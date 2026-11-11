@@ -1,5 +1,8 @@
 packages:
   - "packages/*"
+  # grizzle, the submodule pinned at its live branch: its own packages, versions and gates, none of den's.
+  - "vendor/grizzle/packages/engine"
+  - "vendor/grizzle/packages/grizzle"
 # Approved dependencies' agent skills link into the one skills folder, which .claude/skills and .cursor/skills link to.
 skills:
   dirs:
@@ -20,6 +23,7 @@ catalog:
   "@effect/vitest": 4.1.3
   "@types/node": 26.6.6
   "@types/pg": 8.23.1
+  "@vercel/queue": 0.11.0
   arkregex: 0.0.14
   effect: 4.1.4
   fallow: 3.38.1

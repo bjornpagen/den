@@ -312,6 +312,35 @@ importers:
         specifier: 'catalog:'
         version: 5.1.0(@types/node@26.6.6)(vite@8.3.5(@types/node@26.6.6))
 
+  vendor/grizzle/packages/engine:
+    dependencies:
+      arkregex:
+        specifier: 'catalog:'
+        version: 0.0.14
+    devDependencies:
+      effect:
+        specifier: 'catalog:'
+        version: 4.1.4
+
+  vendor/grizzle/packages/grizzle:
+    dependencies:
+      '@bjornpagen/grizzle-engine':
+        specifier: workspace:*
+        version: link:../engine
+      '@effect/platform-node':
+        specifier: 'catalog:'
+        version: 4.1.3(effect@4.1.4)(redis@6.3.1)
+    devDependencies:
+      '@types/pg':
+        specifier: 'catalog:'
+        version: 8.23.1
+      effect:
+        specifier: 'catalog:'
+        version: 4.1.4
+      pg:
+        specifier: 'catalog:'
+        version: 8.23.1
+
 packages:
 
   '@ark/util@0.56.8':

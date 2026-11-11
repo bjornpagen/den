@@ -11,7 +11,7 @@ const ZOD = {
 /** den's lists for the shared standard; everything else comes from the dev tools' preset. */
 export default defineConfig(
 	lintConfig({
-		ignorePatterns: ["packages/devtools/src/*/fixtures/**", "sources/**"],
+		ignorePatterns: ["packages/devtools/src/*/fixtures/**", "sources/**", "vendor/**"],
 		restrictedImports: { paths: [ZOD], patterns: [] },
 		restrictedGlobals: [],
 		restrictedProperties: [],

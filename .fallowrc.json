@@ -6,7 +6,7 @@
 		"packages/testing/src/vitest/mutated-setup.ts",
 		"packages/testing/src/witness.fixtures.ts"
 	],
-	"ignorePatterns": ["packages/devtools/src/*/fixtures/**"],
+	"ignorePatterns": ["packages/devtools/src/*/fixtures/**", "vendor/**"],
 	// The superlint fixtures, which fallow does not read, are these two packages' only importers in the dev tools.
 	"ignoreDependencies": ["@effect/vitest", "pg"],
 	"boundaries": {
