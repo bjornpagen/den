@@ -203,7 +203,83 @@
 					]
 				}
 			},
-			"scopes": []
+			"scopes": [
+				{
+					"files": [
+						"packages/den/src/",
+						"packages/den-vercel/src/"
+					],
+					"generated": [],
+					"positions": [
+						"comparison",
+						"loop",
+						"extremum",
+						"length",
+						"time",
+						"concurrency",
+						"retry",
+						"size"
+					],
+					"words": "every property",
+					"constants": [
+						"max",
+						"min",
+						"limit",
+						"bound",
+						"budget",
+						"timeout",
+						"deadline",
+						"retries",
+						"size",
+						"depth",
+						"cap",
+						"threshold",
+						"grace",
+						"ms",
+						"millis",
+						"seconds"
+					],
+					"inputs": []
+				},
+				{
+					"files": [
+						"packages/den/test/",
+						"packages/den/integration/",
+						"packages/den-model/src/",
+						"packages/den-vercel/test/",
+						"packages/edullm/"
+					],
+					"generated": [],
+					"positions": [
+						"time",
+						"concurrency",
+						"retry"
+					],
+					"words": "library properties",
+					"constants": [
+						"timeout",
+						"deadline",
+						"retries",
+						"attempts",
+						"concurrency",
+						"grace",
+						"ms",
+						"millis",
+						"seconds",
+						"minutes",
+						"backoff",
+						"interval",
+						"delay",
+						"idle"
+					],
+					"inputs": [
+						{
+							"module": "packages/testing/src/gen.ts",
+							"alias": "Gen"
+						}
+					]
+				}
+			]
 		},
 		"noEnvironment": {
 			"files": [],
@@ -295,7 +371,12 @@
 		},
 		"testCaseIsSearch": {
 			"files": [
-				"packages/testing/src/"
+				"packages/testing/src/",
+				"packages/den/test/",
+				"packages/den/integration/",
+				"packages/den-model/src/",
+				"packages/den-vercel/test/",
+				"packages/edullm/"
 			],
 			"registrars": [
 				{
@@ -342,9 +423,20 @@
 		},
 		"noCaseList": {
 			"files": [
-				"packages/testing/src/"
+				"packages/testing/src/",
+				"packages/den/test/",
+				"packages/den/integration/",
+				"packages/den-model/src/",
+				"packages/den-vercel/test/",
+				"packages/edullm/"
 			],
-			"cases": [],
+			"cases": [
+				"packages/den/test/",
+				"packages/den/integration/",
+				"packages/den-model/src/",
+				"packages/den-vercel/test/",
+				"packages/edullm/"
+			],
 			"dictionaries": [],
 			"searches": [
 				{

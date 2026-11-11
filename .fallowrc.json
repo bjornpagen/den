@@ -14,12 +14,45 @@
 			{
 				"name": "testing",
 				"patterns": ["packages/testing/**"]
+			},
+			{
+				"name": "den",
+				"patterns": ["packages/den/**"]
+			},
+			{
+				"name": "den-model",
+				"patterns": ["packages/den-model/**"]
+			},
+			{
+				"name": "den-vercel",
+				"patterns": ["packages/den-vercel/**"]
+			},
+			{
+				"name": "edullm",
+				"patterns": ["packages/edullm/**"]
 			}
 		],
 		"rules": [
 			{
 				"from": "testing",
 				"allow": []
+			},
+			{
+				// den's own suites hold the engine to the reference model, which imports nothing of den.
+				"from": "den",
+				"allow": ["den-model"]
+			},
+			{
+				"from": "den-model",
+				"allow": []
+			},
+			{
+				"from": "den-vercel",
+				"allow": ["den"]
+			},
+			{
+				"from": "edullm",
+				"allow": ["den", "den-vercel"]
 			}
 		],
 		"coverage": {
