@@ -1,0 +1,53 @@
+{
+	"$schema": "https://turbo.build/schema.json",
+	"agentGuidance": false,
+	"concurrency": "100%",
+	"globalDependencies": [
+		"pnpm-workspace.yaml",
+		"pnpm-lock.yaml",
+		"tsconfig.json",
+		"tsconfig.base.json",
+		"oxlint.config.ts"
+	],
+	"globalEnv": ["NODE_OPTIONS", "NODE_ENV"],
+	"globalPassThroughEnv": ["TMPDIR"],
+	"tasks": {
+		"source": {
+			"description": "Carries each package's source hash to its dependents, so a check reruns when a package it loads changes, without waiting for that package's checks.",
+			"dependsOn": ["^source"]
+		},
+		"typecheck": {
+			"description": "Every project checks with --noEmit: no declarations to cache. The shared tsconfig base is an input too.",
+			"dependsOn": ["^typecheck"],
+			"inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/packages/devtools/tsconfig.base.json"],
+			"outputs": []
+		},
+		"superlint": {
+			"description": "The dev tools' rules and the superlint options in the root package.json are inputs too.",
+			"dependsOn": ["^source", "^typecheck"],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"$TURBO_ROOT$/package.json",
+				"$TURBO_ROOT$/packages/devtools/src/**",
+				"$TURBO_ROOT$/packages/devtools/tsconfig.base.json"
+			]
+		},
+		"oxlint": {
+			"description": "The dev tools' preset and plugin are inputs too.",
+			"dependsOn": ["^source"],
+			"inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/packages/devtools/src/**"]
+		},
+		"fixtures:superlint": {},
+		"fixtures:oxlint": {},
+		"test": {
+			"dependsOn": ["^source"]
+		},
+		"//#typecheck": {},
+		"//#superlint": {},
+		"//#oxlint": {},
+		"//#format": {},
+		"//#dead-code": {},
+		"//#architecture": {},
+		"//#dedupe": {}
+	}
+}

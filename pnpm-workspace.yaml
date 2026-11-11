@@ -1,0 +1,36 @@
+packages:
+  - "packages/*"
+# Approved dependencies' agent skills link into the one skills folder, which .claude/skills and .cursor/skills link to.
+skills:
+  dirs:
+    - .agents/skills
+catalogMode: strict
+# Admit a release once it is a day old, except Effect's own packages: den builds on Effect's newest release.
+minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - effect
+  - "@effect/*"
+# Node 26 is the floor, so its types are the only Node types, even for packages that ask for newer: code typed against
+# 26 runs on 26 and every Node after it.
+overrides:
+  "@types/node": "catalog:"
+catalog:
+  "@effect/platform-node": 4.1.3
+  "@effect/tsgo": 0.67.7
+  "@effect/vitest": 4.1.3
+  "@types/node": 26.6.6
+  "@types/pg": 8.23.1
+  arkregex: 0.0.14
+  effect: 4.1.4
+  fallow: 3.38.1
+  oxfmt: 0.76.0
+  oxlint-tsgolint: 7.0.2005
+  oxlint: 1.91.0
+  pg: 8.23.1
+  turbo: 2.11.10
+  typescript: 7.1.0-beta
+  vite: 8.3.5
+  vitest: 5.1.0
+permissions:
+  fallow:
+    skills: true
