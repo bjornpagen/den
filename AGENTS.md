@@ -24,12 +24,24 @@ rejected, never kept with an allow-list or worked around.
 
 ## Design
 
-- **Effect's algebra, as it is.** Where Effect already has a computation algebra (`effect/workflow`: Workflow,
-  Activity, DurableClock, DurableDeferred, DurableQueue, the `WorkflowEngine` contract), den uses it unchanged and
-  implements its engine. No second language, no wrapper over it. Where it falls short, the shortfall is written into
-  the review and work stops for the owner; it is never worked around.
+- **Effect's algebra first, judged on merit.** Effect already has a computation algebra (`effect/workflow`:
+  Workflow, Activity, DurableClock, DurableDeferred, DurableQueue, the `WorkflowEngine` contract). It is den's
+  starting point, and den departs from its API only where the research shows a better design on technical merit.
+  Where it falls short, the shortfall is written into the review and work stops for the owner; it is never worked
+  around.
+- **The full graph, no hedging.** den records the whole computation graph as typed facts in grizzle: every step and
+  every edge, joins, fan-in and edges found at run time included, never a blob. Where Effect's algebra is partial,
+  den goes past it. No local maximums.
+- **No fire-and-forget.** Every piece of work started is joined by a scope that waits for it; work nobody joins is
+  unrepresentable.
+- **A tight algebraic core.** If Effect's algebra is not good enough, den builds its own small core, as grizzle did
+  for the relational model. Effect stays the language a step's body is written in.
+- **Glue Effect's upstream parts.** When in doubt, use Effect's upstream code (`effect/cluster`, `effect/persistence`,
+  `effect/sql`, `effect/rpc`, Cron, Schedule and the rest) and glue the parts together; never reinvent what Effect
+  already ships.
 - **grizzle only, PostgreSQL 19 only.** den's state lives in a grizzle installation and nowhere else. No other store,
-  no driver beside grizzle's, no PostgreSQL before 19.
+  no driver beside grizzle's, no PostgreSQL before 19. grizzle beats `effect/sql` wherever an Effect part reaches for
+  SQL: such a part is glued in through a grizzle-backed implementation of its interface.
 - **Representation over control flow.** When a new case appears, change the types so it stops being special or stops
   being expressible, instead of adding a branch, flag, guard or sentinel (`.agents/skills/representation-first`).
   Parse at the boundary once; absence is a variant or an `Option`, never a fallback.

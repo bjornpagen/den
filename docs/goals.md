@@ -7,7 +7,8 @@ The owner's goals for den, 2026-11-11.
    `effect/workflow` (Workflow, Activity, DurableClock, DurableDeferred, DurableQueue and the `WorkflowEngine`
    contract, with an in-memory engine) and `effect/cluster` (a SQL-backed `ClusterWorkflowEngine`). den is an engine
    for that algebra, not a new one. Where the algebra falls short, the shortfall goes into the review and the work
-   pauses for the owner.
+   pauses for the owner. When in doubt, den uses Effect's upstream code and glues the parts together rather than
+   reinventing them, so the research inventories every upstream part first.
 2. **Painless lowering onto grizzle.** What a workflow persists becomes grizzle relations, laws and writes.
 3. **Deep coupling with grizzle.** den takes every advantage of grizzle's transactions and ACID guarantees; the
    workload is assumed to be primarily database work.
