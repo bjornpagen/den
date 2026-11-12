@@ -1,11 +1,12 @@
 # den's reference model (`@den/model`)
 
-`packages/den-model` is den's laws stated apart from the engine: a den program as data, the ledger as immutable facts
-with every transition a pure function, a deterministic simulator of the platform around it, and the laws as searches.
-It imports nothing of den or grizzle, only `effect` and `@den/testing`, so the real engine's suites can hold
-`packages/den` to it by differential tests. Everything here follows [the proposal](../proposal.md); where the proposal
-leaves a decision open, the model makes the simplest one consistent with it and marks it **provisional, for the
-owner**.
+`packages/den-model` states den's laws apart from the engine: a den program as data, the ledger as immutable facts
+with every transition a pure function, a deterministic simulator of the platform around it, the laws as searches, and
+edullm's eight workloads as model programs. It imports nothing of den or grizzle, only `effect` and `@den/testing`,
+so the engine's suites can hold `packages/den` to it by differential tests. It follows [the proposal](../proposal.md)
+§4, §7 and §8 and [the decisions](../decisions.md); where they leave a choice open, the model makes the simplest one
+consistent with them and marks it **provisional, for the owner**; the ambiguities it reported are settled by the
+evidence (`decisions.md`, "Settled by the evidence"), and the model follows those rulings.
 
 ## Modules
 
@@ -13,236 +14,256 @@ owner**.
 |---|---|
 | `datum.ts` | `Datum`, the JSON tree a value is once it leaves typed code, and its canonical text |
 | `identity.ts` | derived identities of roots, scopes and steps, and their canonical texts |
-| `program.ts` | the program model: lanes, step kinds, await kinds, scope kinds, root kinds, edges, feeds, and their erasure |
-| `facts.ts` | the trace format: facts, commands, answers, entries |
-| `ledger.ts` | the ledger: state as a projection of facts, the rules, every transition |
-| `simulator.ts` | workers, transport, deaths, clock, census, relay, deployments; the chaotic and the fair phase |
-| `properties.ts` | the laws, each a pure check over a trace |
+| `program.ts` | the primitives: resources, windows, ladders, runs, declared reads, step, scope, root and edge kinds, their erasure, `Program` |
+| `facts.ts` | the trace format, version 2: facts, commands, answers, entries, `Trace`, and the canonical texts of seats, holders and pause targets |
+| `ledger.ts` | the state as a projection of facts, the rules (`Rules`, `SOUND`), eligibility and order (`standingsOf`), every transition |
+| `simulator.ts` | workers, transport, deaths, clock, census, relay, deployments, the world's acts; the chaotic and the fair phase |
+| `properties.ts` | the twelve laws, each a pure check over a trace and the run's sends |
 | `planted.ts` | the planted bugs, each one rule broken |
 | `machine.ts` | the ledger as a `@den/testing/commands` machine over a flat program |
-| `scenarios.ts`, `search.ts` | generators, the simulator's nature drawn from a case's tape, search helpers |
-| `workloads/` | generated programs, edullm's QTI chain and Timeback daily job |
+| `scenarios.ts`, `search.ts` | generators, the simulator's nature drawn from a case's tape, the declaration check, search helpers |
+| `workloads/` | `synthetic.ts` (generated programs), W1 `timeback.ts`, W2 `alphatest.ts`, W3 `qti.ts`, W4 `gold.ts`, W5 `takedown.ts`, W6 `reports.ts`, W7 `enrollment.ts`, W8 `seed.ts`, and `edullm.ts`, all eight on one ledger |
 
 ## The program model
 
-- **Lane**: a name, a width, and a window (`Always`, or open `[opens, closes)` of every `period`). A lane's pause is not
-  declared: pausing and resuming are operator verbs recorded as facts.
-- **Step kind**: a name; how it runs (`Runs`: lane, lease, ceilings, ladder); how its input, output and error show as
-  data; a pure body `(input, claimed) → Output{output, writes} | Failure{error} | Retry{at, counts}`; and its declared
-  edges. `claimed` is the claim's instant and the step's counters, so a re-run of one claim computes the same outcome.
-- **Await kind**: a step with no body, completed from outside (`External`) or by a timer `after` ticks from its spawn.
-- **Scope kind**: a start (the children it opens) and a finish, a step-like body over the scope's input and its
-  children's endings.
-- **Root kind**: a trigger (`Schedule`, `Operator`, `Api`) and a scope. A root's finish starts nothing.
-- **Edges**: `spawn` (steps of one kind in the same scope), `spawnAwait`, `open` (a child scope of one kind, with the
-  `then` edges that start steps in the opening scope once the child's finish is done: "Pages' finish starts Prune"),
-  and `contribute` (one role of a `feed`, a join of several parents in one scope).
+- **Step kind**: a name; how it runs (`Runs`: lease, the resources it holds a seat of while it runs, its ladder); how
+  its input, output and error show as data; its declared reads, a function of its input to named `Query`s (an app
+  relation's rows, all or one key's, or the steps pending under roots of some kinds); a pure body
+  `(input, claimed) → Output{output, writes} | Failure{error} | Retry{at, counts}`, where `claimed` holds the claim's
+  instant, its number, the attempts and waits spent, and the rows each read returned; and its declared spawn edges.
+- **Ladder**: `Attempts{attempts, first, last}` (W1 to W4) or `Never{first, last}` (W6), its rungs written out either
+  way, `min(first · 2ⁿ, last)`.
+- **Due instant**: a child is due at once or at an instant its edge names (`stepAt`, `spawnAt`: W5's timer, W6's delay).
+- **Scope kind**: the children its start opens, and a finish, a step over the scope's input and its children's
+  endings (done or failed). A child scope's `then` edges start steps in the scope that opened it once its finish is
+  done ("Pages' finish starts Prune").
+- **Root kind**: a trigger (`Schedule`, `Operator`, `App`), a precondition (a `Query` that must read empty) or none,
+  an exclusivity key of its input or none, a window or none, and a scope. Exclusivity and windows belong to root kinds
+  only: every one of edullm's is per run.
+- **Edges**: spawn edges only, to steps or child scopes of one declared kind, ordinal by position. An edge runs only on
+  an output: a step that fails spawns nothing.
+- **Resource**: a name and its seats, keyed `"0" … "<seats − 1>"`; a root's exclusivity is a seat keyed by its kind and
+  the value its input names, held by its scope for its life.
 - **Erasure**: a typed kind and input become a `Child` whose closure holds the typed input; the ledger sees only that
-  closure and the input as data. The model never decodes a datum.
+  closure and the input as data.
+- **Program**: its resources and its root kinds (with their preconditions and windows), which is all the laws need.
 
 ## The ledger
 
-The state (`State`) is a projection of the facts, keyed by canonical text; `apply` is the one place a fact's meaning is
-written. A transition computes the facts it adds by emitting them one by one on an evolving state (`Tx`), so later
-decisions in one call see earlier facts, as one grizzle transaction would. A fact whose key is already held is no
-change, so a call made twice adds nothing the second time. Every transition takes the ledger's clock `at`.
+The state is a projection of the facts, keyed by canonical text; `apply` is the one place a fact's meaning is written.
+A transition emits its facts one by one on an evolving state, so later decisions in one call see earlier facts, as one
+grizzle transaction would. A fact whose key is already held is no change, so a call made twice adds nothing.
 
-- **admit** `(admission)`: a root under `(trigger, idempotency key)`. If a root of that key is in the ledger, the answer
-  is `unchanged`. Otherwise `Admitted`, then the root scope's start children (`Spawned` for steps, `Opened` for child
-  scopes, recursively), then the finish at once if the scope has no children.
-- **claim** `(lane, deployment)`: refused `stale` for a deployment that is not current, `paused`, `closed` outside the
-  window, `at-width` when the lane's live claims (lease not run out, no result) leave no room, `idle` when nothing is
-  due. Otherwise the earliest due step (due instant, then key); a step whose lease ran out is due at `until`, and this
-  claim is then a reclaim. A reclaim reaching the step's reclaim ceiling ends it `Failed{ReclaimsExhausted}` instead
-  (answer `exhausted`). The claim is `Claimed{claim, token, slot, until = at + lease, deployment}`, its slot the lowest
-  no live claim holds, its token minted once.
-- **commit** `(step, claim, token, report, deployment)`: `stale`, or `gone` for a step not in the ledger. Then the
-  fence: `open` when the step is held by the claim the token names, whatever its lease; `rerun` when the step already
-  holds exactly this claim's report (or this claim's retry); `lost` otherwise. An open commit lands its outcome:
-  - an output: `Done`, every write as `Wrote`, then each declared edge's children under derived identity, then what
-    the step's end settles;
-  - a failure: `Failed{Refused}`;
-  - a retry: a wait past the waits ceiling counts as an attempt; a counted attempt reaching the attempts ceiling ends
-    it `Failed{AttemptsExhausted}`; else `Retried{due, counts}`.
+- **admit**: `unchanged` if a root of the key is live; `retired` if the key was retired (it never recurs); `blocked` if
+  the precondition reads rows. Otherwise `Admitted` and the precondition's `Read` (empty); then, if another live run
+  holds the exclusivity seat, `Finished{Held}` at once (`held`: the run is recorded and skipped, edullm's "that
+  relation skips the night"), else the scope's `Seated` and the start's children, recursively.
+- **write**: the app's own transaction: its rows as `Wrote{App}`, and the roots it admits, each behind its own race.
+- **claim(step, turn)**: `stale`, `gone`, `lost` (ended, or a live claim holds it), `early`, `closed`, `paused`, `full`,
+  `behind`; else a reclaim of a lapsed lease at the end of its ladder fails the step `LadderEnded{lapsed}` (`exhausted`),
+  and any other claim is `Claimed{attempt, turn, until}`, the lapsed claim's seats given back, and the lowest free seat
+  of each resource taken (giving it back for a lapsed holder first). The claim takes the step's declared reads in its
+  transaction and hands them to its holder; they are recorded with the result. A reclaim spends an attempt.
+- **commit(step, attempt, turn, report)**: `stale`, `gone`; then the fence on the claim's key: `open` when the step's
+  latest claim is this attempt and it holds no result, whatever its lease; `rerun` when this attempt's identical report
+  already landed; `lost` otherwise. An open commit lands `Done` and its claim's reads as `Read`s, gives back its seats,
+  lands its writes and its edges' children, and settles its scope; or `Failed{Refused}` with its reads; or a retry: a
+  counted attempt at the ladder's end is `Failed{LadderEnded{retried}}` with its reads, else `Retried{due, counts}`. A
+  wait spends nothing. A holder that dies after reading reads again at its next claim.
+- **settle**: once every child of a scope ended, `Spawned(scope/finish)` under the finish's key race; when the finish
+  ends, `Finished{Done|Failed}`, a root scope's exclusivity seat given back, and the owner settled in turn.
+- **retire**: `live` until the root's scope finished; then `Retired`, the graph deleted whole, the key kept as retired.
+- **pause, resume** a resource or a root kind; **deploy**; **census**, a read that commits nothing and is recorded so
+  the laws see when ticks fell.
 
-  A rerun re-derives the children and inserts those absent (none, under derived identity): `unchanged`.
-- **spawn identity**: a start child `scope/start#n`, an edge child `step/edge#n` (its ordinal its position in the
-  edge's output), a child scope `step/edge[n]` or `scope/start[n]`, a joined step `scope/feed@key`, a finish
-  `scope/finish`. A re-run lands on the same keys.
-- **finish**: when a step ends, its scope is settled: once every child (step or scope) has ended and the scope has no
-  finish, `Spawned(scope/finish)` on the finish's lane. When the finish ends, `Finished{scope, Done|Failed}`, and the
-  owner scope is settled in turn. The key race is the finish's key: one scope, one finish.
-- **feeds**: a part is `Fed{feed, scope, key, role, parent, value}` once per role; when every role has arrived, the
-  joined step is spawned with the parts as its input.
-- **complete** `(await, value)`: an external await's first completion wins; the same value again is `unchanged`, another
-  is `lost`. **fire**: every timer whose instant has come completes with that instant.
-- **stop** `(scope)`: every unended step under it `Stopped`, every unended scope under it `Finished{Stopped}` innermost
-  first, without running any finish; then the owner scope is settled. A running holder's later commit finds its step
-  ended and is lost, with its spawns.
-- **pause/resume** `(lane)`: facts; idempotent.
-- **retire** `(root)`: refused `live` until the root's scope finished; then `Retired`, and every row of the root's graph
-  is deleted. The app's rows and the token count survive. The key is free again.
-- **deploy**: `Deployed{n + 1}`; calls from older deployments are answered `stale`.
+**Eligibility and order** (`standingsOf`). A step is a candidate at an instant when it exists (its parent ended), has
+not ended, holds no live claim, its due instant (or its lapsed lease's end) has passed, its root's window is open, and neither its root kind nor any resource it holds is paused. Candidates are ordered by their root's age (its
+admission's place), then their due instant, then their key, the same order for every resource. A candidate is eligible
+when every resource it holds has a free seat and fewer candidates ahead of it hold that resource than it has free
+seats: older work is never overtaken, even when it is blocked on another resource.
 
-## The simulator
+## Ringing, and the simulator
 
 `simulate(setup, nature)` runs a chaotic phase of drawn events, then a fair phase. Every choice is a decision of the
-search case's tape (`natureOf`), so a run replays from its token and shrinks; faults are turned on per case by a swarm.
+case's tape (`natureOf`), so a run replays from its token and shrinks; faults are turned on per case by a swarm.
 
-- **Transport**: a message is a doorbell for a lane, keyed, pinned to the deployment that sent it. Faults: `drop`,
-  `duplicate` (a delivery made again), `delay`, `reorder`; a send whose key was seen within the dedup window is dropped.
-  A dead worker's delivery comes back after the visibility timeout (the lifetime), up to `deliveries`.
-- **Workers**: one invocation per delivery, on the message's deployment: claim, run (its body, or a call fault:
-  `transient` is a wait, `unavailable` an attempt, a deadline at `until − 1` an attempt), commit, then another turn while
-  turns and lifetime last, else a continuation keyed by the invocation, only if it worked. Death strikes before the
-  claim, between claim and commit, or after the commit before the ring. `pause` delays a commit, maybe past its lease;
-  `lost-answer` makes a commit land but its answer vanish, so the worker sends it again. On `stale` a worker acknowledges
-  and exits.
-- **Relay**: a leader holding an in-memory set of keys sent; its read is, per lane, the steps due the moment a commit
-  made them so, up to the free slots, each rung once keyed `(step, claims)`, pinned to the leader's deployment. A
-  hand-over clears the set and moves the leader to the current deployment: it replays its whole read, at least once.
-- **Census**: fires timers, retires finished roots, and per lane rings `min(due, free)` doorbells keyed by lane, tick
-  and index, pinned to the current deployment, `due` counting deferred retries and leases that ran out.
-- **Clock**: the ledger's, advanced by `tick` events; nothing else keeps time.
-- **Operators**: admit (and re-admit), stop a scope, pause and resume a lane, complete an await (again, maybe with
-  another value), deploy.
-- **Fair phase** (TigerBeetle's VOPR liveness mode): every admission made, lanes resumed, the relay handed over; then per
-  tick every await completed, the relay served, the census on its period, every delivery made and every worker run
-  through its turns, with no fault. It ends `Quiescent` (no root, no message, no worker), `Stalled` (a step pending with
-  no move for longer than the patience), `Undrained` (an old deployment's messages or workers past the drain bound) or
-  `Spent` (a step past the claims its ceilings allow, or the phase's whole budget).
-- **Re-runs**: every accepted keyed call (admit, commit, complete, fire, stop, pause, resume, retire) is made again at
-  once and recorded in `reruns`.
+- **The committing worker continues with its own first spawn and rings the rest**: a worker's call that spawned a step
+  eligible at once claims it next, while its turns and lifetime last, else sends it as a continuation message; it
+  rings everything else its call made eligible, timers delayed to their instants, keyed by that commit. A worker that
+  dies after its commit rings nothing.
+- **The relay** tails the log of committed entries in commit order: for each, the steps it made eligible (eligible after
+  it, not before) and the timers it spawned, all of them, keyed by the entry's position, pinned to the leader's
+  deployment, so a hand-over's replay of a position is a true duplicate. It and the committer ring the same steps
+  under different keys, harmlessly: the claim decides. A timer, a step spawned due later, is a delayed delivery to its instant. The leader saves
+  its position after sending unless it lags; a hand-over starts the new leader, on the current deployment, from the
+  last position saved: at least once.
+- **The census tick** records its read, retires every root the ledger finds ended, and rings every step eligible at the
+  tick, in order, keyed by the tick's instant: time-made eligibility (due instants, retries, windows opening, lapsed leases) and
+  the net under every lost ring. Eligibility bounds the rings by free seats.
+- **Transport**: a message names one step. Faults: `drop`, `duplicate`, `delay`, `reorder`. As Vercel Queues does, a
+  send whose key the transport accepted within its deduplication window is dropped out of band, however the first was
+  processed; the window is a day at the model's minute tick (`min(retention, 24 h)`, `docs/research/vercel.md`),
+  longer than any run, a few ticks or none in a sixth of cases. Every send is recorded with its key, cause and fate.
+  A dead worker's delivery comes back after the visibility timeout, up to `deliveries`.
+- **Keys name the ring's cause** (`Policy.keyOf`): the fast path's commit, the relay's position, the census's instant,
+  a continuation's worker, with the step. A delivery that ends without a claim (a seat held, a window closed, `stale`)
+  leaves the next cause's ring a fresh key.
+- **Workers**: one invocation per delivery, on the message's deployment: claim, run (its body, or `transient` a wait,
+  `unavailable` an attempt, a deadline at `until − 1` an attempt), commit. Deaths before the claim, between claim and
+  commit and after the commit; `pause` delays a commit maybe past its lease; `lost-answer` loses an accepted commit's
+  answer, so the worker commits again. On `stale` it acknowledges and exits.
+- **The world's acts**: admissions by schedule and operator and the app's own transactions (writes, maybe admitting a
+  root) at their instants; `readmit` admits a root again; operators pause and resume resources and root kinds; deploys.
+- **Fair phase** (TigerBeetle's VOPR liveness mode): everything resumed, the relay handed over; per tick the acts due,
+  the relay, the census on its period, every delivery, every worker through its turns, no fault. It ends `Quiescent`
+  (every act done, no root, no message, no worker), `Stalled` (a step pending with no move past the patience),
+  `Undrained` (old deployments past the drain bound) or `Spent` (a step past its ladder, or the budget).
 
-The patience (`patienceOf`) is derived, not tuned: a pending step's next move waits at most for its lease to run out,
-its retry to fall due, its timer to fire or its window to open, and then for the census's next tick, which rings it, so
-it is delivered and claimed that tick. A step takes at most `attempts + waits + reclaims − 1` claims
-(`claimsBoundOf`).
+The patience (`patienceOf`) is derived: a pending step's next move waits at most for its lease to run out, its due
+instant or retry, and the closed span of a window, then for the census's next tick, which rings it. A step on
+`attempts(n)` that still pends with `n` attempts spent is `Spent` at once.
 
-## Provisional decisions, for the owner
+## The trace format, version 2
 
-1. **Claim protocol and width.** A claim names a lane, never a step, and takes the earliest due step (due instant, then
-   key): edullm's doorbell. A wake's key only deduplicates the transport. Width is checked before candidates, against
-   live claims: a claim in force whose lease has not run out and whose step has no result. A holder whose lease ran out
-   no longer counts, though it may still run. Slots are the lowest free in `0 … width − 1`.
-2. **The fence is a token the ledger mints per claim**, never reused, retirement included; `(step, attempt)` stays the
-   key race and the claim's number. See the finding below.
-3. **Correctness never reads the clock.** A commit is fenced on its token alone: a holder whose lease ran out still
-   lands while no newer claim took its step (edullm's B5), and the newer claim, once taken, makes it `lost`. Leases,
-   due instants and timers read the ledger's clock only for liveness.
-4. **The clock** is the ledger's: every transition takes `at`; workers keep none; a holder's deadline is `until − 1` on
-   that clock; a retry is due at an absolute instant no later than `at + ladder.last`.
-5. **Retirement**: the census retires every finished root whole; the root key is free again, and a new admission under
-   it is a new graph with the same derived identities. The app's rows and the token count survive.
-6. **Stopping a running step**: a stop ends every unended step and scope under it at once; the scope finishes `Stopped`
-   without running its finish (so no cursor moves); the holder's later commit is `lost`, its writes and spawns with it;
-   the owning scope carries on.
-7. **A finish** runs on its own lane like any step (`FinishKind.runs`), is spawned by the commit that ends the last
-   child, and its `then` edges are declared on the edge that opened its scope.
-8. **Feeds** join parents of one scope; their parts are data, so parents of different kinds join without a shared type;
-   a parent that never contributes leaves no joined step.
-9. **Ceilings are per step kind**: a counted attempt reaching `attempts` fails; a wait past `waits` counts as an attempt;
-   a reclaim reaching `reclaims` fails at the claim. A call fault climbs the kind's ladder `min(first · 2ⁿ, last)`.
-10. **Deployments**: a call is served only from the current deployment; on `stale` a worker acknowledges and exits,
-    sending nothing. The relay's leader stays on its deployment until a hand-over.
-11. **Awaits**: an external await's first completion wins; a timer fires at its spawn plus `after`, completed by the
-    census with its instant as its value.
+`Trace` (`facts.ts`) is `{ version: 2, entries }`: every ledger call a run made, in commit order, each the clock's
+instant, the `Command`, the `Answer` and the `Fact`s it committed in order. Steps and scopes are named by their derived
+identity paths (`<root>/start#n`, `<step>/<edge>#n`, `<step>/<edge>[n]`, `<scope>/start[n]`, `<scope>/finish`). The
+facts: `Admitted` (with exclusivity key and trigger), `Opened`, `Spawned` (with due instant and resources held),
+`Claimed` (step, attempt, turn, until, deployment), `Read` (reader, name, query, rows; a claim's reads in the commit
+that lands its result, a precondition's in its admission), `Seated`, `Unseated` (seat and holder, a claim or a root's
+scope), `Retried`, `Done`, `Wrote` (by a step or the app), `Failed` (`Refused` or `LadderEnded{retried|lapsed}`),
+`Finished` (`Done`, `Failed`, or `Held` for a root whose exclusivity seat was held), and the `Commit` command carries
+the reads its claim took, `Paused`, `Resumed` (a resource or root kind),
+`Deployed`, `Retired`. Two traces compare fact by fact, turns as a one-to-one renaming. The JSDoc of `Fact`, `Command`,
+`Answer` and `Trace` is the format's definition.
 
 ## The laws, and the bugs planted to break them
 
-Each law is a pure check over evidence (`Evidence`: a trace, the lanes, and for the platform's laws the re-runs and the
-fair phase's end). Each planted bug replaces exactly one rule (`Rules`) or platform decision (`Policy`); each test
-requires the search over it to fail in a witness phase (the floor or steered stream its suite's label fixes), so the
-law catches the bug on every run seed (`caught`).
+Each law is a pure check over `Evidence` (a trace, the program, and for the platform's laws the re-runs and the fair
+phase); each planted bug replaces one rule (`Rules`) or platform decision (`Policy`), and its search must fail in a
+witness phase, the floor or steered stream its label fixes, so the law catches it on every run seed.
 
 | law | what it checks | planted bug it catches |
 |---|---|---|
-| `no-stall` | the fair phase ends quiescent: no step pending past its patience, none past its claims bound | `censusBlindToExpiry` (the census forgets leases that ran out); `ceilingsIgnored` |
-| `one-result` | at most one `Done`, `Failed`, `Completed` or `Stopped` per step and incarnation; every `Wrote` follows its step's `Done` in one entry | `fenceBlindToResult` (the fence ignores a result already there); `lostWritesLand` (a lost commit's writes land) |
-| `scope-once` | one `Finished` per scope, after every child it owns ended | `finishBlindToScopes` (children scopes not counted); `finishWithoutKey` (the finish is no key race) |
-| `width` | live claims of a lane never exceed its width; no two share a slot | `widthOffByOne` |
-| `rerun` | an accepted keyed call made again at once adds nothing | `ordinalNotDerived` (children keyed by the ledger's count) |
-| `stale-drains` | an old deployment's claims and commits are answered `stale`; its messages and workers drain | `servesOldDeployments`; `staleRingsOn` (a stale worker rings itself on) |
-| `owned` | every step and scope opens inside an open scope; no root retires with work pending | `stopBlindToSpawns` (a stop fences the result, not the spawns) |
-| `fenced` | a landed commit names a token its step minted in the graph as it stands | `fenceOnAttempt` (fenced on the attempt number), caught by the command machine against the specification |
+| `no-stall` | the fair phase ends quiescent: no step pending past its patience, none past its ladder | `censusBlindToExpiry` (the census never rings a lapsed lease); `ladderIgnored` |
+| `one-result` | one result per step key ever; a write only in its step's `Done` entry; a commit lands only for the turn holding the step's latest claim | `fenceBlindToResult`; `lostWritesLand`; `retiredKeysRecur` |
+| `scope-once` | one `Finished` per scope, after every child ended | `finishBlindToScopes`; `finishWithoutKey` |
+| `seats` | a seat is taken only when free, taken from a claim only once its lease ran out, within its resource's seats, and a claim takes a seat of every resource its step holds | `lapseEarly` (a lease counted as run out a tick early), in simulation and in some interleaving |
+| `exclusive` | never two live runs of one exclusive root kind and key; a contested admission ends `Held` in its entry | `exclusiveReleasedEarly` (the seat given back when the finish is spawned) |
+| `precondition` | a root was admitted only while its precondition, evaluated from the trace, read empty | `preconditionBlindToHeld` (a `Pending` read forgets held steps) |
+| `reads` | every recorded read is the rows its query held where it was taken (the claim, or the admission), evaluated from the trace | `readIgnoresKey` (a keyed read returns its whole relation) |
+| `rerun` | an accepted call made again at once adds nothing | `ordinalNotDerived` |
+| `stale-drains` | old deployments' claims and commits are answered `stale`, and their messages and workers drain | `servesOldDeployments`; `staleRingsOn` |
+| `owned` | no fire-and-forget: everything opens inside a scope not yet ended, and no root retires with work pending | `retireBeforeFinish` |
+| `window-tick` | every open span of a declared window inside the fair phase holds a census tick | `windowCheckOffByOne` (the declaration check admits a span a tick short) |
+| `rewake` | a wake re-rung by a later cause is always delivered: the transport drops a send as a duplicate only of an earlier send of the same cause | `keyPerAttempt` (every ring keyed by step and attempt); its stall is also caught by `no-stall`, under a seat held and under a window closed |
 
 ## The searches
 
-- `laws.test.ts`: generated programs (chains, fan-out, a child scope with a follow-up, a feed join, external and timer
-  awaits, every behaviour from output to retry-forever) under every fault, every law; 2,000 independent cases and 21
-  required situations, from reclaims and late commits to hand-overs and deduplication.
-- `planted.test.ts`: the eleven simulator-caught planted bugs above.
-- `workloads.test.ts`: the QTI chain (a nightly root, one read scope per collection, pages each naming the next, a
-  finish moving the frontier) and the Timeback daily job (a print, a pages scope cut at admission with a split edge for
-  a page too large and a refusal for a one-block page too large, a prune started by the pages scope's finish, a cursor
-  moved by the root's finish), both under every law, with edullm's limits in force (`production`) and small ones; and
-  each workload's own law: a frontier or cursor moves only once every page or block landed (checked to fail when the
-  finish moves it regardless).
-- `race.test.ts`: `interleave` with `every`: two workers and a third session (a clock running leases out, an operator's
-  stop, or a third worker), every interleaving of their moves on one ledger, judged by `one-result`, `scope-once`,
-  `width`, `owned` and `fenced`.
-- `machine.test.ts`: `commands`: the ledger as a command machine over a flat program, answered by a specification of
-  the same laws written apart from `ledger.ts`, 600 programs of up to 40 commands; and the planted attempt fence, which
-  the steered phase reaches through a gradient of situations (a retirement, a re-admission, a commit naming a retired
-  graph's lease).
+- `laws.test.ts`: generated programs (chains, fan-out, a child scope with a follow-up, exclusive roots under one key,
+  a seat-holding resource, a root window, timers re-armed by a declared read, a gate root with a quiescence
+  precondition, attempts and never-ending ladders, outages, every trigger) under every fault and every law; 2,000
+  independent cases and 30 required situations, from reclaims and late commits to held roots, blocked gates, workers'
+  rings, replayed relays and refused declarations.
+- `planted.test.ts`: the seventeen simulator-caught planted bugs above, `keyPerAttempt` three times: by `rewake`, and
+  by `no-stall` where a ring finds its seat held, and where a timer finds its window closed, no seat held.
+- `race.test.ts`: `interleave` with `every`: two workers and a third session (a clock, an operator pausing the
+  resource, or a third worker) claiming steps that share a resource of one or two seats, every interleaving judged by
+  `one-result`, `scope-once`, `seats`, `exclusive` and `owned`; and `lapseEarly` caught in some interleaving.
+- `machine.test.ts`: `commands`: the ledger as a command machine over a flat program (steps holding one resource),
+  answered by a specification written apart from `ledger.ts`, 600 programs of up to 40 commands, `full`, `behind`,
+  `retired` included; and `retiredKeysRecur`, which the specification refuses.
+- `workloads.test.ts`: all eight workloads on one ledger, each present or not by case, edullm's limits in force
+  (`production`) or small ones, under every law and each workload's own (below); 500 independent cases and 25
+  required situations.
 
-## The trace format
+## edullm's eight workloads
 
-`Trace` (`facts.ts`) is the ordered list of every ledger call a run made: the clock's instant, the `Command` as data, the
-`Answer`, and the `Fact`s it committed in order. Steps and scopes are named by their derived identity
-(`identity.ts`), structurally and as canonical text. The real engine's tests produce one by reading their committed rows
-in commit order and naming each step and scope by the path its keys derive. Two traces compare fact by fact, except
-`token`, which each implementation mints itself and which compares as a one-to-one renaming. `properties.ts`
-reads either.
+- **W1** (`timeback.ts`): a root per relation and night, exclusive per relation, in its window: a print; its edge opens
+  pages (split for a page too large, a one-block one refused); the pages' finish starts the prune, which reads the print
+  as its declared read; the root's finish moves the cursor. Every part holds a seat of the 8-seat replica. Law: a
+  cursor moves only once every block landed and the prune ran against that night's print.
+- **W2** (`alphatest.ts`): a singleton root in its window opens the listing chain; its finish, the listing gate, opens
+  one chain per request kind (the singleton root keeps each the only live one), the flow window travelling along each
+  chain edge, then the scans.
+  Law: the frontier moves only over every listing page, request batch and scan.
+- **W3** (`qti.ts`): each night the schedule admits one root per collection, exclusive per collection and in its
+  window, a chain of pages; a night whose previous read of the collection still runs is held for it. Law: a frontier
+  moves only over every page.
+- **W4** (`gold.ts`): a singleton root with no window, behind the quiescence precondition (no `TimebackDaily` or
+  `QtiRead` step pending), a chain of views that stops at a failed one, its finish swapping the generation. Law: the swap only over
+  every view.
+- **W5** (`takedown.ts`): the app's write of an attempt's entry admits its root; a timer due `idle` later reads the
+  attempt's presence and re-arms for the instant its last beacon makes it away, or hangs up; the browser's beacons are
+  app writes every tick. Law: no hang-up of an attempt whose last beacon before the claim is younger than `idle`, and
+  every attempt hung up once.
+- **W6** (`reports.ts`): the app's write of a report admits its root; a delivery, delayed for a stretch, on a ladder
+  that never ends, refused while Timeback's outage lasts. Law: none fails, every report is delivered.
+- **W7** (`enrollment.ts`): an hourly exclusive root whose pass reads the intents and the roster and writes the plan.
+  Law: the roster ends as the intents the last pass read.
+- **W8** (`seed.ts`): a one-off operator root seeding one table per step. Law: a run with no failed step seeds every
+  table.
 
-## What the real engine's differential tests should check
+## Retirement closes the fence
 
-1. **The same commands, the same answers and facts.** Drive the engine's ledger with `flatMachine(flat, SOUND)` through
-   `runProgram`, its `Real` the engine; and replay a simulated run's `Trace` command by command against the engine with
-   the same program, comparing answers and committed facts (tokens renamed).
-2. **The laws over the engine's own traces.** Run `CHECKS` (`properties.ts`) over traces the engine commits under the
-   simulator's schedules, with the engine's workers, relay and census in place of the model's.
-3. **The planted bugs, planted in the engine.** Each planted bug in `planted.ts` names a decision the engine makes too
-   (the fence, the width check, the finish's key race, the census's due count, the deploy fence); breaking the engine's
-   the same way should fail the same law.
-4. **The provisional decisions as differences.** Where the engine decided otherwise (claim by step, a clock in the
-   fence, a stopped scope's finish), the differential tests show exactly which answers and facts differ; each is a
-   question for the owner, not a defect of either side.
-5. **The identity paths.** The engine's derived keys must name the same paths: `scope/start#n`, `step/edge#n`,
-   `step/edge[n]`, `scope/feed@key`, `scope/finish`.
+The claim's key `(step, attempt)` fences its commit, with no token beside it, because retired keys never recur
+(grizzle's RETIRE): a step key names one step for ever, so its claim `attempt` is one claim, one holder. grizzle's
+RETIRE remembers retired keys; in the model, tombstones of the retired root keys stand for it, and an admission under
+one is answered `retired`. If retired keys recurred, a re-admission
+would rederive the same step keys with claims counting from 0 again, and a holder of the retired graph would pass for
+the new graph's claim of the same number. `retiredKeysRecur` plants exactly that: its search fails `one-result`, the
+specification refuses its re-admission, and a direct probe over 3,000 simulated runs of it found the landing itself 44
+times (`Synthetic("r0")/start#0 took the report of w12.0 for claim 0, which w22.0 took`), beside 2,152 runs whose new
+graph took a second result under a recurring key.
 
 ## Findings
 
-- **`(step, attempt)` is no fence across a root's incarnations.** Retirement frees the root key; re-admission rederives
-  the same step keys and their claims count from 0 again, so a paused holder from the retired graph matches the new
-  graph's claim of the same number and its report lands there. The model fences on a token minted per claim that
-  survives retirement (a sequence, or the claim row's uuidv7 in grizzle). `fenceOnAttempt` reproduces the hole, and
-  the command machine catches it.
-- **A lane's window must hold a census tick.** A wake that finds the window closed is consumed, and only the census rings
-  again; a window shorter than the census's period may never see one, and its due work stalls for good. The generators
-  draw windows at least a census period long; den's lanes should state the constraint.
-- **The relay cannot heal a lease that ran out.** Expiry is time passing, not a commit, so no live read sees it; the
-  census is the only path back for a dead holder's step, which `censusBlindToExpiry` shows is load-bearing.
-- **Effect's `Array.range(1, 0)` is `[1]`.** The model counts children with `ordinals`, which makes none for zero; the
-  specification caught the model spawning a step for a count of zero.
+- **A key per attempt stalls a step for a day.** Vercel Queues keeps a key for up to 24 h whether or not its first
+  delivery was processed, so a ring that ended without a claim (a seat held, a window closed, `stale`) spends its
+  attempt's key and every later ring of that attempt, the census's included, is dropped. Keys name the ring's cause
+  instead; `keyPerAttempt` reproduces the stall (found first by the den-vercel lane).
+- **Nested windows can make a step unable to run.** Two windows each holding a census tick, whose open spans never
+  overlap, left the steps under both pending for ever (found by the laws search: a root open over `[1, 2)` and a child
+  scope over `[0, 1)` of period 2). Windows on root kinds only make it unrepresentable.
+- **A window must hold a census tick**, and the flow's declaration is where to check it: a wake that finds the window
+  closed is consumed, and only the census rings what a window's opening made eligible. `declares` refuses a window
+  whose open span is shorter than the census's period; `windowCheckOffByOne` shows the law catching an off-by-one there.
+- **The relay cannot heal a lapsed lease**: expiry is time passing, not a commit, so only the census rings a dead
+  holder's step, which `censusBlindToExpiry` shows is load-bearing.
+- **A ladder ending at a claim is not a report landing.** A reclaim that ends a ladder records `LadderEnded{lapsed}`;
+  the lapsed holder's late commit of that attempt is `lost`, not a re-run, which the specification caught when the
+  ending did not say how the last attempt ended.
 
-## Ambiguities the proposal leaves
+## Settled by the evidence
 
-- "Lanes … with a width, a pause and a window": whether the window is a claim window in time (taken here) or a
-  flow-control window, and whether a pause is declared state or only a verb (taken: a verb).
-- A step's key is "(parent step, edge kind, ordinal)": start children, finishes and joined steps have no parent step;
-  the model extends the path with `start`, `finish` and `feed@key`.
-- Where a child scope's finish starts its follow-ups ("Pages' finish starts Prune"): taken as the opening scope, with
-  the follow-up edges declared on the opening edge.
-- Whether a feed's parents may live in different scopes, and how its parts are typed.
-- What a stopped scope's finish does, and whether a commit after a lease ran out but before a reclaim lands.
-- "A retry at an instant": whose instant, and its bound; taken as the ledger's clock, at most `ladder.last` ahead.
-- Re-admission after retirement: the proposal deletes the graph whole but does not say whether its key may be reused;
-  edullm's "one live job per source" needs it reusable, and then the fence needs a token.
+The model follows the rulings in `decisions.md`: the committing worker continues with its first spawn and rings the
+rest, and the relay rings everything each commit made eligible, harmlessly twice; exclusivity and windows belong to
+root kinds only, and a root whose exclusivity seat is held is recorded `Held` and not run; a step's declared reads,
+taken by its claim, are recorded with its result in the commit; a reclaim counts as an attempt and a wait does not;
+grizzle's RETIRE remembers retired keys, for which the model's tombstones stand; W4 has no window.
 
-## Outside this package
+## Provisional decisions, for the owner
 
-- The root `.fallowrc.json` gives the `den-model` zone `allow: []`, which refuses its imports of `@den/testing`
-  (`pnpm architecture` and `pnpm dead-code` report them); `den` has the same problem with its suites. Both zones need
-  `testing` in their `allow`.
-- `pnpm install` added the workspace package to `pnpm-lock.yaml`.
+1. **Preconditions are evaluated at admission**; a refused admission commits nothing, while a held one is recorded.
+2. **Pausing a resource or a root kind stops claims only**; admission proceeds and nothing is lost.
+3. **Waits have no ceiling**: only waits a source asked for (a body's `Retry{wait}`, a `transient` call) are waits.
+4. **Order holds back younger work** on every resource an older candidate holds, even while it is blocked on another.
+5. **Exact timers are delayed deliveries of spawns due later**; a retry's due instant is the census's to ring.
+6. **The fence is `(step, attempt)` alone**; a lapsed holder still lands while no newer claim took its step (edullm's
+   B5); a lapsed claim's seats are free, and the holder's deadline is one tick before its lease's end.
+7. **The census retires** every root whose scope finished, held roots included.
+8. **Deployments**: a call is served only from the current deployment; a stale worker acknowledges and exits.
+
+## What the engine's differential harness should check
+
+1. **The same commands, the same answers and facts**: drive the engine's ledger with `flatMachine(flat, SOUND)` through
+   `runProgram`; and replay a simulated run's `Trace` command by command against the engine on the same program,
+   comparing answers and facts, turns renamed one to one.
+2. **The laws over the engine's own traces**: `CHECKS` over traces the engine commits under the simulator's schedules.
+3. **The planted bugs, planted in the engine**: each names a decision the engine makes too (the fence, the seat's lapse,
+   the finish's key race, the exclusivity release, the precondition's read, the census's rings, the deploy fence, the
+   retired keys); breaking the engine the same way should fail the same law.
+4. **The provisional decisions as differences**: where the engine decided otherwise, the differing answers and facts
+   are questions for the owner, not defects of either side.
+5. **The identity paths and the order**: the engine's derived keys must name the same paths, and its claims must
+   answer `full` and `behind` where the model's do.

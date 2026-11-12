@@ -4,24 +4,35 @@ import { requiredInSpace } from "@den/testing/features"
 import { element } from "@den/testing/gen"
 import { searched } from "@den/testing/vitest"
 import { NodeServices } from "@effect/platform-node"
-import { layer } from "@effect/vitest"
-import { assert } from "@effect/vitest"
-import { Array as Arr, Effect, FileSystem, Formatter, Option, Path, Schema, Stream } from "effect"
+import { assert, layer } from "@effect/vitest"
+import {
+	Array as Arr,
+	Effect,
+	FileSystem,
+	Formatter,
+	Option,
+	Path,
+	Schema,
+	Stream,
+	String as Str
+} from "effect"
 import { ChildProcess } from "effect/process"
 import config from "#integration/slice/grizzle.config.ts"
 
 /**
- * What `grizzle generate` certifies. Every role of the slice's two logins, den's workers and the app's auditor, runs
- * READ COMMITTED: den's relations are insert-only for every role, every law is a native key or containment, and every
- * read of another call's rows is a point read of an insert-only relation by a whole key. And the app's auditor, which
- * reads den's results and inserts audits referencing them by foreign key, is certified exactly as when the
- * installation holds no den writer at all: den's workers move no app role.
+ * What `grizzle generate` certifies at `a226cbac`. Every den role of the worker login, each flow's own, runs READ
+ * COMMITTED: its relations are insert-only for every role, every law is a native key or containment, each selected
+ * side of a result has one source, and every read of another call's rows is a point read of an insert-only relation by
+ * a whole key. Each flow's coordination role runs SERIALIZABLE, since giving back a seat, an exclusivity seat or a
+ * pause deletes, and nothing outside it reads or references what it writes, so it drags no other role. The app's own
+ * roles, its writer, which den's commits run under beside the app's own writes, and its auditor, run READ COMMITTED,
+ * exactly as when the installation holds no den program at all.
  *
  * Oracle (postgresql): `grizzle generate`'s certifier over the installation, against its certificate of the same
- * installation without den's workers.
+ * schema with den's logins and commits taken out.
  */
 
-type Feature = "a den worker" | "an app role"
+type Feature = "a den role" | "a coordination role" | "an app role"
 
 const Served = Schema.Struct({
 	roles: Schema.Struct({
@@ -35,12 +46,6 @@ const Served = Schema.Struct({
 })
 
 const sliceDir = `${import.meta.dirname}/slice`
-
-/** The served file of each login the slice's committed configuration lists. */
-const servedFiles = Arr.map(
-	config.logins,
-	(login) => `${sliceDir}/migrations/slice/served/${login.name}.json`
-)
 const grizzleBin = `${import.meta.dirname}/../../../vendor/grizzle/packages/grizzle/src/cli/main.ts`
 
 /** The roles of a served file, with the level `grizzle generate` certified each at. */
@@ -52,78 +57,103 @@ const levelsOf = (file: string) =>
 		return served.roles["~a"]
 	})
 
-/** The app login's levels when the installation lists no den login: `grizzle generate` in a scratch workspace. */
+/** The app login's levels when the installation holds no den program: `grizzle generate` in a scratch workspace. */
 const withoutDen = Effect.scoped(
 	Effect.gen(function* () {
 		const fs = yield* FileSystem.FileSystem
 		const path = yield* Path.Path
 		const workspace = yield* fs.makeTempDirectoryScoped({
-			directory: path.join(import.meta.dirname),
+			directory: import.meta.dirname,
 			prefix: ".certify-"
 		})
 		yield* fs.writeFileString(
 			path.join(workspace, "grizzle.config.ts"),
-			`import { defineConfig } from "@bjornpagen/grizzle"\nimport { App } from "#integration/slice/app.ts"\nimport { AppLogin } from "#integration/slice/logins.ts"\nimport base from "#integration/slice/grizzle.config.ts"\n\nexport default defineConfig({ ...base, schemas: [App], logins: [AppLogin] })\n`
+			Arr.join(
+				[
+					`import { defineConfig, login } from "@bjornpagen/grizzle"`,
+					`import { App } from "#integration/slice/app.ts"`,
+					`import { appWorkload, Auditor, auditWorkload } from "#integration/slice/app-programs.ts"`,
+					`import { Loader } from "#integration/slice/roles.ts"`,
+					``,
+					`const AppAlone = login(App, "app", [Loader, Auditor], { workload: [appWorkload, auditWorkload] })`,
+					``,
+					`/** generate never connects, so the connection is the slice's shape with no coordinates of its own. */`,
+					`export default defineConfig({ schemas: [App], logins: [AppAlone], migrations: "migrations", connection: () => { throw new Error("generate never connects") } })`,
+					``
+				],
+				"\n"
+			)
 		)
 		const handle = yield* ChildProcess.make(
 			process.execPath,
 			["--conditions=grizzle-source", grizzleBin, "generate", "grizzle.config.ts"],
 			{ cwd: workspace, extendEnv: true, stdin: "ignore" }
 		)
-		const [, code] = yield* Effect.all(
+		const [out, code] = yield* Effect.all(
 			[Stream.mkString(Stream.decodeText(handle.stdout)), handle.exitCode],
-			{ concurrency: "unbounded" }
+			{
+				concurrency: "unbounded"
+			}
 		)
-		assert.strictEqual(code, 0)
+		assert.strictEqual(code, 0, out)
 		return yield* levelsOf(path.join(workspace, "migrations", "slice", "served", "app.json"))
 	})
 )
 
 layer(NodeServices.layer, { excludeTestServices: true })("certification", (it) => {
-	it.effect("certifies every role READ COMMITTED, the app's as without den", (ctx) =>
-		searched(
-			ctx,
-			Effect.gen(function* () {
-				assert.deepStrictEqual(servedFiles, [
-					`${sliceDir}/migrations/slice/served/worker.json`,
-					`${sliceDir}/migrations/slice/served/app.json`
-				])
-				const workers = yield* levelsOf(`${sliceDir}/migrations/slice/served/worker.json`)
-				const apps = yield* levelsOf(`${sliceDir}/migrations/slice/served/app.json`)
-				const alone = yield* withoutDen
-				const owned = (of: "den" | "app") => (role: (typeof workers)[number]) => ({ ...role, of })
-				const roles = [...Arr.map(workers, owned("den")), ...Arr.map(apps, owned("app"))]
-				if (!Arr.isReadonlyArrayNonEmpty(roles)) {
-					return yield* Effect.die("the slice's logins hold roles")
-				}
-				return yield* exhaust(
-					{
-						suite: "certification",
-						generator: element(roles),
-						literal: Formatter.format,
-						limit: roles.length,
-						coverage: requiredInSpace<Feature>(["a den worker", "an app role"]),
-						caseHang,
-						box: "every role of the slice's worker and app logins",
-						oracle: {
-							kind: "postgresql",
-							name: "grizzle generate's certificate, against the installation's without den's workers"
-						}
-					},
-					(role, c) =>
-						Effect.sync(() => {
-							c.note(role.of === "den" ? "a den worker" : "an app role")
-							assert.strictEqual(role.isolation, "readCommitted")
-							if (role.of === "app") {
-								const before = Arr.findFirst(alone, (r) => r.name === role.name)
-								assert.deepStrictEqual(
-									Option.map(before, (r) => r.isolation),
-									Option.some(role.isolation)
-								)
+	it.effect(
+		"certifies den's roles READ COMMITTED, its coordination roles SERIALIZABLE, the app's as without den",
+		(ctx) =>
+			searched(
+				ctx,
+				Effect.gen(function* () {
+					const workers = yield* levelsOf(`${sliceDir}/migrations/slice/served/worker.json`)
+					const apps = yield* levelsOf(`${sliceDir}/migrations/slice/served/app.json`)
+					const alone = yield* withoutDen
+					const owned = (of: "worker" | "app") => (role: (typeof workers)[number]) => ({
+						...role,
+						of
+					})
+					const roles = [...Arr.map(workers, owned("worker")), ...Arr.map(apps, owned("app"))]
+					if (!Arr.isReadonlyArrayNonEmpty(roles)) {
+						return yield* Effect.die("the slice's logins hold roles")
+					}
+					return yield* exhaust(
+						{
+							suite: "certification",
+							generator: element(roles),
+							literal: Formatter.format,
+							limit: roles.length,
+							coverage: requiredInSpace<Feature>([
+								"a den role",
+								"a coordination role",
+								"an app role"
+							]),
+							caseHang,
+							box: "every role of the slice's worker and app logins",
+							oracle: {
+								kind: "postgresql",
+								name: "grizzle generate's certificate, against the schema's with den's logins and commits taken out"
 							}
-						})
-				)
-			})
-		)
+						},
+						(role, c) =>
+							Effect.sync(() => {
+								if (role.of === "app") {
+									c.note("an app role")
+									assert.strictEqual(role.isolation, "readCommitted")
+									const before = Arr.findFirst(alone, (r) => r.name === role.name)
+									assert.deepStrictEqual(
+										Option.map(before, (r) => r.isolation),
+										Option.some(role.isolation)
+									)
+									return
+								}
+								const coordination = Str.endsWith("_seats")(role.name)
+								c.note(coordination ? "a coordination role" : "a den role")
+								assert.strictEqual(role.isolation, coordination ? "serializable" : "readCommitted")
+							})
+					)
+				})
+			)
 	)
 })

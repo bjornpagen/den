@@ -1,10 +1,11 @@
 import type { Case } from "@den/testing/explore"
-import { boolean, type Gen, int, weighted } from "@den/testing/gen"
+import { boolean, type Gen, int, production, type Weighted, weighted } from "@den/testing/gen"
 import { type Swarm, swarm, weightOf } from "@den/testing/swarm"
-import { Array as Arr, Record } from "effect"
-import type { Counts, Window } from "#program.ts"
+import { Array as Arr, Option, Record } from "effect"
+import type { By } from "#facts.ts"
+import { type Counts, type Ladder, ordinals, type Window } from "#program.ts"
 import { type Fault, FAULTS, type Nature, type Platform } from "#simulator.ts"
-import type { Behaviour, Running, Shape } from "#workloads/synthetic.ts"
+import type { Behaviour, Running, Shape, Sub, Timer } from "#workloads/synthetic.ts"
 
 /**
  * The simulator's nature drawn from a case's tape: each choice a decision of the case, so a run replays from its token
@@ -20,13 +21,26 @@ export const natureOf = <F extends string>(c: Case<F>, faults: Swarm<Fault>): Na
 	upTo: (most) => (most <= 0 ? 0 : c.draw(int(0, most)))
 })
 
-/** The platform's settings, drawn small, so a case's whole run fits in a few hundred events. */
+/**
+ * How long the transport deduplicates a key: Vercel Queues drops a later send of a key it has seen for the shorter of
+ * the message's retention and 24 hours, processed or not (`docs/research/vercel.md`), so at the model's tick of a
+ * minute a key is spent for a day, longer than any run.
+ *
+ * @limitKind published
+ * @owner the model's transport
+ * @unit ticks of a minute
+ * @scope the deduplication window of every simulated send
+ * @derivation 24 hours of 60 minutes, the window Vercel's client types, README and KB give
+ */
+const VERCEL_DEDUP_TICKS = 24 * 60
+
+/** The platform's settings, drawn small, so a case's whole run fits in a few hundred events, its dedup window Vercel's. */
 export const platformGen: Gen<Platform> = (source) => ({
 	census: source.draw(int(1, 4)),
 	lifetime: source.draw(int(4, 12)),
 	turns: source.draw(int(1, 4)),
 	deliveries: source.draw(int(1, 4)),
-	dedup: source.draw(int(0, 8)),
+	dedup: source.draw(production(VERCEL_DEDUP_TICKS, [0, 1, 4])),
 	events: source.draw(int(8, 120)),
 	stall: source.draw(int(1, 8))
 })
@@ -41,93 +55,159 @@ export const faultsGen =
 
 const countsGen: Gen<Counts> = (source) => (source.draw(boolean) ? "wait" : "attempt")
 
-/** A generated step's behaviour, mostly an output, shrinking toward one. */
-export const behaviourGen: Gen<Behaviour> = weighted<Behaviour>([
-	[6, () => ({ _tag: "Ok" })],
-	[1, () => ({ _tag: "Fails" })],
-	[
-		3,
-		(source) => ({ _tag: "Retries", times: source.draw(int(1, 3)), counts: source.draw(countsGen) })
-	],
-	[1, (source) => ({ _tag: "Forever", counts: source.draw(countsGen) })]
+/**
+ * A generated step's behaviour, mostly an output, shrinking toward one: never a retry for ever on a ladder that never
+ * ends, which only an outage that heals may stand in for.
+ */
+export const behaviourGen = (ladder: Ladder): Gen<Behaviour> => {
+	const forever: ReadonlyArray<Weighted<Behaviour>> =
+		ladder._tag === "Attempts" ? [[1, () => ({ _tag: "Forever" })]] : []
+	return weighted<Behaviour>([
+		[6, () => ({ _tag: "Ok" })],
+		[1, () => ({ _tag: "Fails" })],
+		[
+			3,
+			(source) => ({
+				_tag: "Retries",
+				times: source.draw(int(1, 3)),
+				counts: source.draw(countsGen)
+			})
+		],
+		[
+			1,
+			(source) => ({
+				_tag: "Outage",
+				until: source.draw(int(1, 40)),
+				counts: source.draw(countsGen)
+			})
+		],
+		...forever
+	])
+}
+
+/** How far a window's open span runs past one tick short of the census's period: mostly a tick or more. */
+const spareGen: Gen<number> = weighted<number>([
+	[1, () => 0],
+	[4, (source) => 1 + source.draw(int(0, 3))]
 ])
 
 /**
- * A lane's window: mostly always open, sometimes open for part of a short period. The open span is never shorter than
- * the census's period, so every window holds a census tick: a wake that finds the window closed is consumed, and only
- * the census rings again, so a window no census tick lands in is never served.
+ * A root kind's window: mostly none, sometimes one open for part of a short period. Its open span is drawn from one tick
+ * shorter than the census's period up, so a flow's declaration check sees spans it must refuse: a wake that finds the
+ * window closed is consumed, and only the census rings again.
  */
-export const windowGen = (census: number): Gen<Window> =>
-	weighted<Window>([
-		[4, () => ({ _tag: "Always" })],
+export const windowGen = (census: number): Gen<Option.Option<Window>> =>
+	weighted<Option.Option<Window>>([
+		[4, () => Option.none()],
 		[
 			1,
 			(source) => {
-				const span = census + source.draw(int(0, 3))
+				const span = Math.max(1, census - 1 + source.draw(spareGen))
 				const period = span + source.draw(int(1, 4))
 				const opens = source.draw(int(0, period - span))
-				return { _tag: "Periodic", period, opens, closes: opens + span }
+				return Option.some({ period, opens, closes: opens + span })
 			}
 		]
 	])
 
-/** How a generated step runs: a short lease, small ceilings, a short ladder. */
-export const runningGen: Gen<Running> = (source) => {
+/** A ladder: mostly one that ends after a few attempts, sometimes one that never ends. */
+export const ladderGen: Gen<Ladder> = (source) => {
 	const first = source.draw(int(1, 3))
-	return {
-		lease: source.draw(int(2, 6)),
-		ceilings: {
-			attempts: source.draw(int(1, 5)),
-			waits: source.draw(int(0, 4)),
-			reclaims: source.draw(int(1, 5))
-		},
-		ladder: { first, last: first + source.draw(int(0, 6)) }
-	}
+	const last = first + source.draw(int(0, 6))
+	return source.draw(
+		weighted<Ladder>([
+			[4, (inner) => ({ _tag: "Attempts", attempts: inner.draw(int(1, 5)), first, last })],
+			[1, () => ({ _tag: "Never", first, last })]
+		])
+	)
 }
 
-/** A generated program's shape, every part drawn small, its windows holding a tick of a census of this period. */
+/** How a generated step runs: a short lease and a short ladder. */
+export const runningGen: Gen<Running> = (source) => ({
+	lease: source.draw(int(2, 6)),
+	ladder: source.draw(ladderGen)
+})
+
+const byGen: Gen<By> = weighted<By>([
+	[2, () => "schedule"],
+	[1, () => "operator"],
+	[1, () => "app"]
+])
+
+const subGen: Gen<Sub> = weighted<Sub>([
+	[2, () => ({ _tag: "None" })],
+	[1, () => ({ _tag: "Sub" })]
+])
+
+const timerGen: Gen<Timer> = weighted<Timer>([
+	[2, () => ({ _tag: "None" })],
+	[
+		1,
+		(source) => ({ _tag: "Timer", after: source.draw(int(1, 6)), rearms: source.draw(int(0, 3)) })
+	]
+])
+
+/** A generated program's shape, every part drawn small, its window drawn against a census of this period. */
 export const shapeGen =
 	(census: number): Gen<Shape> =>
-	(source) => ({
-		lanes: {
-			a: { width: source.draw(int(1, 3)), window: source.draw(windowGen(census)) },
-			b: { width: source.draw(int(1, 3)), window: source.draw(windowGen(census)) }
-		},
-		running: source.draw(runningGen),
-		chain: { length: source.draw(int(0, 4)), behaviour: source.draw(behaviourGen) },
-		fan: {
-			leaves: source.draw(int(0, 4)),
-			behaviour: source.draw(behaviourGen),
-			leaf: source.draw(behaviourGen)
-		},
-		sub: source.draw(boolean),
-		join: source.draw(boolean),
-		gate: source.draw(
-			weighted<Shape["gate"]>([
-				[2, () => ({ _tag: "None" })],
-				[1, () => ({ _tag: "External" })],
-				[1, (inner) => ({ _tag: "Timer", after: inner.draw(int(1, 6)) })]
-			])
-		),
-		finish: source.draw(
-			weighted<Behaviour>([
-				[4, () => ({ _tag: "Ok" })],
-				[1, (inner) => inner.draw(behaviourGen)]
-			])
-		),
-		roots: source.draw(int(1, 3))
-	})
+	(source) => {
+		const running = source.draw(runningGen)
+		const behaviour = behaviourGen(running.ladder)
+		const roots = source.draw(int(1, 3))
+		return {
+			seats: source.draw(int(1, 3)),
+			running,
+			chain: {
+				length: source.draw(int(0, 4)),
+				behaviour: source.draw(behaviour),
+				holds: source.draw(boolean)
+			},
+			fan: {
+				leaves: source.draw(int(0, 4)),
+				behaviour: source.draw(behaviour),
+				leaf: source.draw(behaviour),
+				holds: source.draw(boolean)
+			},
+			sub: source.draw(subGen),
+			timer: source.draw(timerGen),
+			window: source.draw(windowGen(census)),
+			exclusive: source.draw(
+				weighted<boolean>([
+					[3, () => false],
+					[1, () => true]
+				])
+			),
+			finish: source.draw(
+				weighted<Behaviour>([
+					[4, () => ({ _tag: "Ok" })],
+					[1, (inner) => inner.draw(behaviour)]
+				])
+			),
+			roots: Arr.map(Arr.range(1, roots), () => ({
+				at: source.draw(int(0, 12)),
+				by: source.draw(byGen)
+			})),
+			gates: Arr.map(ordinals(source.draw(int(0, 2))), () => source.draw(int(0, 24))),
+			outside: Arr.map(ordinals(source.draw(int(0, 2))), () => ({
+				at: source.draw(int(0, 16)),
+				root: source.draw(int(0, roots - 1))
+			}))
+		}
+	}
 
 /** A case of a generated program: its shape, the platform and the faults on. */
 export type Scenario = Readonly<{ shape: Shape; platform: Platform; faults: Swarm<Fault> }>
 
-/** A generated program's scenario, its shape adjusted and `forced` faults always on. */
+/** A generated program's scenario, its shape adjusted for its platform and `forced` faults always on. */
 export const scenarioGen =
-	(adjust: (shape: Shape) => Shape, forced: ReadonlyArray<Fault>): Gen<Scenario> =>
+	(
+		adjust: (shape: Shape, platform: Platform) => Shape,
+		forced: ReadonlyArray<Fault>
+	): Gen<Scenario> =>
 	(source) => {
 		const platform = source.draw(platformGen)
 		return {
-			shape: adjust(source.draw(shapeGen(platform.census))),
+			shape: adjust(source.draw(shapeGen(platform.census)), platform),
 			platform,
 			faults: source.draw(faultsGen(forced))
 		}

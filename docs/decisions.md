@@ -55,6 +55,16 @@
 - **A step's writes into the app's relations run under the app's own role (owner, 2026-11-11).** A flow names the
   app role that writes its steps' app relations, and den adds its commit programs to that role; den never creates a
   writer of the app's tables, and any certification effect shows in the app's own role's `grizzle generate` report.
+- **Settled by the evidence, from the model's ambiguities (2026-11-11):**
+  - Ringing: the committing function continues with its own first spawn and rings the rest; the relay rings what it
+    did not and what anyone else's commit made eligible. Both ring the same step harmlessly, since the claim decides.
+  - Exclusivity and windows belong to root kinds only: edullm's are all per run (one live run per relation, per
+    collection, one Gold build; the 07:00 to 13:00Z window). A root whose exclusivity seat is held is not admitted and
+    is recorded held, as edullm's "that relation skips the night"; no child scope waits on a seat, so none deadlocks.
+  - A step's declared reads are recorded with its result, in the commit; a step that dies after reading reads again.
+  - A reclaim (a holder that died) counts as an attempt on the step's ladder; a wait (a transient refusal) does not.
+  - Retired keys are remembered by grizzle's RETIRE; den keeps no record of its own.
+  - The Gold refresh (W4) has no window: its trigger is 13:18Z or an operator's press.
 - **The API is decided on technical merit.** Whether den keeps Effect's `Workflow`/`Activity` API as it is or offers
   a graph of steps with no workflow above them is decided by what is great about Effect's API and whether den can
   measurably do better (`docs/research/api.md`).

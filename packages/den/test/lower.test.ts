@@ -1,6 +1,7 @@
+import { natural, pg, relation } from "@bjornpagen/grizzle"
 import { drawn, explore } from "@den/testing/explore"
 import { required } from "@den/testing/features"
-import { boolean, element, type Gen, int } from "@den/testing/gen"
+import { array, boolean, characterOf, element, type Gen, int, string } from "@den/testing/gen"
 import { notesOnly } from "@den/testing/sense"
 import { boundedShrink } from "@den/testing/shrink"
 import { searched } from "@den/testing/vitest"
@@ -19,51 +20,79 @@ import { type AnyFlow, flow } from "#algebra/flow.ts"
 import {
 	type AnyEdge,
 	type AnyStepKind,
+	always,
+	atSpawn,
+	attempts,
 	edge,
+	exclusiveBy,
 	type FieldSchema,
-	lane,
+	noReads,
+	operator,
+	reads,
 	Refused,
+	resource,
 	root,
+	scope,
+	shared,
 	step,
+	unconditional,
+	writer,
 	writesNothing
 } from "#algebra/kinds.ts"
-import { caseHang } from "#limits.ts"
-import { lower } from "#lower/fragment.ts"
+import { caseHang, published } from "#limits.ts"
+import { type LawIR, lower } from "#lower/fragment.ts"
 import { merge } from "#lower/merge.ts"
 import { printFragment } from "#lower/print.ts"
 
 /**
- * Lowering a flow: every relation and roster it declares carries the flow's prefix, every law names only relations
- * the fragment declares, an Option field lowers to a relation of its own, its printing is a function of the flow, and
- * den's merge refuses a fragment spread twice into one record, where a JavaScript spread would drop the clash silently.
+ * Lowering a flow: every relation and roster it declares carries the flow's prefix, every law names only relations the
+ * fragment declares, an Option field lowers to a relation of its own, and its printing is a function of the flow. The
+ * selected sides of a step's Result each have one source alone, its Done or its Failed arm, every output, error,
+ * refusal and exhaustion contained in that arm by its plain key: a selected side with several sources is discharged by a
+ * generated column grizzle's certifier reads as an unsealed foreign key check, which takes every writer of the flow to
+ * SERIALIZABLE. The coordination relations (seats, holds, exclusivity seats, pauses) meet no graph relation in a
+ * containment, since they are deleted from; the exclusivity relations exist exactly when a root is exclusive, and the
+ * seat relations exactly when a step uses a resource.
  *
- * Oracle (specification): the proposal's section 5, over flows of up to three steps, chained or not, of each field form.
+ * Oracle (specification): the proposal's sections 5 and 6, over flows of up to three steps, chained or not, of each
+ * field form, with or without a resource, an exclusive root, a child scope, a declared read and a typed error.
  */
 
-const forms = [
-	"text",
-	"bigint",
-	"boolean",
-	"literals",
-	"brand",
-	"option"
-] as const satisfies ReadonlyArray<string>
-type Form = (typeof forms)[number]
+const Form = Schema.Literals(["text", "bigint", "boolean", "literals", "brand", "option"])
+type Form = typeof Form.Type
 
-type Feature = Form | "chained" | "unchained"
+type Feature =
+	| Form
+	| "chained"
+	| "unchained"
+	| "a resource"
+	| "an exclusive root"
+	| "a child scope"
+	| "a declared read"
+	| "a typed error"
 
 interface Sketch {
 	readonly prefix: "Alpha" | "Beta"
 	readonly steps: number
 	readonly chained: boolean
 	readonly form: Form
+	readonly resource: boolean
+	readonly exclusive: boolean
+	readonly scoped: boolean
+	readonly read: boolean
+	readonly typed: boolean
 }
 
 const sketches: Gen<Sketch> = (source) => ({
-	prefix: source.draw(element(["Alpha", "Beta"])),
+	prefix: source.draw(boolean) ? "Alpha" : "Beta",
 	steps: source.draw(int(1, 3)),
 	chained: source.draw(boolean),
-	form: source.draw(element(forms))
+	form: source.draw(element(Form.literals)),
+	resource: source.draw(boolean),
+	exclusive: source.draw(boolean),
+	scoped: source.draw(boolean),
+	read: source.draw(boolean),
+	typed: source.draw(boolean)
 })
 
 const fieldOf = (form: Form): FieldSchema => {
@@ -83,17 +112,67 @@ const fieldOf = (form: Form): FieldSchema => {
 	}
 }
 
+/** An app relation a step may read: a feed's weight. */
+const Weight = relation("Weight", { feed: pg.bigint, factor: natural }, ["feed", "factor"])
+
+/** The box of grizzle's own work-queue law suite: two seats. */
+const boxSeats = published({
+	value: 2,
+	owner: "the lowering suite's resource, after grizzle's work-queue law suite",
+	unit: "seats",
+	scope: "the steps of a lowered flow that use the Pool",
+	constraint: "compile-time constant",
+	source: "https://github.com/bjornpagen/grizzle/blob/a226cbac/test/support/laws/boxes.ts",
+	quote: "Two resources of two seats each: two leases meet at a seat as often as they miss it.",
+	verified: "2026-11-11"
+})
+
+const finishing = {
+	reads: [],
+	error: Schema.Never,
+	retry: attempts(1),
+	writes: writesNothing,
+	body: () => Effect.succeed({ insert: {}, put: {}, delete: {} })
+}
+
 const built = (sketch: Sketch): AnyFlow => {
-	const work = lane("Work", { width: 1, window: { kind: "always" }, pause: "running", attempts: 1 })
 	const value = Schema.Struct({ value: fieldOf(sketch.form) })
-	const steps: ReadonlyArray<AnyStepKind> = Arr.map(Arr.range(0, sketch.steps - 1), (i) =>
-		step(
-			work,
-			`S${i}`,
-			{ input: value, output: value, error: Schema.Never, writes: writesNothing },
-			(x) => Effect.succeed({ output: x, writes: { insert: {}, put: {}, delete: {} } })
-		)
+	const pool = resource("Pool", boxSeats)
+	const done = (x: typeof value.Type) =>
+		Effect.succeed({ output: x, writes: { insert: {}, put: {}, delete: {} } })
+	const first = step(
+		"S0",
+		{
+			input: value,
+			output: value,
+			error: sketch.typed ? Schema.Struct({ code: Schema.String }) : Schema.Never,
+			reads: sketch.read ? reads(Weight, ["feed"], () => ({ feed: 0n })) : noReads,
+			uses: sketch.resource ? [pool] : [],
+			retry: attempts(1),
+			due: atSpawn,
+			writes: writesNothing
+		},
+		done
 	)
+	const later: ReadonlyArray<AnyStepKind> = Arr.map(
+		Arr.range(1, Math.max(1, sketch.steps - 1)),
+		(i) =>
+			step(
+				`S${i}`,
+				{
+					input: value,
+					output: value,
+					error: Schema.Never,
+					reads: noReads,
+					uses: [],
+					retry: attempts(1),
+					due: atSpawn,
+					writes: writesNothing
+				},
+				done
+			)
+	)
+	const steps: ReadonlyArray<AnyStepKind> = [first, ...Arr.take(later, sketch.steps - 1)]
 	const edges: ReadonlyArray<AnyEdge> = sketch.chained
 		? Arr.flatMap(Arr.range(1, sketch.steps - 1), (i) =>
 				Option.toArray(
@@ -103,77 +182,266 @@ const built = (sketch: Sketch): AnyFlow => {
 				)
 			)
 		: []
-	const Run = root("Run", {
-		trigger: { kind: "command" },
-		input: Schema.Struct({}),
-		children: steps,
-		start: () => [],
-		finish: {
-			lane: work,
-			reads: [],
+	const Leaf = step(
+		"Leaf",
+		{
+			input: value,
+			output: value,
 			error: Schema.Never,
-			writes: writesNothing,
-			body: () => Effect.succeed({ insert: {}, put: {}, delete: {} })
-		}
+			reads: noReads,
+			uses: [],
+			retry: attempts(1),
+			due: atSpawn,
+			writes: writesNothing
+		},
+		done
+	)
+	const Inner = scope("Inner", {
+		input: Schema.Struct({}),
+		children: [Leaf],
+		start: () => [],
+		finish: finishing
 	})
-	return flow(sketch.prefix, { lanes: [work], kinds: [...steps, Run], edges })
+	const Run = root("Run", {
+		trigger: operator,
+		input: Schema.Struct({}),
+		children: sketch.scoped ? [...steps, Inner] : steps,
+		start: () => [],
+		exclusive: sketch.exclusive ? exclusiveBy(() => "k") : shared,
+		window: always,
+		precondition: unconditional,
+		finish: finishing
+	})
+	return flow(sketch.prefix, {
+		writes: writer<{ readonly name: "loader" }>("loader"),
+		kinds: sketch.scoped ? [...steps, Leaf, Inner, Run] : [...steps, Run],
+		edges
+	})
 }
 
-it.effect("lowers each flow under its prefix, into laws over its own relations", (ctx) =>
-	searched(
-		ctx,
-		explore(
-			{
-				suite: "lowering",
-				oracle: { kind: "specification", name: "the proposal's section 5 rules for a fragment" },
-				draw: drawn(sketches),
-				literal: Formatter.format,
-				coverage: required<Feature>([...forms, "chained", "unchained"], {
-					cases: 60,
-					sense: notesOnly
-				}),
-				kept: [],
-				runs: 120,
-				shrink: boundedShrink(40),
-				concurrency: 1,
-				steerEvery: 16,
-				caseHang
-			},
-			(sketch, c) =>
-				Effect.gen(function* () {
-					c.note(sketch.form)
-					c.note(sketch.chained && sketch.steps > 1 ? "chained" : "unchained")
-					const f = built(sketch)
-					const lowered = lower(f)
-					const names = [
-						...Arr.map(lowered.relations, (r) => r.name),
-						...Arr.map(lowered.rosters, (r) => r.name)
-					]
-					assert.isTrue(Arr.every(names, Str.startsWith(f.name)))
-					const sides = Arr.flatMap(lowered.laws, (law) =>
-						law.kind === "contained"
-							? [law.from.relation, law.to.relation]
-							: law.kind === "key"
-								? [law.side.relation]
-								: [law.relation]
-					)
-					assert.isTrue(Arr.every(sides, (side) => Arr.contains(names, side)))
-					assert.strictEqual(
-						Arr.some(lowered.relations, (r) => r.name === `${f.name}S0InputValue`),
-						sketch.form === "option"
-					)
-					assert.strictEqual(printFragment(lower(f)), printFragment(lowered))
-					const record = Record.fromEntries(
-						Arr.map(lowered.relations, (r): readonly [string, string] => [r.name, r.name])
-					)
-					const merged = yield* Effect.exit(
-						Effect.try({
-							try: () => merge(record, record),
-							catch: (thrown) => ({ refused: thrown instanceof Refused })
-						})
-					)
-					assert.deepStrictEqual(Exit.findErrorOption(merged), Option.some({ refused: true }))
-				})
+/** The containments of a set of laws, by their sides' relations and the target's selection. */
+const containmentsOf = (laws: ReadonlyArray<LawIR>) =>
+	Arr.flatMap(laws, (law) => (law.kind === "contained" ? [law] : []))
+
+it.effect(
+	"lowers each flow under its prefix, its Result's arms and its coordination group apart",
+	(ctx) =>
+		searched(
+			ctx,
+			explore(
+				{
+					suite: "lowering",
+					oracle: {
+						kind: "specification",
+						name: "the proposal's sections 5 and 6 rules for a fragment"
+					},
+					draw: drawn(sketches),
+					literal: Formatter.format,
+					coverage: required<Feature>(
+						[
+							...Form.literals,
+							"chained",
+							"unchained",
+							"a resource",
+							"an exclusive root",
+							"a child scope",
+							"a declared read",
+							"a typed error"
+						],
+						{ cases: 80, sense: notesOnly }
+					),
+					kept: [],
+					runs: 160,
+					shrink: boundedShrink(40),
+					concurrency: 1,
+					steerEvery: 16,
+					caseHang
+				},
+				(sketch, c) =>
+					Effect.sync(() => {
+						c.note(sketch.form)
+						c.note(sketch.chained && sketch.steps > 1 ? "chained" : "unchained")
+						if (sketch.resource) {
+							c.note("a resource")
+						}
+						if (sketch.exclusive) {
+							c.note("an exclusive root")
+						}
+						if (sketch.scoped) {
+							c.note("a child scope")
+						}
+						if (sketch.read) {
+							c.note("a declared read")
+						}
+						if (sketch.typed) {
+							c.note("a typed error")
+						}
+						const f = built(sketch)
+						const P = f.name
+						const lowered = lower(f)
+						const relations = Arr.map(lowered.relations, (r) => r.name)
+						const names = [...relations, ...Arr.map(lowered.rosters, (r) => r.name)]
+						const has = (suffix: string) => Arr.contains(relations, `${P}${suffix}`)
+						assert.isTrue(Arr.every(names, Str.startsWith(P)))
+						const sides = Arr.flatMap(lowered.laws, (law) =>
+							law.kind === "contained"
+								? [law.from.relation, law.to.relation]
+								: law.kind === "key"
+									? [law.side.relation]
+									: [law.relation]
+						)
+						assert.isTrue(Arr.every(sides, (side) => Arr.contains(names, side)))
+						assert.strictEqual(has("S0InputValue"), sketch.form === "option")
+						assert.strictEqual(
+							printFragment(lower(f), placement),
+							printFragment(lowered, placement)
+						)
+
+						const containments = containmentsOf(lowered.laws)
+						const into = (handle: "done" | "failed") =>
+							Arr.filter(
+								containments,
+								(law) =>
+									law.to.relation === `${P}Result` &&
+									law.to.selection.kind === "handle" &&
+									law.to.selection.handle === handle
+							)
+						assert.deepStrictEqual(
+							Arr.map(into("done"), (law) => law.from.relation),
+							[`${P}Done`]
+						)
+						assert.deepStrictEqual(
+							Arr.map(into("failed"), (law) => law.from.relation),
+							[`${P}Failed`]
+						)
+						assert.strictEqual(has("S0Error"), sketch.typed)
+						if (sketch.typed) {
+							assert.isTrue(
+								Arr.some(
+									containments,
+									(law) => law.from.relation === `${P}S0Error` && law.to.relation === `${P}Failed`
+								)
+							)
+						}
+						assert.strictEqual(has("S0Read"), sketch.read)
+
+						const coordination = Arr.filter(
+							[`${P}Seat`, `${P}Hold`, `${P}Exclusive`, `${P}Paused`],
+							(name) => Arr.contains(relations, name)
+						)
+						assert.deepStrictEqual(lowered.coordination, coordination)
+						assert.isTrue(
+							Arr.every(
+								containments,
+								(law) =>
+									Arr.contains(coordination, law.from.relation) ===
+									Arr.contains(coordination, law.to.relation)
+							)
+						)
+						assert.strictEqual(has("Exclusive"), sketch.exclusive)
+						assert.strictEqual(has("ExclusiveKey"), sketch.exclusive)
+						assert.strictEqual(has("Seat"), sketch.resource)
+						assert.strictEqual(has("Hold"), sketch.resource)
+						assert.isTrue(has("Paused"))
+					})
+			)
 		)
-	)
+)
+
+/** Where a fragment's printing is placed; the fragment module reads only its app relations' module. */
+const placement = {
+	fragment: "#fragment.ts",
+	programs: "#programs.ts",
+	relations: "#relations.ts",
+	schema: { from: "#app.ts", name: "App" },
+	writer: { from: "#roles.ts", name: "Loader" },
+	flow: { from: "#flows.ts", name: "flow" }
+}
+
+type MergeFeature = "a clash between fragments" | "a clash with the app" | "no clash"
+
+const label = string(characterOf(["A", "B", "C"]), { min: 1, max: 2 })
+
+interface Lists {
+	readonly app: ReadonlyArray<string>
+	readonly fragments: ReadonlyArray<ReadonlyArray<string>>
+}
+
+const lists: Gen<Lists> = (source) => ({
+	app: source.draw(array(label, { min: 0, max: 3 })),
+	fragments: source.draw(array(array(label, { min: 0, max: 3 }), { min: 1, max: 3 }))
+})
+
+it.effect(
+	"merges the app's relations and the fragments' lists into one record, refusing any clash",
+	(ctx) =>
+		searched(
+			ctx,
+			explore(
+				{
+					suite: "clash seam",
+					oracle: {
+						kind: "specification",
+						name: "a name held twice is refused, and otherwise each declaration lies under its own name"
+					},
+					draw: drawn(lists),
+					literal: Formatter.format,
+					coverage: required<MergeFeature>(
+						["a clash between fragments", "a clash with the app", "no clash"],
+						{
+							cases: 40,
+							sense: notesOnly
+						}
+					),
+					kept: [],
+					runs: 200,
+					shrink: boundedShrink(40),
+					concurrency: 1,
+					steerEvery: 16,
+					caseHang
+				},
+				(l, c) =>
+					Effect.gen(function* () {
+						const app = Record.fromEntries(
+							Arr.map(Arr.dedupe(l.app), (name) => [name, { app: name }] as const)
+						)
+						const appNames = Record.keys(app)
+						const fragments = Arr.map(l.fragments, (names) => Arr.map(names, (name) => ({ name })))
+						const listed = Arr.flatten(l.fragments)
+						const betweenFragments = Arr.some(listed, (name, i) =>
+							Arr.contains(Arr.take(listed, i), name)
+						)
+						const withApp = Arr.some(listed, (name) => Arr.contains(appNames, name))
+						c.note(
+							betweenFragments
+								? "a clash between fragments"
+								: withApp
+									? "a clash with the app"
+									: "no clash"
+						)
+						const merged = yield* Effect.exit(
+							Effect.try({
+								try: () => merge(app, fragments),
+								catch: (thrown) => ({ refused: thrown instanceof Refused })
+							})
+						)
+						if (betweenFragments || withApp) {
+							assert.deepStrictEqual(Exit.findErrorOption(merged), Option.some({ refused: true }))
+							return
+						}
+						assert.strictEqual(merged._tag, "Success")
+						if (Exit.isSuccess(merged)) {
+							const record: Readonly<Record<string, unknown>> = merged.value
+							assert.deepStrictEqual(
+								Arr.sort(Record.keys(record), Str.Order),
+								Arr.sort([...appNames, ...listed], Str.Order)
+							)
+							Arr.forEach(Arr.flatten(fragments), (declaration) =>
+								assert.strictEqual(record[declaration.name], declaration)
+							)
+							Arr.forEach(appNames, (name) => assert.strictEqual(record[name], app[name]))
+						}
+					})
+			)
+		)
 )

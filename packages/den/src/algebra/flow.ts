@@ -1,23 +1,29 @@
 import { Array as Arr, Option } from "effect"
 import {
-	type AnyAwaitKind,
 	type AnyEdge,
 	type AnyFinish,
 	type AnyStepKind,
-	type Lane,
+	type Exclusive,
 	named,
+	type Precondition,
 	Refused,
+	type Resource,
 	type Stored,
-	type Trigger
+	type Trigger,
+	type Window,
+	type Writer
 } from "#algebra/kinds.ts"
 
 /** Any root kind, as a flow lists it. */
 export interface AnyRootKind {
 	readonly _tag: "Root"
 	readonly name: string
-	readonly trigger: Trigger
+	readonly trigger: { readonly kind: Trigger<never>["kind"] }
 	readonly input: Stored
 	readonly children: ReadonlyArray<{ readonly _tag: string; readonly name: string }>
+	readonly exclusive: Exclusive<never>
+	readonly window: Window
+	readonly precondition: Precondition
 	readonly finish: AnyFinish
 }
 
@@ -30,33 +36,29 @@ export interface AnyScope {
 	readonly finish: AnyFinish
 }
 
-/** Every kind a flow declares: step kinds, awaits, scope kinds and roots. */
-export type AnyKind = AnyStepKind | AnyAwaitKind | AnyScope | AnyRootKind
+/** Every kind a flow declares: step kinds, scope kinds and roots. */
+export type AnyKind = AnyStepKind | AnyScope | AnyRootKind
 
 /**
- * A flow: its lanes, kinds and edges, checked when it is declared. Its name prefixes every relation, roster, role and
- * program it lowers to, so two flows never meet in an app's schema.
+ * A flow: the app role its steps write under, its kinds and its edges, checked when it is declared. Its name prefixes
+ * every relation, roster, role and program it lowers to, so two flows never meet in an app's schema.
  */
 export interface Flow<
 	Name extends string,
-	Lanes extends ReadonlyArray<Lane>,
 	Kinds extends ReadonlyArray<AnyKind>,
 	Edges extends ReadonlyArray<AnyEdge>
 > {
 	readonly _tag: "Flow"
 	readonly name: Name
-	readonly lanes: Lanes
+	readonly writes: Writer
 	readonly kinds: Kinds
 	readonly edges: Edges
+	/** The resources its steps use, each once, in the order the steps name them. */
+	readonly resources: ReadonlyArray<Resource>
 }
 
 /** Any flow. */
-export type AnyFlow = Flow<
-	string,
-	ReadonlyArray<Lane>,
-	ReadonlyArray<AnyKind>,
-	ReadonlyArray<AnyEdge>
->
+export type AnyFlow = Flow<string, ReadonlyArray<AnyKind>, ReadonlyArray<AnyEdge>>
 
 /** A scope or a root: what joins children. */
 export type AnyJoin = AnyScope | AnyRootKind
@@ -76,33 +78,6 @@ const unique = (declaration: string, names: ReadonlyArray<string>): void => {
 	})
 }
 
-/** The steps and awaits of a join: its children's, and what edges from them spawn in the same scope, transitively. */
-export const membersOf = (
-	join: AnyJoin,
-	kinds: ReadonlyArray<AnyKind>,
-	edges: ReadonlyArray<AnyEdge>
-): ReadonlyArray<AnyStepKind | AnyAwaitKind> => {
-	const inScope = (name: string): Option.Option<AnyStepKind | AnyAwaitKind> =>
-		Arr.findFirst(
-			kinds,
-			(kind): kind is AnyStepKind | AnyAwaitKind =>
-				(kind._tag === "Step" || kind._tag === "Await") && kind.name === name
-		)
-	const grow = (
-		found: ReadonlyArray<AnyStepKind | AnyAwaitKind>
-	): ReadonlyArray<AnyStepKind | AnyAwaitKind> => {
-		const reached: ReadonlyArray<AnyStepKind | AnyAwaitKind> = [
-			...found,
-			...Arr.flatMap(edges, (e) =>
-				Arr.some(found, (k) => k.name === e.from.name) ? Option.toArray(inScope(e.to.name)) : []
-			)
-		]
-		const next = Arr.dedupeWith(reached, (a, b) => a.name === b.name)
-		return next.length === found.length ? found : grow(next)
-	}
-	return grow(Arr.flatMap(join.children, (child) => Option.toArray(inScope(child.name))))
-}
-
 /** The joins a flow declares: its scope kinds and its roots. */
 export const joinsOf = (kinds: ReadonlyArray<AnyKind>): ReadonlyArray<AnyJoin> =>
 	Arr.filter(kinds, (kind): kind is AnyJoin => kind._tag === "Scope" || kind._tag === "Root")
@@ -111,33 +86,65 @@ export const joinsOf = (kinds: ReadonlyArray<AnyKind>): ReadonlyArray<AnyJoin> =
 export const stepsOf = (kinds: ReadonlyArray<AnyKind>): ReadonlyArray<AnyStepKind> =>
 	Arr.filter(kinds, (kind): kind is AnyStepKind => kind._tag === "Step")
 
-/** The awaits a flow declares. */
-export const awaitsOf = (kinds: ReadonlyArray<AnyKind>): ReadonlyArray<AnyAwaitKind> =>
-	Arr.filter(kinds, (kind): kind is AnyAwaitKind => kind._tag === "Await")
+/**
+ * The kinds a join holds: its children, and what edges from its steps spawn in the same scope or as child scopes,
+ * transitively through steps, never into a child scope's own members.
+ */
+export const membersOf = (
+	join: AnyJoin,
+	kinds: ReadonlyArray<AnyKind>,
+	edges: ReadonlyArray<AnyEdge>
+): ReadonlyArray<AnyKind> => {
+	const declared = (name: string): Option.Option<AnyKind> =>
+		Arr.findFirst(kinds, (kind) => kind.name === name && kind._tag !== "Root")
+	const grow = (found: ReadonlyArray<AnyKind>): ReadonlyArray<AnyKind> => {
+		const reached: ReadonlyArray<AnyKind> = [
+			...found,
+			...Arr.flatMap(edges, (e) =>
+				Arr.some(found, (k) => k._tag === "Step" && k.name === e.from.name)
+					? Option.toArray(declared(e.to.name))
+					: []
+			)
+		]
+		const next = Arr.dedupeWith(reached, (a, b) => a.name === b.name)
+		return next.length === found.length ? found : grow(next)
+	}
+	return grow(Arr.flatMap(join.children, (child) => Option.toArray(declared(child.name))))
+}
+
+/** The resources a flow's steps use, each once, refusing two of one name. */
+const resourcesOf = (
+	declaration: string,
+	steps: ReadonlyArray<AnyStepKind>
+): ReadonlyArray<Resource> => {
+	const used = Arr.flatMap(steps, (s) => s.uses)
+	const distinct = Arr.dedupeWith(used, (a, b) => a === b)
+	unique(
+		`${declaration} resources`,
+		Arr.map(distinct, (r) => r.name)
+	)
+	return distinct
+}
 
 /**
- * A flow, checked: its names unique and PascalCase, every step kind on a declared lane, every edge between declared
- * kinds and from a step, every kind but a root owned by some scope (named by a join's children or an edge's target),
- * every root with a trigger, and every finish reading only kinds its scope holds. A refusal is thrown as `Refused`,
- * when the module declaring the flow loads.
+ * A flow, checked: its names unique and PascalCase, every edge between declared kinds and from a step, every kind but a
+ * root owned by some scope (named by a join's children or an edge's target), at least one root, every finish reading
+ * only kinds its scope holds, and its resources distinct by name. A refusal is thrown as `Refused`, when the module
+ * declaring the flow loads.
  */
 export const flow = <
 	const Name extends string,
-	const Lanes extends ReadonlyArray<Lane>,
 	const Kinds extends ReadonlyArray<AnyKind>,
 	const Edges extends ReadonlyArray<AnyEdge>
 >(
 	name: Name,
-	declared: { readonly lanes: Lanes; readonly kinds: Kinds; readonly edges: Edges }
-): Flow<Name, Lanes, Kinds, Edges> => {
+	declared: { readonly writes: Writer; readonly kinds: Kinds; readonly edges: Edges }
+): Flow<Name, Kinds, Edges> => {
 	named("flow", name)
-	const { lanes, kinds, edges } = declared
+	const { writes, kinds, edges } = declared
 	const declaration = `flow ${name}`
 	const joins = joinsOf(kinds)
-	unique(
-		`${declaration} lanes`,
-		Arr.map(lanes, (l) => l.name)
-	)
+	const steps = stepsOf(kinds)
 	unique(`${declaration} kinds`, [...Arr.map(kinds, (k) => k.name), ...Arr.map(joins, finishName)])
 	unique(
 		`${declaration} edges`,
@@ -148,13 +155,6 @@ export const flow = <
 	}
 	const declaredKind = (kind: { readonly name: string }) =>
 		Arr.some(kinds, (k) => k === kind || (k.name === kind.name && k._tag !== "Root"))
-	const onLane = (what: string, l: Lane) => {
-		if (!Arr.some(lanes, (declaredLane) => declaredLane === l)) {
-			refuse(declaration, `${what} runs on lane ${l.name}, which the flow does not declare`)
-		}
-	}
-	Arr.forEach(stepsOf(kinds), (s) => onLane(`step ${s.name}`, s.lane))
-	Arr.forEach(joins, (j) => onLane(`the finish of ${j.name}`, j.finish.lane))
 	Arr.forEach(edges, (e) => {
 		if (!Arr.some(kinds, (k) => k === e.from)) {
 			refuse(
@@ -198,5 +198,6 @@ export const flow = <
 			}
 		})
 	})
-	return { _tag: "Flow", name, lanes, kinds, edges }
+	const resources = resourcesOf(declaration, steps)
+	return { _tag: "Flow", name, writes, kinds, edges, resources }
 }

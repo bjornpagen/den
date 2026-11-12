@@ -5,161 +5,194 @@ import {
 	ChainKind,
 	ChainJoin,
 	ChainOutcome,
+	ChainPausable,
 	ChainPageInputFeed,
 	ChainChainRunInputFeed,
+	ChainOrderedInputFeed,
 	ChainScope,
 	ChainRoot,
 	ChainWithin,
+	ChainAdmitted,
+	ChainSkipped,
 	ChainStep,
 	ChainStartStep,
 	ChainStartScope,
 	ChainFinish,
+	ChainDue,
 	ChainClaim,
+	ChainRetry,
 	ChainResult,
+	ChainDone,
+	ChainFailed,
 	ChainHeld,
 	ChainRefusal,
 	ChainExhausted,
-	ChainNext,
 	ChainPageInput,
 	ChainPageInputAfter,
+	ChainChainRunInput,
+	ChainOrderedInput,
+	ChainNext,
 	ChainPageOutput,
 	ChainPageOutputNext,
-	ChainChainRunInput
+	ChainPageRead,
+	ChainPaused
 } from "#integration/slice/generated/chain.fragment.ts"
+import { Loader } from "#integration/slice/roles.ts"
 
-export const ChainWorker = role(
+/** den's role for the flow Chain: claims, retries, failures, admissions, requests, and every read the scheduler makes. */
+export const ChainDen = role(
 	App,
-	"chain_worker",
+	"chain_den",
 	{
 		ChainKind,
 		ChainJoin,
 		ChainOutcome,
+		ChainPausable,
 		ChainPageInputFeed,
 		ChainChainRunInputFeed,
+		ChainOrderedInputFeed,
 		ChainScope,
 		ChainRoot,
 		ChainWithin,
+		ChainAdmitted,
+		ChainSkipped,
 		ChainStep,
 		ChainStartStep,
 		ChainStartScope,
 		ChainFinish,
+		ChainDue,
 		ChainClaim,
+		ChainRetry,
 		ChainResult,
+		ChainDone,
+		ChainFailed,
 		ChainHeld,
 		ChainRefusal,
 		ChainExhausted,
-		ChainNext,
 		ChainPageInput,
 		ChainPageInputAfter,
+		ChainChainRunInput,
+		ChainOrderedInput,
+		ChainNext,
 		ChainPageOutput,
 		ChainPageOutputNext,
-		ChainChainRunInput,
-		Item: App.relations.Item,
-		Cursor: App.relations.Cursor
+		ChainPageRead
 	},
 	{
 		insert: [
 			"ChainScope",
 			"ChainRoot",
 			"ChainWithin",
+			"ChainAdmitted",
+			"ChainSkipped",
 			"ChainStep",
 			"ChainStartStep",
 			"ChainStartScope",
 			"ChainFinish",
+			"ChainDue",
 			"ChainClaim",
+			"ChainRetry",
 			"ChainResult",
+			"ChainDone",
+			"ChainFailed",
 			"ChainHeld",
 			"ChainRefusal",
 			"ChainExhausted",
-			"ChainNext",
 			"ChainPageInput",
 			"ChainPageInputAfter",
-			"ChainPageOutput",
-			"ChainPageOutputNext",
 			"ChainChainRunInput",
-			"Item",
-			"Cursor"
+			"ChainOrderedInput",
+			"ChainPageRead"
 		]
 	}
 )
 
-export const chainPrograms = Object.freeze({
-	chainClaim: ChangeSet.empty(ChainWorker).insert(ChainClaim, []),
-	chainRefuse: ChangeSet.empty(ChainWorker)
+/** den's coordination role for the flow Chain: seats, holds, exclusivity seats and pauses, the seat module's (LEASE replaces it). */
+export const ChainSeats = role(
+	App,
+	"chain_seats",
+	{
+		ChainKind,
+		ChainJoin,
+		ChainOutcome,
+		ChainPausable,
+		ChainPageInputFeed,
+		ChainChainRunInputFeed,
+		ChainOrderedInputFeed,
+		ChainPaused
+	},
+	{ write: ["ChainPaused"] }
+)
+
+export const chainDenPrograms = Object.freeze({
+	chainClaim: ChangeSet.empty(ChainDen).insert(ChainClaim, []),
+	chainRetry: ChangeSet.empty(ChainDen).insert(ChainRetry, []),
+	chainRefuse: ChangeSet.empty(ChainDen)
 		.insert(ChainResult, [])
+		.insert(ChainFailed, [])
 		.insert(ChainHeld, [])
 		.insert(ChainRefusal, []),
-	chainExhaust: ChangeSet.empty(ChainWorker)
+	chainExhaust: ChangeSet.empty(ChainDen)
 		.insert(ChainResult, [])
+		.insert(ChainFailed, [])
 		.insert(ChainHeld, [])
 		.insert(ChainExhausted, []),
-	chainFinish: ChangeSet.empty(ChainWorker).insert(ChainFinish, []).insert(ChainStep, []),
+	chainAdmit: ChangeSet.empty(ChainDen)
+		.insert(ChainAdmitted, [])
+		.insert(ChainFinish, [])
+		.insert(ChainStartStep, [])
+		.insert(ChainStartScope, [])
+		.insert(ChainStep, [])
+		.insert(ChainDue, [])
+		.insert(ChainScope, [])
+		.insert(ChainWithin, [])
+		.insert(ChainPageInput, [])
+		.insert(ChainPageInputAfter, []),
+	chainSkip: ChangeSet.empty(ChainDen).insert(ChainSkipped, []),
+	chainSkippedOf: ChainSkipped,
 	chainStepOf: ChainStep,
 	chainResultOf: ChainResult,
 	chainHeldOf: ChainHeld,
+	chainDueOf: ChainDue,
 	chainScopeOf: ChainScope,
 	chainWithinOf: ChainWithin,
-	chainPending: query(ChainWorker).rule((r) => {
-		const { step, kind, scope } = v(ChainStep, "step")
+	chainAdmittedOf: ChainAdmitted,
+	chainRootOf: ChainRoot,
+	chainClaimsOf: query(ChainDen).rule((r) => {
+		const { step, attempt, holder, until } = v(ChainClaim, "claim")
 		return r
-			.match(ChainStep, { step, kind, scope })
-			.where(r.not(ChainResult, { step }))
-			.find({ step, kind, scope })
+			.match(ChainClaim, { step, attempt, holder, until })
+			.where(r.eq(step, r.param("step", ChainStep.fields.step)))
+			.find({ step, attempt, holder, until })
 	}),
-	chainPendingClaims: query(ChainWorker).rule((r) => {
-		const { step, attempt, until } = v(ChainClaim, "claim")
+	chainRetriesOf: query(ChainDen).rule((r) => {
+		const { step, attempt, at, spent } = v(ChainRetry, "retry")
 		return r
-			.match(ChainClaim, { step, attempt, until })
-			.where(r.not(ChainResult, { step }))
-			.find({ step, attempt, until })
+			.match(ChainRetry, { step, attempt, at, spent })
+			.where(r.eq(step, r.param("step", ChainStep.fields.step)))
+			.find({ step, attempt, at, spent })
 	}),
-	chainOpenScopes: query(ChainWorker).rule((r) => {
-		const { scope } = v(ChainScope, "scope")
-		return r.match(ChainScope, { scope }).where(r.not(ChainFinish, { scope })).find({ scope })
+	chainUnendedSteps: query(ChainDen).rule((r) => {
+		const { step, scope } = v(ChainStep, "step")
+		return r
+			.match(ChainStep, { step, scope })
+			.where(
+				r.eq(scope, r.param("scope", ChainScope.fields.scope)),
+				r.not(ChainResult, { step }),
+				r.not(ChainFinish, { scope, step })
+			)
+			.find({ step })
 	}),
-	chainStepsIn: query(ChainWorker)
-		.rule((r) => {
-			const { step, scope } = v(ChainStep, "step")
-			return r
-				.match(ChainStep, { step, scope })
-				.match(ChainResult, { step })
-				.where(
-					r.eq(scope, r.param("scope", ChainScope.fields.scope)),
-					r.not(ChainFinish, { scope, step })
-				)
-				.find({ step, done: true })
-		})
-		.rule((r) => {
-			const { step, scope } = v(ChainStep, "step")
-			return r
-				.match(ChainStep, { step, scope })
-				.where(
-					r.eq(scope, r.param("scope", ChainScope.fields.scope)),
-					r.not(ChainResult, { step }),
-					r.not(ChainFinish, { scope, step })
-				)
-				.find({ step, done: false })
-		}),
-	chainScopesIn: query(ChainWorker)
-		.rule((r) => {
-			const { scope, parent } = v(ChainWithin, "within")
-			const { step } = v(ChainFinish, "finish")
-			return r
-				.match(ChainWithin, { scope, parent })
-				.match(ChainFinish, { scope, step })
-				.match(ChainResult, { step })
-				.where(r.eq(parent, r.param("scope", ChainScope.fields.scope)))
-				.find({ child: scope, done: true })
-		})
+	chainOpenChildren: query(ChainDen)
 		.rule((r) => {
 			const { scope, parent } = v(ChainWithin, "within")
 			return r
 				.match(ChainWithin, { scope, parent })
 				.where(
 					r.eq(parent, r.param("scope", ChainScope.fields.scope)),
-					r.not(ChainFinish, { scope })
+					r.not(ChainAdmitted, { scope })
 				)
-				.find({ child: scope, done: false })
+				.find({ child: scope })
 		})
 		.rule((r) => {
 			const { scope, parent } = v(ChainWithin, "within")
@@ -171,41 +204,73 @@ export const chainPrograms = Object.freeze({
 					r.eq(parent, r.param("scope", ChainScope.fields.scope)),
 					r.not(ChainResult, { step })
 				)
-				.find({ child: scope, done: false })
+				.find({ child: scope })
 		}),
-	chainCommitPage: ChangeSet.empty(ChainWorker)
-		.insert(ChainResult, [])
-		.insert(ChainHeld, [])
-		.insert(ChainPageOutput, [])
-		.insert(ChainPageOutputNext, [])
-		.insert(ChainStep, [])
-		.insert(ChainScope, [])
-		.insert(ChainWithin, [])
-		.insert(ChainStartStep, [])
-		.insert(ChainStartScope, [])
-		.insert(ChainPageInput, [])
-		.insert(ChainPageInputAfter, [])
-		.insert(ChainNext, [])
-		.insert(App.relations.Item, []),
+	chainFinished: query(ChainDen).rule((r) => {
+		const { scope, step } = v(ChainFinish, "finish")
+		return r
+			.match(ChainFinish, { scope, step })
+			.match(ChainResult, { step })
+			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.find({ step })
+	}),
+	chainPending: query(ChainDen).rule((r) => {
+		const { step, kind, scope } = v(ChainStep, "step")
+		return r
+			.match(ChainStep, { step, kind, scope })
+			.where(r.not(ChainResult, { step }))
+			.find({ step, kind, scope })
+	}),
+	chainPendingClaims: query(ChainDen).rule((r) => {
+		const { step, attempt, until } = v(ChainClaim, "claim")
+		return r
+			.match(ChainClaim, { step, attempt, until })
+			.where(r.not(ChainResult, { step }))
+			.find({ step, attempt, until })
+	}),
+	chainPendingRetries: query(ChainDen).rule((r) => {
+		const { step, attempt, at, spent } = v(ChainRetry, "retry")
+		return r
+			.match(ChainRetry, { step, attempt, at, spent })
+			.where(r.not(ChainResult, { step }))
+			.find({ step, attempt, at, spent })
+	}),
+	chainPendingDues: query(ChainDen).rule((r) => {
+		const { step, at } = v(ChainDue, "due")
+		return r.match(ChainDue, { step, at }).where(r.not(ChainResult, { step })).find({ step, at })
+	}),
+	chainRequested: query(ChainDen).rule((r) => {
+		const { scope, kind } = v(ChainScope, "scope")
+		return r
+			.match(ChainScope, { scope, kind })
+			.where(r.not(ChainAdmitted, { scope }), r.not(ChainSkipped, { scope }))
+			.find({ scope, kind })
+	}),
+	chainRunning: query(ChainDen).rule((r) => {
+		const { scope, kind } = v(ChainScope, "scope")
+		const { step } = v(ChainFinish, "finish")
+		return r
+			.match(ChainScope, { scope, kind })
+			.match(ChainFinish, { scope, step })
+			.where(r.not(ChainResult, { step }))
+			.find({ scope, kind })
+	}),
+	chainWithins: query(ChainDen).rule((r) => {
+		const { scope, parent } = v(ChainWithin, "chainWithin")
+		return r.match(ChainWithin, { scope, parent }).find({ scope, parent })
+	}),
+	chainRoots: query(ChainDen).rule((r) => {
+		const { scope, key, at } = v(ChainRoot, "chainRoot")
+		return r.match(ChainRoot, { scope, key, at }).find({ scope, key, at })
+	}),
 	chainReadChainPageInput: ChainPageInput,
 	chainReadChainPageInputAfter: ChainPageInputAfter,
-	chainCommitChainRunFinish: ChangeSet.empty(ChainWorker)
-		.insert(ChainResult, [])
-		.insert(ChainHeld, [])
-		.insert(App.relations.Cursor, []),
-	chainStartChainRun: ChangeSet.empty(ChainWorker)
-		.insert(ChainRoot, [])
-		.insert(ChainChainRunInput, [])
-		.insert(ChainStep, [])
-		.insert(ChainScope, [])
-		.insert(ChainWithin, [])
-		.insert(ChainStartStep, [])
-		.insert(ChainStartScope, [])
-		.insert(ChainPageInput, [])
-		.insert(ChainPageInputAfter, [])
-		.insert(ChainNext, []),
 	chainReadChainChainRunInput: ChainChainRunInput,
-	chainOutputsChainRunPage: query(ChainWorker).rule((r) => {
+	chainRequestChainRun: ChangeSet.empty(ChainDen)
+		.insert(ChainScope, [])
+		.insert(ChainRoot, [])
+		.insert(ChainChainRunInput, []),
+	chainOutputsChainRunPage: query(ChainDen).rule((r) => {
 		const { step, scope } = v(ChainStep, "step")
 		const { seq, items } = v(ChainPageOutput, "output")
 		return r
@@ -214,7 +279,7 @@ export const chainPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
 			.find({ step, seq, items })
 	}),
-	chainOutputsChainRunPageNext: query(ChainWorker).rule((r) => {
+	chainOutputsChainRunPageNext: query(ChainDen).rule((r) => {
 		const { step, scope } = v(ChainStep, "step")
 		const { value } = v(ChainPageOutputNext, "value")
 		return r
@@ -222,7 +287,103 @@ export const chainPrograms = Object.freeze({
 			.match(ChainPageOutputNext, { step, value })
 			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
 			.find({ step, value })
+	}),
+	chainFailuresChainRunPage: query(ChainDen).rule((r) => {
+		const { step, scope } = v(ChainStep, "step")
+		return r
+			.match(ChainStep, { step, kind: "Page", scope })
+			.match(ChainResult, { step, outcome: "failed" })
+			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.find({ step })
+	}),
+	chainReadChainOrderedInput: ChainOrderedInput,
+	chainOutputsOrderedPage: query(ChainDen).rule((r) => {
+		const { step, scope } = v(ChainStep, "step")
+		const { seq, items } = v(ChainPageOutput, "output")
+		return r
+			.match(ChainStep, { step, kind: "Page", scope })
+			.match(ChainPageOutput, { step, seq, items })
+			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.find({ step, seq, items })
+	}),
+	chainOutputsOrderedPageNext: query(ChainDen).rule((r) => {
+		const { step, scope } = v(ChainStep, "step")
+		const { value } = v(ChainPageOutputNext, "value")
+		return r
+			.match(ChainStep, { step, kind: "Page", scope })
+			.match(ChainPageOutputNext, { step, value })
+			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.find({ step, value })
+	}),
+	chainFailuresOrderedPage: query(ChainDen).rule((r) => {
+		const { step, scope } = v(ChainStep, "step")
+		return r
+			.match(ChainStep, { step, kind: "Page", scope })
+			.match(ChainResult, { step, outcome: "failed" })
+			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.find({ step })
 	})
 })
 
-export const chainWorkload = workload(ChainWorker, chainPrograms)
+export const chainDenWorkload = workload(ChainDen, chainDenPrograms)
+
+export const chainSeatsPrograms = Object.freeze({
+	chainPause: ChangeSet.empty(ChainSeats).insert(ChainPaused, []),
+	chainResume: ChangeSet.empty(ChainSeats).delete(ChainPaused, []),
+	chainPausedAll: query(ChainSeats).rule((r) => {
+		const { target } = v(ChainPaused, "chainPaused")
+		return r.match(ChainPaused, { target }).find({ target })
+	})
+})
+
+export const chainSeatsWorkload = workload(ChainSeats, chainSeatsPrograms)
+
+/** The commits and declared reads of the flow Chain, over its app role Loader. */
+export const chainCommitPrograms = Object.freeze({
+	chainCommitPage: ChangeSet.empty(Loader)
+		.insert(ChainResult, [])
+		.insert(ChainDone, [])
+		.insert(ChainHeld, [])
+		.insert(ChainPageOutput, [])
+		.insert(ChainPageOutputNext, [])
+		.insert(ChainPageRead, [])
+		.insert(ChainStep, [])
+		.insert(ChainDue, [])
+		.insert(ChainScope, [])
+		.insert(ChainWithin, [])
+		.insert(ChainAdmitted, [])
+		.insert(ChainFinish, [])
+		.insert(ChainStartStep, [])
+		.insert(ChainStartScope, [])
+		.insert(ChainPageInput, [])
+		.insert(ChainPageInputAfter, [])
+		.insert(ChainNext, [])
+		.insert(App.relations.Item, []),
+	chainReadPage: query(Loader).rule((r) => {
+		const { feed, factor } = v(App.relations.Weight, "row")
+		return r
+			.match(App.relations.Weight, { feed, factor })
+			.where(r.eq(feed, r.param("feed", App.relations.Weight.fields.feed)))
+			.find({ feed, factor })
+	}),
+	chainCommitChainRunFinish: ChangeSet.empty(Loader)
+		.insert(ChainResult, [])
+		.insert(ChainDone, [])
+		.insert(ChainHeld, [])
+		.insert(App.relations.Cursor, []),
+	chainCommitOrderedFinish: ChangeSet.empty(Loader)
+		.insert(ChainResult, [])
+		.insert(ChainDone, [])
+		.insert(ChainHeld, [])
+		.insert(App.relations.Cursor, [])
+})
+
+export const chainCommits = workload(Loader, chainCommitPrograms)
+
+/** The requests of the flow's roots the app's own write starts, each a ChangeSet over Loader the app unions with its own. */
+export const chainRequests = Object.freeze({
+	Ordered: ChangeSet.empty(Loader)
+		.insert(ChainScope, [])
+		.insert(ChainRoot, [])
+		.insert(ChainOrderedInput, [])
+})

@@ -1,27 +1,33 @@
 import { Array as Arr, HashMap, Option } from "effect"
-import type { Entry } from "#facts.ts"
-import type { RootKey } from "#identity.ts"
+import {
+	type Answer,
+	type By,
+	type Entry,
+	type Fact,
+	type Target,
+	TRACE_VERSION,
+	type Trace
+} from "#facts.ts"
+import { type StepId, stepText } from "#identity.ts"
 import {
 	type Answered,
-	type AwaitRow,
-	type BodyRow,
-	claimable,
+	dueAtOf,
 	emptyState,
 	endingOf,
-	freeSlots,
 	type Lease,
 	type Ledger,
-	type ScopeRow,
-	type State
+	pendingOf,
+	type State,
+	type StepRow
 } from "#ledger.ts"
 import {
 	type Admission,
-	type Ceilings,
 	closedSpanOf,
-	type Lane,
 	type Program,
 	rungOf,
-	type Settled
+	type Settled,
+	windowsOf,
+	type Write
 } from "#program.ts"
 
 /**
@@ -51,10 +57,10 @@ export type Platform = Readonly<{
  * - `pause`: a worker's process pauses before its commit reaches the ledger, maybe past its lease;
  * - `lost-answer`: a commit lands but its answer is lost, so the worker sends it again;
  * - `transient`, `unavailable`: a step's call fails outside its body (grizzle's `CallError`): a wait, or an attempt;
- * - `handover`: the relay's leader hands over, and the new one replays the read it serves;
- * - `stop`, `operator-pause`: an operator stops a scope, or pauses and resumes a lane;
- * - `double-complete`: an await is completed again, maybe with another value;
- * - `readmit`: a root is admitted again under its key.
+ * - `handover`: the relay's leader hands over, and the new one replays from the last position its leader saved;
+ * - `relay-lag`: the relay's leader sends but does not save its position, so a hand-over replays what it sent;
+ * - `operator-pause`: an operator pauses and resumes resources and root kinds;
+ * - `readmit`: a root is admitted again under its key, live or retired.
  */
 export const FAULTS = [
 	"drop",
@@ -70,9 +76,8 @@ export const FAULTS = [
 	"transient",
 	"unavailable",
 	"handover",
-	"stop",
+	"relay-lag",
 	"operator-pause",
-	"double-complete",
 	"readmit"
 ] as const
 
@@ -89,11 +94,14 @@ export type Nature = Readonly<{
 	upTo: (most: number) => number
 }>
 
-/** A message in the transport: a doorbell for a lane, its key, the deployment it is pinned to, and its deliveries. */
+/**
+ * A message in the transport: a doorbell for one step, its key, the deployment it is pinned to, the instant it may be
+ * delivered (later than its send for a delayed delivery, an exact timer), and its deliveries so far.
+ */
 export type Message = Readonly<{
 	id: number
 	key: string
-	lane: string
+	step: StepId
 	deployment: number
 	deliverAt: number
 	deliveries: number
@@ -101,10 +109,10 @@ export type Message = Readonly<{
 
 /** Where a worker stands in its invocation. */
 type Phase =
-	| Readonly<{ _tag: "Ready" }>
+	| Readonly<{ _tag: "Ready"; step: StepId }>
 	| Readonly<{ _tag: "Running"; lease: Lease; done: number }>
 	| Readonly<{ _tag: "Reporting"; lease: Lease; settled: Settled; arrives: number }>
-	| Readonly<{ _tag: "Turned" }>
+	| Readonly<{ _tag: "Turned"; next: Option.Option<StepId>; rings: Logged; position: number }>
 
 /** One function invocation: the message that woke it, the deployment it runs, when it started, and its turns. */
 type Worker = Readonly<{
@@ -113,36 +121,102 @@ type Worker = Readonly<{
 	deployment: number
 	started: number
 	turns: number
-	worked: boolean
 	phase: Phase
 }>
 
 /**
- * How the platform around the ledger behaves, each a function so a planted bug replaces one (planted.ts):
- * - `counts`: whether the census counts a step as due at an instant;
- * - `afterStale`: what a worker answered `stale` sends before it exits (sound: nothing).
+ * What made a ring: the worker's commit that rang it, by its place in the trace (the fast path); the relay, at the
+ * position of the commit it streamed; the census's tick, at its instant; a worker out of turns sending its
+ * continuation; or a stale worker ringing on (a planted bug's).
  */
-export type Policy = Readonly<{
-	counts: (row: BodyRow, at: number) => boolean
-	afterStale: (lane: string, deployment: number, worker: number) => ReadonlyArray<Send>
+export type Cause =
+	| Readonly<{ _tag: "Commit"; position: number }>
+	| Readonly<{ _tag: "Relay"; position: number }>
+	| Readonly<{ _tag: "Census"; tick: number }>
+	| Readonly<{ _tag: "Continuation"; worker: number }>
+	| Readonly<{ _tag: "Stale"; worker: number }>
+
+/** A cause's canonical text. */
+export const causeText = (cause: Cause): string => {
+	switch (cause._tag) {
+		case "Commit":
+			return `commit@${cause.position}`
+		case "Relay":
+			return `relay@${cause.position}`
+		case "Census":
+			return `census@${cause.tick}`
+		case "Continuation":
+			return `continue@${cause.worker}`
+		case "Stale":
+			return `stale@${cause.worker}`
+	}
+}
+
+/**
+ * A message a worker, the relay or the census asks the transport to send: the step it rings and the attempt it is due
+ * for, what made the ring, its deployment and the instant it may be delivered.
+ */
+export type Send = Readonly<{
+	step: StepId
+	attempt: number
+	cause: Cause
+	deployment: number
+	deliverAt: number
 }>
 
-/** A message a worker or the census asks the transport to send. */
-export type Send = Readonly<{ key: string; lane: string; deployment: number }>
+/**
+ * How the platform around the ledger behaves, each a function so a planted bug replaces one (planted.ts):
+ * - `rings`: whether the census rings a step eligible at its tick;
+ * - `afterStale`: what a worker answered `stale` sends before it exits (sound: nothing);
+ * - `keyOf`: the idempotency key a send carries, which the transport deduplicates for its whole window (Vercel
+ *   Queues: up to 24 h, processed or not). Sound: the ring's cause and its step, so a retry of one cause, a relay's
+ *   replay of one position, is a true duplicate and a later cause is never absorbed by an earlier one's key.
+ */
+export type Policy = Readonly<{
+	rings: (row: StepRow, at: number) => boolean
+	afterStale: (step: StepId, deployment: number, worker: number) => ReadonlyArray<Send>
+	keyOf: (send: Send) => string
+}>
 
-/** The platform as den's proposal describes it. */
+/** The platform as den's proposal describes it, its rings keyed by their causes. */
 export const SOUND_POLICY: Policy = {
-	counts: () => true,
-	afterStale: () => []
+	rings: () => true,
+	afterStale: () => [],
+	keyOf: (send) => `${causeText(send.cause)}:${stepText(send.step)}`
 }
+
+/**
+ * One send the transport was asked for: when, its key, its step, its cause's text, and its fate: queued, dropped by a
+ * fault, or dropped as a duplicate of a key the transport saw within its window.
+ */
+export type Sent = Readonly<{
+	at: number
+	key: string
+	step: string
+	cause: string
+	fate: "queued" | "dropped" | "deduplicated"
+}>
+
+/**
+ * What the world outside den does at an instant: a trigger admits a root (a schedule's tick, an operator's verb), or
+ * the app commits its own transaction, its writes and the roots it admits with them.
+ */
+export type Act =
+	| Readonly<{ _tag: "Admit"; at: number; admission: Admission; by: By }>
+	| Readonly<{
+			_tag: "Write"
+			at: number
+			writes: ReadonlyArray<Write>
+			admits: ReadonlyArray<Admission>
+	  }>
 
 /** A re-run the simulator made of an accepted call, at once, to check it changed nothing: the call and its re-run. */
 export type Rerun = Readonly<{ entry: Entry; again: Entry }>
 
 /**
- * How a run's fair phase ended: every root finished and retired and nothing left in flight; a step pending with no
- * move for longer than the patience its program allows; an old deployment's messages or workers still about past the
- * drain bound; or the phase's whole budget spent without either.
+ * How a run's fair phase ended: every root finished and retired, every act done and nothing left in flight; a step
+ * pending with no move for longer than the patience its program allows; an old deployment's messages or workers still
+ * about past the drain bound; or a step past its ladder, or the phase's whole budget, spent.
  */
 export type FairEnd =
 	| Readonly<{ _tag: "Quiescent"; at: number }>
@@ -157,12 +231,14 @@ export type FairEnd =
 	| Readonly<{ _tag: "Spent"; at: number; pending: ReadonlyArray<string> }>
 
 /**
- * What a run shows its properties: its trace, the re-runs it made, the instant its fair phase began, how that phase
- * ended, the ledger it left, and what it noticed along the way (`seen`), the situations a search steers by.
+ * What a run shows its laws: its trace, the re-runs it made, every send and its fate, the instant its fair phase began,
+ * how that phase ended,
+ * the ledger it left, and what it noticed along the way (`seen`), the situations a search steers by.
  */
 export type Run = Readonly<{
-	trace: ReadonlyArray<Entry>
+	trace: Trace
 	reruns: ReadonlyArray<Rerun>
+	sends: ReadonlyArray<Sent>
 	fairFrom: number
 	end: FairEnd
 	state: State
@@ -174,33 +250,52 @@ export type Seen =
 	| "claimed"
 	| "reclaimed"
 	| "retried"
+	| "waited"
 	| "exhausted"
 	| "failed"
 	| "stale"
 	| "late-accepted"
 	| "late-lost"
 	| "rerun-commit"
-	| "stopped"
+	| "full"
+	| "behind"
+	| "early"
+	| "closed"
 	| "paused"
-	| "at-width"
-	| "completed"
-	| "timer"
-	| "joined"
+	| "read"
 	| "finished"
+	| "held"
+	| "blocked"
 	| "retired"
+	| "readmitted-retired"
+	| "continued"
+	| "rang"
+	| "relayed"
+	| "timer"
 	| "handover"
+	| "replayed"
 	| "redelivered"
 	| "deduplicated"
 	| "deployed"
 
-/** What a run is: the program, its admissions, the ledger's transitions, the platform's behaviour and settings. */
+/** What a run is: the program, what the world does when, the ledger's transitions, the platform, and the horizon. */
 export type Setup = Readonly<{
 	program: Program
-	admissions: Arr.NonEmptyReadonlyArray<Admission>
+	acts: ReadonlyArray<Act>
 	ledger: Ledger
 	policy: Policy
 	platform: Platform
+	horizon: number
 }>
+
+/** What the relay owes per trace entry: the steps the entry made eligible, each from the instant it is due. */
+type Logged = ReadonlyArray<Readonly<{ step: StepId; attempt: number; at: number }>>
+
+/** What a worker's call left it: its continuation, if one, and the rest of what its call made eligible, to ring. */
+type Committed = Readonly<{ next: Option.Option<StepId>; rings: Logged; position: number }>
+
+/** Who made a call: a worker, which continues with its own first spawn and rings the rest, or anyone else. */
+type Caller = "worker" | "other"
 
 /** The mutable world one run steps through; a run is a pure function of its setup and its nature's choices. */
 type World = {
@@ -208,14 +303,16 @@ type World = {
 	now: number
 	messages: Array<Message>
 	sent: Map<string, number>
+	sends: Array<Sent>
 	workers: Array<Worker>
-	relay: { deployment: number; sent: Set<string> }
+	relay: { deployment: number; position: number; durable: number }
+	log: Array<Logged>
 	trace: Array<Entry>
 	reruns: Array<Rerun>
 	seen: Set<Seen>
 	ids: number
-	admitted: Array<number>
-	claims: number
+	acted: number
+	admitted: Array<Readonly<{ admission: Admission; by: By }>>
 	spawned: number
 }
 
@@ -226,33 +323,27 @@ type Move =
 	| "tick"
 	| "census"
 	| "relay"
-	| "admit"
+	| "readmit"
 	| "handover"
 	| "deploy"
-	| "stop"
 	| "pause"
 	| "resume"
-	| "complete"
 
-const laneOf = (program: Program, name: string): Option.Option<Lane> =>
-	Arr.findFirst(program.lanes, (lane) => lane.name === name)
-
-/** Every pending step and unfinished scope of the ledger, by key: what a stall leaves behind. */
-export const pendingOf = (state: State): ReadonlyArray<string> => [
-	...Arr.flatMap(HashMap.toValues(state.steps), (row) =>
-		Option.isNone(endingOf(row)) ? [row.text] : []
-	),
-	...Arr.flatMap(HashMap.toValues(state.scopes), (row) =>
-		Option.isNone(row.ending) ? [row.text] : []
-	)
+/** Every target an operator may pause: the program's resources and its root kinds. */
+const targetsOf = (program: Program): Arr.NonEmptyReadonlyArray<Target> => [
+	...Arr.map(program.roots, (root): Target => ({ _tag: "Root", kind: root.kind })),
+	...Arr.map(program.resources, (resource): Target => ({ _tag: "Resource", name: resource.name }))
 ]
+
+/** The key of a step's attempt, as the relay and the continuation name it. */
+const attemptKey = (step: StepId, attempt: number): string => `${stepText(step)}:${attempt}`
 
 /**
  * Runs a setup: a chaotic phase of `platform.events` events drawn from nature, faults on as nature's swarm says, then a
- * fair phase in which no fault strikes, every lane is resumed, every await is completed, the relay hands over to the
- * current deployment and every delivery is prompt, until the ledger is empty and nothing is in flight, a step pends
- * past its patience, an old deployment stays past its drain bound, or the phase's budget is spent. Every call of the
- * ledger lands in the trace, and every accepted call that names its keys is made again at once into `reruns`.
+ * fair phase in which no fault strikes, everything paused is resumed, the relay hands over to the current deployment
+ * and every delivery is prompt, until the ledger is empty, every act done and nothing in flight, a step pends past its
+ * patience, an old deployment stays past its drain bound, or the phase's budget is spent. Every call of the ledger
+ * lands in the trace, and every accepted call that names its keys is made again at once into `reruns`.
  */
 export const simulate = (setup: Setup, nature: Nature): Run => {
 	const { ledger, platform, program, policy } = setup
@@ -261,26 +352,80 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 		now: 0,
 		messages: [],
 		sent: new Map(),
+		sends: [],
 		workers: [],
-		relay: { deployment: 0, sent: new Set() },
+		relay: { deployment: 0, position: 0, durable: 0 },
+		log: [],
 		trace: [],
 		reruns: [],
 		seen: new Set(),
 		ids: 0,
+		acted: 0,
 		admitted: [],
-		claims: 0,
 		spawned: 0
 	}
-	const record = (answered: Answered): State => {
-		world.trace.push(answered.entry)
-		world.spawned += Arr.filter(answered.entry.facts, (fact) => fact._tag === "Spawned").length
+	const note = (seen: Seen) => world.seen.add(seen)
+	const eligibleKeys = (state: State, at: number): ReadonlySet<string> =>
+		new Set(
+			Arr.map(ledger.standings.eligibleAt(state, at), (row) => attemptKey(row.id, row.claims))
+		)
+
+	/**
+	 * Records a call: its entry in the trace, and in the relay's log the steps it made eligible: those eligible after it
+	 * and not before, at once, and the timers it spawned, from their instants. A worker's call keeps for itself its
+	 * first spawn eligible at once, its continuation, and rings the rest of what the log holds for it; the relay rings
+	 * all of it, so the two ring the same steps harmlessly: the claim decides.
+	 */
+	const record = (answered: Answered, caller: Caller): Committed => {
+		const entry = answered.entry
+		const before = world.state
+		world.trace.push(entry)
 		world.state = answered.state
-		return answered.state
+		const position = world.trace.length - 1
+		if (Arr.isReadonlyArrayEmpty(entry.facts)) {
+			world.log.push([])
+			return { next: Option.none(), rings: [], position }
+		}
+		const was = eligibleKeys(before, entry.at)
+		const after = ledger.standings.eligibleAt(answered.state, entry.at)
+		const spawned = Arr.flatMap(entry.facts, (fact) => (fact._tag === "Spawned" ? [fact] : []))
+		world.spawned += spawned.length
+		const continuation =
+			caller === "worker"
+				? Arr.findFirst(spawned, (fact) =>
+						Arr.some(after, (row) => row.text === stepText(fact.step) && row.claims === 0)
+					)
+				: Option.none()
+		const kept = Option.map(continuation, (fact) => stepText(fact.step))
+		const now = Arr.flatMap(after, (row) =>
+			was.has(attemptKey(row.id, row.claims))
+				? []
+				: [{ step: row.id, attempt: row.claims, at: entry.at }]
+		)
+		const timers = Arr.flatMap(spawned, (fact) =>
+			fact.due > entry.at ? [{ step: fact.step, attempt: 0, at: fact.due }] : []
+		)
+		const logged = [...now, ...timers]
+		world.log.push(logged)
+		Arr.forEach(entry.facts, (fact) => {
+			if (fact._tag === "Read") {
+				note("read")
+			}
+		})
+		return {
+			position,
+			next: Option.map(continuation, (fact) => fact.step),
+			rings:
+				caller === "worker"
+					? Arr.filter(logged, (ring) => !Option.contains(kept, stepText(ring.step)))
+					: []
+		}
 	}
+
 	/** Records a keyed call, and makes it again at once: an accepted call's second run must add nothing. */
 	const keyed = (call: (state: State) => Answered): Answered => {
 		const answered = call(world.state)
-		record(answered)
+		record(answered, "other")
 		if (answered.answer === "accepted") {
 			const again = call(answered.state)
 			world.reruns.push({ entry: answered.entry, again: again.entry })
@@ -288,23 +433,42 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 		}
 		return answered
 	}
-	const note = (seen: Seen) => world.seen.add(seen)
 
+	/**
+	 * Sends a message, as Vercel Queues takes it: a fault may drop it, and a key the transport accepted within its
+	 * deduplication window drops it out of band, however the first was processed.
+	 */
 	const send = (message: Send, faulty: boolean): void => {
+		const key = policy.keyOf(message)
+		const sent = (fate: Sent["fate"]) =>
+			world.sends.push({
+				at: world.now,
+				key,
+				step: stepText(message.step),
+				cause: causeText(message.cause),
+				fate
+			})
 		if (faulty && nature.bool("drop")) {
+			sent("dropped")
 			return
 		}
-		const previous = world.sent.get(message.key)
+		const previous = world.sent.get(key)
 		if (previous !== undefined && world.now - previous < platform.dedup) {
 			note("deduplicated")
+			sent("deduplicated")
 			return
 		}
-		world.sent.set(message.key, world.now)
+		sent("queued")
+		world.sent.set(key, world.now)
 		world.ids += 1
 		world.messages.push({
-			...message,
 			id: world.ids,
-			deliverAt: world.now + (faulty && nature.bool("delay") ? 1 + nature.upTo(platform.stall) : 0),
+			key,
+			step: message.step,
+			deployment: message.deployment,
+			deliverAt:
+				Math.max(world.now, message.deliverAt) +
+				(faulty && nature.bool("delay") ? 1 + nature.upTo(platform.stall) : 0),
 			deliveries: 0
 		})
 	}
@@ -334,25 +498,55 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 		world.workers = Arr.map(world.workers, (other) => (other.id === worker.id ? worker : other))
 	}
 
-	const ring = (lane: string, deployment: number, key: string, faulty: boolean) =>
-		send({ key, lane, deployment }, faulty)
+	/** A ring of a step's attempt, from its instant, by its cause: a worker's commit or the relay's position. */
+	const ring = (
+		target: Readonly<{ step: StepId; attempt: number; at: number }>,
+		cause: Cause,
+		deployment: number,
+		faulty: boolean
+	) =>
+		send(
+			{ step: target.step, attempt: target.attempt, cause, deployment, deliverAt: target.at },
+			faulty
+		)
 
-	/** A worker's turn is over: it claims again while its invocation has turns and time, else it rings on and exits. */
-	const turned = (worker: Worker, faulty: boolean) => {
-		if (worker.turns < platform.turns && world.now < worker.started + platform.lifetime) {
-			replace({ ...worker, phase: { _tag: "Ready" } })
-			return
-		}
-		exit(worker)
-		if (worker.worked) {
-			ring(worker.message.lane, worker.deployment, `continue:${worker.id}`, faulty)
-		}
+	/**
+	 * A worker's turn is over: it rings the rest of what its commit made eligible, then continues with its continuation
+	 * while its invocation has turns and time, sends the continuation as a message when it has neither, and exits when
+	 * it has none.
+	 */
+	const turned = (worker: Worker, committed: Committed, faulty: boolean) => {
+		Arr.forEach(committed.rings, (target) => {
+			note("rang")
+			ring(target, { _tag: "Commit", position: committed.position }, worker.deployment, faulty)
+		})
+		Option.match(committed.next, {
+			onNone: () => exit(worker),
+			onSome: (step) => {
+				if (worker.turns < platform.turns && world.now < worker.started + platform.lifetime) {
+					note("continued")
+					replace({ ...worker, phase: { _tag: "Ready", step } })
+					return
+				}
+				exit(worker)
+				send(
+					{
+						step,
+						attempt: 0,
+						cause: { _tag: "Continuation", worker: worker.id },
+						deployment: worker.deployment,
+						deliverAt: world.now
+					},
+					faulty
+				)
+			}
+		})
 	}
 
-	const stale = (worker: Worker) => {
+	const stale = (worker: Worker, step: StepId) => {
 		note("stale")
 		exit(worker)
-		Arr.forEach(policy.afterStale(worker.message.lane, worker.deployment, worker.id), (message) =>
+		Arr.forEach(policy.afterStale(step, worker.deployment, worker.id), (message) =>
 			send(message, false)
 		)
 	}
@@ -372,61 +566,64 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 		return lease.run(lease.claimed)
 	}
 
+	const claimed = (worker: Worker, step: StepId, faulty: boolean): void => {
+		const turn = `w${worker.id}.${worker.turns}`
+		const lapsed = Option.exists(
+			HashMap.get(world.state.steps, stepText(step)),
+			(row) => row.phase._tag === "Held"
+		)
+		const answered = ledger.claim(world.state, step, turn, worker.deployment, world.now)
+		const committed = record(answered, "worker")
+		switch (answered.answer) {
+			case "stale":
+				stale(worker, step)
+				return
+			case "exhausted":
+				note("exhausted")
+				turned({ ...worker, turns: worker.turns + 1 }, committed, faulty)
+				return
+			case "accepted":
+				Option.match(answered.lease, {
+					onNone: () => exit(worker),
+					onSome: (lease) => {
+						note("claimed")
+						if (lapsed) {
+							note("reclaimed")
+						}
+						const took = faulty ? nature.upTo(lease.runs.lease) : 0
+						replace({ ...worker, phase: { _tag: "Running", lease, done: world.now + took } })
+					}
+				})
+				return
+			case "full":
+			case "behind":
+			case "early":
+			case "closed":
+			case "paused":
+				note(answered.answer)
+				exit(worker)
+				return
+			case "unchanged":
+			case "lost":
+			case "gone":
+			case "live":
+			case "held":
+			case "retired":
+			case "blocked":
+				exit(worker)
+		}
+	}
+
 	/** One move of a worker, faults striking where its phase allows them. */
 	const step = (worker: Worker, faulty: boolean): void => {
 		switch (worker.phase._tag) {
-			case "Ready": {
+			case "Ready":
 				if (faulty && nature.bool("death-before-claim")) {
 					die(worker)
 					return
 				}
-				const lane = laneOf(program, worker.message.lane)
-				if (Option.isNone(lane)) {
-					exit(worker)
-					return
-				}
-				const answered = ledger.claim(world.state, lane.value, worker.deployment, world.now)
-				record(answered)
-				switch (answered.answer) {
-					case "stale":
-						stale(worker)
-						return
-					case "exhausted":
-						note("exhausted")
-						turned({ ...worker, turns: worker.turns + 1, worked: true }, faulty)
-						return
-					case "accepted":
-						Option.match(answered.lease, {
-							onNone: () => exit(worker),
-							onSome: (lease) => {
-								note("claimed")
-								world.claims = Math.max(world.claims, claimsBoundOf(lease.runs.ceilings))
-								if (lease.claimed.reclaims > 0) {
-									note("reclaimed")
-								}
-								const took = faulty ? nature.upTo(lease.runs.lease) : 0
-								replace({ ...worker, phase: { _tag: "Running", lease, done: world.now + took } })
-							}
-						})
-						return
-					case "at-width":
-						note("at-width")
-						exit(worker)
-						return
-					case "paused":
-						note("paused")
-						exit(worker)
-						return
-					case "closed":
-					case "idle":
-					case "unchanged":
-					case "lost":
-					case "gone":
-					case "live":
-						exit(worker)
-						return
-				}
-			}
+				claimed(worker, worker.phase.step, faulty)
+				return
 			case "Running": {
 				const { lease, done } = worker.phase
 				if (world.now < Math.min(done, lease.until - 1)) {
@@ -452,29 +649,54 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 					return
 				}
 				const late = world.now >= lease.until
-				const answered = keyed((state) =>
-					ledger.commit(
-						state,
+				const answered = ledger.commit(
+					world.state,
+					{
+						step: lease.step,
+						attempt: lease.attempt,
+						turn: lease.turn,
+						settled,
+						reads: lease.taken,
+						deployment: worker.deployment
+					},
+					world.now
+				)
+				const committed = record(answered, "worker")
+				if (answered.answer === "accepted") {
+					const again = ledger.commit(
+						answered.state,
 						{
 							step: lease.step,
-							claim: lease.claim,
-							token: lease.token,
+							attempt: lease.attempt,
+							turn: lease.turn,
 							settled,
+							reads: lease.taken,
 							deployment: worker.deployment
 						},
 						world.now
 					)
-				)
+					world.reruns.push({ entry: answered.entry, again: again.entry })
+					world.state = again.state
+				}
 				noteCommit(answered, settled, late)
 				if (answered.answer === "stale") {
-					stale(worker)
+					stale(worker, lease.step)
 					return
 				}
 				if (faulty && nature.bool("lost-answer")) {
 					note("rerun-commit")
 					return
 				}
-				replace({ ...worker, turns: worker.turns + 1, worked: true, phase: { _tag: "Turned" } })
+				replace({
+					...worker,
+					turns: worker.turns + 1,
+					phase: {
+						_tag: "Turned",
+						next: committed.next,
+						rings: committed.rings,
+						position: committed.position
+					}
+				})
 				return
 			}
 			case "Turned":
@@ -482,7 +704,7 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 					exit(worker)
 					return
 				}
-				turned(worker, faulty)
+				turned(worker, worker.phase, faulty)
 		}
 	}
 
@@ -504,55 +726,65 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 	}
 
 	/**
-	 * The relay's read, a served live read the leader streams in commit order: per lane, the steps that were due the
-	 * moment a commit made them so (spawned, or retried at once), up to its free slots. A step that falls due by time
-	 * passing, a deferred retry or a lease that ran out, is the census's to find.
+	 * The relay: the leader streams the log in commit order from its position, ringing every step each entry made
+	 * eligible, pinned to its own deployment, keyed by step and attempt, a timer delayed to its instant; then it saves
+	 * its position, unless it lags, so a hand-over replays from the last position saved: at least once.
 	 */
 	const relay = (faulty: boolean) => {
-		Arr.forEach(program.lanes, (lane) => {
-			const ready = Arr.take(
-				Arr.filter(
-					claimable(world.state, lane.name, world.now),
-					(row) => row.phase._tag === "Due" && row.phase.at <= row.phase.since
-				),
-				freeSlots(world.state, lane, world.now)
-			)
-			Arr.forEach(ready, (row) => {
-				const key = `wake:${row.text}:${row.claims}`
-				if (!world.relay.sent.has(key)) {
-					world.relay.sent.add(key)
-					ring(lane.name, world.relay.deployment, key, faulty)
-				}
+		for (let at = world.relay.position; at < world.log.length; at += 1) {
+			Arr.forEach(Arr.getUnsafe(world.log, at), (target) => {
+				note(target.at > world.now ? "timer" : "relayed")
+				ring(target, { _tag: "Relay", position: at }, world.relay.deployment, faulty)
 			})
-		})
+		}
+		world.relay.position = world.log.length
+		if (!(faulty && nature.bool("relay-lag"))) {
+			world.relay.durable = world.relay.position
+		}
 	}
 
+	/** The relay's leader hands over to the current deployment, which replays from the last position saved. */
 	const handover = () => {
 		note("handover")
-		world.relay = { deployment: world.state.deployment, sent: new Set() }
+		if (world.relay.durable < world.relay.position) {
+			note("replayed")
+		}
+		world.relay = {
+			deployment: world.state.deployment,
+			position: world.relay.durable,
+			durable: world.relay.durable
+		}
 	}
 
-	/** The census: timers fired, finished roots retired, and per lane as many doorbells as due steps and free slots. */
+	/**
+	 * The census: its read at the tick in the trace, every root the ledger finds finished retired, and every step
+	 * eligible at the tick rung, in order, keyed by the tick, pinned to the current deployment. Eligibility bounds the
+	 * rings by free seats.
+	 */
 	const census = (faulty: boolean) => {
-		const fired = keyed((state) => ledger.fire(state, world.now))
-		if (fired.answer === "accepted") {
-			note("timer")
-		}
-		Arr.forEach(finishedRoots(world.state), (root) => {
+		record(ledger.census(world.state, world.now), "other")
+		Arr.forEach(ledger.retirable(world.state), (root) => {
 			const retired = keyed((state) => ledger.retire(state, root, world.now))
 			if (retired.answer === "accepted") {
 				note("retired")
 			}
 		})
-		Arr.forEach(program.lanes, (lane) => {
-			const due = Arr.filter(claimable(world.state, lane.name, world.now), (row) =>
-				policy.counts(row, world.now)
-			).length
-			const rings = Math.min(due, freeSlots(world.state, lane, world.now))
-			for (let at = 0; at < rings; at += 1) {
-				ring(lane.name, world.state.deployment, `census:${lane.name}:${world.now}:${at}`, faulty)
-			}
-		})
+		Arr.forEach(
+			Arr.filter(ledger.standings.eligibleAt(world.state, world.now), (row) =>
+				policy.rings(row, world.now)
+			),
+			(row) =>
+				send(
+					{
+						step: row.id,
+						attempt: row.claims,
+						cause: { _tag: "Census", tick: world.now },
+						deployment: world.state.deployment,
+						deliverAt: world.now
+					},
+					faulty
+				)
+		)
 	}
 
 	const deliverable = () => Arr.filter(world.messages, (message) => message.deliverAt <= world.now)
@@ -570,16 +802,34 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 			deployment: message.deployment,
 			started: world.now,
 			turns: 0,
-			worked: false,
-			phase: { _tag: "Ready" }
+			phase: { _tag: "Ready", step: message.step }
 		})
 	}
 
-	const admit = (index: number) => {
-		const admission = Arr.getUnsafe(setup.admissions, index)
-		keyed((state) => ledger.admit(state, admission, world.now))
-		world.admitted.push(index)
+	const noteAdmission = (answered: Answered) =>
+		Option.match(seenOfAdmission(answered.answer), { onNone: () => undefined, onSome: note })
+
+	/** Every act whose instant has come, in order. */
+	const act = () => {
+		while (world.acted < setup.acts.length) {
+			const next = Arr.getUnsafe(setup.acts, world.acted)
+			if (next.at > world.now) {
+				return
+			}
+			world.acted += 1
+			switch (next._tag) {
+				case "Admit":
+					noteAdmission(keyed((state) => ledger.admit(state, next.admission, next.by, world.now)))
+					world.admitted.push({ admission: next.admission, by: next.by })
+					break
+				case "Write":
+					record(ledger.write(world.state, next.writes, next.admits, world.now), "other")
+					Arr.forEach(next.admits, (admission) => world.admitted.push({ admission, by: "app" }))
+			}
+		}
 	}
+
+	const targets = targetsOf(program)
 
 	const moves = (): Arr.NonEmptyReadonlyArray<Move> => [
 		"tick",
@@ -587,20 +837,19 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 		"relay",
 		...(Arr.isReadonlyArrayNonEmpty(deliverable()) ? (["deliver"] as const) : []),
 		...(Arr.isReadonlyArrayNonEmpty(world.workers) ? (["work", "work", "work"] as const) : []),
-		...(world.admitted.length < setup.admissions.length || nature.bool("readmit")
-			? (["admit"] as const)
+		...(Arr.isReadonlyArrayNonEmpty(world.admitted) && nature.bool("readmit")
+			? (["readmit"] as const)
 			: []),
 		...(nature.bool("handover") ? (["handover"] as const) : []),
 		...(nature.bool("deploy") ? (["deploy"] as const) : []),
-		...(nature.bool("stop") ? (["stop"] as const) : []),
-		...(nature.bool("operator-pause") ? (["pause", "resume"] as const) : []),
-		...(Arr.isReadonlyArrayNonEmpty(awaitsOf(world.state, true)) ? (["complete"] as const) : [])
+		...(nature.bool("operator-pause") ? (["pause", "resume"] as const) : [])
 	]
 
 	const chaos = (move: Move) => {
 		switch (move) {
 			case "tick":
 				world.now += 1
+				act()
 				return
 			case "census":
 				census(true)
@@ -625,9 +874,11 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 					step(Arr.getUnsafe(world.workers, nature.pick(world.workers.length)), true)
 				}
 				return
-			case "admit": {
-				const next = world.admitted.length < setup.admissions.length
-				admit(next ? world.admitted.length : nature.pick(setup.admissions.length))
+			case "readmit": {
+				if (Arr.isReadonlyArrayNonEmpty(world.admitted)) {
+					const again = Arr.getUnsafe(world.admitted, nature.pick(world.admitted.length))
+					noteAdmission(keyed((state) => ledger.admit(state, again.admission, again.by, world.now)))
+				}
 				return
 			}
 			case "handover":
@@ -635,43 +886,21 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 				return
 			case "deploy":
 				note("deployed")
-				record(ledger.deploy(world.state, world.now))
+				record(ledger.deploy(world.state, world.now), "other")
 				return
-			case "stop": {
-				const open = openScopes(world.state)
-				if (Arr.isReadonlyArrayNonEmpty(open)) {
-					const scope = Arr.getUnsafe(open, nature.pick(open.length))
-					const stopped = keyed((state) => ledger.stop(state, scope.id, world.now))
-					if (stopped.answer === "accepted") {
-						note("stopped")
-					}
-				}
-				return
-			}
 			case "pause": {
-				const lane = Arr.getUnsafe(program.lanes, nature.pick(program.lanes.length)).name
-				keyed((state) => ledger.pause(state, lane, world.now))
+				const target = Arr.getUnsafe(targets, nature.pick(targets.length))
+				keyed((state) => ledger.pause(state, target, world.now))
 				return
 			}
 			case "resume": {
-				const lane = Arr.getUnsafe(program.lanes, nature.pick(program.lanes.length)).name
-				keyed((state) => ledger.resume(state, lane, world.now))
-				return
-			}
-			case "complete": {
-				const waiting = awaitsOf(world.state, nature.bool("double-complete"))
-				if (Arr.isReadonlyArrayNonEmpty(waiting)) {
-					const row = Arr.getUnsafe(waiting, nature.pick(waiting.length))
-					const value = nature.upTo(1)
-					const completed = keyed((state) => ledger.complete(state, row.id, value, world.now))
-					if (completed.answer === "accepted") {
-						note("completed")
-					}
-				}
+				const target = Arr.getUnsafe(targets, nature.pick(targets.length))
+				keyed((state) => ledger.resume(state, target, world.now))
 			}
 		}
 	}
 
+	act()
 	for (let event = 0; event < platform.events; event += 1) {
 		const options = moves()
 		chaos(Arr.getUnsafe(options, nature.pick(options.length)))
@@ -685,7 +914,8 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 		deliverable,
 		step,
 		handover,
-		admit
+		act,
+		targets
 	})
 }
 
@@ -698,12 +928,13 @@ type Hands = Readonly<{
 	deliverable: () => ReadonlyArray<Message>
 	step: (worker: Worker, faulty: boolean) => void
 	handover: () => void
-	admit: (index: number) => void
+	act: () => void
+	targets: ReadonlyArray<Target>
 }>
 
 /**
  * The patience the fair phase grants a pending step before its next move. A step's next move waits at most for its
- * holder's lease to run out, its retry to fall due, its timer to fire or its lane's window to open, and then for the
+ * holder's lease to run out, its retry or its timer to fall due, or the windows over it to open, and then for the
  * census's next tick, which is at most a period away and rings it, so it is delivered and claimed that tick. The
  * patience is the sum of the longest of each: every step has a move within it, under fair scheduling.
  */
@@ -716,36 +947,43 @@ export const patienceOf = (
 	const rows = HashMap.toValues(state.steps)
 	const longest = (values: ReadonlyArray<number>) => Arr.reduce(values, 0, Math.max)
 	return (
+		longest(Arr.map(rows, (row) => row.runs.lease + row.runs.ladder.last)) +
 		longest(
 			Arr.flatMap(rows, (row) =>
-				row._tag === "Body" ? [row.runs.lease + row.runs.ladder.last] : []
-			)
-		) +
-		longest(
-			Arr.flatMap(rows, (row) =>
-				row._tag === "Await" && row.awaiting._tag === "Timer" ? [row.awaiting.fires - now] : []
+				Option.isNone(endingOf(row))
+					? Option.toArray(Option.map(dueAtOf(row), (due) => due - now))
+					: []
 			)
 		) +
 		platform.census +
-		longest(Arr.map(program.lanes, (lane) => closedSpanOf(lane.window)))
+		longest(Arr.map(windowsOf(program), closedSpanOf)) +
+		1
 	)
 }
 
+/** The most attempts any step of the ledger's ladders allows, a never-ending ladder counting as one. */
+const attemptsOf = (state: State): number =>
+	Arr.reduce(HashMap.toValues(state.steps), 1, (most, row) =>
+		Math.max(most, row.runs.ladder._tag === "Attempts" ? row.runs.ladder.attempts : 1)
+	)
+
+/** Whether a step has spent its ladder and still pends: a ladder that never ends what it should. */
+const restless = (row: StepRow): boolean =>
+	row.runs.ladder._tag === "Attempts" &&
+	row.attempts >= row.runs.ladder.attempts &&
+	Option.isNone(endingOf(row))
+
 /**
- * The fair phase: every remaining admission made, every lane resumed, the relay handed to the current deployment; then
- * per tick every await completed, the relay's read served, the census on its period, every deliverable message
- * delivered and every worker run to the end of its turns. It ends quiescent, stalled, undrained or spent: its budget is
- * the patience for every move its steps may make, each step's moves bounded by its ceilings (a claim and an end for
- * each attempt, wait and reclaim, and a few more), so a step that moves without end spends it.
+ * The fair phase: everything paused resumed and the relay handed to the current deployment; then per tick every act
+ * due, the relay's log served, the census on its period, every deliverable message delivered and every worker run to
+ * the end of its turns. It ends quiescent, stalled, undrained or spent: its budget is the patience for every move its
+ * steps may make, each step's moves bounded by its ladder, past the horizon of what the world does.
  */
 const fair = (setup: Setup, world: World, hands: Hands): Run => {
 	const { ledger, platform, program } = setup
 	const fairFrom = world.now
-	for (let index = world.admitted.length; index < setup.admissions.length; index += 1) {
-		hands.admit(index)
-	}
-	Arr.forEach(program.lanes, (lane) =>
-		hands.keyed((state) => ledger.resume(state, lane.name, world.now))
+	Arr.forEach(hands.targets, (target) =>
+		hands.keyed((state) => ledger.resume(state, target, world.now))
 	)
 	hands.handover()
 	let lastMove = world.now
@@ -765,55 +1003,8 @@ const fair = (setup: Setup, world: World, hands: Hands): Run => {
 	 * patience. Every one of them then exits, and sends nothing.
 	 */
 	const drainBound = (patience: number) => platform.lifetime + platform.stall + patience
-	const end = (): FairEnd => {
-		for (;;) {
-			const pending = pendingOf(world.state)
-			const quiet =
-				!Arr.isReadonlyArrayNonEmpty(pending) &&
-				HashMap.isEmpty(world.state.roots) &&
-				!Arr.isReadonlyArrayNonEmpty(world.messages) &&
-				!Arr.isReadonlyArrayNonEmpty(world.workers)
-			if (quiet) {
-				return { _tag: "Quiescent", at: world.now }
-			}
-			const patience = patienceOf(world.state, program, platform, world.now)
-			if (Arr.isReadonlyArrayNonEmpty(pending) && world.now - lastMove > patience) {
-				return { _tag: "Stalled", at: world.now, since: lastMove, patience, pending }
-			}
-			const left = deploymentsLeft()
-			if (Arr.isReadonlyArrayNonEmpty(left) && world.now - fairFrom > drainBound(patience)) {
-				return { _tag: "Undrained", at: world.now, deployments: left }
-			}
-			const bodies = Arr.flatMap(HashMap.toValues(world.state.steps), (row) =>
-				row._tag === "Body" ? [row] : []
-			)
-			const restless = Arr.findFirst(bodies, (row) => row.claims > claimsBoundOf(row.runs.ceilings))
-			if (Option.isSome(restless)) {
-				return { _tag: "Spent", at: world.now, pending: [restless.value.text] }
-			}
-			const claims = Arr.reduce(bodies, world.claims, (most, row) =>
-				Math.max(most, claimsBoundOf(row.runs.ceilings))
-			)
-			if (world.now - fairFrom > patience * world.spawned * 2 * claims + drainBound(patience)) {
-				return { _tag: "Spent", at: world.now, pending }
-			}
-			tick()
-			const facts = Arr.reduce(
-				Arr.drop(world.trace, moves),
-				0,
-				(sum, entry) => sum + entry.facts.length
-			)
-			moves = world.trace.length
-			if (facts > 0) {
-				lastMove = world.now
-			}
-			world.now += 1
-		}
-	}
 	const tick = () => {
-		Arr.forEach(awaitsOf(world.state, false), (row) =>
-			hands.keyed((state) => ledger.complete(state, row.id, 0, world.now))
-		)
+		hands.act()
 		hands.relay(false)
 		if (world.now % platform.census === 0) {
 			hands.census(false)
@@ -831,14 +1022,110 @@ const fair = (setup: Setup, world: World, hands: Hands): Run => {
 			busy = signatureOf(world) !== before
 		}
 	}
+	const end = (): FairEnd => {
+		for (;;) {
+			const pending = pendingOf(world.state)
+			const quiet =
+				!Arr.isReadonlyArrayNonEmpty(pending) &&
+				HashMap.isEmpty(world.state.roots) &&
+				world.acted >= setup.acts.length &&
+				!Arr.isReadonlyArrayNonEmpty(world.messages) &&
+				!Arr.isReadonlyArrayNonEmpty(world.workers)
+			if (quiet) {
+				return { _tag: "Quiescent", at: world.now }
+			}
+			const patience = patienceOf(world.state, program, platform, world.now)
+			if (Arr.isReadonlyArrayNonEmpty(pending) && world.now - lastMove > patience) {
+				return { _tag: "Stalled", at: world.now, since: lastMove, patience, pending }
+			}
+			const left = deploymentsLeft()
+			if (Arr.isReadonlyArrayNonEmpty(left) && world.now - fairFrom > drainBound(patience)) {
+				return { _tag: "Undrained", at: world.now, deployments: left }
+			}
+			const spent = Arr.findFirst(HashMap.toValues(world.state.steps), restless)
+			if (Option.isSome(spent)) {
+				return { _tag: "Spent", at: world.now, pending: [spent.value.text] }
+			}
+			const budget =
+				patience * (world.spawned + 2) * (attemptsOf(world.state) + 2) +
+				drainBound(patience) +
+				Math.max(0, setup.horizon - fairFrom)
+			if (world.now - fairFrom > budget) {
+				return { _tag: "Spent", at: world.now, pending }
+			}
+			tick()
+			const facts = Arr.reduce(
+				Arr.drop(world.trace, moves),
+				0,
+				(sum, entry) => sum + entry.facts.length
+			)
+			moves = world.trace.length
+			if (facts > 0) {
+				lastMove = world.now
+			}
+			world.now += 1
+		}
+	}
 	const ended = end()
 	return {
-		trace: world.trace,
+		trace: { version: TRACE_VERSION, entries: world.trace },
 		reruns: world.reruns,
+		sends: world.sends,
 		fairFrom,
 		end: ended,
 		state: world.state,
 		seen: world.seen
+	}
+}
+
+/** What a run notices of a fact a commit landed. */
+const seenOfFact = (fact: Fact): Option.Option<Seen> => {
+	switch (fact._tag) {
+		case "Retried":
+			return Option.some(fact.counts === "wait" ? "waited" : "retried")
+		case "Failed":
+			return Option.some("failed")
+		case "Finished":
+			return Option.some(fact.ending === "Held" ? "held" : "finished")
+		case "Admitted":
+		case "Opened":
+		case "Spawned":
+		case "Claimed":
+		case "Read":
+		case "Seated":
+		case "Unseated":
+		case "Done":
+		case "Wrote":
+		case "Paused":
+		case "Resumed":
+		case "Deployed":
+		case "Retired":
+			return Option.none()
+	}
+}
+
+/** What a run notices of an admission's answer. */
+const seenOfAdmission = (answer: Answer): Option.Option<Seen> => {
+	switch (answer) {
+		case "held":
+			return Option.some("held")
+		case "blocked":
+			return Option.some("blocked")
+		case "retired":
+			return Option.some("readmitted-retired")
+		case "accepted":
+		case "unchanged":
+		case "lost":
+		case "gone":
+		case "stale":
+		case "early":
+		case "closed":
+		case "paused":
+		case "full":
+		case "behind":
+		case "exhausted":
+		case "live":
+			return Option.none()
 	}
 }
 
@@ -848,58 +1135,3 @@ const signatureOf = (world: World): string =>
 		Arr.map(world.workers, (worker) => `${worker.id}:${worker.phase._tag}`),
 		","
 	)}`
-
-/** What a run notices of a fact a commit landed. */
-const seenOfFact = (fact: Entry["facts"][number]): Option.Option<Seen> => {
-	switch (fact._tag) {
-		case "Retried":
-			return Option.some("retried")
-		case "Failed":
-			return Option.some("failed")
-		case "Fed":
-			return Option.some("joined")
-		case "Finished":
-			return Option.some("finished")
-		case "Admitted":
-		case "Opened":
-		case "Spawned":
-		case "Claimed":
-		case "Done":
-		case "Wrote":
-		case "Completed":
-		case "Stopped":
-		case "Paused":
-		case "Resumed":
-		case "Deployed":
-		case "Retired":
-			return Option.none()
-	}
-}
-
-/**
- * The most claims a step can take before its ceilings end it: each claim but the last ends in a retry, which spends an
- * attempt or a wait (a wait past its ceiling spends an attempt), or in a lease running out, which the next claim
- * counts as a reclaim, and the step fails at its attempts' or its reclaims' ceiling.
- */
-export const claimsBoundOf = (ceilings: Ceilings): number =>
-	ceilings.attempts + ceilings.waits + ceilings.reclaims - 1
-
-/** The roots whose scope has finished: what the census retires. */
-const finishedRoots = (state: State): ReadonlyArray<RootKey> =>
-	Arr.flatMap(HashMap.toValues(state.roots), (root) =>
-		Option.exists(HashMap.get(state.scopes, root.scope), (scope) => Option.isSome(scope.ending))
-			? [root.key]
-			: []
-	)
-
-/** The scopes not yet finished: what an operator may stop. */
-const openScopes = (state: State): ReadonlyArray<ScopeRow> =>
-	Arr.flatMap(HashMap.toValues(state.scopes), (row) => (Option.isNone(row.ending) ? [row] : []))
-
-/** The external awaits an outside actor may complete: those pending, and with `again`, those completed too. */
-const awaitsOf = (state: State, again: boolean): ReadonlyArray<AwaitRow> =>
-	Arr.flatMap(HashMap.toValues(state.steps), (row) =>
-		row._tag === "Await" && row.awaiting._tag === "External" && (again || Option.isNone(row.ending))
-			? [row]
-			: []
-	)

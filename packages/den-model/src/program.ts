@@ -1,98 +1,106 @@
-import { Array as Arr, Option, Record } from "effect"
+import { Array as Arr, Option } from "effect"
 import type { Datum } from "#datum.ts"
 
 /**
- * When a lane admits claims: always, or inside a span of every period, `[opens, closes)` ticks past each multiple of
- * `period` (edullm's 07:00–12:59Z window, at the model's scale). A claim at a closed instant is refused; due work waits
- * for the window to open.
+ * A resource: a named bottleneck whose capacity is its seats, keyed `0 … seats − 1` (W1's replica holds 8). A step
+ * holds one seat of each resource it declares while it runs; no two holders share a seat key, so the bound is exact.
+ * A scope's exclusivity is a seat too, keyed by its kind and the value its input names, held for the scope's life.
  */
-export type Window =
-	| Readonly<{ _tag: "Always" }>
-	| Readonly<{ _tag: "Periodic"; period: number; opens: number; closes: number }>
+export type Resource = Readonly<{ name: string; seats: number }>
 
 /**
- * A lane: the most of its steps that hold a live claim at once across every graph (`width`), and its claim window. A
- * lane's pause is not declared: pausing and resuming are operator verbs, recorded as facts.
+ * A root kind's window: the steps of its roots may run only inside a span of every period, `[opens, closes)` ticks past
+ * each multiple of `period` (edullm's 07:00–12:59Z, at the model's scale). A window must hold a census tick, so its
+ * open span is never shorter than the census's period: only the census rings what a window's opening made eligible.
+ * Windows and exclusivity belong to root kinds only, as every one of edullm's is per run, so no step is under two.
  */
-export type Lane = Readonly<{ name: string; width: number; window: Window }>
+export type Window = Readonly<{ period: number; opens: number; closes: number }>
 
-/** Whether a window admits a claim at an instant. */
+/** Whether a window is open at an instant. */
 export const isOpenAt = (window: Window, at: number): boolean => {
-	switch (window._tag) {
-		case "Always":
-			return true
-		case "Periodic": {
-			const phase = at % window.period
-			return phase >= window.opens && phase < window.closes
-		}
-	}
+	const phase = at % window.period
+	return phase >= window.opens && phase < window.closes
 }
 
-/**
- * The most ticks a window keeps a due step waiting: none for one that is always open, and the closed span of a period
- * for a periodic one.
- */
-export const closedSpanOf = (window: Window): number => {
-	switch (window._tag) {
-		case "Always":
-			return 0
-		case "Periodic":
-			return window.period - (window.closes - window.opens)
-	}
-}
+/** The most ticks a window keeps a due step waiting: its closed span. */
+export const closedSpanOf = (window: Window): number =>
+	window.period - (window.closes - window.opens)
 
 /**
- * What turns endless retrying into `failed`: the counted attempts a step may spend, the waits it may spend before each
- * further wait counts as an attempt, and the times its claim may be reclaimed after its holder vanished.
+ * A step's retry ladder, written out either way: it ends after `attempts` counted attempts (W1 to W4), or never (W6's
+ * reports). A rung waits `first` ticks, doubling, never more than `last`, which is also the furthest a body may set
+ * its own retry.
  */
-export type Ceilings = Readonly<{ attempts: number; waits: number; reclaims: number }>
+export type Ladder =
+	| Readonly<{ _tag: "Attempts"; attempts: number; first: number; last: number }>
+	| Readonly<{ _tag: "Never"; first: number; last: number }>
 
-/**
- * The retry ladder a step climbs when its call fails outside its body (a transient or unavailable answer, a deadline):
- * `first` ticks, doubling per rung, never more than `last`, which is also the furthest a body may set its own retry.
- */
-export type Ladder = Readonly<{ first: number; last: number }>
-
-/** The delay of the ladder's rung after `count` earlier rungs. */
+/** The delay of a ladder's rung after `count` earlier rungs. */
 export const rungOf = (ladder: Ladder, count: number): number =>
 	Math.min(ladder.first * 2 ** count, ladder.last)
 
 /**
- * How a step runs: its lane, the ticks its claim's lease lasts (the holder's deadline is one tick before it), its
- * ceilings and its retry ladder. Every step kind and every scope's finish states one.
+ * How a step runs: the ticks its claim's lease lasts (the holder's deadline is one tick before its end), the resources
+ * it holds a seat of while it runs, and its retry ladder. Every step kind and every scope's finish states one.
  */
-export type Runs = Readonly<{ lane: Lane; lease: number; ceilings: Ceilings; ladder: Ladder }>
+export type Runs = Readonly<{ lease: number; holds: ReadonlyArray<Resource>; ladder: Ladder }>
 
-/** One write a step's body returns for the app's own relations; it lands with the step's result or not at all. */
+/** One write into the app's own relations, by a step's result or by the app's own transaction. */
 export type Write = Readonly<{ relation: string; key: string; value: Datum }>
 
+/** One row a read returns: its key and its value. */
+export type Row = Readonly<{ key: string; value: Datum }>
+
 /**
- * What a body sees of its claim: the instant the ledger's clock gave it, and the step's counters so far. A body is a
- * pure function of its input and this, so a re-run of the same claim computes the same outcome.
+ * A declared read, as data: the rows of an app relation (all of them, or the one row of a key), or the steps pending
+ * under roots of some kinds, keyed by their identity's text and valued by their kind.
  */
-export type Claimed = Readonly<{ at: number; attempts: number; waits: number; reclaims: number }>
+export type Query =
+	| Readonly<{ _tag: "Rows"; relation: string; key: Option.Option<string> }>
+	| Readonly<{ _tag: "Pending"; roots: ReadonlyArray<string> }>
+
+/**
+ * A read a step kind declares, by name: taken by the claim before the body runs and recorded as part of the step's
+ * input (W1's fingerprint, W5's presence, W7's intents). A read that depends on what a body computed is its own step.
+ */
+export type Read = Readonly<{ name: string; query: Query }>
+
+/**
+ * What a body sees of its claim: the instant the ledger's clock gave it, the claim's number, the attempts and waits its
+ * step spent so far, and the rows each of its declared reads returned. A body is a pure function of its input and
+ * this, so a re-run of one claim computes the same outcome.
+ */
+export type Claimed = Readonly<{
+	at: number
+	attempt: number
+	attempts: number
+	waits: number
+	read: (name: string) => ReadonlyArray<Row>
+}>
+
+/** Whether a retry spends an attempt on the step's ladder, or is a wait, which spends nothing. */
+export type Counts = "attempt" | "wait"
 
 /**
  * A body's outcome: an output with the app writes that land with it; a typed failure, which ends the step `failed`; or
- * a retry at an instant no later than `at + ladder.last`, counted as an attempt or as a wait.
+ * a retry at an instant no later than `at + ladder.last`.
  */
 export type Outcome<O, E> =
 	| Readonly<{ _tag: "Output"; output: O; writes: ReadonlyArray<Write> }>
 	| Readonly<{ _tag: "Failure"; error: E }>
 	| Readonly<{ _tag: "Retry"; at: number; counts: Counts }>
 
-/** Whether a retry spends an attempt or a wait. */
-export type Counts = "attempt" | "wait"
-
-/** How a scope's child ended, as its scope's finish reads it. A child scope ended as its finish did. */
+/** How a scope's child ended, as its scope's finish reads it: done with its output, or failed. */
 export type ChildEnding =
 	| Readonly<{ _tag: "Done"; kind: string; output: Datum }>
 	| Readonly<{ _tag: "Failed"; kind: string }>
-	| Readonly<{ _tag: "Stopped"; kind: string }>
+
+/** When a spawned step is due: at once, or at an instant its edge names (W5's timer, W6's delay). */
+export type Due = Readonly<{ _tag: "Now" }> | Readonly<{ _tag: "At"; at: number }>
 
 /**
  * A step's outcome once it leaves its typed code: the output and error as data, and, for an output, every child its
- * declared edges take from it, each with the edge's name and its ordinal there.
+ * declared edges take from it, each with the edge's name and its ordinal there. A failed step spawns nothing.
  */
 export type Settled =
 	| Readonly<{
@@ -104,30 +112,19 @@ export type Settled =
 	| Readonly<{ _tag: "Failure"; error: Datum }>
 	| Readonly<{ _tag: "Retry"; at: number; counts: Counts }>
 
-/** What an output starts: a child under an edge and an ordinal, or one role's part of a feed's join. */
-export type Next =
-	| Readonly<{ _tag: "Spawn"; edge: string; ordinal: number; child: Child }>
-	| Readonly<{ _tag: "Part"; feed: Feed; role: string; key: string; value: Datum }>
+/** A child an output starts under one of its step's declared edges, at its ordinal there. */
+export type Next = Readonly<{ edge: string; ordinal: number; child: Child }>
 
-/** How an await is completed: from outside (a webhook, an operator), or by an instant passing `after` ticks from its
- * spawn. */
-export type Completion = Readonly<{ _tag: "External" }> | Readonly<{ _tag: "Timer"; after: number }>
-
-/**
- * A step's work, its types erased into the closure that holds its typed input: a body that runs on a lane under a
- * claim, or an await, which has no body and is completed once, from outside or by its timer.
- */
-export type Work =
-	| Readonly<{ _tag: "Body"; runs: Runs; run: (claimed: Claimed) => Settled }>
-	| Readonly<{
-			_tag: "Await"
-			completion: Completion
-			settle: (value: Datum) => ReadonlyArray<Next>
-	  }>
+/** A step's work, its types erased into the closure that holds its typed input: how it runs, its reads, its body. */
+export type StepWork = Readonly<{
+	runs: Runs
+	reads: ReadonlyArray<Read>
+	run: (claimed: Claimed) => Settled
+}>
 
 /**
- * A scope's work, its types erased: the children its start opens, and its finish, which runs on its lane once every
- * child ended, reads their endings, and starts the edges that follow it in the scope that owns this one.
+ * A scope's work, its types erased: the children its start opens, and its finish, which runs once every child ended,
+ * reads their endings, and starts the edges that follow it in the scope that owns this one.
  */
 export type ScopeWork = Readonly<{
 	children: ReadonlyArray<Child>
@@ -137,8 +134,14 @@ export type ScopeWork = Readonly<{
 	}>
 }>
 
-/** A step an edge or a start opens. */
-export type StepChild = Readonly<{ _tag: "StepChild"; kind: string; input: Datum; work: Work }>
+/** A step an edge or a start opens, due at once or at an instant. */
+export type StepChild = Readonly<{
+	_tag: "StepChild"
+	kind: string
+	input: Datum
+	due: Due
+	work: StepWork
+}>
 
 /** A scope an edge or a start opens, with the edges that follow its finish already in its work. */
 export type ScopeChild = Readonly<{
@@ -151,23 +154,19 @@ export type ScopeChild = Readonly<{
 /** A child an edge or a start opens: a step, or a scope. */
 export type Child = StepChild | ScopeChild
 
-/** A step kind: its name, how it runs, how its values show as data, its pure body and its declared edges. */
+/**
+ * A step kind: its name, how it runs, how its values show as data, the reads it declares for an input, its pure body
+ * and its declared edges.
+ */
 export type StepKind<I, O, E> = Readonly<{
 	name: string
 	runs: Runs
 	input: (input: I) => Datum
 	output: (output: O) => Datum
 	error: (error: E) => Datum
+	reads: (input: I) => ReadonlyArray<Read>
 	body: (input: I, claimed: Claimed) => Outcome<O, E>
 	edges: () => ReadonlyArray<Edge<I, O>>
-}>
-
-/** An await kind: a step with no body, completed from outside or by a timer, whose completion value is its output. */
-export type AwaitKind<I> = Readonly<{
-	name: string
-	input: (input: I) => Datum
-	completion: (input: I) => Completion
-	edges: () => ReadonlyArray<Edge<I, Datum>>
 }>
 
 /** A scope's finish: how it runs, how its values show, and its body over the scope's input and its children's endings. */
@@ -186,45 +185,34 @@ export type ScopeKind<I, O, E> = Readonly<{
 	finish: FinishKind<I, O, E>
 }>
 
-/** What starts a root: a schedule every `every` ticks (its key the period's index), an operator, or an API call. */
+/** What starts a root: a schedule every `every` ticks, an operator, or the app's own write inside its transaction. */
 export type Trigger =
 	| Readonly<{ _tag: "Schedule"; every: number }>
 	| Readonly<{ _tag: "Operator" }>
-	| Readonly<{ _tag: "Api" }>
+	| Readonly<{ _tag: "App" }>
 
-/** A root kind: a scope a trigger starts, the only way a graph begins. Its finish has no edges: nothing follows a root. */
+/**
+ * A root kind: a scope a trigger starts, the only way a graph begins, behind its precondition (a read that must be
+ * empty for it to be admitted, W4's quiescence) and its exclusivity (the key of the seat its run holds for its life,
+ * one live run per key: per relation, per collection, one Gold build); its window bounds when its steps may run.
+ * Nothing follows a root's finish.
+ */
 export type RootKind<I, O, E> = Readonly<{
 	name: string
 	trigger: Trigger
+	precondition: Option.Option<Query>
+	exclusive: Option.Option<(input: I) => string>
+	window: Option.Option<Window>
 	scope: ScopeKind<I, O, E>
 }>
 
 /**
- * A declared edge from a step of input `I` and output `O`: a spawn edge, which starts steps or child scopes of one
- * declared kind, one per input it returns, ordinal by position; or a contribution to a feed's join, which names the
- * join's key and this role's part, or none.
+ * A declared spawn edge from a step of input `I` and output `O`: a pure function to the children it starts, steps or
+ * scopes of one declared kind, ordinal by position. It runs only on an output: a step that fails spawns nothing.
  */
-export type Edge<I, O> =
-	| Readonly<{
-			_tag: "Spawn"
-			name: string
-			children: (input: I, output: O) => ReadonlyArray<Child>
-	  }>
-	| Readonly<{
-			_tag: "Contribute"
-			feed: Feed
-			role: string
-			part: (input: I, output: O) => Option.Option<Readonly<{ key: string; value: Datum }>>
-	  }>
-
-/**
- * A feed: a join of several parents, one per role, in one scope. Its step is started once every role's part arrived
- * under one join key, with the parts as its input; a parent that never contributes leaves no step.
- */
-export type Feed = Readonly<{
+export type Edge<I, O> = Readonly<{
 	name: string
-	roles: Arr.NonEmptyReadonlyArray<string>
-	join: (parts: ReadonlyMap<string, Datum>) => StepChild
+	children: (input: I, output: O) => ReadonlyArray<Child>
 }>
 
 /** An erased outcome of a typed one: its values shown as data and, for an output, the children its edges take. */
@@ -248,53 +236,40 @@ const settledOf = <O, E>(
 	}
 }
 
-/** What a step's declared edges take from its output: each spawn's children under their ordinals, each part. */
+/** What a step's declared edges take from its output: each edge's children under their ordinals. */
 export const nextOf = <I, O>(
 	edges: ReadonlyArray<Edge<I, O>>,
 	input: I,
 	output: O
 ): ReadonlyArray<Next> =>
-	Arr.flatMap(edges, (edge): ReadonlyArray<Next> => {
-		switch (edge._tag) {
-			case "Spawn":
-				return Arr.map(edge.children(input, output), (child, ordinal): Next => ({
-					_tag: "Spawn",
-					edge: edge.name,
-					ordinal,
-					child
-				}))
-			case "Contribute":
-				return Option.match(edge.part(input, output), {
-					onNone: () => [],
-					onSome: (part) => [{ _tag: "Part", feed: edge.feed, role: edge.role, ...part }]
-				})
-		}
-	})
+	Arr.flatMap(edges, (edge) =>
+		Arr.map(edge.children(input, output), (child, ordinal): Next => ({
+			edge: edge.name,
+			ordinal,
+			child
+		}))
+	)
 
-/** A step of a kind, with its input: the child an edge or a start opens. */
-export const stepOf = <I, O, E>(kind: StepKind<I, O, E>, input: I): StepChild => ({
+const childOf = <I, O, E>(kind: StepKind<I, O, E>, input: I, due: Due): StepChild => ({
 	_tag: "StepChild",
 	kind: kind.name,
 	input: kind.input(input),
+	due,
 	work: {
-		_tag: "Body",
 		runs: kind.runs,
+		reads: kind.reads(input),
 		run: (claimed) =>
 			settledOf(kind.body(input, claimed), kind, (output) => nextOf(kind.edges(), input, output))
 	}
 })
 
-/** An await of a kind, with its input. */
-export const awaitOf = <I>(kind: AwaitKind<I>, input: I): StepChild => ({
-	_tag: "StepChild",
-	kind: kind.name,
-	input: kind.input(input),
-	work: {
-		_tag: "Await",
-		completion: kind.completion(input),
-		settle: (value) => nextOf(kind.edges(), input, value)
-	}
-})
+/** A step of a kind, with its input, due at once: the child an edge or a start opens. */
+export const stepOf = <I, O, E>(kind: StepKind<I, O, E>, input: I): StepChild =>
+	childOf(kind, input, { _tag: "Now" })
+
+/** A step of a kind, with its input, due at an instant: a timer. */
+export const stepAt = <I, O, E>(kind: StepKind<I, O, E>, input: I, at: number): StepChild =>
+	childOf(kind, input, { _tag: "At", at })
 
 /** A scope's work for an input, with the edges that follow its finish in the scope that owns it. */
 const scopeWorkOf = <I, O, E>(
@@ -324,26 +299,25 @@ export const scopeOf = <I, O, E>(
 	scope: scopeWorkOf(kind, input, then)
 })
 
-/** A spawn edge to a step kind: one step per input `inputs` returns. */
+/** A spawn edge to a step kind: one step per input `inputs` returns, each due at once. */
 export const spawn = <I, O, J, P, Q>(
 	name: string,
 	target: StepKind<J, P, Q>,
 	inputs: (input: I, output: O) => ReadonlyArray<J>
 ): Edge<I, O> => ({
-	_tag: "Spawn",
 	name,
 	children: (input, output) => Arr.map(inputs(input, output), (child) => stepOf(target, child))
 })
 
-/** A spawn edge to an await kind: one await per input `inputs` returns. */
-export const spawnAwait = <I, O, J>(
+/** A spawn edge to a step kind whose children are timers: one step per input, each due at the instant it names. */
+export const spawnAt = <I, O, J, P, Q>(
 	name: string,
-	target: AwaitKind<J>,
-	inputs: (input: I, output: O) => ReadonlyArray<J>
+	target: StepKind<J, P, Q>,
+	timed: (input: I, output: O) => ReadonlyArray<Readonly<{ input: J; at: number }>>
 ): Edge<I, O> => ({
-	_tag: "Spawn",
 	name,
-	children: (input, output) => Arr.map(inputs(input, output), (child) => awaitOf(target, child))
+	children: (input, output) =>
+		Arr.map(timed(input, output), (child) => stepAt(target, child.input, child.at))
 })
 
 /** A spawn edge to a scope kind: one child scope per input, each followed by `then` in the scope that opens it. */
@@ -353,34 +327,24 @@ export const open = <I, O, J, P, Q>(
 	inputs: (input: I, output: O) => ReadonlyArray<J>,
 	then: () => ReadonlyArray<Edge<J, P>>
 ): Edge<I, O> => ({
-	_tag: "Spawn",
 	name,
 	children: (input, output) =>
 		Arr.map(inputs(input, output), (child) => scopeOf(target, child, then))
 })
 
 /**
- * A feed joining one part per role into a step of `target`, whose input is the parts by role: a feed's parts are what
- * its parents contribute as data, so parents of different kinds join without sharing a type.
+ * A root's admission, its types erased: the root's key (its kind and idempotency key), its input as data, its
+ * precondition, its exclusivity seat's key, its window, and its scope's work.
  */
-export const feed = <P, Q>(
-	name: string,
-	roles: Arr.NonEmptyReadonlyArray<string>,
-	target: StepKind<Readonly<{ [role: string]: Datum }>, P, Q>
-): Feed => ({ name, roles, join: (parts) => stepOf(target, Record.fromEntries(parts)) })
-
-/** A parent's contribution to a feed under one of its roles. */
-export const contribute = <I, O>(
-	target: Feed,
-	role: string,
-	part: (input: I, output: O) => Option.Option<Readonly<{ key: string; value: Datum }>>
-): Edge<I, O> => ({ _tag: "Contribute", feed: target, role, part })
-
-/**
- * A root's admission, its types erased: the root's key (its trigger's name and the idempotency key), its input as data,
- * and its scope's work.
- */
-export type Admission = Readonly<{ trigger: string; key: string; input: Datum; scope: ScopeWork }>
+export type Admission = Readonly<{
+	kind: string
+	key: string
+	input: Datum
+	precondition: Option.Option<Query>
+	exclusive: Option.Option<string>
+	window: Option.Option<Window>
+	scope: ScopeWork
+}>
 
 /** The admission of a root kind under an idempotency key, with its input. Nothing follows a root's finish. */
 export const admissionOf = <I, O, E>(
@@ -388,9 +352,12 @@ export const admissionOf = <I, O, E>(
 	key: string,
 	input: I
 ): Admission => ({
-	trigger: kind.name,
+	kind: kind.name,
 	key,
 	input: kind.scope.input(input),
+	precondition: kind.precondition,
+	exclusive: Option.map(kind.exclusive, (exclusive) => exclusive(input)),
+	window: kind.window,
 	scope: scopeWorkOf(kind.scope, input, () => [])
 })
 
@@ -401,5 +368,40 @@ export const admissionOf = <I, O, E>(
 export const ordinals = (count: number): ReadonlyArray<number> =>
 	count > 0 ? Arr.range(0, count - 1) : []
 
-/** A den program as the simulator runs it: its lanes, which the census reads, and its name. */
-export type Program = Readonly<{ name: string; lanes: Arr.NonEmptyReadonlyArray<Lane> }>
+/** A root kind as its program declares it to the laws: its name, its precondition and its window. */
+export type Rooted = Readonly<{
+	kind: string
+	precondition: Option.Option<Query>
+	window: Option.Option<Window>
+}>
+
+/**
+ * A den program as the simulator and the laws read it: its resources and its root kinds. Steps and scopes are not
+ * listed: their kinds arrive with each admission's work.
+ */
+export type Program = Readonly<{
+	name: string
+	resources: ReadonlyArray<Resource>
+	roots: Arr.NonEmptyReadonlyArray<Rooted>
+}>
+
+/** A root kind's declaration for its program. */
+export const rootedOf = <I, O, E>(kind: RootKind<I, O, E>): Rooted => ({
+	kind: kind.name,
+	precondition: kind.precondition,
+	window: kind.window
+})
+
+/** The windows a program's root kinds carry. */
+export const windowsOf = (program: Program): ReadonlyArray<Window> =>
+	Arr.flatMap(program.roots, (root) => Option.toArray(root.window))
+
+/** Programs side by side, as one app runs them: their resources and roots together. */
+export const together = (name: string, programs: Arr.NonEmptyReadonlyArray<Program>): Program => ({
+	name,
+	resources: Arr.dedupeWith(
+		Arr.flatMap(programs, (program) => program.resources),
+		(a, b) => a.name === b.name
+	),
+	roots: Arr.flatMap(programs, (program) => program.roots)
+})

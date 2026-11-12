@@ -1,43 +1,34 @@
-import { caseHang } from "@bjornpagen/den/limits"
-import type { ScopeKey, StepKey } from "@bjornpagen/den/runtime/identity"
-import type { Turn } from "@bjornpagen/den/runtime/ledger"
-import { claimed, concluded } from "@bjornpagen/den/runtime/turn"
-import { Db } from "@bjornpagen/grizzle/runtime"
+import { caseHang, longestLeaseMillis } from "@bjornpagen/den/limits"
+import { now } from "@bjornpagen/den/runtime/clock"
+import { holderOf, instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
+import { lostRace, serve } from "@bjornpagen/den/runtime/turn"
+import { FlowName } from "@bjornpagen/den/transport"
 import { exhaust } from "@den/testing/explore"
 import { requiredInSpace } from "@den/testing/features"
 import { int } from "@den/testing/gen"
 import { interleave, type Interleaving } from "@den/testing/interleave"
 import { searched } from "@den/testing/vitest"
-import { layer } from "@effect/vitest"
-import { assert } from "@effect/vitest"
+import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Option, Ref } from "effect"
-import { chainLedger } from "#integration/slice/generated/chain.binding.ts"
-import { sliceLayer, WorkerServed } from "#integration/support/slice.ts"
+import type { Digest } from "effect/crypto"
+import { openLedgers, sliceLayer } from "#integration/support/slice.ts"
 
 /**
- * A claim is a key race on (step, attempt), decided at READ COMMITTED by the claim's primary key alone. Two claimers of
- * one step at one attempt, each claiming and then finishing its turn, in every order of their moves: exactly one claim
- * is accepted, the other refused on the key, the holder's turn ends done, and the step's one result is held by that
- * attempt.
+ * A claim is a key race on `(step, attempt)`, decided at READ COMMITTED by the claim's primary key alone. Two claimers
+ * of one step's first attempt, each under its own holder, in every order of their moves, each move in flight beside
+ * the other's: exactly one claim is accepted and the other refused on the key, as a race lost.
  *
  * Oracle (postgresql): PostgreSQL's unique index, which grizzle's insert protocol arbitrates by ON CONFLICT DO SELECT,
- * judged over every interleaving the testing library's `every` strategy runs.
+ * over every interleaving the testing library's `every` strategy runs.
  */
 
 type Session = "first" | "second"
-type Move = "claim" | "finish"
-type Outcome = "claimed" | "refused" | "done" | "idle" | "other"
+type Outcome = "claimed" | "lost" | "other"
 
 type Feature = "one page" | "two pages"
 
-/** The interleavings of two sessions of two moves each, (2 + 2)! / (2! 2!): the search's every order, its runaway guard. */
+/** The interleavings of two sessions of one move each: issue and join orders, the search's runaway guard. */
 const orders = 6
-
-interface Race {
-	readonly step: StepKey
-	readonly scope: ScopeKey
-	readonly held: Option.Option<{ readonly session: Session; readonly turn: Turn }>
-}
 
 layer(sliceLayer)("the claim race", (it) => {
 	it.effect("admits one claimer of an attempt in every interleaving", (ctx) =>
@@ -54,76 +45,57 @@ layer(sliceLayer)("the claim race", (it) => {
 					box: "two claimers of one chain's first page, a run of one or two pages",
 					oracle: {
 						kind: "postgresql",
-						name: "the claim's primary key, over every interleaving of two claimers' moves"
+						name: "the claim's primary key, over every interleaving of two claimers"
 					}
 				},
 				(pages, c) =>
 					Effect.gen(function* () {
 						c.note(pages === 1 ? "one page" : "two pages")
-						const worker = yield* Db.open(WorkerServed.roles.chain_worker, {})
-						const chain = chainLedger(worker.workload)
-						const runner = chain.ledger.runners.get("Page")
-						if (runner === undefined) {
-							return yield* Effect.die("the chain flow runs Page")
-						}
+						const { chain, ledgers } = yield* openLedgers
 						const runs = yield* Ref.make(0)
-						const race = yield* Ref.make(Option.none<Race>())
-						const current = Effect.flatMap(Ref.get(race), (r) =>
-							Option.match(r, {
-								onNone: () => Effect.die("a run resets before its first move"),
-								onSome: Effect.succeed
-							})
-						)
+						const current = yield* Ref.make(Option.none<StepKey>())
 						const reset = Effect.gen(function* () {
 							const n = yield* Ref.getAndUpdate(runs, (k) => k + 1)
-							const started = yield* chain.start.ChainRun(`claim-${pages}-${n}`, {
+							const at = yield* now
+							const requested = yield* chain.request.ChainRun(`claim-${pages}-${n}`, at, {
 								feed: "news",
 								pages: BigInt(pages)
 							})
-							const first = Arr.head(started.spawned.steps)
-							if (Option.isNone(first)) {
-								return yield* Effect.die("a chain starts its first page")
-							}
-							const located = yield* chain.ledger.stepOf(first.value.step)
-							if (Option.isNone(located)) {
-								return yield* Effect.die("a started page is a step")
-							}
+							const served = yield* serve(
+								ledgers,
+								{ _tag: "Admit", flow: FlowName.make("Chain"), scope: requested.scope },
+								instantOf(Number(at) + longestLeaseMillis.value)
+							)
+							const first =
+								served.ending.kind === "admitted"
+									? Arr.head(served.ending.spawned.steps)
+									: Option.none()
 							yield* Ref.set(
-								race,
-								Option.some({
-									step: first.value.step,
-									scope: located.value.scope,
-									held: Option.none()
-								})
+								current,
+								Option.map(first, (s) => s.step)
 							)
 						}).pipe(Effect.orDie)
-						const claim = (session: Session) =>
+						const claim = (session: Session): Effect.Effect<Outcome, never, Digest.Digest> =>
 							Effect.gen(function* () {
-								const r = yield* current
-								const won = yield* Effect.result(claimed(chain.ledger, r.step, 1, r.scope))
-								if (won._tag === "Failure") {
-									const lost: Outcome = won.failure.kind === "refused" ? "refused" : "other"
-									return lost
-								}
-								const turn = won.success
-								yield* Ref.set(race, Option.some({ ...r, held: Option.some({ session, turn }) }))
-								const outcome: Outcome = "claimed"
-								return outcome
-							})
-						const finish = (session: Session) =>
-							Effect.gen(function* () {
-								const r = yield* current
-								if (Option.isNone(r.held) || r.held.value.session !== session) {
-									const idle: Outcome = "idle"
-									return idle
-								}
-								const turn = r.held.value.turn
-								const ran = yield* runner.run(turn)
-								const ending = yield* concluded(chain.ledger, turn, ran)
-								const outcome: Outcome = ending.kind === "done" ? "done" : "other"
-								return outcome
-							})
-						const judge = (run: Interleaving<Session, Move, Outcome, never, never, never>) =>
+								const held = yield* Ref.get(current)
+								const step = Option.getOrThrow(held)
+								const at = yield* now
+								const holder = yield* holderOf(step, 1, session === "first" ? 0 : 1)
+								const outcome = yield* Effect.result(
+									chain.ledger.claim({
+										step,
+										attempt: 1n,
+										holder,
+										until: instantOf(Number(at) + longestLeaseMillis.value)
+									})
+								)
+								return outcome._tag === "Success"
+									? "claimed"
+									: lostRace("Chain", outcome.failure)
+										? "lost"
+										: "other"
+							}).pipe(Effect.orDie)
+						const judge = (run: Interleaving<Session, "claim", Outcome, never, never, never>) =>
 							Effect.gen(function* () {
 								const outcomes = Arr.flatMap(run.order, (record) =>
 									Option.toArray(
@@ -134,28 +106,18 @@ layer(sliceLayer)("the claim race", (it) => {
 										)
 									)
 								)
-								const count = (o: Outcome) => Arr.filter(outcomes, (x) => x === o).length
 								assert.deepStrictEqual(
-									[
-										count("claimed"),
-										count("refused"),
-										count("done"),
-										count("idle"),
-										count("other")
-									],
-									[1, 1, 1, 1, 0]
+									Arr.sort(outcomes, (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)),
+									["claimed", "lost"]
 								)
-								const r = yield* current
-								const held = yield* chain.ledger.heldOf(r.step)
-								assert.deepStrictEqual(held, Option.some(1n))
+								const held = yield* Ref.get(current)
+								const claims = yield* chain.ledger.claimsOf(Option.getOrThrow(held))
+								assert.strictEqual(claims.length, 1)
 							}).pipe(Effect.orDie)
 						yield* interleave(
 							{
 								reset,
-								run: (session: Session, move: Move) =>
-									(move === "claim" ? claim(session) : finish(session)).pipe(
-										Effect.orElseSucceed((): Outcome => "other")
-									),
+								run: (session: Session) => claim(session),
 								waitOf: () => Effect.succeedNone,
 								quiesce: () => Effect.void,
 								outcome: (_move, ended) => ({
@@ -170,8 +132,8 @@ layer(sliceLayer)("the claim race", (it) => {
 							{
 								name: "claim race",
 								sessions: {
-									first: { moves: ["claim", "finish"], after: Option.none() },
-									second: { moves: ["claim", "finish"], after: Option.none() }
+									first: { moves: ["claim"], after: Option.none() },
+									second: { moves: ["claim"], after: Option.none() }
 								},
 								exclusive: [],
 								state: Option.none()

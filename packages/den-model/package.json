@@ -1,7 +1,7 @@
 {
 	"name": "@den/model",
 	"private": true,
-	"description": "den's reference model and deterministic simulator: a den program as data, the ledger as immutable facts with every transition a pure function, a simulator of workers, transport, clock, census and relay driven by choice streams, and den's laws as searches. It imports nothing of den, so the real engine is held to it by differential tests.",
+	"description": "den's reference model and deterministic simulator: a den program as data (steps with declared reads, seats and ladders; scopes with exclusivity, windows and preconditions; roots and spawn edges), the ledger as immutable facts with every transition a pure function, a simulator of workers, transport, clock, census and relay driven by choice streams, den's laws as searches, and edullm's eight workloads as programs. It imports nothing of den, so the real engine is held to it by differential tests.",
 	"type": "module",
 	"sideEffects": false,
 	"imports": {
@@ -19,8 +19,15 @@
 		"./scenarios": "./src/scenarios.ts",
 		"./search": "./src/search.ts",
 		"./simulator": "./src/simulator.ts",
+		"./workloads/alphatest": "./src/workloads/alphatest.ts",
+		"./workloads/edullm": "./src/workloads/edullm.ts",
+		"./workloads/enrollment": "./src/workloads/enrollment.ts",
+		"./workloads/gold": "./src/workloads/gold.ts",
 		"./workloads/qti": "./src/workloads/qti.ts",
+		"./workloads/reports": "./src/workloads/reports.ts",
+		"./workloads/seed": "./src/workloads/seed.ts",
 		"./workloads/synthetic": "./src/workloads/synthetic.ts",
+		"./workloads/takedown": "./src/workloads/takedown.ts",
 		"./workloads/timeback": "./src/workloads/timeback.ts"
 	},
 	"scripts": {

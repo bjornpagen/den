@@ -12,8 +12,9 @@ import { type Brand, Duration } from "effect"
  *   their numbers.
  *
  * A limit is minted only here, so every bound a comparison, a loop, a size or a timeout reads is a Limit or a caller's
- * input, never a bare number. den chooses no number on its caller's behalf: what is a choice (a lane's width, its
- * ceiling on attempts) is the flow's declaration, and what is not is one of these.
+ * input, never a bare number. den chooses no number on its caller's behalf: what is a choice (a step's ladder of
+ * attempts) is the flow's declaration, a resource's seats are the app's own limit with its evidence, and what is
+ * neither is one of these.
  */
 
 /** The day a published source was opened and its number checked, as YYYY-MM-DD. */
@@ -145,24 +146,8 @@ export const functionLifetimeSeconds = published({
 })
 
 /**
- * How long a claim holds its step: as long as the one invocation that claimed it can live, so a claim outlives no
- * holder that is still running, and a holder that died is reclaimed once its invocation can no longer be alive. A
- * lease is judged by the caller's clock, which grizzle takes as a parameter (DBCLOCK replaces it).
- */
-export const leaseMillis = derived({
-	owner: "den's claim protocol",
-	unit: "milliseconds",
-	scope:
-		"the interval from a claim's instant to its `until`, the instant after which its step may be claimed again",
-	from: [functionLifetimeSeconds],
-	derivation:
-		"a function invocation lives at most functionLifetimeSeconds, so a holder is certainly gone once that much time has passed since it claimed",
-	compute: ([lifetime]) => lifetime.value * 1000
-})
-
-/**
- * The most milliseconds one invocation spends taking turns: its whole lifetime. A turn starts only if its step's
- * deadline ends inside the invocation's budget.
+ * The most milliseconds one invocation spends taking turns: its whole lifetime. A turn starts only while its deadline
+ * and the lease margin still fit inside what is left of it.
  */
 export const invocationBudgetMillis = derived({
 	owner: "den's runtime",
@@ -171,21 +156,6 @@ export const invocationBudgetMillis = derived({
 	from: [functionLifetimeSeconds],
 	derivation: "an invocation takes turns only while the platform keeps it alive",
 	compute: ([lifetime]) => lifetime.value * 1000
-})
-
-/**
- * The first instant after a claim's lease at which its step may be claimed again: a lease holds through its `until`,
- * and the caller's clock reads whole milliseconds, so the next instant it can read is one millisecond later.
- */
-export const reclaimableAfterMillis = derived({
-	owner: "den's claim protocol",
-	unit: "milliseconds",
-	scope:
-		"the interval from a claim's instant to the first instant the census rings its step's next attempt",
-	from: [leaseMillis],
-	derivation:
-		"a claim stands while `until >= now`, and the clock's resolution is one millisecond, so one past the lease is the first instant it no longer stands",
-	compute: ([lease]) => lease.value + 1
 })
 
 /**
@@ -215,6 +185,95 @@ export const connectTimeoutMillis = derived({
 	derivation:
 		"the cluster runs at PostgreSQL's default authentication_timeout, past which it closes the connection itself",
 	compute: ([authentication]) => authentication.value * 1000
+})
+
+/**
+ * How far a claim's lease outlasts its turn's deadline. After its deadline a holder's last acts are its commit and the
+ * giving back of its seats, each a call whose session a server at its default lets take at most this long to
+ * authenticate, so a lease this much past the deadline still holds while its holder can be committing. Seats are exact
+ * while the clocks of two holders differ by less than this margin, which DBCLOCK removes by taking the database's
+ * instant.
+ */
+export const leaseMarginMillis = derived({
+	owner: "den's claim protocol",
+	unit: "milliseconds",
+	scope: "the interval from a turn's deadline to its claim's and its seats' `until`",
+	from: [authenticationTimeoutSeconds],
+	derivation:
+		"the commit and the seats' give-back after the deadline each open a session, which the server closes once authentication_timeout passes",
+	compute: ([authentication]) => authentication.value * 1000
+})
+
+/**
+ * The longest a claim's lease can be: a turn's deadline is what its invocation has left less the margin, so its lease
+ * ends no later than the invocation that took it can live.
+ */
+export const longestLeaseMillis = derived({
+	owner: "den's claim protocol",
+	unit: "milliseconds",
+	scope: "the interval from a claim's instant to its `until`, at its longest",
+	from: [invocationBudgetMillis],
+	derivation:
+		"deadline plus margin is at most the invocation's remaining budget, which is at most its whole budget",
+	compute: ([budget]) => budget.value
+})
+
+/**
+ * The first instant after the longest lease at which its step may be claimed again: a lease holds through its `until`,
+ * and the caller's clock reads whole milliseconds, so the next instant it can read is one millisecond later.
+ */
+export const reclaimableAfterMillis = derived({
+	owner: "den's claim protocol",
+	unit: "milliseconds",
+	scope:
+		"the interval from a claim's instant to the first instant the census rings its step's next attempt, at the longest",
+	from: [longestLeaseMillis],
+	derivation:
+		"a claim stands while `until >= now`, and the clock's resolution is one millisecond, so one past the lease is the first instant it no longer stands",
+	compute: ([lease]) => lease.value + 1
+})
+
+/**
+ * How often the census can tick: Vercel Cron's minimum interval on the Pro and Enterprise plans. A window shorter than
+ * this could hold no tick, so den refuses one, and the first rung of a retry ladder waits this long.
+ */
+export const censusPeriodSeconds = published({
+	value: 60,
+	owner: "Vercel Cron Jobs, Pro and Enterprise plans",
+	unit: "seconds",
+	scope: "the interval between two census ticks, at its shortest",
+	constraint: "hard quota",
+	source: "https://vercel.com/docs/schedules/cron-jobs/usage-and-pricing",
+	quote:
+		"| **Pro**        | 100 cron jobs                       | Once per minute      | Per-minute               |",
+	verified: "2026-11-11"
+})
+
+/**
+ * The first rung of every retry ladder: one census period, the soonest the census rings a step again if the wake its
+ * failed turn sent with a delay is lost.
+ */
+export const backoffFirstMillis = derived({
+	owner: "den's retry ladder",
+	unit: "milliseconds",
+	scope: "the wait from a spent attempt's end to the next attempt's due instant, at the first rung",
+	from: [censusPeriodSeconds],
+	derivation: "the census's period, so a lost delayed wake costs at most one more rung",
+	compute: ([period]) => period.value * 1000
+})
+
+/**
+ * The last rung of every retry ladder: the longest lease, so a step is never due again later than a dead holder's step
+ * would be reclaimed.
+ */
+export const backoffLastMillis = derived({
+	owner: "den's retry ladder",
+	unit: "milliseconds",
+	scope: "the wait from a spent attempt's end to the next attempt's due instant, at its longest",
+	from: [longestLeaseMillis],
+	derivation:
+		"rungs double from the first until they reach the longest lease, which a reclaim waits at most",
+	compute: ([lease]) => lease.value
 })
 
 /**

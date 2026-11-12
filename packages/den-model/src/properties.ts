@@ -1,5 +1,14 @@
-import { Array as Arr, Data, HashMap, Option } from "effect"
-import type { Entry, Fact } from "#facts.ts"
+import { Array as Arr, Data, HashMap, HashSet, Option, Order } from "effect"
+import { type Datum, textOf } from "#datum.ts"
+import {
+	type Entry,
+	type Fact,
+	type Holder,
+	holderText,
+	type SeatKey,
+	seatText,
+	type Trace
+} from "#facts.ts"
 import {
 	rootOfScope,
 	rootOfStep,
@@ -9,56 +18,75 @@ import {
 	scopeText,
 	stepText
 } from "#identity.ts"
-import type { Lane } from "#program.ts"
-import type { FairEnd, Rerun } from "#simulator.ts"
+import { ordinals, type Program, type Query, windowsOf } from "#program.ts"
+import type { FairEnd, Rerun, Sent } from "#simulator.ts"
 
 /**
  * den's laws, each checked over what a run leaves:
- * - `no-stall`: under fair scheduling every pending step reaches an end, none waiting past its program's patience;
- * - `one-result`: a step has at most one result, and an app write lands only with its step's result;
- * - `scope-once`: a scope finishes once, after every child it owns;
- * - `width`: a lane never holds more live claims than its width, each in a slot of its own;
+ * - `no-stall`: under fair scheduling every pending step moves within its program's patience, none passes its ladder,
+ *   and the run ends with every root finished and retired;
+ * - `one-result`: a step has at most one result, ever, since its key never recurs; an app write lands only with its
+ *   step's result; and a commit lands only for the turn that holds the step's latest claim;
+ * - `scope-once`: a scope finishes once, after every child it owns ended;
+ * - `seats`: a seat never has two holders: it is taken only when free, taken from a claim only once its lease ran out,
+ *   within its resource's seats, and a claim takes a seat of every resource its step holds, so no bound is exceeded;
+ * - `exclusive`: never two live runs of one exclusive root kind under one key;
+ * - `precondition`: a root kind's precondition was empty when each of its roots was admitted;
+ * - `reads`: every read a commit or an admission recorded is the rows its query held where it was taken, at the claim
+ *   or the admission, so every input a step saw is a fact of the graph;
  * - `rerun`: an accepted call made again at once adds nothing;
  * - `stale-drains`: a call from a deployment older than the current one is answered `stale`, and an old deployment's
  *   messages and workers drain away;
- * - `owned`: every step and scope is opened inside a scope that has not finished, and no root retires with work pending
- *   inside it, so nothing runs that nobody joins;
- * - `fenced`: a commit lands only on a claim its token names, of its step's graph as it stands, never on a claim of a
- *   graph admitted again under a retired root's key.
+ * - `owned`: no fire-and-forget: every step and scope is opened inside a scope that has not finished, and no root
+ *   retires with work pending inside it;
+ * - `window-tick`: every span a declared window is open for, wholly inside the fair phase, holds a census tick;
+ * - `rewake`: a wake re-rung by a later cause is always delivered: the transport drops a send as a duplicate only when
+ *   an earlier send of its key had the same cause, so no step waits on a key an earlier ring spent.
  */
 export type Law =
 	| "no-stall"
 	| "one-result"
 	| "scope-once"
-	| "width"
+	| "seats"
+	| "exclusive"
+	| "precondition"
+	| "reads"
 	| "rerun"
 	| "stale-drains"
 	| "owned"
-	| "fenced"
+	| "window-tick"
+	| "rewake"
 
 /** Every law, in the order a run is checked. */
 export const LAWS: Arr.NonEmptyReadonlyArray<Law> = [
 	"no-stall",
 	"one-result",
 	"scope-once",
-	"width",
+	"seats",
+	"exclusive",
+	"precondition",
+	"reads",
 	"rerun",
 	"stale-drains",
 	"owned",
-	"fenced"
+	"window-tick",
+	"rewake"
 ]
 
 /** A law a run broke, the law named as data and the witness in the message. */
 export class LawBroken extends Data.TaggedError("LawBroken")<{ law: Law; message: string }> {}
 
 /**
- * What a law is checked over: a trace (the model's, or one the real engine's tests wrote), the program's lanes, and,
- * for the laws the platform decides, the re-runs and the fair phase's end a simulated run records.
+ * What a law is checked over: a trace (the model's, or one the real engine's harness wrote), the program it ran, and,
+ * for the laws the platform decides, the re-runs, every send the transport was asked for and its fate, the instant the
+ * fair phase began and how it ended.
  */
 export type Evidence = Readonly<{
-	trace: ReadonlyArray<Entry>
-	lanes: ReadonlyArray<Lane>
+	trace: Trace
+	program: Program
 	reruns: ReadonlyArray<Rerun>
+	sends: ReadonlyArray<Sent>
+	fairFrom: number
 	end: FairEnd
 }>
 
@@ -66,12 +94,9 @@ const broken = (law: Law, message: string) => Option.some(new LawBroken({ law, m
 
 const whereOf = (entry: Entry) => `at ${entry.at}, ${entry.command._tag}`
 
-/**
- * Folds a trace's facts in commit order, each with its entry. The state the check keeps is its own; a root's
- * retirement is the end of its incarnation, after which a root under the same key is a new graph.
- */
+/** Folds a trace's facts in commit order, each with its entry, stopping at the first break a step finds. */
 const firstBreak = <S>(
-	trace: ReadonlyArray<Entry>,
+	trace: Trace,
 	initial: S,
 	step: (
 		state: S,
@@ -80,7 +105,7 @@ const firstBreak = <S>(
 	) => Readonly<{ state: S; broke: Option.Option<LawBroken> }>
 ): Readonly<{ state: S; broke: Option.Option<LawBroken> }> => {
 	let state = initial
-	for (const entry of trace) {
+	for (const entry of trace.entries) {
 		for (const fact of entry.facts) {
 			const next = step(state, fact, entry)
 			if (Option.isSome(next.broke)) {
@@ -94,78 +119,66 @@ const firstBreak = <S>(
 
 const ok = <S>(state: S) => ({ state, broke: Option.none<LawBroken>() })
 
-/** Drops every key of a retired root from a map keyed by step or scope text. */
-const forget = <V>(
-	map: HashMap.HashMap<string, V>,
-	root: string,
-	rootOf: (value: V) => string
-): HashMap.HashMap<string, V> => HashMap.filter(map, (value) => rootOf(value) !== root)
-
-const stepRoot = (step: StepId) => rootText(rootOfStep(step))
-const scopeRoot = (scope: ScopeId) => rootText(rootOfScope(scope))
-
 /** Whether a fact ends a step, and which. */
-const endedStep = (fact: Fact): Option.Option<StepId> => {
-	switch (fact._tag) {
-		case "Done":
-		case "Failed":
-		case "Completed":
-		case "Stopped":
-			return Option.some(fact.step)
-		case "Admitted":
-		case "Opened":
-		case "Spawned":
-		case "Fed":
-		case "Claimed":
-		case "Retried":
-		case "Wrote":
-		case "Finished":
-		case "Paused":
-		case "Resumed":
-		case "Deployed":
-		case "Retired":
-			return Option.none()
-	}
-}
+const endedStep = (fact: Fact): Option.Option<StepId> =>
+	fact._tag === "Done" || fact._tag === "Failed" ? Option.some(fact.step) : Option.none()
 
-/** One result per step, and every write inside the entry that landed its step's `Done`, after it. */
+const claimText = (step: StepId, attempt: number) => `${stepText(step)}@${attempt}`
+
+/**
+ * One result per step, ever, and every write inside the entry that landed its step's `Done`, after it; every accepted
+ * commit by the turn that took the step's latest claim.
+ */
 export const oneResult = (evidence: Evidence): Option.Option<LawBroken> => {
-	type Results = HashMap.HashMap<string, StepId>
-	const results = firstBreak<Results>(evidence.trace, HashMap.empty(), (state, fact, entry) => {
-		if (fact._tag === "Retired") {
-			return ok(forget(state, rootText(fact.root), stepRoot))
-		}
-		return Option.match(endedStep(fact), {
-			onNone: () => ok(state),
-			onSome: (step) =>
-				HashMap.has(state, stepText(step))
-					? {
-							state,
-							broke: broken(
-								"one-result",
-								`${stepText(step)} got a second result (${fact._tag}) ${whereOf(entry)}`
-							)
-						}
-					: ok(HashMap.set(state, stepText(step), step))
-		})
-	})
-	if (Option.isSome(results.broke)) {
-		return results.broke
-	}
-	for (const entry of evidence.trace) {
-		for (const [at, fact] of entry.facts.entries()) {
-			if (fact._tag !== "Wrote") {
-				continue
-			}
-			const landed = Arr.some(
-				Arr.take(entry.facts, at),
-				(earlier) => earlier._tag === "Done" && stepText(earlier.step) === stepText(fact.step)
-			)
-			if (!landed) {
+	const ended = new Set<string>()
+	const turns = new Map<string, string>()
+	const latest = new Map<string, number>()
+	for (const entry of evidence.trace.entries) {
+		const command = entry.command
+		if (command._tag === "Commit" && entry.answer === "accepted") {
+			const step = stepText(command.step)
+			const turn = Option.fromNullishOr(turns.get(claimText(command.step, command.attempt)))
+			if (!Option.contains(turn, command.turn)) {
 				return broken(
 					"one-result",
-					`${fact.write.relation}/${fact.write.key} was written for ${stepText(fact.step)} without its result, ${whereOf(entry)}`
+					`${step} took the report of ${command.turn} for claim ${command.attempt}, which ${Option.match(turn, { onNone: () => "nobody took", onSome: (holder) => `${holder} took` })}, ${whereOf(entry)}`
 				)
+			}
+			if (latest.get(step) !== command.attempt) {
+				return broken(
+					"one-result",
+					`${step} took a report of claim ${command.attempt} after a newer claim, ${whereOf(entry)}`
+				)
+			}
+		}
+		for (const [at, fact] of entry.facts.entries()) {
+			if (fact._tag === "Claimed") {
+				turns.set(claimText(fact.step, fact.attempt), fact.turn)
+				latest.set(stepText(fact.step), fact.attempt)
+			}
+			if (fact._tag === "Wrote" && fact.writer._tag === "Step") {
+				const writer = fact.writer.step
+				const landed = Arr.some(
+					Arr.take(entry.facts, at),
+					(earlier) => earlier._tag === "Done" && stepText(earlier.step) === stepText(writer)
+				)
+				if (!landed) {
+					return broken(
+						"one-result",
+						`${fact.write.relation}/${fact.write.key} was written for ${stepText(writer)} without its result, ${whereOf(entry)}`
+					)
+				}
+			}
+			const ending = endedStep(fact)
+			if (Option.isSome(ending)) {
+				const step = stepText(ending.value)
+				if (ended.has(step)) {
+					return broken(
+						"one-result",
+						`${step} got a second result (${fact._tag}) ${whereOf(entry)}`
+					)
+				}
+				ended.add(step)
 			}
 		}
 	}
@@ -178,9 +191,14 @@ type ScopeSeen = Readonly<{ root: string; children: ReadonlyArray<string>; finis
 type Graph = Readonly<{
 	scopes: HashMap.HashMap<string, ScopeSeen>
 	steps: HashMap.HashMap<string, Readonly<{ root: string; ended: boolean }>>
+	retired: HashSet.HashSet<string>
 }>
 
-const emptyGraph: Graph = { scopes: HashMap.empty(), steps: HashMap.empty() }
+const emptyGraph: Graph = {
+	scopes: HashMap.empty(),
+	steps: HashMap.empty(),
+	retired: HashSet.empty()
+}
 
 const opened = (graph: Graph, scope: string, root: string): Graph => ({
 	...graph,
@@ -199,9 +217,12 @@ const childEnded = (graph: Graph, child: string): boolean =>
 	Option.exists(HashMap.get(graph.steps, child), (row) => row.ended) ||
 	Option.exists(HashMap.get(graph.scopes, child), (row) => row.finished)
 
+const stepRoot = (step: StepId) => rootText(rootOfStep(step))
+const scopeRoot = (scope: ScopeId) => rootText(rootOfScope(scope))
+
 /** The graph a trace's facts open, finish and end, with the first break a check finds as it goes. */
 const walkGraph = (
-	trace: ReadonlyArray<Entry>,
+	trace: Trace,
 	check: (graph: Graph, fact: Fact, entry: Entry) => Option.Option<LawBroken>
 ): Readonly<{ state: Graph; broke: Option.Option<LawBroken> }> =>
 	firstBreak<Graph>(trace, emptyGraph, (graph, fact, entry) => {
@@ -244,25 +265,10 @@ const walkGraph = (
 						finished: true
 					}))
 				})
-			case "Retired": {
-				const root = rootText(fact.root)
-				return ok({
-					scopes: forget(graph.scopes, root, (row) => row.root),
-					steps: forget(graph.steps, root, (row) => row.root)
-				})
-			}
-			case "Fed":
-			case "Claimed":
-			case "Retried":
-			case "Wrote":
-			case "Paused":
-			case "Resumed":
-			case "Deployed":
-				return ok(graph)
+			case "Retired":
+				return ok({ ...graph, retired: HashSet.add(graph.retired, rootText(fact.root)) })
 			case "Done":
 			case "Failed":
-			case "Completed":
-			case "Stopped":
 				return ok({
 					...graph,
 					steps: HashMap.modify(graph.steps, stepText(fact.step), (row) => ({
@@ -270,6 +276,16 @@ const walkGraph = (
 						ended: true
 					}))
 				})
+			case "Claimed":
+			case "Read":
+			case "Seated":
+			case "Unseated":
+			case "Retried":
+			case "Wrote":
+			case "Paused":
+			case "Resumed":
+			case "Deployed":
+				return ok(graph)
 		}
 	})
 
@@ -303,8 +319,8 @@ export const scopeOnce = (evidence: Evidence): Option.Option<LawBroken> =>
 	}).broke
 
 /**
- * Every step and scope is opened inside a scope that exists and has not finished, and a root retires only once
- * everything inside it ended: no work runs that its scope will not wait for.
+ * No fire-and-forget: every step and scope is opened inside a scope that exists, is not retired and has not finished,
+ * and a root retires only once everything inside it ended, so no work runs that its scope will not wait for.
  */
 export const owned = (evidence: Evidence): Option.Option<LawBroken> =>
 	walkGraph(evidence.trace, (graph, fact, entry) => {
@@ -316,10 +332,10 @@ export const owned = (evidence: Evidence): Option.Option<LawBroken> =>
 						`${what} was opened in ${scopeText(owner)}, which is not open, ${whereOf(entry)}`
 					),
 				onSome: (row) =>
-					row.finished
+					row.finished || HashSet.has(graph.retired, row.root)
 						? broken(
 								"owned",
-								`${what} was opened in ${scopeText(owner)} after it finished, so nothing joins it, ${whereOf(entry)}`
+								`${what} was opened in ${scopeText(owner)} after it ended, so nothing joins it, ${whereOf(entry)}`
 							)
 						: Option.none()
 			})
@@ -338,19 +354,22 @@ export const owned = (evidence: Evidence): Option.Option<LawBroken> =>
 					{
 						onNone: () => Option.none(),
 						onSome: ([step]) =>
-							broken("owned", `${root} retired with ${step} still pending, ${whereOf(entry)}`)
+							broken(
+								"owned",
+								`${root} retired with ${step} still pending, so nothing joins it, ${whereOf(entry)}`
+							)
 					}
 				)
 			}
 			case "Admitted":
-			case "Fed":
 			case "Claimed":
+			case "Read":
+			case "Seated":
+			case "Unseated":
 			case "Retried":
 			case "Done":
 			case "Wrote":
 			case "Failed":
-			case "Completed":
-			case "Stopped":
 			case "Finished":
 			case "Paused":
 			case "Resumed":
@@ -359,102 +378,306 @@ export const owned = (evidence: Evidence): Option.Option<LawBroken> =>
 		}
 	}).broke
 
-/** A claim a check holds: its step's lane, its slot and its lease's end. */
-type Held = Readonly<{ lane: string; claim: number; slot: number; until: number; root: string }>
+/** The step whose own call an entry is: a claim's or a commit's, which may give back that step's own seats. */
+const callerOf = (entry: Entry): Option.Option<string> => {
+	switch (entry.command._tag) {
+		case "Claim":
+		case "Commit":
+			return Option.some(stepText(entry.command.step))
+		case "Admit":
+		case "Write":
+		case "Census":
+		case "Retire":
+		case "Pause":
+		case "Resume":
+		case "Deploy":
+			return Option.none()
+	}
+}
 
-type Claims = Readonly<{
-	lanes: HashMap.HashMap<string, Readonly<{ lane: string; root: string }>>
-	held: HashMap.HashMap<string, Held>
-}>
-
-/** No lane ever holds more live claims than its width, and no two live claims share a slot. */
-export const width = (evidence: Evidence): Option.Option<LawBroken> =>
-	firstBreak<Claims>(
-		evidence.trace,
-		{ lanes: HashMap.empty(), held: HashMap.empty() },
-		(claims, fact, entry) => {
-			switch (fact._tag) {
-				case "Spawned":
-					return ok(
-						fact.spawn._tag === "Runs"
-							? {
-									...claims,
-									lanes: HashMap.set(claims.lanes, stepText(fact.step), {
-										lane: fact.spawn.lane,
-										root: stepRoot(fact.step)
-									})
-								}
-							: claims
+/**
+ * A seat never has two holders: a seat is taken only when no one holds it; a claim's seat is given back only by its
+ * own step's call or, once its lease ran out, by whoever takes it; a counted resource's seat is one of its declared
+ * seats; and a claim takes one seat of each resource its step holds, so the resource's bound is exact.
+ */
+export const seats = (evidence: Evidence): Option.Option<LawBroken> => {
+	const counted = new Map(
+		Arr.map(evidence.program.resources, (resource) => [resource.name, resource.seats] as const)
+	)
+	const within = (seat: SeatKey): boolean =>
+		Option.match(Option.fromNullishOr(counted.get(seat.resource)), {
+			onNone: () => true,
+			onSome: (count) => Arr.contains(Arr.map(ordinals(count), String), seat.seat)
+		})
+	const holders = new Map<string, Holder>()
+	const until = new Map<string, number>()
+	const holds = new Map<string, ReadonlyArray<string>>()
+	for (const entry of evidence.trace.entries) {
+		const where = whereOf(entry)
+		for (const fact of entry.facts) {
+			if (fact._tag === "Spawned") {
+				holds.set(stepText(fact.step), fact.holds)
+			}
+			if (fact._tag === "Claimed") {
+				until.set(claimText(fact.step, fact.attempt), fact.until)
+				const holder = holderText({ _tag: "Claim", step: fact.step, attempt: fact.attempt })
+				const taken = Arr.flatMap(entry.facts, (other) =>
+					other._tag === "Seated" && holderText(other.holder) === holder
+						? [other.seat.resource]
+						: []
+				)
+				const needed = holds.get(stepText(fact.step)) ?? []
+				if (!Arr.every(needed, (resource) => Arr.contains(taken, resource))) {
+					return broken(
+						"seats",
+						`${holder} was claimed without a seat of each of ${Arr.join(needed, ", ")}, ${where}`
 					)
-				case "Claimed": {
-					const step = stepText(fact.step)
-					return Option.match(HashMap.get(claims.lanes, step), {
-						onNone: () => ({
-							state: claims,
-							broke: broken(
-								"width",
-								`${step} was claimed but never spawned on a lane, ${whereOf(entry)}`
-							)
-						}),
-						onSome: ({ lane, root }) => {
-							const live = Arr.filter(
-								HashMap.toEntries(claims.held),
-								([other, hold]) => other !== step && hold.lane === lane && hold.until > fact.at
-							)
-							const widthOf = Arr.findFirst(evidence.lanes, (declared) => declared.name === lane)
-							const over = Option.exists(widthOf, (declared) => live.length + 1 > declared.width)
-							const outside = Option.exists(
-								widthOf,
-								(declared) => fact.slot < 0 || fact.slot >= declared.width
-							)
-							const shared = Arr.some(live, ([, hold]) => hold.slot === fact.slot)
-							if (over || outside || shared) {
-								return {
-									state: claims,
-									broke: broken(
-										"width",
-										`${step} was claimed in slot ${fact.slot} of ${lane} beside ${live.length} live claims, ${whereOf(entry)}`
-									)
-								}
-							}
-							return ok({
-								...claims,
-								held: HashMap.set(claims.held, step, {
-									lane,
-									claim: fact.claim,
-									slot: fact.slot,
-									until: fact.until,
-									root
-								})
-							})
-						}
-					})
 				}
-				case "Retried":
-				case "Done":
-				case "Failed":
-				case "Stopped":
-					return ok({ ...claims, held: HashMap.remove(claims.held, stepText(fact.step)) })
-				case "Retired": {
-					const root = rootText(fact.root)
-					return ok({
-						lanes: forget(claims.lanes, root, (row) => row.root),
-						held: forget(claims.held, root, (row) => row.root)
-					})
+			}
+			if (fact._tag === "Seated") {
+				const seat = seatText(fact.seat)
+				if (!within(fact.seat)) {
+					return broken("seats", `${seat} is not one of its resource's seats, ${where}`)
 				}
-				case "Admitted":
-				case "Opened":
-				case "Fed":
-				case "Wrote":
-				case "Completed":
-				case "Finished":
-				case "Paused":
-				case "Resumed":
-				case "Deployed":
-					return ok(claims)
+				const current = holders.get(seat)
+				if (current !== undefined) {
+					return broken(
+						"seats",
+						`${seat} was taken by ${holderText(fact.holder)} while ${holderText(current)} held it, ${where}`
+					)
+				}
+				holders.set(seat, fact.holder)
+			}
+			if (fact._tag === "Unseated") {
+				const holder = fact.holder
+				if (holder._tag === "Claim") {
+					const own = Option.contains(callerOf(entry), stepText(holder.step))
+					const end = until.get(claimText(holder.step, holder.attempt)) ?? fact.at
+					if (!own && end > fact.at) {
+						return broken(
+							"seats",
+							`${seatText(fact.seat)} was taken from ${holderText(holder)}, whose lease runs to ${end}, ${where}`
+						)
+					}
+				}
+				holders.delete(seatText(fact.seat))
+			}
+			if (fact._tag === "Retired") {
+				const root = rootText(fact.root)
+				for (const [seat, holder] of holders) {
+					if (rootOfHolder(holder) === root) {
+						holders.delete(seat)
+					}
+				}
 			}
 		}
-	).broke
+	}
+	return Option.none()
+}
+
+/** The root a seat's holder belongs to. */
+const rootOfHolder = (holder: Holder): string => {
+	switch (holder._tag) {
+		case "Claim":
+			return stepRoot(holder.step)
+		case "Scope":
+			return scopeRoot(holder.scope)
+	}
+}
+
+/**
+ * Never two live runs of one exclusive root kind under one key: a root admitted while another run of its key is live
+ * ends `Held` in the same entry, opening nothing.
+ */
+export const exclusive = (evidence: Evidence): Option.Option<LawBroken> => {
+	const live = new Map<string, string>()
+	const keys = new Map<string, string>()
+	for (const entry of evidence.trace.entries) {
+		const contested = new Set<string>()
+		for (const fact of entry.facts) {
+			if (fact._tag === "Admitted" && Option.isSome(fact.exclusive)) {
+				const scope = scopeText({ _tag: "RootScope", root: fact.root })
+				const key = `${fact.root.kind}[${fact.exclusive.value}]`
+				if (live.has(key)) {
+					contested.add(scope)
+				} else {
+					live.set(key, scope)
+					keys.set(scope, key)
+				}
+			}
+			if (fact._tag === "Finished") {
+				const scope = scopeText(fact.scope)
+				const key = keys.get(scope)
+				if (fact.ending === "Held") {
+					contested.delete(scope)
+				} else if (key !== undefined && live.get(key) === scope) {
+					live.delete(key)
+				}
+			}
+		}
+		const twice = Arr.head(Arr.fromIterable(contested))
+		if (Option.isSome(twice)) {
+			return broken(
+				"exclusive",
+				`${twice.value} was admitted while another run of its key was live, and ran, ${whereOf(entry)}`
+			)
+		}
+	}
+	return Option.none()
+}
+
+/**
+ * What a trace says the ledger held for its reads at a point: the steps not yet ended, each with its kind and its
+ * root's kind, and the app's rows by relation and key, as every write before it left them.
+ */
+type Held = Readonly<{
+	pending: HashMap.HashMap<string, Readonly<{ kind: string; root: string }>>
+	app: HashMap.HashMap<string, HashMap.HashMap<string, Datum>>
+}>
+
+const emptyHeld: Held = { pending: HashMap.empty(), app: HashMap.empty() }
+
+/** What the ledger holds for reads after one more fact. */
+const heldAfter = (held: Held, fact: Fact): Held => {
+	if (fact._tag === "Spawned") {
+		return {
+			...held,
+			pending: HashMap.set(held.pending, stepText(fact.step), {
+				kind: fact.kind,
+				root: rootOfStep(fact.step).kind
+			})
+		}
+	}
+	if (fact._tag === "Done" || fact._tag === "Failed") {
+		return { ...held, pending: HashMap.remove(held.pending, stepText(fact.step)) }
+	}
+	if (fact._tag === "Wrote") {
+		const relation = Option.getOrElse(HashMap.get(held.app, fact.write.relation), () =>
+			HashMap.empty<string, Datum>()
+		)
+		return {
+			...held,
+			app: HashMap.set(
+				held.app,
+				fact.write.relation,
+				HashMap.set(relation, fact.write.key, fact.write.value)
+			)
+		}
+	}
+	return held
+}
+
+const BY_KEY = Order.mapInput(Order.String, (row: Readonly<{ key: string }>) => row.key)
+
+/** The rows a query returns from what the ledger holds, by key, evaluated here from the trace alone. */
+const rowsAt = (
+	held: Held,
+	query: Query
+): ReadonlyArray<Readonly<{ key: string; value: Datum }>> => {
+	switch (query._tag) {
+		case "Pending":
+			return Arr.sort(
+				Arr.flatMap(HashMap.toEntries(held.pending), ([key, step]) =>
+					Arr.contains(query.roots, step.root) ? [{ key, value: step.kind }] : []
+				),
+				BY_KEY
+			)
+		case "Rows": {
+			const rows = Arr.sort(
+				Arr.map(
+					HashMap.toEntries(
+						Option.getOrElse(HashMap.get(held.app, query.relation), () =>
+							HashMap.empty<string, Datum>()
+						)
+					),
+					([key, value]) => ({ key, value })
+				),
+				BY_KEY
+			)
+			return Option.match(query.key, {
+				onNone: () => rows,
+				onSome: (key) => Arr.filter(rows, (row) => row.key === key)
+			})
+		}
+	}
+}
+
+/** Folds what the ledger holds for reads over a trace, checking each fact against it before it applies. */
+const foldHeld = (
+	trace: Trace,
+	check: (held: Held, fact: Fact, entry: Entry) => Option.Option<LawBroken>
+): Option.Option<LawBroken> =>
+	firstBreak<Held>(trace, emptyHeld, (held, fact, entry) => {
+		const broke = check(held, fact, entry)
+		return Option.isSome(broke) ? { state: held, broke } : ok(heldAfter(held, fact))
+	}).broke
+
+/**
+ * Each root of a kind with a precondition was admitted while its read was empty, the read evaluated here from the
+ * trace alone: the steps pending under roots of the kinds it names, or the rows of the app relation it names.
+ */
+export const precondition = (evidence: Evidence): Option.Option<LawBroken> => {
+	const preconditions = new Map(
+		Arr.flatMap(evidence.program.roots, (root) =>
+			Option.match(root.precondition, {
+				onNone: () => [],
+				onSome: (query) => [[root.kind, query] as const]
+			})
+		)
+	)
+	return foldHeld(evidence.trace, (held, fact, entry) => {
+		if (fact._tag !== "Admitted") {
+			return Option.none()
+		}
+		return Option.flatMap(Option.fromNullishOr(preconditions.get(fact.root.kind)), (query) => {
+			const rows = rowsAt(held, query)
+			return Arr.isReadonlyArrayNonEmpty(rows)
+				? broken(
+						"precondition",
+						`${rootText(fact.root)} was admitted while its precondition read ${Arr.join(
+							Arr.map(Arr.take(rows, 3), (row) => row.key),
+							", "
+						)}, ${whereOf(entry)}`
+					)
+				: Option.none()
+		})
+	})
+}
+
+/**
+ * Every recorded read is the rows its query held where it was taken, the query evaluated here from the trace alone (the
+ * app's rows as every write before it left them, or the steps not yet ended under roots of the kinds it names): a
+ * claim's reads, recorded with its result, as the ledger stood at the claim; a precondition, at its admission.
+ */
+export const reads = (evidence: Evidence): Option.Option<LawBroken> => {
+	const atClaim = new Map<string, Held>()
+	return foldHeld(evidence.trace, (held, fact, entry) => {
+		if (fact._tag === "Claimed") {
+			atClaim.set(claimText(fact.step, fact.attempt), held)
+		}
+		if (fact._tag !== "Read") {
+			return Option.none()
+		}
+		const reader = fact.reader
+		const taken =
+			reader._tag === "Claim"
+				? Option.fromNullishOr(atClaim.get(claimText(reader.step, reader.attempt)))
+				: Option.some(held)
+		return Option.match(taken, {
+			onNone: () =>
+				broken("reads", `${fact.name} was recorded for a claim nobody took, ${whereOf(entry)}`),
+			onSome: (then) => {
+				const expected = textOf(Arr.map(rowsAt(then, fact.query), (row): Datum => row))
+				return expected === textOf(fact.value)
+					? Option.none()
+					: broken(
+							"reads",
+							`${fact.name} recorded ${textOf(fact.value)} where its query held ${expected}, ${whereOf(entry)}`
+						)
+			}
+		})
+	})
+}
 
 /** Every accepted call made again at once added nothing. */
 export const rerun = (evidence: Evidence): Option.Option<LawBroken> =>
@@ -476,7 +699,7 @@ export const rerun = (evidence: Evidence): Option.Option<LawBroken> =>
  */
 export const staleDrains = (evidence: Evidence): Option.Option<LawBroken> => {
 	let current = 0
-	for (const entry of evidence.trace) {
+	for (const entry of evidence.trace.entries) {
 		const command = entry.command
 		if (
 			(command._tag === "Claim" || command._tag === "Commit") &&
@@ -522,40 +745,57 @@ export const noStall = (evidence: Evidence): Option.Option<LawBroken> => {
 	}
 }
 
-/** A commit that landed names a token its step's claims minted in the graph as it stands. */
-export const fenced = (evidence: Evidence): Option.Option<LawBroken> => {
-	let tokens = HashMap.empty<string, Readonly<{ root: string; minted: ReadonlyArray<number> }>>()
-	for (const entry of evidence.trace) {
-		const command = entry.command
-		if (command._tag === "Commit" && entry.answer === "accepted") {
-			const step = stepText(command.step)
-			const minted = Option.exists(HashMap.get(tokens, step), (row) =>
-				Arr.contains(row.minted, command.token)
-			)
-			if (!minted) {
+/**
+ * Every span a declared window is open for, from the fair phase's start to its end, holds a census tick: a window that
+ * misses every tick is never rung, since only the census rings what a window's opening made eligible.
+ */
+export const windowTick = (evidence: Evidence): Option.Option<LawBroken> => {
+	const ticks = Arr.flatMap(evidence.trace.entries, (entry) =>
+		entry.command._tag === "Census" && entry.at >= evidence.fairFrom ? [entry.at] : []
+	)
+	const until = evidence.end.at
+	for (const window of windowsOf(evidence.program)) {
+		const first = Math.ceil((evidence.fairFrom - window.opens) / window.period)
+		for (
+			let period = Math.max(0, first);
+			period * window.period + window.closes <= until;
+			period += 1
+		) {
+			const opens = period * window.period + window.opens
+			const closes = period * window.period + window.closes
+			if (!Arr.some(ticks, (tick) => tick >= opens && tick < closes)) {
 				return broken(
-					"fenced",
-					`${step} took a commit of token ${command.token}, which none of its claims in this graph minted, ${whereOf(entry)}`
+					"window-tick",
+					`the window open over [${opens}, ${closes}) held no census tick`
 				)
 			}
 		}
-		for (const fact of entry.facts) {
-			if (fact._tag === "Claimed") {
-				const step = stepText(fact.step)
-				tokens = HashMap.set(tokens, step, {
-					root: stepRoot(fact.step),
-					minted: Arr.append(
-						Option.match(HashMap.get(tokens, step), {
-							onNone: () => [],
-							onSome: (row) => row.minted
-						}),
-						fact.token
+	}
+	return Option.none()
+}
+
+/**
+ * A wake re-rung by a later cause is always delivered: every send the transport dropped as a duplicate repeats the
+ * cause of the send that first took its key (a retry, a relay's replay of one position), never a later one.
+ */
+export const rewake = (evidence: Evidence): Option.Option<LawBroken> => {
+	const first = new Map<string, string>()
+	for (const sent of evidence.sends) {
+		switch (sent.fate) {
+			case "queued":
+				first.set(sent.key, sent.cause)
+				break
+			case "deduplicated": {
+				const cause = first.get(sent.key) ?? sent.cause
+				if (cause !== sent.cause) {
+					return broken(
+						"rewake",
+						`${sent.step} was rung by ${sent.cause} at ${sent.at} and dropped as a duplicate of ${cause}'s key ${sent.key}`
 					)
-				})
+				}
+				break
 			}
-			if (fact._tag === "Retired") {
-				tokens = forget(tokens, rootText(fact.root), (row) => row.root)
-			}
+			case "dropped":
 		}
 	}
 	return Option.none()
@@ -566,11 +806,15 @@ export const CHECKS: Readonly<Record<Law, (evidence: Evidence) => Option.Option<
 	"no-stall": noStall,
 	"one-result": oneResult,
 	"scope-once": scopeOnce,
-	width,
+	seats,
+	exclusive,
+	precondition,
+	reads,
 	rerun,
 	"stale-drains": staleDrains,
 	owned,
-	fenced
+	"window-tick": windowTick,
+	rewake
 }
 
 /** The first of `laws` the evidence breaks, if any. */

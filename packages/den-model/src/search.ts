@@ -9,17 +9,28 @@ import {
 } from "@den/testing/explore"
 import type { Coverage } from "@den/testing/features"
 import { boundedShrink } from "@den/testing/shrink"
-import { Data, Duration, Effect, Formatter, Option } from "effect"
+import { Array as Arr, Data, Duration, Effect, Formatter, Option } from "effect"
+import type { Rules } from "#ledger.ts"
+import { type Program, windowsOf } from "#program.ts"
 import { type Evidence, firstBroken, type Law, type LawBroken } from "#properties.ts"
 import type { Run as Simulated } from "#simulator.ts"
 
 /** What a simulated run's laws are checked over. */
-export const evidenceOf = (run: Simulated, lanes: Evidence["lanes"]): Evidence => ({
+export const evidenceOf = (run: Simulated, program: Program): Evidence => ({
 	trace: run.trace,
-	lanes,
+	program,
 	reruns: run.reruns,
+	sends: run.sends,
+	fairFrom: run.fairFrom,
 	end: run.end
 })
+
+/**
+ * Whether a flow may declare a program under a census of this period: every window it carries holds a tick. A program
+ * refused here never runs, so its case checks nothing.
+ */
+export const declares = (rules: Rules, program: Program, census: number): boolean =>
+	Arr.every(windowsOf(program), (window) => rules.windowHolds(window, census))
 
 /** Fails with the first of `laws` the evidence breaks. */
 export const holds = (

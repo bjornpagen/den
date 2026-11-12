@@ -1,0 +1,40 @@
+{
+	"name": "@den/edullm",
+	"private": true,
+	"description": "The outside world of den's first use, edullm's queueing rebuilt inside den: faithful fakes of the systems edullm's eight workloads talk to (Timeback's replica and its bastion, the AlphaTest and QTI APIs, Timeback's report endpoint, the tutor's presence, the enrollment roster), Bronze's content-addressed store, the app's own facts they write into, and the pure pieces the workloads need (the binary COPY frame scanner, block-range splitting, the bucketed-fingerprint prune, the AlphaTest flow controller). Every misbehaviour of a fake is a choice its caller draws, so a simulation can search over it.",
+	"type": "module",
+	"sideEffects": false,
+	"imports": {
+		"#test/*": "./test/*",
+		"#*": "./src/*"
+	},
+	"exports": {
+		"./alphatest": "./src/alphatest.ts",
+		"./app": "./src/app.ts",
+		"./bronze": "./src/bronze.ts",
+		"./copy-binary": "./src/copy-binary.ts",
+		"./enrollment": "./src/enrollment.ts",
+		"./fingerprint": "./src/fingerprint.ts",
+		"./flow-control": "./src/flow-control.ts",
+		"./nature": "./src/nature.ts",
+		"./presence": "./src/presence.ts",
+		"./qti": "./src/qti.ts",
+		"./ranges": "./src/ranges.ts",
+		"./replica": "./src/replica.ts",
+		"./reports": "./src/reports.ts"
+	},
+	"scripts": {
+		"typecheck": "effect-tsgo tsrs --noEmit -p tsconfig.json",
+		"superlint": "superlint",
+		"oxlint": "oxlint",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@den/testing": "workspace:*",
+		"effect": "catalog:"
+	},
+	"devDependencies": {
+		"@effect/vitest": "catalog:",
+		"vitest": "catalog:"
+	}
+}

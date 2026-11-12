@@ -18,7 +18,6 @@ import { searched } from "@den/testing/vitest"
 import { runOfTest } from "@den/testing/vitest/run"
 import { describe, it } from "@effect/vitest"
 import { Array as Arr, Effect, Option, Order } from "effect"
-import { stepText } from "#identity.ts"
 import { type Rules, SOUND } from "#ledger.ts"
 import {
 	type Flat,
@@ -28,64 +27,63 @@ import {
 	type Refusal,
 	type Report
 } from "#machine.ts"
-import { fenceOnAttempt } from "#planted.ts"
+import { retiredKeysRecur } from "#planted.ts"
 import { ordinals } from "#program.ts"
 import { caught, exploration } from "#search.ts"
 
-/**
- * What the specification notices on the way to a commit from a retired graph: a retirement, an admission after one, a
- * commit naming a lease of a retired graph, and one whose attempt number matches the new graph's live claim.
- */
-type Toward = "retired" | "readmitted" | "old-lease" | "retired-lease"
+/** What the specification notices on the way to a re-admission: a retirement, and an admission after one. */
+type Toward = "retired" | "readmitted"
 
-/** One step of the specification: its key, whether it is the finish, and what the laws say it holds. */
+/** One step of the specification: whether it is the finish, and what the laws say it holds. */
 type Spec = {
+	index: number
 	key: string
 	due: number
-	hold: Option.Option<Readonly<{ token: number; claim: number; until: number }>>
+	hold: Option.Option<Readonly<{ attempt: number; until: number }>>
 	claims: number
-	retried: Option.Option<Readonly<{ token: number; at: number }>>
+	retried: Option.Option<Readonly<{ attempt: number; at: number }>>
 	attempts: number
-	reclaims: number
-	result: Option.Option<Readonly<{ token: Option.Option<number>; report: Option.Option<Report> }>>
+	result: Option.Option<Readonly<{ attempt: number; report: Option.Option<Report> }>>
 	finish: boolean
 }
 
+/** The order seats are given in within one root: the earliest due, then the step's key. */
 const BY_DUE = Order.combine(
 	Order.mapInput(Order.Number, (step: Spec) =>
-		step.hold.pipe(Option.match({ onNone: () => step.due, onSome: (hold) => hold.until }))
+		Option.match(step.hold, { onNone: () => step.due, onSome: (hold) => hold.until })
 	),
 	Order.mapInput(Order.String, (step: Spec) => step.key)
 )
 
 /**
- * The flat program's ledger as the proposal's laws state it, written apart from ledger.ts: a claim takes the earliest
- * due step of a lane with room, a reclaim past the ceiling fails the step instead, a commit lands only on the claim its
- * token names and the same report again changes nothing, the finish starts once every child has a result, a stop ends
- * everything, and a root retires only once it finished.
+ * The flat program's ledger as the proposal's laws state it, written apart from ledger.ts: a claim names a step and
+ * takes it once its due instant passed and no live claim holds it, a seat free and owed to no step due before it; a
+ * reclaim spends an attempt and one at the end of the ladder fails the step instead; a commit lands only on the step's
+ * latest claim while it holds no result, and the same report again changes nothing; the finish, which holds no seat,
+ * starts once every child has a result; a root retires only once it finished, and its key never recurs.
  */
 const specOf = (
 	flat: Flat,
 	notice: (seen: Toward) => void
 ): Real<Model, Parameters, Refusal, never, never> => {
-	const scope = { _tag: "RootScope", root: { trigger: "Flat", key: "flat" } } as const
 	let now = 0
 	let admitted = false
+	let retired = false
 	let finished = false
 	let steps: Array<Spec> = []
-	let minted = 0
-	let graph = 0
-	const leases: Array<Readonly<{ key: string; token: number; claim: number; graph: number }>> = []
-	const fresh = (key: string, finish: boolean): Spec => ({
-		key,
+	const leases: Array<Readonly<{ index: number; attempt: number }>> = []
+	const keyOf = (index: number) =>
+		index === 0 ? `Flat("flat")/finish` : `Flat("flat")/start#${index - 1}`
+	const fresh = (index: number): Spec => ({
+		index,
+		key: keyOf(index),
 		due: now,
 		hold: Option.none(),
 		claims: 0,
 		retried: Option.none(),
 		attempts: 0,
-		reclaims: 0,
 		result: Option.none(),
-		finish
+		finish: index === 0
 	})
 	const settle = () => {
 		const children = Arr.filter(steps, (step) => !step.finish)
@@ -94,110 +92,113 @@ const specOf = (
 			Arr.isReadonlyArrayEmpty(finishes) &&
 			Arr.every(children, (step) => Option.isSome(step.result))
 		) {
-			steps.push(fresh(stepText({ _tag: "FinishStep", scope }), true))
+			steps.push(fresh(0))
 		}
 		if (Arr.some(finishes, (step) => Option.isSome(step.result))) {
 			finished = true
 		}
 	}
-	const end = (step: Spec, token: Option.Option<number>, report: Option.Option<Report>) => {
-		step.result = Option.some({ token, report })
+	const end = (step: Spec, attempt: number, report: Option.Option<Report>) => {
+		step.result = Option.some({ attempt, report })
 		step.hold = Option.none()
 		settle()
 	}
+	const live = (step: Spec) =>
+		Option.isNone(step.result) && Option.exists(step.hold, (hold) => hold.until > now)
+	const due = (step: Spec) =>
+		Option.isNone(step.result) &&
+		Option.match(step.hold, {
+			onNone: () => step.due <= now,
+			onSome: (hold) => hold.until <= now
+		})
 	const answer = (result: Answered<Refusal>) => Effect.succeed(result)
 	return {
 		admit: () => {
 			if (admitted) {
 				return answer(refused("unchanged"))
 			}
-			admitted = true
-			graph += 1
-			if (graph > 1) {
+			if (retired) {
 				notice("readmitted")
+				return answer(refused("retired"))
 			}
-			finished = false
-			steps = Arr.map(ordinals(flat.steps), (ordinal) =>
-				fresh(stepText({ _tag: "StartStep", scope, ordinal }), false)
-			)
+			admitted = true
+			steps = Arr.map(ordinals(flat.steps), (ordinal) => fresh(ordinal + 1))
 			settle()
 			return answer(took)
 		},
-		claim: () => {
-			const live = Arr.filter(
-				steps,
-				(step) => Option.isNone(step.result) && Option.exists(step.hold, (hold) => hold.until > now)
-			)
-			if (live.length >= flat.width) {
-				return answer(refused("at-width"))
-			}
-			const due = Arr.sort(
-				Arr.filter(
-					steps,
-					(step) =>
-						Option.isNone(step.result) &&
-						Option.match(step.hold, {
-							onNone: () => step.due <= now,
-							onSome: (hold) => hold.until <= now
-						})
-				),
-				BY_DUE
-			)
-			return Option.match(Arr.head(due), {
-				onNone: () => answer(refused("idle")),
-				onSome: (step) => {
-					const reclaims = step.reclaims + (Option.isSome(step.hold) ? 1 : 0)
-					if (reclaims >= flat.ceilings.reclaims) {
-						end(step, Option.none(), Option.none())
+		claim: (index) =>
+			Option.match(
+				Arr.findFirst(steps, (step) => step.index === index),
+				{
+					onNone: () => answer(refused("gone")),
+					onSome: (step) => {
+						if (Option.isSome(step.result) || live(step)) {
+							return answer(refused("lost"))
+						}
+						if (!due(step)) {
+							return answer(refused("early"))
+						}
+						if (!step.finish) {
+							const free =
+								flat.seats - Arr.filter(steps, (other) => !other.finish && live(other)).length
+							if (free <= 0) {
+								return answer(refused("full"))
+							}
+							const ahead = Arr.filter(
+								Arr.sort(
+									Arr.filter(steps, (other) => !other.finish && due(other)),
+									BY_DUE
+								),
+								(other) => BY_DUE(other, step) < 0
+							).length
+							if (ahead >= free) {
+								return answer(refused("behind"))
+							}
+						}
+						const lapsed = Option.isSome(step.hold)
+						if (lapsed && step.attempts + 1 >= flat.attempts) {
+							end(
+								step,
+								Option.match(step.hold, { onNone: () => 0, onSome: (hold) => hold.attempt }),
+								Option.none()
+							)
+							return answer(took)
+						}
+						step.attempts += lapsed ? 1 : 0
+						step.hold = Option.some({ attempt: step.claims, until: now + flat.lease })
+						leases.push({ index: step.index, attempt: step.claims })
+						step.claims += 1
 						return answer(took)
 					}
-					step.reclaims = reclaims
-					step.hold = Option.some({ token: minted, claim: step.claims, until: now + flat.lease })
-					leases.push({ key: step.key, token: minted, claim: step.claims, graph })
-					step.claims += 1
-					minted += 1
-					return answer(took)
 				}
-			})
-		},
+			),
 		commit: ({ lease, report }) =>
 			Option.match(Arr.get(leases, lease), {
 				onNone: () => answer(refused("gone")),
 				onSome: (held) =>
 					Option.match(
-						Arr.findFirst(steps, (step) => step.key === held.key),
+						Arr.findFirst(steps, (step) => step.index === held.index),
 						{
 							onNone: () => answer(refused("gone")),
 							onSome: (step) => {
-								if (
-									held.graph !== graph &&
-									Option.exists(step.hold, (hold) => hold.claim === held.claim)
-								) {
-									notice("retired-lease")
-								}
 								if (Option.isSome(step.result)) {
 									const landed = step.result.value
 									return answer(
 										refused(
-											Option.contains(landed.token, held.token) &&
-												Option.contains(landed.report, report)
+											landed.attempt === held.attempt && Option.contains(landed.report, report)
 												? "unchanged"
 												: "lost"
 										)
 									)
 								}
-								if (Option.exists(step.hold, (hold) => hold.token === held.token)) {
-									if (report === "output") {
-										end(step, Option.some(held.token), Option.some(report))
-										return answer(took)
-									}
-									if (step.attempts + 1 >= flat.ceilings.attempts) {
-										end(step, Option.some(held.token), Option.some(report))
+								if (Option.exists(step.hold, (hold) => hold.attempt === held.attempt)) {
+									if (report === "output" || step.attempts + 1 >= flat.attempts) {
+										end(step, held.attempt, Option.some(report))
 										return answer(took)
 									}
 									step.attempts += 1
 									step.hold = Option.none()
-									step.retried = Option.some({ token: held.token, at: now })
+									step.retried = Option.some({ attempt: held.attempt, at: now })
 									step.due = now
 									return answer(took)
 								}
@@ -205,8 +206,8 @@ const specOf = (
 									Option.isNone(step.hold) &&
 									Option.exists(
 										step.retried,
-										(retried) =>
-											retried.token === held.token && retried.at === now && report === "retry"
+										(retry) =>
+											retry.attempt === held.attempt && retry.at === now && report === "retry"
 									)
 								return answer(refused(again ? "unchanged" : "lost"))
 							}
@@ -217,30 +218,15 @@ const specOf = (
 			now += ticks
 			return answer(took)
 		},
-		stop: () => {
-			if (!admitted) {
-				return answer(refused("gone"))
-			}
-			if (finished) {
-				return answer(refused("unchanged"))
-			}
-			Arr.forEach(steps, (step) => {
-				if (Option.isNone(step.result)) {
-					step.result = Option.some({ token: Option.none(), report: Option.none() })
-					step.hold = Option.none()
-				}
-			})
-			finished = true
-			return answer(took)
-		},
 		retire: () => {
 			if (!admitted) {
-				return answer(refused("gone"))
+				return answer(refused(retired ? "unchanged" : "gone"))
 			}
 			if (!finished) {
 				return answer(refused("live"))
 			}
 			admitted = false
+			retired = true
 			steps = []
 			notice("retired")
 			return answer(took)
@@ -253,19 +239,14 @@ const COMMANDS: Arr.NonEmptyReadonlyArray<CommandName<Parameters>> = [
 	"claim",
 	"commit",
 	"tick",
-	"stop",
 	"retire"
 ]
 
 const flatGen: Gen<Flat> = (source) => ({
-	width: source.draw(int(1, 2)),
+	seats: source.draw(int(1, 2)),
 	steps: source.draw(int(0, 3)),
 	lease: source.draw(int(1, 3)),
-	ceilings: {
-		attempts: source.draw(int(1, 3)),
-		waits: 0,
-		reclaims: source.draw(int(1, 3))
-	}
+	attempts: source.draw(int(1, 3))
 })
 
 /** A flat program and a command program over the ledger under `rules`, a swarm of the commands on. */
@@ -277,7 +258,7 @@ const programsOf = (rules: Rules) => (source: Source) => {
 
 describe("the ledger against the laws' own statement", () => {
 	it.effect(
-		"every command a worker, the clock and an operator make is answered as the specification of a flat program says",
+		"every claim, seat, commit, retirement and admission a worker, the clock and an operator make is answered as the specification of a flat program says",
 		(ctx) =>
 			searched(
 				ctx,
@@ -289,14 +270,16 @@ describe("the ledger against the laws' own statement", () => {
 							[
 								"admit accepted",
 								"admit refused unchanged",
+								"admit refused retired",
 								"claim accepted",
-								"claim refused at-width",
-								"claim refused idle",
+								"claim refused full",
+								"claim refused behind",
+								"claim refused lost",
+								"claim refused gone",
 								"commit accepted",
 								"commit refused lost",
 								"commit refused unchanged",
 								"commit refused gone",
-								"stop accepted",
 								"retire accepted",
 								"retire refused live"
 							],
@@ -322,34 +305,29 @@ describe("the ledger against the laws' own statement", () => {
 			)
 	)
 
-	it.effect(
-		"the specification catches a commit fenced on its attempt number, not its token",
-		(ctx) =>
-			caught(
-				explore(
-					exploration({
-						suite: "planted: fence on the attempt",
-						draw: drawn(programsOf(fenceOnAttempt.rules)),
-						coverage: required<"retired-lease">(["retired-lease"], {
-							cases: 800,
-							sense: notesOnly
-						}),
-						runs: 400,
-						shrink: 40,
-						oracle: {
-							kind: "second-implementation",
-							name: "a flat program's ledger as the laws state it, against a ledger fenced on the attempt"
-						}
-					}),
-					(sketch, c: Case<Toward>) =>
-						Effect.asVoid(
-							runProgram(
-								flatMachine(sketch.flat, fenceOnAttempt.rules),
-								specOf(sketch.flat, (seen) => c.note(seen)),
-								sketch.steps
-							)
+	it.effect("the specification catches a ledger whose retired keys recur", (ctx) =>
+		caught(
+			explore(
+				exploration({
+					suite: "planted: retired keys recur, against the specification",
+					draw: drawn(programsOf(retiredKeysRecur.rules)),
+					coverage: required<Toward>(["readmitted"], { cases: 800, sense: notesOnly }),
+					runs: 400,
+					shrink: 40,
+					oracle: {
+						kind: "second-implementation",
+						name: "a flat program's ledger as the laws state it, against a ledger that forgets retired keys"
+					}
+				}),
+				(sketch, c: Case<Toward>) =>
+					Effect.asVoid(
+						runProgram(
+							flatMachine(sketch.flat, retiredKeysRecur.rules),
+							specOf(sketch.flat, (seen) => c.note(seen)),
+							sketch.steps
 						)
-				)
-			).pipe(Effect.provideServiceEffect(Run, runOfTest(ctx)))
+					)
+			)
+		).pipe(Effect.provideServiceEffect(Run, runOfTest(ctx)))
 	)
 })

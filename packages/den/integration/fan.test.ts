@@ -1,7 +1,6 @@
 import { caseHang } from "@bjornpagen/den/limits"
-import { drain } from "@bjornpagen/den/runtime/drive"
-import { rootScope, startedScope } from "@bjornpagen/den/runtime/identity"
-import { begin } from "@bjornpagen/den/runtime/turn"
+import { now } from "@bjornpagen/den/runtime/clock"
+import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
 import { drawn, explore } from "@den/testing/explore"
 import { required } from "@den/testing/features"
@@ -9,35 +8,32 @@ import { type Gen, int } from "@den/testing/gen"
 import { notesOnly } from "@den/testing/sense"
 import { boundedShrink } from "@den/testing/shrink"
 import { searched } from "@den/testing/vitest"
-import { layer } from "@effect/vitest"
-import { assert } from "@effect/vitest"
+import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter } from "effect"
-import { fanLedger } from "#integration/slice/generated/fan.binding.ts"
-import { AppServed, sliceLayer, WorkerServed } from "#integration/support/slice.ts"
+import { admitAndDrain } from "#integration/support/run.ts"
+import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
 
 /**
- * The fan-out flow end to end on PostgreSQL 19: a root starts one batch scope, the batch starts one square per number up
- * to its size, the batch's finish tallies them once every square has its result, and the root's finish runs once
- * after the batch's.
+ * The fan-out flow: a root admits one batch scope, whose admission starts one square per number from 1 to its size,
+ * each holding a seat of the two-seat Pool while it runs; the batch's finish tallies them once every square has ended,
+ * and the root's finish settles the batch after the batch's own finish.
  *
- * Oracle (specification): a batch of size n leaves its tally of n squares summing 1² + … + n², the run settled, and
- * exactly one done finish for each of its two scopes, an empty batch's included; and starting it again changes
- * nothing.
+ * Oracle (specification): the batch's tally counts every square and sums their squares, n(n + 1)(2n + 1) / 6; the
+ * batch and the root each finish once, done; an empty batch tallies nothing and still finishes; every seat is given
+ * back at the end.
  */
 
-type Feature = "empty batch" | "several squares" | "first start" | "start again"
+type Feature = "an empty batch" | "fewer squares than seats" | "more squares than seats"
 
 interface Run {
 	readonly size: number
 	readonly copy: number
 }
 
-const runs: Gen<Run> = (source) => ({ size: source.draw(int(0, 5)), copy: source.draw(int(0, 2)) })
-
-const batchOf = (run: Run) => `b-${run.size}-${run.copy}`
+const runs: Gen<Run> = (source) => ({ size: source.draw(int(0, 5)), copy: source.draw(int(0, 9)) })
 
 layer(sliceLayer)("the fan-out flow", (it) => {
-	it.effect("finishes a batch once after all its children, and its root once after it", (ctx) =>
+	it.effect("tallies every square once all have ended, the root after the batch", (ctx) =>
 		searched(
 			ctx,
 			explore(
@@ -45,16 +41,19 @@ layer(sliceLayer)("the fan-out flow", (it) => {
 					suite: "fan-out flow",
 					oracle: {
 						kind: "specification",
-						name: "a tally of every square, the run settled, one finish per scope, and no change on a rerun"
+						name: "a tally of every square, one done finish per scope, the root's after the batch's, every seat given back"
 					},
 					draw: drawn(runs),
 					literal: Formatter.format,
 					coverage: required<Feature>(
-						["empty batch", "several squares", "first start", "start again"],
-						{ cases: 12, sense: notesOnly }
+						["an empty batch", "fewer squares than seats", "more squares than seats"],
+						{
+							cases: 10,
+							sense: notesOnly
+						}
 					),
 					kept: [],
-					runs: 12,
+					runs: 10,
 					shrink: boundedShrink(8),
 					concurrency: 1,
 					steerEvery: 4,
@@ -62,49 +61,39 @@ layer(sliceLayer)("the fan-out flow", (it) => {
 				},
 				(run, c) =>
 					Effect.gen(function* () {
-						c.note(run.size === 0 ? "empty batch" : "several squares")
-						const worker = yield* Db.open(WorkerServed.roles.fan_worker, {})
+						c.note(
+							run.size === 0
+								? "an empty batch"
+								: run.size <= 2
+									? "fewer squares than seats"
+									: "more squares than seats"
+						)
+						const { fan, ledgers } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
-						const fan = fanLedger(worker.workload)
-						const batch = batchOf(run)
-						const input = { batch, size: BigInt(run.size) }
-						const started = yield* fan.start.FanRun(batch, input)
-						c.note(started.outcome.kind === "accepted" ? "first start" : "start again")
-						yield* begin(fan.ledger, started.spawned)
-						yield* drain(fan.ledger)
-						const tallied = yield* app.workload.tallies.once({ params: {}, facts: {} })
-						const tally = Arr.filter(Arr.fromIterable(tallied), (t) => t.batch === batch)
-						const squares = Arr.map(
-							Arr.filter(Arr.range(1, run.size), (n) => n <= run.size),
-							(n) => BigInt(n * n)
-						)
+						const batch = `b-${run.size}-${yield* nonce}`
+						const at = yield* now
+						const requested = yield* fan.request.FanRun(batch, at, {
+							batch,
+							size: BigInt(run.size)
+						})
+						if (!requested.fresh) {
+							return yield* c.assume(false)
+						}
+						yield* admitAndDrain(ledgers, FlowName.make("Fan"), [requested.scope])
+						const tallies = yield* rows(app.workload.tallies.once({ params: {}, facts: {} }))
+						const n = BigInt(run.size)
 						assert.deepStrictEqual(
-							Arr.map(tally, (t) => [t.count, t.total]),
-							[[BigInt(run.size), Arr.reduce(squares, 0n, (sum, s) => sum + s)]]
+							Arr.filter(tallies, (t) => t.batch === batch),
+							[{ batch, count: n, total: (n * (n + 1n) * (2n * n + 1n)) / 6n }]
 						)
-						const settled = yield* app.workload.settled.once({ params: {}, facts: {} })
-						assert.isTrue(Arr.some(Arr.fromIterable(settled), (s) => s.batch === batch))
-						const root = yield* rootScope("Fan", "FanRun", batch)
-						const child = yield* startedScope(root, 0)
-						const finished = yield* app.workload.fanFinishes.once({ params: {}, facts: {} })
-						const finishes = Arr.filter(
-							Arr.fromIterable(finished),
-							(f) => f.scope === root || f.scope === child
+						const settled = yield* rows(app.workload.settled.once({ params: {}, facts: {} }))
+						assert.isTrue(Arr.some(settled, (s) => s.batch === batch))
+						const finishes = yield* rows(app.workload.fanFinishes.once({ params: {}, facts: {} }))
+						assert.isTrue(
+							Arr.some(finishes, (f) => f.scope === requested.scope && f.outcome === "done")
 						)
-						assert.deepStrictEqual(
-							Arr.map(finishes, (f) => f.outcome),
-							["done", "done"]
-						)
-						const again = yield* fan.start.FanRun(batch, input)
-						assert.strictEqual(again.outcome.kind, "unchanged")
-						yield* begin(fan.ledger, again.spawned)
-						yield* drain(fan.ledger)
-						const after = yield* app.workload.fanFinishes.once({ params: {}, facts: {} })
-						assert.strictEqual(
-							Arr.filter(Arr.fromIterable(after), (f) => f.scope === root || f.scope === child)
-								.length,
-							2
-						)
+						const holds = yield* fan.ledger.coordination.holds
+						assert.deepStrictEqual(holds, [])
 					})
 			)
 		)

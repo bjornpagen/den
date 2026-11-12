@@ -3,25 +3,37 @@ import { requiredInSpace } from "@den/testing/features"
 import { element } from "@den/testing/gen"
 import { searched } from "@den/testing/vitest"
 import { assert, it } from "@effect/vitest"
-import { Effect, Exit, Formatter, Option, Schema } from "effect"
+import { Array as Arr, Effect, Exit, Formatter, Option, Schema } from "effect"
 import { flow } from "#algebra/flow.ts"
 import {
 	type AnyStepKind,
+	always,
+	atSpawn,
+	attempts,
 	edge,
-	lane,
+	noReads,
+	operator,
 	Refused,
+	type Resource,
+	resource,
 	root,
 	scope,
+	shared,
 	step,
+	unconditional,
+	utcHours,
+	type Window,
+	writer,
 	writesNothing
 } from "#algebra/kinds.ts"
-import { caseHang } from "#limits.ts"
+import { caseHang, derived, published } from "#limits.ts"
 
 /**
  * A flow's declaration-time checks: a well-formed flow is accepted, and each fault is refused with Refused when the
- * flow is declared, naming the declaration: a kind declared twice, a step on a lane the flow does not declare, an edge
- * from a step it does not declare, a kind no scope owns, a finish reading a kind its scope never holds, no root at
- * all, and a name den cannot lower into a relation's.
+ * flow or one of its kinds is declared, naming the declaration: a kind declared twice, an edge from a step the flow does
+ * not declare, a kind no scope owns, a finish reading a kind its scope never holds, no root at all, a name den cannot
+ * lower into a relation's, two resources of one name, a resource of no seats, a ladder of no attempts, and a window
+ * that is empty or reaches past a day.
  *
  * Oracle (specification): the proposal's rules of section 4, one fault at a time.
  */
@@ -29,34 +41,85 @@ import { caseHang } from "#limits.ts"
 const Fault = Schema.Literals([
 	"none",
 	"twice",
-	"undeclared lane",
 	"undeclared edge source",
 	"unowned kind",
 	"foreign read",
 	"no root",
-	"bad name"
+	"bad name",
+	"resource name twice",
+	"no seats",
+	"no attempts",
+	"empty window",
+	"window past a day"
 ])
 type Fault = typeof Fault.Type
 
+/** The box of grizzle's own work-queue law suite: two seats, where two leases meet at a seat as often as they miss. */
+const boxSeats = published({
+	value: 2,
+	owner: "the flow checks' resource, after grizzle's work-queue law suite",
+	unit: "seats",
+	scope: "the steps of the checked flow that use the Pool",
+	constraint: "compile-time constant",
+	source: "https://github.com/bjornpagen/grizzle/blob/a226cbac/test/support/laws/boxes.ts",
+	quote: "Two resources of two seats each: two leases meet at a seat as often as they miss it.",
+	verified: "2026-11-11"
+})
+
+/** A resource with none of the box's seats, the count a resource is refused for. */
+const noSeats = derived({
+	owner: "the flow checks' refused resource",
+	unit: "seats",
+	scope: "a resource declared with no seat, which den refuses",
+	from: [boxSeats],
+	derivation: "the box's seats less themselves: a resource that holds no seat bounds nothing",
+	compute: ([box]) => box.value - box.value
+})
+
 const Empty = Schema.Struct({})
 
+const windowOf = (fault: Fault): Window => {
+	switch (fault) {
+		case "empty window":
+			return utcHours(5, 5)
+		case "window past a day":
+			return utcHours(3, 25)
+		case "none":
+		case "twice":
+		case "undeclared edge source":
+		case "unowned kind":
+		case "foreign read":
+		case "no root":
+		case "bad name":
+		case "resource name twice":
+		case "no seats":
+		case "no attempts":
+			return always
+	}
+}
+
 const declare = (fault: Fault) => {
-	const work = lane("Work", { width: 1, window: { kind: "always" }, pause: "running", attempts: 1 })
-	const other = lane("Other", {
-		width: 1,
-		window: { kind: "always" },
-		pause: "running",
-		attempts: 1
+	const pool = resource("Pool", fault === "no seats" ? noSeats : boxSeats)
+	const other: Resource = fault === "resource name twice" ? resource("Pool", boxSeats) : pool
+	const ladder = fault === "no attempts" ? attempts(0) : attempts(1)
+	const shape = (uses: ReadonlyArray<Resource>) => ({
+		input: Empty,
+		output: Empty,
+		error: Schema.Never,
+		reads: noReads,
+		uses,
+		retry: ladder,
+		due: atSpawn,
+		writes: writesNothing
 	})
-	const shape = { input: Empty, output: Empty, error: Schema.Never, writes: writesNothing }
 	const done = () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
-	const A = step(fault === "undeclared lane" ? other : work, "A", shape, done)
-	const B = step(work, "B", shape, done)
-	const Stray = step(work, fault === "twice" ? "A" : "Stray", shape, done)
-	const finish = (reads: ReadonlyArray<AnyStepKind>) => ({
-		lane: work,
+	const A = step("A", shape([pool]), done)
+	const B = step("B", shape([other]), done)
+	const Stray = step(fault === "twice" ? "A" : "Stray", shape([]), done)
+	const finish = <const Reads extends ReadonlyArray<AnyStepKind>>(reads: Reads) => ({
 		reads,
 		error: Schema.Never,
+		retry: attempts(1),
 		writes: writesNothing,
 		body: () => Effect.succeed({ insert: {}, put: {}, delete: {} })
 	})
@@ -67,14 +130,17 @@ const declare = (fault: Fault) => {
 		finish: finish(fault === "foreign read" ? [A] : [B])
 	})
 	const Run = root(fault === "bad name" ? "run_lower" : "Run", {
-		trigger: { kind: "command" },
+		trigger: operator,
 		input: Empty,
 		children: fault === "unowned kind" ? [Inner] : [A, Inner],
 		start: () => [Inner.of({})],
+		exclusive: shared,
+		window: windowOf(fault),
+		precondition: unconditional,
 		finish: finish([])
 	})
 	return flow("Check", {
-		lanes: [work],
+		writes: writer<{ readonly name: "loader" }>("loader"),
 		kinds:
 			fault === "no root"
 				? [A, B, Inner]
@@ -96,7 +162,7 @@ it.effect("accepts a well-formed flow and refuses each fault when it is declared
 				limit: Fault.literals.length,
 				coverage: requiredInSpace<Fault>(Fault.literals),
 				caseHang,
-				box: "a flow of two steps, a scope and a root, with each single fault",
+				box: "a flow of two steps on one resource, a scope and a root, with each single fault",
 				oracle: {
 					kind: "specification",
 					name: "the proposal's section 4 rules, one fault at a time"
@@ -115,6 +181,12 @@ it.effect("accepts a well-formed flow and refuses each fault when it is declared
 						Exit.findErrorOption(declared),
 						fault === "none" ? Option.none() : Option.some({ refused: true })
 					)
+					if (Exit.isSuccess(declared)) {
+						assert.deepStrictEqual(
+							Arr.map(declared.value.resources, (r) => r.name),
+							["Pool"]
+						)
+					}
 				})
 		)
 	)

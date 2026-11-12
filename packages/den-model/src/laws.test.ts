@@ -7,31 +7,39 @@ import { Effect } from "effect"
 import { ledgerOf, SOUND } from "#ledger.ts"
 import { LAWS } from "#properties.ts"
 import { natureOf, type Scenario, scenarioGen } from "#scenarios.ts"
-import { evidenceOf, exploration, holds } from "#search.ts"
+import { declares, evidenceOf, exploration, holds } from "#search.ts"
 import { type Seen, simulate, SOUND_POLICY } from "#simulator.ts"
 import { syntheticOf } from "#workloads/synthetic.ts"
 
+/** What a generated case notices beyond the run's own situations: a program its declaration refused. */
+type Noticed = Seen | "refused-declaration"
+
 /** A generated program run under its scenario's faults, every law checked over what it leaves. */
-const lawful = (scenario: Scenario, c: Case<Seen>) =>
+const lawful = (scenario: Scenario, c: Case<Noticed>) =>
 	Effect.gen(function* () {
-		const { program, admissions } = syntheticOf(scenario.shape)
+		const { program, acts, horizon } = syntheticOf(scenario.shape)
+		if (!declares(SOUND, program, scenario.platform.census)) {
+			c.note("refused-declaration")
+			return
+		}
 		const run = simulate(
 			{
 				program,
-				admissions,
+				acts,
 				ledger: ledgerOf(SOUND),
 				policy: SOUND_POLICY,
-				platform: scenario.platform
+				platform: scenario.platform,
+				horizon
 			},
 			natureOf(c, scenario.faults)
 		)
 		c.noteAll(run.seen)
-		yield* holds(LAWS, evidenceOf(run, program.lanes))
+		yield* holds(LAWS, evidenceOf(run, program))
 	})
 
 describe("den's laws over generated programs", () => {
 	it.effect(
-		"every pending step ends, one result each, scopes finish once after their children, widths hold, re-runs change nothing, stale drains, nothing is fire-and-forget",
+		"pending steps move, one result each, scopes finish once after their children, seats are exact, exclusive runs never overlap, preconditions hold, re-runs change nothing, stale drains, nothing is fire-and-forget, windows hold census ticks",
 		(ctx) =>
 			searched(
 				ctx,
@@ -39,27 +47,38 @@ describe("den's laws over generated programs", () => {
 					exploration({
 						suite: "laws: generated programs",
 						draw: drawn(scenarioGen((shape) => shape, [])),
-						coverage: required<Seen>(
+						coverage: required<Noticed>(
 							[
 								"claimed",
 								"reclaimed",
 								"retried",
+								"waited",
 								"exhausted",
 								"failed",
 								"stale",
 								"late-accepted",
 								"late-lost",
 								"rerun-commit",
-								"stopped",
-								"at-width",
-								"completed",
-								"timer",
-								"joined",
+								"full",
+								"behind",
+								"early",
+								"closed",
+								"paused",
+								"read",
 								"finished",
+								"held",
+								"blocked",
 								"retired",
+								"readmitted-retired",
+								"continued",
+								"rang",
+								"relayed",
+								"timer",
 								"handover",
+								"replayed",
 								"redelivered",
-								"deduplicated"
+								"deduplicated",
+								"refused-declaration"
 							],
 							{ cases: 400, sense: notesOnly }
 						),

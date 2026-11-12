@@ -13,17 +13,23 @@ RETURN '{"news","sport"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__chain_join_names_mqsumlsj56"() RETURNS "pg_catalog"."name"[]
+CREATE FUNCTION "slice"."__chain_join_names_hvq3dwjqow"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"ChainRun"}'::"pg_catalog"."name"[];
+RETURN '{"ChainRun","Ordered"}'::"pg_catalog"."name"[];
 
-REVOKE ALL ON FUNCTION "slice"."__chain_join_names_mqsumlsj56"() FROM PUBLIC;
+REVOKE ALL ON FUNCTION "slice"."__chain_join_names_hvq3dwjqow"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__chain_kind_names_zria4jypsm"() RETURNS "pg_catalog"."name"[]
+CREATE FUNCTION "slice"."__chain_kind_names_73btyxoydp"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"Page","ChainRunFinish"}'::"pg_catalog"."name"[];
+RETURN '{"Page","ChainRunFinish","OrderedFinish"}'::"pg_catalog"."name"[];
 
-REVOKE ALL ON FUNCTION "slice"."__chain_kind_names_zria4jypsm"() FROM PUBLIC;
+REVOKE ALL ON FUNCTION "slice"."__chain_kind_names_73btyxoydp"() FROM PUBLIC;
+
+CREATE FUNCTION "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"news","sport"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"() FROM PUBLIC;
 
 CREATE FUNCTION "slice"."__chain_outcome_names_vo4tgqx6qh"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -36,6 +42,12 @@ LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN '{"news","sport"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__chain_page_input_feed_names_dxuyhzkiur"() FROM PUBLIC;
+
+CREATE FUNCTION "slice"."__chain_pausable_names_vjdoymenyq"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"ChainRun","Ordered"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__chain_pausable_names_vjdoymenyq"() FROM PUBLIC;
 
 CREATE FUNCTION "slice"."__fan_join_names_gct5lzhdqo"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -55,21 +67,85 @@ RETURN '{"done","failed"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__fan_outcome_names_7pbhseigfj"() FROM PUBLIC;
 
+CREATE FUNCTION "slice"."__fan_pausable_names_xzmaxnvnb6"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"Pool","FanRun"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__fan_pausable_names_xzmaxnvnb6"() FROM PUBLIC;
+
+CREATE FUNCTION "slice"."__fan_resource_names_tugc7yp6xo"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"Pool"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__fan_resource_names_tugc7yp6xo"() FROM PUBLIC;
+
 CREATE FUNCTION "slice"."__feed_names_azjbqebc6i"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN '{"news","sport"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__feed_names_azjbqebc6i"() FROM PUBLIC;
 
+CREATE FUNCTION "slice"."__retry_join_names_st4whng7gb"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"Ladders"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__retry_join_names_st4whng7gb"() FROM PUBLIC;
+
+CREATE FUNCTION "slice"."__retry_kind_names_pa363dov7n"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"Steadfast","Brittle","LaddersFinish"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__retry_kind_names_pa363dov7n"() FROM PUBLIC;
+
+CREATE FUNCTION "slice"."__retry_outcome_names_zzz2kawwsa"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"done","failed"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__retry_outcome_names_zzz2kawwsa"() FROM PUBLIC;
+
+CREATE FUNCTION "slice"."__retry_pausable_names_damz4vyplb"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"Ladders"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__retry_pausable_names_damz4vyplb"() FROM PUBLIC;
+
+CREATE FUNCTION "slice"."__sync_join_names_cci5jmwoiz"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"SyncRun","Gold"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__sync_join_names_cci5jmwoiz"() FROM PUBLIC;
+
+CREATE FUNCTION "slice"."__sync_kind_names_4mra6ojpzm"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"Copy","Build","SyncRunFinish","GoldFinish"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__sync_kind_names_4mra6ojpzm"() FROM PUBLIC;
+
+CREATE FUNCTION "slice"."__sync_outcome_names_xzb4y4xgki"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"done","failed"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__sync_outcome_names_xzb4y4xgki"() FROM PUBLIC;
+
+CREATE FUNCTION "slice"."__sync_pausable_names_ehqx6eh7nb"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"SyncRun","Gold"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__sync_pausable_names_ehqx6eh7nb"() FROM PUBLIC;
+
 CREATE DOMAIN "slice"."chain_chain_run_input_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_chain_run_input_feed_names_byxgsvzik7"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
-CREATE DOMAIN "slice"."chain_join" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_join_names_mqsumlsj56"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+CREATE DOMAIN "slice"."chain_join" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_join_names_hvq3dwjqow"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
-CREATE DOMAIN "slice"."chain_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_kind_names_zria4jypsm"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+CREATE DOMAIN "slice"."chain_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_kind_names_73btyxoydp"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."chain_ordered_input_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_ordered_input_feed_names_dwtixlgyrd"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."chain_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_outcome_names_vo4tgqx6qh"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."chain_page_input_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_page_input_feed_names_dxuyhzkiur"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."chain_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_pausable_names_vjdoymenyq"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."fan_join" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__fan_join_names_gct5lzhdqo"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
@@ -77,7 +153,27 @@ CREATE DOMAIN "slice"."fan_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS 
 
 CREATE DOMAIN "slice"."fan_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__fan_outcome_names_7pbhseigfj"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
+CREATE DOMAIN "slice"."fan_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__fan_pausable_names_xzmaxnvnb6"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."fan_resource" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__fan_resource_names_tugc7yp6xo"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
 CREATE DOMAIN "slice"."feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__feed_names_azjbqebc6i"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."retry_join" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__retry_join_names_st4whng7gb"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."retry_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__retry_kind_names_pa363dov7n"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."retry_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__retry_outcome_names_zzz2kawwsa"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."retry_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__retry_pausable_names_damz4vyplb"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."sync_join" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__sync_join_names_cci5jmwoiz"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."sync_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__sync_kind_names_4mra6ojpzm"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."sync_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__sync_outcome_names_xzb4y4xgki"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."sync_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__sync_pausable_names_ehqx6eh7nb"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."__domain_jotafzuj2i" AS "pg_catalog"."uuid";
 

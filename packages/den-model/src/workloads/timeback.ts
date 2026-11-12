@@ -1,30 +1,32 @@
-import { Array as Arr } from "effect"
+import { Array as Arr, Option } from "effect"
 import type { Datum } from "#datum.ts"
 import {
 	type Admission,
 	admissionOf,
-	type Ceilings,
 	type Ladder,
-	type Lane,
 	open,
 	ordinals,
 	type Program,
+	type Resource,
 	type RootKind,
+	rootedOf,
 	type Runs,
 	type ScopeKind,
 	type StepKind,
 	spawn,
-	stepOf
+	stepOf,
+	type Window
 } from "#program.ts"
 
 /**
- * The Timeback workload's limits, each the test's input: the lane's width (edullm's `LANE_WIDTHS.timeback`, measured on
- * the bastion), how a part runs, and the most bytes one page may copy (`COPY_PAGE_BYTES`).
+ * W1's limits, each the test's input: the replica's seats (edullm's measured 8 on the bastion), the window the daily
+ * job claims in, how a part runs (its lease and its ladder, five attempts), and the most bytes one page may copy
+ * (`COPY_PAGE_BYTES`).
  */
 export type TimebackLimits = Readonly<{
-	width: number
+	seats: number
+	window: Option.Option<Window>
 	lease: number
-	ceilings: Ceilings
 	ladder: Ladder
 	pageBytes: number
 }>
@@ -77,23 +79,25 @@ const cut = (relation: Relation, pageBytes: number): ReadonlyArray<Range> => {
 
 const showRange = (range: Range): Datum => ({ from: range.from, to: range.to })
 
+const showDaily = (daily: Daily): Datum => ({ relation: daily.relation.name, night: daily.night })
+
+/** The root kind of W1, by name, for the precondition of W4. */
+export const TIMEBACK_DAILY = "TimebackDaily"
+
 /**
- * edullm's Timeback daily job as a den program: the root starts a print of the relation's key fingerprint; the print's
- * edge opens a pages scope, one page per block range admission cut, a page too large for one copy splitting in two
- * and a one-block page too large refused; the pages scope's finish starts the prune in the root; the root's finish
- * moves the relation's cursor to the night, or holds it where any part failed. Every part runs on one lane, under its
- * width.
+ * W1, edullm's Timeback daily job, as a den program: a root per relation and night, exclusive per relation and inside
+ * its window, starts a print of the relation's key fingerprint; the print's edge opens a pages scope, one page per
+ * block range admission cut, a page too large for one copy splitting in two and a one-block page too large refused;
+ * the pages scope's finish starts the prune in the root, which reads the print's fingerprint as its declared read; the
+ * root's finish moves the relation's cursor to the night, or holds it where any part failed. Every part holds a seat
+ * of the replica while it runs.
  */
 export const timebackOf = (
 	limits: TimebackLimits
 ): Readonly<{ program: Program; admit: (daily: Daily) => Admission }> => {
-	const timeback: Lane = { name: "timeback", width: limits.width, window: { _tag: "Always" } }
-	const runs: Runs = {
-		lane: timeback,
-		lease: limits.lease,
-		ceilings: limits.ceilings,
-		ladder: limits.ladder
-	}
+	const replica: Resource = { name: "replica", seats: limits.seats }
+	const runs: Runs = { lease: limits.lease, holds: [replica], ladder: limits.ladder }
+	const free: Runs = { lease: limits.lease, holds: [], ladder: limits.ladder }
 
 	const Page: StepKind<PageInput, PageCopy, number> = {
 		name: "TimebackPage",
@@ -101,6 +105,7 @@ export const timebackOf = (
 		input: (page) => ({ relation: page.daily.relation.name, range: showRange(page.range) }),
 		output: (copy) => (copy._tag === "Copied" ? { rows: copy.rows } : { split: true }),
 		error: (bytes) => ({ tooLarge: bytes }),
+		reads: () => [],
 		body: (page) => {
 			const bytes = bytesOf(page.daily.relation, page.range)
 			if (bytes <= limits.pageBytes) {
@@ -132,27 +137,38 @@ export const timebackOf = (
 		]
 	}
 
+	/** The prune compares Silver with the print its declared read returns, and prunes against that night's print. */
 	const Prune: StepKind<Daily, number, never> = {
 		name: "TimebackPrune",
 		runs,
-		input: (daily) => ({ relation: daily.relation.name, night: daily.night }),
+		input: showDaily,
 		output: (deleted) => deleted,
 		error: () => 0,
-		body: (daily) => ({
+		reads: (daily) => [
+			{
+				name: "print",
+				query: { _tag: "Rows", relation: "timeback_print", key: Option.some(daily.relation.name) }
+			}
+		],
+		body: (daily, claimed) => ({
 			_tag: "Output",
 			output: 0,
-			writes: [{ relation: "pruned", key: daily.relation.name, value: daily.night }]
+			writes: Arr.map(claimed.read("print"), (print) => ({
+				relation: "pruned",
+				key: daily.relation.name,
+				value: print.value
+			}))
 		}),
 		edges: () => []
 	}
 
 	const Pages: ScopeKind<Daily, boolean, never> = {
 		name: "TimebackPages",
-		input: (daily) => ({ relation: daily.relation.name, night: daily.night }),
+		input: showDaily,
 		start: (daily) =>
 			Arr.map(cut(daily.relation, limits.pageBytes), (range) => stepOf(Page, { daily, range })),
 		finish: {
-			runs,
+			runs: free,
 			output: (complete) => complete,
 			error: () => false,
 			body: (_daily, children) => ({
@@ -166,9 +182,10 @@ export const timebackOf = (
 	const Print: StepKind<Daily, number, never> = {
 		name: "TimebackPrint",
 		runs,
-		input: (daily) => ({ relation: daily.relation.name, night: daily.night }),
+		input: showDaily,
 		output: (blocks) => blocks,
 		error: () => 0,
+		reads: () => [],
 		body: (daily) => ({
 			_tag: "Output",
 			output: daily.relation.blocks,
@@ -185,14 +202,17 @@ export const timebackOf = (
 	}
 
 	const TimebackDaily: RootKind<Daily, boolean, never> = {
-		name: "TimebackDaily",
+		name: TIMEBACK_DAILY,
 		trigger: { _tag: "Schedule", every: 1 },
+		precondition: Option.none(),
+		window: limits.window,
+		exclusive: Option.some((daily) => daily.relation.name),
 		scope: {
-			name: "TimebackDaily",
-			input: (daily) => ({ relation: daily.relation.name, night: daily.night }),
+			name: TIMEBACK_DAILY,
+			input: showDaily,
 			start: (daily) => [stepOf(Print, daily)],
 			finish: {
-				runs,
+				runs: free,
 				output: (moved) => moved,
 				error: () => false,
 				body: (daily, children) => {
@@ -214,7 +234,11 @@ export const timebackOf = (
 	}
 
 	return {
-		program: { name: "timeback", lanes: [timeback] },
+		program: {
+			name: "timeback",
+			resources: [replica],
+			roots: [rootedOf(TimebackDaily)]
+		},
 		admit: (daily) => admissionOf(TimebackDaily, `${daily.relation.name}:${daily.night}`, daily)
 	}
 }

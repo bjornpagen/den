@@ -1,6 +1,22 @@
 import { Array as Arr, Equal, HashMap, HashSet, Option, Order } from "effect"
 import type { Datum } from "#datum.ts"
-import type { Answer, Command, Entry, Fact, Failure, Reported, ScopeEnding, Spawn } from "#facts.ts"
+import {
+	type Answer,
+	type By,
+	type Command,
+	type Entry,
+	type Fact,
+	type Failure,
+	type Holder,
+	holderText,
+	type Reported,
+	type ScopeEnding,
+	type SeatKey,
+	seatText,
+	type Taken,
+	type Target,
+	targetText
+} from "#facts.ts"
 import {
 	type RootKey,
 	rootOfScope,
@@ -11,53 +27,39 @@ import {
 	scopeText,
 	stepText
 } from "#identity.ts"
-import type {
-	Admission,
-	ChildEnding,
-	Claimed,
-	Completion,
-	Counts,
-	Feed,
-	Lane,
-	Next,
-	Runs,
-	ScopeChild,
-	ScopeWork,
-	Settled,
-	StepChild,
-	Write
+import {
+	type Admission,
+	type ChildEnding,
+	type Claimed,
+	type Counts,
+	isOpenAt,
+	type Ladder,
+	type Next,
+	ordinals,
+	type Query,
+	type Read,
+	type Resource,
+	type Row,
+	type Runs,
+	type ScopeChild,
+	type ScopeWork,
+	type Settled,
+	type StepChild,
+	type Window,
+	type Write
 } from "#program.ts"
-import { isOpenAt } from "#program.ts"
 
 /** How a step ended, as its row holds it: the facts that ended it, folded. */
 export type Ending =
-	| Readonly<{
-			_tag: "Done"
-			claim: number
-			token: Option.Option<number>
-			output: Datum
-			writes: ReadonlyArray<Write>
-	  }>
-	| Readonly<{ _tag: "Failed"; claim: number; token: Option.Option<number>; failure: Failure }>
-	| Readonly<{ _tag: "Completed"; value: Datum }>
-	| Readonly<{ _tag: "Stopped" }>
+	| Readonly<{ _tag: "Done"; attempt: number; output: Datum; writes: ReadonlyArray<Write> }>
+	| Readonly<{ _tag: "Failed"; attempt: number; failure: Failure }>
+
+/** A claim in force: its number, the turn that holds it, the instant its lease ends, and the deployment that took it. */
+export type Hold = Readonly<{ attempt: number; turn: string; until: number; deployment: number }>
 
 /**
- * A live claim: its number, its fence token, its slot in the lane, the instant its lease ends, and the deployment that
- * took it.
- */
-export type Hold = Readonly<{
-	claim: number
-	token: number
-	slot: number
-	until: number
-	deployment: number
-}>
-
-/**
- * Where a step that runs on a lane stands: due at an instant (`since` the instant the fact that made it due committed),
- * held by its latest claim (whose lease may have run out,
- * which makes it due again at `until` and its next claim a reclaim), or ended.
+ * Where a step stands: due at an instant (`since` the instant the fact that made it due committed), held by its latest
+ * claim (whose lease may have run out, which makes it due again at `until` and its next claim a reclaim), or ended.
  */
 export type Phase =
 	| Readonly<{ _tag: "Due"; at: number; since: number }>
@@ -67,8 +69,11 @@ export type Phase =
 /** Whether a step is one of its scope's children or the scope's finish. */
 export type Role = "Child" | "Finish"
 
-/** What every step's row holds: its identity, kind, input, owning scope (fixed at spawn) and root, and its role. */
-type Common = Readonly<{
+/**
+ * A step's row: its identity, kind, input, owning scope (fixed at spawn), root and role; its work; where it stands; its
+ * claims so far, the attempts and waits it spent; and the retry its latest claim committed, if one did.
+ */
+export type StepRow = Readonly<{
 	id: StepId
 	text: string
 	kind: string
@@ -76,36 +81,15 @@ type Common = Readonly<{
 	scope: string
 	root: string
 	role: Role
+	runs: Runs
+	reads: ReadonlyArray<Read>
+	run: (claimed: Claimed) => Settled
+	phase: Phase
+	claims: number
+	attempts: number
+	waits: number
+	retried: Option.Option<Readonly<{ attempt: number; at: number; counts: Counts }>>
 }>
-
-/** The row of a step that runs on a lane: its work, where it stands, its claims so far and its counters. */
-export type BodyRow = Common &
-	Readonly<{
-		_tag: "Body"
-		runs: Runs
-		run: (claimed: Claimed) => Settled
-		phase: Phase
-		claims: number
-		attempts: number
-		waits: number
-		reclaims: number
-		retried: Option.Option<Readonly<{ token: number; at: number; counts: Counts }>>
-	}>
-
-/** How an await is completed, its timer's instant fixed at its spawn. */
-export type Awaiting = Readonly<{ _tag: "External" }> | Readonly<{ _tag: "Timer"; fires: number }>
-
-/** The row of an await: how it completes, what its completion starts, and its ending once completed or stopped. */
-export type AwaitRow = Common &
-	Readonly<{
-		_tag: "Await"
-		awaiting: Awaiting
-		settle: (value: Datum) => ReadonlyArray<Next>
-		ending: Option.Option<Ending>
-	}>
-
-/** A step's row. */
-export type StepRow = BodyRow | AwaitRow
 
 /** A scope's child, by the kind of row it is and its key. */
 export type ChildRef = Readonly<{ _tag: "Step" | "Scope"; text: string }>
@@ -123,71 +107,76 @@ export type ScopeRow = Readonly<{
 	ending: Option.Option<ScopeEnding>
 }>
 
-/** A feed's join in one scope under one key: the parts that arrived, by role. */
-export type JoinRow = Readonly<{
+/**
+ * A root's row: its key, its kind, its scope, its age (its admission's place among every admission), the key of the
+ * exclusivity seat its run holds, and the window its steps run in.
+ */
+export type RootRow = Readonly<{
+	key: RootKey
 	text: string
-	feed: Feed
+	kind: string
 	scope: string
-	root: string
-	parts: HashMap.HashMap<string, Datum>
+	age: number
+	exclusive: Option.Option<string>
+	window: Option.Option<Window>
 }>
 
-/** A root's row: its key and its scope. */
-export type RootRow = Readonly<{ key: RootKey; text: string; scope: string }>
+/** A seat's row: the seat and its holder. A seat with no row is free. */
+export type SeatRow = Readonly<{ seat: SeatKey; holder: Holder }>
 
 /**
- * The ledger's state: a projection of the facts it holds, keyed by canonical text (identity.ts). The app's own rows,
- * which steps' writes land in, are a relation of their own that retirement never touches, and so is the count of fence
- * tokens minted, so no token is ever minted twice.
+ * The ledger's state: a projection of the facts it holds, keyed by canonical text. The retired root keys, which never
+ * recur, survive their graphs, and so do the app's own relations, which steps' writes and the app's transactions
+ * land in.
  */
 export type State = Readonly<{
 	roots: HashMap.HashMap<string, RootRow>
+	retired: HashSet.HashSet<string>
 	scopes: HashMap.HashMap<string, ScopeRow>
 	steps: HashMap.HashMap<string, StepRow>
-	joins: HashMap.HashMap<string, JoinRow>
+	seats: HashMap.HashMap<string, SeatRow>
 	paused: HashSet.HashSet<string>
 	deployment: number
-	minted: number
-	app: HashMap.HashMap<string, Datum>
+	admitted: number
+	app: HashMap.HashMap<string, HashMap.HashMap<string, Datum>>
 }>
 
 /** The empty ledger, under deployment 0. */
 export const emptyState: State = {
 	roots: HashMap.empty(),
+	retired: HashSet.empty(),
 	scopes: HashMap.empty(),
 	steps: HashMap.empty(),
-	joins: HashMap.empty(),
+	seats: HashMap.empty(),
 	paused: HashSet.empty(),
 	deployment: 0,
-	minted: 0,
+	admitted: 0,
 	app: HashMap.empty()
 }
 
 type FactOf<T extends Fact["_tag"]> = Extract<Fact, Readonly<{ _tag: T }>>
+
+/** A fact that starts nothing new. */
+type PlainFact = Exclude<Fact, Readonly<{ _tag: "Admitted" | "Opened" | "Spawned" }>>
 
 /**
  * A fact as the ledger applies it: the facts that start something carry the work their typed code erased, which the
  * trace leaves out.
  */
 type Event =
-	| Readonly<{ _tag: "Admit"; fact: FactOf<"Admitted">; work: ScopeWork }>
+	| Readonly<{
+			_tag: "Admit"
+			fact: FactOf<"Admitted">
+			work: ScopeWork
+			window: Option.Option<Window>
+	  }>
 	| Readonly<{ _tag: "Open"; fact: FactOf<"Opened">; work: ScopeWork }>
 	| Readonly<{ _tag: "Spawn"; fact: FactOf<"Spawned">; child: StepChild; role: Role }>
-	| Readonly<{ _tag: "Join"; fact: FactOf<"Fed">; feed: Feed }>
-	| Readonly<{
-			_tag: "Plain"
-			fact: Exclude<Fact, Readonly<{ _tag: "Admitted" | "Opened" | "Spawned" | "Fed" }>>
-	  }>
+	| Readonly<{ _tag: "Plain"; fact: PlainFact }>
 
-/** A step's ending, wherever its row keeps it. */
-export const endingOf = (row: StepRow): Option.Option<Ending> => {
-	switch (row._tag) {
-		case "Body":
-			return row.phase._tag === "Ended" ? Option.some(row.phase.ending) : Option.none()
-		case "Await":
-			return row.ending
-	}
-}
+/** A step's ending, if it ended. */
+export const endingOf = (row: StepRow): Option.Option<Ending> =>
+	row.phase._tag === "Ended" ? Option.some(row.phase.ending) : Option.none()
 
 const withStep = (state: State, text: string, change: (row: StepRow) => StepRow): State =>
 	Option.match(HashMap.get(state.steps, text), {
@@ -201,61 +190,10 @@ const withScope = (state: State, text: string, change: (row: ScopeRow) => ScopeR
 		onSome: (row) => ({ ...state, scopes: HashMap.set(state.scopes, text, change(row)) })
 	})
 
-const withBody = (state: State, text: string, change: (row: BodyRow) => BodyRow): State =>
-	withStep(state, text, (row) => (row._tag === "Body" ? change(row) : row))
-
-const ended = (row: StepRow, ending: Ending): StepRow => {
-	switch (row._tag) {
-		case "Body":
-			return { ...row, phase: { _tag: "Ended", ending } }
-		case "Await":
-			return { ...row, ending: Option.some(ending) }
-	}
-}
-
-const rowOfSpawn = (
-	fact: FactOf<"Spawned">,
-	child: StepChild,
-	role: Role,
-	scope: string
-): StepRow => {
-	const common: Common = {
-		id: fact.step,
-		text: stepText(fact.step),
-		kind: fact.kind,
-		input: fact.input,
-		scope,
-		root: rootText(rootOfStep(fact.step)),
-		role
-	}
-	const work = child.work
-	switch (work._tag) {
-		case "Body":
-			return {
-				...common,
-				_tag: "Body",
-				runs: work.runs,
-				run: work.run,
-				phase: { _tag: "Due", at: fact.at, since: fact.at },
-				claims: 0,
-				attempts: 0,
-				waits: 0,
-				reclaims: 0,
-				retried: Option.none()
-			}
-		case "Await":
-			return {
-				...common,
-				_tag: "Await",
-				awaiting:
-					fact.spawn._tag === "Timer"
-						? { _tag: "Timer", fires: fact.spawn.fires }
-						: { _tag: "External" },
-				settle: work.settle,
-				ending: Option.none()
-			}
-	}
-}
+const ended = (row: StepRow, ending: Ending): StepRow => ({
+	...row,
+	phase: { _tag: "Ended", ending }
+})
 
 const scopeRowOf = (
 	id: ScopeId,
@@ -274,6 +212,34 @@ const scopeRowOf = (
 	ending: Option.none()
 })
 
+/** The root a holder belongs to. */
+const rootOfHolder = (holder: Holder): string => {
+	switch (holder._tag) {
+		case "Claim":
+			return rootText(rootOfStep(holder.step))
+		case "Scope":
+			return rootText(rootOfScope(holder.scope))
+	}
+}
+
+const spawnedRow = (fact: FactOf<"Spawned">, child: StepChild, role: Role): StepRow => ({
+	id: fact.step,
+	text: stepText(fact.step),
+	kind: fact.kind,
+	input: fact.input,
+	scope: scopeText(fact.scope),
+	root: rootText(rootOfStep(fact.step)),
+	role,
+	runs: child.work.runs,
+	reads: child.work.reads,
+	run: child.work.run,
+	phase: { _tag: "Due", at: fact.due, since: fact.at },
+	claims: 0,
+	attempts: 0,
+	waits: 0,
+	retried: Option.none()
+})
+
 /** The ledger's state after one more fact: the one place a fact's meaning is written. */
 const apply = (state: State, event: Event): State => {
 	switch (event._tag) {
@@ -282,11 +248,20 @@ const apply = (state: State, event: Event): State => {
 			const text = rootText(event.fact.root)
 			return {
 				...state,
-				roots: HashMap.set(state.roots, text, { key: event.fact.root, text, scope: scopeText(id) }),
+				roots: HashMap.set(state.roots, text, {
+					key: event.fact.root,
+					text,
+					kind: event.fact.root.kind,
+					scope: scopeText(id),
+					age: state.admitted,
+					exclusive: event.fact.exclusive,
+					window: event.window
+				}),
+				admitted: state.admitted + 1,
 				scopes: HashMap.set(
 					state.scopes,
 					scopeText(id),
-					scopeRowOf(id, event.fact.root.trigger, Option.none(), event.work)
+					scopeRowOf(id, event.fact.root.kind, Option.none(), event.work)
 				)
 			}
 		}
@@ -307,120 +282,107 @@ const apply = (state: State, event: Event): State => {
 			}))
 		}
 		case "Spawn": {
-			const scope = scopeText(event.fact.scope)
-			const row = rowOfSpawn(event.fact, event.child, event.role, scope)
+			const row = spawnedRow(event.fact, event.child, event.role)
 			return withScope(
 				{ ...state, steps: HashMap.set(state.steps, row.text, row) },
-				scope,
+				row.scope,
 				(owner) =>
 					event.role === "Child"
 						? { ...owner, children: Arr.append(owner.children, { _tag: "Step", text: row.text }) }
 						: { ...owner, finishes: Arr.append(owner.finishes, row.text) }
 			)
 		}
-		case "Join": {
-			const scope = scopeText(event.fact.scope)
-			const text = joinText(scope, event.fact.feed, event.fact.key)
-			const join = Option.getOrElse(HashMap.get(state.joins, text), (): JoinRow => ({
-				text,
-				feed: event.feed,
-				scope,
-				root: rootText(rootOfScope(event.fact.scope)),
-				parts: HashMap.empty()
-			}))
-			return {
-				...state,
-				joins: HashMap.set(state.joins, text, {
-					...join,
-					parts: HashMap.set(join.parts, event.fact.role, event.fact.value)
-				})
-			}
-		}
 		case "Plain":
 			return applyPlain(state, event.fact)
 	}
 }
 
-const applyPlain = (
-	state: State,
-	fact: Extract<Event, Readonly<{ _tag: "Plain" }>>["fact"]
-): State => {
+const applyPlain = (state: State, fact: PlainFact): State => {
 	switch (fact._tag) {
 		case "Claimed":
-			return withBody(
-				{ ...state, minted: Math.max(state.minted, fact.token + 1) },
-				stepText(fact.step),
-				(row) => ({
-					...row,
-					phase: {
-						_tag: "Held",
-						hold: {
-							claim: fact.claim,
-							token: fact.token,
-							slot: fact.slot,
-							until: fact.until,
-							deployment: fact.deployment
-						}
-					},
-					claims: row.claims + 1,
-					reclaims: row.reclaims + (row.phase._tag === "Held" ? 1 : 0)
+			return withStep(state, stepText(fact.step), (row) => ({
+				...row,
+				phase: {
+					_tag: "Held",
+					hold: {
+						attempt: fact.attempt,
+						turn: fact.turn,
+						until: fact.until,
+						deployment: fact.deployment
+					}
+				},
+				claims: row.claims + 1,
+				attempts: row.attempts + (row.phase._tag === "Held" ? 1 : 0)
+			}))
+		case "Read":
+			return state
+		case "Seated":
+			return {
+				...state,
+				seats: HashMap.set(state.seats, seatText(fact.seat), {
+					seat: fact.seat,
+					holder: fact.holder
 				})
+			}
+		case "Unseated": {
+			const text = seatText(fact.seat)
+			const held = Option.exists(
+				HashMap.get(state.seats, text),
+				(row) => holderText(row.holder) === holderText(fact.holder)
 			)
+			return held ? { ...state, seats: HashMap.remove(state.seats, text) } : state
+		}
 		case "Retried":
-			return withBody(state, stepText(fact.step), (row) => ({
+			return withStep(state, stepText(fact.step), (row) => ({
 				...row,
 				phase: { _tag: "Due", at: fact.due, since: fact.at },
 				attempts: row.attempts + (fact.counts === "attempt" ? 1 : 0),
 				waits: row.waits + (fact.counts === "wait" ? 1 : 0),
-				retried: Option.map(tokenOf(row), (token) => ({ token, at: fact.due, counts: fact.counts }))
+				retried: Option.some({ attempt: fact.attempt, at: fact.due, counts: fact.counts })
 			}))
 		case "Done":
 			return withStep(state, stepText(fact.step), (row) =>
-				ended(row, {
-					_tag: "Done",
-					claim: fact.claim,
-					token: tokenOf(row),
-					output: fact.output,
-					writes: []
-				})
+				ended(row, { _tag: "Done", attempt: fact.attempt, output: fact.output, writes: [] })
 			)
-		case "Wrote":
-			return {
-				...withStep(state, stepText(fact.step), (row) =>
-					Option.match(endingOf(row), {
-						onNone: () => row,
-						onSome: (ending) =>
-							ending._tag === "Done"
-								? ended(row, { ...ending, writes: Arr.append(ending.writes, fact.write) })
+		case "Wrote": {
+			const relation = Option.getOrElse(HashMap.get(state.app, fact.write.relation), () =>
+				HashMap.empty<string, Datum>()
+			)
+			const app = HashMap.set(
+				state.app,
+				fact.write.relation,
+				HashMap.set(relation, fact.write.key, fact.write.value)
+			)
+			switch (fact.writer._tag) {
+				case "App":
+					return { ...state, app }
+				case "Step":
+					return {
+						...withStep(state, stepText(fact.writer.step), (row) =>
+							row.phase._tag === "Ended" && row.phase.ending._tag === "Done"
+								? ended(row, {
+										...row.phase.ending,
+										writes: Arr.append(row.phase.ending.writes, fact.write)
+									})
 								: row
-					})
-				),
-				app: HashMap.set(state.app, `${fact.write.relation}/${fact.write.key}`, fact.write.value)
+						),
+						app
+					}
 			}
+		}
 		case "Failed":
 			return withStep(state, stepText(fact.step), (row) =>
-				ended(row, {
-					_tag: "Failed",
-					claim: fact.claim,
-					token: tokenOf(row),
-					failure: fact.failure
-				})
+				ended(row, { _tag: "Failed", attempt: fact.attempt, failure: fact.failure })
 			)
-		case "Completed":
-			return withStep(state, stepText(fact.step), (row) =>
-				ended(row, { _tag: "Completed", value: fact.value })
-			)
-		case "Stopped":
-			return withStep(state, stepText(fact.step), (row) => ended(row, { _tag: "Stopped" }))
 		case "Finished":
 			return withScope(state, scopeText(fact.scope), (row) => ({
 				...row,
 				ending: Option.some(fact.ending)
 			}))
 		case "Paused":
-			return { ...state, paused: HashSet.add(state.paused, fact.lane) }
+			return { ...state, paused: HashSet.add(state.paused, targetText(fact.target)) }
 		case "Resumed":
-			return { ...state, paused: HashSet.remove(state.paused, fact.lane) }
+			return { ...state, paused: HashSet.remove(state.paused, targetText(fact.target)) }
 		case "Deployed":
 			return { ...state, deployment: fact.deployment }
 		case "Retired": {
@@ -430,60 +392,62 @@ const applyPlain = (
 			return {
 				...state,
 				roots: HashMap.remove(state.roots, root),
+				retired: HashSet.add(state.retired, root),
 				scopes: kept(state.scopes),
 				steps: kept(state.steps),
-				joins: kept(state.joins)
+				seats: HashMap.filter(state.seats, (row) => rootOfHolder(row.holder) !== root)
 			}
 		}
 	}
 }
 
-/** The token of the claim that holds a step, if one does: the claim a result or a retry landing now closes. */
-const tokenOf = (row: StepRow): Option.Option<number> =>
-	row._tag === "Body" && row.phase._tag === "Held"
-		? Option.some(row.phase.hold.token)
-		: Option.none()
-
-/** A join's key: its scope, its feed and the key its parents named. */
-const joinText = (scope: string, feed: string, key: string): string => `${scope}/${feed}@${key}`
-
-/** Whether a commit may land, re-run, or is lost, as a rule decides. */
+/** Whether a commit may land, is a re-run of what already landed, or is lost, as a rule decides. */
 export type Fence = "open" | "rerun" | "lost"
+
+/** Where a step's finish's release of its scope's exclusivity seat may happen. */
+export type Release = "finish-spawned" | "finished"
 
 /**
  * The ledger's decisions, each a function so a planted bug replaces exactly one (planted.ts). The sound rules are
  * `SOUND`.
  * - `serves`: whether a call from a deployment is served while another is current;
- * - `room`: whether a lane holding `live` claims has a free slot under its width;
- * - `fence`: whether the report of a claim, by its number and its fence token, may land on a step's row, is a re-run
- *   of what already landed, or is lost;
+ * - `lapsed`: whether a claim whose lease ends at `until` has lapsed at `at`, so its seats are free;
+ * - `fence`: whether the report of claim `attempt` may land on a step's row, is a re-run of what landed, or is lost;
  * - `complete`: whether every child of a scope has ended, so its finish is due;
  * - `finish`: the identity of the finish a complete scope spawns, none when it has one;
  * - `ordinal`: the ordinal a child an edge returned at position `ordinal` is spawned under;
  * - `lostWrites`: the writes a lost commit still lands;
- * - `exhausted`: whether `spent` attempts or reclaims reach a ceiling, ending the step failed.
+ * - `exhausted`: whether `spent` attempts end a ladder, so the step fails;
+ * - `retired`: whether a root key is retired, so its admission is refused: retired keys never recur;
+ * - `read`: the rows a declared read returns: an app relation's, or the steps pending under roots of some kinds;
+ * - `releases`: whether a scope gives back its exclusivity seat at this point of its end;
+ * - `retirable`: whether a root's scope has ended, so its graph may go;
+ * - `windowHolds`: whether a declared window holds a tick of a census of this period, so a flow may declare it.
  */
 export type Rules = Readonly<{
 	serves: (caller: number, current: number) => boolean
-	room: (live: number, width: number) => boolean
-	fence: (
-		row: BodyRow,
-		claim: Readonly<{ claim: number; token: number }>,
-		reported: Reported
-	) => Fence
+	lapsed: (until: number, at: number) => boolean
+	fence: (row: StepRow, attempt: number, reported: Reported) => Fence
 	complete: (scope: ScopeRow, state: State) => boolean
 	finish: (scope: ScopeRow, state: State) => Option.Option<StepId>
 	ordinal: (ordinal: number, state: State) => number
 	lostWrites: (reported: Reported) => ReadonlyArray<Write>
-	exhausted: (spent: number, ceiling: number) => boolean
+	exhausted: (spent: number, ladder: Ladder) => boolean
+	retired: (state: State, root: string) => boolean
+	read: (state: State, query: Query) => ReadonlyArray<Row>
+	releases: (at: Release) => boolean
+	retirable: (scope: ScopeRow, state: State) => boolean
+	windowHolds: (window: Window, census: number) => boolean
 }>
 
 /** Whether an ending is the one a claim's report would land: the same claim, the same output and writes, or failure. */
-const isLanded = (ending: Ending, token: number, reported: Reported): boolean => {
+const isLanded = (ending: Ending, attempt: number, reported: Reported): boolean => {
+	if (ending.attempt !== attempt) {
+		return false
+	}
 	switch (ending._tag) {
 		case "Done":
 			return (
-				Option.contains(ending.token, token) &&
 				reported._tag === "Output" &&
 				Equal.equals(ending.output, reported.output) &&
 				Equal.equals(ending.writes, reported.writes)
@@ -491,42 +455,29 @@ const isLanded = (ending: Ending, token: number, reported: Reported): boolean =>
 		case "Failed":
 			switch (ending.failure._tag) {
 				case "Refused":
-					return (
-						Option.contains(ending.token, token) &&
-						reported._tag === "Failure" &&
-						Equal.equals(ending.failure.error, reported.error)
-					)
-				case "AttemptsExhausted":
-					return Option.contains(ending.token, token) && reported._tag === "Retry"
-				case "ReclaimsExhausted":
-					return false
+					return reported._tag === "Failure" && Equal.equals(ending.failure.error, reported.error)
+				case "LadderEnded":
+					return ending.failure.last === "retried" && reported._tag === "Retry"
 			}
-		case "Completed":
-		case "Stopped":
-			return false
 	}
 }
 
 /**
- * The sound fence: a commit lands only on the live claim its token names, whatever its lease; the same report again is
- * a re-run; anything else is lost. The fence is the token, never the clock: a holder whose lease ran out still lands
- * while no newer claim took its step.
+ * The sound fence, on the claim's key `(step, attempt)` alone: a commit lands only on the step's latest claim while it
+ * holds no result, whatever its lease; the same report again is a re-run; anything else is lost. Sound because retired
+ * keys never recur: a step key names one step for ever, so its claim `attempt` is one claim, one holder.
  */
-const soundFence = (
-	row: BodyRow,
-	{ token }: Readonly<{ claim: number; token: number }>,
-	reported: Reported
-): Fence => {
+const soundFence = (row: StepRow, attempt: number, reported: Reported): Fence => {
 	switch (row.phase._tag) {
 		case "Ended":
-			return isLanded(row.phase.ending, token, reported) ? "rerun" : "lost"
+			return isLanded(row.phase.ending, attempt, reported) ? "rerun" : "lost"
 		case "Held":
-			return row.phase.hold.token === token ? "open" : "lost"
+			return row.phase.hold.attempt === attempt ? "open" : "lost"
 		case "Due":
 			return Option.exists(
 				row.retried,
 				(retried) =>
-					retried.token === token &&
+					retried.attempt === attempt &&
 					reported._tag === "Retry" &&
 					retried.at === reported.at &&
 					retried.counts === reported.counts
@@ -553,7 +504,7 @@ const childEnded = (state: State, child: ChildRef): boolean => {
 /** The ledger's laws as the proposal states them. */
 export const SOUND: Rules = {
 	serves: (caller, current) => caller === current,
-	room: (live, width) => live < width,
+	lapsed: (until, at) => until <= at,
 	fence: soundFence,
 	complete: (scope, state) => Arr.every(scope.children, (child) => childEnded(state, child)),
 	finish: (scope) =>
@@ -562,25 +513,38 @@ export const SOUND: Rules = {
 			: Option.none(),
 	ordinal: (ordinal) => ordinal,
 	lostWrites: () => [],
-	exhausted: (spent, ceiling) => spent >= ceiling
+	exhausted: (spent, ladder) => {
+		switch (ladder._tag) {
+			case "Attempts":
+				return spent >= ladder.attempts
+			case "Never":
+				return false
+		}
+	},
+	retired: (state, root) => HashSet.has(state.retired, root),
+	read: (state, query) => rowsOf(state, query),
+	releases: (at) => at === "finished",
+	retirable: (scope) => Option.isSome(scope.ending),
+	windowHolds: (window, census) => window.closes - window.opens >= census
 }
 
 /** One call's answer: the ledger after it, how it answered, and the trace entry it adds. */
 export type Answered = Readonly<{ state: State; answer: Answer; entry: Entry }>
 
 /**
- * What a won claim hands its holder: the step, the claim's number and fence token, its lease's end, how it runs, its
- * work, and what its body sees.
+ * What a won claim hands its holder: the step, the claim's number, the turn holding it, its lease's end, how it runs,
+ * its work, what its body sees, and the reads it took as data, which the holder's commit records with its result.
  */
 export type Lease = Readonly<{
 	step: StepId
 	text: string
-	claim: number
-	token: number
+	attempt: number
+	turn: string
 	until: number
 	runs: Runs
 	run: (claimed: Claimed) => Settled
 	claimed: Claimed
+	taken: ReadonlyArray<Taken>
 }>
 
 /** A claim's answer, with the lease it won, if it won one. */
@@ -606,10 +570,7 @@ const begin = (state: State): Tx => {
 	}
 }
 
-const plain = (fact: Extract<Event, Readonly<{ _tag: "Plain" }>>["fact"]): Event => ({
-	_tag: "Plain",
-	fact
-})
+const plain = (fact: PlainFact): Event => ({ _tag: "Plain", fact })
 
 const entryOf = (
 	at: number,
@@ -635,6 +596,13 @@ const committed = (tx: Tx, at: number, command: Command): Answered => {
 	return { state: tx.state(), answer, entry: entryOf(at, command, answer, tx.events()) }
 }
 
+/** A transaction's answer when it decided the answer itself. */
+const decided = (tx: Tx, at: number, command: Command, answer: Answer): Answered => ({
+	state: tx.state(),
+	answer,
+	entry: entryOf(at, command, answer, tx.events())
+})
+
 /** What a worker's report says, without the children its edges take, which the ledger derives itself. */
 export const reportedOf = (settled: Settled): Reported => {
 	switch (settled._tag) {
@@ -646,8 +614,8 @@ export const reportedOf = (settled: Settled): Reported => {
 	}
 }
 
-/** The instant a step that runs on a lane is due: its due instant, or its lease's end once a claim holds it. */
-export const dueAtOf = (row: BodyRow): Option.Option<number> => {
+/** The instant a step is due: its due instant, or its lease's end once a claim holds it. */
+export const dueAtOf = (row: StepRow): Option.Option<number> => {
 	switch (row.phase._tag) {
 		case "Due":
 			return Option.some(row.phase.at)
@@ -658,44 +626,218 @@ export const dueAtOf = (row: BodyRow): Option.Option<number> => {
 	}
 }
 
-const BY_DUE: Order.Order<readonly [number, BodyRow]> = Order.combine(
-	Order.mapInput(Order.Number, ([due]: readonly [number, BodyRow]) => due),
-	Order.mapInput(Order.String, ([, row]: readonly [number, BodyRow]) => row.text)
+/**
+ * The rows a declared read returns, by key: an app relation's, all of them or the one row of its key; or the steps not
+ * yet ended under roots of some kinds, a precondition's quiescence.
+ */
+export const rowsOf = (state: State, query: Query): ReadonlyArray<Row> => {
+	switch (query._tag) {
+		case "Rows": {
+			const relation = Option.getOrElse(HashMap.get(state.app, query.relation), () =>
+				HashMap.empty<string, Datum>()
+			)
+			return Option.match(query.key, {
+				onNone: () =>
+					Arr.sort(
+						Arr.map(HashMap.toEntries(relation), ([key, value]): Row => ({ key, value })),
+						BY_KEY
+					),
+				onSome: (key) =>
+					Option.match(HashMap.get(relation, key), {
+						onNone: () => [],
+						onSome: (value) => [{ key, value }]
+					})
+			})
+		}
+		case "Pending":
+			return Arr.sort(
+				Arr.flatMap(HashMap.toValues(state.steps), (row): ReadonlyArray<Row> =>
+					Option.isNone(endingOf(row)) &&
+					Option.exists(HashMap.get(state.roots, row.root), (root) =>
+						Arr.contains(query.roots, root.kind)
+					)
+						? [{ key: row.text, value: row.kind }]
+						: []
+				),
+				BY_KEY
+			)
+	}
+}
+
+const BY_KEY: Order.Order<Row> = Order.mapInput(Order.String, (row: Row) => row.key)
+
+/** Rows as the datum a `Read` fact records. */
+export const rowsDatum = (rows: ReadonlyArray<Row>): Datum =>
+	Arr.map(rows, (row): Datum => ({ key: row.key, value: row.value }))
+
+/** The seat keys of a resource, `"0" … "<seats − 1>"`. */
+export const seatsOf = (resource: Resource): ReadonlyArray<SeatKey> =>
+	Arr.map(ordinals(resource.seats), (seat) => ({ resource: resource.name, seat: `${seat}` }))
+
+/**
+ * Where a step stands for a claim at an instant: eligible, with the seat of each resource it would take, or refused
+ * with the answer a claim gets.
+ */
+export type Standing =
+	| Readonly<{ _tag: "Eligible"; seats: ReadonlyArray<SeatKey> }>
+	| Readonly<{ _tag: "Refused"; answer: Answer }>
+
+/** A step that could run at an instant but for the seats it needs, and when it is due: what order ranks. */
+type Candidate = Readonly<{ row: StepRow; age: number; due: number }>
+
+/**
+ * The order contended seats are given in, durable and the same for every resource: the oldest root first, then the
+ * earliest due, then the step's key, so nothing starves and there are no priority or fairness keys.
+ */
+const BY_ORDER: Order.Order<Candidate> = Order.combine(
+	Order.combine(
+		Order.mapInput(Order.Number, (candidate: Candidate) => candidate.age),
+		Order.mapInput(Order.Number, (candidate: Candidate) => candidate.due)
+	),
+	Order.mapInput(Order.String, (candidate: Candidate) => candidate.row.text)
 )
 
-/** The steps of a lane a claim may take at an instant, earliest due first, then by key. */
-export const claimable = (state: State, lane: string, at: number): ReadonlyArray<BodyRow> =>
-	Arr.map(
+/**
+ * The ledger's reads of where steps stand, under a set of rules: whether a seat is free, which seats of a resource are,
+ * and where a step stands at an instant, by the proposal's eligibility (its parent ended, its due instant passed, every
+ * window open, nothing it touches paused, a seat of every resource it holds free) and order.
+ */
+export const standingsOf = (rules: Rules) => {
+	/** Whether a seat is held: by a scope for its life, or by a claim still its step's latest whose lease runs on. */
+	const busy = (state: State, seat: SeatKey, at: number): boolean =>
+		Option.exists(HashMap.get(state.seats, seatText(seat)), (row) => {
+			const holder = row.holder
+			switch (holder._tag) {
+				case "Scope":
+					return true
+				case "Claim":
+					return Option.exists(
+						HashMap.get(state.steps, stepText(holder.step)),
+						(step) =>
+							step.phase._tag === "Held" &&
+							step.phase.hold.attempt === holder.attempt &&
+							!rules.lapsed(step.phase.hold.until, at)
+					)
+			}
+		})
+
+	/** The free seats of a resource at an instant, lowest first. */
+	const freeOf = (state: State, resource: Resource, at: number): ReadonlyArray<SeatKey> =>
+		Arr.filter(seatsOf(resource), (seat) => !busy(state, seat, at))
+
+	/** Whether the window of a step's root, if its kind carries one, is open at an instant. */
+	const windowOpen = (state: State, row: StepRow, at: number): boolean =>
+		Option.match(
+			Option.flatMap(HashMap.get(state.roots, row.root), (root) => root.window),
+			{ onNone: () => true, onSome: (window) => isOpenAt(window, at) }
+		)
+
+	const touchesPaused = (state: State, row: StepRow): boolean =>
+		Option.exists(HashMap.get(state.roots, row.root), (root) =>
+			HashSet.has(state.paused, targetText({ _tag: "Root", kind: root.kind }))
+		) ||
+		Arr.some(row.runs.holds, (resource) =>
+			HashSet.has(state.paused, targetText({ _tag: "Resource", name: resource.name }))
+		)
+
+	/** Where a step stands at an instant before seats are counted: a candidate for seats, or refused. */
+	const before = (state: State, row: StepRow, at: number): Option.Option<Answer> => {
+		switch (row.phase._tag) {
+			case "Ended":
+				return Option.some("lost")
+			case "Held":
+				if (row.phase.hold.until > at) {
+					return Option.some("lost")
+				}
+				break
+			case "Due":
+				if (row.phase.at > at) {
+					return Option.some("early")
+				}
+		}
+		if (!windowOpen(state, row, at)) {
+			return Option.some("closed")
+		}
+		return touchesPaused(state, row) ? Option.some("paused") : Option.none()
+	}
+
+	/** Every step that could run at an instant but for its seats, in order. */
+	const candidatesOf = (state: State, at: number): ReadonlyArray<Candidate> =>
 		Arr.sort(
-			Arr.flatMap(HashMap.toValues(state.steps), (row): ReadonlyArray<readonly [number, BodyRow]> =>
-				row._tag === "Body" && row.runs.lane.name === lane
-					? Option.match(dueAtOf(row), {
-							onNone: () => [],
-							onSome: (due) => (due <= at ? [[due, row]] : [])
-						})
-					: []
+			Arr.flatMap(HashMap.toValues(state.steps), (row): ReadonlyArray<Candidate> =>
+				Option.isSome(before(state, row, at))
+					? []
+					: [
+							{
+								row,
+								age: Option.match(HashMap.get(state.roots, row.root), {
+									onNone: () => state.admitted,
+									onSome: (root) => root.age
+								}),
+								due: Option.getOrElse(dueAtOf(row), () => at)
+							}
+						]
 			),
-			BY_DUE
-		),
-		([, row]) => row
-	)
+			BY_ORDER
+		)
 
-/** The live claims of a lane at an instant: claims in force whose lease has not run out. */
-export const liveHolds = (state: State, lane: string, at: number): ReadonlyArray<Hold> =>
-	Arr.flatMap(HashMap.toValues(state.steps), (row): ReadonlyArray<Hold> =>
-		row._tag === "Body" &&
-		row.runs.lane.name === lane &&
-		row.phase._tag === "Held" &&
-		row.phase.hold.until > at
-			? [row.phase.hold]
-			: []
-	)
+	/**
+	 * Every candidate's standing at an instant, in order: a step may take a seat of a resource only while fewer
+	 * candidates ahead of it hold that resource than it has free seats, so older work is never overtaken.
+	 */
+	const ranked = (
+		state: State,
+		at: number
+	): ReadonlyArray<Readonly<{ row: StepRow; standing: Standing }>> => {
+		const free = new Map<string, ReadonlyArray<SeatKey>>()
+		const ahead = new Map<string, number>()
+		return Arr.map(candidatesOf(state, at), ({ row }) => {
+			const seats = Arr.map(row.runs.holds, (resource) => {
+				const known = free.get(resource.name)
+				const open = known ?? freeOf(state, resource, at)
+				free.set(resource.name, open)
+				const rank = ahead.get(resource.name) ?? 0
+				ahead.set(resource.name, rank + 1)
+				return { open, rank }
+			})
+			const full = Arr.some(seats, (seat) => Arr.isReadonlyArrayEmpty(seat.open))
+			const behind = Arr.some(seats, (seat) => seat.rank >= seat.open.length)
+			const standing: Standing = full
+				? { _tag: "Refused", answer: "full" }
+				: behind
+					? { _tag: "Refused", answer: "behind" }
+					: {
+							_tag: "Eligible",
+							seats: Arr.flatMap(seats, (seat) => Arr.take(seat.open, 1))
+						}
+			return { row, standing }
+		})
+	}
 
-/** The free slots of a lane at an instant: its width less its live claims, never below none. */
-export const freeSlots = (state: State, lane: Lane, at: number): number =>
-	Math.max(0, lane.width - liveHolds(state, lane.name, at).length)
+	/** Where one step stands at an instant. */
+	const standingOf = (state: State, row: StepRow, at: number): Standing =>
+		Option.match(before(state, row, at), {
+			onSome: (answer): Standing => ({ _tag: "Refused", answer }),
+			onNone: () =>
+				Option.match(
+					Arr.findFirst(ranked(state, at), (ranking) => ranking.row.text === row.text),
+					{
+						onNone: (): Standing => ({ _tag: "Refused", answer: "lost" }),
+						onSome: (ranking) => ranking.standing
+					}
+				)
+		})
 
-/** The ending each child of a scope reads as, for its finish. */
+	/** The steps eligible at an instant, in order: what the relay and the census ring. */
+	const eligibleAt = (state: State, at: number): ReadonlyArray<StepRow> =>
+		Arr.flatMap(ranked(state, at), (ranking) =>
+			ranking.standing._tag === "Eligible" ? [ranking.row] : []
+		)
+
+	return { busy, standingOf, eligibleAt }
+}
+
+/** The ending each child of a scope reads as, for its finish: done with its output, or failed. */
 const endingsOf = (state: State, scope: ScopeRow): ReadonlyArray<ChildEnding> =>
 	Arr.flatMap(scope.children, (child): ReadonlyArray<ChildEnding> =>
 		Option.toArray(endingOfChild(state, child))
@@ -718,12 +860,8 @@ const stepEnding = (kind: string, ending: Ending): ChildEnding => {
 	switch (ending._tag) {
 		case "Done":
 			return { _tag: "Done", kind, output: ending.output }
-		case "Completed":
-			return { _tag: "Done", kind, output: ending.value }
 		case "Failed":
 			return { _tag: "Failed", kind }
-		case "Stopped":
-			return { _tag: "Stopped", kind }
 	}
 }
 
@@ -741,30 +879,29 @@ const scopeEnding = (state: State, scope: ScopeRow, ending: ScopeEnding): ChildE
 				}
 			)
 		case "Failed":
+		case "Held":
 			return { _tag: "Failed", kind: scope.kind }
-		case "Stopped":
-			return { _tag: "Stopped", kind: scope.kind }
 	}
 }
 
-const spawnOf = (child: StepChild, at: number): Spawn => {
-	const work = child.work
-	switch (work._tag) {
-		case "Body":
-			return { _tag: "Runs", lane: work.runs.lane.name }
-		case "Await":
-			return completionSpawn(work.completion, at)
-	}
-}
+/** A finish's input as data: its children's endings, in order. */
+const endingsDatum = (endings: ReadonlyArray<ChildEnding>): Datum =>
+	Arr.map(endings, (ending): Datum => {
+		switch (ending._tag) {
+			case "Done":
+				return { ending: "Done", kind: ending.kind, output: ending.output }
+			case "Failed":
+				return { ending: "Failed", kind: ending.kind }
+		}
+	})
 
-const completionSpawn = (completion: Completion, at: number): Spawn => {
-	switch (completion._tag) {
-		case "External":
-			return { _tag: "Awaits" }
-		case "Timer":
-			return { _tag: "Timer", fires: at + completion.after }
-	}
-}
+/** The seat a root's exclusivity takes, keyed by its kind and the value its input names, if its kind is exclusive. */
+const exclusiveSeat = (kind: string, exclusive: Option.Option<string>): Option.Option<SeatKey> =>
+	Option.map(exclusive, (key) => ({ resource: kind, seat: key }))
+
+const BY_SEAT: Order.Order<SeatRow> = Order.mapInput(Order.String, (row: SeatRow) =>
+	seatText(row.seat)
+)
 
 /**
  * The ledger's transitions under a set of rules. Each is a pure function of the state, the call and the ledger's
@@ -772,6 +909,8 @@ const completionSpawn = (completion: Completion, at: number): Spawn => {
  * and a fact whose key is already held is no change, so a call made twice changes nothing the second time.
  */
 export const ledgerOf = (rules: Rules) => {
+	const standings = standingsOf(rules)
+
 	const spawnStep = (
 		tx: Tx,
 		id: StepId,
@@ -791,7 +930,8 @@ export const ledgerOf = (rules: Rules) => {
 				kind: child.kind,
 				input: child.input,
 				scope: scope.id,
-				spawn: spawnOf(child, at),
+				due: child.due._tag === "At" ? child.due.at : at,
+				holds: Arr.map(child.work.runs.holds, (resource) => resource.name),
 				at
 			},
 			child,
@@ -812,6 +952,7 @@ export const ledgerOf = (rules: Rules) => {
 		settle(tx, scope.text, at)
 	}
 
+	/** Opens a child scope under its derived identity, and starts its children. */
 	const openScope = (tx: Tx, id: ScopeId, owner: ScopeRow, child: ScopeChild, at: number): void => {
 		const text = scopeText(id)
 		if (HashMap.has(tx.state().scopes, text)) {
@@ -835,6 +976,44 @@ export const ledgerOf = (rules: Rules) => {
 		})
 	}
 
+	/** Gives back a root scope's exclusivity seat, if it still holds it. */
+	const unseatScope = (tx: Tx, scope: ScopeRow, at: number): void => {
+		const root = Option.filter(
+			HashMap.get(tx.state().roots, scope.root),
+			(row) => row.scope === scope.text
+		)
+		Option.match(
+			Option.flatMap(root, (row) => exclusiveSeat(row.kind, row.exclusive)),
+			{
+				onNone: () => undefined,
+				onSome: (seat) => {
+					const holder: Holder = { _tag: "Scope", scope: scope.id }
+					if (
+						Option.exists(
+							HashMap.get(tx.state().seats, seatText(seat)),
+							(row) => holderText(row.holder) === holderText(holder)
+						)
+					) {
+						tx.emit(plain({ _tag: "Unseated", seat, holder, at }))
+					}
+				}
+			}
+		)
+	}
+
+	/** Gives back every seat a claim still holds, in seat order. */
+	const giveBack = (tx: Tx, step: StepId, attempt: number, at: number): void => {
+		const holder: Holder = { _tag: "Claim", step, attempt }
+		const text = holderText(holder)
+		Arr.forEach(
+			Arr.sort(
+				Arr.filter(HashMap.toValues(tx.state().seats), (row) => holderText(row.holder) === text),
+				BY_SEAT
+			),
+			(row) => tx.emit(plain({ _tag: "Unseated", seat: row.seat, holder, at }))
+		)
+	}
+
 	/** Spawns a scope's finish once every child ended, under the identity the rules give it. */
 	const settle = (tx: Tx, text: string, at: number): void => {
 		Option.match(HashMap.get(tx.state().scopes, text), {
@@ -855,15 +1034,19 @@ export const ledgerOf = (rules: Rules) => {
 								_tag: "StepChild",
 								kind: scope.kind,
 								input: endingsDatum(endings),
+								due: { _tag: "Now" },
 								work: {
-									_tag: "Body",
 									runs: scope.work.finish.runs,
+									reads: [],
 									run: (claimed) => scope.work.finish.run(endings, claimed)
 								}
 							},
 							"Finish",
 							at
 						)
+						if (rules.releases("finish-spawned")) {
+							unseatScope(tx, scope, at)
+						}
 					}
 				})
 			}
@@ -892,6 +1075,9 @@ export const ledgerOf = (rules: Rules) => {
 								at
 							})
 						)
+						if (rules.releases("finished")) {
+							unseatScope(tx, scope, at)
+						}
 						Option.match(scope.owner, {
 							onNone: () => undefined,
 							onSome: (owner) => settle(tx, owner, at)
@@ -918,89 +1104,67 @@ export const ledgerOf = (rules: Rules) => {
 			onNone: () => undefined,
 			onSome: (scope) =>
 				Arr.forEach(next, (item) => {
-					switch (item._tag) {
-						case "Spawn": {
-							const ordinal = rules.ordinal(item.ordinal, tx.state())
-							switch (item.child._tag) {
-								case "StepChild":
-									spawnStep(
-										tx,
-										{ _tag: "EdgeStep", by: row.id, edge: item.edge, ordinal },
-										scope,
-										item.child,
-										"Child",
-										at
-									)
-									return
-								case "ScopeChild":
-									openScope(
-										tx,
-										{ _tag: "EdgeScope", by: row.id, edge: item.edge, ordinal },
-										scope,
-										item.child,
-										at
-									)
-									return
-							}
-						}
-						case "Part":
-							feedPart(tx, scope, row.id, item, at)
+					const ordinal = rules.ordinal(item.ordinal, tx.state())
+					switch (item.child._tag) {
+						case "StepChild":
+							spawnStep(
+								tx,
+								{ _tag: "EdgeStep", by: row.id, edge: item.edge, ordinal },
+								scope,
+								item.child,
+								"Child",
+								at
+							)
+							return
+						case "ScopeChild":
+							openScope(
+								tx,
+								{ _tag: "EdgeScope", by: row.id, edge: item.edge, ordinal },
+								scope,
+								item.child,
+								at
+							)
 					}
 				})
 		})
 	}
 
-	const feedPart = (
+	/** Records a claim's reads with its result, in the commit that lands it. */
+	const recordReads = (
 		tx: Tx,
-		scope: ScopeRow,
-		parent: StepId,
-		part: Extract<Next, Readonly<{ _tag: "Part" }>>,
+		row: StepRow,
+		attempt: number,
+		reads: ReadonlyArray<Taken>,
+		at: number
+	): void =>
+		Arr.forEach(reads, (read) =>
+			tx.emit(
+				plain({
+					_tag: "Read",
+					reader: { _tag: "Claim", step: row.id, attempt },
+					name: read.name,
+					query: read.query,
+					value: read.value,
+					at
+				})
+			)
+		)
+
+	const land = (
+		tx: Tx,
+		row: StepRow,
+		attempt: number,
+		settled: Settled,
+		reads: ReadonlyArray<Taken>,
 		at: number
 	): void => {
-		const text = joinText(scope.text, part.feed.name, part.key)
-		const arrived = Option.exists(HashMap.get(tx.state().joins, text), (join) =>
-			HashMap.has(join.parts, part.role)
-		)
-		if (arrived) {
-			return
-		}
-		tx.emit({
-			_tag: "Join",
-			fact: {
-				_tag: "Fed",
-				feed: part.feed.name,
-				scope: scope.id,
-				key: part.key,
-				role: part.role,
-				parent,
-				value: part.value,
-				at
-			},
-			feed: part.feed
-		})
-		Option.match(HashMap.get(tx.state().joins, text), {
-			onNone: () => undefined,
-			onSome: (join) => {
-				if (Arr.every(part.feed.roles, (role) => HashMap.has(join.parts, role))) {
-					spawnStep(
-						tx,
-						{ _tag: "JoinStep", scope: scope.id, feed: part.feed.name, key: part.key },
-						scope,
-						part.feed.join(new Map(HashMap.toEntries(join.parts))),
-						"Child",
-						at
-					)
-				}
-			}
-		})
-	}
-
-	const land = (tx: Tx, row: BodyRow, claim: number, settled: Settled, at: number): void => {
 		switch (settled._tag) {
 			case "Output":
-				tx.emit(plain({ _tag: "Done", step: row.id, claim, output: settled.output, at }))
+				tx.emit(plain({ _tag: "Done", step: row.id, attempt, output: settled.output, at }))
+				recordReads(tx, row, attempt, reads, at)
+				giveBack(tx, row.id, attempt, at)
 				Arr.forEach(settled.writes, (write) =>
-					tx.emit(plain({ _tag: "Wrote", step: row.id, write, at }))
+					tx.emit(plain({ _tag: "Wrote", writer: { _tag: "Step", step: row.id }, write, at }))
 				)
 				landNext(tx, row, settled.next, at)
 				endStep(tx, row.text, at)
@@ -1010,101 +1174,251 @@ export const ledgerOf = (rules: Rules) => {
 					plain({
 						_tag: "Failed",
 						step: row.id,
-						claim,
+						attempt,
 						failure: { _tag: "Refused", error: settled.error },
 						at
 					})
 				)
+				recordReads(tx, row, attempt, reads, at)
+				giveBack(tx, row.id, attempt, at)
 				endStep(tx, row.text, at)
 				return
-			case "Retry": {
-				const ceilings = row.runs.ceilings
-				const counts: Counts =
-					settled.counts === "wait" && row.waits + 1 <= ceilings.waits ? "wait" : "attempt"
-				if (counts === "attempt" && rules.exhausted(row.attempts + 1, ceilings.attempts)) {
+			case "Retry":
+				if (settled.counts === "attempt" && rules.exhausted(row.attempts + 1, row.runs.ladder)) {
 					tx.emit(
 						plain({
 							_tag: "Failed",
 							step: row.id,
-							claim,
-							failure: { _tag: "AttemptsExhausted" },
+							attempt,
+							failure: { _tag: "LadderEnded", last: "retried" },
 							at
 						})
 					)
+					recordReads(tx, row, attempt, reads, at)
+					giveBack(tx, row.id, attempt, at)
 					endStep(tx, row.text, at)
 					return
 				}
-				tx.emit(plain({ _tag: "Retried", step: row.id, claim, due: settled.at, counts, at }))
-			}
+				tx.emit(
+					plain({
+						_tag: "Retried",
+						step: row.id,
+						attempt,
+						due: settled.at,
+						counts: settled.counts,
+						at
+					})
+				)
+				giveBack(tx, row.id, attempt, at)
 		}
 	}
 
-	const settleAwait = (tx: Tx, row: AwaitRow, value: Datum, at: number): void => {
-		tx.emit(plain({ _tag: "Completed", step: row.id, value, at }))
-		landNext(tx, row, row.settle(value), at)
-		endStep(tx, row.text, at)
-	}
-
-	/** Ends every unended step and scope under a scope `stopped`, innermost first, without starting any finish. */
-	const stopTree = (tx: Tx, scope: ScopeRow, at: number): void => {
-		Arr.forEach(scope.children, (child) => {
-			switch (child._tag) {
-				case "Step":
-					stopStep(tx, child.text, at)
-					return
-				case "Scope":
-					Option.match(HashMap.get(tx.state().scopes, child.text), {
-						onNone: () => undefined,
-						onSome: (inner) => {
-							if (Option.isNone(inner.ending)) {
-								stopTree(tx, inner, at)
-							}
-						}
-					})
-			}
+	/**
+	 * Admits a root into a transaction under its key, behind its key race, its retired key and its precondition's read;
+	 * a root whose exclusivity seat another live run holds is recorded and ends `Held` at once, so its night is
+	 * skipped under its key, and answers how it went.
+	 */
+	const admitInto = (tx: Tx, admission: Admission, by: By, at: number): Answer => {
+		const root: RootKey = { kind: admission.kind, key: admission.key }
+		const text = rootText(root)
+		const state = tx.state()
+		if (HashMap.has(state.roots, text)) {
+			return "unchanged"
+		}
+		if (rules.retired(state, text)) {
+			return "retired"
+		}
+		const precondition = Option.map(admission.precondition, (query) => ({
+			query,
+			rows: rules.read(state, query)
+		}))
+		if (Option.exists(precondition, (read) => Arr.isReadonlyArrayNonEmpty(read.rows))) {
+			return "blocked"
+		}
+		const seat = exclusiveSeat(admission.kind, admission.exclusive)
+		const held = Option.exists(seat, (key) => standings.busy(state, key, at))
+		const scope: ScopeId = { _tag: "RootScope", root }
+		tx.emit({
+			_tag: "Admit",
+			fact: {
+				_tag: "Admitted",
+				root,
+				input: admission.input,
+				exclusive: admission.exclusive,
+				by,
+				at
+			},
+			work: admission.scope,
+			window: admission.window
 		})
-		Arr.forEach(scope.finishes, (finish) => stopStep(tx, finish, at))
-		tx.emit(plain({ _tag: "Finished", scope: scope.id, ending: "Stopped", at }))
-	}
-
-	const stopStep = (tx: Tx, text: string, at: number): void => {
-		Option.match(HashMap.get(tx.state().steps, text), {
+		Option.match(precondition, {
 			onNone: () => undefined,
-			onSome: (row) => {
-				if (Option.isNone(endingOf(row))) {
-					tx.emit(plain({ _tag: "Stopped", step: row.id, at }))
-				}
-			}
+			onSome: (read) =>
+				tx.emit(
+					plain({
+						_tag: "Read",
+						reader: { _tag: "Admission", root },
+						name: "precondition",
+						query: read.query,
+						value: rowsDatum(read.rows),
+						at
+					})
+				)
 		})
+		if (held) {
+			tx.emit(plain({ _tag: "Finished", scope, ending: "Held", at }))
+			return "held"
+		}
+		Option.match(seat, {
+			onNone: () => undefined,
+			onSome: (key) =>
+				tx.emit(plain({ _tag: "Seated", seat: key, holder: { _tag: "Scope", scope }, at }))
+		})
+		Option.match(HashMap.get(tx.state().scopes, scopeText(scope)), {
+			onNone: () => undefined,
+			onSome: (row) => startChildren(tx, row, at)
+		})
+		return "accepted"
+	}
+
+	/**
+	 * A claim won: the reclaim that ends its ladder, or the claim and its seats, its declared reads taken in the same
+	 * transaction for its body and handed to its holder, who reports them with the claim's result.
+	 */
+	const won = (
+		state: State,
+		row: StepRow,
+		seats: ReadonlyArray<SeatKey>,
+		command: Command,
+		turn: string,
+		deployment: number,
+		at: number
+	): ClaimAnswered => {
+		const tx = begin(state)
+		const lapsed = row.phase._tag === "Held" ? Option.some(row.phase.hold) : Option.none()
+		const attempts = row.attempts + (Option.isSome(lapsed) ? 1 : 0)
+		if (Option.isSome(lapsed) && rules.exhausted(attempts, row.runs.ladder)) {
+			tx.emit(
+				plain({
+					_tag: "Failed",
+					step: row.id,
+					attempt: lapsed.value.attempt,
+					failure: { _tag: "LadderEnded", last: "lapsed" },
+					at
+				})
+			)
+			giveBack(tx, row.id, lapsed.value.attempt, at)
+			endStep(tx, row.text, at)
+			return { ...decided(tx, at, command, "exhausted"), lease: Option.none() }
+		}
+		const attempt = row.claims
+		const until = at + row.runs.lease
+		tx.emit(plain({ _tag: "Claimed", step: row.id, attempt, turn, until, deployment, at }))
+		Option.match(lapsed, {
+			onNone: () => undefined,
+			onSome: (hold) => giveBack(tx, row.id, hold.attempt, at)
+		})
+		const holder: Holder = { _tag: "Claim", step: row.id, attempt }
+		Arr.forEach(seats, (seat) => {
+			Option.match(HashMap.get(tx.state().seats, seatText(seat)), {
+				onNone: () => undefined,
+				onSome: (old) => tx.emit(plain({ _tag: "Unseated", seat, holder: old.holder, at }))
+			})
+			tx.emit(plain({ _tag: "Seated", seat, holder, at }))
+		})
+		const taken = Arr.map(row.reads, (read) => ({
+			name: read.name,
+			query: read.query,
+			rows: rules.read(tx.state(), read.query)
+		}))
+		const claimed: Claimed = {
+			at,
+			attempt,
+			attempts,
+			waits: row.waits,
+			read: (name) =>
+				Option.match(
+					Arr.findFirst(taken, (read) => read.name === name),
+					{ onNone: () => [], onSome: (read) => read.rows }
+				)
+		}
+		return {
+			...decided(tx, at, command, "accepted"),
+			lease: Option.some({
+				step: row.id,
+				text: row.text,
+				attempt,
+				turn,
+				until,
+				runs: row.runs,
+				run: row.run,
+				claimed,
+				taken: Arr.map(taken, (read) => ({
+					name: read.name,
+					query: read.query,
+					value: rowsDatum(read.rows)
+				}))
+			})
+		}
 	}
 
 	return {
-		/** Admits a root under its key: no change while a root of that key is in the ledger. */
-		admit: (state: State, admission: Admission, at: number): Answered => {
-			const root: RootKey = { trigger: admission.trigger, key: admission.key }
-			const command: Command = { _tag: "Admit", root, input: admission.input }
-			const tx = begin(state)
-			if (!HashMap.has(state.roots, rootText(root))) {
-				tx.emit({
-					_tag: "Admit",
-					fact: { _tag: "Admitted", root, input: admission.input, at },
-					work: admission.scope
-				})
-				Option.match(HashMap.get(tx.state().scopes, scopeText({ _tag: "RootScope", root })), {
-					onNone: () => undefined,
-					onSome: (scope) => startChildren(tx, scope, at)
-				})
+		/** Where steps stand, under these rules. */
+		standings,
+
+		/** Admits a root under its key, by its trigger. */
+		admit: (state: State, admission: Admission, by: By, at: number): Answered => {
+			const command: Command = {
+				_tag: "Admit",
+				root: { kind: admission.kind, key: admission.key },
+				input: admission.input,
+				by
 			}
+			const tx = begin(state)
+			return decided(tx, at, command, admitInto(tx, admission, by, at))
+		},
+
+		/**
+		 * Commits the app's own transaction: its writes, and the roots it admits in the same commit, each behind its own
+		 * key race. The writes land whatever the admissions answer.
+		 */
+		write: (
+			state: State,
+			writes: ReadonlyArray<Write>,
+			admits: ReadonlyArray<Admission>,
+			at: number
+		): Answered => {
+			const command: Command = {
+				_tag: "Write",
+				writes,
+				admits: Arr.map(admits, (admission) => ({
+					root: { kind: admission.kind, key: admission.key },
+					input: admission.input
+				}))
+			}
+			const tx = begin(state)
+			Arr.forEach(writes, (write) =>
+				tx.emit(plain({ _tag: "Wrote", writer: { _tag: "App" }, write, at }))
+			)
+			Arr.forEach(admits, (admission) => admitInto(tx, admission, "app", at))
 			return committed(tx, at, command)
 		},
 
 		/**
-		 * Claims a lane's earliest due step for a deployment: refused for a stale deployment, a paused lane, a closed
-		 * window, a lane at its width or one with nothing due. A claim of a step whose lease ran out is a reclaim; one
-		 * past the step's reclaim ceiling ends it failed instead.
+		 * Claims the step a message names, as one turn of a deployment: refused for a stale deployment, a step not in the
+		 * ledger, one ended or held, one not due, one under a closed window, one touching a paused resource or root kind,
+		 * and one whose resources have no seat for it. A claim of a step whose lease ran out is a reclaim, and spends an
+		 * attempt; one at the end of its ladder ends the step failed instead. A won claim takes the lowest free seat of
+		 * each resource its step holds, giving back any whose holder's lease ran out, and takes its declared reads.
 		 */
-		claim: (state: State, lane: Lane, deployment: number, at: number): ClaimAnswered => {
-			const command: Command = { _tag: "Claim", lane: lane.name, deployment }
+		claim: (
+			state: State,
+			step: StepId,
+			turn: string,
+			deployment: number,
+			at: number
+		): ClaimAnswered => {
+			const command: Command = { _tag: "Claim", step, turn, deployment }
 			const refuse = (answer: Answer): ClaimAnswered => ({
 				...answered(state, at, command, answer),
 				lease: Option.none()
@@ -1112,68 +1426,15 @@ export const ledgerOf = (rules: Rules) => {
 			if (!rules.serves(deployment, state.deployment)) {
 				return refuse("stale")
 			}
-			if (HashSet.has(state.paused, lane.name)) {
-				return refuse("paused")
-			}
-			if (!isOpenAt(lane.window, at)) {
-				return refuse("closed")
-			}
-			const holds = liveHolds(state, lane.name, at)
-			if (!rules.room(holds.length, lane.width)) {
-				return refuse("at-width")
-			}
-			return Option.match(Arr.head(claimable(state, lane.name, at)), {
-				onNone: () => refuse("idle"),
+			return Option.match(HashMap.get(state.steps, stepText(step)), {
+				onNone: () => refuse("gone"),
 				onSome: (row): ClaimAnswered => {
-					const tx = begin(state)
-					const reclaims = row.reclaims + (row.phase._tag === "Held" ? 1 : 0)
-					if (rules.exhausted(reclaims, row.runs.ceilings.reclaims)) {
-						tx.emit(
-							plain({
-								_tag: "Failed",
-								step: row.id,
-								claim: row.claims,
-								failure: { _tag: "ReclaimsExhausted" },
-								at
-							})
-						)
-						endStep(tx, row.text, at)
-						return {
-							state: tx.state(),
-							answer: "exhausted",
-							entry: entryOf(at, command, "exhausted", tx.events()),
-							lease: Option.none()
-						}
-					}
-					const slot = lowestFree(Arr.map(holds, (hold) => hold.slot))
-					const until = at + row.runs.lease
-					const token = state.minted
-					tx.emit(
-						plain({
-							_tag: "Claimed",
-							step: row.id,
-							claim: row.claims,
-							token,
-							slot,
-							until,
-							deployment,
-							at
-						})
-					)
-					return {
-						state: tx.state(),
-						answer: "accepted",
-						entry: entryOf(at, command, "accepted", tx.events()),
-						lease: Option.some({
-							step: row.id,
-							text: row.text,
-							claim: row.claims,
-							token,
-							until,
-							runs: row.runs,
-							run: row.run,
-							claimed: { at, attempts: row.attempts, waits: row.waits, reclaims }
-						})
+					const standing = standings.standingOf(state, row, at)
+					switch (standing._tag) {
+						case "Refused":
+							return refuse(standing.answer)
+						case "Eligible":
+							return won(state, row, standing.seats, command, turn, deployment, at)
 					}
 				}
 			})
@@ -1181,16 +1442,18 @@ export const ledgerOf = (rules: Rules) => {
 
 		/**
 		 * Commits a claim's report: the output, its writes and the children its edges take land together, or a failure,
-		 * or a retry under the step's ceilings. A report that already landed is a re-run and changes nothing; a report
-		 * whose claim is no longer the step's latest, or whose step already has another result, is lost.
+		 * or a retry on the step's ladder; the claim's seats go back with it. A report that already landed is a re-run
+		 * and changes nothing; a report whose claim is no longer the step's latest, or whose step already has another
+		 * result, is lost.
 		 */
 		commit: (
 			state: State,
 			report: Readonly<{
 				step: StepId
-				claim: number
-				token: number
+				attempt: number
+				turn: string
 				settled: Settled
+				reads: ReadonlyArray<Taken>
 				deployment: number
 			}>,
 			at: number
@@ -1199,9 +1462,10 @@ export const ledgerOf = (rules: Rules) => {
 			const command: Command = {
 				_tag: "Commit",
 				step: report.step,
-				claim: report.claim,
-				token: report.token,
+				attempt: report.attempt,
+				turn: report.turn,
 				reported,
+				reads: report.reads,
 				deployment: report.deployment
 			}
 			if (!rules.serves(report.deployment, state.deployment)) {
@@ -1210,134 +1474,60 @@ export const ledgerOf = (rules: Rules) => {
 			return Option.match(HashMap.get(state.steps, stepText(report.step)), {
 				onNone: () => answered(state, at, command, "gone"),
 				onSome: (row): Answered => {
-					if (row._tag !== "Body") {
-						return answered(state, at, command, "lost")
-					}
 					const tx = begin(state)
-					switch (rules.fence(row, report, reported)) {
-						case "lost": {
+					switch (rules.fence(row, report.attempt, reported)) {
+						case "lost":
 							Arr.forEach(rules.lostWrites(reported), (write) =>
-								tx.emit(plain({ _tag: "Wrote", step: row.id, write, at }))
+								tx.emit(plain({ _tag: "Wrote", writer: { _tag: "Step", step: row.id }, write, at }))
 							)
-							return {
-								state: tx.state(),
-								answer: "lost",
-								entry: entryOf(at, command, "lost", tx.events())
-							}
-						}
+							return decided(tx, at, command, "lost")
 						case "rerun":
 							if (report.settled._tag === "Output") {
 								landNext(tx, row, report.settled.next, at)
 							}
 							return committed(tx, at, command)
 						case "open":
-							land(tx, row, report.claim, report.settled, at)
+							land(tx, row, report.attempt, report.settled, report.reads, at)
 							return committed(tx, at, command)
 					}
 				}
 			})
 		},
 
-		/** Completes an external await from outside: the first completion wins, the same one again is no change. */
-		complete: (state: State, step: StepId, value: Datum, at: number): Answered => {
-			const command: Command = { _tag: "Complete", step, value }
-			return Option.match(HashMap.get(state.steps, stepText(step)), {
-				onNone: () => answered(state, at, command, "gone"),
-				onSome: (row): Answered => {
-					if (row._tag !== "Await" || row.awaiting._tag !== "External") {
-						return answered(state, at, command, "lost")
-					}
-					return Option.match(row.ending, {
-						onSome: (ending) =>
-							answered(
-								state,
-								at,
-								command,
-								ending._tag === "Completed" && Equal.equals(ending.value, value)
-									? "unchanged"
-									: "lost"
-							),
-						onNone: () => {
-							const tx = begin(state)
-							settleAwait(tx, row, value, at)
-							return committed(tx, at, command)
-						}
-					})
-				}
-			})
-		},
+		/** The census's read at a tick: it commits nothing, and is recorded so the laws see when ticks fell. */
+		census: (state: State, at: number): Answered =>
+			answered(state, at, { _tag: "Census" }, "unchanged"),
 
-		/** Completes every timer whose instant has come, each with its instant. */
-		fire: (state: State, at: number): Answered => {
+		/** Pauses a resource or a root kind: what touches it is not claimed until it is resumed, and nothing is lost. */
+		pause: (state: State, target: Target, at: number): Answered => {
 			const tx = begin(state)
-			Arr.forEach(dueTimers(state, at), (row) => {
-				Option.match(HashMap.get(tx.state().steps, row.text), {
-					onNone: () => undefined,
-					onSome: (current) => {
-						if (
-							current._tag === "Await" &&
-							Option.isNone(current.ending) &&
-							current.awaiting._tag === "Timer"
-						) {
-							settleAwait(tx, current, current.awaiting.fires, at)
-						}
-					}
-				})
-			})
-			return committed(tx, at, { _tag: "Fire" })
-		},
-
-		/**
-		 * Stops a scope: every unended step and scope under it ends `stopped`, the scope finishes stopped without its
-		 * finish, and the scope that owns it carries on. A holder's later commit finds its step ended and is lost.
-		 */
-		stop: (state: State, scope: ScopeId, at: number): Answered => {
-			const command: Command = { _tag: "Stop", scope }
-			return Option.match(HashMap.get(state.scopes, scopeText(scope)), {
-				onNone: () => answered(state, at, command, "gone"),
-				onSome: (row): Answered => {
-					if (Option.isSome(row.ending)) {
-						return answered(state, at, command, "unchanged")
-					}
-					const tx = begin(state)
-					stopTree(tx, row, at)
-					Option.match(row.owner, {
-						onNone: () => undefined,
-						onSome: (owner) => settle(tx, owner, at)
-					})
-					return committed(tx, at, command)
-				}
-			})
-		},
-
-		/** Pauses a lane: its claims are refused until it is resumed, and nothing it holds is lost. */
-		pause: (state: State, lane: string, at: number): Answered => {
-			const tx = begin(state)
-			if (!HashSet.has(state.paused, lane)) {
-				tx.emit(plain({ _tag: "Paused", lane, at }))
+			if (!HashSet.has(state.paused, targetText(target))) {
+				tx.emit(plain({ _tag: "Paused", target, at }))
 			}
-			return committed(tx, at, { _tag: "Pause", lane })
+			return committed(tx, at, { _tag: "Pause", target })
 		},
 
-		/** Resumes a paused lane. */
-		resume: (state: State, lane: string, at: number): Answered => {
+		/** Resumes a paused resource or root kind. */
+		resume: (state: State, target: Target, at: number): Answered => {
 			const tx = begin(state)
-			if (HashSet.has(state.paused, lane)) {
-				tx.emit(plain({ _tag: "Resumed", lane, at }))
+			if (HashSet.has(state.paused, targetText(target))) {
+				tx.emit(plain({ _tag: "Resumed", target, at }))
 			}
-			return committed(tx, at, { _tag: "Resume", lane })
+			return committed(tx, at, { _tag: "Resume", target })
 		},
 
-		/** Retires a finished root's graph whole; a root still running is refused `live`. */
+		/** Retires a finished root's graph whole, its key never to recur; a root still running is refused `live`. */
 		retire: (state: State, root: RootKey, at: number): Answered => {
 			const command: Command = { _tag: "Retire", root }
-			return Option.match(HashMap.get(state.roots, rootText(root)), {
-				onNone: () => answered(state, at, command, "gone"),
+			const text = rootText(root)
+			return Option.match(HashMap.get(state.roots, text), {
+				onNone: () =>
+					answered(state, at, command, HashSet.has(state.retired, text) ? "unchanged" : "gone"),
 				onSome: (row): Answered => {
-					const finished = Option.exists(HashMap.get(state.scopes, row.scope), (scope) =>
-						Option.isSome(scope.ending)
+					const retirable = Option.exists(HashMap.get(state.scopes, row.scope), (scope) =>
+						rules.retirable(scope, state)
 					)
-					if (!finished) {
+					if (!retirable) {
 						return answered(state, at, command, "live")
 					}
 					const tx = begin(state)
@@ -1346,6 +1536,16 @@ export const ledgerOf = (rules: Rules) => {
 				}
 			})
 		},
+
+		/** The roots the census may retire: those whose scope the rules find ended. */
+		retirable: (state: State): ReadonlyArray<RootKey> =>
+			Arr.flatMap(HashMap.toValues(state.roots), (root) =>
+				Option.exists(HashMap.get(state.scopes, root.scope), (scope) =>
+					rules.retirable(scope, state)
+				)
+					? [root.key]
+					: []
+			),
 
 		/** Makes a new deployment the current one. */
 		deploy: (state: State, at: number): Answered => {
@@ -1359,34 +1559,12 @@ export const ledgerOf = (rules: Rules) => {
 /** The ledger's transitions under a set of rules. */
 export type Ledger = ReturnType<typeof ledgerOf>
 
-/** The lowest slot no live claim holds. */
-const lowestFree = (held: ReadonlyArray<number>): number => {
-	let slot = 0
-	while (Arr.contains(held, slot)) {
-		slot += 1
-	}
-	return slot
-}
-
-/** A finish's input as data: its children's endings, in order. */
-const endingsDatum = (endings: ReadonlyArray<ChildEnding>): Datum =>
-	Arr.map(endings, (ending): Datum => {
-		switch (ending._tag) {
-			case "Done":
-				return { ending: "Done", kind: ending.kind, output: ending.output }
-			case "Failed":
-			case "Stopped":
-				return { ending: ending._tag, kind: ending.kind }
-		}
-	})
-
-/** The timers whose instant has come, not yet completed. */
-export const dueTimers = (state: State, at: number): ReadonlyArray<AwaitRow> =>
-	Arr.flatMap(HashMap.toValues(state.steps), (row): ReadonlyArray<AwaitRow> =>
-		row._tag === "Await" &&
-		Option.isNone(row.ending) &&
-		row.awaiting._tag === "Timer" &&
-		row.awaiting.fires <= at
-			? [row]
-			: []
+/** Every pending step and unfinished scope of the ledger, by key: what a stall leaves behind. */
+export const pendingOf = (state: State): ReadonlyArray<string> => [
+	...Arr.flatMap(HashMap.toValues(state.steps), (row) =>
+		Option.isNone(endingOf(row)) ? [row.text] : []
+	),
+	...Arr.flatMap(HashMap.toValues(state.scopes), (row) =>
+		Option.isNone(row.ending) ? [row.text] : []
 	)
+]

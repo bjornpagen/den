@@ -1,0 +1,39 @@
+{
+	"name": "@bjornpagen/den-vercel",
+	"version": "0.0.0",
+	"private": true,
+	"description": "den's Vercel Queues transport: one topic for every wake, each sent with its attempt's idempotency key, a push consumer that decodes a delivery once and always acknowledges it, the census as Vercel Cron, and the vercel.json fragment that declares both, with its check.",
+	"type": "module",
+	"sideEffects": false,
+	"imports": {
+		"#test/*": "./test/*",
+		"#*": "./src/*"
+	},
+	"exports": {
+		"./census": "./src/census.ts",
+		"./config": "./src/config.ts",
+		"./consumer": "./src/consumer.ts",
+		"./limits": "./src/limits.ts",
+		"./live": "./src/live.ts",
+		"./queue": "./src/queue.ts",
+		"./send": "./src/send.ts"
+	},
+	"scripts": {
+		"typecheck": "effect-tsgo tsrs --noEmit -p tsconfig.json",
+		"superlint": "superlint",
+		"oxlint": "oxlint",
+		"test": "vitest run --config vitest.config.ts"
+	},
+	"dependencies": {
+		"@bjornpagen/den": "workspace:*",
+		"@vercel/queue": "catalog:",
+		"effect": "catalog:"
+	},
+	"devDependencies": {
+		"@den/devtools": "workspace:*",
+		"@den/testing": "workspace:*",
+		"@effect/vitest": "catalog:",
+		"@types/node": "catalog:",
+		"vitest": "catalog:"
+	}
+}

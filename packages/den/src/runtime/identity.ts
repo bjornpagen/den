@@ -22,6 +22,9 @@ export type ScopeKey = Uuid & Brand.Brand<"DenScope">
 /** A claim's holder: one turn's own key, the ledger's `DenHolder`. */
 export type Holder = Uuid & Brand.Brand<"DenHolder">
 
+/** An exclusivity seat's key: the uuid of a scope kind and the key text its input names, the ledger's `DenExclusive`. */
+export type ExclusiveId = Uuid & Brand.Brand<"DenExclusive">
+
 /** An instant, milliseconds since the epoch: the ledger's `DenInstant`, the caller's clock as grizzle takes it. */
 export type Instant = bigint & Brand.Brand<"DenInstant">
 
@@ -29,6 +32,7 @@ export type Instant = bigint & Brand.Brand<"DenInstant">
 const derivedStep: (value: Uuid) => asserts value is StepKey = () => undefined
 const derivedScope: (value: Uuid) => asserts value is ScopeKey = () => undefined
 const derivedHolder: (value: Uuid) => asserts value is Holder = () => undefined
+const derivedExclusive: (value: Uuid) => asserts value is ExclusiveId = () => undefined
 const readInstant: (value: bigint) => asserts value is Instant = () => undefined
 
 /** The instant `millis` milliseconds after the epoch, the one mint of an Instant. */
@@ -84,7 +88,7 @@ export const startedStep = (scope: ScopeKey, ordinal: number) =>
 
 /** The child scope a scope's start spawns at `ordinal`. */
 export const startedScope = (scope: ScopeKey, ordinal: number) =>
-	Effect.map(derive(["start", scope, String(ordinal)]), asScope)
+	Effect.map(derive(["start-scope", scope, String(ordinal)]), asScope)
 
 /** The step edge `edge` of step `step` spawns at `ordinal`. */
 export const edgeStep = (step: StepKey, edge: string, ordinal: number) =>
@@ -92,10 +96,17 @@ export const edgeStep = (step: StepKey, edge: string, ordinal: number) =>
 
 /** The child scope edge `edge` of step `step` spawns at `ordinal`. */
 export const edgeScope = (step: StepKey, edge: string, ordinal: number) =>
-	Effect.map(derive(["edge", step, edge, String(ordinal)]), asScope)
+	Effect.map(derive(["edge-scope", step, edge, String(ordinal)]), asScope)
 
 /** The step that runs scope `scope`'s finish: one per scope, the key its finish's race is decided on. */
 export const finishStep = (scope: ScopeKey) => Effect.map(derive(["finish", scope]), asStep)
+
+/** The exclusivity seat of scope kind `kind` of flow `flow` under the key text `key`. */
+export const exclusiveId = (flow: string, kind: string, key: string) =>
+	Effect.map(derive(["exclusive", flow, kind, key]), (value) => {
+		derivedExclusive(value)
+		return value
+	})
 
 /** A claim's holder for one turn of `step` at `attempt`, from a nonce the caller draws, so two turns never share one. */
 export const holderOf = (step: StepKey, attempt: number, nonce: number) =>

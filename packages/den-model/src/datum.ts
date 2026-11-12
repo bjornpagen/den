@@ -1,10 +1,11 @@
 import { Array as Arr, Order, Record, String as Str } from "effect"
 
 /**
- * A value as the ledger records it: what a step's input, output and error, a write's value and an await's completion
+ * A value as the ledger records it: what a step's input, output and error, a write's value and a read's rows
  * are once they leave the typed code that made them. It is the JSON tree a grizzle row's typed columns encode, so a
- * trace the real engine writes and one this model writes compare value by value. The model never decodes a datum: a
- * step's typed input lives in the closure its spawn built, and the datum is only what the trace shows of it.
+ * trace the real engine writes and one this model writes compare value by value. A step's typed input lives in the
+ * closure its spawn built, and its datum is only what the trace shows of it; the rows a read returns are the one datum
+ * a body takes apart, as data from outside its typed code.
  */
 export type Datum =
 	| string

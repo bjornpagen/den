@@ -1,15 +1,16 @@
-import type { AnyRelation, Written } from "@bjornpagen/grizzle"
+import type { AnyRelation, Fact, Written } from "@bjornpagen/grizzle"
 import { regex } from "arkregex"
-import { Data, type Cron, type Effect, type Schema } from "effect"
+import { Array as Arr, type Cron, Data, Duration, type Effect, type Schema } from "effect"
+import { censusPeriodSeconds, type Limit } from "#limits.ts"
 
 /**
- * The declarations of den's algebra (the proposal's section 4): lanes, step kinds, awaits, scope kinds, roots and
- * edges, each typed by Effect Schemas, so a flow's whole shape is known before anything runs and lowers into grizzle
- * relations. Work nobody joins is unrepresentable: a step is only ever a spawn a scope's `children` or an edge names, and
- * a scope finishes only after every child has a result.
+ * The declarations of den's algebra (the proposal's section 4): step kinds, scope kinds, roots, spawn edges and
+ * resources, each typed by Effect Schemas, so a flow's whole shape is known before anything runs and lowers into grizzle
+ * relations. Work nobody joins is unrepresentable: a step is only ever a spawn a scope's start or an edge names, and a
+ * scope finishes only after every child has ended.
  */
 
-/** A declaration den refuses, with what it refuses: a name, a lane, an edge or a scope's shape. */
+/** A declaration den refuses, with what it refuses: a name, an edge, a window or a scope's shape. */
 export class Refused extends Data.TaggedError("Refused")<{
 	readonly declaration: string
 	readonly why: string
@@ -26,46 +27,85 @@ export const named = (declaration: string, name: string): void => {
 	}
 }
 
-/** When a lane's steps may be claimed: at every instant, or at the instants a cron expression matches. */
-export type LaneWindow =
-	| { readonly kind: "always" }
-	| { readonly kind: "cron"; readonly cron: Cron.Cron }
-
-/** The standing a lane is installed in: running, or paused until an operator resumes it. */
-export type LanePause = "running" | "paused"
-
-/**
- * A lane: the most of its steps running at once across every graph (`width`), when they may be claimed (`window`), the
- * standing it starts in (`pause`), and the ceiling of attempts after which a step that keeps failing ends `failed`.
- */
-export interface Lane<Name extends string = string> {
-	readonly _tag: "Lane"
-	readonly name: Name
-	readonly width: number
-	readonly window: LaneWindow
-	readonly pause: LanePause
-	readonly attempts: number
-}
-
-/** A lane's declaration: its width, window, standing and ceiling of attempts, each the flow's own choice. */
-export interface LaneOptions {
-	readonly width: number
-	readonly window: LaneWindow
-	readonly pause: LanePause
-	readonly attempts: number
-}
-
 const positive = (declaration: string, what: string, n: number): void => {
 	if (!Number.isSafeInteger(n) || n < 1) {
 		throw new Refused({ declaration, why: `${what} ${String(n)} is no positive integer` })
 	}
 }
 
-export const lane = <const Name extends string>(name: Name, options: LaneOptions): Lane<Name> => {
-	named("lane", name)
-	positive(`lane ${name}`, "width", options.width)
-	positive(`lane ${name}`, "attempts", options.attempts)
-	return { _tag: "Lane", name, ...options }
+/**
+ * A resource: a named bottleneck whose capacity is its seats, each a row, so no two holders share one and a bound is
+ * never exceeded. Its count is a limit with evidence (W1's replica holds 8). A step holds a seat of every resource it
+ * uses while it runs.
+ */
+export interface Resource<Name extends string = string> {
+	readonly _tag: "Resource"
+	readonly name: Name
+	readonly seats: Limit
+}
+
+export const resource = <const Name extends string>(
+	name: Name,
+	seats: Limit
+): Resource<Name> => {
+	named("resource", name)
+	positive(`resource ${name}`, "seats", seats.value)
+	return { _tag: "Resource", name, seats }
+}
+
+/**
+ * A step's retry ladder, written out: it ends after `attempts` attempts (W1 to W4), its next claim then failing the
+ * step, or it never ends (W6's reports). Each spent attempt waits a rung before the next is due.
+ */
+export type Ladder =
+	| { readonly kind: "attempts"; readonly attempts: number }
+	| { readonly kind: "never" }
+
+/** A ladder that ends the step `failed` once `count` attempts are spent. */
+export const attempts = (count: number): Ladder => {
+	positive("ladder", "attempts", count)
+	return { kind: "attempts", attempts: count }
+}
+
+/** A ladder that never ends: the step is due again after every spent attempt. */
+export const never: Ladder = { kind: "never" }
+
+/**
+ * When a scope's work may run: at every instant, or inside the UTC hours `[opens, closes)` of each day (W1 to W4's
+ * 07:00 to 13:00). A window holds at least one census tick, or work due in it could stall for good.
+ */
+export type Window =
+	| { readonly kind: "always" }
+	| { readonly kind: "utcHours"; readonly opens: number; readonly closes: number }
+
+/** Always open. */
+export const always: Window = { kind: "always" }
+
+/**
+ * The hours of a day in UTC, from midnight: a window's hours lie within one.
+ *
+ * @formatConstant
+ */
+export const HOURS_IN_DAY = 24
+
+/**
+ * Open inside the UTC hours `[opens, closes)` of each day, refused when it is empty, reaches past a day, or is shorter
+ * than the census's period, so it always holds a tick.
+ */
+export const utcHours = (opens: number, closes: number): Window => {
+	const declaration = `window ${String(opens)} to ${String(closes)}`
+	if (!Number.isSafeInteger(opens) || !Number.isSafeInteger(closes) || opens < 0) {
+		throw new Refused({ declaration, why: "its hours are whole hours of a day" })
+	}
+	if (closes <= opens || closes > HOURS_IN_DAY) {
+		throw new Refused({ declaration, why: "it closes after it opens, within one day" })
+	}
+	if (
+		Duration.isLessThan(Duration.hours(closes - opens), Duration.seconds(censusPeriodSeconds.value))
+	) {
+		throw new Refused({ declaration, why: "it is shorter than the census's period" })
+	}
+	return { kind: "utcHours", opens, closes }
 }
 
 /** A column's schema: text, a bigint, a boolean, a literal union of texts, or a brand of one. */
@@ -88,8 +128,8 @@ export type ErrorSchema = Stored | Schema.Never
 
 /**
  * What a step may write into the app's relations, by operation, as the facts of the ChangeSet its commit applies with
- * the step's result: a served Db runs only workload members, so a step's writes are that member's array facts, never a
- * ChangeSet built at run time.
+ * the step's result under the flow's app role: a served Db runs only workload members, so a step's writes are that
+ * member's array facts, never a ChangeSet built at run time.
  */
 export interface WritesDeclaration<
 	Ins extends ReadonlyArray<AnyRelation> = ReadonlyArray<AnyRelation>,
@@ -126,6 +166,55 @@ export const writesNothing: WritesDeclaration<readonly [], readonly [], readonly
 	delete: []
 }
 
+/**
+ * A step's declared read: the rows of one of the app's relations whose fields `by` equal what `params` takes from the
+ * step's input (W1's fingerprint, W5's presence, W7's intents), taken in one read-only call after the claim and before
+ * the body, and recorded with its result, so every input a step saw is a fact of the graph. A read that depends on
+ * what a body computed becomes its own step, joined by an edge.
+ */
+export type Reads<I = never> =
+	| { readonly kind: "none" }
+	| {
+			readonly kind: "rows"
+			readonly relation: AnyRelation
+			readonly by: ReadonlyArray<string>
+			readonly params: (input: I) => Readonly<Record<string, unknown>>
+	  }
+
+/** A declared read of `relation`'s rows whose fields `by` hold what `params` gives. */
+export interface RowsRead<R extends AnyRelation, I, By extends keyof Fact<R> & string> {
+	readonly kind: "rows"
+	readonly relation: R
+	readonly by: ReadonlyArray<By>
+	readonly params: (input: I) => Pick<Fact<R>, By>
+}
+
+/** A step that reads nothing before its body. */
+export const noReads: { readonly kind: "none" } = { kind: "none" }
+
+/** A declared read: the rows of `relation` whose fields `by` hold the values `params` takes from the input. */
+export const reads = <R extends AnyRelation, const By extends keyof Fact<R> & string, I>(
+	relation: R,
+	by: ReadonlyArray<By>,
+	params: (input: I) => Pick<Fact<R>, By>
+): RowsRead<R, I, By> => ({ kind: "rows", relation, by, params })
+
+/** What a body sees of its declared read: the rows it found, none for a step that reads nothing. */
+export type RowsOf<D> = D extends { readonly kind: "rows"; readonly relation: infer R }
+	? ReadonlyArray<Fact<R>>
+	: ReadonlyArray<never>
+
+/** When a step is first due: as soon as it is spawned, or a delay after (W5's timer, W6's delay). */
+export type Due =
+	| { readonly kind: "spawned" }
+	| { readonly kind: "after"; readonly millis: Limit }
+
+/** Due when spawned. */
+export const atSpawn: Due = { kind: "spawned" }
+
+/** Due `millis` after its spawn: an exact timer, which rides the transport's delay with the census as its net. */
+export const after = (millis: Limit): Due => ({ kind: "after", millis })
+
 /** What a body returns: its output and its writes into the app's relations, committed with its result in one call. */
 export interface Done<O, W extends WritesDeclaration> {
 	readonly output: O
@@ -133,8 +222,8 @@ export interface Done<O, W extends WritesDeclaration> {
 }
 
 /**
- * A spawn: a step, await or scope of the kind named `kind`, with its input. A spawn exists only as a scope's start or
- * an edge's yield, so every piece of work has the scope that joins it.
+ * A spawn: a step or scope of the kind named `kind`, with its input. A spawn exists only as a scope's start or an
+ * edge's yield, so every piece of work has the scope that joins it.
  */
 export interface Spawn<Kind extends string, I> {
 	readonly _tag: "Spawn"
@@ -146,28 +235,46 @@ const spawnOf =
 	<Kind extends string, I>(kind: Kind) =>
 	(input: I): Spawn<Kind, I> => ({ _tag: "Spawn", kind, input })
 
-/** A step's body: from its input to its output and writes, never holding grizzle's Db, which den alone opens. */
-export type Body<I, O, E, W extends WritesDeclaration, R> = (
-	input: I
+/**
+ * A step's body: from its input and the rows its declared read found to its output and writes, never holding grizzle's
+ * Db, which den alone opens.
+ */
+export type Body<I, Rows, O, E, W extends WritesDeclaration, R> = (
+	input: I,
+	rows: Rows
 ) => Effect.Effect<Done<O, W>, E, R>
 
-/** A step kind: its name, lane, schemas, declared writes and body; `of` spawns one. */
+/** What a step kind declares besides its body. */
+export interface StepShape<
+	IS extends Stored,
+	OS extends Stored,
+	ES extends ErrorSchema,
+	D extends Reads<IS["Type"]>,
+	W extends WritesDeclaration
+> {
+	readonly input: IS
+	readonly output: OS
+	readonly error: ES
+	readonly reads: D
+	readonly uses: ReadonlyArray<Resource>
+	readonly retry: Ladder
+	readonly due: Due
+	readonly writes: W
+}
+
+/** A step kind: its name, its shape, and its body; `of` spawns one. */
 export interface StepKind<
 	Name extends string,
 	IS extends Stored,
 	OS extends Stored,
 	ES extends ErrorSchema,
+	D extends Reads<IS["Type"]>,
 	W extends WritesDeclaration,
 	R
-> {
+> extends StepShape<IS, OS, ES, D, W> {
 	readonly _tag: "Step"
 	readonly name: Name
-	readonly lane: Lane
-	readonly input: IS
-	readonly output: OS
-	readonly error: ES
-	readonly writes: W
-	readonly body: Body<IS["Type"], OS["Type"], ES["Type"], W, R>
+	readonly body: Body<IS["Type"], RowsOf<D>, OS["Type"], ES["Type"], W, R>
 	readonly of: (input: IS["Type"]) => Spawn<Name, IS["Type"]>
 }
 
@@ -175,10 +282,13 @@ export interface StepKind<
 export interface AnyStepKind {
 	readonly _tag: "Step"
 	readonly name: string
-	readonly lane: Lane
 	readonly input: Stored
 	readonly output: Stored
 	readonly error: ErrorSchema
+	readonly reads: Reads<never>
+	readonly uses: ReadonlyArray<Resource>
+	readonly retry: Ladder
+	readonly due: Due
 	readonly writes: WritesDeclaration
 }
 
@@ -187,98 +297,140 @@ export const step = <
 	IS extends Stored,
 	OS extends Stored,
 	ES extends ErrorSchema,
+	D extends Reads<IS["Type"]>,
 	W extends WritesDeclaration,
 	R
 >(
-	on: Lane,
 	name: Name,
-	shape: { readonly input: IS; readonly output: OS; readonly error: ES; readonly writes: W },
-	body: Body<IS["Type"], OS["Type"], ES["Type"], W, R>
-): StepKind<Name, IS, OS, ES, W, R> => {
+	shape: StepShape<IS, OS, ES, D, W>,
+	body: Body<IS["Type"], RowsOf<D>, OS["Type"], ES["Type"], W, R>
+): StepKind<Name, IS, OS, ES, D, W, R> => {
 	named("step", name)
-	return { _tag: "Step", name, lane: on, ...shape, body, of: spawnOf(name) }
+	return { _tag: "Step", name, ...shape, body, of: spawnOf(name) }
 }
 
-/**
- * An await: a step with no body whose result is inserted from outside (a webhook, an operator, an instant passing),
- * the first insert winning. It runs on no lane and is never claimed.
- */
-export interface AwaitKind<Name extends string, IS extends Stored, OS extends Stored> {
-	readonly _tag: "Await"
-	readonly name: Name
-	readonly input: IS
-	readonly output: OS
-	readonly of: (input: IS["Type"]) => Spawn<Name, IS["Type"]>
-}
-
-/** Any await, as a flow lists it. */
-export interface AnyAwaitKind {
-	readonly _tag: "Await"
-	readonly name: string
-	readonly input: Stored
-	readonly output: Stored
-}
-
-export const awaiting = <const Name extends string, IS extends Stored, OS extends Stored>(
-	name: Name,
-	shape: { readonly input: IS; readonly output: OS }
-): AwaitKind<Name, IS, OS> => {
-	named("await", name)
-	return { _tag: "Await", name, ...shape, of: spawnOf(name) }
-}
-
-/** What a scope may start or an edge may spawn: a step kind, an await or a scope kind. */
-export type ChildKind = AnyStepKind | AnyAwaitKind | AnyScopeKind
+/** What a scope may start or an edge may spawn: a step kind or a scope kind. */
+export type ChildKind = AnyStepKind | AnyScopeKind
 
 /** The spawn of one of `Children`, typed by that kind's input. */
 export type SpawnOf<Children extends ReadonlyArray<ChildKind>> = {
 	readonly [K in keyof Children]: Spawn<Children[K]["name"], Children[K]["input"]["Type"]>
 }[number]
 
-/** The outputs a finish reads, by the kind of each child it reads. */
-export type ResultsOf<Reads extends ReadonlyArray<AnyStepKind | AnyAwaitKind>> = {
-	readonly [K in Reads[number] as K["name"]]: ReadonlyArray<K["output"]["Type"]>
+/** How a child step ended, as its scope's finish reads it: done with its output, or failed. */
+export type Ending<O> = { readonly _tag: "Done"; readonly output: O } | { readonly _tag: "Failed" }
+
+/** How a child scope ended, as its parent's finish reads it: its own finish done, or failed. A scope has no output. */
+export type ScopeEnding = { readonly _tag: "Done" } | { readonly _tag: "Failed" }
+
+/** What a finish reads of a child kind: a step kind's ending with its output, a scope kind's ending. */
+type EndingOf<K> = K extends { readonly _tag: "Step"; readonly output: infer OS }
+	? OS extends Stored
+		? Ending<OS["Type"]>
+		: never
+	: ScopeEnding
+
+/** The endings a finish reads, by the kind of each child it reads. */
+export type EndingsOf<Ended extends ReadonlyArray<ChildKind>> = {
+	readonly [K in Ended[number] as K["name"]]: ReadonlyArray<EndingOf<K>>
 }
 
-/** A scope's finish: what it reads of its children's outputs, and a body that returns only writes. */
+/**
+ * A scope's finish: a step that runs once every child has ended, reads the endings of the kinds it names (done or
+ * failed), and returns writes (a cursor moved, or held where a child failed).
+ */
 export interface Finish<
 	I,
-	Reads extends ReadonlyArray<AnyStepKind | AnyAwaitKind>,
+	Ended extends ReadonlyArray<ChildKind>,
 	ES extends ErrorSchema,
 	W extends WritesDeclaration,
 	R
 > {
-	readonly lane: Lane
-	readonly reads: Reads
+	readonly reads: Ended
 	readonly error: ES
+	readonly retry: Ladder
 	readonly writes: W
-	readonly body: (input: I, results: ResultsOf<Reads>) => Effect.Effect<Writes<W>, ES["Type"], R>
+	readonly body: (input: I, endings: EndingsOf<Ended>) => Effect.Effect<Writes<W>, ES["Type"], R>
 }
 
 /** Any finish, as a flow reads it. */
 export interface AnyFinish {
-	readonly lane: Lane
-	readonly reads: ReadonlyArray<AnyStepKind | AnyAwaitKind>
+	readonly reads: ReadonlyArray<{ readonly _tag: string; readonly name: string }>
 	readonly error: ErrorSchema
+	readonly retry: Ladder
 	readonly writes: WritesDeclaration
 }
 
 /**
+ * Whether a root holds a seat for its whole life: no, or one per key its input names (one live run per relation, W1;
+ * per collection, W3; per request kind, W2; one Gold build, W4). A root whose seat another live root of its kind holds
+ * is not admitted and is recorded skipped, as edullm's relation skips the night; no child scope holds a seat, so none
+ * waits on one and none deadlocks.
+ */
+export type Exclusive<I> =
+	| { readonly kind: "shared" }
+	| { readonly kind: "exclusive"; readonly key: (input: I) => string }
+
+/** No exclusivity seat. */
+export const shared: { readonly kind: "shared" } = { kind: "shared" }
+
+/** One live scope of the kind per key `key` takes from its input. */
+export const exclusiveBy = <I>(key: (input: I) => string): Exclusive<I> => ({
+	kind: "exclusive",
+	key
+})
+
+/**
+ * What must hold for a root to be admitted: nothing, or that the flows it names have nothing pending, a read that must
+ * be empty (W4: no Timeback or QTI step pending). A root whose precondition does not hold waits, and is admitted once
+ * it does.
+ */
+export type Precondition =
+	| { readonly kind: "none" }
+	| { readonly kind: "idle"; readonly flows: readonly [string, ...Array<string>] }
+
+/** Admitted with no precondition. */
+export const unconditional: Precondition = { kind: "none" }
+
+/** Admitted only while every flow named has no step pending. */
+export const idle = (...flows: readonly [string, ...Array<string>]): Precondition => {
+	Arr.forEach(flows, (name) => named("idle", name))
+	return { kind: "idle", flows }
+}
+
+/** What a scope kind declares: its input, children, start and finish. */
+export interface ScopeShape<
+	IS extends Stored,
+	Children extends ReadonlyArray<ChildKind>,
+	F extends AnyFinish
+> {
+	readonly input: IS
+	readonly children: Children
+	readonly start: (input: IS["Type"]) => ReadonlyArray<SpawnOf<Children>>
+	readonly finish: F
+}
+
+/** What only a root declares beside its scope's shape: its trigger and its gates, an exclusivity seat, a window and a precondition. */
+export interface RootGates<I> {
+	readonly trigger: Trigger<I>
+	readonly exclusive: Exclusive<I>
+	readonly window: Window
+	readonly precondition: Precondition
+}
+
+/**
  * A scope kind: a join. It owns what its start and its children's edges spawn, and finishes exactly once, after every
- * child has a result, by running its finish. `children` names every kind its start may spawn.
+ * child has ended, by running its finish. A child scope is admitted in the call that opens it, its start's children
+ * spawned with it: only a root waits for its admission.
  */
 export interface ScopeKind<
 	Name extends string,
 	IS extends Stored,
 	Children extends ReadonlyArray<ChildKind>,
 	F extends AnyFinish
-> {
+> extends ScopeShape<IS, Children, F> {
 	readonly _tag: "Scope"
 	readonly name: Name
-	readonly input: IS
-	readonly children: Children
-	readonly start: (input: IS["Type"]) => ReadonlyArray<SpawnOf<Children>>
-	readonly finish: F
 	readonly of: (input: IS["Type"]) => Spawn<Name, IS["Type"]>
 }
 
@@ -287,7 +439,7 @@ export interface AnyScopeKind {
 	readonly _tag: "Scope" | "Root"
 	readonly name: string
 	readonly input: Stored
-	readonly children: ReadonlyArray<{ readonly name: string }>
+	readonly children: ReadonlyArray<{ readonly _tag: string; readonly name: string }>
 	readonly finish: AnyFinish
 }
 
@@ -295,88 +447,74 @@ export const scope = <
 	const Name extends string,
 	IS extends Stored,
 	const Children extends ReadonlyArray<ChildKind>,
-	const Reads extends ReadonlyArray<AnyStepKind | AnyAwaitKind>,
+	const Ended extends ReadonlyArray<ChildKind>,
 	ES extends ErrorSchema,
 	W extends WritesDeclaration,
 	R
 >(
 	name: Name,
-	shape: {
-		readonly input: IS
-		readonly children: Children
-		readonly start: (input: IS["Type"]) => ReadonlyArray<SpawnOf<Children>>
-		readonly finish: Finish<IS["Type"], Reads, ES, W, R>
-	}
-): ScopeKind<Name, IS, Children, Finish<IS["Type"], Reads, ES, W, R>> => {
+	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, ES, W, R>>
+): ScopeKind<Name, IS, Children, Finish<IS["Type"], Ended, ES, W, R>> => {
 	named("scope", name)
 	return { _tag: "Scope", name, ...shape, of: spawnOf(name) }
 }
 
-/** What starts a root: a schedule, an operator's command, or an API call. */
-export type Trigger =
-	| { readonly kind: "schedule"; readonly cron: Cron.Cron }
-	| { readonly kind: "command" }
-	| { readonly kind: "api" }
+/**
+ * What starts a root: a schedule, whose every instant is one root keyed by it; an operator's command; or the app's own
+ * write, which requests the root inside the app's own transaction.
+ */
+export type Trigger<I> =
+	| {
+			readonly kind: "schedule"
+			readonly cron: Cron.Cron
+			readonly input: (at: bigint) => I
+	  }
+	| { readonly kind: "operator" }
+	| { readonly kind: "app" }
+
+/** A root started at each instant `cron` matches, its input what `input` makes of that instant. */
+export const schedule = <I>(cron: Cron.Cron, input: (at: bigint) => I): Trigger<I> => ({
+	kind: "schedule",
+	cron,
+	input
+})
+
+/** A root an operator starts. */
+export const operator: { readonly kind: "operator" } = { kind: "operator" }
+
+/** A root the app's own write requests, in its own transaction. */
+export const app: { readonly kind: "app" } = { kind: "app" }
 
 /**
  * A root kind: a scope a trigger starts, the only way a graph begins. Its identity is its kind and the idempotency key
- * its trigger gives, so starting it twice with one key starts one graph.
+ * its trigger gives, so starting it twice with one key starts one graph. It is admitted once its precondition holds,
+ * inside its window, unless its exclusivity seat is held; its work runs only inside its window.
  */
 export interface RootKind<
 	Name extends string,
 	IS extends Stored,
 	Children extends ReadonlyArray<ChildKind>,
 	F extends AnyFinish
-> {
+>
+	extends ScopeShape<IS, Children, F>, RootGates<IS["Type"]> {
 	readonly _tag: "Root"
 	readonly name: Name
-	readonly trigger: Trigger
-	readonly input: IS
-	readonly children: Children
-	readonly start: (input: IS["Type"]) => ReadonlyArray<SpawnOf<Children>>
-	readonly finish: F
 }
 
 export const root = <
 	const Name extends string,
 	IS extends Stored,
 	const Children extends ReadonlyArray<ChildKind>,
-	const Reads extends ReadonlyArray<AnyStepKind | AnyAwaitKind>,
+	const Ended extends ReadonlyArray<ChildKind>,
 	ES extends ErrorSchema,
 	W extends WritesDeclaration,
 	R
 >(
 	name: Name,
-	shape: {
-		readonly trigger: Trigger
-		readonly input: IS
-		readonly children: Children
-		readonly start: (input: IS["Type"]) => ReadonlyArray<SpawnOf<Children>>
-		readonly finish: Finish<IS["Type"], Reads, ES, W, R>
-	}
-): RootKind<Name, IS, Children, Finish<IS["Type"], Reads, ES, W, R>> => {
+	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, ES, W, R>> & RootGates<IS["Type"]>
+): RootKind<Name, IS, Children, Finish<IS["Type"], Ended, ES, W, R>> => {
 	named("root", name)
 	return { _tag: "Root", name, ...shape }
-}
-
-/**
- * A spawn edge: a pure function from a step's input and output to the inputs of the children it starts, of kind `to`,
- * in the step's own scope (a step or await) or as new child scopes (a scope kind). A result decides only which declared
- * edges it takes, and how often.
- */
-export interface Edge<
-	Name extends string,
-	From extends AnyStepKind,
-	To extends AnyStepKind | AnyAwaitKind | AnyScopeKindOf
-> {
-	readonly _tag: "Edge"
-	readonly name: Name
-	readonly from: From
-	readonly to: To
-	readonly next: (
-		input: From["input"]["Type"],
-		output: From["output"]["Type"]
-	) => ReadonlyArray<To["input"]["Type"]>
 }
 
 /** A scope kind an edge spawns: never a root, which only a trigger starts. */
@@ -388,18 +526,38 @@ export interface AnyScopeKindOf {
 	readonly finish: AnyFinish
 }
 
+/**
+ * A spawn edge: a pure function from a step's input and output to the inputs of the children it starts, of kind `to`,
+ * in the step's own scope (a step) or as new child scopes (a scope kind). A result decides only which declared edges it
+ * takes, and how often; a step that fails spawns nothing.
+ */
+export interface Edge<
+	Name extends string,
+	From extends AnyStepKind,
+	To extends AnyStepKind | AnyScopeKindOf
+> {
+	readonly _tag: "Edge"
+	readonly name: Name
+	readonly from: From
+	readonly to: To
+	readonly next: (
+		input: From["input"]["Type"],
+		output: From["output"]["Type"]
+	) => ReadonlyArray<To["input"]["Type"]>
+}
+
 /** Any edge, as a flow lists it. */
 export interface AnyEdge {
 	readonly _tag: "Edge"
 	readonly name: string
 	readonly from: AnyStepKind
-	readonly to: AnyStepKind | AnyAwaitKind | AnyScopeKindOf
+	readonly to: AnyStepKind | AnyScopeKindOf
 }
 
 export const edge = <
 	const Name extends string,
 	From extends AnyStepKind,
-	To extends AnyStepKind | AnyAwaitKind | AnyScopeKindOf
+	To extends AnyStepKind | AnyScopeKindOf
 >(
 	name: Name,
 	from: From,
@@ -412,3 +570,21 @@ export const edge = <
 	named("edge", name)
 	return { _tag: "Edge", name, from, to, next }
 }
+
+/**
+ * The app role a flow's steps write the app's relations under, named by its stem: den adds its commit programs to that
+ * role and never creates a writer of the app's tables. It is named, not held, because the role is declared over the
+ * schema the flow's own fragment is spread into; `R` checks the name against the role's type, which costs no import.
+ */
+export interface Writer<Name extends string = string> {
+	readonly _tag: "Writer"
+	readonly name: Name
+}
+
+/** The app role `R`, by its stem. */
+export const writer = <R extends { readonly name: string }>(
+	name: R["name"]
+): Writer<R["name"]> => ({
+	_tag: "Writer",
+	name
+})

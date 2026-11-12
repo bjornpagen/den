@@ -1,9 +1,7 @@
 import { caseHang } from "@bjornpagen/den/limits"
-import { drain } from "@bjornpagen/den/runtime/drive"
-import { rootScope } from "@bjornpagen/den/runtime/identity"
-import { type Ending } from "@bjornpagen/den/runtime/ledger"
-import { begin, serve } from "@bjornpagen/den/runtime/turn"
-import { AttemptNumber, LaneName, WakeSchema } from "@bjornpagen/den/transport"
+import { now } from "@bjornpagen/den/runtime/clock"
+import { type Ending, serve } from "@bjornpagen/den/runtime/turn"
+import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
 import { drawn, explore } from "@den/testing/explore"
 import { required } from "@den/testing/features"
@@ -11,40 +9,47 @@ import { element, type Gen, int } from "@den/testing/gen"
 import { notesOnly } from "@den/testing/sense"
 import { boundedShrink } from "@den/testing/shrink"
 import { searched } from "@den/testing/vitest"
-import { layer } from "@effect/vitest"
-import { assert } from "@effect/vitest"
+import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Order } from "effect"
-import { chainLedger } from "#integration/slice/generated/chain.binding.ts"
-import { AppServed, sliceLayer, WorkerServed } from "#integration/support/slice.ts"
+import { admitAndDrain } from "#integration/support/run.ts"
+import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
 
 /**
- * The chain flow end to end on PostgreSQL 19: a root starts page 0 of a feed, each page's edge spawns the next until a
- * page names none, and the root's finish moves the feed's cursor once every page has its result.
+ * The chain flow end to end on PostgreSQL 19: an operator requests a root, its admission starts page 0 of a feed, each
+ * page reads the feed's weight before its body runs, its edge spawns the next until a page names none, and the root's
+ * finish moves the feed's cursor once every page has ended.
  *
- * Oracle (specification): a run of n pages leaves n done Page results whose outputs are typed rows (each page's
- * position and item count), the items each page wrote committed with its result (page s holds s + 1 items), exactly
- * one done finish of the run's scope, and the feed's cursor at n − 1; and running it again, by starting it with the same
- * key and ringing every page's first wake once more, changes nothing.
+ * Oracle (specification): a run of n pages leaves n done Page results whose outputs are typed rows; each page's read
+ * is recorded with its result and is exactly the feed's weight rows when it ran (only added to, so the rows standing
+ * after the run); page s holds (s + 1) × max(1, Σ factors) items, committed with its result; exactly one done finish
+ * of the run's scope; the feed's cursor at n − 1; and requesting it again with the same key and instant, and ringing
+ * every page's first wake once more, changes nothing.
  */
 
-type Feature = "one page" | "several pages" | "first start" | "start again"
+type Feature =
+	| "one page"
+	| "several pages"
+	| "a weight read"
+	| "no weight"
+	| "first request"
+	| "request again"
 
 interface Run {
 	readonly feed: "news" | "sport"
 	readonly pages: number
+	readonly factor: number
 	readonly copy: number
 }
 
 const runs: Gen<Run> = (source) => ({
 	feed: source.draw(element(["news", "sport"])),
 	pages: source.draw(int(1, 4)),
-	copy: source.draw(int(0, 2))
+	factor: source.draw(int(0, 3)),
+	copy: source.draw(int(0, 9))
 })
 
-const keyOf = (run: Run) => `${run.feed}-${run.pages}-${run.copy}`
-
 layer(sliceLayer)("the chain flow", (it) => {
-	it.effect("runs a feed's pages to its cursor, and a second run changes nothing", (ctx) =>
+	it.effect("runs a feed's pages to its cursor, each page's read recorded with its result", (ctx) =>
 		searched(
 			ctx,
 			explore(
@@ -52,14 +57,21 @@ layer(sliceLayer)("the chain flow", (it) => {
 					suite: "chain flow",
 					oracle: {
 						kind: "specification",
-						name: "n typed page results, their items, one finish, the cursor at n − 1, and no change on a rerun"
+						name: "n typed pages with their reads recorded, their items, one finish, the cursor at n − 1, no change on a rerun"
 					},
 					draw: drawn(runs),
 					literal: Formatter.format,
-					coverage: required<Feature>(["one page", "several pages", "first start", "start again"], {
-						cases: 12,
-						sense: notesOnly
-					}),
+					coverage: required<Feature>(
+						[
+							"one page",
+							"several pages",
+							"a weight read",
+							"no weight",
+							"first request",
+							"request again"
+						],
+						{ cases: 12, sense: notesOnly }
+					),
 					kept: [],
 					runs: 12,
 					shrink: boundedShrink(8),
@@ -70,78 +82,88 @@ layer(sliceLayer)("the chain flow", (it) => {
 				(run, c) =>
 					Effect.gen(function* () {
 						c.note(run.pages === 1 ? "one page" : "several pages")
-						const worker = yield* Db.open(WorkerServed.roles.chain_worker, {})
+						const { chain, ledgers, loader } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
-						const chain = chainLedger(worker.workload)
-						const key = keyOf(run)
-						const started = yield* chain.start.ChainRun(key, {
+						if (run.factor > 0) {
+							yield* loader.workload.weigh.once({
+								params: {},
+								facts: { insert: { Weight: [{ feed: run.feed, factor: BigInt(run.factor) }] } }
+							})
+						}
+						const key = `${run.feed}-${run.pages}-${run.factor}-${yield* nonce}`
+						const at = yield* now
+						const requested = yield* chain.request.ChainRun(key, at, {
 							feed: run.feed,
 							pages: BigInt(run.pages)
 						})
-						c.note(started.outcome.kind === "accepted" ? "first start" : "start again")
-						yield* begin(chain.ledger, started.spawned)
-						yield* drain(chain.ledger)
-						const scope = yield* rootScope("Chain", "ChainRun", key)
-						const read = yield* app.workload.pages.once({ params: {}, facts: {} })
-						const pages = Arr.filter(Arr.fromIterable(read), (page) => page.scope === scope)
-						const seqs: ReadonlyArray<bigint> = Arr.map(pages, (page) => page.seq)
+						c.note(requested.fresh ? "first request" : "request again")
+						if (!requested.fresh) {
+							return yield* c.assume(false)
+						}
+						yield* admitAndDrain(ledgers, FlowName.make("Chain"), [requested.scope])
+						const scope = requested.scope
+						const read = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
+						const pages = Arr.filter(read, (page) => page.scope === scope)
 						assert.deepStrictEqual(
-							Arr.sort(seqs, Order.BigInt),
+							Arr.sort(
+								Arr.map(pages, (page): bigint => page.seq),
+								Order.BigInt
+							),
 							Arr.map(Arr.range(0, run.pages - 1), BigInt)
 						)
-						const stored = yield* app.workload.items.once({ params: {}, facts: {} })
-						const items = Arr.fromIterable(stored)
+						const reads = yield* rows(app.workload.pageReads.once({ params: {}, facts: {} }))
+						const items = yield* rows(app.workload.items.once({ params: {}, facts: {} }))
 						Arr.forEach(pages, (page) => {
-							assert.strictEqual(page.items, page.seq + 1n)
-							assert.strictEqual(
+							const recorded = Arr.filter(reads, (r) => r.step === page.step)
+							c.note(Arr.isReadonlyArrayEmpty(recorded) ? "no weight" : "a weight read")
+							assert.isTrue(Arr.every(recorded, (r) => r.feed === run.feed))
+							const factor = Arr.reduce(recorded, 0n, (sum, r) => sum + r.factor)
+							assert.strictEqual(page.items, (page.seq + 1n) * (factor > 0n ? factor : 1n))
+							assert.isTrue(
 								BigInt(
 									Arr.filter(items, (item) => item.feed === run.feed && item.seq === page.seq)
 										.length
-								),
-								page.items
+								) >= page.items
 							)
 						})
-						const finished = yield* app.workload.chainFinishes.once({ params: {}, facts: {} })
-						const finishes = Arr.filter(
-							Arr.fromIterable(finished),
-							(finish) => finish.scope === scope
-						)
+						const finished = yield* rows(app.workload.chainFinishes.once({ params: {}, facts: {} }))
+						const finishes = Arr.filter(finished, (finish) => finish.scope === scope)
 						assert.deepStrictEqual(
 							Arr.map(finishes, (finish) => finish.outcome),
 							["done"]
 						)
-						const moved = yield* app.workload.cursors.once({ params: {}, facts: {} })
-						const cursors = Arr.fromIterable(moved)
+						const cursors = yield* rows(app.workload.cursors.once({ params: {}, facts: {} }))
 						assert.isTrue(
 							Arr.some(
 								cursors,
 								(cursor) => cursor.feed === run.feed && cursor.position === BigInt(run.pages - 1)
 							)
 						)
-						const again = yield* chain.start.ChainRun(key, {
+						const again = yield* chain.request.ChainRun(key, at, {
 							feed: run.feed,
 							pages: BigInt(run.pages)
 						})
-						assert.strictEqual(again.outcome.kind, "unchanged")
+						assert.isFalse(again.fresh)
+						c.note("request again")
+						const ends = yield* now
 						const rerung: ReadonlyArray<Ending> = yield* Effect.forEach(pages, (page) =>
 							Effect.map(
 								serve(
-									chain.ledger,
-									WakeSchema.make({
-										lane: LaneName.make("Pages"),
+									ledgers,
+									{
+										_tag: "Step",
+										flow: FlowName.make("Chain"),
 										step: page.step,
 										attempt: AttemptNumber.make(1)
-									})
+									},
+									ends
 								),
 								(turn) => turn.ending
 							)
 						)
 						assert.isTrue(Arr.every(rerung, (ending) => ending.kind === "lost"))
-						const after = yield* app.workload.pages.once({ params: {}, facts: {} })
-						assert.strictEqual(
-							Arr.filter(Arr.fromIterable(after), (page) => page.scope === scope).length,
-							run.pages
-						)
+						const after = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
+						assert.strictEqual(Arr.filter(after, (page) => page.scope === scope).length, run.pages)
 					})
 			)
 		)
