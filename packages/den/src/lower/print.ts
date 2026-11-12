@@ -425,8 +425,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 				[
 					n.program(`Busy${f}`),
 					`query(${n.den}).rule((r) => {
-	const { step } = v(${f}Step, "step")
-	return r.match(${f}Step, { step }).where(r.not(${f}Result, { step })).find({ step })
+	const { step } = v(${app}.relations.${f}Step, "step")
+	return r.match(${app}.relations.${f}Step, { step }).where(r.not(${app}.relations.${f}Result, { step })).find({ step })
 })`
 				] as const
 		)
@@ -634,11 +634,6 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		`import { ${app} } from ${q(place.schema.from)}`,
 		`import { ${W} } from ${q(place.writer.from)}`,
 		`import { ${commas(fragmentNames)} } from ${q(place.fragment)}`,
-		...(Arr.isReadonlyArrayNonEmpty(l.idle)
-			? [
-					`const { ${commas(Arr.flatMap(l.idle, (f) => [`${f}Step`, `${f}Result`]))} } = ${app}.relations`
-				]
-			: []),
 		"",
 		`/** den's role for the flow ${P}: claims, retries, failures, admissions, requests, and every read the scheduler makes. */`,
 		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([...rosterNames, ...Arr.filter(allRelations, (rel) => !Arr.contains(coordination, rel)), ...idleEntries])} }, { insert: [${commas(Arr.map(den, q))}] })`,
@@ -1054,8 +1049,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\tresume: (target) => Effect.asVoid(h.seats.${n.program("Resume")}.once({ params: {}, facts: { delete: { ${r("Paused")}: Arr.map(Option.toArray(pausableOf(target)), (id) => ({ target: id })) } } }))`,
 		"}"
 	])
-	const all = (handle: string, role: "den" | "seats" = "den") =>
-		`Effect.map(h.${role}.${handle}.once({ params: {}, facts: {} }), rowsOf)`
+	const all = (handle: string) =>
+		`Effect.map(h.den.${handle}.once({ params: {}, facts: {} }), rowsOf)`
 	const snapshot = lines([
 		"Effect.gen(function* () {",
 		`\tconst steps = yield* ${all(n.program("Pending"))}`,

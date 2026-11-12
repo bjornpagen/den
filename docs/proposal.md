@@ -1,7 +1,6 @@
 # den: the proposal
 
-Approved by the owner, 2026-11-11. The decisions behind it are [decisions.md](decisions.md); the evidence is
-[research/](research/README.md).
+Approved by the owner, 2026-11-11. The decisions behind it are [decisions.md](decisions.md).
 
 ## 1. The problem
 
@@ -104,7 +103,7 @@ export const Worker = login(App, "worker", [AppRole, ...qtiPrograms.roles])
 ```
 
 - Relations and laws are plain values, so den's spread into the app's call, and foreign keys run both ways within the
-  level (`research/porous.md`).
+  level.
 - Programs are built over the app's schema value; whether a builder generic over any schema holding den's fragment
   typechecks is open (grizzle ask 1).
 - Every generated name carries its flow's prefix; den's merge checks clashes until grizzle does (ask 2).
@@ -183,8 +182,9 @@ works. Exploration: workers anywhere, calling the claim and commit programs over
 ## 10. Transports
 
 Vercel Queues first: one topic per lane, a visibility timeout equal to the function's lifetime, every delivery
-acknowledged, a finite `maxDeliveries`, an idempotency key per step attempt. The contract any transport must meet is in
-`research/transports.md`; SQS, Cloudflare and a server of one's own come later.
+acknowledged, a finite `maxDeliveries`, an idempotency key per ring's cause. Any transport that delivers "take this
+step" after commit, losses and duplicates allowed, meets den's contract; SQS, Cloudflare and a server of one's own
+come later.
 
 ## 11. Effect's place
 
@@ -217,7 +217,7 @@ packages in the workspace through the `grizzle-source` condition. Effect 4.1.4. 
 
 ## 15. grizzle's part
 
-The owner's order, sent to the grizzle session on 2026-11-11: fix every defect in `research/grizzle-defects.md` on the
+The owner's order, sent to the grizzle session on 2026-11-11: fix every known grizzle defect that affects den, on the
 `live` branch. The owner's rulings there, the same day:
 
 - **Kept as is:** the false 40001 between SERIALIZABLE writers of disjoint keys (retryable, never a wrong answer; den

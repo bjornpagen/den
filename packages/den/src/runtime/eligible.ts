@@ -38,7 +38,9 @@ export const opensAt = (window: Window, at: Instant): Instant => {
 			const day = DateTime.startOf(DateTime.makeUnsafe(Number(at)), "day")
 			const today = DateTime.add(day, { hours: window.opens })
 			const next =
-				DateTime.toEpochMillis(today) > Number(at) ? today : DateTime.add(today, { hours: HOURS_IN_DAY })
+				DateTime.toEpochMillis(today) > Number(at)
+					? today
+					: DateTime.add(today, { hours: HOURS_IN_DAY })
 			return instantOf(DateTime.toEpochMillis(next))
 		}
 	}

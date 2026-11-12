@@ -103,10 +103,10 @@ layer(sliceLayer)("exact seats", (it) => {
 										yield* Ref.update(held, HashMap.remove(session))
 										return "given" satisfies Outcome
 									}
-									const at = yield* now
-									const until = instantOf(Number(at) + longestLeaseMillis.value)
+									const instant = yield* now
+									const until = instantOf(Number(instant) + longestLeaseMillis.value)
 									const holder = Option.getOrThrow(HashMap.get(holders, session))
-									const taken = yield* take(ledger, ["Pool"], holder, until, at)
+									const taken = yield* take(ledger, ["Pool"], holder, until, instant)
 									const live = yield* ledger.coordination.holds
 									yield* Ref.update(peak, (p) => Math.max(p, live.length))
 									assert.isAtMost(live.length, 2)

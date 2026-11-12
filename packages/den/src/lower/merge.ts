@@ -39,7 +39,7 @@ export const merge = <
 	const F extends ReadonlyArray<ReadonlyArray<Named>>
 >(
 	app: A,
-	...fragments: F
+	fragments: F
 ): A & RecordOf<F[number]> => {
 	const names = [...Record.keys(app), ...Arr.flatMap(fragments, (f) => Arr.map(f, (d) => d.name))]
 	const clashes = Arr.dedupe(

@@ -35,7 +35,6 @@ import {
 	SyncPaused
 } from "#integration/slice/generated/sync.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
-const { ChainStep, ChainResult } = App.relations
 
 /** den's role for the flow Sync: claims, retries, failures, admissions, requests, and every read the scheduler makes. */
 export const SyncDen = role(
@@ -253,8 +252,11 @@ export const syncDenPrograms = Object.freeze({
 		return r.match(SyncExclusiveKey, { scope, key, id }).find({ scope, key, id })
 	}),
 	syncBusyChain: query(SyncDen).rule((r) => {
-		const { step } = v(ChainStep, "step")
-		return r.match(ChainStep, { step }).where(r.not(ChainResult, { step })).find({ step })
+		const { step } = v(App.relations.ChainStep, "step")
+		return r
+			.match(App.relations.ChainStep, { step })
+			.where(r.not(App.relations.ChainResult, { step }))
+			.find({ step })
 	}),
 	syncReadSyncCopyInput: SyncCopyInput,
 	syncReadSyncBuildInput: SyncBuildInput,

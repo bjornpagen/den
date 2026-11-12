@@ -8,7 +8,7 @@ The owner's goals for den, 2026-11-11.
    contract, with an in-memory engine) and `effect/cluster` (a SQL-backed `ClusterWorkflowEngine`). den is an engine
    for that algebra, not a new one. Where the algebra falls short, the shortfall goes into the review and the work
    pauses for the owner. When in doubt, den uses Effect's upstream code and glues the parts together rather than
-   reinventing them, so the research inventories every upstream part first.
+   reinventing them.
 2. **Painless lowering onto grizzle.** What a workflow persists becomes grizzle relations, laws and writes.
 3. **Deep coupling with grizzle.** den takes every advantage of grizzle's transactions and ACID guarantees; the
    workload is assumed to be primarily database work.
@@ -39,5 +39,4 @@ each reading `watch` events (`reset`, `upsert`, `remove`, `ready`) as keyed stat
 
 ## Phase
 
-Research first. The research agents aggregate what exists into `docs/research/`; the design is worked out with the
-owner once every lane is back.
+The design is approved (`proposal.md`) and being built in waves; `../TODO.md` says what is next.

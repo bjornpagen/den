@@ -1,14 +1,9 @@
 # Working in den
 
-den runs Effect's own workflow algebra (`effect/workflow`) durably: Effect states the computation, grizzle
-(PostgreSQL 19) holds its state under ACID transactions, and Vercel Queues wake the functions that run it, through a
-transactional outbox. The goals are [docs/goals.md](docs/goals.md); the settled decisions and the open ones are
-[docs/decisions.md](docs/decisions.md).
-
-**Phase: research.** `docs/research/` gathers what exists: Effect's algebra, grizzle, edullm's queueing code, the
-durable-execution systems, PostgreSQL queues, std::execution, Erlang/OTP, the research literature, Vercel's
-platform and the other transports that could wake its functions. Nobody designs or writes library code until the owner has read the research and the design is worked out
-with them.
+den holds a fully declared computation graph as immutable typed facts in the app's own grizzle schema
+(PostgreSQL 19): Effect states each step's body, a step's writes commit with its result in one grizzle call, and
+Vercel Queues wake the functions that run it. The design is [docs/proposal.md](docs/proposal.md), the goals
+[docs/goals.md](docs/goals.md), and the owner's rulings [docs/decisions.md](docs/decisions.md).
 
 ## Code is the documentation
 
@@ -26,7 +21,7 @@ rejected, never kept with an allow-list or worked around.
 
 - **Effect's algebra first, judged on merit.** Effect already has a computation algebra (`effect/workflow`:
   Workflow, Activity, DurableClock, DurableDeferred, DurableQueue, the `WorkflowEngine` contract). It is den's
-  starting point, and den departs from its API only where the research shows a better design on technical merit.
+  starting point, and den departs from its API only where a better design wins on technical merit.
   Where it falls short, the shortfall is written into the review and work stops for the owner; it is never worked
   around.
 - **The full graph, no hedging.** den records the whole computation graph as typed facts in grizzle: every step and
@@ -61,10 +56,10 @@ A Turborepo workspace of private packages named `@den/<name>`, each exporting it
   oxlint plugin and superlint, each rule proven against fixtures. Copied from grizzle's; den owns its copy.
 - `packages/testing`: the choice-stream testing library every suite runs on (`explore`, `exhaust`, `commands`,
   `interleave`, the shrinker, `pnpm fuzz`, `pnpm mutate`). Copied from grizzle's; den owns its copy.
-- `docs/`: the goals, the decisions and the research.
-- `scripts/sources.sh` fetches the research sources into `sources/`, which git ignores: a shallow clone of each
-  reference repository, std::execution's paper, and Vercel's published queue and functions clients. The sources are
-  read, never run: no install, build or script of theirs.
+- `packages/den` (`@bjornpagen/den`): the library. `packages/den-model`: its reference model and simulator.
+  `packages/den-vercel`: the Vercel Queues transport. `packages/edullm`: the outside systems of den's first use.
+- `vendor/grizzle`: grizzle, a git submodule pinned on its `live` branch.
+- `docs/`: the goals, the decisions, the proposal and the build notes.
 
 Inside a package, import through its own `#` map with the real extension; across packages, by package export.
 
@@ -81,5 +76,5 @@ Inside a package, import through its own `#` map with the real extension; across
 ## Working here
 
 - Commit only when asked, by explicit paths. Never run `git stash` in any form.
-- The repository has no remote until the owner asks for one. Nothing is published.
-- Research reads `../edullm`, `../grizzle` and `sources/`, and changes none of them.
+- The remote is github.com/bjornpagen/den. Nothing is published to npm.
+- `../edullm` and `../grizzle` are read, never changed, from here.

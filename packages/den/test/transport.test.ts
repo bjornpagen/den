@@ -242,10 +242,7 @@ const rerung: Gen<Rerung> = (source) => {
 	const wake = source.draw(encodedWake)
 	const first = source.draw(causeIn(wake.flow))
 	const how = source.draw(element(Later.literals))
-	const between = Arr.map(
-		Arr.range(1, source.draw(int(1, 3))),
-		() => source.draw(ringSketch)
-	)
+	const between = Arr.map(Arr.range(1, source.draw(int(1, 3))), () => source.draw(ringSketch))
 	return {
 		wake,
 		first,

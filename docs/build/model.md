@@ -102,7 +102,7 @@ case's tape (`natureOf`), so a run replays from its token and shrinks; faults ar
   the net under every lost ring. Eligibility bounds the rings by free seats.
 - **Transport**: a message names one step. Faults: `drop`, `duplicate`, `delay`, `reorder`. As Vercel Queues does, a
   send whose key the transport accepted within its deduplication window is dropped out of band, however the first was
-  processed; the window is a day at the model's minute tick (`min(retention, 24 h)`, `docs/research/vercel.md`),
+  processed; the window is a day at the model's minute tick (`min(retention, 24 h)`, Vercel Queues' concepts page),
   longer than any run, a few ticks or none in a sixth of cases. Every send is recorded with its key, cause and fate.
   A dead worker's delivery comes back after the visibility timeout, up to `deliveries`.
 - **Keys name the ring's cause** (`Policy.keyOf`): the fast path's commit, the relay's position, the census's instant,

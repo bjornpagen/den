@@ -44,8 +44,7 @@ export type Knee = Readonly<{ window: number; rate: number }>
  * @owner AlphaTest's API, as edullm's acquisition met it
  * @unit requests in flight, and requests a second
  * @scope one request kind of the AlphaTest fake
- * @evidence edullm `packages/platform/pipeline/src/limits.ts` `ALPHATEST_KNEE` (read at edullm staging 903bad4ba), and
- * den's `docs/research/edullm-kernel.md` §3.2
+ * @evidence edullm `packages/platform/pipeline/src/limits.ts` `ALPHATEST_KNEE` (read at edullm staging 903bad4ba)
  * @observed 2026-11-01 02:08–02:29Z
  * @environment the operator's VM, not iad1, against AlphaTest's production API Gateway
  * @workload a ramp probe of each kind alone, the window raised one step at a time
@@ -70,8 +69,7 @@ export const MEASURED_KNEES: Readonly<Record<Kind, Knee>> = {
  * @owner AlphaTest's listing endpoint (`/delivery/teacher/all-assignments`)
  * @unit rows a page
  * @scope one listing page of the AlphaTest fake
- * @evidence edullm `packages/platform/pipeline/src/limits.ts` `ALPHATEST_LISTING_PAGE_ROWS`, and den's
- * `docs/research/edullm-kernel.md` §3.2
+ * @evidence edullm `packages/platform/pipeline/src/limits.ts` `ALPHATEST_LISTING_PAGE_ROWS`
  * @observed 2026-11-01, edullm's listing probe
  * @environment AlphaTest's production API Gateway
  * @workload the whole listing, every `limit` of at least 200
@@ -91,7 +89,7 @@ export const LISTING_PAGE_ROWS = 200
  * @unit requests in the trailing second, across every kind
  * @scope the AlphaTest fake's gateway
  * @evidence edullm `packages/data/alphatest-acquisition/src/answers.ts` (the 429's body and missing header) and
- * `packages/platform/pipeline/src/limits.ts` `ALPHATEST_KNEE`; den's `docs/research/edullm-kernel.md` §3.2 and §5
+ * `packages/platform/pipeline/src/limits.ts` `ALPHATEST_KNEE`
  * @observed 2026-10-09 06:14:37–06:15:29Z (991 429s), 2026-11-01 02:08–02:29Z (the ramp probe)
  * @environment Vercel iad1 (2026-10-09) and the operator's VM (2026-11-01) against AlphaTest's production gateway
  * @workload eight readers of every kind (2026-10-09); one kind at a time (2026-11-01)

@@ -97,7 +97,7 @@ layer(sliceLayer, { excludeTestServices: true })("the relay", (it) => {
 							)
 						)
 						yield* Fiber.interrupt(relayed)
-						assert.isTrue(Option.isSome(admission))
+						assert.strictEqual(admission._tag, "Some")
 						if (Option.isSome(admission)) {
 							assert.strictEqual(admission.value.cause._tag, "Relay")
 							c.note("a relay ring")

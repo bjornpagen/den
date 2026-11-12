@@ -23,7 +23,7 @@ export const natureOf = <F extends string>(c: Case<F>, faults: Swarm<Fault>): Na
 
 /**
  * How long the transport deduplicates a key: Vercel Queues drops a later send of a key it has seen for the shorter of
- * the message's retention and 24 hours, processed or not (`docs/research/vercel.md`), so at the model's tick of a
+ * the message's retention and 24 hours, processed or not (https://vercel.com/docs/queues/concepts), so at the model's tick of a
  * minute a key is spent for a day, longer than any run.
  *
  * @limitKind published

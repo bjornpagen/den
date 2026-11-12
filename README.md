@@ -1,15 +1,17 @@
 # den
 
-Durable execution for Effect's own workflow algebra (`effect/workflow`), on grizzle and PostgreSQL 19, scheduled on
-Vercel Queues through a transactional outbox.
+Durable execution as typed facts: a fully declared computation graph held in the app's own grizzle schema on
+PostgreSQL 19, each step's writes committed with its result in one call, its functions woken by Vercel Queues.
 
-den is in its research phase: there is no library code yet. Read [docs/goals.md](docs/goals.md), then
-[docs/research/](docs/research/README.md). How to work here is [AGENTS.md](AGENTS.md).
+den is being built. Read [docs/proposal.md](docs/proposal.md) for the design and [AGENTS.md](AGENTS.md) for how to
+work here.
 
 ```bash
+git submodule update --init
 pnpm install
 pnpm check            # the gate
-./scripts/sources.sh  # the research sources, into sources/ (ignored by git)
+pnpm test             # the suites that need no database
+pnpm pg init && pnpm pg start && pnpm test:network   # den's own PostgreSQL 19 cluster
 ```
 
 Requires Node 26 or later and pnpm at the version `packageManager` pins.

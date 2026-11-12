@@ -3,8 +3,8 @@
 `packages/edullm` is what den's first use, edullm's queueing rebuilt inside den, talks to: faithful fakes of edullm's
 outside systems, Bronze, the app's own facts, and the pure pieces the eight workloads (`../decisions.md`) need. It
 imports only `effect` and `@den/testing`, nothing of den or grizzle; the flows that drive these fakes come in the next
-wave, once den's API settles. The behaviour reproduced is the measured one of
-[`../research/edullm-kernel.md`](../research/edullm-kernel.md), read against edullm's code at `staging` 903bad4ba.
+wave, once den's API settles. The behaviour reproduced is the one edullm measured, as its code at `staging` 903bad4ba
+records it (its `packages/platform/pipeline/src/limits.ts` and `packages/data/alphatest-acquisition/src/`).
 
 ## How a fake is built
 
@@ -41,7 +41,7 @@ W4 (Gold) has no outside system: its views are the app's own SQL.
 
 ## Measured numbers
 
-Each carries its evidence in its JSDoc, citing edullm's `limits.ts` and the research's §3.2 and §5: the AlphaTest knees
+Each carries its evidence in its JSDoc, citing edullm's `limits.ts`: the AlphaTest knees
 (`MEASURED_KNEES`), the 200-row listing page (`LISTING_PAGE_ROWS`), the gateway's 40–68 requests a second (drawn by a
 simulation, never fixed), the bastion's eight seats at 5,227,836.87 bytes a second and 13,941 keys a second a session
 (`MEASURED_BASTION`), the 65,536 print buckets, QTI's published 1,000-document page, BBR's and TCP's published constants.

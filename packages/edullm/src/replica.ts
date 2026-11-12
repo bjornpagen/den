@@ -40,8 +40,7 @@ export const pageBodyOf = (rows: ReadonlyArray<Row>): Uint8Array =>
  * @owner the shared Timeback SSM bastion, held by edullm's operator
  * @unit sessions; bytes a second; keys a second
  * @scope the Timeback replica fake's bastion
- * @evidence edullm `packages/platform/pipeline/src/limits.ts` `LANE_WIDTHS.timeback` and `PRUNE_FETCH_KEYS`, and den's
- * `docs/research/edullm-kernel.md` §3.2 and §5
+ * @evidence edullm `packages/platform/pipeline/src/limits.ts` `LANE_WIDTHS.timeback` and `PRUNE_FETCH_KEYS`
  * @observed 2026-09-16 06:37–07:37Z (the eight-slot trial); 2026-10-15T17:41Z (the key rate)
  * @environment Vercel production iad1, Timeback's Aurora PostgreSQL 17.7 through the shared us-east-1 SSM bastion
  * @workload eight concurrent COPY sessions of whole relations (545 COPY attempts, 538 pages); `resources`' key scan,

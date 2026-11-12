@@ -8,3 +8,5 @@ dist/
 /.agents/skills/local-*
 packages/*/out/
 /sources/
+/docs/research/
+/scripts/sources.sh

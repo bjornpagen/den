@@ -44,10 +44,7 @@ export interface Resource<Name extends string = string> {
 	readonly seats: Limit
 }
 
-export const resource = <const Name extends string>(
-	name: Name,
-	seats: Limit
-): Resource<Name> => {
+export const resource = <const Name extends string>(name: Name, seats: Limit): Resource<Name> => {
 	named("resource", name)
 	positive(`resource ${name}`, "seats", seats.value)
 	return { _tag: "Resource", name, seats }
@@ -205,9 +202,7 @@ export type RowsOf<D> = D extends { readonly kind: "rows"; readonly relation: in
 	: ReadonlyArray<never>
 
 /** When a step is first due: as soon as it is spawned, or a delay after (W5's timer, W6's delay). */
-export type Due =
-	| { readonly kind: "spawned" }
-	| { readonly kind: "after"; readonly millis: Limit }
+export type Due = { readonly kind: "spawned" } | { readonly kind: "after"; readonly millis: Limit }
 
 /** Due when spawned. */
 export const atSpawn: Due = { kind: "spawned" }
@@ -285,7 +280,7 @@ export interface AnyStepKind {
 	readonly input: Stored
 	readonly output: Stored
 	readonly error: ErrorSchema
-	readonly reads: Reads<never>
+	readonly reads: Reads
 	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
 	readonly due: Due

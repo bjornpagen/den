@@ -153,11 +153,11 @@ interface ChainIn {
 const noOutput: Datum = {}
 
 /** A finish that reads its children's endings and outputs nothing the comparison reads. */
-const finishing = <I>(ladder: Ladder) => ({
+const finishing = (ladder: Ladder) => ({
 	runs: runsOf([], ladder),
 	output: () => noOutput,
 	error: () => noOutput,
-	body: (_input: I) => ({ _tag: "Output", output: {}, writes: [] }) as const
+	body: () => ({ _tag: "Output", output: {}, writes: [] }) as const
 })
 
 const ChainRun: RootKind<ChainIn, Datum, never> = {
@@ -170,7 +170,7 @@ const ChainRun: RootKind<ChainIn, Datum, never> = {
 		name: "ChainRun",
 		input: (run) => ({ feed: run.feed, pages: run.pages }),
 		start: (run) => [stepOf(Page, { feed: run.feed, seq: 0, pages: run.pages, after: [] })],
-		finish: finishing<ChainIn>(pageLadder)
+		finish: finishing(pageLadder)
 	}
 }
 
@@ -201,7 +201,7 @@ const Batch: ScopeKind<BatchIn, Datum, never> = {
 	name: "Batch",
 	input: (b) => ({ batch: b.batch, size: b.size }),
 	start: (b) => Arr.map(ordinals(b.size), (n) => stepOf(Square, { batch: b.batch, n: n + 1 })),
-	finish: finishing<BatchIn>(pageLadder)
+	finish: finishing(pageLadder)
 }
 
 const FanRun: RootKind<BatchIn, Datum, never> = {
@@ -214,7 +214,7 @@ const FanRun: RootKind<BatchIn, Datum, never> = {
 		name: "FanRun",
 		input: (run) => ({ batch: run.batch, size: run.size }),
 		start: (run) => [scopeOf(Batch, run, () => [])],
-		finish: finishing<BatchIn>(pageLadder)
+		finish: finishing(pageLadder)
 	}
 }
 
@@ -228,9 +228,9 @@ const modelRun = (
 	weight: Option.Option<{ readonly feed: string; readonly factor: number }>
 ): ReadonlyArray<Fact> => {
 	const ledger = ledgerOf(SOUND)
-	const facts: Array<Fact> = []
+	const log: Array<ReadonlyArray<Fact>> = []
 	const record = (state: State, entry: { readonly facts: ReadonlyArray<Fact> }): State => {
-		facts.push(...entry.facts)
+		log.push(entry.facts)
 		return state
 	}
 	const written = ledger.write(
@@ -275,7 +275,7 @@ const modelRun = (
 		return after === state ? state : pass(after, turn + 1)
 	}
 	pass(record(admitted.state, admitted.entry), 0)
-	return facts
+	return Arr.flatten(log)
 }
 
 layer(sliceLayer)("the differential harness", (it) => {
@@ -315,33 +315,33 @@ layer(sliceLayer)("the differential harness", (it) => {
 						const app = yield* Db.open(AppServed.roles.auditor, {})
 						const key = `diff-${yield* nonce}`
 						const at = yield* now
-						const begin = (drawn: Program) =>
+						const begin = (chosen: Program) =>
 							Effect.gen(function* () {
-								switch (drawn.kind) {
+								switch (chosen.kind) {
 									case "chain": {
-										c.note(drawn.pages > 2 ? "a long chain" : "a chain")
-										if (drawn.factor > 0) {
+										c.note(chosen.pages > 2 ? "a long chain" : "a chain")
+										if (chosen.factor > 0) {
 											c.note("a weighted feed")
 											yield* loader.workload.weigh.once({
 												params: {},
 												facts: {
-													insert: { Weight: [{ feed: drawn.feed, factor: BigInt(drawn.factor) }] }
+													insert: { Weight: [{ feed: chosen.feed, factor: BigInt(chosen.factor) }] }
 												}
 											})
 										}
 										const stored = yield* rows(app.workload.weights.once({ params: {}, facts: {} }))
 										const factor = Arr.reduce(
-											Arr.filter(stored, (w) => w.feed === drawn.feed),
+											Arr.filter(stored, (w) => w.feed === chosen.feed),
 											0,
 											(sum, w) => sum + Number(w.factor)
 										)
 										const requested = yield* chainLedger.request.ChainRun(key, at, {
-											feed: drawn.feed,
-											pages: BigInt(drawn.pages)
+											feed: chosen.feed,
+											pages: BigInt(chosen.pages)
 										})
 										const model = modelRun(
-											admissionOf(ChainRun, key, { feed: drawn.feed, pages: drawn.pages }),
-											factor > 0 ? Option.some({ feed: drawn.feed, factor }) : Option.none()
+											admissionOf(ChainRun, key, { feed: chosen.feed, pages: chosen.pages }),
+											factor > 0 ? Option.some({ feed: chosen.feed, factor }) : Option.none()
 										)
 										return {
 											scope: requested.scope,
@@ -351,16 +351,16 @@ layer(sliceLayer)("the differential harness", (it) => {
 										}
 									}
 									case "fan": {
-										c.note(drawn.size === 0 ? "an empty batch" : "a fan-out")
-										if (drawn.size > poolSeats.value) {
+										c.note(chosen.size === 0 ? "an empty batch" : "a fan-out")
+										if (chosen.size > poolSeats.value) {
 											c.note("a contended pool")
 										}
 										const requested = yield* fanLedger.request.FanRun(key, at, {
 											batch: key,
-											size: BigInt(drawn.size)
+											size: BigInt(chosen.size)
 										})
 										const model = modelRun(
-											admissionOf(FanRun, key, { batch: key, size: drawn.size }),
+											admissionOf(FanRun, key, { batch: key, size: chosen.size }),
 											Option.none()
 										)
 										return {
