@@ -1,0 +1,2222 @@
+{
+	"constraintToLaw": {
+		"domains": {
+			"__domain_gfw43vigph": {
+				"check": "__natural_hcnvygsglu"
+			},
+			"__text_t4rwovzmqj": {
+				"check": "__settled_pattern_batch_fbl3au7jk6"
+			}
+		},
+		"tables": {
+			"audit": {
+				"__audit_fk_step_zgfyapbfme": "__audit_in_chain_result_lnwfzi4o3s",
+				"__audit_pk_dcvpvv5cjz": "__audit_pk_step_lew2zfy6bw"
+			},
+			"chain_chain_run_input": {
+				"__chain_chain_run_input_fk_scope_tag_kind_chain_run_m37i2umurb": "__chain_chain_run_input_in_chain_scope_wqljp2wcfi",
+				"__chain_chain_run_input_pk_ezbgzw4jha": "__chain_chain_run_input_pk_scope_vur4vba74o"
+			},
+			"chain_claim": {
+				"__chain_claim_fk_step_pred_attempt_eaxsvkfnat": "__chain_claim_attempt_in_chain_claim_5dt4pbxed5",
+				"__chain_claim_fk_step_tlgqnv6mzi": "__chain_claim_in_chain_step_jxcl5ly66y",
+				"__chain_claim_pk_nrr2rn3gui": "__chain_claim_pk_step_attempt_xusn4fcg7b",
+				"attempt_from_one": "__chain_claim_check_attempt_from_one_gr4ciwsbbc"
+			},
+			"chain_exhausted": {
+				"__chain_exhausted_fk_step_tag_outcome_failed_2udbgsp3ck": "__chain_exhausted_in_chain_result_lqxy3o3e25",
+				"__chain_exhausted_pk_nc4gvildnw": "__chain_exhausted_pk_step_io2gd2mclp"
+			},
+			"chain_finish": {
+				"__chain_finish_fk_scope_holmjz7tss": "__chain_finish_in_chain_scope_l5bx62vphb",
+				"__chain_finish_fk_step_djulfbbhyv": "__chain_finish_in_chain_step_dwqdrfsb4p",
+				"__chain_finish_key_step_x7i5pvi5jm": "__chain_finish_key_step_ke3gmvjyzj",
+				"__chain_finish_pk_ebe75jmnzy": "__chain_finish_pk_scope_6voaufcuur"
+			},
+			"chain_held": {
+				"__chain_held_fk_step_attempt_ha67r6xn73": "__chain_held_in_chain_claim_6xlqg77mfv",
+				"__chain_held_fk_step_gn4a3vhis4": "__chain_held_in_chain_result_zvjwjut3zp",
+				"__chain_held_pk_73idl7oo5c": "__chain_held_pk_step_2b3fpvtryc"
+			},
+			"chain_next": {
+				"__chain_next_fk_from_y5is7epime": "__chain_next_in_chain_page_input_llyatocfa2",
+				"__chain_next_fk_to_4dtheiiigt": "__chain_next_in_chain_page_input_omgf5h4lvg",
+				"__chain_next_key_to_jqccfs2l4c": "__chain_next_key_to_qbsvtae4tj",
+				"__chain_next_pk_qeumlilvtk": "__chain_next_pk_from_ordinal_lqc52r5ckp"
+			},
+			"chain_page_input": {
+				"__chain_page_input_fk_step_tag_kind_page_iu55gzqbo5": "__chain_page_input_in_chain_step_2stn3xviz6",
+				"__chain_page_input_pk_xuafsbu5vz": "__chain_page_input_pk_step_57ihquntc3"
+			},
+			"chain_page_input_after": {
+				"__chain_page_input_after_fk_step_lfprg2mtrc": "__chain_page_input_after_in_chain_page_input_6eyp2srnrg",
+				"__chain_page_input_after_pk_zsdylv6pam": "__chain_page_input_after_pk_step_qm4klzkqbe"
+			},
+			"chain_page_output": {
+				"__chain_page_output_fk_step_g37yommeoy": "__chain_page_output_in_chain_page_input_wcjoqau5xk",
+				"__chain_page_output_fk_step_tag_outcome_done_pvpnykkthy": "__chain_page_output_in_chain_result_nbvtforwwl",
+				"__chain_page_output_pk_whwnpdfgmi": "__chain_page_output_pk_step_4wgq3mptl4"
+			},
+			"chain_page_output_next": {
+				"__chain_page_output_next_fk_step_azw5pfnnsa": "__chain_page_output_next_in_chain_page_output_p6kzvp5jkn",
+				"__chain_page_output_next_pk_h55uzx4bbq": "__chain_page_output_next_pk_step_tdebtakd2s"
+			},
+			"chain_refusal": {
+				"__chain_refusal_fk_step_tag_outcome_failed_2a6zwjr3n5": "__chain_refusal_in_chain_result_vgtctqtfc2",
+				"__chain_refusal_pk_4j4yw3qc6m": "__chain_refusal_pk_step_l2wdgv4seg"
+			},
+			"chain_result": {
+				"__chain_result_fk_step_dbmjl746t7": "__chain_result_in_chain_step_n7gtkmhm2k",
+				"__chain_result_key_step_outcome_hqqrqon5z3": "__chain_result_pk_step_uqgeeqhrb7",
+				"__chain_result_pk_btw3jzlkgl": "__chain_result_pk_step_uqgeeqhrb7"
+			},
+			"chain_root": {
+				"__chain_root_fk_scope_g7gu2qhyp2": "__chain_root_in_chain_scope_r2nrkys5h6",
+				"__chain_root_pk_wqfycdg3x5": "__chain_root_pk_scope_sdojfkmzws"
+			},
+			"chain_scope": {
+				"__chain_scope_key_scope_kind_f3gtwiklfd": "__chain_scope_pk_scope_w2xnsj4e2a",
+				"__chain_scope_pk_fxzt444lf6": "__chain_scope_pk_scope_w2xnsj4e2a"
+			},
+			"chain_start_scope": {
+				"__chain_start_scope_fk_child_bz3czs5on4": "__chain_start_scope_in_chain_scope_b6csyx7mrx",
+				"__chain_start_scope_fk_scope_ijdwqi66fj": "__chain_start_scope_in_chain_scope_dh7xqelem2",
+				"__chain_start_scope_key_child_h23cre6olg": "__chain_start_scope_key_child_aa6ht6ua3p",
+				"__chain_start_scope_pk_t4giphzblt": "__chain_start_scope_pk_scope_ordinal_jqxelpwwuk"
+			},
+			"chain_start_step": {
+				"__chain_start_step_fk_scope_gegsqdzyp5": "__chain_start_step_in_chain_scope_f775aepjro",
+				"__chain_start_step_fk_step_yqr6ccimjq": "__chain_start_step_in_chain_step_dke4gsvoya",
+				"__chain_start_step_key_step_ygziyjwk3l": "__chain_start_step_key_step_z6c2zkvcl2",
+				"__chain_start_step_pk_dgda7shxb4": "__chain_start_step_pk_scope_ordinal_lo2yi6hjtr"
+			},
+			"chain_step": {
+				"__chain_step_fk_scope_zyevzya6lc": "__chain_step_in_chain_scope_7p57wnt6mf",
+				"__chain_step_key_step_kind_dlshgwdqz2": "__chain_step_pk_step_xzxslohv7e",
+				"__chain_step_pk_u6x5wnvfbv": "__chain_step_pk_step_xzxslohv7e"
+			},
+			"chain_within": {
+				"__chain_within_fk_parent_n3pon4mlxe": "__chain_within_in_chain_scope_bhxe5bbtgr",
+				"__chain_within_fk_scope_gzdy7afflv": "__chain_within_in_chain_scope_dgm4stwg3c",
+				"__chain_within_pk_ihqzjavdib": "__chain_within_pk_scope_decqvrh3r3"
+			},
+			"cursor": {
+				"__cursor_pk_wl2ngqny4j": "__cursor_pk_feed_position_hylioo6cog"
+			},
+			"fan_batch_input": {
+				"__fan_batch_input_fk_scope_tag_kind_batch_b6gxzmmqsm": "__fan_batch_input_in_fan_scope_bfrz7jrnqp",
+				"__fan_batch_input_pk_bmhyfuy2bw": "__fan_batch_input_pk_scope_vbpnbs7s62"
+			},
+			"fan_claim": {
+				"__fan_claim_fk_step_ihp5bkdfc7": "__fan_claim_in_fan_step_3niz6hzxzn",
+				"__fan_claim_fk_step_pred_attempt_r5pt5cwztz": "__fan_claim_attempt_in_fan_claim_sdwwwgvq4k",
+				"__fan_claim_pk_e7zimqppco": "__fan_claim_pk_step_attempt_stpirpjmun",
+				"attempt_from_one": "__fan_claim_check_attempt_from_one_pagmo5a6sv"
+			},
+			"fan_exhausted": {
+				"__fan_exhausted_fk_step_tag_outcome_failed_s2kqkxsbyn": "__fan_exhausted_in_fan_result_2ezamdfms2",
+				"__fan_exhausted_pk_4t3sxjskvd": "__fan_exhausted_pk_step_fyi4dpr5vk"
+			},
+			"fan_fan_run_input": {
+				"__fan_fan_run_input_fk_scope_tag_kind_fan_run_tihneov63d": "__fan_fan_run_input_in_fan_scope_hqvpkj3nzl",
+				"__fan_fan_run_input_pk_tbzpgbwe7g": "__fan_fan_run_input_pk_scope_i3w5p6s7tc"
+			},
+			"fan_finish": {
+				"__fan_finish_fk_scope_qa2mnv7a2g": "__fan_finish_in_fan_scope_y6e46wxt6e",
+				"__fan_finish_fk_step_f3he376omz": "__fan_finish_in_fan_step_ydwudc6eh4",
+				"__fan_finish_key_step_v72sacijwp": "__fan_finish_key_step_bitfkx65pq",
+				"__fan_finish_pk_6mb33urjra": "__fan_finish_pk_scope_emwpcqlzpz"
+			},
+			"fan_held": {
+				"__fan_held_fk_step_6tkjkyjp3h": "__fan_held_in_fan_result_xikram4wsq",
+				"__fan_held_fk_step_attempt_zol2no7gql": "__fan_held_in_fan_claim_sc3nv4f6ed",
+				"__fan_held_pk_4ic6tjvac4": "__fan_held_pk_step_rfsjin5avs"
+			},
+			"fan_refusal": {
+				"__fan_refusal_fk_step_tag_outcome_failed_zd74wltaye": "__fan_refusal_in_fan_result_6anf2mfgyv",
+				"__fan_refusal_pk_7va55wo2wj": "__fan_refusal_pk_step_bybvr6luwn"
+			},
+			"fan_result": {
+				"__fan_result_fk_step_kzt2ms65pp": "__fan_result_in_fan_step_5aj6rsrfd2",
+				"__fan_result_key_step_outcome_5nrb7r22qd": "__fan_result_pk_step_fcaikbu5eh",
+				"__fan_result_pk_yeear352sx": "__fan_result_pk_step_fcaikbu5eh"
+			},
+			"fan_root": {
+				"__fan_root_fk_scope_7k4byqnauw": "__fan_root_in_fan_scope_az6o6atfon",
+				"__fan_root_pk_jesu7xtefn": "__fan_root_pk_scope_z55b3x6bzo"
+			},
+			"fan_scope": {
+				"__fan_scope_key_scope_kind_epdwnzjh52": "__fan_scope_pk_scope_6k27a46fch",
+				"__fan_scope_pk_7bvjfihnef": "__fan_scope_pk_scope_6k27a46fch"
+			},
+			"fan_square_input": {
+				"__fan_square_input_fk_step_tag_kind_square_dshd7bwrky": "__fan_square_input_in_fan_step_sr2jda33tc",
+				"__fan_square_input_pk_uzumoizv53": "__fan_square_input_pk_step_ttnew4u5ot"
+			},
+			"fan_square_output": {
+				"__fan_square_output_fk_step_prwr7wqv35": "__fan_square_output_in_fan_square_input_uomv6oa3qh",
+				"__fan_square_output_fk_step_tag_outcome_done_nflx2lb3xz": "__fan_square_output_in_fan_result_f2kfqlyck3",
+				"__fan_square_output_pk_wcgarjqvhr": "__fan_square_output_pk_step_khygcrz4ai"
+			},
+			"fan_start_scope": {
+				"__fan_start_scope_fk_child_ngma7ay7kq": "__fan_start_scope_in_fan_scope_bhhvamc5hn",
+				"__fan_start_scope_fk_scope_ymqglh3w64": "__fan_start_scope_in_fan_scope_7k3whmavlc",
+				"__fan_start_scope_key_child_gmvcyvsk2k": "__fan_start_scope_key_child_a3h6qetrpn",
+				"__fan_start_scope_pk_nnms2gjwyi": "__fan_start_scope_pk_scope_ordinal_5p7wps5yno"
+			},
+			"fan_start_step": {
+				"__fan_start_step_fk_scope_nidx2ru6ls": "__fan_start_step_in_fan_scope_zhyx77fwkx",
+				"__fan_start_step_fk_step_vjwo5huhik": "__fan_start_step_in_fan_step_6dw3bjdq76",
+				"__fan_start_step_key_step_777capvdxg": "__fan_start_step_key_step_rj2yrfqid4",
+				"__fan_start_step_pk_7e247xk4mz": "__fan_start_step_pk_scope_ordinal_67lpopbntt"
+			},
+			"fan_step": {
+				"__fan_step_fk_scope_qjqxjbw7tr": "__fan_step_in_fan_scope_nwybgeckkk",
+				"__fan_step_key_step_kind_6mwvvgt65w": "__fan_step_pk_step_2hksg5ydn6",
+				"__fan_step_pk_2f4tcxnofk": "__fan_step_pk_step_2hksg5ydn6"
+			},
+			"fan_within": {
+				"__fan_within_fk_parent_koa6wzyqvq": "__fan_within_in_fan_scope_gf7x7hmoqu",
+				"__fan_within_fk_scope_5a7dtldf3w": "__fan_within_in_fan_scope_cslksgyas3",
+				"__fan_within_pk_g5tswgjfa6": "__fan_within_pk_scope_q33jlup6nn"
+			},
+			"item": {
+				"__item_pk_ai4obgmq4k": "__item_pk_feed_seq_n_y4mrwtlrwm"
+			},
+			"settled": {
+				"__settled_pk_yitdz6z3ts": "__settled_pk_batch_qfhu63z7q7"
+			},
+			"tally": {
+				"__tally_pk_7jc66uxxx4": "__tally_pk_batch_ae65tx2wol"
+			}
+		}
+	},
+	"derived": {
+		"closed": {},
+		"fkCycles": [],
+		"live": {
+			"kind": "source",
+			"tables": {
+				"audit": [],
+				"chain_chain_run_input": [
+					"scope"
+				],
+				"chain_claim": [],
+				"chain_finish": [
+					"scope"
+				],
+				"chain_held": [
+					"step"
+				],
+				"chain_page_input": [
+					"step"
+				],
+				"chain_page_input_after": [
+					"step"
+				],
+				"chain_page_output": [],
+				"chain_page_output_next": [],
+				"chain_result": [
+					"step"
+				],
+				"chain_scope": [
+					"scope"
+				],
+				"chain_step": [
+					"scope",
+					"step"
+				],
+				"chain_within": [
+					"parent",
+					"scope"
+				],
+				"cursor": [],
+				"fan_batch_input": [
+					"scope"
+				],
+				"fan_claim": [],
+				"fan_fan_run_input": [
+					"scope"
+				],
+				"fan_finish": [
+					"scope"
+				],
+				"fan_held": [
+					"step"
+				],
+				"fan_result": [
+					"step"
+				],
+				"fan_scope": [
+					"scope"
+				],
+				"fan_square_input": [
+					"step"
+				],
+				"fan_square_output": [],
+				"fan_step": [
+					"scope",
+					"step"
+				],
+				"fan_within": [
+					"parent",
+					"scope"
+				],
+				"item": [],
+				"settled": [],
+				"tally": []
+			},
+			"views": []
+		},
+		"references": [
+			{
+				"law": "__chain_chain_run_input_in_chain_scope_wqljp2wcfi",
+				"part": 0
+			},
+			{
+				"law": "__chain_exhausted_in_chain_result_lqxy3o3e25",
+				"part": 0
+			},
+			{
+				"law": "__chain_page_output_in_chain_result_nbvtforwwl",
+				"part": 0
+			},
+			{
+				"law": "__chain_refusal_in_chain_result_vgtctqtfc2",
+				"part": 0
+			},
+			{
+				"law": "__chain_page_input_in_chain_step_2stn3xviz6",
+				"part": 0
+			},
+			{
+				"law": "__fan_batch_input_in_fan_scope_bfrz7jrnqp",
+				"part": 0
+			},
+			{
+				"law": "__fan_fan_run_input_in_fan_scope_hqvpkj3nzl",
+				"part": 0
+			},
+			{
+				"law": "__fan_exhausted_in_fan_result_2ezamdfms2",
+				"part": 0
+			},
+			{
+				"law": "__fan_refusal_in_fan_result_6anf2mfgyv",
+				"part": 0
+			},
+			{
+				"law": "__fan_square_output_in_fan_result_f2kfqlyck3",
+				"part": 0
+			},
+			{
+				"law": "__fan_square_input_in_fan_step_sr2jda33tc",
+				"part": 0
+			}
+		],
+		"tables": {
+			"slice": {
+				"audit": {
+					"indexes": {
+						"__audit_pk_dcvpvv5cjz": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__audit_pk_step_lew2zfy6bw"
+								},
+								{
+									"kind": "law",
+									"law": "__audit_in_chain_result_lnwfzi4o3s"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "Audit"
+				},
+				"chain_chain_run_input": {
+					"indexes": {
+						"__chain_chain_run_input_pk_ezbgzw4jha": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_chain_run_input_pk_scope_vur4vba74o"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_chain_run_input_in_chain_scope_wqljp2wcfi"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainChainRunInput"
+				},
+				"chain_claim": {
+					"indexes": {
+						"__chain_claim_ix_step_fxyms_236_d_4_pred_attempt_cgz4fqmrbd": {
+							"columns": [
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "step",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__chain_claim_attempt_in_chain_claim_5dt4pbxed5"
+									]
+								},
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "attempt",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__chain_claim_attempt_in_chain_claim_5dt4pbxed5"
+									]
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_claim_attempt_in_chain_claim_5dt4pbxed5"
+								}
+							]
+						},
+						"__chain_claim_pk_nrr2rn3gui": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_claim_pk_step_attempt_xusn4fcg7b"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_claim_in_chain_step_jxcl5ly66y"
+								}
+							]
+						}
+					},
+					"relation": "ChainClaim"
+				},
+				"chain_exhausted": {
+					"indexes": {
+						"__chain_exhausted_pk_nc4gvildnw": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_exhausted_pk_step_io2gd2mclp"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_exhausted_in_chain_result_lqxy3o3e25"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainExhausted"
+				},
+				"chain_finish": {
+					"indexes": {
+						"__chain_finish_key_step_x7i5pvi5jm": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_finish_key_step_ke3gmvjyzj"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_finish_in_chain_step_dwqdrfsb4p"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__chain_finish_pk_ebe75jmnzy": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_finish_pk_scope_6voaufcuur"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_finish_in_chain_scope_l5bx62vphb"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainFinish"
+				},
+				"chain_held": {
+					"indexes": {
+						"__chain_held_pk_73idl7oo5c": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_held_pk_step_2b3fpvtryc"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_held_in_chain_claim_6xlqg77mfv"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_held_in_chain_result_zvjwjut3zp"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainHeld"
+				},
+				"chain_next": {
+					"indexes": {
+						"__chain_next_key_to_jqccfs2l4c": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "to",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_next_key_to_qbsvtae4tj"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_next_in_chain_page_input_omgf5h4lvg"
+								}
+							]
+						},
+						"__chain_next_pk_qeumlilvtk": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "from",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "ordinal",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_next_pk_from_ordinal_lqc52r5ckp"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_next_in_chain_page_input_llyatocfa2"
+								}
+							]
+						}
+					},
+					"relation": "ChainNext"
+				},
+				"chain_page_input": {
+					"indexes": {
+						"__chain_page_input_pk_xuafsbu5vz": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_page_input_pk_step_57ihquntc3"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_page_input_in_chain_step_2stn3xviz6"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainPageInput"
+				},
+				"chain_page_input_after": {
+					"indexes": {
+						"__chain_page_input_after_pk_zsdylv6pam": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_page_input_after_pk_step_qm4klzkqbe"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_page_input_after_in_chain_page_input_6eyp2srnrg"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainPageInputAfter"
+				},
+				"chain_page_output": {
+					"indexes": {
+						"__chain_page_output_pk_whwnpdfgmi": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_page_output_pk_step_4wgq3mptl4"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_page_output_in_chain_page_input_wcjoqau5xk"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_page_output_in_chain_result_nbvtforwwl"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainPageOutput"
+				},
+				"chain_page_output_next": {
+					"indexes": {
+						"__chain_page_output_next_pk_h55uzx4bbq": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_page_output_next_pk_step_tdebtakd2s"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_page_output_next_in_chain_page_output_p6kzvp5jkn"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainPageOutputNext"
+				},
+				"chain_refusal": {
+					"indexes": {
+						"__chain_refusal_pk_4j4yw3qc6m": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_refusal_pk_step_l2wdgv4seg"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_refusal_in_chain_result_vgtctqtfc2"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainRefusal"
+				},
+				"chain_result": {
+					"indexes": {
+						"__chain_result_key_step_outcome_hqqrqon5z3": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "outcome",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_result_pk_step_uqgeeqhrb7"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_exhausted_in_chain_result_lqxy3o3e25"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_page_output_in_chain_result_nbvtforwwl"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_refusal_in_chain_result_vgtctqtfc2"
+								}
+							]
+						},
+						"__chain_result_pk_btw3jzlkgl": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_result_pk_step_uqgeeqhrb7"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_result_in_chain_step_n7gtkmhm2k"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainResult"
+				},
+				"chain_root": {
+					"indexes": {
+						"__chain_root_pk_wqfycdg3x5": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_root_pk_scope_sdojfkmzws"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_root_in_chain_scope_r2nrkys5h6"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainRoot"
+				},
+				"chain_scope": {
+					"indexes": {
+						"__chain_scope_key_scope_kind_f3gtwiklfd": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "kind",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_scope_pk_scope_w2xnsj4e2a"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_chain_run_input_in_chain_scope_wqljp2wcfi"
+								}
+							]
+						},
+						"__chain_scope_pk_fxzt444lf6": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_scope_pk_scope_w2xnsj4e2a"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainScope"
+				},
+				"chain_start_scope": {
+					"indexes": {
+						"__chain_start_scope_key_child_h23cre6olg": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "child",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_start_scope_key_child_aa6ht6ua3p"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_start_scope_in_chain_scope_b6csyx7mrx"
+								}
+							]
+						},
+						"__chain_start_scope_pk_t4giphzblt": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "ordinal",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_start_scope_pk_scope_ordinal_jqxelpwwuk"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_start_scope_in_chain_scope_dh7xqelem2"
+								}
+							]
+						}
+					},
+					"relation": "ChainStartScope"
+				},
+				"chain_start_step": {
+					"indexes": {
+						"__chain_start_step_key_step_ygziyjwk3l": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_start_step_key_step_z6c2zkvcl2"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_start_step_in_chain_step_dke4gsvoya"
+								}
+							]
+						},
+						"__chain_start_step_pk_dgda7shxb4": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "ordinal",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_start_step_pk_scope_ordinal_lo2yi6hjtr"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_start_step_in_chain_scope_f775aepjro"
+								}
+							]
+						}
+					},
+					"relation": "ChainStartStep"
+				},
+				"chain_step": {
+					"indexes": {
+						"__chain_step_ix_scope_kind_spn3gys2vi": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "kind",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_step_in_chain_scope_7p57wnt6mf"
+								}
+							]
+						},
+						"__chain_step_key_step_kind_dlshgwdqz2": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "kind",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_step_pk_step_xzxslohv7e"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_page_input_in_chain_step_2stn3xviz6"
+								}
+							]
+						},
+						"__chain_step_pk_u6x5wnvfbv": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_step_pk_step_xzxslohv7e"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainStep"
+				},
+				"chain_within": {
+					"indexes": {
+						"__chain_within_ix_parent_3xemf3jvuy": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "parent",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_within_in_chain_scope_bhxe5bbtgr"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__chain_within_pk_ihqzjavdib": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_within_pk_scope_decqvrh3r3"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_within_in_chain_scope_dgm4stwg3c"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainWithin"
+				},
+				"cursor": {
+					"indexes": {
+						"__cursor_pk_wl2ngqny4j": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "feed",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "position",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__cursor_pk_feed_position_hylioo6cog"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "Cursor"
+				},
+				"fan_batch_input": {
+					"indexes": {
+						"__fan_batch_input_pk_bmhyfuy2bw": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_batch_input_pk_scope_vbpnbs7s62"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_batch_input_in_fan_scope_bfrz7jrnqp"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanBatchInput"
+				},
+				"fan_claim": {
+					"indexes": {
+						"__fan_claim_ix_step_fxyms_236_d_4_pred_attempt_rdwu35kano": {
+							"columns": [
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "step",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__fan_claim_attempt_in_fan_claim_sdwwwgvq4k"
+									]
+								},
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "attempt",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__fan_claim_attempt_in_fan_claim_sdwwwgvq4k"
+									]
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_claim_attempt_in_fan_claim_sdwwwgvq4k"
+								}
+							]
+						},
+						"__fan_claim_pk_e7zimqppco": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_claim_pk_step_attempt_stpirpjmun"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_claim_in_fan_step_3niz6hzxzn"
+								}
+							]
+						}
+					},
+					"relation": "FanClaim"
+				},
+				"fan_exhausted": {
+					"indexes": {
+						"__fan_exhausted_pk_4t3sxjskvd": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_exhausted_pk_step_fyi4dpr5vk"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_exhausted_in_fan_result_2ezamdfms2"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanExhausted"
+				},
+				"fan_fan_run_input": {
+					"indexes": {
+						"__fan_fan_run_input_pk_tbzpgbwe7g": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_fan_run_input_pk_scope_i3w5p6s7tc"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_fan_run_input_in_fan_scope_hqvpkj3nzl"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanFanRunInput"
+				},
+				"fan_finish": {
+					"indexes": {
+						"__fan_finish_key_step_v72sacijwp": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_finish_key_step_bitfkx65pq"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_finish_in_fan_step_ydwudc6eh4"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__fan_finish_pk_6mb33urjra": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_finish_pk_scope_emwpcqlzpz"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_finish_in_fan_scope_y6e46wxt6e"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanFinish"
+				},
+				"fan_held": {
+					"indexes": {
+						"__fan_held_pk_4ic6tjvac4": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_held_pk_step_rfsjin5avs"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_held_in_fan_claim_sc3nv4f6ed"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_held_in_fan_result_xikram4wsq"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanHeld"
+				},
+				"fan_refusal": {
+					"indexes": {
+						"__fan_refusal_pk_7va55wo2wj": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_refusal_pk_step_bybvr6luwn"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_refusal_in_fan_result_6anf2mfgyv"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanRefusal"
+				},
+				"fan_result": {
+					"indexes": {
+						"__fan_result_key_step_outcome_5nrb7r22qd": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "outcome",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_result_pk_step_fcaikbu5eh"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_exhausted_in_fan_result_2ezamdfms2"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_refusal_in_fan_result_6anf2mfgyv"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_square_output_in_fan_result_f2kfqlyck3"
+								}
+							]
+						},
+						"__fan_result_pk_yeear352sx": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_result_pk_step_fcaikbu5eh"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_result_in_fan_step_5aj6rsrfd2"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanResult"
+				},
+				"fan_root": {
+					"indexes": {
+						"__fan_root_pk_jesu7xtefn": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_root_pk_scope_z55b3x6bzo"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_root_in_fan_scope_az6o6atfon"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanRoot"
+				},
+				"fan_scope": {
+					"indexes": {
+						"__fan_scope_key_scope_kind_epdwnzjh52": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "kind",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_scope_pk_scope_6k27a46fch"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_batch_input_in_fan_scope_bfrz7jrnqp"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_fan_run_input_in_fan_scope_hqvpkj3nzl"
+								}
+							]
+						},
+						"__fan_scope_pk_7bvjfihnef": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_scope_pk_scope_6k27a46fch"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanScope"
+				},
+				"fan_square_input": {
+					"indexes": {
+						"__fan_square_input_pk_uzumoizv53": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_square_input_pk_step_ttnew4u5ot"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_square_input_in_fan_step_sr2jda33tc"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanSquareInput"
+				},
+				"fan_square_output": {
+					"indexes": {
+						"__fan_square_output_pk_wcgarjqvhr": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_square_output_pk_step_khygcrz4ai"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_square_output_in_fan_result_f2kfqlyck3"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_square_output_in_fan_square_input_uomv6oa3qh"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanSquareOutput"
+				},
+				"fan_start_scope": {
+					"indexes": {
+						"__fan_start_scope_key_child_gmvcyvsk2k": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "child",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_start_scope_key_child_a3h6qetrpn"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_start_scope_in_fan_scope_bhhvamc5hn"
+								}
+							]
+						},
+						"__fan_start_scope_pk_nnms2gjwyi": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "ordinal",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_start_scope_pk_scope_ordinal_5p7wps5yno"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_start_scope_in_fan_scope_7k3whmavlc"
+								}
+							]
+						}
+					},
+					"relation": "FanStartScope"
+				},
+				"fan_start_step": {
+					"indexes": {
+						"__fan_start_step_key_step_777capvdxg": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_start_step_key_step_rj2yrfqid4"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_start_step_in_fan_step_6dw3bjdq76"
+								}
+							]
+						},
+						"__fan_start_step_pk_7e247xk4mz": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "ordinal",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_start_step_pk_scope_ordinal_67lpopbntt"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_start_step_in_fan_scope_zhyx77fwkx"
+								}
+							]
+						}
+					},
+					"relation": "FanStartStep"
+				},
+				"fan_step": {
+					"indexes": {
+						"__fan_step_ix_scope_kind_h2wuapaqs3": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "kind",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_step_in_fan_scope_nwybgeckkk"
+								}
+							]
+						},
+						"__fan_step_key_step_kind_6mwvvgt65w": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "kind",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_step_pk_step_2hksg5ydn6"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_square_input_in_fan_step_sr2jda33tc"
+								}
+							]
+						},
+						"__fan_step_pk_2f4tcxnofk": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_step_pk_step_2hksg5ydn6"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanStep"
+				},
+				"fan_within": {
+					"indexes": {
+						"__fan_within_ix_parent_7swblvcobd": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "parent",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_within_in_fan_scope_gf7x7hmoqu"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__fan_within_pk_g5tswgjfa6": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_within_pk_scope_q33jlup6nn"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_within_in_fan_scope_cslksgyas3"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanWithin"
+				},
+				"item": {
+					"indexes": {
+						"__item_pk_ai4obgmq4k": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "feed",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "seq",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "n",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__item_pk_feed_seq_n_y4mrwtlrwm"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "Item"
+				},
+				"settled": {
+					"indexes": {
+						"__settled_pk_yitdz6z3ts": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "batch",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__settled_pk_batch_qfhu63z7q7"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "Settled"
+				},
+				"tally": {
+					"indexes": {
+						"__tally_pk_7jc66uxxx4": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "batch",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__tally_pk_batch_ae65tx2wol"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "Tally"
+				}
+			}
+		},
+		"textDomains": {
+			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
+		}
+	},
+	"fingerprint": "385b6f874b4bc4bfaf50465bf26c5746a9e747445c98eb465d18e6de1722e4e6",
+	"levels": [
+		{
+			"fingerprint": "c0cee38792dd78b763f3cc96a71524e5560407054ab446e3902b29a094483575",
+			"laws": [
+				{"described":{"from":{"relation":"Audit","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__audit_in_chain_result_lnwfzi4o3s"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"Audit"},"law":"__audit_pk_step_lew2zfy6bw"},
+				{"described":{"from":{"relation":"ChainChainRunInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"ChainRun"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_chain_run_input_in_chain_scope_wqljp2wcfi"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"ChainChainRunInput"},"law":"__chain_chain_run_input_pk_scope_vur4vba74o"},
+				{"described":{"from":{"relation":"ChainClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:2"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"}]},"kind":"contained","to":{"relation":"ChainClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]}},"law":"__chain_claim_attempt_in_chain_claim_5dt4pbxed5"},
+				{"described":{"kind":"check","name":"AttemptFromOne","relation":"ChainClaim"},"law":"__chain_claim_check_attempt_from_one_gr4ciwsbbc"},
+				{"described":{"from":{"relation":"ChainClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_claim_in_chain_step_jxcl5ly66y"},
+				{"described":{"fields":["step","attempt"],"kind":"primaryKey","relation":"ChainClaim"},"law":"__chain_claim_pk_step_attempt_xusn4fcg7b"},
+				{"described":{"from":{"relation":"ChainExhausted","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"failed"}}]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_exhausted_in_chain_result_lqxy3o3e25"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"ChainExhausted"},"law":"__chain_exhausted_pk_step_io2gd2mclp"},
+				{"described":{"from":{"relation":"ChainFinish","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_finish_in_chain_scope_l5bx62vphb"},
+				{"described":{"from":{"relation":"ChainFinish","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_finish_in_chain_step_dwqdrfsb4p"},
+				{"described":{"kind":"key","side":{"relation":"ChainFinish","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_finish_key_step_ke3gmvjyzj"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"ChainFinish"},"law":"__chain_finish_pk_scope_6voaufcuur"},
+				{"described":{"from":{"relation":"ChainHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]},"kind":"contained","to":{"relation":"ChainClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]}},"law":"__chain_held_in_chain_claim_6xlqg77mfv"},
+				{"described":{"from":{"relation":"ChainHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_held_in_chain_result_zvjwjut3zp"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"ChainHeld"},"law":"__chain_held_pk_step_2b3fpvtryc"},
+				{"described":{"from":{"relation":"ChainNext","selection":{"conjuncts":[]},"terms":[{"field":"from","kind":"field"}]},"kind":"contained","to":{"relation":"ChainPageInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_next_in_chain_page_input_llyatocfa2"},
+				{"described":{"from":{"relation":"ChainNext","selection":{"conjuncts":[]},"terms":[{"field":"to","kind":"field"}]},"kind":"contained","to":{"relation":"ChainPageInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_next_in_chain_page_input_omgf5h4lvg"},
+				{"described":{"kind":"key","side":{"relation":"ChainNext","selection":{"conjuncts":[]},"terms":[{"field":"to","kind":"field"}]}},"law":"__chain_next_key_to_qbsvtae4tj"},
+				{"described":{"fields":["from","ordinal"],"kind":"primaryKey","relation":"ChainNext"},"law":"__chain_next_pk_from_ordinal_lqc52r5ckp"},
+				{"described":{"from":{"relation":"ChainPageInputAfter","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainPageInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_page_input_after_in_chain_page_input_6eyp2srnrg"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"ChainPageInputAfter"},"law":"__chain_page_input_after_pk_step_qm4klzkqbe"},
+				{"described":{"from":{"relation":"ChainPageInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainStep","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Page"}}]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_page_input_in_chain_step_2stn3xviz6"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"ChainPageInput"},"law":"__chain_page_input_pk_step_57ihquntc3"},
+				{"described":{"from":{"relation":"ChainPageOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainPageInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_page_output_in_chain_page_input_wcjoqau5xk"},
+				{"described":{"from":{"relation":"ChainPageOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"done"}}]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_page_output_in_chain_result_nbvtforwwl"},
+				{"described":{"from":{"relation":"ChainPageOutputNext","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainPageOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_page_output_next_in_chain_page_output_p6kzvp5jkn"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"ChainPageOutputNext"},"law":"__chain_page_output_next_pk_step_tdebtakd2s"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"ChainPageOutput"},"law":"__chain_page_output_pk_step_4wgq3mptl4"},
+				{"described":{"from":{"relation":"ChainRefusal","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"failed"}}]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_refusal_in_chain_result_vgtctqtfc2"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"ChainRefusal"},"law":"__chain_refusal_pk_step_l2wdgv4seg"},
+				{"described":{"from":{"relation":"ChainResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_result_in_chain_step_n7gtkmhm2k"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"ChainResult"},"law":"__chain_result_pk_step_uqgeeqhrb7"},
+				{"described":{"from":{"relation":"ChainRoot","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_root_in_chain_scope_r2nrkys5h6"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"ChainRoot"},"law":"__chain_root_pk_scope_sdojfkmzws"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"ChainScope"},"law":"__chain_scope_pk_scope_w2xnsj4e2a"},
+				{"described":{"from":{"relation":"ChainStartScope","selection":{"conjuncts":[]},"terms":[{"field":"child","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_start_scope_in_chain_scope_b6csyx7mrx"},
+				{"described":{"from":{"relation":"ChainStartScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_start_scope_in_chain_scope_dh7xqelem2"},
+				{"described":{"kind":"key","side":{"relation":"ChainStartScope","selection":{"conjuncts":[]},"terms":[{"field":"child","kind":"field"}]}},"law":"__chain_start_scope_key_child_aa6ht6ua3p"},
+				{"described":{"fields":["scope","ordinal"],"kind":"primaryKey","relation":"ChainStartScope"},"law":"__chain_start_scope_pk_scope_ordinal_jqxelpwwuk"},
+				{"described":{"from":{"relation":"ChainStartStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_start_step_in_chain_scope_f775aepjro"},
+				{"described":{"from":{"relation":"ChainStartStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_start_step_in_chain_step_dke4gsvoya"},
+				{"described":{"kind":"key","side":{"relation":"ChainStartStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_start_step_key_step_z6c2zkvcl2"},
+				{"described":{"fields":["scope","ordinal"],"kind":"primaryKey","relation":"ChainStartStep"},"law":"__chain_start_step_pk_scope_ordinal_lo2yi6hjtr"},
+				{"described":{"from":{"relation":"ChainStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_step_in_chain_scope_7p57wnt6mf"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"ChainStep"},"law":"__chain_step_pk_step_xzxslohv7e"},
+				{"described":{"from":{"relation":"ChainWithin","selection":{"conjuncts":[]},"terms":[{"field":"parent","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_within_in_chain_scope_bhxe5bbtgr"},
+				{"described":{"from":{"relation":"ChainWithin","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_within_in_chain_scope_dgm4stwg3c"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"ChainWithin"},"law":"__chain_within_pk_scope_decqvrh3r3"},
+				{"described":{"fields":["feed","position"],"kind":"primaryKey","relation":"Cursor"},"law":"__cursor_pk_feed_position_hylioo6cog"},
+				{"described":{"contract":"DenHolder","kind":"contract"},"law":"__den_holder_kytavffv25"},
+				{"described":{"contract":"DenInstant","kind":"contract"},"law":"__den_instant_st6jpyax5b"},
+				{"described":{"contract":"DenScope","kind":"contract"},"law":"__den_scope_g3mjgc2ytk"},
+				{"described":{"contract":"DenStep","kind":"contract"},"law":"__den_step_345ke2ya2t"},
+				{"described":{"from":{"relation":"FanBatchInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Batch"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_batch_input_in_fan_scope_bfrz7jrnqp"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"FanBatchInput"},"law":"__fan_batch_input_pk_scope_vbpnbs7s62"},
+				{"described":{"from":{"relation":"FanClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:2"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"}]},"kind":"contained","to":{"relation":"FanClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]}},"law":"__fan_claim_attempt_in_fan_claim_sdwwwgvq4k"},
+				{"described":{"kind":"check","name":"AttemptFromOne","relation":"FanClaim"},"law":"__fan_claim_check_attempt_from_one_pagmo5a6sv"},
+				{"described":{"from":{"relation":"FanClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__fan_claim_in_fan_step_3niz6hzxzn"},
+				{"described":{"fields":["step","attempt"],"kind":"primaryKey","relation":"FanClaim"},"law":"__fan_claim_pk_step_attempt_stpirpjmun"},
+				{"described":{"from":{"relation":"FanExhausted","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"failed"}}]},"terms":[{"field":"step","kind":"field"}]}},"law":"__fan_exhausted_in_fan_result_2ezamdfms2"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"FanExhausted"},"law":"__fan_exhausted_pk_step_fyi4dpr5vk"},
+				{"described":{"from":{"relation":"FanFanRunInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"FanRun"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_fan_run_input_in_fan_scope_hqvpkj3nzl"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"FanFanRunInput"},"law":"__fan_fan_run_input_pk_scope_i3w5p6s7tc"},
+				{"described":{"from":{"relation":"FanFinish","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_finish_in_fan_scope_y6e46wxt6e"},
+				{"described":{"from":{"relation":"FanFinish","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__fan_finish_in_fan_step_ydwudc6eh4"},
+				{"described":{"kind":"key","side":{"relation":"FanFinish","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__fan_finish_key_step_bitfkx65pq"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"FanFinish"},"law":"__fan_finish_pk_scope_emwpcqlzpz"},
+				{"described":{"from":{"relation":"FanHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]},"kind":"contained","to":{"relation":"FanClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]}},"law":"__fan_held_in_fan_claim_sc3nv4f6ed"},
+				{"described":{"from":{"relation":"FanHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__fan_held_in_fan_result_xikram4wsq"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"FanHeld"},"law":"__fan_held_pk_step_rfsjin5avs"},
+				{"described":{"from":{"relation":"FanRefusal","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"failed"}}]},"terms":[{"field":"step","kind":"field"}]}},"law":"__fan_refusal_in_fan_result_6anf2mfgyv"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"FanRefusal"},"law":"__fan_refusal_pk_step_bybvr6luwn"},
+				{"described":{"from":{"relation":"FanResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__fan_result_in_fan_step_5aj6rsrfd2"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"FanResult"},"law":"__fan_result_pk_step_fcaikbu5eh"},
+				{"described":{"from":{"relation":"FanRoot","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_root_in_fan_scope_az6o6atfon"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"FanRoot"},"law":"__fan_root_pk_scope_z55b3x6bzo"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"FanScope"},"law":"__fan_scope_pk_scope_6k27a46fch"},
+				{"described":{"from":{"relation":"FanSquareInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanStep","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Square"}}]},"terms":[{"field":"step","kind":"field"}]}},"law":"__fan_square_input_in_fan_step_sr2jda33tc"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"FanSquareInput"},"law":"__fan_square_input_pk_step_ttnew4u5ot"},
+				{"described":{"from":{"relation":"FanSquareOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"done"}}]},"terms":[{"field":"step","kind":"field"}]}},"law":"__fan_square_output_in_fan_result_f2kfqlyck3"},
+				{"described":{"from":{"relation":"FanSquareOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanSquareInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__fan_square_output_in_fan_square_input_uomv6oa3qh"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"FanSquareOutput"},"law":"__fan_square_output_pk_step_khygcrz4ai"},
+				{"described":{"from":{"relation":"FanStartScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_start_scope_in_fan_scope_7k3whmavlc"},
+				{"described":{"from":{"relation":"FanStartScope","selection":{"conjuncts":[]},"terms":[{"field":"child","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_start_scope_in_fan_scope_bhhvamc5hn"},
+				{"described":{"kind":"key","side":{"relation":"FanStartScope","selection":{"conjuncts":[]},"terms":[{"field":"child","kind":"field"}]}},"law":"__fan_start_scope_key_child_a3h6qetrpn"},
+				{"described":{"fields":["scope","ordinal"],"kind":"primaryKey","relation":"FanStartScope"},"law":"__fan_start_scope_pk_scope_ordinal_5p7wps5yno"},
+				{"described":{"from":{"relation":"FanStartStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_start_step_in_fan_scope_zhyx77fwkx"},
+				{"described":{"from":{"relation":"FanStartStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__fan_start_step_in_fan_step_6dw3bjdq76"},
+				{"described":{"kind":"key","side":{"relation":"FanStartStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__fan_start_step_key_step_rj2yrfqid4"},
+				{"described":{"fields":["scope","ordinal"],"kind":"primaryKey","relation":"FanStartStep"},"law":"__fan_start_step_pk_scope_ordinal_67lpopbntt"},
+				{"described":{"from":{"relation":"FanStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_step_in_fan_scope_nwybgeckkk"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"FanStep"},"law":"__fan_step_pk_step_2hksg5ydn6"},
+				{"described":{"from":{"relation":"FanWithin","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_within_in_fan_scope_cslksgyas3"},
+				{"described":{"from":{"relation":"FanWithin","selection":{"conjuncts":[]},"terms":[{"field":"parent","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_within_in_fan_scope_gf7x7hmoqu"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"FanWithin"},"law":"__fan_within_pk_scope_q33jlup6nn"},
+				{"described":{"fields":["feed","seq","n"],"kind":"primaryKey","relation":"Item"},"law":"__item_pk_feed_seq_n_y4mrwtlrwm"},
+				{"described":{"contract":"natural","kind":"contract"},"law":"__natural_hcnvygsglu"},
+				{"described":{"contract":"Seq","kind":"contract"},"law":"__seq_fssxeyunev"},
+				{"described":{"fields":["batch"],"kind":"primaryKey","relation":"Settled"},"law":"__settled_pk_batch_qfhu63z7q7"},
+				{"described":{"fields":["batch"],"kind":"primaryKey","relation":"Tally"},"law":"__tally_pk_batch_ae65tx2wol"}
+			],
+			"name": "Slice",
+			"schema": "slice"
+		}
+	],
+	"live": {
+		"tables": [
+			{
+				"relation": "Audit",
+				"routes": []
+			},
+			{
+				"relation": "ChainChainRunInput",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "ChainClaim",
+				"routes": []
+			},
+			{
+				"relation": "ChainFinish",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "ChainHeld",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "ChainPageInput",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "ChainPageInputAfter",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "ChainPageOutput",
+				"routes": []
+			},
+			{
+				"relation": "ChainPageOutputNext",
+				"routes": []
+			},
+			{
+				"relation": "ChainResult",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "ChainScope",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "ChainStep",
+				"routes": [
+					"scope",
+					"step"
+				]
+			},
+			{
+				"relation": "ChainWithin",
+				"routes": [
+					"parent",
+					"scope"
+				]
+			},
+			{
+				"relation": "Cursor",
+				"routes": []
+			},
+			{
+				"relation": "FanBatchInput",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "FanClaim",
+				"routes": []
+			},
+			{
+				"relation": "FanFanRunInput",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "FanFinish",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "FanHeld",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "FanResult",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "FanScope",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "FanSquareInput",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "FanSquareOutput",
+				"routes": []
+			},
+			{
+				"relation": "FanStep",
+				"routes": [
+					"scope",
+					"step"
+				]
+			},
+			{
+				"relation": "FanWithin",
+				"routes": [
+					"parent",
+					"scope"
+				]
+			},
+			{
+				"relation": "Item",
+				"routes": []
+			},
+			{
+				"relation": "Settled",
+				"routes": []
+			},
+			{
+				"relation": "Tally",
+				"routes": []
+			}
+		],
+		"views": []
+	},
+	"rosters": {
+		"ChainChainRunInputFeed": [
+			{
+				"handle": "news",
+				"kind": "live"
+			},
+			{
+				"handle": "sport",
+				"kind": "live"
+			}
+		],
+		"ChainJoin": [
+			{
+				"handle": "ChainRun",
+				"kind": "live"
+			}
+		],
+		"ChainKind": [
+			{
+				"handle": "Page",
+				"kind": "live"
+			},
+			{
+				"handle": "ChainRunFinish",
+				"kind": "live"
+			}
+		],
+		"ChainOutcome": [
+			{
+				"handle": "done",
+				"kind": "live"
+			},
+			{
+				"handle": "failed",
+				"kind": "live"
+			}
+		],
+		"ChainPageInputFeed": [
+			{
+				"handle": "news",
+				"kind": "live"
+			},
+			{
+				"handle": "sport",
+				"kind": "live"
+			}
+		],
+		"FanJoin": [
+			{
+				"handle": "Batch",
+				"kind": "live"
+			},
+			{
+				"handle": "FanRun",
+				"kind": "live"
+			}
+		],
+		"FanKind": [
+			{
+				"handle": "Square",
+				"kind": "live"
+			},
+			{
+				"handle": "BatchFinish",
+				"kind": "live"
+			},
+			{
+				"handle": "FanRunFinish",
+				"kind": "live"
+			}
+		],
+		"FanOutcome": [
+			{
+				"handle": "done",
+				"kind": "live"
+			},
+			{
+				"handle": "failed",
+				"kind": "live"
+			}
+		],
+		"Feed": [
+			{
+				"handle": "news",
+				"kind": "live"
+			},
+			{
+				"handle": "sport",
+				"kind": "live"
+			}
+		]
+	}
+}

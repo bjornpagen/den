@@ -1,0 +1,2001 @@
+{
+	"meta": {
+		"declared": {
+			"drops": [],
+			"renames": []
+		},
+		"files": [
+			{
+				"name": "01-setup.sql",
+				"steps": [
+					{
+						"kind": "statement",
+						"statement": "DO $$\nBEGIN\n  PERFORM \"pg_catalog\".\"pg_advisory_xact_lock\"(7567026782556624299::bigint);\n  EXECUTE \"pg_catalog\".\"format\"('ALTER DATABASE %I SET default_transaction_isolation = %L'::\"pg_catalog\".\"text\", \"pg_catalog\".\"current_database\"(), 'serializable'::\"pg_catalog\".\"text\");\nEND\n$$"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE SCHEMA \"slice\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE FUNCTION \"slice\".\"__chain_chain_run_input_feed_names_byxgsvzik7\"() RETURNS \"pg_catalog\".\"name\"[]\nLANGUAGE sql IMMUTABLE PARALLEL SAFE\nRETURN '{\"news\",\"sport\"}'::\"pg_catalog\".\"name\"[]"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE ALL ON FUNCTION \"slice\".\"__chain_chain_run_input_feed_names_byxgsvzik7\"() FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE FUNCTION \"slice\".\"__chain_join_names_mqsumlsj56\"() RETURNS \"pg_catalog\".\"name\"[]\nLANGUAGE sql IMMUTABLE PARALLEL SAFE\nRETURN '{\"ChainRun\"}'::\"pg_catalog\".\"name\"[]"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE ALL ON FUNCTION \"slice\".\"__chain_join_names_mqsumlsj56\"() FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE FUNCTION \"slice\".\"__chain_kind_names_zria4jypsm\"() RETURNS \"pg_catalog\".\"name\"[]\nLANGUAGE sql IMMUTABLE PARALLEL SAFE\nRETURN '{\"Page\",\"ChainRunFinish\"}'::\"pg_catalog\".\"name\"[]"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE ALL ON FUNCTION \"slice\".\"__chain_kind_names_zria4jypsm\"() FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE FUNCTION \"slice\".\"__chain_outcome_names_vo4tgqx6qh\"() RETURNS \"pg_catalog\".\"name\"[]\nLANGUAGE sql IMMUTABLE PARALLEL SAFE\nRETURN '{\"done\",\"failed\"}'::\"pg_catalog\".\"name\"[]"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE ALL ON FUNCTION \"slice\".\"__chain_outcome_names_vo4tgqx6qh\"() FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE FUNCTION \"slice\".\"__chain_page_input_feed_names_dxuyhzkiur\"() RETURNS \"pg_catalog\".\"name\"[]\nLANGUAGE sql IMMUTABLE PARALLEL SAFE\nRETURN '{\"news\",\"sport\"}'::\"pg_catalog\".\"name\"[]"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE ALL ON FUNCTION \"slice\".\"__chain_page_input_feed_names_dxuyhzkiur\"() FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE FUNCTION \"slice\".\"__fan_join_names_gct5lzhdqo\"() RETURNS \"pg_catalog\".\"name\"[]\nLANGUAGE sql IMMUTABLE PARALLEL SAFE\nRETURN '{\"Batch\",\"FanRun\"}'::\"pg_catalog\".\"name\"[]"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE ALL ON FUNCTION \"slice\".\"__fan_join_names_gct5lzhdqo\"() FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE FUNCTION \"slice\".\"__fan_kind_names_gikh2fxf2t\"() RETURNS \"pg_catalog\".\"name\"[]\nLANGUAGE sql IMMUTABLE PARALLEL SAFE\nRETURN '{\"Square\",\"BatchFinish\",\"FanRunFinish\"}'::\"pg_catalog\".\"name\"[]"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE ALL ON FUNCTION \"slice\".\"__fan_kind_names_gikh2fxf2t\"() FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE FUNCTION \"slice\".\"__fan_outcome_names_7pbhseigfj\"() RETURNS \"pg_catalog\".\"name\"[]\nLANGUAGE sql IMMUTABLE PARALLEL SAFE\nRETURN '{\"done\",\"failed\"}'::\"pg_catalog\".\"name\"[]"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE ALL ON FUNCTION \"slice\".\"__fan_outcome_names_7pbhseigfj\"() FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE FUNCTION \"slice\".\"__feed_names_azjbqebc6i\"() RETURNS \"pg_catalog\".\"name\"[]\nLANGUAGE sql IMMUTABLE PARALLEL SAFE\nRETURN '{\"news\",\"sport\"}'::\"pg_catalog\".\"name\"[]"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE ALL ON FUNCTION \"slice\".\"__feed_names_azjbqebc6i\"() FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE DOMAIN \"slice\".\"chain_chain_run_input_feed\" AS smallint CONSTRAINT \"check\" CHECK (VALUE IS NULL OR ((\"slice\".\"__chain_chain_run_input_feed_names_byxgsvzik7\"())[VALUE + 1] <> ''::\"pg_catalog\".\"name\") IS TRUE)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE DOMAIN \"slice\".\"chain_join\" AS smallint CONSTRAINT \"check\" CHECK (VALUE IS NULL OR ((\"slice\".\"__chain_join_names_mqsumlsj56\"())[VALUE + 1] <> ''::\"pg_catalog\".\"name\") IS TRUE)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE DOMAIN \"slice\".\"chain_kind\" AS smallint CONSTRAINT \"check\" CHECK (VALUE IS NULL OR ((\"slice\".\"__chain_kind_names_zria4jypsm\"())[VALUE + 1] <> ''::\"pg_catalog\".\"name\") IS TRUE)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE DOMAIN \"slice\".\"chain_outcome\" AS smallint CONSTRAINT \"check\" CHECK (VALUE IS NULL OR ((\"slice\".\"__chain_outcome_names_vo4tgqx6qh\"())[VALUE + 1] <> ''::\"pg_catalog\".\"name\") IS TRUE)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE DOMAIN \"slice\".\"chain_page_input_feed\" AS smallint CONSTRAINT \"check\" CHECK (VALUE IS NULL OR ((\"slice\".\"__chain_page_input_feed_names_dxuyhzkiur\"())[VALUE + 1] <> ''::\"pg_catalog\".\"name\") IS TRUE)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE DOMAIN \"slice\".\"fan_join\" AS smallint CONSTRAINT \"check\" CHECK (VALUE IS NULL OR ((\"slice\".\"__fan_join_names_gct5lzhdqo\"())[VALUE + 1] <> ''::\"pg_catalog\".\"name\") IS TRUE)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE DOMAIN \"slice\".\"fan_kind\" AS smallint CONSTRAINT \"check\" CHECK (VALUE IS NULL OR ((\"slice\".\"__fan_kind_names_gikh2fxf2t\"())[VALUE + 1] <> ''::\"pg_catalog\".\"name\") IS TRUE)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE DOMAIN \"slice\".\"fan_outcome\" AS smallint CONSTRAINT \"check\" CHECK (VALUE IS NULL OR ((\"slice\".\"__fan_outcome_names_7pbhseigfj\"())[VALUE + 1] <> ''::\"pg_catalog\".\"name\") IS TRUE)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE DOMAIN \"slice\".\"feed\" AS smallint CONSTRAINT \"check\" CHECK (VALUE IS NULL OR ((\"slice\".\"__feed_names_azjbqebc6i\"())[VALUE + 1] <> ''::\"pg_catalog\".\"name\") IS TRUE)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE DOMAIN \"slice\".\"__domain_jotafzuj2i\" AS \"pg_catalog\".\"uuid\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE DOMAIN \"slice\".\"__domain_gfw43vigph\" AS bigint CONSTRAINT \"check\" CHECK (VALUE IS NULL OR (VALUE >= 0::bigint) IS TRUE)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE DOMAIN \"slice\".\"__domain_mxhao3k6ss\" AS bigint"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE DOMAIN \"slice\".\"__text_t4rwovzmqj\" AS \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" CONSTRAINT \"check\" CHECK (VALUE IS NULL OR (VALUE ~ '\\A[\\-0-9a-z]{1,64}\\Z'::\"pg_catalog\".\"text\") IS TRUE)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE OR REPLACE FUNCTION \"slice\".\"__refuse\"(\"state\" \"pg_catalog\".\"text\", \"constraint_name\" \"pg_catalog\".\"text\", \"detail\" \"pg_catalog\".\"text\") RETURNS boolean\nLANGUAGE plpgsql VOLATILE PARALLEL SAFE SECURITY DEFINER SET search_path = \"pg_catalog\", \"pg_temp\"\nAS $$\nBEGIN\n  RAISE EXCEPTION 'grizzle refused the statement'\n    USING ERRCODE = \"state\",\n          CONSTRAINT = \"constraint_name\",\n          DETAIL = \"detail\";\nEND\n$$"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE EXECUTE ON FUNCTION \"slice\".\"__refuse\"(\"pg_catalog\".\"text\", \"pg_catalog\".\"text\", \"pg_catalog\".\"text\") FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE OR REPLACE FUNCTION \"slice\".\"__require_serializable\"() RETURNS \"pg_catalog\".\"trigger\"\nLANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = \"pg_catalog\", \"pg_temp\"\nAS $$\nBEGIN\n  IF \"pg_catalog\".\"current_setting\"('transaction_isolation'::\"pg_catalog\".\"text\") <> 'serializable'::\"pg_catalog\".\"text\" THEN\n    RAISE EXCEPTION 'a write to a grizzle table requires SERIALIZABLE'\n      USING ERRCODE = 'invalid_transaction_state'::\"pg_catalog\".\"text\",\n            SCHEMA = TG_TABLE_SCHEMA,\n            TABLE = TG_TABLE_NAME,\n            HINT = 'write at SERIALIZABLE'::\"pg_catalog\".\"text\";\n  END IF;\n  RETURN NEW;\nEND\n$$"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE EXECUTE ON FUNCTION \"slice\".\"__require_serializable\"() FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"__ledger\" (\n  \"folder\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  \"ordinal\" integer NOT NULL,\n  \"file\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  \"source\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  \"target\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  \"files\" integer NOT NULL,\n  \"digest\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  CONSTRAINT \"__ledger_pk\" PRIMARY KEY (\"folder\", \"ordinal\"),\n  CONSTRAINT \"__ledger_ordinal_check\" CHECK ((\"ordinal\" >= 0) IS TRUE),\n  CONSTRAINT \"__ledger_files_check\" CHECK ((\"files\" >= 0) IS TRUE)\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE ALL ON TABLE \"slice\".\"__ledger\" FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TRIGGER \"__isolation\"\n  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON \"slice\".\"__ledger\"\n  FOR EACH STATEMENT EXECUTE FUNCTION \"slice\".\"__require_serializable\"()"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE OR REPLACE FUNCTION \"slice\".\"__snapshot_guard\"(\"fingerprint\" \"pg_catalog\".\"text\") RETURNS \"pg_catalog\".\"void\"\nLANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = \"pg_catalog\", \"pg_temp\"\nAS $$\nBEGIN\n  IF EXISTS (SELECT 1 FROM \"slice\".\"__ledger\" AS \"r1\" WHERE \"r1\".\"ordinal\" = 0 AND \"r1\".\"files\" <> (SELECT \"pg_catalog\".\"count\"(*) FROM \"slice\".\"__ledger\" AS \"r2\" WHERE \"r2\".\"folder\" = \"r1\".\"folder\" AND \"r2\".\"ordinal\" <> 0)) THEN\n    RAISE EXCEPTION 'a grizzle migration of this schema is running or stopped part-way'\n      USING ERRCODE = '55Z02'::\"pg_catalog\".\"text\";\n  END IF;\n  IF NOT EXISTS (SELECT 1 FROM \"slice\".\"__ledger\" AS \"r3\" WHERE \"r3\".\"ordinal\" = 0 AND \"r3\".\"target\" = \"fingerprint\" AND NOT EXISTS (SELECT 1 FROM \"slice\".\"__ledger\" AS \"r4\" WHERE \"r4\".\"ordinal\" = 0 AND \"r4\".\"folder\" > \"r3\".\"folder\")) THEN\n    RAISE EXCEPTION 'the latest grizzle migration of this schema is not the snapshot of this Db'\n      USING ERRCODE = '55Z01'::\"pg_catalog\".\"text\";\n  END IF;\nEND\n$$"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE EXECUTE ON FUNCTION \"slice\".\"__snapshot_guard\"(\"pg_catalog\".\"text\") FROM PUBLIC"
+					}
+				]
+			},
+			{
+				"name": "02-structure.sql",
+				"steps": [
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"audit\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"note\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  CONSTRAINT \"__audit_pk_dcvpvv5cjz\" PRIMARY KEY (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_chain_run_input\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"feed\" \"slice\".\"chain_chain_run_input_feed\" NOT NULL,\n  \"pages\" bigint NOT NULL,\n  CONSTRAINT \"__chain_chain_run_input_pk_ezbgzw4jha\" PRIMARY KEY (\"scope\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_claim\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"attempt\" \"slice\".\"__domain_gfw43vigph\" NOT NULL,\n  \"holder\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"until\" \"slice\".\"__domain_mxhao3k6ss\" NOT NULL,\n  CONSTRAINT \"__chain_claim_pk_nrr2rn3gui\" PRIMARY KEY (\"step\", \"attempt\"),\n  CONSTRAINT \"attempt_from_one\" CHECK ((\"attempt\" >= 1::bigint) IS TRUE)\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_exhausted\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"attempts\" \"slice\".\"__domain_gfw43vigph\" NOT NULL,\n  CONSTRAINT \"__chain_exhausted_pk_nc4gvildnw\" PRIMARY KEY (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_finish\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  CONSTRAINT \"__chain_finish_pk_ebe75jmnzy\" PRIMARY KEY (\"scope\"),\n  CONSTRAINT \"__chain_finish_key_step_x7i5pvi5jm\" UNIQUE NULLS DISTINCT (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_held\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"attempt\" \"slice\".\"__domain_gfw43vigph\" NOT NULL,\n  CONSTRAINT \"__chain_held_pk_73idl7oo5c\" PRIMARY KEY (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_next\" (\n  \"from\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"ordinal\" \"slice\".\"__domain_gfw43vigph\" NOT NULL,\n  \"to\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  CONSTRAINT \"__chain_next_pk_qeumlilvtk\" PRIMARY KEY (\"from\", \"ordinal\"),\n  CONSTRAINT \"__chain_next_key_to_jqccfs2l4c\" UNIQUE NULLS DISTINCT (\"to\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_page_input\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"feed\" \"slice\".\"chain_page_input_feed\" NOT NULL,\n  \"seq\" \"slice\".\"__domain_mxhao3k6ss\" NOT NULL,\n  \"pages\" bigint NOT NULL,\n  CONSTRAINT \"__chain_page_input_pk_xuafsbu5vz\" PRIMARY KEY (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_page_input_after\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"value\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  CONSTRAINT \"__chain_page_input_after_pk_zsdylv6pam\" PRIMARY KEY (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_page_output\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"seq\" \"slice\".\"__domain_mxhao3k6ss\" NOT NULL,\n  \"items\" bigint NOT NULL,\n  CONSTRAINT \"__chain_page_output_pk_whwnpdfgmi\" PRIMARY KEY (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_page_output_next\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"value\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  CONSTRAINT \"__chain_page_output_next_pk_h55uzx4bbq\" PRIMARY KEY (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_refusal\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"law\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  CONSTRAINT \"__chain_refusal_pk_4j4yw3qc6m\" PRIMARY KEY (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_result\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"outcome\" \"slice\".\"chain_outcome\" NOT NULL,\n  CONSTRAINT \"__chain_result_pk_btw3jzlkgl\" PRIMARY KEY (\"step\"),\n  CONSTRAINT \"__chain_result_key_step_outcome_hqqrqon5z3\" UNIQUE NULLS DISTINCT (\"step\", \"outcome\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_root\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"key\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  CONSTRAINT \"__chain_root_pk_wqfycdg3x5\" PRIMARY KEY (\"scope\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_scope\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"kind\" \"slice\".\"chain_join\" NOT NULL,\n  CONSTRAINT \"__chain_scope_pk_fxzt444lf6\" PRIMARY KEY (\"scope\"),\n  CONSTRAINT \"__chain_scope_key_scope_kind_f3gtwiklfd\" UNIQUE NULLS DISTINCT (\"scope\", \"kind\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_start_scope\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"ordinal\" \"slice\".\"__domain_gfw43vigph\" NOT NULL,\n  \"child\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  CONSTRAINT \"__chain_start_scope_pk_t4giphzblt\" PRIMARY KEY (\"scope\", \"ordinal\"),\n  CONSTRAINT \"__chain_start_scope_key_child_h23cre6olg\" UNIQUE NULLS DISTINCT (\"child\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_start_step\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"ordinal\" \"slice\".\"__domain_gfw43vigph\" NOT NULL,\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  CONSTRAINT \"__chain_start_step_pk_dgda7shxb4\" PRIMARY KEY (\"scope\", \"ordinal\"),\n  CONSTRAINT \"__chain_start_step_key_step_ygziyjwk3l\" UNIQUE NULLS DISTINCT (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_step\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"kind\" \"slice\".\"chain_kind\" NOT NULL,\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  CONSTRAINT \"__chain_step_pk_u6x5wnvfbv\" PRIMARY KEY (\"step\"),\n  CONSTRAINT \"__chain_step_key_step_kind_dlshgwdqz2\" UNIQUE NULLS DISTINCT (\"step\", \"kind\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"chain_within\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"parent\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  CONSTRAINT \"__chain_within_pk_ihqzjavdib\" PRIMARY KEY (\"scope\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"cursor\" (\n  \"feed\" \"slice\".\"feed\" NOT NULL,\n  \"position\" bigint NOT NULL,\n  CONSTRAINT \"__cursor_pk_wl2ngqny4j\" PRIMARY KEY (\"feed\", \"position\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_batch_input\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"batch\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  \"size\" bigint NOT NULL,\n  CONSTRAINT \"__fan_batch_input_pk_bmhyfuy2bw\" PRIMARY KEY (\"scope\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_claim\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"attempt\" \"slice\".\"__domain_gfw43vigph\" NOT NULL,\n  \"holder\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"until\" \"slice\".\"__domain_mxhao3k6ss\" NOT NULL,\n  CONSTRAINT \"__fan_claim_pk_e7zimqppco\" PRIMARY KEY (\"step\", \"attempt\"),\n  CONSTRAINT \"attempt_from_one\" CHECK ((\"attempt\" >= 1::bigint) IS TRUE)\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_exhausted\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"attempts\" \"slice\".\"__domain_gfw43vigph\" NOT NULL,\n  CONSTRAINT \"__fan_exhausted_pk_4t3sxjskvd\" PRIMARY KEY (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_fan_run_input\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"batch\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  \"size\" bigint NOT NULL,\n  CONSTRAINT \"__fan_fan_run_input_pk_tbzpgbwe7g\" PRIMARY KEY (\"scope\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_finish\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  CONSTRAINT \"__fan_finish_pk_6mb33urjra\" PRIMARY KEY (\"scope\"),\n  CONSTRAINT \"__fan_finish_key_step_v72sacijwp\" UNIQUE NULLS DISTINCT (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_held\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"attempt\" \"slice\".\"__domain_gfw43vigph\" NOT NULL,\n  CONSTRAINT \"__fan_held_pk_4ic6tjvac4\" PRIMARY KEY (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_refusal\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"law\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  CONSTRAINT \"__fan_refusal_pk_7va55wo2wj\" PRIMARY KEY (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_result\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"outcome\" \"slice\".\"fan_outcome\" NOT NULL,\n  CONSTRAINT \"__fan_result_pk_yeear352sx\" PRIMARY KEY (\"step\"),\n  CONSTRAINT \"__fan_result_key_step_outcome_5nrb7r22qd\" UNIQUE NULLS DISTINCT (\"step\", \"outcome\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_root\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"key\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  CONSTRAINT \"__fan_root_pk_jesu7xtefn\" PRIMARY KEY (\"scope\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_scope\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"kind\" \"slice\".\"fan_join\" NOT NULL,\n  CONSTRAINT \"__fan_scope_pk_7bvjfihnef\" PRIMARY KEY (\"scope\"),\n  CONSTRAINT \"__fan_scope_key_scope_kind_epdwnzjh52\" UNIQUE NULLS DISTINCT (\"scope\", \"kind\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_square_input\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"batch\" \"pg_catalog\".\"text\" COLLATE \"pg_catalog\".\"pg_c_utf8\" NOT NULL,\n  \"n\" bigint NOT NULL,\n  CONSTRAINT \"__fan_square_input_pk_uzumoizv53\" PRIMARY KEY (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_square_output\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"square\" bigint NOT NULL,\n  CONSTRAINT \"__fan_square_output_pk_wcgarjqvhr\" PRIMARY KEY (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_start_scope\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"ordinal\" \"slice\".\"__domain_gfw43vigph\" NOT NULL,\n  \"child\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  CONSTRAINT \"__fan_start_scope_pk_nnms2gjwyi\" PRIMARY KEY (\"scope\", \"ordinal\"),\n  CONSTRAINT \"__fan_start_scope_key_child_gmvcyvsk2k\" UNIQUE NULLS DISTINCT (\"child\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_start_step\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"ordinal\" \"slice\".\"__domain_gfw43vigph\" NOT NULL,\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  CONSTRAINT \"__fan_start_step_pk_7e247xk4mz\" PRIMARY KEY (\"scope\", \"ordinal\"),\n  CONSTRAINT \"__fan_start_step_key_step_777capvdxg\" UNIQUE NULLS DISTINCT (\"step\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_step\" (\n  \"step\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"kind\" \"slice\".\"fan_kind\" NOT NULL,\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  CONSTRAINT \"__fan_step_pk_2f4tcxnofk\" PRIMARY KEY (\"step\"),\n  CONSTRAINT \"__fan_step_key_step_kind_6mwvvgt65w\" UNIQUE NULLS DISTINCT (\"step\", \"kind\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"fan_within\" (\n  \"scope\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  \"parent\" \"slice\".\"__domain_jotafzuj2i\" NOT NULL,\n  CONSTRAINT \"__fan_within_pk_g5tswgjfa6\" PRIMARY KEY (\"scope\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"item\" (\n  \"feed\" \"slice\".\"feed\" NOT NULL,\n  \"seq\" bigint NOT NULL,\n  \"n\" \"slice\".\"__domain_gfw43vigph\" NOT NULL,\n  CONSTRAINT \"__item_pk_ai4obgmq4k\" PRIMARY KEY (\"feed\", \"seq\", \"n\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"settled\" (\n  \"batch\" \"slice\".\"__text_t4rwovzmqj\" NOT NULL,\n  CONSTRAINT \"__settled_pk_yitdz6z3ts\" PRIMARY KEY (\"batch\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"tally\" (\n  \"batch\" \"slice\".\"__text_t4rwovzmqj\" NOT NULL,\n  \"count\" \"slice\".\"__domain_gfw43vigph\" NOT NULL,\n  \"total\" bigint NOT NULL,\n  CONSTRAINT \"__tally_pk_7jc66uxxx4\" PRIMARY KEY (\"batch\")\n)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE TABLE \"slice\".\"__live_secret\" (\"secret\") AS SELECT \"pg_catalog\".\"sha256\"(\"pg_catalog\".\"uuid_send\"(\"pg_catalog\".\"gen_random_uuid\"()) || \"pg_catalog\".\"uuid_send\"(\"pg_catalog\".\"gen_random_uuid\"()))"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE ALL ON TABLE \"slice\".\"__live_secret\" FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_step\" REPLICA IDENTITY FULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_within\" REPLICA IDENTITY FULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_step\" REPLICA IDENTITY FULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_within\" REPLICA IDENTITY FULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_chain_run_input\" ADD COLUMN \"__tag_kind_chain_run_ufow3vhuwb\" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_claim\" ADD COLUMN \"__step_fxyms236d4\" \"pg_catalog\".\"uuid\" GENERATED ALWAYS AS (CASE WHEN \"attempt\" >= 2::bigint THEN \"step\" END) STORED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_claim\" ADD COLUMN \"__pred_attempt_xnnzpydhox\" bigint GENERATED ALWAYS AS (CASE WHEN \"attempt\" >= 2::bigint AND \"attempt\" > 0::bigint THEN \"attempt\"::numeric - (1::bigint)::numeric END) STORED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_exhausted\" ADD COLUMN \"__tag_outcome_failed_lrxbpw73ih\" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_page_input\" ADD COLUMN \"__tag_kind_page_wmj4dlxrkf\" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_page_output\" ADD COLUMN \"__tag_outcome_done_uhpvxcbhg2\" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_refusal\" ADD COLUMN \"__tag_outcome_failed_lrxbpw73ih\" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_batch_input\" ADD COLUMN \"__tag_kind_batch_fkqwrqkogg\" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_claim\" ADD COLUMN \"__step_fxyms236d4\" \"pg_catalog\".\"uuid\" GENERATED ALWAYS AS (CASE WHEN \"attempt\" >= 2::bigint THEN \"step\" END) STORED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_claim\" ADD COLUMN \"__pred_attempt_xnnzpydhox\" bigint GENERATED ALWAYS AS (CASE WHEN \"attempt\" >= 2::bigint AND \"attempt\" > 0::bigint THEN \"attempt\"::numeric - (1::bigint)::numeric END) STORED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_exhausted\" ADD COLUMN \"__tag_outcome_failed_3kga3qw77n\" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_fan_run_input\" ADD COLUMN \"__tag_kind_fan_run_eorldhk2ce\" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_refusal\" ADD COLUMN \"__tag_outcome_failed_3kga3qw77n\" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_square_input\" ADD COLUMN \"__tag_kind_square_q3stoybx3v\" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_square_output\" ADD COLUMN \"__tag_outcome_done_tulqbccryg\" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"audit\" ADD CONSTRAINT \"__audit_fk_step_zgfyapbfme\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"chain_result\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_chain_run_input\" ADD CONSTRAINT \"__chain_chain_run_input_fk_scope_tag_kind_chain_run_m37i2umurb\" FOREIGN KEY (\"scope\", \"__tag_kind_chain_run_ufow3vhuwb\") REFERENCES \"slice\".\"chain_scope\" (\"scope\", \"kind\") MATCH SIMPLE"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_claim\" ADD CONSTRAINT \"__chain_claim_fk_step_tlgqnv6mzi\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"chain_step\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_claim\" ADD CONSTRAINT \"__chain_claim_fk_step_pred_attempt_eaxsvkfnat\" FOREIGN KEY (\"__step_fxyms236d4\", \"__pred_attempt_xnnzpydhox\") REFERENCES \"slice\".\"chain_claim\" (\"step\", \"attempt\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_exhausted\" ADD CONSTRAINT \"__chain_exhausted_fk_step_tag_outcome_failed_2udbgsp3ck\" FOREIGN KEY (\"step\", \"__tag_outcome_failed_lrxbpw73ih\") REFERENCES \"slice\".\"chain_result\" (\"step\", \"outcome\") MATCH SIMPLE"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_finish\" ADD CONSTRAINT \"__chain_finish_fk_scope_holmjz7tss\" FOREIGN KEY (\"scope\") REFERENCES \"slice\".\"chain_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_finish\" ADD CONSTRAINT \"__chain_finish_fk_step_djulfbbhyv\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"chain_step\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_held\" ADD CONSTRAINT \"__chain_held_fk_step_gn4a3vhis4\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"chain_result\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_held\" ADD CONSTRAINT \"__chain_held_fk_step_attempt_ha67r6xn73\" FOREIGN KEY (\"step\", \"attempt\") REFERENCES \"slice\".\"chain_claim\" (\"step\", \"attempt\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_next\" ADD CONSTRAINT \"__chain_next_fk_from_y5is7epime\" FOREIGN KEY (\"from\") REFERENCES \"slice\".\"chain_page_input\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_next\" ADD CONSTRAINT \"__chain_next_fk_to_4dtheiiigt\" FOREIGN KEY (\"to\") REFERENCES \"slice\".\"chain_page_input\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_page_input\" ADD CONSTRAINT \"__chain_page_input_fk_step_tag_kind_page_iu55gzqbo5\" FOREIGN KEY (\"step\", \"__tag_kind_page_wmj4dlxrkf\") REFERENCES \"slice\".\"chain_step\" (\"step\", \"kind\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_page_input_after\" ADD CONSTRAINT \"__chain_page_input_after_fk_step_lfprg2mtrc\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"chain_page_input\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_page_output\" ADD CONSTRAINT \"__chain_page_output_fk_step_g37yommeoy\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"chain_page_input\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_page_output\" ADD CONSTRAINT \"__chain_page_output_fk_step_tag_outcome_done_pvpnykkthy\" FOREIGN KEY (\"step\", \"__tag_outcome_done_uhpvxcbhg2\") REFERENCES \"slice\".\"chain_result\" (\"step\", \"outcome\") MATCH SIMPLE"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_page_output_next\" ADD CONSTRAINT \"__chain_page_output_next_fk_step_azw5pfnnsa\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"chain_page_output\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_refusal\" ADD CONSTRAINT \"__chain_refusal_fk_step_tag_outcome_failed_2a6zwjr3n5\" FOREIGN KEY (\"step\", \"__tag_outcome_failed_lrxbpw73ih\") REFERENCES \"slice\".\"chain_result\" (\"step\", \"outcome\") MATCH SIMPLE"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_result\" ADD CONSTRAINT \"__chain_result_fk_step_dbmjl746t7\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"chain_step\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_root\" ADD CONSTRAINT \"__chain_root_fk_scope_g7gu2qhyp2\" FOREIGN KEY (\"scope\") REFERENCES \"slice\".\"chain_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_start_scope\" ADD CONSTRAINT \"__chain_start_scope_fk_child_bz3czs5on4\" FOREIGN KEY (\"child\") REFERENCES \"slice\".\"chain_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_start_scope\" ADD CONSTRAINT \"__chain_start_scope_fk_scope_ijdwqi66fj\" FOREIGN KEY (\"scope\") REFERENCES \"slice\".\"chain_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_start_step\" ADD CONSTRAINT \"__chain_start_step_fk_scope_gegsqdzyp5\" FOREIGN KEY (\"scope\") REFERENCES \"slice\".\"chain_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_start_step\" ADD CONSTRAINT \"__chain_start_step_fk_step_yqr6ccimjq\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"chain_step\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_step\" ADD CONSTRAINT \"__chain_step_fk_scope_zyevzya6lc\" FOREIGN KEY (\"scope\") REFERENCES \"slice\".\"chain_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_within\" ADD CONSTRAINT \"__chain_within_fk_parent_n3pon4mlxe\" FOREIGN KEY (\"parent\") REFERENCES \"slice\".\"chain_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"chain_within\" ADD CONSTRAINT \"__chain_within_fk_scope_gzdy7afflv\" FOREIGN KEY (\"scope\") REFERENCES \"slice\".\"chain_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_batch_input\" ADD CONSTRAINT \"__fan_batch_input_fk_scope_tag_kind_batch_b6gxzmmqsm\" FOREIGN KEY (\"scope\", \"__tag_kind_batch_fkqwrqkogg\") REFERENCES \"slice\".\"fan_scope\" (\"scope\", \"kind\") MATCH SIMPLE"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_claim\" ADD CONSTRAINT \"__fan_claim_fk_step_ihp5bkdfc7\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"fan_step\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_claim\" ADD CONSTRAINT \"__fan_claim_fk_step_pred_attempt_r5pt5cwztz\" FOREIGN KEY (\"__step_fxyms236d4\", \"__pred_attempt_xnnzpydhox\") REFERENCES \"slice\".\"fan_claim\" (\"step\", \"attempt\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_exhausted\" ADD CONSTRAINT \"__fan_exhausted_fk_step_tag_outcome_failed_s2kqkxsbyn\" FOREIGN KEY (\"step\", \"__tag_outcome_failed_3kga3qw77n\") REFERENCES \"slice\".\"fan_result\" (\"step\", \"outcome\") MATCH SIMPLE"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_fan_run_input\" ADD CONSTRAINT \"__fan_fan_run_input_fk_scope_tag_kind_fan_run_tihneov63d\" FOREIGN KEY (\"scope\", \"__tag_kind_fan_run_eorldhk2ce\") REFERENCES \"slice\".\"fan_scope\" (\"scope\", \"kind\") MATCH SIMPLE"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_finish\" ADD CONSTRAINT \"__fan_finish_fk_scope_qa2mnv7a2g\" FOREIGN KEY (\"scope\") REFERENCES \"slice\".\"fan_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_finish\" ADD CONSTRAINT \"__fan_finish_fk_step_f3he376omz\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"fan_step\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_held\" ADD CONSTRAINT \"__fan_held_fk_step_6tkjkyjp3h\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"fan_result\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_held\" ADD CONSTRAINT \"__fan_held_fk_step_attempt_zol2no7gql\" FOREIGN KEY (\"step\", \"attempt\") REFERENCES \"slice\".\"fan_claim\" (\"step\", \"attempt\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_refusal\" ADD CONSTRAINT \"__fan_refusal_fk_step_tag_outcome_failed_zd74wltaye\" FOREIGN KEY (\"step\", \"__tag_outcome_failed_3kga3qw77n\") REFERENCES \"slice\".\"fan_result\" (\"step\", \"outcome\") MATCH SIMPLE"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_result\" ADD CONSTRAINT \"__fan_result_fk_step_kzt2ms65pp\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"fan_step\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_root\" ADD CONSTRAINT \"__fan_root_fk_scope_7k4byqnauw\" FOREIGN KEY (\"scope\") REFERENCES \"slice\".\"fan_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_square_input\" ADD CONSTRAINT \"__fan_square_input_fk_step_tag_kind_square_dshd7bwrky\" FOREIGN KEY (\"step\", \"__tag_kind_square_q3stoybx3v\") REFERENCES \"slice\".\"fan_step\" (\"step\", \"kind\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_square_output\" ADD CONSTRAINT \"__fan_square_output_fk_step_prwr7wqv35\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"fan_square_input\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_square_output\" ADD CONSTRAINT \"__fan_square_output_fk_step_tag_outcome_done_nflx2lb3xz\" FOREIGN KEY (\"step\", \"__tag_outcome_done_tulqbccryg\") REFERENCES \"slice\".\"fan_result\" (\"step\", \"outcome\") MATCH SIMPLE"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_start_scope\" ADD CONSTRAINT \"__fan_start_scope_fk_child_ngma7ay7kq\" FOREIGN KEY (\"child\") REFERENCES \"slice\".\"fan_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_start_scope\" ADD CONSTRAINT \"__fan_start_scope_fk_scope_ymqglh3w64\" FOREIGN KEY (\"scope\") REFERENCES \"slice\".\"fan_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_start_step\" ADD CONSTRAINT \"__fan_start_step_fk_scope_nidx2ru6ls\" FOREIGN KEY (\"scope\") REFERENCES \"slice\".\"fan_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_start_step\" ADD CONSTRAINT \"__fan_start_step_fk_step_vjwo5huhik\" FOREIGN KEY (\"step\") REFERENCES \"slice\".\"fan_step\" (\"step\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_step\" ADD CONSTRAINT \"__fan_step_fk_scope_qjqxjbw7tr\" FOREIGN KEY (\"scope\") REFERENCES \"slice\".\"fan_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_within\" ADD CONSTRAINT \"__fan_within_fk_parent_koa6wzyqvq\" FOREIGN KEY (\"parent\") REFERENCES \"slice\".\"fan_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER TABLE \"slice\".\"fan_within\" ADD CONSTRAINT \"__fan_within_fk_scope_5a7dtldf3w\" FOREIGN KEY (\"scope\") REFERENCES \"slice\".\"fan_scope\" (\"scope\") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED"
+					}
+				]
+			},
+			{
+				"name": "03-indexes.sql",
+				"steps": [
+					{
+						"kind": "statement",
+						"statement": "CREATE INDEX \"__chain_claim_ix_step_fxyms_236_d_4_pred_attempt_cgz4fqmrbd\" ON \"slice\".\"chain_claim\" USING btree (\"__step_fxyms236d4\", \"__pred_attempt_xnnzpydhox\")"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE INDEX \"__chain_step_ix_scope_kind_spn3gys2vi\" ON \"slice\".\"chain_step\" USING btree (\"scope\", \"kind\")"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE INDEX \"__chain_within_ix_parent_3xemf3jvuy\" ON \"slice\".\"chain_within\" USING btree (\"parent\")"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE INDEX \"__fan_claim_ix_step_fxyms_236_d_4_pred_attempt_rdwu35kano\" ON \"slice\".\"fan_claim\" USING btree (\"__step_fxyms236d4\", \"__pred_attempt_xnnzpydhox\")"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE INDEX \"__fan_step_ix_scope_kind_h2wuapaqs3\" ON \"slice\".\"fan_step\" USING btree (\"scope\", \"kind\")"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE INDEX \"__fan_within_ix_parent_7swblvcobd\" ON \"slice\".\"fan_within\" USING btree (\"parent\")"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE STATISTICS \"slice\".\"__chain_step_stats_kind_scope_tc5nmidpxu\" (ndistinct, dependencies, mcv) ON \"kind\", \"scope\" FROM \"slice\".\"chain_step\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE STATISTICS \"slice\".\"__fan_step_stats_kind_scope_xmuvugpu6n\" (ndistinct, dependencies, mcv) ON \"kind\", \"scope\" FROM \"slice\".\"fan_step\""
+					}
+				]
+			},
+			{
+				"name": "04-publish.sql",
+				"steps": [
+					{
+						"kind": "statement",
+						"statement": "CREATE PUBLICATION \"__live_slice_wzkq6p2yii\"\n  FOR TABLE \"slice\".\"audit\" (\"step\"), \"slice\".\"chain_chain_run_input\" (\"scope\"), \"slice\".\"chain_claim\" (\"step\", \"attempt\"), \"slice\".\"chain_finish\" (\"scope\"), \"slice\".\"chain_held\" (\"step\"), \"slice\".\"chain_page_input\" (\"step\"), \"slice\".\"chain_page_input_after\" (\"step\"), \"slice\".\"chain_page_output\" (\"step\"), \"slice\".\"chain_page_output_next\" (\"step\"), \"slice\".\"chain_result\" (\"step\"), \"slice\".\"chain_scope\" (\"scope\"), \"slice\".\"chain_step\", \"slice\".\"chain_within\", \"slice\".\"cursor\" (\"feed\", \"position\"), \"slice\".\"fan_batch_input\" (\"scope\"), \"slice\".\"fan_claim\" (\"step\", \"attempt\"), \"slice\".\"fan_fan_run_input\" (\"scope\"), \"slice\".\"fan_finish\" (\"scope\"), \"slice\".\"fan_held\" (\"step\"), \"slice\".\"fan_result\" (\"step\"), \"slice\".\"fan_scope\" (\"scope\"), \"slice\".\"fan_square_input\" (\"step\"), \"slice\".\"fan_square_output\" (\"step\"), \"slice\".\"fan_step\", \"slice\".\"fan_within\", \"slice\".\"item\" (\"feed\", \"seq\", \"n\"), \"slice\".\"settled\" (\"batch\"), \"slice\".\"tally\" (\"batch\")\n  WITH (publish = 'insert, update, delete, truncate', publish_generated_columns = stored)"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE ROLE :\"slice__app\" LOGIN NOINHERIT"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE ROLE :\"slice__auditor\" NOLOGIN"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE ROLE :\"slice__chain_worker\" NOLOGIN"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE ROLE :\"slice__fan_worker\" NOLOGIN"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE ROLE :\"slice__worker\" LOGIN NOINHERIT"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE ROLE :\"__live_slice_wzkq6p2yii\" LOGIN NOINHERIT"
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE SCHEMA \"slice__auditor\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE SCHEMA \"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE SCHEMA \"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__auditor\".\"audit\" (\"step\", \"note\") AS\nSELECT \"r1\".\"step\", \"r1\".\"note\"\nFROM \"slice\".\"audit\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__auditor\".\"chain_claim\" (\"step\", \"attempt\", \"holder\", \"until\") AS\nSELECT \"r1\".\"step\", \"r1\".\"attempt\", \"r1\".\"holder\", \"r1\".\"until\"\nFROM \"slice\".\"chain_claim\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__auditor\".\"chain_finish\" (\"scope\", \"step\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"step\"\nFROM \"slice\".\"chain_finish\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__auditor\".\"chain_page_output\" (\"step\", \"seq\", \"items\") AS\nSELECT \"r1\".\"step\", \"r1\".\"seq\", \"r1\".\"items\"\nFROM \"slice\".\"chain_page_output\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__auditor\".\"chain_result\" (\"step\", \"outcome\", \"outcome_name\") AS\nSELECT \"r1\".\"step\", \"r1\".\"outcome\", (\"slice\".\"__chain_outcome_names_vo4tgqx6qh\"())[\"r1\".\"outcome\" + 1]::\"pg_catalog\".\"text\"\nFROM \"slice\".\"chain_result\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__auditor\".\"chain_step\" (\"step\", \"kind\", \"kind_name\", \"scope\") AS\nSELECT \"r1\".\"step\", \"r1\".\"kind\", (\"slice\".\"__chain_kind_names_zria4jypsm\"())[\"r1\".\"kind\" + 1]::\"pg_catalog\".\"text\", \"r1\".\"scope\"\nFROM \"slice\".\"chain_step\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__auditor\".\"cursor\" (\"feed\", \"feed_name\", \"position\") AS\nSELECT \"r1\".\"feed\", (\"slice\".\"__feed_names_azjbqebc6i\"())[\"r1\".\"feed\" + 1]::\"pg_catalog\".\"text\", \"r1\".\"position\"\nFROM \"slice\".\"cursor\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__auditor\".\"fan_finish\" (\"scope\", \"step\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"step\"\nFROM \"slice\".\"fan_finish\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__auditor\".\"fan_result\" (\"step\", \"outcome\", \"outcome_name\") AS\nSELECT \"r1\".\"step\", \"r1\".\"outcome\", (\"slice\".\"__fan_outcome_names_7pbhseigfj\"())[\"r1\".\"outcome\" + 1]::\"pg_catalog\".\"text\"\nFROM \"slice\".\"fan_result\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__auditor\".\"fan_square_output\" (\"step\", \"square\") AS\nSELECT \"r1\".\"step\", \"r1\".\"square\"\nFROM \"slice\".\"fan_square_output\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__auditor\".\"item\" (\"feed\", \"feed_name\", \"seq\", \"n\") AS\nSELECT \"r1\".\"feed\", (\"slice\".\"__feed_names_azjbqebc6i\"())[\"r1\".\"feed\" + 1]::\"pg_catalog\".\"text\", \"r1\".\"seq\", \"r1\".\"n\"\nFROM \"slice\".\"item\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__auditor\".\"settled\" (\"batch\") AS\nSELECT \"r1\".\"batch\"\nFROM \"slice\".\"settled\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__auditor\".\"tally\" (\"batch\", \"count\", \"total\") AS\nSELECT \"r1\".\"batch\", \"r1\".\"count\", \"r1\".\"total\"\nFROM \"slice\".\"tally\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_chain_run_input\" (\"scope\", \"feed\", \"feed_name\", \"pages\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"feed\", (\"slice\".\"__chain_chain_run_input_feed_names_byxgsvzik7\"())[\"r1\".\"feed\" + 1]::\"pg_catalog\".\"text\", \"r1\".\"pages\"\nFROM \"slice\".\"chain_chain_run_input\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_claim\" (\"step\", \"attempt\", \"holder\", \"until\") AS\nSELECT \"r1\".\"step\", \"r1\".\"attempt\", \"r1\".\"holder\", \"r1\".\"until\"\nFROM \"slice\".\"chain_claim\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_exhausted\" (\"step\", \"attempts\") AS\nSELECT \"r1\".\"step\", \"r1\".\"attempts\"\nFROM \"slice\".\"chain_exhausted\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_finish\" (\"scope\", \"step\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"step\"\nFROM \"slice\".\"chain_finish\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_held\" (\"step\", \"attempt\") AS\nSELECT \"r1\".\"step\", \"r1\".\"attempt\"\nFROM \"slice\".\"chain_held\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_next\" (\"from\", \"ordinal\", \"to\") AS\nSELECT \"r1\".\"from\", \"r1\".\"ordinal\", \"r1\".\"to\"\nFROM \"slice\".\"chain_next\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_page_input\" (\"step\", \"feed\", \"feed_name\", \"seq\", \"pages\") AS\nSELECT \"r1\".\"step\", \"r1\".\"feed\", (\"slice\".\"__chain_page_input_feed_names_dxuyhzkiur\"())[\"r1\".\"feed\" + 1]::\"pg_catalog\".\"text\", \"r1\".\"seq\", \"r1\".\"pages\"\nFROM \"slice\".\"chain_page_input\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_page_input_after\" (\"step\", \"value\") AS\nSELECT \"r1\".\"step\", \"r1\".\"value\"\nFROM \"slice\".\"chain_page_input_after\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_page_output\" (\"step\", \"seq\", \"items\") AS\nSELECT \"r1\".\"step\", \"r1\".\"seq\", \"r1\".\"items\"\nFROM \"slice\".\"chain_page_output\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_page_output_next\" (\"step\", \"value\") AS\nSELECT \"r1\".\"step\", \"r1\".\"value\"\nFROM \"slice\".\"chain_page_output_next\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_refusal\" (\"step\", \"law\") AS\nSELECT \"r1\".\"step\", \"r1\".\"law\"\nFROM \"slice\".\"chain_refusal\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_result\" (\"step\", \"outcome\", \"outcome_name\") AS\nSELECT \"r1\".\"step\", \"r1\".\"outcome\", (\"slice\".\"__chain_outcome_names_vo4tgqx6qh\"())[\"r1\".\"outcome\" + 1]::\"pg_catalog\".\"text\"\nFROM \"slice\".\"chain_result\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_root\" (\"scope\", \"key\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"key\"\nFROM \"slice\".\"chain_root\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_scope\" (\"scope\", \"kind\", \"kind_name\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"kind\", (\"slice\".\"__chain_join_names_mqsumlsj56\"())[\"r1\".\"kind\" + 1]::\"pg_catalog\".\"text\"\nFROM \"slice\".\"chain_scope\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_start_scope\" (\"scope\", \"ordinal\", \"child\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"ordinal\", \"r1\".\"child\"\nFROM \"slice\".\"chain_start_scope\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_start_step\" (\"scope\", \"ordinal\", \"step\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"ordinal\", \"r1\".\"step\"\nFROM \"slice\".\"chain_start_step\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_step\" (\"step\", \"kind\", \"kind_name\", \"scope\") AS\nSELECT \"r1\".\"step\", \"r1\".\"kind\", (\"slice\".\"__chain_kind_names_zria4jypsm\"())[\"r1\".\"kind\" + 1]::\"pg_catalog\".\"text\", \"r1\".\"scope\"\nFROM \"slice\".\"chain_step\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"chain_within\" (\"scope\", \"parent\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"parent\"\nFROM \"slice\".\"chain_within\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"cursor\" (\"feed\", \"feed_name\", \"position\") AS\nSELECT \"r1\".\"feed\", (\"slice\".\"__feed_names_azjbqebc6i\"())[\"r1\".\"feed\" + 1]::\"pg_catalog\".\"text\", \"r1\".\"position\"\nFROM \"slice\".\"cursor\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__chain_worker\".\"item\" (\"feed\", \"feed_name\", \"seq\", \"n\") AS\nSELECT \"r1\".\"feed\", (\"slice\".\"__feed_names_azjbqebc6i\"())[\"r1\".\"feed\" + 1]::\"pg_catalog\".\"text\", \"r1\".\"seq\", \"r1\".\"n\"\nFROM \"slice\".\"item\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_batch_input\" (\"scope\", \"batch\", \"size\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"batch\", \"r1\".\"size\"\nFROM \"slice\".\"fan_batch_input\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_claim\" (\"step\", \"attempt\", \"holder\", \"until\") AS\nSELECT \"r1\".\"step\", \"r1\".\"attempt\", \"r1\".\"holder\", \"r1\".\"until\"\nFROM \"slice\".\"fan_claim\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_exhausted\" (\"step\", \"attempts\") AS\nSELECT \"r1\".\"step\", \"r1\".\"attempts\"\nFROM \"slice\".\"fan_exhausted\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_fan_run_input\" (\"scope\", \"batch\", \"size\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"batch\", \"r1\".\"size\"\nFROM \"slice\".\"fan_fan_run_input\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_finish\" (\"scope\", \"step\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"step\"\nFROM \"slice\".\"fan_finish\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_held\" (\"step\", \"attempt\") AS\nSELECT \"r1\".\"step\", \"r1\".\"attempt\"\nFROM \"slice\".\"fan_held\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_refusal\" (\"step\", \"law\") AS\nSELECT \"r1\".\"step\", \"r1\".\"law\"\nFROM \"slice\".\"fan_refusal\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_result\" (\"step\", \"outcome\", \"outcome_name\") AS\nSELECT \"r1\".\"step\", \"r1\".\"outcome\", (\"slice\".\"__fan_outcome_names_7pbhseigfj\"())[\"r1\".\"outcome\" + 1]::\"pg_catalog\".\"text\"\nFROM \"slice\".\"fan_result\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_root\" (\"scope\", \"key\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"key\"\nFROM \"slice\".\"fan_root\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_scope\" (\"scope\", \"kind\", \"kind_name\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"kind\", (\"slice\".\"__fan_join_names_gct5lzhdqo\"())[\"r1\".\"kind\" + 1]::\"pg_catalog\".\"text\"\nFROM \"slice\".\"fan_scope\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_square_input\" (\"step\", \"batch\", \"n\") AS\nSELECT \"r1\".\"step\", \"r1\".\"batch\", \"r1\".\"n\"\nFROM \"slice\".\"fan_square_input\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_square_output\" (\"step\", \"square\") AS\nSELECT \"r1\".\"step\", \"r1\".\"square\"\nFROM \"slice\".\"fan_square_output\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_start_scope\" (\"scope\", \"ordinal\", \"child\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"ordinal\", \"r1\".\"child\"\nFROM \"slice\".\"fan_start_scope\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_start_step\" (\"scope\", \"ordinal\", \"step\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"ordinal\", \"r1\".\"step\"\nFROM \"slice\".\"fan_start_step\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_step\" (\"step\", \"kind\", \"kind_name\", \"scope\") AS\nSELECT \"r1\".\"step\", \"r1\".\"kind\", (\"slice\".\"__fan_kind_names_gikh2fxf2t\"())[\"r1\".\"kind\" + 1]::\"pg_catalog\".\"text\", \"r1\".\"scope\"\nFROM \"slice\".\"fan_step\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"fan_within\" (\"scope\", \"parent\") AS\nSELECT \"r1\".\"scope\", \"r1\".\"parent\"\nFROM \"slice\".\"fan_within\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"settled\" (\"batch\") AS\nSELECT \"r1\".\"batch\"\nFROM \"slice\".\"settled\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "CREATE VIEW \"slice__fan_worker\".\"tally\" (\"batch\", \"count\", \"total\") AS\nSELECT \"r1\".\"batch\", \"r1\".\"count\", \"r1\".\"total\"\nFROM \"slice\".\"tally\" AS \"r1\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT :\"slice__auditor\" TO :\"slice__app\" WITH INHERIT FALSE, SET TRUE"
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT :\"slice__chain_worker\" TO :\"slice__worker\" WITH INHERIT FALSE, SET TRUE"
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT :\"slice__fan_worker\" TO :\"slice__worker\" WITH INHERIT FALSE, SET TRUE"
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT USAGE ON SCHEMA \"slice\" TO :\"slice__app\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT EXECUTE ON FUNCTION \"slice\".\"__snapshot_guard\"(\"pg_catalog\".\"text\") TO :\"slice__app\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT ON TABLE \"slice\".\"__live_secret\" TO :\"slice__app\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT USAGE ON SCHEMA \"slice\", \"slice__auditor\" TO :\"slice__auditor\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT USAGE ON DOMAIN \"slice\".\"__domain_jotafzuj2i\", \"slice\".\"__domain_gfw43vigph\", \"slice\".\"__domain_mxhao3k6ss\", \"slice\".\"chain_kind\", \"slice\".\"chain_outcome\", \"slice\".\"fan_outcome\", \"slice\".\"feed\", \"slice\".\"__text_t4rwovzmqj\" TO :\"slice__auditor\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT ON TABLE \"slice__auditor\".\"audit\", \"slice__auditor\".\"chain_claim\", \"slice__auditor\".\"chain_finish\", \"slice__auditor\".\"chain_page_output\", \"slice__auditor\".\"chain_result\", \"slice__auditor\".\"chain_step\", \"slice__auditor\".\"cursor\", \"slice__auditor\".\"fan_finish\", \"slice__auditor\".\"fan_result\", \"slice__auditor\".\"fan_square_output\", \"slice__auditor\".\"item\", \"slice__auditor\".\"settled\", \"slice__auditor\".\"tally\" TO :\"slice__auditor\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"audit\" TO :\"slice__auditor\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT EXECUTE ON FUNCTION \"slice\".\"__refuse\"(\"pg_catalog\".\"text\", \"pg_catalog\".\"text\", \"pg_catalog\".\"text\") TO :\"slice__auditor\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT EXECUTE ON FUNCTION \"slice\".\"__chain_kind_names_zria4jypsm\"(), \"slice\".\"__chain_outcome_names_vo4tgqx6qh\"(), \"slice\".\"__fan_outcome_names_7pbhseigfj\"(), \"slice\".\"__feed_names_azjbqebc6i\"() TO :\"slice__auditor\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT USAGE ON SCHEMA \"slice\", \"slice__chain_worker\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT USAGE ON DOMAIN \"slice\".\"__domain_jotafzuj2i\", \"slice\".\"__domain_gfw43vigph\", \"slice\".\"__domain_mxhao3k6ss\", \"slice\".\"chain_chain_run_input_feed\", \"slice\".\"chain_join\", \"slice\".\"chain_kind\", \"slice\".\"chain_outcome\", \"slice\".\"chain_page_input_feed\", \"slice\".\"feed\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT ON TABLE \"slice__chain_worker\".\"chain_chain_run_input\", \"slice__chain_worker\".\"chain_claim\", \"slice__chain_worker\".\"chain_exhausted\", \"slice__chain_worker\".\"chain_finish\", \"slice__chain_worker\".\"chain_held\", \"slice__chain_worker\".\"chain_next\", \"slice__chain_worker\".\"chain_page_input\", \"slice__chain_worker\".\"chain_page_input_after\", \"slice__chain_worker\".\"chain_page_output\", \"slice__chain_worker\".\"chain_page_output_next\", \"slice__chain_worker\".\"chain_refusal\", \"slice__chain_worker\".\"chain_result\", \"slice__chain_worker\".\"chain_root\", \"slice__chain_worker\".\"chain_scope\", \"slice__chain_worker\".\"chain_start_scope\", \"slice__chain_worker\".\"chain_start_step\", \"slice__chain_worker\".\"chain_step\", \"slice__chain_worker\".\"chain_within\", \"slice__chain_worker\".\"cursor\", \"slice__chain_worker\".\"item\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_chain_run_input\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_claim\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_exhausted\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_finish\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_held\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_next\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_page_input\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_page_input_after\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_page_output\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_page_output_next\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_refusal\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_result\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_root\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_scope\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_start_scope\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_start_step\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_step\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"chain_within\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"cursor\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"item\" TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT EXECUTE ON FUNCTION \"slice\".\"__refuse\"(\"pg_catalog\".\"text\", \"pg_catalog\".\"text\", \"pg_catalog\".\"text\") TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT EXECUTE ON FUNCTION \"slice\".\"__chain_chain_run_input_feed_names_byxgsvzik7\"(), \"slice\".\"__chain_join_names_mqsumlsj56\"(), \"slice\".\"__chain_kind_names_zria4jypsm\"(), \"slice\".\"__chain_outcome_names_vo4tgqx6qh\"(), \"slice\".\"__chain_page_input_feed_names_dxuyhzkiur\"(), \"slice\".\"__feed_names_azjbqebc6i\"() TO :\"slice__chain_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT USAGE ON SCHEMA \"slice\", \"slice__fan_worker\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT USAGE ON DOMAIN \"slice\".\"__domain_jotafzuj2i\", \"slice\".\"__domain_gfw43vigph\", \"slice\".\"__domain_mxhao3k6ss\", \"slice\".\"fan_join\", \"slice\".\"fan_kind\", \"slice\".\"fan_outcome\", \"slice\".\"__text_t4rwovzmqj\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT ON TABLE \"slice__fan_worker\".\"fan_batch_input\", \"slice__fan_worker\".\"fan_claim\", \"slice__fan_worker\".\"fan_exhausted\", \"slice__fan_worker\".\"fan_fan_run_input\", \"slice__fan_worker\".\"fan_finish\", \"slice__fan_worker\".\"fan_held\", \"slice__fan_worker\".\"fan_refusal\", \"slice__fan_worker\".\"fan_result\", \"slice__fan_worker\".\"fan_root\", \"slice__fan_worker\".\"fan_scope\", \"slice__fan_worker\".\"fan_square_input\", \"slice__fan_worker\".\"fan_square_output\", \"slice__fan_worker\".\"fan_start_scope\", \"slice__fan_worker\".\"fan_start_step\", \"slice__fan_worker\".\"fan_step\", \"slice__fan_worker\".\"fan_within\", \"slice__fan_worker\".\"settled\", \"slice__fan_worker\".\"tally\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_batch_input\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_claim\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_exhausted\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_fan_run_input\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_finish\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_held\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_refusal\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_result\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_root\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_scope\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_square_input\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_square_output\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_start_scope\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_start_step\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_step\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"fan_within\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"settled\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT, INSERT ON TABLE \"slice\".\"tally\" TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT EXECUTE ON FUNCTION \"slice\".\"__refuse\"(\"pg_catalog\".\"text\", \"pg_catalog\".\"text\", \"pg_catalog\".\"text\") TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT EXECUTE ON FUNCTION \"slice\".\"__fan_join_names_gct5lzhdqo\"(), \"slice\".\"__fan_kind_names_gikh2fxf2t\"(), \"slice\".\"__fan_outcome_names_7pbhseigfj\"() TO :\"slice__fan_worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT USAGE ON SCHEMA \"slice\" TO :\"slice__worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT EXECUTE ON FUNCTION \"slice\".\"__snapshot_guard\"(\"pg_catalog\".\"text\") TO :\"slice__worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT ON TABLE \"slice\".\"__live_secret\" TO :\"slice__worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT ON TABLE \"slice\".\"__live_secret\" TO :\"__live_slice_wzkq6p2yii\""
+					},
+					{
+						"kind": "statement",
+						"statement": "GRANT SELECT ON TABLE \"slice\".\"__ledger\" TO :\"slice__app\", :\"slice__worker\""
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER ROLE :\"slice__app\" SET search_path = \"pg_catalog\", \"pg_temp\""
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER ROLE :\"slice__app\" SET extra_float_digits = '1'"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER ROLE :\"slice__app\" SET DateStyle = 'ISO, YMD'"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER ROLE :\"slice__app\" SET bytea_output = 'hex'"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER ROLE :\"slice__app\" SET lc_monetary = 'C.UTF-8'"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER ROLE :\"slice__app\" SET lc_numeric = 'C.UTF-8'"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER ROLE :\"slice__app\" SET lc_time = 'C.UTF-8'"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER ROLE :\"slice__worker\" SET search_path = \"pg_catalog\", \"pg_temp\""
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER ROLE :\"slice__worker\" SET extra_float_digits = '1'"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER ROLE :\"slice__worker\" SET DateStyle = 'ISO, YMD'"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER ROLE :\"slice__worker\" SET bytea_output = 'hex'"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER ROLE :\"slice__worker\" SET lc_monetary = 'C.UTF-8'"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER ROLE :\"slice__worker\" SET lc_numeric = 'C.UTF-8'"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER ROLE :\"slice__worker\" SET lc_time = 'C.UTF-8'"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE ALL ON SCHEMA \"slice\", \"slice__auditor\", \"slice__chain_worker\", \"slice__fan_worker\" FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE ALL ON TABLE \"slice\".\"audit\", \"slice\".\"chain_chain_run_input\", \"slice\".\"chain_claim\", \"slice\".\"chain_exhausted\", \"slice\".\"chain_finish\", \"slice\".\"chain_held\", \"slice\".\"chain_next\", \"slice\".\"chain_page_input\", \"slice\".\"chain_page_input_after\", \"slice\".\"chain_page_output\", \"slice\".\"chain_page_output_next\", \"slice\".\"chain_refusal\", \"slice\".\"chain_result\", \"slice\".\"chain_root\", \"slice\".\"chain_scope\", \"slice\".\"chain_start_scope\", \"slice\".\"chain_start_step\", \"slice\".\"chain_step\", \"slice\".\"chain_within\", \"slice\".\"cursor\", \"slice\".\"fan_batch_input\", \"slice\".\"fan_claim\", \"slice\".\"fan_exhausted\", \"slice\".\"fan_fan_run_input\", \"slice\".\"fan_finish\", \"slice\".\"fan_held\", \"slice\".\"fan_refusal\", \"slice\".\"fan_result\", \"slice\".\"fan_root\", \"slice\".\"fan_scope\", \"slice\".\"fan_square_input\", \"slice\".\"fan_square_output\", \"slice\".\"fan_start_scope\", \"slice\".\"fan_start_step\", \"slice\".\"fan_step\", \"slice\".\"fan_within\", \"slice\".\"item\", \"slice\".\"settled\", \"slice\".\"tally\", \"slice__auditor\".\"audit\", \"slice__auditor\".\"chain_claim\", \"slice__auditor\".\"chain_finish\", \"slice__auditor\".\"chain_page_output\", \"slice__auditor\".\"chain_result\", \"slice__auditor\".\"chain_step\", \"slice__auditor\".\"cursor\", \"slice__auditor\".\"fan_finish\", \"slice__auditor\".\"fan_result\", \"slice__auditor\".\"fan_square_output\", \"slice__auditor\".\"item\", \"slice__auditor\".\"settled\", \"slice__auditor\".\"tally\", \"slice__chain_worker\".\"chain_chain_run_input\", \"slice__chain_worker\".\"chain_claim\", \"slice__chain_worker\".\"chain_exhausted\", \"slice__chain_worker\".\"chain_finish\", \"slice__chain_worker\".\"chain_held\", \"slice__chain_worker\".\"chain_next\", \"slice__chain_worker\".\"chain_page_input\", \"slice__chain_worker\".\"chain_page_input_after\", \"slice__chain_worker\".\"chain_page_output\", \"slice__chain_worker\".\"chain_page_output_next\", \"slice__chain_worker\".\"chain_refusal\", \"slice__chain_worker\".\"chain_result\", \"slice__chain_worker\".\"chain_root\", \"slice__chain_worker\".\"chain_scope\", \"slice__chain_worker\".\"chain_start_scope\", \"slice__chain_worker\".\"chain_start_step\", \"slice__chain_worker\".\"chain_step\", \"slice__chain_worker\".\"chain_within\", \"slice__chain_worker\".\"cursor\", \"slice__chain_worker\".\"item\", \"slice__fan_worker\".\"fan_batch_input\", \"slice__fan_worker\".\"fan_claim\", \"slice__fan_worker\".\"fan_exhausted\", \"slice__fan_worker\".\"fan_fan_run_input\", \"slice__fan_worker\".\"fan_finish\", \"slice__fan_worker\".\"fan_held\", \"slice__fan_worker\".\"fan_refusal\", \"slice__fan_worker\".\"fan_result\", \"slice__fan_worker\".\"fan_root\", \"slice__fan_worker\".\"fan_scope\", \"slice__fan_worker\".\"fan_square_input\", \"slice__fan_worker\".\"fan_square_output\", \"slice__fan_worker\".\"fan_start_scope\", \"slice__fan_worker\".\"fan_start_step\", \"slice__fan_worker\".\"fan_step\", \"slice__fan_worker\".\"fan_within\", \"slice__fan_worker\".\"settled\", \"slice__fan_worker\".\"tally\" FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "REVOKE ALL ON DOMAIN \"slice\".\"chain_chain_run_input_feed\", \"slice\".\"chain_join\", \"slice\".\"chain_kind\", \"slice\".\"chain_outcome\", \"slice\".\"chain_page_input_feed\", \"slice\".\"fan_join\", \"slice\".\"fan_kind\", \"slice\".\"fan_outcome\", \"slice\".\"feed\", \"slice\".\"__text_t4rwovzmqj\", \"slice\".\"__domain_jotafzuj2i\", \"slice\".\"__domain_mxhao3k6ss\", \"slice\".\"__domain_jotafzuj2i\", \"slice\".\"__domain_jotafzuj2i\", \"slice\".\"__domain_mxhao3k6ss\", \"slice\".\"__domain_gfw43vigph\" FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER DEFAULT PRIVILEGES IN SCHEMA \"slice\" REVOKE ALL ON TABLES FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER DEFAULT PRIVILEGES IN SCHEMA \"slice\" REVOKE ALL ON SEQUENCES FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER DEFAULT PRIVILEGES REVOKE ALL ON FUNCTIONS FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "ALTER DEFAULT PRIVILEGES REVOKE ALL ON TYPES FROM PUBLIC"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON FUNCTION \"slice\".\"__chain_chain_run_input_feed_names_byxgsvzik7\"() IS 'names of roster ChainChainRunInputFeed (680decfc5f7c5dce0a8514706351fe286818e7840b3167b02f53f9918a3f7e66)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON FUNCTION \"slice\".\"__chain_join_names_mqsumlsj56\"() IS 'names of roster ChainJoin (f57d228506d313bedb0e4c8357d4e9e6a1849f6fa5ef27f839558c9f095bd414)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON FUNCTION \"slice\".\"__chain_kind_names_zria4jypsm\"() IS 'names of roster ChainKind (ec9d69d76e6f60da7b7610968bd1d99b5e7db6567321f298268f040e4caaf1e8)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON FUNCTION \"slice\".\"__chain_outcome_names_vo4tgqx6qh\"() IS 'names of roster ChainOutcome (82a110e4a67b9eb26002a0d95cd17a2a11bb93419b6bbcf77b61d96796e4106a)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON FUNCTION \"slice\".\"__chain_page_input_feed_names_dxuyhzkiur\"() IS 'names of roster ChainPageInputFeed (680decfc5f7c5dce0a8514706351fe286818e7840b3167b02f53f9918a3f7e66)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON FUNCTION \"slice\".\"__fan_join_names_gct5lzhdqo\"() IS 'names of roster FanJoin (d77b79d385adc2a7e8acb4e4a4a35cf4e5217428ed007776aefa04ebd4a774fa)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON FUNCTION \"slice\".\"__fan_kind_names_gikh2fxf2t\"() IS 'names of roster FanKind (e9aed98b3893ff20de22383ac3b4ec54f57129936d708100bd0ae678466bbe14)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON FUNCTION \"slice\".\"__fan_outcome_names_7pbhseigfj\"() IS 'names of roster FanOutcome (82a110e4a67b9eb26002a0d95cd17a2a11bb93419b6bbcf77b61d96796e4106a)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON FUNCTION \"slice\".\"__feed_names_azjbqebc6i\"() IS 'names of roster Feed (680decfc5f7c5dce0a8514706351fe286818e7840b3167b02f53f9918a3f7e66)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON DOMAIN \"slice\".\"__domain_jotafzuj2i\" IS 'domain of definition 2bb9f8bcd5ca34ebfde7708e229f30409aad95a1fa4f4398311673f0c0eacec4'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON DOMAIN \"slice\".\"__domain_gfw43vigph\" IS 'domain of definition 39922592cedecf769d6df372d6df99e0b82206b0bf6dacd9722d0490f83cc782'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON DOMAIN \"slice\".\"__domain_mxhao3k6ss\" IS 'domain of definition be4e1f34160619e14c4a8009e96d1ced7b683a1e169a9e4d0e9e10640701b8aa'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON DOMAIN \"slice\".\"__text_t4rwovzmqj\" IS 'text domain of definition 6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__audit_pk_dcvpvv5cjz\" ON \"slice\".\"audit\" IS 'primary key of Audit'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_chain_run_input_pk_ezbgzw4jha\" ON \"slice\".\"chain_chain_run_input\" IS 'primary key of ChainChainRunInput'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_claim_pk_nrr2rn3gui\" ON \"slice\".\"chain_claim\" IS 'primary key of ChainClaim'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_exhausted_pk_nc4gvildnw\" ON \"slice\".\"chain_exhausted\" IS 'primary key of ChainExhausted'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_finish_pk_ebe75jmnzy\" ON \"slice\".\"chain_finish\" IS 'primary key of ChainFinish'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_finish_key_step_x7i5pvi5jm\" ON \"slice\".\"chain_finish\" IS 'key ChainFinish(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_held_pk_73idl7oo5c\" ON \"slice\".\"chain_held\" IS 'primary key of ChainHeld'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_next_pk_qeumlilvtk\" ON \"slice\".\"chain_next\" IS 'primary key of ChainNext'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_next_key_to_jqccfs2l4c\" ON \"slice\".\"chain_next\" IS 'key ChainNext(to)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_page_input_pk_xuafsbu5vz\" ON \"slice\".\"chain_page_input\" IS 'primary key of ChainPageInput'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_page_input_after_pk_zsdylv6pam\" ON \"slice\".\"chain_page_input_after\" IS 'primary key of ChainPageInputAfter'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_page_output_pk_whwnpdfgmi\" ON \"slice\".\"chain_page_output\" IS 'primary key of ChainPageOutput'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_page_output_next_pk_h55uzx4bbq\" ON \"slice\".\"chain_page_output_next\" IS 'primary key of ChainPageOutputNext'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_refusal_pk_4j4yw3qc6m\" ON \"slice\".\"chain_refusal\" IS 'primary key of ChainRefusal'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_result_pk_btw3jzlkgl\" ON \"slice\".\"chain_result\" IS 'primary key of ChainResult'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_result_key_step_outcome_hqqrqon5z3\" ON \"slice\".\"chain_result\" IS 'key ChainResult(step, outcome)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_root_pk_wqfycdg3x5\" ON \"slice\".\"chain_root\" IS 'primary key of ChainRoot'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_scope_pk_fxzt444lf6\" ON \"slice\".\"chain_scope\" IS 'primary key of ChainScope'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_scope_key_scope_kind_f3gtwiklfd\" ON \"slice\".\"chain_scope\" IS 'key ChainScope(scope, kind)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_start_scope_pk_t4giphzblt\" ON \"slice\".\"chain_start_scope\" IS 'primary key of ChainStartScope'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_start_scope_key_child_h23cre6olg\" ON \"slice\".\"chain_start_scope\" IS 'key ChainStartScope(child)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_start_step_pk_dgda7shxb4\" ON \"slice\".\"chain_start_step\" IS 'primary key of ChainStartStep'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_start_step_key_step_ygziyjwk3l\" ON \"slice\".\"chain_start_step\" IS 'key ChainStartStep(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_step_pk_u6x5wnvfbv\" ON \"slice\".\"chain_step\" IS 'primary key of ChainStep'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_step_key_step_kind_dlshgwdqz2\" ON \"slice\".\"chain_step\" IS 'key ChainStep(step, kind)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_within_pk_ihqzjavdib\" ON \"slice\".\"chain_within\" IS 'primary key of ChainWithin'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__cursor_pk_wl2ngqny4j\" ON \"slice\".\"cursor\" IS 'primary key of Cursor'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_batch_input_pk_bmhyfuy2bw\" ON \"slice\".\"fan_batch_input\" IS 'primary key of FanBatchInput'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_claim_pk_e7zimqppco\" ON \"slice\".\"fan_claim\" IS 'primary key of FanClaim'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_exhausted_pk_4t3sxjskvd\" ON \"slice\".\"fan_exhausted\" IS 'primary key of FanExhausted'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_fan_run_input_pk_tbzpgbwe7g\" ON \"slice\".\"fan_fan_run_input\" IS 'primary key of FanFanRunInput'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_finish_pk_6mb33urjra\" ON \"slice\".\"fan_finish\" IS 'primary key of FanFinish'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_finish_key_step_v72sacijwp\" ON \"slice\".\"fan_finish\" IS 'key FanFinish(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_held_pk_4ic6tjvac4\" ON \"slice\".\"fan_held\" IS 'primary key of FanHeld'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_refusal_pk_7va55wo2wj\" ON \"slice\".\"fan_refusal\" IS 'primary key of FanRefusal'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_result_pk_yeear352sx\" ON \"slice\".\"fan_result\" IS 'primary key of FanResult'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_result_key_step_outcome_5nrb7r22qd\" ON \"slice\".\"fan_result\" IS 'key FanResult(step, outcome)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_root_pk_jesu7xtefn\" ON \"slice\".\"fan_root\" IS 'primary key of FanRoot'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_scope_pk_7bvjfihnef\" ON \"slice\".\"fan_scope\" IS 'primary key of FanScope'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_scope_key_scope_kind_epdwnzjh52\" ON \"slice\".\"fan_scope\" IS 'key FanScope(scope, kind)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_square_input_pk_uzumoizv53\" ON \"slice\".\"fan_square_input\" IS 'primary key of FanSquareInput'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_square_output_pk_wcgarjqvhr\" ON \"slice\".\"fan_square_output\" IS 'primary key of FanSquareOutput'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_start_scope_pk_nnms2gjwyi\" ON \"slice\".\"fan_start_scope\" IS 'primary key of FanStartScope'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_start_scope_key_child_gmvcyvsk2k\" ON \"slice\".\"fan_start_scope\" IS 'key FanStartScope(child)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_start_step_pk_7e247xk4mz\" ON \"slice\".\"fan_start_step\" IS 'primary key of FanStartStep'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_start_step_key_step_777capvdxg\" ON \"slice\".\"fan_start_step\" IS 'key FanStartStep(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_step_pk_2f4tcxnofk\" ON \"slice\".\"fan_step\" IS 'primary key of FanStep'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_step_key_step_kind_6mwvvgt65w\" ON \"slice\".\"fan_step\" IS 'key FanStep(step, kind)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_within_pk_g5tswgjfa6\" ON \"slice\".\"fan_within\" IS 'primary key of FanWithin'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__item_pk_ai4obgmq4k\" ON \"slice\".\"item\" IS 'primary key of Item'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__settled_pk_yitdz6z3ts\" ON \"slice\".\"settled\" IS 'primary key of Settled'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__tally_pk_7jc66uxxx4\" ON \"slice\".\"tally\" IS 'primary key of Tally'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"chain_chain_run_input\".\"__tag_kind_chain_run_ufow3vhuwb\" IS 'tag ChainScope.kind = ChainRun'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"chain_claim\".\"__step_fxyms236d4\" IS 'step where {\"kind\":\"compare\",\"left\":{\"field\":\"attempt\",\"kind\":\"field\"},\"op\":\"ge\",\"right\":{\"kind\":\"literal\",\"value\":\"~n:2\"}}'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"chain_claim\".\"__pred_attempt_xnnzpydhox\" IS 'pred(attempt) where {\"kind\":\"compare\",\"left\":{\"field\":\"attempt\",\"kind\":\"field\"},\"op\":\"ge\",\"right\":{\"kind\":\"literal\",\"value\":\"~n:2\"}}'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"chain_exhausted\".\"__tag_outcome_failed_lrxbpw73ih\" IS 'tag ChainResult.outcome = failed'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"chain_page_input\".\"__tag_kind_page_wmj4dlxrkf\" IS 'tag ChainStep.kind = Page'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"chain_page_output\".\"__tag_outcome_done_uhpvxcbhg2\" IS 'tag ChainResult.outcome = done'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"chain_refusal\".\"__tag_outcome_failed_lrxbpw73ih\" IS 'tag ChainResult.outcome = failed'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"fan_batch_input\".\"__tag_kind_batch_fkqwrqkogg\" IS 'tag FanScope.kind = Batch'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"fan_claim\".\"__step_fxyms236d4\" IS 'step where {\"kind\":\"compare\",\"left\":{\"field\":\"attempt\",\"kind\":\"field\"},\"op\":\"ge\",\"right\":{\"kind\":\"literal\",\"value\":\"~n:2\"}}'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"fan_claim\".\"__pred_attempt_xnnzpydhox\" IS 'pred(attempt) where {\"kind\":\"compare\",\"left\":{\"field\":\"attempt\",\"kind\":\"field\"},\"op\":\"ge\",\"right\":{\"kind\":\"literal\",\"value\":\"~n:2\"}}'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"fan_exhausted\".\"__tag_outcome_failed_3kga3qw77n\" IS 'tag FanResult.outcome = failed'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"fan_fan_run_input\".\"__tag_kind_fan_run_eorldhk2ce\" IS 'tag FanScope.kind = FanRun'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"fan_refusal\".\"__tag_outcome_failed_3kga3qw77n\" IS 'tag FanResult.outcome = failed'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"fan_square_input\".\"__tag_kind_square_q3stoybx3v\" IS 'tag FanStep.kind = Square'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON COLUMN \"slice\".\"fan_square_output\".\"__tag_outcome_done_tulqbccryg\" IS 'tag FanResult.outcome = done'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__audit_fk_step_zgfyapbfme\" ON \"slice\".\"audit\" IS 'foreign key Audit(step) to ChainResult(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_chain_run_input_fk_scope_tag_kind_chain_run_m37i2umurb\" ON \"slice\".\"chain_chain_run_input\" IS 'foreign key ChainChainRunInput(scope, tag ChainScope.kind = ChainRun) to ChainScope(scope, kind)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_claim_fk_step_tlgqnv6mzi\" ON \"slice\".\"chain_claim\" IS 'foreign key ChainClaim(step) to ChainStep(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_claim_fk_step_pred_attempt_eaxsvkfnat\" ON \"slice\".\"chain_claim\" IS 'foreign key ChainClaim(step where {\"kind\":\"compare\",\"left\":{\"field\":\"attempt\",\"kind\":\"field\"},\"op\":\"ge\",\"right\":{\"kind\":\"literal\",\"value\":\"~n:2\"}}, pred(attempt) where {\"kind\":\"compare\",\"left\":{\"field\":\"attempt\",\"kind\":\"field\"},\"op\":\"ge\",\"right\":{\"kind\":\"literal\",\"value\":\"~n:2\"}}) to ChainClaim(step, attempt)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_exhausted_fk_step_tag_outcome_failed_2udbgsp3ck\" ON \"slice\".\"chain_exhausted\" IS 'foreign key ChainExhausted(step, tag ChainResult.outcome = failed) to ChainResult(step, outcome)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_finish_fk_scope_holmjz7tss\" ON \"slice\".\"chain_finish\" IS 'foreign key ChainFinish(scope) to ChainScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_finish_fk_step_djulfbbhyv\" ON \"slice\".\"chain_finish\" IS 'foreign key ChainFinish(step) to ChainStep(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_held_fk_step_gn4a3vhis4\" ON \"slice\".\"chain_held\" IS 'foreign key ChainHeld(step) to ChainResult(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_held_fk_step_attempt_ha67r6xn73\" ON \"slice\".\"chain_held\" IS 'foreign key ChainHeld(step, attempt) to ChainClaim(step, attempt)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_next_fk_from_y5is7epime\" ON \"slice\".\"chain_next\" IS 'foreign key ChainNext(from) to ChainPageInput(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_next_fk_to_4dtheiiigt\" ON \"slice\".\"chain_next\" IS 'foreign key ChainNext(to) to ChainPageInput(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_page_input_fk_step_tag_kind_page_iu55gzqbo5\" ON \"slice\".\"chain_page_input\" IS 'foreign key ChainPageInput(step, tag ChainStep.kind = Page) to ChainStep(step, kind)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_page_input_after_fk_step_lfprg2mtrc\" ON \"slice\".\"chain_page_input_after\" IS 'foreign key ChainPageInputAfter(step) to ChainPageInput(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_page_output_fk_step_g37yommeoy\" ON \"slice\".\"chain_page_output\" IS 'foreign key ChainPageOutput(step) to ChainPageInput(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_page_output_fk_step_tag_outcome_done_pvpnykkthy\" ON \"slice\".\"chain_page_output\" IS 'foreign key ChainPageOutput(step, tag ChainResult.outcome = done) to ChainResult(step, outcome)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_page_output_next_fk_step_azw5pfnnsa\" ON \"slice\".\"chain_page_output_next\" IS 'foreign key ChainPageOutputNext(step) to ChainPageOutput(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_refusal_fk_step_tag_outcome_failed_2a6zwjr3n5\" ON \"slice\".\"chain_refusal\" IS 'foreign key ChainRefusal(step, tag ChainResult.outcome = failed) to ChainResult(step, outcome)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_result_fk_step_dbmjl746t7\" ON \"slice\".\"chain_result\" IS 'foreign key ChainResult(step) to ChainStep(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_root_fk_scope_g7gu2qhyp2\" ON \"slice\".\"chain_root\" IS 'foreign key ChainRoot(scope) to ChainScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_start_scope_fk_child_bz3czs5on4\" ON \"slice\".\"chain_start_scope\" IS 'foreign key ChainStartScope(child) to ChainScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_start_scope_fk_scope_ijdwqi66fj\" ON \"slice\".\"chain_start_scope\" IS 'foreign key ChainStartScope(scope) to ChainScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_start_step_fk_scope_gegsqdzyp5\" ON \"slice\".\"chain_start_step\" IS 'foreign key ChainStartStep(scope) to ChainScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_start_step_fk_step_yqr6ccimjq\" ON \"slice\".\"chain_start_step\" IS 'foreign key ChainStartStep(step) to ChainStep(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_step_fk_scope_zyevzya6lc\" ON \"slice\".\"chain_step\" IS 'foreign key ChainStep(scope) to ChainScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_within_fk_parent_n3pon4mlxe\" ON \"slice\".\"chain_within\" IS 'foreign key ChainWithin(parent) to ChainScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__chain_within_fk_scope_gzdy7afflv\" ON \"slice\".\"chain_within\" IS 'foreign key ChainWithin(scope) to ChainScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_batch_input_fk_scope_tag_kind_batch_b6gxzmmqsm\" ON \"slice\".\"fan_batch_input\" IS 'foreign key FanBatchInput(scope, tag FanScope.kind = Batch) to FanScope(scope, kind)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_claim_fk_step_ihp5bkdfc7\" ON \"slice\".\"fan_claim\" IS 'foreign key FanClaim(step) to FanStep(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_claim_fk_step_pred_attempt_r5pt5cwztz\" ON \"slice\".\"fan_claim\" IS 'foreign key FanClaim(step where {\"kind\":\"compare\",\"left\":{\"field\":\"attempt\",\"kind\":\"field\"},\"op\":\"ge\",\"right\":{\"kind\":\"literal\",\"value\":\"~n:2\"}}, pred(attempt) where {\"kind\":\"compare\",\"left\":{\"field\":\"attempt\",\"kind\":\"field\"},\"op\":\"ge\",\"right\":{\"kind\":\"literal\",\"value\":\"~n:2\"}}) to FanClaim(step, attempt)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_exhausted_fk_step_tag_outcome_failed_s2kqkxsbyn\" ON \"slice\".\"fan_exhausted\" IS 'foreign key FanExhausted(step, tag FanResult.outcome = failed) to FanResult(step, outcome)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_fan_run_input_fk_scope_tag_kind_fan_run_tihneov63d\" ON \"slice\".\"fan_fan_run_input\" IS 'foreign key FanFanRunInput(scope, tag FanScope.kind = FanRun) to FanScope(scope, kind)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_finish_fk_scope_qa2mnv7a2g\" ON \"slice\".\"fan_finish\" IS 'foreign key FanFinish(scope) to FanScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_finish_fk_step_f3he376omz\" ON \"slice\".\"fan_finish\" IS 'foreign key FanFinish(step) to FanStep(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_held_fk_step_6tkjkyjp3h\" ON \"slice\".\"fan_held\" IS 'foreign key FanHeld(step) to FanResult(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_held_fk_step_attempt_zol2no7gql\" ON \"slice\".\"fan_held\" IS 'foreign key FanHeld(step, attempt) to FanClaim(step, attempt)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_refusal_fk_step_tag_outcome_failed_zd74wltaye\" ON \"slice\".\"fan_refusal\" IS 'foreign key FanRefusal(step, tag FanResult.outcome = failed) to FanResult(step, outcome)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_result_fk_step_kzt2ms65pp\" ON \"slice\".\"fan_result\" IS 'foreign key FanResult(step) to FanStep(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_root_fk_scope_7k4byqnauw\" ON \"slice\".\"fan_root\" IS 'foreign key FanRoot(scope) to FanScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_square_input_fk_step_tag_kind_square_dshd7bwrky\" ON \"slice\".\"fan_square_input\" IS 'foreign key FanSquareInput(step, tag FanStep.kind = Square) to FanStep(step, kind)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_square_output_fk_step_prwr7wqv35\" ON \"slice\".\"fan_square_output\" IS 'foreign key FanSquareOutput(step) to FanSquareInput(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_square_output_fk_step_tag_outcome_done_nflx2lb3xz\" ON \"slice\".\"fan_square_output\" IS 'foreign key FanSquareOutput(step, tag FanResult.outcome = done) to FanResult(step, outcome)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_start_scope_fk_child_ngma7ay7kq\" ON \"slice\".\"fan_start_scope\" IS 'foreign key FanStartScope(child) to FanScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_start_scope_fk_scope_ymqglh3w64\" ON \"slice\".\"fan_start_scope\" IS 'foreign key FanStartScope(scope) to FanScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_start_step_fk_scope_nidx2ru6ls\" ON \"slice\".\"fan_start_step\" IS 'foreign key FanStartStep(scope) to FanScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_start_step_fk_step_vjwo5huhik\" ON \"slice\".\"fan_start_step\" IS 'foreign key FanStartStep(step) to FanStep(step)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_step_fk_scope_qjqxjbw7tr\" ON \"slice\".\"fan_step\" IS 'foreign key FanStep(scope) to FanScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_within_fk_parent_koa6wzyqvq\" ON \"slice\".\"fan_within\" IS 'foreign key FanWithin(parent) to FanScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON CONSTRAINT \"__fan_within_fk_scope_5a7dtldf3w\" ON \"slice\".\"fan_within\" IS 'foreign key FanWithin(scope) to FanScope(scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON INDEX \"slice\".\"__chain_claim_ix_step_fxyms_236_d_4_pred_attempt_cgz4fqmrbd\" IS 'btree index ChainClaim(__step_fxyms236d4, __pred_attempt_xnnzpydhox)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON INDEX \"slice\".\"__chain_step_ix_scope_kind_spn3gys2vi\" IS 'btree index ChainStep(scope, kind)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON INDEX \"slice\".\"__chain_within_ix_parent_3xemf3jvuy\" IS 'btree index ChainWithin(parent)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON INDEX \"slice\".\"__fan_claim_ix_step_fxyms_236_d_4_pred_attempt_rdwu35kano\" IS 'btree index FanClaim(__step_fxyms236d4, __pred_attempt_xnnzpydhox)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON INDEX \"slice\".\"__fan_step_ix_scope_kind_h2wuapaqs3\" IS 'btree index FanStep(scope, kind)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON INDEX \"slice\".\"__fan_within_ix_parent_7swblvcobd\" IS 'btree index FanWithin(parent)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON STATISTICS \"slice\".\"__chain_step_stats_kind_scope_tc5nmidpxu\" IS 'statistics ChainStep(kind, scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON STATISTICS \"slice\".\"__fan_step_stats_kind_scope_xmuvugpu6n\" IS 'statistics FanStep(kind, scope)'"
+					},
+					{
+						"kind": "statement",
+						"statement": "COMMENT ON ROLE :\"__live_slice_wzkq6p2yii\" IS 'live source of slice'"
+					}
+				]
+			}
+		],
+		"kind": "drafted",
+		"laws": {
+			"constraintToLaw": {
+				"domains": {
+					"__domain_gfw43vigph": {
+						"check": "__natural_hcnvygsglu"
+					},
+					"__text_t4rwovzmqj": {
+						"check": "__settled_pattern_batch_fbl3au7jk6"
+					}
+				},
+				"tables": {
+					"audit": {
+						"__audit_fk_step_zgfyapbfme": "__audit_in_chain_result_lnwfzi4o3s",
+						"__audit_pk_dcvpvv5cjz": "__audit_pk_step_lew2zfy6bw"
+					},
+					"chain_chain_run_input": {
+						"__chain_chain_run_input_fk_scope_tag_kind_chain_run_m37i2umurb": "__chain_chain_run_input_in_chain_scope_wqljp2wcfi",
+						"__chain_chain_run_input_pk_ezbgzw4jha": "__chain_chain_run_input_pk_scope_vur4vba74o"
+					},
+					"chain_claim": {
+						"__chain_claim_fk_step_pred_attempt_eaxsvkfnat": "__chain_claim_attempt_in_chain_claim_5dt4pbxed5",
+						"__chain_claim_fk_step_tlgqnv6mzi": "__chain_claim_in_chain_step_jxcl5ly66y",
+						"__chain_claim_pk_nrr2rn3gui": "__chain_claim_pk_step_attempt_xusn4fcg7b",
+						"attempt_from_one": "__chain_claim_check_attempt_from_one_gr4ciwsbbc"
+					},
+					"chain_exhausted": {
+						"__chain_exhausted_fk_step_tag_outcome_failed_2udbgsp3ck": "__chain_exhausted_in_chain_result_lqxy3o3e25",
+						"__chain_exhausted_pk_nc4gvildnw": "__chain_exhausted_pk_step_io2gd2mclp"
+					},
+					"chain_finish": {
+						"__chain_finish_fk_scope_holmjz7tss": "__chain_finish_in_chain_scope_l5bx62vphb",
+						"__chain_finish_fk_step_djulfbbhyv": "__chain_finish_in_chain_step_dwqdrfsb4p",
+						"__chain_finish_key_step_x7i5pvi5jm": "__chain_finish_key_step_ke3gmvjyzj",
+						"__chain_finish_pk_ebe75jmnzy": "__chain_finish_pk_scope_6voaufcuur"
+					},
+					"chain_held": {
+						"__chain_held_fk_step_attempt_ha67r6xn73": "__chain_held_in_chain_claim_6xlqg77mfv",
+						"__chain_held_fk_step_gn4a3vhis4": "__chain_held_in_chain_result_zvjwjut3zp",
+						"__chain_held_pk_73idl7oo5c": "__chain_held_pk_step_2b3fpvtryc"
+					},
+					"chain_next": {
+						"__chain_next_fk_from_y5is7epime": "__chain_next_in_chain_page_input_llyatocfa2",
+						"__chain_next_fk_to_4dtheiiigt": "__chain_next_in_chain_page_input_omgf5h4lvg",
+						"__chain_next_key_to_jqccfs2l4c": "__chain_next_key_to_qbsvtae4tj",
+						"__chain_next_pk_qeumlilvtk": "__chain_next_pk_from_ordinal_lqc52r5ckp"
+					},
+					"chain_page_input": {
+						"__chain_page_input_fk_step_tag_kind_page_iu55gzqbo5": "__chain_page_input_in_chain_step_2stn3xviz6",
+						"__chain_page_input_pk_xuafsbu5vz": "__chain_page_input_pk_step_57ihquntc3"
+					},
+					"chain_page_input_after": {
+						"__chain_page_input_after_fk_step_lfprg2mtrc": "__chain_page_input_after_in_chain_page_input_6eyp2srnrg",
+						"__chain_page_input_after_pk_zsdylv6pam": "__chain_page_input_after_pk_step_qm4klzkqbe"
+					},
+					"chain_page_output": {
+						"__chain_page_output_fk_step_g37yommeoy": "__chain_page_output_in_chain_page_input_wcjoqau5xk",
+						"__chain_page_output_fk_step_tag_outcome_done_pvpnykkthy": "__chain_page_output_in_chain_result_nbvtforwwl",
+						"__chain_page_output_pk_whwnpdfgmi": "__chain_page_output_pk_step_4wgq3mptl4"
+					},
+					"chain_page_output_next": {
+						"__chain_page_output_next_fk_step_azw5pfnnsa": "__chain_page_output_next_in_chain_page_output_p6kzvp5jkn",
+						"__chain_page_output_next_pk_h55uzx4bbq": "__chain_page_output_next_pk_step_tdebtakd2s"
+					},
+					"chain_refusal": {
+						"__chain_refusal_fk_step_tag_outcome_failed_2a6zwjr3n5": "__chain_refusal_in_chain_result_vgtctqtfc2",
+						"__chain_refusal_pk_4j4yw3qc6m": "__chain_refusal_pk_step_l2wdgv4seg"
+					},
+					"chain_result": {
+						"__chain_result_fk_step_dbmjl746t7": "__chain_result_in_chain_step_n7gtkmhm2k",
+						"__chain_result_key_step_outcome_hqqrqon5z3": "__chain_result_pk_step_uqgeeqhrb7",
+						"__chain_result_pk_btw3jzlkgl": "__chain_result_pk_step_uqgeeqhrb7"
+					},
+					"chain_root": {
+						"__chain_root_fk_scope_g7gu2qhyp2": "__chain_root_in_chain_scope_r2nrkys5h6",
+						"__chain_root_pk_wqfycdg3x5": "__chain_root_pk_scope_sdojfkmzws"
+					},
+					"chain_scope": {
+						"__chain_scope_key_scope_kind_f3gtwiklfd": "__chain_scope_pk_scope_w2xnsj4e2a",
+						"__chain_scope_pk_fxzt444lf6": "__chain_scope_pk_scope_w2xnsj4e2a"
+					},
+					"chain_start_scope": {
+						"__chain_start_scope_fk_child_bz3czs5on4": "__chain_start_scope_in_chain_scope_b6csyx7mrx",
+						"__chain_start_scope_fk_scope_ijdwqi66fj": "__chain_start_scope_in_chain_scope_dh7xqelem2",
+						"__chain_start_scope_key_child_h23cre6olg": "__chain_start_scope_key_child_aa6ht6ua3p",
+						"__chain_start_scope_pk_t4giphzblt": "__chain_start_scope_pk_scope_ordinal_jqxelpwwuk"
+					},
+					"chain_start_step": {
+						"__chain_start_step_fk_scope_gegsqdzyp5": "__chain_start_step_in_chain_scope_f775aepjro",
+						"__chain_start_step_fk_step_yqr6ccimjq": "__chain_start_step_in_chain_step_dke4gsvoya",
+						"__chain_start_step_key_step_ygziyjwk3l": "__chain_start_step_key_step_z6c2zkvcl2",
+						"__chain_start_step_pk_dgda7shxb4": "__chain_start_step_pk_scope_ordinal_lo2yi6hjtr"
+					},
+					"chain_step": {
+						"__chain_step_fk_scope_zyevzya6lc": "__chain_step_in_chain_scope_7p57wnt6mf",
+						"__chain_step_key_step_kind_dlshgwdqz2": "__chain_step_pk_step_xzxslohv7e",
+						"__chain_step_pk_u6x5wnvfbv": "__chain_step_pk_step_xzxslohv7e"
+					},
+					"chain_within": {
+						"__chain_within_fk_parent_n3pon4mlxe": "__chain_within_in_chain_scope_bhxe5bbtgr",
+						"__chain_within_fk_scope_gzdy7afflv": "__chain_within_in_chain_scope_dgm4stwg3c",
+						"__chain_within_pk_ihqzjavdib": "__chain_within_pk_scope_decqvrh3r3"
+					},
+					"cursor": {
+						"__cursor_pk_wl2ngqny4j": "__cursor_pk_feed_position_hylioo6cog"
+					},
+					"fan_batch_input": {
+						"__fan_batch_input_fk_scope_tag_kind_batch_b6gxzmmqsm": "__fan_batch_input_in_fan_scope_bfrz7jrnqp",
+						"__fan_batch_input_pk_bmhyfuy2bw": "__fan_batch_input_pk_scope_vbpnbs7s62"
+					},
+					"fan_claim": {
+						"__fan_claim_fk_step_ihp5bkdfc7": "__fan_claim_in_fan_step_3niz6hzxzn",
+						"__fan_claim_fk_step_pred_attempt_r5pt5cwztz": "__fan_claim_attempt_in_fan_claim_sdwwwgvq4k",
+						"__fan_claim_pk_e7zimqppco": "__fan_claim_pk_step_attempt_stpirpjmun",
+						"attempt_from_one": "__fan_claim_check_attempt_from_one_pagmo5a6sv"
+					},
+					"fan_exhausted": {
+						"__fan_exhausted_fk_step_tag_outcome_failed_s2kqkxsbyn": "__fan_exhausted_in_fan_result_2ezamdfms2",
+						"__fan_exhausted_pk_4t3sxjskvd": "__fan_exhausted_pk_step_fyi4dpr5vk"
+					},
+					"fan_fan_run_input": {
+						"__fan_fan_run_input_fk_scope_tag_kind_fan_run_tihneov63d": "__fan_fan_run_input_in_fan_scope_hqvpkj3nzl",
+						"__fan_fan_run_input_pk_tbzpgbwe7g": "__fan_fan_run_input_pk_scope_i3w5p6s7tc"
+					},
+					"fan_finish": {
+						"__fan_finish_fk_scope_qa2mnv7a2g": "__fan_finish_in_fan_scope_y6e46wxt6e",
+						"__fan_finish_fk_step_f3he376omz": "__fan_finish_in_fan_step_ydwudc6eh4",
+						"__fan_finish_key_step_v72sacijwp": "__fan_finish_key_step_bitfkx65pq",
+						"__fan_finish_pk_6mb33urjra": "__fan_finish_pk_scope_emwpcqlzpz"
+					},
+					"fan_held": {
+						"__fan_held_fk_step_6tkjkyjp3h": "__fan_held_in_fan_result_xikram4wsq",
+						"__fan_held_fk_step_attempt_zol2no7gql": "__fan_held_in_fan_claim_sc3nv4f6ed",
+						"__fan_held_pk_4ic6tjvac4": "__fan_held_pk_step_rfsjin5avs"
+					},
+					"fan_refusal": {
+						"__fan_refusal_fk_step_tag_outcome_failed_zd74wltaye": "__fan_refusal_in_fan_result_6anf2mfgyv",
+						"__fan_refusal_pk_7va55wo2wj": "__fan_refusal_pk_step_bybvr6luwn"
+					},
+					"fan_result": {
+						"__fan_result_fk_step_kzt2ms65pp": "__fan_result_in_fan_step_5aj6rsrfd2",
+						"__fan_result_key_step_outcome_5nrb7r22qd": "__fan_result_pk_step_fcaikbu5eh",
+						"__fan_result_pk_yeear352sx": "__fan_result_pk_step_fcaikbu5eh"
+					},
+					"fan_root": {
+						"__fan_root_fk_scope_7k4byqnauw": "__fan_root_in_fan_scope_az6o6atfon",
+						"__fan_root_pk_jesu7xtefn": "__fan_root_pk_scope_z55b3x6bzo"
+					},
+					"fan_scope": {
+						"__fan_scope_key_scope_kind_epdwnzjh52": "__fan_scope_pk_scope_6k27a46fch",
+						"__fan_scope_pk_7bvjfihnef": "__fan_scope_pk_scope_6k27a46fch"
+					},
+					"fan_square_input": {
+						"__fan_square_input_fk_step_tag_kind_square_dshd7bwrky": "__fan_square_input_in_fan_step_sr2jda33tc",
+						"__fan_square_input_pk_uzumoizv53": "__fan_square_input_pk_step_ttnew4u5ot"
+					},
+					"fan_square_output": {
+						"__fan_square_output_fk_step_prwr7wqv35": "__fan_square_output_in_fan_square_input_uomv6oa3qh",
+						"__fan_square_output_fk_step_tag_outcome_done_nflx2lb3xz": "__fan_square_output_in_fan_result_f2kfqlyck3",
+						"__fan_square_output_pk_wcgarjqvhr": "__fan_square_output_pk_step_khygcrz4ai"
+					},
+					"fan_start_scope": {
+						"__fan_start_scope_fk_child_ngma7ay7kq": "__fan_start_scope_in_fan_scope_bhhvamc5hn",
+						"__fan_start_scope_fk_scope_ymqglh3w64": "__fan_start_scope_in_fan_scope_7k3whmavlc",
+						"__fan_start_scope_key_child_gmvcyvsk2k": "__fan_start_scope_key_child_a3h6qetrpn",
+						"__fan_start_scope_pk_nnms2gjwyi": "__fan_start_scope_pk_scope_ordinal_5p7wps5yno"
+					},
+					"fan_start_step": {
+						"__fan_start_step_fk_scope_nidx2ru6ls": "__fan_start_step_in_fan_scope_zhyx77fwkx",
+						"__fan_start_step_fk_step_vjwo5huhik": "__fan_start_step_in_fan_step_6dw3bjdq76",
+						"__fan_start_step_key_step_777capvdxg": "__fan_start_step_key_step_rj2yrfqid4",
+						"__fan_start_step_pk_7e247xk4mz": "__fan_start_step_pk_scope_ordinal_67lpopbntt"
+					},
+					"fan_step": {
+						"__fan_step_fk_scope_qjqxjbw7tr": "__fan_step_in_fan_scope_nwybgeckkk",
+						"__fan_step_key_step_kind_6mwvvgt65w": "__fan_step_pk_step_2hksg5ydn6",
+						"__fan_step_pk_2f4tcxnofk": "__fan_step_pk_step_2hksg5ydn6"
+					},
+					"fan_within": {
+						"__fan_within_fk_parent_koa6wzyqvq": "__fan_within_in_fan_scope_gf7x7hmoqu",
+						"__fan_within_fk_scope_5a7dtldf3w": "__fan_within_in_fan_scope_cslksgyas3",
+						"__fan_within_pk_g5tswgjfa6": "__fan_within_pk_scope_q33jlup6nn"
+					},
+					"item": {
+						"__item_pk_ai4obgmq4k": "__item_pk_feed_seq_n_y4mrwtlrwm"
+					},
+					"settled": {
+						"__settled_pk_yitdz6z3ts": "__settled_pk_batch_qfhu63z7q7"
+					},
+					"tally": {
+						"__tally_pk_7jc66uxxx4": "__tally_pk_batch_ae65tx2wol"
+					}
+				}
+			},
+			"schemas": [
+				"slice"
+			]
+		},
+		"schema": "slice",
+		"schemaName": "Slice",
+		"source": "c05d81c6e77da49c56afb338cd23714f4001a82047304cab6c20b4bd05ef5165",
+		"target": "385b6f874b4bc4bfaf50465bf26c5746a9e747445c98eb465d18e6de1722e4e6"
+	},
+	"seal": "74cbff9e4d51530612fc54447e058bd03b622bc9e788ee3b992f2b6b3514c234"
+}

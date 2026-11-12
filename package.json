@@ -22,8 +22,10 @@
 		"architecture": "fallow architecture",
 		"dedupe": "pnpm dedupe --check",
 		"test": "turbo run test --filter=./packages/*",
+		"test:network": "pnpm --filter @bjornpagen/den test:network",
 		"fuzz": "node packages/testing/scripts/fuzz.ts",
-		"mutate": "node packages/testing/scripts/mutate.ts"
+		"mutate": "node packages/testing/scripts/mutate.ts",
+		"pg": "scripts/pg.sh"
 	},
 	"devDependencies": {
 		"@den/devtools": "workspace:*",

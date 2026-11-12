@@ -29,6 +29,14 @@ Owner, 2026-11-11, as exploration only: the transport that wakes functions might
 first; others worth knowing are SQS, plain Vercel (cron, `waitUntil`, a function that calls itself), Cloudflare
 (Queues, Durable Object alarms, Workflows), and a server of one's own (supervised Node spawns, systemd, celld).
 
+Owner, 2026-11-11, also exploration only: more projections of a login's served file, beside its OpenAPI document,
+each reading `watch` events (`reset`, `upsert`, `remove`, `ready`) as keyed state and calling writes through `once`:
+
+- an htmx dashboard generated from the served programs, each event's data an HTML fragment swapped by row key;
+- an OpenTUI console (`sst/opentui`), possibly generated from the OpenAPI document by a `tui` mode of
+  `effect-openapi-cli-generator`, possibly served over SSH (`@opentui/ssh`); its Node support is unverified;
+- a GraphQL adapter through Effect's `effect/graphql`, persisted documents only.
+
 ## Phase
 
 Research first. The research agents aggregate what exists into `docs/research/`; the design is worked out with the

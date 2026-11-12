@@ -195,10 +195,21 @@ packages in the workspace through the `grizzle-source` condition. Effect 4.1.4. 
 ## 15. grizzle's part
 
 The owner's order, sent to the grizzle session on 2026-11-11: fix every defect in `research/grizzle-defects.md` on the
-`live` branch. den also needs: programs over a fragment; fragment name checks; a fragment in a PostgreSQL schema of its
-own inside one level; a certified lease race; sound retirement; a database-clock term; a guard over a whole ChangeSet;
-`delta.met`; a deferrable read-only read; the Effect Schema mapping confirmed. Questions: when `live` merges; a leader
-inside 800 s functions and its WAL bound on RDS; a library's way into the change stream.
+`live` branch. The owner's rulings there, the same day:
+
+- **Kept as is:** the false 40001 between SERIALIZABLE writers of disjoint keys (retryable, never a wrong answer; den
+  keeps its hot paths at certified READ COMMITTED, where SSI never applies), and the SSI conflict-out patch, not carried
+  in grizzle's build so local behaviour matches RDS, filed upstream when the owner chooses.
+- **Approved, each designed by its own lane before code, all on `live`:** RETIRE (retiring whole sealed groups without
+  forcing insert-only writers onto SERIALIZABLE; retired keys never recur), LEASE (the certified READ COMMITTED lease
+  race), DELTAMET (`delta.met`), CARRIER (no temporary table per call), DBCLOCK (a database-clock term), DEFERRABLE
+  (deferrable read-only reads), CLASH (fragment name clashes refused), DENTRIAGE (the remaining catalogue items), and,
+  as slots free, POROUS (programs generic over a fragment), GUARD (a guard over a whole ChangeSet) and SCHEMAMAP (the
+  Effect Schema mapping, `Exit` and `Cause`).
+- **In motion:** RULESEED (rules over queries no longer quadratic, on `main`, then merged into `live`), the 19rc2
+  repin on 2026-11-12, and `stale` (already a typed CallError on `live`).
+
+den repins `vendor/grizzle` as each lands on `live`.
 
 ## 16. Open, decided with the owner one at a time
 

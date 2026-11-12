@@ -1,0 +1,53 @@
+{
+	"name": "@bjornpagen/den",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Durable execution on grizzle and PostgreSQL 19: a computation declared as a graph of steps, scopes and edges, lowered into the app's own grizzle schema, run one turn at a time.",
+	"type": "module",
+	"sideEffects": false,
+	"imports": {
+		"#integration/*": "./integration/*",
+		"#test/*": "./test/*",
+		"#*": "./src/*"
+	},
+	"exports": {
+		"./algebra/flow": "./src/algebra/flow.ts",
+		"./algebra/kinds": "./src/algebra/kinds.ts",
+		"./limits": "./src/limits.ts",
+		"./lower/fragment": "./src/lower/fragment.ts",
+		"./lower/generate": "./src/lower/generate.ts",
+		"./lower/keys": "./src/lower/keys.ts",
+		"./lower/merge": "./src/lower/merge.ts",
+		"./lower/print": "./src/lower/print.ts",
+		"./lower/schema": "./src/lower/schema.ts",
+		"./runtime/census": "./src/runtime/census.ts",
+		"./runtime/drive": "./src/runtime/drive.ts",
+		"./runtime/identity": "./src/runtime/identity.ts",
+		"./runtime/ledger": "./src/runtime/ledger.ts",
+		"./runtime/turn": "./src/runtime/turn.ts",
+		"./transport": "./src/transport.ts"
+	},
+	"scripts": {
+		"typecheck": "effect-tsgo tsrs --noEmit -p tsconfig.json",
+		"superlint": "superlint",
+		"oxlint": "oxlint",
+		"test": "vitest run --config vitest.config.ts",
+		"test:network": "vitest run --config vitest.network.config.ts",
+		"generate:slice": "node --conditions=grizzle-source integration/slice/generate.ts && oxfmt integration/slice/generated"
+	},
+	"dependencies": {
+		"@bjornpagen/grizzle": "workspace:*",
+		"@types/pg": "catalog:",
+		"arkregex": "catalog:",
+		"effect": "catalog:",
+		"pg": "catalog:"
+	},
+	"devDependencies": {
+		"@den/devtools": "workspace:*",
+		"@den/testing": "workspace:*",
+		"@effect/platform-node": "catalog:",
+		"@effect/vitest": "catalog:",
+		"@types/node": "catalog:",
+		"vitest": "catalog:"
+	}
+}

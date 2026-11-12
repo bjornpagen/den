@@ -1,0 +1,40 @@
+{
+	"name": "@den/model",
+	"private": true,
+	"description": "den's reference model and deterministic simulator: a den program as data, the ledger as immutable facts with every transition a pure function, a simulator of workers, transport, clock, census and relay driven by choice streams, and den's laws as searches. It imports nothing of den, so the real engine is held to it by differential tests.",
+	"type": "module",
+	"sideEffects": false,
+	"imports": {
+		"#*": "./src/*"
+	},
+	"exports": {
+		"./datum": "./src/datum.ts",
+		"./facts": "./src/facts.ts",
+		"./identity": "./src/identity.ts",
+		"./ledger": "./src/ledger.ts",
+		"./machine": "./src/machine.ts",
+		"./planted": "./src/planted.ts",
+		"./program": "./src/program.ts",
+		"./properties": "./src/properties.ts",
+		"./scenarios": "./src/scenarios.ts",
+		"./search": "./src/search.ts",
+		"./simulator": "./src/simulator.ts",
+		"./workloads/qti": "./src/workloads/qti.ts",
+		"./workloads/synthetic": "./src/workloads/synthetic.ts",
+		"./workloads/timeback": "./src/workloads/timeback.ts"
+	},
+	"scripts": {
+		"typecheck": "effect-tsgo tsrs --noEmit -p tsconfig.json",
+		"superlint": "superlint",
+		"oxlint": "oxlint",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@den/testing": "workspace:*",
+		"effect": "catalog:"
+	},
+	"devDependencies": {
+		"@effect/vitest": "catalog:",
+		"vitest": "catalog:"
+	}
+}
