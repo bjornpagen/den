@@ -107,8 +107,13 @@ layer(NodeServices.layer, { excludeTestServices: true })("certification", (it) =
 			searched(
 				ctx,
 				Effect.gen(function* () {
-					const workers = yield* levelsOf(`${sliceDir}/migrations/slice/served/worker.json`)
-					const apps = yield* levelsOf(`${sliceDir}/migrations/slice/served/app.json`)
+					const served = (name: string) => `${sliceDir}/migrations/slice/served/${name}.json`
+					assert.deepStrictEqual(
+						Arr.map(config.logins, (login) => login.name),
+						["worker", "app"]
+					)
+					const workers = yield* levelsOf(served("worker"))
+					const apps = yield* levelsOf(served("app"))
 					const alone = yield* withoutDen
 					const owned = (of: "worker" | "app") => (role: (typeof workers)[number]) => ({
 						...role,
