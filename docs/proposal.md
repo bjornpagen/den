@@ -41,41 +41,50 @@ fence, the HTTP API, live status and the outbox all come from grizzle.
 
 ## 4. The algebra
 
-Five primitives, and lanes.
+Four primitives and resources, each needed by a workload of the eight (`decisions.md`); feed edges with several
+parents, awaits completed from outside, stopping, fairness and priority are not built, because no workload needs them.
 
-- **Step kind.** A name; a typed input, output and error (Effect Schemas); a lane; a body
-  `input → Effect<{ output, writes }, Error, R>`, where `writes` is a ChangeSet over the app's relations and `R` never
-  holds grizzle's database handle.
-- **Scope kind.** A join: it owns the steps started in it and finishes exactly once, after every child has a result.
-  Its finish is a step that reads the children's results and returns writes.
-- **Root kind.** A scope started by a trigger: a schedule, an operator command, an API call. The only way a graph
-  begins.
-- **Edge kind.** A pure function from a step's input and output to new step inputs. *Spawn* edges start steps in the
-  same scope or a new child scope (chains, fan-out, splits, the next stage); *feed* edges give a step several parents,
-  and it runs once all of them have results.
-- **Await kind.** A step with no body whose result is inserted from outside (a webhook, an operator, an instant
-  passing for a timer); the first insert wins.
-- **Lanes.** Every step kind runs on a lane, with a width (the most of its steps running at once across every graph),
-  a pause and a window. Flow-control state (AlphaTest's BBR window) is a field carried along a chain edge.
+- **Step kind.** A name; a typed input, output and error (Effect Schemas); its declared reads (W1's fingerprint, W5's
+  presence, W7's intents), taken before its body runs and recorded as part of its input; the resources it holds a
+  seat of while it runs; its retry ladder, ending after `n` attempts (W1 to W4) or never (W6's reports), written out
+  either way; a due instant (backoff, W5's timer, W6's delay). Its body is
+  `input → Effect<{ output, writes }, Error, R>`, where `writes` is a ChangeSet over the app's relations and `R` holds
+  no grizzle handle.
+- **Scope kind.** A join: it owns the steps started in it and finishes exactly once, after every child has ended
+  (done or failed); its finish is a step that reads the children's endings and returns writes (a cursor moved, or held
+  where a child failed). A scope kind may hold a seat for its whole life: that is exclusivity (one live run per
+  relation, W1; per collection, W3; per request kind, W2; one Gold build, W4). It may carry a window (W1 to W4) and a
+  precondition, a read that must be empty for it to be admitted (W4: no Timeback or QTI step pending).
+- **Root kind.** A scope started by a trigger: a schedule (W1 to W4, W7), an operator (W4's button, W8) or the app's
+  own write inside its own transaction. The only way a graph begins; its key is its trigger and idempotency key.
+- **Edge kind.** A pure function from a step's input and output to the inputs of the steps it spawns, in the same
+  scope or in a new child scope: chains whose result names the next step (W2, W3, W4), a timer that re-arms (W5),
+  fan-out over a computed partition with split (W1), the next stage (W1, W2, W4). A step that fails spawns nothing.
+- **Resources.** A named bottleneck whose capacity is its seats, as rows, each count a limit with evidence: W1's
+  replica holds 8, the operator's hold on a bastion shared with other principals. A fixed host (a server of one's own,
+  celld) is a resource whose seats are its workers; on an elastic host compute is no resource. A step holds a seat
+  while it runs; a scope holds one for its life. No two holders share a seat key, so a bound is never exceeded.
+  Pausing attaches to a resource or a root kind. AlphaTest's adaptive window is not a resource: it bounds requests
+  inside one link's body and travels along the chain edge.
 
-A step ends `done` (output, writes, spawns), `failed` (a typed error), `retry` (due again at an instant, counted as an
-attempt or a wait), `stopped` (its scope was stopped) or `lost` (another fact already holds its key). Ceilings on
-attempts, reclaims and waits turn endless retrying into `failed`.
+A step ends `done` (output, writes, spawns), `failed` (a typed error, or its ladder ended), `retry` (due again at an
+instant) or `lost` (another fact already holds its key). A defect is no state of its own: the attempt ends, the step is
+retried on its ladder, and the defect's detail goes to its span.
 
 Laws: a step has exactly one owning scope, fixed at spawn, so ownership is a tree; a step has at most one result, the
-first; a scope finishes once, after all its children; results never change; outputs flow only along declared edges.
-Unrepresentable: fire-and-forget, untyped values, writes outside a step's returned writes, cycles of ownership, edges
-nobody declared.
+first; a scope finishes once, after all its children have ended; results never change; outputs flow only along
+declared edges; a seat has at most one holder; a window contains at least one census tick. Unrepresentable:
+fire-and-forget, untyped values, writes outside a step's returned writes, reads nobody declared, cycles of ownership,
+edges nobody declared, a bound without evidence.
 
 The QTI chain, as an illustration of shape only:
 
 ```ts
-const qti = lane("qti", { width: 3 })
-const Page = step(qti, "QtiPage", { input: PageInput, output: PageRead, error: QtiRefused }, readPage)
+const Page = step("QtiPage", { input: PageInput, output: PageRead, error: QtiRefused, retry: attempts(5) }, readPage)
 const Next = edge(Page, Page, (page, read) => Option.map(read.next, (after) => ({ ...page, seq: page.seq + 1n, after })))
-const Read = scope("QtiRead", { input: Window, start: (w) => [Page.first(w)], finish: moveFrontier })
+const Read = scope("QtiRead", { input: Window, exclusive: (w) => w.collection, window: utcHours(7, 13), start: (w) => [Page.first(w)], finish: moveFrontier })
 const Nightly = root("QtiNightly", { trigger: schedule("0 7 * * *"), start: () => COLLECTIONS.map(Read.of) })
-export const qtiFlow = flow("qti", { lanes: [qti], kinds: [Page, Read, Nightly], edges: [Next] })
+export const qtiFlow = flow("qti", { writes: Loader, kinds: [Page, Read, Nightly], edges: [Next] })
 ```
 
 Timeback's daily job: `TimebackDaily` starts `Print`; Print's edge starts a child scope `Pages` (one `Page` per block
@@ -124,13 +133,27 @@ relation per edge kind with a foreign key on each side.
 - **Edges are foreign keys.** "This scope is done" is a read-only query and a key race on the finish, sound because
   only a child's own result, committed in the same call, can add a sibling.
 
-## 7. Coordination
+## 7. Coordination and the scheduler
 
-Free, because each only adds facts: recording a result, spawning, adding edges, moving a cursor forward, an await's
-first insert. One key decides each of: a claim (`Claim(step, attempt)`, certified READ COMMITTED: ask 4), width (slot
-facts decided by key), a scope's finish, and retirement (a finished root's graph deleted whole: ask 5; history lives in
-spans). Time is a parameter in grizzle; keys fence every write, so correctness never depends on a clock, only liveness
-does (ask 6).
+Free, because each only adds facts: recording a result, spawning, adding edges, moving a cursor forward. One key
+decides each of: a claim (`Claim(step, attempt)`), a seat (`(resource, seat)`, exact: the 9th holder of an
+8-seat resource finds no key), a scope's finish, and a root's admission (its trigger and idempotency key, behind its
+precondition and exclusivity seat). Retirement deletes a finished root's graph whole under grizzle's RETIRE; until it
+lands nothing is deleted and no interim janitor exists. Time is a parameter in grizzle until DBCLOCK; keys fence every
+write, so correctness holds whatever the clocks say, and exactness of seats assumes clocks drift less than a lease's
+margin (60 s), which DBCLOCK removes (Gray and Cheriton's lease).
+
+**Eligibility** (issue's law, durable): a step may run once its parent ended, its due instant passed, its root is
+inside its window, nothing it touches is paused, and a seat of every resource it uses is free. **Order** when seats
+are contended: the oldest root first, then the earliest due, so nothing starves; no priority or fairness keys.
+**Ringing**, three paths: the committing function continues with its own first spawn and rings the rest; the relay
+rings what someone else's commit made eligible (the app's own write, an operator); the census tick rings what time
+made eligible (windows, due instants, expired leases). Exact timers (W5's 180 s) ride the transport's delayed delivery,
+the census as their net. On a fixed host the relay's watch is the transport and the host's workers are seats.
+
+Taking and giving back seats certifies SERIALIZABLE at `a226cbac` (the disjoint-key 40001 the owner keeps is
+retryable and, at W1's measured one claim per seven seconds, rare); grizzle's LEASE moves the same relations to READ
+COMMITTED with nothing in den changed.
 
 ## 8. How it runs
 
@@ -211,8 +234,7 @@ The owner's order, sent to the grizzle session on 2026-11-11: fix every defect i
 
 den repins `vendor/grizzle` as each lands on `live`.
 
-## 16. Open, decided with the owner one at a time
+## 16. Settled with the owner
 
-1. The claim protocol and width. 2. The clock. 3. Retiring finished graphs. 4. Where the relay runs, and the WAL
-bound. 5. Defect values and type refusals. 6. What stopping means for a running step. 7. Which role runs a step's
-writes into the app's relations.
+Every open decision is settled (`decisions.md`): exact seats, declared reads, writes under the app's own role, the
+eight workloads and nothing invented, retirement under RETIRE, the clock as a parameter until DBCLOCK.
