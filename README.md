@@ -14,4 +14,4 @@ pnpm test             # the suites that need no database
 pnpm pg init && pnpm pg start && pnpm test:network   # den's own PostgreSQL 19 cluster
 ```
 
-Requires Node 26 or later and pnpm at the version `packageManager` pins.
+Requires pnpm at the version `packageManager` pins; it downloads the exact Node that `devEngines` pins.
