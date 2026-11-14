@@ -8,16 +8,29 @@ has no other read-back), and POROUS (each flow is two grizzle fragments the app 
 group; den's programs are written over them, and each commit is a union of den's facts with the app's writes). den still
 takes these, each from the grizzle session's report:
 
-- **LEASE (28496788).** `race(R)`, a schema rule beside `mutable`: a raced table's inserts arbitrate at its primary key,
-  and the loser meets the stored fact; refused on a mutable relation, a whole-heading or span key, a drawn primary-key
-  field, a family's owner or member, a derived relation. The certifier counts a winner read after a clean arbitration as
-  arbitrated, and expiry is a new fact (`at + ttl < now`, DBCLOCK's `now`). den's seat relations become raced (its
-  claims race since the claim seam), and the seat module (SERIALIZABLE at `a226cbac`) moves to READ COMMITTED; adding or
-  dropping `race` is a fingerprint-only migration, after which an old Db answers `StaleSnapshot`
-- **DBCLOCK (44cade74, 6172e92c, 8081e6ce).** `clocked(program, { now: unit })` binds `now` to
-  `transaction_timestamp()`, one reading per call. Leases, due instants and windows are judged by the database's clock:
-  den's caller-clock seam is deleted. Clocked reads serve `once` and no `watch`, which matches den's split: the relay's
-  watch reads what commits made eligible, without time; the census reads what time made eligible, as a clocked `once`
+- **LEASE for the coordination group (28496788).** Decided, not yet built. The group becomes insert-only, so den's
+  coordination role certifies READ COMMITTED with no delete: each seat, exclusivity seat and pause is a chain of turns.
+  `<P>Hold(resource, seat, turn, holder, until)` keyed by `(resource, seat, turn)`, `<P>Freed(resource, seat, turn)`
+  contained in it, and `contained(on(<P>Hold, "resource", "seat", pred("turn")), on(<P>Freed, "resource", "seat",
+  "turn"))`, so a turn after the first needs its predecessor freed and a seat holds at most one unfreed hold, which the
+  database enforces. Taking a lapsed seat frees its turn and holds the next in one call; giving back inserts `Freed`.
+  The live holds are the holds with no `Freed`; a seat's next turn is its latest, `r.max(turn)` grouped by seat, plus
+  one. Exclusivity seats (`<P>Exclusive` and `<P>Released`, by `(kind, key, turn)`) and pauses (`<P>Paused` and
+  `<P>Resumed`, by `(target, turn)`) take the same shape. A resource's seat count is a closed relation,
+  `closed.relation("<P>Seats", { resource, seats }, ["resource"], …)` from the flow's declaration, and a hold's seat
+  is checked below it (`<P>Seats.at("seats", resource)`), so provisioning goes. None of these relations races: a
+  multi-resource take must win every seat or none, which one call refused whole on any held key gives and a raced
+  insert would not (it can win one seat and meet another), and a raced insert at a turn a stale read chose meets that
+  turn's old row, which says nothing of who holds the key now; a refusal and a fresh read do. Until RETIRE, the turns
+  accumulate as the graph does, and the status reads scan them as the graph's do.
+- **DBCLOCK (44cade74, 6172e92c, 8081e6ce).** Decided, not yet built. `clocked(program, { now: unit })` binds `now` to
+  `transaction_timestamp()`, one reading per call. Each flow's den role serves a clocked read of the database's instant
+  alone, `query(<P>Graph).rule((r) => r.find({ now: r.param("now", DenInstant) }))` served `clocked(…, { now: "millis"
+  })` (grizzle's own served-clocked suite reads an instant so), and the ledger port answers it as `now`. The census's
+  tick, the relay's pass and a turn judge leases, due instants and windows at that reading, and a claim's lease and a
+  retry's due instant are stamped from it, so no host's clock judges anything; `runtime/clock.ts` keeps only the
+  in-process transport's delays, which are durations. Clocked reads serve `once` and no `watch`, which matches den's
+  split: the relay's watch reads what commits made eligible, without time; the census reads what time made eligible.
 - **RETIRE (c70cbed8, 1f935498, f14a46da).** `retirable(header, bodies)` with a declared `retirement` field; adopting a
   unit rewrites each body table once in its migration. Holds (commit 2, f14a46da) grant EXECUTE on each unit's hold to
   its holding roles, with `UnheldGroup` refusals. The retire API (commit 4) is still to come, so den's retirement seam
