@@ -302,17 +302,17 @@ export const retrySeatsWorkload = workload(RetrySeats, retrySeatsPrograms)
 
 /** The commits and declared reads of the flow Retry, over its app role Loader. */
 export const retryCommitPrograms = Object.freeze({
-	retryCommitSteadfast: ChangeSet.empty(Loader)
+	retryCommitSteadfast: ChangeSet.empty(retryGraph)
 		.insert(RetryResult, [])
 		.insert(RetryDone, [])
 		.insert(RetryHeld, [])
 		.insert(RetrySteadfastOutput, []),
-	retryCommitBrittle: ChangeSet.empty(Loader)
+	retryCommitBrittle: ChangeSet.empty(retryGraph)
 		.insert(RetryResult, [])
 		.insert(RetryDone, [])
 		.insert(RetryHeld, [])
 		.insert(RetryBrittleOutput, []),
-	retryCommitLaddersFinish: ChangeSet.empty(Loader)
+	retryCommitLaddersFinish: ChangeSet.empty(retryGraph)
 		.insert(RetryResult, [])
 		.insert(RetryDone, [])
 		.insert(RetryHeld, [])

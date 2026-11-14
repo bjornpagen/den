@@ -304,23 +304,27 @@ export const syncSeatsWorkload = workload(SyncSeats, syncSeatsPrograms)
 
 /** The commits and declared reads of the flow Sync, over its app role Loader. */
 export const syncCommitPrograms = Object.freeze({
-	syncCommitCopy: ChangeSet.empty(Loader)
-		.insert(SyncResult, [])
-		.insert(SyncDone, [])
-		.insert(SyncHeld, [])
-		.insert(SyncCopyOutput, [])
-		.insert(App.relations.Copied, []),
-	syncCommitBuild: ChangeSet.empty(Loader)
-		.insert(SyncResult, [])
-		.insert(SyncDone, [])
-		.insert(SyncHeld, [])
-		.insert(SyncBuildOutput, [])
-		.insert(App.relations.Built, []),
-	syncCommitSyncRunFinish: ChangeSet.empty(Loader)
+	syncCommitCopy: ChangeSet.union(
+		ChangeSet.empty(syncGraph)
+			.insert(SyncResult, [])
+			.insert(SyncDone, [])
+			.insert(SyncHeld, [])
+			.insert(SyncCopyOutput, []),
+		ChangeSet.empty(Loader).insert(App.relations.Copied, [])
+	),
+	syncCommitBuild: ChangeSet.union(
+		ChangeSet.empty(syncGraph)
+			.insert(SyncResult, [])
+			.insert(SyncDone, [])
+			.insert(SyncHeld, [])
+			.insert(SyncBuildOutput, []),
+		ChangeSet.empty(Loader).insert(App.relations.Built, [])
+	),
+	syncCommitSyncRunFinish: ChangeSet.empty(syncGraph)
 		.insert(SyncResult, [])
 		.insert(SyncDone, [])
 		.insert(SyncHeld, []),
-	syncCommitGoldFinish: ChangeSet.empty(Loader)
+	syncCommitGoldFinish: ChangeSet.empty(syncGraph)
 		.insert(SyncResult, [])
 		.insert(SyncDone, [])
 		.insert(SyncHeld, [])

@@ -312,21 +312,19 @@ export const fanSeatsWorkload = workload(FanSeats, fanSeatsPrograms)
 
 /** The commits and declared reads of the flow Fan, over its app role Loader. */
 export const fanCommitPrograms = Object.freeze({
-	fanCommitSquare: ChangeSet.empty(Loader)
+	fanCommitSquare: ChangeSet.empty(fanGraph)
 		.insert(FanResult, [])
 		.insert(FanDone, [])
 		.insert(FanHeld, [])
 		.insert(FanSquareOutput, []),
-	fanCommitBatchFinish: ChangeSet.empty(Loader)
-		.insert(FanResult, [])
-		.insert(FanDone, [])
-		.insert(FanHeld, [])
-		.insert(App.relations.Tally, []),
-	fanCommitFanRunFinish: ChangeSet.empty(Loader)
-		.insert(FanResult, [])
-		.insert(FanDone, [])
-		.insert(FanHeld, [])
-		.insert(App.relations.Settled, [])
+	fanCommitBatchFinish: ChangeSet.union(
+		ChangeSet.empty(fanGraph).insert(FanResult, []).insert(FanDone, []).insert(FanHeld, []),
+		ChangeSet.empty(Loader).insert(App.relations.Tally, [])
+	),
+	fanCommitFanRunFinish: ChangeSet.union(
+		ChangeSet.empty(fanGraph).insert(FanResult, []).insert(FanDone, []).insert(FanHeld, []),
+		ChangeSet.empty(Loader).insert(App.relations.Settled, [])
+	)
 })
 
 export const fanCommits = workload(Loader, fanCommitPrograms)

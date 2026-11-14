@@ -326,25 +326,27 @@ export const chainSeatsWorkload = workload(ChainSeats, chainSeatsPrograms)
 
 /** The commits and declared reads of the flow Chain, over its app role Loader. */
 export const chainCommitPrograms = Object.freeze({
-	chainCommitPage: ChangeSet.empty(Loader)
-		.insert(ChainResult, [])
-		.insert(ChainDone, [])
-		.insert(ChainHeld, [])
-		.insert(ChainPageOutput, [])
-		.insert(ChainPageOutputNext, [])
-		.insert(ChainPageRead, [])
-		.insert(ChainStep, [])
-		.insert(ChainDue, [])
-		.insert(ChainScope, [])
-		.insert(ChainWithin, [])
-		.insert(ChainAdmitted, [])
-		.insert(ChainFinish, [])
-		.insert(ChainStartStep, [])
-		.insert(ChainStartScope, [])
-		.insert(ChainPageInput, [])
-		.insert(ChainPageInputAfter, [])
-		.insert(ChainNext, [])
-		.insert(App.relations.Item, []),
+	chainCommitPage: ChangeSet.union(
+		ChangeSet.empty(chainGraph)
+			.insert(ChainResult, [])
+			.insert(ChainDone, [])
+			.insert(ChainHeld, [])
+			.insert(ChainPageOutput, [])
+			.insert(ChainPageOutputNext, [])
+			.insert(ChainPageRead, [])
+			.insert(ChainStep, [])
+			.insert(ChainDue, [])
+			.insert(ChainScope, [])
+			.insert(ChainWithin, [])
+			.insert(ChainAdmitted, [])
+			.insert(ChainFinish, [])
+			.insert(ChainStartStep, [])
+			.insert(ChainStartScope, [])
+			.insert(ChainPageInput, [])
+			.insert(ChainPageInputAfter, [])
+			.insert(ChainNext, []),
+		ChangeSet.empty(Loader).insert(App.relations.Item, [])
+	),
 	chainReadPage: deferrable(
 		query(Loader).rule((r) => {
 			const { feed, factor } = v(App.relations.Weight, "row")
@@ -354,23 +356,21 @@ export const chainCommitPrograms = Object.freeze({
 				.find({ feed, factor })
 		})
 	),
-	chainCommitChainRunFinish: ChangeSet.empty(Loader)
-		.insert(ChainResult, [])
-		.insert(ChainDone, [])
-		.insert(ChainHeld, [])
-		.insert(App.relations.Cursor, []),
-	chainCommitOrderedFinish: ChangeSet.empty(Loader)
-		.insert(ChainResult, [])
-		.insert(ChainDone, [])
-		.insert(ChainHeld, [])
-		.insert(App.relations.Cursor, [])
+	chainCommitChainRunFinish: ChangeSet.union(
+		ChangeSet.empty(chainGraph).insert(ChainResult, []).insert(ChainDone, []).insert(ChainHeld, []),
+		ChangeSet.empty(Loader).insert(App.relations.Cursor, [])
+	),
+	chainCommitOrderedFinish: ChangeSet.union(
+		ChangeSet.empty(chainGraph).insert(ChainResult, []).insert(ChainDone, []).insert(ChainHeld, []),
+		ChangeSet.empty(Loader).insert(App.relations.Cursor, [])
+	)
 })
 
 export const chainCommits = workload(Loader, chainCommitPrograms)
 
-/** The requests of the flow's roots the app's own write starts, each a ChangeSet over Loader the app unions with its own. */
+/** The requests of the flow's roots the app's own write starts, each a ChangeSet over the flow's graph the app unions with its own. */
 export const chainRequests = Object.freeze({
-	Ordered: ChangeSet.empty(Loader)
+	Ordered: ChangeSet.empty(chainGraph)
 		.insert(ChainScope, [])
 		.insert(ChainRoot, [])
 		.insert(ChainOrderedInput, [])

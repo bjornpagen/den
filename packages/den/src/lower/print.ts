@@ -345,10 +345,28 @@ const admittingOf = (l: Lowered): ReadonlyArray<string> => {
 }
 
 /**
- * The programs module: den's role's and its coordination role's programs over the flow's graph and coordination
- * fragments, the roles over the app's schema that serve them, and the commits and requests over the flow's app role,
- * which write den's facts beside the app's own in one call. A commit or a request stays a program over the app role
- * until a union of a fragment's ChangeSet with the app's types its members' rows.
+ * A step's or a finish's commit: den's facts, a ChangeSet over the flow's graph, and, when it writes any, the app's own
+ * writes over its app role, unioned so both commit in one call.
+ */
+const commitOf = (
+	graph: string,
+	writer: string,
+	inserts: ReadonlyArray<string>,
+	app: WritesIR,
+	appRef: string
+): string => {
+	const den = `ChangeSet.empty(${graph})${members(inserts, none, appRef)}`
+	return Arr.isReadonlyArrayEmpty(app.insert) &&
+		Arr.isReadonlyArrayEmpty(app.put) &&
+		Arr.isReadonlyArrayEmpty(app.delete)
+		? den
+		: `ChangeSet.union(${den}, ChangeSet.empty(${writer})${members([], app, appRef)})`
+}
+
+/**
+ * The programs module: den's programs over the flow's graph and coordination fragments, the roles over the app's
+ * schema that hold them whole and serve them, each commit's union of den's facts with the app's writes, each app root's
+ * request over the graph, which the app unions with its own write, and the declared reads over the flow's app role.
  */
 export const printPrograms = (l: Lowered, place: Placement): string => {
 	const n = naming(l)
@@ -669,7 +687,9 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		const spawns = Arr.isReadonlyArrayNonEmpty(s.edges) ? l.spawning : []
 		commitPrograms.push([
 			n.program(`Commit${s.name}`),
-			`ChangeSet.empty(${W})${members(
+			commitOf(
+				n.graph,
+				W,
 				[
 					r("Result"),
 					r("Done"),
@@ -680,7 +700,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 				],
 				s.writes,
 				app
-			)}`
+			)
 		])
 		Option.map(s.reads, (rd) =>
 			commitPrograms.push([
@@ -702,14 +722,14 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	Arr.forEach(l.joins, (j) =>
 		commitPrograms.push([
 			n.program(`Commit${j.finish.name}`),
-			`ChangeSet.empty(${W})${members([r("Result"), r("Done"), r("Held")], j.finish.writes, app)}`
+			commitOf(n.graph, W, [r("Result"), r("Done"), r("Held")], j.finish.writes, app)
 		])
 	)
 	const appRoots = Arr.filter(l.joins, isApp)
 	const requests = Arr.map(
 		appRoots,
 		(j) =>
-			`${j.name}: ChangeSet.empty(${W})${members(
+			`${j.name}: ChangeSet.empty(${n.graph})${members(
 				[
 					r("Scope"),
 					r("Root"),
@@ -748,7 +768,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		"",
 		...(Arr.isReadonlyArrayNonEmpty(requests)
 			? [
-					`/** The requests of the flow's roots the app's own write starts, each a ChangeSet over ${W} the app unions with its own. */`,
+					`/** The requests of the flow's roots the app's own write starts, each a ChangeSet over the flow's graph the app unions with its own. */`,
 					`export const ${n.requests} = Object.freeze({ ${commas(requests)} })`
 				]
 			: [])
