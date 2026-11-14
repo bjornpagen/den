@@ -1,6 +1,8 @@
 {
 	"$schema": "./node_modules/fallow/schema.json",
 	"ignorePatterns": ["vendor/**"],
+	// The tsconfig's @effect/language-service plugin is no package: it is @effect/tsgo's, patched into TypeScript.
+	"ignoreDependencies": ["@effect/language-service"],
 	"boundaries": {
 		"zones": [
 			{

@@ -37,7 +37,6 @@
 		"@bjornpagen/testing": "workspace:*",
 		"@effect/tsgo": "catalog:",
 		"@types/node": "catalog:",
-		"effect": "catalog:",
 		"fallow": "catalog:",
 		"lefthook": "catalog:",
 		"oxfmt": "catalog:",
