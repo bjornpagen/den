@@ -1,7 +1,6 @@
 import { caseHang, longestLeaseMillis } from "@bjornpagen/den/limits"
 import { lower } from "@bjornpagen/den/lower/fragment"
 import { printFragment } from "@bjornpagen/den/lower/print"
-import { now } from "@bjornpagen/den/runtime/clock"
 import { holderOf, instantOf, rootScope, startedStep } from "@bjornpagen/den/runtime/identity"
 import { giveBack, take } from "@bjornpagen/den/runtime/seats"
 import { exhaust } from "@bjornpagen/testing/explore"
@@ -137,7 +136,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("seat counts", (it) => 
 									c.note(featureOf(seat))
 									const { fan: ledgers } = yield* openLedgers
 									const ledger = ledgers.ledger
-									const at = yield* now
+									const at = yield* ledger.now
 									const until = instantOf(Number(at) + longestLeaseMillis.value)
 									const scope = yield* rootScope("Fan", "FanRun", "seat counts")
 									const holder = (ordinal: number) =>

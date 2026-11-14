@@ -1,5 +1,4 @@
 import { caseHang } from "@bjornpagen/den/limits"
-import { now } from "@bjornpagen/den/runtime/clock"
 import { type Ending, serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
@@ -91,7 +90,7 @@ layer(sliceLayer)("the chain flow", (it) => {
 							})
 						}
 						const key = `${run.feed}-${run.pages}-${run.factor}-${yield* nonce}`
-						const at = yield* now
+						const at = yield* chain.ledger.now
 						const requested = yield* chain.request.ChainRun(key, at, {
 							feed: run.feed,
 							pages: BigInt(run.pages)
@@ -143,7 +142,7 @@ layer(sliceLayer)("the chain flow", (it) => {
 						})
 						assert.isFalse(again.fresh)
 						c.note("request again")
-						const ends = yield* now
+						const ends = yield* chain.ledger.now
 						const rerung: ReadonlyArray<Ending> = yield* Effect.forEach(pages, (page) =>
 							Effect.map(
 								serve(

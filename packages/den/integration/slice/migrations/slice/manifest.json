@@ -34219,6 +34219,10 @@
 				],
 				"statistics": []
 			},
+			"chainNow": {
+				"paths": [],
+				"statistics": []
+			},
 			"chainOpenChildren": {
 				"paths": [
 					{
@@ -35558,6 +35562,10 @@
 				],
 				"statistics": []
 			},
+			"fanNow": {
+				"paths": [],
+				"statistics": []
+			},
 			"fanOpenChildren": {
 				"paths": [
 					{
@@ -36703,6 +36711,10 @@
 				],
 				"statistics": []
 			},
+			"retryNow": {
+				"paths": [],
+				"statistics": []
+			},
 			"retryOpenChildren": {
 				"paths": [
 					{
@@ -37835,6 +37847,10 @@
 						"use": "write target"
 					}
 				],
+				"statistics": []
+			},
+			"syncNow": {
+				"paths": [],
 				"statistics": []
 			},
 			"syncOpenChildren": {

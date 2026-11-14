@@ -1,5 +1,6 @@
+import { DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Fan to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
-import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
+import { ChangeSet, clocked, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
 	FanKind,
@@ -38,7 +39,7 @@ import {
 } from "#integration/slice/generated/fan.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's role for the flow Fan: claims, retries, failures, admissions, requests, and every read the scheduler makes. */
+/** den's role for the flow Fan: the database's instant, claims, retries, failures, admissions, requests, and every read the scheduler makes. */
 export const FanDen = role(
 	App,
 	"fan_den",
@@ -89,6 +90,10 @@ export const FanCoordinator = role(
 )
 
 export const fanDenPrograms = Object.freeze({
+	fanNow: clocked(
+		query(fanGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+		{ now: "millis" }
+	),
 	fanClaim: ChangeSet.empty(fanGraph)
 		.insert(FanClaim, [])
 		.read("held", (delta) =>

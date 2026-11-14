@@ -1,4 +1,13 @@
-import { any, dueAt, fresh, one, rowsOf, scheduleOf, signals } from "@bjornpagen/den/runtime/bind"
+import {
+	any,
+	dueAt,
+	fresh,
+	one,
+	readingOf,
+	rowsOf,
+	scheduleOf,
+	signals
+} from "@bjornpagen/den/runtime/bind"
 import {
 	finishStep,
 	type ExclusiveId,
@@ -310,6 +319,7 @@ export const fanLedger = (h: FanHandles) => {
 	}
 	const ledger: Ledger<FlowNeeds<typeof fan>> = {
 		flow: FlowName.make("Fan"),
+		now: Effect.flatMap(h.den.fanNow.once({ params: {}, facts: {} }), readingOf),
 		resources: [{ name: "Pool", seats: 2 }],
 		steps: new Map([
 			[

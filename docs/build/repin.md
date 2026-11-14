@@ -5,8 +5,8 @@ den is pinned on grizzle's `main`, into which `live` merged, so every commit bel
 status and declared reads deferrable), LEASE and DELTAMET for claims (each flow's Claim races its key, and a claim reads
 back the holder it added or met), CARRIER (that read-back rides the claim's one statement, which generate compiles; den
 has no other read-back), POROUS (each flow is two grizzle fragments the app lists, its graph and its coordination
-group; den's programs are written over them, and each commit is a union of den's facts with the app's writes), and
-LEASE for the coordination group:
+group; den's programs are written over them, and each commit is a union of den's facts with the app's writes), LEASE
+for the coordination group, and DBCLOCK:
 
 - **LEASE for the coordination group (28496788).** The group is insert-only, and every den role, each flow's
   coordinator role included, certifies READ COMMITTED (`certification.test.ts`). Each seat, exclusivity seat and pause is
@@ -35,16 +35,22 @@ LEASE for the coordination group:
   SERIALIZABLE for it (`laws`: a rule over a query, which a trigger checks), giving up the READ COMMITTED LEASE exists
   for; it waits on grizzle. Growing a count is a migration that validates at once.
 
-den still takes these, each from the grizzle session's report:
-
-- **DBCLOCK (44cade74, 6172e92c, 8081e6ce).** Decided, not yet built. `clocked(program, { now: unit })` binds `now` to
+- **DBCLOCK (44cade74, 6172e92c, 8081e6ce).** `clocked(program, { now: unit })` binds `now` to
   `transaction_timestamp()`, one reading per call. Each flow's den role serves a clocked read of the database's instant
-  alone, `query(<P>Graph).rule((r) => r.find({ now: r.param("now", DenInstant) }))` served `clocked(…, { now: "millis"
-  })` (grizzle's own served-clocked suite reads an instant so), and the ledger port answers it as `now`. The census's
-  tick, the relay's pass and a turn judge leases, due instants and windows at that reading, and a claim's lease and a
-  retry's due instant are stamped from it, so no host's clock judges anything; `runtime/clock.ts` keeps only the
-  in-process transport's delays, which are durations. Clocked reads serve `once` and no `watch`, which matches den's
-  split: the relay's watch reads what commits made eligible, without time; the census reads what time made eligible.
+  alone, `<p>Now: clocked(query(<p>Graph).rule((r) => r.find({ now: r.param("now", DenInstant) })), { now: "millis" })`,
+  and the ledger port answers it as `now`. The census's tick and the relay's pass read it once each and judge leases,
+  due instants and windows at that reading; a turn judges its claim and its gates at a reading, its retry's due instant
+  is stamped from a reading, its commit's spawns are due from one, and the timers it rings are the durations between
+  two readings. An invocation's end is its first reading plus its budget, and a claim's lease is that end, so no host's
+  clock judges anything. `runtime/clock.ts` keeps only the in-process transport's clock, at which the in-process driver
+  delivers a held wake once its delay has passed. Clocked reads serve `once` and no `watch`, which matches den's split:
+  the relay's watch reads what commits made eligible, without time, and the census reads what time made eligible. The
+  suites cannot move the database's clock: their ledgers read it moved on by the time their TestClock travelled since
+  they were opened (`integration/support/slice.ts`), and `stale.test.ts` holds each flow's reading between two of
+  PostgreSQL's own.
+
+den still takes this, from the grizzle session's report:
+
 - **RETIRE (c70cbed8, 1f935498, f14a46da).** `retirable(header, bodies)` with a declared `retirement` field; adopting a
   unit rewrites each body table once in its migration. Holds (commit 2, f14a46da) grant EXECUTE on each unit's hold to
   its holding roles, with `UnheldGroup` refusals. The retire API (commit 4) is still to come, so den's retirement seam

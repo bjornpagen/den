@@ -93,7 +93,15 @@ export interface StepRunner<R> {
 	readonly retry: Ladder
 	/** The scope it finishes, for a finish; none for a step kind. */
 	readonly finishes: Option.Option<string>
-	readonly run: (turn: Turn, now: Instant) => Effect.Effect<Ran, never, R | Digest.Digest>
+	/**
+	 * The turn after its claim: `at` the turn's reading of the database's instant, and `clock` a fresh reading, for its
+	 * commit's spawns and its writes' deadline.
+	 */
+	readonly run: (
+		turn: Turn,
+		at: Instant,
+		clock: Effect.Effect<Instant, CallError>
+	) => Effect.Effect<Ran, never, R | Digest.Digest>
 }
 
 /** A root kind's admission and gates. */
@@ -211,12 +219,18 @@ export interface Coordination {
 }
 
 /**
- * A flow's ledger: its name (the prefix its lowered relations carry), its declared kinds, reads by key, the claim and
- * the endings every kind shares, the scheduler's snapshot, the coordinator role, and each kind's runner. R is what the
- * flow's bodies require.
+ * A flow's ledger: its name (the prefix its lowered relations carry), its declared kinds, the database's instant,
+ * reads by key, the claim and the endings every kind shares, the scheduler's snapshot, the coordinator role, and each
+ * kind's runner. R is what the flow's bodies require.
  */
 export interface Ledger<R> {
 	readonly flow: FlowName
+	/**
+	 * The database's instant, a clocked read of `transaction_timestamp()` in milliseconds, one reading per call: every
+	 * lease, due instant and window is judged at a reading of it, and a claim's lease and a retry's due instant are
+	 * stamped from one, so no host's clock judges anything.
+	 */
+	readonly now: Effect.Effect<Instant, CallError>
 	readonly resources: ReadonlyArray<{ readonly name: string; readonly seats: number }>
 	readonly steps: ReadonlyMap<string, StepRunner<R>>
 	readonly roots: ReadonlyMap<string, RootRunner>

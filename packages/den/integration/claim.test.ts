@@ -1,5 +1,4 @@
 import { caseHang, longestLeaseMillis } from "@bjornpagen/den/limits"
-import { now } from "@bjornpagen/den/runtime/clock"
 import { holderOf, instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
@@ -56,7 +55,7 @@ layer(sliceLayer)("the claim race", (it) => {
 						const current = yield* Ref.make(Option.none<StepKey>())
 						const reset = Effect.gen(function* () {
 							const n = yield* Ref.getAndUpdate(runs, (k) => k + 1)
-							const at = yield* now
+							const at = yield* chain.ledger.now
 							const requested = yield* chain.request.ChainRun(`claim-${pages}-${n}`, at, {
 								feed: "news",
 								pages: BigInt(pages)
@@ -79,7 +78,7 @@ layer(sliceLayer)("the claim race", (it) => {
 							Effect.gen(function* () {
 								const held = yield* Ref.get(current)
 								const step = Option.getOrThrow(held)
-								const at = yield* now
+								const at = yield* chain.ledger.now
 								const holder = yield* holderOf(step, 1, session === "first" ? 0 : 1)
 								const outcome = yield* Effect.result(
 									chain.ledger.claim({

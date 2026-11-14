@@ -4,7 +4,6 @@ import {
 	caseHang,
 	longestLeaseMillis
 } from "@bjornpagen/den/limits"
-import { now } from "@bjornpagen/den/runtime/clock"
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
 import { drawn, explore } from "@bjornpagen/testing/explore"
@@ -316,7 +315,7 @@ layer(sliceLayer)("the differential harness", (it) => {
 						const { chain: chainLedger, fan: fanLedger, ledgers, loader } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
 						const key = `diff-${yield* nonce}`
-						const at = yield* now
+						const at = yield* chainLedger.ledger.now
 						const begin = (chosen: Program) =>
 							Effect.gen(function* () {
 								switch (chosen.kind) {

@@ -1,5 +1,6 @@
+import { DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Chain to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
-import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
+import { ChangeSet, clocked, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
 	ChainKind,
@@ -42,7 +43,7 @@ import {
 } from "#integration/slice/generated/chain.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's role for the flow Chain: claims, retries, failures, admissions, requests, and every read the scheduler makes. */
+/** den's role for the flow Chain: the database's instant, claims, retries, failures, admissions, requests, and every read the scheduler makes. */
 export const ChainDen = role(
 	App,
 	"chain_den",
@@ -95,6 +96,10 @@ export const ChainCoordinator = role(
 )
 
 export const chainDenPrograms = Object.freeze({
+	chainNow: clocked(
+		query(chainGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+		{ now: "millis" }
+	),
 	chainClaim: ChangeSet.empty(chainGraph)
 		.insert(ChainClaim, [])
 		.read("held", (delta) =>

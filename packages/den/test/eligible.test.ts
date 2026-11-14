@@ -105,6 +105,7 @@ const rootOf = (
 
 const ledgerOf = (seats: number, window: Window): Ledger<never> => ({
 	flow: flowName,
+	now: Effect.die("eligibility judges the instant it is given"),
 	resources: [{ name: "Pool", seats }],
 	steps: new Map([
 		["Work", runnerOf("Work", ["Pool"], Option.none())],

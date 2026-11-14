@@ -3,7 +3,6 @@ import { Array as Arr, Cause, Duration, Effect, Exit, Option, Order, Random } fr
 import type { Digest } from "effect/crypto"
 import type { Ladder } from "#algebra/kinds.ts"
 import { backoffFirstMillis, backoffLastMillis, leaseMarginMillis } from "#limits.ts"
-import { now } from "#runtime/clock.ts"
 import { opensAt, isOpen } from "#runtime/eligible.ts"
 import {
 	finishStep,
@@ -36,10 +35,13 @@ export interface Onward {
 
 /**
  * One turn, in three calls: the claim, a race at `(step, attempt)` certified READ COMMITTED, whose loser meets the
- * winner's claim and goes no further; the step's declared
- * reads in one read-only call; and the commit, its result, the rows its reads found, the body's writes and its spawns,
- * in one call under the flow's app role. Before the claim the turn takes a seat of each resource the step uses (the
- * seat module), and after its last write it gives them back.
+ * winner's claim and goes no further; the step's declared reads in one read-only call; and the commit, its result, the
+ * rows its reads found, the body's writes and its spawns, in one call under the flow's app role. Before the claim the
+ * turn takes a seat of each resource the step uses (the seat module), and after its last write it gives them back.
+ *
+ * Time is the database's: a turn judges its claim's lease, its due instant and its windows at a reading of the
+ * database's instant (the ledger's `now`), stamps its claim's lease from the invocation's end in that clock and a
+ * retry's due instant from a reading, and rings a timer with the duration between two readings.
  *
  * Endings come from grizzle's CallError: `transient` is a wait, retried in place within the deadline and, past it,
  * recorded with no attempt spent; `unavailable` and `transport` spend an attempt; `refused` is `lost` when the law is a
@@ -157,12 +159,16 @@ export const lostRace = (flow: string, error: CallError): boolean =>
 const lawOf = (error: Extract<CallError, { readonly kind: "refused" }>): string =>
 	String(error.refused.laws[0].id)
 
-/** Retries a write while SERIALIZABLE refuses it as transient, which changed nothing, until `deadline`. */
+/**
+ * Retries a write while it is refused as transient, which changed nothing, until `deadline`, judged at a reading of the
+ * database's instant `clock` takes.
+ */
 export const written = <A, R>(
 	write: Effect.Effect<A, CallError, R>,
+	clock: Effect.Effect<Instant, CallError>,
 	deadline: Instant
 ): Effect.Effect<Option.Option<A>, CallError, R> =>
-	Effect.flatMap(now, (at) =>
+	Effect.flatMap(clock, (at) =>
 		Effect.timeoutOption(
 			Effect.retry(write, { while: (error) => error.kind === "transient" }),
 			delayTo(at, deadline)
@@ -203,8 +209,9 @@ export interface Runnable<I, Rows, O, E, W, R> {
 }
 
 /**
- * A kind's runner: its input, its declared read in one read-only call, its body under the turn's deadline, and the
- * write its exit decides, each write retried in place while transient. A defect or an interruption spends the attempt.
+ * A kind's runner: its input, its declared read in one read-only call, its body under the turn's deadline from the
+ * turn's reading `at`, and the write its exit decides, each write retried in place while transient and its spawns due
+ * from a fresh reading of the database's instant `clock` takes. A defect or an interruption spends the attempt.
  */
 export const runnerOf = <I, Rows, O, E, W, R>(
 	runnable: Runnable<I, Rows, O, E, W, R>,
@@ -215,7 +222,11 @@ export const runnerOf = <I, Rows, O, E, W, R>(
 	uses: Arr.map(runnable.uses, (r) => r.name),
 	retry: runnable.retry,
 	finishes,
-	run: Effect.fn(`den.turn.${runnable.name}`)(function* (turn: Turn, at: Instant) {
+	run: Effect.fn(`den.turn.${runnable.name}`)(function* (
+		turn: Turn,
+		at: Instant,
+		clock: Effect.Effect<Instant, CallError>
+	) {
 		const input = yield* Effect.result(port.input(turn.step))
 		if (input._tag === "Failure") {
 			return { kind: "error", error: input.failure } satisfies Ran
@@ -238,7 +249,7 @@ export const runnerOf = <I, Rows, O, E, W, R>(
 				return { kind: "spent", detail: Cause.pretty(exit.cause) } satisfies Ran
 			}
 			return yield* Effect.match(
-				written(port.fail({ turn, input: read, rows, error: failure }), turn.deadline),
+				written(port.fail({ turn, input: read, rows, error: failure }), clock, turn.deadline),
 				{
 					onFailure: (error): Ran => ({ kind: "error", error }),
 					onSuccess: (outcome): Ran =>
@@ -250,9 +261,17 @@ export const runnerOf = <I, Rows, O, E, W, R>(
 			return { kind: "spent", detail: "the body ran past the turn's deadline" } satisfies Ran
 		}
 		const { output, writes } = exit.value.value
-		const committed = yield* now
+		const reading = yield* Effect.result(clock)
+		if (reading._tag === "Failure") {
+			return { kind: "error", error: reading.failure } satisfies Ran
+		}
+		const committed = reading.success
 		return yield* Effect.match(
-			written(port.commit({ turn, input: read, rows, output, writes }, committed), turn.deadline),
+			written(
+				port.commit({ turn, input: read, rows, output, writes }, committed),
+				clock,
+				turn.deadline
+			),
 			{
 				onFailure: (error): Ran => ({ kind: "error", error }),
 				onSuccess: (outcome): Ran =>
@@ -343,7 +362,7 @@ const nextWake = <R>(
 	step: StepKey
 ): Effect.Effect<Option.Option<Onward>, CallError> =>
 	Effect.gen(function* () {
-		const at = yield* now
+		const at = yield* ledger.now
 		const result = yield* ledger.resultOf(step)
 		if (Option.isSome(result)) {
 			return Option.none()
@@ -381,7 +400,7 @@ const settled = <R>(
 	spawned: Spawned
 ): Effect.Effect<ReadonlyArray<Onward>, never, Digest.Digest> =>
 	Effect.gen(function* () {
-		const at = yield* now
+		const at = yield* ledger.now
 		const children = spawnedRings(ledger.flow, at, spawned)
 		const ready = (s: ScopeKey) =>
 			Effect.flatMap(ledger.unended(s), (busy) =>
@@ -406,8 +425,8 @@ const settled = <R>(
 	}).pipe(Effect.orElseSucceed((): ReadonlyArray<Onward> => []))
 
 /**
- * An attempt that ended without a result: its retry recorded, the next due a rung later, or the step failed once its
- * ladder is spent; `spent` false is a wait, recorded due at once.
+ * An attempt that ended without a result: its retry recorded, the next due a rung after a reading of the database's
+ * instant, or the step failed once its ladder is spent; `spent` false is a wait, recorded due at once.
  */
 const ended = <R>(
 	ledger: Ledger<R>,
@@ -418,7 +437,7 @@ const ended = <R>(
 	wake: Wake
 ): Effect.Effect<Ending> =>
 	Effect.gen(function* () {
-		const at = yield* now
+		const at = yield* readOr(ledger.now, wake)
 		const total = spentSoFar + (spent ? 1 : 0)
 		if (spent && !allows(runner.retry, total)) {
 			return yield* recorded(ledger, ledger.exhaust(turn.step, turn.attempt), wake, {
@@ -441,7 +460,7 @@ const ended = <R>(
 						until: Option.some(due)
 					}
 		)
-	})
+	}).pipe(Effect.catch((ending: Ending) => Effect.succeed(ending)))
 
 /** The ending a write's outcome gives: `ok` once written, lost when another fact holds its key, else a wait. */
 const recorded = <R>(
@@ -539,7 +558,7 @@ const serveStep = <R>(
 ): Effect.Effect<Served, Ending, R | Digest.Digest> =>
 	Effect.gen(function* () {
 		const step = wake.step
-		const at = yield* now
+		const at = yield* readOr(ledger.now, wake)
 		const located = yield* readOr(ledger.stepOf(step), wake)
 		if (Option.isNone(located)) {
 			return served({ kind: "lost", wake })
@@ -643,7 +662,7 @@ const serveStep = <R>(
 					})
 					return { ending: failed, onward: yield* settledOn(ledger, runner, scope, failed) }
 				}
-				const ran = yield* runner.run(turn, at)
+				const ran = yield* runner.run(turn, at, ledger.now)
 				const ending = yield* endingOf(ledger, runner, turn, ran, spentSoFar, wake)
 				return { ending, onward: yield* settledOn(ledger, runner, scope, ending) }
 			})
@@ -656,28 +675,31 @@ const settledOn = <R>(
 	runner: StepRunner<R>,
 	scope: ScopeKey,
 	ending: Ending
-): Effect.Effect<ReadonlyArray<Onward>, never, Digest.Digest> =>
-	Effect.gen(function* () {
-		const at = yield* now
-		switch (ending.kind) {
-			case "done":
-				return yield* settled(ledger, runner, scope, ending.spawned)
-			case "failed":
-				return yield* settled(ledger, runner, scope, { steps: [], finishes: [] })
-			case "retry":
-				return [{ wake: ending.wake, delay: delayTo(at, ending.due) }]
-			case "waiting":
-				return Arr.map(Option.toArray(ending.until), (until) => ({
-					wake: ending.wake,
-					delay: delayTo(at, until)
-				}))
-			case "admitted":
-			case "skipped":
-			case "lost":
-			case "fenced":
-				return []
-		}
-	})
+): Effect.Effect<ReadonlyArray<Onward>, never, Digest.Digest> => {
+	const ringAt = (wake: Wake, until: Instant): Effect.Effect<ReadonlyArray<Onward>> =>
+		Effect.match(ledger.now, {
+			onFailure: (): ReadonlyArray<Onward> => [],
+			onSuccess: (at) => [{ wake, delay: delayTo(at, until) }]
+		})
+	switch (ending.kind) {
+		case "done":
+			return settled(ledger, runner, scope, ending.spawned)
+		case "failed":
+			return settled(ledger, runner, scope, { steps: [], finishes: [] })
+		case "retry":
+			return ringAt(ending.wake, ending.due)
+		case "waiting":
+			return Option.match(ending.until, {
+				onNone: () => Effect.succeed([]),
+				onSome: (until) => ringAt(ending.wake, until)
+			})
+		case "admitted":
+		case "skipped":
+		case "lost":
+		case "fenced":
+			return Effect.succeed([])
+	}
+}
 
 /**
  * Serves one wake of a root's admission: refuses a root already admitted or skipped, waits for its window, its pause and
@@ -691,7 +713,7 @@ const serveAdmit = <R>(
 ): Effect.Effect<Served, Ending, Digest.Digest> =>
 	Effect.gen(function* () {
 		const scope = wake.scope
-		const at = yield* now
+		const at = yield* readOr(ledger.now, wake)
 		const viewed = yield* readOr(ledger.scopeOf(scope), wake)
 		if (Option.isNone(viewed) || viewed.value.admitted || viewed.value.skipped) {
 			return served({ kind: "lost", wake })
@@ -779,7 +801,8 @@ export const serve = <R>(
 /**
  * One invocation of `budget`: serves the wake it was woken for, then continues with the first of each turn's onward
  * wakes due at once while a turn's deadline and margin still fit, and rings the rest through the transport as each turn
- * ends, so no step waits for a delivery its invocation could have run itself.
+ * ends, so no step waits for a delivery its invocation could have run itself. Its end is its first reading of the
+ * database's instant plus its budget, and each turn's fit is judged at a reading of its own.
  */
 export const invoke = <R>(
 	ledgers: Ledgers<R>,
@@ -788,39 +811,40 @@ export const invoke = <R>(
 ): Effect.Effect<ReadonlyArray<Ending>, never, R | Digest.Digest | Transport> =>
 	Effect.gen(function* () {
 		const transport = yield* Transport
-		const started = yield* now
-		const ends = instantOf(Number(started) + Duration.toMillis(budget))
-		const fits = Effect.map(now, (at) => Number(at) + leaseMarginMillis.value < Number(ends))
 		const loop = (
 			current: Option.Option<Wake>,
+			ends: Option.Option<Instant>,
 			endings: ReadonlyArray<Ending>
 		): Effect.Effect<ReadonlyArray<Ending>, never, R | Digest.Digest | Transport> =>
 			Effect.gen(function* () {
 				if (Option.isNone(current)) {
 					return endings
 				}
-				if (!(yield* fits)) {
-					const at = yield* now
-					yield* transport.send([
-						{
-							wake: current.value,
-							delay: Duration.zero,
-							cause: { _tag: "Turn", by: current.value, at: Number(at) }
-						}
-					])
+				const serving = current.value
+				const ledger = ledgers.get(serving.flow)
+				if (ledger === undefined) {
+					return [...endings, { kind: "lost", wake: serving } satisfies Ending]
+				}
+				const reading = yield* Effect.result(readOr(ledger.now, serving))
+				if (reading._tag === "Failure") {
+					return [...endings, reading.failure]
+				}
+				const at = reading.success
+				const end = Option.getOrElse(ends, () => instantOf(Number(at) + Duration.toMillis(budget)))
+				const cause = { _tag: "Turn", by: serving, at: Number(at) } as const
+				if (Number(at) + leaseMarginMillis.value >= Number(end)) {
+					yield* transport.send([{ wake: serving, delay: Duration.zero, cause }])
 					return endings
 				}
-				const turn = yield* serve(ledgers, current.value, ends)
-				const at = yield* now
-				const cause = { _tag: "Turn", by: current.value, at: Number(at) } as const
+				const turn = yield* serve(ledgers, serving, end)
 				const rung = Arr.map(turn.onward, (o): Ring => ({ ...o, cause }))
 				const [first, ...rest] = rung
 				const continues = first !== undefined && Duration.isZero(first.delay)
 				yield* transport.send(continues ? rest : rung)
-				return yield* loop(continues ? Option.some(first.wake) : Option.none(), [
+				return yield* loop(continues ? Option.some(first.wake) : Option.none(), Option.some(end), [
 					...endings,
 					turn.ending
 				])
 			})
-		return yield* loop(Option.some(wake), [])
+		return yield* loop(Option.some(wake), Option.none(), [])
 	})

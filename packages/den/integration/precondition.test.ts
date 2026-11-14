@@ -1,6 +1,5 @@
 import { caseHang, longestLeaseMillis } from "@bjornpagen/den/limits"
 import { tick } from "@bjornpagen/den/runtime/census"
-import { now } from "@bjornpagen/den/runtime/clock"
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
@@ -72,7 +71,7 @@ layer(sliceLayer)("a precondition root", (it) => {
 						c.note(run.pages === 1 ? "one page pending" : "several pages")
 						const { chain, sync, ledgers } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
-						const at = yield* now
+						const at = yield* chain.ledger.now
 						const ends = instantOf(Number(at) + longestLeaseMillis.value)
 						const build = yield* Effect.map(Random.nextInt, (n) => BigInt(Math.abs(n)))
 						const tag = yield* nonce
@@ -101,8 +100,7 @@ layer(sliceLayer)("a precondition root", (it) => {
 							["precondition", 0]
 						)
 						c.note("the build waited")
-						const busyAt = yield* now
-						const busyTick = yield* tick(sync.ledger, busyAt)
+						const busyTick = yield* tick(sync.ledger)
 						assert.isFalse(
 							Arr.some(
 								busyTick.rings,
@@ -112,8 +110,7 @@ layer(sliceLayer)("a precondition root", (it) => {
 						const builtBefore = yield* rows(app.workload.built.once({ params: {}, facts: {} }))
 						assert.isFalse(Arr.some(builtBefore, (b) => b.build === build))
 						yield* ringOnAndDrain(ledgers, chainAdmitted)
-						const idleAt = yield* now
-						const idleTick = yield* tick(sync.ledger, idleAt)
+						const idleTick = yield* tick(sync.ledger)
 						assert.isTrue(
 							Arr.some(
 								idleTick.rings,

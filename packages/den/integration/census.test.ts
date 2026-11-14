@@ -1,6 +1,5 @@
 import { caseHang, longestLeaseMillis, reclaimableAfterMillis } from "@bjornpagen/den/limits"
 import { tick } from "@bjornpagen/den/runtime/census"
-import { now } from "@bjornpagen/den/runtime/clock"
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { holderOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
@@ -20,7 +19,7 @@ import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/su
 /**
  * The census heals what the doorbell loses and rings what time made eligible. A chain's wakes are dropped (its
  * admission's, or its first page's after an admission served by hand); its first page may be claimed by a holder that
- * dies before it commits. Census ticks at the caller's instant, each followed by delivering what it rang, still admit
+ * dies before it commits. Census ticks at the database's instant, each followed by delivering what it rang, still admit
  * the root, run every page and the finish, never ringing a claim whose lease stands, and ring the dead holder's step at
  * its next attempt once its lease lapses, a reclaim counted on its ladder.
  *
@@ -81,7 +80,7 @@ layer(sliceLayer)("the census", (it) => {
 							const { held } = yield* InProcess
 							const { chain, ledgers } = yield* openLedgers
 							const app = yield* Db.open(AppServed.roles.auditor, {})
-							const at = yield* now
+							const at = yield* chain.ledger.now
 							const key = `census-${yield* nonce}`
 							const requested = yield* chain.request.ChainRun(key, at, {
 								feed: "news",
@@ -105,8 +104,7 @@ layer(sliceLayer)("the census", (it) => {
 								const step = first.value.step
 								const holder = yield* holderOf(step, 1, loss.copy)
 								yield* chain.ledger.claim({ step, attempt: 1n, holder, until: ends })
-								const instant = yield* now
-								const standing = yield* tick(chain.ledger, instant)
+								const standing = yield* tick(chain.ledger)
 								assert.isFalse(
 									Arr.some(
 										standing.rings,
@@ -124,8 +122,7 @@ layer(sliceLayer)("the census", (it) => {
 							)
 							const passes = yield* Effect.forEach(Array.from({ length: loss.pages + 3 }), () =>
 								Effect.gen(function* () {
-									const instant = yield* now
-									yield* tick(chain.ledger, instant)
+									yield* tick(chain.ledger)
 									yield* drain(ledgers)
 									return yield* finished
 								})

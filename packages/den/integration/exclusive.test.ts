@@ -1,5 +1,4 @@
 import { caseHang, longestLeaseMillis } from "@bjornpagen/den/limits"
-import { now } from "@bjornpagen/den/runtime/clock"
 import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
@@ -71,7 +70,7 @@ layer(sliceLayer)("exclusivity", (it) => {
 						const { sync, ledgers } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
 						const relation = `rel-${yield* nonce}`
-						const at = yield* now
+						const at = yield* sync.ledger.now
 						const request = (n: number) =>
 							sync.request.SyncRun(`${relation}-${n}`, at, { relation, run: BigInt(n) })
 						const first = yield* request(1)

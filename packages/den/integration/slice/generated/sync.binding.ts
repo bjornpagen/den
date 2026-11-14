@@ -4,6 +4,7 @@ import {
 	exclusiveRows,
 	fresh,
 	one,
+	readingOf,
 	rowsOf,
 	scheduleOf,
 	signals
@@ -331,6 +332,7 @@ export const syncLedger = (h: SyncHandles) => {
 	}
 	const ledger: Ledger<FlowNeeds<typeof sync>> = {
 		flow: FlowName.make("Sync"),
+		now: Effect.flatMap(h.den.syncNow.once({ params: {}, facts: {} }), readingOf),
 		resources: [],
 		steps: new Map([
 			[

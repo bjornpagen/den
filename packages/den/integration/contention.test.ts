@@ -1,5 +1,4 @@
 import { caseHang, longestLeaseMillis } from "@bjornpagen/den/limits"
-import { now } from "@bjornpagen/den/runtime/clock"
 import { holderOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import type { HoldRow } from "@bjornpagen/den/runtime/ledger"
 import { giveBack, take } from "@bjornpagen/den/runtime/seats"
@@ -84,7 +83,7 @@ layer(sliceLayer)("exact seats", (it) => {
 							const { fan, ledgers } = yield* openLedgers
 							const ledger = fan.ledger
 							const batch = `contended-${yield* nonce}`
-							const at = yield* now
+							const at = yield* fan.ledger.now
 							const requested = yield* fan.request.FanRun(batch, at, { batch, size: 5n })
 							assert.isTrue(requested.fresh)
 							const ends = instantOf(Number(at) + longestLeaseMillis.value)
@@ -135,7 +134,7 @@ layer(sliceLayer)("exact seats", (it) => {
 										yield* exact
 										return "given" satisfies Outcome
 									}
-									const instant = yield* now
+									const instant = yield* ledger.now
 									const until = instantOf(
 										taker.lapsed ? Number(instant) - 1 : Number(instant) + longestLeaseMillis.value
 									)

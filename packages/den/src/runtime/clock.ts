@@ -2,9 +2,9 @@ import { Clock, Effect } from "effect"
 import { type Instant, instantOf } from "#runtime/identity.ts"
 
 /**
- * The instant every lease, due instant, window and census tick is judged by: the caller's clock, Effect's, which grizzle
- * takes as a parameter. It is the one place den reads the time, the seam DBCLOCK replaces with the database's own
- * instant as a query term. Keys fence every write, so correctness never rests on it; exactness of seats assumes two
- * callers' clocks differ by less than a lease's margin, which DBCLOCK removes.
+ * The in-process transport's clock: Effect's, at which the in-process driver delivers a held wake once its delay has
+ * passed, so a test's clock decides when a delayed wake lands. It judges nothing else: every lease, due instant and
+ * window is judged at a reading of the database's instant (a ledger's `now`), and a delay a turn rings with is a
+ * duration between two such readings.
  */
 export const now: Effect.Effect<Instant> = Effect.map(Clock.currentTimeMillis, instantOf)

@@ -1,5 +1,6 @@
+import { DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Sync to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
-import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
+import { ChangeSet, clocked, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
 	SyncKind,
@@ -40,7 +41,7 @@ import {
 } from "#integration/slice/generated/sync.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's role for the flow Sync: claims, retries, failures, admissions, requests, and every read the scheduler makes. */
+/** den's role for the flow Sync: the database's instant, claims, retries, failures, admissions, requests, and every read the scheduler makes. */
 export const SyncDen = role(
 	App,
 	"sync_den",
@@ -96,6 +97,10 @@ export const SyncCoordinator = role(
 )
 
 export const syncDenPrograms = Object.freeze({
+	syncNow: clocked(
+		query(syncGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+		{ now: "millis" }
+	),
 	syncClaim: ChangeSet.empty(syncGraph)
 		.insert(SyncClaim, [])
 		.read("held", (delta) =>

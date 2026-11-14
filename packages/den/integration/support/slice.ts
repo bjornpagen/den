@@ -1,4 +1,5 @@
 import { connectTimeoutMillis } from "@bjornpagen/den/limits"
+import { instantOf } from "@bjornpagen/den/runtime/identity"
 import type { Ledger } from "@bjornpagen/den/runtime/ledger"
 import type { Ledgers } from "@bjornpagen/den/runtime/turn"
 import { inProcess } from "@bjornpagen/den/transport"
@@ -6,6 +7,7 @@ import { Db, DbLayer, LiveSource, roleNameOf, served } from "@bjornpagen/grizzle
 import { NodeServices } from "@effect/platform-node"
 import {
 	Array as Arr,
+	Clock,
 	Context,
 	Data,
 	Effect,
@@ -187,6 +189,21 @@ const installed = Effect.acquireRelease(
 export const migrateIn = (directory: string) =>
 	Effect.flatMap(Database, (db) => grizzle("migrate", db.env, directory))
 
+/**
+ * PostgreSQL's own instant in the suite's database, `transaction_timestamp()` in milliseconds since the epoch, floored,
+ * read by the cluster's owner in a transaction of its own: what a clocked read in milliseconds binds.
+ */
+export const databaseMillis = Effect.flatMap(Database, (db) =>
+	Effect.map(
+		asOwner(
+			db.cluster,
+			db.database,
+			"SELECT floor(extract(epoch FROM transaction_timestamp()) * 1000)::bigint::text AS name"
+		),
+		(rows) => Arr.map(rows, BigInt)
+	)
+)
+
 /** The suite's database, installed for the layer's scope. */
 const databaseLayer = Layer.effect(Database, installed)
 
@@ -249,30 +266,51 @@ export const rows = <A, E>(
 	read: Effect.Effect<Iterable<A>, E>
 ): Effect.Effect<ReadonlyArray<A>, E> => Effect.map(read, Arr.fromIterable)
 
-/** The slice's four flows' ledgers over Dbs opened on the worker's den and coordinator roles and the app's loader. */
+/**
+ * A ledger whose readings of the database's instant are moved on by the time the suite's clock, its TestClock, has
+ * travelled since `opened`. The database's clock cannot be moved, and a suite moves its TestClock to let a lease lapse
+ * or a retry come due, which the in-process transport's delays follow too; while the suite's clock stands, a reading is
+ * the database's own.
+ */
+const travelling = <R>(ledger: Ledger<R>, opened: number): Ledger<R> => ({
+	...ledger,
+	now: Effect.zipWith(ledger.now, Clock.currentTimeMillis, (reading, at) =>
+		instantOf(Number(reading) + at - opened)
+	)
+})
+
+/**
+ * The slice's four flows' ledgers over Dbs opened on the worker's den and coordinator roles and the app's loader, each
+ * reading the database's instant moved on by the time the suite's clock travels from here.
+ */
 export const openLedgers = Effect.gen(function* () {
+	const opened = yield* Clock.currentTimeMillis
 	const loader = yield* Db.open(AppServed.roles.loader, {})
 	const commits = loader.workload
-	const chain = chainLedger({
+	const chainBound = chainLedger({
 		den: (yield* Db.open(WorkerServed.roles.chain_den, {})).workload,
 		coordinator: (yield* Db.open(WorkerServed.roles.chain_coordinator, {})).workload,
 		commits
 	})
-	const fan = fanLedger({
+	const fanBound = fanLedger({
 		den: (yield* Db.open(WorkerServed.roles.fan_den, {})).workload,
 		coordinator: (yield* Db.open(WorkerServed.roles.fan_coordinator, {})).workload,
 		commits
 	})
-	const sync = syncLedger({
+	const syncBound = syncLedger({
 		den: (yield* Db.open(WorkerServed.roles.sync_den, {})).workload,
 		coordinator: (yield* Db.open(WorkerServed.roles.sync_coordinator, {})).workload,
 		commits
 	})
-	const retry = retryLedger({
+	const retryBound = retryLedger({
 		den: (yield* Db.open(WorkerServed.roles.retry_den, {})).workload,
 		coordinator: (yield* Db.open(WorkerServed.roles.retry_coordinator, {})).workload,
 		commits
 	})
+	const chain = { ...chainBound, ledger: travelling(chainBound.ledger, opened) }
+	const fan = { ...fanBound, ledger: travelling(fanBound.ledger, opened) }
+	const sync = { ...syncBound, ledger: travelling(syncBound.ledger, opened) }
+	const retry = { ...retryBound, ledger: travelling(retryBound.ledger, opened) }
 	const all: ReadonlyArray<Ledger<Faults>> = [chain.ledger, fan.ledger, sync.ledger, retry.ledger]
 	const ledgers: Ledgers<Faults> = new Map(Arr.map(all, (l) => [l.flow, l] as const))
 	return { chain, fan, sync, retry, all, ledgers, loader }

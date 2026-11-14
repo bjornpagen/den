@@ -1,5 +1,4 @@
 import { caseHang } from "@bjornpagen/den/limits"
-import { now } from "@bjornpagen/den/runtime/clock"
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
 import { drawn, explore } from "@bjornpagen/testing/explore"
@@ -71,7 +70,7 @@ layer(sliceLayer)("the fan-out flow", (it) => {
 						const { fan, ledgers } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
 						const batch = `b-${run.size}-${yield* nonce}`
-						const at = yield* now
+						const at = yield* fan.ledger.now
 						const requested = yield* fan.request.FanRun(batch, at, {
 							batch,
 							size: BigInt(run.size)

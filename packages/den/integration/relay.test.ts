@@ -1,5 +1,4 @@
 import { caseHang } from "@bjornpagen/den/limits"
-import { now } from "@bjornpagen/den/runtime/clock"
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { relay } from "@bjornpagen/den/runtime/relay"
 import { type Ring, Transport } from "@bjornpagen/den/transport"
@@ -76,7 +75,7 @@ layer(sliceLayer, { excludeTestServices: true })("the relay", (it) => {
 							)
 						)
 						const order = `order-${yield* nonce}`
-						const at = yield* now
+						const at = yield* chain.ledger.now
 						const request = yield* chain.requestFacts.Ordered(order, at, {
 							feed: run.feed,
 							pages: BigInt(run.pages)

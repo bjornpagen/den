@@ -432,6 +432,10 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const exclusiveKeys = has(r("ExclusiveKey"))
 	const denPrograms: Array<readonly [string, string]> = [
 		[
+			n.program("Now"),
+			`clocked(query(${n.graph}).rule((r) => r.find({ now: r.param("now", DenInstant) })), { now: "millis" })`
+		],
+		[
 			n.program("Claim"),
 			`ChangeSet.empty(${n.graph})
 	.insert(${r("Claim")}, [])
@@ -793,7 +797,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		"})"
 	]
 	const body = lines([
-		`/** den's role for the flow ${P}: claims, retries, failures, admissions, requests, and every read the scheduler makes. */`,
+		`/** den's role for the flow ${P}: the database's instant, claims, retries, failures, admissions, requests, and every read the scheduler makes. */`,
 		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([`...${n.graph}.relations`, ...idleEntries])} }, { insert: [${commas(Arr.map(den, q))}] })`,
 		"",
 		`/** den's coordinator role for the flow ${P}: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole; no role holds a closed relation. */`,
@@ -825,7 +829,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	)
 	return `${lines([
 		`/** The programs den lowered the flow ${P} to, over its fragments, and its roles over the schema ${app}; \`den generate\` writes them, and nothing edits them. */`,
-		`import { ${commas(Arr.filter(["ChangeSet", "deferrable", "query", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
+		`import { ${commas(Arr.filter(["ChangeSet", "clocked", "deferrable", "query", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
+		`import { DenInstant } from "@bjornpagen/den/lower/keys"`,
 		`import { ${app} } from ${q(place.schema.from)}`,
 		`import { ${W} } from ${q(place.writer.from)}`,
 		`import { ${commas(imported)} } from ${q(place.fragment)}`,
@@ -1319,7 +1324,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`/** The ledger port of the flow ${P} over its served programs; \`den generate\` writes it, and nothing edits it. */`,
 		`import type { Written } from "@bjornpagen/grizzle"`,
 		`import type { CallError, MemberHandle } from "@bjornpagen/grizzle/runtime"`,
-		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), "one", "rowsOf", "scheduleOf", "signals"])} } from "@bjornpagen/den/runtime/bind"`,
+		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), "one", "readingOf", "rowsOf", "scheduleOf", "signals"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
 		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), ...(resources ? ["HoldRow"] : []), "Ledger", "PauseRow", "ScopeView", ...(resources ? ["SeatTurn"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
 		`import { runnerOf } from "@bjornpagen/den/runtime/turn"`,
@@ -1374,6 +1379,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\tconst request = { ${commas(Arr.map(denRoots, requestOf))} }`,
 		`\tconst ledger: Ledger<FlowNeeds<typeof ${F}>> = {`,
 		`\t\tflow: FlowName.make(${q(P)}),`,
+		`\t\tnow: Effect.flatMap(h.den.${n.program("Now")}.once({ params: {}, facts: {} }), readingOf),`,
 		`\t\tresources: [${commas(Arr.map(l.resources, (res) => `{ name: ${q(res.name)}, seats: ${res.seats} }`))}],`,
 		"\t\tsteps: new Map([",
 		...Arr.map(l.steps, (s) => `\t\t\t[${q(s.name)}, ${indented("\t\t\t")(stepRunner(s))}],`),

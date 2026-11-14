@@ -1,4 +1,13 @@
-import { any, dueAt, fresh, one, rowsOf, scheduleOf, signals } from "@bjornpagen/den/runtime/bind"
+import {
+	any,
+	dueAt,
+	fresh,
+	one,
+	readingOf,
+	rowsOf,
+	scheduleOf,
+	signals
+} from "@bjornpagen/den/runtime/bind"
 import {
 	finishStep,
 	type ExclusiveId,
@@ -247,6 +256,7 @@ export const retryLedger = (h: RetryHandles) => {
 	}
 	const ledger: Ledger<FlowNeeds<typeof retry>> = {
 		flow: FlowName.make("Retry"),
+		now: Effect.flatMap(h.den.retryNow.once({ params: {}, facts: {} }), readingOf),
 		resources: [],
 		steps: new Map([
 			[

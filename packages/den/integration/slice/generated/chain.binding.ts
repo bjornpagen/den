@@ -1,4 +1,13 @@
-import { any, dueAt, fresh, one, rowsOf, scheduleOf, signals } from "@bjornpagen/den/runtime/bind"
+import {
+	any,
+	dueAt,
+	fresh,
+	one,
+	readingOf,
+	rowsOf,
+	scheduleOf,
+	signals
+} from "@bjornpagen/den/runtime/bind"
 import {
 	edgeStep,
 	finishStep,
@@ -286,6 +295,7 @@ export const chainLedger = (h: ChainHandles) => {
 	}
 	const ledger: Ledger<FlowNeeds<typeof chain>> = {
 		flow: FlowName.make("Chain"),
+		now: Effect.flatMap(h.den.chainNow.once({ params: {}, facts: {} }), readingOf),
 		resources: [],
 		steps: new Map([
 			[

@@ -1,5 +1,6 @@
+import { DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Retry to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
-import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
+import { ChangeSet, clocked, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
 	RetryKind,
@@ -36,7 +37,7 @@ import {
 } from "#integration/slice/generated/retry.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's role for the flow Retry: claims, retries, failures, admissions, requests, and every read the scheduler makes. */
+/** den's role for the flow Retry: the database's instant, claims, retries, failures, admissions, requests, and every read the scheduler makes. */
 export const RetryDen = role(
 	App,
 	"retry_den",
@@ -77,6 +78,10 @@ export const RetryCoordinator = role(
 )
 
 export const retryDenPrograms = Object.freeze({
+	retryNow: clocked(
+		query(retryGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+		{ now: "millis" }
+	),
 	retryClaim: ChangeSet.empty(retryGraph)
 		.insert(RetryClaim, [])
 		.read("held", (delta) =>

@@ -135,12 +135,12 @@ relation per edge kind with a foreign key on each side.
 ## 7. Coordination and the scheduler
 
 Free, because each only adds facts: recording a result, spawning, adding edges, moving a cursor forward. One key
-decides each of: a claim (`Claim(step, attempt)`), a seat (`(resource, seat)`, exact: the 9th holder of an
-8-seat resource finds no key), a scope's finish, and a root's admission (its trigger and idempotency key, behind its
+decides each of: a claim (`Claim(step, attempt)`), a seat (its chain's next turn `(resource, seat, turn)`, exact:
+the 9th holder of an 8-seat resource finds no seat free), a scope's finish, and a root's admission (its trigger and idempotency key, behind its
 precondition and exclusivity seat). Retirement deletes a finished root's graph whole under grizzle's RETIRE; until it
-lands nothing is deleted and no interim janitor exists. Time is a parameter in grizzle until DBCLOCK; keys fence every
-write, so correctness holds whatever the clocks say, and exactness of seats assumes clocks drift less than a lease's
-margin (60 s), which DBCLOCK removes (Gray and Cheriton's lease).
+lands nothing is deleted and no interim janitor exists. Time is the database's (grizzle's DBCLOCK): every lease,
+due instant and window is judged at a reading of `transaction_timestamp()`, and keys fence every write, so correctness
+holds whatever the clocks say (Gray and Cheriton's lease).
 
 **Eligibility** (issue's law, durable): a step may run once its parent ended, its due instant passed, its root is
 inside its window, nothing it touches is paused, and a seat of every resource it uses is free. **Order** when seats

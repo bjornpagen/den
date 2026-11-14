@@ -11,7 +11,6 @@ import {
 	Stream
 } from "effect"
 import { Digest } from "effect/crypto"
-import { now } from "#runtime/clock.ts"
 import { eligible } from "#runtime/eligible.ts"
 import type { Ledger, Snapshot } from "#runtime/ledger.ts"
 import { type Ring, Transport, wakeText } from "#transport.ts"
@@ -63,9 +62,9 @@ const textOf = (snapshot: Snapshot): string => {
  * Runs the relay of one flow until one of its watches ends with an error grizzle does not call safe to run again, which
  * it returns: its host runs it again. A watch that ends safe to retry (no session yet, a connection broken, the
  * installation's replication slot not yet made by its leader) is opened again at once, as a transient refusal is retried
- * in place. At each change it reads the scheduler's snapshot, rings the wakes eligible now that it had not rung since
- * they became eligible, and forgets those no longer eligible, so a wake that falls out of eligibility and back in is
- * rung again.
+ * in place. At each change it reads the scheduler's snapshot and the database's instant, rings the wakes eligible at
+ * that reading that it had not rung since they became eligible, and forgets those no longer eligible, so a wake that
+ * falls out of eligibility and back in is rung again.
  */
 export const relay = <R>(
 	ledger: Ledger<R>
@@ -76,7 +75,7 @@ export const relay = <R>(
 		const rung = yield* Ref.make(HashSet.empty<string>())
 		const pass = Effect.gen(function* () {
 			const snapshot = yield* ledger.snapshot
-			const at = yield* now
+			const at = yield* ledger.now
 			const found = eligible(ledger, snapshot, at)
 			const position = yield* digest.digestHex(Digest.sha256, encoder.encode(textOf(snapshot)))
 			const before = yield* Ref.get(rung)

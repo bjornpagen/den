@@ -5,12 +5,23 @@ import type { Due, Exclusive, Trigger } from "#algebra/kinds.ts"
 import { exclusiveId, type Instant, instantOf, type ScopeKey } from "#runtime/identity.ts"
 
 /**
- * What every printed binding shares (lower/print.ts): reading a key member's one row and a read's rows, a spawn's due
- * instant, a scope's exclusivity key and a root's schedule, and a watch's events as the relay's signals.
+ * What every printed binding shares (lower/print.ts): reading a key member's one row, the database's instant and a
+ * read's rows, a spawn's due instant, a scope's exclusivity key and a root's schedule, and a watch's events as the
+ * relay's signals.
  */
 
 /** The one row a key member found, if it found one. */
 export const one = <A>(rows: Iterable<A>): Option.Option<A> => Arr.head(Arr.fromIterable(rows))
+
+/**
+ * The instant a clocked read of the database's clock answered, its one row's `now`: a query of no relation that finds
+ * a parameter answers exactly one row.
+ */
+export const readingOf = <I>(rows: Iterable<{ readonly now: I }>): Effect.Effect<I> =>
+	Option.match(one(rows), {
+		onNone: () => Effect.die("a clocked read of the database's instant answered no row"),
+		onSome: (row) => Effect.succeed(row.now)
+	})
 
 /** A read's rows, as an array. */
 export const rowsOf = <A>(rows: Iterable<A>): ReadonlyArray<A> => Arr.fromIterable(rows)

@@ -1,5 +1,4 @@
 import { backoffLastMillis, caseHang } from "@bjornpagen/den/limits"
-import { now } from "@bjornpagen/den/runtime/clock"
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
@@ -91,7 +90,7 @@ layer(sliceLayer)("retry ladders", (it) => {
 							yield* Ref.update(faults, (map) =>
 								HashMap.set(HashMap.set(map, steadfast, run.steadfast), brittle, run.brittle)
 							)
-							const at = yield* now
+							const at = yield* retry.ledger.now
 							const requested = yield* retry.request.Ladders(`ladders-${tag}`, at, {
 								steadfast,
 								brittle
