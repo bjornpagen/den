@@ -42,7 +42,7 @@ import { type Placement, printFragment } from "#lower/print.ts"
  * SERIALIZABLE. The coordination relations (each seat's, exclusivity seat's and pause's chain of turns) meet no graph
  * relation in a containment; each chain's turns are keyed by its coordinates and turn, its ends contained in its turns
  * and each turn's predecessor in its ends; the exclusivity chain exists exactly when a root is exclusive, and the seat
- * chain, with its seat counts and every hold's seat checked below them, exactly when a step uses a resource.
+ * chain, with its seat counts and its seat level, the live holds checked below them, exactly when a step uses a resource.
  *
  * Oracle (specification): the proposal's sections 5 and 6, over flows of up to three steps, chained or not, of each
  * field form, with or without a resource, an exclusive root, a child scope, a declared read and a typed error.
@@ -270,7 +270,10 @@ it.effect(
 						const P = f.name
 						const lowered = lower(f)
 						const relations = Arr.map(lowered.relations, (r) => r.name)
-						const counts = Option.toArray(Option.map(lowered.counts, (seats) => seats.name))
+						const counts = Arr.flatMap(Option.toArray(lowered.seats), (seats) => [
+							seats.counts.name,
+							seats.live
+						])
 						const names = [...relations, ...counts, ...Arr.map(lowered.rosters, (r) => r.name)]
 						const has = (suffix: string) => Arr.contains(relations, `${P}${suffix}`)
 						assert.isTrue(Arr.every(names, Str.startsWith(P)))
@@ -279,9 +282,7 @@ it.effect(
 								? [law.from.relation, law.to.relation]
 								: law.kind === "key"
 									? [law.side.relation]
-									: law.kind === "check" && law.bound.kind === "below"
-										? [law.relation, law.bound.counts]
-										: [law.relation]
+									: [law.relation]
 						)
 						assert.isTrue(Arr.every(sides, (side) => Arr.contains(names, side)))
 						assert.strictEqual(has("S0InputValue"), sketch.form === "option")
@@ -365,20 +366,36 @@ it.effect(
 							)
 						})
 						assert.deepStrictEqual(
-							Arr.flatMap(lowered.laws, (law) =>
-								law.kind === "check" && law.bound.kind === "below"
-									? [[law.relation, law.field, law.bound.counts, law.bound.at]]
-									: []
-							),
-							sketch.resource ? [[`${P}Hold`, "seat", `${P}Seats`, "resource"]] : []
+							Option.map(lowered.seats, (seats) => [
+								seats.hold,
+								seats.freed,
+								seats.live,
+								seats.counts.name,
+								seats.bound
+							]),
+							sketch.resource
+								? Option.some([
+										`${P}Hold`,
+										`${P}Freed`,
+										`${P}Live`,
+										`${P}Seats`,
+										`${P}SeatBelowCount`
+									])
+								: Option.none()
 						)
 						assert.deepStrictEqual(
 							Option.map(
-								lowered.counts,
+								lowered.seats,
 								(seats): ReadonlyArray<{ readonly handle: string; readonly count: bigint }> =>
-									seats.rows
+									seats.counts.rows
 							),
 							sketch.resource ? Option.some([{ handle: "Pool", count: 2n }]) : Option.none()
+						)
+						assert.strictEqual(
+							Str.includes(`export const ${Str.uncapitalize(P)}SeatLevel =`)(
+								printFragment(lowered, placement)
+							),
+							sketch.resource
 						)
 						assert.strictEqual(has("ExclusiveKey"), sketch.exclusive)
 					})

@@ -18,22 +18,25 @@ for the coordination group, and DBCLOCK:
   holds with no `Freed`; a seat's next turn is one past its latest, `r.max(turn)` grouped by seat, or 0. Exclusivity seats
   (`<P>Exclusive` and `<P>Released`, by `(kind, key, turn)`) and pauses (`<P>Paused` and `<P>Resumed`, by `(target,
   turn)`) take the same shape. A resource's seat count is a closed relation, `closed.relation("<P>Seats", { resource,
-  seats }, ["resource"], …)` from the flow's declaration, and every hold's seat is checked below it (`check("SeatBelowCount",
-  <P>Hold, (row) => row.lt(row.seat, <P>Seats.at("seats", row.resource)))`), so provisioning is gone. The coordinator role
-  (`<p>_coordinator`) holds the group's rosters and relations by name, since no role holds a closed relation. None of
+  seats }, ["resource"], …)` from the flow's declaration, and every live hold's seat is checked below it, so provisioning
+  is gone. The coordinator role (`<p>_coordinator`) holds the group's rosters and relations by name, since no role holds a
+  closed relation. None of
   these relations races: a multi-resource take must win every seat or none, which one call refused whole on any held key
   gives and a raced insert would not (it can win one seat and meet another), and a raced insert at a turn a stale read
   chose meets that turn's old row, which says nothing of who holds the key now; a refusal and a fresh read do. Until
   RETIRE, the turns accumulate as the graph does, and the status reads scan them as the graph's do.
 
   One outcome moved: **lowering a resource's seat count.** The provisioned seats let the census remove a seat once its
-  hold was given back. Now a changed `<P>Seats` replaces and validates `SeatBelowCount` against every `Hold` row, freed
-  turns included, so a migration that lowers a count is refused while any turn, live or freed, sits at or above the new
-  count, which is always once that seat was used, until RETIRE deletes turns (`seatcount.test.ts` holds it). The owner's choice was to bound the live
-  holds alone, a rule over a query (`derived` live holds, `Hold` with no `Freed`, checked below the count), and grizzle
-  states it only in a level above the app's (a fragment declares no derived relation) and certifies the coordinator role
-  SERIALIZABLE for it (`laws`: a rule over a query, which a trigger checks), giving up the READ COMMITTED LEASE exists
-  for; it waits on grizzle. Growing a count is a migration that validates at once.
+  hold was given back. A freed turn now stays a row until RETIRE, so the seat bound is over the live holds alone:
+  `<P>Live`, a derived relation of the holds no `Freed` ended, under `check("<P>SeatBelowCount", <P>Live, (row) =>
+  row.lt(row.seat, <P>Seats.at("seats", row.resource)))`, a rule over a query. A fragment declares no derived relation,
+  so the fragment module exports them as `<p>SeatLevel`, and the schema that lists the coordination fragment states them
+  on a level over itself (the slice's `App`, `schema.extend(Listed, "SliceSeats", …)`). The coordinator role reads its
+  holds through a query entry over `<P>Live`, so a schema without the level fails to typecheck. grizzle's MONOTONE
+  (57c3a05f) certifies the coordinator READ COMMITTED beside the rule, which its writes can break only through the hold
+  each inserts. A migration that lowers a count is refused while a live hold sits at or above the new count and admitted
+  over freed turns (`seatcount.test.ts`, whose plant checks every hold). Growing a count is a migration that validates
+  at once.
 
 - **DBCLOCK (44cade74, 6172e92c, 8081e6ce).** `clocked(program, { now: unit })` binds `now` to
   `transaction_timestamp()`, one reading per call. Each flow's den role serves a clocked read of the database's instant

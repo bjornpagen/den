@@ -19,5 +19,12 @@
 		"original": "\t\tconst letIn = Arr.isReadonlyArrayNonEmpty(found.fenced)\n\t\t\t? yield* Effect.isSuccess(ledger.authenticated)\n\t\t\t: false\n",
 		"replacement": "\t\tconst letIn = Arr.isReadonlyArrayNonEmpty(found.fenced)\n",
 		"killers": ["integration/credential.test.ts"]
+	},
+	{
+		"name": "the seat level checks every hold, freed turns included",
+		"file": "src/lower/print.ts",
+		"original": "\t\t\t`const ${st.live} = derived(${q(st.live)}, ${liveOf(n.coordination, st.hold, st.freed, [\"resource\", \"seat\"], [\"holder\", \"until\"])})`,\n",
+		"replacement": "\t\t\t`const ${st.live} = derived(${q(st.live)}, query(${n.coordination}).rule((r) => { const { resource, seat, turn, holder, until } = v(${st.hold}, \"hold\"); return r.match(${st.hold}, { resource, seat, turn, holder, until }).find({ resource, seat, turn, holder, until }) }))`,\n",
+		"killers": ["integration/seatcount.test.ts"]
 	}
 ]

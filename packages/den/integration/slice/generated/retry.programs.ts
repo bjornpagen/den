@@ -71,7 +71,7 @@ export const RetryDen = role(
 	}
 )
 
-/** den's coordinator role for the flow Retry: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole; no role holds a closed relation. */
+/** den's coordinator role for the flow Retry: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation. */
 export const RetryCoordinator = role(
 	App,
 	"retry_coordinator",

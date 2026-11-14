@@ -5,15 +5,18 @@ import {
 	closed,
 	closedId,
 	contained,
+	derived,
 	fragment,
 	key,
 	natural,
 	on,
 	pg,
 	pred,
+	query,
 	race,
 	relation,
-	select
+	select,
+	v
 } from "@bjornpagen/grizzle"
 
 export const FanKind = closed("FanKind", ["Square", "BatchFinish", "FanRunFinish"])
@@ -247,11 +250,32 @@ export const fanCoordination = fragment(
 			on(FanHold, "resource", "seat", pred("turn")),
 			on(FanFreed, "resource", "seat", "turn")
 		),
-		check("SeatBelowCount", FanHold, (row) => row.lt(row.seat, FanSeats.at("seats", row.resource))),
 		contained(on(FanResumed, "target", "turn"), on(FanPaused, "target", "turn")),
 		contained(on(FanPaused, "target", pred("turn")), on(FanResumed, "target", "turn"))
 	]
 )
+
+/** The flow's live holds: each hold whose turn no free ended, which the coordinator role reads as the seats' holders. */
+const FanLive = derived(
+	"FanLive",
+	query(fanCoordination).rule((r) => {
+		const { resource, seat, turn, holder, until } = v(FanHold, "fanHold")
+		return r
+			.match(FanHold, { resource, seat, turn, holder, until })
+			.where(r.not(FanFreed, { resource, seat, turn }))
+			.find({ resource, seat, turn, holder, until })
+	})
+)
+
+/** The flow's seat level: its live holds, each held below its resource's count. A fragment declares no derived relation, so the schema that lists `fanCoordination` states these on a level over itself, `schema.extend(listing, name, [...fanSeatLevel.relations], [...fanSeatLevel.laws])`. */
+export const fanSeatLevel = {
+	relations: [FanLive],
+	laws: [
+		check("FanSeatBelowCount", FanLive, (row) =>
+			row.lt(row.seat, FanSeats.at("seats", row.resource))
+		)
+	]
+} as const
 
 /** The den relations the flow's app role `loader` inserts into: each step's commit's, and each app root's request's. */
 export const fanWriter = ["FanResult", "FanDone", "FanHeld", "FanSquareOutput"] as const

@@ -30,7 +30,7 @@ import { type Base, type Column, errorShapeOf, type Shape, shapeOf } from "#lowe
  * den's coordinator role alone: each seat, exclusivity seat and pause is a chain of turns, a turn held and then ended
  * (`Hold`/`Freed`, `Exclusive`/`Released`, `Paused`/`Resumed`), each turn after the first contained in its
  * predecessor's end, so a chain holds at most one live turn, its latest, and nothing is ever deleted. A resource's seat
- * count is a closed relation, which every hold's seat is checked below.
+ * count is a closed relation, which every live hold's seat is checked below on the seat level (SeatsIR).
  */
 
 /** One of den's own key contracts, every flow's alike. */
@@ -77,20 +77,7 @@ export interface SideIR {
 	readonly terms: ReadonlyArray<{ readonly field: string; readonly pred: boolean }>
 }
 
-/**
- * What a row check holds a natural field to: at least a constant, or below the count field `count` of the closed
- * relation of counts `counts` at the row's own field `at`.
- */
-export type Bound =
-	| { readonly kind: "atLeast"; readonly value: bigint }
-	| {
-			readonly kind: "below"
-			readonly counts: string
-			readonly count: string
-			readonly at: string
-	  }
-
-/** A law of the fragment. */
+/** A law of the fragment: a containment, a key, a race, or a row check holding a natural field to at least a constant. */
 export type LawIR =
 	| { readonly kind: "contained"; readonly from: SideIR; readonly to: SideIR }
 	| { readonly kind: "key"; readonly side: SideIR }
@@ -100,7 +87,7 @@ export type LawIR =
 			readonly name: string
 			readonly relation: string
 			readonly field: string
-			readonly bound: Bound
+			readonly atLeast: bigint
 	  }
 
 /**
@@ -115,6 +102,21 @@ export interface CountsIR {
 		{ readonly handle: string; readonly count: bigint },
 		...Array<{ readonly handle: string; readonly count: bigint }>
 	]
+}
+
+/**
+ * A flow's seats: the closed relation of each resource's count; the chain of holds and frees; and the live holds, a
+ * derived relation of the holds no free ended, with the check `bound` that holds each live hold's seat below its
+ * resource's count. A fragment declares no derived relation, which reads a level below its own, so the live holds and
+ * their check are the seat level: the schema that lists the flow's coordination fragment states them on a level over
+ * itself. A freed turn is no live hold, so lowering a count is refused only while a live hold sits at or above it.
+ */
+export interface SeatsIR {
+	readonly counts: CountsIR
+	readonly hold: string
+	readonly freed: string
+	readonly live: string
+	readonly bound: string
 }
 
 /** A value as relations: its owner's relation and, for each optional field, the relation of its own. */
@@ -212,8 +214,8 @@ export interface Lowered {
 	readonly writer: string
 	readonly rosters: ReadonlyArray<RosterIR>
 	readonly brands: ReadonlyArray<BrandIR>
-	/** The resources' seat counts, none when the flow declares no resource. */
-	readonly counts: Option.Option<CountsIR>
+	/** The resources' seats, none when the flow declares no resource. */
+	readonly seats: Option.Option<SeatsIR>
 	readonly relations: ReadonlyArray<RelationIR>
 	readonly laws: ReadonlyArray<LawIR>
 	readonly steps: ReadonlyArray<StepIR>
@@ -545,7 +547,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 			name: "AttemptFromOne",
 			relation: Claim,
 			field: "attempt",
-			bound: { kind: "atLeast", value: 1n }
+			atLeast: 1n
 		},
 		into(
 			{
@@ -822,9 +824,8 @@ export const lower = (flow: AnyFlow): Lowered => {
 				rows: resourceRows
 			})
 		: Option.none()
-	if (Option.isSome(counts)) {
-		const seats = counts.value
-		const resourceField: FieldType = { kind: "closed", roster: seats.key.roster }
+	const seats = Option.map(counts, (seatCounts): SeatsIR => {
+		const resourceField: FieldType = { kind: "closed", roster: seatCounts.key.roster }
 		const [Hold, Freed] = chainOf(
 			name("Hold"),
 			name("Freed"),
@@ -837,15 +838,15 @@ export const lower = (flow: AnyFlow): Lowered => {
 				{ name: "until", type: instant }
 			]
 		)
-		laws.push({
-			kind: "check",
-			name: "SeatBelowCount",
-			relation: Hold,
-			field: "seat",
-			bound: { kind: "below", counts: seats.name, count: seats.count, at: seats.key.field }
-		})
 		coordination.push(Hold, Freed)
-	}
+		return {
+			counts: seatCounts,
+			hold: Hold,
+			freed: Freed,
+			live: name("Live"),
+			bound: name("SeatBelowCount")
+		}
+	})
 	if (Arr.isReadonlyArrayNonEmpty(exclusiveKeys)) {
 		coordination.push(
 			...chainOf(
@@ -907,7 +908,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		...Arr.map(relations, (r) => r.name),
 		...Arr.map(rosters, (r) => r.name),
 		...Arr.map(brands, (b) => b.name),
-		...Option.toArray(Option.map(counts, (c) => c.name))
+		...Arr.flatMap(Option.toArray(seats), (st) => [st.counts.name, st.live])
 	]
 	Arr.forEach(names, (n, i) => {
 		if (Arr.some(Arr.take(names, i), (earlier) => earlier === n)) {
@@ -923,7 +924,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		writer: flow.writes.name,
 		rosters,
 		brands,
-		counts,
+		seats,
 		relations,
 		laws,
 		steps: stepsIR,

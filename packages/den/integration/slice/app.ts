@@ -4,7 +4,11 @@ import {
 	chainCoordination,
 	chainGraph
 } from "#integration/slice/generated/chain.fragment.ts"
-import { fanCoordination, fanGraph } from "#integration/slice/generated/fan.fragment.ts"
+import {
+	fanCoordination,
+	fanGraph,
+	fanSeatLevel
+} from "#integration/slice/generated/fan.fragment.ts"
 import { retryCoordination, retryGraph } from "#integration/slice/generated/retry.fragment.ts"
 import { syncCoordination, syncGraph } from "#integration/slice/generated/sync.fragment.ts"
 import {
@@ -20,8 +24,8 @@ import {
 	Weight
 } from "#integration/slice/relations.ts"
 
-/** The toy app's schema, each of den's four flows listed as its graph and its coordination fragments: one level, one installation, one migrations chain. */
-export const App = schema(
+/** The toy app's own level, each of den's four flows listed as its graph and its coordination fragments. */
+const Listed = schema(
 	"Slice",
 	[
 		Feed,
@@ -44,4 +48,15 @@ export const App = schema(
 		retryCoordination
 	],
 	[contained(on(Audit, "step"), on(ChainResult, "step"))]
+)
+
+/**
+ * The toy app's schema: its own level, and over it the fan-out's seat level, its live holds checked below its seat
+ * counts, which no fragment can state: one installation, one migrations chain.
+ */
+export const App = schema.extend(
+	Listed,
+	"SliceSeats",
+	[...fanSeatLevel.relations],
+	[...fanSeatLevel.laws]
 )

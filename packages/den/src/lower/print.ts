@@ -102,12 +102,7 @@ const lawExpr = (law: LawIR): string => {
 		case "race":
 			return `race(${law.relation})`
 		case "check":
-			switch (law.bound.kind) {
-				case "atLeast":
-					return `check(${q(law.name)}, ${law.relation}, (row) => row.ge(row.${law.field}, ${law.bound.value}n))`
-				case "below":
-					return `check(${q(law.name)}, ${law.relation}, (row) => row.lt(row.${law.field}, ${law.bound.counts}.at(${q(law.bound.count)}, row.${law.bound.at})))`
-			}
+			return `check(${q(law.name)}, ${law.relation}, (row) => row.ge(row.${law.field}, ${law.atLeast}n))`
 	}
 }
 
@@ -134,21 +129,25 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 	const sides = Arr.flatMap(l.laws, (law) =>
 		law.kind === "contained" ? [law.from, law.to] : law.kind === "key" ? [law.side] : []
 	)
+	const seated = Option.isSome(l.seats)
 	return [
-		...(Arr.some(l.laws, (law) => law.kind === "check") ? ["check"] : []),
+		...(seated || Arr.some(l.laws, (law) => law.kind === "check") ? ["check"] : []),
 		"closed",
 		...(used("closed") ? ["closedId"] : []),
 		"contained",
 		...(Arr.isReadonlyArrayNonEmpty(l.brands) ? ["contract"] : []),
+		...(seated ? ["derived"] : []),
 		"fragment",
 		"key",
 		...(used("natural") ? ["natural"] : []),
 		"on",
 		...(base("bigint") || base("boolean") ? ["pg"] : []),
 		...(Arr.some(sides, (sd) => Arr.some(sd.terms, (t) => t.pred)) ? ["pred"] : []),
+		...(seated ? ["query"] : []),
 		...(Arr.some(l.laws, (law) => law.kind === "race") ? ["race"] : []),
 		"relation",
-		...(Arr.some(sides, (sd) => sd.selection.kind !== "all") ? ["select"] : [])
+		...(Arr.some(sides, (sd) => sd.selection.kind !== "all") ? ["select"] : []),
+		...(seated ? ["v"] : [])
 	]
 }
 
@@ -165,6 +164,7 @@ const naming = (l: Lowered) => {
 	return {
 		graph: n("Graph"),
 		coordination: n("Coordination"),
+		seatLevel: n("SeatLevel"),
 		writerInserts: n("Writer"),
 		den: `${l.prefix}Den`,
 		denName: `${snake}_den`,
@@ -236,12 +236,7 @@ const lawRelations = (law: LawIR): ReadonlyArray<string> => {
 		case "race":
 			return [law.relation]
 		case "check":
-			switch (law.bound.kind) {
-				case "atLeast":
-					return [law.relation]
-				case "below":
-					return [law.relation, law.bound.counts]
-			}
+			return [law.relation]
 	}
 }
 
@@ -258,14 +253,17 @@ const countsExpr = (counts: CountsIR): string =>
  * The fragment module: the flow's rosters, contracts and relations, and two grizzle fragments the app lists in its
  * schema, each with every roster: the graph, its relations and laws, which den's role and the flow's app role hold
  * whole; and the coordination group, its chains of turns and its seat counts, which den's coordinator role holds whole and
- * no law of the graph names. Beside them, the den relations the flow's app role inserts into.
+ * no law of the graph names. For a flow with seats, its seat level: the live holds, a derived relation, and their check
+ * below the counts, which the listing schema states on a level over itself. Beside them, the den relations the flow's
+ * app role inserts into.
  */
 export const printFragment = (l: Lowered, place: Placement): string => {
 	const n = naming(l)
 	const reads = l.read
 	const writer = writerRelationsOf(l)
 	const rosterNames = Arr.map(l.rosters, (r) => r.name)
-	const counts = Option.toArray(l.counts)
+	const seats = Option.toArray(l.seats)
+	const counts = Arr.map(seats, (st) => st.counts)
 	const countNames = Arr.map(counts, (c) => c.name)
 	const coordination = new Set([...l.coordination, ...countNames])
 	const graphRelations = Arr.filter(
@@ -310,6 +308,14 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 			Arr.map(Arr.filter(l.laws, coordinating), lawExpr)
 		)}])`,
 		"",
+		...Arr.flatMap(seats, (st) => [
+			`/** The flow's live holds: each hold whose turn no free ended, which the coordinator role reads as the seats' holders. */`,
+			`const ${st.live} = derived(${q(st.live)}, ${liveOf(n.coordination, st.hold, st.freed, ["resource", "seat"], ["holder", "until"])})`,
+			"",
+			`/** The flow's seat level: its live holds, each held below its resource's count. A fragment declares no derived relation, so the schema that lists \`${n.coordination}\` states these on a level over itself, \`schema.extend(listing, name, [...${n.seatLevel}.relations], [...${n.seatLevel}.laws])\`. */`,
+			`export const ${n.seatLevel} = { relations: [${st.live}], laws: [check(${q(st.bound)}, ${st.live}, (row) => row.lt(row.seat, ${st.counts.name}.at(${q(st.counts.count)}, row.${st.counts.key.field})))] } as const`,
+			""
+		]),
 		`/** The den relations the flow's app role \`${l.writer}\` inserts into: each step's commit's, and each app root's request's. */`,
 		`export const ${n.writerInserts} = [${commas(Arr.map(writer, q))}] as const`
 	])}\n`
@@ -342,6 +348,9 @@ const latestOf = (role: string, held: string, coordinates: ReadonlyArray<string>
 	const { ${commas([...coordinates, "turn"])} } = v(${held}, ${q(lower1(held))})
 	return r.match(${held}, { ${commas([...coordinates, "turn"])} }).find({ ${commas([...coordinates, "turn: r.max(turn)"])} })
 })`
+
+/** A hold's fields, as the live holds find them. */
+const seatFields = ["resource", "seat", "turn", "holder", "until"] as const
 
 /** A query over `role` of each chain's live turn: every turn of `held` that no row of `ended` ends. */
 const liveOf = (
@@ -427,6 +436,13 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		`${f}Result: ${app}.relations.${f}Result`
 	])
 	const rosterNames = Arr.map(l.rosters, (ro) => ro.name)
+	const liveEntry = Arr.map(Option.toArray(l.seats), (st) => {
+		const fields = commas(seatFields)
+		return `${st.live}: query(${app}).rule((r) => {
+	const { ${fields} } = v(${app}.relations.${st.live}, "live")
+	return r.match(${app}.relations.${st.live}, { ${fields} }).find({ ${fields} })
+})`
+	})
 	const allRelations = Arr.map(l.relations, (rel) => rel.name)
 	const has = (relation: string) => Arr.contains(allRelations, relation)
 	const exclusiveKeys = has(r("ExclusiveKey"))
@@ -707,19 +723,23 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const coordinatorPrograms: Array<readonly [string, string]> = []
 	const insertInto = (relation: string) =>
 		`ChangeSet.empty(${n.coordination}).insert(${relation}, [])`
-	if (has(r("Hold"))) {
+	if (Option.isSome(l.seats)) {
+		const st = l.seats.value
+		const live = `${n.coordinator}.relations.${st.live}`
+		const fields = commas(seatFields)
 		coordinatorPrograms.push(
 			[
 				n.program("Take"),
-				`ChangeSet.empty(${n.coordination}).insert(${r("Freed")}, []).insert(${r("Hold")}, [])`
+				`ChangeSet.empty(${n.coordination}).insert(${st.freed}, []).insert(${st.hold}, [])`
 			],
-			[n.program("GiveBack"), insertInto(r("Freed"))],
-			[n.program("SeatTurns"), deferred(latestOf(n.coordination, r("Hold"), ["resource", "seat"]))],
+			[n.program("GiveBack"), insertInto(st.freed)],
+			[n.program("SeatTurns"), deferred(latestOf(n.coordination, st.hold, ["resource", "seat"]))],
 			[
 				n.program("Holds"),
-				deferred(
-					liveOf(n.coordination, r("Hold"), r("Freed"), ["resource", "seat"], ["holder", "until"])
-				)
+				deferred(`query(${n.coordinator}).rule((r) => {
+	const { ${fields} } = v(${live}, "live")
+	return r.match(${live}, { ${fields} }).find({ ${fields} })
+})`)
 			]
 		)
 	}
@@ -820,8 +840,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		`/** den's role for the flow ${P}: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. */`,
 		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([`...${n.graph}.relations`, ...idleEntries])} }, { insert: [${commas(Arr.map(den, q))}] })`,
 		"",
-		`/** den's coordinator role for the flow ${P}: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole; no role holds a closed relation. */`,
-		`export const ${n.coordinator} = role(${app}, ${q(n.coordinatorName)}, { ${commas([...rosterNames, ...l.coordination])} }, { insert: [${commas(Arr.map(l.coordination, q))}] })`,
+		`/** den's coordinator role for the flow ${P}: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation${Option.isSome(l.seats) ? ", and reads its seats' live holds through the seat level the app's schema states, so a schema without it fails to typecheck" : ""}. */`,
+		`export const ${n.coordinator} = role(${app}, ${q(n.coordinatorName)}, { ${commas([...rosterNames, ...l.coordination, ...liveEntry])} }, { insert: [${commas(Arr.map(l.coordination, q))}] })`,
 		"",
 		...block(n.denPrograms, denPrograms),
 		"",

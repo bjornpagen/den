@@ -7,6 +7,8 @@ $$;
 
 CREATE SCHEMA "slice";
 
+CREATE SCHEMA "slice_seats";
+
 CREATE FUNCTION "slice"."__constant_ejkw66w2je"() RETURNS bigint[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN '{"2"}'::bigint[];

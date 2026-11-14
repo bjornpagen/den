@@ -81,7 +81,7 @@ export const SyncDen = role(
 	}
 )
 
-/** den's coordinator role for the flow Sync: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole; no role holds a closed relation. */
+/** den's coordinator role for the flow Sync: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation. */
 export const SyncCoordinator = role(
 	App,
 	"sync_coordinator",

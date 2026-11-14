@@ -73,7 +73,7 @@ export const FanDen = role(
 	}
 )
 
-/** den's coordinator role for the flow Fan: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole; no role holds a closed relation. */
+/** den's coordinator role for the flow Fan: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation, and reads its seats' live holds through the seat level the app's schema states, so a schema without it fails to typecheck. */
 export const FanCoordinator = role(
 	App,
 	"fan_coordinator",
@@ -86,7 +86,13 @@ export const FanCoordinator = role(
 		FanHold,
 		FanFreed,
 		FanPaused,
-		FanResumed
+		FanResumed,
+		FanLive: query(App).rule((r) => {
+			const { resource, seat, turn, holder, until } = v(App.relations.FanLive, "live")
+			return r
+				.match(App.relations.FanLive, { resource, seat, turn, holder, until })
+				.find({ resource, seat, turn, holder, until })
+		})
 	},
 	{ insert: ["FanHold", "FanFreed", "FanPaused", "FanResumed"] }
 )
@@ -327,11 +333,10 @@ export const fanCoordinatorPrograms = Object.freeze({
 		})
 	),
 	fanHolds: deferrable(
-		query(fanCoordination).rule((r) => {
-			const { resource, seat, turn, holder, until } = v(FanHold, "fanHold")
+		query(FanCoordinator).rule((r) => {
+			const { resource, seat, turn, holder, until } = v(FanCoordinator.relations.FanLive, "live")
 			return r
-				.match(FanHold, { resource, seat, turn, holder, until })
-				.where(r.not(FanFreed, { resource, seat, turn }))
+				.match(FanCoordinator.relations.FanLive, { resource, seat, turn, holder, until })
 				.find({ resource, seat, turn, holder, until })
 		})
 	),

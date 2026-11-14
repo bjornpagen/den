@@ -200,7 +200,8 @@
 			},
 			"fan_freed": {
 				"__fan_freed_fk_resource_seat_turn_5lyzcw65au": "__fan_freed_in_fan_hold_w5dtx6dw32",
-				"__fan_freed_pk_r3csmayfa7": "__fan_freed_pk_resource_seat_turn_ifmyx5qq5h"
+				"__fan_freed_pk_r3csmayfa7": "__fan_freed_pk_resource_seat_turn_ifmyx5qq5h",
+				"__rule_fan_live_check_fan_seat_below_count_yebtxevyos": "__fan_live_check_fan_seat_below_count_jcuojp5fnq"
 			},
 			"fan_held": {
 				"__fan_held_fk_step_6tkjkyjp3h": "__fan_held_in_fan_result_xikram4wsq",
@@ -210,7 +211,7 @@
 			"fan_hold": {
 				"__fan_hold_fk_resource_seat_pred_turn_vfz6ol7e57": "__fan_hold_in_fan_freed_jbaif55wxm",
 				"__fan_hold_pk_avuqdkljvb": "__fan_hold_pk_resource_seat_turn_pmyluo75er",
-				"seat_below_count": "__fan_hold_check_seat_below_count_22gav3f3y6"
+				"__rule_fan_live_check_fan_seat_below_count_yebtxevyos": "__fan_live_check_fan_seat_below_count_jcuojp5fnq"
 			},
 			"fan_paused": {
 				"__fan_paused_fk_target_pred_turn_flvtnhgqoq": "__fan_paused_in_fan_resumed_x4ff7d67zu",
@@ -2510,6 +2511,10 @@
 									"law": "__fan_freed_in_fan_hold_w5dtx6dw32"
 								},
 								{
+									"kind": "law",
+									"law": "__fan_live_check_fan_seat_below_count_jcuojp5fnq"
+								},
+								{
 									"kind": "access"
 								}
 							]
@@ -2603,6 +2608,10 @@
 								{
 									"kind": "law",
 									"law": "__fan_hold_pk_resource_seat_turn_pmyluo75er"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_live_check_fan_seat_below_count_jcuojp5fnq"
 								},
 								{
 									"kind": "access"
@@ -5476,10 +5485,10 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "304e355438c258d243548224d6a6373a77d5bdd016e7d35cc315a1cdb90ebe47",
+	"fingerprint": "a692ab39596a8a21799963813332c0217f728b55fade49682f7ea7381df96e6c",
 	"levels": [
 		{
-			"fingerprint": "48082e47013fd0cbefb3c7fddb475c35659e949d3e6562edc67743811c9f12d7",
+			"fingerprint": "42bb30364bf7539afd67b09f5297d842b22354ecae5b753a460789bb79e23924",
 			"laws": [
 				{"described":{"from":{"relation":"Audit","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__audit_in_chain_result_lnwfzi4o3s"},
 				{"described":{"fields":["step"],"kind":"primaryKey","relation":"Audit"},"law":"__audit_pk_step_lew2zfy6bw"},
@@ -5591,7 +5600,6 @@
 				{"described":{"from":{"relation":"FanHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]},"kind":"contained","to":{"relation":"FanClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]}},"law":"__fan_held_in_fan_claim_sc3nv4f6ed"},
 				{"described":{"from":{"relation":"FanHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__fan_held_in_fan_result_xikram4wsq"},
 				{"described":{"fields":["step"],"kind":"primaryKey","relation":"FanHeld"},"law":"__fan_held_pk_step_rfsjin5avs"},
-				{"described":{"kind":"check","name":"SeatBelowCount","relation":"FanHold"},"law":"__fan_hold_check_seat_below_count_22gav3f3y6"},
 				{"described":{"from":{"relation":"FanHold","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"FanFreed","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__fan_hold_in_fan_freed_jbaif55wxm"},
 				{"described":{"fields":["resource","seat","turn"],"kind":"primaryKey","relation":"FanHold"},"law":"__fan_hold_pk_resource_seat_turn_pmyluo75er"},
 				{"described":{"from":{"relation":"FanPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"FanResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__fan_paused_in_fan_resumed_x4ff7d67zu"},
@@ -5774,6 +5782,14 @@
 			],
 			"name": "Slice",
 			"schema": "slice"
+		},
+		{
+			"fingerprint": "805c1c6ac81b0c3570d643b46c0190a71b028722dc334a58ee617d4771932eac",
+			"laws": [
+				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"}
+			],
+			"name": "SliceSeats",
+			"schema": "slice_seats"
 		}
 	],
 	"live": {

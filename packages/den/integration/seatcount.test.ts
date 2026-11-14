@@ -26,13 +26,15 @@ import { fan } from "#integration/slice/flows.ts"
 import { migrateIn, openLedgers, sliceLayer } from "#integration/support/slice.ts"
 
 /**
- * A resource's seat count is a closed relation of the flow's declaration, and every hold's seat is checked below it.
- * Lowering the Pool from two seats to one is a migration that grizzle validates against every hold, so it is admitted
- * exactly when no hold, live or freed, sits at seat 1: a freed turn stays a row until RETIRE deletes it.
+ * A resource's seat count is a closed relation of the flow's declaration, and every live hold's seat is checked below
+ * it, on the seat level the slice's schema states over its own: the live holds, a derived relation of the holds no free
+ * ended, under a rule over a query. Lowering the Pool from two seats to one is a migration that grizzle validates
+ * against the live holds, so it is admitted exactly when no live hold sits at seat 1: a freed turn stays a row until
+ * RETIRE deletes it, and it is no live hold.
  *
  * Oracle (postgresql): `grizzle migrate` of the slice to a copy of it whose Pool holds one seat, over a database where
- * seat 0 is held and seat 1 was never taken, is held, or was taken and freed: admitted, or refused by a check a row
- * violates (SQLSTATE 23514).
+ * seat 0 is held and seat 1 was never taken, is held, or was taken and freed: admitted, or refused by the seat law the
+ * existing rows violate (its validation's integrity_constraint_violation, SQLSTATE 23000, naming the law).
  */
 
 type Feature = "never taken" | "held" | "freed"
@@ -81,9 +83,12 @@ const lowered = Effect.gen(function* () {
 	const flow = lower(fan)
 	const oneSeat = {
 		...flow,
-		counts: Option.map(flow.counts, (counts) => ({
-			...counts,
-			rows: Arr.map(counts.rows, (row) => ({ ...row, count: 1n }))
+		seats: Option.map(flow.seats, (seats) => ({
+			...seats,
+			counts: {
+				...seats.counts,
+				rows: Arr.map(seats.counts.rows, (row) => ({ ...row, count: 1n }))
+			}
 		}))
 	}
 	yield* fs.writeFileString(
@@ -112,7 +117,7 @@ const lowered = Effect.gen(function* () {
 
 layer(NodeServices.layer, { excludeTestServices: true })("seat counts", (it) => {
 	it.effect(
-		"admits lowering a seat count exactly when no hold sits at or above the new count",
+		"admits lowering a seat count exactly when no live hold sits at or above the new count",
 		(ctx) =>
 			searched(
 				ctx,
@@ -129,7 +134,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("seat counts", (it) => 
 								box: "seat 1 of the Pool's two, never taken, held or freed, beside seat 0 held",
 								oracle: {
 									kind: "postgresql",
-									name: "grizzle migrate to one Pool seat, validating each hold's seat below the count"
+									name: "grizzle migrate to one Pool seat, validating each live hold's seat below the count"
 								},
 								/** Each case migrates its own database; both slice folders are read-only input. */
 								concurrency: testWorkers
@@ -176,10 +181,11 @@ layer(NodeServices.layer, { excludeTestServices: true })("seat counts", (it) => 
 									assert.deepStrictEqual(
 										migrated._tag === "Success"
 											? "admitted"
-											: Str.includes("SQLSTATE 23514")(migrated.failure.message)
-												? "refused by a check"
+											: Str.includes("SQLSTATE 23000")(migrated.failure.message) &&
+												  Str.includes("fan_seat_below_count")(migrated.failure.message)
+												? "refused by the seat law"
 												: migrated.failure.message,
-										seat.taken ? "refused by a check" : "admitted"
+										seat.taken && !seat.freed ? "refused by the seat law" : "admitted"
 									)
 								}).pipe(
 									(body) =>

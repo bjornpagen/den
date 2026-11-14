@@ -298,8 +298,7 @@ CREATE TABLE "slice"."fan_hold" (
   "turn" "slice"."__domain_gfw43vigph" NOT NULL,
   "holder" "slice"."__domain_jotafzuj2i" NOT NULL,
   "until" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  CONSTRAINT "__fan_hold_pk_avuqdkljvb" PRIMARY KEY ("resource", "seat", "turn"),
-  CONSTRAINT "seat_below_count" CHECK (("seat" < ("slice"."__constant_ejkw66w2je"())[NULLIF("pg_catalog"."substring"("slice"."__constant_ib5zplua3f"(), "resource" + 1, 1)::integer, 0) - 1 + 1]) IS TRUE)
+  CONSTRAINT "__fan_hold_pk_avuqdkljvb" PRIMARY KEY ("resource", "seat", "turn")
 );
 
 CREATE TABLE "slice"."fan_paused" (
