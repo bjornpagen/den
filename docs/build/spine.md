@@ -39,7 +39,7 @@ and `grizzle check` passes.
   batch's finish tallies them once all have results; the root's finish runs after the batch's and inserts `Settled`.
 
 The cluster: `scripts/pg.sh` (`init [--force]`, `start`, `stop`, `status`, `psql`, `admin`, `reset`, `env`), run as
-`pnpm pg …`; the build at `~/.local/opt/postgresql/19rc1/bin`, data at `~/.local/var/den/pg19rc1/data`, port 5435,
+`pnpm pg …`; the build `vendor/grizzle`'s `scripts/pg/pin.env` pins, data at `~/.local/var/den/pg/data`, port 5435,
 verify-full TLS with its own CA (grizzle speaks nothing else), `wal_level=logical`, 100 replication slots and senders
 (= `max_connections`), `max_pred_locks_per_transaction = 2048`, owner role `den_dev` (LOGIN CREATEDB CREATEROLE
 REPLICATION) and the template `den_template`. Each test file creates a database of its own from the template, runs

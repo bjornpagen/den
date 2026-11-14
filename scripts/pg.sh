@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# den's own PostgreSQL 19 cluster, from the build grizzle's scripts/pg/build.sh makes. It never touches grizzle's
-# cluster (port 5433) or its data directory.
+# den's own PostgreSQL 19 cluster, run from the build vendor/grizzle pins (scripts/pg/pin.env), which grizzle's
+# scripts/pg/build.sh makes. It never touches grizzle's cluster (port 5433) or its data directory. The data directory
+# carries the pinned version it was initialized from, and start refuses it once the pin moves on.
 #   pg.sh init [--force]   TLS material, configuration, the den_dev owner role and the template database
 #   pg.sh start | stop | status
 #   pg.sh psql [database] [psql args...]    verify-full TLS as den_dev
@@ -9,13 +10,22 @@
 #   pg.sh env                               the cluster's coordinates, one KEY=value per line, for the suites
 set -euo pipefail
 
-PG_VERSION=19rc1
+PIN="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/vendor/grizzle/scripts/pg/pin.env"
+if [[ ! -f "$PIN" ]]; then
+	echo "grizzle's PostgreSQL pin $PIN is missing; run git submodule update --init" >&2
+	exit 1
+fi
+# One setting of grizzle's pin, read in a subshell so none of the pin's other settings reaches this script.
+pinned() { (source "$PIN" && printf '%s' "${!1}"); }
+
+PG_VERSION="$(pinned PG_PIN_VERSION)"
+PREFIX="$(pinned GRIZZLE_PG_PREFIX)"
 PG_PORT=5435
 DEV_ROLE=den_dev
 TEMPLATE_DB=den_template
 TEST_DB_PREFIX=den_t_
-PREFIX="$HOME/.local/opt/postgresql/$PG_VERSION"
-STATE="$HOME/.local/var/den/pg$PG_VERSION"
+STATE="$HOME/.local/var/den/pg"
+STAMP="$STATE/pin"
 DATA="$STATE/data"
 TLS="$STATE/tls"
 LOG="$STATE/log"
@@ -27,6 +37,17 @@ bin() { echo "$PREFIX/bin/$1"; }
 require_build() {
 	if [[ ! -x "$(bin postgres)" ]]; then
 		echo "PostgreSQL $PG_VERSION is not built at $PREFIX; run grizzle's scripts/pg/build.sh" >&2
+		exit 1
+	fi
+}
+
+require_stamp() {
+	if [[ ! -f "$STAMP" ]]; then
+		echo "den's cluster at $STATE records no PostgreSQL version; run pg.sh init, with --force if $STATE exists" >&2
+		exit 1
+	fi
+	if [[ "$(cat "$STAMP")" != "$PG_VERSION" ]]; then
+		echo "den's cluster at $STATE was initialized from PostgreSQL $(cat "$STAMP"), not the pinned $PG_VERSION; run pg.sh init --force" >&2
 		exit 1
 	fi
 }
@@ -122,6 +143,7 @@ SQL
 	admin_psql -d postgres -c "CREATE DATABASE $DEV_ROLE OWNER $DEV_ROLE TEMPLATE $TEMPLATE_DB"
 	# A session inside the template would make every clone fail.
 	admin_psql -d postgres -c "ALTER DATABASE $TEMPLATE_DB ALLOW_CONNECTIONS false"
+	printf '%s\n' "$PG_VERSION" >"$STAMP"
 	echo "den's cluster: PostgreSQL $PG_VERSION on localhost:$PG_PORT (verify-full TLS, CA $TLS/ca.crt)"
 	echo "Owner role $DEV_ROLE; password in $PASSWORD_FILE; template database $TEMPLATE_DB"
 }
@@ -133,6 +155,7 @@ case "${1:-}" in
 		init "${1:-}"
 		;;
 	start)
+		require_stamp
 		running || "$(bin pg_ctl)" -D "$DATA" -l "$LOG/startup.log" -w start >/dev/null
 		echo "PostgreSQL $PG_VERSION running on localhost:$PG_PORT"
 		;;
