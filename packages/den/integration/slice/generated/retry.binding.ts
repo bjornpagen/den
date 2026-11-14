@@ -515,7 +515,11 @@ export const retryLedger = (h: RetryHandles) => {
 			),
 		finished: (scope) => any(h.den.retryFinished.once({ params: { scope }, facts: {} })),
 		busy: busyOf,
-		claim: (row) => h.den.retryClaim.once({ params: {}, facts: { insert: { RetryClaim: [row] } } }),
+		claim: (row) =>
+			Effect.map(
+				h.den.retryClaim.once({ params: {}, facts: { insert: { RetryClaim: [row] } } }),
+				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
+			),
 		retry: (row) => h.den.retryRetry.once({ params: {}, facts: { insert: { RetryRetry: [row] } } }),
 		refuse: (step, attempt, law) =>
 			h.den.retryRefuse.once({

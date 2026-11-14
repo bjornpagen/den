@@ -601,7 +601,11 @@ export const fanLedger = (h: FanHandles) => {
 			),
 		finished: (scope) => any(h.den.fanFinished.once({ params: { scope }, facts: {} })),
 		busy: busyOf,
-		claim: (row) => h.den.fanClaim.once({ params: {}, facts: { insert: { FanClaim: [row] } } }),
+		claim: (row) =>
+			Effect.map(
+				h.den.fanClaim.once({ params: {}, facts: { insert: { FanClaim: [row] } } }),
+				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
+			),
 		retry: (row) => h.den.fanRetry.once({ params: {}, facts: { insert: { FanRetry: [row] } } }),
 		refuse: (step, attempt, law) =>
 			h.den.fanRefuse.once({

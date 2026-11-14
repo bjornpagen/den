@@ -1,21 +1,17 @@
 # The seams grizzle's main replaces
 
 den is pinned on grizzle's `main`, into which `live` merged, so every commit below is in its pin. Taken: CLASH
-(`schema()` takes a list, `lower/merge.ts` deleted), LIVE-SOURCE (the suites' decoder grant deleted) and DEFERRABLE (the
-status and declared reads deferrable). den still takes these, each from the grizzle session's report:
+(`schema()` takes a list, `lower/merge.ts` deleted), LIVE-SOURCE (the suites' decoder grant deleted), DEFERRABLE (the
+status and declared reads deferrable), LEASE and DELTAMET for claims (each flow's Claim races its key, and a claim reads
+back the holder it added or met), and CARRIER (that read-back rides the claim's one statement, which generate compiles;
+den has no other read-back). den still takes these, each from the grizzle session's report:
 
 - **LEASE (28496788).** `race(R)`, a schema rule beside `mutable`: a raced table's inserts arbitrate at its primary key,
   and the loser meets the stored fact; refused on a mutable relation, a whole-heading or span key, a drawn primary-key
   field, a family's owner or member, a derived relation. The certifier counts a winner read after a clean arbitration as
-  arbitrated, and expiry is a new fact (`at + ttl < now`, DBCLOCK's `now`). den's claim and seat relations become raced,
-  and the seat module (SERIALIZABLE at `a226cbac`) moves to READ COMMITTED; adding or dropping `race` is a
-  fingerprint-only migration, after which an old Db answers `StaleSnapshot`
-- **DELTAMET (cdf8da2d, its tests 3f679040).** `delta.met`: an arbitrated insert reports the rows it met beside those it
-  added; a lost claim or spawn race learns the winner in the same call
-- **CARRIER (1cc5b113).** no delta in a temporary table: a read-back of a delta runs inside the statement that makes it,
-  met included; any other read-back is refused at compile as `ReadBackCrossesStatements`, naming its rewrite. A queue
-  claim compiled on it: 14 → 9 statements and 4 → 2 temporary tables (mutable work), 17 → 12 and 5 → 3 (immutable).
-  den's claim and commit read-backs must take the rewrite each refusal names
+  arbitrated, and expiry is a new fact (`at + ttl < now`, DBCLOCK's `now`). den's seat relations become raced (its
+  claims race since the claim seam), and the seat module (SERIALIZABLE at `a226cbac`) moves to READ COMMITTED; adding or
+  dropping `race` is a fingerprint-only migration, after which an old Db answers `StaleSnapshot`
 - **POROUS (e509252a, 9a2af8c5).** `fragment(relations, statements)`: a nameless library fragment, identified by its
   content, listed in an app's `schema()` or `schema.extend()` list and a level of every schema that lists it. Programs
   written once over the fragment compile per host at generate, served byte-identical to their host twin. Every

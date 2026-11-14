@@ -102,7 +102,23 @@ export const RetrySeats = role(
 )
 
 export const retryDenPrograms = Object.freeze({
-	retryClaim: ChangeSet.empty(RetryDen).insert(RetryClaim, []),
+	retryClaim: ChangeSet.empty(RetryDen)
+		.insert(RetryClaim, [])
+		.read("held", (delta) =>
+			query(RetryDen)
+				.rule((r) => {
+					const { step, attempt, holder } = v(delta.added(RetryClaim), "added")
+					return r
+						.match(delta.added(RetryClaim), { step, attempt, holder })
+						.find({ step, attempt, holder })
+				})
+				.rule((r) => {
+					const { step, attempt, holder } = v(delta.met(RetryClaim), "met")
+					return r
+						.match(delta.met(RetryClaim), { step, attempt, holder })
+						.find({ step, attempt, holder })
+				})
+		),
 	retryRetry: ChangeSet.empty(RetryDen).insert(RetryRetry, []),
 	retryRefuse: ChangeSet.empty(RetryDen)
 		.insert(RetryResult, [])

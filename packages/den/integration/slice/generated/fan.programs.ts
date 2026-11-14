@@ -104,7 +104,23 @@ export const FanSeats = role(
 )
 
 export const fanDenPrograms = Object.freeze({
-	fanClaim: ChangeSet.empty(FanDen).insert(FanClaim, []),
+	fanClaim: ChangeSet.empty(FanDen)
+		.insert(FanClaim, [])
+		.read("held", (delta) =>
+			query(FanDen)
+				.rule((r) => {
+					const { step, attempt, holder } = v(delta.added(FanClaim), "added")
+					return r
+						.match(delta.added(FanClaim), { step, attempt, holder })
+						.find({ step, attempt, holder })
+				})
+				.rule((r) => {
+					const { step, attempt, holder } = v(delta.met(FanClaim), "met")
+					return r
+						.match(delta.met(FanClaim), { step, attempt, holder })
+						.find({ step, attempt, holder })
+				})
+		),
 	fanRetry: ChangeSet.empty(FanDen).insert(FanRetry, []),
 	fanRefuse: ChangeSet.empty(FanDen)
 		.insert(FanResult, [])

@@ -17,6 +17,7 @@ import {
 	on,
 	pg,
 	pred,
+	race,
 	relation,
 	select
 } from "@bjornpagen/grizzle"
@@ -163,6 +164,7 @@ export const syncFragment = Object.freeze({
 		key(on(SyncFinish, "step")),
 		contained(on(SyncDue, "step"), on(SyncStep, "step")),
 		contained(on(SyncClaim, "step"), on(SyncStep, "step")),
+		race(SyncClaim),
 		check("AttemptFromOne", SyncClaim, (row) => row.ge(row.attempt, 1n)),
 		contained(
 			on(

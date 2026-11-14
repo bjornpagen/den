@@ -675,7 +675,11 @@ export const syncLedger = (h: SyncHandles) => {
 			),
 		finished: (scope) => any(h.den.syncFinished.once({ params: { scope }, facts: {} })),
 		busy: busyOf,
-		claim: (row) => h.den.syncClaim.once({ params: {}, facts: { insert: { SyncClaim: [row] } } }),
+		claim: (row) =>
+			Effect.map(
+				h.den.syncClaim.once({ params: {}, facts: { insert: { SyncClaim: [row] } } }),
+				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
+			),
 		retry: (row) => h.den.syncRetry.once({ params: {}, facts: { insert: { SyncRetry: [row] } } }),
 		refuse: (step, attempt, law) =>
 			h.den.syncRefuse.once({

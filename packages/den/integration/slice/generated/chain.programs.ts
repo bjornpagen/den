@@ -125,7 +125,23 @@ export const ChainSeats = role(
 )
 
 export const chainDenPrograms = Object.freeze({
-	chainClaim: ChangeSet.empty(ChainDen).insert(ChainClaim, []),
+	chainClaim: ChangeSet.empty(ChainDen)
+		.insert(ChainClaim, [])
+		.read("held", (delta) =>
+			query(ChainDen)
+				.rule((r) => {
+					const { step, attempt, holder } = v(delta.added(ChainClaim), "added")
+					return r
+						.match(delta.added(ChainClaim), { step, attempt, holder })
+						.find({ step, attempt, holder })
+				})
+				.rule((r) => {
+					const { step, attempt, holder } = v(delta.met(ChainClaim), "met")
+					return r
+						.match(delta.met(ChainClaim), { step, attempt, holder })
+						.find({ step, attempt, holder })
+				})
+		),
 	chainRetry: ChangeSet.empty(ChainDen).insert(ChainRetry, []),
 	chainRefuse: ChangeSet.empty(ChainDen)
 		.insert(ChainResult, [])

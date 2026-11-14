@@ -11,6 +11,7 @@ import {
 	on,
 	pg,
 	pred,
+	race,
 	relation,
 	select
 } from "@bjornpagen/grizzle"
@@ -168,6 +169,7 @@ export const chainFragment = Object.freeze({
 		key(on(ChainFinish, "step")),
 		contained(on(ChainDue, "step"), on(ChainStep, "step")),
 		contained(on(ChainClaim, "step"), on(ChainStep, "step")),
+		race(ChainClaim),
 		check("AttemptFromOne", ChainClaim, (row) => row.ge(row.attempt, 1n)),
 		contained(
 			on(

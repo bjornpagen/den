@@ -214,7 +214,11 @@ export interface Ledger<R> {
 	readonly finished: (scope: ScopeKey) => Effect.Effect<boolean, CallError>
 	/** Whether a flow a precondition names holds a pending step. */
 	readonly busy: (flow: string) => Effect.Effect<boolean, CallError>
-	readonly claim: (claim: ClaimRow) => Effect.Effect<WriteOutcome<unknown>, CallError>
+	/**
+	 * Claims a step's attempt, a race at its key: whether the claim holding `(step, attempt)` is `claim`'s holder's, this
+	 * call's or an earlier one of the same holder, or another holder's, which this call met and wrote nothing beside.
+	 */
+	readonly claim: (claim: ClaimRow) => Effect.Effect<boolean, CallError>
 	readonly retry: (retry: RetryRow) => Effect.Effect<WriteOutcome<unknown>, CallError>
 	readonly refuse: (
 		step: StepKey,

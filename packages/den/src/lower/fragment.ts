@@ -79,6 +79,7 @@ export interface SideIR {
 export type LawIR =
 	| { readonly kind: "contained"; readonly from: SideIR; readonly to: SideIR }
 	| { readonly kind: "key"; readonly side: SideIR }
+	| { readonly kind: "race"; readonly relation: string }
 	| {
 			readonly kind: "check"
 			readonly name: string
@@ -499,6 +500,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		keyOf(Finish, ["step"]),
 		into(side(Due, ["step"]), side(Step, ["step"])),
 		into(side(Claim, ["step"]), side(Step, ["step"])),
+		{ kind: "race", relation: Claim },
 		{ kind: "check", name: "AttemptFromOne", relation: Claim, field: "attempt", bound: 1n },
 		into(
 			{

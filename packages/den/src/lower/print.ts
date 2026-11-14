@@ -98,6 +98,8 @@ const lawExpr = (law: LawIR): string => {
 			return `contained(${sideExpr(law.from)}, ${sideExpr(law.to)})`
 		case "key":
 			return `key(${sideExpr(law.side)})`
+		case "race":
+			return `race(${law.relation})`
 		case "check":
 			return `check(${q(law.name)}, ${law.relation}, (row) => row.ge(row.${law.field}, ${law.bound}n))`
 	}
@@ -137,6 +139,7 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		"on",
 		...(base("bigint") || base("boolean") ? ["pg"] : []),
 		...(Arr.some(sides, (sd) => Arr.some(sd.terms, (t) => t.pred)) ? ["pred"] : []),
+		...(Arr.some(l.laws, (law) => law.kind === "race") ? ["race"] : []),
 		"relation",
 		...(Arr.some(sides, (sd) => sd.selection.kind !== "all") ? ["select"] : [])
 	]
@@ -302,7 +305,22 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const has = (relation: string) => Arr.contains(allRelations, relation)
 	const exclusiveKeys = has(r("ExclusiveKey"))
 	const denPrograms: Array<readonly [string, string]> = [
-		[n.program("Claim"), `ChangeSet.empty(${n.den}).insert(${r("Claim")}, [])`],
+		[
+			n.program("Claim"),
+			`ChangeSet.empty(${n.den})
+	.insert(${r("Claim")}, [])
+	.read("held", (delta) =>
+		query(${n.den})
+			.rule((r) => {
+				const { step, attempt, holder } = v(delta.added(${r("Claim")}), "added")
+				return r.match(delta.added(${r("Claim")}), { step, attempt, holder }).find({ step, attempt, holder })
+			})
+			.rule((r) => {
+				const { step, attempt, holder } = v(delta.met(${r("Claim")}), "met")
+				return r.match(delta.met(${r("Claim")}), { step, attempt, holder }).find({ step, attempt, holder })
+			})
+	)`
+		],
 		[n.program("Retry"), `ChangeSet.empty(${n.den}).insert(${r("Retry")}, [])`],
 		[
 			n.program("Refuse"),
@@ -1248,7 +1266,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\t\tunended: (scope) => Effect.flatMap(any(h.den.${n.program("UnendedSteps")}.once({ params: { scope }, facts: {} })), (steps) => steps ? Effect.succeed(true) : any(h.den.${n.program("OpenChildren")}.once({ params: { scope }, facts: {} }))),`,
 		`\t\tfinished: (scope) => any(h.den.${n.program("Finished")}.once({ params: { scope }, facts: {} })),`,
 		"\t\tbusy: busyOf,",
-		`\t\tclaim: (row) => h.den.${n.program("Claim")}.once({ params: {}, facts: { insert: { ${r("Claim")}: [row] } } }),`,
+		`\t\tclaim: (row) => Effect.map(h.den.${n.program("Claim")}.once({ params: {}, facts: { insert: { ${r("Claim")}: [row] } } }), (outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)),`,
 		`\t\tretry: (row) => h.den.${n.program("Retry")}.once({ params: {}, facts: { insert: { ${r("Retry")}: [row] } } }),`,
 		`\t\trefuse: (step, attempt, law) => h.den.${n.program("Refuse")}.once({ params: {}, facts: { insert: { ${r("Result")}: [{ step, outcome: "failed" }], ${r("Failed")}: [{ step }], ${r("Held")}: [{ step, attempt }], ${r("Refusal")}: [{ step, law }] } } }),`,
 		`\t\tskip: (scope, by) => h.den.${n.program("Skip")}.once({ params: {}, facts: { insert: { ${r("Skipped")}: [{ scope, by }] } } }),`,

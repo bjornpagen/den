@@ -10,6 +10,7 @@ import {
 	on,
 	pg,
 	pred,
+	race,
 	relation,
 	select
 } from "@bjornpagen/grizzle"
@@ -146,6 +147,7 @@ export const fanFragment = Object.freeze({
 		key(on(FanFinish, "step")),
 		contained(on(FanDue, "step"), on(FanStep, "step")),
 		contained(on(FanClaim, "step"), on(FanStep, "step")),
+		race(FanClaim),
 		check("AttemptFromOne", FanClaim, (row) => row.ge(row.attempt, 1n)),
 		contained(
 			on(

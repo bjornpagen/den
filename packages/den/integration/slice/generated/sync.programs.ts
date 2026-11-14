@@ -111,7 +111,23 @@ export const SyncSeats = role(
 )
 
 export const syncDenPrograms = Object.freeze({
-	syncClaim: ChangeSet.empty(SyncDen).insert(SyncClaim, []),
+	syncClaim: ChangeSet.empty(SyncDen)
+		.insert(SyncClaim, [])
+		.read("held", (delta) =>
+			query(SyncDen)
+				.rule((r) => {
+					const { step, attempt, holder } = v(delta.added(SyncClaim), "added")
+					return r
+						.match(delta.added(SyncClaim), { step, attempt, holder })
+						.find({ step, attempt, holder })
+				})
+				.rule((r) => {
+					const { step, attempt, holder } = v(delta.met(SyncClaim), "met")
+					return r
+						.match(delta.met(SyncClaim), { step, attempt, holder })
+						.find({ step, attempt, holder })
+				})
+		),
 	syncRetry: ChangeSet.empty(SyncDen).insert(SyncRetry, []),
 	syncRefuse: ChangeSet.empty(SyncDen)
 		.insert(SyncResult, [])

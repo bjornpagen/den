@@ -35,7 +35,8 @@ export interface Onward {
 }
 
 /**
- * One turn, in three calls: the claim, a key race on `(step, attempt)` certified READ COMMITTED; the step's declared
+ * One turn, in three calls: the claim, a race at `(step, attempt)` certified READ COMMITTED, whose loser meets the
+ * winner's claim and goes no further; the step's declared
  * reads in one read-only call; and the commit, its result, the rows its reads found, the body's writes and its spawns,
  * in one call under the flow's app role. Before the claim the turn takes a seat of each resource the step uses (the
  * seat module), and after its last write it gives them back.
@@ -128,8 +129,9 @@ export const spentBefore = (
 
 /**
  * Whether a refusal is a key race this turn lost: the step's Result or Held already held by another attempt's commit,
- * its Claim at this attempt by another holder, the attempt before this one never claimed (a stale or forged wake), or
- * an admission whose rows another admitter already wrote.
+ * the attempt before this one never claimed (a stale or forged wake), or an admission whose rows another admitter
+ * already wrote. A claim at this attempt by another holder refuses nothing: Claim races its key, and the claim reports
+ * the holder it met.
  */
 export const lostRace = (flow: string, error: CallError): boolean =>
 	error.kind === "refused" &&
@@ -141,7 +143,6 @@ export const lostRace = (flow: string, error: CallError): boolean =>
 					[
 						`${flow}Result`,
 						`${flow}Held`,
-						`${flow}Claim`,
 						`${flow}Retry`,
 						`${flow}Admitted`,
 						`${flow}Due`,
@@ -628,6 +629,9 @@ const serveStep = <R>(
 								? { kind: "lost", wake }
 								: { kind: "waiting", wake, why: "unread", until: Option.none() }
 					)
+				}
+				if (!claimed.success) {
+					return served({ kind: "lost", wake })
 				}
 				const turn: Turn = { step, attempt: next, scope, holder, deadline, until }
 				if (exhausted) {

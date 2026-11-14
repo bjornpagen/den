@@ -10,6 +10,7 @@ import {
 	on,
 	pg,
 	pred,
+	race,
 	relation,
 	select
 } from "@bjornpagen/grizzle"
@@ -137,6 +138,7 @@ export const retryFragment = Object.freeze({
 		key(on(RetryFinish, "step")),
 		contained(on(RetryDue, "step"), on(RetryStep, "step")),
 		contained(on(RetryClaim, "step"), on(RetryStep, "step")),
+		race(RetryClaim),
 		check("AttemptFromOne", RetryClaim, (row) => row.ge(row.attempt, 1n)),
 		contained(
 			on(

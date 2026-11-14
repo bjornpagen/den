@@ -717,7 +717,11 @@ export const chainLedger = (h: ChainHandles) => {
 			),
 		finished: (scope) => any(h.den.chainFinished.once({ params: { scope }, facts: {} })),
 		busy: busyOf,
-		claim: (row) => h.den.chainClaim.once({ params: {}, facts: { insert: { ChainClaim: [row] } } }),
+		claim: (row) =>
+			Effect.map(
+				h.den.chainClaim.once({ params: {}, facts: { insert: { ChainClaim: [row] } } }),
+				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
+			),
 		retry: (row) => h.den.chainRetry.once({ params: {}, facts: { insert: { ChainRetry: [row] } } }),
 		refuse: (step, attempt, law) =>
 			h.den.chainRefuse.once({
