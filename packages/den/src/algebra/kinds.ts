@@ -81,7 +81,7 @@ export const always: Window = { kind: "always" }
 /**
  * The hours of a day in UTC, from midnight: a window's hours lie within one.
  *
- * @formatConstant
+ * @formatConstant a day in UTC: 24 hours from midnight, every day, since UTC has no daylight saving time
  */
 export const HOURS_IN_DAY = 24
 

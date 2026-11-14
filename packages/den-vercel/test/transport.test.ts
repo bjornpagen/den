@@ -1,5 +1,5 @@
 import { censusPeriodSeconds, caseHang } from "@bjornpagen/den/limits"
-import { idempotencyKey, now, type Wake, WakeSchema } from "@bjornpagen/den/transport"
+import { idempotencyKey, type Ring, type Wake, WakeSchema } from "@bjornpagen/den/transport"
 import { type Case, drawn, explore } from "@den/testing/explore"
 import { required } from "@den/testing/features"
 import { constant, element, type Gen, int, oneOf, weighted } from "@den/testing/gen"
@@ -42,9 +42,9 @@ const decoded = (encoded: ReadonlyArray<Encoded>) =>
 
 /** den's transport and consumer over a fake whose consumer group reads `maxDeliveries` from its trigger. */
 const harness = (queue: Fake) => ({
-	send: (rings: ReadonlyArray<Wake>) =>
+	send: (rings: ReadonlyArray<Ring>) =>
 		Effect.flatMap(Effect.provideService(sender, VercelQueue, queue.queue), (transport) =>
-			transport.send(Arr.map(rings, now))
+			transport.send(rings)
 		),
 	route: <A>(serve: (wake: Wake) => Effect.Effect<A>) =>
 		consumer(serve).pipe(Effect.provideService(VercelQueue, queue.queue))
