@@ -15,8 +15,7 @@ import {
 	Random,
 	Redacted,
 	Ref,
-	Stream,
-	String as Str
+	Stream
 } from "effect"
 import { Digest } from "effect/crypto"
 import { ChildProcess } from "effect/process"
@@ -42,11 +41,7 @@ import {
 /**
  * A suite's own database on den's cluster: created from the template, migrated by `grizzle migrate` from the slice's
  * committed migrations under a role prefix of its own (PostgreSQL roles are cluster-wide), its logins and its live
- * source's decoder login given passwords, and uninstalled and dropped when the suite's scope closes. At `a226cbac`
- * grizzle grants its decoder login SELECT on the live secret but not USAGE on the schema the secret lies in
- * (packages/engine/src/physical/ddl/live.ts:178-186), so its leader's first read is refused with "permission denied for
- * schema slice"; the suite grants it as the owner until the repin, whose LIVE-SOURCE (faa8053f) opens the source under
- * the installation's roles.
+ * source's decoder login given passwords, and uninstalled and dropped when the suite's scope closes.
  */
 
 const WorkerServed = served<typeof Worker>(workerFile, "worker")
@@ -100,7 +95,7 @@ const grizzle = (command: string, env: Readonly<Record<string, string>>) =>
 		Effect.gen(function* () {
 			const handle = yield* ChildProcess.make(
 				process.execPath,
-				["--conditions=grizzle-source", grizzleBin, command, "grizzle.config.ts"],
+				[grizzleBin, command, "grizzle.config.ts"],
 				{ cwd: sliceDir, env, extendEnv: true, stdin: "ignore" }
 			)
 			const [stdout, stderr, code] = yield* Effect.all(
@@ -161,22 +156,13 @@ const installed = Effect.acquireRelease(
 			asOwner(cluster, ownerRole, `ALTER ROLE "${role}" PASSWORD '${Redacted.value(secret)}'`)
 		yield* set(roleNameOf(WorkerServed, { rolePrefix }), worker)
 		yield* set(roleNameOf(AppServed, { rolePrefix }), app)
-
-		const workerRole = roleNameOf(WorkerServed, { rolePrefix })
-		const appRole = roleNameOf(AppServed, { rolePrefix })
-		const unprefixed = roleNameOf(WorkerServed, {})
-		const namespace = Str.slice(0, workerRole.length - unprefixed.length - 2)(workerRole)
-		const decoders = yield* asOwner(
-			cluster,
-			ownerRole,
-			`SELECT rolname::text AS name FROM pg_catalog.pg_roles WHERE rolreplication AND starts_with(rolname::text, '${namespace}__') AND rolname::text NOT IN ('${workerRole}', '${appRole}')`
-		)
-		yield* Effect.forEach(decoders, (role) =>
-			Effect.andThen(
-				set(role, decoder),
-				asOwner(cluster, database, `GRANT USAGE ON SCHEMA "slice" TO "${role}"`)
-			)
-		)
+		const decoderLogin = WorkerServed.decoder
+		if (decoderLogin.kind === "none") {
+			return yield* new SetupFailed({
+				message: "the worker login serves no read, so its installation names no decoder login"
+			})
+		}
+		yield* set(roleNameOf(decoderLogin, { rolePrefix }), decoder)
 		const done: Installed = { cluster, database, rolePrefix, worker, app, decoder }
 		return { done, env }
 	}),

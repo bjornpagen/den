@@ -1,4 +1,6 @@
 import { caseHang } from "@bjornpagen/den/limits"
+import type { AnyLogin } from "@bjornpagen/grizzle"
+import { served } from "@bjornpagen/grizzle/runtime"
 import { exhaust } from "@den/testing/explore"
 import { requiredInSpace } from "@den/testing/features"
 import { element } from "@den/testing/gen"
@@ -12,6 +14,7 @@ import {
 	Formatter,
 	Option,
 	Path,
+	Record,
 	Schema,
 	Stream,
 	String as Str
@@ -20,7 +23,7 @@ import { ChildProcess } from "effect/process"
 import config from "#integration/slice/grizzle.config.ts"
 
 /**
- * What `grizzle generate` certifies at `a226cbac`. Every den role of the worker login, each flow's own, runs READ
+ * What `grizzle generate` certifies. Every den role of the worker login, each flow's own, runs READ
  * COMMITTED: its relations are insert-only for every role, every law is a native key or containment, each selected
  * side of a result has one source, and every read of another call's rows is a point read of an insert-only relation by
  * a whole key. Each flow's coordination role runs SERIALIZABLE, since giving back a seat, an exclusivity seat or a
@@ -34,27 +37,19 @@ import config from "#integration/slice/grizzle.config.ts"
 
 type Feature = "a den role" | "a coordination role" | "an app role"
 
-const Served = Schema.Struct({
-	roles: Schema.Struct({
-		"~a": Schema.Array(
-			Schema.Struct({
-				name: Schema.String,
-				isolation: Schema.Literals(["readCommitted", "serializable"])
-			})
-		)
-	})
-})
-
 const sliceDir = `${import.meta.dirname}/slice`
 const grizzleBin = `${import.meta.dirname}/../../../vendor/grizzle/packages/grizzle/src/cli/main.ts`
 
-/** The roles of a served file, with the level `grizzle generate` certified each at. */
-const levelsOf = (file: string) =>
+/** The roles of a login's served file, with the level `grizzle generate` certified each at. */
+const levelsOf = (file: string, login: string) =>
 	Effect.gen(function* () {
 		const fs = yield* FileSystem.FileSystem
 		const text = yield* fs.readFileString(file)
-		const served = yield* Schema.decodeEffect(Schema.fromJsonString(Served))(text)
-		return served.roles["~a"]
+		const json = yield* Schema.decodeEffect(Schema.fromJsonString(Schema.Unknown))(text)
+		return Arr.map(Record.toEntries(served<AnyLogin>(json, login).roles), ([name, role]) => ({
+			name,
+			isolation: role.isolation
+		}))
 	})
 
 /** The app login's levels when the installation holds no den program: `grizzle generate` in a scratch workspace. */
@@ -86,7 +81,7 @@ const withoutDen = Effect.scoped(
 		)
 		const handle = yield* ChildProcess.make(
 			process.execPath,
-			["--conditions=grizzle-source", grizzleBin, "generate", "grizzle.config.ts"],
+			[grizzleBin, "generate", "grizzle.config.ts"],
 			{ cwd: workspace, extendEnv: true, stdin: "ignore" }
 		)
 		const [out, code] = yield* Effect.all(
@@ -96,7 +91,7 @@ const withoutDen = Effect.scoped(
 			}
 		)
 		assert.strictEqual(code, 0, out)
-		return yield* levelsOf(path.join(workspace, "migrations", "slice", "served", "app.json"))
+		return yield* levelsOf(path.join(workspace, "migrations", "slice", "served", "app.json"), "app")
 	})
 )
 
@@ -107,13 +102,13 @@ layer(NodeServices.layer, { excludeTestServices: true })("certification", (it) =
 			searched(
 				ctx,
 				Effect.gen(function* () {
-					const served = (name: string) => `${sliceDir}/migrations/slice/served/${name}.json`
+					const servedFile = (name: string) => `${sliceDir}/migrations/slice/served/${name}.json`
 					assert.deepStrictEqual(
 						Arr.map(config.logins, (login) => login.name),
 						["worker", "app"]
 					)
-					const workers = yield* levelsOf(served("worker"))
-					const apps = yield* levelsOf(served("app"))
+					const workers = yield* levelsOf(servedFile("worker"), "worker")
+					const apps = yield* levelsOf(servedFile("app"), "app")
 					const alone = yield* withoutDen
 					const owned = (of: "worker" | "app") => (role: (typeof workers)[number]) => ({
 						...role,

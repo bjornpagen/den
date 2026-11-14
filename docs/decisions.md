@@ -30,8 +30,9 @@
   in.
 - **The graph is fully declared (owner, 2026-11-11).** Every step kind, scope kind and edge kind is declared with
   its types before anything runs; a result decides only which declared edges are taken and how often.
-- **den builds on grizzle's `live` branch, pinned (owner, 2026-11-11):** commit `a226cbac` of
-  github.com/bjornpagen/grizzle, for its live reads, HTTP routes, OpenAPI documents, typed client and `CallError`.
+- **den builds on grizzle's `main` branch, pinned (owner, 2026-11-14):** "let's move den to point to grizzle main".
+  `vendor/grizzle` is a commit of github.com/bjornpagen/grizzle's `main`, into which `live` merged, for its live reads,
+  HTTP routes, OpenAPI documents, typed client and `CallError`.
 - **Fully porous (owner, 2026-11-11).** den plugs into any grizzle schema and never takes over the installation. Its
   declarations lower and are erased into the app's own unified schema, with no installation, root, login or schema
   of den's own, so the app's own grizzle code sits beside den's, reads and joins its relations, and is written by its

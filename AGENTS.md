@@ -58,7 +58,7 @@ A Turborepo workspace of private packages named `@den/<name>`, each exporting it
   `interleave`, the shrinker, `pnpm fuzz`, `pnpm mutate`). Copied from grizzle's; den owns its copy.
 - `packages/den` (`@bjornpagen/den`): the library. `packages/den-model`: its reference model and simulator.
   `packages/den-vercel`: the Vercel Queues transport. `packages/edullm`: the outside systems of den's first use.
-- `vendor/grizzle`: grizzle, a git submodule pinned on its `live` branch.
+- `vendor/grizzle`: grizzle, a git submodule pinned on its `main` branch.
 - `docs/`: the goals, the decisions, the proposal and the build notes.
 
 Inside a package, import through its own `#` map with the real extension; across packages, by package export.

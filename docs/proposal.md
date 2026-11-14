@@ -211,9 +211,9 @@ outbox send path, the second scheduler, removing old deployments by hand.
 
 ## 14. The repository
 
-`vendor/grizzle` is a git submodule pinned at `a226cbac` of grizzle's `live` branch, its `engine` and `grizzle`
-packages in the workspace through the `grizzle-source` condition. Effect 4.1.4. A PostgreSQL 19 cluster of den's own
-(`pnpm pg`), from the build grizzle's `scripts/pg` makes, with `wal_level=logical`.
+`vendor/grizzle` is a git submodule pinned on grizzle's `main` branch, its `engine` and `grizzle` packages in the
+workspace, whose exports name their TypeScript sources. Effect 4.1.4. A PostgreSQL 19 cluster of den's own
+(`pnpm pg`), from the build grizzle's `scripts/pg/pin.env` pins, with `wal_level=logical`.
 
 ## 15. grizzle's part
 
@@ -232,7 +232,7 @@ The owner's order, sent to the grizzle session on 2026-11-11: fix every known gr
 - **In motion:** RULESEED (rules over queries no longer quadratic, on `main`, then merged into `live`), the 19rc2
   repin on 2026-11-12, and `stale` (already a typed CallError on `live`).
 
-den repins `vendor/grizzle` as each lands on `live`.
+den repins `vendor/grizzle` along grizzle's `main`, into which `live` merged.
 
 ## 16. Settled with the owner
 

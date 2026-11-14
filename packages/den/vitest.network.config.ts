@@ -10,7 +10,7 @@ export default defineTestConfig({
 	exclusive: [],
 	guided: [],
 	setup: [],
-	conditions: ["grizzle-source"],
+	conditions: [],
 	timeouts: { test: { kind: "unbounded" }, hook: { kind: "unbounded" } },
 	maxWorkers: Option.none(),
 	smallStack: []

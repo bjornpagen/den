@@ -1,7 +1,8 @@
-# The next repin of vendor/grizzle
+# The seams grizzle's main replaces
 
-den is pinned at `a226cbac` of grizzle's `live` branch. At the next wave boundary it repins to `live`'s head and
-takes these, each from the grizzle session's report:
+den is pinned on grizzle's `main`, into which `live` merged, so every commit below is in its pin. CLASH (`schema()`
+takes a list, `lower/merge.ts` deleted) and LIVE-SOURCE (the suites' decoder grant deleted) are taken; den still takes
+the rest, each from the grizzle session's report:
 
 | Commit | Lane | What changes in den |
 |---|---|---|

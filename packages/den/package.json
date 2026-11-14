@@ -17,7 +17,6 @@
 		"./lower/fragment": "./src/lower/fragment.ts",
 		"./lower/generate": "./src/lower/generate.ts",
 		"./lower/keys": "./src/lower/keys.ts",
-		"./lower/merge": "./src/lower/merge.ts",
 		"./lower/print": "./src/lower/print.ts",
 		"./lower/schema": "./src/lower/schema.ts",
 		"./runtime/bind": "./src/runtime/bind.ts",
@@ -39,7 +38,7 @@
 		"oxlint": "oxlint",
 		"test": "vitest run --config vitest.config.ts",
 		"test:network": "vitest run --config vitest.network.config.ts",
-		"generate:slice": "node --conditions=grizzle-source integration/slice/generate.ts && oxfmt integration/slice/generated"
+		"generate:slice": "node integration/slice/generate.ts && oxfmt integration/slice/generated"
 	},
 	"dependencies": {
 		"@bjornpagen/grizzle": "workspace:*",

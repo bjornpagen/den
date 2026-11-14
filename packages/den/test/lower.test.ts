@@ -1,21 +1,12 @@
 import { natural, pg, relation } from "@bjornpagen/grizzle"
 import { drawn, explore } from "@den/testing/explore"
 import { required } from "@den/testing/features"
-import { array, boolean, characterOf, element, type Gen, int, string } from "@den/testing/gen"
+import { boolean, element, type Gen, int } from "@den/testing/gen"
 import { notesOnly } from "@den/testing/sense"
 import { boundedShrink } from "@den/testing/shrink"
 import { searched } from "@den/testing/vitest"
 import { assert, it } from "@effect/vitest"
-import {
-	Array as Arr,
-	Effect,
-	Exit,
-	Formatter,
-	Option,
-	Record,
-	Schema,
-	String as Str
-} from "effect"
+import { Array as Arr, Effect, Formatter, Option, Schema, String as Str } from "effect"
 import { type AnyFlow, flow } from "#algebra/flow.ts"
 import {
 	type AnyEdge,
@@ -29,7 +20,6 @@ import {
 	noReads,
 	operator,
 	reads,
-	Refused,
 	resource,
 	root,
 	scope,
@@ -41,7 +31,6 @@ import {
 } from "#algebra/kinds.ts"
 import { caseHang, published } from "#limits.ts"
 import { type LawIR, lower } from "#lower/fragment.ts"
-import { merge } from "#lower/merge.ts"
 import { printFragment } from "#lower/print.ts"
 
 /**
@@ -357,91 +346,3 @@ const placement = {
 	writer: { from: "#roles.ts", name: "Loader" },
 	flow: { from: "#flows.ts", name: "flow" }
 }
-
-type MergeFeature = "a clash between fragments" | "a clash with the app" | "no clash"
-
-const label = string(characterOf(["A", "B", "C"]), { min: 1, max: 2 })
-
-interface Lists {
-	readonly app: ReadonlyArray<string>
-	readonly fragments: ReadonlyArray<ReadonlyArray<string>>
-}
-
-const lists: Gen<Lists> = (source) => ({
-	app: source.draw(array(label, { min: 0, max: 3 })),
-	fragments: source.draw(array(array(label, { min: 0, max: 3 }), { min: 1, max: 3 }))
-})
-
-it.effect(
-	"merges the app's relations and the fragments' lists into one record, refusing any clash",
-	(ctx) =>
-		searched(
-			ctx,
-			explore(
-				{
-					suite: "clash seam",
-					oracle: {
-						kind: "specification",
-						name: "a name held twice is refused, and otherwise each declaration lies under its own name"
-					},
-					draw: drawn(lists),
-					literal: Formatter.format,
-					coverage: required<MergeFeature>(
-						["a clash between fragments", "a clash with the app", "no clash"],
-						{
-							cases: 40,
-							sense: notesOnly
-						}
-					),
-					kept: [],
-					runs: 200,
-					shrink: boundedShrink(40),
-					concurrency: 1,
-					steerEvery: 16,
-					caseHang
-				},
-				(l, c) =>
-					Effect.gen(function* () {
-						const app = Record.fromEntries(
-							Arr.map(Arr.dedupe(l.app), (name) => [name, { app: name }] as const)
-						)
-						const appNames = Record.keys(app)
-						const fragments = Arr.map(l.fragments, (names) => Arr.map(names, (name) => ({ name })))
-						const listed = Arr.flatten(l.fragments)
-						const betweenFragments = Arr.some(listed, (name, i) =>
-							Arr.contains(Arr.take(listed, i), name)
-						)
-						const withApp = Arr.some(listed, (name) => Arr.contains(appNames, name))
-						c.note(
-							betweenFragments
-								? "a clash between fragments"
-								: withApp
-									? "a clash with the app"
-									: "no clash"
-						)
-						const merged = yield* Effect.exit(
-							Effect.try({
-								try: () => merge(app, fragments),
-								catch: (thrown) => ({ refused: thrown instanceof Refused })
-							})
-						)
-						if (betweenFragments || withApp) {
-							assert.deepStrictEqual(Exit.findErrorOption(merged), Option.some({ refused: true }))
-							return
-						}
-						assert.strictEqual(merged._tag, "Success")
-						if (Exit.isSuccess(merged)) {
-							const record: Readonly<Record<string, unknown>> = merged.value
-							assert.deepStrictEqual(
-								Arr.sort(Record.keys(record), Str.Order),
-								Arr.sort([...appNames, ...listed], Str.Order)
-							)
-							Arr.forEach(Arr.flatten(fragments), (declaration) =>
-								assert.strictEqual(record[declaration.name], declaration)
-							)
-							Arr.forEach(appNames, (name) => assert.strictEqual(record[name], app[name]))
-						}
-					})
-			)
-		)
-)

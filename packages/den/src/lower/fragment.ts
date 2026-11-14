@@ -21,8 +21,8 @@ import { type Base, type Column, errorShapeOf, type Shape, shapeOf } from "#lowe
 /**
  * A flow lowered to a fragment, as data: the rosters, contracts, relations and laws the app spreads into its own
  * `schema(...)`, every name under the flow's prefix, and the kinds, joins and edges the programs and the binding are
- * printed from. The fragment's relations are an ordered list, the form grizzle's `schema()` takes once CLASH lands; the
- * one conversion to the record it takes at `a226cbac` is `lower/merge.ts`'s.
+ * printed from. The fragment's relations are an ordered list, the form grizzle's `schema()` takes, which refuses two
+ * declarations of one name that differ as `DuplicateIdentity`.
  *
  * Three groups of relations, by who writes them. The graph (scopes, steps, claims, results, values, edges) is
  * insert-only for every role, its every law a key, a containment or a row check, so den's role and the app's writer

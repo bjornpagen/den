@@ -1,4 +1,4 @@
 [submodule "vendor/grizzle"]
 	path = vendor/grizzle
 	url = https://github.com/bjornpagen/grizzle.git
-	branch = live
+	branch = main

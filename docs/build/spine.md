@@ -48,8 +48,7 @@ logins passwords, and runs `grizzle uninstall` and drops the database when it en
 touched.
 
 Commands: `pnpm test` (unit), `pnpm test:network` (the slice), `pnpm --filter @bjornpagen/den generate:slice` (den
-generate, then oxfmt), and in `integration/slice`, `node --conditions=grizzle-source
-../../../../vendor/grizzle/packages/grizzle/src/cli/main.ts generate|check grizzle.config.ts`.
+generate, then oxfmt), and in `integration/slice`, `pnpm exec grizzle generate|check grizzle.config.ts`.
 
 ## The graph as relations
 
