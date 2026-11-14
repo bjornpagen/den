@@ -5,10 +5,10 @@ import { batchMessages, maxDelaySeconds } from "#limits.ts"
 import { type Queue, TOPIC, VercelQueue, WakeJson } from "#queue.ts"
 
 /**
- * Sending wakes. Each is one message on the one topic, keyed by the contract's idempotency key, one per step attempt
- * and one per admission, so a send retried or rung twice for one of them is delivered once; an exact timer is the
- * message's delay. A send that fails is logged and never fails its caller: the relay or the census rings again every
- * step a lost wake would have.
+ * Sending rings. Each is one message on the one topic, keyed by the contract's idempotency key, its wake and the cause
+ * that rang it, so a ring sent again by its cause is delivered once, while a wake another cause rings (a later tick,
+ * another commit) is sent anew, whatever became of the first; an exact timer is the message's delay. A send that fails
+ * is logged and never fails its caller: the relay or the census rings again every step a lost wake would have.
  */
 
 /** A batch send that threw: no message of it is known to have been accepted, though some may have been. */
@@ -18,13 +18,13 @@ class SendFailed extends Schema.TaggedError<SendFailed, { readonly brand: unique
 ) {}
 
 /**
- * The message a ring is sent as: its wake's JSON under the wake's key, held back for its delay in whole seconds, rounded
+ * The message a ring is sent as: its wake's JSON under the ring's key, held back for its delay in whole seconds, rounded
  * up so a timer never rings early. A ring held longer than a message may be delayed is not sent: the census rings its
  * step once it is due.
  */
 export const messageOf = (ring: Ring): Effect.Effect<Option.Option<BatchSendMessage<string>>> =>
 	Effect.map(Effect.orDie(Schema.encodeEffect(WakeJson)(ring.wake)), (payload) => {
-		const key = idempotencyKey(ring.wake)
+		const key = idempotencyKey(ring)
 		const delaySeconds = Math.ceil(Duration.toMillis(ring.delay) / 1000)
 		if (delaySeconds > maxDelaySeconds.value) {
 			return Option.none()

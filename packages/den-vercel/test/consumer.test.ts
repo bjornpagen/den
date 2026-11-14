@@ -1,5 +1,5 @@
 import { caseHang } from "@bjornpagen/den/limits"
-import { idempotencyKey, type Wake, WakeSchema } from "@bjornpagen/den/transport"
+import { type Wake, WakeSchema, wakeText } from "@bjornpagen/den/transport"
 import { type Case, drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import {
@@ -158,16 +158,14 @@ it.effect("the consumer acknowledges every delivery, a stale ending included", (
 					)
 					const outcomes = new Map(
 						Arr.flatMap(bodies, (b) =>
-							Option.toArray(
-								Option.map(b.wake, (w) => [idempotencyKey(w.wake), w.outcome] as const)
-							)
+							Option.toArray(Option.map(b.wake, (w) => [wakeText(w.wake), w.outcome] as const))
 						)
 					)
 					const served: Array<Wake> = []
 					const route = yield* consumer((wake: Wake) =>
 						Effect.suspend(() => {
 							served.push(wake)
-							const outcome = outcomes.get(idempotencyKey(wake)) ?? "done"
+							const outcome = outcomes.get(wakeText(wake)) ?? "done"
 							return outcome === "dies"
 								? Effect.die("the runtime died")
 								: outcome === "interrupted"

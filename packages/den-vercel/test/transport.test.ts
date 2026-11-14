@@ -1,5 +1,12 @@
 import { censusPeriodSeconds, caseHang } from "@bjornpagen/den/limits"
-import { idempotencyKey, type Ring, type Wake, WakeSchema } from "@bjornpagen/den/transport"
+import {
+	type Cause,
+	idempotencyKey,
+	type Ring,
+	type Wake,
+	WakeSchema,
+	wakeText
+} from "@bjornpagen/den/transport"
 import { type Case, drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { constant, element, type Gen, int, oneOf, weighted } from "@bjornpagen/testing/gen"
@@ -14,37 +21,59 @@ import {
 	Equal,
 	Formatter,
 	Option,
-	Order,
 	Record as Rec,
 	Schema
 } from "effect"
 import { consumer } from "#consumer.ts"
-import {
-	batchMessages,
-	maxDelaySeconds,
-	maxDeliveries,
-	retentionSeconds,
-	visibilityTimeoutSeconds
-} from "#limits.ts"
+import { batchMessages, maxDelaySeconds, maxDeliveries, visibilityTimeoutSeconds } from "#limits.ts"
 import { TOPIC, VercelQueue, WakeJson } from "#queue.ts"
 import { sender } from "#send.ts"
-import { type Fake, type Fates, fake, faultless } from "#test/fake.ts"
-import { type Encoded, encodedWake, wakes } from "#test/wakes.ts"
+import { type Fake, type Fates, fake, faultless, type Submitted } from "#test/fake.ts"
+import {
+	type Encoded,
+	type EncodedCause,
+	type EncodedRing,
+	encodedWake,
+	ringOf,
+	rings
+} from "#test/wakes.ts"
 
 /**
- * The transport against a fake of Vercel Queues that drops, duplicates, delays and redelivers: every wake sent is
- * delivered at least once or healed by a census; keys never collide across distinct wakes, and repeat for a wake rung
- * twice; a timer is held for its delay and never less.
+ * The transport against a fake of Vercel Queues that drops, duplicates, delays and redelivers: every wake a ring sends
+ * is delivered at least once or healed by a census; keys never collide across distinct rings, and repeat for a ring its
+ * cause sends again, while a wake two causes ring is sent for each; a timer is held for its delay and never less.
  */
 
-const decoded = (encoded: ReadonlyArray<Encoded>) =>
-	Effect.orDie(Effect.forEach(encoded, (wake) => Schema.decodeUnknownEffect(WakeSchema)(wake)))
+const wakeOf = (encoded: Encoded): Effect.Effect<Wake> =>
+	Effect.orDie(Schema.decodeUnknownEffect(WakeSchema)(encoded))
+
+const causeOf = (encoded: EncodedCause): Effect.Effect<Cause> => {
+	switch (encoded._tag) {
+		case "Turn":
+			return Effect.map(wakeOf(encoded.by), (by): Cause => ({ _tag: "Turn", by, at: encoded.at }))
+		case "Relay":
+		case "Census":
+		case "Start":
+			return Effect.succeed(encoded)
+	}
+}
+
+/** A drawn ring as the core rings it, held back for `delay`. */
+const ringFrom = (encoded: EncodedRing, delay: Duration.Duration): Effect.Effect<Ring> =>
+	Effect.zipWith(wakeOf(encoded.wake), causeOf(encoded.cause), (wake, cause) => ({
+		wake,
+		delay,
+		cause
+	}))
+
+/** What a ring names, its wake and its cause, without its delay. */
+const rang = (ring: Ring) => ({ wake: ring.wake, cause: ring.cause })
 
 /** den's transport and consumer over a fake whose consumer group reads `maxDeliveries` from its trigger. */
 const harness = (queue: Fake) => ({
-	send: (rings: ReadonlyArray<Ring>) =>
+	send: (sent: ReadonlyArray<Ring>) =>
 		Effect.flatMap(Effect.provideService(sender, VercelQueue, queue.queue), (transport) =>
-			transport.send(rings)
+			transport.send(sent)
 		),
 	route: <A>(serve: (wake: Wake) => Effect.Effect<A>) =>
 		consumer(serve).pipe(Effect.provideService(VercelQueue, queue.queue))
@@ -54,14 +83,14 @@ type Healing =
 	| "delivered at once"
 	| "refused, then rung by the census"
 	| "lost before acceptance, then rung by the census"
-	| "lost after acceptance, the census's ring deduplicated"
+	| "a ring its cause sent again, deduplicated"
 	| "redelivered after a lapsed lease"
-	| "dropped after its deliveries, then rung past its key's window"
+	| "dropped after its deliveries, then rung by the census"
 	| "delivered twice"
 
-/** A run of the transport: the wakes a commit sends, the faults the queue may still inflict, its trigger's ceiling. */
+/** A run of the transport: the rings the core sends, the faults the queue may still inflict, its trigger's ceiling. */
 interface Run {
-	readonly wakes: ReadonlyArray<Encoded>
+	readonly rings: ReadonlyArray<EncodedRing>
 	readonly faults: number
 	readonly maxDeliveries: number
 }
@@ -97,12 +126,12 @@ const faulty = (c: Case<Healing>, budget: number): Fates => {
 const period = censusPeriodSeconds.value * 1000
 
 const run: Gen<Run> = (source) => ({
-	wakes: source.draw(wakes({ min: 1, max: 5 })),
+	rings: source.draw(rings({ min: 1, max: 5 })),
 	faults: source.draw(int(0, 6)),
 	maxDeliveries: source.draw(oneOf([int(1, 2), constant(maxDeliveries.value)]))
 })
 
-it.effect("every wake sent is delivered at least once or healed by a census", (ctx) =>
+it.effect("every wake a ring sends is delivered at least once or healed by a census", (ctx) =>
 	searched(
 		ctx,
 		explore(
@@ -110,7 +139,7 @@ it.effect("every wake sent is delivered at least once or healed by a census", (c
 				suite: "delivered or healed",
 				oracle: {
 					kind: "specification",
-					name: "every wake sent is heard by the runtime before the horizon its faults allow"
+					name: "every wake a ring sends is heard by the runtime before the horizon its faults allow"
 				},
 				draw: drawn(run),
 				literal: Formatter.format,
@@ -119,9 +148,9 @@ it.effect("every wake sent is delivered at least once or healed by a census", (c
 						"delivered at once",
 						"refused, then rung by the census",
 						"lost before acceptance, then rung by the census",
-						"lost after acceptance, the census's ring deduplicated",
+						"a ring its cause sent again, deduplicated",
 						"redelivered after a lapsed lease",
-						"dropped after its deliveries, then rung past its key's window",
+						"dropped after its deliveries, then rung by the census",
 						"delivered twice"
 					],
 					{ cases: 200, sense: notesOnly }
@@ -135,7 +164,9 @@ it.effect("every wake sent is delivered at least once or healed by a census", (c
 			},
 			(drawnRun, c) =>
 				Effect.gen(function* () {
-					const sent = yield* decoded(drawnRun.wakes)
+					const sent = yield* Effect.forEach(drawnRun.rings, (ring) =>
+						ringFrom(ring, Duration.zero)
+					)
 					const queue = fake(
 						{ topic: TOPIC, maxDeliveries: drawnRun.maxDeliveries },
 						faulty(c, drawnRun.faults)
@@ -144,16 +175,17 @@ it.effect("every wake sent is delivered at least once or healed by a census", (c
 					const heard = new Map<string, number>()
 					const route = yield* routeOf((wake) =>
 						Effect.sync(() => {
-							const key = idempotencyKey(wake)
-							heard.set(key, (heard.get(key) ?? 0) + 1)
+							const text = wakeText(wake)
+							heard.set(text, (heard.get(text) ?? 0) + 1)
 						})
 					)
-					const keys = Arr.dedupe(Arr.map(sent, idempotencyKey))
-					const unheard = () => Arr.filter(sent, (wake) => !heard.has(idempotencyKey(wake)))
+					const wakes = Arr.dedupeWith(
+						Arr.map(sent, (ring) => ring.wake),
+						Equal.equals
+					)
+					const unheard = () => Arr.filter(wakes, (wake) => !heard.has(wakeText(wake)))
 					const lease = visibilityTimeoutSeconds.value * 1000
-					const horizon =
-						(drawnRun.faults + 1) *
-						(retentionSeconds.value * 1000 + drawnRun.maxDeliveries * lease + 2 * period)
+					const horizon = (drawnRun.faults + 1) * (drawnRun.maxDeliveries * lease + 2 * period)
 					yield* send(sent)
 					while (Arr.isReadonlyArrayNonEmpty(unheard()) && queue.now() <= horizon) {
 						yield* queue.deliverDue(route)
@@ -161,27 +193,33 @@ it.effect("every wake sent is delivered at least once or healed by a census", (c
 						if (!Arr.isReadonlyArrayNonEmpty(waiting)) {
 							break
 						}
-						const held = Arr.map(waiting, (wake) => queue.holdsKey(idempotencyKey(wake)))
-						const windows = Arr.getSomes(held)
-						const census =
-							Arr.isReadonlyArrayNonEmpty(windows) && windows.length === held.length
-								? Math.ceil(Arr.min(windows, Order.Number) / period) * period
-								: (Math.floor(queue.now() / period) + 1) * period
+						const census = (Math.floor(queue.now() / period) + 1) * period
 						const delivery = Option.getOrElse(queue.nextDelivery(), () => census)
 						queue.advance(Math.min(census, delivery))
 						if (census <= delivery) {
-							yield* send(waiting)
+							yield* send(
+								Arr.map(waiting, (wake): Ring => ({
+									wake,
+									delay: Duration.zero,
+									cause: { _tag: "Census", at: census }
+								}))
+							)
 						}
 					}
 					assert.deepStrictEqual(
-						Arr.map(unheard(), idempotencyKey),
+						Arr.map(unheard(), wakeText),
 						[],
 						"a wake neither delivered nor healed before its horizon"
 					)
 					const submitted = queue.submitted()
 					const delivered = queue.delivered()
-					const later = (key: string, outcome: string) =>
-						Arr.some(submitted, (s) => Option.contains(s.key, key) && s.outcome === outcome)
+					const sentFirst = (outcome: Submitted["outcome"]) =>
+						Arr.filter(submitted, (s) => s.at === 0 && s.outcome === outcome)
+					const rungByCensus = (payload: string) =>
+						Arr.some(
+							submitted,
+							(s) => s.at > 0 && s.payload === payload && s.outcome === "accepted"
+						)
 					if (
 						Arr.some(
 							delivered,
@@ -190,38 +228,27 @@ it.effect("every wake sent is delivered at least once or healed by a census", (c
 					) {
 						c.note("delivered at once")
 					}
-					if (Arr.some(keys, (key) => later(key, "refused") && later(key, "accepted"))) {
+					if (Arr.some(sentFirst("refused"), (s) => rungByCensus(s.payload))) {
 						c.note("refused, then rung by the census")
 					}
-					if (
-						Arr.some(
-							keys,
-							(key) =>
-								Arr.some(submitted, (s) => Option.contains(s.key, key) && s.outcome === "lost") &&
-								later(key, "accepted")
-						)
-					) {
+					if (Arr.some(sentFirst("lost"), (s) => rungByCensus(s.payload))) {
 						c.note("lost before acceptance, then rung by the census")
 					}
-					if (Arr.some(submitted, (s) => s.outcome === "deduplicated")) {
-						c.note("lost after acceptance, the census's ring deduplicated")
+					if (Arr.isReadonlyArrayNonEmpty(sentFirst("deduplicated"))) {
+						c.note("a ring its cause sent again, deduplicated")
 					}
 					if (Arr.some(delivered, (d) => d.count > 1)) {
 						c.note("redelivered after a lapsed lease")
 					}
 					if (
 						Arr.some(queue.dropped(), (key) =>
-							Option.exists(
-								key,
-								(k) =>
-									Arr.filter(
-										submitted,
-										(s) => Option.contains(s.key, k) && s.outcome === "accepted"
-									).length > 1
+							Arr.some(
+								submitted,
+								(s) => Option.isSome(key) && Equal.equals(s.key, key) && rungByCensus(s.payload)
 							)
 						)
 					) {
-						c.note("dropped after its deliveries, then rung past its key's window")
+						c.note("dropped after its deliveries, then rung by the census")
 					}
 					if (Arr.some(delivered, (d) => d.fate === "doubled")) {
 						c.note("delivered twice")
@@ -231,15 +258,19 @@ it.effect("every wake sent is delivered at least once or healed by a census", (c
 	)
 )
 
-type Keying = "a wake rung twice" | "distinct wakes" | "more wakes than one batch holds"
+type Keying =
+	| "a ring its cause sent again"
+	| "a wake two causes rang"
+	| "distinct wakes"
+	| "more rings than one batch holds"
 
-const many: Gen<ReadonlyArray<Encoded>> = oneOf([
-	wakes({ min: 1, max: 8 }),
-	wakes({ min: batchMessages.value + 1, max: 2 * batchMessages.value + 5 })
+const many: Gen<ReadonlyArray<EncodedRing>> = oneOf([
+	rings({ min: 1, max: 8 }),
+	rings({ min: batchMessages.value + 1, max: 2 * batchMessages.value + 5 })
 ])
 
 it.effect(
-	"keys never collide across distinct wakes, and a wake rung twice is delivered once",
+	"keys never collide across distinct rings, a ring its cause sends again is delivered once, and a wake is delivered once for each cause that rang it",
 	(ctx) =>
 		searched(
 			ctx,
@@ -248,12 +279,17 @@ it.effect(
 					suite: "keys",
 					oracle: {
 						kind: "universal",
-						name: "key(a) = key(b) ⇔ a = b over every message sent, each payload the wake it keys"
+						name: "key(a) = key(b) ⇔ a and b ring one wake for one cause, over every message sent, each payload the wake it keys"
 					},
 					draw: drawn(many),
 					literal: Formatter.format,
 					coverage: required<Keying>(
-						["a wake rung twice", "distinct wakes", "more wakes than one batch holds"],
+						[
+							"a ring its cause sent again",
+							"a wake two causes rang",
+							"distinct wakes",
+							"more rings than one batch holds"
+						],
 						{
 							cases: 40,
 							sense: notesOnly
@@ -268,13 +304,13 @@ it.effect(
 				},
 				(encoded, c) =>
 					Effect.gen(function* () {
-						const sent = yield* decoded(encoded)
+						const sent = yield* Effect.forEach(encoded, (ring) => ringFrom(ring, Duration.zero))
 						const queue = fake({ topic: TOPIC, maxDeliveries: maxDeliveries.value }, faultless)
 						const { send, route: routeOf } = harness(queue)
 						const heard = new Map<string, number>()
 						const route = yield* routeOf((wake) =>
 							Effect.sync(() => {
-								heard.set(idempotencyKey(wake), (heard.get(idempotencyKey(wake)) ?? 0) + 1)
+								heard.set(wakeText(wake), (heard.get(wakeText(wake)) ?? 0) + 1)
 							})
 						)
 						yield* send(sent)
@@ -285,7 +321,10 @@ it.effect(
 						const payloads = yield* Effect.orDie(
 							Effect.forEach(submitted, (s) => Schema.decodeEffect(WakeJson)(s.payload))
 						)
-						assert.deepStrictEqual(payloads, sent)
+						assert.deepStrictEqual(
+							payloads,
+							Arr.map(sent, (ring) => ring.wake)
+						)
 						assert.deepStrictEqual(
 							Arr.map(submitted, (s) => Option.getOrUndefined(s.key)),
 							Arr.map(sent, idempotencyKey)
@@ -293,26 +332,33 @@ it.effect(
 						const byKey = Arr.groupBy(sent, idempotencyKey)
 						Arr.forEach(Rec.values(byKey), (group) => {
 							assert.isTrue(
-								Arr.every(group, (wake) => Equal.equals(wake, group[0])),
-								"one key, two wakes"
+								Arr.every(group, (ring) => Equal.equals(rang(ring), rang(group[0]))),
+								"one key, two rings"
 							)
 						})
-						const distinct = Arr.dedupeWith(sent, Equal.equals)
-						assert.strictEqual(Rec.size(byKey), distinct.length, "two wakes, one key")
+						const distinct = Arr.dedupeWith(Arr.map(sent, rang), Equal.equals)
+						assert.strictEqual(Rec.size(byKey), distinct.length, "two rings, one key")
+						const wakes = Arr.dedupeWith(
+							Arr.map(sent, (ring) => ring.wake),
+							Equal.equals
+						)
+						const causesOf = (wake: Wake) =>
+							Arr.filter(distinct, (ring) => Equal.equals(ring.wake, wake)).length
 						if (distinct.length < sent.length) {
-							c.note("a wake rung twice")
+							c.note("a ring its cause sent again")
 						}
-						if (distinct.length > 1) {
+						if (Arr.some(wakes, (wake) => causesOf(wake) > 1)) {
+							c.note("a wake two causes rang")
+						}
+						if (wakes.length > 1) {
 							c.note("distinct wakes")
 						}
 						if (sent.length > batchMessages.value) {
-							c.note("more wakes than one batch holds")
+							c.note("more rings than one batch holds")
 						}
-						const keys = Arr.dedupe(Arr.map(sent, idempotencyKey))
-						assert.strictEqual(heard.size, keys.length)
 						assert.deepStrictEqual(
-							Arr.map(keys, (key) => heard.get(key)),
-							Arr.map(keys, () => 1)
+							Arr.map(wakes, (wake) => heard.get(wakeText(wake))),
+							Arr.map(wakes, causesOf)
 						)
 					})
 			)
@@ -322,12 +368,12 @@ it.effect(
 type Timing = "at once" | "held back" | "past the longest delay"
 
 interface Timer {
-	readonly wake: Encoded
+	readonly ring: EncodedRing
 	readonly delayMillis: number
 }
 
 const timer: Gen<Timer> = (source) => ({
-	wake: source.draw(encodedWake),
+	ring: source.draw(ringOf(encodedWake)),
 	delayMillis: source.draw(
 		oneOf([
 			constant(0),
@@ -364,16 +410,15 @@ it.effect(
 				},
 				(drawnTimer, c) =>
 					Effect.gen(function* () {
-						const wake = yield* Effect.orDie(
-							Schema.decodeUnknownEffect(WakeSchema)(drawnTimer.wake)
-						)
+						const ring = yield* ringFrom(drawnTimer.ring, Duration.millis(drawnTimer.delayMillis))
+						const wake = ring.wake
 						const queue = fake({ topic: TOPIC, maxDeliveries: maxDeliveries.value }, faultless)
 						const heard: Array<Wake> = []
 						const route = yield* consumer((delivered: Wake) =>
 							Effect.sync(() => heard.push(delivered))
 						).pipe(Effect.provideService(VercelQueue, queue.queue))
 						const { send } = yield* Effect.provideService(sender, VercelQueue, queue.queue)
-						yield* send([{ wake, delay: Duration.millis(drawnTimer.delayMillis) }])
+						yield* send([ring])
 						const dueSeconds = Math.ceil(drawnTimer.delayMillis / 1000)
 						const due = dueSeconds * 1000
 						if (dueSeconds > maxDelaySeconds.value) {
