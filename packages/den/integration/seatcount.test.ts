@@ -7,6 +7,7 @@ import { exhaust } from "@bjornpagen/testing/explore"
 import { requiredInSpace } from "@bjornpagen/testing/features"
 import { boolean, type Gen } from "@bjornpagen/testing/gen"
 import { searched } from "@bjornpagen/testing/vitest"
+import { testWorkers } from "@bjornpagen/testing/workers"
 import { NodeServices } from "@effect/platform-node"
 import { assert, layer } from "@effect/vitest"
 import {
@@ -130,7 +131,8 @@ layer(NodeServices.layer, { excludeTestServices: true })("seat counts", (it) => 
 									kind: "postgresql",
 									name: "grizzle migrate to one Pool seat, validating each hold's seat below the count"
 								},
-								concurrency: 1
+								/** Each case migrates its own database; both slice folders are read-only input. */
+								concurrency: testWorkers
 							},
 							(seat, c) =>
 								Effect.gen(function* () {
