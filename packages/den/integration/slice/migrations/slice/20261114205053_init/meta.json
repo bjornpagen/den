@@ -1513,7 +1513,7 @@
 				"steps": [
 					{
 						"kind": "statement",
-						"statement": "CREATE PUBLICATION \"__live_slice_wzkq6p2yii\"\n  FOR TABLE \"slice\".\"audit\" (\"step\"), \"slice\".\"built\" (\"build\"), \"slice\".\"chain_admitted\" (\"scope\"), \"slice\".\"chain_chain_run_input\" (\"scope\"), \"slice\".\"chain_claim\" (\"step\", \"attempt\"), \"slice\".\"chain_due\" (\"step\"), \"slice\".\"chain_finish\" (\"scope\"), \"slice\".\"chain_held\" (\"step\"), \"slice\".\"chain_next\" (\"from\", \"ordinal\"), \"slice\".\"chain_ordered_input\" (\"scope\"), \"slice\".\"chain_page_input\" (\"step\"), \"slice\".\"chain_page_input_after\" (\"step\"), \"slice\".\"chain_page_output\" (\"step\"), \"slice\".\"chain_page_output_next\" (\"step\"), \"slice\".\"chain_page_read\" (\"step\", \"ordinal\"), \"slice\".\"chain_paused\" (\"target\", \"turn\"), \"slice\".\"chain_result\" (\"step\"), \"slice\".\"chain_resumed\" (\"target\", \"turn\"), \"slice\".\"chain_retry\" (\"step\", \"attempt\"), \"slice\".\"chain_root\" (\"scope\"), \"slice\".\"chain_scope\" (\"scope\"), \"slice\".\"chain_skipped\" (\"scope\"), \"slice\".\"chain_start_scope\" (\"scope\", \"ordinal\"), \"slice\".\"chain_start_step\" (\"scope\", \"ordinal\"), \"slice\".\"chain_step\", \"slice\".\"chain_within\", \"slice\".\"copied\" (\"relation\", \"run\"), \"slice\".\"cursor\" (\"feed\", \"position\"), \"slice\".\"fan_admitted\" (\"scope\"), \"slice\".\"fan_batch_input\" (\"scope\"), \"slice\".\"fan_claim\" (\"step\", \"attempt\"), \"slice\".\"fan_due\" (\"step\"), \"slice\".\"fan_fan_run_input\" (\"scope\"), \"slice\".\"fan_finish\" (\"scope\"), \"slice\".\"fan_freed\" (\"resource\", \"seat\", \"turn\"), \"slice\".\"fan_held\" (\"step\"), \"slice\".\"fan_hold\" (\"resource\", \"seat\", \"turn\"), \"slice\".\"fan_paused\" (\"target\", \"turn\"), \"slice\".\"fan_result\" (\"step\"), \"slice\".\"fan_resumed\" (\"target\", \"turn\"), \"slice\".\"fan_retry\" (\"step\", \"attempt\"), \"slice\".\"fan_root\" (\"scope\"), \"slice\".\"fan_scope\" (\"scope\"), \"slice\".\"fan_skipped\" (\"scope\"), \"slice\".\"fan_square_input\" (\"step\"), \"slice\".\"fan_square_output\" (\"step\"), \"slice\".\"fan_start_scope\" (\"scope\", \"ordinal\"), \"slice\".\"fan_start_step\" (\"scope\", \"ordinal\"), \"slice\".\"fan_step\", \"slice\".\"fan_within\", \"slice\".\"item\" (\"feed\", \"seq\", \"n\"), \"slice\".\"retry_admitted\" (\"scope\"), \"slice\".\"retry_brittle_input\" (\"step\"), \"slice\".\"retry_brittle_output\" (\"step\"), \"slice\".\"retry_claim\" (\"step\", \"attempt\"), \"slice\".\"retry_due\" (\"step\"), \"slice\".\"retry_exhausted\" (\"step\"), \"slice\".\"retry_finish\" (\"scope\"), \"slice\".\"retry_held\" (\"step\"), \"slice\".\"retry_ladders_input\" (\"scope\"), \"slice\".\"retry_paused\" (\"target\", \"turn\"), \"slice\".\"retry_result\" (\"step\"), \"slice\".\"retry_resumed\" (\"target\", \"turn\"), \"slice\".\"retry_retry\" (\"step\", \"attempt\"), \"slice\".\"retry_root\" (\"scope\"), \"slice\".\"retry_scope\" (\"scope\"), \"slice\".\"retry_skipped\" (\"scope\"), \"slice\".\"retry_steadfast_input\" (\"step\"), \"slice\".\"retry_steadfast_output\" (\"step\"), \"slice\".\"retry_step\", \"slice\".\"retry_within\", \"slice\".\"settled\" (\"batch\"), \"slice\".\"sync_admitted\" (\"scope\"), \"slice\".\"sync_build_input\" (\"step\"), \"slice\".\"sync_claim\" (\"step\", \"attempt\"), \"slice\".\"sync_copy_input\" (\"step\"), \"slice\".\"sync_due\" (\"step\"), \"slice\".\"sync_exclusive\" (\"kind\", \"key\", \"turn\"), \"slice\".\"sync_exclusive_key\" (\"scope\"), \"slice\".\"sync_finish\" (\"scope\"), \"slice\".\"sync_gold_input\" (\"scope\"), \"slice\".\"sync_held\" (\"step\"), \"slice\".\"sync_paused\" (\"target\", \"turn\"), \"slice\".\"sync_released\" (\"kind\", \"key\", \"turn\"), \"slice\".\"sync_result\" (\"step\"), \"slice\".\"sync_resumed\" (\"target\", \"turn\"), \"slice\".\"sync_retry\" (\"step\", \"attempt\"), \"slice\".\"sync_root\" (\"scope\"), \"slice\".\"sync_scope\" (\"scope\"), \"slice\".\"sync_skipped\" (\"scope\"), \"slice\".\"sync_step\", \"slice\".\"sync_sync_run_input\" (\"scope\"), \"slice\".\"sync_within\", \"slice\".\"tally\" (\"batch\"), \"slice\".\"weight\" (\"feed\", \"factor\"), \"slice\".\"__ledger\"\n  WITH (publish_generated_columns = stored)"
+						"statement": "CREATE PUBLICATION \"__live_wzkq6p2yii\"\n  FOR TABLE \"slice\".\"audit\" (\"step\"), \"slice\".\"built\" (\"build\"), \"slice\".\"chain_admitted\" (\"scope\"), \"slice\".\"chain_chain_run_input\" (\"scope\"), \"slice\".\"chain_claim\" (\"step\", \"attempt\"), \"slice\".\"chain_due\" (\"step\"), \"slice\".\"chain_finish\" (\"scope\"), \"slice\".\"chain_held\" (\"step\"), \"slice\".\"chain_next\" (\"from\", \"ordinal\"), \"slice\".\"chain_ordered_input\" (\"scope\"), \"slice\".\"chain_page_input\" (\"step\"), \"slice\".\"chain_page_input_after\" (\"step\"), \"slice\".\"chain_page_output\" (\"step\"), \"slice\".\"chain_page_output_next\" (\"step\"), \"slice\".\"chain_page_read\" (\"step\", \"ordinal\"), \"slice\".\"chain_paused\" (\"target\", \"turn\"), \"slice\".\"chain_result\" (\"step\"), \"slice\".\"chain_resumed\" (\"target\", \"turn\"), \"slice\".\"chain_retry\" (\"step\", \"attempt\"), \"slice\".\"chain_root\" (\"scope\"), \"slice\".\"chain_scope\" (\"scope\"), \"slice\".\"chain_skipped\" (\"scope\"), \"slice\".\"chain_start_scope\" (\"scope\", \"ordinal\"), \"slice\".\"chain_start_step\" (\"scope\", \"ordinal\"), \"slice\".\"chain_step\", \"slice\".\"chain_within\", \"slice\".\"copied\" (\"relation\", \"run\"), \"slice\".\"cursor\" (\"feed\", \"position\"), \"slice\".\"fan_admitted\" (\"scope\"), \"slice\".\"fan_batch_input\" (\"scope\"), \"slice\".\"fan_claim\" (\"step\", \"attempt\"), \"slice\".\"fan_due\" (\"step\"), \"slice\".\"fan_fan_run_input\" (\"scope\"), \"slice\".\"fan_finish\" (\"scope\"), \"slice\".\"fan_freed\" (\"resource\", \"seat\", \"turn\"), \"slice\".\"fan_held\" (\"step\"), \"slice\".\"fan_hold\" (\"resource\", \"seat\", \"turn\"), \"slice\".\"fan_paused\" (\"target\", \"turn\"), \"slice\".\"fan_result\" (\"step\"), \"slice\".\"fan_resumed\" (\"target\", \"turn\"), \"slice\".\"fan_retry\" (\"step\", \"attempt\"), \"slice\".\"fan_root\" (\"scope\"), \"slice\".\"fan_scope\" (\"scope\"), \"slice\".\"fan_skipped\" (\"scope\"), \"slice\".\"fan_square_input\" (\"step\"), \"slice\".\"fan_square_output\" (\"step\"), \"slice\".\"fan_start_scope\" (\"scope\", \"ordinal\"), \"slice\".\"fan_start_step\" (\"scope\", \"ordinal\"), \"slice\".\"fan_step\", \"slice\".\"fan_within\", \"slice\".\"item\" (\"feed\", \"seq\", \"n\"), \"slice\".\"retry_admitted\" (\"scope\"), \"slice\".\"retry_brittle_input\" (\"step\"), \"slice\".\"retry_brittle_output\" (\"step\"), \"slice\".\"retry_claim\" (\"step\", \"attempt\"), \"slice\".\"retry_due\" (\"step\"), \"slice\".\"retry_exhausted\" (\"step\"), \"slice\".\"retry_finish\" (\"scope\"), \"slice\".\"retry_held\" (\"step\"), \"slice\".\"retry_ladders_input\" (\"scope\"), \"slice\".\"retry_paused\" (\"target\", \"turn\"), \"slice\".\"retry_result\" (\"step\"), \"slice\".\"retry_resumed\" (\"target\", \"turn\"), \"slice\".\"retry_retry\" (\"step\", \"attempt\"), \"slice\".\"retry_root\" (\"scope\"), \"slice\".\"retry_scope\" (\"scope\"), \"slice\".\"retry_skipped\" (\"scope\"), \"slice\".\"retry_steadfast_input\" (\"step\"), \"slice\".\"retry_steadfast_output\" (\"step\"), \"slice\".\"retry_step\", \"slice\".\"retry_within\", \"slice\".\"settled\" (\"batch\"), \"slice\".\"sync_admitted\" (\"scope\"), \"slice\".\"sync_build_input\" (\"step\"), \"slice\".\"sync_claim\" (\"step\", \"attempt\"), \"slice\".\"sync_copy_input\" (\"step\"), \"slice\".\"sync_due\" (\"step\"), \"slice\".\"sync_exclusive\" (\"kind\", \"key\", \"turn\"), \"slice\".\"sync_exclusive_key\" (\"scope\"), \"slice\".\"sync_finish\" (\"scope\"), \"slice\".\"sync_gold_input\" (\"scope\"), \"slice\".\"sync_held\" (\"step\"), \"slice\".\"sync_paused\" (\"target\", \"turn\"), \"slice\".\"sync_released\" (\"kind\", \"key\", \"turn\"), \"slice\".\"sync_result\" (\"step\"), \"slice\".\"sync_resumed\" (\"target\", \"turn\"), \"slice\".\"sync_retry\" (\"step\", \"attempt\"), \"slice\".\"sync_root\" (\"scope\"), \"slice\".\"sync_scope\" (\"scope\"), \"slice\".\"sync_skipped\" (\"scope\"), \"slice\".\"sync_step\", \"slice\".\"sync_sync_run_input\" (\"scope\"), \"slice\".\"sync_within\", \"slice\".\"tally\" (\"batch\"), \"slice\".\"weight\" (\"feed\", \"factor\"), \"slice\".\"__ledger\"\n  WITH (publish_generated_columns = stored)"
 					},
 					{
 						"kind": "statement",
@@ -1569,7 +1569,7 @@
 					},
 					{
 						"kind": "statement",
-						"statement": "CREATE ROLE :\"__live_slice_wzkq6p2yii\" LOGIN NOINHERIT"
+						"statement": "CREATE ROLE :\"__live_wzkq6p2yii\" LOGIN NOINHERIT"
 					},
 					{
 						"kind": "statement",
@@ -3489,11 +3489,11 @@
 					},
 					{
 						"kind": "statement",
-						"statement": "GRANT USAGE ON SCHEMA \"slice\" TO :\"__live_slice_wzkq6p2yii\""
+						"statement": "GRANT USAGE ON SCHEMA \"slice\" TO :\"__live_wzkq6p2yii\""
 					},
 					{
 						"kind": "statement",
-						"statement": "GRANT SELECT ON TABLE \"slice\".\"__live_secret\" TO :\"__live_slice_wzkq6p2yii\""
+						"statement": "GRANT SELECT ON TABLE \"slice\".\"__live_secret\" TO :\"__live_wzkq6p2yii\""
 					},
 					{
 						"kind": "statement",
@@ -5069,7 +5069,7 @@
 					},
 					{
 						"kind": "statement",
-						"statement": "COMMENT ON ROLE :\"__live_slice_wzkq6p2yii\" IS 'live source of slice'"
+						"statement": "COMMENT ON ROLE :\"__live_wzkq6p2yii\" IS 'live source of slice'"
 					}
 				]
 			}
@@ -5616,7 +5616,7 @@
 		"schema": "slice",
 		"schemaName": "Slice",
 		"source": "c05d81c6e77da49c56afb338cd23714f4001a82047304cab6c20b4bd05ef5165",
-		"target": "567191aea0be917ee28c408530d48f9a611915eb43869f98b500271e79ab2621"
+		"target": "9bfc276c9b6c7bd3e9bf75ed3671eb3edc0a5495de5c4f78bce191a0653c627d"
 	},
-	"seal": "812f92288f7533086519e40c5d49487ad1baf2d20ecce3a9674f9d71e9eed2c3"
+	"seal": "3593bd6bf7cf237f34a28acef53963214c2e8f1016981873113c46778cb9823a"
 }

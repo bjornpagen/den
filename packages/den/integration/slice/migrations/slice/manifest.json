@@ -3054,7 +3054,7 @@
 			{"kind":"comment","on":{"kind":"STATISTICS","name":{"name":"__fan_step_stats_kind_scope_xmuvugpu6n","schema":"slice"}},"text":"statistics FanStep(kind, scope)"},
 			{"kind":"comment","on":{"kind":"STATISTICS","name":{"name":"__retry_step_stats_kind_scope_osnqmvpfhd","schema":"slice"}},"text":"statistics RetryStep(kind, scope)"},
 			{"kind":"comment","on":{"kind":"STATISTICS","name":{"name":"__sync_exclusive_stats_key_kind_smed76p3zh","schema":"slice"}},"text":"statistics SyncExclusive(key, kind)"},
-			{"kind":"comment","on":{"kind":"ROLE","name":"__live_slice_wzkq6p2yii"},"text":"live source of slice"}
+			{"kind":"comment","on":{"kind":"ROLE","name":"__live_wzkq6p2yii"},"text":"live source of slice"}
 		],
 		"edges": [
 			{
@@ -7535,35 +7535,35 @@
 			},
 			{
 				"from": "replicaIdentity:slice.chain_step",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "replicaIdentity:slice.chain_within",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "replicaIdentity:slice.fan_step",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "replicaIdentity:slice.fan_within",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "replicaIdentity:slice.retry_step",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "replicaIdentity:slice.retry_within",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "replicaIdentity:slice.sync_step",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "replicaIdentity:slice.sync_within",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "role:slice__app",
@@ -7694,8 +7694,8 @@
 				"to": "privileges:slice__worker"
 			},
 			{
-				"from": "role:__live_slice_wzkq6p2yii",
-				"to": "privileges:__live_slice_wzkq6p2yii"
+				"from": "role:__live_wzkq6p2yii",
+				"to": "privileges:__live_wzkq6p2yii"
 			},
 			{
 				"from": "schema:slice",
@@ -7951,7 +7951,7 @@
 			},
 			{
 				"from": "schema:slice",
-				"to": "privileges:__live_slice_wzkq6p2yii"
+				"to": "privileges:__live_wzkq6p2yii"
 			},
 			{
 				"from": "schema:slice",
@@ -9519,7 +9519,7 @@
 			},
 			{
 				"from": "table:slice.__live_secret",
-				"to": "privileges:__live_slice_wzkq6p2yii"
+				"to": "privileges:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.audit",
@@ -9535,7 +9535,7 @@
 			},
 			{
 				"from": "table:slice.audit",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.audit",
@@ -9551,7 +9551,7 @@
 			},
 			{
 				"from": "table:slice.built",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.built",
@@ -9599,7 +9599,7 @@
 			},
 			{
 				"from": "table:slice.chain_admitted",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_admitted",
@@ -9631,7 +9631,7 @@
 			},
 			{
 				"from": "table:slice.chain_chain_run_input",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_chain_run_input",
@@ -9687,7 +9687,7 @@
 			},
 			{
 				"from": "table:slice.chain_claim",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_claim",
@@ -9751,7 +9751,7 @@
 			},
 			{
 				"from": "table:slice.chain_due",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_due",
@@ -9839,7 +9839,7 @@
 			},
 			{
 				"from": "table:slice.chain_finish",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_finish",
@@ -9875,7 +9875,7 @@
 			},
 			{
 				"from": "table:slice.chain_held",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_held",
@@ -9907,7 +9907,7 @@
 			},
 			{
 				"from": "table:slice.chain_next",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_next",
@@ -9943,7 +9943,7 @@
 			},
 			{
 				"from": "table:slice.chain_ordered_input",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_ordered_input",
@@ -9995,7 +9995,7 @@
 			},
 			{
 				"from": "table:slice.chain_page_input",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_page_input",
@@ -10027,7 +10027,7 @@
 			},
 			{
 				"from": "table:slice.chain_page_input_after",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_page_input_after",
@@ -10063,7 +10063,7 @@
 			},
 			{
 				"from": "table:slice.chain_page_output",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_page_output",
@@ -10091,7 +10091,7 @@
 			},
 			{
 				"from": "table:slice.chain_page_output_next",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_page_output_next",
@@ -10123,7 +10123,7 @@
 			},
 			{
 				"from": "table:slice.chain_page_read",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_page_read",
@@ -10163,7 +10163,7 @@
 			},
 			{
 				"from": "table:slice.chain_paused",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_paused",
@@ -10231,7 +10231,7 @@
 			},
 			{
 				"from": "table:slice.chain_result",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_result",
@@ -10267,7 +10267,7 @@
 			},
 			{
 				"from": "table:slice.chain_resumed",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_resumed",
@@ -10287,7 +10287,7 @@
 			},
 			{
 				"from": "table:slice.chain_retry",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_retry",
@@ -10319,7 +10319,7 @@
 			},
 			{
 				"from": "table:slice.chain_root",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_root",
@@ -10379,7 +10379,7 @@
 			},
 			{
 				"from": "table:slice.chain_scope",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_scope",
@@ -10415,7 +10415,7 @@
 			},
 			{
 				"from": "table:slice.chain_skipped",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_skipped",
@@ -10451,7 +10451,7 @@
 			},
 			{
 				"from": "table:slice.chain_start_scope",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_start_scope",
@@ -10491,7 +10491,7 @@
 			},
 			{
 				"from": "table:slice.chain_start_step",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_start_step",
@@ -10555,7 +10555,7 @@
 			},
 			{
 				"from": "table:slice.chain_step",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_step",
@@ -10607,7 +10607,7 @@
 			},
 			{
 				"from": "table:slice.chain_within",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.chain_within",
@@ -10635,7 +10635,7 @@
 			},
 			{
 				"from": "table:slice.copied",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.copied",
@@ -10655,7 +10655,7 @@
 			},
 			{
 				"from": "table:slice.cursor",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.cursor",
@@ -10699,7 +10699,7 @@
 			},
 			{
 				"from": "table:slice.fan_admitted",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_admitted",
@@ -10731,7 +10731,7 @@
 			},
 			{
 				"from": "table:slice.fan_batch_input",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_batch_input",
@@ -10787,7 +10787,7 @@
 			},
 			{
 				"from": "table:slice.fan_claim",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_claim",
@@ -10843,7 +10843,7 @@
 			},
 			{
 				"from": "table:slice.fan_due",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_due",
@@ -10923,7 +10923,7 @@
 			},
 			{
 				"from": "table:slice.fan_fan_run_input",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_fan_run_input",
@@ -10959,7 +10959,7 @@
 			},
 			{
 				"from": "table:slice.fan_finish",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_finish",
@@ -10991,7 +10991,7 @@
 			},
 			{
 				"from": "table:slice.fan_freed",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_freed",
@@ -11019,7 +11019,7 @@
 			},
 			{
 				"from": "table:slice.fan_held",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_held",
@@ -11059,7 +11059,7 @@
 			},
 			{
 				"from": "table:slice.fan_hold",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_hold",
@@ -11095,7 +11095,7 @@
 			},
 			{
 				"from": "table:slice.fan_paused",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_paused",
@@ -11155,7 +11155,7 @@
 			},
 			{
 				"from": "table:slice.fan_result",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_result",
@@ -11187,7 +11187,7 @@
 			},
 			{
 				"from": "table:slice.fan_resumed",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_resumed",
@@ -11207,7 +11207,7 @@
 			},
 			{
 				"from": "table:slice.fan_retry",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_retry",
@@ -11235,7 +11235,7 @@
 			},
 			{
 				"from": "table:slice.fan_root",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_root",
@@ -11291,7 +11291,7 @@
 			},
 			{
 				"from": "table:slice.fan_scope",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_scope",
@@ -11327,7 +11327,7 @@
 			},
 			{
 				"from": "table:slice.fan_skipped",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_skipped",
@@ -11359,7 +11359,7 @@
 			},
 			{
 				"from": "table:slice.fan_square_input",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_square_input",
@@ -11391,7 +11391,7 @@
 			},
 			{
 				"from": "table:slice.fan_square_output",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_square_output",
@@ -11427,7 +11427,7 @@
 			},
 			{
 				"from": "table:slice.fan_start_scope",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_start_scope",
@@ -11463,7 +11463,7 @@
 			},
 			{
 				"from": "table:slice.fan_start_step",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_start_step",
@@ -11523,7 +11523,7 @@
 			},
 			{
 				"from": "table:slice.fan_step",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_step",
@@ -11567,7 +11567,7 @@
 			},
 			{
 				"from": "table:slice.fan_within",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.fan_within",
@@ -11595,7 +11595,7 @@
 			},
 			{
 				"from": "table:slice.item",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.item",
@@ -11655,7 +11655,7 @@
 			},
 			{
 				"from": "table:slice.retry_admitted",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_admitted",
@@ -11687,7 +11687,7 @@
 			},
 			{
 				"from": "table:slice.retry_brittle_input",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_brittle_input",
@@ -11715,7 +11715,7 @@
 			},
 			{
 				"from": "table:slice.retry_brittle_output",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_brittle_output",
@@ -11767,7 +11767,7 @@
 			},
 			{
 				"from": "table:slice.retry_claim",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_claim",
@@ -11831,7 +11831,7 @@
 			},
 			{
 				"from": "table:slice.retry_due",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_due",
@@ -11855,7 +11855,7 @@
 			},
 			{
 				"from": "table:slice.retry_exhausted",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_exhausted",
@@ -11923,7 +11923,7 @@
 			},
 			{
 				"from": "table:slice.retry_finish",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_finish",
@@ -11955,7 +11955,7 @@
 			},
 			{
 				"from": "table:slice.retry_held",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_held",
@@ -11983,7 +11983,7 @@
 			},
 			{
 				"from": "table:slice.retry_ladders_input",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_ladders_input",
@@ -12019,7 +12019,7 @@
 			},
 			{
 				"from": "table:slice.retry_paused",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_paused",
@@ -12079,7 +12079,7 @@
 			},
 			{
 				"from": "table:slice.retry_result",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_result",
@@ -12111,7 +12111,7 @@
 			},
 			{
 				"from": "table:slice.retry_resumed",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_resumed",
@@ -12131,7 +12131,7 @@
 			},
 			{
 				"from": "table:slice.retry_retry",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_retry",
@@ -12159,7 +12159,7 @@
 			},
 			{
 				"from": "table:slice.retry_root",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_root",
@@ -12207,7 +12207,7 @@
 			},
 			{
 				"from": "table:slice.retry_scope",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_scope",
@@ -12239,7 +12239,7 @@
 			},
 			{
 				"from": "table:slice.retry_skipped",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_skipped",
@@ -12327,7 +12327,7 @@
 			},
 			{
 				"from": "table:slice.retry_steadfast_input",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_steadfast_input",
@@ -12355,7 +12355,7 @@
 			},
 			{
 				"from": "table:slice.retry_steadfast_output",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_steadfast_output",
@@ -12415,7 +12415,7 @@
 			},
 			{
 				"from": "table:slice.retry_step",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_step",
@@ -12459,7 +12459,7 @@
 			},
 			{
 				"from": "table:slice.retry_within",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.retry_within",
@@ -12483,7 +12483,7 @@
 			},
 			{
 				"from": "table:slice.settled",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.settled",
@@ -12527,7 +12527,7 @@
 			},
 			{
 				"from": "table:slice.sync_admitted",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_admitted",
@@ -12563,7 +12563,7 @@
 			},
 			{
 				"from": "table:slice.sync_build_input",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_build_input",
@@ -12639,7 +12639,7 @@
 			},
 			{
 				"from": "table:slice.sync_claim",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_claim",
@@ -12671,7 +12671,7 @@
 			},
 			{
 				"from": "table:slice.sync_copy_input",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_copy_input",
@@ -12755,7 +12755,7 @@
 			},
 			{
 				"from": "table:slice.sync_due",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_due",
@@ -12791,7 +12791,7 @@
 			},
 			{
 				"from": "table:slice.sync_exclusive",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_exclusive",
@@ -12815,7 +12815,7 @@
 			},
 			{
 				"from": "table:slice.sync_exclusive_key",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_exclusive_key",
@@ -12899,7 +12899,7 @@
 			},
 			{
 				"from": "table:slice.sync_finish",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_finish",
@@ -12931,7 +12931,7 @@
 			},
 			{
 				"from": "table:slice.sync_gold_input",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_gold_input",
@@ -12963,7 +12963,7 @@
 			},
 			{
 				"from": "table:slice.sync_held",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_held",
@@ -12999,7 +12999,7 @@
 			},
 			{
 				"from": "table:slice.sync_paused",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_paused",
@@ -13043,7 +13043,7 @@
 			},
 			{
 				"from": "table:slice.sync_released",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_released",
@@ -13083,7 +13083,7 @@
 			},
 			{
 				"from": "table:slice.sync_result",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_result",
@@ -13115,7 +13115,7 @@
 			},
 			{
 				"from": "table:slice.sync_resumed",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_resumed",
@@ -13135,7 +13135,7 @@
 			},
 			{
 				"from": "table:slice.sync_retry",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_retry",
@@ -13163,7 +13163,7 @@
 			},
 			{
 				"from": "table:slice.sync_root",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_root",
@@ -13219,7 +13219,7 @@
 			},
 			{
 				"from": "table:slice.sync_scope",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_scope",
@@ -13255,7 +13255,7 @@
 			},
 			{
 				"from": "table:slice.sync_skipped",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_skipped",
@@ -13375,7 +13375,7 @@
 			},
 			{
 				"from": "table:slice.sync_step",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_step",
@@ -13407,7 +13407,7 @@
 			},
 			{
 				"from": "table:slice.sync_sync_run_input",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_sync_run_input",
@@ -13439,7 +13439,7 @@
 			},
 			{
 				"from": "table:slice.sync_within",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.sync_within",
@@ -13463,7 +13463,7 @@
 			},
 			{
 				"from": "table:slice.tally",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.tally",
@@ -13483,7 +13483,7 @@
 			},
 			{
 				"from": "table:slice.weight",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			},
 			{
 				"from": "table:slice.weight",
@@ -14559,7 +14559,7 @@
 			},
 			{
 				"from": "table:slice.__ledger",
-				"to": "publication:__live_slice_wzkq6p2yii"
+				"to": "publication:__live_wzkq6p2yii"
 			}
 		],
 		"objects": [
@@ -23395,9 +23395,9 @@
 			},
 			{
 				"ddl": [
-					{"kind":"createRole","login":true,"name":"__live_slice_wzkq6p2yii"}
+					{"kind":"createRole","login":true,"name":"__live_wzkq6p2yii"}
 				],
-				"ident": "role:__live_slice_wzkq6p2yii",
+				"ident": "role:__live_wzkq6p2yii",
 				"kind": "decoder",
 				"phase": "publish",
 				"reasons": [
@@ -27655,9 +27655,9 @@
 			},
 			{
 				"ddl": [
-					{"kind":"createPublication","name":"__live_slice_wzkq6p2yii","tables":[{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"audit","schema":"slice"}},{"columns":{"columns":["build"],"kind":"listed"},"table":{"name":"built","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_admitted","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_chain_run_input","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"chain_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_due","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_finish","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_held","schema":"slice"}},{"columns":{"columns":["from","ordinal"],"kind":"listed"},"table":{"name":"chain_next","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_ordered_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_input_after","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_output","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_output_next","schema":"slice"}},{"columns":{"columns":["step","ordinal"],"kind":"listed"},"table":{"name":"chain_page_read","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"chain_paused","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"chain_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"chain_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_skipped","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"chain_start_scope","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"chain_start_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"chain_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"chain_within","schema":"slice"}},{"columns":{"columns":["relation","run"],"kind":"listed"},"table":{"name":"copied","schema":"slice"}},{"columns":{"columns":["feed","position"],"kind":"listed"},"table":{"name":"cursor","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_admitted","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_batch_input","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"fan_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_due","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_fan_run_input","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_finish","schema":"slice"}},{"columns":{"columns":["resource","seat","turn"],"kind":"listed"},"table":{"name":"fan_freed","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_held","schema":"slice"}},{"columns":{"columns":["resource","seat","turn"],"kind":"listed"},"table":{"name":"fan_hold","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"fan_paused","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"fan_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"fan_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_skipped","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_square_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_square_output","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"fan_start_scope","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"fan_start_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"fan_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"fan_within","schema":"slice"}},{"columns":{"columns":["feed","seq","n"],"kind":"listed"},"table":{"name":"item","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_admitted","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_brittle_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_brittle_output","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"retry_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_due","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_exhausted","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_finish","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_held","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_ladders_input","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"retry_paused","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"retry_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"retry_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_skipped","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_steadfast_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_steadfast_output","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"retry_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"retry_within","schema":"slice"}},{"columns":{"columns":["batch"],"kind":"listed"},"table":{"name":"settled","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_admitted","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_build_input","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"sync_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_copy_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_due","schema":"slice"}},{"columns":{"columns":["kind","key","turn"],"kind":"listed"},"table":{"name":"sync_exclusive","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_exclusive_key","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_finish","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_gold_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_held","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"sync_paused","schema":"slice"}},{"columns":{"columns":["kind","key","turn"],"kind":"listed"},"table":{"name":"sync_released","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"sync_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"sync_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_skipped","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"sync_step","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_sync_run_input","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"sync_within","schema":"slice"}},{"columns":{"columns":["batch"],"kind":"listed"},"table":{"name":"tally","schema":"slice"}},{"columns":{"columns":["feed","factor"],"kind":"listed"},"table":{"name":"weight","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"__ledger","schema":"slice"}}]}
+					{"kind":"createPublication","name":"__live_wzkq6p2yii","tables":[{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"audit","schema":"slice"}},{"columns":{"columns":["build"],"kind":"listed"},"table":{"name":"built","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_admitted","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_chain_run_input","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"chain_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_due","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_finish","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_held","schema":"slice"}},{"columns":{"columns":["from","ordinal"],"kind":"listed"},"table":{"name":"chain_next","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_ordered_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_input_after","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_output","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_output_next","schema":"slice"}},{"columns":{"columns":["step","ordinal"],"kind":"listed"},"table":{"name":"chain_page_read","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"chain_paused","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"chain_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"chain_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_skipped","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"chain_start_scope","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"chain_start_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"chain_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"chain_within","schema":"slice"}},{"columns":{"columns":["relation","run"],"kind":"listed"},"table":{"name":"copied","schema":"slice"}},{"columns":{"columns":["feed","position"],"kind":"listed"},"table":{"name":"cursor","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_admitted","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_batch_input","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"fan_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_due","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_fan_run_input","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_finish","schema":"slice"}},{"columns":{"columns":["resource","seat","turn"],"kind":"listed"},"table":{"name":"fan_freed","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_held","schema":"slice"}},{"columns":{"columns":["resource","seat","turn"],"kind":"listed"},"table":{"name":"fan_hold","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"fan_paused","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"fan_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"fan_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_skipped","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_square_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_square_output","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"fan_start_scope","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"fan_start_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"fan_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"fan_within","schema":"slice"}},{"columns":{"columns":["feed","seq","n"],"kind":"listed"},"table":{"name":"item","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_admitted","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_brittle_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_brittle_output","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"retry_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_due","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_exhausted","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_finish","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_held","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_ladders_input","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"retry_paused","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"retry_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"retry_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_skipped","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_steadfast_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_steadfast_output","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"retry_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"retry_within","schema":"slice"}},{"columns":{"columns":["batch"],"kind":"listed"},"table":{"name":"settled","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_admitted","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_build_input","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"sync_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_copy_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_due","schema":"slice"}},{"columns":{"columns":["kind","key","turn"],"kind":"listed"},"table":{"name":"sync_exclusive","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_exclusive_key","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_finish","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_gold_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_held","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"sync_paused","schema":"slice"}},{"columns":{"columns":["kind","key","turn"],"kind":"listed"},"table":{"name":"sync_released","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"sync_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"sync_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_skipped","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"sync_step","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_sync_run_input","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"sync_within","schema":"slice"}},{"columns":{"columns":["batch"],"kind":"listed"},"table":{"name":"tally","schema":"slice"}},{"columns":{"columns":["feed","factor"],"kind":"listed"},"table":{"name":"weight","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"__ledger","schema":"slice"}}]}
 				],
-				"ident": "publication:__live_slice_wzkq6p2yii",
+				"ident": "publication:__live_wzkq6p2yii",
 				"kind": "publication",
 				"phase": "publish",
 				"reasons": [
@@ -28034,10 +28034,10 @@
 			},
 			{
 				"ddl": [
-					{"kind":"grant","on":{"kind":"SCHEMA","names":["slice"]},"privileges":["USAGE"],"to":[{"kind":"role","name":"__live_slice_wzkq6p2yii"}]},
-					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"__live_secret","schema":"slice"}]},"privileges":["SELECT"],"to":[{"kind":"role","name":"__live_slice_wzkq6p2yii"}]}
+					{"kind":"grant","on":{"kind":"SCHEMA","names":["slice"]},"privileges":["USAGE"],"to":[{"kind":"role","name":"__live_wzkq6p2yii"}]},
+					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"__live_secret","schema":"slice"}]},"privileges":["SELECT"],"to":[{"kind":"role","name":"__live_wzkq6p2yii"}]}
 				],
-				"ident": "privileges:__live_slice_wzkq6p2yii",
+				"ident": "privileges:__live_wzkq6p2yii",
 				"kind": "privileges",
 				"phase": "publish",
 				"reasons": [

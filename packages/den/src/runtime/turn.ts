@@ -44,7 +44,8 @@ export interface Onward {
  * retry's due instant from a reading, and rings a timer with the duration between two readings.
  *
  * Endings come from grizzle's CallError: `transient` is a wait, retried in place within the deadline and, past it,
- * recorded with no attempt spent; `unavailable` and `transport` spend an attempt; `refused` is `lost` when the law is a
+ * recorded with no attempt spent; `unavailable`, `credentialRefused` and `transport`, which change nothing, spend an
+ * attempt, as every other refusal of the call does; `refused` is `lost` when the law is a
  * key another fact already holds, and `failed` naming the law otherwise; `stale` is the deploy fence, on which this
  * deployment acknowledges its wake and exits. A defect is no state of its own: the attempt ends spent, and its detail
  * goes to the turn's span.
@@ -522,6 +523,7 @@ const endingOf = <R>(
 				case "transient":
 					return ended(ledger, runner, turn, spentSoFar, false, wake)
 				case "unavailable":
+				case "credentialRefused":
 				case "transport":
 				case "input":
 				case "outsideWorld":

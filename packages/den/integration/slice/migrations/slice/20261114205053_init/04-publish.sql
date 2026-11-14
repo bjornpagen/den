@@ -1,4 +1,4 @@
-CREATE PUBLICATION "__live_slice_wzkq6p2yii"
+CREATE PUBLICATION "__live_wzkq6p2yii"
   FOR TABLE "slice"."audit" ("step"), "slice"."built" ("build"), "slice"."chain_admitted" ("scope"), "slice"."chain_chain_run_input" ("scope"), "slice"."chain_claim" ("step", "attempt"), "slice"."chain_due" ("step"), "slice"."chain_finish" ("scope"), "slice"."chain_held" ("step"), "slice"."chain_next" ("from", "ordinal"), "slice"."chain_ordered_input" ("scope"), "slice"."chain_page_input" ("step"), "slice"."chain_page_input_after" ("step"), "slice"."chain_page_output" ("step"), "slice"."chain_page_output_next" ("step"), "slice"."chain_page_read" ("step", "ordinal"), "slice"."chain_paused" ("target", "turn"), "slice"."chain_result" ("step"), "slice"."chain_resumed" ("target", "turn"), "slice"."chain_retry" ("step", "attempt"), "slice"."chain_root" ("scope"), "slice"."chain_scope" ("scope"), "slice"."chain_skipped" ("scope"), "slice"."chain_start_scope" ("scope", "ordinal"), "slice"."chain_start_step" ("scope", "ordinal"), "slice"."chain_step", "slice"."chain_within", "slice"."copied" ("relation", "run"), "slice"."cursor" ("feed", "position"), "slice"."fan_admitted" ("scope"), "slice"."fan_batch_input" ("scope"), "slice"."fan_claim" ("step", "attempt"), "slice"."fan_due" ("step"), "slice"."fan_fan_run_input" ("scope"), "slice"."fan_finish" ("scope"), "slice"."fan_freed" ("resource", "seat", "turn"), "slice"."fan_held" ("step"), "slice"."fan_hold" ("resource", "seat", "turn"), "slice"."fan_paused" ("target", "turn"), "slice"."fan_result" ("step"), "slice"."fan_resumed" ("target", "turn"), "slice"."fan_retry" ("step", "attempt"), "slice"."fan_root" ("scope"), "slice"."fan_scope" ("scope"), "slice"."fan_skipped" ("scope"), "slice"."fan_square_input" ("step"), "slice"."fan_square_output" ("step"), "slice"."fan_start_scope" ("scope", "ordinal"), "slice"."fan_start_step" ("scope", "ordinal"), "slice"."fan_step", "slice"."fan_within", "slice"."item" ("feed", "seq", "n"), "slice"."retry_admitted" ("scope"), "slice"."retry_brittle_input" ("step"), "slice"."retry_brittle_output" ("step"), "slice"."retry_claim" ("step", "attempt"), "slice"."retry_due" ("step"), "slice"."retry_exhausted" ("step"), "slice"."retry_finish" ("scope"), "slice"."retry_held" ("step"), "slice"."retry_ladders_input" ("scope"), "slice"."retry_paused" ("target", "turn"), "slice"."retry_result" ("step"), "slice"."retry_resumed" ("target", "turn"), "slice"."retry_retry" ("step", "attempt"), "slice"."retry_root" ("scope"), "slice"."retry_scope" ("scope"), "slice"."retry_skipped" ("scope"), "slice"."retry_steadfast_input" ("step"), "slice"."retry_steadfast_output" ("step"), "slice"."retry_step", "slice"."retry_within", "slice"."settled" ("batch"), "slice"."sync_admitted" ("scope"), "slice"."sync_build_input" ("step"), "slice"."sync_claim" ("step", "attempt"), "slice"."sync_copy_input" ("step"), "slice"."sync_due" ("step"), "slice"."sync_exclusive" ("kind", "key", "turn"), "slice"."sync_exclusive_key" ("scope"), "slice"."sync_finish" ("scope"), "slice"."sync_gold_input" ("scope"), "slice"."sync_held" ("step"), "slice"."sync_paused" ("target", "turn"), "slice"."sync_released" ("kind", "key", "turn"), "slice"."sync_result" ("step"), "slice"."sync_resumed" ("target", "turn"), "slice"."sync_retry" ("step", "attempt"), "slice"."sync_root" ("scope"), "slice"."sync_scope" ("scope"), "slice"."sync_skipped" ("scope"), "slice"."sync_step", "slice"."sync_sync_run_input" ("scope"), "slice"."sync_within", "slice"."tally" ("batch"), "slice"."weight" ("feed", "factor"), "slice"."__ledger"
   WITH (publish_generated_columns = stored);
 
@@ -29,7 +29,7 @@ CREATE ROLE :"slice__sync_den" NOLOGIN;
 
 CREATE ROLE :"slice__worker" LOGIN NOINHERIT;
 
-CREATE ROLE :"__live_slice_wzkq6p2yii" LOGIN NOINHERIT;
+CREATE ROLE :"__live_wzkq6p2yii" LOGIN NOINHERIT;
 
 CREATE SCHEMA "slice__auditor";
 
@@ -1515,9 +1515,9 @@ GRANT USAGE ON SCHEMA "slice" TO :"slice__worker";
 
 GRANT EXECUTE ON FUNCTION "slice"."__snapshot_guard"("pg_catalog"."text") TO :"slice__worker";
 
-GRANT USAGE ON SCHEMA "slice" TO :"__live_slice_wzkq6p2yii";
+GRANT USAGE ON SCHEMA "slice" TO :"__live_wzkq6p2yii";
 
-GRANT SELECT ON TABLE "slice"."__live_secret" TO :"__live_slice_wzkq6p2yii";
+GRANT SELECT ON TABLE "slice"."__live_secret" TO :"__live_wzkq6p2yii";
 
 GRANT SELECT ON TABLE "slice"."__ledger" TO :"slice__app", :"slice__worker";
 
@@ -2305,4 +2305,4 @@ COMMENT ON STATISTICS "slice"."__retry_step_stats_kind_scope_osnqmvpfhd" IS 'sta
 
 COMMENT ON STATISTICS "slice"."__sync_exclusive_stats_key_kind_smed76p3zh" IS 'statistics SyncExclusive(key, kind)';
 
-COMMENT ON ROLE :"__live_slice_wzkq6p2yii" IS 'live source of slice';
+COMMENT ON ROLE :"__live_wzkq6p2yii" IS 'live source of slice';

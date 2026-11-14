@@ -165,13 +165,7 @@ const installed = Effect.acquireRelease(
 			asOwner(cluster, ownerRole, `ALTER ROLE "${role}" PASSWORD '${Redacted.value(secret)}'`)
 		yield* set(roleNameOf(WorkerServed, { rolePrefix }), worker)
 		yield* set(roleNameOf(AppServed, { rolePrefix }), app)
-		const decoderLogin = WorkerServed.decoder
-		if (decoderLogin.kind === "none") {
-			return yield* new SetupFailed({
-				message: "the worker login serves no read, so its installation names no decoder login"
-			})
-		}
-		yield* set(roleNameOf(decoderLogin, { rolePrefix }), decoder)
+		yield* set(roleNameOf(WorkerServed.decoder, { rolePrefix }), decoder)
 		const done: Installed = { cluster, database, rolePrefix, env, worker, app, decoder }
 		return { done, env }
 	}),
