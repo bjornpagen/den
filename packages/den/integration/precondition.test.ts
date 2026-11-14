@@ -8,12 +8,12 @@ import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
 import { drawn, explore } from "@den/testing/explore"
 import { required } from "@den/testing/features"
-import { type Gen, int } from "@den/testing/gen"
+import { element, type Gen, int } from "@den/testing/gen"
 import { notesOnly } from "@den/testing/sense"
 import { boundedShrink } from "@den/testing/shrink"
 import { searched } from "@den/testing/vitest"
 import { assert, layer } from "@effect/vitest"
-import { Array as Arr, Effect, Formatter } from "effect"
+import { Array as Arr, Effect, Formatter, Random } from "effect"
 import { ringOnAndDrain } from "#integration/support/run.ts"
 import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
 
@@ -23,6 +23,10 @@ import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/su
  * census does not ring it while the chain is busy; once the chain has run to its end the census rings the build, which
  * is admitted and builds.
  *
+ * Each case builds a number of its own, drawn fresh as a nonce is: Built is keyed by its build, so a number an earlier
+ * case of the suite's database built would be there before this case's build ran, and that case's chain left pending
+ * by the failure would keep every later case's chain busy.
+ *
  * Oracle (specification): no Built row while any chain step is pending; the waiting admission ends `waiting` on
  * `precondition`; the build runs once the chain is idle.
  */
@@ -31,12 +35,12 @@ type Feature = "one page pending" | "several pages" | "the build waited"
 
 interface Run {
 	readonly pages: number
-	readonly build: number
+	readonly feed: "news" | "sport"
 }
 
 const runs: Gen<Run> = (source) => ({
 	pages: source.draw(int(1, 3)),
-	build: source.draw(int(0, 9_999))
+	feed: source.draw(element(["news", "sport"] as const))
 })
 
 layer(sliceLayer)("a precondition root", (it) => {
@@ -70,13 +74,13 @@ layer(sliceLayer)("a precondition root", (it) => {
 						const app = yield* Db.open(AppServed.roles.auditor, {})
 						const at = yield* now
 						const ends = instantOf(Number(at) + longestLeaseMillis.value)
-						const feed = run.build % 2 === 0 ? "news" : "sport"
+						const build = yield* Effect.map(Random.nextInt, (n) => BigInt(Math.abs(n)))
 						const tag = yield* nonce
 						const chained = yield* chain.request.ChainRun(`gold-${tag}`, at, {
-							feed,
+							feed: run.feed,
 							pages: BigInt(run.pages)
 						})
-						const gold = yield* sync.request.Gold(`gold-${tag}`, at, { build: BigInt(run.build) })
+						const gold = yield* sync.request.Gold(`gold-${tag}`, at, { build })
 						if (!chained.fresh || !gold.fresh) {
 							return yield* c.assume(false)
 						}
@@ -107,7 +111,7 @@ layer(sliceLayer)("a precondition root", (it) => {
 							)
 						)
 						const builtBefore = yield* rows(app.workload.built.once({ params: {}, facts: {} }))
-						assert.isFalse(Arr.some(builtBefore, (b) => b.build === BigInt(run.build)))
+						assert.isFalse(Arr.some(builtBefore, (b) => b.build === build))
 						yield* ringOnAndDrain(ledgers, chainAdmitted)
 						const idleAt = yield* now
 						const idleTick = yield* tick(sync.ledger, idleAt)
@@ -119,7 +123,7 @@ layer(sliceLayer)("a precondition root", (it) => {
 						)
 						yield* drain(ledgers)
 						const built = yield* rows(app.workload.built.once({ params: {}, facts: {} }))
-						assert.isTrue(Arr.some(built, (b) => b.build === BigInt(run.build)))
+						assert.isTrue(Arr.some(built, (b) => b.build === build))
 					})
 			)
 		)
