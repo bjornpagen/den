@@ -1,0 +1,3 @@
+# grizzle's tree keeps its own gate. Its nested .oxfmtrc.json takes over its subtree, ignorePatterns included, so
+# only an ignore file keeps oxfmt out of it.
+/vendor/

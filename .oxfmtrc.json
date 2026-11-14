@@ -22,7 +22,6 @@
 		"dist/**",
 		"*.md",
 		"packages/devtools/src/*/fixtures/**",
-		"sources/**",
-		"vendor/**"
+		"sources/**"
 	]
 }
