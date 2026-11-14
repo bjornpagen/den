@@ -41,6 +41,8 @@
 		"oxlint": "catalog:",
 		"oxlint-tsgolint": "catalog:",
 		"turbo": "catalog:",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"vite": "catalog:",
+		"vitest": "catalog:"
 	}
 }

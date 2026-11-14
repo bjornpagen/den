@@ -5,6 +5,7 @@ import { exhaust } from "@bjornpagen/testing/explore"
 import { requiredInSpace } from "@bjornpagen/testing/features"
 import { element } from "@bjornpagen/testing/gen"
 import { searched } from "@bjornpagen/testing/vitest"
+import { testWorkers } from "@bjornpagen/testing/workers"
 import { NodeServices } from "@effect/platform-node"
 import { assert, layer } from "@effect/vitest"
 import {
@@ -134,7 +135,8 @@ layer(NodeServices.layer, { excludeTestServices: true })("certification", (it) =
 							oracle: {
 								kind: "postgresql",
 								name: "grizzle generate's certificate, against the schema's with den's logins and commits taken out"
-							}
+							},
+							concurrency: testWorkers
 						},
 						(role, c) =>
 							Effect.sync(() => {

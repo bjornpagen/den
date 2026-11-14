@@ -2,6 +2,7 @@ import { exhaust } from "@bjornpagen/testing/explore"
 import { requiredInSpace } from "@bjornpagen/testing/features"
 import { element } from "@bjornpagen/testing/gen"
 import { searched } from "@bjornpagen/testing/vitest"
+import { testWorkers } from "@bjornpagen/testing/workers"
 import { assert, it } from "@effect/vitest"
 import { Array as Arr, Effect, Exit, Formatter, Option, Schema } from "effect"
 import { flow } from "#algebra/flow.ts"
@@ -165,7 +166,8 @@ it.effect("accepts a well-formed flow and refuses each fault when it is declared
 				oracle: {
 					kind: "specification",
 					name: "the proposal's section 4 rules, one fault at a time"
-				}
+				},
+				concurrency: testWorkers
 			},
 			(fault, c) =>
 				Effect.gen(function* () {

@@ -45,7 +45,8 @@ layer(sliceLayer)("the claim race", (it) => {
 					oracle: {
 						kind: "postgresql",
 						name: "the claim's primary key, over every interleaving of two claimers"
-					}
+					},
+					concurrency: 1
 				},
 				(pages, c) =>
 					Effect.gen(function* () {

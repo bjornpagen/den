@@ -129,7 +129,8 @@ layer(NodeServices.layer, { excludeTestServices: true })("seat counts", (it) => 
 								oracle: {
 									kind: "postgresql",
 									name: "grizzle migrate to one Pool seat, validating each hold's seat below the count"
-								}
+								},
+								concurrency: 1
 							},
 							(seat, c) =>
 								Effect.gen(function* () {
