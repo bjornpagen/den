@@ -252,6 +252,12 @@ const allOf = (role: string, relation: string, fields: ReadonlyArray<string>): s
 	return r.match(${relation}, { ${commas(fields)} }).find({ ${commas(fields)} })
 })`
 
+/**
+ * A status read, run deferrable: it waits for a safe snapshot and then never fails with a serialization failure, the
+ * census's and the relay's reads, the seat module's and each step's declared read.
+ */
+const deferred = (program: string): string => `deferrable(${program})`
+
 /** The relations den's own role inserts into: every graph relation but those only a commit writes. */
 const denRelationsOf = (l: Lowered): ReadonlyArray<string> => {
 	const coordination = new Set(l.coordination)
@@ -368,54 +374,54 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		],
 		[
 			n.program("Pending"),
-			`query(${n.den}).rule((r) => {
+			deferred(`query(${n.den}).rule((r) => {
 	const { step, kind, scope } = v(${r("Step")}, "step")
 	return r.match(${r("Step")}, { step, kind, scope }).where(r.not(${r("Result")}, { step })).find({ step, kind, scope })
-})`
+})`)
 		],
 		[
 			n.program("PendingClaims"),
-			`query(${n.den}).rule((r) => {
+			deferred(`query(${n.den}).rule((r) => {
 	const { step, attempt, until } = v(${r("Claim")}, "claim")
 	return r.match(${r("Claim")}, { step, attempt, until }).where(r.not(${r("Result")}, { step })).find({ step, attempt, until })
-})`
+})`)
 		],
 		[
 			n.program("PendingRetries"),
-			`query(${n.den}).rule((r) => {
+			deferred(`query(${n.den}).rule((r) => {
 	const { step, attempt, at, spent } = v(${r("Retry")}, "retry")
 	return r.match(${r("Retry")}, { step, attempt, at, spent }).where(r.not(${r("Result")}, { step })).find({ step, attempt, at, spent })
-})`
+})`)
 		],
 		[
 			n.program("PendingDues"),
-			`query(${n.den}).rule((r) => {
+			deferred(`query(${n.den}).rule((r) => {
 	const { step, at } = v(${r("Due")}, "due")
 	return r.match(${r("Due")}, { step, at }).where(r.not(${r("Result")}, { step })).find({ step, at })
-})`
+})`)
 		],
 		[
 			n.program("Requested"),
-			`query(${n.den}).rule((r) => {
+			deferred(`query(${n.den}).rule((r) => {
 	const { scope, kind } = v(${r("Scope")}, "scope")
 	return r.match(${r("Scope")}, { scope, kind }).where(r.not(${r("Admitted")}, { scope }), r.not(${r("Skipped")}, { scope })).find({ scope, kind })
-})`
+})`)
 		],
 		[
 			n.program("Running"),
-			`query(${n.den}).rule((r) => {
+			deferred(`query(${n.den}).rule((r) => {
 	const { scope, kind } = v(${r("Scope")}, "scope")
 	const { step } = v(${r("Finish")}, "finish")
 	return r.match(${r("Scope")}, { scope, kind }).match(${r("Finish")}, { scope, step }).where(r.not(${r("Result")}, { step })).find({ scope, kind })
-})`
+})`)
 		],
-		[n.program("Withins"), allOf(n.den, r("Within"), ["scope", "parent"])],
-		[n.program("Roots"), allOf(n.den, r("Root"), ["scope", "key", "at"])],
+		[n.program("Withins"), deferred(allOf(n.den, r("Within"), ["scope", "parent"]))],
+		[n.program("Roots"), deferred(allOf(n.den, r("Root"), ["scope", "key", "at"]))],
 		...(exclusiveKeys
 			? [
 					[
 						n.program("ExclusiveKeys"),
-						allOf(n.den, r("ExclusiveKey"), ["scope", "key", "id"])
+						deferred(allOf(n.den, r("ExclusiveKey"), ["scope", "key", "id"]))
 					] as const
 				]
 			: []),
@@ -424,10 +430,10 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			(f) =>
 				[
 					n.program(`Busy${f}`),
-					`query(${n.den}).rule((r) => {
+					deferred(`query(${n.den}).rule((r) => {
 	const { step } = v(${app}.relations.${f}Step, "step")
 	return r.match(${app}.relations.${f}Step, { step }).where(r.not(${app}.relations.${f}Result, { step })).find({ step })
-})`
+})`)
 				] as const
 		)
 	]
@@ -548,21 +554,24 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 				`ChangeSet.sequence(ChangeSet.empty(${n.seats}).delete(${r("Hold")}, []), ChangeSet.empty(${n.seats}).insert(${r("Hold")}, []))`
 			],
 			[n.program("GiveBack"), `ChangeSet.empty(${n.seats}).delete(${r("Hold")}, [])`],
-			[n.program("Seats"), allOf(n.seats, r("Seat"), ["resource", "seat"])],
-			[n.program("Holds"), allOf(n.seats, r("Hold"), ["resource", "seat", "holder", "until"])]
+			[n.program("Seats"), deferred(allOf(n.seats, r("Seat"), ["resource", "seat"]))],
+			[
+				n.program("Holds"),
+				deferred(allOf(n.seats, r("Hold"), ["resource", "seat", "holder", "until"]))
+			]
 		)
 	}
 	if (has(r("Exclusive"))) {
 		seatsPrograms.push(
 			[n.program("HoldExclusive"), `ChangeSet.empty(${n.seats}).insert(${r("Exclusive")}, [])`],
 			[n.program("ReleaseExclusive"), `ChangeSet.empty(${n.seats}).delete(${r("Exclusive")}, [])`],
-			[n.program("Exclusives"), allOf(n.seats, r("Exclusive"), ["kind", "key", "scope"])]
+			[n.program("Exclusives"), deferred(allOf(n.seats, r("Exclusive"), ["kind", "key", "scope"]))]
 		)
 	}
 	seatsPrograms.push(
 		[n.program("Pause"), `ChangeSet.empty(${n.seats}).insert(${r("Paused")}, [])`],
 		[n.program("Resume"), `ChangeSet.empty(${n.seats}).delete(${r("Paused")}, [])`],
-		[n.program("PausedAll"), allOf(n.seats, r("Paused"), ["target"])]
+		[n.program("PausedAll"), deferred(allOf(n.seats, r("Paused"), ["target"]))]
 	)
 
 	const commitPrograms: Array<readonly [string, string]> = []
@@ -586,7 +595,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		Option.map(s.reads, (rd) =>
 			commitPrograms.push([
 				n.program(`Read${s.name}`),
-				`query(${W}).rule((r) => {
+				deferred(`query(${W}).rule((r) => {
 	const { ${commas(rd.fields)} } = v(${app}.relations.${rd.relation}, "row")
 	return r
 		.match(${app}.relations.${rd.relation}, { ${commas(rd.fields)} })${
@@ -596,7 +605,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 				: ""
 		}
 		.find({ ${commas(rd.fields)} })
-})`
+})`)
 			])
 		)
 	})
@@ -630,7 +639,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	]
 	return `${lines([
 		`/** The programs den lowered the flow ${P} to, over the schema ${app}; \`den generate\` writes them, and nothing edits them. */`,
-		`import { ChangeSet, query, role, v, workload } from "@bjornpagen/grizzle"`,
+		`import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"`,
 		`import { ${app} } from ${q(place.schema.from)}`,
 		`import { ${W} } from ${q(place.writer.from)}`,
 		`import { ${commas(fragmentNames)} } from ${q(place.fragment)}`,

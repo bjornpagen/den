@@ -1,5 +1,5 @@
 /** The programs den lowered the flow Chain to, over the schema App; `den generate` writes them, and nothing edits them. */
-import { ChangeSet, query, role, v, workload } from "@bjornpagen/grizzle"
+import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
 	ChainKind,
@@ -214,55 +214,71 @@ export const chainDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
 			.find({ step })
 	}),
-	chainPending: query(ChainDen).rule((r) => {
-		const { step, kind, scope } = v(ChainStep, "step")
-		return r
-			.match(ChainStep, { step, kind, scope })
-			.where(r.not(ChainResult, { step }))
-			.find({ step, kind, scope })
-	}),
-	chainPendingClaims: query(ChainDen).rule((r) => {
-		const { step, attempt, until } = v(ChainClaim, "claim")
-		return r
-			.match(ChainClaim, { step, attempt, until })
-			.where(r.not(ChainResult, { step }))
-			.find({ step, attempt, until })
-	}),
-	chainPendingRetries: query(ChainDen).rule((r) => {
-		const { step, attempt, at, spent } = v(ChainRetry, "retry")
-		return r
-			.match(ChainRetry, { step, attempt, at, spent })
-			.where(r.not(ChainResult, { step }))
-			.find({ step, attempt, at, spent })
-	}),
-	chainPendingDues: query(ChainDen).rule((r) => {
-		const { step, at } = v(ChainDue, "due")
-		return r.match(ChainDue, { step, at }).where(r.not(ChainResult, { step })).find({ step, at })
-	}),
-	chainRequested: query(ChainDen).rule((r) => {
-		const { scope, kind } = v(ChainScope, "scope")
-		return r
-			.match(ChainScope, { scope, kind })
-			.where(r.not(ChainAdmitted, { scope }), r.not(ChainSkipped, { scope }))
-			.find({ scope, kind })
-	}),
-	chainRunning: query(ChainDen).rule((r) => {
-		const { scope, kind } = v(ChainScope, "scope")
-		const { step } = v(ChainFinish, "finish")
-		return r
-			.match(ChainScope, { scope, kind })
-			.match(ChainFinish, { scope, step })
-			.where(r.not(ChainResult, { step }))
-			.find({ scope, kind })
-	}),
-	chainWithins: query(ChainDen).rule((r) => {
-		const { scope, parent } = v(ChainWithin, "chainWithin")
-		return r.match(ChainWithin, { scope, parent }).find({ scope, parent })
-	}),
-	chainRoots: query(ChainDen).rule((r) => {
-		const { scope, key, at } = v(ChainRoot, "chainRoot")
-		return r.match(ChainRoot, { scope, key, at }).find({ scope, key, at })
-	}),
+	chainPending: deferrable(
+		query(ChainDen).rule((r) => {
+			const { step, kind, scope } = v(ChainStep, "step")
+			return r
+				.match(ChainStep, { step, kind, scope })
+				.where(r.not(ChainResult, { step }))
+				.find({ step, kind, scope })
+		})
+	),
+	chainPendingClaims: deferrable(
+		query(ChainDen).rule((r) => {
+			const { step, attempt, until } = v(ChainClaim, "claim")
+			return r
+				.match(ChainClaim, { step, attempt, until })
+				.where(r.not(ChainResult, { step }))
+				.find({ step, attempt, until })
+		})
+	),
+	chainPendingRetries: deferrable(
+		query(ChainDen).rule((r) => {
+			const { step, attempt, at, spent } = v(ChainRetry, "retry")
+			return r
+				.match(ChainRetry, { step, attempt, at, spent })
+				.where(r.not(ChainResult, { step }))
+				.find({ step, attempt, at, spent })
+		})
+	),
+	chainPendingDues: deferrable(
+		query(ChainDen).rule((r) => {
+			const { step, at } = v(ChainDue, "due")
+			return r.match(ChainDue, { step, at }).where(r.not(ChainResult, { step })).find({ step, at })
+		})
+	),
+	chainRequested: deferrable(
+		query(ChainDen).rule((r) => {
+			const { scope, kind } = v(ChainScope, "scope")
+			return r
+				.match(ChainScope, { scope, kind })
+				.where(r.not(ChainAdmitted, { scope }), r.not(ChainSkipped, { scope }))
+				.find({ scope, kind })
+		})
+	),
+	chainRunning: deferrable(
+		query(ChainDen).rule((r) => {
+			const { scope, kind } = v(ChainScope, "scope")
+			const { step } = v(ChainFinish, "finish")
+			return r
+				.match(ChainScope, { scope, kind })
+				.match(ChainFinish, { scope, step })
+				.where(r.not(ChainResult, { step }))
+				.find({ scope, kind })
+		})
+	),
+	chainWithins: deferrable(
+		query(ChainDen).rule((r) => {
+			const { scope, parent } = v(ChainWithin, "chainWithin")
+			return r.match(ChainWithin, { scope, parent }).find({ scope, parent })
+		})
+	),
+	chainRoots: deferrable(
+		query(ChainDen).rule((r) => {
+			const { scope, key, at } = v(ChainRoot, "chainRoot")
+			return r.match(ChainRoot, { scope, key, at }).find({ scope, key, at })
+		})
+	),
 	chainReadChainPageInput: ChainPageInput,
 	chainReadChainPageInputAfter: ChainPageInputAfter,
 	chainReadChainChainRunInput: ChainChainRunInput,
@@ -330,10 +346,12 @@ export const chainDenWorkload = workload(ChainDen, chainDenPrograms)
 export const chainSeatsPrograms = Object.freeze({
 	chainPause: ChangeSet.empty(ChainSeats).insert(ChainPaused, []),
 	chainResume: ChangeSet.empty(ChainSeats).delete(ChainPaused, []),
-	chainPausedAll: query(ChainSeats).rule((r) => {
-		const { target } = v(ChainPaused, "chainPaused")
-		return r.match(ChainPaused, { target }).find({ target })
-	})
+	chainPausedAll: deferrable(
+		query(ChainSeats).rule((r) => {
+			const { target } = v(ChainPaused, "chainPaused")
+			return r.match(ChainPaused, { target }).find({ target })
+		})
+	)
 })
 
 export const chainSeatsWorkload = workload(ChainSeats, chainSeatsPrograms)
@@ -359,13 +377,15 @@ export const chainCommitPrograms = Object.freeze({
 		.insert(ChainPageInputAfter, [])
 		.insert(ChainNext, [])
 		.insert(App.relations.Item, []),
-	chainReadPage: query(Loader).rule((r) => {
-		const { feed, factor } = v(App.relations.Weight, "row")
-		return r
-			.match(App.relations.Weight, { feed, factor })
-			.where(r.eq(feed, r.param("feed", App.relations.Weight.fields.feed)))
-			.find({ feed, factor })
-	}),
+	chainReadPage: deferrable(
+		query(Loader).rule((r) => {
+			const { feed, factor } = v(App.relations.Weight, "row")
+			return r
+				.match(App.relations.Weight, { feed, factor })
+				.where(r.eq(feed, r.param("feed", App.relations.Weight.fields.feed)))
+				.find({ feed, factor })
+		})
+	),
 	chainCommitChainRunFinish: ChangeSet.empty(Loader)
 		.insert(ChainResult, [])
 		.insert(ChainDone, [])

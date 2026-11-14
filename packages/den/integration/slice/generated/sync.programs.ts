@@ -1,5 +1,5 @@
 /** The programs den lowered the flow Sync to, over the schema App; `den generate` writes them, and nothing edits them. */
-import { ChangeSet, query, role, v, workload } from "@bjornpagen/grizzle"
+import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
 	SyncKind,
@@ -198,66 +198,86 @@ export const syncDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", SyncScope.fields.scope)))
 			.find({ step })
 	}),
-	syncPending: query(SyncDen).rule((r) => {
-		const { step, kind, scope } = v(SyncStep, "step")
-		return r
-			.match(SyncStep, { step, kind, scope })
-			.where(r.not(SyncResult, { step }))
-			.find({ step, kind, scope })
-	}),
-	syncPendingClaims: query(SyncDen).rule((r) => {
-		const { step, attempt, until } = v(SyncClaim, "claim")
-		return r
-			.match(SyncClaim, { step, attempt, until })
-			.where(r.not(SyncResult, { step }))
-			.find({ step, attempt, until })
-	}),
-	syncPendingRetries: query(SyncDen).rule((r) => {
-		const { step, attempt, at, spent } = v(SyncRetry, "retry")
-		return r
-			.match(SyncRetry, { step, attempt, at, spent })
-			.where(r.not(SyncResult, { step }))
-			.find({ step, attempt, at, spent })
-	}),
-	syncPendingDues: query(SyncDen).rule((r) => {
-		const { step, at } = v(SyncDue, "due")
-		return r.match(SyncDue, { step, at }).where(r.not(SyncResult, { step })).find({ step, at })
-	}),
-	syncRequested: query(SyncDen).rule((r) => {
-		const { scope, kind } = v(SyncScope, "scope")
-		return r
-			.match(SyncScope, { scope, kind })
-			.where(r.not(SyncAdmitted, { scope }), r.not(SyncSkipped, { scope }))
-			.find({ scope, kind })
-	}),
-	syncRunning: query(SyncDen).rule((r) => {
-		const { scope, kind } = v(SyncScope, "scope")
-		const { step } = v(SyncFinish, "finish")
-		return r
-			.match(SyncScope, { scope, kind })
-			.match(SyncFinish, { scope, step })
-			.where(r.not(SyncResult, { step }))
-			.find({ scope, kind })
-	}),
-	syncWithins: query(SyncDen).rule((r) => {
-		const { scope, parent } = v(SyncWithin, "syncWithin")
-		return r.match(SyncWithin, { scope, parent }).find({ scope, parent })
-	}),
-	syncRoots: query(SyncDen).rule((r) => {
-		const { scope, key, at } = v(SyncRoot, "syncRoot")
-		return r.match(SyncRoot, { scope, key, at }).find({ scope, key, at })
-	}),
-	syncExclusiveKeys: query(SyncDen).rule((r) => {
-		const { scope, key, id } = v(SyncExclusiveKey, "syncExclusiveKey")
-		return r.match(SyncExclusiveKey, { scope, key, id }).find({ scope, key, id })
-	}),
-	syncBusyChain: query(SyncDen).rule((r) => {
-		const { step } = v(App.relations.ChainStep, "step")
-		return r
-			.match(App.relations.ChainStep, { step })
-			.where(r.not(App.relations.ChainResult, { step }))
-			.find({ step })
-	}),
+	syncPending: deferrable(
+		query(SyncDen).rule((r) => {
+			const { step, kind, scope } = v(SyncStep, "step")
+			return r
+				.match(SyncStep, { step, kind, scope })
+				.where(r.not(SyncResult, { step }))
+				.find({ step, kind, scope })
+		})
+	),
+	syncPendingClaims: deferrable(
+		query(SyncDen).rule((r) => {
+			const { step, attempt, until } = v(SyncClaim, "claim")
+			return r
+				.match(SyncClaim, { step, attempt, until })
+				.where(r.not(SyncResult, { step }))
+				.find({ step, attempt, until })
+		})
+	),
+	syncPendingRetries: deferrable(
+		query(SyncDen).rule((r) => {
+			const { step, attempt, at, spent } = v(SyncRetry, "retry")
+			return r
+				.match(SyncRetry, { step, attempt, at, spent })
+				.where(r.not(SyncResult, { step }))
+				.find({ step, attempt, at, spent })
+		})
+	),
+	syncPendingDues: deferrable(
+		query(SyncDen).rule((r) => {
+			const { step, at } = v(SyncDue, "due")
+			return r.match(SyncDue, { step, at }).where(r.not(SyncResult, { step })).find({ step, at })
+		})
+	),
+	syncRequested: deferrable(
+		query(SyncDen).rule((r) => {
+			const { scope, kind } = v(SyncScope, "scope")
+			return r
+				.match(SyncScope, { scope, kind })
+				.where(r.not(SyncAdmitted, { scope }), r.not(SyncSkipped, { scope }))
+				.find({ scope, kind })
+		})
+	),
+	syncRunning: deferrable(
+		query(SyncDen).rule((r) => {
+			const { scope, kind } = v(SyncScope, "scope")
+			const { step } = v(SyncFinish, "finish")
+			return r
+				.match(SyncScope, { scope, kind })
+				.match(SyncFinish, { scope, step })
+				.where(r.not(SyncResult, { step }))
+				.find({ scope, kind })
+		})
+	),
+	syncWithins: deferrable(
+		query(SyncDen).rule((r) => {
+			const { scope, parent } = v(SyncWithin, "syncWithin")
+			return r.match(SyncWithin, { scope, parent }).find({ scope, parent })
+		})
+	),
+	syncRoots: deferrable(
+		query(SyncDen).rule((r) => {
+			const { scope, key, at } = v(SyncRoot, "syncRoot")
+			return r.match(SyncRoot, { scope, key, at }).find({ scope, key, at })
+		})
+	),
+	syncExclusiveKeys: deferrable(
+		query(SyncDen).rule((r) => {
+			const { scope, key, id } = v(SyncExclusiveKey, "syncExclusiveKey")
+			return r.match(SyncExclusiveKey, { scope, key, id }).find({ scope, key, id })
+		})
+	),
+	syncBusyChain: deferrable(
+		query(SyncDen).rule((r) => {
+			const { step } = v(App.relations.ChainStep, "step")
+			return r
+				.match(App.relations.ChainStep, { step })
+				.where(r.not(App.relations.ChainResult, { step }))
+				.find({ step })
+		})
+	),
 	syncReadSyncCopyInput: SyncCopyInput,
 	syncReadSyncBuildInput: SyncBuildInput,
 	syncReadSyncSyncRunInput: SyncSyncRunInput,
@@ -278,16 +298,20 @@ export const syncDenWorkload = workload(SyncDen, syncDenPrograms)
 export const syncSeatsPrograms = Object.freeze({
 	syncHoldExclusive: ChangeSet.empty(SyncSeats).insert(SyncExclusive, []),
 	syncReleaseExclusive: ChangeSet.empty(SyncSeats).delete(SyncExclusive, []),
-	syncExclusives: query(SyncSeats).rule((r) => {
-		const { kind, key, scope } = v(SyncExclusive, "syncExclusive")
-		return r.match(SyncExclusive, { kind, key, scope }).find({ kind, key, scope })
-	}),
+	syncExclusives: deferrable(
+		query(SyncSeats).rule((r) => {
+			const { kind, key, scope } = v(SyncExclusive, "syncExclusive")
+			return r.match(SyncExclusive, { kind, key, scope }).find({ kind, key, scope })
+		})
+	),
 	syncPause: ChangeSet.empty(SyncSeats).insert(SyncPaused, []),
 	syncResume: ChangeSet.empty(SyncSeats).delete(SyncPaused, []),
-	syncPausedAll: query(SyncSeats).rule((r) => {
-		const { target } = v(SyncPaused, "syncPaused")
-		return r.match(SyncPaused, { target }).find({ target })
-	})
+	syncPausedAll: deferrable(
+		query(SyncSeats).rule((r) => {
+			const { target } = v(SyncPaused, "syncPaused")
+			return r.match(SyncPaused, { target }).find({ target })
+		})
+	)
 })
 
 export const syncSeatsWorkload = workload(SyncSeats, syncSeatsPrograms)

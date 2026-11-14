@@ -1,5 +1,5 @@
 /** The programs den lowered the flow Retry to, over the schema App; `den generate` writes them, and nothing edits them. */
-import { ChangeSet, query, role, v, workload } from "@bjornpagen/grizzle"
+import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
 	RetryKind,
@@ -191,55 +191,71 @@ export const retryDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
 			.find({ step })
 	}),
-	retryPending: query(RetryDen).rule((r) => {
-		const { step, kind, scope } = v(RetryStep, "step")
-		return r
-			.match(RetryStep, { step, kind, scope })
-			.where(r.not(RetryResult, { step }))
-			.find({ step, kind, scope })
-	}),
-	retryPendingClaims: query(RetryDen).rule((r) => {
-		const { step, attempt, until } = v(RetryClaim, "claim")
-		return r
-			.match(RetryClaim, { step, attempt, until })
-			.where(r.not(RetryResult, { step }))
-			.find({ step, attempt, until })
-	}),
-	retryPendingRetries: query(RetryDen).rule((r) => {
-		const { step, attempt, at, spent } = v(RetryRetry, "retry")
-		return r
-			.match(RetryRetry, { step, attempt, at, spent })
-			.where(r.not(RetryResult, { step }))
-			.find({ step, attempt, at, spent })
-	}),
-	retryPendingDues: query(RetryDen).rule((r) => {
-		const { step, at } = v(RetryDue, "due")
-		return r.match(RetryDue, { step, at }).where(r.not(RetryResult, { step })).find({ step, at })
-	}),
-	retryRequested: query(RetryDen).rule((r) => {
-		const { scope, kind } = v(RetryScope, "scope")
-		return r
-			.match(RetryScope, { scope, kind })
-			.where(r.not(RetryAdmitted, { scope }), r.not(RetrySkipped, { scope }))
-			.find({ scope, kind })
-	}),
-	retryRunning: query(RetryDen).rule((r) => {
-		const { scope, kind } = v(RetryScope, "scope")
-		const { step } = v(RetryFinish, "finish")
-		return r
-			.match(RetryScope, { scope, kind })
-			.match(RetryFinish, { scope, step })
-			.where(r.not(RetryResult, { step }))
-			.find({ scope, kind })
-	}),
-	retryWithins: query(RetryDen).rule((r) => {
-		const { scope, parent } = v(RetryWithin, "retryWithin")
-		return r.match(RetryWithin, { scope, parent }).find({ scope, parent })
-	}),
-	retryRoots: query(RetryDen).rule((r) => {
-		const { scope, key, at } = v(RetryRoot, "retryRoot")
-		return r.match(RetryRoot, { scope, key, at }).find({ scope, key, at })
-	}),
+	retryPending: deferrable(
+		query(RetryDen).rule((r) => {
+			const { step, kind, scope } = v(RetryStep, "step")
+			return r
+				.match(RetryStep, { step, kind, scope })
+				.where(r.not(RetryResult, { step }))
+				.find({ step, kind, scope })
+		})
+	),
+	retryPendingClaims: deferrable(
+		query(RetryDen).rule((r) => {
+			const { step, attempt, until } = v(RetryClaim, "claim")
+			return r
+				.match(RetryClaim, { step, attempt, until })
+				.where(r.not(RetryResult, { step }))
+				.find({ step, attempt, until })
+		})
+	),
+	retryPendingRetries: deferrable(
+		query(RetryDen).rule((r) => {
+			const { step, attempt, at, spent } = v(RetryRetry, "retry")
+			return r
+				.match(RetryRetry, { step, attempt, at, spent })
+				.where(r.not(RetryResult, { step }))
+				.find({ step, attempt, at, spent })
+		})
+	),
+	retryPendingDues: deferrable(
+		query(RetryDen).rule((r) => {
+			const { step, at } = v(RetryDue, "due")
+			return r.match(RetryDue, { step, at }).where(r.not(RetryResult, { step })).find({ step, at })
+		})
+	),
+	retryRequested: deferrable(
+		query(RetryDen).rule((r) => {
+			const { scope, kind } = v(RetryScope, "scope")
+			return r
+				.match(RetryScope, { scope, kind })
+				.where(r.not(RetryAdmitted, { scope }), r.not(RetrySkipped, { scope }))
+				.find({ scope, kind })
+		})
+	),
+	retryRunning: deferrable(
+		query(RetryDen).rule((r) => {
+			const { scope, kind } = v(RetryScope, "scope")
+			const { step } = v(RetryFinish, "finish")
+			return r
+				.match(RetryScope, { scope, kind })
+				.match(RetryFinish, { scope, step })
+				.where(r.not(RetryResult, { step }))
+				.find({ scope, kind })
+		})
+	),
+	retryWithins: deferrable(
+		query(RetryDen).rule((r) => {
+			const { scope, parent } = v(RetryWithin, "retryWithin")
+			return r.match(RetryWithin, { scope, parent }).find({ scope, parent })
+		})
+	),
+	retryRoots: deferrable(
+		query(RetryDen).rule((r) => {
+			const { scope, key, at } = v(RetryRoot, "retryRoot")
+			return r.match(RetryRoot, { scope, key, at }).find({ scope, key, at })
+		})
+	),
 	retryReadRetrySteadfastInput: RetrySteadfastInput,
 	retryReadRetryBrittleInput: RetryBrittleInput,
 	retryReadRetryLaddersInput: RetryLaddersInput,
@@ -288,10 +304,12 @@ export const retryDenWorkload = workload(RetryDen, retryDenPrograms)
 export const retrySeatsPrograms = Object.freeze({
 	retryPause: ChangeSet.empty(RetrySeats).insert(RetryPaused, []),
 	retryResume: ChangeSet.empty(RetrySeats).delete(RetryPaused, []),
-	retryPausedAll: query(RetrySeats).rule((r) => {
-		const { target } = v(RetryPaused, "retryPaused")
-		return r.match(RetryPaused, { target }).find({ target })
-	})
+	retryPausedAll: deferrable(
+		query(RetrySeats).rule((r) => {
+			const { target } = v(RetryPaused, "retryPaused")
+			return r.match(RetryPaused, { target }).find({ target })
+		})
+	)
 })
 
 export const retrySeatsWorkload = workload(RetrySeats, retrySeatsPrograms)

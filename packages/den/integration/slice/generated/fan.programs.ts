@@ -1,5 +1,5 @@
 /** The programs den lowered the flow Fan to, over the schema App; `den generate` writes them, and nothing edits them. */
-import { ChangeSet, query, role, v, workload } from "@bjornpagen/grizzle"
+import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
 	FanKind,
@@ -187,55 +187,71 @@ export const fanDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", FanScope.fields.scope)))
 			.find({ step })
 	}),
-	fanPending: query(FanDen).rule((r) => {
-		const { step, kind, scope } = v(FanStep, "step")
-		return r
-			.match(FanStep, { step, kind, scope })
-			.where(r.not(FanResult, { step }))
-			.find({ step, kind, scope })
-	}),
-	fanPendingClaims: query(FanDen).rule((r) => {
-		const { step, attempt, until } = v(FanClaim, "claim")
-		return r
-			.match(FanClaim, { step, attempt, until })
-			.where(r.not(FanResult, { step }))
-			.find({ step, attempt, until })
-	}),
-	fanPendingRetries: query(FanDen).rule((r) => {
-		const { step, attempt, at, spent } = v(FanRetry, "retry")
-		return r
-			.match(FanRetry, { step, attempt, at, spent })
-			.where(r.not(FanResult, { step }))
-			.find({ step, attempt, at, spent })
-	}),
-	fanPendingDues: query(FanDen).rule((r) => {
-		const { step, at } = v(FanDue, "due")
-		return r.match(FanDue, { step, at }).where(r.not(FanResult, { step })).find({ step, at })
-	}),
-	fanRequested: query(FanDen).rule((r) => {
-		const { scope, kind } = v(FanScope, "scope")
-		return r
-			.match(FanScope, { scope, kind })
-			.where(r.not(FanAdmitted, { scope }), r.not(FanSkipped, { scope }))
-			.find({ scope, kind })
-	}),
-	fanRunning: query(FanDen).rule((r) => {
-		const { scope, kind } = v(FanScope, "scope")
-		const { step } = v(FanFinish, "finish")
-		return r
-			.match(FanScope, { scope, kind })
-			.match(FanFinish, { scope, step })
-			.where(r.not(FanResult, { step }))
-			.find({ scope, kind })
-	}),
-	fanWithins: query(FanDen).rule((r) => {
-		const { scope, parent } = v(FanWithin, "fanWithin")
-		return r.match(FanWithin, { scope, parent }).find({ scope, parent })
-	}),
-	fanRoots: query(FanDen).rule((r) => {
-		const { scope, key, at } = v(FanRoot, "fanRoot")
-		return r.match(FanRoot, { scope, key, at }).find({ scope, key, at })
-	}),
+	fanPending: deferrable(
+		query(FanDen).rule((r) => {
+			const { step, kind, scope } = v(FanStep, "step")
+			return r
+				.match(FanStep, { step, kind, scope })
+				.where(r.not(FanResult, { step }))
+				.find({ step, kind, scope })
+		})
+	),
+	fanPendingClaims: deferrable(
+		query(FanDen).rule((r) => {
+			const { step, attempt, until } = v(FanClaim, "claim")
+			return r
+				.match(FanClaim, { step, attempt, until })
+				.where(r.not(FanResult, { step }))
+				.find({ step, attempt, until })
+		})
+	),
+	fanPendingRetries: deferrable(
+		query(FanDen).rule((r) => {
+			const { step, attempt, at, spent } = v(FanRetry, "retry")
+			return r
+				.match(FanRetry, { step, attempt, at, spent })
+				.where(r.not(FanResult, { step }))
+				.find({ step, attempt, at, spent })
+		})
+	),
+	fanPendingDues: deferrable(
+		query(FanDen).rule((r) => {
+			const { step, at } = v(FanDue, "due")
+			return r.match(FanDue, { step, at }).where(r.not(FanResult, { step })).find({ step, at })
+		})
+	),
+	fanRequested: deferrable(
+		query(FanDen).rule((r) => {
+			const { scope, kind } = v(FanScope, "scope")
+			return r
+				.match(FanScope, { scope, kind })
+				.where(r.not(FanAdmitted, { scope }), r.not(FanSkipped, { scope }))
+				.find({ scope, kind })
+		})
+	),
+	fanRunning: deferrable(
+		query(FanDen).rule((r) => {
+			const { scope, kind } = v(FanScope, "scope")
+			const { step } = v(FanFinish, "finish")
+			return r
+				.match(FanScope, { scope, kind })
+				.match(FanFinish, { scope, step })
+				.where(r.not(FanResult, { step }))
+				.find({ scope, kind })
+		})
+	),
+	fanWithins: deferrable(
+		query(FanDen).rule((r) => {
+			const { scope, parent } = v(FanWithin, "fanWithin")
+			return r.match(FanWithin, { scope, parent }).find({ scope, parent })
+		})
+	),
+	fanRoots: deferrable(
+		query(FanDen).rule((r) => {
+			const { scope, key, at } = v(FanRoot, "fanRoot")
+			return r.match(FanRoot, { scope, key, at }).find({ scope, key, at })
+		})
+	),
 	fanReadFanSquareInput: FanSquareInput,
 	fanReadFanBatchInput: FanBatchInput,
 	fanOutputsBatchSquare: query(FanDen).rule((r) => {
@@ -283,22 +299,28 @@ export const fanSeatsPrograms = Object.freeze({
 		ChangeSet.empty(FanSeats).insert(FanHold, [])
 	),
 	fanGiveBack: ChangeSet.empty(FanSeats).delete(FanHold, []),
-	fanSeats: query(FanSeats).rule((r) => {
-		const { resource, seat } = v(FanSeat, "fanSeat")
-		return r.match(FanSeat, { resource, seat }).find({ resource, seat })
-	}),
-	fanHolds: query(FanSeats).rule((r) => {
-		const { resource, seat, holder, until } = v(FanHold, "fanHold")
-		return r
-			.match(FanHold, { resource, seat, holder, until })
-			.find({ resource, seat, holder, until })
-	}),
+	fanSeats: deferrable(
+		query(FanSeats).rule((r) => {
+			const { resource, seat } = v(FanSeat, "fanSeat")
+			return r.match(FanSeat, { resource, seat }).find({ resource, seat })
+		})
+	),
+	fanHolds: deferrable(
+		query(FanSeats).rule((r) => {
+			const { resource, seat, holder, until } = v(FanHold, "fanHold")
+			return r
+				.match(FanHold, { resource, seat, holder, until })
+				.find({ resource, seat, holder, until })
+		})
+	),
 	fanPause: ChangeSet.empty(FanSeats).insert(FanPaused, []),
 	fanResume: ChangeSet.empty(FanSeats).delete(FanPaused, []),
-	fanPausedAll: query(FanSeats).rule((r) => {
-		const { target } = v(FanPaused, "fanPaused")
-		return r.match(FanPaused, { target }).find({ target })
-	})
+	fanPausedAll: deferrable(
+		query(FanSeats).rule((r) => {
+			const { target } = v(FanPaused, "fanPaused")
+			return r.match(FanPaused, { target }).find({ target })
+		})
+	)
 })
 
 export const fanSeatsWorkload = workload(FanSeats, fanSeatsPrograms)
