@@ -17,8 +17,8 @@
 			"dependsOn": ["^source"]
 		},
 		"typecheck": {
-			"description": "Every project checks its own sources with --noEmit and reads its dependencies' sources directly, so no check waits on another's; grizzle's packages, the submodule's, keep their own gates.",
-			"dependsOn": [],
+			"description": "Every project checks its own sources with --noEmit and reads its dependencies' sources directly, so no check waits on another's, and reruns when a package it loads changes, the submodule's grizzle packages among them; grizzle's packages keep their own gates.",
+			"dependsOn": ["^source"],
 			"inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/packages/devtools/tsconfig.base.json"],
 			"outputs": []
 		},
