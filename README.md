@@ -9,7 +9,8 @@ work here.
 ```bash
 git submodule update --init
 pnpm install
-pnpm check            # the gate
+pnpm types            # after every edit: every project's typecheck, incremental
+pnpm check            # the gate, which a push runs
 pnpm test             # the suites that need no database
 pnpm pg init && pnpm pg start && pnpm test:network   # den's own PostgreSQL 19 cluster
 ```

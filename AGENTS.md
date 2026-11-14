@@ -70,8 +70,12 @@ Inside a package, import through its own `#` map with the real extension; across
   strict catalog (`pnpm-workspace.yaml`). A release is admitted once it is a day old, except Effect's own packages:
   den builds on Effect's newest release.
 - TypeScript 7.1 beta with Effect's language service, from `@effect/tsgo`; `pnpm install` patches it in.
-- `pnpm check` is the gate, run by hand before a commit: every package's typecheck, superlint and oxlint, oxfmt,
-  fallow (`dead-code`, `architecture`) and `pnpm dedupe --check`. `pnpm test` runs the suites that need no database.
+- After every edit, run `pnpm types`: every project's typecheck, incremental, so a rerun checks again only what
+  changed.
+- The hooks run the gates (lefthook, which `pnpm install` installs): a commit checks the format of the files it stages
+  and runs `pnpm types`; a push runs `pnpm check`, the whole gate: every project's typecheck from scratch, superlint
+  and type-aware oxlint, oxfmt, fallow (`dead-code`, `architecture`) and `pnpm dedupe --check`. Never commit or push
+  with `--no-verify`. `pnpm test` runs the suites that need no database.
 
 ## Working here
 
