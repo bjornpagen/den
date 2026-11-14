@@ -16,11 +16,17 @@ import {
 	select
 } from "@bjornpagen/grizzle"
 
-const FanKind = closed("FanKind", ["Square", "BatchFinish", "FanRunFinish"])
-const FanJoin = closed("FanJoin", ["Batch", "FanRun"])
-const FanOutcome = closed("FanOutcome", ["done", "failed"])
+export const FanKind = closed("FanKind", ["Square", "BatchFinish", "FanRunFinish"])
+export const FanJoin = closed("FanJoin", ["Batch", "FanRun"])
+export const FanOutcome = closed("FanOutcome", ["done", "failed"])
 export const FanPausable = closed("FanPausable", ["Pool", "FanRun"])
 export const FanResource = closed("FanResource", ["Pool"])
+const FanSeats = closed.relation(
+	"FanSeats",
+	{ resource: closedId(FanResource), seats: natural },
+	["resource"],
+	[{ resource: "Pool", seats: 2n }]
+)
 
 export const FanScope = relation("FanScope", { scope: DenScope, kind: closedId(FanJoin) }, [
 	"scope"
@@ -84,16 +90,30 @@ export const FanFanRunInput = relation(
 export const FanSquareOutput = relation("FanSquareOutput", { step: DenStep, square: pg.bigint }, [
 	"step"
 ])
-export const FanSeat = relation("FanSeat", { resource: closedId(FanResource), seat: natural }, [
-	"resource",
-	"seat"
-])
 export const FanHold = relation(
 	"FanHold",
-	{ resource: closedId(FanResource), seat: natural, holder: DenHolder, until: DenInstant },
-	["resource", "seat"]
+	{
+		resource: closedId(FanResource),
+		seat: natural,
+		turn: natural,
+		holder: DenHolder,
+		until: DenInstant
+	},
+	["resource", "seat", "turn"]
 )
-export const FanPaused = relation("FanPaused", { target: closedId(FanPausable) }, ["target"])
+export const FanFreed = relation(
+	"FanFreed",
+	{ resource: closedId(FanResource), seat: natural, turn: natural },
+	["resource", "seat", "turn"]
+)
+export const FanPaused = relation("FanPaused", { target: closedId(FanPausable), turn: natural }, [
+	"target",
+	"turn"
+])
+export const FanResumed = relation("FanResumed", { target: closedId(FanPausable), turn: natural }, [
+	"target",
+	"turn"
+])
 
 /** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
 export const fanGraph = fragment(
@@ -201,10 +221,30 @@ export const fanGraph = fragment(
 	]
 )
 
-/** The flow's coordination group: its rosters, seats, holds, exclusivity seats and pauses, which den's coordination role holds whole. */
+/** The flow's coordination group: its rosters, its seat counts, and its chains of holds, exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const fanCoordination = fragment(
-	[FanKind, FanJoin, FanOutcome, FanPausable, FanResource, FanSeat, FanHold, FanPaused],
-	[contained(on(FanHold, "resource", "seat"), on(FanSeat, "resource", "seat"))]
+	[
+		FanKind,
+		FanJoin,
+		FanOutcome,
+		FanPausable,
+		FanResource,
+		FanSeats,
+		FanHold,
+		FanFreed,
+		FanPaused,
+		FanResumed
+	],
+	[
+		contained(on(FanFreed, "resource", "seat", "turn"), on(FanHold, "resource", "seat", "turn")),
+		contained(
+			on(FanHold, "resource", "seat", pred("turn")),
+			on(FanFreed, "resource", "seat", "turn")
+		),
+		check("SeatBelowCount", FanHold, (row) => row.lt(row.seat, FanSeats.at("seats", row.resource))),
+		contained(on(FanResumed, "target", "turn"), on(FanPaused, "target", "turn")),
+		contained(on(FanPaused, "target", pred("turn")), on(FanResumed, "target", "turn"))
+	]
 )
 
 /** The den relations the flow's app role `loader` inserts into: each step's commit's, and each app root's request's. */

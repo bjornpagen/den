@@ -23,9 +23,9 @@ import {
 	select
 } from "@bjornpagen/grizzle"
 
-const SyncKind = closed("SyncKind", ["Copy", "Build", "SyncRunFinish", "GoldFinish"])
+export const SyncKind = closed("SyncKind", ["Copy", "Build", "SyncRunFinish", "GoldFinish"])
 export const SyncJoin = closed("SyncJoin", ["SyncRun", "Gold"])
-const SyncOutcome = closed("SyncOutcome", ["done", "failed"])
+export const SyncOutcome = closed("SyncOutcome", ["done", "failed"])
 export const SyncPausable = closed("SyncPausable", ["SyncRun", "Gold"])
 
 export const SyncScope = relation("SyncScope", { scope: DenScope, kind: closedId(SyncJoin) }, [
@@ -105,10 +105,24 @@ export const SyncBuildOutput = relation("SyncBuildOutput", { step: DenStep, buil
 ])
 export const SyncExclusive = relation(
 	"SyncExclusive",
-	{ kind: closedId(SyncJoin), key: DenExclusive, scope: DenScope },
-	["kind", "key"]
+	{ kind: closedId(SyncJoin), key: DenExclusive, turn: natural, scope: DenScope },
+	["kind", "key", "turn"]
 )
-export const SyncPaused = relation("SyncPaused", { target: closedId(SyncPausable) }, ["target"])
+export const SyncReleased = relation(
+	"SyncReleased",
+	{ kind: closedId(SyncJoin), key: DenExclusive, turn: natural },
+	["kind", "key", "turn"]
+)
+export const SyncPaused = relation(
+	"SyncPaused",
+	{ target: closedId(SyncPausable), turn: natural },
+	["target", "turn"]
+)
+export const SyncResumed = relation(
+	"SyncResumed",
+	{ target: closedId(SyncPausable), turn: natural },
+	["target", "turn"]
+)
 
 /** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
 export const syncGraph = fragment(
@@ -228,10 +242,27 @@ export const syncGraph = fragment(
 	]
 )
 
-/** The flow's coordination group: its rosters, seats, holds, exclusivity seats and pauses, which den's coordination role holds whole. */
+/** The flow's coordination group: its rosters, its seat counts, and its chains of holds, exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const syncCoordination = fragment(
-	[SyncKind, SyncJoin, SyncOutcome, SyncPausable, SyncExclusive, SyncPaused],
-	[]
+	[
+		SyncKind,
+		SyncJoin,
+		SyncOutcome,
+		SyncPausable,
+		SyncExclusive,
+		SyncReleased,
+		SyncPaused,
+		SyncResumed
+	],
+	[
+		contained(on(SyncReleased, "kind", "key", "turn"), on(SyncExclusive, "kind", "key", "turn")),
+		contained(
+			on(SyncExclusive, "kind", "key", pred("turn")),
+			on(SyncReleased, "kind", "key", "turn")
+		),
+		contained(on(SyncResumed, "target", "turn"), on(SyncPaused, "target", "turn")),
+		contained(on(SyncPaused, "target", pred("turn")), on(SyncResumed, "target", "turn"))
+	]
 )
 
 /** The den relations the flow's app role `loader` inserts into: each step's commit's, and each app root's request's. */

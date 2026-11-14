@@ -2,6 +2,13 @@
 import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
+	ChainKind,
+	ChainJoin,
+	ChainOutcome,
+	ChainPausable,
+	ChainPageInputFeed,
+	ChainChainRunInputFeed,
+	ChainOrderedInputFeed,
 	ChainScope,
 	ChainRoot,
 	ChainWithin,
@@ -29,6 +36,7 @@ import {
 	ChainPageOutputNext,
 	ChainPageRead,
 	ChainPaused,
+	ChainResumed,
 	chainGraph,
 	chainCoordination
 } from "#integration/slice/generated/chain.fragment.ts"
@@ -68,12 +76,22 @@ export const ChainDen = role(
 	}
 )
 
-/** den's coordination role for the flow Chain: seats, holds, exclusivity seats and pauses, the seat module's (LEASE replaces it). */
-export const ChainSeats = role(
+/** den's coordinator role for the flow Chain: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole; no role holds a closed relation. */
+export const ChainCoordinator = role(
 	App,
-	"chain_seats",
-	{ ...chainCoordination.relations },
-	{ write: ["ChainPaused"] }
+	"chain_coordinator",
+	{
+		ChainKind,
+		ChainJoin,
+		ChainOutcome,
+		ChainPausable,
+		ChainPageInputFeed,
+		ChainChainRunInputFeed,
+		ChainOrderedInputFeed,
+		ChainPaused,
+		ChainResumed
+	},
+	{ insert: ["ChainPaused", "ChainResumed"] }
 )
 
 export const chainDenPrograms = Object.freeze({
@@ -311,18 +329,27 @@ export const chainDenPrograms = Object.freeze({
 
 export const chainDenWorkload = workload(ChainDen, chainDenPrograms)
 
-export const chainSeatsPrograms = Object.freeze({
+export const chainCoordinatorPrograms = Object.freeze({
 	chainPause: ChangeSet.empty(chainCoordination).insert(ChainPaused, []),
-	chainResume: ChangeSet.empty(chainCoordination).delete(ChainPaused, []),
+	chainResume: ChangeSet.empty(chainCoordination).insert(ChainResumed, []),
+	chainPauseTurns: deferrable(
+		query(chainCoordination).rule((r) => {
+			const { target, turn } = v(ChainPaused, "chainPaused")
+			return r.match(ChainPaused, { target, turn }).find({ target, turn: r.max(turn) })
+		})
+	),
 	chainPausedAll: deferrable(
 		query(chainCoordination).rule((r) => {
-			const { target } = v(ChainPaused, "chainPaused")
-			return r.match(ChainPaused, { target }).find({ target })
+			const { target, turn } = v(ChainPaused, "chainPaused")
+			return r
+				.match(ChainPaused, { target, turn })
+				.where(r.not(ChainResumed, { target, turn }))
+				.find({ target, turn })
 		})
 	)
 })
 
-export const chainSeatsWorkload = workload(ChainSeats, chainSeatsPrograms)
+export const chainCoordinatorWorkload = workload(ChainCoordinator, chainCoordinatorPrograms)
 
 /** The commits and declared reads of the flow Chain, over its app role Loader. */
 export const chainCommitPrograms = Object.freeze({

@@ -2,6 +2,10 @@
 import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
+	RetryKind,
+	RetryJoin,
+	RetryOutcome,
+	RetryPausable,
 	RetryScope,
 	RetryRoot,
 	RetryWithin,
@@ -26,6 +30,7 @@ import {
 	RetrySteadfastOutput,
 	RetryBrittleOutput,
 	RetryPaused,
+	RetryResumed,
 	retryGraph,
 	retryCoordination
 } from "#integration/slice/generated/retry.fragment.ts"
@@ -63,12 +68,12 @@ export const RetryDen = role(
 	}
 )
 
-/** den's coordination role for the flow Retry: seats, holds, exclusivity seats and pauses, the seat module's (LEASE replaces it). */
-export const RetrySeats = role(
+/** den's coordinator role for the flow Retry: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole; no role holds a closed relation. */
+export const RetryCoordinator = role(
 	App,
-	"retry_seats",
-	{ ...retryCoordination.relations },
-	{ write: ["RetryPaused"] }
+	"retry_coordinator",
+	{ RetryKind, RetryJoin, RetryOutcome, RetryPausable, RetryPaused, RetryResumed },
+	{ insert: ["RetryPaused", "RetryResumed"] }
 )
 
 export const retryDenPrograms = Object.freeze({
@@ -287,18 +292,27 @@ export const retryDenPrograms = Object.freeze({
 
 export const retryDenWorkload = workload(RetryDen, retryDenPrograms)
 
-export const retrySeatsPrograms = Object.freeze({
+export const retryCoordinatorPrograms = Object.freeze({
 	retryPause: ChangeSet.empty(retryCoordination).insert(RetryPaused, []),
-	retryResume: ChangeSet.empty(retryCoordination).delete(RetryPaused, []),
+	retryResume: ChangeSet.empty(retryCoordination).insert(RetryResumed, []),
+	retryPauseTurns: deferrable(
+		query(retryCoordination).rule((r) => {
+			const { target, turn } = v(RetryPaused, "retryPaused")
+			return r.match(RetryPaused, { target, turn }).find({ target, turn: r.max(turn) })
+		})
+	),
 	retryPausedAll: deferrable(
 		query(retryCoordination).rule((r) => {
-			const { target } = v(RetryPaused, "retryPaused")
-			return r.match(RetryPaused, { target }).find({ target })
+			const { target, turn } = v(RetryPaused, "retryPaused")
+			return r
+				.match(RetryPaused, { target, turn })
+				.where(r.not(RetryResumed, { target, turn }))
+				.find({ target, turn })
 		})
 	)
 })
 
-export const retrySeatsWorkload = workload(RetrySeats, retrySeatsPrograms)
+export const retryCoordinatorWorkload = workload(RetryCoordinator, retryCoordinatorPrograms)
 
 /** The commits and declared reads of the flow Retry, over its app role Loader. */
 export const retryCommitPrograms = Object.freeze({

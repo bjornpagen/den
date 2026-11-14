@@ -117,7 +117,8 @@ CREATE TABLE "slice"."chain_page_read" (
 
 CREATE TABLE "slice"."chain_paused" (
   "target" "slice"."chain_pausable" NOT NULL,
-  CONSTRAINT "__chain_paused_pk_oorovhvyps" PRIMARY KEY ("target")
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__chain_paused_pk_oorovhvyps" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."chain_refusal" (
@@ -131,6 +132,12 @@ CREATE TABLE "slice"."chain_result" (
   "outcome" "slice"."chain_outcome" NOT NULL,
   CONSTRAINT "__chain_result_pk_btw3jzlkgl" PRIMARY KEY ("step"),
   CONSTRAINT "__chain_result_key_step_outcome_hqqrqon5z3" UNIQUE NULLS DISTINCT ("step", "outcome")
+);
+
+CREATE TABLE "slice"."chain_resumed" (
+  "target" "slice"."chain_pausable" NOT NULL,
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__chain_resumed_pk_smdbyqzxn2" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."chain_retry" (
@@ -260,6 +267,13 @@ CREATE TABLE "slice"."fan_finish" (
   CONSTRAINT "__fan_finish_key_step_v72sacijwp" UNIQUE NULLS DISTINCT ("step")
 );
 
+CREATE TABLE "slice"."fan_freed" (
+  "resource" "slice"."fan_resource" NOT NULL,
+  "seat" "slice"."__domain_gfw43vigph" NOT NULL,
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__fan_freed_pk_r3csmayfa7" PRIMARY KEY ("resource", "seat", "turn")
+);
+
 CREATE TABLE "slice"."fan_held" (
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
@@ -269,14 +283,17 @@ CREATE TABLE "slice"."fan_held" (
 CREATE TABLE "slice"."fan_hold" (
   "resource" "slice"."fan_resource" NOT NULL,
   "seat" "slice"."__domain_gfw43vigph" NOT NULL,
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
   "holder" "slice"."__domain_jotafzuj2i" NOT NULL,
   "until" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  CONSTRAINT "__fan_hold_pk_avuqdkljvb" PRIMARY KEY ("resource", "seat")
+  CONSTRAINT "__fan_hold_pk_avuqdkljvb" PRIMARY KEY ("resource", "seat", "turn"),
+  CONSTRAINT "seat_below_count" CHECK (("seat" < ("slice"."__constant_ejkw66w2je"())[NULLIF("pg_catalog"."substring"("slice"."__constant_ib5zplua3f"(), "resource" + 1, 1)::integer, 0) - 1 + 1]) IS TRUE)
 );
 
 CREATE TABLE "slice"."fan_paused" (
   "target" "slice"."fan_pausable" NOT NULL,
-  CONSTRAINT "__fan_paused_pk_3eaz2xb4qg" PRIMARY KEY ("target")
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__fan_paused_pk_3eaz2xb4qg" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."fan_refusal" (
@@ -290,6 +307,12 @@ CREATE TABLE "slice"."fan_result" (
   "outcome" "slice"."fan_outcome" NOT NULL,
   CONSTRAINT "__fan_result_pk_yeear352sx" PRIMARY KEY ("step"),
   CONSTRAINT "__fan_result_key_step_outcome_5nrb7r22qd" UNIQUE NULLS DISTINCT ("step", "outcome")
+);
+
+CREATE TABLE "slice"."fan_resumed" (
+  "target" "slice"."fan_pausable" NOT NULL,
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__fan_resumed_pk_w6ao5h3tp7" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."fan_retry" (
@@ -312,12 +335,6 @@ CREATE TABLE "slice"."fan_scope" (
   "kind" "slice"."fan_join" NOT NULL,
   CONSTRAINT "__fan_scope_pk_7bvjfihnef" PRIMARY KEY ("scope"),
   CONSTRAINT "__fan_scope_key_scope_kind_epdwnzjh52" UNIQUE NULLS DISTINCT ("scope", "kind")
-);
-
-CREATE TABLE "slice"."fan_seat" (
-  "resource" "slice"."fan_resource" NOT NULL,
-  "seat" "slice"."__domain_gfw43vigph" NOT NULL,
-  CONSTRAINT "__fan_seat_pk_ad6aaozjhg" PRIMARY KEY ("resource", "seat")
 );
 
 CREATE TABLE "slice"."fan_skipped" (
@@ -452,7 +469,8 @@ CREATE TABLE "slice"."retry_ladders_input" (
 
 CREATE TABLE "slice"."retry_paused" (
   "target" "slice"."retry_pausable" NOT NULL,
-  CONSTRAINT "__retry_paused_pk_umm2nscqny" PRIMARY KEY ("target")
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__retry_paused_pk_umm2nscqny" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."retry_refusal" (
@@ -466,6 +484,12 @@ CREATE TABLE "slice"."retry_result" (
   "outcome" "slice"."retry_outcome" NOT NULL,
   CONSTRAINT "__retry_result_pk_5fegihvmml" PRIMARY KEY ("step"),
   CONSTRAINT "__retry_result_key_step_outcome_vx2zehdpf7" UNIQUE NULLS DISTINCT ("step", "outcome")
+);
+
+CREATE TABLE "slice"."retry_resumed" (
+  "target" "slice"."retry_pausable" NOT NULL,
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__retry_resumed_pk_jdtjm5vy5r" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."retry_retry" (
@@ -596,8 +620,9 @@ CREATE TABLE "slice"."sync_due" (
 CREATE TABLE "slice"."sync_exclusive" (
   "kind" "slice"."sync_join" NOT NULL,
   "key" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
   "scope" "slice"."__domain_jotafzuj2i" NOT NULL,
-  CONSTRAINT "__sync_exclusive_pk_joiibnjuvf" PRIMARY KEY ("kind", "key")
+  CONSTRAINT "__sync_exclusive_pk_joiibnjuvf" PRIMARY KEY ("kind", "key", "turn")
 );
 
 CREATE TABLE "slice"."sync_exclusive_key" (
@@ -639,7 +664,8 @@ CREATE TABLE "slice"."sync_held" (
 
 CREATE TABLE "slice"."sync_paused" (
   "target" "slice"."sync_pausable" NOT NULL,
-  CONSTRAINT "__sync_paused_pk_tstk2okngj" PRIMARY KEY ("target")
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__sync_paused_pk_tstk2okngj" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."sync_refusal" (
@@ -648,11 +674,24 @@ CREATE TABLE "slice"."sync_refusal" (
   CONSTRAINT "__sync_refusal_pk_mbmfornc5c" PRIMARY KEY ("step")
 );
 
+CREATE TABLE "slice"."sync_released" (
+  "kind" "slice"."sync_join" NOT NULL,
+  "key" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__sync_released_pk_k7qaw2iram" PRIMARY KEY ("kind", "key", "turn")
+);
+
 CREATE TABLE "slice"."sync_result" (
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
   "outcome" "slice"."sync_outcome" NOT NULL,
   CONSTRAINT "__sync_result_pk_jmwy2p3mqf" PRIMARY KEY ("step"),
   CONSTRAINT "__sync_result_key_step_outcome_wyar5y72qb" UNIQUE NULLS DISTINCT ("step", "outcome")
+);
+
+CREATE TABLE "slice"."sync_resumed" (
+  "target" "slice"."sync_pausable" NOT NULL,
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__sync_resumed_pk_3xc5n2yvjk" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."sync_retry" (
@@ -767,6 +806,8 @@ ALTER TABLE "slice"."chain_ordered_input" ADD COLUMN "__tag_kind_ordered_bcobbqx
 
 ALTER TABLE "slice"."chain_page_input" ADD COLUMN "__tag_kind_page_wmj4dlxrkf" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL;
 
+ALTER TABLE "slice"."chain_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
+
 ALTER TABLE "slice"."fan_batch_input" ADD COLUMN "__tag_kind_batch_fkqwrqkogg" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL;
 
 ALTER TABLE "slice"."fan_claim"
@@ -778,6 +819,10 @@ ALTER TABLE "slice"."fan_done" ADD COLUMN "__tag_outcome_done_tulqbccryg" smalli
 ALTER TABLE "slice"."fan_failed" ADD COLUMN "__tag_outcome_failed_3kga3qw77n" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL;
 
 ALTER TABLE "slice"."fan_fan_run_input" ADD COLUMN "__tag_kind_fan_run_eorldhk2ce" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL;
+
+ALTER TABLE "slice"."fan_hold" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
+
+ALTER TABLE "slice"."fan_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
 
 ALTER TABLE "slice"."fan_square_input" ADD COLUMN "__tag_kind_square_q3stoybx3v" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL;
 
@@ -793,6 +838,8 @@ ALTER TABLE "slice"."retry_failed" ADD COLUMN "__tag_outcome_failed_446fx3eezg" 
 
 ALTER TABLE "slice"."retry_ladders_input" ADD COLUMN "__tag_kind_ladders_gimfs6gp4j" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL;
 
+ALTER TABLE "slice"."retry_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
+
 ALTER TABLE "slice"."retry_steadfast_input" ADD COLUMN "__tag_kind_steadfast_4rudtmco65" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL;
 
 ALTER TABLE "slice"."sync_build_input" ADD COLUMN "__tag_kind_build_pslevsssox" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL;
@@ -805,39 +852,15 @@ ALTER TABLE "slice"."sync_copy_input" ADD COLUMN "__tag_kind_copy_wfaj52nfh7" sm
 
 ALTER TABLE "slice"."sync_done" ADD COLUMN "__tag_outcome_done_pkvv6jrgpq" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL;
 
+ALTER TABLE "slice"."sync_exclusive" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
+
 ALTER TABLE "slice"."sync_failed" ADD COLUMN "__tag_outcome_failed_26do6twsnf" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL;
 
 ALTER TABLE "slice"."sync_gold_input" ADD COLUMN "__tag_kind_gold_7mgmvxjg34" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL;
 
+ALTER TABLE "slice"."sync_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
+
 ALTER TABLE "slice"."sync_sync_run_input" ADD COLUMN "__tag_kind_sync_run_wcjtzgltvo" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL;
-
-CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."chain_paused"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_hold"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_paused"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_seat"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."retry_paused"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."sync_exclusive"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."sync_paused"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 ALTER TABLE "slice"."audit" ADD CONSTRAINT "__audit_fk_step_zgfyapbfme" FOREIGN KEY ("step") REFERENCES "slice"."chain_result" ("step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
@@ -883,9 +906,13 @@ ALTER TABLE "slice"."chain_page_output_next" ADD CONSTRAINT "__chain_page_output
 
 ALTER TABLE "slice"."chain_page_read" ADD CONSTRAINT "__chain_page_read_fk_step_wj2fe2lazd" FOREIGN KEY ("step") REFERENCES "slice"."chain_result" ("step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
+ALTER TABLE "slice"."chain_paused" ADD CONSTRAINT "__chain_paused_fk_target_pred_turn_mokmv27wuy" FOREIGN KEY ("target", "__pred_turn_qryngij6c4") REFERENCES "slice"."chain_resumed" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice"."chain_refusal" ADD CONSTRAINT "__chain_refusal_fk_step_bac3stmrn3" FOREIGN KEY ("step") REFERENCES "slice"."chain_failed" ("step") MATCH SIMPLE;
 
 ALTER TABLE "slice"."chain_result" ADD CONSTRAINT "__chain_result_fk_step_dbmjl746t7" FOREIGN KEY ("step") REFERENCES "slice"."chain_step" ("step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."chain_resumed" ADD CONSTRAINT "__chain_resumed_fk_target_turn_qdtxs3euay" FOREIGN KEY ("target", "turn") REFERENCES "slice"."chain_paused" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."chain_retry" ADD CONSTRAINT "__chain_retry_fk_step_attempt_ezek5vymkn" FOREIGN KEY ("step", "attempt") REFERENCES "slice"."chain_claim" ("step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
@@ -931,15 +958,21 @@ ALTER TABLE "slice"."fan_finish"
   ADD CONSTRAINT "__fan_finish_fk_scope_7bafbqarll" FOREIGN KEY ("scope") REFERENCES "slice"."fan_admitted" ("scope") MATCH SIMPLE,
   ADD CONSTRAINT "__fan_finish_fk_step_f3he376omz" FOREIGN KEY ("step") REFERENCES "slice"."fan_step" ("step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
+ALTER TABLE "slice"."fan_freed" ADD CONSTRAINT "__fan_freed_fk_resource_seat_turn_5lyzcw65au" FOREIGN KEY ("resource", "seat", "turn") REFERENCES "slice"."fan_hold" ("resource", "seat", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice"."fan_held"
   ADD CONSTRAINT "__fan_held_fk_step_6tkjkyjp3h" FOREIGN KEY ("step") REFERENCES "slice"."fan_result" ("step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_held_fk_step_attempt_zol2no7gql" FOREIGN KEY ("step", "attempt") REFERENCES "slice"."fan_claim" ("step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."fan_hold" ADD CONSTRAINT "__fan_hold_fk_resource_seat_ckrj3dllkr" FOREIGN KEY ("resource", "seat") REFERENCES "slice"."fan_seat" ("resource", "seat") MATCH SIMPLE;
+ALTER TABLE "slice"."fan_hold" ADD CONSTRAINT "__fan_hold_fk_resource_seat_pred_turn_vfz6ol7e57" FOREIGN KEY ("resource", "seat", "__pred_turn_qryngij6c4") REFERENCES "slice"."fan_freed" ("resource", "seat", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."fan_paused" ADD CONSTRAINT "__fan_paused_fk_target_pred_turn_flvtnhgqoq" FOREIGN KEY ("target", "__pred_turn_qryngij6c4") REFERENCES "slice"."fan_resumed" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."fan_refusal" ADD CONSTRAINT "__fan_refusal_fk_step_otwlhohyvs" FOREIGN KEY ("step") REFERENCES "slice"."fan_failed" ("step") MATCH SIMPLE;
 
 ALTER TABLE "slice"."fan_result" ADD CONSTRAINT "__fan_result_fk_step_kzt2ms65pp" FOREIGN KEY ("step") REFERENCES "slice"."fan_step" ("step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."fan_resumed" ADD CONSTRAINT "__fan_resumed_fk_target_turn_c5d76zka2w" FOREIGN KEY ("target", "turn") REFERENCES "slice"."fan_paused" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."fan_retry" ADD CONSTRAINT "__fan_retry_fk_step_attempt_ch6qjnmtkt" FOREIGN KEY ("step", "attempt") REFERENCES "slice"."fan_claim" ("step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
@@ -999,9 +1032,13 @@ ALTER TABLE "slice"."retry_held"
 
 ALTER TABLE "slice"."retry_ladders_input" ADD CONSTRAINT "__retry_ladders_input_fk_scope_tag_kind_ladders_vn6lnz3pry" FOREIGN KEY ("scope", "__tag_kind_ladders_gimfs6gp4j") REFERENCES "slice"."retry_scope" ("scope", "kind") MATCH SIMPLE;
 
+ALTER TABLE "slice"."retry_paused" ADD CONSTRAINT "__retry_paused_fk_target_pred_turn_i33p2skdd4" FOREIGN KEY ("target", "__pred_turn_qryngij6c4") REFERENCES "slice"."retry_resumed" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice"."retry_refusal" ADD CONSTRAINT "__retry_refusal_fk_step_lcou3dggjh" FOREIGN KEY ("step") REFERENCES "slice"."retry_failed" ("step") MATCH SIMPLE;
 
 ALTER TABLE "slice"."retry_result" ADD CONSTRAINT "__retry_result_fk_step_6eyc56xk3a" FOREIGN KEY ("step") REFERENCES "slice"."retry_step" ("step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."retry_resumed" ADD CONSTRAINT "__retry_resumed_fk_target_turn_x2e4jllxuy" FOREIGN KEY ("target", "turn") REFERENCES "slice"."retry_paused" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."retry_retry" ADD CONSTRAINT "__retry_retry_fk_step_attempt_ykromtpll2" FOREIGN KEY ("step", "attempt") REFERENCES "slice"."retry_claim" ("step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
@@ -1053,6 +1090,8 @@ ALTER TABLE "slice"."sync_done" ADD CONSTRAINT "__sync_done_fk_step_tag_outcome_
 
 ALTER TABLE "slice"."sync_due" ADD CONSTRAINT "__sync_due_fk_step_o5af5jr33h" FOREIGN KEY ("step") REFERENCES "slice"."sync_step" ("step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
+ALTER TABLE "slice"."sync_exclusive" ADD CONSTRAINT "__sync_exclusive_fk_kind_key_pred_turn_opo5gkimc4" FOREIGN KEY ("kind", "key", "__pred_turn_qryngij6c4") REFERENCES "slice"."sync_released" ("kind", "key", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice"."sync_exclusive_key" ADD CONSTRAINT "__sync_exclusive_key_fk_scope_cy4cbhycir" FOREIGN KEY ("scope") REFERENCES "slice"."sync_scope" ("scope") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."sync_exhausted" ADD CONSTRAINT "__sync_exhausted_fk_step_qdkuopifxf" FOREIGN KEY ("step") REFERENCES "slice"."sync_failed" ("step") MATCH SIMPLE;
@@ -1069,9 +1108,15 @@ ALTER TABLE "slice"."sync_held"
   ADD CONSTRAINT "__sync_held_fk_step_cko2wzco3r" FOREIGN KEY ("step") REFERENCES "slice"."sync_result" ("step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__sync_held_fk_step_attempt_r37vvfdble" FOREIGN KEY ("step", "attempt") REFERENCES "slice"."sync_claim" ("step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
+ALTER TABLE "slice"."sync_paused" ADD CONSTRAINT "__sync_paused_fk_target_pred_turn_ovy6ezc3ey" FOREIGN KEY ("target", "__pred_turn_qryngij6c4") REFERENCES "slice"."sync_resumed" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice"."sync_refusal" ADD CONSTRAINT "__sync_refusal_fk_step_pkbm4yq2hj" FOREIGN KEY ("step") REFERENCES "slice"."sync_failed" ("step") MATCH SIMPLE;
 
+ALTER TABLE "slice"."sync_released" ADD CONSTRAINT "__sync_released_fk_kind_key_turn_e54e5at4ya" FOREIGN KEY ("kind", "key", "turn") REFERENCES "slice"."sync_exclusive" ("kind", "key", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice"."sync_result" ADD CONSTRAINT "__sync_result_fk_step_4ueb5frgri" FOREIGN KEY ("step") REFERENCES "slice"."sync_step" ("step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."sync_resumed" ADD CONSTRAINT "__sync_resumed_fk_target_turn_x3nw56h4tx" FOREIGN KEY ("target", "turn") REFERENCES "slice"."sync_paused" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."sync_retry" ADD CONSTRAINT "__sync_retry_fk_step_attempt_dbfp7g6nwv" FOREIGN KEY ("step", "attempt") REFERENCES "slice"."sync_claim" ("step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 

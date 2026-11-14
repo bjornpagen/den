@@ -1,6 +1,7 @@
 import { regex } from "arkregex"
 import { Array as Arr, Option, Order, String as Str } from "effect"
 import type {
+	CountsIR,
 	EdgeIR,
 	FieldType,
 	JoinIR,
@@ -19,7 +20,7 @@ import type {
  * - the fragment: rosters, contracts and relations, and two grizzle fragments the app lists in its `schema(...)`, the
  *   flow's graph and its coordination group, each with its laws, beside the den relations the flow's app role inserts
  *   into to commit its steps;
- * - the programs: den's role's and its coordination role's programs over those fragments, the roles over the app's
+ * - the programs: den's role's and its coordinator role's programs over those fragments, the roles over the app's
  *   schema that hold them whole and serve them, and the commits, requests and declared reads over the flow's app role;
  * - the binding: the ledger port over the programs' served handles, converting den's values to facts and rows back.
  */
@@ -101,7 +102,12 @@ const lawExpr = (law: LawIR): string => {
 		case "race":
 			return `race(${law.relation})`
 		case "check":
-			return `check(${q(law.name)}, ${law.relation}, (row) => row.ge(row.${law.field}, ${law.bound}n))`
+			switch (law.bound.kind) {
+				case "atLeast":
+					return `check(${q(law.name)}, ${law.relation}, (row) => row.ge(row.${law.field}, ${law.bound.value}n))`
+				case "below":
+					return `check(${q(law.name)}, ${law.relation}, (row) => row.lt(row.${law.field}, ${law.bound.counts}.at(${q(law.bound.count)}, row.${law.bound.at})))`
+			}
 	}
 }
 
@@ -162,12 +168,12 @@ const naming = (l: Lowered) => {
 		writerInserts: n("Writer"),
 		den: `${l.prefix}Den`,
 		denName: `${snake}_den`,
-		seats: `${l.prefix}Seats`,
-		seatsName: `${snake}_seats`,
+		coordinator: `${l.prefix}Coordinator`,
+		coordinatorName: `${snake}_coordinator`,
 		denPrograms: n("DenPrograms"),
 		denWorkload: n("DenWorkload"),
-		seatsPrograms: n("SeatsPrograms"),
-		seatsWorkload: n("SeatsWorkload"),
+		coordinatorPrograms: n("CoordinatorPrograms"),
+		coordinatorWorkload: n("CoordinatorWorkload"),
 		commitPrograms: n("CommitPrograms"),
 		commitWorkload: n("Commits"),
 		requests: n("Requests"),
@@ -207,8 +213,8 @@ const identifiersOf = (text: string): ReadonlySet<string> =>
 	new Set(Arr.map(Arr.fromIterable(Str.matchAll(IDENTIFIER)(text)), (found) => found[0]))
 
 /**
- * The rosters the binding reads by value, which the fragment module exports: the root kinds an exclusivity seat names,
- * the pausable targets, and the resources.
+ * The rosters the binding reads by value: the root kinds an exclusivity seat names, the pausable targets, and the
+ * resources.
  */
 const boundRostersOf = (l: Lowered): ReadonlyArray<string> => {
 	const relations = Arr.map(l.relations, (rel) => rel.name)
@@ -216,7 +222,7 @@ const boundRostersOf = (l: Lowered): ReadonlyArray<string> => {
 	return [
 		...(Arr.contains(relations, r("Exclusive")) ? [r("Join")] : []),
 		r("Pausable"),
-		...(Arr.contains(relations, r("Seat")) ? [r("Resource")] : [])
+		...(Arr.contains(relations, r("Hold")) ? [r("Resource")] : [])
 	]
 }
 
@@ -228,23 +234,40 @@ const lawRelations = (law: LawIR): ReadonlyArray<string> => {
 		case "key":
 			return [law.side.relation]
 		case "race":
-		case "check":
 			return [law.relation]
+		case "check":
+			switch (law.bound.kind) {
+				case "atLeast":
+					return [law.relation]
+				case "below":
+					return [law.relation, law.bound.counts]
+			}
 	}
 }
+
+/** The closed relation of a flow's seat counts, as its fragment module declares it. */
+const countsExpr = (counts: CountsIR): string =>
+	`const ${counts.name} = closed.relation(${q(counts.name)}, { ${counts.key.field}: closedId(${counts.key.roster}), ${counts.count}: natural }, [${q(counts.key.field)}], [${commas(
+		Arr.map(
+			counts.rows,
+			(row) => `{ ${counts.key.field}: ${q(row.handle)}, ${counts.count}: ${row.count}n }`
+		)
+	)}])`
 
 /**
  * The fragment module: the flow's rosters, contracts and relations, and two grizzle fragments the app lists in its
  * schema, each with every roster: the graph, its relations and laws, which den's role and the flow's app role hold
- * whole; and the coordination group, which den's coordination role holds whole and no law of the graph names. Beside
- * them, the den relations the flow's app role inserts into.
+ * whole; and the coordination group, its chains of turns and its seat counts, which den's coordinator role holds whole and
+ * no law of the graph names. Beside them, the den relations the flow's app role inserts into.
  */
 export const printFragment = (l: Lowered, place: Placement): string => {
 	const n = naming(l)
 	const reads = l.read
 	const writer = writerRelationsOf(l)
 	const rosterNames = Arr.map(l.rosters, (r) => r.name)
-	const coordination = new Set(l.coordination)
+	const counts = Option.toArray(l.counts)
+	const countNames = Arr.map(counts, (c) => c.name)
+	const coordination = new Set([...l.coordination, ...countNames])
 	const graphRelations = Arr.filter(
 		Arr.map(l.relations, (r) => r.name),
 		(r) => !coordination.has(r)
@@ -262,9 +285,9 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 		"",
 		...Arr.map(
 			l.rosters,
-			(r) =>
-				`${Arr.contains(boundRostersOf(l), r.name) ? "export " : ""}const ${r.name} = closed(${q(r.name)}, [${commas(Arr.map(r.handles, q))}])`
+			(r) => `export const ${r.name} = closed(${q(r.name)}, [${commas(Arr.map(r.handles, q))}])`
 		),
+		...Arr.map(counts, countsExpr),
 		"",
 		...Arr.map(
 			l.relations,
@@ -282,8 +305,8 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 			)
 		)}])`,
 		"",
-		`/** The flow's coordination group: its rosters, seats, holds, exclusivity seats and pauses, which den's coordination role holds whole. */`,
-		`export const ${n.coordination} = fragment([${commas([...rosterNames, ...l.coordination])}], [${commas(
+		`/** The flow's coordination group: its rosters, its seat counts, and its chains of holds, exclusivity seats and pauses, which den's coordinator role holds whole. */`,
+		`export const ${n.coordination} = fragment([${commas([...rosterNames, ...countNames, ...l.coordination])}], [${commas(
 			Arr.map(Arr.filter(l.laws, coordinating), lawExpr)
 		)}])`,
 		"",
@@ -312,6 +335,28 @@ const allOf = (role: string, relation: string, fields: ReadonlyArray<string>): s
 	const { ${commas(fields)} } = v(${relation}, ${q(lower1(relation))})
 	return r.match(${relation}, { ${commas(fields)} }).find({ ${commas(fields)} })
 })`
+
+/** A query over `role` of each chain's latest turn in `held`: `r.max(turn)`, grouped by its coordinates. */
+const latestOf = (role: string, held: string, coordinates: ReadonlyArray<string>): string =>
+	`query(${role}).rule((r) => {
+	const { ${commas([...coordinates, "turn"])} } = v(${held}, ${q(lower1(held))})
+	return r.match(${held}, { ${commas([...coordinates, "turn"])} }).find({ ${commas([...coordinates, "turn: r.max(turn)"])} })
+})`
+
+/** A query over `role` of each chain's live turn: every turn of `held` that no row of `ended` ends. */
+const liveOf = (
+	role: string,
+	held: string,
+	ended: string,
+	coordinates: ReadonlyArray<string>,
+	payload: ReadonlyArray<string>
+): string => {
+	const fields = commas([...coordinates, "turn", ...payload])
+	return `query(${role}).rule((r) => {
+	const { ${fields} } = v(${held}, ${q(lower1(held))})
+	return r.match(${held}, { ${fields} }).where(r.not(${ended}, { ${commas([...coordinates, "turn"])} })).find({ ${fields} })
+})`
+}
 
 /**
  * A status read, run deferrable: it waits for a safe snapshot and then never fails with a serialization failure, the
@@ -640,46 +685,47 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		})
 	})
 
-	const coordination = l.coordination
-	const seatsPrograms: Array<readonly [string, string]> = []
-	if (has(r("Seat"))) {
-		seatsPrograms.push(
-			[
-				n.program("Provision"),
-				`ChangeSet.empty(${n.coordination}).insert(${r("Seat")}, []).delete(${r("Seat")}, [])`
-			],
+	const coordinatorPrograms: Array<readonly [string, string]> = []
+	const insertInto = (relation: string) =>
+		`ChangeSet.empty(${n.coordination}).insert(${relation}, [])`
+	if (has(r("Hold"))) {
+		coordinatorPrograms.push(
 			[
 				n.program("Take"),
-				`ChangeSet.sequence(ChangeSet.empty(${n.coordination}).delete(${r("Hold")}, []), ChangeSet.empty(${n.coordination}).insert(${r("Hold")}, []))`
+				`ChangeSet.empty(${n.coordination}).insert(${r("Freed")}, []).insert(${r("Hold")}, [])`
 			],
-			[n.program("GiveBack"), `ChangeSet.empty(${n.coordination}).delete(${r("Hold")}, [])`],
-			[n.program("Seats"), deferred(allOf(n.coordination, r("Seat"), ["resource", "seat"]))],
+			[n.program("GiveBack"), insertInto(r("Freed"))],
+			[n.program("SeatTurns"), deferred(latestOf(n.coordination, r("Hold"), ["resource", "seat"]))],
 			[
 				n.program("Holds"),
-				deferred(allOf(n.coordination, r("Hold"), ["resource", "seat", "holder", "until"]))
+				deferred(
+					liveOf(n.coordination, r("Hold"), r("Freed"), ["resource", "seat"], ["holder", "until"])
+				)
 			]
 		)
 	}
 	if (has(r("Exclusive"))) {
-		seatsPrograms.push(
+		coordinatorPrograms.push(
+			[n.program("HoldExclusive"), insertInto(r("Exclusive"))],
+			[n.program("ReleaseExclusive"), insertInto(r("Released"))],
 			[
-				n.program("HoldExclusive"),
-				`ChangeSet.empty(${n.coordination}).insert(${r("Exclusive")}, [])`
-			],
-			[
-				n.program("ReleaseExclusive"),
-				`ChangeSet.empty(${n.coordination}).delete(${r("Exclusive")}, [])`
+				n.program("ExclusiveTurns"),
+				deferred(latestOf(n.coordination, r("Exclusive"), ["kind", "key"]))
 			],
 			[
 				n.program("Exclusives"),
-				deferred(allOf(n.coordination, r("Exclusive"), ["kind", "key", "scope"]))
+				deferred(liveOf(n.coordination, r("Exclusive"), r("Released"), ["kind", "key"], ["scope"]))
 			]
 		)
 	}
-	seatsPrograms.push(
-		[n.program("Pause"), `ChangeSet.empty(${n.coordination}).insert(${r("Paused")}, [])`],
-		[n.program("Resume"), `ChangeSet.empty(${n.coordination}).delete(${r("Paused")}, [])`],
-		[n.program("PausedAll"), deferred(allOf(n.coordination, r("Paused"), ["target"]))]
+	coordinatorPrograms.push(
+		[n.program("Pause"), insertInto(r("Paused"))],
+		[n.program("Resume"), insertInto(r("Resumed"))],
+		[n.program("PauseTurns"), deferred(latestOf(n.coordination, r("Paused"), ["target"]))],
+		[
+			n.program("PausedAll"),
+			deferred(liveOf(n.coordination, r("Paused"), r("Resumed"), ["target"], []))
+		]
 	)
 
 	const commitPrograms: Array<readonly [string, string]> = []
@@ -750,16 +796,16 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		`/** den's role for the flow ${P}: claims, retries, failures, admissions, requests, and every read the scheduler makes. */`,
 		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([`...${n.graph}.relations`, ...idleEntries])} }, { insert: [${commas(Arr.map(den, q))}] })`,
 		"",
-		`/** den's coordination role for the flow ${P}: seats, holds, exclusivity seats and pauses, the seat module's (LEASE replaces it). */`,
-		`export const ${n.seats} = role(${app}, ${q(n.seatsName)}, { ...${n.coordination}.relations }, { write: [${commas(Arr.map(coordination, q))}] })`,
+		`/** den's coordinator role for the flow ${P}: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole; no role holds a closed relation. */`,
+		`export const ${n.coordinator} = role(${app}, ${q(n.coordinatorName)}, { ${commas([...rosterNames, ...l.coordination])} }, { insert: [${commas(Arr.map(l.coordination, q))}] })`,
 		"",
 		...block(n.denPrograms, denPrograms),
 		"",
 		`export const ${n.denWorkload} = workload(${n.den}, ${n.denPrograms})`,
 		"",
-		...block(n.seatsPrograms, seatsPrograms),
+		...block(n.coordinatorPrograms, coordinatorPrograms),
 		"",
-		`export const ${n.seatsWorkload} = workload(${n.seats}, ${n.seatsPrograms})`,
+		`export const ${n.coordinatorWorkload} = workload(${n.coordinator}, ${n.coordinatorPrograms})`,
 		"",
 		`/** The commits and declared reads of the flow ${P}, over its app role ${W}. */`,
 		...block(n.commitPrograms, commitPrograms),
@@ -1141,37 +1187,43 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const scoped = (name: string) => `(typeof ${name})["handles"][number]`
 	const handleOf = (roster: string) =>
 		`(name: string): Option.Option<${scoped(roster)}> => Arr.findFirst(${roster}.handles, (handle) => handle === name)`
-	const resources = has(r("Seat"))
+	const resources = has(r("Hold"))
 	const exclusives = has(r("Exclusive"))
+	const call = (program: string) => `h.coordinator.${n.program(program)}.once`
+	const read = (program: string, row: string) =>
+		`Effect.map(${call(program)}({ params: {}, facts: {} }), (rows) => Arr.map(rowsOf(rows), (row) => (${row})))`
+	const write = (program: string, facts: string) =>
+		`Effect.asVoid(${call(program)}({ params: {}, facts: { insert: { ${facts} } } }))`
 	const coordination = lines([
 		"{",
 		resources
-			? `\tseats: Effect.map(h.seats.${n.program("Seats")}.once({ params: {}, facts: {} }), (rows) => Arr.map(rowsOf(rows), (row) => ({ resource: row.resource, seat: row.seat }))),`
-			: "\tseats: Effect.succeed([]),",
+			? `\tseatTurns: ${read("SeatTurns", "{ resource: row.resource, seat: row.seat, turn: row.turn }")},`
+			: "\tseatTurns: Effect.succeed([]),",
 		resources
-			? `\tholds: Effect.map(h.seats.${n.program("Holds")}.once({ params: {}, facts: {} }), (rows) => Arr.map(rowsOf(rows), (row) => ({ resource: row.resource, seat: row.seat, holder: row.holder, until: row.until }))),`
+			? `\tholds: ${read("Holds", "{ resource: row.resource, seat: row.seat, turn: row.turn, holder: row.holder, until: row.until }")},`
 			: "\tholds: Effect.succeed([]),",
 		exclusives
-			? `\texclusives: Effect.map(h.seats.${n.program("Exclusives")}.once({ params: {}, facts: {} }), (rows) => Arr.map(rowsOf(rows), (row) => ({ kind: row.kind, key: row.key, scope: row.scope }))),`
+			? `\texclusiveTurns: ${read("ExclusiveTurns", "{ kind: row.kind, key: row.key, turn: row.turn }")},`
+			: "\texclusiveTurns: Effect.succeed([]),",
+		exclusives
+			? `\texclusives: ${read("Exclusives", "{ kind: row.kind, key: row.key, turn: row.turn, scope: row.scope }")},`
 			: "\texclusives: Effect.succeed([]),",
-		`\tpaused: Effect.map(h.seats.${n.program("PausedAll")}.once({ params: {}, facts: {} }), (rows) => Arr.map(rowsOf(rows), (row) => row.target)),`,
+		`\tpauseTurns: ${read("PauseTurns", "{ target: row.target, turn: row.turn }")},`,
+		`\tpaused: ${read("PausedAll", "{ target: row.target, turn: row.turn }")},`,
 		resources
-			? `\tprovision: (add, remove) => Effect.asVoid(h.seats.${n.program("Provision")}.once({ params: {}, facts: { insert: { ${r("Seat")}: Arr.flatMap(add, (s) => Option.toArray(Option.map(resourceOf(s.resource), (resource) => ({ resource, seat: s.seat })))) }, delete: { ${r("Seat")}: Arr.flatMap(remove, (s) => Option.toArray(Option.map(resourceOf(s.resource), (resource) => ({ resource, seat: s.seat })))) } } })),`
-			: "\tprovision: () => Effect.void,",
-		resources
-			? `\ttake: (lapsed, taken) => Effect.asVoid(h.seats.${n.program("Take")}.once({ params: {}, facts: { delete: { ${r("Hold")}: holdsOf(lapsed) }, insert: { ${r("Hold")}: holdsOf(taken) } } })),`
+			? `\ttake: (lapsed, taken) => ${write("Take", `${r("Freed")}: seatTurnsOf(lapsed), ${r("Hold")}: holdsOf(taken)`)},`
 			: "\ttake: () => Effect.void,",
 		resources
-			? `\tgiveBack: (holds) => Effect.asVoid(h.seats.${n.program("GiveBack")}.once({ params: {}, facts: { delete: { ${r("Hold")}: holdsOf(holds) } } })),`
+			? `\tgiveBack: (holds) => ${write("GiveBack", `${r("Freed")}: seatTurnsOf(holds)`)},`
 			: "\tgiveBack: () => Effect.void,",
 		exclusives
-			? `\tholdExclusive: (row) => Effect.asVoid(h.seats.${n.program("HoldExclusive")}.once({ params: {}, facts: { insert: { ${r("Exclusive")}: exclusivesOf([row]) } } })),`
+			? `\tholdExclusive: (row) => ${write("HoldExclusive", `${r("Exclusive")}: Arr.flatMap(exclusiveTurnsOf([row]), (turn) => [{ ...turn, scope: row.scope }])`)},`
 			: "\tholdExclusive: () => Effect.void,",
 		exclusives
-			? `\treleaseExclusive: (rows) => Effect.asVoid(h.seats.${n.program("ReleaseExclusive")}.once({ params: {}, facts: { delete: { ${r("Exclusive")}: exclusivesOf(rows) } } })),`
+			? `\treleaseExclusive: (rows) => ${write("ReleaseExclusive", `${r("Released")}: exclusiveTurnsOf(rows)`)},`
 			: "\treleaseExclusive: () => Effect.void,",
-		`\tpause: (target) => Effect.asVoid(h.seats.${n.program("Pause")}.once({ params: {}, facts: { insert: { ${r("Paused")}: Arr.map(Option.toArray(pausableOf(target)), (id) => ({ target: id })) } } })),`,
-		`\tresume: (target) => Effect.asVoid(h.seats.${n.program("Resume")}.once({ params: {}, facts: { delete: { ${r("Paused")}: Arr.map(Option.toArray(pausableOf(target)), (id) => ({ target: id })) } } }))`,
+		`\tpause: (row) => ${write("Pause", `${r("Paused")}: pausesOf([row])`)},`,
+		`\tresume: (row) => ${write("Resume", `${r("Resumed")}: pausesOf([row])`)}`,
 		"}"
 	])
 	const all = (handle: string) =>
@@ -1189,10 +1241,9 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		exclusiveKeys
 			? `\tconst keys = yield* ${all(n.program("ExclusiveKeys"))}`
 			: "\tconst keys: ReadonlyArray<{ readonly scope: ScopeKey; readonly id: ExclusiveId }> = []",
-		"\tconst seats = yield* coordination.seats",
 		"\tconst holds = yield* coordination.holds",
 		"\tconst exclusives = yield* coordination.exclusives",
-		"\tconst paused = yield* coordination.paused",
+		"\tconst paused = yield* Effect.map(coordination.paused, Arr.map((row) => row.target))",
 		`\tconst busy = yield* Effect.filter([${commas(Arr.map(l.idle, q))}], (flow) => busyOf(flow))`,
 		"\tconst view = (scope: ScopeKey, kind: string, admitted: boolean): ScopeView => ({",
 		"\t\tscope,",
@@ -1209,7 +1260,6 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"\t\tretries,",
 		"\t\tdues,",
 		"\t\tscopes: [...Arr.map(requested, (s) => view(s.scope, s.kind, false)), ...Arr.map(running, (s) => view(s.scope, s.kind, true))],",
-		"\t\tseats,",
 		"\t\tholds,",
 		"\t\texclusives,",
 		"\t\tpaused,",
@@ -1222,12 +1272,12 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`signals(h.den.${n.program("Requested")}.watch({ params: {}, facts: {} }))`,
 		`signals(h.den.${n.program("Running")}.watch({ params: {}, facts: {} }))`,
 		...(resources
-			? [`signals(h.seats.${n.program("Holds")}.watch({ params: {}, facts: {} }))`]
+			? [`signals(h.coordinator.${n.program("Holds")}.watch({ params: {}, facts: {} }))`]
 			: []),
 		...(exclusives
-			? [`signals(h.seats.${n.program("Exclusives")}.watch({ params: {}, facts: {} }))`]
+			? [`signals(h.coordinator.${n.program("Exclusives")}.watch({ params: {}, facts: {} }))`]
 			: []),
-		`signals(h.seats.${n.program("PausedAll")}.watch({ params: {}, facts: {} }))`,
+		`signals(h.coordinator.${n.program("PausedAll")}.watch({ params: {}, facts: {} }))`,
 		...Arr.map(
 			l.idle,
 			(f) => `signals(h.den.${n.program(`Busy${f}`)}.watch({ params: {}, facts: {} }))`
@@ -1271,7 +1321,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`import type { CallError, MemberHandle } from "@bjornpagen/grizzle/runtime"`,
 		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), "one", "rowsOf", "scheduleOf", "signals"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
-		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveRow"] : []), ...(resources ? ["HoldRow"] : []), "Ledger", "ScopeView", "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
+		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), ...(resources ? ["HoldRow"] : []), "Ledger", "PauseRow", "ScopeView", ...(resources ? ["SeatTurn"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
 		`import { runnerOf } from "@bjornpagen/den/runtime/turn"`,
 		`import { FlowName } from "@bjornpagen/den/transport"`,
 		`import { Array as Arr, Effect, Option, Stream } from "effect"`,
@@ -1279,12 +1329,12 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`import { ${F} } from ${q(place.flow.from)}`,
 		`import { ${commas(fragmentValues)} } from ${q(place.fragment)}`,
 		`import type { ${commas(fragmentTypes)} } from ${q(place.fragment)}`,
-		`import type { ${commas([n.denPrograms, n.seatsPrograms, n.commitPrograms])} } from ${q(place.programs)}`,
+		`import type { ${commas([n.denPrograms, n.coordinatorPrograms, n.commitPrograms])} } from ${q(place.programs)}`,
 		"",
-		`/** The handles the ledger calls: den's role's, its coordination role's, and the app role's commits, from whichever logins serve them. */`,
+		`/** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */`,
 		`export interface ${n.handles} {`,
 		`\treadonly den: { readonly [K in keyof typeof ${n.denPrograms}]: MemberHandle<(typeof ${n.denPrograms})[K]> }`,
-		`\treadonly seats: { readonly [K in keyof typeof ${n.seatsPrograms}]: MemberHandle<(typeof ${n.seatsPrograms})[K]> }`,
+		`\treadonly coordinator: { readonly [K in keyof typeof ${n.coordinatorPrograms}]: MemberHandle<(typeof ${n.coordinatorPrograms})[K]> }`,
 		`\treadonly commits: { readonly [K in keyof typeof ${n.commitPrograms}]: MemberHandle<(typeof ${n.commitPrograms})[K]> }`,
 		"}",
 		"",
@@ -1300,14 +1350,16 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		...(resources ? [`const resourceOf = ${handleOf(r("Resource"))}`] : []),
 		...(resources
 			? [
-					`const holdsOf = (holds: ReadonlyArray<HoldRow>) => Arr.flatMap(holds, (hold) => Option.toArray(Option.map(resourceOf(hold.resource), (resource) => ({ resource, seat: hold.seat, holder: hold.holder, until: hold.until }))))`
+					`const seatTurnsOf = (turns: ReadonlyArray<SeatTurn>) => Arr.flatMap(turns, (turn) => Option.toArray(Option.map(resourceOf(turn.resource), (resource) => ({ resource, seat: turn.seat, turn: turn.turn }))))`,
+					`const holdsOf = (holds: ReadonlyArray<HoldRow>) => Arr.flatMap(holds, (hold) => Option.toArray(Option.map(resourceOf(hold.resource), (resource) => ({ resource, seat: hold.seat, turn: hold.turn, holder: hold.holder, until: hold.until }))))`
 				]
 			: []),
 		...(exclusives
 			? [
-					`const exclusivesOf = (rows: ReadonlyArray<ExclusiveRow>) => Arr.flatMap(rows, (row) => Option.toArray(Option.map(joinOf(row.kind), (kind) => ({ kind, key: row.key, scope: row.scope }))))`
+					`const exclusiveTurnsOf = (turns: ReadonlyArray<ExclusiveTurn>) => Arr.flatMap(turns, (turn) => Option.toArray(Option.map(joinOf(turn.kind), (kind) => ({ kind, key: turn.key, turn: turn.turn }))))`
 				]
 			: []),
+		`const pausesOf = (rows: ReadonlyArray<PauseRow>) => Arr.flatMap(rows, (row) => Option.toArray(Option.map(pausableOf(row.target), (target) => ({ target, turn: row.turn }))))`,
 		"",
 		`/** The ledger of the flow ${P} over its handles, with the requests of its roots. */`,
 		`export const ${n.ledger} = (h: ${n.handles}) => {`,

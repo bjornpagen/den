@@ -3,49 +3,58 @@ import { appWorkload, Auditor, auditWorkload } from "#integration/slice/app-prog
 import { App } from "#integration/slice/app.ts"
 import {
 	ChainDen,
-	ChainSeats,
+	ChainCoordinator,
 	chainCommits,
 	chainDenWorkload,
-	chainSeatsWorkload
+	chainCoordinatorWorkload
 } from "#integration/slice/generated/chain.programs.ts"
 import {
 	FanDen,
-	FanSeats,
+	FanCoordinator,
 	fanCommits,
 	fanDenWorkload,
-	fanSeatsWorkload
+	fanCoordinatorWorkload
 } from "#integration/slice/generated/fan.programs.ts"
 import {
 	RetryDen,
-	RetrySeats,
+	RetryCoordinator,
 	retryCommits,
 	retryDenWorkload,
-	retrySeatsWorkload
+	retryCoordinatorWorkload
 } from "#integration/slice/generated/retry.programs.ts"
 import {
 	SyncDen,
-	SyncSeats,
+	SyncCoordinator,
 	syncCommits,
 	syncDenWorkload,
-	syncSeatsWorkload
+	syncCoordinatorWorkload
 } from "#integration/slice/generated/sync.programs.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's runtime login: each flow's den role and coordination role. */
+/** den's runtime login: each flow's den role and coordinator role. */
 export const Worker = login(
 	App,
 	"worker",
-	[ChainDen, ChainSeats, FanDen, FanSeats, SyncDen, SyncSeats, RetryDen, RetrySeats],
+	[
+		ChainDen,
+		ChainCoordinator,
+		FanDen,
+		FanCoordinator,
+		SyncDen,
+		SyncCoordinator,
+		RetryDen,
+		RetryCoordinator
+	],
 	{
 		workload: [
 			chainDenWorkload,
-			chainSeatsWorkload,
+			chainCoordinatorWorkload,
 			fanDenWorkload,
-			fanSeatsWorkload,
+			fanCoordinatorWorkload,
 			syncDenWorkload,
-			syncSeatsWorkload,
+			syncCoordinatorWorkload,
 			retryDenWorkload,
-			retrySeatsWorkload
+			retryCoordinatorWorkload
 		]
 	}
 )

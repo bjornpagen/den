@@ -16,9 +16,9 @@ import {
 	select
 } from "@bjornpagen/grizzle"
 
-const RetryKind = closed("RetryKind", ["Steadfast", "Brittle", "LaddersFinish"])
-const RetryJoin = closed("RetryJoin", ["Ladders"])
-const RetryOutcome = closed("RetryOutcome", ["done", "failed"])
+export const RetryKind = closed("RetryKind", ["Steadfast", "Brittle", "LaddersFinish"])
+export const RetryJoin = closed("RetryJoin", ["Ladders"])
+export const RetryOutcome = closed("RetryOutcome", ["done", "failed"])
 export const RetryPausable = closed("RetryPausable", ["Ladders"])
 
 export const RetryScope = relation("RetryScope", { scope: DenScope, kind: closedId(RetryJoin) }, [
@@ -86,7 +86,16 @@ export const RetrySteadfastOutput = relation("RetrySteadfastOutput", { step: Den
 export const RetryBrittleOutput = relation("RetryBrittleOutput", { step: DenStep, key: Text }, [
 	"step"
 ])
-export const RetryPaused = relation("RetryPaused", { target: closedId(RetryPausable) }, ["target"])
+export const RetryPaused = relation(
+	"RetryPaused",
+	{ target: closedId(RetryPausable), turn: natural },
+	["target", "turn"]
+)
+export const RetryResumed = relation(
+	"RetryResumed",
+	{ target: closedId(RetryPausable), turn: natural },
+	["target", "turn"]
+)
 
 /** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
 export const retryGraph = fragment(
@@ -196,10 +205,13 @@ export const retryGraph = fragment(
 	]
 )
 
-/** The flow's coordination group: its rosters, seats, holds, exclusivity seats and pauses, which den's coordination role holds whole. */
+/** The flow's coordination group: its rosters, its seat counts, and its chains of holds, exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const retryCoordination = fragment(
-	[RetryKind, RetryJoin, RetryOutcome, RetryPausable, RetryPaused],
-	[]
+	[RetryKind, RetryJoin, RetryOutcome, RetryPausable, RetryPaused, RetryResumed],
+	[
+		contained(on(RetryResumed, "target", "turn"), on(RetryPaused, "target", "turn")),
+		contained(on(RetryPaused, "target", pred("turn")), on(RetryResumed, "target", "turn"))
+	]
 )
 
 /** The den relations the flow's app role `loader` inserts into: each step's commit's, and each app root's request's. */

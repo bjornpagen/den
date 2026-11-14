@@ -135,11 +135,12 @@ const ledgerOf = (seats: number, window: Window): Ledger<never> => ({
 	snapshot: Effect.die("eligibility reads only the snapshot"),
 	changes: Stream.empty,
 	coordination: {
-		seats: Effect.die("unread"),
+		seatTurns: Effect.die("unread"),
 		holds: Effect.die("unread"),
+		exclusiveTurns: Effect.die("unread"),
 		exclusives: Effect.die("unread"),
+		pauseTurns: Effect.die("unread"),
 		paused: Effect.die("unread"),
-		provision: unread,
 		take: unread,
 		giveBack: unread,
 		holdExclusive: unread,
@@ -348,6 +349,7 @@ const built = (w: World) =>
 			Arr.map(w.exclusives, (e) => ({
 				kind: "Sync",
 				key: keyOf(e.key),
+				turn: 0n,
 				scope: Option.getOrElse(
 					Option.flatMap(e.holder, (h) => Arr.get(syncs, h)),
 					() => dead
@@ -360,6 +362,7 @@ const built = (w: World) =>
 			Effect.map(holderOf(holdersStep, seat + 1, seat), (holder): HoldRow => ({
 				resource: "Pool",
 				seat: BigInt(seat),
+				turn: 0n,
 				holder,
 				until: at(h.until)
 			}))
@@ -370,10 +373,6 @@ const built = (w: World) =>
 			retries,
 			dues,
 			scopes,
-			seats: Arr.map(ordinals(w.seats), (seat) => ({
-				resource: "Pool",
-				seat: BigInt(seat)
-			})),
 			holds,
 			exclusives,
 			paused: [

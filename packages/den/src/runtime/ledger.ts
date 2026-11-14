@@ -11,8 +11,8 @@ import type { FlowName } from "#transport.ts"
  * role), so the runtime never names a grizzle program and grizzle never sees den's algebra.
  *
  * Three handles serve it: den's role (claims, retries, failures, admissions, requests and every read), den's
- * coordination role (seats, exclusivity, pauses: the seat module's, which LEASE replaces) and the flow's app role
- * (each step's commit, with the app's writes).
+ * coordinator role (the turns of seats, exclusivity seats and pauses: the seat module's) and the flow's app role (each
+ * step's commit, with the app's writes).
  */
 
 /** A step's outcome, its Result: done with its output, or failed. */
@@ -121,25 +121,49 @@ export interface ScopeView {
 	readonly root: Option.Option<{ readonly key: string; readonly at: Instant }>
 }
 
-/** A seat's hold, as the coordination role keeps it. */
-export interface HoldRow {
+/** A seat: a resource, and one of its seats, `0 … seats − 1`. */
+export interface SeatAt {
 	readonly resource: string
 	readonly seat: bigint
+}
+
+/** A seat's turn: the turns of a seat run from 0, each taken once the one before it was freed. */
+export interface SeatTurn extends SeatAt {
+	readonly turn: bigint
+}
+
+/** A seat's live hold, a turn not freed: who holds it and until when. */
+export interface HoldRow extends SeatTurn {
 	readonly holder: Holder
 	readonly until: Instant
 }
 
-/** An exclusivity seat's holder. */
-export interface ExclusiveRow {
+/** An exclusivity seat: a root kind and the exclusivity key its scopes share. */
+export interface ExclusiveAt {
 	readonly kind: string
 	readonly key: ExclusiveId
+}
+
+/** An exclusivity seat's turn, as a seat's. */
+export interface ExclusiveTurn extends ExclusiveAt {
+	readonly turn: bigint
+}
+
+/** An exclusivity seat's live turn, not released, and the scope holding it. */
+export interface ExclusiveRow extends ExclusiveTurn {
 	readonly scope: ScopeKey
+}
+
+/** A pause's turn: a resource or a root kind, paused at a turn until that turn is resumed. */
+export interface PauseRow {
+	readonly target: string
+	readonly turn: bigint
 }
 
 /**
  * Everything the scheduler reads at one instant, for the relay's and the census's eligibility: the pending steps with
  * their claims, retries and first due instants; the live scopes (requested, or admitted with an unfinished finish);
- * and the coordination group's seats, holds, exclusivity seats and pauses; and, for each flow a precondition names,
+ * the coordination group's live holds, exclusivity seats and paused targets; and, for each flow a precondition names,
  * whether it holds a pending step.
  */
 export interface Snapshot {
@@ -156,7 +180,6 @@ export interface Snapshot {
 	readonly retries: ReadonlyArray<RetryRow>
 	readonly dues: ReadonlyArray<{ readonly step: StepKey; readonly at: Instant }>
 	readonly scopes: ReadonlyArray<ScopeView>
-	readonly seats: ReadonlyArray<{ readonly resource: string; readonly seat: bigint }>
 	readonly holds: ReadonlyArray<HoldRow>
 	readonly exclusives: ReadonlyArray<ExclusiveRow>
 	readonly paused: ReadonlyArray<string>
@@ -164,36 +187,32 @@ export interface Snapshot {
 }
 
 /**
- * den's coordination role: the seat module's calls. At `a226cbac` taking and giving back seats certifies SERIALIZABLE,
- * so every call here may meet `transient`, which the seat module retries; grizzle's LEASE moves the same relations to
- * READ COMMITTED.
+ * den's coordinator role: the seat module's calls, each certified READ COMMITTED. A seat, an exclusivity seat and a
+ * pause are each a chain of turns, inserted and never deleted: a read of each chain's latest turn, a read of its live
+ * turns, a take of turns, and an end of turns.
  */
 export interface Coordination {
-	readonly seats: Effect.Effect<
-		ReadonlyArray<{ readonly resource: string; readonly seat: bigint }>,
-		CallError
-	>
+	readonly seatTurns: Effect.Effect<ReadonlyArray<SeatTurn>, CallError>
 	readonly holds: Effect.Effect<ReadonlyArray<HoldRow>, CallError>
+	readonly exclusiveTurns: Effect.Effect<ReadonlyArray<ExclusiveTurn>, CallError>
 	readonly exclusives: Effect.Effect<ReadonlyArray<ExclusiveRow>, CallError>
-	readonly paused: Effect.Effect<ReadonlyArray<string>, CallError>
-	readonly provision: (
-		add: ReadonlyArray<{ readonly resource: string; readonly seat: bigint }>,
-		remove: ReadonlyArray<{ readonly resource: string; readonly seat: bigint }>
-	) => Effect.Effect<void, CallError>
+	readonly pauseTurns: Effect.Effect<ReadonlyArray<PauseRow>, CallError>
+	readonly paused: Effect.Effect<ReadonlyArray<PauseRow>, CallError>
+	/** Frees `lapsed` and holds `taken` in one call, refused whole on any turn another holder took first. */
 	readonly take: (
-		lapsed: ReadonlyArray<HoldRow>,
+		lapsed: ReadonlyArray<SeatTurn>,
 		taken: ReadonlyArray<HoldRow>
 	) => Effect.Effect<void, CallError>
-	readonly giveBack: (holds: ReadonlyArray<HoldRow>) => Effect.Effect<void, CallError>
+	readonly giveBack: (holds: ReadonlyArray<SeatTurn>) => Effect.Effect<void, CallError>
 	readonly holdExclusive: (row: ExclusiveRow) => Effect.Effect<void, CallError>
-	readonly releaseExclusive: (rows: ReadonlyArray<ExclusiveRow>) => Effect.Effect<void, CallError>
-	readonly pause: (target: string) => Effect.Effect<void, CallError>
-	readonly resume: (target: string) => Effect.Effect<void, CallError>
+	readonly releaseExclusive: (rows: ReadonlyArray<ExclusiveTurn>) => Effect.Effect<void, CallError>
+	readonly pause: (row: PauseRow) => Effect.Effect<void, CallError>
+	readonly resume: (row: PauseRow) => Effect.Effect<void, CallError>
 }
 
 /**
  * A flow's ledger: its name (the prefix its lowered relations carry), its declared kinds, reads by key, the claim and
- * the endings every kind shares, the scheduler's snapshot, the coordination role, and each kind's runner. R is what the
+ * the endings every kind shares, the scheduler's snapshot, the coordinator role, and each kind's runner. R is what the
  * flow's bodies require.
  */
 export interface Ledger<R> {

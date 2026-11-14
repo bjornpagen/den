@@ -24,11 +24,13 @@ import { type Base, type Column, errorShapeOf, type Shape, shapeOf } from "#lowe
  * printed from. The fragment's relations are an ordered list, the form grizzle's `schema()` takes, which refuses two
  * declarations of one name that differ as `DuplicateIdentity`.
  *
- * Three groups of relations, by who writes them. The graph (scopes, steps, claims, results, values, edges) is
- * insert-only for every role, its every law a key, a containment or a row check, so den's role and the app's writer
- * role both certify READ COMMITTED. The coordination group (seats, holds, exclusivity and pauses) is deleted from as
- * seats are given back and pauses lifted, so only den's coordination role writes it and nothing in the graph references
- * it: a containment from the graph into it would read, at its check, rows a SERIALIZABLE role writes.
+ * Two groups of relations, by who writes them, each insert-only for every role, its every law a key, a containment or
+ * a row check, so every den role and the app's writer role certify READ COMMITTED. The graph (scopes, steps, claims,
+ * results, values, edges) is written by den's role and the app's writer role. The coordination group is written by
+ * den's coordinator role alone: each seat, exclusivity seat and pause is a chain of turns, a turn held and then ended
+ * (`Hold`/`Freed`, `Exclusive`/`Released`, `Paused`/`Resumed`), each turn after the first contained in its
+ * predecessor's end, so a chain holds at most one live turn, its latest, and nothing is ever deleted. A resource's seat
+ * count is a closed relation, which every hold's seat is checked below.
  */
 
 /** One of den's own key contracts, every flow's alike. */
@@ -75,6 +77,19 @@ export interface SideIR {
 	readonly terms: ReadonlyArray<{ readonly field: string; readonly pred: boolean }>
 }
 
+/**
+ * What a row check holds a natural field to: at least a constant, or below the count field `count` of the closed
+ * relation of counts `counts` at the row's own field `at`.
+ */
+export type Bound =
+	| { readonly kind: "atLeast"; readonly value: bigint }
+	| {
+			readonly kind: "below"
+			readonly counts: string
+			readonly count: string
+			readonly at: string
+	  }
+
 /** A law of the fragment. */
 export type LawIR =
 	| { readonly kind: "contained"; readonly from: SideIR; readonly to: SideIR }
@@ -85,8 +100,22 @@ export type LawIR =
 			readonly name: string
 			readonly relation: string
 			readonly field: string
-			readonly bound: bigint
+			readonly bound: Bound
 	  }
+
+/**
+ * A closed relation of counts keyed by a roster, fixed by the flow's declaration: each resource's seats. Its rows are
+ * constants every statement that reads them folds in, so changing a count is a migration.
+ */
+export interface CountsIR {
+	readonly name: string
+	readonly key: { readonly field: string; readonly roster: string }
+	readonly count: string
+	readonly rows: readonly [
+		{ readonly handle: string; readonly count: bigint },
+		...Array<{ readonly handle: string; readonly count: bigint }>
+	]
+}
 
 /** A value as relations: its owner's relation and, for each optional field, the relation of its own. */
 export interface ValueIR {
@@ -183,6 +212,8 @@ export interface Lowered {
 	readonly writer: string
 	readonly rosters: ReadonlyArray<RosterIR>
 	readonly brands: ReadonlyArray<BrandIR>
+	/** The resources' seat counts, none when the flow declares no resource. */
+	readonly counts: Option.Option<CountsIR>
 	readonly relations: ReadonlyArray<RelationIR>
 	readonly laws: ReadonlyArray<LawIR>
 	readonly steps: ReadonlyArray<StepIR>
@@ -198,7 +229,7 @@ export interface Lowered {
 	readonly spawning: ReadonlyArray<string>
 	/** The relations the request of a root the app's own write starts writes. */
 	readonly requesting: ReadonlyArray<string>
-	/** The relations den's coordination role writes, deleting from each. */
+	/** The relations den's coordinator role inserts into: each chain's turns and their ends. */
 	readonly coordination: ReadonlyArray<string>
 	/** The app's relations the flow's steps and finishes write, by operation. */
 	readonly app: WritesIR
@@ -501,7 +532,13 @@ export const lower = (flow: AnyFlow): Lowered => {
 		into(side(Due, ["step"]), side(Step, ["step"])),
 		into(side(Claim, ["step"]), side(Step, ["step"])),
 		{ kind: "race", relation: Claim },
-		{ kind: "check", name: "AttemptFromOne", relation: Claim, field: "attempt", bound: 1n },
+		{
+			kind: "check",
+			name: "AttemptFromOne",
+			relation: Claim,
+			field: "attempt",
+			bound: { kind: "atLeast", value: 1n }
+		},
 		into(
 			{
 				relation: Claim,
@@ -730,48 +767,96 @@ export const lower = (flow: AnyFlow): Lowered => {
 		}
 	})
 
+	/**
+	 * A chain of turns over `coordinates`: `held` keyed by the coordinates and its turn, beside `payload`, and `ended`,
+	 * one row per turn ended, contained in it; each turn after the first is contained in its predecessor's end, so a
+	 * chain holds at most one turn not ended, its latest.
+	 */
+	const chainOf = (
+		held: string,
+		ended: string,
+		coordinates: ReadonlyArray<{ readonly name: string; readonly type: FieldType }>,
+		payload: ReadonlyArray<{ readonly name: string; readonly type: FieldType }>
+	): readonly [string, string] => {
+		const turnKey = Arr.append(
+			Arr.map(coordinates, (c) => c.name),
+			"turn"
+		)
+		const turn = { name: "turn", type: natural }
+		const turns = relation({ name: held, fields: [...coordinates, turn, ...payload], key: turnKey })
+		const ends = relation({ name: ended, fields: [...coordinates, turn], key: turnKey })
+		laws.push(into(side(ends, turnKey), side(turns, turnKey)), {
+			kind: "contained",
+			from: {
+				relation: turns,
+				selection: all,
+				terms: [
+					...Arr.map(coordinates, (c) => ({ field: c.name, pred: false })),
+					{ field: "turn", pred: true }
+				]
+			},
+			to: side(ends, turnKey)
+		})
+		return [turns, ends]
+	}
+
 	const coordination: Array<string> = []
-	if (Arr.isReadonlyArrayNonEmpty(resourceNames)) {
-		const Seat = relation({
-			name: name("Seat"),
-			fields: [
-				{ name: "resource", type: { kind: "closed", roster: name("Resource") } },
+	const resourceRows = Arr.map(flow.resources, (r) => ({
+		handle: r.name,
+		count: BigInt(r.seats.value)
+	}))
+	const counts: Option.Option<CountsIR> = Arr.isReadonlyArrayNonEmpty(resourceRows)
+		? Option.some({
+				name: name("Seats"),
+				key: { field: "resource", roster: name("Resource") },
+				count: "seats",
+				rows: resourceRows
+			})
+		: Option.none()
+	if (Option.isSome(counts)) {
+		const seats = counts.value
+		const resourceField: FieldType = { kind: "closed", roster: seats.key.roster }
+		const [Hold, Freed] = chainOf(
+			name("Hold"),
+			name("Freed"),
+			[
+				{ name: "resource", type: resourceField },
 				{ name: "seat", type: natural }
 			],
-			key: ["resource", "seat"]
-		})
-		const Hold = relation({
-			name: name("Hold"),
-			fields: [
-				{ name: "resource", type: { kind: "closed", roster: name("Resource") } },
-				{ name: "seat", type: natural },
+			[
 				{ name: "holder", type: { kind: "key", contract: "DenHolder" } },
 				{ name: "until", type: instant }
-			],
-			key: ["resource", "seat"]
+			]
+		)
+		laws.push({
+			kind: "check",
+			name: "SeatBelowCount",
+			relation: Hold,
+			field: "seat",
+			bound: { kind: "below", counts: seats.name, count: seats.count, at: seats.key.field }
 		})
-		laws.push(into(side(Hold, ["resource", "seat"]), side(Seat, ["resource", "seat"])))
-		coordination.push(Seat, Hold)
+		coordination.push(Hold, Freed)
 	}
 	if (Arr.isReadonlyArrayNonEmpty(exclusiveKeys)) {
 		coordination.push(
-			relation({
-				name: name("Exclusive"),
-				fields: [
+			...chainOf(
+				name("Exclusive"),
+				name("Released"),
+				[
 					{ name: "kind", type: { kind: "closed", roster: name("Join") } },
-					{ name: "key", type: { kind: "key", contract: "DenExclusive" } },
-					{ name: "scope", type: scopeKey }
+					{ name: "key", type: { kind: "key", contract: "DenExclusive" } }
 				],
-				key: ["kind", "key"]
-			})
+				[{ name: "scope", type: scopeKey }]
+			)
 		)
 	}
 	coordination.push(
-		relation({
-			name: name("Paused"),
-			fields: [{ name: "target", type: { kind: "closed", roster: name("Pausable") } }],
-			key: ["target"]
-		})
+		...chainOf(
+			name("Paused"),
+			name("Resumed"),
+			[{ name: "target", type: { kind: "closed", roster: name("Pausable") } }],
+			[]
+		)
 	)
 
 	const valueRelations = (value: ValueIR): ReadonlyArray<string> => [
@@ -812,7 +897,8 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const names = [
 		...Arr.map(relations, (r) => r.name),
 		...Arr.map(rosters, (r) => r.name),
-		...Arr.map(brands, (b) => b.name)
+		...Arr.map(brands, (b) => b.name),
+		...Option.toArray(Option.map(counts, (c) => c.name))
 	]
 	Arr.forEach(names, (n, i) => {
 		if (Arr.some(Arr.take(names, i), (earlier) => earlier === n)) {
@@ -828,6 +914,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		writer: flow.writes.name,
 		rosters,
 		brands,
+		counts,
 		relations,
 		laws,
 		steps: stepsIR,

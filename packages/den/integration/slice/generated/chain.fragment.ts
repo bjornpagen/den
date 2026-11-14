@@ -20,13 +20,13 @@ import { Weight } from "#integration/slice/relations.ts"
 
 const Seq = contract("Seq", pg.bigint)
 
-const ChainKind = closed("ChainKind", ["Page", "ChainRunFinish", "OrderedFinish"])
-const ChainJoin = closed("ChainJoin", ["ChainRun", "Ordered"])
-const ChainOutcome = closed("ChainOutcome", ["done", "failed"])
+export const ChainKind = closed("ChainKind", ["Page", "ChainRunFinish", "OrderedFinish"])
+export const ChainJoin = closed("ChainJoin", ["ChainRun", "Ordered"])
+export const ChainOutcome = closed("ChainOutcome", ["done", "failed"])
 export const ChainPausable = closed("ChainPausable", ["ChainRun", "Ordered"])
-const ChainPageInputFeed = closed("ChainPageInputFeed", ["news", "sport"])
-const ChainChainRunInputFeed = closed("ChainChainRunInputFeed", ["news", "sport"])
-const ChainOrderedInputFeed = closed("ChainOrderedInputFeed", ["news", "sport"])
+export const ChainPageInputFeed = closed("ChainPageInputFeed", ["news", "sport"])
+export const ChainChainRunInputFeed = closed("ChainChainRunInputFeed", ["news", "sport"])
+export const ChainOrderedInputFeed = closed("ChainOrderedInputFeed", ["news", "sport"])
 
 export const ChainScope = relation("ChainScope", { scope: DenScope, kind: closedId(ChainJoin) }, [
 	"scope"
@@ -111,7 +111,16 @@ export const ChainPageRead = relation(
 	{ step: DenStep, ordinal: natural, feed: Weight.fields.feed, factor: Weight.fields.factor },
 	["step", "ordinal"]
 )
-export const ChainPaused = relation("ChainPaused", { target: closedId(ChainPausable) }, ["target"])
+export const ChainPaused = relation(
+	"ChainPaused",
+	{ target: closedId(ChainPausable), turn: natural },
+	["target", "turn"]
+)
+export const ChainResumed = relation(
+	"ChainResumed",
+	{ target: closedId(ChainPausable), turn: natural },
+	["target", "turn"]
+)
 
 /** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
 export const chainGraph = fragment(
@@ -231,7 +240,7 @@ export const chainGraph = fragment(
 	]
 )
 
-/** The flow's coordination group: its rosters, seats, holds, exclusivity seats and pauses, which den's coordination role holds whole. */
+/** The flow's coordination group: its rosters, its seat counts, and its chains of holds, exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const chainCoordination = fragment(
 	[
 		ChainKind,
@@ -241,9 +250,13 @@ export const chainCoordination = fragment(
 		ChainPageInputFeed,
 		ChainChainRunInputFeed,
 		ChainOrderedInputFeed,
-		ChainPaused
+		ChainPaused,
+		ChainResumed
 	],
-	[]
+	[
+		contained(on(ChainResumed, "target", "turn"), on(ChainPaused, "target", "turn")),
+		contained(on(ChainPaused, "target", pred("turn")), on(ChainResumed, "target", "turn"))
+	]
 )
 
 /** The den relations the flow's app role `loader` inserts into: each step's commit's, and each app root's request's. */

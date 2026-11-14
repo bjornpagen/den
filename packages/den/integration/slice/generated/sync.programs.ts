@@ -2,6 +2,10 @@
 import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
+	SyncKind,
+	SyncJoin,
+	SyncOutcome,
+	SyncPausable,
 	SyncScope,
 	SyncRoot,
 	SyncWithin,
@@ -28,7 +32,9 @@ import {
 	SyncCopyOutput,
 	SyncBuildOutput,
 	SyncExclusive,
+	SyncReleased,
 	SyncPaused,
+	SyncResumed,
 	syncGraph,
 	syncCoordination
 } from "#integration/slice/generated/sync.fragment.ts"
@@ -72,12 +78,21 @@ export const SyncDen = role(
 	}
 )
 
-/** den's coordination role for the flow Sync: seats, holds, exclusivity seats and pauses, the seat module's (LEASE replaces it). */
-export const SyncSeats = role(
+/** den's coordinator role for the flow Sync: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole; no role holds a closed relation. */
+export const SyncCoordinator = role(
 	App,
-	"sync_seats",
-	{ ...syncCoordination.relations },
-	{ write: ["SyncExclusive", "SyncPaused"] }
+	"sync_coordinator",
+	{
+		SyncKind,
+		SyncJoin,
+		SyncOutcome,
+		SyncPausable,
+		SyncExclusive,
+		SyncReleased,
+		SyncPaused,
+		SyncResumed
+	},
+	{ insert: ["SyncExclusive", "SyncReleased", "SyncPaused", "SyncResumed"] }
 )
 
 export const syncDenPrograms = Object.freeze({
@@ -281,26 +296,44 @@ export const syncDenPrograms = Object.freeze({
 
 export const syncDenWorkload = workload(SyncDen, syncDenPrograms)
 
-export const syncSeatsPrograms = Object.freeze({
+export const syncCoordinatorPrograms = Object.freeze({
 	syncHoldExclusive: ChangeSet.empty(syncCoordination).insert(SyncExclusive, []),
-	syncReleaseExclusive: ChangeSet.empty(syncCoordination).delete(SyncExclusive, []),
+	syncReleaseExclusive: ChangeSet.empty(syncCoordination).insert(SyncReleased, []),
+	syncExclusiveTurns: deferrable(
+		query(syncCoordination).rule((r) => {
+			const { kind, key, turn } = v(SyncExclusive, "syncExclusive")
+			return r.match(SyncExclusive, { kind, key, turn }).find({ kind, key, turn: r.max(turn) })
+		})
+	),
 	syncExclusives: deferrable(
 		query(syncCoordination).rule((r) => {
-			const { kind, key, scope } = v(SyncExclusive, "syncExclusive")
-			return r.match(SyncExclusive, { kind, key, scope }).find({ kind, key, scope })
+			const { kind, key, turn, scope } = v(SyncExclusive, "syncExclusive")
+			return r
+				.match(SyncExclusive, { kind, key, turn, scope })
+				.where(r.not(SyncReleased, { kind, key, turn }))
+				.find({ kind, key, turn, scope })
 		})
 	),
 	syncPause: ChangeSet.empty(syncCoordination).insert(SyncPaused, []),
-	syncResume: ChangeSet.empty(syncCoordination).delete(SyncPaused, []),
+	syncResume: ChangeSet.empty(syncCoordination).insert(SyncResumed, []),
+	syncPauseTurns: deferrable(
+		query(syncCoordination).rule((r) => {
+			const { target, turn } = v(SyncPaused, "syncPaused")
+			return r.match(SyncPaused, { target, turn }).find({ target, turn: r.max(turn) })
+		})
+	),
 	syncPausedAll: deferrable(
 		query(syncCoordination).rule((r) => {
-			const { target } = v(SyncPaused, "syncPaused")
-			return r.match(SyncPaused, { target }).find({ target })
+			const { target, turn } = v(SyncPaused, "syncPaused")
+			return r
+				.match(SyncPaused, { target, turn })
+				.where(r.not(SyncResumed, { target, turn }))
+				.find({ target, turn })
 		})
 	)
 })
 
-export const syncSeatsWorkload = workload(SyncSeats, syncSeatsPrograms)
+export const syncCoordinatorWorkload = workload(SyncCoordinator, syncCoordinatorPrograms)
 
 /** The commits and declared reads of the flow Sync, over its app role Loader. */
 export const syncCommitPrograms = Object.freeze({

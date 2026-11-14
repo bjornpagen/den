@@ -316,7 +316,8 @@ const gate = <R>(
 			})
 			return Option.some({ why: "window", until: Option.some(until) } as const)
 		}
-		const paused = yield* ledger.coordination.paused
+		const live = yield* ledger.coordination.paused
+		const paused = Arr.map(live, (row) => row.target)
 		const root = Arr.findFirst(chain, (s) => Option.isSome(s.root))
 		if (
 			Option.exists(root, (s) => Arr.contains(paused, s.kind)) ||

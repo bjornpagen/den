@@ -150,9 +150,8 @@ rings what someone else's commit made eligible (the app's own write, an operator
 made eligible (windows, due instants, expired leases). Exact timers (W5's 180 s) ride the transport's delayed delivery,
 the census as their net. On a fixed host the relay's watch is the transport and the host's workers are seats.
 
-Taking and giving back seats certifies SERIALIZABLE at `a226cbac` (the disjoint-key 40001 the owner keeps is
-retryable and, at W1's measured one claim per seven seconds, rare); grizzle's LEASE moves the same relations to READ
-COMMITTED with nothing in den changed.
+Each seat, exclusivity seat and pause is a chain of turns, inserted and never deleted, so den's coordinator role
+certifies READ COMMITTED under grizzle's LEASE ([build/repin.md](build/repin.md)).
 
 ## 8. How it runs
 

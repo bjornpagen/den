@@ -89,14 +89,17 @@ const asOwner = (cluster: Cluster, database: string, statement: string) =>
 		(client) => Effect.promise(() => client.end())
 	)
 
-/** Runs a grizzle command over the slice's configuration, for the database and role prefix `env` names. */
-const grizzle = (command: string, env: Readonly<Record<string, string>>) =>
+/**
+ * Runs a grizzle command over the configuration in `directory` (the slice's own, or a copy of it), for the database and
+ * role prefix `env` names.
+ */
+const grizzle = (command: string, env: Readonly<Record<string, string>>, directory: string) =>
 	Effect.scoped(
 		Effect.gen(function* () {
 			const handle = yield* ChildProcess.make(
 				process.execPath,
 				[grizzleBin, command, "grizzle.config.ts"],
-				{ cwd: sliceDir, env, extendEnv: true, stdin: "ignore" }
+				{ cwd: directory, env, extendEnv: true, stdin: "ignore" }
 			)
 			const [stdout, stderr, code] = yield* Effect.all(
 				[
@@ -113,11 +116,15 @@ const grizzle = (command: string, env: Readonly<Record<string, string>>) =>
 		})
 	)
 
-/** The installed database a suite runs in: its name, its role prefix, and its logins' passwords. */
+/**
+ * The installed database a suite runs in: its name, its role prefix, the environment a grizzle command over it reads,
+ * and its logins' passwords.
+ */
 interface Installed {
 	readonly cluster: Cluster
 	readonly database: string
 	readonly rolePrefix: string
+	readonly env: Readonly<Record<string, string>>
 	readonly worker: Redacted.Redacted
 	readonly app: Redacted.Redacted
 	readonly decoder: Redacted.Redacted
@@ -145,7 +152,7 @@ const installed = Effect.acquireRelease(
 			DEN_ROLE_PREFIX: rolePrefix
 		}
 		yield* asOwner(cluster, ownerRole, `CREATE DATABASE "${database}" TEMPLATE ${templateDatabase}`)
-		yield* grizzle("migrate", env)
+		yield* grizzle("migrate", env, sliceDir)
 		const password = Effect.map(Effect.all([freshName, freshName]), ([a, b]) =>
 			Redacted.make(`p${a}${b}`)
 		)
@@ -163,15 +170,22 @@ const installed = Effect.acquireRelease(
 			})
 		}
 		yield* set(roleNameOf(decoderLogin, { rolePrefix }), decoder)
-		const done: Installed = { cluster, database, rolePrefix, worker, app, decoder }
+		const done: Installed = { cluster, database, rolePrefix, env, worker, app, decoder }
 		return { done, env }
 	}),
 	({ done, env }) =>
 		Effect.gen(function* () {
-			yield* grizzle("uninstall", env)
+			yield* grizzle("uninstall", env, sliceDir)
 			yield* asOwner(done.cluster, ownerRole, `DROP DATABASE "${done.database}" WITH (FORCE)`)
 		}).pipe(Effect.orDie)
 ).pipe(Effect.map(({ done }) => done))
+
+/**
+ * Migrates the suite's database by the configuration in `directory`, a copy of the slice whose migrations continue the
+ * slice's: grizzle migrate's output, or the SetupFailed its refusal ends with.
+ */
+export const migrateIn = (directory: string) =>
+	Effect.flatMap(Database, (db) => grizzle("migrate", db.env, directory))
 
 /** The suite's database, installed for the layer's scope. */
 const databaseLayer = Layer.effect(Database, installed)
@@ -235,28 +249,28 @@ export const rows = <A, E>(
 	read: Effect.Effect<Iterable<A>, E>
 ): Effect.Effect<ReadonlyArray<A>, E> => Effect.map(read, Arr.fromIterable)
 
-/** The slice's four flows' ledgers over Dbs opened on the worker's den and coordination roles and the app's loader. */
+/** The slice's four flows' ledgers over Dbs opened on the worker's den and coordinator roles and the app's loader. */
 export const openLedgers = Effect.gen(function* () {
 	const loader = yield* Db.open(AppServed.roles.loader, {})
 	const commits = loader.workload
 	const chain = chainLedger({
 		den: (yield* Db.open(WorkerServed.roles.chain_den, {})).workload,
-		seats: (yield* Db.open(WorkerServed.roles.chain_seats, {})).workload,
+		coordinator: (yield* Db.open(WorkerServed.roles.chain_coordinator, {})).workload,
 		commits
 	})
 	const fan = fanLedger({
 		den: (yield* Db.open(WorkerServed.roles.fan_den, {})).workload,
-		seats: (yield* Db.open(WorkerServed.roles.fan_seats, {})).workload,
+		coordinator: (yield* Db.open(WorkerServed.roles.fan_coordinator, {})).workload,
 		commits
 	})
 	const sync = syncLedger({
 		den: (yield* Db.open(WorkerServed.roles.sync_den, {})).workload,
-		seats: (yield* Db.open(WorkerServed.roles.sync_seats, {})).workload,
+		coordinator: (yield* Db.open(WorkerServed.roles.sync_coordinator, {})).workload,
 		commits
 	})
 	const retry = retryLedger({
 		den: (yield* Db.open(WorkerServed.roles.retry_den, {})).workload,
-		seats: (yield* Db.open(WorkerServed.roles.retry_seats, {})).workload,
+		coordinator: (yield* Db.open(WorkerServed.roles.retry_coordinator, {})).workload,
 		commits
 	})
 	const all: ReadonlyArray<Ledger<Faults>> = [chain.ledger, fan.ledger, sync.ledger, retry.ledger]

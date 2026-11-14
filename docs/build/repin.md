@@ -4,25 +4,39 @@ den is pinned on grizzle's `main`, into which `live` merged, so every commit bel
 (`schema()` takes a list, `lower/merge.ts` deleted), LIVE-SOURCE (the suites' decoder grant deleted), DEFERRABLE (the
 status and declared reads deferrable), LEASE and DELTAMET for claims (each flow's Claim races its key, and a claim reads
 back the holder it added or met), CARRIER (that read-back rides the claim's one statement, which generate compiles; den
-has no other read-back), and POROUS (each flow is two grizzle fragments the app lists, its graph and its coordination
-group; den's programs are written over them, and each commit is a union of den's facts with the app's writes). den still
-takes these, each from the grizzle session's report:
+has no other read-back), POROUS (each flow is two grizzle fragments the app lists, its graph and its coordination
+group; den's programs are written over them, and each commit is a union of den's facts with the app's writes), and
+LEASE for the coordination group:
 
-- **LEASE for the coordination group (28496788).** Decided, not yet built. The group becomes insert-only, so den's
-  coordination role certifies READ COMMITTED with no delete: each seat, exclusivity seat and pause is a chain of turns.
-  `<P>Hold(resource, seat, turn, holder, until)` keyed by `(resource, seat, turn)`, `<P>Freed(resource, seat, turn)`
-  contained in it, and `contained(on(<P>Hold, "resource", "seat", pred("turn")), on(<P>Freed, "resource", "seat",
-  "turn"))`, so a turn after the first needs its predecessor freed and a seat holds at most one unfreed hold, which the
-  database enforces. Taking a lapsed seat frees its turn and holds the next in one call; giving back inserts `Freed`.
-  The live holds are the holds with no `Freed`; a seat's next turn is its latest, `r.max(turn)` grouped by seat, plus
-  one. Exclusivity seats (`<P>Exclusive` and `<P>Released`, by `(kind, key, turn)`) and pauses (`<P>Paused` and
-  `<P>Resumed`, by `(target, turn)`) take the same shape. A resource's seat count is a closed relation,
-  `closed.relation("<P>Seats", { resource, seats }, ["resource"], …)` from the flow's declaration, and a hold's seat
-  is checked below it (`<P>Seats.at("seats", resource)`), so provisioning goes. None of these relations races: a
-  multi-resource take must win every seat or none, which one call refused whole on any held key gives and a raced
-  insert would not (it can win one seat and meet another), and a raced insert at a turn a stale read chose meets that
-  turn's old row, which says nothing of who holds the key now; a refusal and a fresh read do. Until RETIRE, the turns
-  accumulate as the graph does, and the status reads scan them as the graph's do.
+- **LEASE for the coordination group (28496788).** The group is insert-only, and every den role, each flow's
+  coordinator role included, certifies READ COMMITTED (`certification.test.ts`). Each seat, exclusivity seat and pause is
+  a chain of turns: `<P>Hold(resource, seat, turn, holder, until)` keyed by `(resource, seat, turn)`, `<P>Freed(resource,
+  seat, turn)` contained in it, and `contained(on(<P>Hold, "resource", "seat", pred("turn")), on(<P>Freed, "resource",
+  "seat", "turn"))`, so a turn after the first needs its predecessor freed and a seat holds at most one live hold, which
+  the database enforces. Taking a lapsed seat frees its turn and holds the next in one call; giving back inserts
+  `Freed`, which is the same row, no change, for a turn another holder already freed and took over. The live holds are the
+  holds with no `Freed`; a seat's next turn is one past its latest, `r.max(turn)` grouped by seat, or 0. Exclusivity seats
+  (`<P>Exclusive` and `<P>Released`, by `(kind, key, turn)`) and pauses (`<P>Paused` and `<P>Resumed`, by `(target,
+  turn)`) take the same shape. A resource's seat count is a closed relation, `closed.relation("<P>Seats", { resource,
+  seats }, ["resource"], …)` from the flow's declaration, and every hold's seat is checked below it (`check("SeatBelowCount",
+  <P>Hold, (row) => row.lt(row.seat, <P>Seats.at("seats", row.resource)))`), so provisioning is gone. The coordinator role
+  (`<p>_coordinator`) holds the group's rosters and relations by name, since no role holds a closed relation. None of
+  these relations races: a multi-resource take must win every seat or none, which one call refused whole on any held key
+  gives and a raced insert would not (it can win one seat and meet another), and a raced insert at a turn a stale read
+  chose meets that turn's old row, which says nothing of who holds the key now; a refusal and a fresh read do. Until
+  RETIRE, the turns accumulate as the graph does, and the status reads scan them as the graph's do.
+
+  One outcome moved: **lowering a resource's seat count.** The provisioned seats let the census remove a seat once its
+  hold was given back. Now a changed `<P>Seats` replaces and validates `SeatBelowCount` against every `Hold` row, freed
+  turns included, so a migration that lowers a count is refused while any turn, live or freed, sits at or above the new
+  count, which is always once that seat was used, until RETIRE deletes turns (`seatcount.test.ts` holds it). The owner's choice was to bound the live
+  holds alone, a rule over a query (`derived` live holds, `Hold` with no `Freed`, checked below the count), and grizzle
+  states it only in a level above the app's (a fragment declares no derived relation) and certifies the coordinator role
+  SERIALIZABLE for it (`laws`: a rule over a query, which a trigger checks), giving up the READ COMMITTED LEASE exists
+  for; it waits on grizzle. Growing a count is a migration that validates at once.
+
+den still takes these, each from the grizzle session's report:
+
 - **DBCLOCK (44cade74, 6172e92c, 8081e6ce).** Decided, not yet built. `clocked(program, { now: unit })` binds `now` to
   `transaction_timestamp()`, one reading per call. Each flow's den role serves a clocked read of the database's instant
   alone, `query(<P>Graph).rule((r) => r.find({ now: r.param("now", DenInstant) }))` served `clocked(…, { now: "millis"

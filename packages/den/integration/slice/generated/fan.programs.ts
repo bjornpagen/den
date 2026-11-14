@@ -2,6 +2,11 @@
 import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
+	FanKind,
+	FanJoin,
+	FanOutcome,
+	FanPausable,
+	FanResource,
 	FanScope,
 	FanRoot,
 	FanWithin,
@@ -24,9 +29,10 @@ import {
 	FanBatchInput,
 	FanFanRunInput,
 	FanSquareOutput,
-	FanSeat,
 	FanHold,
+	FanFreed,
 	FanPaused,
+	FanResumed,
 	fanGraph,
 	fanCoordination
 } from "#integration/slice/generated/fan.fragment.ts"
@@ -64,12 +70,22 @@ export const FanDen = role(
 	}
 )
 
-/** den's coordination role for the flow Fan: seats, holds, exclusivity seats and pauses, the seat module's (LEASE replaces it). */
-export const FanSeats = role(
+/** den's coordinator role for the flow Fan: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole; no role holds a closed relation. */
+export const FanCoordinator = role(
 	App,
-	"fan_seats",
-	{ ...fanCoordination.relations },
-	{ write: ["FanSeat", "FanHold", "FanPaused"] }
+	"fan_coordinator",
+	{
+		FanKind,
+		FanJoin,
+		FanOutcome,
+		FanPausable,
+		FanResource,
+		FanHold,
+		FanFreed,
+		FanPaused,
+		FanResumed
+	},
+	{ insert: ["FanHold", "FanFreed", "FanPaused", "FanResumed"] }
 )
 
 export const fanDenPrograms = Object.freeze({
@@ -277,38 +293,44 @@ export const fanDenPrograms = Object.freeze({
 
 export const fanDenWorkload = workload(FanDen, fanDenPrograms)
 
-export const fanSeatsPrograms = Object.freeze({
-	fanProvision: ChangeSet.empty(fanCoordination).insert(FanSeat, []).delete(FanSeat, []),
-	fanTake: ChangeSet.sequence(
-		ChangeSet.empty(fanCoordination).delete(FanHold, []),
-		ChangeSet.empty(fanCoordination).insert(FanHold, [])
-	),
-	fanGiveBack: ChangeSet.empty(fanCoordination).delete(FanHold, []),
-	fanSeats: deferrable(
+export const fanCoordinatorPrograms = Object.freeze({
+	fanTake: ChangeSet.empty(fanCoordination).insert(FanFreed, []).insert(FanHold, []),
+	fanGiveBack: ChangeSet.empty(fanCoordination).insert(FanFreed, []),
+	fanSeatTurns: deferrable(
 		query(fanCoordination).rule((r) => {
-			const { resource, seat } = v(FanSeat, "fanSeat")
-			return r.match(FanSeat, { resource, seat }).find({ resource, seat })
+			const { resource, seat, turn } = v(FanHold, "fanHold")
+			return r.match(FanHold, { resource, seat, turn }).find({ resource, seat, turn: r.max(turn) })
 		})
 	),
 	fanHolds: deferrable(
 		query(fanCoordination).rule((r) => {
-			const { resource, seat, holder, until } = v(FanHold, "fanHold")
+			const { resource, seat, turn, holder, until } = v(FanHold, "fanHold")
 			return r
-				.match(FanHold, { resource, seat, holder, until })
-				.find({ resource, seat, holder, until })
+				.match(FanHold, { resource, seat, turn, holder, until })
+				.where(r.not(FanFreed, { resource, seat, turn }))
+				.find({ resource, seat, turn, holder, until })
 		})
 	),
 	fanPause: ChangeSet.empty(fanCoordination).insert(FanPaused, []),
-	fanResume: ChangeSet.empty(fanCoordination).delete(FanPaused, []),
+	fanResume: ChangeSet.empty(fanCoordination).insert(FanResumed, []),
+	fanPauseTurns: deferrable(
+		query(fanCoordination).rule((r) => {
+			const { target, turn } = v(FanPaused, "fanPaused")
+			return r.match(FanPaused, { target, turn }).find({ target, turn: r.max(turn) })
+		})
+	),
 	fanPausedAll: deferrable(
 		query(fanCoordination).rule((r) => {
-			const { target } = v(FanPaused, "fanPaused")
-			return r.match(FanPaused, { target }).find({ target })
+			const { target, turn } = v(FanPaused, "fanPaused")
+			return r
+				.match(FanPaused, { target, turn })
+				.where(r.not(FanResumed, { target, turn }))
+				.find({ target, turn })
 		})
 	)
 })
 
-export const fanSeatsWorkload = workload(FanSeats, fanSeatsPrograms)
+export const fanCoordinatorWorkload = workload(FanCoordinator, fanCoordinatorPrograms)
 
 /** The commits and declared reads of the flow Fan, over its app role Loader. */
 export const fanCommitPrograms = Object.freeze({

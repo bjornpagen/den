@@ -39,9 +39,10 @@ import { type Placement, printFragment } from "#lower/print.ts"
  * selected sides of a step's Result each have one source alone, its Done or its Failed arm, every output, error,
  * refusal and exhaustion contained in that arm by its plain key: a selected side with several sources is discharged by a
  * generated column grizzle's certifier reads as an unsealed foreign key check, which takes every writer of the flow to
- * SERIALIZABLE. The coordination relations (seats, holds, exclusivity seats, pauses) meet no graph relation in a
- * containment, since they are deleted from; the exclusivity relations exist exactly when a root is exclusive, and the
- * seat relations exactly when a step uses a resource.
+ * SERIALIZABLE. The coordination relations (each seat's, exclusivity seat's and pause's chain of turns) meet no graph
+ * relation in a containment; each chain's turns are keyed by its coordinates and turn, its ends contained in its turns
+ * and each turn's predecessor in its ends; the exclusivity chain exists exactly when a root is exclusive, and the seat
+ * chain, with its seat counts and every hold's seat checked below them, exactly when a step uses a resource.
  *
  * Oracle (specification): the proposal's sections 5 and 6, over flows of up to three steps, chained or not, of each
  * field form, with or without a resource, an exclusive root, a child scope, a declared read and a typed error.
@@ -269,7 +270,8 @@ it.effect(
 						const P = f.name
 						const lowered = lower(f)
 						const relations = Arr.map(lowered.relations, (r) => r.name)
-						const names = [...relations, ...Arr.map(lowered.rosters, (r) => r.name)]
+						const counts = Option.toArray(Option.map(lowered.counts, (seats) => seats.name))
+						const names = [...relations, ...counts, ...Arr.map(lowered.rosters, (r) => r.name)]
 						const has = (suffix: string) => Arr.contains(relations, `${P}${suffix}`)
 						assert.isTrue(Arr.every(names, Str.startsWith(P)))
 						const sides = Arr.flatMap(lowered.laws, (law) =>
@@ -277,7 +279,9 @@ it.effect(
 								? [law.from.relation, law.to.relation]
 								: law.kind === "key"
 									? [law.side.relation]
-									: [law.relation]
+									: law.kind === "check" && law.bound.kind === "below"
+										? [law.relation, law.bound.counts]
+										: [law.relation]
 						)
 						assert.isTrue(Arr.every(sides, (side) => Arr.contains(names, side)))
 						assert.strictEqual(has("S0InputValue"), sketch.form === "option")
@@ -314,10 +318,16 @@ it.effect(
 						}
 						assert.strictEqual(has("S0Read"), sketch.read)
 
-						const coordination = Arr.filter(
-							[`${P}Seat`, `${P}Hold`, `${P}Exclusive`, `${P}Paused`],
-							(name) => Arr.contains(relations, name)
-						)
+						const chains = [
+							...(sketch.resource
+								? [{ held: "Hold", ended: "Freed", at: ["resource", "seat"] }]
+								: []),
+							...(sketch.exclusive
+								? [{ held: "Exclusive", ended: "Released", at: ["kind", "key"] }]
+								: []),
+							{ held: "Paused", ended: "Resumed", at: ["target"] }
+						]
+						const coordination = Arr.flatMap(chains, (ch) => [`${P}${ch.held}`, `${P}${ch.ended}`])
 						assert.deepStrictEqual(lowered.coordination, coordination)
 						assert.isTrue(
 							Arr.every(
@@ -327,11 +337,50 @@ it.effect(
 									Arr.contains(coordination, law.to.relation)
 							)
 						)
-						assert.strictEqual(has("Exclusive"), sketch.exclusive)
+						Arr.forEach(chains, (ch) => {
+							const held = `${P}${ch.held}`
+							const ended = `${P}${ch.ended}`
+							const turn = [...ch.at, "turn"]
+							const termsOf = (side: (typeof containments)[number]["from"]) =>
+								Arr.map(side.terms, (t) => `${t.pred ? "pred:" : ""}${t.field}`)
+							const keyOf = (name: string) =>
+								Option.map(
+									Arr.findFirst(lowered.relations, (r) => r.name === name),
+									(r): ReadonlyArray<string> => r.key
+								)
+							assert.deepStrictEqual(keyOf(held), Option.some(turn))
+							assert.deepStrictEqual(keyOf(ended), Option.some(turn))
+							assert.deepStrictEqual(
+								Arr.map(
+									Arr.filter(
+										containments,
+										(law) => law.from.relation === ended || law.from.relation === held
+									),
+									(law) => [law.from.relation, termsOf(law.from), law.to.relation, termsOf(law.to)]
+								),
+								[
+									[ended, turn, held, turn],
+									[held, [...ch.at, "pred:turn"], ended, turn]
+								]
+							)
+						})
+						assert.deepStrictEqual(
+							Arr.flatMap(lowered.laws, (law) =>
+								law.kind === "check" && law.bound.kind === "below"
+									? [[law.relation, law.field, law.bound.counts, law.bound.at]]
+									: []
+							),
+							sketch.resource ? [[`${P}Hold`, "seat", `${P}Seats`, "resource"]] : []
+						)
+						assert.deepStrictEqual(
+							Option.map(
+								lowered.counts,
+								(seats): ReadonlyArray<{ readonly handle: string; readonly count: bigint }> =>
+									seats.rows
+							),
+							sketch.resource ? Option.some([{ handle: "Pool", count: 2n }]) : Option.none()
+						)
 						assert.strictEqual(has("ExclusiveKey"), sketch.exclusive)
-						assert.strictEqual(has("Seat"), sketch.resource)
-						assert.strictEqual(has("Hold"), sketch.resource)
-						assert.isTrue(has("Paused"))
 					})
 			)
 		)

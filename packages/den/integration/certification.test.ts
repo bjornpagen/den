@@ -26,16 +26,17 @@ import config from "#integration/slice/grizzle.config.ts"
  * What `grizzle generate` certifies. Every den role of the worker login, each flow's own, runs READ
  * COMMITTED: its relations are insert-only for every role, every law is a native key or containment, each selected
  * side of a result has one source, and every read of another call's rows is a point read of an insert-only relation by
- * a whole key. Each flow's coordination role runs SERIALIZABLE, since giving back a seat, an exclusivity seat or a
- * pause deletes, and nothing outside it reads or references what it writes, so it drags no other role. The app's own
- * roles, its writer, which den's commits run under beside the app's own writes, and its auditor, run READ COMMITTED,
- * exactly as when the installation holds no den program at all.
+ * a whole key. Each flow's coordinator role runs READ COMMITTED too: a seat, an exclusivity seat and a pause are each a
+ * chain of turns it only inserts into, each turn after the first contained in its predecessor's end and each hold's
+ * seat checked below the resource's count, all native laws, and its reads of the live turns and the latest turn are
+ * deferrable reads of their own. The app's own roles, its writer, which den's commits run under beside the app's own
+ * writes, and its auditor, run READ COMMITTED, exactly as when the installation holds no den program at all.
  *
  * Oracle (postgresql): `grizzle generate`'s certifier over the installation, against its certificate of the same
  * schema with den's logins and commits taken out.
  */
 
-type Feature = "a den role" | "a coordination role" | "an app role"
+type Feature = "a den role" | "a coordinator role" | "an app role"
 
 const sliceDir = `${import.meta.dirname}/slice`
 const grizzleBin = `${import.meta.dirname}/../../../vendor/grizzle/packages/grizzle/src/cli/main.ts`
@@ -97,7 +98,7 @@ const withoutDen = Effect.scoped(
 
 layer(NodeServices.layer, { excludeTestServices: true })("certification", (it) => {
 	it.effect(
-		"certifies den's roles READ COMMITTED, its coordination roles SERIALIZABLE, the app's as without den",
+		"certifies den's roles and its coordinator roles READ COMMITTED, the app's as without den",
 		(ctx) =>
 			searched(
 				ctx,
@@ -125,7 +126,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("certification", (it) =
 							literal: Formatter.format,
 							coverage: requiredInSpace<Feature>([
 								"a den role",
-								"a coordination role",
+								"a coordinator role",
 								"an app role"
 							]),
 							caseHang,
@@ -147,9 +148,10 @@ layer(NodeServices.layer, { excludeTestServices: true })("certification", (it) =
 									)
 									return
 								}
-								const coordination = Str.endsWith("_seats")(role.name)
-								c.note(coordination ? "a coordination role" : "a den role")
-								assert.strictEqual(role.isolation, coordination ? "serializable" : "readCommitted")
+								c.note(
+									Str.endsWith("_coordinator")(role.name) ? "a coordinator role" : "a den role"
+								)
+								assert.strictEqual(role.isolation, "readCommitted")
 							})
 					)
 				})

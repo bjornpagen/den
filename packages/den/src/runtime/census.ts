@@ -4,15 +4,15 @@ import type { Digest } from "effect/crypto"
 import { eligible } from "#runtime/eligible.ts"
 import { type Instant, instantOf } from "#runtime/identity.ts"
 import type { Ledger } from "#runtime/ledger.ts"
-import { provision, releaseExclusive } from "#runtime/seats.ts"
+import { releaseExclusive } from "#runtime/seats.ts"
 import { type Ring, Transport } from "#transport.ts"
 
 /**
  * The census: a tick, about once a minute on Vercel Cron, that rings what time made eligible (due instants passed,
  * windows opened, leases lapsed) and heals every lost wake. At the tick's instant, the caller's clock as a parameter,
- * it makes the seat rows what the flow declares, requests each scheduled root's latest instant (its key, so a tick
- * repeated requests nothing), gives back the exclusivity seats of finished scopes, and rings every eligible wake. It
- * writes only key races and the coordination group.
+ * it requests each scheduled root's latest instant (its key, so a tick repeated requests nothing), releases the
+ * exclusivity seats of finished scopes, and rings every eligible wake. It writes only key races and the coordination
+ * group's turns.
  */
 
 /** What a tick rang. */
@@ -26,7 +26,6 @@ export const tick = <R>(
 	at: Instant
 ): Effect.Effect<Tick, CallError, Digest.Digest | Transport> =>
 	Effect.gen(function* () {
-		yield* provision(ledger)
 		yield* Effect.forEach(ledger.scheduled, (s) =>
 			s.request(instantOf(Cron.prev(s.cron, Number(at) + 1).getTime()))
 		)

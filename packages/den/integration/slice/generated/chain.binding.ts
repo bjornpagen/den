@@ -12,6 +12,7 @@ import {
 import type {
 	FlowNeeds,
 	Ledger,
+	PauseRow,
 	ScopeView,
 	Snapshot,
 	Spawned
@@ -40,17 +41,19 @@ import type {
 } from "#integration/slice/generated/chain.fragment.ts"
 import type {
 	chainDenPrograms,
-	chainSeatsPrograms,
+	chainCoordinatorPrograms,
 	chainCommitPrograms
 } from "#integration/slice/generated/chain.programs.ts"
 
-/** The handles the ledger calls: den's role's, its coordination role's, and the app role's commits, from whichever logins serve them. */
+/** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface ChainHandles {
 	readonly den: {
 		readonly [K in keyof typeof chainDenPrograms]: MemberHandle<(typeof chainDenPrograms)[K]>
 	}
-	readonly seats: {
-		readonly [K in keyof typeof chainSeatsPrograms]: MemberHandle<(typeof chainSeatsPrograms)[K]>
+	readonly coordinator: {
+		readonly [K in keyof typeof chainCoordinatorPrograms]: MemberHandle<
+			(typeof chainCoordinatorPrograms)[K]
+		>
 	}
 	readonly commits: {
 		readonly [K in keyof typeof chainCommitPrograms]: MemberHandle<(typeof chainCommitPrograms)[K]>
@@ -78,6 +81,10 @@ interface Grown {
 
 const pausableOf = (name: string): Option.Option<(typeof ChainPausable)["handles"][number]> =>
 	Arr.findFirst(ChainPausable.handles, (handle) => handle === name)
+const pausesOf = (rows: ReadonlyArray<PauseRow>) =>
+	Arr.flatMap(rows, (row) =>
+		Option.toArray(Option.map(pausableOf(row.target), (target) => ({ target, turn: row.turn })))
+	)
 
 /** The ledger of the flow Chain over its handles, with the requests of its roots. */
 export const chainLedger = (h: ChainHandles) => {
@@ -221,37 +228,32 @@ export const chainLedger = (h: ChainHandles) => {
 			return Option.map(row, (found) => ({ feed: found.feed, pages: found.pages }))
 		})
 	const coordination: Ledger<never>["coordination"] = {
-		seats: Effect.succeed([]),
+		seatTurns: Effect.succeed([]),
 		holds: Effect.succeed([]),
+		exclusiveTurns: Effect.succeed([]),
 		exclusives: Effect.succeed([]),
-		paused: Effect.map(h.seats.chainPausedAll.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => row.target)
+		pauseTurns: Effect.map(h.coordinator.chainPauseTurns.once({ params: {}, facts: {} }), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
 		),
-		provision: () => Effect.void,
+		paused: Effect.map(h.coordinator.chainPausedAll.once({ params: {}, facts: {} }), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		),
 		take: () => Effect.void,
 		giveBack: () => Effect.void,
 		holdExclusive: () => Effect.void,
 		releaseExclusive: () => Effect.void,
-		pause: (target) =>
+		pause: (row) =>
 			Effect.asVoid(
-				h.seats.chainPause.once({
+				h.coordinator.chainPause.once({
 					params: {},
-					facts: {
-						insert: {
-							ChainPaused: Arr.map(Option.toArray(pausableOf(target)), (id) => ({ target: id }))
-						}
-					}
+					facts: { insert: { ChainPaused: pausesOf([row]) } }
 				})
 			),
-		resume: (target) =>
+		resume: (row) =>
 			Effect.asVoid(
-				h.seats.chainResume.once({
+				h.coordinator.chainResume.once({
 					params: {},
-					facts: {
-						delete: {
-							ChainPaused: Arr.map(Option.toArray(pausableOf(target)), (id) => ({ target: id }))
-						}
-					}
+					facts: { insert: { ChainResumed: pausesOf([row]) } }
 				})
 			)
 	}
@@ -768,10 +770,12 @@ export const chainLedger = (h: ChainHandles) => {
 			const withins = yield* Effect.map(h.den.chainWithins.once({ params: {}, facts: {} }), rowsOf)
 			const roots = yield* Effect.map(h.den.chainRoots.once({ params: {}, facts: {} }), rowsOf)
 			const keys: ReadonlyArray<{ readonly scope: ScopeKey; readonly id: ExclusiveId }> = []
-			const seats = yield* coordination.seats
 			const holds = yield* coordination.holds
 			const exclusives = yield* coordination.exclusives
-			const paused = yield* coordination.paused
+			const paused = yield* Effect.map(
+				coordination.paused,
+				Arr.map((row) => row.target)
+			)
 			const busy = yield* Effect.filter([], (flow) => busyOf(flow))
 			const view = (scope: ScopeKey, kind: string, admitted: boolean): ScopeView => ({
 				scope,
@@ -800,7 +804,6 @@ export const chainLedger = (h: ChainHandles) => {
 					...Arr.map(requested, (s) => view(s.scope, s.kind, false)),
 					...Arr.map(running, (s) => view(s.scope, s.kind, true))
 				],
-				seats,
 				holds,
 				exclusives,
 				paused,
@@ -812,7 +815,7 @@ export const chainLedger = (h: ChainHandles) => {
 				signals(h.den.chainPending.watch({ params: {}, facts: {} })),
 				signals(h.den.chainRequested.watch({ params: {}, facts: {} })),
 				signals(h.den.chainRunning.watch({ params: {}, facts: {} })),
-				signals(h.seats.chainPausedAll.watch({ params: {}, facts: {} }))
+				signals(h.coordinator.chainPausedAll.watch({ params: {}, facts: {} }))
 			],
 			{ concurrency: "unbounded" }
 		),

@@ -11,6 +11,7 @@ import {
 import type {
 	FlowNeeds,
 	Ledger,
+	PauseRow,
 	ScopeView,
 	Snapshot,
 	Spawned
@@ -38,17 +39,19 @@ import type {
 } from "#integration/slice/generated/retry.fragment.ts"
 import type {
 	retryDenPrograms,
-	retrySeatsPrograms,
+	retryCoordinatorPrograms,
 	retryCommitPrograms
 } from "#integration/slice/generated/retry.programs.ts"
 
-/** The handles the ledger calls: den's role's, its coordination role's, and the app role's commits, from whichever logins serve them. */
+/** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface RetryHandles {
 	readonly den: {
 		readonly [K in keyof typeof retryDenPrograms]: MemberHandle<(typeof retryDenPrograms)[K]>
 	}
-	readonly seats: {
-		readonly [K in keyof typeof retrySeatsPrograms]: MemberHandle<(typeof retrySeatsPrograms)[K]>
+	readonly coordinator: {
+		readonly [K in keyof typeof retryCoordinatorPrograms]: MemberHandle<
+			(typeof retryCoordinatorPrograms)[K]
+		>
 	}
 	readonly commits: {
 		readonly [K in keyof typeof retryCommitPrograms]: MemberHandle<(typeof retryCommitPrograms)[K]>
@@ -75,6 +78,10 @@ interface Grown {
 
 const pausableOf = (name: string): Option.Option<(typeof RetryPausable)["handles"][number]> =>
 	Arr.findFirst(RetryPausable.handles, (handle) => handle === name)
+const pausesOf = (rows: ReadonlyArray<PauseRow>) =>
+	Arr.flatMap(rows, (row) =>
+		Option.toArray(Option.map(pausableOf(row.target), (target) => ({ target, turn: row.turn })))
+	)
 
 /** The ledger of the flow Retry over its handles, with the requests of its roots. */
 export const retryLedger = (h: RetryHandles) => {
@@ -180,37 +187,32 @@ export const retryLedger = (h: RetryHandles) => {
 			return Option.map(row, (found) => ({ steadfast: found.steadfast, brittle: found.brittle }))
 		})
 	const coordination: Ledger<never>["coordination"] = {
-		seats: Effect.succeed([]),
+		seatTurns: Effect.succeed([]),
 		holds: Effect.succeed([]),
+		exclusiveTurns: Effect.succeed([]),
 		exclusives: Effect.succeed([]),
-		paused: Effect.map(h.seats.retryPausedAll.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => row.target)
+		pauseTurns: Effect.map(h.coordinator.retryPauseTurns.once({ params: {}, facts: {} }), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
 		),
-		provision: () => Effect.void,
+		paused: Effect.map(h.coordinator.retryPausedAll.once({ params: {}, facts: {} }), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		),
 		take: () => Effect.void,
 		giveBack: () => Effect.void,
 		holdExclusive: () => Effect.void,
 		releaseExclusive: () => Effect.void,
-		pause: (target) =>
+		pause: (row) =>
 			Effect.asVoid(
-				h.seats.retryPause.once({
+				h.coordinator.retryPause.once({
 					params: {},
-					facts: {
-						insert: {
-							RetryPaused: Arr.map(Option.toArray(pausableOf(target)), (id) => ({ target: id }))
-						}
-					}
+					facts: { insert: { RetryPaused: pausesOf([row]) } }
 				})
 			),
-		resume: (target) =>
+		resume: (row) =>
 			Effect.asVoid(
-				h.seats.retryResume.once({
+				h.coordinator.retryResume.once({
 					params: {},
-					facts: {
-						delete: {
-							RetryPaused: Arr.map(Option.toArray(pausableOf(target)), (id) => ({ target: id }))
-						}
-					}
+					facts: { insert: { RetryResumed: pausesOf([row]) } }
 				})
 			)
 	}
@@ -566,10 +568,12 @@ export const retryLedger = (h: RetryHandles) => {
 			const withins = yield* Effect.map(h.den.retryWithins.once({ params: {}, facts: {} }), rowsOf)
 			const roots = yield* Effect.map(h.den.retryRoots.once({ params: {}, facts: {} }), rowsOf)
 			const keys: ReadonlyArray<{ readonly scope: ScopeKey; readonly id: ExclusiveId }> = []
-			const seats = yield* coordination.seats
 			const holds = yield* coordination.holds
 			const exclusives = yield* coordination.exclusives
-			const paused = yield* coordination.paused
+			const paused = yield* Effect.map(
+				coordination.paused,
+				Arr.map((row) => row.target)
+			)
 			const busy = yield* Effect.filter([], (flow) => busyOf(flow))
 			const view = (scope: ScopeKey, kind: string, admitted: boolean): ScopeView => ({
 				scope,
@@ -598,7 +602,6 @@ export const retryLedger = (h: RetryHandles) => {
 					...Arr.map(requested, (s) => view(s.scope, s.kind, false)),
 					...Arr.map(running, (s) => view(s.scope, s.kind, true))
 				],
-				seats,
 				holds,
 				exclusives,
 				paused,
@@ -610,7 +613,7 @@ export const retryLedger = (h: RetryHandles) => {
 				signals(h.den.retryPending.watch({ params: {}, facts: {} })),
 				signals(h.den.retryRequested.watch({ params: {}, facts: {} })),
 				signals(h.den.retryRunning.watch({ params: {}, facts: {} })),
-				signals(h.seats.retryPausedAll.watch({ params: {}, facts: {} }))
+				signals(h.coordinator.retryPausedAll.watch({ params: {}, facts: {} }))
 			],
 			{ concurrency: "unbounded" }
 		),

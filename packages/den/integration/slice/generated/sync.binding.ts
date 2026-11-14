@@ -18,8 +18,9 @@ import {
 } from "@bjornpagen/den/runtime/identity"
 import type {
 	FlowNeeds,
-	ExclusiveRow,
+	ExclusiveTurn,
 	Ledger,
+	PauseRow,
 	ScopeView,
 	Snapshot,
 	Spawned
@@ -47,17 +48,19 @@ import type {
 } from "#integration/slice/generated/sync.fragment.ts"
 import type {
 	syncDenPrograms,
-	syncSeatsPrograms,
+	syncCoordinatorPrograms,
 	syncCommitPrograms
 } from "#integration/slice/generated/sync.programs.ts"
 
-/** The handles the ledger calls: den's role's, its coordination role's, and the app role's commits, from whichever logins serve them. */
+/** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface SyncHandles {
 	readonly den: {
 		readonly [K in keyof typeof syncDenPrograms]: MemberHandle<(typeof syncDenPrograms)[K]>
 	}
-	readonly seats: {
-		readonly [K in keyof typeof syncSeatsPrograms]: MemberHandle<(typeof syncSeatsPrograms)[K]>
+	readonly coordinator: {
+		readonly [K in keyof typeof syncCoordinatorPrograms]: MemberHandle<
+			(typeof syncCoordinatorPrograms)[K]
+		>
 	}
 	readonly commits: {
 		readonly [K in keyof typeof syncCommitPrograms]: MemberHandle<(typeof syncCommitPrograms)[K]>
@@ -86,11 +89,15 @@ const joinOf = (name: string): Option.Option<(typeof SyncJoin)["handles"][number
 	Arr.findFirst(SyncJoin.handles, (handle) => handle === name)
 const pausableOf = (name: string): Option.Option<(typeof SyncPausable)["handles"][number]> =>
 	Arr.findFirst(SyncPausable.handles, (handle) => handle === name)
-const exclusivesOf = (rows: ReadonlyArray<ExclusiveRow>) =>
-	Arr.flatMap(rows, (row) =>
+const exclusiveTurnsOf = (turns: ReadonlyArray<ExclusiveTurn>) =>
+	Arr.flatMap(turns, (turn) =>
 		Option.toArray(
-			Option.map(joinOf(row.kind), (kind) => ({ kind, key: row.key, scope: row.scope }))
+			Option.map(joinOf(turn.kind), (kind) => ({ kind, key: turn.key, turn: turn.turn }))
 		)
+	)
+const pausesOf = (rows: ReadonlyArray<PauseRow>) =>
+	Arr.flatMap(rows, (row) =>
+		Option.toArray(Option.map(pausableOf(row.target), (target) => ({ target, turn: row.turn })))
 	)
 
 /** The ledger of the flow Sync over its handles, with the requests of its roots. */
@@ -212,51 +219,60 @@ export const syncLedger = (h: SyncHandles) => {
 			return Option.map(row, (found) => ({ build: found.build }))
 		})
 	const coordination: Ledger<never>["coordination"] = {
-		seats: Effect.succeed([]),
+		seatTurns: Effect.succeed([]),
 		holds: Effect.succeed([]),
-		exclusives: Effect.map(h.seats.syncExclusives.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => ({ kind: row.kind, key: row.key, scope: row.scope }))
+		exclusiveTurns: Effect.map(
+			h.coordinator.syncExclusiveTurns.once({ params: {}, facts: {} }),
+			(rows) => Arr.map(rowsOf(rows), (row) => ({ kind: row.kind, key: row.key, turn: row.turn }))
 		),
-		paused: Effect.map(h.seats.syncPausedAll.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => row.target)
+		exclusives: Effect.map(h.coordinator.syncExclusives.once({ params: {}, facts: {} }), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({
+				kind: row.kind,
+				key: row.key,
+				turn: row.turn,
+				scope: row.scope
+			}))
 		),
-		provision: () => Effect.void,
+		pauseTurns: Effect.map(h.coordinator.syncPauseTurns.once({ params: {}, facts: {} }), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		),
+		paused: Effect.map(h.coordinator.syncPausedAll.once({ params: {}, facts: {} }), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		),
 		take: () => Effect.void,
 		giveBack: () => Effect.void,
 		holdExclusive: (row) =>
 			Effect.asVoid(
-				h.seats.syncHoldExclusive.once({
+				h.coordinator.syncHoldExclusive.once({
 					params: {},
-					facts: { insert: { SyncExclusive: exclusivesOf([row]) } }
+					facts: {
+						insert: {
+							SyncExclusive: Arr.flatMap(exclusiveTurnsOf([row]), (turn) => [
+								{ ...turn, scope: row.scope }
+							])
+						}
+					}
 				})
 			),
 		releaseExclusive: (rows) =>
 			Effect.asVoid(
-				h.seats.syncReleaseExclusive.once({
+				h.coordinator.syncReleaseExclusive.once({
 					params: {},
-					facts: { delete: { SyncExclusive: exclusivesOf(rows) } }
+					facts: { insert: { SyncReleased: exclusiveTurnsOf(rows) } }
 				})
 			),
-		pause: (target) =>
+		pause: (row) =>
 			Effect.asVoid(
-				h.seats.syncPause.once({
+				h.coordinator.syncPause.once({
 					params: {},
-					facts: {
-						insert: {
-							SyncPaused: Arr.map(Option.toArray(pausableOf(target)), (id) => ({ target: id }))
-						}
-					}
+					facts: { insert: { SyncPaused: pausesOf([row]) } }
 				})
 			),
-		resume: (target) =>
+		resume: (row) =>
 			Effect.asVoid(
-				h.seats.syncResume.once({
+				h.coordinator.syncResume.once({
 					params: {},
-					facts: {
-						delete: {
-							SyncPaused: Arr.map(Option.toArray(pausableOf(target)), (id) => ({ target: id }))
-						}
-					}
+					facts: { insert: { SyncResumed: pausesOf([row]) } }
 				})
 			)
 	}
@@ -729,10 +745,12 @@ export const syncLedger = (h: SyncHandles) => {
 				h.den.syncExclusiveKeys.once({ params: {}, facts: {} }),
 				rowsOf
 			)
-			const seats = yield* coordination.seats
 			const holds = yield* coordination.holds
 			const exclusives = yield* coordination.exclusives
-			const paused = yield* coordination.paused
+			const paused = yield* Effect.map(
+				coordination.paused,
+				Arr.map((row) => row.target)
+			)
 			const busy = yield* Effect.filter(["Chain"], (flow) => busyOf(flow))
 			const view = (scope: ScopeKey, kind: string, admitted: boolean): ScopeView => ({
 				scope,
@@ -761,7 +779,6 @@ export const syncLedger = (h: SyncHandles) => {
 					...Arr.map(requested, (s) => view(s.scope, s.kind, false)),
 					...Arr.map(running, (s) => view(s.scope, s.kind, true))
 				],
-				seats,
 				holds,
 				exclusives,
 				paused,
@@ -773,8 +790,8 @@ export const syncLedger = (h: SyncHandles) => {
 				signals(h.den.syncPending.watch({ params: {}, facts: {} })),
 				signals(h.den.syncRequested.watch({ params: {}, facts: {} })),
 				signals(h.den.syncRunning.watch({ params: {}, facts: {} })),
-				signals(h.seats.syncExclusives.watch({ params: {}, facts: {} })),
-				signals(h.seats.syncPausedAll.watch({ params: {}, facts: {} })),
+				signals(h.coordinator.syncExclusives.watch({ params: {}, facts: {} })),
+				signals(h.coordinator.syncPausedAll.watch({ params: {}, facts: {} })),
 				signals(h.den.syncBusyChain.watch({ params: {}, facts: {} }))
 			],
 			{ concurrency: "unbounded" }

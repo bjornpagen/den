@@ -7,6 +7,17 @@ $$;
 
 CREATE SCHEMA "slice";
 
+CREATE FUNCTION "slice"."__constant_ejkw66w2je"() RETURNS bigint[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"2"}'::bigint[];
+
+REVOKE ALL ON FUNCTION "slice"."__constant_ejkw66w2je"() FROM PUBLIC;
+
+-- closed constant: 1 rows in 1 cells of 1 bits, content e74e8afa12f9482972f8c3a277d42e6adeba09f7057c2e49ce81978193dcd5e4
+CREATE FUNCTION "slice"."__constant_ib5zplua3f"() RETURNS bit varying LANGUAGE sql IMMUTABLE PARALLEL SAFE RETURN X'8'::bit varying;
+
+REVOKE ALL ON FUNCTION "slice"."__constant_ib5zplua3f"() FROM PUBLIC;
+
 CREATE FUNCTION "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN '{"news","sport"}'::"pg_catalog"."name"[];

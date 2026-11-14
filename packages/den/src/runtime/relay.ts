@@ -50,7 +50,6 @@ const textOf = (snapshot: Snapshot): string => {
 			rows(snapshot.retries),
 			rows(snapshot.dues),
 			rows(snapshot.scopes),
-			rows(snapshot.seats),
 			rows(snapshot.holds),
 			rows(snapshot.exclusives),
 			rows(snapshot.paused),

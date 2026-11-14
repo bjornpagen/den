@@ -13,7 +13,9 @@ import type {
 	FlowNeeds,
 	HoldRow,
 	Ledger,
+	PauseRow,
 	ScopeView,
+	SeatTurn,
 	Snapshot,
 	Spawned
 } from "@bjornpagen/den/runtime/ledger"
@@ -40,17 +42,19 @@ import type {
 } from "#integration/slice/generated/fan.fragment.ts"
 import type {
 	fanDenPrograms,
-	fanSeatsPrograms,
+	fanCoordinatorPrograms,
 	fanCommitPrograms
 } from "#integration/slice/generated/fan.programs.ts"
 
-/** The handles the ledger calls: den's role's, its coordination role's, and the app role's commits, from whichever logins serve them. */
+/** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface FanHandles {
 	readonly den: {
 		readonly [K in keyof typeof fanDenPrograms]: MemberHandle<(typeof fanDenPrograms)[K]>
 	}
-	readonly seats: {
-		readonly [K in keyof typeof fanSeatsPrograms]: MemberHandle<(typeof fanSeatsPrograms)[K]>
+	readonly coordinator: {
+		readonly [K in keyof typeof fanCoordinatorPrograms]: MemberHandle<
+			(typeof fanCoordinatorPrograms)[K]
+		>
 	}
 	readonly commits: {
 		readonly [K in keyof typeof fanCommitPrograms]: MemberHandle<(typeof fanCommitPrograms)[K]>
@@ -79,16 +83,31 @@ const pausableOf = (name: string): Option.Option<(typeof FanPausable)["handles"]
 	Arr.findFirst(FanPausable.handles, (handle) => handle === name)
 const resourceOf = (name: string): Option.Option<(typeof FanResource)["handles"][number]> =>
 	Arr.findFirst(FanResource.handles, (handle) => handle === name)
+const seatTurnsOf = (turns: ReadonlyArray<SeatTurn>) =>
+	Arr.flatMap(turns, (turn) =>
+		Option.toArray(
+			Option.map(resourceOf(turn.resource), (resource) => ({
+				resource,
+				seat: turn.seat,
+				turn: turn.turn
+			}))
+		)
+	)
 const holdsOf = (holds: ReadonlyArray<HoldRow>) =>
 	Arr.flatMap(holds, (hold) =>
 		Option.toArray(
 			Option.map(resourceOf(hold.resource), (resource) => ({
 				resource,
 				seat: hold.seat,
+				turn: hold.turn,
 				holder: hold.holder,
 				until: hold.until
 			}))
 		)
+	)
+const pausesOf = (rows: ReadonlyArray<PauseRow>) =>
+	Arr.flatMap(rows, (row) =>
+		Option.toArray(Option.map(pausableOf(row.target), (target) => ({ target, turn: row.turn })))
 	)
 
 /** The ledger of the flow Fan over its handles, with the requests of its roots. */
@@ -211,76 +230,54 @@ export const fanLedger = (h: FanHandles) => {
 			return Option.map(row, (found) => ({ batch: found.batch, size: found.size }))
 		})
 	const coordination: Ledger<never>["coordination"] = {
-		seats: Effect.map(h.seats.fanSeats.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => ({ resource: row.resource, seat: row.seat }))
+		seatTurns: Effect.map(h.coordinator.fanSeatTurns.once({ params: {}, facts: {} }), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ resource: row.resource, seat: row.seat, turn: row.turn }))
 		),
-		holds: Effect.map(h.seats.fanHolds.once({ params: {}, facts: {} }), (rows) =>
+		holds: Effect.map(h.coordinator.fanHolds.once({ params: {}, facts: {} }), (rows) =>
 			Arr.map(rowsOf(rows), (row) => ({
 				resource: row.resource,
 				seat: row.seat,
+				turn: row.turn,
 				holder: row.holder,
 				until: row.until
 			}))
 		),
+		exclusiveTurns: Effect.succeed([]),
 		exclusives: Effect.succeed([]),
-		paused: Effect.map(h.seats.fanPausedAll.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => row.target)
+		pauseTurns: Effect.map(h.coordinator.fanPauseTurns.once({ params: {}, facts: {} }), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
 		),
-		provision: (add, remove) =>
-			Effect.asVoid(
-				h.seats.fanProvision.once({
-					params: {},
-					facts: {
-						insert: {
-							FanSeat: Arr.flatMap(add, (s) =>
-								Option.toArray(
-									Option.map(resourceOf(s.resource), (resource) => ({ resource, seat: s.seat }))
-								)
-							)
-						},
-						delete: {
-							FanSeat: Arr.flatMap(remove, (s) =>
-								Option.toArray(
-									Option.map(resourceOf(s.resource), (resource) => ({ resource, seat: s.seat }))
-								)
-							)
-						}
-					}
-				})
-			),
+		paused: Effect.map(h.coordinator.fanPausedAll.once({ params: {}, facts: {} }), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		),
 		take: (lapsed, taken) =>
 			Effect.asVoid(
-				h.seats.fanTake.once({
+				h.coordinator.fanTake.once({
 					params: {},
-					facts: { delete: { FanHold: holdsOf(lapsed) }, insert: { FanHold: holdsOf(taken) } }
+					facts: { insert: { FanFreed: seatTurnsOf(lapsed), FanHold: holdsOf(taken) } }
 				})
 			),
 		giveBack: (holds) =>
 			Effect.asVoid(
-				h.seats.fanGiveBack.once({ params: {}, facts: { delete: { FanHold: holdsOf(holds) } } })
+				h.coordinator.fanGiveBack.once({
+					params: {},
+					facts: { insert: { FanFreed: seatTurnsOf(holds) } }
+				})
 			),
 		holdExclusive: () => Effect.void,
 		releaseExclusive: () => Effect.void,
-		pause: (target) =>
+		pause: (row) =>
 			Effect.asVoid(
-				h.seats.fanPause.once({
+				h.coordinator.fanPause.once({
 					params: {},
-					facts: {
-						insert: {
-							FanPaused: Arr.map(Option.toArray(pausableOf(target)), (id) => ({ target: id }))
-						}
-					}
+					facts: { insert: { FanPaused: pausesOf([row]) } }
 				})
 			),
-		resume: (target) =>
+		resume: (row) =>
 			Effect.asVoid(
-				h.seats.fanResume.once({
+				h.coordinator.fanResume.once({
 					params: {},
-					facts: {
-						delete: {
-							FanPaused: Arr.map(Option.toArray(pausableOf(target)), (id) => ({ target: id }))
-						}
-					}
+					facts: { insert: { FanResumed: pausesOf([row]) } }
 				})
 			)
 	}
@@ -652,10 +649,12 @@ export const fanLedger = (h: FanHandles) => {
 			const withins = yield* Effect.map(h.den.fanWithins.once({ params: {}, facts: {} }), rowsOf)
 			const roots = yield* Effect.map(h.den.fanRoots.once({ params: {}, facts: {} }), rowsOf)
 			const keys: ReadonlyArray<{ readonly scope: ScopeKey; readonly id: ExclusiveId }> = []
-			const seats = yield* coordination.seats
 			const holds = yield* coordination.holds
 			const exclusives = yield* coordination.exclusives
-			const paused = yield* coordination.paused
+			const paused = yield* Effect.map(
+				coordination.paused,
+				Arr.map((row) => row.target)
+			)
 			const busy = yield* Effect.filter([], (flow) => busyOf(flow))
 			const view = (scope: ScopeKey, kind: string, admitted: boolean): ScopeView => ({
 				scope,
@@ -684,7 +683,6 @@ export const fanLedger = (h: FanHandles) => {
 					...Arr.map(requested, (s) => view(s.scope, s.kind, false)),
 					...Arr.map(running, (s) => view(s.scope, s.kind, true))
 				],
-				seats,
 				holds,
 				exclusives,
 				paused,
@@ -696,8 +694,8 @@ export const fanLedger = (h: FanHandles) => {
 				signals(h.den.fanPending.watch({ params: {}, facts: {} })),
 				signals(h.den.fanRequested.watch({ params: {}, facts: {} })),
 				signals(h.den.fanRunning.watch({ params: {}, facts: {} })),
-				signals(h.seats.fanHolds.watch({ params: {}, facts: {} })),
-				signals(h.seats.fanPausedAll.watch({ params: {}, facts: {} }))
+				signals(h.coordinator.fanHolds.watch({ params: {}, facts: {} })),
+				signals(h.coordinator.fanPausedAll.watch({ params: {}, facts: {} }))
 			],
 			{ concurrency: "unbounded" }
 		),
