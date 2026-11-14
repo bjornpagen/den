@@ -9,6 +9,8 @@
 		"allowImportingTsExtensions": true,
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
-		"noEmit": true
+		"noEmit": true,
+		"incremental": true,
+		"tsBuildInfoFile": "${configDir}/node_modules/.cache/tsconfig.tsbuildinfo"
 	}
 }

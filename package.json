@@ -15,8 +15,10 @@
 	},
 	"scripts": {
 		"prepare": "effect-tsgo patch",
-		"check": "turbo run typecheck superlint oxlint format dead-code architecture dedupe --filter=./packages/* --filter=// --continue=dependencies-successful",
+		"check": "turbo run typecheck:full superlint oxlint format dead-code architecture dedupe --filter=./packages/* --filter=// --continue=dependencies-successful",
+		"types": "turbo run typecheck --filter=./packages/* --filter=//",
 		"typecheck": "effect-tsgo tsrs --noEmit -p tsconfig.json",
+		"typecheck:full": "effect-tsgo tsrs --noEmit -p tsconfig.json --incremental false",
 		"superlint": "superlint",
 		"oxlint": "oxlint oxlint.config.ts",
 		"format": "oxfmt --check .",

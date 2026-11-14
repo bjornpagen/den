@@ -9,15 +9,30 @@
 		"tsconfig.base.json",
 		"oxlint.config.ts"
 	],
-	"globalEnv": ["NODE_OPTIONS", "NODE_ENV"],
-	"globalPassThroughEnv": ["TMPDIR"],
+	"globalEnv": ["NODE_ENV"],
+	"globalPassThroughEnv": [
+		"TMPDIR",
+		"NODE_OPTIONS",
+		"TOOLCHAIN_TEST_WORKERS",
+		"TOOLCHAIN_TSGOLINT_PROCS",
+		"TOOLCHAIN_TS_CHECKERS"
+	],
 	"tasks": {
 		"source": {
 			"description": "Carries each package's source hash to its dependents, so a check reruns when a package it loads changes, without waiting for that package's checks.",
 			"dependsOn": ["^source"]
 		},
 		"typecheck": {
-			"description": "Every project checks its own sources with --noEmit and reads its dependencies' sources directly, so no check waits on another's, and reruns when a package it loads changes, the submodule's grizzle packages among them; grizzle's packages keep their own gates.",
+			"description": "Every project checks its own sources with --noEmit and reads its dependencies' sources directly, so no check waits on another's, and reruns when a package it loads changes, the submodule's grizzle packages among them; grizzle's packages keep their own gates. It is incremental: each project keeps its state in its own node_modules/.cache, so a rerun rechecks only what changed.",
+			"dependsOn": ["^source"],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"$TURBO_ROOT$/vendor/toolchain/packages/devtools/tsconfig.base.json"
+			],
+			"outputs": ["node_modules/.cache/tsconfig.tsbuildinfo"]
+		},
+		"typecheck:full": {
+			"description": "The typecheck pnpm check runs: every project checked from scratch (--incremental false), cached apart from typecheck, so no incremental state, stale or not, decides the gate.",
 			"dependsOn": ["^source"],
 			"inputs": [
 				"$TURBO_DEFAULT$",
@@ -47,7 +62,10 @@
 		"test": {
 			"dependsOn": ["^source"]
 		},
-		"//#typecheck": {},
+		"//#typecheck": {
+			"outputs": ["node_modules/.cache/tsconfig.tsbuildinfo"]
+		},
+		"//#typecheck:full": {},
 		"//#superlint": {},
 		"//#oxlint": {},
 		"//#format": {},
