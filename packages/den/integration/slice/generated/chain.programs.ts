@@ -22,6 +22,7 @@ import {
 	ChainDue,
 	ChainClaim,
 	ChainRetry,
+	ChainFenced,
 	ChainResult,
 	ChainDone,
 	ChainFailed,
@@ -43,7 +44,7 @@ import {
 } from "#integration/slice/generated/chain.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's role for the flow Chain: the database's instant, claims, retries, failures, admissions, requests, and every read the scheduler makes. */
+/** den's role for the flow Chain: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. */
 export const ChainDen = role(
 	App,
 	"chain_den",
@@ -62,6 +63,7 @@ export const ChainDen = role(
 			"ChainDue",
 			"ChainClaim",
 			"ChainRetry",
+			"ChainFenced",
 			"ChainResult",
 			"ChainDone",
 			"ChainFailed",
@@ -118,6 +120,7 @@ export const chainDenPrograms = Object.freeze({
 				})
 		),
 	chainRetry: ChangeSet.empty(chainGraph).insert(ChainRetry, []),
+	chainFence: ChangeSet.empty(chainGraph).insert(ChainFenced, []),
 	chainRefuse: ChangeSet.empty(chainGraph)
 		.insert(ChainResult, [])
 		.insert(ChainFailed, [])
@@ -162,6 +165,13 @@ export const chainDenPrograms = Object.freeze({
 			.match(ChainRetry, { step, attempt, at, spent })
 			.where(r.eq(step, r.param("step", ChainStep.fields.step)))
 			.find({ step, attempt, at, spent })
+	}),
+	chainFencedOf: query(chainGraph).rule((r) => {
+		const { step, attempt } = v(ChainFenced, "fenced")
+		return r
+			.match(ChainFenced, { step, attempt })
+			.where(r.eq(step, r.param("step", ChainStep.fields.step)))
+			.find({ step, attempt })
 	}),
 	chainUnendedSteps: query(chainGraph).rule((r) => {
 		const { step, scope } = v(ChainStep, "step")
@@ -230,6 +240,15 @@ export const chainDenPrograms = Object.freeze({
 				.match(ChainRetry, { step, attempt, at, spent })
 				.where(r.not(ChainResult, { step }))
 				.find({ step, attempt, at, spent })
+		})
+	),
+	chainPendingFenced: deferrable(
+		query(chainGraph).rule((r) => {
+			const { step, attempt } = v(ChainFenced, "fenced")
+			return r
+				.match(ChainFenced, { step, attempt })
+				.where(r.not(ChainResult, { step }))
+				.find({ step, attempt })
 		})
 	),
 	chainPendingDues: deferrable(
@@ -356,8 +375,12 @@ export const chainCoordinatorPrograms = Object.freeze({
 
 export const chainCoordinatorWorkload = workload(ChainCoordinator, chainCoordinatorPrograms)
 
-/** The commits and declared reads of the flow Chain, over its app role Loader. */
+/** The commits and declared reads of the flow Chain, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const chainCommitPrograms = Object.freeze({
+	chainAuthenticated: clocked(
+		query(chainGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+		{ now: "millis" }
+	),
 	chainCommitPage: ChangeSet.union(
 		ChangeSet.empty(chainGraph)
 			.insert(ChainResult, [])

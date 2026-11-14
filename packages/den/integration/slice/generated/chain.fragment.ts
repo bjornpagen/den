@@ -64,6 +64,10 @@ export const ChainRetry = relation(
 	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean },
 	["step", "attempt"]
 )
+export const ChainFenced = relation("ChainFenced", { step: DenStep, attempt: natural }, [
+	"step",
+	"attempt"
+])
 export const ChainResult = relation(
 	"ChainResult",
 	{ step: DenStep, outcome: closedId(ChainOutcome) },
@@ -144,6 +148,7 @@ export const chainGraph = fragment(
 		ChainDue,
 		ChainClaim,
 		ChainRetry,
+		ChainFenced,
 		ChainResult,
 		ChainDone,
 		ChainFailed,
@@ -189,6 +194,7 @@ export const chainGraph = fragment(
 			on(ChainClaim, "step", "attempt")
 		),
 		contained(on(ChainRetry, "step", "attempt"), on(ChainClaim, "step", "attempt")),
+		contained(on(ChainFenced, "step", "attempt"), on(ChainClaim, "step", "attempt")),
 		contained(on(ChainResult, "step"), on(ChainStep, "step")),
 		contained(on(ChainHeld, "step", "attempt"), on(ChainClaim, "step", "attempt")),
 		contained(on(ChainHeld, "step"), on(ChainResult, "step")),

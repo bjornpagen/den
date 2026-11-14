@@ -57,6 +57,10 @@ export const RetryRetry = relation(
 	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean },
 	["step", "attempt"]
 )
+export const RetryFenced = relation("RetryFenced", { step: DenStep, attempt: natural }, [
+	"step",
+	"attempt"
+])
 export const RetryResult = relation(
 	"RetryResult",
 	{ step: DenStep, outcome: closedId(RetryOutcome) },
@@ -116,6 +120,7 @@ export const retryGraph = fragment(
 		RetryDue,
 		RetryClaim,
 		RetryRetry,
+		RetryFenced,
 		RetryResult,
 		RetryDone,
 		RetryFailed,
@@ -158,6 +163,7 @@ export const retryGraph = fragment(
 			on(RetryClaim, "step", "attempt")
 		),
 		contained(on(RetryRetry, "step", "attempt"), on(RetryClaim, "step", "attempt")),
+		contained(on(RetryFenced, "step", "attempt"), on(RetryClaim, "step", "attempt")),
 		contained(on(RetryResult, "step"), on(RetryStep, "step")),
 		contained(on(RetryHeld, "step", "attempt"), on(RetryClaim, "step", "attempt")),
 		contained(on(RetryHeld, "step"), on(RetryResult, "step")),

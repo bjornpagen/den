@@ -7,7 +7,8 @@ import { AttemptNumber, type Wake } from "#transport.ts"
 /**
  * Eligibility (§7, the issue's law, durable), as a pure function of a snapshot and an instant, which the relay and the
  * census share. A step may run once its parent ended (an edge's child is spawned by its parent's commit, so its parent
- * has; a finish waits for every child of its scope), its due instant passed, its root's window is open, nothing it
+ * has; a finish waits for every child of its scope), its due instant passed (or, its latest attempt fenced on a refused
+ * credential, the deployment let in again, which the census asks), its root's window is open, nothing it
  * touches is paused (its root kind, its resources), and a seat of every resource it uses is
  * free. A root is rung for its admission once its window is open, its kind is not paused and its precondition holds;
  * its admission takes its exclusivity seat or records it skipped. When seats are contended, the oldest root goes first,
@@ -46,19 +47,28 @@ export const opensAt = (window: Window, at: Instant): Instant => {
 	}
 }
 
-/** What eligibility found: the wakes to ring now, and the exclusivity seats of finished scopes to give back. */
+/**
+ * What eligibility found: the wakes to ring now; the wakes of steps whose latest attempt was fenced on a refused
+ * credential, which wait on the deployment rather than on time, so only the census rings them, once the commits' login
+ * is let in; and the exclusivity seats of finished scopes to give back.
+ */
 export interface Eligible {
 	readonly wakes: ReadonlyArray<Wake>
+	readonly fenced: ReadonlyArray<Wake>
 	readonly release: ReadonlyArray<ExclusiveRow>
 }
 
-/** A candidate step: its wake's parts, the resources it needs, and its order key. */
+/**
+ * A candidate step: its wake's parts, the resources it needs, its order key, and what it waited on: `time`, its due
+ * instant, or `deployment`, its latest attempt fenced.
+ */
 interface Candidate {
 	readonly step: StepKey
 	readonly attempt: number
 	readonly uses: ReadonlyArray<string>
 	readonly age: Instant
 	readonly due: Instant
+	readonly waited: "time" | "deployment"
 }
 
 const BY_ORDER: Order.Order<Candidate> = Order.combine(
@@ -134,9 +144,12 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot, now: Instant)
 		const latest = Arr.head(Arr.sort(claims, LATEST))
 		const retried = (attempt: bigint) =>
 			Arr.some(snapshot.retries, (r) => r.step === p.step && r.attempt === attempt)
-		if (Option.exists(latest, (c) => c.until >= now && !retried(c.attempt))) {
+		const fenced = (attempt: bigint) =>
+			Arr.some(snapshot.fenced, (f) => f.step === p.step && f.attempt === attempt)
+		if (Option.exists(latest, (c) => c.until >= now && !retried(c.attempt) && !fenced(c.attempt))) {
 			return []
 		}
+		const waited = Option.exists(latest, (c) => fenced(c.attempt)) ? "deployment" : "time"
 		const due = Option.match(latest, {
 			onNone: () =>
 				Option.getOrElse(
@@ -147,13 +160,18 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot, now: Instant)
 					() => now
 				),
 			onSome: (c) =>
-				Option.getOrElse(
-					Option.map(
-						Arr.findFirst(snapshot.retries, (r) => r.step === p.step && r.attempt === c.attempt),
-						(r) => r.at
-					),
-					() => instantOf(Number(c.until) + 1)
-				)
+				fenced(c.attempt)
+					? now
+					: Option.getOrElse(
+							Option.map(
+								Arr.findFirst(
+									snapshot.retries,
+									(r) => r.step === p.step && r.attempt === c.attempt
+								),
+								(r) => r.at
+							),
+							() => instantOf(Number(c.until) + 1)
+						)
 		})
 		if (due > now) {
 			return []
@@ -165,7 +183,7 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot, now: Instant)
 			return []
 		}
 		const attempt = Option.match(latest, { onNone: () => 1, onSome: (c) => Number(c.attempt) + 1 })
-		return [{ step: p.step, attempt, uses: runner.uses, age: ageOf(p.scope), due }]
+		return [{ step: p.step, attempt, uses: runner.uses, age: ageOf(p.scope), due, waited }]
 	})
 
 	const free = HashMap.fromIterable(
@@ -194,16 +212,23 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot, now: Instant)
 	)
 
 	const live = (scope: ScopeKey) => Option.isSome(view(scope))
+	const wakeOf = (c: Candidate): Wake => ({
+		_tag: "Step",
+		flow: ledger.flow,
+		step: c.step,
+		attempt: AttemptNumber.make(c.attempt)
+	})
+	const waitedOn = (waited: Candidate["waited"]) =>
+		Arr.map(
+			Arr.filter(chosen, (c) => c.waited === waited),
+			wakeOf
+		)
 	return {
 		wakes: [
 			...Arr.map(admissions, (s): Wake => ({ _tag: "Admit", flow: ledger.flow, scope: s.scope })),
-			...Arr.map(chosen, (c): Wake => ({
-				_tag: "Step",
-				flow: ledger.flow,
-				step: c.step,
-				attempt: AttemptNumber.make(c.attempt)
-			}))
+			...waitedOn("time")
 		],
+		fenced: waitedOn("deployment"),
 		release: Arr.filter(snapshot.exclusives, (e) => !live(e.scope))
 	}
 }

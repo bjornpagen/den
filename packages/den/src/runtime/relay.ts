@@ -47,6 +47,7 @@ const textOf = (snapshot: Snapshot): string => {
 			rows(snapshot.steps),
 			rows(snapshot.claims),
 			rows(snapshot.retries),
+			rows(snapshot.fenced),
 			rows(snapshot.dues),
 			rows(snapshot.scopes),
 			rows(snapshot.holds),
@@ -64,7 +65,8 @@ const textOf = (snapshot: Snapshot): string => {
  * installation's replication slot not yet made by its leader) is opened again at once, as a transient refusal is retried
  * in place. At each change it reads the scheduler's snapshot and the database's instant, rings the wakes eligible at
  * that reading that it had not rung since they became eligible, and forgets those no longer eligible, so a wake that
- * falls out of eligibility and back in is rung again.
+ * falls out of eligibility and back in is rung again. A step whose latest attempt was fenced waits on the deployment,
+ * which the census asks after, never the relay.
  */
 export const relay = <R>(
 	ledger: Ledger<R>

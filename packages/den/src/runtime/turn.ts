@@ -15,6 +15,7 @@ import {
 import type {
 	ClaimRow,
 	Committed,
+	FencedRow,
 	HoldRow,
 	Ledger,
 	Ran,
@@ -89,8 +90,9 @@ export type Ending =
  * The deployment's faults: `stale`, the database holds another snapshot than this deployment's, and
  * `credentialRefused`, the database does not let one of this deployment's logins in. A call that meets either changed
  * nothing, and no retry of it can succeed until the deployment changes, so a turn that meets one fences: it spends no
- * attempt, which would turn one misconfiguration into a run of failed steps, records a claimed attempt as one that
- * spent nothing where its own login still can (`ended`), rings nothing, and names the fault in its ending.
+ * attempt, which would turn one misconfiguration into a run of failed steps, records a claimed attempt as fenced, waiting
+ * on the deployment, where its own login still can (`ended`), rings nothing, and names the fault in its ending. A stale
+ * deployment's record never lands, since its every call meets `stale`: its claim's lapse spends the attempt, as before.
  */
 export type Fault = Extract<CallError, { readonly kind: "stale" | "credentialRefused" }>
 
@@ -138,16 +140,21 @@ const allows = (ladder: Ladder, spent: number): boolean =>
 
 /**
  * How many of a step's attempts before `next` were spent: every claimed attempt but those whose retry says it waited
- * without spending; a claim whose holder vanished, recording no retry, spent its attempt.
+ * without spending and those fenced on a refused credential; a claim whose holder vanished, recording neither, spent its
+ * attempt.
  */
 export const spentBefore = (
 	claims: ReadonlyArray<ClaimRow>,
 	retries: ReadonlyArray<RetryRow>,
+	fenced: ReadonlyArray<FencedRow>,
 	next: bigint
 ): number =>
 	Arr.filter(
 		claims,
-		(c) => c.attempt < next && !Arr.some(retries, (r) => r.attempt === c.attempt && !r.spent)
+		(c) =>
+			c.attempt < next &&
+			!Arr.some(retries, (r) => r.attempt === c.attempt && !r.spent) &&
+			!Arr.some(fenced, (f) => f.attempt === c.attempt)
 	).length
 
 /**
@@ -167,6 +174,7 @@ export const lostRace = (flow: string, error: CallError): boolean =>
 						`${flow}Result`,
 						`${flow}Held`,
 						`${flow}Retry`,
+						`${flow}Fenced`,
 						`${flow}Admitted`,
 						`${flow}Due`,
 						`${flow}Root`
@@ -384,11 +392,21 @@ const LATEST: Order.Order<ClaimRow> = Order.flip(
 	Order.mapInput(Order.BigInt, (c: ClaimRow) => c.attempt)
 )
 
-/** Whether a claim still holds its step at `at`: its lease stands and its attempt recorded no retry, which ended it. */
-const stands = (claim: ClaimRow, retries: ReadonlyArray<RetryRow>, at: Instant): boolean =>
-	claim.until >= at && !Arr.some(retries, (r) => r.attempt === claim.attempt)
+/**
+ * Whether a claim still holds its step at `at`: its lease stands and its attempt recorded neither a retry nor a fence,
+ * either of which ended it.
+ */
+const stands = (
+	claim: ClaimRow,
+	retries: ReadonlyArray<RetryRow>,
+	fenced: ReadonlyArray<FencedRow>,
+	at: Instant
+): boolean =>
+	claim.until >= at &&
+	!Arr.some(retries, (r) => r.attempt === claim.attempt) &&
+	!Arr.some(fenced, (f) => f.attempt === claim.attempt)
 
-/** The wake for a step's next attempt, as its claims and retries stand: none while a claim stands. */
+/** The wake for a step's next attempt, as its claims, retries and fences stand: none while a claim stands. */
 const nextWake = <R>(
 	ledger: Ledger<R>,
 	step: StepKey
@@ -401,8 +419,9 @@ const nextWake = <R>(
 		}
 		const claims = yield* ledger.claimsOf(step)
 		const retries = yield* ledger.retriesOf(step)
+		const fenced = yield* ledger.fencedOf(step)
 		const latest = Arr.head(Arr.sort(claims, LATEST))
-		if (Option.exists(latest, (c) => stands(c, retries, at))) {
+		if (Option.exists(latest, (c) => stands(c, retries, fenced, at))) {
 			return Option.none()
 		}
 		const attempt = Option.match(latest, { onNone: () => 1n, onSome: (c) => c.attempt + 1n })
@@ -467,10 +486,11 @@ type Unfinished =
 
 /**
  * An attempt that ended without a result, recorded at a reading of the database's instant: a spent one's retry due a
- * rung later, or the step failed once its ladder is spent; one that spent nothing recorded as such, due at once, so no
- * lapse of its claim counts it spent. A wait rings its next attempt at once; a fenced attempt rings nothing, and the
- * census rings its step at its next tick, so a fault no retry clears is met once a tick until the deployment changes,
- * and never fails the step.
+ * rung later, or the step failed once its ladder is spent; a wait recorded as a retry that spent nothing, due at once,
+ * whose next attempt it rings at once; a fenced one recorded as fenced, where its own login still can, so it spends
+ * nothing, no lapse of its claim counts it spent, and it waits on the deployment: it rings nothing, and the census rings
+ * its step only once the commits' login is let in again, so no body runs while the deployment stays broken and the
+ * step never fails of it.
  */
 const ended = <R>(
 	ledger: Ledger<R>,
@@ -483,7 +503,6 @@ const ended = <R>(
 	Effect.gen(function* () {
 		const at = yield* readOr(ledger.now, wake)
 		const next = stepWake(ledger.flow, turn.step, turn.attempt + 1n)
-		const unspent = ledger.retry({ step: turn.step, attempt: turn.attempt, at, spent: false })
 		switch (how.kind) {
 			case "spent": {
 				const total = spentSoFar + 1
@@ -503,14 +522,19 @@ const ended = <R>(
 				)
 			}
 			case "waited":
-				return yield* recorded(ledger, unspent, wake, {
-					kind: "waiting",
-					wake: next,
-					why: "transient",
-					until: Option.some(at)
-				})
+				return yield* recorded(
+					ledger,
+					ledger.retry({ step: turn.step, attempt: turn.attempt, at, spent: false }),
+					wake,
+					{ kind: "waiting", wake: next, why: "transient", until: Option.some(at) }
+				)
 			case "fenced":
-				return yield* recorded(ledger, unspent, wake, { kind: "fenced", wake, fault: how.fault })
+				return yield* recorded(
+					ledger,
+					ledger.fence({ step: turn.step, attempt: turn.attempt }),
+					wake,
+					{ kind: "fenced", wake, fault: how.fault }
+				)
 		}
 	}).pipe(Effect.catch((ending: Ending) => Effect.succeed(ending)))
 
@@ -622,9 +646,13 @@ const serveStep = <R>(
 		}
 		const claims = yield* readOr(ledger.claimsOf(step), wake)
 		const retries = yield* readOr(ledger.retriesOf(step), wake)
+		const fenced = yield* readOr(ledger.fencedOf(step), wake)
 		const latest = Arr.head(Arr.sort(claims, LATEST))
 		const next = Option.match(latest, { onNone: () => 1n, onSome: (c) => c.attempt + 1n })
-		if (BigInt(wake.attempt) !== next || Option.exists(latest, (c) => stands(c, retries, at))) {
+		if (
+			BigInt(wake.attempt) !== next ||
+			Option.exists(latest, (c) => stands(c, retries, fenced, at))
+		) {
 			return served({ kind: "lost", wake })
 		}
 		const due = yield* Option.match(latest, {
@@ -635,13 +663,15 @@ const serveStep = <R>(
 				),
 			onSome: (c) =>
 				Effect.succeed(
-					Option.getOrElse(
-						Option.map(
-							Arr.findFirst(retries, (r) => r.attempt === c.attempt),
-							(r) => r.at
-						),
-						() => instantOf(Number(c.until) + 1)
-					)
+					Arr.some(fenced, (f) => f.attempt === c.attempt)
+						? at
+						: Option.getOrElse(
+								Option.map(
+									Arr.findFirst(retries, (r) => r.attempt === c.attempt),
+									(r) => r.at
+								),
+								() => instantOf(Number(c.until) + 1)
+							)
 				)
 		})
 		if (due > at) {
@@ -667,7 +697,7 @@ const serveStep = <R>(
 				return served({ kind: "waiting", wake, why: "unready", until: Option.none() })
 			}
 		}
-		const spentSoFar = spentBefore(claims, retries, next)
+		const spentSoFar = spentBefore(claims, retries, fenced, next)
 		const nonce = yield* Random.nextInt
 		const holder = yield* holderOf(step, Number(next), nonce)
 		const margin = leaseMarginMillis.value

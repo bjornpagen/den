@@ -19,6 +19,7 @@ import {
 	RetryDue,
 	RetryClaim,
 	RetryRetry,
+	RetryFenced,
 	RetryResult,
 	RetryDone,
 	RetryFailed,
@@ -37,7 +38,7 @@ import {
 } from "#integration/slice/generated/retry.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's role for the flow Retry: the database's instant, claims, retries, failures, admissions, requests, and every read the scheduler makes. */
+/** den's role for the flow Retry: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. */
 export const RetryDen = role(
 	App,
 	"retry_den",
@@ -56,6 +57,7 @@ export const RetryDen = role(
 			"RetryDue",
 			"RetryClaim",
 			"RetryRetry",
+			"RetryFenced",
 			"RetryResult",
 			"RetryDone",
 			"RetryFailed",
@@ -100,6 +102,7 @@ export const retryDenPrograms = Object.freeze({
 				})
 		),
 	retryRetry: ChangeSet.empty(retryGraph).insert(RetryRetry, []),
+	retryFence: ChangeSet.empty(retryGraph).insert(RetryFenced, []),
 	retryRefuse: ChangeSet.empty(retryGraph)
 		.insert(RetryResult, [])
 		.insert(RetryFailed, [])
@@ -144,6 +147,13 @@ export const retryDenPrograms = Object.freeze({
 			.match(RetryRetry, { step, attempt, at, spent })
 			.where(r.eq(step, r.param("step", RetryStep.fields.step)))
 			.find({ step, attempt, at, spent })
+	}),
+	retryFencedOf: query(retryGraph).rule((r) => {
+		const { step, attempt } = v(RetryFenced, "fenced")
+		return r
+			.match(RetryFenced, { step, attempt })
+			.where(r.eq(step, r.param("step", RetryStep.fields.step)))
+			.find({ step, attempt })
 	}),
 	retryUnendedSteps: query(retryGraph).rule((r) => {
 		const { step, scope } = v(RetryStep, "step")
@@ -212,6 +222,15 @@ export const retryDenPrograms = Object.freeze({
 				.match(RetryRetry, { step, attempt, at, spent })
 				.where(r.not(RetryResult, { step }))
 				.find({ step, attempt, at, spent })
+		})
+	),
+	retryPendingFenced: deferrable(
+		query(retryGraph).rule((r) => {
+			const { step, attempt } = v(RetryFenced, "fenced")
+			return r
+				.match(RetryFenced, { step, attempt })
+				.where(r.not(RetryResult, { step }))
+				.find({ step, attempt })
 		})
 	),
 	retryPendingDues: deferrable(
@@ -319,8 +338,12 @@ export const retryCoordinatorPrograms = Object.freeze({
 
 export const retryCoordinatorWorkload = workload(RetryCoordinator, retryCoordinatorPrograms)
 
-/** The commits and declared reads of the flow Retry, over its app role Loader. */
+/** The commits and declared reads of the flow Retry, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const retryCommitPrograms = Object.freeze({
+	retryAuthenticated: clocked(
+		query(retryGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+		{ now: "millis" }
+	),
 	retryCommitSteadfast: ChangeSet.empty(retryGraph)
 		.insert(RetryResult, [])
 		.insert(RetryDone, [])

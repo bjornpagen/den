@@ -168,9 +168,10 @@ certifies READ COMMITTED under grizzle's LEASE ([build/repin.md](build/repin.md)
 
 Endings come from grizzle's `CallError`: `transient` is a wait, no attempt spent; `unavailable` and `transport` are an
 attempt; `refused` is `failed`, naming the law and its witness; `stale` and `credentialRefused` are the deployment's
-faults, which no retry clears: the turn is `fenced`, spends nothing (its claimed attempt recorded as unspent where the
-worker's login still can), acknowledges its wake and exits, and the census rings the step again until the deployment
-is fixed. A finished root's graph is deleted whole.
+faults, which no retry clears: the turn is `fenced`, spends nothing, acknowledges its wake and exits. Its claimed
+attempt is recorded fenced where the worker's login still can, waiting on the deployment with no due instant: the census
+asks once a tick whether the commits' login is let in (one read, no body) and rings fenced steps only once it is, so no
+body runs again while the deployment stays broken. A finished root's graph is deleted whole.
 
 ## 9. The surface is the app's login
 

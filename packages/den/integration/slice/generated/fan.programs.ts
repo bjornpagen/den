@@ -20,6 +20,7 @@ import {
 	FanDue,
 	FanClaim,
 	FanRetry,
+	FanFenced,
 	FanResult,
 	FanDone,
 	FanFailed,
@@ -39,7 +40,7 @@ import {
 } from "#integration/slice/generated/fan.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's role for the flow Fan: the database's instant, claims, retries, failures, admissions, requests, and every read the scheduler makes. */
+/** den's role for the flow Fan: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. */
 export const FanDen = role(
 	App,
 	"fan_den",
@@ -58,6 +59,7 @@ export const FanDen = role(
 			"FanDue",
 			"FanClaim",
 			"FanRetry",
+			"FanFenced",
 			"FanResult",
 			"FanDone",
 			"FanFailed",
@@ -112,6 +114,7 @@ export const fanDenPrograms = Object.freeze({
 				})
 		),
 	fanRetry: ChangeSet.empty(fanGraph).insert(FanRetry, []),
+	fanFence: ChangeSet.empty(fanGraph).insert(FanFenced, []),
 	fanRefuse: ChangeSet.empty(fanGraph)
 		.insert(FanResult, [])
 		.insert(FanFailed, [])
@@ -156,6 +159,13 @@ export const fanDenPrograms = Object.freeze({
 			.match(FanRetry, { step, attempt, at, spent })
 			.where(r.eq(step, r.param("step", FanStep.fields.step)))
 			.find({ step, attempt, at, spent })
+	}),
+	fanFencedOf: query(fanGraph).rule((r) => {
+		const { step, attempt } = v(FanFenced, "fenced")
+		return r
+			.match(FanFenced, { step, attempt })
+			.where(r.eq(step, r.param("step", FanStep.fields.step)))
+			.find({ step, attempt })
 	}),
 	fanUnendedSteps: query(fanGraph).rule((r) => {
 		const { step, scope } = v(FanStep, "step")
@@ -218,6 +228,15 @@ export const fanDenPrograms = Object.freeze({
 				.match(FanRetry, { step, attempt, at, spent })
 				.where(r.not(FanResult, { step }))
 				.find({ step, attempt, at, spent })
+		})
+	),
+	fanPendingFenced: deferrable(
+		query(fanGraph).rule((r) => {
+			const { step, attempt } = v(FanFenced, "fenced")
+			return r
+				.match(FanFenced, { step, attempt })
+				.where(r.not(FanResult, { step }))
+				.find({ step, attempt })
 		})
 	),
 	fanPendingDues: deferrable(
@@ -337,8 +356,12 @@ export const fanCoordinatorPrograms = Object.freeze({
 
 export const fanCoordinatorWorkload = workload(FanCoordinator, fanCoordinatorPrograms)
 
-/** The commits and declared reads of the flow Fan, over its app role Loader. */
+/** The commits and declared reads of the flow Fan, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const fanCommitPrograms = Object.freeze({
+	fanAuthenticated: clocked(
+		query(fanGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+		{ now: "millis" }
+	),
 	fanCommitSquare: ChangeSet.empty(fanGraph)
 		.insert(FanResult, [])
 		.insert(FanDone, [])

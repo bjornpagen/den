@@ -9,8 +9,15 @@
 	{
 		"name": "a fenced attempt records nothing, so its claim's lapse spends it",
 		"file": "src/runtime/turn.ts",
-		"original": "\t\t\t\treturn yield* recorded(ledger, unspent, wake, { kind: \"fenced\", wake, fault: how.fault })\n",
-		"replacement": "\t\t\t\treturn { kind: \"fenced\", wake, fault: how.fault } satisfies Ending\n",
+		"original": "\t\t\tcase \"fenced\":\n\t\t\t\treturn yield* recorded(\n\t\t\t\t\tledger,\n\t\t\t\t\tledger.fence({ step: turn.step, attempt: turn.attempt }),\n\t\t\t\t\twake,\n\t\t\t\t\t{ kind: \"fenced\", wake, fault: how.fault }\n\t\t\t\t)\n",
+		"replacement": "\t\t\tcase \"fenced\":\n\t\t\t\treturn { kind: \"fenced\", wake, fault: how.fault } satisfies Ending\n",
+		"killers": ["integration/credential.test.ts"]
+	},
+	{
+		"name": "the census rings fenced steps without asking whether the deployment's login is let in",
+		"file": "src/runtime/census.ts",
+		"original": "\t\tconst letIn = Arr.isReadonlyArrayNonEmpty(found.fenced)\n\t\t\t? yield* Effect.isSuccess(ledger.authenticated)\n\t\t\t: false\n",
+		"replacement": "\t\tconst letIn = Arr.isReadonlyArrayNonEmpty(found.fenced)\n",
 		"killers": ["integration/credential.test.ts"]
 	}
 ]

@@ -69,6 +69,10 @@ export const SyncRetry = relation(
 	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean },
 	["step", "attempt"]
 )
+export const SyncFenced = relation("SyncFenced", { step: DenStep, attempt: natural }, [
+	"step",
+	"attempt"
+])
 export const SyncResult = relation(
 	"SyncResult",
 	{ step: DenStep, outcome: closedId(SyncOutcome) },
@@ -144,6 +148,7 @@ export const syncGraph = fragment(
 		SyncDue,
 		SyncClaim,
 		SyncRetry,
+		SyncFenced,
 		SyncResult,
 		SyncDone,
 		SyncFailed,
@@ -188,6 +193,7 @@ export const syncGraph = fragment(
 			on(SyncClaim, "step", "attempt")
 		),
 		contained(on(SyncRetry, "step", "attempt"), on(SyncClaim, "step", "attempt")),
+		contained(on(SyncFenced, "step", "attempt"), on(SyncClaim, "step", "attempt")),
 		contained(on(SyncResult, "step"), on(SyncStep, "step")),
 		contained(on(SyncHeld, "step", "attempt"), on(SyncClaim, "step", "attempt")),
 		contained(on(SyncHeld, "step"), on(SyncResult, "step")),

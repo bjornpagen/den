@@ -463,6 +463,14 @@ export const lower = (flow: AnyFlow): Lowered => {
 		],
 		key: ["step", "attempt"]
 	})
+	const Fenced = relation({
+		name: name("Fenced"),
+		fields: [
+			{ name: "step", type: stepKey },
+			{ name: "attempt", type: natural }
+		],
+		key: ["step", "attempt"]
+	})
 	const Result = relation({
 		name: name("Result"),
 		fields: [
@@ -551,6 +559,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 			side(Claim, ["step", "attempt"])
 		),
 		into(side(Retry, ["step", "attempt"]), side(Claim, ["step", "attempt"])),
+		into(side(Fenced, ["step", "attempt"]), side(Claim, ["step", "attempt"])),
 		into(side(Result, ["step"]), side(Step, ["step"])),
 		into(side(Held, ["step", "attempt"]), side(Claim, ["step", "attempt"])),
 		into(side(Held, ["step"]), side(Result, ["step"])),

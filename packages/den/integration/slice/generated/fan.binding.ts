@@ -320,6 +320,7 @@ export const fanLedger = (h: FanHandles) => {
 	const ledger: Ledger<FlowNeeds<typeof fan>> = {
 		flow: FlowName.make("Fan"),
 		now: Effect.flatMap(h.den.fanNow.once({ params: {}, facts: {} }), readingOf),
+		authenticated: Effect.asVoid(h.commits.fanAuthenticated.once({ params: {}, facts: {} })),
 		resources: [{ name: "Pool", seats: 2 }],
 		steps: new Map([
 			[
@@ -564,6 +565,7 @@ export const fanLedger = (h: FanHandles) => {
 		claimsOf: (step) => Effect.map(h.den.fanClaimsOf.once({ params: { step }, facts: {} }), rowsOf),
 		retriesOf: (step) =>
 			Effect.map(h.den.fanRetriesOf.once({ params: { step }, facts: {} }), rowsOf),
+		fencedOf: (step) => Effect.map(h.den.fanFencedOf.once({ params: { step }, facts: {} }), rowsOf),
 		scopeOf: (scope) =>
 			Effect.gen(function* () {
 				const row = yield* Effect.map(
@@ -614,6 +616,7 @@ export const fanLedger = (h: FanHandles) => {
 				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
 			),
 		retry: (row) => h.den.fanRetry.once({ params: {}, facts: { insert: { FanRetry: [row] } } }),
+		fence: (row) => h.den.fanFence.once({ params: {}, facts: { insert: { FanFenced: [row] } } }),
 		refuse: (step, attempt, law) =>
 			h.den.fanRefuse.once({
 				params: {},
@@ -648,6 +651,10 @@ export const fanLedger = (h: FanHandles) => {
 			)
 			const retries = yield* Effect.map(
 				h.den.fanPendingRetries.once({ params: {}, facts: {} }),
+				rowsOf
+			)
+			const fenced = yield* Effect.map(
+				h.den.fanPendingFenced.once({ params: {}, facts: {} }),
 				rowsOf
 			)
 			const dues = yield* Effect.map(h.den.fanPendingDues.once({ params: {}, facts: {} }), rowsOf)
@@ -688,6 +695,7 @@ export const fanLedger = (h: FanHandles) => {
 				steps,
 				claims,
 				retries,
+				fenced,
 				dues,
 				scopes: [
 					...Arr.map(requested, (s) => view(s.scope, s.kind, false)),

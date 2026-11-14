@@ -176,6 +176,34 @@
 			"keys": [
 				{
 					"dir": "asc",
+					"expr": "step"
+				},
+				{
+					"dir": "asc",
+					"expr": "attempt"
+				}
+			],
+			"method": "btree",
+			"relation": "ChainFenced",
+			"role": "access",
+			"use": "write target"
+		},
+		{
+			"keys": [
+				{
+					"dir": "asc",
+					"expr": "step"
+				}
+			],
+			"method": "btree",
+			"relation": "ChainFenced",
+			"role": "access",
+			"use": "equality lookup"
+		},
+		{
+			"keys": [
+				{
+					"dir": "asc",
 					"expr": "scope"
 				}
 			],
@@ -884,6 +912,34 @@
 			"keys": [
 				{
 					"dir": "asc",
+					"expr": "step"
+				},
+				{
+					"dir": "asc",
+					"expr": "attempt"
+				}
+			],
+			"method": "btree",
+			"relation": "FanFenced",
+			"role": "access",
+			"use": "write target"
+		},
+		{
+			"keys": [
+				{
+					"dir": "asc",
+					"expr": "step"
+				}
+			],
+			"method": "btree",
+			"relation": "FanFenced",
+			"role": "access",
+			"use": "equality lookup"
+		},
+		{
+			"keys": [
+				{
+					"dir": "asc",
 					"expr": "scope"
 				}
 			],
@@ -1543,6 +1599,34 @@
 			"relation": "RetryFailed",
 			"role": "access",
 			"use": "write target"
+		},
+		{
+			"keys": [
+				{
+					"dir": "asc",
+					"expr": "step"
+				},
+				{
+					"dir": "asc",
+					"expr": "attempt"
+				}
+			],
+			"method": "btree",
+			"relation": "RetryFenced",
+			"role": "access",
+			"use": "write target"
+		},
+		{
+			"keys": [
+				{
+					"dir": "asc",
+					"expr": "step"
+				}
+			],
+			"method": "btree",
+			"relation": "RetryFenced",
+			"role": "access",
+			"use": "equality lookup"
 		},
 		{
 			"keys": [
@@ -2212,6 +2296,34 @@
 			"keys": [
 				{
 					"dir": "asc",
+					"expr": "step"
+				},
+				{
+					"dir": "asc",
+					"expr": "attempt"
+				}
+			],
+			"method": "btree",
+			"relation": "SyncFenced",
+			"role": "access",
+			"use": "write target"
+		},
+		{
+			"keys": [
+				{
+					"dir": "asc",
+					"expr": "step"
+				}
+			],
+			"method": "btree",
+			"relation": "SyncFenced",
+			"role": "access",
+			"use": "equality lookup"
+		},
+		{
+			"keys": [
+				{
+					"dir": "asc",
 					"expr": "scope"
 				}
 			],
@@ -2719,6 +2831,7 @@
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__chain_due_pk_d5xdvmzepr","on":{"name":"chain_due","schema":"slice"}},"text":"primary key of ChainDue"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__chain_exhausted_pk_nc4gvildnw","on":{"name":"chain_exhausted","schema":"slice"}},"text":"primary key of ChainExhausted"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__chain_failed_pk_m7o5m3xzrr","on":{"name":"chain_failed","schema":"slice"}},"text":"primary key of ChainFailed"},
+			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__chain_fenced_pk_wwbie4qq5k","on":{"name":"chain_fenced","schema":"slice"}},"text":"primary key of ChainFenced"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__chain_finish_pk_ebe75jmnzy","on":{"name":"chain_finish","schema":"slice"}},"text":"primary key of ChainFinish"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__chain_finish_key_step_x7i5pvi5jm","on":{"name":"chain_finish","schema":"slice"}},"text":"key ChainFinish(step)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__chain_held_pk_73idl7oo5c","on":{"name":"chain_held","schema":"slice"}},"text":"primary key of ChainHeld"},
@@ -2757,6 +2870,7 @@
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__fan_exhausted_pk_4t3sxjskvd","on":{"name":"fan_exhausted","schema":"slice"}},"text":"primary key of FanExhausted"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__fan_failed_pk_z4etp5dmax","on":{"name":"fan_failed","schema":"slice"}},"text":"primary key of FanFailed"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__fan_fan_run_input_pk_tbzpgbwe7g","on":{"name":"fan_fan_run_input","schema":"slice"}},"text":"primary key of FanFanRunInput"},
+			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__fan_fenced_pk_6tkvirerez","on":{"name":"fan_fenced","schema":"slice"}},"text":"primary key of FanFenced"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__fan_finish_pk_6mb33urjra","on":{"name":"fan_finish","schema":"slice"}},"text":"primary key of FanFinish"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__fan_finish_key_step_v72sacijwp","on":{"name":"fan_finish","schema":"slice"}},"text":"key FanFinish(step)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__fan_freed_pk_r3csmayfa7","on":{"name":"fan_freed","schema":"slice"}},"text":"primary key of FanFreed"},
@@ -2791,6 +2905,7 @@
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__retry_due_pk_lerzzlnz7o","on":{"name":"retry_due","schema":"slice"}},"text":"primary key of RetryDue"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__retry_exhausted_pk_v56c23krid","on":{"name":"retry_exhausted","schema":"slice"}},"text":"primary key of RetryExhausted"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__retry_failed_pk_mygc4onczp","on":{"name":"retry_failed","schema":"slice"}},"text":"primary key of RetryFailed"},
+			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__retry_fenced_pk_umzicmiruo","on":{"name":"retry_fenced","schema":"slice"}},"text":"primary key of RetryFenced"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__retry_finish_pk_yhwp5uk5cg","on":{"name":"retry_finish","schema":"slice"}},"text":"primary key of RetryFinish"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__retry_finish_key_step_lifwe43hve","on":{"name":"retry_finish","schema":"slice"}},"text":"key RetryFinish(step)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__retry_held_pk_nvgeylmjp2","on":{"name":"retry_held","schema":"slice"}},"text":"primary key of RetryHeld"},
@@ -2827,6 +2942,7 @@
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__sync_exclusive_key_pk_dba4nxbky5","on":{"name":"sync_exclusive_key","schema":"slice"}},"text":"primary key of SyncExclusiveKey"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__sync_exhausted_pk_ek6zxvo6it","on":{"name":"sync_exhausted","schema":"slice"}},"text":"primary key of SyncExhausted"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__sync_failed_pk_gqykngewxb","on":{"name":"sync_failed","schema":"slice"}},"text":"primary key of SyncFailed"},
+			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__sync_fenced_pk_tszx4qm2gz","on":{"name":"sync_fenced","schema":"slice"}},"text":"primary key of SyncFenced"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__sync_finish_pk_hn7tmx25xc","on":{"name":"sync_finish","schema":"slice"}},"text":"primary key of SyncFinish"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__sync_finish_key_step_wzmqfzha66","on":{"name":"sync_finish","schema":"slice"}},"text":"key SyncFinish(step)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__sync_gold_input_pk_wp7hfx6n2e","on":{"name":"sync_gold_input","schema":"slice"}},"text":"primary key of SyncGoldInput"},
@@ -2896,6 +3012,7 @@
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__chain_due_fk_step_dcq52t54ph","on":{"name":"chain_due","schema":"slice"}},"text":"foreign key ChainDue(step) to ChainStep(step)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__chain_exhausted_fk_step_fa2jqgxojj","on":{"name":"chain_exhausted","schema":"slice"}},"text":"foreign key ChainExhausted(step) to ChainFailed(step)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__chain_failed_fk_step_tag_outcome_failed_2enwrjafnc","on":{"name":"chain_failed","schema":"slice"}},"text":"foreign key ChainFailed(step, tag ChainResult.outcome = failed) to ChainResult(step, outcome)"},
+			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__chain_fenced_fk_step_attempt_tr357gwkw2","on":{"name":"chain_fenced","schema":"slice"}},"text":"foreign key ChainFenced(step, attempt) to ChainClaim(step, attempt)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__chain_finish_fk_scope_cfnzgc3ln5","on":{"name":"chain_finish","schema":"slice"}},"text":"foreign key ChainFinish(scope) to ChainAdmitted(scope)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__chain_finish_fk_step_djulfbbhyv","on":{"name":"chain_finish","schema":"slice"}},"text":"foreign key ChainFinish(step) to ChainStep(step)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__chain_held_fk_step_gn4a3vhis4","on":{"name":"chain_held","schema":"slice"}},"text":"foreign key ChainHeld(step) to ChainResult(step)"},
@@ -2933,6 +3050,7 @@
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__fan_exhausted_fk_step_j42evr2xp3","on":{"name":"fan_exhausted","schema":"slice"}},"text":"foreign key FanExhausted(step) to FanFailed(step)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__fan_failed_fk_step_tag_outcome_failed_isdm7nl2mt","on":{"name":"fan_failed","schema":"slice"}},"text":"foreign key FanFailed(step, tag FanResult.outcome = failed) to FanResult(step, outcome)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__fan_fan_run_input_fk_scope_tag_kind_fan_run_tihneov63d","on":{"name":"fan_fan_run_input","schema":"slice"}},"text":"foreign key FanFanRunInput(scope, tag FanScope.kind = FanRun) to FanScope(scope, kind)"},
+			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__fan_fenced_fk_step_attempt_ykbq3jv4ri","on":{"name":"fan_fenced","schema":"slice"}},"text":"foreign key FanFenced(step, attempt) to FanClaim(step, attempt)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__fan_finish_fk_scope_7bafbqarll","on":{"name":"fan_finish","schema":"slice"}},"text":"foreign key FanFinish(scope) to FanAdmitted(scope)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__fan_finish_fk_step_f3he376omz","on":{"name":"fan_finish","schema":"slice"}},"text":"foreign key FanFinish(step) to FanStep(step)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__fan_freed_fk_resource_seat_turn_5lyzcw65au","on":{"name":"fan_freed","schema":"slice"}},"text":"foreign key FanFreed(resource, seat, turn) to FanHold(resource, seat, turn)"},
@@ -2967,6 +3085,7 @@
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__retry_due_fk_step_sm2v4p4wn5","on":{"name":"retry_due","schema":"slice"}},"text":"foreign key RetryDue(step) to RetryStep(step)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__retry_exhausted_fk_step_sanifiwunj","on":{"name":"retry_exhausted","schema":"slice"}},"text":"foreign key RetryExhausted(step) to RetryFailed(step)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__retry_failed_fk_step_tag_outcome_failed_3iz2aprkti","on":{"name":"retry_failed","schema":"slice"}},"text":"foreign key RetryFailed(step, tag RetryResult.outcome = failed) to RetryResult(step, outcome)"},
+			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__retry_fenced_fk_step_attempt_5lvusmnjjt","on":{"name":"retry_fenced","schema":"slice"}},"text":"foreign key RetryFenced(step, attempt) to RetryClaim(step, attempt)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__retry_finish_fk_scope_fwo5tjrgbx","on":{"name":"retry_finish","schema":"slice"}},"text":"foreign key RetryFinish(scope) to RetryAdmitted(scope)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__retry_finish_fk_step_rjhqbqx2wh","on":{"name":"retry_finish","schema":"slice"}},"text":"foreign key RetryFinish(step) to RetryStep(step)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__retry_held_fk_step_rlbcm6phjy","on":{"name":"retry_held","schema":"slice"}},"text":"foreign key RetryHeld(step) to RetryResult(step)"},
@@ -3005,6 +3124,7 @@
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__sync_exclusive_key_fk_scope_cy4cbhycir","on":{"name":"sync_exclusive_key","schema":"slice"}},"text":"foreign key SyncExclusiveKey(scope) to SyncScope(scope)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__sync_exhausted_fk_step_qdkuopifxf","on":{"name":"sync_exhausted","schema":"slice"}},"text":"foreign key SyncExhausted(step) to SyncFailed(step)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__sync_failed_fk_step_tag_outcome_failed_w7buaawyeg","on":{"name":"sync_failed","schema":"slice"}},"text":"foreign key SyncFailed(step, tag SyncResult.outcome = failed) to SyncResult(step, outcome)"},
+			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__sync_fenced_fk_step_attempt_ypmzavzbgy","on":{"name":"sync_fenced","schema":"slice"}},"text":"foreign key SyncFenced(step, attempt) to SyncClaim(step, attempt)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__sync_finish_fk_scope_bv3hsrlx5y","on":{"name":"sync_finish","schema":"slice"}},"text":"foreign key SyncFinish(scope) to SyncAdmitted(scope)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__sync_finish_fk_step_vhog6r5pu5","on":{"name":"sync_finish","schema":"slice"}},"text":"foreign key SyncFinish(step) to SyncStep(step)"},
 			{"kind":"comment","on":{"kind":"CONSTRAINT","name":"__sync_gold_input_fk_scope_tag_kind_gold_m6g42g4z2p","on":{"name":"sync_gold_input","schema":"slice"}},"text":"foreign key SyncGoldInput(scope, tag SyncScope.kind = Gold) to SyncScope(scope, kind)"},
@@ -3223,6 +3343,10 @@
 			},
 			{
 				"from": "constraint:slice.chain_claim.__chain_claim_pk_nrr2rn3gui",
+				"to": "constraint:slice.chain_fenced.__chain_fenced_fk_step_attempt_tr357gwkw2"
+			},
+			{
+				"from": "constraint:slice.chain_claim.__chain_claim_pk_nrr2rn3gui",
 				"to": "constraint:slice.chain_held.__chain_held_fk_step_attempt_ha67r6xn73"
 			},
 			{
@@ -3371,6 +3495,10 @@
 			},
 			{
 				"from": "constraint:slice.fan_claim.__fan_claim_pk_e7zimqppco",
+				"to": "constraint:slice.fan_fenced.__fan_fenced_fk_step_attempt_ykbq3jv4ri"
+			},
+			{
+				"from": "constraint:slice.fan_claim.__fan_claim_pk_e7zimqppco",
 				"to": "constraint:slice.fan_held.__fan_held_fk_step_attempt_zol2no7gql"
 			},
 			{
@@ -3507,6 +3635,10 @@
 			},
 			{
 				"from": "constraint:slice.retry_claim.__retry_claim_pk_aayzt5ni6z",
+				"to": "constraint:slice.retry_fenced.__retry_fenced_fk_step_attempt_5lvusmnjjt"
+			},
+			{
+				"from": "constraint:slice.retry_claim.__retry_claim_pk_aayzt5ni6z",
 				"to": "constraint:slice.retry_held.__retry_held_fk_step_attempt_g534cnd4ee"
 			},
 			{
@@ -3636,6 +3768,10 @@
 			{
 				"from": "constraint:slice.sync_claim.__sync_claim_pk_s2tqnziq4u",
 				"to": "constraint:slice.sync_claim.__sync_claim_fk_step_pred_attempt_4du2uws4ru"
+			},
+			{
+				"from": "constraint:slice.sync_claim.__sync_claim_pk_s2tqnziq4u",
+				"to": "constraint:slice.sync_fenced.__sync_fenced_fk_step_attempt_ypmzavzbgy"
 			},
 			{
 				"from": "constraint:slice.sync_claim.__sync_claim_pk_s2tqnziq4u",
@@ -4535,6 +4671,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "table:slice.chain_fenced"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "table:slice.chain_finish"
 			},
 			{
@@ -4643,6 +4783,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "table:slice.fan_fenced"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "table:slice.fan_finish"
 			},
 			{
@@ -4732,6 +4876,10 @@
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "table:slice.retry_failed"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "table:slice.retry_fenced"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
@@ -4840,6 +4988,10 @@
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "table:slice.sync_failed"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "table:slice.sync_fenced"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
@@ -5095,6 +5247,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__chain_den.chain_fenced"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__chain_den.chain_finish"
 			},
 			{
@@ -5207,6 +5363,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__fan_den.fan_fenced"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__fan_den.fan_finish"
 			},
 			{
@@ -5288,6 +5448,10 @@
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.chain_failed"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.chain_fenced"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
@@ -5399,6 +5563,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_fenced"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.fan_finish"
 			},
 			{
@@ -5484,6 +5652,10 @@
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.retry_failed"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_fenced"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
@@ -5591,6 +5763,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_fenced"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.sync_finish"
 			},
 			{
@@ -5676,6 +5852,10 @@
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__retry_den.retry_failed"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__retry_den.retry_fenced"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
@@ -5799,6 +5979,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__sync_den.sync_fenced"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__sync_den.sync_finish"
 			},
 			{
@@ -5907,6 +6091,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "table:slice.chain_fenced"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "table:slice.chain_held"
 			},
 			{
@@ -5948,6 +6136,10 @@
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "table:slice.fan_exhausted"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "table:slice.fan_fenced"
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
@@ -5995,6 +6187,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "table:slice.retry_fenced"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "table:slice.retry_held"
 			},
 			{
@@ -6028,6 +6224,10 @@
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "table:slice.sync_exhausted"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "table:slice.sync_fenced"
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
@@ -6139,6 +6339,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__chain_den.chain_fenced"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "view:slice__chain_den.chain_held"
 			},
 			{
@@ -6187,6 +6391,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__fan_den.fan_fenced"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "view:slice__fan_den.fan_held"
 			},
 			{
@@ -6212,6 +6420,10 @@
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "view:slice__loader.chain_exhausted"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.chain_fenced"
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
@@ -6251,6 +6463,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.fan_fenced"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "view:slice__loader.fan_held"
 			},
 			{
@@ -6279,6 +6495,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.retry_fenced"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "view:slice__loader.retry_held"
 			},
 			{
@@ -6300,6 +6520,10 @@
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "view:slice__loader.sync_exhausted"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.sync_fenced"
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
@@ -6343,6 +6567,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__retry_den.retry_fenced"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "view:slice__retry_den.retry_held"
 			},
 			{
@@ -6380,6 +6608,10 @@
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "view:slice__sync_den.sync_exhausted"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__sync_den.sync_fenced"
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
@@ -7995,6 +8227,10 @@
 			},
 			{
 				"from": "schema:slice",
+				"to": "table:slice.chain_fenced"
+			},
+			{
+				"from": "schema:slice",
 				"to": "table:slice.chain_finish"
 			},
 			{
@@ -8119,6 +8355,10 @@
 			},
 			{
 				"from": "schema:slice",
+				"to": "table:slice.fan_fenced"
+			},
+			{
+				"from": "schema:slice",
 				"to": "table:slice.fan_finish"
 			},
 			{
@@ -8228,6 +8468,10 @@
 			{
 				"from": "schema:slice",
 				"to": "table:slice.retry_failed"
+			},
+			{
+				"from": "schema:slice",
+				"to": "table:slice.retry_fenced"
 			},
 			{
 				"from": "schema:slice",
@@ -8348,6 +8592,10 @@
 			{
 				"from": "schema:slice",
 				"to": "table:slice.sync_failed"
+			},
+			{
+				"from": "schema:slice",
+				"to": "table:slice.sync_fenced"
 			},
 			{
 				"from": "schema:slice",
@@ -8671,6 +8919,10 @@
 			},
 			{
 				"from": "schema:slice__chain_den",
+				"to": "view:slice__chain_den.chain_fenced"
+			},
+			{
+				"from": "schema:slice__chain_den",
 				"to": "view:slice__chain_den.chain_finish"
 			},
 			{
@@ -8803,6 +9055,10 @@
 			},
 			{
 				"from": "schema:slice__fan_den",
+				"to": "view:slice__fan_den.fan_fenced"
+			},
+			{
+				"from": "schema:slice__fan_den",
 				"to": "view:slice__fan_den.fan_finish"
 			},
 			{
@@ -8892,6 +9148,10 @@
 			{
 				"from": "schema:slice__loader",
 				"to": "view:slice__loader.chain_failed"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.chain_fenced"
 			},
 			{
 				"from": "schema:slice__loader",
@@ -9011,6 +9271,10 @@
 			},
 			{
 				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_fenced"
+			},
+			{
+				"from": "schema:slice__loader",
 				"to": "view:slice__loader.fan_finish"
 			},
 			{
@@ -9104,6 +9368,10 @@
 			{
 				"from": "schema:slice__loader",
 				"to": "view:slice__loader.retry_failed"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_fenced"
 			},
 			{
 				"from": "schema:slice__loader",
@@ -9212,6 +9480,10 @@
 			{
 				"from": "schema:slice__loader",
 				"to": "view:slice__loader.sync_failed"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_fenced"
 			},
 			{
 				"from": "schema:slice__loader",
@@ -9324,6 +9596,10 @@
 			{
 				"from": "schema:slice__retry_den",
 				"to": "view:slice__retry_den.retry_failed"
+			},
+			{
+				"from": "schema:slice__retry_den",
+				"to": "view:slice__retry_den.retry_fenced"
 			},
 			{
 				"from": "schema:slice__retry_den",
@@ -9460,6 +9736,10 @@
 			{
 				"from": "schema:slice__sync_den",
 				"to": "view:slice__sync_den.sync_failed"
+			},
+			{
+				"from": "schema:slice__sync_den",
+				"to": "view:slice__sync_den.sync_fenced"
 			},
 			{
 				"from": "schema:slice__sync_den",
@@ -9671,6 +9951,10 @@
 			},
 			{
 				"from": "table:slice.chain_claim",
+				"to": "constraint:slice.chain_fenced.__chain_fenced_fk_step_attempt_tr357gwkw2"
+			},
+			{
+				"from": "table:slice.chain_claim",
 				"to": "constraint:slice.chain_held.__chain_held_fk_step_attempt_ha67r6xn73"
 			},
 			{
@@ -9812,6 +10096,30 @@
 			{
 				"from": "table:slice.chain_failed",
 				"to": "view:slice__loader.chain_failed"
+			},
+			{
+				"from": "table:slice.chain_fenced",
+				"to": "constraint:slice.chain_fenced.__chain_fenced_fk_step_attempt_tr357gwkw2"
+			},
+			{
+				"from": "table:slice.chain_fenced",
+				"to": "constraint:slice.chain_fenced.__chain_fenced_pk_wwbie4qq5k"
+			},
+			{
+				"from": "table:slice.chain_fenced",
+				"to": "privileges:slice__chain_den"
+			},
+			{
+				"from": "table:slice.chain_fenced",
+				"to": "publication:__live_wzkq6p2yii"
+			},
+			{
+				"from": "table:slice.chain_fenced",
+				"to": "view:slice__chain_den.chain_fenced"
+			},
+			{
+				"from": "table:slice.chain_fenced",
+				"to": "view:slice__loader.chain_fenced"
 			},
 			{
 				"from": "table:slice.chain_finish",
@@ -10771,6 +11079,10 @@
 			},
 			{
 				"from": "table:slice.fan_claim",
+				"to": "constraint:slice.fan_fenced.__fan_fenced_fk_step_attempt_ykbq3jv4ri"
+			},
+			{
+				"from": "table:slice.fan_claim",
 				"to": "constraint:slice.fan_held.__fan_held_fk_step_attempt_zol2no7gql"
 			},
 			{
@@ -10936,6 +11248,30 @@
 			{
 				"from": "table:slice.fan_fan_run_input",
 				"to": "view:slice__loader.fan_fan_run_input"
+			},
+			{
+				"from": "table:slice.fan_fenced",
+				"to": "constraint:slice.fan_fenced.__fan_fenced_fk_step_attempt_ykbq3jv4ri"
+			},
+			{
+				"from": "table:slice.fan_fenced",
+				"to": "constraint:slice.fan_fenced.__fan_fenced_pk_6tkvirerez"
+			},
+			{
+				"from": "table:slice.fan_fenced",
+				"to": "privileges:slice__fan_den"
+			},
+			{
+				"from": "table:slice.fan_fenced",
+				"to": "publication:__live_wzkq6p2yii"
+			},
+			{
+				"from": "table:slice.fan_fenced",
+				"to": "view:slice__fan_den.fan_fenced"
+			},
+			{
+				"from": "table:slice.fan_fenced",
+				"to": "view:slice__loader.fan_fenced"
 			},
 			{
 				"from": "table:slice.fan_finish",
@@ -11751,6 +12087,10 @@
 			},
 			{
 				"from": "table:slice.retry_claim",
+				"to": "constraint:slice.retry_fenced.__retry_fenced_fk_step_attempt_5lvusmnjjt"
+			},
+			{
+				"from": "table:slice.retry_claim",
 				"to": "constraint:slice.retry_held.__retry_held_fk_step_attempt_g534cnd4ee"
 			},
 			{
@@ -11900,6 +12240,30 @@
 			{
 				"from": "table:slice.retry_failed",
 				"to": "view:slice__retry_den.retry_failed"
+			},
+			{
+				"from": "table:slice.retry_fenced",
+				"to": "constraint:slice.retry_fenced.__retry_fenced_fk_step_attempt_5lvusmnjjt"
+			},
+			{
+				"from": "table:slice.retry_fenced",
+				"to": "constraint:slice.retry_fenced.__retry_fenced_pk_umzicmiruo"
+			},
+			{
+				"from": "table:slice.retry_fenced",
+				"to": "privileges:slice__retry_den"
+			},
+			{
+				"from": "table:slice.retry_fenced",
+				"to": "publication:__live_wzkq6p2yii"
+			},
+			{
+				"from": "table:slice.retry_fenced",
+				"to": "view:slice__loader.retry_fenced"
+			},
+			{
+				"from": "table:slice.retry_fenced",
+				"to": "view:slice__retry_den.retry_fenced"
 			},
 			{
 				"from": "table:slice.retry_finish",
@@ -12623,6 +12987,10 @@
 			},
 			{
 				"from": "table:slice.sync_claim",
+				"to": "constraint:slice.sync_fenced.__sync_fenced_fk_step_attempt_ypmzavzbgy"
+			},
+			{
+				"from": "table:slice.sync_claim",
 				"to": "constraint:slice.sync_held.__sync_held_fk_step_attempt_r37vvfdble"
 			},
 			{
@@ -12876,6 +13244,30 @@
 			{
 				"from": "table:slice.sync_failed",
 				"to": "view:slice__sync_den.sync_failed"
+			},
+			{
+				"from": "table:slice.sync_fenced",
+				"to": "constraint:slice.sync_fenced.__sync_fenced_fk_step_attempt_ypmzavzbgy"
+			},
+			{
+				"from": "table:slice.sync_fenced",
+				"to": "constraint:slice.sync_fenced.__sync_fenced_pk_tszx4qm2gz"
+			},
+			{
+				"from": "table:slice.sync_fenced",
+				"to": "privileges:slice__sync_den"
+			},
+			{
+				"from": "table:slice.sync_fenced",
+				"to": "publication:__live_wzkq6p2yii"
+			},
+			{
+				"from": "table:slice.sync_fenced",
+				"to": "view:slice__loader.sync_fenced"
+			},
+			{
+				"from": "table:slice.sync_fenced",
+				"to": "view:slice__sync_den.sync_fenced"
 			},
 			{
 				"from": "table:slice.sync_finish",
@@ -13726,6 +14118,10 @@
 				"to": "privileges:slice__chain_den"
 			},
 			{
+				"from": "view:slice__chain_den.chain_fenced",
+				"to": "privileges:slice__chain_den"
+			},
+			{
 				"from": "view:slice__chain_den.chain_finish",
 				"to": "privileges:slice__chain_den"
 			},
@@ -13850,6 +14246,10 @@
 				"to": "privileges:slice__fan_den"
 			},
 			{
+				"from": "view:slice__fan_den.fan_fenced",
+				"to": "privileges:slice__fan_den"
+			},
+			{
 				"from": "view:slice__fan_den.fan_finish",
 				"to": "privileges:slice__fan_den"
 			},
@@ -13935,6 +14335,10 @@
 			},
 			{
 				"from": "view:slice__loader.chain_failed",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.chain_fenced",
 				"to": "privileges:slice__loader"
 			},
 			{
@@ -14054,6 +14458,10 @@
 				"to": "privileges:slice__loader"
 			},
 			{
+				"from": "view:slice__loader.fan_fenced",
+				"to": "privileges:slice__loader"
+			},
+			{
 				"from": "view:slice__loader.fan_finish",
 				"to": "privileges:slice__loader"
 			},
@@ -14147,6 +14555,10 @@
 			},
 			{
 				"from": "view:slice__loader.retry_failed",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_fenced",
 				"to": "privileges:slice__loader"
 			},
 			{
@@ -14258,6 +14670,10 @@
 				"to": "privileges:slice__loader"
 			},
 			{
+				"from": "view:slice__loader.sync_fenced",
+				"to": "privileges:slice__loader"
+			},
+			{
 				"from": "view:slice__loader.sync_finish",
 				"to": "privileges:slice__loader"
 			},
@@ -14359,6 +14775,10 @@
 			},
 			{
 				"from": "view:slice__retry_den.retry_failed",
+				"to": "privileges:slice__retry_den"
+			},
+			{
+				"from": "view:slice__retry_den.retry_fenced",
 				"to": "privileges:slice__retry_den"
 			},
 			{
@@ -14487,6 +14907,10 @@
 			},
 			{
 				"from": "view:slice__sync_den.sync_failed",
+				"to": "privileges:slice__sync_den"
+			},
+			{
+				"from": "view:slice__sync_den.sync_fenced",
 				"to": "privileges:slice__sync_den"
 			},
 			{
@@ -15568,6 +15992,21 @@
 			},
 			{
 				"ddl": [
+					{"columns":[{"name":"step","type":{"array":false,"kind":"named","name":"__domain_jotafzuj2i","schema":"slice","typmod":[]}},{"name":"attempt","type":{"array":false,"kind":"named","name":"__domain_gfw43vigph","schema":"slice","typmod":[]}}],"kind":"createTable","primaryKey":{"columns":[{"column":"step","withoutOverlaps":false},{"column":"attempt","withoutOverlaps":false}],"kind":"primaryKey","name":"__chain_fenced_pk_wwbie4qq5k"},"secondary":[],"table":{"name":"chain_fenced","schema":"slice"}}
+				],
+				"ident": "table:slice.chain_fenced",
+				"kind": "table",
+				"phase": "structure",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "relation ChainFenced"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"columns":[{"name":"scope","type":{"array":false,"kind":"named","name":"__domain_jotafzuj2i","schema":"slice","typmod":[]}},{"name":"step","type":{"array":false,"kind":"named","name":"__domain_jotafzuj2i","schema":"slice","typmod":[]}}],"kind":"createTable","primaryKey":{"columns":[{"column":"scope","withoutOverlaps":false}],"kind":"primaryKey","name":"__chain_finish_pk_ebe75jmnzy"},"secondary":[{"columns":[{"column":"step","withoutOverlaps":false}],"kind":"unique","name":"__chain_finish_key_step_x7i5pvi5jm"}],"table":{"name":"chain_finish","schema":"slice"}}
 				],
 				"ident": "table:slice.chain_finish",
@@ -16033,6 +16472,21 @@
 			},
 			{
 				"ddl": [
+					{"columns":[{"name":"step","type":{"array":false,"kind":"named","name":"__domain_jotafzuj2i","schema":"slice","typmod":[]}},{"name":"attempt","type":{"array":false,"kind":"named","name":"__domain_gfw43vigph","schema":"slice","typmod":[]}}],"kind":"createTable","primaryKey":{"columns":[{"column":"step","withoutOverlaps":false},{"column":"attempt","withoutOverlaps":false}],"kind":"primaryKey","name":"__fan_fenced_pk_6tkvirerez"},"secondary":[],"table":{"name":"fan_fenced","schema":"slice"}}
+				],
+				"ident": "table:slice.fan_fenced",
+				"kind": "table",
+				"phase": "structure",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "relation FanFenced"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"columns":[{"name":"scope","type":{"array":false,"kind":"named","name":"__domain_jotafzuj2i","schema":"slice","typmod":[]}},{"name":"step","type":{"array":false,"kind":"named","name":"__domain_jotafzuj2i","schema":"slice","typmod":[]}}],"kind":"createTable","primaryKey":{"columns":[{"column":"scope","withoutOverlaps":false}],"kind":"primaryKey","name":"__fan_finish_pk_6mb33urjra"},"secondary":[{"columns":[{"column":"step","withoutOverlaps":false}],"kind":"unique","name":"__fan_finish_key_step_v72sacijwp"}],"table":{"name":"fan_finish","schema":"slice"}}
 				],
 				"ident": "table:slice.fan_finish",
@@ -16447,6 +16901,21 @@
 					{
 						"kind": "enforcement",
 						"of": "relation RetryFailed"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"columns":[{"name":"step","type":{"array":false,"kind":"named","name":"__domain_jotafzuj2i","schema":"slice","typmod":[]}},{"name":"attempt","type":{"array":false,"kind":"named","name":"__domain_gfw43vigph","schema":"slice","typmod":[]}}],"kind":"createTable","primaryKey":{"columns":[{"column":"step","withoutOverlaps":false},{"column":"attempt","withoutOverlaps":false}],"kind":"primaryKey","name":"__retry_fenced_pk_umzicmiruo"},"secondary":[],"table":{"name":"retry_fenced","schema":"slice"}}
+				],
+				"ident": "table:slice.retry_fenced",
+				"kind": "table",
+				"phase": "structure",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "relation RetryFenced"
 					}
 				],
 				"state": "needed"
@@ -16897,6 +17366,21 @@
 					{
 						"kind": "enforcement",
 						"of": "relation SyncFailed"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"columns":[{"name":"step","type":{"array":false,"kind":"named","name":"__domain_jotafzuj2i","schema":"slice","typmod":[]}},{"name":"attempt","type":{"array":false,"kind":"named","name":"__domain_gfw43vigph","schema":"slice","typmod":[]}}],"kind":"createTable","primaryKey":{"columns":[{"column":"step","withoutOverlaps":false},{"column":"attempt","withoutOverlaps":false}],"kind":"primaryKey","name":"__sync_fenced_pk_tszx4qm2gz"},"secondary":[],"table":{"name":"sync_fenced","schema":"slice"}}
+				],
+				"ident": "table:slice.sync_fenced",
+				"kind": "table",
+				"phase": "structure",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "relation SyncFenced"
 					}
 				],
 				"state": "needed"
@@ -18025,6 +18509,26 @@
 			},
 			{
 				"ddl": [],
+				"ident": "constraint:slice.chain_fenced.__chain_fenced_pk_wwbie4qq5k",
+				"kind": "primaryKey",
+				"phase": "structure",
+				"reasons": [
+					{
+						"kind": "law",
+						"law": "__chain_fenced_pk_step_attempt_mphuy55y32"
+					},
+					{
+						"kind": "law",
+						"law": "__chain_fenced_in_chain_claim_c44ugcuoba"
+					},
+					{
+						"kind": "access"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [],
 				"ident": "constraint:slice.chain_finish.__chain_finish_pk_ebe75jmnzy",
 				"kind": "primaryKey",
 				"phase": "structure",
@@ -18633,6 +19137,26 @@
 			},
 			{
 				"ddl": [],
+				"ident": "constraint:slice.fan_fenced.__fan_fenced_pk_6tkvirerez",
+				"kind": "primaryKey",
+				"phase": "structure",
+				"reasons": [
+					{
+						"kind": "law",
+						"law": "__fan_fenced_pk_step_attempt_vyxkm5b25s"
+					},
+					{
+						"kind": "law",
+						"law": "__fan_fenced_in_fan_claim_ooaw56in5u"
+					},
+					{
+						"kind": "access"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [],
 				"ident": "constraint:slice.fan_finish.__fan_finish_pk_6mb33urjra",
 				"kind": "primaryKey",
 				"phase": "structure",
@@ -19172,6 +19696,26 @@
 					{
 						"kind": "law",
 						"law": "__retry_failed_in_retry_result_4v6r2flcnt"
+					},
+					{
+						"kind": "access"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [],
+				"ident": "constraint:slice.retry_fenced.__retry_fenced_pk_umzicmiruo",
+				"kind": "primaryKey",
+				"phase": "structure",
+				"reasons": [
+					{
+						"kind": "law",
+						"law": "__retry_fenced_pk_step_attempt_y5p7sutkpi"
+					},
+					{
+						"kind": "law",
+						"law": "__retry_fenced_in_retry_claim_6db5i6xhnu"
 					},
 					{
 						"kind": "access"
@@ -19768,6 +20312,26 @@
 					{
 						"kind": "law",
 						"law": "__sync_failed_in_sync_result_mhfqm53nqw"
+					},
+					{
+						"kind": "access"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [],
+				"ident": "constraint:slice.sync_fenced.__sync_fenced_pk_tszx4qm2gz",
+				"kind": "primaryKey",
+				"phase": "structure",
+				"reasons": [
+					{
+						"kind": "law",
+						"law": "__sync_fenced_pk_step_attempt_bxn6csqmeh"
+					},
+					{
+						"kind": "law",
+						"law": "__sync_fenced_in_sync_claim_44orfaablb"
 					},
 					{
 						"kind": "access"
@@ -20811,6 +21375,21 @@
 			},
 			{
 				"ddl": [
+					{"actions":[{"constraint":{"columns":[{"column":"step","period":false},{"column":"attempt","period":false}],"deferrable":"INITIALLY DEFERRED","kind":"foreignKey","name":"__chain_fenced_fk_step_attempt_tr357gwkw2","referencedColumns":[{"column":"step","period":false},{"column":"attempt","period":false}],"references":{"name":"chain_claim","schema":"slice"}},"kind":"addConstraint","notValid":false}],"kind":"alterTable","table":{"name":"chain_fenced","schema":"slice"}}
+				],
+				"ident": "constraint:slice.chain_fenced.__chain_fenced_fk_step_attempt_tr357gwkw2",
+				"kind": "foreignKey",
+				"phase": "structure",
+				"reasons": [
+					{
+						"kind": "law",
+						"law": "__chain_fenced_in_chain_claim_c44ugcuoba"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"actions":[{"constraint":{"columns":[{"column":"scope","period":false}],"kind":"foreignKey","name":"__chain_finish_fk_scope_cfnzgc3ln5","referencedColumns":[{"column":"scope","period":false}],"references":{"name":"chain_admitted","schema":"slice"}},"kind":"addConstraint","notValid":false}],"kind":"alterTable","table":{"name":"chain_finish","schema":"slice"}}
 				],
 				"ident": "constraint:slice.chain_finish.__chain_finish_fk_scope_cfnzgc3ln5",
@@ -21366,6 +21945,21 @@
 			},
 			{
 				"ddl": [
+					{"actions":[{"constraint":{"columns":[{"column":"step","period":false},{"column":"attempt","period":false}],"deferrable":"INITIALLY DEFERRED","kind":"foreignKey","name":"__fan_fenced_fk_step_attempt_ykbq3jv4ri","referencedColumns":[{"column":"step","period":false},{"column":"attempt","period":false}],"references":{"name":"fan_claim","schema":"slice"}},"kind":"addConstraint","notValid":false}],"kind":"alterTable","table":{"name":"fan_fenced","schema":"slice"}}
+				],
+				"ident": "constraint:slice.fan_fenced.__fan_fenced_fk_step_attempt_ykbq3jv4ri",
+				"kind": "foreignKey",
+				"phase": "structure",
+				"reasons": [
+					{
+						"kind": "law",
+						"law": "__fan_fenced_in_fan_claim_ooaw56in5u"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"actions":[{"constraint":{"columns":[{"column":"scope","period":false}],"kind":"foreignKey","name":"__fan_finish_fk_scope_7bafbqarll","referencedColumns":[{"column":"scope","period":false}],"references":{"name":"fan_admitted","schema":"slice"}},"kind":"addConstraint","notValid":false}],"kind":"alterTable","table":{"name":"fan_finish","schema":"slice"}}
 				],
 				"ident": "constraint:slice.fan_finish.__fan_finish_fk_scope_7bafbqarll",
@@ -21870,6 +22464,21 @@
 					{
 						"kind": "law",
 						"law": "__retry_failed_in_retry_result_4v6r2flcnt"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"actions":[{"constraint":{"columns":[{"column":"step","period":false},{"column":"attempt","period":false}],"deferrable":"INITIALLY DEFERRED","kind":"foreignKey","name":"__retry_fenced_fk_step_attempt_5lvusmnjjt","referencedColumns":[{"column":"step","period":false},{"column":"attempt","period":false}],"references":{"name":"retry_claim","schema":"slice"}},"kind":"addConstraint","notValid":false}],"kind":"alterTable","table":{"name":"retry_fenced","schema":"slice"}}
+				],
+				"ident": "constraint:slice.retry_fenced.__retry_fenced_fk_step_attempt_5lvusmnjjt",
+				"kind": "foreignKey",
+				"phase": "structure",
+				"reasons": [
+					{
+						"kind": "law",
+						"law": "__retry_fenced_in_retry_claim_6db5i6xhnu"
 					}
 				],
 				"state": "needed"
@@ -22440,6 +23049,21 @@
 					{
 						"kind": "law",
 						"law": "__sync_failed_in_sync_result_mhfqm53nqw"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"actions":[{"constraint":{"columns":[{"column":"step","period":false},{"column":"attempt","period":false}],"deferrable":"INITIALLY DEFERRED","kind":"foreignKey","name":"__sync_fenced_fk_step_attempt_ypmzavzbgy","referencedColumns":[{"column":"step","period":false},{"column":"attempt","period":false}],"references":{"name":"sync_claim","schema":"slice"}},"kind":"addConstraint","notValid":false}],"kind":"alterTable","table":{"name":"sync_fenced","schema":"slice"}}
+				],
+				"ident": "constraint:slice.sync_fenced.__sync_fenced_fk_step_attempt_ypmzavzbgy",
+				"kind": "foreignKey",
+				"phase": "structure",
+				"reasons": [
+					{
+						"kind": "law",
+						"law": "__sync_fenced_in_sync_claim_44orfaablb"
 					}
 				],
 				"state": "needed"
@@ -24580,6 +25204,21 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["step","attempt"],"kind":"createView","name":{"name":"chain_fenced","schema":"slice__chain_den"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_fenced","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__chain_den.chain_fenced",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role chain_den"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["scope","step"],"kind":"createView","name":{"name":"chain_finish","schema":"slice__chain_den"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_finish","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__chain_den.chain_finish",
@@ -25045,6 +25684,21 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["step","attempt"],"kind":"createView","name":{"name":"fan_fenced","schema":"slice__fan_den"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_fenced","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__fan_den.fan_fenced",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role fan_den"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["scope","step"],"kind":"createView","name":{"name":"fan_finish","schema":"slice__fan_den"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_finish","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__fan_den.fan_finish",
@@ -25363,6 +26017,21 @@
 					{"barrier":false,"columns":["step"],"kind":"createView","name":{"name":"chain_failed","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_failed","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.chain_failed",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","attempt"],"kind":"createView","name":{"name":"chain_fenced","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_fenced","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.chain_fenced",
 				"kind": "view",
 				"phase": "publish",
 				"reasons": [
@@ -25810,6 +26479,21 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["step","attempt"],"kind":"createView","name":{"name":"fan_fenced","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_fenced","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_fenced",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["scope","step"],"kind":"createView","name":{"name":"fan_finish","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_finish","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.fan_finish",
@@ -26158,6 +26842,21 @@
 					{"barrier":false,"columns":["step"],"kind":"createView","name":{"name":"retry_failed","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_failed","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.retry_failed",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","attempt"],"kind":"createView","name":{"name":"retry_fenced","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_fenced","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_fenced",
 				"kind": "view",
 				"phase": "publish",
 				"reasons": [
@@ -26575,6 +27274,21 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["step","attempt"],"kind":"createView","name":{"name":"sync_fenced","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_fenced","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_fenced",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["scope","step"],"kind":"createView","name":{"name":"sync_finish","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_finish","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.sync_finish",
@@ -26953,6 +27667,21 @@
 					{"barrier":false,"columns":["step"],"kind":"createView","name":{"name":"retry_failed","schema":"slice__retry_den"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_failed","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__retry_den.retry_failed",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role retry_den"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","attempt"],"kind":"createView","name":{"name":"retry_fenced","schema":"slice__retry_den"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_fenced","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__retry_den.retry_fenced",
 				"kind": "view",
 				"phase": "publish",
 				"reasons": [
@@ -27445,6 +28174,21 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["step","attempt"],"kind":"createView","name":{"name":"sync_fenced","schema":"slice__sync_den"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_fenced","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__sync_den.sync_fenced",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role sync_den"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["scope","step"],"kind":"createView","name":{"name":"sync_finish","schema":"slice__sync_den"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_finish","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__sync_den.sync_finish",
@@ -27655,7 +28399,7 @@
 			},
 			{
 				"ddl": [
-					{"kind":"createPublication","name":"__live_wzkq6p2yii","tables":[{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"audit","schema":"slice"}},{"columns":{"columns":["build"],"kind":"listed"},"table":{"name":"built","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_admitted","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_chain_run_input","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"chain_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_due","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_finish","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_held","schema":"slice"}},{"columns":{"columns":["from","ordinal"],"kind":"listed"},"table":{"name":"chain_next","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_ordered_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_input_after","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_output","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_output_next","schema":"slice"}},{"columns":{"columns":["step","ordinal"],"kind":"listed"},"table":{"name":"chain_page_read","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"chain_paused","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"chain_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"chain_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_skipped","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"chain_start_scope","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"chain_start_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"chain_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"chain_within","schema":"slice"}},{"columns":{"columns":["relation","run"],"kind":"listed"},"table":{"name":"copied","schema":"slice"}},{"columns":{"columns":["feed","position"],"kind":"listed"},"table":{"name":"cursor","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_admitted","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_batch_input","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"fan_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_due","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_fan_run_input","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_finish","schema":"slice"}},{"columns":{"columns":["resource","seat","turn"],"kind":"listed"},"table":{"name":"fan_freed","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_held","schema":"slice"}},{"columns":{"columns":["resource","seat","turn"],"kind":"listed"},"table":{"name":"fan_hold","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"fan_paused","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"fan_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"fan_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_skipped","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_square_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_square_output","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"fan_start_scope","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"fan_start_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"fan_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"fan_within","schema":"slice"}},{"columns":{"columns":["feed","seq","n"],"kind":"listed"},"table":{"name":"item","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_admitted","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_brittle_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_brittle_output","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"retry_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_due","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_exhausted","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_finish","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_held","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_ladders_input","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"retry_paused","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"retry_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"retry_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_skipped","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_steadfast_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_steadfast_output","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"retry_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"retry_within","schema":"slice"}},{"columns":{"columns":["batch"],"kind":"listed"},"table":{"name":"settled","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_admitted","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_build_input","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"sync_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_copy_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_due","schema":"slice"}},{"columns":{"columns":["kind","key","turn"],"kind":"listed"},"table":{"name":"sync_exclusive","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_exclusive_key","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_finish","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_gold_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_held","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"sync_paused","schema":"slice"}},{"columns":{"columns":["kind","key","turn"],"kind":"listed"},"table":{"name":"sync_released","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"sync_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"sync_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_skipped","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"sync_step","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_sync_run_input","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"sync_within","schema":"slice"}},{"columns":{"columns":["batch"],"kind":"listed"},"table":{"name":"tally","schema":"slice"}},{"columns":{"columns":["feed","factor"],"kind":"listed"},"table":{"name":"weight","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"__ledger","schema":"slice"}}]}
+					{"kind":"createPublication","name":"__live_wzkq6p2yii","tables":[{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"audit","schema":"slice"}},{"columns":{"columns":["build"],"kind":"listed"},"table":{"name":"built","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_admitted","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_chain_run_input","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"chain_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_due","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"chain_fenced","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_finish","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_held","schema":"slice"}},{"columns":{"columns":["from","ordinal"],"kind":"listed"},"table":{"name":"chain_next","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_ordered_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_input_after","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_output","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_page_output_next","schema":"slice"}},{"columns":{"columns":["step","ordinal"],"kind":"listed"},"table":{"name":"chain_page_read","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"chain_paused","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"chain_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"chain_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"chain_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"chain_skipped","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"chain_start_scope","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"chain_start_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"chain_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"chain_within","schema":"slice"}},{"columns":{"columns":["relation","run"],"kind":"listed"},"table":{"name":"copied","schema":"slice"}},{"columns":{"columns":["feed","position"],"kind":"listed"},"table":{"name":"cursor","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_admitted","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_batch_input","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"fan_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_due","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_fan_run_input","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"fan_fenced","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_finish","schema":"slice"}},{"columns":{"columns":["resource","seat","turn"],"kind":"listed"},"table":{"name":"fan_freed","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_held","schema":"slice"}},{"columns":{"columns":["resource","seat","turn"],"kind":"listed"},"table":{"name":"fan_hold","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"fan_paused","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"fan_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"fan_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"fan_skipped","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_square_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"fan_square_output","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"fan_start_scope","schema":"slice"}},{"columns":{"columns":["scope","ordinal"],"kind":"listed"},"table":{"name":"fan_start_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"fan_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"fan_within","schema":"slice"}},{"columns":{"columns":["feed","seq","n"],"kind":"listed"},"table":{"name":"item","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_admitted","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_brittle_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_brittle_output","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"retry_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_due","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_exhausted","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"retry_fenced","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_finish","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_held","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_ladders_input","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"retry_paused","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"retry_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"retry_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"retry_skipped","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_steadfast_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"retry_steadfast_output","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"retry_step","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"retry_within","schema":"slice"}},{"columns":{"columns":["batch"],"kind":"listed"},"table":{"name":"settled","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_admitted","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_build_input","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"sync_claim","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_copy_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_due","schema":"slice"}},{"columns":{"columns":["kind","key","turn"],"kind":"listed"},"table":{"name":"sync_exclusive","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_exclusive_key","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"sync_fenced","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_finish","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_gold_input","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_held","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"sync_paused","schema":"slice"}},{"columns":{"columns":["kind","key","turn"],"kind":"listed"},"table":{"name":"sync_released","schema":"slice"}},{"columns":{"columns":["step"],"kind":"listed"},"table":{"name":"sync_result","schema":"slice"}},{"columns":{"columns":["target","turn"],"kind":"listed"},"table":{"name":"sync_resumed","schema":"slice"}},{"columns":{"columns":["step","attempt"],"kind":"listed"},"table":{"name":"sync_retry","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_root","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_scope","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_skipped","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"sync_step","schema":"slice"}},{"columns":{"columns":["scope"],"kind":"listed"},"table":{"name":"sync_sync_run_input","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"sync_within","schema":"slice"}},{"columns":{"columns":["batch"],"kind":"listed"},"table":{"name":"tally","schema":"slice"}},{"columns":{"columns":["feed","factor"],"kind":"listed"},"table":{"name":"weight","schema":"slice"}},{"columns":{"kind":"whole"},"table":{"name":"__ledger","schema":"slice"}}]}
 				],
 				"ident": "publication:__live_wzkq6p2yii",
 				"kind": "publication",
@@ -27729,7 +28473,7 @@
 				"ddl": [
 					{"kind":"grant","on":{"kind":"SCHEMA","names":["slice","slice__chain_den"]},"privileges":["USAGE"],"to":[{"kind":"role","name":"slice__chain_den"}]},
 					{"kind":"grant","on":{"kind":"DOMAIN","names":[{"name":"__domain_jotafzuj2i","schema":"slice"},{"name":"__domain_gfw43vigph","schema":"slice"},{"name":"__domain_mxhao3k6ss","schema":"slice"},{"name":"chain_chain_run_input_feed","schema":"slice"},{"name":"chain_join","schema":"slice"},{"name":"chain_kind","schema":"slice"},{"name":"chain_ordered_input_feed","schema":"slice"},{"name":"chain_outcome","schema":"slice"},{"name":"chain_page_input_feed","schema":"slice"},{"name":"chain_pausable","schema":"slice"},{"name":"feed","schema":"slice"}]},"privileges":["USAGE"],"to":[{"kind":"role","name":"slice__chain_den"}]},
-					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_admitted","schema":"slice__chain_den"},{"name":"chain_chain_run_input","schema":"slice__chain_den"},{"name":"chain_claim","schema":"slice__chain_den"},{"name":"chain_done","schema":"slice__chain_den"},{"name":"chain_due","schema":"slice__chain_den"},{"name":"chain_exhausted","schema":"slice__chain_den"},{"name":"chain_failed","schema":"slice__chain_den"},{"name":"chain_finish","schema":"slice__chain_den"},{"name":"chain_held","schema":"slice__chain_den"},{"name":"chain_next","schema":"slice__chain_den"},{"name":"chain_ordered_input","schema":"slice__chain_den"},{"name":"chain_page_input","schema":"slice__chain_den"},{"name":"chain_page_input_after","schema":"slice__chain_den"},{"name":"chain_page_output","schema":"slice__chain_den"},{"name":"chain_page_output_next","schema":"slice__chain_den"},{"name":"chain_page_read","schema":"slice__chain_den"},{"name":"chain_refusal","schema":"slice__chain_den"},{"name":"chain_result","schema":"slice__chain_den"},{"name":"chain_retry","schema":"slice__chain_den"},{"name":"chain_root","schema":"slice__chain_den"},{"name":"chain_scope","schema":"slice__chain_den"},{"name":"chain_skipped","schema":"slice__chain_den"},{"name":"chain_start_scope","schema":"slice__chain_den"},{"name":"chain_start_step","schema":"slice__chain_den"},{"name":"chain_step","schema":"slice__chain_den"},{"name":"chain_within","schema":"slice__chain_den"}]},"privileges":["SELECT"],"to":[{"kind":"role","name":"slice__chain_den"}]},
+					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_admitted","schema":"slice__chain_den"},{"name":"chain_chain_run_input","schema":"slice__chain_den"},{"name":"chain_claim","schema":"slice__chain_den"},{"name":"chain_done","schema":"slice__chain_den"},{"name":"chain_due","schema":"slice__chain_den"},{"name":"chain_exhausted","schema":"slice__chain_den"},{"name":"chain_failed","schema":"slice__chain_den"},{"name":"chain_fenced","schema":"slice__chain_den"},{"name":"chain_finish","schema":"slice__chain_den"},{"name":"chain_held","schema":"slice__chain_den"},{"name":"chain_next","schema":"slice__chain_den"},{"name":"chain_ordered_input","schema":"slice__chain_den"},{"name":"chain_page_input","schema":"slice__chain_den"},{"name":"chain_page_input_after","schema":"slice__chain_den"},{"name":"chain_page_output","schema":"slice__chain_den"},{"name":"chain_page_output_next","schema":"slice__chain_den"},{"name":"chain_page_read","schema":"slice__chain_den"},{"name":"chain_refusal","schema":"slice__chain_den"},{"name":"chain_result","schema":"slice__chain_den"},{"name":"chain_retry","schema":"slice__chain_den"},{"name":"chain_root","schema":"slice__chain_den"},{"name":"chain_scope","schema":"slice__chain_den"},{"name":"chain_skipped","schema":"slice__chain_den"},{"name":"chain_start_scope","schema":"slice__chain_den"},{"name":"chain_start_step","schema":"slice__chain_den"},{"name":"chain_step","schema":"slice__chain_den"},{"name":"chain_within","schema":"slice__chain_den"}]},"privileges":["SELECT"],"to":[{"kind":"role","name":"slice__chain_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_admitted","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__chain_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_chain_run_input","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__chain_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_claim","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__chain_den"}]},
@@ -27737,6 +28481,7 @@
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_due","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__chain_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_exhausted","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__chain_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_failed","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__chain_den"}]},
+					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_fenced","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__chain_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_finish","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__chain_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_held","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__chain_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_ordered_input","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__chain_den"}]},
@@ -27794,7 +28539,7 @@
 				"ddl": [
 					{"kind":"grant","on":{"kind":"SCHEMA","names":["slice","slice__fan_den"]},"privileges":["USAGE"],"to":[{"kind":"role","name":"slice__fan_den"}]},
 					{"kind":"grant","on":{"kind":"DOMAIN","names":[{"name":"__domain_jotafzuj2i","schema":"slice"},{"name":"__domain_gfw43vigph","schema":"slice"},{"name":"__domain_mxhao3k6ss","schema":"slice"},{"name":"fan_join","schema":"slice"},{"name":"fan_kind","schema":"slice"},{"name":"fan_outcome","schema":"slice"},{"name":"fan_pausable","schema":"slice"},{"name":"fan_resource","schema":"slice"}]},"privileges":["USAGE"],"to":[{"kind":"role","name":"slice__fan_den"}]},
-					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"fan_admitted","schema":"slice__fan_den"},{"name":"fan_batch_input","schema":"slice__fan_den"},{"name":"fan_claim","schema":"slice__fan_den"},{"name":"fan_done","schema":"slice__fan_den"},{"name":"fan_due","schema":"slice__fan_den"},{"name":"fan_exhausted","schema":"slice__fan_den"},{"name":"fan_failed","schema":"slice__fan_den"},{"name":"fan_fan_run_input","schema":"slice__fan_den"},{"name":"fan_finish","schema":"slice__fan_den"},{"name":"fan_held","schema":"slice__fan_den"},{"name":"fan_refusal","schema":"slice__fan_den"},{"name":"fan_result","schema":"slice__fan_den"},{"name":"fan_retry","schema":"slice__fan_den"},{"name":"fan_root","schema":"slice__fan_den"},{"name":"fan_scope","schema":"slice__fan_den"},{"name":"fan_skipped","schema":"slice__fan_den"},{"name":"fan_square_input","schema":"slice__fan_den"},{"name":"fan_square_output","schema":"slice__fan_den"},{"name":"fan_start_scope","schema":"slice__fan_den"},{"name":"fan_start_step","schema":"slice__fan_den"},{"name":"fan_step","schema":"slice__fan_den"},{"name":"fan_within","schema":"slice__fan_den"}]},"privileges":["SELECT"],"to":[{"kind":"role","name":"slice__fan_den"}]},
+					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"fan_admitted","schema":"slice__fan_den"},{"name":"fan_batch_input","schema":"slice__fan_den"},{"name":"fan_claim","schema":"slice__fan_den"},{"name":"fan_done","schema":"slice__fan_den"},{"name":"fan_due","schema":"slice__fan_den"},{"name":"fan_exhausted","schema":"slice__fan_den"},{"name":"fan_failed","schema":"slice__fan_den"},{"name":"fan_fan_run_input","schema":"slice__fan_den"},{"name":"fan_fenced","schema":"slice__fan_den"},{"name":"fan_finish","schema":"slice__fan_den"},{"name":"fan_held","schema":"slice__fan_den"},{"name":"fan_refusal","schema":"slice__fan_den"},{"name":"fan_result","schema":"slice__fan_den"},{"name":"fan_retry","schema":"slice__fan_den"},{"name":"fan_root","schema":"slice__fan_den"},{"name":"fan_scope","schema":"slice__fan_den"},{"name":"fan_skipped","schema":"slice__fan_den"},{"name":"fan_square_input","schema":"slice__fan_den"},{"name":"fan_square_output","schema":"slice__fan_den"},{"name":"fan_start_scope","schema":"slice__fan_den"},{"name":"fan_start_step","schema":"slice__fan_den"},{"name":"fan_step","schema":"slice__fan_den"},{"name":"fan_within","schema":"slice__fan_den"}]},"privileges":["SELECT"],"to":[{"kind":"role","name":"slice__fan_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"fan_admitted","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__fan_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"fan_batch_input","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__fan_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"fan_claim","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__fan_den"}]},
@@ -27803,6 +28548,7 @@
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"fan_exhausted","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__fan_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"fan_failed","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__fan_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"fan_fan_run_input","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__fan_den"}]},
+					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"fan_fenced","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__fan_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"fan_finish","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__fan_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"fan_held","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__fan_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"fan_refusal","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__fan_den"}]},
@@ -27834,7 +28580,7 @@
 				"ddl": [
 					{"kind":"grant","on":{"kind":"SCHEMA","names":["slice","slice__loader"]},"privileges":["USAGE"],"to":[{"kind":"role","name":"slice__loader"}]},
 					{"kind":"grant","on":{"kind":"DOMAIN","names":[{"name":"__domain_jotafzuj2i","schema":"slice"},{"name":"__domain_gfw43vigph","schema":"slice"},{"name":"__domain_mxhao3k6ss","schema":"slice"},{"name":"chain_chain_run_input_feed","schema":"slice"},{"name":"chain_join","schema":"slice"},{"name":"chain_kind","schema":"slice"},{"name":"chain_ordered_input_feed","schema":"slice"},{"name":"chain_outcome","schema":"slice"},{"name":"chain_page_input_feed","schema":"slice"},{"name":"chain_pausable","schema":"slice"},{"name":"fan_join","schema":"slice"},{"name":"fan_kind","schema":"slice"},{"name":"fan_outcome","schema":"slice"},{"name":"fan_pausable","schema":"slice"},{"name":"fan_resource","schema":"slice"},{"name":"feed","schema":"slice"},{"name":"retry_join","schema":"slice"},{"name":"retry_kind","schema":"slice"},{"name":"retry_outcome","schema":"slice"},{"name":"retry_pausable","schema":"slice"},{"name":"sync_join","schema":"slice"},{"name":"sync_kind","schema":"slice"},{"name":"sync_outcome","schema":"slice"},{"name":"sync_pausable","schema":"slice"},{"name":"__text_t4rwovzmqj","schema":"slice"}]},"privileges":["USAGE"],"to":[{"kind":"role","name":"slice__loader"}]},
-					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"built","schema":"slice__loader"},{"name":"chain_admitted","schema":"slice__loader"},{"name":"chain_chain_run_input","schema":"slice__loader"},{"name":"chain_claim","schema":"slice__loader"},{"name":"chain_done","schema":"slice__loader"},{"name":"chain_due","schema":"slice__loader"},{"name":"chain_exhausted","schema":"slice__loader"},{"name":"chain_failed","schema":"slice__loader"},{"name":"chain_finish","schema":"slice__loader"},{"name":"chain_held","schema":"slice__loader"},{"name":"chain_next","schema":"slice__loader"},{"name":"chain_ordered_input","schema":"slice__loader"},{"name":"chain_page_input","schema":"slice__loader"},{"name":"chain_page_input_after","schema":"slice__loader"},{"name":"chain_page_output","schema":"slice__loader"},{"name":"chain_page_output_next","schema":"slice__loader"},{"name":"chain_page_read","schema":"slice__loader"},{"name":"chain_refusal","schema":"slice__loader"},{"name":"chain_result","schema":"slice__loader"},{"name":"chain_retry","schema":"slice__loader"},{"name":"chain_root","schema":"slice__loader"},{"name":"chain_scope","schema":"slice__loader"},{"name":"chain_skipped","schema":"slice__loader"},{"name":"chain_start_scope","schema":"slice__loader"},{"name":"chain_start_step","schema":"slice__loader"},{"name":"chain_step","schema":"slice__loader"},{"name":"chain_within","schema":"slice__loader"},{"name":"copied","schema":"slice__loader"},{"name":"cursor","schema":"slice__loader"},{"name":"fan_admitted","schema":"slice__loader"},{"name":"fan_batch_input","schema":"slice__loader"},{"name":"fan_claim","schema":"slice__loader"},{"name":"fan_done","schema":"slice__loader"},{"name":"fan_due","schema":"slice__loader"},{"name":"fan_exhausted","schema":"slice__loader"},{"name":"fan_failed","schema":"slice__loader"},{"name":"fan_fan_run_input","schema":"slice__loader"},{"name":"fan_finish","schema":"slice__loader"},{"name":"fan_held","schema":"slice__loader"},{"name":"fan_refusal","schema":"slice__loader"},{"name":"fan_result","schema":"slice__loader"},{"name":"fan_retry","schema":"slice__loader"},{"name":"fan_root","schema":"slice__loader"},{"name":"fan_scope","schema":"slice__loader"},{"name":"fan_skipped","schema":"slice__loader"},{"name":"fan_square_input","schema":"slice__loader"},{"name":"fan_square_output","schema":"slice__loader"},{"name":"fan_start_scope","schema":"slice__loader"},{"name":"fan_start_step","schema":"slice__loader"},{"name":"fan_step","schema":"slice__loader"},{"name":"fan_within","schema":"slice__loader"},{"name":"item","schema":"slice__loader"},{"name":"order","schema":"slice__loader"},{"name":"retry_admitted","schema":"slice__loader"},{"name":"retry_brittle_input","schema":"slice__loader"},{"name":"retry_brittle_output","schema":"slice__loader"},{"name":"retry_claim","schema":"slice__loader"},{"name":"retry_done","schema":"slice__loader"},{"name":"retry_due","schema":"slice__loader"},{"name":"retry_exhausted","schema":"slice__loader"},{"name":"retry_failed","schema":"slice__loader"},{"name":"retry_finish","schema":"slice__loader"},{"name":"retry_held","schema":"slice__loader"},{"name":"retry_ladders_input","schema":"slice__loader"},{"name":"retry_refusal","schema":"slice__loader"},{"name":"retry_result","schema":"slice__loader"},{"name":"retry_retry","schema":"slice__loader"},{"name":"retry_root","schema":"slice__loader"},{"name":"retry_scope","schema":"slice__loader"},{"name":"retry_skipped","schema":"slice__loader"},{"name":"retry_start_scope","schema":"slice__loader"},{"name":"retry_start_step","schema":"slice__loader"},{"name":"retry_steadfast_input","schema":"slice__loader"},{"name":"retry_steadfast_output","schema":"slice__loader"},{"name":"retry_step","schema":"slice__loader"},{"name":"retry_within","schema":"slice__loader"},{"name":"settled","schema":"slice__loader"},{"name":"sync_admitted","schema":"slice__loader"},{"name":"sync_build_input","schema":"slice__loader"},{"name":"sync_build_output","schema":"slice__loader"},{"name":"sync_claim","schema":"slice__loader"},{"name":"sync_copy_input","schema":"slice__loader"},{"name":"sync_copy_output","schema":"slice__loader"},{"name":"sync_done","schema":"slice__loader"},{"name":"sync_due","schema":"slice__loader"},{"name":"sync_exclusive_key","schema":"slice__loader"},{"name":"sync_exhausted","schema":"slice__loader"},{"name":"sync_failed","schema":"slice__loader"},{"name":"sync_finish","schema":"slice__loader"},{"name":"sync_gold_input","schema":"slice__loader"},{"name":"sync_held","schema":"slice__loader"},{"name":"sync_refusal","schema":"slice__loader"},{"name":"sync_result","schema":"slice__loader"},{"name":"sync_retry","schema":"slice__loader"},{"name":"sync_root","schema":"slice__loader"},{"name":"sync_scope","schema":"slice__loader"},{"name":"sync_skipped","schema":"slice__loader"},{"name":"sync_start_scope","schema":"slice__loader"},{"name":"sync_start_step","schema":"slice__loader"},{"name":"sync_step","schema":"slice__loader"},{"name":"sync_sync_run_input","schema":"slice__loader"},{"name":"sync_within","schema":"slice__loader"},{"name":"tally","schema":"slice__loader"},{"name":"weight","schema":"slice__loader"}]},"privileges":["SELECT"],"to":[{"kind":"role","name":"slice__loader"}]},
+					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"built","schema":"slice__loader"},{"name":"chain_admitted","schema":"slice__loader"},{"name":"chain_chain_run_input","schema":"slice__loader"},{"name":"chain_claim","schema":"slice__loader"},{"name":"chain_done","schema":"slice__loader"},{"name":"chain_due","schema":"slice__loader"},{"name":"chain_exhausted","schema":"slice__loader"},{"name":"chain_failed","schema":"slice__loader"},{"name":"chain_fenced","schema":"slice__loader"},{"name":"chain_finish","schema":"slice__loader"},{"name":"chain_held","schema":"slice__loader"},{"name":"chain_next","schema":"slice__loader"},{"name":"chain_ordered_input","schema":"slice__loader"},{"name":"chain_page_input","schema":"slice__loader"},{"name":"chain_page_input_after","schema":"slice__loader"},{"name":"chain_page_output","schema":"slice__loader"},{"name":"chain_page_output_next","schema":"slice__loader"},{"name":"chain_page_read","schema":"slice__loader"},{"name":"chain_refusal","schema":"slice__loader"},{"name":"chain_result","schema":"slice__loader"},{"name":"chain_retry","schema":"slice__loader"},{"name":"chain_root","schema":"slice__loader"},{"name":"chain_scope","schema":"slice__loader"},{"name":"chain_skipped","schema":"slice__loader"},{"name":"chain_start_scope","schema":"slice__loader"},{"name":"chain_start_step","schema":"slice__loader"},{"name":"chain_step","schema":"slice__loader"},{"name":"chain_within","schema":"slice__loader"},{"name":"copied","schema":"slice__loader"},{"name":"cursor","schema":"slice__loader"},{"name":"fan_admitted","schema":"slice__loader"},{"name":"fan_batch_input","schema":"slice__loader"},{"name":"fan_claim","schema":"slice__loader"},{"name":"fan_done","schema":"slice__loader"},{"name":"fan_due","schema":"slice__loader"},{"name":"fan_exhausted","schema":"slice__loader"},{"name":"fan_failed","schema":"slice__loader"},{"name":"fan_fan_run_input","schema":"slice__loader"},{"name":"fan_fenced","schema":"slice__loader"},{"name":"fan_finish","schema":"slice__loader"},{"name":"fan_held","schema":"slice__loader"},{"name":"fan_refusal","schema":"slice__loader"},{"name":"fan_result","schema":"slice__loader"},{"name":"fan_retry","schema":"slice__loader"},{"name":"fan_root","schema":"slice__loader"},{"name":"fan_scope","schema":"slice__loader"},{"name":"fan_skipped","schema":"slice__loader"},{"name":"fan_square_input","schema":"slice__loader"},{"name":"fan_square_output","schema":"slice__loader"},{"name":"fan_start_scope","schema":"slice__loader"},{"name":"fan_start_step","schema":"slice__loader"},{"name":"fan_step","schema":"slice__loader"},{"name":"fan_within","schema":"slice__loader"},{"name":"item","schema":"slice__loader"},{"name":"order","schema":"slice__loader"},{"name":"retry_admitted","schema":"slice__loader"},{"name":"retry_brittle_input","schema":"slice__loader"},{"name":"retry_brittle_output","schema":"slice__loader"},{"name":"retry_claim","schema":"slice__loader"},{"name":"retry_done","schema":"slice__loader"},{"name":"retry_due","schema":"slice__loader"},{"name":"retry_exhausted","schema":"slice__loader"},{"name":"retry_failed","schema":"slice__loader"},{"name":"retry_fenced","schema":"slice__loader"},{"name":"retry_finish","schema":"slice__loader"},{"name":"retry_held","schema":"slice__loader"},{"name":"retry_ladders_input","schema":"slice__loader"},{"name":"retry_refusal","schema":"slice__loader"},{"name":"retry_result","schema":"slice__loader"},{"name":"retry_retry","schema":"slice__loader"},{"name":"retry_root","schema":"slice__loader"},{"name":"retry_scope","schema":"slice__loader"},{"name":"retry_skipped","schema":"slice__loader"},{"name":"retry_start_scope","schema":"slice__loader"},{"name":"retry_start_step","schema":"slice__loader"},{"name":"retry_steadfast_input","schema":"slice__loader"},{"name":"retry_steadfast_output","schema":"slice__loader"},{"name":"retry_step","schema":"slice__loader"},{"name":"retry_within","schema":"slice__loader"},{"name":"settled","schema":"slice__loader"},{"name":"sync_admitted","schema":"slice__loader"},{"name":"sync_build_input","schema":"slice__loader"},{"name":"sync_build_output","schema":"slice__loader"},{"name":"sync_claim","schema":"slice__loader"},{"name":"sync_copy_input","schema":"slice__loader"},{"name":"sync_copy_output","schema":"slice__loader"},{"name":"sync_done","schema":"slice__loader"},{"name":"sync_due","schema":"slice__loader"},{"name":"sync_exclusive_key","schema":"slice__loader"},{"name":"sync_exhausted","schema":"slice__loader"},{"name":"sync_failed","schema":"slice__loader"},{"name":"sync_fenced","schema":"slice__loader"},{"name":"sync_finish","schema":"slice__loader"},{"name":"sync_gold_input","schema":"slice__loader"},{"name":"sync_held","schema":"slice__loader"},{"name":"sync_refusal","schema":"slice__loader"},{"name":"sync_result","schema":"slice__loader"},{"name":"sync_retry","schema":"slice__loader"},{"name":"sync_root","schema":"slice__loader"},{"name":"sync_scope","schema":"slice__loader"},{"name":"sync_skipped","schema":"slice__loader"},{"name":"sync_start_scope","schema":"slice__loader"},{"name":"sync_start_step","schema":"slice__loader"},{"name":"sync_step","schema":"slice__loader"},{"name":"sync_sync_run_input","schema":"slice__loader"},{"name":"sync_within","schema":"slice__loader"},{"name":"tally","schema":"slice__loader"},{"name":"weight","schema":"slice__loader"}]},"privileges":["SELECT"],"to":[{"kind":"role","name":"slice__loader"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"built","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__loader"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_admitted","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__loader"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_done","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__loader"}]},
@@ -27915,7 +28661,7 @@
 				"ddl": [
 					{"kind":"grant","on":{"kind":"SCHEMA","names":["slice","slice__retry_den"]},"privileges":["USAGE"],"to":[{"kind":"role","name":"slice__retry_den"}]},
 					{"kind":"grant","on":{"kind":"DOMAIN","names":[{"name":"__domain_jotafzuj2i","schema":"slice"},{"name":"__domain_gfw43vigph","schema":"slice"},{"name":"__domain_mxhao3k6ss","schema":"slice"},{"name":"retry_join","schema":"slice"},{"name":"retry_kind","schema":"slice"},{"name":"retry_outcome","schema":"slice"},{"name":"retry_pausable","schema":"slice"}]},"privileges":["USAGE"],"to":[{"kind":"role","name":"slice__retry_den"}]},
-					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"retry_admitted","schema":"slice__retry_den"},{"name":"retry_brittle_input","schema":"slice__retry_den"},{"name":"retry_brittle_output","schema":"slice__retry_den"},{"name":"retry_claim","schema":"slice__retry_den"},{"name":"retry_done","schema":"slice__retry_den"},{"name":"retry_due","schema":"slice__retry_den"},{"name":"retry_exhausted","schema":"slice__retry_den"},{"name":"retry_failed","schema":"slice__retry_den"},{"name":"retry_finish","schema":"slice__retry_den"},{"name":"retry_held","schema":"slice__retry_den"},{"name":"retry_ladders_input","schema":"slice__retry_den"},{"name":"retry_refusal","schema":"slice__retry_den"},{"name":"retry_result","schema":"slice__retry_den"},{"name":"retry_retry","schema":"slice__retry_den"},{"name":"retry_root","schema":"slice__retry_den"},{"name":"retry_scope","schema":"slice__retry_den"},{"name":"retry_skipped","schema":"slice__retry_den"},{"name":"retry_start_scope","schema":"slice__retry_den"},{"name":"retry_start_step","schema":"slice__retry_den"},{"name":"retry_steadfast_input","schema":"slice__retry_den"},{"name":"retry_steadfast_output","schema":"slice__retry_den"},{"name":"retry_step","schema":"slice__retry_den"},{"name":"retry_within","schema":"slice__retry_den"}]},"privileges":["SELECT"],"to":[{"kind":"role","name":"slice__retry_den"}]},
+					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"retry_admitted","schema":"slice__retry_den"},{"name":"retry_brittle_input","schema":"slice__retry_den"},{"name":"retry_brittle_output","schema":"slice__retry_den"},{"name":"retry_claim","schema":"slice__retry_den"},{"name":"retry_done","schema":"slice__retry_den"},{"name":"retry_due","schema":"slice__retry_den"},{"name":"retry_exhausted","schema":"slice__retry_den"},{"name":"retry_failed","schema":"slice__retry_den"},{"name":"retry_fenced","schema":"slice__retry_den"},{"name":"retry_finish","schema":"slice__retry_den"},{"name":"retry_held","schema":"slice__retry_den"},{"name":"retry_ladders_input","schema":"slice__retry_den"},{"name":"retry_refusal","schema":"slice__retry_den"},{"name":"retry_result","schema":"slice__retry_den"},{"name":"retry_retry","schema":"slice__retry_den"},{"name":"retry_root","schema":"slice__retry_den"},{"name":"retry_scope","schema":"slice__retry_den"},{"name":"retry_skipped","schema":"slice__retry_den"},{"name":"retry_start_scope","schema":"slice__retry_den"},{"name":"retry_start_step","schema":"slice__retry_den"},{"name":"retry_steadfast_input","schema":"slice__retry_den"},{"name":"retry_steadfast_output","schema":"slice__retry_den"},{"name":"retry_step","schema":"slice__retry_den"},{"name":"retry_within","schema":"slice__retry_den"}]},"privileges":["SELECT"],"to":[{"kind":"role","name":"slice__retry_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"retry_admitted","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__retry_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"retry_brittle_input","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__retry_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"retry_claim","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__retry_den"}]},
@@ -27923,6 +28669,7 @@
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"retry_due","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__retry_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"retry_exhausted","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__retry_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"retry_failed","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__retry_den"}]},
+					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"retry_fenced","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__retry_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"retry_finish","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__retry_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"retry_held","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__retry_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"retry_ladders_input","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__retry_den"}]},
@@ -27978,7 +28725,7 @@
 				"ddl": [
 					{"kind":"grant","on":{"kind":"SCHEMA","names":["slice","slice__sync_den"]},"privileges":["USAGE"],"to":[{"kind":"role","name":"slice__sync_den"}]},
 					{"kind":"grant","on":{"kind":"DOMAIN","names":[{"name":"__domain_jotafzuj2i","schema":"slice"},{"name":"__domain_gfw43vigph","schema":"slice"},{"name":"__domain_mxhao3k6ss","schema":"slice"},{"name":"chain_kind","schema":"slice"},{"name":"chain_outcome","schema":"slice"},{"name":"sync_join","schema":"slice"},{"name":"sync_kind","schema":"slice"},{"name":"sync_outcome","schema":"slice"},{"name":"sync_pausable","schema":"slice"}]},"privileges":["USAGE"],"to":[{"kind":"role","name":"slice__sync_den"}]},
-					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_result","schema":"slice__sync_den"},{"name":"chain_step","schema":"slice__sync_den"},{"name":"sync_admitted","schema":"slice__sync_den"},{"name":"sync_build_input","schema":"slice__sync_den"},{"name":"sync_build_output","schema":"slice__sync_den"},{"name":"sync_claim","schema":"slice__sync_den"},{"name":"sync_copy_input","schema":"slice__sync_den"},{"name":"sync_copy_output","schema":"slice__sync_den"},{"name":"sync_done","schema":"slice__sync_den"},{"name":"sync_due","schema":"slice__sync_den"},{"name":"sync_exclusive_key","schema":"slice__sync_den"},{"name":"sync_exhausted","schema":"slice__sync_den"},{"name":"sync_failed","schema":"slice__sync_den"},{"name":"sync_finish","schema":"slice__sync_den"},{"name":"sync_gold_input","schema":"slice__sync_den"},{"name":"sync_held","schema":"slice__sync_den"},{"name":"sync_refusal","schema":"slice__sync_den"},{"name":"sync_result","schema":"slice__sync_den"},{"name":"sync_retry","schema":"slice__sync_den"},{"name":"sync_root","schema":"slice__sync_den"},{"name":"sync_scope","schema":"slice__sync_den"},{"name":"sync_skipped","schema":"slice__sync_den"},{"name":"sync_start_scope","schema":"slice__sync_den"},{"name":"sync_start_step","schema":"slice__sync_den"},{"name":"sync_step","schema":"slice__sync_den"},{"name":"sync_sync_run_input","schema":"slice__sync_den"},{"name":"sync_within","schema":"slice__sync_den"}]},"privileges":["SELECT"],"to":[{"kind":"role","name":"slice__sync_den"}]},
+					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_result","schema":"slice__sync_den"},{"name":"chain_step","schema":"slice__sync_den"},{"name":"sync_admitted","schema":"slice__sync_den"},{"name":"sync_build_input","schema":"slice__sync_den"},{"name":"sync_build_output","schema":"slice__sync_den"},{"name":"sync_claim","schema":"slice__sync_den"},{"name":"sync_copy_input","schema":"slice__sync_den"},{"name":"sync_copy_output","schema":"slice__sync_den"},{"name":"sync_done","schema":"slice__sync_den"},{"name":"sync_due","schema":"slice__sync_den"},{"name":"sync_exclusive_key","schema":"slice__sync_den"},{"name":"sync_exhausted","schema":"slice__sync_den"},{"name":"sync_failed","schema":"slice__sync_den"},{"name":"sync_fenced","schema":"slice__sync_den"},{"name":"sync_finish","schema":"slice__sync_den"},{"name":"sync_gold_input","schema":"slice__sync_den"},{"name":"sync_held","schema":"slice__sync_den"},{"name":"sync_refusal","schema":"slice__sync_den"},{"name":"sync_result","schema":"slice__sync_den"},{"name":"sync_retry","schema":"slice__sync_den"},{"name":"sync_root","schema":"slice__sync_den"},{"name":"sync_scope","schema":"slice__sync_den"},{"name":"sync_skipped","schema":"slice__sync_den"},{"name":"sync_start_scope","schema":"slice__sync_den"},{"name":"sync_start_step","schema":"slice__sync_den"},{"name":"sync_step","schema":"slice__sync_den"},{"name":"sync_sync_run_input","schema":"slice__sync_den"},{"name":"sync_within","schema":"slice__sync_den"}]},"privileges":["SELECT"],"to":[{"kind":"role","name":"slice__sync_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"sync_admitted","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__sync_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"sync_build_input","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__sync_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"sync_claim","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__sync_den"}]},
@@ -27988,6 +28735,7 @@
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"sync_exclusive_key","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__sync_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"sync_exhausted","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__sync_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"sync_failed","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__sync_den"}]},
+					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"sync_fenced","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__sync_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"sync_finish","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__sync_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"sync_gold_input","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__sync_den"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"sync_held","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__sync_den"}]},
@@ -28066,7 +28814,7 @@
 		],
 		"publicRevokes": [
 			{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"SCHEMA","names":["slice","slice__auditor","slice__loader","slice__chain_coordinator","slice__chain_den","slice__fan_coordinator","slice__fan_den","slice__retry_coordinator","slice__retry_den","slice__sync_coordinator","slice__sync_den"]},"privileges":["ALL"]},
-			{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"TABLE","names":[{"name":"audit","schema":"slice"},{"name":"built","schema":"slice"},{"name":"chain_admitted","schema":"slice"},{"name":"chain_chain_run_input","schema":"slice"},{"name":"chain_claim","schema":"slice"},{"name":"chain_done","schema":"slice"},{"name":"chain_due","schema":"slice"},{"name":"chain_exhausted","schema":"slice"},{"name":"chain_failed","schema":"slice"},{"name":"chain_finish","schema":"slice"},{"name":"chain_held","schema":"slice"},{"name":"chain_next","schema":"slice"},{"name":"chain_ordered_input","schema":"slice"},{"name":"chain_page_input","schema":"slice"},{"name":"chain_page_input_after","schema":"slice"},{"name":"chain_page_output","schema":"slice"},{"name":"chain_page_output_next","schema":"slice"},{"name":"chain_page_read","schema":"slice"},{"name":"chain_paused","schema":"slice"},{"name":"chain_refusal","schema":"slice"},{"name":"chain_result","schema":"slice"},{"name":"chain_resumed","schema":"slice"},{"name":"chain_retry","schema":"slice"},{"name":"chain_root","schema":"slice"},{"name":"chain_scope","schema":"slice"},{"name":"chain_skipped","schema":"slice"},{"name":"chain_start_scope","schema":"slice"},{"name":"chain_start_step","schema":"slice"},{"name":"chain_step","schema":"slice"},{"name":"chain_within","schema":"slice"},{"name":"copied","schema":"slice"},{"name":"cursor","schema":"slice"},{"name":"fan_admitted","schema":"slice"},{"name":"fan_batch_input","schema":"slice"},{"name":"fan_claim","schema":"slice"},{"name":"fan_done","schema":"slice"},{"name":"fan_due","schema":"slice"},{"name":"fan_exhausted","schema":"slice"},{"name":"fan_failed","schema":"slice"},{"name":"fan_fan_run_input","schema":"slice"},{"name":"fan_finish","schema":"slice"},{"name":"fan_freed","schema":"slice"},{"name":"fan_held","schema":"slice"},{"name":"fan_hold","schema":"slice"},{"name":"fan_paused","schema":"slice"},{"name":"fan_refusal","schema":"slice"},{"name":"fan_result","schema":"slice"},{"name":"fan_resumed","schema":"slice"},{"name":"fan_retry","schema":"slice"},{"name":"fan_root","schema":"slice"},{"name":"fan_scope","schema":"slice"},{"name":"fan_skipped","schema":"slice"},{"name":"fan_square_input","schema":"slice"},{"name":"fan_square_output","schema":"slice"},{"name":"fan_start_scope","schema":"slice"},{"name":"fan_start_step","schema":"slice"},{"name":"fan_step","schema":"slice"},{"name":"fan_within","schema":"slice"},{"name":"item","schema":"slice"},{"name":"order","schema":"slice"},{"name":"retry_admitted","schema":"slice"},{"name":"retry_brittle_input","schema":"slice"},{"name":"retry_brittle_output","schema":"slice"},{"name":"retry_claim","schema":"slice"},{"name":"retry_done","schema":"slice"},{"name":"retry_due","schema":"slice"},{"name":"retry_exhausted","schema":"slice"},{"name":"retry_failed","schema":"slice"},{"name":"retry_finish","schema":"slice"},{"name":"retry_held","schema":"slice"},{"name":"retry_ladders_input","schema":"slice"},{"name":"retry_paused","schema":"slice"},{"name":"retry_refusal","schema":"slice"},{"name":"retry_result","schema":"slice"},{"name":"retry_resumed","schema":"slice"},{"name":"retry_retry","schema":"slice"},{"name":"retry_root","schema":"slice"},{"name":"retry_scope","schema":"slice"},{"name":"retry_skipped","schema":"slice"},{"name":"retry_start_scope","schema":"slice"},{"name":"retry_start_step","schema":"slice"},{"name":"retry_steadfast_input","schema":"slice"},{"name":"retry_steadfast_output","schema":"slice"},{"name":"retry_step","schema":"slice"},{"name":"retry_within","schema":"slice"},{"name":"settled","schema":"slice"},{"name":"sync_admitted","schema":"slice"},{"name":"sync_build_input","schema":"slice"},{"name":"sync_build_output","schema":"slice"},{"name":"sync_claim","schema":"slice"},{"name":"sync_copy_input","schema":"slice"},{"name":"sync_copy_output","schema":"slice"},{"name":"sync_done","schema":"slice"},{"name":"sync_due","schema":"slice"},{"name":"sync_exclusive","schema":"slice"},{"name":"sync_exclusive_key","schema":"slice"},{"name":"sync_exhausted","schema":"slice"},{"name":"sync_failed","schema":"slice"},{"name":"sync_finish","schema":"slice"},{"name":"sync_gold_input","schema":"slice"},{"name":"sync_held","schema":"slice"},{"name":"sync_paused","schema":"slice"},{"name":"sync_refusal","schema":"slice"},{"name":"sync_released","schema":"slice"},{"name":"sync_result","schema":"slice"},{"name":"sync_resumed","schema":"slice"},{"name":"sync_retry","schema":"slice"},{"name":"sync_root","schema":"slice"},{"name":"sync_scope","schema":"slice"},{"name":"sync_skipped","schema":"slice"},{"name":"sync_start_scope","schema":"slice"},{"name":"sync_start_step","schema":"slice"},{"name":"sync_step","schema":"slice"},{"name":"sync_sync_run_input","schema":"slice"},{"name":"sync_within","schema":"slice"},{"name":"tally","schema":"slice"},{"name":"weight","schema":"slice"},{"name":"audit","schema":"slice__auditor"},{"name":"built","schema":"slice__auditor"},{"name":"chain_admitted","schema":"slice__auditor"},{"name":"chain_chain_run_input","schema":"slice__auditor"},{"name":"chain_claim","schema":"slice__auditor"},{"name":"chain_finish","schema":"slice__auditor"},{"name":"chain_next","schema":"slice__auditor"},{"name":"chain_ordered_input","schema":"slice__auditor"},{"name":"chain_page_input","schema":"slice__auditor"},{"name":"chain_page_input_after","schema":"slice__auditor"},{"name":"chain_page_output","schema":"slice__auditor"},{"name":"chain_page_output_next","schema":"slice__auditor"},{"name":"chain_page_read","schema":"slice__auditor"},{"name":"chain_result","schema":"slice__auditor"},{"name":"chain_root","schema":"slice__auditor"},{"name":"chain_scope","schema":"slice__auditor"},{"name":"chain_start_scope","schema":"slice__auditor"},{"name":"chain_start_step","schema":"slice__auditor"},{"name":"chain_step","schema":"slice__auditor"},{"name":"chain_within","schema":"slice__auditor"},{"name":"copied","schema":"slice__auditor"},{"name":"cursor","schema":"slice__auditor"},{"name":"fan_admitted","schema":"slice__auditor"},{"name":"fan_batch_input","schema":"slice__auditor"},{"name":"fan_fan_run_input","schema":"slice__auditor"},{"name":"fan_finish","schema":"slice__auditor"},{"name":"fan_result","schema":"slice__auditor"},{"name":"fan_root","schema":"slice__auditor"},{"name":"fan_scope","schema":"slice__auditor"},{"name":"fan_square_input","schema":"slice__auditor"},{"name":"fan_square_output","schema":"slice__auditor"},{"name":"fan_start_scope","schema":"slice__auditor"},{"name":"fan_start_step","schema":"slice__auditor"},{"name":"fan_step","schema":"slice__auditor"},{"name":"fan_within","schema":"slice__auditor"},{"name":"item","schema":"slice__auditor"},{"name":"order","schema":"slice__auditor"},{"name":"retry_claim","schema":"slice__auditor"},{"name":"retry_exhausted","schema":"slice__auditor"},{"name":"retry_result","schema":"slice__auditor"},{"name":"retry_step","schema":"slice__auditor"},{"name":"settled","schema":"slice__auditor"},{"name":"sync_admitted","schema":"slice__auditor"},{"name":"sync_finish","schema":"slice__auditor"},{"name":"sync_result","schema":"slice__auditor"},{"name":"sync_scope","schema":"slice__auditor"},{"name":"sync_skipped","schema":"slice__auditor"},{"name":"tally","schema":"slice__auditor"},{"name":"weight","schema":"slice__auditor"},{"name":"built","schema":"slice__loader"},{"name":"chain_admitted","schema":"slice__loader"},{"name":"chain_chain_run_input","schema":"slice__loader"},{"name":"chain_claim","schema":"slice__loader"},{"name":"chain_done","schema":"slice__loader"},{"name":"chain_due","schema":"slice__loader"},{"name":"chain_exhausted","schema":"slice__loader"},{"name":"chain_failed","schema":"slice__loader"},{"name":"chain_finish","schema":"slice__loader"},{"name":"chain_held","schema":"slice__loader"},{"name":"chain_next","schema":"slice__loader"},{"name":"chain_ordered_input","schema":"slice__loader"},{"name":"chain_page_input","schema":"slice__loader"},{"name":"chain_page_input_after","schema":"slice__loader"},{"name":"chain_page_output","schema":"slice__loader"},{"name":"chain_page_output_next","schema":"slice__loader"},{"name":"chain_page_read","schema":"slice__loader"},{"name":"chain_refusal","schema":"slice__loader"},{"name":"chain_result","schema":"slice__loader"},{"name":"chain_retry","schema":"slice__loader"},{"name":"chain_root","schema":"slice__loader"},{"name":"chain_scope","schema":"slice__loader"},{"name":"chain_skipped","schema":"slice__loader"},{"name":"chain_start_scope","schema":"slice__loader"},{"name":"chain_start_step","schema":"slice__loader"},{"name":"chain_step","schema":"slice__loader"},{"name":"chain_within","schema":"slice__loader"},{"name":"copied","schema":"slice__loader"},{"name":"cursor","schema":"slice__loader"},{"name":"fan_admitted","schema":"slice__loader"},{"name":"fan_batch_input","schema":"slice__loader"},{"name":"fan_claim","schema":"slice__loader"},{"name":"fan_done","schema":"slice__loader"},{"name":"fan_due","schema":"slice__loader"},{"name":"fan_exhausted","schema":"slice__loader"},{"name":"fan_failed","schema":"slice__loader"},{"name":"fan_fan_run_input","schema":"slice__loader"},{"name":"fan_finish","schema":"slice__loader"},{"name":"fan_held","schema":"slice__loader"},{"name":"fan_refusal","schema":"slice__loader"},{"name":"fan_result","schema":"slice__loader"},{"name":"fan_retry","schema":"slice__loader"},{"name":"fan_root","schema":"slice__loader"},{"name":"fan_scope","schema":"slice__loader"},{"name":"fan_skipped","schema":"slice__loader"},{"name":"fan_square_input","schema":"slice__loader"},{"name":"fan_square_output","schema":"slice__loader"},{"name":"fan_start_scope","schema":"slice__loader"},{"name":"fan_start_step","schema":"slice__loader"},{"name":"fan_step","schema":"slice__loader"},{"name":"fan_within","schema":"slice__loader"},{"name":"item","schema":"slice__loader"},{"name":"order","schema":"slice__loader"},{"name":"retry_admitted","schema":"slice__loader"},{"name":"retry_brittle_input","schema":"slice__loader"},{"name":"retry_brittle_output","schema":"slice__loader"},{"name":"retry_claim","schema":"slice__loader"},{"name":"retry_done","schema":"slice__loader"},{"name":"retry_due","schema":"slice__loader"},{"name":"retry_exhausted","schema":"slice__loader"},{"name":"retry_failed","schema":"slice__loader"},{"name":"retry_finish","schema":"slice__loader"},{"name":"retry_held","schema":"slice__loader"},{"name":"retry_ladders_input","schema":"slice__loader"},{"name":"retry_refusal","schema":"slice__loader"},{"name":"retry_result","schema":"slice__loader"},{"name":"retry_retry","schema":"slice__loader"},{"name":"retry_root","schema":"slice__loader"},{"name":"retry_scope","schema":"slice__loader"},{"name":"retry_skipped","schema":"slice__loader"},{"name":"retry_start_scope","schema":"slice__loader"},{"name":"retry_start_step","schema":"slice__loader"},{"name":"retry_steadfast_input","schema":"slice__loader"},{"name":"retry_steadfast_output","schema":"slice__loader"},{"name":"retry_step","schema":"slice__loader"},{"name":"retry_within","schema":"slice__loader"},{"name":"settled","schema":"slice__loader"},{"name":"sync_admitted","schema":"slice__loader"},{"name":"sync_build_input","schema":"slice__loader"},{"name":"sync_build_output","schema":"slice__loader"},{"name":"sync_claim","schema":"slice__loader"},{"name":"sync_copy_input","schema":"slice__loader"},{"name":"sync_copy_output","schema":"slice__loader"},{"name":"sync_done","schema":"slice__loader"},{"name":"sync_due","schema":"slice__loader"},{"name":"sync_exclusive_key","schema":"slice__loader"},{"name":"sync_exhausted","schema":"slice__loader"},{"name":"sync_failed","schema":"slice__loader"},{"name":"sync_finish","schema":"slice__loader"},{"name":"sync_gold_input","schema":"slice__loader"},{"name":"sync_held","schema":"slice__loader"},{"name":"sync_refusal","schema":"slice__loader"},{"name":"sync_result","schema":"slice__loader"},{"name":"sync_retry","schema":"slice__loader"},{"name":"sync_root","schema":"slice__loader"},{"name":"sync_scope","schema":"slice__loader"},{"name":"sync_skipped","schema":"slice__loader"},{"name":"sync_start_scope","schema":"slice__loader"},{"name":"sync_start_step","schema":"slice__loader"},{"name":"sync_step","schema":"slice__loader"},{"name":"sync_sync_run_input","schema":"slice__loader"},{"name":"sync_within","schema":"slice__loader"},{"name":"tally","schema":"slice__loader"},{"name":"weight","schema":"slice__loader"},{"name":"chain_paused","schema":"slice__chain_coordinator"},{"name":"chain_resumed","schema":"slice__chain_coordinator"},{"name":"chain_admitted","schema":"slice__chain_den"},{"name":"chain_chain_run_input","schema":"slice__chain_den"},{"name":"chain_claim","schema":"slice__chain_den"},{"name":"chain_done","schema":"slice__chain_den"},{"name":"chain_due","schema":"slice__chain_den"},{"name":"chain_exhausted","schema":"slice__chain_den"},{"name":"chain_failed","schema":"slice__chain_den"},{"name":"chain_finish","schema":"slice__chain_den"},{"name":"chain_held","schema":"slice__chain_den"},{"name":"chain_next","schema":"slice__chain_den"},{"name":"chain_ordered_input","schema":"slice__chain_den"},{"name":"chain_page_input","schema":"slice__chain_den"},{"name":"chain_page_input_after","schema":"slice__chain_den"},{"name":"chain_page_output","schema":"slice__chain_den"},{"name":"chain_page_output_next","schema":"slice__chain_den"},{"name":"chain_page_read","schema":"slice__chain_den"},{"name":"chain_refusal","schema":"slice__chain_den"},{"name":"chain_result","schema":"slice__chain_den"},{"name":"chain_retry","schema":"slice__chain_den"},{"name":"chain_root","schema":"slice__chain_den"},{"name":"chain_scope","schema":"slice__chain_den"},{"name":"chain_skipped","schema":"slice__chain_den"},{"name":"chain_start_scope","schema":"slice__chain_den"},{"name":"chain_start_step","schema":"slice__chain_den"},{"name":"chain_step","schema":"slice__chain_den"},{"name":"chain_within","schema":"slice__chain_den"},{"name":"fan_freed","schema":"slice__fan_coordinator"},{"name":"fan_hold","schema":"slice__fan_coordinator"},{"name":"fan_paused","schema":"slice__fan_coordinator"},{"name":"fan_resumed","schema":"slice__fan_coordinator"},{"name":"fan_admitted","schema":"slice__fan_den"},{"name":"fan_batch_input","schema":"slice__fan_den"},{"name":"fan_claim","schema":"slice__fan_den"},{"name":"fan_done","schema":"slice__fan_den"},{"name":"fan_due","schema":"slice__fan_den"},{"name":"fan_exhausted","schema":"slice__fan_den"},{"name":"fan_failed","schema":"slice__fan_den"},{"name":"fan_fan_run_input","schema":"slice__fan_den"},{"name":"fan_finish","schema":"slice__fan_den"},{"name":"fan_held","schema":"slice__fan_den"},{"name":"fan_refusal","schema":"slice__fan_den"},{"name":"fan_result","schema":"slice__fan_den"},{"name":"fan_retry","schema":"slice__fan_den"},{"name":"fan_root","schema":"slice__fan_den"},{"name":"fan_scope","schema":"slice__fan_den"},{"name":"fan_skipped","schema":"slice__fan_den"},{"name":"fan_square_input","schema":"slice__fan_den"},{"name":"fan_square_output","schema":"slice__fan_den"},{"name":"fan_start_scope","schema":"slice__fan_den"},{"name":"fan_start_step","schema":"slice__fan_den"},{"name":"fan_step","schema":"slice__fan_den"},{"name":"fan_within","schema":"slice__fan_den"},{"name":"retry_paused","schema":"slice__retry_coordinator"},{"name":"retry_resumed","schema":"slice__retry_coordinator"},{"name":"retry_admitted","schema":"slice__retry_den"},{"name":"retry_brittle_input","schema":"slice__retry_den"},{"name":"retry_brittle_output","schema":"slice__retry_den"},{"name":"retry_claim","schema":"slice__retry_den"},{"name":"retry_done","schema":"slice__retry_den"},{"name":"retry_due","schema":"slice__retry_den"},{"name":"retry_exhausted","schema":"slice__retry_den"},{"name":"retry_failed","schema":"slice__retry_den"},{"name":"retry_finish","schema":"slice__retry_den"},{"name":"retry_held","schema":"slice__retry_den"},{"name":"retry_ladders_input","schema":"slice__retry_den"},{"name":"retry_refusal","schema":"slice__retry_den"},{"name":"retry_result","schema":"slice__retry_den"},{"name":"retry_retry","schema":"slice__retry_den"},{"name":"retry_root","schema":"slice__retry_den"},{"name":"retry_scope","schema":"slice__retry_den"},{"name":"retry_skipped","schema":"slice__retry_den"},{"name":"retry_start_scope","schema":"slice__retry_den"},{"name":"retry_start_step","schema":"slice__retry_den"},{"name":"retry_steadfast_input","schema":"slice__retry_den"},{"name":"retry_steadfast_output","schema":"slice__retry_den"},{"name":"retry_step","schema":"slice__retry_den"},{"name":"retry_within","schema":"slice__retry_den"},{"name":"sync_exclusive","schema":"slice__sync_coordinator"},{"name":"sync_paused","schema":"slice__sync_coordinator"},{"name":"sync_released","schema":"slice__sync_coordinator"},{"name":"sync_resumed","schema":"slice__sync_coordinator"},{"name":"chain_result","schema":"slice__sync_den"},{"name":"chain_step","schema":"slice__sync_den"},{"name":"sync_admitted","schema":"slice__sync_den"},{"name":"sync_build_input","schema":"slice__sync_den"},{"name":"sync_build_output","schema":"slice__sync_den"},{"name":"sync_claim","schema":"slice__sync_den"},{"name":"sync_copy_input","schema":"slice__sync_den"},{"name":"sync_copy_output","schema":"slice__sync_den"},{"name":"sync_done","schema":"slice__sync_den"},{"name":"sync_due","schema":"slice__sync_den"},{"name":"sync_exclusive_key","schema":"slice__sync_den"},{"name":"sync_exhausted","schema":"slice__sync_den"},{"name":"sync_failed","schema":"slice__sync_den"},{"name":"sync_finish","schema":"slice__sync_den"},{"name":"sync_gold_input","schema":"slice__sync_den"},{"name":"sync_held","schema":"slice__sync_den"},{"name":"sync_refusal","schema":"slice__sync_den"},{"name":"sync_result","schema":"slice__sync_den"},{"name":"sync_retry","schema":"slice__sync_den"},{"name":"sync_root","schema":"slice__sync_den"},{"name":"sync_scope","schema":"slice__sync_den"},{"name":"sync_skipped","schema":"slice__sync_den"},{"name":"sync_start_scope","schema":"slice__sync_den"},{"name":"sync_start_step","schema":"slice__sync_den"},{"name":"sync_step","schema":"slice__sync_den"},{"name":"sync_sync_run_input","schema":"slice__sync_den"},{"name":"sync_within","schema":"slice__sync_den"}]},"privileges":["ALL"]},
+			{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"TABLE","names":[{"name":"audit","schema":"slice"},{"name":"built","schema":"slice"},{"name":"chain_admitted","schema":"slice"},{"name":"chain_chain_run_input","schema":"slice"},{"name":"chain_claim","schema":"slice"},{"name":"chain_done","schema":"slice"},{"name":"chain_due","schema":"slice"},{"name":"chain_exhausted","schema":"slice"},{"name":"chain_failed","schema":"slice"},{"name":"chain_fenced","schema":"slice"},{"name":"chain_finish","schema":"slice"},{"name":"chain_held","schema":"slice"},{"name":"chain_next","schema":"slice"},{"name":"chain_ordered_input","schema":"slice"},{"name":"chain_page_input","schema":"slice"},{"name":"chain_page_input_after","schema":"slice"},{"name":"chain_page_output","schema":"slice"},{"name":"chain_page_output_next","schema":"slice"},{"name":"chain_page_read","schema":"slice"},{"name":"chain_paused","schema":"slice"},{"name":"chain_refusal","schema":"slice"},{"name":"chain_result","schema":"slice"},{"name":"chain_resumed","schema":"slice"},{"name":"chain_retry","schema":"slice"},{"name":"chain_root","schema":"slice"},{"name":"chain_scope","schema":"slice"},{"name":"chain_skipped","schema":"slice"},{"name":"chain_start_scope","schema":"slice"},{"name":"chain_start_step","schema":"slice"},{"name":"chain_step","schema":"slice"},{"name":"chain_within","schema":"slice"},{"name":"copied","schema":"slice"},{"name":"cursor","schema":"slice"},{"name":"fan_admitted","schema":"slice"},{"name":"fan_batch_input","schema":"slice"},{"name":"fan_claim","schema":"slice"},{"name":"fan_done","schema":"slice"},{"name":"fan_due","schema":"slice"},{"name":"fan_exhausted","schema":"slice"},{"name":"fan_failed","schema":"slice"},{"name":"fan_fan_run_input","schema":"slice"},{"name":"fan_fenced","schema":"slice"},{"name":"fan_finish","schema":"slice"},{"name":"fan_freed","schema":"slice"},{"name":"fan_held","schema":"slice"},{"name":"fan_hold","schema":"slice"},{"name":"fan_paused","schema":"slice"},{"name":"fan_refusal","schema":"slice"},{"name":"fan_result","schema":"slice"},{"name":"fan_resumed","schema":"slice"},{"name":"fan_retry","schema":"slice"},{"name":"fan_root","schema":"slice"},{"name":"fan_scope","schema":"slice"},{"name":"fan_skipped","schema":"slice"},{"name":"fan_square_input","schema":"slice"},{"name":"fan_square_output","schema":"slice"},{"name":"fan_start_scope","schema":"slice"},{"name":"fan_start_step","schema":"slice"},{"name":"fan_step","schema":"slice"},{"name":"fan_within","schema":"slice"},{"name":"item","schema":"slice"},{"name":"order","schema":"slice"},{"name":"retry_admitted","schema":"slice"},{"name":"retry_brittle_input","schema":"slice"},{"name":"retry_brittle_output","schema":"slice"},{"name":"retry_claim","schema":"slice"},{"name":"retry_done","schema":"slice"},{"name":"retry_due","schema":"slice"},{"name":"retry_exhausted","schema":"slice"},{"name":"retry_failed","schema":"slice"},{"name":"retry_fenced","schema":"slice"},{"name":"retry_finish","schema":"slice"},{"name":"retry_held","schema":"slice"},{"name":"retry_ladders_input","schema":"slice"},{"name":"retry_paused","schema":"slice"},{"name":"retry_refusal","schema":"slice"},{"name":"retry_result","schema":"slice"},{"name":"retry_resumed","schema":"slice"},{"name":"retry_retry","schema":"slice"},{"name":"retry_root","schema":"slice"},{"name":"retry_scope","schema":"slice"},{"name":"retry_skipped","schema":"slice"},{"name":"retry_start_scope","schema":"slice"},{"name":"retry_start_step","schema":"slice"},{"name":"retry_steadfast_input","schema":"slice"},{"name":"retry_steadfast_output","schema":"slice"},{"name":"retry_step","schema":"slice"},{"name":"retry_within","schema":"slice"},{"name":"settled","schema":"slice"},{"name":"sync_admitted","schema":"slice"},{"name":"sync_build_input","schema":"slice"},{"name":"sync_build_output","schema":"slice"},{"name":"sync_claim","schema":"slice"},{"name":"sync_copy_input","schema":"slice"},{"name":"sync_copy_output","schema":"slice"},{"name":"sync_done","schema":"slice"},{"name":"sync_due","schema":"slice"},{"name":"sync_exclusive","schema":"slice"},{"name":"sync_exclusive_key","schema":"slice"},{"name":"sync_exhausted","schema":"slice"},{"name":"sync_failed","schema":"slice"},{"name":"sync_fenced","schema":"slice"},{"name":"sync_finish","schema":"slice"},{"name":"sync_gold_input","schema":"slice"},{"name":"sync_held","schema":"slice"},{"name":"sync_paused","schema":"slice"},{"name":"sync_refusal","schema":"slice"},{"name":"sync_released","schema":"slice"},{"name":"sync_result","schema":"slice"},{"name":"sync_resumed","schema":"slice"},{"name":"sync_retry","schema":"slice"},{"name":"sync_root","schema":"slice"},{"name":"sync_scope","schema":"slice"},{"name":"sync_skipped","schema":"slice"},{"name":"sync_start_scope","schema":"slice"},{"name":"sync_start_step","schema":"slice"},{"name":"sync_step","schema":"slice"},{"name":"sync_sync_run_input","schema":"slice"},{"name":"sync_within","schema":"slice"},{"name":"tally","schema":"slice"},{"name":"weight","schema":"slice"},{"name":"audit","schema":"slice__auditor"},{"name":"built","schema":"slice__auditor"},{"name":"chain_admitted","schema":"slice__auditor"},{"name":"chain_chain_run_input","schema":"slice__auditor"},{"name":"chain_claim","schema":"slice__auditor"},{"name":"chain_finish","schema":"slice__auditor"},{"name":"chain_next","schema":"slice__auditor"},{"name":"chain_ordered_input","schema":"slice__auditor"},{"name":"chain_page_input","schema":"slice__auditor"},{"name":"chain_page_input_after","schema":"slice__auditor"},{"name":"chain_page_output","schema":"slice__auditor"},{"name":"chain_page_output_next","schema":"slice__auditor"},{"name":"chain_page_read","schema":"slice__auditor"},{"name":"chain_result","schema":"slice__auditor"},{"name":"chain_root","schema":"slice__auditor"},{"name":"chain_scope","schema":"slice__auditor"},{"name":"chain_start_scope","schema":"slice__auditor"},{"name":"chain_start_step","schema":"slice__auditor"},{"name":"chain_step","schema":"slice__auditor"},{"name":"chain_within","schema":"slice__auditor"},{"name":"copied","schema":"slice__auditor"},{"name":"cursor","schema":"slice__auditor"},{"name":"fan_admitted","schema":"slice__auditor"},{"name":"fan_batch_input","schema":"slice__auditor"},{"name":"fan_fan_run_input","schema":"slice__auditor"},{"name":"fan_finish","schema":"slice__auditor"},{"name":"fan_result","schema":"slice__auditor"},{"name":"fan_root","schema":"slice__auditor"},{"name":"fan_scope","schema":"slice__auditor"},{"name":"fan_square_input","schema":"slice__auditor"},{"name":"fan_square_output","schema":"slice__auditor"},{"name":"fan_start_scope","schema":"slice__auditor"},{"name":"fan_start_step","schema":"slice__auditor"},{"name":"fan_step","schema":"slice__auditor"},{"name":"fan_within","schema":"slice__auditor"},{"name":"item","schema":"slice__auditor"},{"name":"order","schema":"slice__auditor"},{"name":"retry_claim","schema":"slice__auditor"},{"name":"retry_exhausted","schema":"slice__auditor"},{"name":"retry_result","schema":"slice__auditor"},{"name":"retry_step","schema":"slice__auditor"},{"name":"settled","schema":"slice__auditor"},{"name":"sync_admitted","schema":"slice__auditor"},{"name":"sync_finish","schema":"slice__auditor"},{"name":"sync_result","schema":"slice__auditor"},{"name":"sync_scope","schema":"slice__auditor"},{"name":"sync_skipped","schema":"slice__auditor"},{"name":"tally","schema":"slice__auditor"},{"name":"weight","schema":"slice__auditor"},{"name":"built","schema":"slice__loader"},{"name":"chain_admitted","schema":"slice__loader"},{"name":"chain_chain_run_input","schema":"slice__loader"},{"name":"chain_claim","schema":"slice__loader"},{"name":"chain_done","schema":"slice__loader"},{"name":"chain_due","schema":"slice__loader"},{"name":"chain_exhausted","schema":"slice__loader"},{"name":"chain_failed","schema":"slice__loader"},{"name":"chain_fenced","schema":"slice__loader"},{"name":"chain_finish","schema":"slice__loader"},{"name":"chain_held","schema":"slice__loader"},{"name":"chain_next","schema":"slice__loader"},{"name":"chain_ordered_input","schema":"slice__loader"},{"name":"chain_page_input","schema":"slice__loader"},{"name":"chain_page_input_after","schema":"slice__loader"},{"name":"chain_page_output","schema":"slice__loader"},{"name":"chain_page_output_next","schema":"slice__loader"},{"name":"chain_page_read","schema":"slice__loader"},{"name":"chain_refusal","schema":"slice__loader"},{"name":"chain_result","schema":"slice__loader"},{"name":"chain_retry","schema":"slice__loader"},{"name":"chain_root","schema":"slice__loader"},{"name":"chain_scope","schema":"slice__loader"},{"name":"chain_skipped","schema":"slice__loader"},{"name":"chain_start_scope","schema":"slice__loader"},{"name":"chain_start_step","schema":"slice__loader"},{"name":"chain_step","schema":"slice__loader"},{"name":"chain_within","schema":"slice__loader"},{"name":"copied","schema":"slice__loader"},{"name":"cursor","schema":"slice__loader"},{"name":"fan_admitted","schema":"slice__loader"},{"name":"fan_batch_input","schema":"slice__loader"},{"name":"fan_claim","schema":"slice__loader"},{"name":"fan_done","schema":"slice__loader"},{"name":"fan_due","schema":"slice__loader"},{"name":"fan_exhausted","schema":"slice__loader"},{"name":"fan_failed","schema":"slice__loader"},{"name":"fan_fan_run_input","schema":"slice__loader"},{"name":"fan_fenced","schema":"slice__loader"},{"name":"fan_finish","schema":"slice__loader"},{"name":"fan_held","schema":"slice__loader"},{"name":"fan_refusal","schema":"slice__loader"},{"name":"fan_result","schema":"slice__loader"},{"name":"fan_retry","schema":"slice__loader"},{"name":"fan_root","schema":"slice__loader"},{"name":"fan_scope","schema":"slice__loader"},{"name":"fan_skipped","schema":"slice__loader"},{"name":"fan_square_input","schema":"slice__loader"},{"name":"fan_square_output","schema":"slice__loader"},{"name":"fan_start_scope","schema":"slice__loader"},{"name":"fan_start_step","schema":"slice__loader"},{"name":"fan_step","schema":"slice__loader"},{"name":"fan_within","schema":"slice__loader"},{"name":"item","schema":"slice__loader"},{"name":"order","schema":"slice__loader"},{"name":"retry_admitted","schema":"slice__loader"},{"name":"retry_brittle_input","schema":"slice__loader"},{"name":"retry_brittle_output","schema":"slice__loader"},{"name":"retry_claim","schema":"slice__loader"},{"name":"retry_done","schema":"slice__loader"},{"name":"retry_due","schema":"slice__loader"},{"name":"retry_exhausted","schema":"slice__loader"},{"name":"retry_failed","schema":"slice__loader"},{"name":"retry_fenced","schema":"slice__loader"},{"name":"retry_finish","schema":"slice__loader"},{"name":"retry_held","schema":"slice__loader"},{"name":"retry_ladders_input","schema":"slice__loader"},{"name":"retry_refusal","schema":"slice__loader"},{"name":"retry_result","schema":"slice__loader"},{"name":"retry_retry","schema":"slice__loader"},{"name":"retry_root","schema":"slice__loader"},{"name":"retry_scope","schema":"slice__loader"},{"name":"retry_skipped","schema":"slice__loader"},{"name":"retry_start_scope","schema":"slice__loader"},{"name":"retry_start_step","schema":"slice__loader"},{"name":"retry_steadfast_input","schema":"slice__loader"},{"name":"retry_steadfast_output","schema":"slice__loader"},{"name":"retry_step","schema":"slice__loader"},{"name":"retry_within","schema":"slice__loader"},{"name":"settled","schema":"slice__loader"},{"name":"sync_admitted","schema":"slice__loader"},{"name":"sync_build_input","schema":"slice__loader"},{"name":"sync_build_output","schema":"slice__loader"},{"name":"sync_claim","schema":"slice__loader"},{"name":"sync_copy_input","schema":"slice__loader"},{"name":"sync_copy_output","schema":"slice__loader"},{"name":"sync_done","schema":"slice__loader"},{"name":"sync_due","schema":"slice__loader"},{"name":"sync_exclusive_key","schema":"slice__loader"},{"name":"sync_exhausted","schema":"slice__loader"},{"name":"sync_failed","schema":"slice__loader"},{"name":"sync_fenced","schema":"slice__loader"},{"name":"sync_finish","schema":"slice__loader"},{"name":"sync_gold_input","schema":"slice__loader"},{"name":"sync_held","schema":"slice__loader"},{"name":"sync_refusal","schema":"slice__loader"},{"name":"sync_result","schema":"slice__loader"},{"name":"sync_retry","schema":"slice__loader"},{"name":"sync_root","schema":"slice__loader"},{"name":"sync_scope","schema":"slice__loader"},{"name":"sync_skipped","schema":"slice__loader"},{"name":"sync_start_scope","schema":"slice__loader"},{"name":"sync_start_step","schema":"slice__loader"},{"name":"sync_step","schema":"slice__loader"},{"name":"sync_sync_run_input","schema":"slice__loader"},{"name":"sync_within","schema":"slice__loader"},{"name":"tally","schema":"slice__loader"},{"name":"weight","schema":"slice__loader"},{"name":"chain_paused","schema":"slice__chain_coordinator"},{"name":"chain_resumed","schema":"slice__chain_coordinator"},{"name":"chain_admitted","schema":"slice__chain_den"},{"name":"chain_chain_run_input","schema":"slice__chain_den"},{"name":"chain_claim","schema":"slice__chain_den"},{"name":"chain_done","schema":"slice__chain_den"},{"name":"chain_due","schema":"slice__chain_den"},{"name":"chain_exhausted","schema":"slice__chain_den"},{"name":"chain_failed","schema":"slice__chain_den"},{"name":"chain_fenced","schema":"slice__chain_den"},{"name":"chain_finish","schema":"slice__chain_den"},{"name":"chain_held","schema":"slice__chain_den"},{"name":"chain_next","schema":"slice__chain_den"},{"name":"chain_ordered_input","schema":"slice__chain_den"},{"name":"chain_page_input","schema":"slice__chain_den"},{"name":"chain_page_input_after","schema":"slice__chain_den"},{"name":"chain_page_output","schema":"slice__chain_den"},{"name":"chain_page_output_next","schema":"slice__chain_den"},{"name":"chain_page_read","schema":"slice__chain_den"},{"name":"chain_refusal","schema":"slice__chain_den"},{"name":"chain_result","schema":"slice__chain_den"},{"name":"chain_retry","schema":"slice__chain_den"},{"name":"chain_root","schema":"slice__chain_den"},{"name":"chain_scope","schema":"slice__chain_den"},{"name":"chain_skipped","schema":"slice__chain_den"},{"name":"chain_start_scope","schema":"slice__chain_den"},{"name":"chain_start_step","schema":"slice__chain_den"},{"name":"chain_step","schema":"slice__chain_den"},{"name":"chain_within","schema":"slice__chain_den"},{"name":"fan_freed","schema":"slice__fan_coordinator"},{"name":"fan_hold","schema":"slice__fan_coordinator"},{"name":"fan_paused","schema":"slice__fan_coordinator"},{"name":"fan_resumed","schema":"slice__fan_coordinator"},{"name":"fan_admitted","schema":"slice__fan_den"},{"name":"fan_batch_input","schema":"slice__fan_den"},{"name":"fan_claim","schema":"slice__fan_den"},{"name":"fan_done","schema":"slice__fan_den"},{"name":"fan_due","schema":"slice__fan_den"},{"name":"fan_exhausted","schema":"slice__fan_den"},{"name":"fan_failed","schema":"slice__fan_den"},{"name":"fan_fan_run_input","schema":"slice__fan_den"},{"name":"fan_fenced","schema":"slice__fan_den"},{"name":"fan_finish","schema":"slice__fan_den"},{"name":"fan_held","schema":"slice__fan_den"},{"name":"fan_refusal","schema":"slice__fan_den"},{"name":"fan_result","schema":"slice__fan_den"},{"name":"fan_retry","schema":"slice__fan_den"},{"name":"fan_root","schema":"slice__fan_den"},{"name":"fan_scope","schema":"slice__fan_den"},{"name":"fan_skipped","schema":"slice__fan_den"},{"name":"fan_square_input","schema":"slice__fan_den"},{"name":"fan_square_output","schema":"slice__fan_den"},{"name":"fan_start_scope","schema":"slice__fan_den"},{"name":"fan_start_step","schema":"slice__fan_den"},{"name":"fan_step","schema":"slice__fan_den"},{"name":"fan_within","schema":"slice__fan_den"},{"name":"retry_paused","schema":"slice__retry_coordinator"},{"name":"retry_resumed","schema":"slice__retry_coordinator"},{"name":"retry_admitted","schema":"slice__retry_den"},{"name":"retry_brittle_input","schema":"slice__retry_den"},{"name":"retry_brittle_output","schema":"slice__retry_den"},{"name":"retry_claim","schema":"slice__retry_den"},{"name":"retry_done","schema":"slice__retry_den"},{"name":"retry_due","schema":"slice__retry_den"},{"name":"retry_exhausted","schema":"slice__retry_den"},{"name":"retry_failed","schema":"slice__retry_den"},{"name":"retry_fenced","schema":"slice__retry_den"},{"name":"retry_finish","schema":"slice__retry_den"},{"name":"retry_held","schema":"slice__retry_den"},{"name":"retry_ladders_input","schema":"slice__retry_den"},{"name":"retry_refusal","schema":"slice__retry_den"},{"name":"retry_result","schema":"slice__retry_den"},{"name":"retry_retry","schema":"slice__retry_den"},{"name":"retry_root","schema":"slice__retry_den"},{"name":"retry_scope","schema":"slice__retry_den"},{"name":"retry_skipped","schema":"slice__retry_den"},{"name":"retry_start_scope","schema":"slice__retry_den"},{"name":"retry_start_step","schema":"slice__retry_den"},{"name":"retry_steadfast_input","schema":"slice__retry_den"},{"name":"retry_steadfast_output","schema":"slice__retry_den"},{"name":"retry_step","schema":"slice__retry_den"},{"name":"retry_within","schema":"slice__retry_den"},{"name":"sync_exclusive","schema":"slice__sync_coordinator"},{"name":"sync_paused","schema":"slice__sync_coordinator"},{"name":"sync_released","schema":"slice__sync_coordinator"},{"name":"sync_resumed","schema":"slice__sync_coordinator"},{"name":"chain_result","schema":"slice__sync_den"},{"name":"chain_step","schema":"slice__sync_den"},{"name":"sync_admitted","schema":"slice__sync_den"},{"name":"sync_build_input","schema":"slice__sync_den"},{"name":"sync_build_output","schema":"slice__sync_den"},{"name":"sync_claim","schema":"slice__sync_den"},{"name":"sync_copy_input","schema":"slice__sync_den"},{"name":"sync_copy_output","schema":"slice__sync_den"},{"name":"sync_done","schema":"slice__sync_den"},{"name":"sync_due","schema":"slice__sync_den"},{"name":"sync_exclusive_key","schema":"slice__sync_den"},{"name":"sync_exhausted","schema":"slice__sync_den"},{"name":"sync_failed","schema":"slice__sync_den"},{"name":"sync_fenced","schema":"slice__sync_den"},{"name":"sync_finish","schema":"slice__sync_den"},{"name":"sync_gold_input","schema":"slice__sync_den"},{"name":"sync_held","schema":"slice__sync_den"},{"name":"sync_refusal","schema":"slice__sync_den"},{"name":"sync_result","schema":"slice__sync_den"},{"name":"sync_retry","schema":"slice__sync_den"},{"name":"sync_root","schema":"slice__sync_den"},{"name":"sync_scope","schema":"slice__sync_den"},{"name":"sync_skipped","schema":"slice__sync_den"},{"name":"sync_start_scope","schema":"slice__sync_den"},{"name":"sync_start_step","schema":"slice__sync_den"},{"name":"sync_step","schema":"slice__sync_den"},{"name":"sync_sync_run_input","schema":"slice__sync_den"},{"name":"sync_within","schema":"slice__sync_den"}]},"privileges":["ALL"]},
 			{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"DOMAIN","names":[{"name":"chain_chain_run_input_feed","schema":"slice"},{"name":"chain_join","schema":"slice"},{"name":"chain_kind","schema":"slice"},{"name":"chain_ordered_input_feed","schema":"slice"},{"name":"chain_outcome","schema":"slice"},{"name":"chain_page_input_feed","schema":"slice"},{"name":"chain_pausable","schema":"slice"},{"name":"fan_join","schema":"slice"},{"name":"fan_kind","schema":"slice"},{"name":"fan_outcome","schema":"slice"},{"name":"fan_pausable","schema":"slice"},{"name":"fan_resource","schema":"slice"},{"name":"feed","schema":"slice"},{"name":"retry_join","schema":"slice"},{"name":"retry_kind","schema":"slice"},{"name":"retry_outcome","schema":"slice"},{"name":"retry_pausable","schema":"slice"},{"name":"sync_join","schema":"slice"},{"name":"sync_kind","schema":"slice"},{"name":"sync_outcome","schema":"slice"},{"name":"sync_pausable","schema":"slice"},{"name":"__text_t4rwovzmqj","schema":"slice"},{"name":"__domain_jotafzuj2i","schema":"slice"},{"name":"__domain_jotafzuj2i","schema":"slice"},{"name":"__domain_mxhao3k6ss","schema":"slice"},{"name":"__domain_jotafzuj2i","schema":"slice"},{"name":"__domain_jotafzuj2i","schema":"slice"},{"name":"__domain_mxhao3k6ss","schema":"slice"},{"name":"__domain_gfw43vigph","schema":"slice"}]},"privileges":["ALL"]},
 			{"from":[{"kind":"PUBLIC"}],"inSchema":"slice","kind":"alterDefaultPrivileges","on":"TABLES","privileges":["ALL"]},
 			{"from":[{"kind":"PUBLIC"}],"inSchema":"slice","kind":"alterDefaultPrivileges","on":"SEQUENCES","privileges":["ALL"]},
@@ -28167,6 +28915,14 @@
 				"shape": "contained"
 			},
 			"__chain_failed_pk_step_3cdk2fomnp": {
+				"kind": "native",
+				"shape": "pk"
+			},
+			"__chain_fenced_in_chain_claim_c44ugcuoba": {
+				"kind": "native",
+				"shape": "contained"
+			},
+			"__chain_fenced_pk_step_attempt_mphuy55y32": {
 				"kind": "native",
 				"shape": "pk"
 			},
@@ -28482,6 +29238,14 @@
 				"kind": "native",
 				"shape": "pk"
 			},
+			"__fan_fenced_in_fan_claim_ooaw56in5u": {
+				"kind": "native",
+				"shape": "contained"
+			},
+			"__fan_fenced_pk_step_attempt_vyxkm5b25s": {
+				"kind": "native",
+				"shape": "pk"
+			},
 			"__fan_finish_in_fan_admitted_kpxentn3e2": {
 				"kind": "native",
 				"shape": "contained"
@@ -28751,6 +29515,14 @@
 				"shape": "contained"
 			},
 			"__retry_failed_pk_step_euhsmtm3m5": {
+				"kind": "native",
+				"shape": "pk"
+			},
+			"__retry_fenced_in_retry_claim_6db5i6xhnu": {
+				"kind": "native",
+				"shape": "contained"
+			},
+			"__retry_fenced_pk_step_attempt_y5p7sutkpi": {
 				"kind": "native",
 				"shape": "pk"
 			},
@@ -29043,6 +29815,14 @@
 				"shape": "contained"
 			},
 			"__sync_failed_pk_step_qwjeczzfel": {
+				"kind": "native",
+				"shape": "pk"
+			},
+			"__sync_fenced_in_sync_claim_44orfaablb": {
+				"kind": "native",
+				"shape": "contained"
+			},
+			"__sync_fenced_pk_step_attempt_bxn6csqmeh": {
 				"kind": "native",
 				"shape": "pk"
 			},
@@ -29439,6 +30219,31 @@
 				"mutable": false,
 				"primaryKey": [
 					"step"
+				]
+			},
+			"ChainFenced": {
+				"attnums": 2,
+				"fields": [
+					{
+						"column": "step",
+						"name": "step",
+						"type": "1bfdb7c47b0274e1ddcbe84ca56a692d2fa583ec370d39cc69c651a5d13a78f1",
+						"writing": "caller"
+					},
+					{
+						"column": "attempt",
+						"name": "attempt",
+						"type": "5ffef5b15590aec607cb673b5cacedb2206fd8c21ffde1fd6ed1dc3c8eb83a9f",
+						"writing": "caller"
+					}
+				],
+				"ident": "chain_fenced",
+				"kind": "relation",
+				"level": 0,
+				"mutable": false,
+				"primaryKey": [
+					"step",
+					"attempt"
 				]
 			},
 			"ChainFinish": {
@@ -30315,6 +31120,31 @@
 					"scope"
 				]
 			},
+			"FanFenced": {
+				"attnums": 2,
+				"fields": [
+					{
+						"column": "step",
+						"name": "step",
+						"type": "1bfdb7c47b0274e1ddcbe84ca56a692d2fa583ec370d39cc69c651a5d13a78f1",
+						"writing": "caller"
+					},
+					{
+						"column": "attempt",
+						"name": "attempt",
+						"type": "5ffef5b15590aec607cb673b5cacedb2206fd8c21ffde1fd6ed1dc3c8eb83a9f",
+						"writing": "caller"
+					}
+				],
+				"ident": "fan_fenced",
+				"kind": "relation",
+				"level": 0,
+				"mutable": false,
+				"primaryKey": [
+					"step",
+					"attempt"
+				]
+			},
 			"FanFinish": {
 				"attnums": 2,
 				"fields": [
@@ -31099,6 +31929,31 @@
 				"mutable": false,
 				"primaryKey": [
 					"step"
+				]
+			},
+			"RetryFenced": {
+				"attnums": 2,
+				"fields": [
+					{
+						"column": "step",
+						"name": "step",
+						"type": "1bfdb7c47b0274e1ddcbe84ca56a692d2fa583ec370d39cc69c651a5d13a78f1",
+						"writing": "caller"
+					},
+					{
+						"column": "attempt",
+						"name": "attempt",
+						"type": "5ffef5b15590aec607cb673b5cacedb2206fd8c21ffde1fd6ed1dc3c8eb83a9f",
+						"writing": "caller"
+					}
+				],
+				"ident": "retry_fenced",
+				"kind": "relation",
+				"level": 0,
+				"mutable": false,
+				"primaryKey": [
+					"step",
+					"attempt"
 				]
 			},
 			"RetryFinish": {
@@ -31907,6 +32762,31 @@
 					"step"
 				]
 			},
+			"SyncFenced": {
+				"attnums": 2,
+				"fields": [
+					{
+						"column": "step",
+						"name": "step",
+						"type": "1bfdb7c47b0274e1ddcbe84ca56a692d2fa583ec370d39cc69c651a5d13a78f1",
+						"writing": "caller"
+					},
+					{
+						"column": "attempt",
+						"name": "attempt",
+						"type": "5ffef5b15590aec607cb673b5cacedb2206fd8c21ffde1fd6ed1dc3c8eb83a9f",
+						"writing": "caller"
+					}
+				],
+				"ident": "sync_fenced",
+				"kind": "relation",
+				"level": 0,
+				"mutable": false,
+				"primaryKey": [
+					"step",
+					"attempt"
+				]
+			},
 			"SyncFinish": {
 				"attnums": 2,
 				"fields": [
@@ -32450,7 +33330,7 @@
 				]
 			}
 		},
-		"schema": "84f2fbeaa0e498bd54226bf7f574eb20aa0b05a605472e940e54cbbfe922500c"
+		"schema": "48082e47013fd0cbefb3c7fddb475c35659e949d3e6562edc67743811c9f12d7"
 	},
 	"workload": {
 		"app": {
@@ -32505,6 +33385,10 @@
 				"statistics": []
 			},
 			"chainAdmittedAll": {
+				"paths": [],
+				"statistics": []
+			},
+			"chainAuthenticated": {
 				"paths": [],
 				"statistics": []
 			},
@@ -32972,6 +33856,10 @@
 				"paths": [],
 				"statistics": []
 			},
+			"fanAuthenticated": {
+				"paths": [],
+				"statistics": []
+			},
 			"fanBatchInputs": {
 				"paths": [],
 				"statistics": []
@@ -33310,6 +34198,10 @@
 				],
 				"statistics": []
 			},
+			"retryAuthenticated": {
+				"paths": [],
+				"statistics": []
+			},
 			"retryClaims": {
 				"paths": [],
 				"statistics": []
@@ -33525,6 +34417,10 @@
 						"use": "key lookup"
 					}
 				],
+				"statistics": []
+			},
+			"syncAuthenticated": {
+				"paths": [],
 				"statistics": []
 			},
 			"syncCommitBuild": {
@@ -34173,6 +35069,44 @@
 					}
 				]
 			},
+			"chainFence": {
+				"paths": [
+					{
+						"derived": false,
+						"keys": [
+							{
+								"dir": "asc",
+								"field": "step"
+							},
+							{
+								"dir": "asc",
+								"field": "attempt"
+							}
+						],
+						"method": "btree",
+						"relation": "ChainFenced",
+						"use": "write target"
+					}
+				],
+				"statistics": []
+			},
+			"chainFencedOf": {
+				"paths": [
+					{
+						"derived": false,
+						"keys": [
+							{
+								"dir": "asc",
+								"field": "step"
+							}
+						],
+						"method": "btree",
+						"relation": "ChainFenced",
+						"use": "equality lookup"
+					}
+				],
+				"statistics": []
+			},
 			"chainFinished": {
 				"paths": [
 					{
@@ -34585,6 +35519,23 @@
 				"statistics": []
 			},
 			"chainPendingDues": {
+				"paths": [
+					{
+						"derived": false,
+						"keys": [
+							{
+								"dir": "asc",
+								"field": "step"
+							}
+						],
+						"method": "btree",
+						"relation": "ChainResult",
+						"use": "key lookup"
+					}
+				],
+				"statistics": []
+			},
+			"chainPendingFenced": {
 				"paths": [
 					{
 						"derived": false,
@@ -35466,6 +36417,44 @@
 					}
 				]
 			},
+			"fanFence": {
+				"paths": [
+					{
+						"derived": false,
+						"keys": [
+							{
+								"dir": "asc",
+								"field": "step"
+							},
+							{
+								"dir": "asc",
+								"field": "attempt"
+							}
+						],
+						"method": "btree",
+						"relation": "FanFenced",
+						"use": "write target"
+					}
+				],
+				"statistics": []
+			},
+			"fanFencedOf": {
+				"paths": [
+					{
+						"derived": false,
+						"keys": [
+							{
+								"dir": "asc",
+								"field": "step"
+							}
+						],
+						"method": "btree",
+						"relation": "FanFenced",
+						"use": "equality lookup"
+					}
+				],
+				"statistics": []
+			},
 			"fanFinished": {
 				"paths": [
 					{
@@ -35766,6 +36755,23 @@
 				"statistics": []
 			},
 			"fanPendingDues": {
+				"paths": [
+					{
+						"derived": false,
+						"keys": [
+							{
+								"dir": "asc",
+								"field": "step"
+							}
+						],
+						"method": "btree",
+						"relation": "FanResult",
+						"use": "key lookup"
+					}
+				],
+				"statistics": []
+			},
+			"fanPendingFenced": {
 				"paths": [
 					{
 						"derived": false,
@@ -36665,6 +37671,44 @@
 					}
 				]
 			},
+			"retryFence": {
+				"paths": [
+					{
+						"derived": false,
+						"keys": [
+							{
+								"dir": "asc",
+								"field": "step"
+							},
+							{
+								"dir": "asc",
+								"field": "attempt"
+							}
+						],
+						"method": "btree",
+						"relation": "RetryFenced",
+						"use": "write target"
+					}
+				],
+				"statistics": []
+			},
+			"retryFencedOf": {
+				"paths": [
+					{
+						"derived": false,
+						"keys": [
+							{
+								"dir": "asc",
+								"field": "step"
+							}
+						],
+						"method": "btree",
+						"relation": "RetryFenced",
+						"use": "equality lookup"
+					}
+				],
+				"statistics": []
+			},
 			"retryFinished": {
 				"paths": [
 					{
@@ -36969,6 +38013,23 @@
 				"statistics": []
 			},
 			"retryPendingDues": {
+				"paths": [
+					{
+						"derived": false,
+						"keys": [
+							{
+								"dir": "asc",
+								"field": "step"
+							}
+						],
+						"method": "btree",
+						"relation": "RetryResult",
+						"use": "key lookup"
+					}
+				],
+				"statistics": []
+			},
+			"retryPendingFenced": {
 				"paths": [
 					{
 						"derived": false,
@@ -37778,6 +38839,44 @@
 				],
 				"statistics": []
 			},
+			"syncFence": {
+				"paths": [
+					{
+						"derived": false,
+						"keys": [
+							{
+								"dir": "asc",
+								"field": "step"
+							},
+							{
+								"dir": "asc",
+								"field": "attempt"
+							}
+						],
+						"method": "btree",
+						"relation": "SyncFenced",
+						"use": "write target"
+					}
+				],
+				"statistics": []
+			},
+			"syncFencedOf": {
+				"paths": [
+					{
+						"derived": false,
+						"keys": [
+							{
+								"dir": "asc",
+								"field": "step"
+							}
+						],
+						"method": "btree",
+						"relation": "SyncFenced",
+						"use": "equality lookup"
+					}
+				],
+				"statistics": []
+			},
 			"syncFinished": {
 				"paths": [
 					{
@@ -37999,6 +39098,23 @@
 				"statistics": []
 			},
 			"syncPendingDues": {
+				"paths": [
+					{
+						"derived": false,
+						"keys": [
+							{
+								"dir": "asc",
+								"field": "step"
+							}
+						],
+						"method": "btree",
+						"relation": "SyncResult",
+						"use": "key lookup"
+					}
+				],
+				"statistics": []
+			},
+			"syncPendingFenced": {
 				"paths": [
 					{
 						"derived": false,

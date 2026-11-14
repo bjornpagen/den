@@ -11,8 +11,10 @@ import { type Ring, Transport } from "#transport.ts"
  * The census: a tick, about once a minute on Vercel Cron, that rings what time made eligible (due instants passed,
  * windows opened, leases lapsed) and heals every lost wake. At the tick's instant, one reading of the database's clock,
  * it requests each scheduled root's latest instant (its key, so a tick repeated requests nothing), releases the
- * exclusivity seats of finished scopes, and rings every eligible wake. It writes only key races and the coordination
- * group's turns.
+ * exclusivity seats of finished scopes, and rings every eligible wake. A step whose latest attempt was fenced on a
+ * refused credential waits on the deployment: the tick asks once whether the commits' login is let in (the ledger's
+ * `authenticated`, one read that runs no body) and rings those steps only when it is, so no body runs again while the
+ * deployment stays broken. It writes only key races and the coordination group's turns.
  */
 
 /** What a tick rang. */
@@ -32,7 +34,10 @@ export const tick = <R>(
 		const snapshot = yield* ledger.snapshot
 		const found = eligible(ledger, snapshot, at)
 		yield* releaseExclusive(ledger, found.release)
-		const rings = Arr.map(found.wakes, (wake): Ring => ({
+		const letIn = Arr.isReadonlyArrayNonEmpty(found.fenced)
+			? yield* Effect.isSuccess(ledger.authenticated)
+			: false
+		const rings = Arr.map([...found.wakes, ...(letIn ? found.fenced : [])], (wake): Ring => ({
 			wake,
 			delay: Duration.zero,
 			cause: { _tag: "Census", at: Number(at) }

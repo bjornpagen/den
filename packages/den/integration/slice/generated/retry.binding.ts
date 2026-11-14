@@ -257,6 +257,7 @@ export const retryLedger = (h: RetryHandles) => {
 	const ledger: Ledger<FlowNeeds<typeof retry>> = {
 		flow: FlowName.make("Retry"),
 		now: Effect.flatMap(h.den.retryNow.once({ params: {}, facts: {} }), readingOf),
+		authenticated: Effect.asVoid(h.commits.retryAuthenticated.once({ params: {}, facts: {} })),
 		resources: [],
 		steps: new Map([
 			[
@@ -483,6 +484,8 @@ export const retryLedger = (h: RetryHandles) => {
 			Effect.map(h.den.retryClaimsOf.once({ params: { step }, facts: {} }), rowsOf),
 		retriesOf: (step) =>
 			Effect.map(h.den.retryRetriesOf.once({ params: { step }, facts: {} }), rowsOf),
+		fencedOf: (step) =>
+			Effect.map(h.den.retryFencedOf.once({ params: { step }, facts: {} }), rowsOf),
 		scopeOf: (scope) =>
 			Effect.gen(function* () {
 				const row = yield* Effect.map(
@@ -533,6 +536,8 @@ export const retryLedger = (h: RetryHandles) => {
 				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
 			),
 		retry: (row) => h.den.retryRetry.once({ params: {}, facts: { insert: { RetryRetry: [row] } } }),
+		fence: (row) =>
+			h.den.retryFence.once({ params: {}, facts: { insert: { RetryFenced: [row] } } }),
 		refuse: (step, attempt, law) =>
 			h.den.retryRefuse.once({
 				params: {},
@@ -567,6 +572,10 @@ export const retryLedger = (h: RetryHandles) => {
 			)
 			const retries = yield* Effect.map(
 				h.den.retryPendingRetries.once({ params: {}, facts: {} }),
+				rowsOf
+			)
+			const fenced = yield* Effect.map(
+				h.den.retryPendingFenced.once({ params: {}, facts: {} }),
 				rowsOf
 			)
 			const dues = yield* Effect.map(h.den.retryPendingDues.once({ params: {}, facts: {} }), rowsOf)
@@ -607,6 +616,7 @@ export const retryLedger = (h: RetryHandles) => {
 				steps,
 				claims,
 				retries,
+				fenced,
 				dues,
 				scopes: [
 					...Arr.map(requested, (s) => view(s.scope, s.kind, false)),

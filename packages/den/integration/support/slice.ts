@@ -243,23 +243,39 @@ const loginsLayer = Layer.unwrap(
 	})
 )
 
-/** The faults the retry suite plants, as a service: each key's remaining deaths, counted down by its bodies. */
+/**
+ * The faults the retry suites plant, as a service: each key's remaining deaths, counted down by its bodies, and how many
+ * times each key's body ran, since a body asks once a run whether it dies.
+ */
 export class Planted extends Context.Service<
 	Planted,
-	{ readonly faults: Ref.Ref<HashMap.HashMap<string, number>> }
+	{
+		readonly faults: Ref.Ref<HashMap.HashMap<string, number>>
+		readonly runs: Ref.Ref<HashMap.HashMap<string, number>>
+	}
 >()("@bjornpagen/den/integration/support/slice/Planted") {}
 
 const faultsLayer = Layer.effectContext(
-	Effect.map(Ref.make(HashMap.empty<string, number>()), (faults) =>
-		Context.make(Planted, { faults }).pipe(
-			Context.add(Faults, {
-				dies: (key) =>
-					Ref.modify(faults, (map) => {
-						const left = Option.getOrElse(HashMap.get(map, key), () => 0)
-						return left > 0 ? [true, HashMap.set(map, key, left - 1)] : [false, map]
-					})
-			})
-		)
+	Effect.map(
+		Effect.all([
+			Ref.make(HashMap.empty<string, number>()),
+			Ref.make(HashMap.empty<string, number>())
+		]),
+		([faults, runs]) =>
+			Context.make(Planted, { faults, runs }).pipe(
+				Context.add(Faults, {
+					dies: (key) =>
+						Effect.andThen(
+							Ref.update(runs, (map) =>
+								HashMap.set(map, key, Option.getOrElse(HashMap.get(map, key), () => 0) + 1)
+							),
+							Ref.modify(faults, (map) => {
+								const left = Option.getOrElse(HashMap.get(map, key), () => 0)
+								return left > 0 ? [true, HashMap.set(map, key, left - 1)] : [false, map]
+							})
+						)
+				})
+			)
 	)
 )
 

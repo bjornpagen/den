@@ -11,7 +11,7 @@ import { requiredInSpace } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
 import { searched } from "@bjornpagen/testing/vitest"
 import { assert, layer } from "@effect/vitest"
-import { Array as Arr, Duration, Effect, Formatter, HashMap, Order, Ref } from "effect"
+import { Array as Arr, Duration, Effect, Formatter, HashMap, Option, Order, Ref } from "effect"
 import { TestClock } from "effect/testing"
 import type { Faults } from "#integration/slice/flows.ts"
 import { admitAndDrain } from "#integration/support/run.ts"
@@ -25,41 +25,45 @@ import {
 } from "#integration/support/slice.ts"
 
 /**
- * A refused credential fences, and spends nothing: a deployment whose app login offers the worker's password, which
- * PostgreSQL refuses, runs a Ladders root, whose two steps' commits each meet `credentialRefused` round after round
- * while the worker's own login, which claims and records, is let in. `Brittle` first dies as many times as the case
- * plants, and its ladder ends after two spent attempts; `Steadfast` never dies, and never stops retrying. A round moves
- * the suite's clock a whole longest rung on, ticks the census, as it does about once a minute, and drains the
- * transport; once the deployment's credential is set right, one round more.
+ * A refused credential fences, spends nothing, and runs no body again while it stands. A deployment whose app login
+ * offers the worker's password, which PostgreSQL refuses, runs a Ladders root: each step's commit meets
+ * `credentialRefused` while the worker's own login, which claims and records, is let in. `Brittle` first dies as many
+ * times as the case plants, each a spent attempt; `Steadfast` never dies. A round moves the suite's clock a whole
+ * longest rung on, ticks the census, as it does about once a minute, and drains the transport. Once both steps are
+ * fenced, the deployment stays broken for as many more rounds as the case draws; then its credential is set right, for
+ * one round more.
  *
- * Oracle (specification): every refused commit ends fenced on `credentialRefused` (`passwordRefused`, PostgreSQL's
- * 28P01), its attempt recorded as one that spent nothing, and every death's attempt spent; with the credential right,
- * each step ends done at the attempt after its last refusal, and the root's finish once both have, however many
- * refusals met a ladder that spending them would have ended failed.
+ * Oracle (specification): each step's commit is refused once, fenced on `credentialRefused` (`passwordRefused`,
+ * PostgreSQL's 28P01) and recorded fenced, every death's attempt spent; no body runs and no attempt is claimed while the
+ * deployment stays broken, however many ticks; and with the credential right, each step ends done at the attempt after
+ * its fence, having run its body once more, and the root's finish once both have.
  *
- * Its plants, kept mutants of the turn (kept-mutants.json, `pnpm mutate --package packages/den --kept
+ * Its plants, kept mutants (kept-mutants.json, `pnpm mutate --package packages/den --kept
  * packages/den/integration/kept-mutants.json --config vitest.network.config.ts`), each turn it red: a refused
- * credential counted as a spent attempt, and a fence that records nothing, whose claim's lapse then spends it.
+ * credential counted as a spent attempt, a fence that records nothing, whose claim's lapse then spends it, and a census
+ * that rings fenced steps without asking whether the deployment's login is let in.
  */
 
 type Feature =
-	| "a refusal its ladder had room to spend"
-	| "refusals that spent would end its ladder"
-	| "a refusal after a spent attempt"
+	| "fenced at its first attempt"
+	| "fenced after a spent attempt"
+	| "broken for one tick"
+	| "broken for several ticks"
 
 interface Run {
 	readonly deaths: number
-	readonly refusals: number
+	readonly ticks: number
 }
 
 const runs: Gen<Run> = (source) => ({
 	deaths: source.draw(int(0, 1)),
-	refusals: source.draw(int(1, 3))
+	ticks: source.draw(int(1, 3))
 })
 
 /** One of the root's two steps, and how many times the case planted its body's death. */
 interface Planned {
 	readonly kind: "Steadfast" | "Brittle"
+	readonly key: string
 	readonly deaths: number
 }
 
@@ -83,7 +87,7 @@ const refusedAt = (step: StepKey, ending: Ending): boolean =>
 
 layer(sliceLayer)("a refused credential", (it) => {
 	it.effect(
-		"fences its commits, spends no attempt, and the steps end done once it is set right",
+		"fences its commits, spends no attempt, runs no body while it stands, and the steps end done once it is set right",
 		(ctx) =>
 			searched(
 				ctx,
@@ -93,53 +97,67 @@ layer(sliceLayer)("a refused credential", (it) => {
 						generator: runs,
 						literal: Formatter.format,
 						coverage: requiredInSpace<Feature>([
-							"a refusal its ladder had room to spend",
-							"refusals that spent would end its ladder",
-							"a refusal after a spent attempt"
+							"fenced at its first attempt",
+							"fenced after a spent attempt",
+							"broken for one tick",
+							"broken for several ticks"
 						]),
 						caseHang,
-						box: "a two-attempt ladder dead at most once, then refused its commit one to three times, beside a never-ending one",
+						box: "a two-attempt ladder dead at most once, then its commit refused, beside a never-ending one, the deployment broken one to three ticks after",
 						oracle: {
 							kind: "specification",
-							name: "refused commits fenced and recorded unspent, deaths spent, every step done once the credential is right"
+							name: "refused commits fenced and recorded, deaths spent, no body run while broken, every step done once the credential is right"
 						},
 						/** Every case shares the suite's database, its ledgers, its transport and its clock. */
 						concurrency: 1
 					},
 					(run, c) =>
 						Effect.gen(function* () {
-							const rounds = run.deaths + run.refusals
-							const { retry, ledgers, all, misconfigured } = yield* openLedgers
-							const ladder = (yield* Effect.fromNullishOr(retry.ledger.steps.get("Brittle"))).retry
 							c.note(
-								ladder.kind === "attempts" && rounds >= ladder.attempts
-									? "refusals that spent would end its ladder"
-									: "a refusal its ladder had room to spend"
+								run.deaths > 0 ? "fenced after a spent attempt" : "fenced at its first attempt"
 							)
-							if (run.deaths > 0) {
-								c.note("a refusal after a spent attempt")
-							}
+							c.note(run.ticks > 1 ? "broken for several ticks" : "broken for one tick")
+							const { retry, ledgers, all, misconfigured } = yield* openLedgers
 							const app = yield* Db.open(AppServed.roles.auditor, {})
-							const { faults } = yield* Planted
+							const { faults, runs: ran } = yield* Planted
 							const tag = yield* nonce
-							const steadfast = `steadfast-${tag}`
-							const brittle = `brittle-${tag}`
+							const steps: ReadonlyArray<Planned> = [
+								{ kind: "Steadfast", key: `steadfast-${tag}`, deaths: 0 },
+								{ kind: "Brittle", key: `brittle-${tag}`, deaths: run.deaths }
+							]
 							yield* Ref.update(faults, (map) =>
-								HashMap.set(HashMap.set(map, steadfast, 0), brittle, run.deaths)
+								Arr.reduce(steps, map, (acc, s) => HashMap.set(acc, s.key, s.deaths))
 							)
+							const runsOf = (key: string) =>
+								Effect.map(Ref.get(ran), (map) => Option.getOrElse(HashMap.get(map, key), () => 0))
 							const at = yield* retry.ledger.now
 							const requested = yield* retry.request.Ladders(`refused-${tag}`, at, {
-								steadfast,
-								brittle
+								steadfast: `steadfast-${tag}`,
+								brittle: `brittle-${tag}`
 							})
 							assert.isTrue(requested.fresh)
 							const first = yield* admitAndDrain(misconfigured.ledgers, FlowName.make("Retry"), [
 								requested.scope
 							])
-							const later = yield* Effect.forEach(Array.from({ length: rounds - 1 }), () =>
+							const dying = yield* Effect.forEach(Array.from({ length: run.deaths }), () =>
 								round(misconfigured.all, misconfigured.ledgers)
 							)
-							const endings = [...first, ...Arr.flatten(later)]
+							const fencedRuns = yield* Effect.forEach(steps, (s) => runsOf(s.key))
+							const broken = yield* Effect.forEach(Array.from({ length: run.ticks }), () =>
+								round(misconfigured.all, misconfigured.ledgers)
+							)
+							const brokenRuns = yield* Effect.forEach(steps, (s) => runsOf(s.key))
+							assert.deepStrictEqual(
+								brokenRuns,
+								fencedRuns,
+								"a body ran while the deployment stayed broken"
+							)
+							assert.deepStrictEqual(
+								Arr.flatten(broken),
+								[],
+								"a turn ran while the deployment stayed broken"
+							)
+							const endings = [...first, ...Arr.flatten(dying)]
 							yield* round(all, ledgers)
 							const results = yield* rows(app.workload.retryResults.once({ params: {}, facts: {} }))
 							const mine = Arr.filter(results, (r) => r.scope === requested.scope)
@@ -154,27 +172,28 @@ layer(sliceLayer)("a refused credential", (it) => {
 									const step = (yield* Effect.fromOption(Arr.head(done))).step
 									const claimed = yield* retry.ledger.claimsOf(step)
 									const retried = yield* retry.ledger.retriesOf(step)
-									const claims = Arr.sort(claimed, byAttempt)
-									const retries = Arr.sort(retried, byAttempt)
-									const attempts = Array.from({ length: rounds + 1 }, (_, i) => BigInt(i + 1))
+									const fenced = yield* retry.ledger.fencedOf(step)
+									const fence = BigInt(planned.deaths + 1)
 									assert.deepStrictEqual(
-										Arr.map(claims, (cl) => cl.attempt),
-										attempts
+										Arr.map(Arr.sort(claimed, byAttempt), (cl) => cl.attempt),
+										Array.from({ length: planned.deaths + 2 }, (_, i) => BigInt(i + 1))
 									)
 									assert.deepStrictEqual(
-										Arr.map(retries, (r) => [r.attempt, r.spent] as const),
-										Arr.map(
-											Arr.take(attempts, rounds),
-											(attempt, i) => [attempt, i < planned.deaths] as const
-										)
+										Arr.map(Arr.sort(retried, byAttempt), (r) => [r.attempt, r.spent] as const),
+										Array.from({ length: planned.deaths }, (_, i) => [BigInt(i + 1), true] as const)
+									)
+									assert.deepStrictEqual(
+										Arr.map(fenced, (f) => f.attempt),
+										[fence]
 									)
 									assert.strictEqual(
 										Arr.filter(endings, (ending) => refusedAt(step, ending)).length,
-										rounds - planned.deaths
+										1
 									)
+									const bodies = yield* runsOf(planned.key)
+									assert.strictEqual(bodies, planned.deaths + 2)
 								})
-							yield* settled({ kind: "Steadfast", deaths: 0 })
-							yield* settled({ kind: "Brittle", deaths: run.deaths })
+							yield* Effect.forEach(steps, settled, { discard: true })
 							assert.deepStrictEqual(
 								Arr.map(of("LaddersFinish"), (r) => r.outcome),
 								["done"]

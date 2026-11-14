@@ -20,6 +20,7 @@ import {
 	SyncDue,
 	SyncClaim,
 	SyncRetry,
+	SyncFenced,
 	SyncResult,
 	SyncDone,
 	SyncFailed,
@@ -41,7 +42,7 @@ import {
 } from "#integration/slice/generated/sync.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's role for the flow Sync: the database's instant, claims, retries, failures, admissions, requests, and every read the scheduler makes. */
+/** den's role for the flow Sync: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. */
 export const SyncDen = role(
 	App,
 	"sync_den",
@@ -65,6 +66,7 @@ export const SyncDen = role(
 			"SyncDue",
 			"SyncClaim",
 			"SyncRetry",
+			"SyncFenced",
 			"SyncResult",
 			"SyncDone",
 			"SyncFailed",
@@ -119,6 +121,7 @@ export const syncDenPrograms = Object.freeze({
 				})
 		),
 	syncRetry: ChangeSet.empty(syncGraph).insert(SyncRetry, []),
+	syncFence: ChangeSet.empty(syncGraph).insert(SyncFenced, []),
 	syncRefuse: ChangeSet.empty(syncGraph)
 		.insert(SyncResult, [])
 		.insert(SyncFailed, [])
@@ -164,6 +167,13 @@ export const syncDenPrograms = Object.freeze({
 			.match(SyncRetry, { step, attempt, at, spent })
 			.where(r.eq(step, r.param("step", SyncStep.fields.step)))
 			.find({ step, attempt, at, spent })
+	}),
+	syncFencedOf: query(syncGraph).rule((r) => {
+		const { step, attempt } = v(SyncFenced, "fenced")
+		return r
+			.match(SyncFenced, { step, attempt })
+			.where(r.eq(step, r.param("step", SyncStep.fields.step)))
+			.find({ step, attempt })
 	}),
 	syncUnendedSteps: query(syncGraph).rule((r) => {
 		const { step, scope } = v(SyncStep, "step")
@@ -229,6 +239,15 @@ export const syncDenPrograms = Object.freeze({
 				.match(SyncRetry, { step, attempt, at, spent })
 				.where(r.not(SyncResult, { step }))
 				.find({ step, attempt, at, spent })
+		})
+	),
+	syncPendingFenced: deferrable(
+		query(syncGraph).rule((r) => {
+			const { step, attempt } = v(SyncFenced, "fenced")
+			return r
+				.match(SyncFenced, { step, attempt })
+				.where(r.not(SyncResult, { step }))
+				.find({ step, attempt })
 		})
 	),
 	syncPendingDues: deferrable(
@@ -340,8 +359,12 @@ export const syncCoordinatorPrograms = Object.freeze({
 
 export const syncCoordinatorWorkload = workload(SyncCoordinator, syncCoordinatorPrograms)
 
-/** The commits and declared reads of the flow Sync, over its app role Loader. */
+/** The commits and declared reads of the flow Sync, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const syncCommitPrograms = Object.freeze({
+	syncAuthenticated: clocked(
+		query(syncGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+		{ now: "millis" }
+	),
 	syncCommitCopy: ChangeSet.union(
 		ChangeSet.empty(syncGraph)
 			.insert(SyncResult, [])

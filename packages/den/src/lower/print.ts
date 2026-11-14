@@ -452,6 +452,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	)`
 		],
 		[n.program("Retry"), `ChangeSet.empty(${n.graph}).insert(${r("Retry")}, [])`],
+		[n.program("Fence"), `ChangeSet.empty(${n.graph}).insert(${r("Fenced")}, [])`],
 		[
 			n.program("Refuse"),
 			`ChangeSet.empty(${n.graph})${members([r("Result"), r("Failed"), r("Held"), r("Refusal")], none, app)}`
@@ -484,6 +485,13 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			`query(${n.graph}).rule((r) => {
 	const { step, attempt, at, spent } = v(${r("Retry")}, "retry")
 	return r.match(${r("Retry")}, { step, attempt, at, spent }).where(r.eq(step, ${stepParam})).find({ step, attempt, at, spent })
+})`
+		],
+		[
+			n.program("FencedOf"),
+			`query(${n.graph}).rule((r) => {
+	const { step, attempt } = v(${r("Fenced")}, "fenced")
+	return r.match(${r("Fenced")}, { step, attempt }).where(r.eq(step, ${stepParam})).find({ step, attempt })
 })`
 		],
 		[
@@ -539,6 +547,13 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			deferred(`query(${n.graph}).rule((r) => {
 	const { step, attempt, at, spent } = v(${r("Retry")}, "retry")
 	return r.match(${r("Retry")}, { step, attempt, at, spent }).where(r.not(${r("Result")}, { step })).find({ step, attempt, at, spent })
+})`)
+		],
+		[
+			n.program("PendingFenced"),
+			deferred(`query(${n.graph}).rule((r) => {
+	const { step, attempt } = v(${r("Fenced")}, "fenced")
+	return r.match(${r("Fenced")}, { step, attempt }).where(r.not(${r("Result")}, { step })).find({ step, attempt })
 })`)
 		],
 		[
@@ -732,7 +747,12 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		]
 	)
 
-	const commitPrograms: Array<readonly [string, string]> = []
+	const commitPrograms: Array<readonly [string, string]> = [
+		[
+			n.program("Authenticated"),
+			`clocked(query(${n.graph}).rule((r) => r.find({ now: r.param("now", DenInstant) })), { now: "millis" })`
+		]
+	]
 	Arr.forEach(l.steps, (s) => {
 		const spawns = Arr.isReadonlyArrayNonEmpty(s.edges) ? l.spawning : []
 		commitPrograms.push([
@@ -797,7 +817,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		"})"
 	]
 	const body = lines([
-		`/** den's role for the flow ${P}: the database's instant, claims, retries, failures, admissions, requests, and every read the scheduler makes. */`,
+		`/** den's role for the flow ${P}: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. */`,
 		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([`...${n.graph}.relations`, ...idleEntries])} }, { insert: [${commas(Arr.map(den, q))}] })`,
 		"",
 		`/** den's coordinator role for the flow ${P}: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole; no role holds a closed relation. */`,
@@ -811,7 +831,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		"",
 		`export const ${n.coordinatorWorkload} = workload(${n.coordinator}, ${n.coordinatorPrograms})`,
 		"",
-		`/** The commits and declared reads of the flow ${P}, over its app role ${W}. */`,
+		`/** The commits and declared reads of the flow ${P}, over its app role ${W}, and a read of the database's instant that says the role's login is let in. */`,
 		...block(n.commitPrograms, commitPrograms),
 		"",
 		`export const ${n.commitWorkload} = workload(${W}, ${n.commitPrograms})`,
@@ -1238,6 +1258,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\tconst steps = yield* ${all(n.program("Pending"))}`,
 		`\tconst claims = yield* ${all(n.program("PendingClaims"))}`,
 		`\tconst retries = yield* ${all(n.program("PendingRetries"))}`,
+		`\tconst fenced = yield* ${all(n.program("PendingFenced"))}`,
 		`\tconst dues = yield* ${all(n.program("PendingDues"))}`,
 		`\tconst requested = yield* ${all(n.program("Requested"))}`,
 		`\tconst running = yield* ${all(n.program("Running"))}`,
@@ -1263,6 +1284,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"\t\tsteps,",
 		"\t\tclaims,",
 		"\t\tretries,",
+		"\t\tfenced,",
 		"\t\tdues,",
 		"\t\tscopes: [...Arr.map(requested, (s) => view(s.scope, s.kind, false)), ...Arr.map(running, (s) => view(s.scope, s.kind, true))],",
 		"\t\tholds,",
@@ -1380,6 +1402,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\tconst ledger: Ledger<FlowNeeds<typeof ${F}>> = {`,
 		`\t\tflow: FlowName.make(${q(P)}),`,
 		`\t\tnow: Effect.flatMap(h.den.${n.program("Now")}.once({ params: {}, facts: {} }), readingOf),`,
+		`\t\tauthenticated: Effect.asVoid(h.commits.${n.program("Authenticated")}.once({ params: {}, facts: {} })),`,
 		`\t\tresources: [${commas(Arr.map(l.resources, (res) => `{ name: ${q(res.name)}, seats: ${res.seats} }`))}],`,
 		"\t\tsteps: new Map([",
 		...Arr.map(l.steps, (s) => `\t\t\t[${q(s.name)}, ${indented("\t\t\t")(stepRunner(s))}],`),
@@ -1401,6 +1424,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\t\tdueOf: (step) => Effect.map(h.den.${n.program("DueOf")}.once({ params: { step }, facts: {} }), (rows) => Option.map(one(rows), (row) => row.at)),`,
 		`\t\tclaimsOf: (step) => Effect.map(h.den.${n.program("ClaimsOf")}.once({ params: { step }, facts: {} }), rowsOf),`,
 		`\t\tretriesOf: (step) => Effect.map(h.den.${n.program("RetriesOf")}.once({ params: { step }, facts: {} }), rowsOf),`,
+		`\t\tfencedOf: (step) => Effect.map(h.den.${n.program("FencedOf")}.once({ params: { step }, facts: {} }), rowsOf),`,
 		"\t\tscopeOf: (scope) => Effect.gen(function* () {",
 		`\t\t\tconst row = yield* ${keyRead(n.program("ScopeOf"), "scope", "scope")}`,
 		"\t\t\tif (Option.isNone(row)) {",
@@ -1420,6 +1444,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"\t\tbusy: busyOf,",
 		`\t\tclaim: (row) => Effect.map(h.den.${n.program("Claim")}.once({ params: {}, facts: { insert: { ${r("Claim")}: [row] } } }), (outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)),`,
 		`\t\tretry: (row) => h.den.${n.program("Retry")}.once({ params: {}, facts: { insert: { ${r("Retry")}: [row] } } }),`,
+		`\t\tfence: (row) => h.den.${n.program("Fence")}.once({ params: {}, facts: { insert: { ${r("Fenced")}: [row] } } }),`,
 		`\t\trefuse: (step, attempt, law) => h.den.${n.program("Refuse")}.once({ params: {}, facts: { insert: { ${r("Result")}: [{ step, outcome: "failed" }], ${r("Failed")}: [{ step }], ${r("Held")}: [{ step, attempt }], ${r("Refusal")}: [{ step, law }] } } }),`,
 		`\t\tskip: (scope, by) => h.den.${n.program("Skip")}.once({ params: {}, facts: { insert: { ${r("Skipped")}: [{ scope, by }] } } }),`,
 		`\t\texhaust: (step, attempt) => h.den.${n.program("Exhaust")}.once({ params: {}, facts: { insert: { ${r("Result")}: [{ step, outcome: "failed" }], ${r("Failed")}: [{ step }], ${r("Held")}: [{ step, attempt }], ${r("Exhausted")}: [{ step, attempts: attempt }] } } }),`,

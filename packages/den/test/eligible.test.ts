@@ -1,6 +1,6 @@
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
-import { array, boolean, type Gen, int, option } from "@bjornpagen/testing/gen"
+import { array, boolean, element, type Gen, int, oneOf, option } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
@@ -43,6 +43,7 @@ import {
 import type {
 	ClaimRow,
 	ExclusiveRow,
+	FencedRow,
 	HoldRow,
 	Ledger,
 	RetryRow,
@@ -106,6 +107,7 @@ const rootOf = (
 const ledgerOf = (seats: number, window: Window): Ledger<never> => ({
 	flow: flowName,
 	now: Effect.die("eligibility judges the instant it is given"),
+	authenticated: Effect.die("the census asks after the deployment, never eligibility"),
 	resources: [{ name: "Pool", seats }],
 	steps: new Map([
 		["Work", runnerOf("Work", ["Pool"], Option.none())],
@@ -123,6 +125,7 @@ const ledgerOf = (seats: number, window: Window): Ledger<never> => ({
 	heldOf: unread,
 	claimsOf: unread,
 	retriesOf: unread,
+	fencedOf: unread,
 	dueOf: unread,
 	scopeOf: unread,
 	unended: unread,
@@ -130,6 +133,7 @@ const ledgerOf = (seats: number, window: Window): Ledger<never> => ({
 	busy: unread,
 	claim: unread,
 	retry: unread,
+	fence: unread,
 	refuse: unread,
 	exhaust: unread,
 	skip: unread,
@@ -152,13 +156,18 @@ const ledgerOf = (seats: number, window: Window): Ledger<never> => ({
 	scheduled: []
 })
 
-/** A pending step of a root: its kind, its latest claim, if any, with its retry, and its first due instant. */
+/** How a claimed attempt ended without a result: a retry, due at an offset, or a fence on a refused credential. */
+type EndSketch =
+	| { readonly kind: "retry"; readonly at: number; readonly spent: boolean }
+	| { readonly kind: "fenced" }
+
+/** A pending step of a root: its kind, its latest claim, if any, with how it ended, and its first due instant. */
 interface StepSketch {
 	readonly kind: "Work" | "Free"
 	readonly claim: Option.Option<{
 		readonly attempt: number
 		readonly until: number
-		readonly retry: Option.Option<{ readonly at: number; readonly spent: boolean }>
+		readonly end: Option.Option<EndSketch>
 	}>
 	readonly due: Option.Option<number>
 }
@@ -205,7 +214,14 @@ const stepSketch: Gen<StepSketch> = (source) => ({
 		option((s) => ({
 			attempt: s.draw(int(1, 3)),
 			until: s.draw(offset),
-			retry: s.draw(option((r) => ({ at: r.draw(offset), spent: r.draw(boolean) })))
+			end: s.draw(
+				option(
+					oneOf<EndSketch>([
+						(r) => ({ kind: "retry", at: r.draw(offset), spent: r.draw(boolean) }),
+						() => ({ kind: "fenced" })
+					])
+				)
+			)
 		}))
 	),
 	due: source.draw(option(offset))
@@ -273,6 +289,7 @@ const built = (w: World) =>
 		const steps: Array<Snapshot["steps"][number]> = []
 		const claims: Array<Snapshot["claims"][number]> = []
 		const retries: Array<RetryRow> = []
+		const fenced: Array<FencedRow> = []
 		const dues: Array<Snapshot["dues"][number]> = []
 		const kinds = new Map<StepKey, string>()
 		const syncs: Array<ScopeKey> = []
@@ -303,13 +320,13 @@ const built = (w: World) =>
 				if (Option.isSome(s.claim)) {
 					const c = s.claim.value
 					claims.push({ step, attempt: BigInt(c.attempt), until: at(c.until) })
-					if (Option.isSome(c.retry)) {
-						retries.push({
-							step,
-							attempt: BigInt(c.attempt),
-							at: at(c.retry.value.at),
-							spent: c.retry.value.spent
-						})
+					if (Option.isSome(c.end)) {
+						const end = c.end.value
+						if (end.kind === "retry") {
+							retries.push({ step, attempt: BigInt(c.attempt), at: at(end.at), spent: end.spent })
+						} else {
+							fenced.push({ step, attempt: BigInt(c.attempt) })
+						}
 					}
 				}
 			}
@@ -372,6 +389,7 @@ const built = (w: World) =>
 			steps,
 			claims,
 			retries,
+			fenced,
 			dues,
 			scopes,
 			holds,
@@ -387,8 +405,13 @@ const built = (w: World) =>
 		return done
 	})
 
-/** The specification, written apart from `eligible`: which steps and admissions a snapshot makes eligible at `now`. */
-const specified = (b: Built): ReadonlyArray<string> => {
+/**
+ * The specification, written apart from `eligible`: which steps and admissions a snapshot makes eligible at `now`, and,
+ * apart, the steps whose latest attempt was fenced, which wait on the deployment rather than on time.
+ */
+const specified = (
+	b: Built
+): { readonly wakes: ReadonlyArray<string>; readonly fenced: ReadonlyArray<string> } => {
 	const { snapshot, now } = b
 	const viewOf = (scope: ScopeKey) => Arr.findFirst(snapshot.scopes, (s) => s.scope === scope)
 	const rootViewOf = (scope: ScopeKey): Option.Option<ScopeView> =>
@@ -422,6 +445,7 @@ const specified = (b: Built): ReadonlyArray<string> => {
 		readonly attempt: number
 		readonly age: Instant
 		readonly due: Instant
+		readonly fenced: boolean
 	}
 	const ready = Arr.flatMap(snapshot.steps, (p): ReadonlyArray<Ready> => {
 		const mine = Arr.filter(snapshot.claims, (c) => c.step === p.step)
@@ -433,10 +457,16 @@ const specified = (b: Built): ReadonlyArray<string> => {
 		)
 		const retryOf = (attempt: bigint) =>
 			Arr.findFirst(snapshot.retries, (r) => r.step === p.step && r.attempt === attempt)
-		const stands = Option.exists(latest, (c) => c.until >= now && Option.isNone(retryOf(c.attempt)))
+		const fencedAt = (attempt: bigint) =>
+			Arr.some(snapshot.fenced, (f) => f.step === p.step && f.attempt === attempt)
+		const stands = Option.exists(
+			latest,
+			(c) => c.until >= now && Option.isNone(retryOf(c.attempt)) && !fencedAt(c.attempt)
+		)
 		if (stands) {
 			return []
 		}
+		const fenced = Option.exists(latest, (c) => fencedAt(c.attempt))
 		const due = Option.match(latest, {
 			onNone: () =>
 				Option.getOrElse(
@@ -447,10 +477,12 @@ const specified = (b: Built): ReadonlyArray<string> => {
 					() => now
 				),
 			onSome: (c) =>
-				Option.getOrElse(
-					Option.map(retryOf(c.attempt), (r) => r.at),
-					() => instantOf(Number(c.until) + 1)
-				)
+				fenced
+					? now
+					: Option.getOrElse(
+							Option.map(retryOf(c.attempt), (r) => r.at),
+							() => instantOf(Number(c.until) + 1)
+						)
 		})
 		if (
 			due > now ||
@@ -468,7 +500,7 @@ const specified = (b: Built): ReadonlyArray<string> => {
 			return []
 		}
 		const attempt = Option.match(latest, { onNone: () => 1, onSome: (c) => Number(c.attempt) + 1 })
-		return [{ step: p.step, kind: p.kind, attempt, age: ageOf(p.scope), due }]
+		return [{ step: p.step, kind: p.kind, attempt, age: ageOf(p.scope), due, fenced }]
 	})
 	const liveHolds = Arr.filter(snapshot.holds, (h) => h.until >= now).length
 	const free = Math.max(0, b.seats - liveHolds)
@@ -483,7 +515,20 @@ const specified = (b: Built): ReadonlyArray<string> => {
 		)
 	)
 	const seated = [...Arr.filter(ready, (r) => r.kind !== "Work"), ...Arr.take(contending, free)]
-	return [...admitted, ...Arr.map(seated, (r) => `step ${r.step} ${r.attempt}`)]
+	const text = (r: Ready) => `step ${r.step} ${r.attempt}`
+	return {
+		wakes: [
+			...admitted,
+			...Arr.map(
+				Arr.filter(seated, (r) => !r.fenced),
+				text
+			)
+		],
+		fenced: Arr.map(
+			Arr.filter(seated, (r) => r.fenced),
+			text
+		)
+	}
 }
 
 const textOf = (wake: Wake): string =>
@@ -493,6 +538,7 @@ type Feature =
 	| "contended seats"
 	| "a standing claim"
 	| "a retried attempt"
+	| "a fenced attempt waiting on the deployment"
 	| "a lapsed lease"
 	| "a finish held back"
 	| "a finish rung"
@@ -529,6 +575,7 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 								"contended seats",
 								"a standing claim",
 								"a retried attempt",
+								"a fenced attempt waiting on the deployment",
 								"a lapsed lease",
 								"a finish held back",
 								"a finish rung",
@@ -553,19 +600,24 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 							const b = yield* built(w)
 							const { snapshot, now } = b
 							const found = eligible(b.ledger, snapshot, now)
-							const rung = Arr.map(found.wakes, textOf)
+							const spec = specified(b)
 							assert.deepStrictEqual(
-								Arr.sort(rung, Order.String),
-								Arr.sort(specified(b), Order.String)
+								Arr.sort(Arr.map(found.wakes, textOf), Order.String),
+								Arr.sort(spec.wakes, Order.String)
 							)
+							assert.deepStrictEqual(
+								Arr.sort(Arr.map(found.fenced, textOf), Order.String),
+								Arr.sort(spec.fenced, Order.String)
+							)
+							const every = [...found.wakes, ...found.fenced]
 							assert.strictEqual(
-								HashSet.size(HashSet.fromIterable(Arr.map(found.wakes, wakeText))),
-								found.wakes.length
+								HashSet.size(HashSet.fromIterable(Arr.map(every, wakeText))),
+								every.length
 							)
 
 							const liveHolds = Arr.filter(snapshot.holds, (h) => h.until >= now).length
 							const pool = Arr.filter(
-								found.wakes,
+								every,
 								(wake) => wake._tag === "Step" && b.kinds.get(wake.step) === "Work"
 							).length
 							assert.isAtMost(pool, Math.max(0, w.seats - liveHolds))
@@ -581,7 +633,8 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 							)
 
 							const retriedOf = (step: StepKey, attempt: bigint) =>
-								Arr.some(snapshot.retries, (r) => r.step === step && r.attempt === attempt)
+								Arr.some(snapshot.retries, (r) => r.step === step && r.attempt === attempt) ||
+								Arr.some(snapshot.fenced, (f) => f.step === step && f.attempt === attempt)
 							const work = Arr.filter(snapshot.steps, (p) => p.kind === "Work")
 							if (
 								pool > 0 &&
@@ -600,6 +653,9 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 							}
 							if (Arr.some(snapshot.retries, (r) => ringsStep(found.wakes, r.step))) {
 								c.note("a retried attempt")
+							}
+							if (Arr.isReadonlyArrayNonEmpty(found.fenced)) {
+								c.note("a fenced attempt waiting on the deployment")
 							}
 							if (
 								Arr.some(
@@ -743,12 +799,19 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 						suite: "retry ladder",
 						oracle: {
 							kind: "specification",
-							name: "rung(1) = first, rung(n) ≤ rung(n + 1) ≤ last, and spentBefore counts every attempt but a wait"
+							name: "rung(1) = first, rung(n) ≤ rung(n + 1) ≤ last, and spentBefore counts every attempt but a wait or a fence"
 						},
 						draw: drawn((source) => ({
 							spent: source.draw(int(1, 12)),
 							claims: source.draw(
-								array((s) => ({ retried: s.draw(option(boolean)) }), { min: 0, max: 5 })
+								array(
+									(s) => ({
+										ended: s.draw(
+											option(element<"spent" | "waited" | "fenced">(["spent", "waited", "fenced"]))
+										)
+									}),
+									{ min: 0, max: 5 }
+								)
 							),
 							next: source.draw(int(1, 6))
 						})),
@@ -793,19 +856,29 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 							)
 							const retries: ReadonlyArray<RetryRow> = Arr.flatMap(l.claims, (cl, i) =>
 								Option.toArray(
-									Option.map(cl.retried, (spent) => ({
-										step,
-										attempt: BigInt(i + 1),
-										at: instantOf(0),
-										spent
-									}))
+									Option.flatMap(cl.ended, (ended) =>
+										ended === "fenced"
+											? Option.none()
+											: Option.some({
+													step,
+													attempt: BigInt(i + 1),
+													at: instantOf(0),
+													spent: ended === "spent"
+												})
+									)
 								)
+							)
+							const fenced: ReadonlyArray<FencedRow> = Arr.flatMap(l.claims, (cl, i) =>
+								Option.contains(cl.ended, "fenced") ? [{ step, attempt: BigInt(i + 1) }] : []
 							)
 							const expected = Arr.filter(
 								Arr.map(l.claims, (cl, i) => ({ cl, attempt: i + 1 })),
-								({ cl, attempt }) => attempt < l.next && !Option.contains(cl.retried, false)
+								({ cl, attempt }) =>
+									attempt < l.next &&
+									!Option.contains(cl.ended, "waited") &&
+									!Option.contains(cl.ended, "fenced")
 							).length
-							assert.strictEqual(spentBefore(claims, retries, BigInt(l.next)), expected)
+							assert.strictEqual(spentBefore(claims, retries, fenced, BigInt(l.next)), expected)
 						})
 				)
 			)

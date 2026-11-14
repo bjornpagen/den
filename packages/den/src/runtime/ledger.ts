@@ -65,6 +65,15 @@ export interface RetryRow {
 	readonly spent: boolean
 }
 
+/**
+ * An attempt fenced on a refused credential: its commit's login was not let in, so it spent nothing and waits on the
+ * deployment, with no due instant of its own; the census rings its step again once the commits' login is let in.
+ */
+export interface FencedRow {
+	readonly step: StepKey
+	readonly attempt: bigint
+}
+
 /** A turn of a step, once claimed: the step, its attempt and scope, and its claim's deadline and lease. */
 export interface Turn {
 	readonly step: StepKey
@@ -170,7 +179,7 @@ export interface PauseRow {
 
 /**
  * Everything the scheduler reads at one instant, for the relay's and the census's eligibility: the pending steps with
- * their claims, retries and first due instants; the live scopes (requested, or admitted with an unfinished finish);
+ * their claims, retries, fenced attempts and first due instants; the live scopes (requested, or admitted with an unfinished finish);
  * the coordination group's live holds, exclusivity seats and paused targets; and, for each flow a precondition names,
  * whether it holds a pending step.
  */
@@ -186,6 +195,7 @@ export interface Snapshot {
 		readonly until: Instant
 	}>
 	readonly retries: ReadonlyArray<RetryRow>
+	readonly fenced: ReadonlyArray<FencedRow>
 	readonly dues: ReadonlyArray<{ readonly step: StepKey; readonly at: Instant }>
 	readonly scopes: ReadonlyArray<ScopeView>
 	readonly holds: ReadonlyArray<HoldRow>
@@ -231,6 +241,11 @@ export interface Ledger<R> {
 	 * stamped from one, so no host's clock judges anything.
 	 */
 	readonly now: Effect.Effect<Instant, CallError>
+	/**
+	 * Whether the deployment's commits' login is let in: one cheap read under it, which authenticates a session and
+	 * runs no body, so the census rings a fenced attempt's step again only once it succeeds.
+	 */
+	readonly authenticated: Effect.Effect<void, CallError>
 	readonly resources: ReadonlyArray<{ readonly name: string; readonly seats: number }>
 	readonly steps: ReadonlyMap<string, StepRunner<R>>
 	readonly roots: ReadonlyMap<string, RootRunner>
@@ -239,6 +254,7 @@ export interface Ledger<R> {
 	readonly heldOf: (step: StepKey) => Effect.Effect<Option.Option<bigint>, CallError>
 	readonly claimsOf: (step: StepKey) => Effect.Effect<ReadonlyArray<ClaimRow>, CallError>
 	readonly retriesOf: (step: StepKey) => Effect.Effect<ReadonlyArray<RetryRow>, CallError>
+	readonly fencedOf: (step: StepKey) => Effect.Effect<ReadonlyArray<FencedRow>, CallError>
 	readonly dueOf: (step: StepKey) => Effect.Effect<Option.Option<Instant>, CallError>
 	readonly scopeOf: (scope: ScopeKey) => Effect.Effect<Option.Option<ScopeView>, CallError>
 	/** Whether some child of a scope, a step but its finish or a child scope, has not ended. */
@@ -253,6 +269,7 @@ export interface Ledger<R> {
 	 */
 	readonly claim: (claim: ClaimRow) => Effect.Effect<boolean, CallError>
 	readonly retry: (retry: RetryRow) => Effect.Effect<WriteOutcome<unknown>, CallError>
+	readonly fence: (fenced: FencedRow) => Effect.Effect<WriteOutcome<unknown>, CallError>
 	readonly refuse: (
 		step: StepKey,
 		attempt: bigint,

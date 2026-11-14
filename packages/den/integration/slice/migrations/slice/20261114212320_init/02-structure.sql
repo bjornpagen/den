@@ -52,6 +52,12 @@ CREATE TABLE "slice"."chain_failed" (
   CONSTRAINT "__chain_failed_pk_m7o5m3xzrr" PRIMARY KEY ("step")
 );
 
+CREATE TABLE "slice"."chain_fenced" (
+  "step" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__chain_fenced_pk_wwbie4qq5k" PRIMARY KEY ("step", "attempt")
+);
+
 CREATE TABLE "slice"."chain_finish" (
   "scope" "slice"."__domain_jotafzuj2i" NOT NULL,
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
@@ -260,6 +266,12 @@ CREATE TABLE "slice"."fan_fan_run_input" (
   CONSTRAINT "__fan_fan_run_input_pk_tbzpgbwe7g" PRIMARY KEY ("scope")
 );
 
+CREATE TABLE "slice"."fan_fenced" (
+  "step" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__fan_fenced_pk_6tkvirerez" PRIMARY KEY ("step", "attempt")
+);
+
 CREATE TABLE "slice"."fan_finish" (
   "scope" "slice"."__domain_jotafzuj2i" NOT NULL,
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
@@ -445,6 +457,12 @@ CREATE TABLE "slice"."retry_exhausted" (
 CREATE TABLE "slice"."retry_failed" (
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
   CONSTRAINT "__retry_failed_pk_mygc4onczp" PRIMARY KEY ("step")
+);
+
+CREATE TABLE "slice"."retry_fenced" (
+  "step" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__retry_fenced_pk_umzicmiruo" PRIMARY KEY ("step", "attempt")
 );
 
 CREATE TABLE "slice"."retry_finish" (
@@ -641,6 +659,12 @@ CREATE TABLE "slice"."sync_exhausted" (
 CREATE TABLE "slice"."sync_failed" (
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
   CONSTRAINT "__sync_failed_pk_gqykngewxb" PRIMARY KEY ("step")
+);
+
+CREATE TABLE "slice"."sync_fenced" (
+  "step" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__sync_fenced_pk_tszx4qm2gz" PRIMARY KEY ("step", "attempt")
 );
 
 CREATE TABLE "slice"."sync_finish" (
@@ -880,6 +904,8 @@ ALTER TABLE "slice"."chain_exhausted" ADD CONSTRAINT "__chain_exhausted_fk_step_
 
 ALTER TABLE "slice"."chain_failed" ADD CONSTRAINT "__chain_failed_fk_step_tag_outcome_failed_2enwrjafnc" FOREIGN KEY ("step", "__tag_outcome_failed_lrxbpw73ih") REFERENCES "slice"."chain_result" ("step", "outcome") MATCH SIMPLE;
 
+ALTER TABLE "slice"."chain_fenced" ADD CONSTRAINT "__chain_fenced_fk_step_attempt_tr357gwkw2" FOREIGN KEY ("step", "attempt") REFERENCES "slice"."chain_claim" ("step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice"."chain_finish"
   ADD CONSTRAINT "__chain_finish_fk_scope_cfnzgc3ln5" FOREIGN KEY ("scope") REFERENCES "slice"."chain_admitted" ("scope") MATCH SIMPLE,
   ADD CONSTRAINT "__chain_finish_fk_step_djulfbbhyv" FOREIGN KEY ("step") REFERENCES "slice"."chain_step" ("step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
@@ -954,6 +980,8 @@ ALTER TABLE "slice"."fan_failed" ADD CONSTRAINT "__fan_failed_fk_step_tag_outcom
 
 ALTER TABLE "slice"."fan_fan_run_input" ADD CONSTRAINT "__fan_fan_run_input_fk_scope_tag_kind_fan_run_tihneov63d" FOREIGN KEY ("scope", "__tag_kind_fan_run_eorldhk2ce") REFERENCES "slice"."fan_scope" ("scope", "kind") MATCH SIMPLE;
 
+ALTER TABLE "slice"."fan_fenced" ADD CONSTRAINT "__fan_fenced_fk_step_attempt_ykbq3jv4ri" FOREIGN KEY ("step", "attempt") REFERENCES "slice"."fan_claim" ("step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice"."fan_finish"
   ADD CONSTRAINT "__fan_finish_fk_scope_7bafbqarll" FOREIGN KEY ("scope") REFERENCES "slice"."fan_admitted" ("scope") MATCH SIMPLE,
   ADD CONSTRAINT "__fan_finish_fk_step_f3he376omz" FOREIGN KEY ("step") REFERENCES "slice"."fan_step" ("step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
@@ -1021,6 +1049,8 @@ ALTER TABLE "slice"."retry_due" ADD CONSTRAINT "__retry_due_fk_step_sm2v4p4wn5" 
 ALTER TABLE "slice"."retry_exhausted" ADD CONSTRAINT "__retry_exhausted_fk_step_sanifiwunj" FOREIGN KEY ("step") REFERENCES "slice"."retry_failed" ("step") MATCH SIMPLE;
 
 ALTER TABLE "slice"."retry_failed" ADD CONSTRAINT "__retry_failed_fk_step_tag_outcome_failed_3iz2aprkti" FOREIGN KEY ("step", "__tag_outcome_failed_446fx3eezg") REFERENCES "slice"."retry_result" ("step", "outcome") MATCH SIMPLE;
+
+ALTER TABLE "slice"."retry_fenced" ADD CONSTRAINT "__retry_fenced_fk_step_attempt_5lvusmnjjt" FOREIGN KEY ("step", "attempt") REFERENCES "slice"."retry_claim" ("step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."retry_finish"
   ADD CONSTRAINT "__retry_finish_fk_scope_fwo5tjrgbx" FOREIGN KEY ("scope") REFERENCES "slice"."retry_admitted" ("scope") MATCH SIMPLE,
@@ -1097,6 +1127,8 @@ ALTER TABLE "slice"."sync_exclusive_key" ADD CONSTRAINT "__sync_exclusive_key_fk
 ALTER TABLE "slice"."sync_exhausted" ADD CONSTRAINT "__sync_exhausted_fk_step_qdkuopifxf" FOREIGN KEY ("step") REFERENCES "slice"."sync_failed" ("step") MATCH SIMPLE;
 
 ALTER TABLE "slice"."sync_failed" ADD CONSTRAINT "__sync_failed_fk_step_tag_outcome_failed_w7buaawyeg" FOREIGN KEY ("step", "__tag_outcome_failed_26do6twsnf") REFERENCES "slice"."sync_result" ("step", "outcome") MATCH SIMPLE;
+
+ALTER TABLE "slice"."sync_fenced" ADD CONSTRAINT "__sync_fenced_fk_step_attempt_ypmzavzbgy" FOREIGN KEY ("step", "attempt") REFERENCES "slice"."sync_claim" ("step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."sync_finish"
   ADD CONSTRAINT "__sync_finish_fk_scope_bv3hsrlx5y" FOREIGN KEY ("scope") REFERENCES "slice"."sync_admitted" ("scope") MATCH SIMPLE,

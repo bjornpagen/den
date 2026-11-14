@@ -333,6 +333,7 @@ export const syncLedger = (h: SyncHandles) => {
 	const ledger: Ledger<FlowNeeds<typeof sync>> = {
 		flow: FlowName.make("Sync"),
 		now: Effect.flatMap(h.den.syncNow.once({ params: {}, facts: {} }), readingOf),
+		authenticated: Effect.asVoid(h.commits.syncAuthenticated.once({ params: {}, facts: {} })),
 		resources: [],
 		steps: new Map([
 			[
@@ -646,6 +647,8 @@ export const syncLedger = (h: SyncHandles) => {
 			Effect.map(h.den.syncClaimsOf.once({ params: { step }, facts: {} }), rowsOf),
 		retriesOf: (step) =>
 			Effect.map(h.den.syncRetriesOf.once({ params: { step }, facts: {} }), rowsOf),
+		fencedOf: (step) =>
+			Effect.map(h.den.syncFencedOf.once({ params: { step }, facts: {} }), rowsOf),
 		scopeOf: (scope) =>
 			Effect.gen(function* () {
 				const row = yield* Effect.map(
@@ -699,6 +702,7 @@ export const syncLedger = (h: SyncHandles) => {
 				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
 			),
 		retry: (row) => h.den.syncRetry.once({ params: {}, facts: { insert: { SyncRetry: [row] } } }),
+		fence: (row) => h.den.syncFence.once({ params: {}, facts: { insert: { SyncFenced: [row] } } }),
 		refuse: (step, attempt, law) =>
 			h.den.syncRefuse.once({
 				params: {},
@@ -733,6 +737,10 @@ export const syncLedger = (h: SyncHandles) => {
 			)
 			const retries = yield* Effect.map(
 				h.den.syncPendingRetries.once({ params: {}, facts: {} }),
+				rowsOf
+			)
+			const fenced = yield* Effect.map(
+				h.den.syncPendingFenced.once({ params: {}, facts: {} }),
 				rowsOf
 			)
 			const dues = yield* Effect.map(h.den.syncPendingDues.once({ params: {}, facts: {} }), rowsOf)
@@ -776,6 +784,7 @@ export const syncLedger = (h: SyncHandles) => {
 				steps,
 				claims,
 				retries,
+				fenced,
 				dues,
 				scopes: [
 					...Arr.map(requested, (s) => view(s.scope, s.kind, false)),

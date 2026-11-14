@@ -296,6 +296,7 @@ export const chainLedger = (h: ChainHandles) => {
 	const ledger: Ledger<FlowNeeds<typeof chain>> = {
 		flow: FlowName.make("Chain"),
 		now: Effect.flatMap(h.den.chainNow.once({ params: {}, facts: {} }), readingOf),
+		authenticated: Effect.asVoid(h.commits.chainAuthenticated.once({ params: {}, facts: {} })),
 		resources: [],
 		steps: new Map([
 			[
@@ -685,6 +686,8 @@ export const chainLedger = (h: ChainHandles) => {
 			Effect.map(h.den.chainClaimsOf.once({ params: { step }, facts: {} }), rowsOf),
 		retriesOf: (step) =>
 			Effect.map(h.den.chainRetriesOf.once({ params: { step }, facts: {} }), rowsOf),
+		fencedOf: (step) =>
+			Effect.map(h.den.chainFencedOf.once({ params: { step }, facts: {} }), rowsOf),
 		scopeOf: (scope) =>
 			Effect.gen(function* () {
 				const row = yield* Effect.map(
@@ -735,6 +738,8 @@ export const chainLedger = (h: ChainHandles) => {
 				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
 			),
 		retry: (row) => h.den.chainRetry.once({ params: {}, facts: { insert: { ChainRetry: [row] } } }),
+		fence: (row) =>
+			h.den.chainFence.once({ params: {}, facts: { insert: { ChainFenced: [row] } } }),
 		refuse: (step, attempt, law) =>
 			h.den.chainRefuse.once({
 				params: {},
@@ -769,6 +774,10 @@ export const chainLedger = (h: ChainHandles) => {
 			)
 			const retries = yield* Effect.map(
 				h.den.chainPendingRetries.once({ params: {}, facts: {} }),
+				rowsOf
+			)
+			const fenced = yield* Effect.map(
+				h.den.chainPendingFenced.once({ params: {}, facts: {} }),
 				rowsOf
 			)
 			const dues = yield* Effect.map(h.den.chainPendingDues.once({ params: {}, facts: {} }), rowsOf)
@@ -809,6 +818,7 @@ export const chainLedger = (h: ChainHandles) => {
 				steps,
 				claims,
 				retries,
+				fenced,
 				dues,
 				scopes: [
 					...Arr.map(requested, (s) => view(s.scope, s.kind, false)),

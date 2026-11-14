@@ -64,6 +64,10 @@ export const FanRetry = relation(
 	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean },
 	["step", "attempt"]
 )
+export const FanFenced = relation("FanFenced", { step: DenStep, attempt: natural }, [
+	"step",
+	"attempt"
+])
 export const FanResult = relation("FanResult", { step: DenStep, outcome: closedId(FanOutcome) }, [
 	"step"
 ])
@@ -135,6 +139,7 @@ export const fanGraph = fragment(
 		FanDue,
 		FanClaim,
 		FanRetry,
+		FanFenced,
 		FanResult,
 		FanDone,
 		FanFailed,
@@ -176,6 +181,7 @@ export const fanGraph = fragment(
 			on(FanClaim, "step", "attempt")
 		),
 		contained(on(FanRetry, "step", "attempt"), on(FanClaim, "step", "attempt")),
+		contained(on(FanFenced, "step", "attempt"), on(FanClaim, "step", "attempt")),
 		contained(on(FanResult, "step"), on(FanStep, "step")),
 		contained(on(FanHeld, "step", "attempt"), on(FanClaim, "step", "attempt")),
 		contained(on(FanHeld, "step"), on(FanResult, "step")),
