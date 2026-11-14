@@ -1,4 +1,4 @@
-import type { Gen } from "@den/testing/gen"
+import type { Gen } from "@bjornpagen/testing/gen"
 import { Array as Arr, Context, Effect, HashMap, Layer, Option, Ref, Schema } from "effect"
 import type { Nature } from "#nature.ts"
 
@@ -178,7 +178,10 @@ const resourceAnswer = Effect.fnUntraced(function* (world: World, request: Reque
 		const size = Math.min(request.limit, LISTING_PAGE_ROWS)
 		const first = (request.page - 1) * size
 		const rows = Arr.map(
-			Arr.filter(Arr.range(first + 1, first + size), (row) => row <= world.listingRows),
+			Arr.filter(
+				Array.from({ length: size }, (_, at) => first + 1 + at),
+				(row) => row <= world.listingRows
+			),
 			(row) => String(row)
 		)
 		const text = yield* Schema.encodeEffect(ListingBody)({ total: world.listingRows, rows }).pipe(

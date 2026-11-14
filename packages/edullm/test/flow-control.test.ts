@@ -1,9 +1,9 @@
-import { type Case, drawn, explore, Run } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { constant, type Gen, int, weighted } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { searched } from "@den/testing/vitest"
-import { runOfTest } from "@den/testing/vitest/run"
+import { type Case, drawn, explore, Run } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { constant, type Gen, int, weighted } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { searched } from "@bjornpagen/testing/vitest"
+import { runOfTest } from "@bjornpagen/testing/vitest/run"
 import { describe, it } from "@effect/vitest"
 import { Array as Arr, Effect, HashMap, Option } from "effect"
 import {
@@ -97,7 +97,10 @@ const worldOf = (scenario: Scenario): World => ({
 })
 
 const itemsOf = (scenario: Scenario): ReadonlyArray<Request> =>
-	Arr.map(Arr.range(1, scenario.requests), (n): Request => ({ kind: "review", target: String(n) }))
+	Array.from({ length: scenario.requests }, (_, at): Request => ({
+		kind: "review",
+		target: String(at + 1)
+	}))
 
 /**
  * The legal moves of the window at one transition: a delivery leaves it, or ends a probe round at the probe window; a

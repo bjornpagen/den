@@ -6,9 +6,9 @@ import {
 	type Oracle,
 	type Run,
 	type SearchFailure
-} from "@den/testing/explore"
-import type { Coverage } from "@den/testing/features"
-import { boundedShrink } from "@den/testing/shrink"
+} from "@bjornpagen/testing/explore"
+import type { Coverage } from "@bjornpagen/testing/features"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { Data, Duration, Effect, Formatter } from "effect"
 
 /**

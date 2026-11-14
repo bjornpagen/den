@@ -60,7 +60,7 @@ A host serves two routes: `export const POST = await runtime.runPromise(consumer
 
 ## The suites
 
-Every case a search on `@den/testing`, over `test/fake.ts`, a fake of `@vercel/queue`'s client with a clock of its
+Every case a search on `@bjornpagen/testing`, over `test/fake.ts`, a fake of `@vercel/queue`'s client with a clock of its
 own: an idempotency key drops a later send for its message's retention, a message lives for its retention and is
 consumed only while unexpired, a delay holds it back, a lapsed lease delivers it again up to the trigger's
 `maxDeliveries`, the client serializes with `text`, and the suite's fates drop, duplicate, delay and redeliver.
@@ -76,9 +76,6 @@ consumed only while unexpired, a delay holds it back, a lapsed lease delivers it
   delivery.
 - `census.test.ts`: the tick runs exactly for `Bearer <secret>`; 200, 500, or 401 having run nothing.
 - `config.test.ts`: den's file passes; one edit of it is reported exactly when it changes what den owns.
-
-The package's `tsconfig.json` includes `packages/testing/src/interleave.ts`: superlint's `testCaseIsSearch` resolves
-every search it names in each test's program, and no suite here interleaves sessions.
 
 ## Not verified
 

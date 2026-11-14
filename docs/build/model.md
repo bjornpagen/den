@@ -2,7 +2,7 @@
 
 `packages/den-model` states den's laws apart from the engine: a den program as data, the ledger as immutable facts
 with every transition a pure function, a deterministic simulator of the platform around it, the laws as searches, and
-edullm's eight workloads as model programs. It imports nothing of den or grizzle, only `effect` and `@den/testing`,
+edullm's eight workloads as model programs. It imports nothing of den or grizzle, only `effect` and `@bjornpagen/testing`,
 so the engine's suites can hold `packages/den` to it by differential tests. It follows [the proposal](../proposal.md)
 §4, §7 and §8 and [the decisions](../decisions.md); where they leave a choice open, the model makes the simplest one
 consistent with them and marks it **provisional, for the owner**; the ambiguities it reported are settled by the
@@ -20,7 +20,7 @@ evidence (`decisions.md`, "Settled by the evidence"), and the model follows thos
 | `simulator.ts` | workers, transport, deaths, clock, census, relay, deployments, the world's acts; the chaotic and the fair phase |
 | `properties.ts` | the twelve laws, each a pure check over a trace and the run's sends |
 | `planted.ts` | the planted bugs, each one rule broken |
-| `machine.ts` | the ledger as a `@den/testing/commands` machine over a flat program |
+| `machine.ts` | the ledger as a `@bjornpagen/testing/commands` machine over a flat program |
 | `scenarios.ts`, `search.ts` | generators, the simulator's nature drawn from a case's tape, the declaration check, search helpers |
 | `workloads/` | `synthetic.ts` (generated programs), W1 `timeback.ts`, W2 `alphatest.ts`, W3 `qti.ts`, W4 `gold.ts`, W5 `takedown.ts`, W6 `reports.ts`, W7 `enrollment.ts`, W8 `seed.ts`, and `edullm.ts`, all eight on one ledger |
 

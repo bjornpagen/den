@@ -148,8 +148,9 @@ export const exclusiveOf = <R>(
 		Arr.filter(rows, (row) => row.scope === scope)
 	)
 
-/** The seat numbers `0 … count − 1`, none for a count of 0: Effect's `Array.range` makes one of an empty range. */
-const seatsOf = (count: number): ReadonlyArray<number> => (count > 0 ? Arr.range(0, count - 1) : [])
+/** The seat numbers `0 … count − 1`, none for a count of 0. */
+const seatsOf = (count: number): ReadonlyArray<number> =>
+	Array.from({ length: count }, (_, seat) => seat)
 
 /**
  * Makes the seat rows what the flow declares: each resource's seats `0 … n − 1`, adding the missing and removing the

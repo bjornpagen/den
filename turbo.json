@@ -19,26 +19,31 @@
 		"typecheck": {
 			"description": "Every project checks its own sources with --noEmit and reads its dependencies' sources directly, so no check waits on another's, and reruns when a package it loads changes, the submodule's grizzle packages among them; grizzle's packages keep their own gates.",
 			"dependsOn": ["^source"],
-			"inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/packages/devtools/tsconfig.base.json"],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"$TURBO_ROOT$/vendor/toolchain/packages/devtools/tsconfig.base.json"
+			],
 			"outputs": []
 		},
 		"superlint": {
-			"description": "The dev tools' rules and the superlint options in the root package.json are inputs too.",
+			"description": "The dev tools' rules and den's toolchain.config.ts are inputs too.",
 			"dependsOn": ["^source"],
 			"inputs": [
 				"$TURBO_DEFAULT$",
-				"$TURBO_ROOT$/package.json",
-				"$TURBO_ROOT$/packages/devtools/src/**",
-				"$TURBO_ROOT$/packages/devtools/tsconfig.base.json"
+				"$TURBO_ROOT$/toolchain.config.ts",
+				"$TURBO_ROOT$/vendor/toolchain/packages/devtools/src/**",
+				"$TURBO_ROOT$/vendor/toolchain/packages/devtools/tsconfig.base.json"
 			]
 		},
 		"oxlint": {
-			"description": "The dev tools' preset and plugin are inputs too.",
+			"description": "The dev tools' preset and plugin and den's toolchain.config.ts are inputs too.",
 			"dependsOn": ["^source"],
-			"inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/packages/devtools/src/**"]
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"$TURBO_ROOT$/toolchain.config.ts",
+				"$TURBO_ROOT$/vendor/toolchain/packages/devtools/src/**"
+			]
 		},
-		"fixtures:superlint": {},
-		"fixtures:oxlint": {},
 		"test": {
 			"dependsOn": ["^source"]
 		},

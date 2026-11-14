@@ -1,6 +1,13 @@
-import type { Case } from "@den/testing/explore"
-import { boolean, type Gen, int, production, type Weighted, weighted } from "@den/testing/gen"
-import { type Swarm, swarm, weightOf } from "@den/testing/swarm"
+import type { Case } from "@bjornpagen/testing/explore"
+import {
+	boolean,
+	type Gen,
+	int,
+	production,
+	type Weighted,
+	weighted
+} from "@bjornpagen/testing/gen"
+import { type Swarm, swarm, weightOf } from "@bjornpagen/testing/swarm"
 import { Array as Arr, Option, Record } from "effect"
 import type { By } from "#facts.ts"
 import { type Counts, type Ladder, ordinals, type Window } from "#program.ts"
@@ -154,6 +161,7 @@ export const shapeGen =
 		const running = source.draw(runningGen)
 		const behaviour = behaviourGen(running.ladder)
 		const roots = source.draw(int(1, 3))
+		const rootOf = () => ({ at: source.draw(int(0, 12)), by: source.draw(byGen) })
 		return {
 			seats: source.draw(int(1, 3)),
 			running,
@@ -183,10 +191,7 @@ export const shapeGen =
 					[1, (inner) => inner.draw(behaviour)]
 				])
 			),
-			roots: Arr.map(Arr.range(1, roots), () => ({
-				at: source.draw(int(0, 12)),
-				by: source.draw(byGen)
-			})),
+			roots: [rootOf(), ...Array.from({ length: roots - 1 }, rootOf)],
 			gates: Arr.map(ordinals(source.draw(int(0, 2))), () => source.draw(int(0, 24))),
 			outside: Arr.map(ordinals(source.draw(int(0, 2))), () => ({
 				at: source.draw(int(0, 16)),

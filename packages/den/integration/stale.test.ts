@@ -5,12 +5,12 @@ import type { Ran, Turn } from "@bjornpagen/den/runtime/ledger"
 import { lostRace, serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
-import { drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { element, type Gen, int } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { boundedShrink } from "@den/testing/shrink"
-import { searched } from "@den/testing/vitest"
+import { drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { element, type Gen, int } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
+import { searched } from "@bjornpagen/testing/vitest"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Duration, Effect, Formatter, Option } from "effect"
 import type { Digest } from "effect/crypto"
@@ -83,9 +83,7 @@ layer(sliceLayer)("a stale holder", (it) => {
 							feed: "sport",
 							pages: BigInt(race.pages)
 						})
-						if (!requested.fresh) {
-							return yield* c.assume(false)
-						}
+						assert.isTrue(requested.fresh)
 						const ends = (from: bigint) => instantOf(Number(from) + longestLeaseMillis.value)
 						const admitted = yield* serve(
 							ledgers,

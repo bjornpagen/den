@@ -1,9 +1,9 @@
-import { type Case, drawn, explore, Run } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { alphabet, element, type Gen, int, oneOf, subarray } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { searched } from "@den/testing/vitest"
-import { runOfTest } from "@den/testing/vitest/run"
+import { type Case, drawn, explore, Run } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { alphabet, element, type Gen, int, oneOf, subarray } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { searched } from "@bjornpagen/testing/vitest"
+import { runOfTest } from "@bjornpagen/testing/vitest/run"
 import { describe, it } from "@effect/vitest"
 import { Array as Arr, Effect, HashMap, Option } from "effect"
 import {
@@ -48,8 +48,8 @@ const scenarioGen: Gen<Scenario> = (source) => {
 	const buckets = source.draw(
 		alphabet(Arr.map(Arr.range(0, 5), () => source.draw(int(0, PRINT_BUCKETS - 1))))
 	)
-	const universe = Arr.map(Arr.range(1, source.draw(int(1, 12))), (index): Key => ({
-		text: `k${String(index)}`,
+	const universe = Array.from({ length: source.draw(int(1, 12)) }, (_, at): Key => ({
+		text: `k${String(at + 1)}`,
 		mark: {
 			bucket: source.draw(element(buckets)),
 			fingerprint: source.draw(oneOf([int(0, 3), int(0, 2 ** 24 - 1)]))

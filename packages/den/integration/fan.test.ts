@@ -2,12 +2,12 @@ import { caseHang } from "@bjornpagen/den/limits"
 import { now } from "@bjornpagen/den/runtime/clock"
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
-import { drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { type Gen, int } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { boundedShrink } from "@den/testing/shrink"
-import { searched } from "@den/testing/vitest"
+import { drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { type Gen, int } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
+import { searched } from "@bjornpagen/testing/vitest"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter } from "effect"
 import { admitAndDrain } from "#integration/support/run.ts"
@@ -76,9 +76,7 @@ layer(sliceLayer)("the fan-out flow", (it) => {
 							batch,
 							size: BigInt(run.size)
 						})
-						if (!requested.fresh) {
-							return yield* c.assume(false)
-						}
+						assert.isTrue(requested.fresh)
 						yield* admitAndDrain(ledgers, FlowName.make("Fan"), [requested.scope])
 						const tallies = yield* rows(app.workload.tallies.once({ params: {}, facts: {} }))
 						const n = BigInt(run.size)

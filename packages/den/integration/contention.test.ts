@@ -5,13 +5,13 @@ import type { HoldRow } from "@bjornpagen/den/runtime/ledger"
 import { giveBack, provision, take } from "@bjornpagen/den/runtime/seats"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
-import { drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { type Gen, int } from "@den/testing/gen"
-import { interleave, type Interleaving } from "@den/testing/interleave"
-import { notesOnly } from "@den/testing/sense"
-import { boundedShrink } from "@den/testing/shrink"
-import { searched } from "@den/testing/vitest"
+import { drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { type Gen, int } from "@bjornpagen/testing/gen"
+import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
+import { searched } from "@bjornpagen/testing/vitest"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, HashMap, Option, Ref } from "effect"
 import { ringOnAndDrain } from "#integration/support/run.ts"
@@ -72,9 +72,7 @@ layer(sliceLayer)("exact seats", (it) => {
 							const batch = `contended-${yield* nonce}`
 							const at = yield* now
 							const requested = yield* fan.request.FanRun(batch, at, { batch, size: 5n })
-							if (!requested.fresh) {
-								return yield* c.assume(false)
-							}
+							assert.isTrue(requested.fresh)
 							const ends = instantOf(Number(at) + longestLeaseMillis.value)
 							const admitted = yield* serve(
 								ledgers,

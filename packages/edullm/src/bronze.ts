@@ -1,4 +1,4 @@
-import type { Gen } from "@den/testing/gen"
+import type { Gen } from "@bjornpagen/testing/gen"
 import { Context, Effect, HashMap, Layer, Option, Ref, Schema } from "effect"
 import { Digest } from "effect/crypto"
 import { Hex } from "effect/encoding"

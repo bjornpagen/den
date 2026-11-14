@@ -1,8 +1,8 @@
-import { type Case, drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { array, constant, element, type Gen, production, weighted } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { searched } from "@den/testing/vitest"
+import { type Case, drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { array, constant, element, type Gen, production, weighted } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { searched } from "@bjornpagen/testing/vitest"
 import { describe, it } from "@effect/vitest"
 import { Array as Arr, Effect, HashMap, Option, Result } from "effect"
 import {

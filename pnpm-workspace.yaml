@@ -3,6 +3,10 @@ packages:
   # grizzle, the submodule pinned on its main branch: its own packages, versions and gates, none of den's.
   - "vendor/grizzle/packages/engine"
   - "vendor/grizzle/packages/grizzle"
+  # The toolchain, the submodule pinned at its commit: its dev tools and testing library run from source, with gates of
+  # their own, none of den's.
+  - "vendor/toolchain/packages/devtools"
+  - "vendor/toolchain/packages/testing"
 # Approved dependencies' agent skills link into the one skills folder, which .claude/skills and .cursor/skills link to.
 skills:
   dirs:
@@ -18,13 +22,17 @@ minimumReleaseAgeExclude:
 overrides:
   "@types/node": "catalog:"
 catalog:
+  "@babel/core": 7.29.7
   "@effect/platform-node": 4.1.3
   "@effect/tsgo": 0.67.7
   "@effect/vitest": 4.1.3
+  "@tailwindcss/node": 4.3.4
+  "@types/babel__core": 7.20.5
   "@types/node": 26.6.6
   "@types/pg": 8.23.1
   "@vercel/queue": 0.11.0
   arkregex: 0.0.14
+  babel-plugin-react-compiler: 1.0.0
   effect: 4.1.4
   fallow: 3.38.1
   oxfmt: 0.76.0

@@ -1,7 +1,7 @@
-import { exhaust } from "@den/testing/explore"
-import { requiredInSpace } from "@den/testing/features"
-import { element } from "@den/testing/gen"
-import { searched } from "@den/testing/vitest"
+import { exhaust } from "@bjornpagen/testing/explore"
+import { requiredInSpace } from "@bjornpagen/testing/features"
+import { element } from "@bjornpagen/testing/gen"
+import { searched } from "@bjornpagen/testing/vitest"
 import { assert, it } from "@effect/vitest"
 import { Array as Arr, Effect, Exit, Formatter, Option, Schema } from "effect"
 import { flow } from "#algebra/flow.ts"
@@ -159,7 +159,6 @@ it.effect("accepts a well-formed flow and refuses each fault when it is declared
 				suite: "flow checks",
 				generator: element(Fault.literals),
 				literal: Formatter.format,
-				limit: Fault.literals.length,
 				coverage: requiredInSpace<Fault>(Fault.literals),
 				caseHang,
 				box: "a flow of two steps on one resource, a scope and a root, with each single fault",

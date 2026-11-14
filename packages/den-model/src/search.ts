@@ -6,9 +6,9 @@ import {
 	type Oracle,
 	type Run,
 	type SearchFailure
-} from "@den/testing/explore"
-import type { Coverage } from "@den/testing/features"
-import { boundedShrink } from "@den/testing/shrink"
+} from "@bjornpagen/testing/explore"
+import type { Coverage } from "@bjornpagen/testing/features"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { Array as Arr, Data, Duration, Effect, Formatter, Option } from "effect"
 import type { Rules } from "#ledger.ts"
 import { type Program, windowsOf } from "#program.ts"

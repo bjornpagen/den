@@ -2,3 +2,7 @@
 	path = vendor/grizzle
 	url = https://github.com/bjornpagen/grizzle.git
 	branch = main
+[submodule "vendor/toolchain"]
+	path = vendor/toolchain
+	url = https://github.com/bjornpagen/toolchain.git
+	branch = main

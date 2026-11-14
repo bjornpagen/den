@@ -3,11 +3,11 @@ import { now } from "@bjornpagen/den/runtime/clock"
 import { holderOf, instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
-import { exhaust } from "@den/testing/explore"
-import { requiredInSpace } from "@den/testing/features"
-import { int } from "@den/testing/gen"
-import { interleave, type Interleaving } from "@den/testing/interleave"
-import { searched } from "@den/testing/vitest"
+import { exhaust } from "@bjornpagen/testing/explore"
+import { requiredInSpace } from "@bjornpagen/testing/features"
+import { int } from "@bjornpagen/testing/gen"
+import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
+import { searched } from "@bjornpagen/testing/vitest"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Option, Ref } from "effect"
 import type { Digest } from "effect/crypto"
@@ -40,7 +40,6 @@ layer(sliceLayer)("the claim race", (it) => {
 					suite: "claim race",
 					generator: int(1, 2),
 					literal: Formatter.format,
-					limit: 2,
 					coverage: requiredInSpace<Feature>(["one page", "two pages"]),
 					caseHang,
 					box: "two claimers of one chain's first page, a run of one or two pages",

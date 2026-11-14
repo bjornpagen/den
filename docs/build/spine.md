@@ -169,7 +169,7 @@ output into `select(PResult, outcome = done)`) certifies.
 
 ## The suites
 
-Every case is a search on `@den/testing`. Unit (`pnpm test`): the wake contract (decode ∘ encode = id, and a key names
+Every case is a search on `@bjornpagen/testing`. Unit (`pnpm test`): the wake contract (decode ∘ encode = id, and a key names
 one wake), the flow's declaration checks (exhausted, one fault at a time), derived identity, and lowering (every name
 prefixed, every law over the fragment's own relations, an Option a relation of its own, the merge refusing a clash).
 PostgreSQL (`pnpm test:network`, six files, each its own database):

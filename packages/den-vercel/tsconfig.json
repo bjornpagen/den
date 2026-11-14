@@ -4,5 +4,5 @@
 		"types": ["node"],
 		"lib": ["ESNext"]
 	},
-	"include": ["**/*", "../testing/src/interleave.ts"]
+	"include": ["**/*"]
 }

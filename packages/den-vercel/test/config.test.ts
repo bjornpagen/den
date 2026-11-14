@@ -1,10 +1,10 @@
 import { functionLifetimeSeconds, caseHang } from "@bjornpagen/den/limits"
-import { drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { characterOf, type Gen, int, oneOf, option, string } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { boundedShrink } from "@den/testing/shrink"
-import { searched } from "@den/testing/vitest"
+import { drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { characterOf, type Gen, int, oneOf, option, string } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
+import { searched } from "@bjornpagen/testing/vitest"
 import { assert, it } from "@effect/vitest"
 import {
 	Array as Arr,

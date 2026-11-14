@@ -3,12 +3,12 @@ import { now } from "@bjornpagen/den/runtime/clock"
 import { type Ending, serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
-import { drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { element, type Gen, int } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { boundedShrink } from "@den/testing/shrink"
-import { searched } from "@den/testing/vitest"
+import { drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { element, type Gen, int } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
+import { searched } from "@bjornpagen/testing/vitest"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Order } from "effect"
 import { admitAndDrain } from "#integration/support/run.ts"
@@ -96,10 +96,8 @@ layer(sliceLayer)("the chain flow", (it) => {
 							feed: run.feed,
 							pages: BigInt(run.pages)
 						})
-						c.note(requested.fresh ? "first request" : "request again")
-						if (!requested.fresh) {
-							return yield* c.assume(false)
-						}
+						assert.isTrue(requested.fresh)
+						c.note("first request")
 						yield* admitAndDrain(ledgers, FlowName.make("Chain"), [requested.scope])
 						const scope = requested.scope
 						const read = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
@@ -109,7 +107,7 @@ layer(sliceLayer)("the chain flow", (it) => {
 								Arr.map(pages, (page): bigint => page.seq),
 								Order.BigInt
 							),
-							Arr.map(Arr.range(0, run.pages - 1), BigInt)
+							Array.from({ length: run.pages }, (_, seq) => BigInt(seq))
 						)
 						const reads = yield* rows(app.workload.pageReads.once({ params: {}, facts: {} }))
 						const items = yield* rows(app.workload.items.once({ params: {}, facts: {} }))

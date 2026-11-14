@@ -1,4 +1,4 @@
-import type { Gen } from "@den/testing/gen"
+import type { Gen } from "@bjornpagen/testing/gen"
 import { Array as Arr, Context, Effect, Layer, Option, Order, Ref, Schema } from "effect"
 import type { Nature } from "#nature.ts"
 

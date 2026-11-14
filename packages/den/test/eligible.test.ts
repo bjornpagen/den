@@ -1,9 +1,9 @@
-import { drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { array, boolean, type Gen, int, option } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { boundedShrink } from "@den/testing/shrink"
-import { searched } from "@den/testing/vitest"
+import { drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { array, boolean, type Gen, int, option } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
+import { searched } from "@bjornpagen/testing/vitest"
 import { assert, layer } from "@effect/vitest"
 import {
 	Array as Arr,
@@ -251,9 +251,9 @@ interface Built {
 	readonly seats: number
 }
 
-/** The ordinals `0 … count − 1`, none for a count of 0: Effect's `Array.range` makes one element of an empty range. */
+/** The ordinals `0 … count − 1`, none for a count of 0. */
 const ordinals = (count: number): ReadonlyArray<number> =>
-	count > 0 ? Arr.range(0, count - 1) : []
+	Array.from({ length: count }, (_, at) => at)
 
 const indexed = <A>(items: ReadonlyArray<A>) => Arr.map(items, (value, index) => ({ value, index }))
 
@@ -370,7 +370,7 @@ const built = (w: World) =>
 			retries,
 			dues,
 			scopes,
-			seats: Arr.map(Arr.range(0, w.seats - 1), (seat) => ({
+			seats: Arr.map(ordinals(w.seats), (seat) => ({
 				resource: "Pool",
 				seat: BigInt(seat)
 			})),

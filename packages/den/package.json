@@ -48,9 +48,9 @@
 		"pg": "catalog:"
 	},
 	"devDependencies": {
-		"@den/devtools": "workspace:*",
+		"@bjornpagen/devtools": "workspace:*",
 		"@den/model": "workspace:*",
-		"@den/testing": "workspace:*",
+		"@bjornpagen/testing": "workspace:*",
 		"@effect/platform-node": "catalog:",
 		"@effect/vitest": "catalog:",
 		"@types/node": "catalog:",

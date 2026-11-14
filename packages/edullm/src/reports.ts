@@ -1,4 +1,4 @@
-import type { Gen } from "@den/testing/gen"
+import type { Gen } from "@bjornpagen/testing/gen"
 import { Context, Effect, HashMap, HashSet, Layer, Option, Ref } from "effect"
 import type { Nature } from "#nature.ts"
 

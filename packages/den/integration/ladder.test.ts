@@ -3,12 +3,12 @@ import { now } from "@bjornpagen/den/runtime/clock"
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
-import { drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { type Gen, int } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { boundedShrink } from "@den/testing/shrink"
-import { searched } from "@den/testing/vitest"
+import { drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { type Gen, int } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
+import { searched } from "@bjornpagen/testing/vitest"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Duration, Effect, Formatter, HashMap, Ref } from "effect"
 import { TestClock } from "effect/testing"
@@ -96,11 +96,9 @@ layer(sliceLayer)("retry ladders", (it) => {
 								steadfast,
 								brittle
 							})
-							if (!requested.fresh) {
-								return yield* c.assume(false)
-							}
+							assert.isTrue(requested.fresh)
 							yield* admitAndDrain(ledgers, FlowName.make("Retry"), [requested.scope])
-							yield* Effect.forEach(Arr.range(0, run.steadfast + run.brittle + 1), () =>
+							yield* Effect.forEach(Array.from({ length: run.steadfast + run.brittle + 2 }), () =>
 								Effect.andThen(
 									TestClock.adjust(Duration.millis(backoffLastMillis.value)),
 									drain(ledgers)

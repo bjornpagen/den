@@ -1,6 +1,6 @@
 {
 	"$schema": "./node_modules/@effect/tsgo/schema.json",
-	"extends": ["@den/devtools/tsconfig.base.json", "./tsconfig.base.json"],
+	"extends": ["@bjornpagen/devtools/tsconfig.base.json", "./tsconfig.base.json"],
 	"compilerOptions": {
 		"plugins": [
 			{

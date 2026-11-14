@@ -7,6 +7,12 @@ import {
 import { now } from "@bjornpagen/den/runtime/clock"
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
+import { drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { element, type Gen, int, oneOf } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
+import { searched } from "@bjornpagen/testing/vitest"
 import type { Datum } from "@den/model/datum"
 import type { Fact } from "@den/model/facts"
 import { rootText } from "@den/model/identity"
@@ -24,12 +30,6 @@ import {
 	type StepKind,
 	stepOf
 } from "@den/model/program"
-import { drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { element, type Gen, int, oneOf } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { boundedShrink } from "@den/testing/shrink"
-import { searched } from "@den/testing/vitest"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, HashMap, Option, String as Str } from "effect"
 import { chain, poolSeats } from "#integration/slice/flows.ts"
@@ -90,11 +90,13 @@ const runsOf = (holds: ReadonlyArray<Resource>, ladder: Ladder): Runs => ({
 	ladder
 })
 
-const steps = Arr.filter(chain.kinds, (k) => k._tag === "Step")
-const pageLadder = Option.match(Arr.head(steps), {
-	onNone: () => ladderOf(1),
-	onSome: (s) => ladderOf(s.retry.kind === "attempts" ? s.retry.attempts : 1)
-})
+const pageLadder = Option.match(
+	Arr.findFirst(chain.kinds, (k) => k._tag === "Step"),
+	{
+		onNone: () => ladderOf(1),
+		onSome: (s) => ladderOf(s.retry.kind === "attempts" ? s.retry.attempts : 1)
+	}
+)
 
 interface PageIn {
 	readonly feed: string

@@ -1,4 +1,4 @@
-import { int } from "@den/testing/gen"
+import { int } from "@bjornpagen/testing/gen"
 import { Array as Arr, Effect } from "effect"
 import { AlphaTestApi, type Answered, classify, type Request } from "#alphatest.ts"
 import {

@@ -17,11 +17,5 @@
 		"newlinesBetween": false,
 		"partitionByNewline": true
 	},
-	"ignorePatterns": [
-		"pnpm-lock.yaml",
-		"dist/**",
-		"*.md",
-		"packages/devtools/src/*/fixtures/**",
-		"sources/**"
-	]
+	"ignorePatterns": ["pnpm-lock.yaml", "dist/**", "*.md", "sources/**"]
 }

@@ -13,9 +13,9 @@ outside facts. State rules in plain words; never narrate history.
 
 Lint (oxlint and the dev tools' plugin, superlint, fallow) and Effect's diagnostics record owner decisions: strengthen
 them, never weaken them to let code through. Inline suppressions are refused; a file a rule must spare is named in
-config. Rules rejected on purpose live in `REJECTED` in the dev tools' preset, and Effect's diagnostics in
-`REJECTED_DIAGNOSTICS`, each with its reason; turning one back on needs the owner. A rule that forces worse code is
-rejected, never kept with an allow-list or worked around.
+config. Rules rejected on purpose live in `toolchain.config.ts`'s `rejected`, lint rules and Effect's diagnostics
+each with its reason; turning one back on needs the owner. A rule that forces worse code is rejected, never kept with
+an allow-list or worked around.
 
 ## Design
 
@@ -52,13 +52,14 @@ rejected, never kept with an allow-list or worked around.
 
 A Turborepo workspace of private packages named `@den/<name>`, each exporting its raw TypeScript:
 
-- `packages/devtools`: the lint preset (`lintConfig`, `REJECTED`, `REJECTED_DIAGNOSTICS`), the tsconfig base, the
-  oxlint plugin and superlint, each rule proven against fixtures. Copied from grizzle's; den owns its copy.
-- `packages/testing`: the choice-stream testing library every suite runs on (`explore`, `exhaust`, `commands`,
-  `interleave`, the shrinker, `pnpm fuzz`, `pnpm mutate`). Copied from grizzle's; den owns its copy.
 - `packages/den` (`@bjornpagen/den`): the library. `packages/den-model`: its reference model and simulator.
   `packages/den-vercel`: the Vercel Queues transport. `packages/edullm`: the outside systems of den's first use.
 - `vendor/grizzle`: grizzle, a git submodule pinned on its `main` branch.
+- `vendor/toolchain`: the shared toolchain, a git submodule pinned at its commit, whose packages run from source:
+  `@bjornpagen/devtools` (the lint preset, the tsconfig base, the oxlint plugin and superlint with its packs) and
+  `@bjornpagen/testing`, the choice-stream testing library every suite runs on (`explore`, `exhaust`, `commands`,
+  `interleave`, the shrinker, `pnpm fuzz`, `pnpm mutate`). den keeps only its own decisions, in `toolchain.config.ts`
+  and `oxlint.config.ts`; the toolchain's fixes land in its repository, and den takes them by moving the submodule.
 - `docs/`: the goals, the decisions, the proposal and the build notes.
 
 Inside a package, import through its own `#` map with the real extension; across packages, by package export.
@@ -69,9 +70,8 @@ Inside a package, import through its own `#` map with the real extension; across
   strict catalog (`pnpm-workspace.yaml`). A release is admitted once it is a day old, except Effect's own packages:
   den builds on Effect's newest release.
 - TypeScript 7.1 beta with Effect's language service, from `@effect/tsgo`; `pnpm install` patches it in.
-- `pnpm check` is the gate, run by hand before a commit: every package's typecheck, superlint and oxlint, the dev
-  tools' fixture suites, oxfmt, fallow (`dead-code`, `architecture`) and `pnpm dedupe --check`. `pnpm test` runs the
-  testing library's suite.
+- `pnpm check` is the gate, run by hand before a commit: every package's typecheck, superlint and oxlint, oxfmt,
+  fallow (`dead-code`, `architecture`) and `pnpm dedupe --check`. `pnpm test` runs the suites that need no database.
 
 ## Working here
 

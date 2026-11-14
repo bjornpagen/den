@@ -1,10 +1,10 @@
 import { natural, pg, relation } from "@bjornpagen/grizzle"
-import { drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { boolean, element, type Gen, int } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { boundedShrink } from "@den/testing/shrink"
-import { searched } from "@den/testing/vitest"
+import { drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { boolean, element, type Gen, int } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
+import { searched } from "@bjornpagen/testing/vitest"
 import { assert, it } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Option, Schema, String as Str } from "effect"
 import { type AnyFlow, flow } from "#algebra/flow.ts"
@@ -31,7 +31,7 @@ import {
 } from "#algebra/kinds.ts"
 import { caseHang, published } from "#limits.ts"
 import { type LawIR, lower } from "#lower/fragment.ts"
-import { printFragment } from "#lower/print.ts"
+import { type Placement, printFragment } from "#lower/print.ts"
 
 /**
  * Lowering a flow: every relation and roster it declares carries the flow's prefix, every law names only relations the
@@ -122,7 +122,7 @@ const finishing = {
 	retry: attempts(1),
 	writes: writesNothing,
 	body: () => Effect.succeed({ insert: {}, put: {}, delete: {} })
-}
+} as const
 
 const built = (sketch: Sketch): AnyFlow => {
 	const value = Schema.Struct({ value: fieldOf(sketch.form) })
@@ -143,32 +143,32 @@ const built = (sketch: Sketch): AnyFlow => {
 		},
 		done
 	)
-	const later: ReadonlyArray<AnyStepKind> = Arr.map(
-		Arr.range(1, Math.max(1, sketch.steps - 1)),
-		(i) =>
-			step(
-				`S${i}`,
-				{
-					input: value,
-					output: value,
-					error: Schema.Never,
-					reads: noReads,
-					uses: [],
-					retry: attempts(1),
-					due: atSpawn,
-					writes: writesNothing
-				},
-				done
-			)
+	const later: ReadonlyArray<AnyStepKind> = Array.from({ length: sketch.steps - 1 }, (_, at) =>
+		step(
+			`S${at + 1}`,
+			{
+				input: value,
+				output: value,
+				error: Schema.Never,
+				reads: noReads,
+				uses: [],
+				retry: attempts(1),
+				due: atSpawn,
+				writes: writesNothing
+			},
+			done
+		)
 	)
-	const steps: ReadonlyArray<AnyStepKind> = [first, ...Arr.take(later, sketch.steps - 1)]
+	const steps: ReadonlyArray<AnyStepKind> = [first, ...later]
 	const edges: ReadonlyArray<AnyEdge> = sketch.chained
-		? Arr.flatMap(Arr.range(1, sketch.steps - 1), (i) =>
-				Option.toArray(
-					Option.zipWith(Arr.get(steps, i - 1), Arr.get(steps, i), (from, to) =>
-						edge(`E${i}`, from, to, () => [])
+		? Arr.flatMap(
+				Array.from({ length: sketch.steps - 1 }, (_, at) => at + 1),
+				(i) =>
+					Option.toArray(
+						Option.zipWith(Arr.get(steps, i - 1), Arr.get(steps, i), (from, to) =>
+							edge(`E${i}`, from, to, () => [])
+						)
 					)
-				)
 			)
 		: []
 	const Leaf = step(
@@ -338,7 +338,7 @@ it.effect(
 )
 
 /** Where a fragment's printing is placed; the fragment module reads only its app relations' module. */
-const placement = {
+const placement: Placement = {
 	fragment: "#fragment.ts",
 	programs: "#programs.ts",
 	relations: "#relations.ts",

@@ -6,12 +6,12 @@ import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
-import { drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { element, type Gen, int } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { boundedShrink } from "@den/testing/shrink"
-import { searched } from "@den/testing/vitest"
+import { drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { element, type Gen, int } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
+import { searched } from "@bjornpagen/testing/vitest"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Random } from "effect"
 import { ringOnAndDrain } from "#integration/support/run.ts"
@@ -81,9 +81,8 @@ layer(sliceLayer)("a precondition root", (it) => {
 							pages: BigInt(run.pages)
 						})
 						const gold = yield* sync.request.Gold(`gold-${tag}`, at, { build })
-						if (!chained.fresh || !gold.fresh) {
-							return yield* c.assume(false)
-						}
+						assert.isTrue(chained.fresh)
+						assert.isTrue(gold.fresh)
 						const chainAdmitted = yield* serve(
 							ledgers,
 							{ _tag: "Admit", flow: FlowName.make("Chain"), scope: chained.scope },

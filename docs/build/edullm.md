@@ -2,7 +2,7 @@
 
 `packages/edullm` is what den's first use, edullm's queueing rebuilt inside den, talks to: faithful fakes of edullm's
 outside systems, Bronze, the app's own facts, and the pure pieces the eight workloads (`../decisions.md`) need. It
-imports only `effect` and `@den/testing`, nothing of den or grizzle; the flows that drive these fakes come in the next
+imports only `effect` and `@bjornpagen/testing`, nothing of den or grizzle; the flows that drive these fakes come in the next
 wave, once den's API settles. The behaviour reproduced is the one edullm measured, as its code at `staging` 903bad4ba
 records it (its `packages/platform/pipeline/src/limits.ts` and `packages/data/alphatest-acquisition/src/`).
 
@@ -13,7 +13,7 @@ records it (its `packages/platform/pipeline/src/limits.ts` and `packages/data/al
   parameter.
 - **Misbehaviour is drawn.** A fake takes a `World` (what the outside system is: its rows, its knees, its outage) and a
   `Nature` (`src/nature.ts`), the choice stream it draws what the real system decides on its own: a page's chunking, a
-  statement's failure, which request meets a 5xx, what an outside actor does to the roster. A `@den/testing` `Case` is a
+  statement's failure, which request meets a 5xx, what an outside actor does to the roster. A `@bjornpagen/testing` `Case` is a
   `Nature`, so a search finds, shrinks and replays the outside world's behaviour with the rest of its case.
 - **The fake speaks the system's own protocol.** AlphaTest and QTI answer HTTP statuses, exact bodies and Retry-After
   headers; the replica answers binary COPY bodies in chunks and SQLSTATE-named failures. Classifying an answer is the

@@ -86,9 +86,9 @@ export const edullmOf = (
 				admits: [takedown.enter(attempt)]
 			},
 			...Arr.map(
-				Arr.filter(
-					Arr.range(attempt.entered, Math.max(attempt.entered, leaves)),
-					(at) => at < leaves
+				Array.from(
+					{ length: Math.max(0, leaves - attempt.entered) },
+					(_, after) => attempt.entered + after
 				),
 				(at): Act => ({
 					_tag: "Write",

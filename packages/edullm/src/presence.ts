@@ -1,4 +1,4 @@
-import { array, type Gen, int, weighted } from "@den/testing/gen"
+import { array, type Gen, int, weighted } from "@bjornpagen/testing/gen"
 import { Array as Arr, Context, Effect, HashMap, Layer, Option } from "effect"
 
 /**

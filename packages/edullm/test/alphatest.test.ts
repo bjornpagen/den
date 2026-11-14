@@ -1,5 +1,5 @@
-import { type Case, drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
+import { type Case, drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
 import {
 	array,
 	constant,
@@ -9,9 +9,9 @@ import {
 	option,
 	production,
 	weighted
-} from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { searched } from "@den/testing/vitest"
+} from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { searched } from "@bjornpagen/testing/vitest"
 import { describe, it } from "@effect/vitest"
 import { Array as Arr, Effect, HashMap, Option } from "effect"
 import {
@@ -86,11 +86,13 @@ const requestGen = (targets: number): Gen<Request> =>
 
 const scenarioGen: Gen<Scenario> = (source) => {
 	const targets = source.draw(int(1, 6))
-	const finals = Arr.flatMap(Arr.range(1, targets), (target) =>
-		Arr.map(
-			Arr.filter(KINDS, (kind): kind is Exclude<Kind, "listing"> => kind !== "listing"),
-			(kind) => [`${kind}/${String(target)}`, source.draw(element(FINAL_STATUSES))] as const
-		)
+	const finals = Arr.flatMap(
+		Array.from({ length: targets }, (_, at) => at + 1),
+		(target) =>
+			Arr.map(
+				Arr.filter(KINDS, (kind): kind is Exclude<Kind, "listing"> => kind !== "listing"),
+				(kind) => [`${kind}/${String(target)}`, source.draw(element(FINAL_STATUSES))] as const
+			)
 	)
 	return {
 		world: {

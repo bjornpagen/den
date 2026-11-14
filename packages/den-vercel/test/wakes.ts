@@ -1,4 +1,4 @@
-import { characterOf, type Gen, int, oneOf, string } from "@den/testing/gen"
+import { characterOf, type Gen, int, oneOf, string } from "@bjornpagen/testing/gen"
 import { Array as Arr } from "effect"
 
 /**

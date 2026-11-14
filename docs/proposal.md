@@ -194,7 +194,7 @@ for root triggers; `Schedule` for retry ladders; `TestClock`. Not used: the work
 
 ## 12. Testing
 
-A deterministic simulator on `@den/testing`: a fake transport that drops, duplicates, delays and pins messages;
+A deterministic simulator on `@bjornpagen/testing`: a fake transport that drops, duplicates, delays and pins messages;
 functions that die; a clock the test controls; a fake leader that hands over and replays. Properties: every pending
 step has a bounded next move; one result per step; each scope finishes once, after all its children; width is never
 exceeded; a re-run changes nothing; `stale` drains old deployments; an app schema with den spread into it certifies its

@@ -30,8 +30,8 @@
 		"effect": "catalog:"
 	},
 	"devDependencies": {
-		"@den/devtools": "workspace:*",
-		"@den/testing": "workspace:*",
+		"@bjornpagen/devtools": "workspace:*",
+		"@bjornpagen/testing": "workspace:*",
 		"@effect/vitest": "catalog:",
 		"@types/node": "catalog:",
 		"vitest": "catalog:"

@@ -37,7 +37,7 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"@den/testing": "workspace:*",
+		"@bjornpagen/testing": "workspace:*",
 		"effect": "catalog:"
 	},
 	"devDependencies": {

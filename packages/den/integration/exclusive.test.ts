@@ -4,12 +4,12 @@ import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
-import { drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { type Gen, int } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { boundedShrink } from "@den/testing/shrink"
-import { searched } from "@den/testing/vitest"
+import { drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { type Gen, int } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
+import { searched } from "@bjornpagen/testing/vitest"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter } from "effect"
 import { admitAndDrain, ringOnAndDrain } from "#integration/support/run.ts"
@@ -72,16 +72,17 @@ layer(sliceLayer)("exclusivity", (it) => {
 						const app = yield* Db.open(AppServed.roles.auditor, {})
 						const relation = `rel-${yield* nonce}`
 						const at = yield* now
-						const requested = yield* Effect.forEach(Arr.range(1, run.roots), (n) =>
+						const request = (n: number) =>
 							sync.request.SyncRun(`${relation}-${n}`, at, { relation, run: BigInt(n) })
+						const first = yield* request(1)
+						const rest = yield* Effect.forEach(
+							Array.from({ length: run.roots - 1 }, (_, ordinal) => ordinal + 2),
+							request
 						)
-						if (!Arr.every(requested, (r) => r.fresh)) {
-							return yield* c.assume(false)
-						}
+						assert.isTrue(Arr.every([first, ...rest], (r) => r.fresh))
 						const ends = instantOf(Number(at) + longestLeaseMillis.value)
-						const admit = (scope: (typeof requested)[number]["scope"]) =>
+						const admit = (scope: typeof first.scope) =>
 							serve(ledgers, { _tag: "Admit", flow: FlowName.make("Sync"), scope }, ends)
-						const [first, ...rest] = requested
 						const winner = yield* admit(first.scope)
 						assert.strictEqual(winner.ending.kind, "admitted")
 						const losers = yield* Effect.forEach(rest, (r) => admit(r.scope))

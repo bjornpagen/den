@@ -44,9 +44,9 @@ import type { Loader } from "#integration/slice/roles.ts"
 
 const loader = writer<typeof Loader>("loader")
 
-/** The ordinals `0 … count − 1`, none for a count of 0: Effect's `Array.range` makes one element of an empty range. */
+/** The ordinals `0 … count − 1`, none for a count of 0. */
 const ordinals = (count: number): ReadonlyArray<number> =>
-	count > 0 ? Arr.range(0, count - 1) : []
+	Array.from({ length: count }, (_, at) => at)
 
 /** A page's position in its feed. */
 const Seq = Schema.BigInt.pipe(Schema.brand("Seq"))

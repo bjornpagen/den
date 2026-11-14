@@ -1,10 +1,10 @@
 import { caseHang } from "@bjornpagen/den/limits"
 import type { AnyLogin } from "@bjornpagen/grizzle"
 import { served } from "@bjornpagen/grizzle/runtime"
-import { exhaust } from "@den/testing/explore"
-import { requiredInSpace } from "@den/testing/features"
-import { element } from "@den/testing/gen"
-import { searched } from "@den/testing/vitest"
+import { exhaust } from "@bjornpagen/testing/explore"
+import { requiredInSpace } from "@bjornpagen/testing/features"
+import { element } from "@bjornpagen/testing/gen"
+import { searched } from "@bjornpagen/testing/vitest"
 import { NodeServices } from "@effect/platform-node"
 import { assert, layer } from "@effect/vitest"
 import {
@@ -123,7 +123,6 @@ layer(NodeServices.layer, { excludeTestServices: true })("certification", (it) =
 							suite: "certification",
 							generator: element(roles),
 							literal: Formatter.format,
-							limit: roles.length,
 							coverage: requiredInSpace<Feature>([
 								"a den role",
 								"a coordination role",

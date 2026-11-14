@@ -1,5 +1,4 @@
-import { defineTestConfig } from "@den/testing/vitest/config"
-import { Option } from "effect"
+import { defineTestConfig } from "@bjornpagen/testing/vitest/config"
 
 /**
  * `pnpm test:network`: the vertical slice on den's own PostgreSQL 19 cluster (scripts/pg.sh), each file in a database
@@ -7,11 +6,9 @@ import { Option } from "effect"
  */
 export default defineTestConfig({
 	include: ["integration/**/*.test.ts"],
-	exclusive: [],
 	guided: [],
 	setup: [],
 	conditions: [],
 	timeouts: { test: { kind: "unbounded" }, hook: { kind: "unbounded" } },
-	maxWorkers: Option.none(),
 	smallStack: []
 })

@@ -1,11 +1,11 @@
 import { censusPeriodSeconds, caseHang } from "@bjornpagen/den/limits"
 import { idempotencyKey, type Ring, type Wake, WakeSchema } from "@bjornpagen/den/transport"
-import { type Case, drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { constant, element, type Gen, int, oneOf, weighted } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { boundedShrink } from "@den/testing/shrink"
-import { searched } from "@den/testing/vitest"
+import { type Case, drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { constant, element, type Gen, int, oneOf, weighted } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
+import { searched } from "@bjornpagen/testing/vitest"
 import { assert, it } from "@effect/vitest"
 import {
 	Array as Arr,

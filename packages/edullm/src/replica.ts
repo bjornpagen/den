@@ -1,4 +1,4 @@
-import { type Gen, int } from "@den/testing/gen"
+import { type Gen, int } from "@bjornpagen/testing/gen"
 import { Array as Arr, Context, Effect, HashMap, Layer, Option, Ref, Schema } from "effect"
 import { Digest } from "effect/crypto"
 import { bodyOf, FieldCount, PGCOPY, type Tuple } from "#copy-binary.ts"

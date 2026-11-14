@@ -1,20 +1,8 @@
 {
 	"$schema": "./node_modules/fallow/schema.json",
-	"entry": [
-		"packages/devtools/src/oxlint/fixtures.config.ts",
-		"packages/testing/src/vitest/coverage.ts",
-		"packages/testing/src/vitest/mutated-setup.ts",
-		"packages/testing/src/witness.fixtures.ts"
-	],
-	"ignorePatterns": ["packages/devtools/src/*/fixtures/**", "vendor/**"],
-	// The superlint fixtures, which fallow does not read, are @effect/vitest's and pg's only importers in the dev tools.
-	"ignoreDependencies": ["@effect/vitest", "pg"],
+	"ignorePatterns": ["vendor/**"],
 	"boundaries": {
 		"zones": [
-			{
-				"name": "testing",
-				"patterns": ["packages/testing/**"]
-			},
 			{
 				"name": "den",
 				"patterns": ["packages/den/**"]
@@ -34,30 +22,26 @@
 		],
 		"rules": [
 			{
-				"from": "testing",
-				"allow": []
-			},
-			{
 				// den's own suites hold the engine to the reference model, which imports nothing of den.
 				"from": "den",
-				"allow": ["den-model", "testing"]
+				"allow": ["den-model"]
 			},
 			{
 				"from": "den-model",
-				"allow": ["testing"]
+				"allow": []
 			},
 			{
 				"from": "den-vercel",
-				"allow": ["den", "testing"]
+				"allow": ["den"]
 			},
 			{
 				"from": "edullm",
-				"allow": ["den", "den-vercel", "testing"]
+				"allow": ["den", "den-vercel"]
 			}
 		],
 		"coverage": {
 			"requireAllFiles": true,
-			"allowUnmatched": ["packages/devtools/**", "oxlint.config.ts"]
+			"allowUnmatched": ["oxlint.config.ts", "toolchain.config.ts"]
 		}
 	}
 }

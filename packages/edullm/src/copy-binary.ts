@@ -236,7 +236,7 @@ export type Tuple = ReadonlyArray<Field>
 
 /** `value` as a big-endian integer of `width` bytes. */
 const bigEndian = (value: number, width: number): ReadonlyArray<number> =>
-	Arr.map(Arr.range(1, width), (at) => Math.floor(value / 256 ** (width - at)) % 256)
+	Array.from({ length: width }, (_, at) => Math.floor(value / 256 ** (width - 1 - at)) % 256)
 
 /**
  * The binary COPY body PostgreSQL writes for `tuples` under `format`, with `flags` in its header (zero, or bits below

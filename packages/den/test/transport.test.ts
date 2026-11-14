@@ -1,9 +1,17 @@
-import { drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { boolean, characterOf, element, type Gen, int, string, weighted } from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { boundedShrink } from "@den/testing/shrink"
-import { searched } from "@den/testing/vitest"
+import { drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import {
+	boolean,
+	characterOf,
+	element,
+	type Gen,
+	int,
+	string,
+	weighted
+} from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
+import { searched } from "@bjornpagen/testing/vitest"
 import { assert, it } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, HashSet, Schema, String as Str } from "effect"
 import { caseHang } from "#limits.ts"
@@ -242,7 +250,7 @@ const rerung: Gen<Rerung> = (source) => {
 	const wake = source.draw(encodedWake)
 	const first = source.draw(causeIn(wake.flow))
 	const how = source.draw(element(Later.literals))
-	const between = Arr.map(Arr.range(1, source.draw(int(1, 3))), () => source.draw(ringSketch))
+	const between = Array.from({ length: source.draw(int(1, 3)) }, () => source.draw(ringSketch))
 	return {
 		wake,
 		first,

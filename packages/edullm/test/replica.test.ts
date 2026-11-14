@@ -1,5 +1,5 @@
-import { type Case, drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
+import { type Case, drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
 import {
 	array,
 	bytes,
@@ -9,9 +9,9 @@ import {
 	production,
 	subarray,
 	weighted
-} from "@den/testing/gen"
-import { notesOnly } from "@den/testing/sense"
-import { searched } from "@den/testing/vitest"
+} from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { searched } from "@bjornpagen/testing/vitest"
 import { layer } from "@effect/vitest"
 import { Array as Arr, Effect, HashMap, Option, Result } from "effect"
 import { Digest } from "effect/crypto"
@@ -114,8 +114,8 @@ const scenarioGen: Gen<Scenario> = (source) => {
 		pageBytes: source.draw(int(20, 400)),
 		changes: { since, before: since + source.draw(int(0, 50)) },
 		deleted: source.draw(subarray(keys)),
-		inserted: Arr.map(Arr.range(1, source.draw(int(1, 3))), (n) =>
-			source.draw(rowGen(`new${String(n)}`))
+		inserted: Array.from({ length: source.draw(int(1, 3)) }, (_, at) =>
+			source.draw(rowGen(`new${String(at + 1)}`))
 		),
 		fetchKeys: source.draw(int(1, 6))
 	}

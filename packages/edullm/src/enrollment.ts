@@ -1,4 +1,4 @@
-import type { Gen } from "@den/testing/gen"
+import type { Gen } from "@bjornpagen/testing/gen"
 import { Array as Arr, Context, Effect, HashMap, Layer, Option, Ref, Schema } from "effect"
 import type { EnrollmentIntent } from "#app.ts"
 import type { Nature } from "#nature.ts"

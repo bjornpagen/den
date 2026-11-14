@@ -366,7 +366,7 @@ export const admissionOf = <I, O, E>(
  * program that spawns `count` children counts them here.
  */
 export const ordinals = (count: number): ReadonlyArray<number> =>
-	count > 0 ? Arr.range(0, count - 1) : []
+	Array.from({ length: count }, (_, at) => at)
 
 /** A root kind as its program declares it to the laws: its name, its precondition and its window. */
 export type Rooted = Readonly<{

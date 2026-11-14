@@ -1,9 +1,9 @@
-import { type Case, drawn, explore } from "@den/testing/explore"
-import { required } from "@den/testing/features"
-import { array, constant, type Gen, int, weighted } from "@den/testing/gen"
-import { type Driver, interleave } from "@den/testing/interleave"
-import { notesOnly } from "@den/testing/sense"
-import { searched } from "@den/testing/vitest"
+import { type Case, drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
+import { array, constant, type Gen, int, weighted } from "@bjornpagen/testing/gen"
+import { type Driver, interleave } from "@bjornpagen/testing/interleave"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { searched } from "@bjornpagen/testing/vitest"
 import { describe, it } from "@effect/vitest"
 import { Array as Arr, Effect, HashMap, HashSet, Option } from "effect"
 import { makeReports, type Sent, type TimebackReports, type Weather, type World } from "#reports.ts"
@@ -49,7 +49,10 @@ const raceGen: Gen<Race> = (source) => {
 			outageEndsAt: source.draw(int(0, 1500)),
 			malformed: HashSet.fromIterable(
 				Arr.map(
-					Arr.filter(Arr.range(1, reports), () => source.draw(int(0, 3)) === 0),
+					Arr.filter(
+						Array.from({ length: reports }, (_, at) => at + 1),
+						() => source.draw(int(0, 3)) === 0
+					),
 					(report) => String(report)
 				)
 			),

@@ -1,5 +1,5 @@
-import { accepted, type Machine, refused, type Verdict } from "@den/testing/commands"
-import { boolean, type Gen, int } from "@den/testing/gen"
+import { accepted, type Machine, refused, type Verdict } from "@bjornpagen/testing/commands"
+import { boolean, type Gen, int } from "@bjornpagen/testing/gen"
 import { Array as Arr, Option } from "effect"
 import type { Answer } from "#facts.ts"
 import type { StepId } from "#identity.ts"
@@ -136,7 +136,7 @@ const none: Gen<undefined> = () => undefined
 /**
  * The ledger as a command machine over a flat program, its model the ledger under `rules` (`SOUND` for den's laws, a
  * planted bug's to prove a test catches it): the oracle a differential test of the real engine runs its own ledger
- * against, command by command, through `runProgram` from `@den/testing/commands`. The commands an operator, a worker
+ * against, command by command, through `runProgram` from `@bjornpagen/testing/commands`. The commands an operator, a worker
  * and the clock make (admit, claim a step, commit a lease won earlier, let time pass, retire the root) are drawn as
  * readily where the model refuses them as where it accepts them.
  */
