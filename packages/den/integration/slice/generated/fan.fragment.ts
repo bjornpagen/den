@@ -5,6 +5,7 @@ import {
 	closed,
 	closedId,
 	contained,
+	fragment,
 	key,
 	natural,
 	on,
@@ -15,9 +16,9 @@ import {
 	select
 } from "@bjornpagen/grizzle"
 
-export const FanKind = closed("FanKind", ["Square", "BatchFinish", "FanRunFinish"])
-export const FanJoin = closed("FanJoin", ["Batch", "FanRun"])
-export const FanOutcome = closed("FanOutcome", ["done", "failed"])
+const FanKind = closed("FanKind", ["Square", "BatchFinish", "FanRunFinish"])
+const FanJoin = closed("FanJoin", ["Batch", "FanRun"])
+const FanOutcome = closed("FanOutcome", ["done", "failed"])
 export const FanPausable = closed("FanPausable", ["Pool", "FanRun"])
 export const FanResource = closed("FanResource", ["Pool"])
 
@@ -94,9 +95,9 @@ export const FanHold = relation(
 )
 export const FanPaused = relation("FanPaused", { target: closedId(FanPausable) }, ["target"])
 
-/** The flow's declarations, in order, its laws, and the den relations its app role `loader` holds and inserts into. */
-export const fanFragment = Object.freeze({
-	relations: [
+/** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
+export const fanGraph = fragment(
+	[
 		FanKind,
 		FanJoin,
 		FanOutcome,
@@ -123,12 +124,9 @@ export const fanFragment = Object.freeze({
 		FanSquareInput,
 		FanBatchInput,
 		FanFanRunInput,
-		FanSquareOutput,
-		FanSeat,
-		FanHold,
-		FanPaused
-	] as const,
-	laws: Object.freeze([
+		FanSquareOutput
+	],
+	[
 		contained(on(FanRoot, "scope"), on(FanScope, "scope")),
 		contained(on(FanWithin, "scope"), on(FanScope, "scope")),
 		contained(on(FanWithin, "parent"), on(FanScope, "scope")),
@@ -199,21 +197,15 @@ export const fanFragment = Object.freeze({
 			)
 		),
 		contained(on(FanSquareOutput, "step"), on(FanSquareInput, "step")),
-		contained(on(FanSquareOutput, "step"), on(FanDone, "step")),
-		contained(on(FanHold, "resource", "seat"), on(FanSeat, "resource", "seat"))
-	]),
-	writer: Object.freeze({
-		relations: Object.freeze({
-			FanKind,
-			FanJoin,
-			FanOutcome,
-			FanPausable,
-			FanResource,
-			FanResult,
-			FanDone,
-			FanHeld,
-			FanSquareOutput
-		}),
-		insert: ["FanResult", "FanDone", "FanHeld", "FanSquareOutput"] as const
-	})
-})
+		contained(on(FanSquareOutput, "step"), on(FanDone, "step"))
+	]
+)
+
+/** The flow's coordination group: its rosters, seats, holds, exclusivity seats and pauses, which den's coordination role holds whole. */
+export const fanCoordination = fragment(
+	[FanKind, FanJoin, FanOutcome, FanPausable, FanResource, FanSeat, FanHold, FanPaused],
+	[contained(on(FanHold, "resource", "seat"), on(FanSeat, "resource", "seat"))]
+)
+
+/** The den relations the flow's app role `loader` inserts into: each step's commit's, and each app root's request's. */
+export const fanWriter = ["FanResult", "FanDone", "FanHeld", "FanSquareOutput"] as const

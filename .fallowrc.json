@@ -7,9 +7,8 @@
 		"packages/testing/src/witness.fixtures.ts"
 	],
 	"ignorePatterns": ["packages/devtools/src/*/fixtures/**", "vendor/**"],
-	// The superlint fixtures, which fallow does not read, are @effect/vitest's and pg's only importers in the dev tools;
-	// grizzle is the submodule fallow does not read (vendor/**), so den's imports of it resolve outside fallow's graph.
-	"ignoreDependencies": ["@effect/vitest", "pg", "@bjornpagen/grizzle"],
+	// The superlint fixtures, which fallow does not read, are @effect/vitest's and pg's only importers in the dev tools.
+	"ignoreDependencies": ["@effect/vitest", "pg"],
 	"boundaries": {
 		"zones": [
 			{

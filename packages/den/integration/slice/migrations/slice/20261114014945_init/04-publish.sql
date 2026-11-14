@@ -460,6 +460,14 @@ CREATE VIEW "slice__loader"."chain_admitted" ("scope") AS
 SELECT "r1"."scope"
 FROM "slice"."chain_admitted" AS "r1";
 
+CREATE VIEW "slice__loader"."chain_chain_run_input" ("scope", "feed", "feed_name", "pages") AS
+SELECT "r1"."scope", "r1"."feed", ("slice"."__chain_chain_run_input_feed_names_byxgsvzik7"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages"
+FROM "slice"."chain_chain_run_input" AS "r1";
+
+CREATE VIEW "slice__loader"."chain_claim" ("step", "attempt", "holder", "until") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."holder", "r1"."until"
+FROM "slice"."chain_claim" AS "r1";
+
 CREATE VIEW "slice__loader"."chain_done" ("step") AS
 SELECT "r1"."step"
 FROM "slice"."chain_done" AS "r1";
@@ -467,6 +475,14 @@ FROM "slice"."chain_done" AS "r1";
 CREATE VIEW "slice__loader"."chain_due" ("step", "at") AS
 SELECT "r1"."step", "r1"."at"
 FROM "slice"."chain_due" AS "r1";
+
+CREATE VIEW "slice__loader"."chain_exhausted" ("step", "attempts") AS
+SELECT "r1"."step", "r1"."attempts"
+FROM "slice"."chain_exhausted" AS "r1";
+
+CREATE VIEW "slice__loader"."chain_failed" ("step") AS
+SELECT "r1"."step"
+FROM "slice"."chain_failed" AS "r1";
 
 CREATE VIEW "slice__loader"."chain_finish" ("scope", "step") AS
 SELECT "r1"."scope", "r1"."step"
@@ -504,9 +520,17 @@ CREATE VIEW "slice__loader"."chain_page_read" ("step", "ordinal", "feed", "feed_
 SELECT "r1"."step", "r1"."ordinal", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor"
 FROM "slice"."chain_page_read" AS "r1";
 
+CREATE VIEW "slice__loader"."chain_refusal" ("step", "law") AS
+SELECT "r1"."step", "r1"."law"
+FROM "slice"."chain_refusal" AS "r1";
+
 CREATE VIEW "slice__loader"."chain_result" ("step", "outcome", "outcome_name") AS
 SELECT "r1"."step", "r1"."outcome", ("slice"."__chain_outcome_names_vo4tgqx6qh"())["r1"."outcome" + 1]::"pg_catalog"."text"
 FROM "slice"."chain_result" AS "r1";
+
+CREATE VIEW "slice__loader"."chain_retry" ("step", "attempt", "at", "spent") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."at", "r1"."spent"
+FROM "slice"."chain_retry" AS "r1";
 
 CREATE VIEW "slice__loader"."chain_root" ("scope", "key", "at") AS
 SELECT "r1"."scope", "r1"."key", "r1"."at"
@@ -515,6 +539,10 @@ FROM "slice"."chain_root" AS "r1";
 CREATE VIEW "slice__loader"."chain_scope" ("scope", "kind", "kind_name") AS
 SELECT "r1"."scope", "r1"."kind", ("slice"."__chain_join_names_hvq3dwjqow"())["r1"."kind" + 1]::"pg_catalog"."text"
 FROM "slice"."chain_scope" AS "r1";
+
+CREATE VIEW "slice__loader"."chain_skipped" ("scope", "by") AS
+SELECT "r1"."scope", "r1"."by"
+FROM "slice"."chain_skipped" AS "r1";
 
 CREATE VIEW "slice__loader"."chain_start_scope" ("scope", "ordinal", "child") AS
 SELECT "r1"."scope", "r1"."ordinal", "r1"."child"
@@ -540,21 +568,93 @@ CREATE VIEW "slice__loader"."cursor" ("feed", "feed_name", "position") AS
 SELECT "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."position"
 FROM "slice"."cursor" AS "r1";
 
+CREATE VIEW "slice__loader"."fan_admitted" ("scope") AS
+SELECT "r1"."scope"
+FROM "slice"."fan_admitted" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_batch_input" ("scope", "batch", "size") AS
+SELECT "r1"."scope", "r1"."batch", "r1"."size"
+FROM "slice"."fan_batch_input" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_claim" ("step", "attempt", "holder", "until") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."holder", "r1"."until"
+FROM "slice"."fan_claim" AS "r1";
+
 CREATE VIEW "slice__loader"."fan_done" ("step") AS
 SELECT "r1"."step"
 FROM "slice"."fan_done" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_due" ("step", "at") AS
+SELECT "r1"."step", "r1"."at"
+FROM "slice"."fan_due" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_exhausted" ("step", "attempts") AS
+SELECT "r1"."step", "r1"."attempts"
+FROM "slice"."fan_exhausted" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_failed" ("step") AS
+SELECT "r1"."step"
+FROM "slice"."fan_failed" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_fan_run_input" ("scope", "batch", "size") AS
+SELECT "r1"."scope", "r1"."batch", "r1"."size"
+FROM "slice"."fan_fan_run_input" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_finish" ("scope", "step") AS
+SELECT "r1"."scope", "r1"."step"
+FROM "slice"."fan_finish" AS "r1";
 
 CREATE VIEW "slice__loader"."fan_held" ("step", "attempt") AS
 SELECT "r1"."step", "r1"."attempt"
 FROM "slice"."fan_held" AS "r1";
 
+CREATE VIEW "slice__loader"."fan_refusal" ("step", "law") AS
+SELECT "r1"."step", "r1"."law"
+FROM "slice"."fan_refusal" AS "r1";
+
 CREATE VIEW "slice__loader"."fan_result" ("step", "outcome", "outcome_name") AS
 SELECT "r1"."step", "r1"."outcome", ("slice"."__fan_outcome_names_7pbhseigfj"())["r1"."outcome" + 1]::"pg_catalog"."text"
 FROM "slice"."fan_result" AS "r1";
 
+CREATE VIEW "slice__loader"."fan_retry" ("step", "attempt", "at", "spent") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."at", "r1"."spent"
+FROM "slice"."fan_retry" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_root" ("scope", "key", "at") AS
+SELECT "r1"."scope", "r1"."key", "r1"."at"
+FROM "slice"."fan_root" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_scope" ("scope", "kind", "kind_name") AS
+SELECT "r1"."scope", "r1"."kind", ("slice"."__fan_join_names_gct5lzhdqo"())["r1"."kind" + 1]::"pg_catalog"."text"
+FROM "slice"."fan_scope" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_skipped" ("scope", "by") AS
+SELECT "r1"."scope", "r1"."by"
+FROM "slice"."fan_skipped" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_square_input" ("step", "batch", "n") AS
+SELECT "r1"."step", "r1"."batch", "r1"."n"
+FROM "slice"."fan_square_input" AS "r1";
+
 CREATE VIEW "slice__loader"."fan_square_output" ("step", "square") AS
 SELECT "r1"."step", "r1"."square"
 FROM "slice"."fan_square_output" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_start_scope" ("scope", "ordinal", "child") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."child"
+FROM "slice"."fan_start_scope" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_start_step" ("scope", "ordinal", "step") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."step"
+FROM "slice"."fan_start_step" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_step" ("step", "kind", "kind_name", "scope") AS
+SELECT "r1"."step", "r1"."kind", ("slice"."__fan_kind_names_gikh2fxf2t"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope"
+FROM "slice"."fan_step" AS "r1";
+
+CREATE VIEW "slice__loader"."fan_within" ("scope", "parent") AS
+SELECT "r1"."scope", "r1"."parent"
+FROM "slice"."fan_within" AS "r1";
 
 CREATE VIEW "slice__loader"."item" ("feed", "feed_name", "seq", "n") AS
 SELECT "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
@@ -564,33 +664,121 @@ CREATE VIEW "slice__loader"."order" ("order", "feed", "feed_name") AS
 SELECT "r1"."order", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text"
 FROM "slice"."order" AS "r1";
 
+CREATE VIEW "slice__loader"."retry_admitted" ("scope") AS
+SELECT "r1"."scope"
+FROM "slice"."retry_admitted" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_brittle_input" ("step", "key") AS
+SELECT "r1"."step", "r1"."key"
+FROM "slice"."retry_brittle_input" AS "r1";
+
 CREATE VIEW "slice__loader"."retry_brittle_output" ("step", "key") AS
 SELECT "r1"."step", "r1"."key"
 FROM "slice"."retry_brittle_output" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_claim" ("step", "attempt", "holder", "until") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."holder", "r1"."until"
+FROM "slice"."retry_claim" AS "r1";
 
 CREATE VIEW "slice__loader"."retry_done" ("step") AS
 SELECT "r1"."step"
 FROM "slice"."retry_done" AS "r1";
 
+CREATE VIEW "slice__loader"."retry_due" ("step", "at") AS
+SELECT "r1"."step", "r1"."at"
+FROM "slice"."retry_due" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_exhausted" ("step", "attempts") AS
+SELECT "r1"."step", "r1"."attempts"
+FROM "slice"."retry_exhausted" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_failed" ("step") AS
+SELECT "r1"."step"
+FROM "slice"."retry_failed" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_finish" ("scope", "step") AS
+SELECT "r1"."scope", "r1"."step"
+FROM "slice"."retry_finish" AS "r1";
+
 CREATE VIEW "slice__loader"."retry_held" ("step", "attempt") AS
 SELECT "r1"."step", "r1"."attempt"
 FROM "slice"."retry_held" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_ladders_input" ("scope", "steadfast", "brittle") AS
+SELECT "r1"."scope", "r1"."steadfast", "r1"."brittle"
+FROM "slice"."retry_ladders_input" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_refusal" ("step", "law") AS
+SELECT "r1"."step", "r1"."law"
+FROM "slice"."retry_refusal" AS "r1";
 
 CREATE VIEW "slice__loader"."retry_result" ("step", "outcome", "outcome_name") AS
 SELECT "r1"."step", "r1"."outcome", ("slice"."__retry_outcome_names_zzz2kawwsa"())["r1"."outcome" + 1]::"pg_catalog"."text"
 FROM "slice"."retry_result" AS "r1";
 
+CREATE VIEW "slice__loader"."retry_retry" ("step", "attempt", "at", "spent") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."at", "r1"."spent"
+FROM "slice"."retry_retry" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_root" ("scope", "key", "at") AS
+SELECT "r1"."scope", "r1"."key", "r1"."at"
+FROM "slice"."retry_root" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_scope" ("scope", "kind", "kind_name") AS
+SELECT "r1"."scope", "r1"."kind", ("slice"."__retry_join_names_st4whng7gb"())["r1"."kind" + 1]::"pg_catalog"."text"
+FROM "slice"."retry_scope" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_skipped" ("scope", "by") AS
+SELECT "r1"."scope", "r1"."by"
+FROM "slice"."retry_skipped" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_start_scope" ("scope", "ordinal", "child") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."child"
+FROM "slice"."retry_start_scope" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_start_step" ("scope", "ordinal", "step") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."step"
+FROM "slice"."retry_start_step" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_steadfast_input" ("step", "key") AS
+SELECT "r1"."step", "r1"."key"
+FROM "slice"."retry_steadfast_input" AS "r1";
+
 CREATE VIEW "slice__loader"."retry_steadfast_output" ("step", "key") AS
 SELECT "r1"."step", "r1"."key"
 FROM "slice"."retry_steadfast_output" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_step" ("step", "kind", "kind_name", "scope") AS
+SELECT "r1"."step", "r1"."kind", ("slice"."__retry_kind_names_pa363dov7n"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope"
+FROM "slice"."retry_step" AS "r1";
+
+CREATE VIEW "slice__loader"."retry_within" ("scope", "parent") AS
+SELECT "r1"."scope", "r1"."parent"
+FROM "slice"."retry_within" AS "r1";
 
 CREATE VIEW "slice__loader"."settled" ("batch") AS
 SELECT "r1"."batch"
 FROM "slice"."settled" AS "r1";
 
+CREATE VIEW "slice__loader"."sync_admitted" ("scope") AS
+SELECT "r1"."scope"
+FROM "slice"."sync_admitted" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_build_input" ("step", "build") AS
+SELECT "r1"."step", "r1"."build"
+FROM "slice"."sync_build_input" AS "r1";
+
 CREATE VIEW "slice__loader"."sync_build_output" ("step", "build") AS
 SELECT "r1"."step", "r1"."build"
 FROM "slice"."sync_build_output" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_claim" ("step", "attempt", "holder", "until") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."holder", "r1"."until"
+FROM "slice"."sync_claim" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_copy_input" ("step", "relation", "run") AS
+SELECT "r1"."step", "r1"."relation", "r1"."run"
+FROM "slice"."sync_copy_input" AS "r1";
 
 CREATE VIEW "slice__loader"."sync_copy_output" ("step", "run") AS
 SELECT "r1"."step", "r1"."run"
@@ -600,13 +788,77 @@ CREATE VIEW "slice__loader"."sync_done" ("step") AS
 SELECT "r1"."step"
 FROM "slice"."sync_done" AS "r1";
 
+CREATE VIEW "slice__loader"."sync_due" ("step", "at") AS
+SELECT "r1"."step", "r1"."at"
+FROM "slice"."sync_due" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_exclusive_key" ("scope", "key", "id") AS
+SELECT "r1"."scope", "r1"."key", "r1"."id"
+FROM "slice"."sync_exclusive_key" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_exhausted" ("step", "attempts") AS
+SELECT "r1"."step", "r1"."attempts"
+FROM "slice"."sync_exhausted" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_failed" ("step") AS
+SELECT "r1"."step"
+FROM "slice"."sync_failed" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_finish" ("scope", "step") AS
+SELECT "r1"."scope", "r1"."step"
+FROM "slice"."sync_finish" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_gold_input" ("scope", "build") AS
+SELECT "r1"."scope", "r1"."build"
+FROM "slice"."sync_gold_input" AS "r1";
+
 CREATE VIEW "slice__loader"."sync_held" ("step", "attempt") AS
 SELECT "r1"."step", "r1"."attempt"
 FROM "slice"."sync_held" AS "r1";
 
+CREATE VIEW "slice__loader"."sync_refusal" ("step", "law") AS
+SELECT "r1"."step", "r1"."law"
+FROM "slice"."sync_refusal" AS "r1";
+
 CREATE VIEW "slice__loader"."sync_result" ("step", "outcome", "outcome_name") AS
 SELECT "r1"."step", "r1"."outcome", ("slice"."__sync_outcome_names_xzb4y4xgki"())["r1"."outcome" + 1]::"pg_catalog"."text"
 FROM "slice"."sync_result" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_retry" ("step", "attempt", "at", "spent") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."at", "r1"."spent"
+FROM "slice"."sync_retry" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_root" ("scope", "key", "at") AS
+SELECT "r1"."scope", "r1"."key", "r1"."at"
+FROM "slice"."sync_root" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_scope" ("scope", "kind", "kind_name") AS
+SELECT "r1"."scope", "r1"."kind", ("slice"."__sync_join_names_cci5jmwoiz"())["r1"."kind" + 1]::"pg_catalog"."text"
+FROM "slice"."sync_scope" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_skipped" ("scope", "by") AS
+SELECT "r1"."scope", "r1"."by"
+FROM "slice"."sync_skipped" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_start_scope" ("scope", "ordinal", "child") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."child"
+FROM "slice"."sync_start_scope" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_start_step" ("scope", "ordinal", "step") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."step"
+FROM "slice"."sync_start_step" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_step" ("step", "kind", "kind_name", "scope") AS
+SELECT "r1"."step", "r1"."kind", ("slice"."__sync_kind_names_4mra6ojpzm"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope"
+FROM "slice"."sync_step" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_sync_run_input" ("scope", "relation", "run") AS
+SELECT "r1"."scope", "r1"."relation", "r1"."run"
+FROM "slice"."sync_sync_run_input" AS "r1";
+
+CREATE VIEW "slice__loader"."sync_within" ("scope", "parent") AS
+SELECT "r1"."scope", "r1"."parent"
+FROM "slice"."sync_within" AS "r1";
 
 CREATE VIEW "slice__loader"."tally" ("batch", "count", "total") AS
 SELECT "r1"."batch", "r1"."count", "r1"."total"
@@ -1004,7 +1256,7 @@ GRANT USAGE ON SCHEMA "slice", "slice__loader" TO :"slice__loader";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."chain_chain_run_input_feed", "slice"."chain_join", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."fan_join", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."feed", "slice"."retry_join", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."sync_join", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."__text_t4rwovzmqj" TO :"slice__loader";
 
-GRANT SELECT ON TABLE "slice__loader"."built", "slice__loader"."chain_admitted", "slice__loader"."chain_done", "slice__loader"."chain_due", "slice__loader"."chain_finish", "slice__loader"."chain_held", "slice__loader"."chain_next", "slice__loader"."chain_ordered_input", "slice__loader"."chain_page_input", "slice__loader"."chain_page_input_after", "slice__loader"."chain_page_output", "slice__loader"."chain_page_output_next", "slice__loader"."chain_page_read", "slice__loader"."chain_result", "slice__loader"."chain_root", "slice__loader"."chain_scope", "slice__loader"."chain_start_scope", "slice__loader"."chain_start_step", "slice__loader"."chain_step", "slice__loader"."chain_within", "slice__loader"."copied", "slice__loader"."cursor", "slice__loader"."fan_done", "slice__loader"."fan_held", "slice__loader"."fan_result", "slice__loader"."fan_square_output", "slice__loader"."item", "slice__loader"."order", "slice__loader"."retry_brittle_output", "slice__loader"."retry_done", "slice__loader"."retry_held", "slice__loader"."retry_result", "slice__loader"."retry_steadfast_output", "slice__loader"."settled", "slice__loader"."sync_build_output", "slice__loader"."sync_copy_output", "slice__loader"."sync_done", "slice__loader"."sync_held", "slice__loader"."sync_result", "slice__loader"."tally", "slice__loader"."weight" TO :"slice__loader";
+GRANT SELECT ON TABLE "slice__loader"."built", "slice__loader"."chain_admitted", "slice__loader"."chain_chain_run_input", "slice__loader"."chain_claim", "slice__loader"."chain_done", "slice__loader"."chain_due", "slice__loader"."chain_exhausted", "slice__loader"."chain_failed", "slice__loader"."chain_finish", "slice__loader"."chain_held", "slice__loader"."chain_next", "slice__loader"."chain_ordered_input", "slice__loader"."chain_page_input", "slice__loader"."chain_page_input_after", "slice__loader"."chain_page_output", "slice__loader"."chain_page_output_next", "slice__loader"."chain_page_read", "slice__loader"."chain_refusal", "slice__loader"."chain_result", "slice__loader"."chain_retry", "slice__loader"."chain_root", "slice__loader"."chain_scope", "slice__loader"."chain_skipped", "slice__loader"."chain_start_scope", "slice__loader"."chain_start_step", "slice__loader"."chain_step", "slice__loader"."chain_within", "slice__loader"."copied", "slice__loader"."cursor", "slice__loader"."fan_admitted", "slice__loader"."fan_batch_input", "slice__loader"."fan_claim", "slice__loader"."fan_done", "slice__loader"."fan_due", "slice__loader"."fan_exhausted", "slice__loader"."fan_failed", "slice__loader"."fan_fan_run_input", "slice__loader"."fan_finish", "slice__loader"."fan_held", "slice__loader"."fan_refusal", "slice__loader"."fan_result", "slice__loader"."fan_retry", "slice__loader"."fan_root", "slice__loader"."fan_scope", "slice__loader"."fan_skipped", "slice__loader"."fan_square_input", "slice__loader"."fan_square_output", "slice__loader"."fan_start_scope", "slice__loader"."fan_start_step", "slice__loader"."fan_step", "slice__loader"."fan_within", "slice__loader"."item", "slice__loader"."order", "slice__loader"."retry_admitted", "slice__loader"."retry_brittle_input", "slice__loader"."retry_brittle_output", "slice__loader"."retry_claim", "slice__loader"."retry_done", "slice__loader"."retry_due", "slice__loader"."retry_exhausted", "slice__loader"."retry_failed", "slice__loader"."retry_finish", "slice__loader"."retry_held", "slice__loader"."retry_ladders_input", "slice__loader"."retry_refusal", "slice__loader"."retry_result", "slice__loader"."retry_retry", "slice__loader"."retry_root", "slice__loader"."retry_scope", "slice__loader"."retry_skipped", "slice__loader"."retry_start_scope", "slice__loader"."retry_start_step", "slice__loader"."retry_steadfast_input", "slice__loader"."retry_steadfast_output", "slice__loader"."retry_step", "slice__loader"."retry_within", "slice__loader"."settled", "slice__loader"."sync_admitted", "slice__loader"."sync_build_input", "slice__loader"."sync_build_output", "slice__loader"."sync_claim", "slice__loader"."sync_copy_input", "slice__loader"."sync_copy_output", "slice__loader"."sync_done", "slice__loader"."sync_due", "slice__loader"."sync_exclusive_key", "slice__loader"."sync_exhausted", "slice__loader"."sync_failed", "slice__loader"."sync_finish", "slice__loader"."sync_gold_input", "slice__loader"."sync_held", "slice__loader"."sync_refusal", "slice__loader"."sync_result", "slice__loader"."sync_retry", "slice__loader"."sync_root", "slice__loader"."sync_scope", "slice__loader"."sync_skipped", "slice__loader"."sync_start_scope", "slice__loader"."sync_start_step", "slice__loader"."sync_step", "slice__loader"."sync_sync_run_input", "slice__loader"."sync_within", "slice__loader"."tally", "slice__loader"."weight" TO :"slice__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."built" TO :"slice__loader";
 
@@ -1266,7 +1518,7 @@ ALTER ROLE :"slice__worker" SET lc_time = 'C.UTF-8';
 
 REVOKE ALL ON SCHEMA "slice", "slice__auditor", "slice__loader", "slice__chain_den", "slice__chain_seats", "slice__fan_den", "slice__fan_seats", "slice__retry_den", "slice__retry_seats", "slice__sync_den", "slice__sync_seats" FROM PUBLIC;
 
-REVOKE ALL ON TABLE "slice"."audit", "slice"."built", "slice"."chain_admitted", "slice"."chain_chain_run_input", "slice"."chain_claim", "slice"."chain_done", "slice"."chain_due", "slice"."chain_exhausted", "slice"."chain_failed", "slice"."chain_finish", "slice"."chain_held", "slice"."chain_next", "slice"."chain_ordered_input", "slice"."chain_page_input", "slice"."chain_page_input_after", "slice"."chain_page_output", "slice"."chain_page_output_next", "slice"."chain_page_read", "slice"."chain_paused", "slice"."chain_refusal", "slice"."chain_result", "slice"."chain_retry", "slice"."chain_root", "slice"."chain_scope", "slice"."chain_skipped", "slice"."chain_start_scope", "slice"."chain_start_step", "slice"."chain_step", "slice"."chain_within", "slice"."copied", "slice"."cursor", "slice"."fan_admitted", "slice"."fan_batch_input", "slice"."fan_claim", "slice"."fan_done", "slice"."fan_due", "slice"."fan_exhausted", "slice"."fan_failed", "slice"."fan_fan_run_input", "slice"."fan_finish", "slice"."fan_held", "slice"."fan_hold", "slice"."fan_paused", "slice"."fan_refusal", "slice"."fan_result", "slice"."fan_retry", "slice"."fan_root", "slice"."fan_scope", "slice"."fan_seat", "slice"."fan_skipped", "slice"."fan_square_input", "slice"."fan_square_output", "slice"."fan_start_scope", "slice"."fan_start_step", "slice"."fan_step", "slice"."fan_within", "slice"."item", "slice"."order", "slice"."retry_admitted", "slice"."retry_brittle_input", "slice"."retry_brittle_output", "slice"."retry_claim", "slice"."retry_done", "slice"."retry_due", "slice"."retry_exhausted", "slice"."retry_failed", "slice"."retry_finish", "slice"."retry_held", "slice"."retry_ladders_input", "slice"."retry_paused", "slice"."retry_refusal", "slice"."retry_result", "slice"."retry_retry", "slice"."retry_root", "slice"."retry_scope", "slice"."retry_skipped", "slice"."retry_start_scope", "slice"."retry_start_step", "slice"."retry_steadfast_input", "slice"."retry_steadfast_output", "slice"."retry_step", "slice"."retry_within", "slice"."settled", "slice"."sync_admitted", "slice"."sync_build_input", "slice"."sync_build_output", "slice"."sync_claim", "slice"."sync_copy_input", "slice"."sync_copy_output", "slice"."sync_done", "slice"."sync_due", "slice"."sync_exclusive", "slice"."sync_exclusive_key", "slice"."sync_exhausted", "slice"."sync_failed", "slice"."sync_finish", "slice"."sync_gold_input", "slice"."sync_held", "slice"."sync_paused", "slice"."sync_refusal", "slice"."sync_result", "slice"."sync_retry", "slice"."sync_root", "slice"."sync_scope", "slice"."sync_skipped", "slice"."sync_start_scope", "slice"."sync_start_step", "slice"."sync_step", "slice"."sync_sync_run_input", "slice"."sync_within", "slice"."tally", "slice"."weight", "slice__auditor"."audit", "slice__auditor"."built", "slice__auditor"."chain_admitted", "slice__auditor"."chain_chain_run_input", "slice__auditor"."chain_claim", "slice__auditor"."chain_finish", "slice__auditor"."chain_next", "slice__auditor"."chain_ordered_input", "slice__auditor"."chain_page_input", "slice__auditor"."chain_page_input_after", "slice__auditor"."chain_page_output", "slice__auditor"."chain_page_output_next", "slice__auditor"."chain_page_read", "slice__auditor"."chain_result", "slice__auditor"."chain_root", "slice__auditor"."chain_scope", "slice__auditor"."chain_start_scope", "slice__auditor"."chain_start_step", "slice__auditor"."chain_step", "slice__auditor"."chain_within", "slice__auditor"."copied", "slice__auditor"."cursor", "slice__auditor"."fan_admitted", "slice__auditor"."fan_batch_input", "slice__auditor"."fan_fan_run_input", "slice__auditor"."fan_finish", "slice__auditor"."fan_result", "slice__auditor"."fan_root", "slice__auditor"."fan_scope", "slice__auditor"."fan_square_input", "slice__auditor"."fan_square_output", "slice__auditor"."fan_start_scope", "slice__auditor"."fan_start_step", "slice__auditor"."fan_step", "slice__auditor"."fan_within", "slice__auditor"."item", "slice__auditor"."order", "slice__auditor"."retry_claim", "slice__auditor"."retry_exhausted", "slice__auditor"."retry_result", "slice__auditor"."retry_step", "slice__auditor"."settled", "slice__auditor"."sync_admitted", "slice__auditor"."sync_finish", "slice__auditor"."sync_result", "slice__auditor"."sync_scope", "slice__auditor"."sync_skipped", "slice__auditor"."tally", "slice__auditor"."weight", "slice__loader"."built", "slice__loader"."chain_admitted", "slice__loader"."chain_done", "slice__loader"."chain_due", "slice__loader"."chain_finish", "slice__loader"."chain_held", "slice__loader"."chain_next", "slice__loader"."chain_ordered_input", "slice__loader"."chain_page_input", "slice__loader"."chain_page_input_after", "slice__loader"."chain_page_output", "slice__loader"."chain_page_output_next", "slice__loader"."chain_page_read", "slice__loader"."chain_result", "slice__loader"."chain_root", "slice__loader"."chain_scope", "slice__loader"."chain_start_scope", "slice__loader"."chain_start_step", "slice__loader"."chain_step", "slice__loader"."chain_within", "slice__loader"."copied", "slice__loader"."cursor", "slice__loader"."fan_done", "slice__loader"."fan_held", "slice__loader"."fan_result", "slice__loader"."fan_square_output", "slice__loader"."item", "slice__loader"."order", "slice__loader"."retry_brittle_output", "slice__loader"."retry_done", "slice__loader"."retry_held", "slice__loader"."retry_result", "slice__loader"."retry_steadfast_output", "slice__loader"."settled", "slice__loader"."sync_build_output", "slice__loader"."sync_copy_output", "slice__loader"."sync_done", "slice__loader"."sync_held", "slice__loader"."sync_result", "slice__loader"."tally", "slice__loader"."weight", "slice__chain_den"."chain_admitted", "slice__chain_den"."chain_chain_run_input", "slice__chain_den"."chain_claim", "slice__chain_den"."chain_done", "slice__chain_den"."chain_due", "slice__chain_den"."chain_exhausted", "slice__chain_den"."chain_failed", "slice__chain_den"."chain_finish", "slice__chain_den"."chain_held", "slice__chain_den"."chain_next", "slice__chain_den"."chain_ordered_input", "slice__chain_den"."chain_page_input", "slice__chain_den"."chain_page_input_after", "slice__chain_den"."chain_page_output", "slice__chain_den"."chain_page_output_next", "slice__chain_den"."chain_page_read", "slice__chain_den"."chain_refusal", "slice__chain_den"."chain_result", "slice__chain_den"."chain_retry", "slice__chain_den"."chain_root", "slice__chain_den"."chain_scope", "slice__chain_den"."chain_skipped", "slice__chain_den"."chain_start_scope", "slice__chain_den"."chain_start_step", "slice__chain_den"."chain_step", "slice__chain_den"."chain_within", "slice__chain_seats"."chain_paused", "slice__fan_den"."fan_admitted", "slice__fan_den"."fan_batch_input", "slice__fan_den"."fan_claim", "slice__fan_den"."fan_done", "slice__fan_den"."fan_due", "slice__fan_den"."fan_exhausted", "slice__fan_den"."fan_failed", "slice__fan_den"."fan_fan_run_input", "slice__fan_den"."fan_finish", "slice__fan_den"."fan_held", "slice__fan_den"."fan_refusal", "slice__fan_den"."fan_result", "slice__fan_den"."fan_retry", "slice__fan_den"."fan_root", "slice__fan_den"."fan_scope", "slice__fan_den"."fan_skipped", "slice__fan_den"."fan_square_input", "slice__fan_den"."fan_square_output", "slice__fan_den"."fan_start_scope", "slice__fan_den"."fan_start_step", "slice__fan_den"."fan_step", "slice__fan_den"."fan_within", "slice__fan_seats"."fan_hold", "slice__fan_seats"."fan_paused", "slice__fan_seats"."fan_seat", "slice__retry_den"."retry_admitted", "slice__retry_den"."retry_brittle_input", "slice__retry_den"."retry_brittle_output", "slice__retry_den"."retry_claim", "slice__retry_den"."retry_done", "slice__retry_den"."retry_due", "slice__retry_den"."retry_exhausted", "slice__retry_den"."retry_failed", "slice__retry_den"."retry_finish", "slice__retry_den"."retry_held", "slice__retry_den"."retry_ladders_input", "slice__retry_den"."retry_refusal", "slice__retry_den"."retry_result", "slice__retry_den"."retry_retry", "slice__retry_den"."retry_root", "slice__retry_den"."retry_scope", "slice__retry_den"."retry_skipped", "slice__retry_den"."retry_start_scope", "slice__retry_den"."retry_start_step", "slice__retry_den"."retry_steadfast_input", "slice__retry_den"."retry_steadfast_output", "slice__retry_den"."retry_step", "slice__retry_den"."retry_within", "slice__retry_seats"."retry_paused", "slice__sync_den"."chain_result", "slice__sync_den"."chain_step", "slice__sync_den"."sync_admitted", "slice__sync_den"."sync_build_input", "slice__sync_den"."sync_build_output", "slice__sync_den"."sync_claim", "slice__sync_den"."sync_copy_input", "slice__sync_den"."sync_copy_output", "slice__sync_den"."sync_done", "slice__sync_den"."sync_due", "slice__sync_den"."sync_exclusive_key", "slice__sync_den"."sync_exhausted", "slice__sync_den"."sync_failed", "slice__sync_den"."sync_finish", "slice__sync_den"."sync_gold_input", "slice__sync_den"."sync_held", "slice__sync_den"."sync_refusal", "slice__sync_den"."sync_result", "slice__sync_den"."sync_retry", "slice__sync_den"."sync_root", "slice__sync_den"."sync_scope", "slice__sync_den"."sync_skipped", "slice__sync_den"."sync_start_scope", "slice__sync_den"."sync_start_step", "slice__sync_den"."sync_step", "slice__sync_den"."sync_sync_run_input", "slice__sync_den"."sync_within", "slice__sync_seats"."sync_exclusive", "slice__sync_seats"."sync_paused" FROM PUBLIC;
+REVOKE ALL ON TABLE "slice"."audit", "slice"."built", "slice"."chain_admitted", "slice"."chain_chain_run_input", "slice"."chain_claim", "slice"."chain_done", "slice"."chain_due", "slice"."chain_exhausted", "slice"."chain_failed", "slice"."chain_finish", "slice"."chain_held", "slice"."chain_next", "slice"."chain_ordered_input", "slice"."chain_page_input", "slice"."chain_page_input_after", "slice"."chain_page_output", "slice"."chain_page_output_next", "slice"."chain_page_read", "slice"."chain_paused", "slice"."chain_refusal", "slice"."chain_result", "slice"."chain_retry", "slice"."chain_root", "slice"."chain_scope", "slice"."chain_skipped", "slice"."chain_start_scope", "slice"."chain_start_step", "slice"."chain_step", "slice"."chain_within", "slice"."copied", "slice"."cursor", "slice"."fan_admitted", "slice"."fan_batch_input", "slice"."fan_claim", "slice"."fan_done", "slice"."fan_due", "slice"."fan_exhausted", "slice"."fan_failed", "slice"."fan_fan_run_input", "slice"."fan_finish", "slice"."fan_held", "slice"."fan_hold", "slice"."fan_paused", "slice"."fan_refusal", "slice"."fan_result", "slice"."fan_retry", "slice"."fan_root", "slice"."fan_scope", "slice"."fan_seat", "slice"."fan_skipped", "slice"."fan_square_input", "slice"."fan_square_output", "slice"."fan_start_scope", "slice"."fan_start_step", "slice"."fan_step", "slice"."fan_within", "slice"."item", "slice"."order", "slice"."retry_admitted", "slice"."retry_brittle_input", "slice"."retry_brittle_output", "slice"."retry_claim", "slice"."retry_done", "slice"."retry_due", "slice"."retry_exhausted", "slice"."retry_failed", "slice"."retry_finish", "slice"."retry_held", "slice"."retry_ladders_input", "slice"."retry_paused", "slice"."retry_refusal", "slice"."retry_result", "slice"."retry_retry", "slice"."retry_root", "slice"."retry_scope", "slice"."retry_skipped", "slice"."retry_start_scope", "slice"."retry_start_step", "slice"."retry_steadfast_input", "slice"."retry_steadfast_output", "slice"."retry_step", "slice"."retry_within", "slice"."settled", "slice"."sync_admitted", "slice"."sync_build_input", "slice"."sync_build_output", "slice"."sync_claim", "slice"."sync_copy_input", "slice"."sync_copy_output", "slice"."sync_done", "slice"."sync_due", "slice"."sync_exclusive", "slice"."sync_exclusive_key", "slice"."sync_exhausted", "slice"."sync_failed", "slice"."sync_finish", "slice"."sync_gold_input", "slice"."sync_held", "slice"."sync_paused", "slice"."sync_refusal", "slice"."sync_result", "slice"."sync_retry", "slice"."sync_root", "slice"."sync_scope", "slice"."sync_skipped", "slice"."sync_start_scope", "slice"."sync_start_step", "slice"."sync_step", "slice"."sync_sync_run_input", "slice"."sync_within", "slice"."tally", "slice"."weight", "slice__auditor"."audit", "slice__auditor"."built", "slice__auditor"."chain_admitted", "slice__auditor"."chain_chain_run_input", "slice__auditor"."chain_claim", "slice__auditor"."chain_finish", "slice__auditor"."chain_next", "slice__auditor"."chain_ordered_input", "slice__auditor"."chain_page_input", "slice__auditor"."chain_page_input_after", "slice__auditor"."chain_page_output", "slice__auditor"."chain_page_output_next", "slice__auditor"."chain_page_read", "slice__auditor"."chain_result", "slice__auditor"."chain_root", "slice__auditor"."chain_scope", "slice__auditor"."chain_start_scope", "slice__auditor"."chain_start_step", "slice__auditor"."chain_step", "slice__auditor"."chain_within", "slice__auditor"."copied", "slice__auditor"."cursor", "slice__auditor"."fan_admitted", "slice__auditor"."fan_batch_input", "slice__auditor"."fan_fan_run_input", "slice__auditor"."fan_finish", "slice__auditor"."fan_result", "slice__auditor"."fan_root", "slice__auditor"."fan_scope", "slice__auditor"."fan_square_input", "slice__auditor"."fan_square_output", "slice__auditor"."fan_start_scope", "slice__auditor"."fan_start_step", "slice__auditor"."fan_step", "slice__auditor"."fan_within", "slice__auditor"."item", "slice__auditor"."order", "slice__auditor"."retry_claim", "slice__auditor"."retry_exhausted", "slice__auditor"."retry_result", "slice__auditor"."retry_step", "slice__auditor"."settled", "slice__auditor"."sync_admitted", "slice__auditor"."sync_finish", "slice__auditor"."sync_result", "slice__auditor"."sync_scope", "slice__auditor"."sync_skipped", "slice__auditor"."tally", "slice__auditor"."weight", "slice__loader"."built", "slice__loader"."chain_admitted", "slice__loader"."chain_chain_run_input", "slice__loader"."chain_claim", "slice__loader"."chain_done", "slice__loader"."chain_due", "slice__loader"."chain_exhausted", "slice__loader"."chain_failed", "slice__loader"."chain_finish", "slice__loader"."chain_held", "slice__loader"."chain_next", "slice__loader"."chain_ordered_input", "slice__loader"."chain_page_input", "slice__loader"."chain_page_input_after", "slice__loader"."chain_page_output", "slice__loader"."chain_page_output_next", "slice__loader"."chain_page_read", "slice__loader"."chain_refusal", "slice__loader"."chain_result", "slice__loader"."chain_retry", "slice__loader"."chain_root", "slice__loader"."chain_scope", "slice__loader"."chain_skipped", "slice__loader"."chain_start_scope", "slice__loader"."chain_start_step", "slice__loader"."chain_step", "slice__loader"."chain_within", "slice__loader"."copied", "slice__loader"."cursor", "slice__loader"."fan_admitted", "slice__loader"."fan_batch_input", "slice__loader"."fan_claim", "slice__loader"."fan_done", "slice__loader"."fan_due", "slice__loader"."fan_exhausted", "slice__loader"."fan_failed", "slice__loader"."fan_fan_run_input", "slice__loader"."fan_finish", "slice__loader"."fan_held", "slice__loader"."fan_refusal", "slice__loader"."fan_result", "slice__loader"."fan_retry", "slice__loader"."fan_root", "slice__loader"."fan_scope", "slice__loader"."fan_skipped", "slice__loader"."fan_square_input", "slice__loader"."fan_square_output", "slice__loader"."fan_start_scope", "slice__loader"."fan_start_step", "slice__loader"."fan_step", "slice__loader"."fan_within", "slice__loader"."item", "slice__loader"."order", "slice__loader"."retry_admitted", "slice__loader"."retry_brittle_input", "slice__loader"."retry_brittle_output", "slice__loader"."retry_claim", "slice__loader"."retry_done", "slice__loader"."retry_due", "slice__loader"."retry_exhausted", "slice__loader"."retry_failed", "slice__loader"."retry_finish", "slice__loader"."retry_held", "slice__loader"."retry_ladders_input", "slice__loader"."retry_refusal", "slice__loader"."retry_result", "slice__loader"."retry_retry", "slice__loader"."retry_root", "slice__loader"."retry_scope", "slice__loader"."retry_skipped", "slice__loader"."retry_start_scope", "slice__loader"."retry_start_step", "slice__loader"."retry_steadfast_input", "slice__loader"."retry_steadfast_output", "slice__loader"."retry_step", "slice__loader"."retry_within", "slice__loader"."settled", "slice__loader"."sync_admitted", "slice__loader"."sync_build_input", "slice__loader"."sync_build_output", "slice__loader"."sync_claim", "slice__loader"."sync_copy_input", "slice__loader"."sync_copy_output", "slice__loader"."sync_done", "slice__loader"."sync_due", "slice__loader"."sync_exclusive_key", "slice__loader"."sync_exhausted", "slice__loader"."sync_failed", "slice__loader"."sync_finish", "slice__loader"."sync_gold_input", "slice__loader"."sync_held", "slice__loader"."sync_refusal", "slice__loader"."sync_result", "slice__loader"."sync_retry", "slice__loader"."sync_root", "slice__loader"."sync_scope", "slice__loader"."sync_skipped", "slice__loader"."sync_start_scope", "slice__loader"."sync_start_step", "slice__loader"."sync_step", "slice__loader"."sync_sync_run_input", "slice__loader"."sync_within", "slice__loader"."tally", "slice__loader"."weight", "slice__chain_den"."chain_admitted", "slice__chain_den"."chain_chain_run_input", "slice__chain_den"."chain_claim", "slice__chain_den"."chain_done", "slice__chain_den"."chain_due", "slice__chain_den"."chain_exhausted", "slice__chain_den"."chain_failed", "slice__chain_den"."chain_finish", "slice__chain_den"."chain_held", "slice__chain_den"."chain_next", "slice__chain_den"."chain_ordered_input", "slice__chain_den"."chain_page_input", "slice__chain_den"."chain_page_input_after", "slice__chain_den"."chain_page_output", "slice__chain_den"."chain_page_output_next", "slice__chain_den"."chain_page_read", "slice__chain_den"."chain_refusal", "slice__chain_den"."chain_result", "slice__chain_den"."chain_retry", "slice__chain_den"."chain_root", "slice__chain_den"."chain_scope", "slice__chain_den"."chain_skipped", "slice__chain_den"."chain_start_scope", "slice__chain_den"."chain_start_step", "slice__chain_den"."chain_step", "slice__chain_den"."chain_within", "slice__chain_seats"."chain_paused", "slice__fan_den"."fan_admitted", "slice__fan_den"."fan_batch_input", "slice__fan_den"."fan_claim", "slice__fan_den"."fan_done", "slice__fan_den"."fan_due", "slice__fan_den"."fan_exhausted", "slice__fan_den"."fan_failed", "slice__fan_den"."fan_fan_run_input", "slice__fan_den"."fan_finish", "slice__fan_den"."fan_held", "slice__fan_den"."fan_refusal", "slice__fan_den"."fan_result", "slice__fan_den"."fan_retry", "slice__fan_den"."fan_root", "slice__fan_den"."fan_scope", "slice__fan_den"."fan_skipped", "slice__fan_den"."fan_square_input", "slice__fan_den"."fan_square_output", "slice__fan_den"."fan_start_scope", "slice__fan_den"."fan_start_step", "slice__fan_den"."fan_step", "slice__fan_den"."fan_within", "slice__fan_seats"."fan_hold", "slice__fan_seats"."fan_paused", "slice__fan_seats"."fan_seat", "slice__retry_den"."retry_admitted", "slice__retry_den"."retry_brittle_input", "slice__retry_den"."retry_brittle_output", "slice__retry_den"."retry_claim", "slice__retry_den"."retry_done", "slice__retry_den"."retry_due", "slice__retry_den"."retry_exhausted", "slice__retry_den"."retry_failed", "slice__retry_den"."retry_finish", "slice__retry_den"."retry_held", "slice__retry_den"."retry_ladders_input", "slice__retry_den"."retry_refusal", "slice__retry_den"."retry_result", "slice__retry_den"."retry_retry", "slice__retry_den"."retry_root", "slice__retry_den"."retry_scope", "slice__retry_den"."retry_skipped", "slice__retry_den"."retry_start_scope", "slice__retry_den"."retry_start_step", "slice__retry_den"."retry_steadfast_input", "slice__retry_den"."retry_steadfast_output", "slice__retry_den"."retry_step", "slice__retry_den"."retry_within", "slice__retry_seats"."retry_paused", "slice__sync_den"."chain_result", "slice__sync_den"."chain_step", "slice__sync_den"."sync_admitted", "slice__sync_den"."sync_build_input", "slice__sync_den"."sync_build_output", "slice__sync_den"."sync_claim", "slice__sync_den"."sync_copy_input", "slice__sync_den"."sync_copy_output", "slice__sync_den"."sync_done", "slice__sync_den"."sync_due", "slice__sync_den"."sync_exclusive_key", "slice__sync_den"."sync_exhausted", "slice__sync_den"."sync_failed", "slice__sync_den"."sync_finish", "slice__sync_den"."sync_gold_input", "slice__sync_den"."sync_held", "slice__sync_den"."sync_refusal", "slice__sync_den"."sync_result", "slice__sync_den"."sync_retry", "slice__sync_den"."sync_root", "slice__sync_den"."sync_scope", "slice__sync_den"."sync_skipped", "slice__sync_den"."sync_start_scope", "slice__sync_den"."sync_start_step", "slice__sync_den"."sync_step", "slice__sync_den"."sync_sync_run_input", "slice__sync_den"."sync_within", "slice__sync_seats"."sync_exclusive", "slice__sync_seats"."sync_paused" FROM PUBLIC;
 
 REVOKE ALL ON DOMAIN "slice"."chain_chain_run_input_feed", "slice"."chain_join", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."fan_join", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."feed", "slice"."retry_join", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."sync_join", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."__text_t4rwovzmqj", "slice"."__domain_jotafzuj2i", "slice"."__domain_jotafzuj2i", "slice"."__domain_mxhao3k6ss", "slice"."__domain_jotafzuj2i", "slice"."__domain_jotafzuj2i", "slice"."__domain_mxhao3k6ss", "slice"."__domain_gfw43vigph" FROM PUBLIC;
 

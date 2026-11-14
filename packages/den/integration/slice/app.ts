@@ -1,8 +1,12 @@
 import { contained, on, schema } from "@bjornpagen/grizzle"
-import { ChainResult, chainFragment } from "#integration/slice/generated/chain.fragment.ts"
-import { fanFragment } from "#integration/slice/generated/fan.fragment.ts"
-import { retryFragment } from "#integration/slice/generated/retry.fragment.ts"
-import { syncFragment } from "#integration/slice/generated/sync.fragment.ts"
+import {
+	ChainResult,
+	chainCoordination,
+	chainGraph
+} from "#integration/slice/generated/chain.fragment.ts"
+import { fanCoordination, fanGraph } from "#integration/slice/generated/fan.fragment.ts"
+import { retryCoordination, retryGraph } from "#integration/slice/generated/retry.fragment.ts"
+import { syncCoordination, syncGraph } from "#integration/slice/generated/sync.fragment.ts"
 import {
 	Audit,
 	Built,
@@ -16,7 +20,7 @@ import {
 	Weight
 } from "#integration/slice/relations.ts"
 
-/** The toy app's schema, den's four flows spread into it: one level, one installation, one migrations chain. */
+/** The toy app's schema, each of den's four flows listed as its graph and its coordination fragments: one level, one installation, one migrations chain. */
 export const App = schema(
 	"Slice",
 	[
@@ -30,16 +34,14 @@ export const App = schema(
 		Copied,
 		Built,
 		Audit,
-		...chainFragment.relations,
-		...fanFragment.relations,
-		...syncFragment.relations,
-		...retryFragment.relations
+		chainGraph,
+		chainCoordination,
+		fanGraph,
+		fanCoordination,
+		syncGraph,
+		syncCoordination,
+		retryGraph,
+		retryCoordination
 	],
-	[
-		contained(on(Audit, "step"), on(ChainResult, "step")),
-		...chainFragment.laws,
-		...fanFragment.laws,
-		...syncFragment.laws,
-		...retryFragment.laws
-	]
+	[contained(on(Audit, "step"), on(ChainResult, "step"))]
 )

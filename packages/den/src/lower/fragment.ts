@@ -19,8 +19,8 @@ import {
 import { type Base, type Column, errorShapeOf, type Shape, shapeOf } from "#lower/schema.ts"
 
 /**
- * A flow lowered to a fragment, as data: the rosters, contracts, relations and laws the app spreads into its own
- * `schema(...)`, every name under the flow's prefix, and the kinds, joins and edges the programs and the binding are
+ * A flow lowered to a fragment, as data: the rosters, contracts, relations and laws the app lists in its own
+ * `schema(...)` as the flow's graph and coordination fragments, every name under the flow's prefix, and the kinds, joins and edges the programs and the binding are
  * printed from. The fragment's relations are an ordered list, the form grizzle's `schema()` takes, which refuses two
  * declarations of one name that differ as `DuplicateIdentity`.
  *

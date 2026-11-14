@@ -5,6 +5,7 @@ import {
 	closed,
 	closedId,
 	contained,
+	fragment,
 	key,
 	natural,
 	on,
@@ -15,9 +16,9 @@ import {
 	select
 } from "@bjornpagen/grizzle"
 
-export const RetryKind = closed("RetryKind", ["Steadfast", "Brittle", "LaddersFinish"])
-export const RetryJoin = closed("RetryJoin", ["Ladders"])
-export const RetryOutcome = closed("RetryOutcome", ["done", "failed"])
+const RetryKind = closed("RetryKind", ["Steadfast", "Brittle", "LaddersFinish"])
+const RetryJoin = closed("RetryJoin", ["Ladders"])
+const RetryOutcome = closed("RetryOutcome", ["done", "failed"])
 export const RetryPausable = closed("RetryPausable", ["Ladders"])
 
 export const RetryScope = relation("RetryScope", { scope: DenScope, kind: closedId(RetryJoin) }, [
@@ -87,9 +88,9 @@ export const RetryBrittleOutput = relation("RetryBrittleOutput", { step: DenStep
 ])
 export const RetryPaused = relation("RetryPaused", { target: closedId(RetryPausable) }, ["target"])
 
-/** The flow's declarations, in order, its laws, and the den relations its app role `loader` holds and inserts into. */
-export const retryFragment = Object.freeze({
-	relations: [
+/** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
+export const retryGraph = fragment(
+	[
 		RetryKind,
 		RetryJoin,
 		RetryOutcome,
@@ -116,10 +117,9 @@ export const retryFragment = Object.freeze({
 		RetryBrittleInput,
 		RetryLaddersInput,
 		RetrySteadfastOutput,
-		RetryBrittleOutput,
-		RetryPaused
-	] as const,
-	laws: Object.freeze([
+		RetryBrittleOutput
+	],
+	[
 		contained(on(RetryRoot, "scope"), on(RetryScope, "scope")),
 		contained(on(RetryWithin, "scope"), on(RetryScope, "scope")),
 		contained(on(RetryWithin, "parent"), on(RetryScope, "scope")),
@@ -193,25 +193,20 @@ export const retryFragment = Object.freeze({
 		contained(on(RetrySteadfastOutput, "step"), on(RetryDone, "step")),
 		contained(on(RetryBrittleOutput, "step"), on(RetryBrittleInput, "step")),
 		contained(on(RetryBrittleOutput, "step"), on(RetryDone, "step"))
-	]),
-	writer: Object.freeze({
-		relations: Object.freeze({
-			RetryKind,
-			RetryJoin,
-			RetryOutcome,
-			RetryPausable,
-			RetryResult,
-			RetryDone,
-			RetryHeld,
-			RetrySteadfastOutput,
-			RetryBrittleOutput
-		}),
-		insert: [
-			"RetryResult",
-			"RetryDone",
-			"RetryHeld",
-			"RetrySteadfastOutput",
-			"RetryBrittleOutput"
-		] as const
-	})
-})
+	]
+)
+
+/** The flow's coordination group: its rosters, seats, holds, exclusivity seats and pauses, which den's coordination role holds whole. */
+export const retryCoordination = fragment(
+	[RetryKind, RetryJoin, RetryOutcome, RetryPausable, RetryPaused],
+	[]
+)
+
+/** The den relations the flow's app role `loader` inserts into: each step's commit's, and each app root's request's. */
+export const retryWriter = [
+	"RetryResult",
+	"RetryDone",
+	"RetryHeld",
+	"RetrySteadfastOutput",
+	"RetryBrittleOutput"
+] as const

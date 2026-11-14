@@ -12,6 +12,7 @@ import {
 	closed,
 	closedId,
 	contained,
+	fragment,
 	key,
 	natural,
 	on,
@@ -22,9 +23,9 @@ import {
 	select
 } from "@bjornpagen/grizzle"
 
-export const SyncKind = closed("SyncKind", ["Copy", "Build", "SyncRunFinish", "GoldFinish"])
+const SyncKind = closed("SyncKind", ["Copy", "Build", "SyncRunFinish", "GoldFinish"])
 export const SyncJoin = closed("SyncJoin", ["SyncRun", "Gold"])
-export const SyncOutcome = closed("SyncOutcome", ["done", "failed"])
+const SyncOutcome = closed("SyncOutcome", ["done", "failed"])
 export const SyncPausable = closed("SyncPausable", ["SyncRun", "Gold"])
 
 export const SyncScope = relation("SyncScope", { scope: DenScope, kind: closedId(SyncJoin) }, [
@@ -109,9 +110,9 @@ export const SyncExclusive = relation(
 )
 export const SyncPaused = relation("SyncPaused", { target: closedId(SyncPausable) }, ["target"])
 
-/** The flow's declarations, in order, its laws, and the den relations its app role `loader` holds and inserts into. */
-export const syncFragment = Object.freeze({
-	relations: [
+/** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
+export const syncGraph = fragment(
+	[
 		SyncKind,
 		SyncJoin,
 		SyncOutcome,
@@ -140,11 +141,9 @@ export const syncFragment = Object.freeze({
 		SyncSyncRunInput,
 		SyncGoldInput,
 		SyncCopyOutput,
-		SyncBuildOutput,
-		SyncExclusive,
-		SyncPaused
-	] as const,
-	laws: Object.freeze([
+		SyncBuildOutput
+	],
+	[
 		contained(on(SyncExclusiveKey, "scope"), on(SyncScope, "scope")),
 		contained(on(SyncRoot, "scope"), on(SyncScope, "scope")),
 		contained(on(SyncWithin, "scope"), on(SyncScope, "scope")),
@@ -226,19 +225,20 @@ export const syncFragment = Object.freeze({
 		contained(on(SyncCopyOutput, "step"), on(SyncDone, "step")),
 		contained(on(SyncBuildOutput, "step"), on(SyncBuildInput, "step")),
 		contained(on(SyncBuildOutput, "step"), on(SyncDone, "step"))
-	]),
-	writer: Object.freeze({
-		relations: Object.freeze({
-			SyncKind,
-			SyncJoin,
-			SyncOutcome,
-			SyncPausable,
-			SyncResult,
-			SyncDone,
-			SyncHeld,
-			SyncCopyOutput,
-			SyncBuildOutput
-		}),
-		insert: ["SyncResult", "SyncDone", "SyncHeld", "SyncCopyOutput", "SyncBuildOutput"] as const
-	})
-})
+	]
+)
+
+/** The flow's coordination group: its rosters, seats, holds, exclusivity seats and pauses, which den's coordination role holds whole. */
+export const syncCoordination = fragment(
+	[SyncKind, SyncJoin, SyncOutcome, SyncPausable, SyncExclusive, SyncPaused],
+	[]
+)
+
+/** The den relations the flow's app role `loader` inserts into: each step's commit's, and each app root's request's. */
+export const syncWriter = [
+	"SyncResult",
+	"SyncDone",
+	"SyncHeld",
+	"SyncCopyOutput",
+	"SyncBuildOutput"
+] as const

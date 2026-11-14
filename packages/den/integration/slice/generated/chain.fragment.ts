@@ -6,6 +6,7 @@ import {
 	closedId,
 	contained,
 	contract,
+	fragment,
 	key,
 	natural,
 	on,
@@ -19,13 +20,13 @@ import { Weight } from "#integration/slice/relations.ts"
 
 const Seq = contract("Seq", pg.bigint)
 
-export const ChainKind = closed("ChainKind", ["Page", "ChainRunFinish", "OrderedFinish"])
-export const ChainJoin = closed("ChainJoin", ["ChainRun", "Ordered"])
-export const ChainOutcome = closed("ChainOutcome", ["done", "failed"])
+const ChainKind = closed("ChainKind", ["Page", "ChainRunFinish", "OrderedFinish"])
+const ChainJoin = closed("ChainJoin", ["ChainRun", "Ordered"])
+const ChainOutcome = closed("ChainOutcome", ["done", "failed"])
 export const ChainPausable = closed("ChainPausable", ["ChainRun", "Ordered"])
-export const ChainPageInputFeed = closed("ChainPageInputFeed", ["news", "sport"])
-export const ChainChainRunInputFeed = closed("ChainChainRunInputFeed", ["news", "sport"])
-export const ChainOrderedInputFeed = closed("ChainOrderedInputFeed", ["news", "sport"])
+const ChainPageInputFeed = closed("ChainPageInputFeed", ["news", "sport"])
+const ChainChainRunInputFeed = closed("ChainChainRunInputFeed", ["news", "sport"])
+const ChainOrderedInputFeed = closed("ChainOrderedInputFeed", ["news", "sport"])
 
 export const ChainScope = relation("ChainScope", { scope: DenScope, kind: closedId(ChainJoin) }, [
 	"scope"
@@ -112,9 +113,9 @@ export const ChainPageRead = relation(
 )
 export const ChainPaused = relation("ChainPaused", { target: closedId(ChainPausable) }, ["target"])
 
-/** The flow's declarations, in order, its laws, and the den relations its app role `loader` holds and inserts into. */
-export const chainFragment = Object.freeze({
-	relations: [
+/** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
+export const chainGraph = fragment(
+	[
 		ChainKind,
 		ChainJoin,
 		ChainOutcome,
@@ -147,10 +148,9 @@ export const chainFragment = Object.freeze({
 		ChainNext,
 		ChainPageOutput,
 		ChainPageOutputNext,
-		ChainPageRead,
-		ChainPaused
-	] as const,
-	laws: Object.freeze([
+		ChainPageRead
+	],
+	[
 		contained(on(ChainRoot, "scope"), on(ChainScope, "scope")),
 		contained(on(ChainWithin, "scope"), on(ChainScope, "scope")),
 		contained(on(ChainWithin, "parent"), on(ChainScope, "scope")),
@@ -228,56 +228,43 @@ export const chainFragment = Object.freeze({
 		contained(on(ChainPageOutput, "step"), on(ChainDone, "step")),
 		contained(on(ChainPageOutputNext, "step"), on(ChainPageOutput, "step")),
 		contained(on(ChainPageRead, "step"), on(ChainResult, "step"))
-	]),
-	writer: Object.freeze({
-		relations: Object.freeze({
-			ChainKind,
-			ChainJoin,
-			ChainOutcome,
-			ChainPausable,
-			ChainPageInputFeed,
-			ChainChainRunInputFeed,
-			ChainOrderedInputFeed,
-			ChainResult,
-			ChainDone,
-			ChainHeld,
-			ChainPageOutput,
-			ChainPageOutputNext,
-			ChainPageRead,
-			ChainStep,
-			ChainDue,
-			ChainScope,
-			ChainWithin,
-			ChainAdmitted,
-			ChainFinish,
-			ChainStartStep,
-			ChainStartScope,
-			ChainPageInput,
-			ChainPageInputAfter,
-			ChainNext,
-			ChainRoot,
-			ChainOrderedInput
-		}),
-		insert: [
-			"ChainResult",
-			"ChainDone",
-			"ChainHeld",
-			"ChainPageOutput",
-			"ChainPageOutputNext",
-			"ChainPageRead",
-			"ChainStep",
-			"ChainDue",
-			"ChainScope",
-			"ChainWithin",
-			"ChainAdmitted",
-			"ChainFinish",
-			"ChainStartStep",
-			"ChainStartScope",
-			"ChainPageInput",
-			"ChainPageInputAfter",
-			"ChainNext",
-			"ChainRoot",
-			"ChainOrderedInput"
-		] as const
-	})
-})
+	]
+)
+
+/** The flow's coordination group: its rosters, seats, holds, exclusivity seats and pauses, which den's coordination role holds whole. */
+export const chainCoordination = fragment(
+	[
+		ChainKind,
+		ChainJoin,
+		ChainOutcome,
+		ChainPausable,
+		ChainPageInputFeed,
+		ChainChainRunInputFeed,
+		ChainOrderedInputFeed,
+		ChainPaused
+	],
+	[]
+)
+
+/** The den relations the flow's app role `loader` inserts into: each step's commit's, and each app root's request's. */
+export const chainWriter = [
+	"ChainResult",
+	"ChainDone",
+	"ChainHeld",
+	"ChainPageOutput",
+	"ChainPageOutputNext",
+	"ChainPageRead",
+	"ChainStep",
+	"ChainDue",
+	"ChainScope",
+	"ChainWithin",
+	"ChainAdmitted",
+	"ChainFinish",
+	"ChainStartStep",
+	"ChainStartScope",
+	"ChainPageInput",
+	"ChainPageInputAfter",
+	"ChainNext",
+	"ChainRoot",
+	"ChainOrderedInput"
+] as const

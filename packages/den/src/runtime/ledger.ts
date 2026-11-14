@@ -7,8 +7,8 @@ import type { FlowName } from "#transport.ts"
 
 /**
  * The ledger port: what den's runtime asks of a flow's relations, in den's own types. The module den generates for an
- * app's schema implements it over the app's served programs (programs over the concrete app schema, until grizzle can
- * build them over a fragment), so the runtime never names a grizzle program and grizzle never sees den's algebra.
+ * app's schema implements it over the app's served programs (den's over the flow's fragments, the commits over its app
+ * role), so the runtime never names a grizzle program and grizzle never sees den's algebra.
  *
  * Three handles serve it: den's role (claims, retries, failures, admissions, requests and every read), den's
  * coordination role (seats, exclusivity, pauses: the seat module's, which LEASE replaces) and the flow's app role

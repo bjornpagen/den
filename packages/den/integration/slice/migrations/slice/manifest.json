@@ -3470,6 +3470,10 @@
 				"to": "view:slice__chain_den.chain_chain_run_input"
 			},
 			{
+				"from": "domain:slice.chain_chain_run_input_feed",
+				"to": "view:slice__loader.chain_chain_run_input"
+			},
+			{
 				"from": "domain:slice.chain_join",
 				"to": "privileges:slice__auditor"
 			},
@@ -3694,6 +3698,10 @@
 				"to": "view:slice__fan_den.fan_scope"
 			},
 			{
+				"from": "domain:slice.fan_join",
+				"to": "view:slice__loader.fan_scope"
+			},
+			{
 				"from": "domain:slice.fan_kind",
 				"to": "privileges:slice__auditor"
 			},
@@ -3720,6 +3728,10 @@
 			{
 				"from": "domain:slice.fan_kind",
 				"to": "view:slice__fan_den.fan_step"
+			},
+			{
+				"from": "domain:slice.fan_kind",
+				"to": "view:slice__loader.fan_step"
 			},
 			{
 				"from": "domain:slice.fan_outcome",
@@ -3895,6 +3907,10 @@
 			},
 			{
 				"from": "domain:slice.retry_join",
+				"to": "view:slice__loader.retry_scope"
+			},
+			{
+				"from": "domain:slice.retry_join",
 				"to": "view:slice__retry_den.retry_scope"
 			},
 			{
@@ -3920,6 +3936,10 @@
 			{
 				"from": "domain:slice.retry_kind",
 				"to": "view:slice__auditor.retry_step"
+			},
+			{
+				"from": "domain:slice.retry_kind",
+				"to": "view:slice__loader.retry_step"
 			},
 			{
 				"from": "domain:slice.retry_kind",
@@ -4007,6 +4027,10 @@
 			},
 			{
 				"from": "domain:slice.sync_join",
+				"to": "view:slice__loader.sync_scope"
+			},
+			{
+				"from": "domain:slice.sync_join",
 				"to": "view:slice__sync_den.sync_scope"
 			},
 			{
@@ -4028,6 +4052,10 @@
 			{
 				"from": "domain:slice.sync_kind",
 				"to": "table:slice.sync_step"
+			},
+			{
+				"from": "domain:slice.sync_kind",
+				"to": "view:slice__loader.sync_step"
 			},
 			{
 				"from": "domain:slice.sync_kind",
@@ -4879,11 +4907,27 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.chain_chain_run_input"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.chain_claim"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.chain_done"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.chain_due"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.chain_exhausted"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.chain_failed"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
@@ -4923,7 +4967,15 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.chain_refusal"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.chain_result"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.chain_retry"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
@@ -4932,6 +4984,10 @@
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.chain_scope"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.chain_skipped"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
@@ -4951,7 +5007,39 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_admitted"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_batch_input"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_claim"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.fan_done"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_due"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_exhausted"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_failed"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_fan_run_input"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_finish"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
@@ -4959,7 +5047,31 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_refusal"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.fan_result"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_retry"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_root"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_scope"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_skipped"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_square_input"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
@@ -4967,7 +5079,35 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_start_scope"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_start_step"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_step"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.fan_within"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_admitted"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_brittle_input"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.retry_brittle_output"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_claim"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
@@ -4975,7 +5115,31 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_due"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_exhausted"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_failed"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_finish"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.retry_held"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_ladders_input"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_refusal"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
@@ -4983,11 +5147,63 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_retry"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_root"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_scope"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_skipped"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_start_scope"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_start_step"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_steadfast_input"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.retry_steadfast_output"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_step"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.retry_within"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_admitted"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_build_input"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.sync_build_output"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_claim"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_copy_input"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
@@ -4999,11 +5215,75 @@
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_due"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_exclusive_key"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_exhausted"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_failed"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_finish"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_gold_input"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.sync_held"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_refusal"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
 				"to": "view:slice__loader.sync_result"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_retry"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_root"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_scope"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_skipped"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_start_scope"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_start_step"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_step"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_sync_run_input"
+			},
+			{
+				"from": "domain:slice.__domain_jotafzuj2i",
+				"to": "view:slice__loader.sync_within"
 			},
 			{
 				"from": "domain:slice.__domain_jotafzuj2i",
@@ -5495,6 +5775,14 @@
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.chain_claim"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.chain_exhausted"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "view:slice__loader.chain_held"
 			},
 			{
@@ -5504,6 +5792,10 @@
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "view:slice__loader.chain_page_read"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.chain_retry"
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
@@ -5519,7 +5811,27 @@
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.fan_claim"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.fan_exhausted"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "view:slice__loader.fan_held"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.fan_retry"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.fan_start_scope"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.fan_start_step"
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
@@ -5527,11 +5839,51 @@
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.retry_claim"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.retry_exhausted"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "view:slice__loader.retry_held"
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.retry_retry"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.retry_start_scope"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.retry_start_step"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.sync_claim"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.sync_exhausted"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
 				"to": "view:slice__loader.sync_held"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.sync_retry"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.sync_start_scope"
+			},
+			{
+				"from": "domain:slice.__domain_gfw43vigph",
+				"to": "view:slice__loader.sync_start_step"
 			},
 			{
 				"from": "domain:slice.__domain_gfw43vigph",
@@ -5763,6 +6115,10 @@
 			},
 			{
 				"from": "domain:slice.__domain_mxhao3k6ss",
+				"to": "view:slice__loader.chain_claim"
+			},
+			{
+				"from": "domain:slice.__domain_mxhao3k6ss",
 				"to": "view:slice__loader.chain_due"
 			},
 			{
@@ -5775,7 +6131,59 @@
 			},
 			{
 				"from": "domain:slice.__domain_mxhao3k6ss",
+				"to": "view:slice__loader.chain_retry"
+			},
+			{
+				"from": "domain:slice.__domain_mxhao3k6ss",
 				"to": "view:slice__loader.chain_root"
+			},
+			{
+				"from": "domain:slice.__domain_mxhao3k6ss",
+				"to": "view:slice__loader.fan_claim"
+			},
+			{
+				"from": "domain:slice.__domain_mxhao3k6ss",
+				"to": "view:slice__loader.fan_due"
+			},
+			{
+				"from": "domain:slice.__domain_mxhao3k6ss",
+				"to": "view:slice__loader.fan_retry"
+			},
+			{
+				"from": "domain:slice.__domain_mxhao3k6ss",
+				"to": "view:slice__loader.fan_root"
+			},
+			{
+				"from": "domain:slice.__domain_mxhao3k6ss",
+				"to": "view:slice__loader.retry_claim"
+			},
+			{
+				"from": "domain:slice.__domain_mxhao3k6ss",
+				"to": "view:slice__loader.retry_due"
+			},
+			{
+				"from": "domain:slice.__domain_mxhao3k6ss",
+				"to": "view:slice__loader.retry_retry"
+			},
+			{
+				"from": "domain:slice.__domain_mxhao3k6ss",
+				"to": "view:slice__loader.retry_root"
+			},
+			{
+				"from": "domain:slice.__domain_mxhao3k6ss",
+				"to": "view:slice__loader.sync_claim"
+			},
+			{
+				"from": "domain:slice.__domain_mxhao3k6ss",
+				"to": "view:slice__loader.sync_due"
+			},
+			{
+				"from": "domain:slice.__domain_mxhao3k6ss",
+				"to": "view:slice__loader.sync_retry"
+			},
+			{
+				"from": "domain:slice.__domain_mxhao3k6ss",
+				"to": "view:slice__loader.sync_root"
 			},
 			{
 				"from": "domain:slice.__domain_mxhao3k6ss",
@@ -5968,6 +6376,10 @@
 			{
 				"from": "function:slice.__chain_chain_run_input_feed_names_byxgsvzik7",
 				"to": "view:slice__chain_den.chain_chain_run_input"
+			},
+			{
+				"from": "function:slice.__chain_chain_run_input_feed_names_byxgsvzik7",
+				"to": "view:slice__loader.chain_chain_run_input"
 			},
 			{
 				"from": "function:slice.__chain_join_names_hvq3dwjqow",
@@ -6194,6 +6606,10 @@
 				"to": "view:slice__fan_den.fan_scope"
 			},
 			{
+				"from": "function:slice.__fan_join_names_gct5lzhdqo",
+				"to": "view:slice__loader.fan_scope"
+			},
+			{
 				"from": "function:slice.__fan_kind_names_gikh2fxf2t",
 				"to": "domain:slice.fan_kind"
 			},
@@ -6220,6 +6636,10 @@
 			{
 				"from": "function:slice.__fan_kind_names_gikh2fxf2t",
 				"to": "view:slice__fan_den.fan_step"
+			},
+			{
+				"from": "function:slice.__fan_kind_names_gikh2fxf2t",
+				"to": "view:slice__loader.fan_step"
 			},
 			{
 				"from": "function:slice.__fan_outcome_names_7pbhseigfj",
@@ -6375,6 +6795,10 @@
 			},
 			{
 				"from": "function:slice.__retry_join_names_st4whng7gb",
+				"to": "view:slice__loader.retry_scope"
+			},
+			{
+				"from": "function:slice.__retry_join_names_st4whng7gb",
 				"to": "view:slice__retry_den.retry_scope"
 			},
 			{
@@ -6400,6 +6824,10 @@
 			{
 				"from": "function:slice.__retry_kind_names_pa363dov7n",
 				"to": "view:slice__auditor.retry_step"
+			},
+			{
+				"from": "function:slice.__retry_kind_names_pa363dov7n",
+				"to": "view:slice__loader.retry_step"
 			},
 			{
 				"from": "function:slice.__retry_kind_names_pa363dov7n",
@@ -6483,6 +6911,10 @@
 			},
 			{
 				"from": "function:slice.__sync_join_names_cci5jmwoiz",
+				"to": "view:slice__loader.sync_scope"
+			},
+			{
+				"from": "function:slice.__sync_join_names_cci5jmwoiz",
 				"to": "view:slice__sync_den.sync_scope"
 			},
 			{
@@ -6504,6 +6936,10 @@
 			{
 				"from": "function:slice.__sync_kind_names_4mra6ojpzm",
 				"to": "privileges:slice__sync_seats"
+			},
+			{
+				"from": "function:slice.__sync_kind_names_4mra6ojpzm",
+				"to": "view:slice__loader.sync_step"
 			},
 			{
 				"from": "function:slice.__sync_kind_names_4mra6ojpzm",
@@ -7863,11 +8299,27 @@
 			},
 			{
 				"from": "schema:slice__loader",
+				"to": "view:slice__loader.chain_chain_run_input"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.chain_claim"
+			},
+			{
+				"from": "schema:slice__loader",
 				"to": "view:slice__loader.chain_done"
 			},
 			{
 				"from": "schema:slice__loader",
 				"to": "view:slice__loader.chain_due"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.chain_exhausted"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.chain_failed"
 			},
 			{
 				"from": "schema:slice__loader",
@@ -7907,7 +8359,15 @@
 			},
 			{
 				"from": "schema:slice__loader",
+				"to": "view:slice__loader.chain_refusal"
+			},
+			{
+				"from": "schema:slice__loader",
 				"to": "view:slice__loader.chain_result"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.chain_retry"
 			},
 			{
 				"from": "schema:slice__loader",
@@ -7916,6 +8376,10 @@
 			{
 				"from": "schema:slice__loader",
 				"to": "view:slice__loader.chain_scope"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.chain_skipped"
 			},
 			{
 				"from": "schema:slice__loader",
@@ -7943,7 +8407,39 @@
 			},
 			{
 				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_admitted"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_batch_input"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_claim"
+			},
+			{
+				"from": "schema:slice__loader",
 				"to": "view:slice__loader.fan_done"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_due"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_exhausted"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_failed"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_fan_run_input"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_finish"
 			},
 			{
 				"from": "schema:slice__loader",
@@ -7951,11 +8447,51 @@
 			},
 			{
 				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_refusal"
+			},
+			{
+				"from": "schema:slice__loader",
 				"to": "view:slice__loader.fan_result"
 			},
 			{
 				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_retry"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_root"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_scope"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_skipped"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_square_input"
+			},
+			{
+				"from": "schema:slice__loader",
 				"to": "view:slice__loader.fan_square_output"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_start_scope"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_start_step"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_step"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.fan_within"
 			},
 			{
 				"from": "schema:slice__loader",
@@ -7967,7 +8503,19 @@
 			},
 			{
 				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_admitted"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_brittle_input"
+			},
+			{
+				"from": "schema:slice__loader",
 				"to": "view:slice__loader.retry_brittle_output"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_claim"
 			},
 			{
 				"from": "schema:slice__loader",
@@ -7975,7 +8523,31 @@
 			},
 			{
 				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_due"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_exhausted"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_failed"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_finish"
+			},
+			{
+				"from": "schema:slice__loader",
 				"to": "view:slice__loader.retry_held"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_ladders_input"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_refusal"
 			},
 			{
 				"from": "schema:slice__loader",
@@ -7983,7 +8555,43 @@
 			},
 			{
 				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_retry"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_root"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_scope"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_skipped"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_start_scope"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_start_step"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_steadfast_input"
+			},
+			{
+				"from": "schema:slice__loader",
 				"to": "view:slice__loader.retry_steadfast_output"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_step"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.retry_within"
 			},
 			{
 				"from": "schema:slice__loader",
@@ -7991,7 +8599,23 @@
 			},
 			{
 				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_admitted"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_build_input"
+			},
+			{
+				"from": "schema:slice__loader",
 				"to": "view:slice__loader.sync_build_output"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_claim"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_copy_input"
 			},
 			{
 				"from": "schema:slice__loader",
@@ -8003,11 +8627,75 @@
 			},
 			{
 				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_due"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_exclusive_key"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_exhausted"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_failed"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_finish"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_gold_input"
+			},
+			{
+				"from": "schema:slice__loader",
 				"to": "view:slice__loader.sync_held"
 			},
 			{
 				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_refusal"
+			},
+			{
+				"from": "schema:slice__loader",
 				"to": "view:slice__loader.sync_result"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_retry"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_root"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_scope"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_skipped"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_start_scope"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_start_step"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_step"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_sync_run_input"
+			},
+			{
+				"from": "schema:slice__loader",
+				"to": "view:slice__loader.sync_within"
 			},
 			{
 				"from": "schema:slice__loader",
@@ -8370,6 +9058,10 @@
 				"to": "view:slice__chain_den.chain_chain_run_input"
 			},
 			{
+				"from": "table:slice.chain_chain_run_input",
+				"to": "view:slice__loader.chain_chain_run_input"
+			},
+			{
 				"from": "table:slice.chain_claim",
 				"to": "column:slice.chain_claim.__step_fxyms236d4"
 			},
@@ -8420,6 +9112,10 @@
 			{
 				"from": "table:slice.chain_claim",
 				"to": "view:slice__chain_den.chain_claim"
+			},
+			{
+				"from": "table:slice.chain_claim",
+				"to": "view:slice__loader.chain_claim"
 			},
 			{
 				"from": "table:slice.chain_done",
@@ -8498,6 +9194,10 @@
 				"to": "view:slice__chain_den.chain_exhausted"
 			},
 			{
+				"from": "table:slice.chain_exhausted",
+				"to": "view:slice__loader.chain_exhausted"
+			},
+			{
 				"from": "table:slice.chain_failed",
 				"to": "column:slice.chain_failed.__tag_outcome_failed_lrxbpw73ih"
 			},
@@ -8524,6 +9224,10 @@
 			{
 				"from": "table:slice.chain_failed",
 				"to": "view:slice__chain_den.chain_failed"
+			},
+			{
+				"from": "table:slice.chain_failed",
+				"to": "view:slice__loader.chain_failed"
 			},
 			{
 				"from": "table:slice.chain_finish",
@@ -8886,6 +9590,10 @@
 				"to": "view:slice__chain_den.chain_refusal"
 			},
 			{
+				"from": "table:slice.chain_refusal",
+				"to": "view:slice__loader.chain_refusal"
+			},
+			{
 				"from": "table:slice.chain_result",
 				"to": "constraint:slice.audit.__audit_fk_step_zgfyapbfme"
 			},
@@ -8964,6 +9672,10 @@
 			{
 				"from": "table:slice.chain_retry",
 				"to": "view:slice__chain_den.chain_retry"
+			},
+			{
+				"from": "table:slice.chain_retry",
+				"to": "view:slice__loader.chain_retry"
 			},
 			{
 				"from": "table:slice.chain_root",
@@ -9088,6 +9800,10 @@
 			{
 				"from": "table:slice.chain_skipped",
 				"to": "view:slice__chain_den.chain_skipped"
+			},
+			{
+				"from": "table:slice.chain_skipped",
+				"to": "view:slice__loader.chain_skipped"
 			},
 			{
 				"from": "table:slice.chain_start_scope",
@@ -9374,6 +10090,10 @@
 				"to": "view:slice__fan_den.fan_admitted"
 			},
 			{
+				"from": "table:slice.fan_admitted",
+				"to": "view:slice__loader.fan_admitted"
+			},
+			{
 				"from": "table:slice.fan_batch_input",
 				"to": "column:slice.fan_batch_input.__tag_kind_batch_fkqwrqkogg"
 			},
@@ -9400,6 +10120,10 @@
 			{
 				"from": "table:slice.fan_batch_input",
 				"to": "view:slice__fan_den.fan_batch_input"
+			},
+			{
+				"from": "table:slice.fan_batch_input",
+				"to": "view:slice__loader.fan_batch_input"
 			},
 			{
 				"from": "table:slice.fan_claim",
@@ -9448,6 +10172,10 @@
 			{
 				"from": "table:slice.fan_claim",
 				"to": "view:slice__fan_den.fan_claim"
+			},
+			{
+				"from": "table:slice.fan_claim",
+				"to": "view:slice__loader.fan_claim"
 			},
 			{
 				"from": "table:slice.fan_done",
@@ -9502,6 +10230,10 @@
 				"to": "view:slice__fan_den.fan_due"
 			},
 			{
+				"from": "table:slice.fan_due",
+				"to": "view:slice__loader.fan_due"
+			},
+			{
 				"from": "table:slice.fan_exhausted",
 				"to": "constraint:slice.fan_exhausted.__fan_exhausted_fk_step_j42evr2xp3"
 			},
@@ -9516,6 +10248,10 @@
 			{
 				"from": "table:slice.fan_exhausted",
 				"to": "view:slice__fan_den.fan_exhausted"
+			},
+			{
+				"from": "table:slice.fan_exhausted",
+				"to": "view:slice__loader.fan_exhausted"
 			},
 			{
 				"from": "table:slice.fan_failed",
@@ -9546,6 +10282,10 @@
 				"to": "view:slice__fan_den.fan_failed"
 			},
 			{
+				"from": "table:slice.fan_failed",
+				"to": "view:slice__loader.fan_failed"
+			},
+			{
 				"from": "table:slice.fan_fan_run_input",
 				"to": "column:slice.fan_fan_run_input.__tag_kind_fan_run_eorldhk2ce"
 			},
@@ -9572,6 +10312,10 @@
 			{
 				"from": "table:slice.fan_fan_run_input",
 				"to": "view:slice__fan_den.fan_fan_run_input"
+			},
+			{
+				"from": "table:slice.fan_fan_run_input",
+				"to": "view:slice__loader.fan_fan_run_input"
 			},
 			{
 				"from": "table:slice.fan_finish",
@@ -9604,6 +10348,10 @@
 			{
 				"from": "table:slice.fan_finish",
 				"to": "view:slice__fan_den.fan_finish"
+			},
+			{
+				"from": "table:slice.fan_finish",
+				"to": "view:slice__loader.fan_finish"
 			},
 			{
 				"from": "table:slice.fan_held",
@@ -9698,6 +10446,10 @@
 				"to": "view:slice__fan_den.fan_refusal"
 			},
 			{
+				"from": "table:slice.fan_refusal",
+				"to": "view:slice__loader.fan_refusal"
+			},
+			{
 				"from": "table:slice.fan_result",
 				"to": "constraint:slice.fan_done.__fan_done_fk_step_tag_outcome_done_jagqpg3plp"
 			},
@@ -9766,6 +10518,10 @@
 				"to": "view:slice__fan_den.fan_retry"
 			},
 			{
+				"from": "table:slice.fan_retry",
+				"to": "view:slice__loader.fan_retry"
+			},
+			{
 				"from": "table:slice.fan_root",
 				"to": "constraint:slice.fan_root.__fan_root_fk_scope_7k4byqnauw"
 			},
@@ -9792,6 +10548,10 @@
 			{
 				"from": "table:slice.fan_root",
 				"to": "view:slice__fan_den.fan_root"
+			},
+			{
+				"from": "table:slice.fan_root",
+				"to": "view:slice__loader.fan_root"
 			},
 			{
 				"from": "table:slice.fan_scope",
@@ -9846,6 +10606,10 @@
 				"to": "view:slice__fan_den.fan_scope"
 			},
 			{
+				"from": "table:slice.fan_scope",
+				"to": "view:slice__loader.fan_scope"
+			},
+			{
 				"from": "table:slice.fan_seat",
 				"to": "constraint:slice.fan_hold.__fan_hold_fk_resource_seat_ckrj3dllkr"
 			},
@@ -9898,6 +10662,10 @@
 				"to": "view:slice__fan_den.fan_skipped"
 			},
 			{
+				"from": "table:slice.fan_skipped",
+				"to": "view:slice__loader.fan_skipped"
+			},
+			{
 				"from": "table:slice.fan_square_input",
 				"to": "column:slice.fan_square_input.__tag_kind_square_q3stoybx3v"
 			},
@@ -9928,6 +10696,10 @@
 			{
 				"from": "table:slice.fan_square_input",
 				"to": "view:slice__fan_den.fan_square_input"
+			},
+			{
+				"from": "table:slice.fan_square_input",
+				"to": "view:slice__loader.fan_square_input"
 			},
 			{
 				"from": "table:slice.fan_square_output",
@@ -9994,6 +10766,10 @@
 				"to": "view:slice__fan_den.fan_start_scope"
 			},
 			{
+				"from": "table:slice.fan_start_scope",
+				"to": "view:slice__loader.fan_start_scope"
+			},
+			{
 				"from": "table:slice.fan_start_step",
 				"to": "constraint:slice.fan_start_step.__fan_start_step_fk_scope_jcmkodvipd"
 			},
@@ -10024,6 +10800,10 @@
 			{
 				"from": "table:slice.fan_start_step",
 				"to": "view:slice__fan_den.fan_start_step"
+			},
+			{
+				"from": "table:slice.fan_start_step",
+				"to": "view:slice__loader.fan_start_step"
 			},
 			{
 				"from": "table:slice.fan_step",
@@ -10090,6 +10870,10 @@
 				"to": "view:slice__fan_den.fan_step"
 			},
 			{
+				"from": "table:slice.fan_step",
+				"to": "view:slice__loader.fan_step"
+			},
+			{
 				"from": "table:slice.fan_within",
 				"to": "constraint:slice.fan_within.__fan_within_fk_parent_koa6wzyqvq"
 			},
@@ -10124,6 +10908,10 @@
 			{
 				"from": "table:slice.fan_within",
 				"to": "view:slice__fan_den.fan_within"
+			},
+			{
+				"from": "table:slice.fan_within",
+				"to": "view:slice__loader.fan_within"
 			},
 			{
 				"from": "table:slice.item",
@@ -10199,6 +10987,10 @@
 			},
 			{
 				"from": "table:slice.retry_admitted",
+				"to": "view:slice__loader.retry_admitted"
+			},
+			{
+				"from": "table:slice.retry_admitted",
 				"to": "view:slice__retry_den.retry_admitted"
 			},
 			{
@@ -10224,6 +11016,10 @@
 			{
 				"from": "table:slice.retry_brittle_input",
 				"to": "publication:__live_slice_wzkq6p2yii"
+			},
+			{
+				"from": "table:slice.retry_brittle_input",
+				"to": "view:slice__loader.retry_brittle_input"
 			},
 			{
 				"from": "table:slice.retry_brittle_input",
@@ -10307,6 +11103,10 @@
 			},
 			{
 				"from": "table:slice.retry_claim",
+				"to": "view:slice__loader.retry_claim"
+			},
+			{
+				"from": "table:slice.retry_claim",
 				"to": "view:slice__retry_den.retry_claim"
 			},
 			{
@@ -10363,6 +11163,10 @@
 			},
 			{
 				"from": "table:slice.retry_due",
+				"to": "view:slice__loader.retry_due"
+			},
+			{
+				"from": "table:slice.retry_due",
 				"to": "view:slice__retry_den.retry_due"
 			},
 			{
@@ -10384,6 +11188,10 @@
 			{
 				"from": "table:slice.retry_exhausted",
 				"to": "view:slice__auditor.retry_exhausted"
+			},
+			{
+				"from": "table:slice.retry_exhausted",
+				"to": "view:slice__loader.retry_exhausted"
 			},
 			{
 				"from": "table:slice.retry_exhausted",
@@ -10415,6 +11223,10 @@
 			},
 			{
 				"from": "table:slice.retry_failed",
+				"to": "view:slice__loader.retry_failed"
+			},
+			{
+				"from": "table:slice.retry_failed",
 				"to": "view:slice__retry_den.retry_failed"
 			},
 			{
@@ -10440,6 +11252,10 @@
 			{
 				"from": "table:slice.retry_finish",
 				"to": "publication:__live_slice_wzkq6p2yii"
+			},
+			{
+				"from": "table:slice.retry_finish",
+				"to": "view:slice__loader.retry_finish"
 			},
 			{
 				"from": "table:slice.retry_finish",
@@ -10499,6 +11315,10 @@
 			},
 			{
 				"from": "table:slice.retry_ladders_input",
+				"to": "view:slice__loader.retry_ladders_input"
+			},
+			{
+				"from": "table:slice.retry_ladders_input",
 				"to": "view:slice__retry_den.retry_ladders_input"
 			},
 			{
@@ -10532,6 +11352,10 @@
 			{
 				"from": "table:slice.retry_refusal",
 				"to": "privileges:slice__retry_den"
+			},
+			{
+				"from": "table:slice.retry_refusal",
+				"to": "view:slice__loader.retry_refusal"
 			},
 			{
 				"from": "table:slice.retry_refusal",
@@ -10603,6 +11427,10 @@
 			},
 			{
 				"from": "table:slice.retry_retry",
+				"to": "view:slice__loader.retry_retry"
+			},
+			{
+				"from": "table:slice.retry_retry",
 				"to": "view:slice__retry_den.retry_retry"
 			},
 			{
@@ -10624,6 +11452,10 @@
 			{
 				"from": "table:slice.retry_root",
 				"to": "publication:__live_slice_wzkq6p2yii"
+			},
+			{
+				"from": "table:slice.retry_root",
+				"to": "view:slice__loader.retry_root"
 			},
 			{
 				"from": "table:slice.retry_root",
@@ -10671,6 +11503,10 @@
 			},
 			{
 				"from": "table:slice.retry_scope",
+				"to": "view:slice__loader.retry_scope"
+			},
+			{
+				"from": "table:slice.retry_scope",
 				"to": "view:slice__retry_den.retry_scope"
 			},
 			{
@@ -10699,6 +11535,10 @@
 			},
 			{
 				"from": "table:slice.retry_skipped",
+				"to": "view:slice__loader.retry_skipped"
+			},
+			{
+				"from": "table:slice.retry_skipped",
 				"to": "view:slice__retry_den.retry_skipped"
 			},
 			{
@@ -10723,6 +11563,10 @@
 			},
 			{
 				"from": "table:slice.retry_start_scope",
+				"to": "view:slice__loader.retry_start_scope"
+			},
+			{
+				"from": "table:slice.retry_start_scope",
 				"to": "view:slice__retry_den.retry_start_scope"
 			},
 			{
@@ -10744,6 +11588,10 @@
 			{
 				"from": "table:slice.retry_start_step",
 				"to": "privileges:slice__retry_den"
+			},
+			{
+				"from": "table:slice.retry_start_step",
+				"to": "view:slice__loader.retry_start_step"
 			},
 			{
 				"from": "table:slice.retry_start_step",
@@ -10772,6 +11620,10 @@
 			{
 				"from": "table:slice.retry_steadfast_input",
 				"to": "publication:__live_slice_wzkq6p2yii"
+			},
+			{
+				"from": "table:slice.retry_steadfast_input",
+				"to": "view:slice__loader.retry_steadfast_input"
 			},
 			{
 				"from": "table:slice.retry_steadfast_input",
@@ -10871,6 +11723,10 @@
 			},
 			{
 				"from": "table:slice.retry_step",
+				"to": "view:slice__loader.retry_step"
+			},
+			{
+				"from": "table:slice.retry_step",
 				"to": "view:slice__retry_den.retry_step"
 			},
 			{
@@ -10900,6 +11756,10 @@
 			{
 				"from": "table:slice.retry_within",
 				"to": "replicaIdentity:slice.retry_within"
+			},
+			{
+				"from": "table:slice.retry_within",
+				"to": "view:slice__loader.retry_within"
 			},
 			{
 				"from": "table:slice.retry_within",
@@ -10967,6 +11827,10 @@
 			},
 			{
 				"from": "table:slice.sync_admitted",
+				"to": "view:slice__loader.sync_admitted"
+			},
+			{
+				"from": "table:slice.sync_admitted",
 				"to": "view:slice__sync_den.sync_admitted"
 			},
 			{
@@ -10992,6 +11856,10 @@
 			{
 				"from": "table:slice.sync_build_input",
 				"to": "publication:__live_slice_wzkq6p2yii"
+			},
+			{
+				"from": "table:slice.sync_build_input",
+				"to": "view:slice__loader.sync_build_input"
 			},
 			{
 				"from": "table:slice.sync_build_input",
@@ -11067,6 +11935,10 @@
 			},
 			{
 				"from": "table:slice.sync_claim",
+				"to": "view:slice__loader.sync_claim"
+			},
+			{
+				"from": "table:slice.sync_claim",
 				"to": "view:slice__sync_den.sync_claim"
 			},
 			{
@@ -11092,6 +11964,10 @@
 			{
 				"from": "table:slice.sync_copy_input",
 				"to": "publication:__live_slice_wzkq6p2yii"
+			},
+			{
+				"from": "table:slice.sync_copy_input",
+				"to": "view:slice__loader.sync_copy_input"
 			},
 			{
 				"from": "table:slice.sync_copy_input",
@@ -11175,6 +12051,10 @@
 			},
 			{
 				"from": "table:slice.sync_due",
+				"to": "view:slice__loader.sync_due"
+			},
+			{
+				"from": "table:slice.sync_due",
 				"to": "view:slice__sync_den.sync_due"
 			},
 			{
@@ -11215,6 +12095,10 @@
 			},
 			{
 				"from": "table:slice.sync_exclusive_key",
+				"to": "view:slice__loader.sync_exclusive_key"
+			},
+			{
+				"from": "table:slice.sync_exclusive_key",
 				"to": "view:slice__sync_den.sync_exclusive_key"
 			},
 			{
@@ -11228,6 +12112,10 @@
 			{
 				"from": "table:slice.sync_exhausted",
 				"to": "privileges:slice__sync_den"
+			},
+			{
+				"from": "table:slice.sync_exhausted",
+				"to": "view:slice__loader.sync_exhausted"
 			},
 			{
 				"from": "table:slice.sync_exhausted",
@@ -11256,6 +12144,10 @@
 			{
 				"from": "table:slice.sync_failed",
 				"to": "privileges:slice__sync_den"
+			},
+			{
+				"from": "table:slice.sync_failed",
+				"to": "view:slice__loader.sync_failed"
 			},
 			{
 				"from": "table:slice.sync_failed",
@@ -11291,6 +12183,10 @@
 			},
 			{
 				"from": "table:slice.sync_finish",
+				"to": "view:slice__loader.sync_finish"
+			},
+			{
+				"from": "table:slice.sync_finish",
 				"to": "view:slice__sync_den.sync_finish"
 			},
 			{
@@ -11312,6 +12208,10 @@
 			{
 				"from": "table:slice.sync_gold_input",
 				"to": "publication:__live_slice_wzkq6p2yii"
+			},
+			{
+				"from": "table:slice.sync_gold_input",
+				"to": "view:slice__loader.sync_gold_input"
 			},
 			{
 				"from": "table:slice.sync_gold_input",
@@ -11383,6 +12283,10 @@
 			},
 			{
 				"from": "table:slice.sync_refusal",
+				"to": "view:slice__loader.sync_refusal"
+			},
+			{
+				"from": "table:slice.sync_refusal",
 				"to": "view:slice__sync_den.sync_refusal"
 			},
 			{
@@ -11451,6 +12355,10 @@
 			},
 			{
 				"from": "table:slice.sync_retry",
+				"to": "view:slice__loader.sync_retry"
+			},
+			{
+				"from": "table:slice.sync_retry",
 				"to": "view:slice__sync_den.sync_retry"
 			},
 			{
@@ -11472,6 +12380,10 @@
 			{
 				"from": "table:slice.sync_root",
 				"to": "publication:__live_slice_wzkq6p2yii"
+			},
+			{
+				"from": "table:slice.sync_root",
+				"to": "view:slice__loader.sync_root"
 			},
 			{
 				"from": "table:slice.sync_root",
@@ -11531,6 +12443,10 @@
 			},
 			{
 				"from": "table:slice.sync_scope",
+				"to": "view:slice__loader.sync_scope"
+			},
+			{
+				"from": "table:slice.sync_scope",
 				"to": "view:slice__sync_den.sync_scope"
 			},
 			{
@@ -11563,6 +12479,10 @@
 			},
 			{
 				"from": "table:slice.sync_skipped",
+				"to": "view:slice__loader.sync_skipped"
+			},
+			{
+				"from": "table:slice.sync_skipped",
 				"to": "view:slice__sync_den.sync_skipped"
 			},
 			{
@@ -11587,6 +12507,10 @@
 			},
 			{
 				"from": "table:slice.sync_start_scope",
+				"to": "view:slice__loader.sync_start_scope"
+			},
+			{
+				"from": "table:slice.sync_start_scope",
 				"to": "view:slice__sync_den.sync_start_scope"
 			},
 			{
@@ -11608,6 +12532,10 @@
 			{
 				"from": "table:slice.sync_start_step",
 				"to": "privileges:slice__sync_den"
+			},
+			{
+				"from": "table:slice.sync_start_step",
+				"to": "view:slice__loader.sync_start_step"
 			},
 			{
 				"from": "table:slice.sync_start_step",
@@ -11671,6 +12599,10 @@
 			},
 			{
 				"from": "table:slice.sync_step",
+				"to": "view:slice__loader.sync_step"
+			},
+			{
+				"from": "table:slice.sync_step",
 				"to": "view:slice__sync_den.sync_step"
 			},
 			{
@@ -11692,6 +12624,10 @@
 			{
 				"from": "table:slice.sync_sync_run_input",
 				"to": "publication:__live_slice_wzkq6p2yii"
+			},
+			{
+				"from": "table:slice.sync_sync_run_input",
+				"to": "view:slice__loader.sync_sync_run_input"
 			},
 			{
 				"from": "table:slice.sync_sync_run_input",
@@ -11724,6 +12660,10 @@
 			{
 				"from": "table:slice.sync_within",
 				"to": "replicaIdentity:slice.sync_within"
+			},
+			{
+				"from": "table:slice.sync_within",
+				"to": "view:slice__loader.sync_within"
 			},
 			{
 				"from": "table:slice.sync_within",
@@ -12182,11 +13122,27 @@
 				"to": "privileges:slice__loader"
 			},
 			{
+				"from": "view:slice__loader.chain_chain_run_input",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.chain_claim",
+				"to": "privileges:slice__loader"
+			},
+			{
 				"from": "view:slice__loader.chain_done",
 				"to": "privileges:slice__loader"
 			},
 			{
 				"from": "view:slice__loader.chain_due",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.chain_exhausted",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.chain_failed",
 				"to": "privileges:slice__loader"
 			},
 			{
@@ -12226,7 +13182,15 @@
 				"to": "privileges:slice__loader"
 			},
 			{
+				"from": "view:slice__loader.chain_refusal",
+				"to": "privileges:slice__loader"
+			},
+			{
 				"from": "view:slice__loader.chain_result",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.chain_retry",
 				"to": "privileges:slice__loader"
 			},
 			{
@@ -12235,6 +13199,10 @@
 			},
 			{
 				"from": "view:slice__loader.chain_scope",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.chain_skipped",
 				"to": "privileges:slice__loader"
 			},
 			{
@@ -12262,7 +13230,39 @@
 				"to": "privileges:slice__loader"
 			},
 			{
+				"from": "view:slice__loader.fan_admitted",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_batch_input",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_claim",
+				"to": "privileges:slice__loader"
+			},
+			{
 				"from": "view:slice__loader.fan_done",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_due",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_exhausted",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_failed",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_fan_run_input",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_finish",
 				"to": "privileges:slice__loader"
 			},
 			{
@@ -12270,11 +13270,51 @@
 				"to": "privileges:slice__loader"
 			},
 			{
+				"from": "view:slice__loader.fan_refusal",
+				"to": "privileges:slice__loader"
+			},
+			{
 				"from": "view:slice__loader.fan_result",
 				"to": "privileges:slice__loader"
 			},
 			{
+				"from": "view:slice__loader.fan_retry",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_root",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_scope",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_skipped",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_square_input",
+				"to": "privileges:slice__loader"
+			},
+			{
 				"from": "view:slice__loader.fan_square_output",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_start_scope",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_start_step",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_step",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.fan_within",
 				"to": "privileges:slice__loader"
 			},
 			{
@@ -12286,7 +13326,19 @@
 				"to": "privileges:slice__loader"
 			},
 			{
+				"from": "view:slice__loader.retry_admitted",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_brittle_input",
+				"to": "privileges:slice__loader"
+			},
+			{
 				"from": "view:slice__loader.retry_brittle_output",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_claim",
 				"to": "privileges:slice__loader"
 			},
 			{
@@ -12294,7 +13346,31 @@
 				"to": "privileges:slice__loader"
 			},
 			{
+				"from": "view:slice__loader.retry_due",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_exhausted",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_failed",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_finish",
+				"to": "privileges:slice__loader"
+			},
+			{
 				"from": "view:slice__loader.retry_held",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_ladders_input",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_refusal",
 				"to": "privileges:slice__loader"
 			},
 			{
@@ -12302,7 +13378,43 @@
 				"to": "privileges:slice__loader"
 			},
 			{
+				"from": "view:slice__loader.retry_retry",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_root",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_scope",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_skipped",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_start_scope",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_start_step",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_steadfast_input",
+				"to": "privileges:slice__loader"
+			},
+			{
 				"from": "view:slice__loader.retry_steadfast_output",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_step",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.retry_within",
 				"to": "privileges:slice__loader"
 			},
 			{
@@ -12310,7 +13422,23 @@
 				"to": "privileges:slice__loader"
 			},
 			{
+				"from": "view:slice__loader.sync_admitted",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_build_input",
+				"to": "privileges:slice__loader"
+			},
+			{
 				"from": "view:slice__loader.sync_build_output",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_claim",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_copy_input",
 				"to": "privileges:slice__loader"
 			},
 			{
@@ -12322,11 +13450,75 @@
 				"to": "privileges:slice__loader"
 			},
 			{
+				"from": "view:slice__loader.sync_due",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_exclusive_key",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_exhausted",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_failed",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_finish",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_gold_input",
+				"to": "privileges:slice__loader"
+			},
+			{
 				"from": "view:slice__loader.sync_held",
 				"to": "privileges:slice__loader"
 			},
 			{
+				"from": "view:slice__loader.sync_refusal",
+				"to": "privileges:slice__loader"
+			},
+			{
 				"from": "view:slice__loader.sync_result",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_retry",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_root",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_scope",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_skipped",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_start_scope",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_start_step",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_step",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_sync_run_input",
+				"to": "privileges:slice__loader"
+			},
+			{
+				"from": "view:slice__loader.sync_within",
 				"to": "privileges:slice__loader"
 			},
 			{
@@ -22756,6 +23948,36 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["scope","feed","feed_name","pages"],"kind":"createView","name":{"name":"chain_chain_run_input","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_chain_run_input","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"feed","kind":"column","table":"r1"}},{"expr":{"expr":{"array":{"args":[],"distinct":false,"fn":{"kind":"qualified","name":"__chain_chain_run_input_feed_names_byxgsvzik7","schema":"slice"},"kind":"call","orderBy":[],"star":false,"withinGroup":[]},"index":{"kind":"binary","left":{"column":"feed","kind":"column","table":"r1"},"op":"+","right":{"kind":"literal","type":{"array":false,"kind":"builtin","name":"integer"},"value":{"kind":"int","value":"~n:1"}}},"kind":"subscript"},"kind":"cast","type":{"array":false,"kind":"builtin","name":"text"}}},{"expr":{"column":"pages","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.chain_chain_run_input",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","attempt","holder","until"],"kind":"createView","name":{"name":"chain_claim","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_claim","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}},{"expr":{"column":"holder","kind":"column","table":"r1"}},{"expr":{"column":"until","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.chain_claim",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["step"],"kind":"createView","name":{"name":"chain_done","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_done","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.chain_done",
@@ -22774,6 +23996,36 @@
 					{"barrier":false,"columns":["step","at"],"kind":"createView","name":{"name":"chain_due","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_due","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"at","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.chain_due",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","attempts"],"kind":"createView","name":{"name":"chain_exhausted","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_exhausted","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempts","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.chain_exhausted",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step"],"kind":"createView","name":{"name":"chain_failed","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_failed","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.chain_failed",
 				"kind": "view",
 				"phase": "publish",
 				"reasons": [
@@ -22921,9 +24173,39 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["step","law"],"kind":"createView","name":{"name":"chain_refusal","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_refusal","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"law","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.chain_refusal",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["step","outcome","outcome_name"],"kind":"createView","name":{"name":"chain_result","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_result","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"outcome","kind":"column","table":"r1"}},{"expr":{"expr":{"array":{"args":[],"distinct":false,"fn":{"kind":"qualified","name":"__chain_outcome_names_vo4tgqx6qh","schema":"slice"},"kind":"call","orderBy":[],"star":false,"withinGroup":[]},"index":{"kind":"binary","left":{"column":"outcome","kind":"column","table":"r1"},"op":"+","right":{"kind":"literal","type":{"array":false,"kind":"builtin","name":"integer"},"value":{"kind":"int","value":"~n:1"}}},"kind":"subscript"},"kind":"cast","type":{"array":false,"kind":"builtin","name":"text"}}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.chain_result",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","attempt","at","spent"],"kind":"createView","name":{"name":"chain_retry","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_retry","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}},{"expr":{"column":"at","kind":"column","table":"r1"}},{"expr":{"column":"spent","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.chain_retry",
 				"kind": "view",
 				"phase": "publish",
 				"reasons": [
@@ -22954,6 +24236,21 @@
 					{"barrier":false,"columns":["scope","kind","kind_name"],"kind":"createView","name":{"name":"chain_scope","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_scope","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"kind","kind":"column","table":"r1"}},{"expr":{"expr":{"array":{"args":[],"distinct":false,"fn":{"kind":"qualified","name":"__chain_join_names_hvq3dwjqow","schema":"slice"},"kind":"call","orderBy":[],"star":false,"withinGroup":[]},"index":{"kind":"binary","left":{"column":"kind","kind":"column","table":"r1"},"op":"+","right":{"kind":"literal","type":{"array":false,"kind":"builtin","name":"integer"},"value":{"kind":"int","value":"~n:1"}}},"kind":"subscript"},"kind":"cast","type":{"array":false,"kind":"builtin","name":"text"}}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.chain_scope",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","by"],"kind":"createView","name":{"name":"chain_skipped","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"chain_skipped","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"by","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.chain_skipped",
 				"kind": "view",
 				"phase": "publish",
 				"reasons": [
@@ -23056,9 +24353,129 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["scope"],"kind":"createView","name":{"name":"fan_admitted","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_admitted","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_admitted",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","batch","size"],"kind":"createView","name":{"name":"fan_batch_input","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_batch_input","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"batch","kind":"column","table":"r1"}},{"expr":{"column":"size","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_batch_input",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","attempt","holder","until"],"kind":"createView","name":{"name":"fan_claim","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_claim","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}},{"expr":{"column":"holder","kind":"column","table":"r1"}},{"expr":{"column":"until","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_claim",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["step"],"kind":"createView","name":{"name":"fan_done","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_done","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.fan_done",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","at"],"kind":"createView","name":{"name":"fan_due","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_due","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"at","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_due",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","attempts"],"kind":"createView","name":{"name":"fan_exhausted","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_exhausted","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempts","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_exhausted",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step"],"kind":"createView","name":{"name":"fan_failed","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_failed","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_failed",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","batch","size"],"kind":"createView","name":{"name":"fan_fan_run_input","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_fan_run_input","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"batch","kind":"column","table":"r1"}},{"expr":{"column":"size","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_fan_run_input",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","step"],"kind":"createView","name":{"name":"fan_finish","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_finish","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_finish",
 				"kind": "view",
 				"phase": "publish",
 				"reasons": [
@@ -23086,6 +24503,21 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["step","law"],"kind":"createView","name":{"name":"fan_refusal","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_refusal","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"law","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_refusal",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["step","outcome","outcome_name"],"kind":"createView","name":{"name":"fan_result","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_result","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"outcome","kind":"column","table":"r1"}},{"expr":{"expr":{"array":{"args":[],"distinct":false,"fn":{"kind":"qualified","name":"__fan_outcome_names_7pbhseigfj","schema":"slice"},"kind":"call","orderBy":[],"star":false,"withinGroup":[]},"index":{"kind":"binary","left":{"column":"outcome","kind":"column","table":"r1"},"op":"+","right":{"kind":"literal","type":{"array":false,"kind":"builtin","name":"integer"},"value":{"kind":"int","value":"~n:1"}}},"kind":"subscript"},"kind":"cast","type":{"array":false,"kind":"builtin","name":"text"}}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.fan_result",
@@ -23101,9 +24533,144 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["step","attempt","at","spent"],"kind":"createView","name":{"name":"fan_retry","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_retry","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}},{"expr":{"column":"at","kind":"column","table":"r1"}},{"expr":{"column":"spent","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_retry",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","key","at"],"kind":"createView","name":{"name":"fan_root","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_root","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"key","kind":"column","table":"r1"}},{"expr":{"column":"at","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_root",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","kind","kind_name"],"kind":"createView","name":{"name":"fan_scope","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_scope","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"kind","kind":"column","table":"r1"}},{"expr":{"expr":{"array":{"args":[],"distinct":false,"fn":{"kind":"qualified","name":"__fan_join_names_gct5lzhdqo","schema":"slice"},"kind":"call","orderBy":[],"star":false,"withinGroup":[]},"index":{"kind":"binary","left":{"column":"kind","kind":"column","table":"r1"},"op":"+","right":{"kind":"literal","type":{"array":false,"kind":"builtin","name":"integer"},"value":{"kind":"int","value":"~n:1"}}},"kind":"subscript"},"kind":"cast","type":{"array":false,"kind":"builtin","name":"text"}}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_scope",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","by"],"kind":"createView","name":{"name":"fan_skipped","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_skipped","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"by","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_skipped",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","batch","n"],"kind":"createView","name":{"name":"fan_square_input","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_square_input","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"batch","kind":"column","table":"r1"}},{"expr":{"column":"n","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_square_input",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["step","square"],"kind":"createView","name":{"name":"fan_square_output","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_square_output","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"square","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.fan_square_output",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","ordinal","child"],"kind":"createView","name":{"name":"fan_start_scope","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_start_scope","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"ordinal","kind":"column","table":"r1"}},{"expr":{"column":"child","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_start_scope",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","ordinal","step"],"kind":"createView","name":{"name":"fan_start_step","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_start_step","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"ordinal","kind":"column","table":"r1"}},{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_start_step",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","kind","kind_name","scope"],"kind":"createView","name":{"name":"fan_step","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_step","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"kind","kind":"column","table":"r1"}},{"expr":{"expr":{"array":{"args":[],"distinct":false,"fn":{"kind":"qualified","name":"__fan_kind_names_gikh2fxf2t","schema":"slice"},"kind":"call","orderBy":[],"star":false,"withinGroup":[]},"index":{"kind":"binary","left":{"column":"kind","kind":"column","table":"r1"},"op":"+","right":{"kind":"literal","type":{"array":false,"kind":"builtin","name":"integer"},"value":{"kind":"int","value":"~n:1"}}},"kind":"subscript"},"kind":"cast","type":{"array":false,"kind":"builtin","name":"text"}}},{"expr":{"column":"scope","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_step",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","parent"],"kind":"createView","name":{"name":"fan_within","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"fan_within","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"parent","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.fan_within",
 				"kind": "view",
 				"phase": "publish",
 				"reasons": [
@@ -23146,9 +24713,54 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["scope"],"kind":"createView","name":{"name":"retry_admitted","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_admitted","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_admitted",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","key"],"kind":"createView","name":{"name":"retry_brittle_input","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_brittle_input","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"key","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_brittle_input",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["step","key"],"kind":"createView","name":{"name":"retry_brittle_output","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_brittle_output","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"key","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.retry_brittle_output",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","attempt","holder","until"],"kind":"createView","name":{"name":"retry_claim","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_claim","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}},{"expr":{"column":"holder","kind":"column","table":"r1"}},{"expr":{"column":"until","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_claim",
 				"kind": "view",
 				"phase": "publish",
 				"reasons": [
@@ -23176,9 +24788,99 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["step","at"],"kind":"createView","name":{"name":"retry_due","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_due","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"at","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_due",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","attempts"],"kind":"createView","name":{"name":"retry_exhausted","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_exhausted","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempts","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_exhausted",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step"],"kind":"createView","name":{"name":"retry_failed","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_failed","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_failed",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","step"],"kind":"createView","name":{"name":"retry_finish","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_finish","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_finish",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["step","attempt"],"kind":"createView","name":{"name":"retry_held","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_held","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.retry_held",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","steadfast","brittle"],"kind":"createView","name":{"name":"retry_ladders_input","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_ladders_input","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"steadfast","kind":"column","table":"r1"}},{"expr":{"column":"brittle","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_ladders_input",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","law"],"kind":"createView","name":{"name":"retry_refusal","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_refusal","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"law","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_refusal",
 				"kind": "view",
 				"phase": "publish",
 				"reasons": [
@@ -23206,9 +24908,144 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["step","attempt","at","spent"],"kind":"createView","name":{"name":"retry_retry","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_retry","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}},{"expr":{"column":"at","kind":"column","table":"r1"}},{"expr":{"column":"spent","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_retry",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","key","at"],"kind":"createView","name":{"name":"retry_root","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_root","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"key","kind":"column","table":"r1"}},{"expr":{"column":"at","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_root",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","kind","kind_name"],"kind":"createView","name":{"name":"retry_scope","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_scope","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"kind","kind":"column","table":"r1"}},{"expr":{"expr":{"array":{"args":[],"distinct":false,"fn":{"kind":"qualified","name":"__retry_join_names_st4whng7gb","schema":"slice"},"kind":"call","orderBy":[],"star":false,"withinGroup":[]},"index":{"kind":"binary","left":{"column":"kind","kind":"column","table":"r1"},"op":"+","right":{"kind":"literal","type":{"array":false,"kind":"builtin","name":"integer"},"value":{"kind":"int","value":"~n:1"}}},"kind":"subscript"},"kind":"cast","type":{"array":false,"kind":"builtin","name":"text"}}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_scope",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","by"],"kind":"createView","name":{"name":"retry_skipped","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_skipped","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"by","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_skipped",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","ordinal","child"],"kind":"createView","name":{"name":"retry_start_scope","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_start_scope","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"ordinal","kind":"column","table":"r1"}},{"expr":{"column":"child","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_start_scope",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","ordinal","step"],"kind":"createView","name":{"name":"retry_start_step","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_start_step","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"ordinal","kind":"column","table":"r1"}},{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_start_step",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","key"],"kind":"createView","name":{"name":"retry_steadfast_input","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_steadfast_input","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"key","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_steadfast_input",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["step","key"],"kind":"createView","name":{"name":"retry_steadfast_output","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_steadfast_output","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"key","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.retry_steadfast_output",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","kind","kind_name","scope"],"kind":"createView","name":{"name":"retry_step","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_step","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"kind","kind":"column","table":"r1"}},{"expr":{"expr":{"array":{"args":[],"distinct":false,"fn":{"kind":"qualified","name":"__retry_kind_names_pa363dov7n","schema":"slice"},"kind":"call","orderBy":[],"star":false,"withinGroup":[]},"index":{"kind":"binary","left":{"column":"kind","kind":"column","table":"r1"},"op":"+","right":{"kind":"literal","type":{"array":false,"kind":"builtin","name":"integer"},"value":{"kind":"int","value":"~n:1"}}},"kind":"subscript"},"kind":"cast","type":{"array":false,"kind":"builtin","name":"text"}}},{"expr":{"column":"scope","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_step",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","parent"],"kind":"createView","name":{"name":"retry_within","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"retry_within","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"parent","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.retry_within",
 				"kind": "view",
 				"phase": "publish",
 				"reasons": [
@@ -23236,9 +25073,69 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["scope"],"kind":"createView","name":{"name":"sync_admitted","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_admitted","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_admitted",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","build"],"kind":"createView","name":{"name":"sync_build_input","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_build_input","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"build","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_build_input",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["step","build"],"kind":"createView","name":{"name":"sync_build_output","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_build_output","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"build","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.sync_build_output",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","attempt","holder","until"],"kind":"createView","name":{"name":"sync_claim","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_claim","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}},{"expr":{"column":"holder","kind":"column","table":"r1"}},{"expr":{"column":"until","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_claim",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","relation","run"],"kind":"createView","name":{"name":"sync_copy_input","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_copy_input","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"relation","kind":"column","table":"r1"}},{"expr":{"column":"run","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_copy_input",
 				"kind": "view",
 				"phase": "publish",
 				"reasons": [
@@ -23281,6 +25178,96 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["step","at"],"kind":"createView","name":{"name":"sync_due","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_due","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"at","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_due",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","key","id"],"kind":"createView","name":{"name":"sync_exclusive_key","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_exclusive_key","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"key","kind":"column","table":"r1"}},{"expr":{"column":"id","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_exclusive_key",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","attempts"],"kind":"createView","name":{"name":"sync_exhausted","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_exhausted","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempts","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_exhausted",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step"],"kind":"createView","name":{"name":"sync_failed","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_failed","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_failed",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","step"],"kind":"createView","name":{"name":"sync_finish","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_finish","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_finish",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","build"],"kind":"createView","name":{"name":"sync_gold_input","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_gold_input","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"build","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_gold_input",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["step","attempt"],"kind":"createView","name":{"name":"sync_held","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_held","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.sync_held",
@@ -23296,9 +25283,159 @@
 			},
 			{
 				"ddl": [
+					{"barrier":false,"columns":["step","law"],"kind":"createView","name":{"name":"sync_refusal","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_refusal","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"law","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_refusal",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
 					{"barrier":false,"columns":["step","outcome","outcome_name"],"kind":"createView","name":{"name":"sync_result","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_result","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"outcome","kind":"column","table":"r1"}},{"expr":{"expr":{"array":{"args":[],"distinct":false,"fn":{"kind":"qualified","name":"__sync_outcome_names_xzb4y4xgki","schema":"slice"},"kind":"call","orderBy":[],"star":false,"withinGroup":[]},"index":{"kind":"binary","left":{"column":"outcome","kind":"column","table":"r1"},"op":"+","right":{"kind":"literal","type":{"array":false,"kind":"builtin","name":"integer"},"value":{"kind":"int","value":"~n:1"}}},"kind":"subscript"},"kind":"cast","type":{"array":false,"kind":"builtin","name":"text"}}}]},"kind":"select","orderBy":[]}}
 				],
 				"ident": "view:slice__loader.sync_result",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","attempt","at","spent"],"kind":"createView","name":{"name":"sync_retry","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_retry","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"attempt","kind":"column","table":"r1"}},{"expr":{"column":"at","kind":"column","table":"r1"}},{"expr":{"column":"spent","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_retry",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","key","at"],"kind":"createView","name":{"name":"sync_root","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_root","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"key","kind":"column","table":"r1"}},{"expr":{"column":"at","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_root",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","kind","kind_name"],"kind":"createView","name":{"name":"sync_scope","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_scope","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"kind","kind":"column","table":"r1"}},{"expr":{"expr":{"array":{"args":[],"distinct":false,"fn":{"kind":"qualified","name":"__sync_join_names_cci5jmwoiz","schema":"slice"},"kind":"call","orderBy":[],"star":false,"withinGroup":[]},"index":{"kind":"binary","left":{"column":"kind","kind":"column","table":"r1"},"op":"+","right":{"kind":"literal","type":{"array":false,"kind":"builtin","name":"integer"},"value":{"kind":"int","value":"~n:1"}}},"kind":"subscript"},"kind":"cast","type":{"array":false,"kind":"builtin","name":"text"}}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_scope",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","by"],"kind":"createView","name":{"name":"sync_skipped","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_skipped","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"by","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_skipped",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","ordinal","child"],"kind":"createView","name":{"name":"sync_start_scope","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_start_scope","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"ordinal","kind":"column","table":"r1"}},{"expr":{"column":"child","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_start_scope",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","ordinal","step"],"kind":"createView","name":{"name":"sync_start_step","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_start_step","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"ordinal","kind":"column","table":"r1"}},{"expr":{"column":"step","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_start_step",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["step","kind","kind_name","scope"],"kind":"createView","name":{"name":"sync_step","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_step","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"step","kind":"column","table":"r1"}},{"expr":{"column":"kind","kind":"column","table":"r1"}},{"expr":{"expr":{"array":{"args":[],"distinct":false,"fn":{"kind":"qualified","name":"__sync_kind_names_4mra6ojpzm","schema":"slice"},"kind":"call","orderBy":[],"star":false,"withinGroup":[]},"index":{"kind":"binary","left":{"column":"kind","kind":"column","table":"r1"},"op":"+","right":{"kind":"literal","type":{"array":false,"kind":"builtin","name":"integer"},"value":{"kind":"int","value":"~n:1"}}},"kind":"subscript"},"kind":"cast","type":{"array":false,"kind":"builtin","name":"text"}}},{"expr":{"column":"scope","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_step",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","relation","run"],"kind":"createView","name":{"name":"sync_sync_run_input","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_sync_run_input","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"relation","kind":"column","table":"r1"}},{"expr":{"column":"run","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_sync_run_input",
+				"kind": "view",
+				"phase": "publish",
+				"reasons": [
+					{
+						"kind": "enforcement",
+						"of": "role loader"
+					}
+				],
+				"state": "needed"
+			},
+			{
+				"ddl": [
+					{"barrier":false,"columns":["scope","parent"],"kind":"createView","name":{"name":"sync_within","schema":"slice__loader"},"query":{"body":{"distinct":false,"from":[{"alias":"r1","kind":"table","table":{"name":"sync_within","schema":"slice"}}],"groupBy":[],"kind":"core","rows":"keyed","targets":[{"expr":{"column":"scope","kind":"column","table":"r1"}},{"expr":{"column":"parent","kind":"column","table":"r1"}}]},"kind":"select","orderBy":[]}}
+				],
+				"ident": "view:slice__loader.sync_within",
 				"kind": "view",
 				"phase": "publish",
 				"reasons": [
@@ -24313,7 +26450,7 @@
 				"ddl": [
 					{"kind":"grant","on":{"kind":"SCHEMA","names":["slice","slice__loader"]},"privileges":["USAGE"],"to":[{"kind":"role","name":"slice__loader"}]},
 					{"kind":"grant","on":{"kind":"DOMAIN","names":[{"name":"__domain_jotafzuj2i","schema":"slice"},{"name":"__domain_gfw43vigph","schema":"slice"},{"name":"__domain_mxhao3k6ss","schema":"slice"},{"name":"chain_chain_run_input_feed","schema":"slice"},{"name":"chain_join","schema":"slice"},{"name":"chain_kind","schema":"slice"},{"name":"chain_ordered_input_feed","schema":"slice"},{"name":"chain_outcome","schema":"slice"},{"name":"chain_page_input_feed","schema":"slice"},{"name":"chain_pausable","schema":"slice"},{"name":"fan_join","schema":"slice"},{"name":"fan_kind","schema":"slice"},{"name":"fan_outcome","schema":"slice"},{"name":"fan_pausable","schema":"slice"},{"name":"fan_resource","schema":"slice"},{"name":"feed","schema":"slice"},{"name":"retry_join","schema":"slice"},{"name":"retry_kind","schema":"slice"},{"name":"retry_outcome","schema":"slice"},{"name":"retry_pausable","schema":"slice"},{"name":"sync_join","schema":"slice"},{"name":"sync_kind","schema":"slice"},{"name":"sync_outcome","schema":"slice"},{"name":"sync_pausable","schema":"slice"},{"name":"__text_t4rwovzmqj","schema":"slice"}]},"privileges":["USAGE"],"to":[{"kind":"role","name":"slice__loader"}]},
-					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"built","schema":"slice__loader"},{"name":"chain_admitted","schema":"slice__loader"},{"name":"chain_done","schema":"slice__loader"},{"name":"chain_due","schema":"slice__loader"},{"name":"chain_finish","schema":"slice__loader"},{"name":"chain_held","schema":"slice__loader"},{"name":"chain_next","schema":"slice__loader"},{"name":"chain_ordered_input","schema":"slice__loader"},{"name":"chain_page_input","schema":"slice__loader"},{"name":"chain_page_input_after","schema":"slice__loader"},{"name":"chain_page_output","schema":"slice__loader"},{"name":"chain_page_output_next","schema":"slice__loader"},{"name":"chain_page_read","schema":"slice__loader"},{"name":"chain_result","schema":"slice__loader"},{"name":"chain_root","schema":"slice__loader"},{"name":"chain_scope","schema":"slice__loader"},{"name":"chain_start_scope","schema":"slice__loader"},{"name":"chain_start_step","schema":"slice__loader"},{"name":"chain_step","schema":"slice__loader"},{"name":"chain_within","schema":"slice__loader"},{"name":"copied","schema":"slice__loader"},{"name":"cursor","schema":"slice__loader"},{"name":"fan_done","schema":"slice__loader"},{"name":"fan_held","schema":"slice__loader"},{"name":"fan_result","schema":"slice__loader"},{"name":"fan_square_output","schema":"slice__loader"},{"name":"item","schema":"slice__loader"},{"name":"order","schema":"slice__loader"},{"name":"retry_brittle_output","schema":"slice__loader"},{"name":"retry_done","schema":"slice__loader"},{"name":"retry_held","schema":"slice__loader"},{"name":"retry_result","schema":"slice__loader"},{"name":"retry_steadfast_output","schema":"slice__loader"},{"name":"settled","schema":"slice__loader"},{"name":"sync_build_output","schema":"slice__loader"},{"name":"sync_copy_output","schema":"slice__loader"},{"name":"sync_done","schema":"slice__loader"},{"name":"sync_held","schema":"slice__loader"},{"name":"sync_result","schema":"slice__loader"},{"name":"tally","schema":"slice__loader"},{"name":"weight","schema":"slice__loader"}]},"privileges":["SELECT"],"to":[{"kind":"role","name":"slice__loader"}]},
+					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"built","schema":"slice__loader"},{"name":"chain_admitted","schema":"slice__loader"},{"name":"chain_chain_run_input","schema":"slice__loader"},{"name":"chain_claim","schema":"slice__loader"},{"name":"chain_done","schema":"slice__loader"},{"name":"chain_due","schema":"slice__loader"},{"name":"chain_exhausted","schema":"slice__loader"},{"name":"chain_failed","schema":"slice__loader"},{"name":"chain_finish","schema":"slice__loader"},{"name":"chain_held","schema":"slice__loader"},{"name":"chain_next","schema":"slice__loader"},{"name":"chain_ordered_input","schema":"slice__loader"},{"name":"chain_page_input","schema":"slice__loader"},{"name":"chain_page_input_after","schema":"slice__loader"},{"name":"chain_page_output","schema":"slice__loader"},{"name":"chain_page_output_next","schema":"slice__loader"},{"name":"chain_page_read","schema":"slice__loader"},{"name":"chain_refusal","schema":"slice__loader"},{"name":"chain_result","schema":"slice__loader"},{"name":"chain_retry","schema":"slice__loader"},{"name":"chain_root","schema":"slice__loader"},{"name":"chain_scope","schema":"slice__loader"},{"name":"chain_skipped","schema":"slice__loader"},{"name":"chain_start_scope","schema":"slice__loader"},{"name":"chain_start_step","schema":"slice__loader"},{"name":"chain_step","schema":"slice__loader"},{"name":"chain_within","schema":"slice__loader"},{"name":"copied","schema":"slice__loader"},{"name":"cursor","schema":"slice__loader"},{"name":"fan_admitted","schema":"slice__loader"},{"name":"fan_batch_input","schema":"slice__loader"},{"name":"fan_claim","schema":"slice__loader"},{"name":"fan_done","schema":"slice__loader"},{"name":"fan_due","schema":"slice__loader"},{"name":"fan_exhausted","schema":"slice__loader"},{"name":"fan_failed","schema":"slice__loader"},{"name":"fan_fan_run_input","schema":"slice__loader"},{"name":"fan_finish","schema":"slice__loader"},{"name":"fan_held","schema":"slice__loader"},{"name":"fan_refusal","schema":"slice__loader"},{"name":"fan_result","schema":"slice__loader"},{"name":"fan_retry","schema":"slice__loader"},{"name":"fan_root","schema":"slice__loader"},{"name":"fan_scope","schema":"slice__loader"},{"name":"fan_skipped","schema":"slice__loader"},{"name":"fan_square_input","schema":"slice__loader"},{"name":"fan_square_output","schema":"slice__loader"},{"name":"fan_start_scope","schema":"slice__loader"},{"name":"fan_start_step","schema":"slice__loader"},{"name":"fan_step","schema":"slice__loader"},{"name":"fan_within","schema":"slice__loader"},{"name":"item","schema":"slice__loader"},{"name":"order","schema":"slice__loader"},{"name":"retry_admitted","schema":"slice__loader"},{"name":"retry_brittle_input","schema":"slice__loader"},{"name":"retry_brittle_output","schema":"slice__loader"},{"name":"retry_claim","schema":"slice__loader"},{"name":"retry_done","schema":"slice__loader"},{"name":"retry_due","schema":"slice__loader"},{"name":"retry_exhausted","schema":"slice__loader"},{"name":"retry_failed","schema":"slice__loader"},{"name":"retry_finish","schema":"slice__loader"},{"name":"retry_held","schema":"slice__loader"},{"name":"retry_ladders_input","schema":"slice__loader"},{"name":"retry_refusal","schema":"slice__loader"},{"name":"retry_result","schema":"slice__loader"},{"name":"retry_retry","schema":"slice__loader"},{"name":"retry_root","schema":"slice__loader"},{"name":"retry_scope","schema":"slice__loader"},{"name":"retry_skipped","schema":"slice__loader"},{"name":"retry_start_scope","schema":"slice__loader"},{"name":"retry_start_step","schema":"slice__loader"},{"name":"retry_steadfast_input","schema":"slice__loader"},{"name":"retry_steadfast_output","schema":"slice__loader"},{"name":"retry_step","schema":"slice__loader"},{"name":"retry_within","schema":"slice__loader"},{"name":"settled","schema":"slice__loader"},{"name":"sync_admitted","schema":"slice__loader"},{"name":"sync_build_input","schema":"slice__loader"},{"name":"sync_build_output","schema":"slice__loader"},{"name":"sync_claim","schema":"slice__loader"},{"name":"sync_copy_input","schema":"slice__loader"},{"name":"sync_copy_output","schema":"slice__loader"},{"name":"sync_done","schema":"slice__loader"},{"name":"sync_due","schema":"slice__loader"},{"name":"sync_exclusive_key","schema":"slice__loader"},{"name":"sync_exhausted","schema":"slice__loader"},{"name":"sync_failed","schema":"slice__loader"},{"name":"sync_finish","schema":"slice__loader"},{"name":"sync_gold_input","schema":"slice__loader"},{"name":"sync_held","schema":"slice__loader"},{"name":"sync_refusal","schema":"slice__loader"},{"name":"sync_result","schema":"slice__loader"},{"name":"sync_retry","schema":"slice__loader"},{"name":"sync_root","schema":"slice__loader"},{"name":"sync_scope","schema":"slice__loader"},{"name":"sync_skipped","schema":"slice__loader"},{"name":"sync_start_scope","schema":"slice__loader"},{"name":"sync_start_step","schema":"slice__loader"},{"name":"sync_step","schema":"slice__loader"},{"name":"sync_sync_run_input","schema":"slice__loader"},{"name":"sync_within","schema":"slice__loader"},{"name":"tally","schema":"slice__loader"},{"name":"weight","schema":"slice__loader"}]},"privileges":["SELECT"],"to":[{"kind":"role","name":"slice__loader"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"built","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__loader"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_admitted","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__loader"}]},
 					{"kind":"grant","on":{"kind":"TABLE","names":[{"name":"chain_done","schema":"slice"}]},"privileges":["SELECT","INSERT"],"to":[{"kind":"role","name":"slice__loader"}]},
@@ -24542,7 +26679,7 @@
 		],
 		"publicRevokes": [
 			{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"SCHEMA","names":["slice","slice__auditor","slice__loader","slice__chain_den","slice__chain_seats","slice__fan_den","slice__fan_seats","slice__retry_den","slice__retry_seats","slice__sync_den","slice__sync_seats"]},"privileges":["ALL"]},
-			{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"TABLE","names":[{"name":"audit","schema":"slice"},{"name":"built","schema":"slice"},{"name":"chain_admitted","schema":"slice"},{"name":"chain_chain_run_input","schema":"slice"},{"name":"chain_claim","schema":"slice"},{"name":"chain_done","schema":"slice"},{"name":"chain_due","schema":"slice"},{"name":"chain_exhausted","schema":"slice"},{"name":"chain_failed","schema":"slice"},{"name":"chain_finish","schema":"slice"},{"name":"chain_held","schema":"slice"},{"name":"chain_next","schema":"slice"},{"name":"chain_ordered_input","schema":"slice"},{"name":"chain_page_input","schema":"slice"},{"name":"chain_page_input_after","schema":"slice"},{"name":"chain_page_output","schema":"slice"},{"name":"chain_page_output_next","schema":"slice"},{"name":"chain_page_read","schema":"slice"},{"name":"chain_paused","schema":"slice"},{"name":"chain_refusal","schema":"slice"},{"name":"chain_result","schema":"slice"},{"name":"chain_retry","schema":"slice"},{"name":"chain_root","schema":"slice"},{"name":"chain_scope","schema":"slice"},{"name":"chain_skipped","schema":"slice"},{"name":"chain_start_scope","schema":"slice"},{"name":"chain_start_step","schema":"slice"},{"name":"chain_step","schema":"slice"},{"name":"chain_within","schema":"slice"},{"name":"copied","schema":"slice"},{"name":"cursor","schema":"slice"},{"name":"fan_admitted","schema":"slice"},{"name":"fan_batch_input","schema":"slice"},{"name":"fan_claim","schema":"slice"},{"name":"fan_done","schema":"slice"},{"name":"fan_due","schema":"slice"},{"name":"fan_exhausted","schema":"slice"},{"name":"fan_failed","schema":"slice"},{"name":"fan_fan_run_input","schema":"slice"},{"name":"fan_finish","schema":"slice"},{"name":"fan_held","schema":"slice"},{"name":"fan_hold","schema":"slice"},{"name":"fan_paused","schema":"slice"},{"name":"fan_refusal","schema":"slice"},{"name":"fan_result","schema":"slice"},{"name":"fan_retry","schema":"slice"},{"name":"fan_root","schema":"slice"},{"name":"fan_scope","schema":"slice"},{"name":"fan_seat","schema":"slice"},{"name":"fan_skipped","schema":"slice"},{"name":"fan_square_input","schema":"slice"},{"name":"fan_square_output","schema":"slice"},{"name":"fan_start_scope","schema":"slice"},{"name":"fan_start_step","schema":"slice"},{"name":"fan_step","schema":"slice"},{"name":"fan_within","schema":"slice"},{"name":"item","schema":"slice"},{"name":"order","schema":"slice"},{"name":"retry_admitted","schema":"slice"},{"name":"retry_brittle_input","schema":"slice"},{"name":"retry_brittle_output","schema":"slice"},{"name":"retry_claim","schema":"slice"},{"name":"retry_done","schema":"slice"},{"name":"retry_due","schema":"slice"},{"name":"retry_exhausted","schema":"slice"},{"name":"retry_failed","schema":"slice"},{"name":"retry_finish","schema":"slice"},{"name":"retry_held","schema":"slice"},{"name":"retry_ladders_input","schema":"slice"},{"name":"retry_paused","schema":"slice"},{"name":"retry_refusal","schema":"slice"},{"name":"retry_result","schema":"slice"},{"name":"retry_retry","schema":"slice"},{"name":"retry_root","schema":"slice"},{"name":"retry_scope","schema":"slice"},{"name":"retry_skipped","schema":"slice"},{"name":"retry_start_scope","schema":"slice"},{"name":"retry_start_step","schema":"slice"},{"name":"retry_steadfast_input","schema":"slice"},{"name":"retry_steadfast_output","schema":"slice"},{"name":"retry_step","schema":"slice"},{"name":"retry_within","schema":"slice"},{"name":"settled","schema":"slice"},{"name":"sync_admitted","schema":"slice"},{"name":"sync_build_input","schema":"slice"},{"name":"sync_build_output","schema":"slice"},{"name":"sync_claim","schema":"slice"},{"name":"sync_copy_input","schema":"slice"},{"name":"sync_copy_output","schema":"slice"},{"name":"sync_done","schema":"slice"},{"name":"sync_due","schema":"slice"},{"name":"sync_exclusive","schema":"slice"},{"name":"sync_exclusive_key","schema":"slice"},{"name":"sync_exhausted","schema":"slice"},{"name":"sync_failed","schema":"slice"},{"name":"sync_finish","schema":"slice"},{"name":"sync_gold_input","schema":"slice"},{"name":"sync_held","schema":"slice"},{"name":"sync_paused","schema":"slice"},{"name":"sync_refusal","schema":"slice"},{"name":"sync_result","schema":"slice"},{"name":"sync_retry","schema":"slice"},{"name":"sync_root","schema":"slice"},{"name":"sync_scope","schema":"slice"},{"name":"sync_skipped","schema":"slice"},{"name":"sync_start_scope","schema":"slice"},{"name":"sync_start_step","schema":"slice"},{"name":"sync_step","schema":"slice"},{"name":"sync_sync_run_input","schema":"slice"},{"name":"sync_within","schema":"slice"},{"name":"tally","schema":"slice"},{"name":"weight","schema":"slice"},{"name":"audit","schema":"slice__auditor"},{"name":"built","schema":"slice__auditor"},{"name":"chain_admitted","schema":"slice__auditor"},{"name":"chain_chain_run_input","schema":"slice__auditor"},{"name":"chain_claim","schema":"slice__auditor"},{"name":"chain_finish","schema":"slice__auditor"},{"name":"chain_next","schema":"slice__auditor"},{"name":"chain_ordered_input","schema":"slice__auditor"},{"name":"chain_page_input","schema":"slice__auditor"},{"name":"chain_page_input_after","schema":"slice__auditor"},{"name":"chain_page_output","schema":"slice__auditor"},{"name":"chain_page_output_next","schema":"slice__auditor"},{"name":"chain_page_read","schema":"slice__auditor"},{"name":"chain_result","schema":"slice__auditor"},{"name":"chain_root","schema":"slice__auditor"},{"name":"chain_scope","schema":"slice__auditor"},{"name":"chain_start_scope","schema":"slice__auditor"},{"name":"chain_start_step","schema":"slice__auditor"},{"name":"chain_step","schema":"slice__auditor"},{"name":"chain_within","schema":"slice__auditor"},{"name":"copied","schema":"slice__auditor"},{"name":"cursor","schema":"slice__auditor"},{"name":"fan_admitted","schema":"slice__auditor"},{"name":"fan_batch_input","schema":"slice__auditor"},{"name":"fan_fan_run_input","schema":"slice__auditor"},{"name":"fan_finish","schema":"slice__auditor"},{"name":"fan_result","schema":"slice__auditor"},{"name":"fan_root","schema":"slice__auditor"},{"name":"fan_scope","schema":"slice__auditor"},{"name":"fan_square_input","schema":"slice__auditor"},{"name":"fan_square_output","schema":"slice__auditor"},{"name":"fan_start_scope","schema":"slice__auditor"},{"name":"fan_start_step","schema":"slice__auditor"},{"name":"fan_step","schema":"slice__auditor"},{"name":"fan_within","schema":"slice__auditor"},{"name":"item","schema":"slice__auditor"},{"name":"order","schema":"slice__auditor"},{"name":"retry_claim","schema":"slice__auditor"},{"name":"retry_exhausted","schema":"slice__auditor"},{"name":"retry_result","schema":"slice__auditor"},{"name":"retry_step","schema":"slice__auditor"},{"name":"settled","schema":"slice__auditor"},{"name":"sync_admitted","schema":"slice__auditor"},{"name":"sync_finish","schema":"slice__auditor"},{"name":"sync_result","schema":"slice__auditor"},{"name":"sync_scope","schema":"slice__auditor"},{"name":"sync_skipped","schema":"slice__auditor"},{"name":"tally","schema":"slice__auditor"},{"name":"weight","schema":"slice__auditor"},{"name":"built","schema":"slice__loader"},{"name":"chain_admitted","schema":"slice__loader"},{"name":"chain_done","schema":"slice__loader"},{"name":"chain_due","schema":"slice__loader"},{"name":"chain_finish","schema":"slice__loader"},{"name":"chain_held","schema":"slice__loader"},{"name":"chain_next","schema":"slice__loader"},{"name":"chain_ordered_input","schema":"slice__loader"},{"name":"chain_page_input","schema":"slice__loader"},{"name":"chain_page_input_after","schema":"slice__loader"},{"name":"chain_page_output","schema":"slice__loader"},{"name":"chain_page_output_next","schema":"slice__loader"},{"name":"chain_page_read","schema":"slice__loader"},{"name":"chain_result","schema":"slice__loader"},{"name":"chain_root","schema":"slice__loader"},{"name":"chain_scope","schema":"slice__loader"},{"name":"chain_start_scope","schema":"slice__loader"},{"name":"chain_start_step","schema":"slice__loader"},{"name":"chain_step","schema":"slice__loader"},{"name":"chain_within","schema":"slice__loader"},{"name":"copied","schema":"slice__loader"},{"name":"cursor","schema":"slice__loader"},{"name":"fan_done","schema":"slice__loader"},{"name":"fan_held","schema":"slice__loader"},{"name":"fan_result","schema":"slice__loader"},{"name":"fan_square_output","schema":"slice__loader"},{"name":"item","schema":"slice__loader"},{"name":"order","schema":"slice__loader"},{"name":"retry_brittle_output","schema":"slice__loader"},{"name":"retry_done","schema":"slice__loader"},{"name":"retry_held","schema":"slice__loader"},{"name":"retry_result","schema":"slice__loader"},{"name":"retry_steadfast_output","schema":"slice__loader"},{"name":"settled","schema":"slice__loader"},{"name":"sync_build_output","schema":"slice__loader"},{"name":"sync_copy_output","schema":"slice__loader"},{"name":"sync_done","schema":"slice__loader"},{"name":"sync_held","schema":"slice__loader"},{"name":"sync_result","schema":"slice__loader"},{"name":"tally","schema":"slice__loader"},{"name":"weight","schema":"slice__loader"},{"name":"chain_admitted","schema":"slice__chain_den"},{"name":"chain_chain_run_input","schema":"slice__chain_den"},{"name":"chain_claim","schema":"slice__chain_den"},{"name":"chain_done","schema":"slice__chain_den"},{"name":"chain_due","schema":"slice__chain_den"},{"name":"chain_exhausted","schema":"slice__chain_den"},{"name":"chain_failed","schema":"slice__chain_den"},{"name":"chain_finish","schema":"slice__chain_den"},{"name":"chain_held","schema":"slice__chain_den"},{"name":"chain_next","schema":"slice__chain_den"},{"name":"chain_ordered_input","schema":"slice__chain_den"},{"name":"chain_page_input","schema":"slice__chain_den"},{"name":"chain_page_input_after","schema":"slice__chain_den"},{"name":"chain_page_output","schema":"slice__chain_den"},{"name":"chain_page_output_next","schema":"slice__chain_den"},{"name":"chain_page_read","schema":"slice__chain_den"},{"name":"chain_refusal","schema":"slice__chain_den"},{"name":"chain_result","schema":"slice__chain_den"},{"name":"chain_retry","schema":"slice__chain_den"},{"name":"chain_root","schema":"slice__chain_den"},{"name":"chain_scope","schema":"slice__chain_den"},{"name":"chain_skipped","schema":"slice__chain_den"},{"name":"chain_start_scope","schema":"slice__chain_den"},{"name":"chain_start_step","schema":"slice__chain_den"},{"name":"chain_step","schema":"slice__chain_den"},{"name":"chain_within","schema":"slice__chain_den"},{"name":"chain_paused","schema":"slice__chain_seats"},{"name":"fan_admitted","schema":"slice__fan_den"},{"name":"fan_batch_input","schema":"slice__fan_den"},{"name":"fan_claim","schema":"slice__fan_den"},{"name":"fan_done","schema":"slice__fan_den"},{"name":"fan_due","schema":"slice__fan_den"},{"name":"fan_exhausted","schema":"slice__fan_den"},{"name":"fan_failed","schema":"slice__fan_den"},{"name":"fan_fan_run_input","schema":"slice__fan_den"},{"name":"fan_finish","schema":"slice__fan_den"},{"name":"fan_held","schema":"slice__fan_den"},{"name":"fan_refusal","schema":"slice__fan_den"},{"name":"fan_result","schema":"slice__fan_den"},{"name":"fan_retry","schema":"slice__fan_den"},{"name":"fan_root","schema":"slice__fan_den"},{"name":"fan_scope","schema":"slice__fan_den"},{"name":"fan_skipped","schema":"slice__fan_den"},{"name":"fan_square_input","schema":"slice__fan_den"},{"name":"fan_square_output","schema":"slice__fan_den"},{"name":"fan_start_scope","schema":"slice__fan_den"},{"name":"fan_start_step","schema":"slice__fan_den"},{"name":"fan_step","schema":"slice__fan_den"},{"name":"fan_within","schema":"slice__fan_den"},{"name":"fan_hold","schema":"slice__fan_seats"},{"name":"fan_paused","schema":"slice__fan_seats"},{"name":"fan_seat","schema":"slice__fan_seats"},{"name":"retry_admitted","schema":"slice__retry_den"},{"name":"retry_brittle_input","schema":"slice__retry_den"},{"name":"retry_brittle_output","schema":"slice__retry_den"},{"name":"retry_claim","schema":"slice__retry_den"},{"name":"retry_done","schema":"slice__retry_den"},{"name":"retry_due","schema":"slice__retry_den"},{"name":"retry_exhausted","schema":"slice__retry_den"},{"name":"retry_failed","schema":"slice__retry_den"},{"name":"retry_finish","schema":"slice__retry_den"},{"name":"retry_held","schema":"slice__retry_den"},{"name":"retry_ladders_input","schema":"slice__retry_den"},{"name":"retry_refusal","schema":"slice__retry_den"},{"name":"retry_result","schema":"slice__retry_den"},{"name":"retry_retry","schema":"slice__retry_den"},{"name":"retry_root","schema":"slice__retry_den"},{"name":"retry_scope","schema":"slice__retry_den"},{"name":"retry_skipped","schema":"slice__retry_den"},{"name":"retry_start_scope","schema":"slice__retry_den"},{"name":"retry_start_step","schema":"slice__retry_den"},{"name":"retry_steadfast_input","schema":"slice__retry_den"},{"name":"retry_steadfast_output","schema":"slice__retry_den"},{"name":"retry_step","schema":"slice__retry_den"},{"name":"retry_within","schema":"slice__retry_den"},{"name":"retry_paused","schema":"slice__retry_seats"},{"name":"chain_result","schema":"slice__sync_den"},{"name":"chain_step","schema":"slice__sync_den"},{"name":"sync_admitted","schema":"slice__sync_den"},{"name":"sync_build_input","schema":"slice__sync_den"},{"name":"sync_build_output","schema":"slice__sync_den"},{"name":"sync_claim","schema":"slice__sync_den"},{"name":"sync_copy_input","schema":"slice__sync_den"},{"name":"sync_copy_output","schema":"slice__sync_den"},{"name":"sync_done","schema":"slice__sync_den"},{"name":"sync_due","schema":"slice__sync_den"},{"name":"sync_exclusive_key","schema":"slice__sync_den"},{"name":"sync_exhausted","schema":"slice__sync_den"},{"name":"sync_failed","schema":"slice__sync_den"},{"name":"sync_finish","schema":"slice__sync_den"},{"name":"sync_gold_input","schema":"slice__sync_den"},{"name":"sync_held","schema":"slice__sync_den"},{"name":"sync_refusal","schema":"slice__sync_den"},{"name":"sync_result","schema":"slice__sync_den"},{"name":"sync_retry","schema":"slice__sync_den"},{"name":"sync_root","schema":"slice__sync_den"},{"name":"sync_scope","schema":"slice__sync_den"},{"name":"sync_skipped","schema":"slice__sync_den"},{"name":"sync_start_scope","schema":"slice__sync_den"},{"name":"sync_start_step","schema":"slice__sync_den"},{"name":"sync_step","schema":"slice__sync_den"},{"name":"sync_sync_run_input","schema":"slice__sync_den"},{"name":"sync_within","schema":"slice__sync_den"},{"name":"sync_exclusive","schema":"slice__sync_seats"},{"name":"sync_paused","schema":"slice__sync_seats"}]},"privileges":["ALL"]},
+			{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"TABLE","names":[{"name":"audit","schema":"slice"},{"name":"built","schema":"slice"},{"name":"chain_admitted","schema":"slice"},{"name":"chain_chain_run_input","schema":"slice"},{"name":"chain_claim","schema":"slice"},{"name":"chain_done","schema":"slice"},{"name":"chain_due","schema":"slice"},{"name":"chain_exhausted","schema":"slice"},{"name":"chain_failed","schema":"slice"},{"name":"chain_finish","schema":"slice"},{"name":"chain_held","schema":"slice"},{"name":"chain_next","schema":"slice"},{"name":"chain_ordered_input","schema":"slice"},{"name":"chain_page_input","schema":"slice"},{"name":"chain_page_input_after","schema":"slice"},{"name":"chain_page_output","schema":"slice"},{"name":"chain_page_output_next","schema":"slice"},{"name":"chain_page_read","schema":"slice"},{"name":"chain_paused","schema":"slice"},{"name":"chain_refusal","schema":"slice"},{"name":"chain_result","schema":"slice"},{"name":"chain_retry","schema":"slice"},{"name":"chain_root","schema":"slice"},{"name":"chain_scope","schema":"slice"},{"name":"chain_skipped","schema":"slice"},{"name":"chain_start_scope","schema":"slice"},{"name":"chain_start_step","schema":"slice"},{"name":"chain_step","schema":"slice"},{"name":"chain_within","schema":"slice"},{"name":"copied","schema":"slice"},{"name":"cursor","schema":"slice"},{"name":"fan_admitted","schema":"slice"},{"name":"fan_batch_input","schema":"slice"},{"name":"fan_claim","schema":"slice"},{"name":"fan_done","schema":"slice"},{"name":"fan_due","schema":"slice"},{"name":"fan_exhausted","schema":"slice"},{"name":"fan_failed","schema":"slice"},{"name":"fan_fan_run_input","schema":"slice"},{"name":"fan_finish","schema":"slice"},{"name":"fan_held","schema":"slice"},{"name":"fan_hold","schema":"slice"},{"name":"fan_paused","schema":"slice"},{"name":"fan_refusal","schema":"slice"},{"name":"fan_result","schema":"slice"},{"name":"fan_retry","schema":"slice"},{"name":"fan_root","schema":"slice"},{"name":"fan_scope","schema":"slice"},{"name":"fan_seat","schema":"slice"},{"name":"fan_skipped","schema":"slice"},{"name":"fan_square_input","schema":"slice"},{"name":"fan_square_output","schema":"slice"},{"name":"fan_start_scope","schema":"slice"},{"name":"fan_start_step","schema":"slice"},{"name":"fan_step","schema":"slice"},{"name":"fan_within","schema":"slice"},{"name":"item","schema":"slice"},{"name":"order","schema":"slice"},{"name":"retry_admitted","schema":"slice"},{"name":"retry_brittle_input","schema":"slice"},{"name":"retry_brittle_output","schema":"slice"},{"name":"retry_claim","schema":"slice"},{"name":"retry_done","schema":"slice"},{"name":"retry_due","schema":"slice"},{"name":"retry_exhausted","schema":"slice"},{"name":"retry_failed","schema":"slice"},{"name":"retry_finish","schema":"slice"},{"name":"retry_held","schema":"slice"},{"name":"retry_ladders_input","schema":"slice"},{"name":"retry_paused","schema":"slice"},{"name":"retry_refusal","schema":"slice"},{"name":"retry_result","schema":"slice"},{"name":"retry_retry","schema":"slice"},{"name":"retry_root","schema":"slice"},{"name":"retry_scope","schema":"slice"},{"name":"retry_skipped","schema":"slice"},{"name":"retry_start_scope","schema":"slice"},{"name":"retry_start_step","schema":"slice"},{"name":"retry_steadfast_input","schema":"slice"},{"name":"retry_steadfast_output","schema":"slice"},{"name":"retry_step","schema":"slice"},{"name":"retry_within","schema":"slice"},{"name":"settled","schema":"slice"},{"name":"sync_admitted","schema":"slice"},{"name":"sync_build_input","schema":"slice"},{"name":"sync_build_output","schema":"slice"},{"name":"sync_claim","schema":"slice"},{"name":"sync_copy_input","schema":"slice"},{"name":"sync_copy_output","schema":"slice"},{"name":"sync_done","schema":"slice"},{"name":"sync_due","schema":"slice"},{"name":"sync_exclusive","schema":"slice"},{"name":"sync_exclusive_key","schema":"slice"},{"name":"sync_exhausted","schema":"slice"},{"name":"sync_failed","schema":"slice"},{"name":"sync_finish","schema":"slice"},{"name":"sync_gold_input","schema":"slice"},{"name":"sync_held","schema":"slice"},{"name":"sync_paused","schema":"slice"},{"name":"sync_refusal","schema":"slice"},{"name":"sync_result","schema":"slice"},{"name":"sync_retry","schema":"slice"},{"name":"sync_root","schema":"slice"},{"name":"sync_scope","schema":"slice"},{"name":"sync_skipped","schema":"slice"},{"name":"sync_start_scope","schema":"slice"},{"name":"sync_start_step","schema":"slice"},{"name":"sync_step","schema":"slice"},{"name":"sync_sync_run_input","schema":"slice"},{"name":"sync_within","schema":"slice"},{"name":"tally","schema":"slice"},{"name":"weight","schema":"slice"},{"name":"audit","schema":"slice__auditor"},{"name":"built","schema":"slice__auditor"},{"name":"chain_admitted","schema":"slice__auditor"},{"name":"chain_chain_run_input","schema":"slice__auditor"},{"name":"chain_claim","schema":"slice__auditor"},{"name":"chain_finish","schema":"slice__auditor"},{"name":"chain_next","schema":"slice__auditor"},{"name":"chain_ordered_input","schema":"slice__auditor"},{"name":"chain_page_input","schema":"slice__auditor"},{"name":"chain_page_input_after","schema":"slice__auditor"},{"name":"chain_page_output","schema":"slice__auditor"},{"name":"chain_page_output_next","schema":"slice__auditor"},{"name":"chain_page_read","schema":"slice__auditor"},{"name":"chain_result","schema":"slice__auditor"},{"name":"chain_root","schema":"slice__auditor"},{"name":"chain_scope","schema":"slice__auditor"},{"name":"chain_start_scope","schema":"slice__auditor"},{"name":"chain_start_step","schema":"slice__auditor"},{"name":"chain_step","schema":"slice__auditor"},{"name":"chain_within","schema":"slice__auditor"},{"name":"copied","schema":"slice__auditor"},{"name":"cursor","schema":"slice__auditor"},{"name":"fan_admitted","schema":"slice__auditor"},{"name":"fan_batch_input","schema":"slice__auditor"},{"name":"fan_fan_run_input","schema":"slice__auditor"},{"name":"fan_finish","schema":"slice__auditor"},{"name":"fan_result","schema":"slice__auditor"},{"name":"fan_root","schema":"slice__auditor"},{"name":"fan_scope","schema":"slice__auditor"},{"name":"fan_square_input","schema":"slice__auditor"},{"name":"fan_square_output","schema":"slice__auditor"},{"name":"fan_start_scope","schema":"slice__auditor"},{"name":"fan_start_step","schema":"slice__auditor"},{"name":"fan_step","schema":"slice__auditor"},{"name":"fan_within","schema":"slice__auditor"},{"name":"item","schema":"slice__auditor"},{"name":"order","schema":"slice__auditor"},{"name":"retry_claim","schema":"slice__auditor"},{"name":"retry_exhausted","schema":"slice__auditor"},{"name":"retry_result","schema":"slice__auditor"},{"name":"retry_step","schema":"slice__auditor"},{"name":"settled","schema":"slice__auditor"},{"name":"sync_admitted","schema":"slice__auditor"},{"name":"sync_finish","schema":"slice__auditor"},{"name":"sync_result","schema":"slice__auditor"},{"name":"sync_scope","schema":"slice__auditor"},{"name":"sync_skipped","schema":"slice__auditor"},{"name":"tally","schema":"slice__auditor"},{"name":"weight","schema":"slice__auditor"},{"name":"built","schema":"slice__loader"},{"name":"chain_admitted","schema":"slice__loader"},{"name":"chain_chain_run_input","schema":"slice__loader"},{"name":"chain_claim","schema":"slice__loader"},{"name":"chain_done","schema":"slice__loader"},{"name":"chain_due","schema":"slice__loader"},{"name":"chain_exhausted","schema":"slice__loader"},{"name":"chain_failed","schema":"slice__loader"},{"name":"chain_finish","schema":"slice__loader"},{"name":"chain_held","schema":"slice__loader"},{"name":"chain_next","schema":"slice__loader"},{"name":"chain_ordered_input","schema":"slice__loader"},{"name":"chain_page_input","schema":"slice__loader"},{"name":"chain_page_input_after","schema":"slice__loader"},{"name":"chain_page_output","schema":"slice__loader"},{"name":"chain_page_output_next","schema":"slice__loader"},{"name":"chain_page_read","schema":"slice__loader"},{"name":"chain_refusal","schema":"slice__loader"},{"name":"chain_result","schema":"slice__loader"},{"name":"chain_retry","schema":"slice__loader"},{"name":"chain_root","schema":"slice__loader"},{"name":"chain_scope","schema":"slice__loader"},{"name":"chain_skipped","schema":"slice__loader"},{"name":"chain_start_scope","schema":"slice__loader"},{"name":"chain_start_step","schema":"slice__loader"},{"name":"chain_step","schema":"slice__loader"},{"name":"chain_within","schema":"slice__loader"},{"name":"copied","schema":"slice__loader"},{"name":"cursor","schema":"slice__loader"},{"name":"fan_admitted","schema":"slice__loader"},{"name":"fan_batch_input","schema":"slice__loader"},{"name":"fan_claim","schema":"slice__loader"},{"name":"fan_done","schema":"slice__loader"},{"name":"fan_due","schema":"slice__loader"},{"name":"fan_exhausted","schema":"slice__loader"},{"name":"fan_failed","schema":"slice__loader"},{"name":"fan_fan_run_input","schema":"slice__loader"},{"name":"fan_finish","schema":"slice__loader"},{"name":"fan_held","schema":"slice__loader"},{"name":"fan_refusal","schema":"slice__loader"},{"name":"fan_result","schema":"slice__loader"},{"name":"fan_retry","schema":"slice__loader"},{"name":"fan_root","schema":"slice__loader"},{"name":"fan_scope","schema":"slice__loader"},{"name":"fan_skipped","schema":"slice__loader"},{"name":"fan_square_input","schema":"slice__loader"},{"name":"fan_square_output","schema":"slice__loader"},{"name":"fan_start_scope","schema":"slice__loader"},{"name":"fan_start_step","schema":"slice__loader"},{"name":"fan_step","schema":"slice__loader"},{"name":"fan_within","schema":"slice__loader"},{"name":"item","schema":"slice__loader"},{"name":"order","schema":"slice__loader"},{"name":"retry_admitted","schema":"slice__loader"},{"name":"retry_brittle_input","schema":"slice__loader"},{"name":"retry_brittle_output","schema":"slice__loader"},{"name":"retry_claim","schema":"slice__loader"},{"name":"retry_done","schema":"slice__loader"},{"name":"retry_due","schema":"slice__loader"},{"name":"retry_exhausted","schema":"slice__loader"},{"name":"retry_failed","schema":"slice__loader"},{"name":"retry_finish","schema":"slice__loader"},{"name":"retry_held","schema":"slice__loader"},{"name":"retry_ladders_input","schema":"slice__loader"},{"name":"retry_refusal","schema":"slice__loader"},{"name":"retry_result","schema":"slice__loader"},{"name":"retry_retry","schema":"slice__loader"},{"name":"retry_root","schema":"slice__loader"},{"name":"retry_scope","schema":"slice__loader"},{"name":"retry_skipped","schema":"slice__loader"},{"name":"retry_start_scope","schema":"slice__loader"},{"name":"retry_start_step","schema":"slice__loader"},{"name":"retry_steadfast_input","schema":"slice__loader"},{"name":"retry_steadfast_output","schema":"slice__loader"},{"name":"retry_step","schema":"slice__loader"},{"name":"retry_within","schema":"slice__loader"},{"name":"settled","schema":"slice__loader"},{"name":"sync_admitted","schema":"slice__loader"},{"name":"sync_build_input","schema":"slice__loader"},{"name":"sync_build_output","schema":"slice__loader"},{"name":"sync_claim","schema":"slice__loader"},{"name":"sync_copy_input","schema":"slice__loader"},{"name":"sync_copy_output","schema":"slice__loader"},{"name":"sync_done","schema":"slice__loader"},{"name":"sync_due","schema":"slice__loader"},{"name":"sync_exclusive_key","schema":"slice__loader"},{"name":"sync_exhausted","schema":"slice__loader"},{"name":"sync_failed","schema":"slice__loader"},{"name":"sync_finish","schema":"slice__loader"},{"name":"sync_gold_input","schema":"slice__loader"},{"name":"sync_held","schema":"slice__loader"},{"name":"sync_refusal","schema":"slice__loader"},{"name":"sync_result","schema":"slice__loader"},{"name":"sync_retry","schema":"slice__loader"},{"name":"sync_root","schema":"slice__loader"},{"name":"sync_scope","schema":"slice__loader"},{"name":"sync_skipped","schema":"slice__loader"},{"name":"sync_start_scope","schema":"slice__loader"},{"name":"sync_start_step","schema":"slice__loader"},{"name":"sync_step","schema":"slice__loader"},{"name":"sync_sync_run_input","schema":"slice__loader"},{"name":"sync_within","schema":"slice__loader"},{"name":"tally","schema":"slice__loader"},{"name":"weight","schema":"slice__loader"},{"name":"chain_admitted","schema":"slice__chain_den"},{"name":"chain_chain_run_input","schema":"slice__chain_den"},{"name":"chain_claim","schema":"slice__chain_den"},{"name":"chain_done","schema":"slice__chain_den"},{"name":"chain_due","schema":"slice__chain_den"},{"name":"chain_exhausted","schema":"slice__chain_den"},{"name":"chain_failed","schema":"slice__chain_den"},{"name":"chain_finish","schema":"slice__chain_den"},{"name":"chain_held","schema":"slice__chain_den"},{"name":"chain_next","schema":"slice__chain_den"},{"name":"chain_ordered_input","schema":"slice__chain_den"},{"name":"chain_page_input","schema":"slice__chain_den"},{"name":"chain_page_input_after","schema":"slice__chain_den"},{"name":"chain_page_output","schema":"slice__chain_den"},{"name":"chain_page_output_next","schema":"slice__chain_den"},{"name":"chain_page_read","schema":"slice__chain_den"},{"name":"chain_refusal","schema":"slice__chain_den"},{"name":"chain_result","schema":"slice__chain_den"},{"name":"chain_retry","schema":"slice__chain_den"},{"name":"chain_root","schema":"slice__chain_den"},{"name":"chain_scope","schema":"slice__chain_den"},{"name":"chain_skipped","schema":"slice__chain_den"},{"name":"chain_start_scope","schema":"slice__chain_den"},{"name":"chain_start_step","schema":"slice__chain_den"},{"name":"chain_step","schema":"slice__chain_den"},{"name":"chain_within","schema":"slice__chain_den"},{"name":"chain_paused","schema":"slice__chain_seats"},{"name":"fan_admitted","schema":"slice__fan_den"},{"name":"fan_batch_input","schema":"slice__fan_den"},{"name":"fan_claim","schema":"slice__fan_den"},{"name":"fan_done","schema":"slice__fan_den"},{"name":"fan_due","schema":"slice__fan_den"},{"name":"fan_exhausted","schema":"slice__fan_den"},{"name":"fan_failed","schema":"slice__fan_den"},{"name":"fan_fan_run_input","schema":"slice__fan_den"},{"name":"fan_finish","schema":"slice__fan_den"},{"name":"fan_held","schema":"slice__fan_den"},{"name":"fan_refusal","schema":"slice__fan_den"},{"name":"fan_result","schema":"slice__fan_den"},{"name":"fan_retry","schema":"slice__fan_den"},{"name":"fan_root","schema":"slice__fan_den"},{"name":"fan_scope","schema":"slice__fan_den"},{"name":"fan_skipped","schema":"slice__fan_den"},{"name":"fan_square_input","schema":"slice__fan_den"},{"name":"fan_square_output","schema":"slice__fan_den"},{"name":"fan_start_scope","schema":"slice__fan_den"},{"name":"fan_start_step","schema":"slice__fan_den"},{"name":"fan_step","schema":"slice__fan_den"},{"name":"fan_within","schema":"slice__fan_den"},{"name":"fan_hold","schema":"slice__fan_seats"},{"name":"fan_paused","schema":"slice__fan_seats"},{"name":"fan_seat","schema":"slice__fan_seats"},{"name":"retry_admitted","schema":"slice__retry_den"},{"name":"retry_brittle_input","schema":"slice__retry_den"},{"name":"retry_brittle_output","schema":"slice__retry_den"},{"name":"retry_claim","schema":"slice__retry_den"},{"name":"retry_done","schema":"slice__retry_den"},{"name":"retry_due","schema":"slice__retry_den"},{"name":"retry_exhausted","schema":"slice__retry_den"},{"name":"retry_failed","schema":"slice__retry_den"},{"name":"retry_finish","schema":"slice__retry_den"},{"name":"retry_held","schema":"slice__retry_den"},{"name":"retry_ladders_input","schema":"slice__retry_den"},{"name":"retry_refusal","schema":"slice__retry_den"},{"name":"retry_result","schema":"slice__retry_den"},{"name":"retry_retry","schema":"slice__retry_den"},{"name":"retry_root","schema":"slice__retry_den"},{"name":"retry_scope","schema":"slice__retry_den"},{"name":"retry_skipped","schema":"slice__retry_den"},{"name":"retry_start_scope","schema":"slice__retry_den"},{"name":"retry_start_step","schema":"slice__retry_den"},{"name":"retry_steadfast_input","schema":"slice__retry_den"},{"name":"retry_steadfast_output","schema":"slice__retry_den"},{"name":"retry_step","schema":"slice__retry_den"},{"name":"retry_within","schema":"slice__retry_den"},{"name":"retry_paused","schema":"slice__retry_seats"},{"name":"chain_result","schema":"slice__sync_den"},{"name":"chain_step","schema":"slice__sync_den"},{"name":"sync_admitted","schema":"slice__sync_den"},{"name":"sync_build_input","schema":"slice__sync_den"},{"name":"sync_build_output","schema":"slice__sync_den"},{"name":"sync_claim","schema":"slice__sync_den"},{"name":"sync_copy_input","schema":"slice__sync_den"},{"name":"sync_copy_output","schema":"slice__sync_den"},{"name":"sync_done","schema":"slice__sync_den"},{"name":"sync_due","schema":"slice__sync_den"},{"name":"sync_exclusive_key","schema":"slice__sync_den"},{"name":"sync_exhausted","schema":"slice__sync_den"},{"name":"sync_failed","schema":"slice__sync_den"},{"name":"sync_finish","schema":"slice__sync_den"},{"name":"sync_gold_input","schema":"slice__sync_den"},{"name":"sync_held","schema":"slice__sync_den"},{"name":"sync_refusal","schema":"slice__sync_den"},{"name":"sync_result","schema":"slice__sync_den"},{"name":"sync_retry","schema":"slice__sync_den"},{"name":"sync_root","schema":"slice__sync_den"},{"name":"sync_scope","schema":"slice__sync_den"},{"name":"sync_skipped","schema":"slice__sync_den"},{"name":"sync_start_scope","schema":"slice__sync_den"},{"name":"sync_start_step","schema":"slice__sync_den"},{"name":"sync_step","schema":"slice__sync_den"},{"name":"sync_sync_run_input","schema":"slice__sync_den"},{"name":"sync_within","schema":"slice__sync_den"},{"name":"sync_exclusive","schema":"slice__sync_seats"},{"name":"sync_paused","schema":"slice__sync_seats"}]},"privileges":["ALL"]},
 			{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"DOMAIN","names":[{"name":"chain_chain_run_input_feed","schema":"slice"},{"name":"chain_join","schema":"slice"},{"name":"chain_kind","schema":"slice"},{"name":"chain_ordered_input_feed","schema":"slice"},{"name":"chain_outcome","schema":"slice"},{"name":"chain_page_input_feed","schema":"slice"},{"name":"chain_pausable","schema":"slice"},{"name":"fan_join","schema":"slice"},{"name":"fan_kind","schema":"slice"},{"name":"fan_outcome","schema":"slice"},{"name":"fan_pausable","schema":"slice"},{"name":"fan_resource","schema":"slice"},{"name":"feed","schema":"slice"},{"name":"retry_join","schema":"slice"},{"name":"retry_kind","schema":"slice"},{"name":"retry_outcome","schema":"slice"},{"name":"retry_pausable","schema":"slice"},{"name":"sync_join","schema":"slice"},{"name":"sync_kind","schema":"slice"},{"name":"sync_outcome","schema":"slice"},{"name":"sync_pausable","schema":"slice"},{"name":"__text_t4rwovzmqj","schema":"slice"},{"name":"__domain_jotafzuj2i","schema":"slice"},{"name":"__domain_jotafzuj2i","schema":"slice"},{"name":"__domain_mxhao3k6ss","schema":"slice"},{"name":"__domain_jotafzuj2i","schema":"slice"},{"name":"__domain_jotafzuj2i","schema":"slice"},{"name":"__domain_mxhao3k6ss","schema":"slice"},{"name":"__domain_gfw43vigph","schema":"slice"}]},"privileges":["ALL"]},
 			{"from":[{"kind":"PUBLIC"}],"inSchema":"slice","kind":"alterDefaultPrivileges","on":"TABLES","privileges":["ALL"]},
 			{"from":[{"kind":"PUBLIC"}],"inSchema":"slice","kind":"alterDefaultPrivileges","on":"SEQUENCES","privileges":["ALL"]},

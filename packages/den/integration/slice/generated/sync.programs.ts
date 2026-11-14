@@ -1,11 +1,7 @@
-/** The programs den lowered the flow Sync to, over the schema App; `den generate` writes them, and nothing edits them. */
+/** The programs den lowered the flow Sync to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
 import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
-	SyncKind,
-	SyncJoin,
-	SyncOutcome,
-	SyncPausable,
 	SyncScope,
 	SyncRoot,
 	SyncWithin,
@@ -32,7 +28,9 @@ import {
 	SyncCopyOutput,
 	SyncBuildOutput,
 	SyncExclusive,
-	SyncPaused
+	SyncPaused,
+	syncGraph,
+	syncCoordination
 } from "#integration/slice/generated/sync.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
@@ -41,35 +39,7 @@ export const SyncDen = role(
 	App,
 	"sync_den",
 	{
-		SyncKind,
-		SyncJoin,
-		SyncOutcome,
-		SyncPausable,
-		SyncScope,
-		SyncRoot,
-		SyncWithin,
-		SyncExclusiveKey,
-		SyncAdmitted,
-		SyncSkipped,
-		SyncStep,
-		SyncStartStep,
-		SyncStartScope,
-		SyncFinish,
-		SyncDue,
-		SyncClaim,
-		SyncRetry,
-		SyncResult,
-		SyncDone,
-		SyncFailed,
-		SyncHeld,
-		SyncRefusal,
-		SyncExhausted,
-		SyncCopyInput,
-		SyncBuildInput,
-		SyncSyncRunInput,
-		SyncGoldInput,
-		SyncCopyOutput,
-		SyncBuildOutput,
+		...syncGraph.relations,
 		ChainStep: App.relations.ChainStep,
 		ChainResult: App.relations.ChainResult
 	},
@@ -106,15 +76,15 @@ export const SyncDen = role(
 export const SyncSeats = role(
 	App,
 	"sync_seats",
-	{ SyncKind, SyncJoin, SyncOutcome, SyncPausable, SyncExclusive, SyncPaused },
+	{ ...syncCoordination.relations },
 	{ write: ["SyncExclusive", "SyncPaused"] }
 )
 
 export const syncDenPrograms = Object.freeze({
-	syncClaim: ChangeSet.empty(SyncDen)
+	syncClaim: ChangeSet.empty(syncGraph)
 		.insert(SyncClaim, [])
 		.read("held", (delta) =>
-			query(SyncDen)
+			query(syncGraph)
 				.rule((r) => {
 					const { step, attempt, holder } = v(delta.added(SyncClaim), "added")
 					return r
@@ -128,18 +98,18 @@ export const syncDenPrograms = Object.freeze({
 						.find({ step, attempt, holder })
 				})
 		),
-	syncRetry: ChangeSet.empty(SyncDen).insert(SyncRetry, []),
-	syncRefuse: ChangeSet.empty(SyncDen)
+	syncRetry: ChangeSet.empty(syncGraph).insert(SyncRetry, []),
+	syncRefuse: ChangeSet.empty(syncGraph)
 		.insert(SyncResult, [])
 		.insert(SyncFailed, [])
 		.insert(SyncHeld, [])
 		.insert(SyncRefusal, []),
-	syncExhaust: ChangeSet.empty(SyncDen)
+	syncExhaust: ChangeSet.empty(syncGraph)
 		.insert(SyncResult, [])
 		.insert(SyncFailed, [])
 		.insert(SyncHeld, [])
 		.insert(SyncExhausted, []),
-	syncAdmit: ChangeSet.empty(SyncDen)
+	syncAdmit: ChangeSet.empty(syncGraph)
 		.insert(SyncAdmitted, [])
 		.insert(SyncFinish, [])
 		.insert(SyncStartStep, [])
@@ -150,7 +120,7 @@ export const syncDenPrograms = Object.freeze({
 		.insert(SyncWithin, [])
 		.insert(SyncCopyInput, [])
 		.insert(SyncBuildInput, []),
-	syncSkip: ChangeSet.empty(SyncDen).insert(SyncSkipped, []),
+	syncSkip: ChangeSet.empty(syncGraph).insert(SyncSkipped, []),
 	syncSkippedOf: SyncSkipped,
 	syncStepOf: SyncStep,
 	syncResultOf: SyncResult,
@@ -161,21 +131,21 @@ export const syncDenPrograms = Object.freeze({
 	syncAdmittedOf: SyncAdmitted,
 	syncRootOf: SyncRoot,
 	syncExclusiveKeyOf: SyncExclusiveKey,
-	syncClaimsOf: query(SyncDen).rule((r) => {
+	syncClaimsOf: query(syncGraph).rule((r) => {
 		const { step, attempt, holder, until } = v(SyncClaim, "claim")
 		return r
 			.match(SyncClaim, { step, attempt, holder, until })
 			.where(r.eq(step, r.param("step", SyncStep.fields.step)))
 			.find({ step, attempt, holder, until })
 	}),
-	syncRetriesOf: query(SyncDen).rule((r) => {
+	syncRetriesOf: query(syncGraph).rule((r) => {
 		const { step, attempt, at, spent } = v(SyncRetry, "retry")
 		return r
 			.match(SyncRetry, { step, attempt, at, spent })
 			.where(r.eq(step, r.param("step", SyncStep.fields.step)))
 			.find({ step, attempt, at, spent })
 	}),
-	syncUnendedSteps: query(SyncDen).rule((r) => {
+	syncUnendedSteps: query(syncGraph).rule((r) => {
 		const { step, scope } = v(SyncStep, "step")
 		return r
 			.match(SyncStep, { step, scope })
@@ -186,7 +156,7 @@ export const syncDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	syncOpenChildren: query(SyncDen)
+	syncOpenChildren: query(syncGraph)
 		.rule((r) => {
 			const { scope, parent } = v(SyncWithin, "within")
 			return r
@@ -206,7 +176,7 @@ export const syncDenPrograms = Object.freeze({
 				.where(r.eq(parent, r.param("scope", SyncScope.fields.scope)), r.not(SyncResult, { step }))
 				.find({ child: scope })
 		}),
-	syncFinished: query(SyncDen).rule((r) => {
+	syncFinished: query(syncGraph).rule((r) => {
 		const { scope, step } = v(SyncFinish, "finish")
 		return r
 			.match(SyncFinish, { scope, step })
@@ -215,7 +185,7 @@ export const syncDenPrograms = Object.freeze({
 			.find({ step })
 	}),
 	syncPending: deferrable(
-		query(SyncDen).rule((r) => {
+		query(syncGraph).rule((r) => {
 			const { step, kind, scope } = v(SyncStep, "step")
 			return r
 				.match(SyncStep, { step, kind, scope })
@@ -224,7 +194,7 @@ export const syncDenPrograms = Object.freeze({
 		})
 	),
 	syncPendingClaims: deferrable(
-		query(SyncDen).rule((r) => {
+		query(syncGraph).rule((r) => {
 			const { step, attempt, until } = v(SyncClaim, "claim")
 			return r
 				.match(SyncClaim, { step, attempt, until })
@@ -233,7 +203,7 @@ export const syncDenPrograms = Object.freeze({
 		})
 	),
 	syncPendingRetries: deferrable(
-		query(SyncDen).rule((r) => {
+		query(syncGraph).rule((r) => {
 			const { step, attempt, at, spent } = v(SyncRetry, "retry")
 			return r
 				.match(SyncRetry, { step, attempt, at, spent })
@@ -242,13 +212,13 @@ export const syncDenPrograms = Object.freeze({
 		})
 	),
 	syncPendingDues: deferrable(
-		query(SyncDen).rule((r) => {
+		query(syncGraph).rule((r) => {
 			const { step, at } = v(SyncDue, "due")
 			return r.match(SyncDue, { step, at }).where(r.not(SyncResult, { step })).find({ step, at })
 		})
 	),
 	syncRequested: deferrable(
-		query(SyncDen).rule((r) => {
+		query(syncGraph).rule((r) => {
 			const { scope, kind } = v(SyncScope, "scope")
 			return r
 				.match(SyncScope, { scope, kind })
@@ -257,7 +227,7 @@ export const syncDenPrograms = Object.freeze({
 		})
 	),
 	syncRunning: deferrable(
-		query(SyncDen).rule((r) => {
+		query(syncGraph).rule((r) => {
 			const { scope, kind } = v(SyncScope, "scope")
 			const { step } = v(SyncFinish, "finish")
 			return r
@@ -268,19 +238,19 @@ export const syncDenPrograms = Object.freeze({
 		})
 	),
 	syncWithins: deferrable(
-		query(SyncDen).rule((r) => {
+		query(syncGraph).rule((r) => {
 			const { scope, parent } = v(SyncWithin, "syncWithin")
 			return r.match(SyncWithin, { scope, parent }).find({ scope, parent })
 		})
 	),
 	syncRoots: deferrable(
-		query(SyncDen).rule((r) => {
+		query(syncGraph).rule((r) => {
 			const { scope, key, at } = v(SyncRoot, "syncRoot")
 			return r.match(SyncRoot, { scope, key, at }).find({ scope, key, at })
 		})
 	),
 	syncExclusiveKeys: deferrable(
-		query(SyncDen).rule((r) => {
+		query(syncGraph).rule((r) => {
 			const { scope, key, id } = v(SyncExclusiveKey, "syncExclusiveKey")
 			return r.match(SyncExclusiveKey, { scope, key, id }).find({ scope, key, id })
 		})
@@ -297,13 +267,13 @@ export const syncDenPrograms = Object.freeze({
 	syncReadSyncCopyInput: SyncCopyInput,
 	syncReadSyncBuildInput: SyncBuildInput,
 	syncReadSyncSyncRunInput: SyncSyncRunInput,
-	syncRequestSyncRun: ChangeSet.empty(SyncDen)
+	syncRequestSyncRun: ChangeSet.empty(syncGraph)
 		.insert(SyncScope, [])
 		.insert(SyncRoot, [])
 		.insert(SyncExclusiveKey, [])
 		.insert(SyncSyncRunInput, []),
 	syncReadSyncGoldInput: SyncGoldInput,
-	syncRequestGold: ChangeSet.empty(SyncDen)
+	syncRequestGold: ChangeSet.empty(syncGraph)
 		.insert(SyncScope, [])
 		.insert(SyncRoot, [])
 		.insert(SyncGoldInput, [])
@@ -312,18 +282,18 @@ export const syncDenPrograms = Object.freeze({
 export const syncDenWorkload = workload(SyncDen, syncDenPrograms)
 
 export const syncSeatsPrograms = Object.freeze({
-	syncHoldExclusive: ChangeSet.empty(SyncSeats).insert(SyncExclusive, []),
-	syncReleaseExclusive: ChangeSet.empty(SyncSeats).delete(SyncExclusive, []),
+	syncHoldExclusive: ChangeSet.empty(syncCoordination).insert(SyncExclusive, []),
+	syncReleaseExclusive: ChangeSet.empty(syncCoordination).delete(SyncExclusive, []),
 	syncExclusives: deferrable(
-		query(SyncSeats).rule((r) => {
+		query(syncCoordination).rule((r) => {
 			const { kind, key, scope } = v(SyncExclusive, "syncExclusive")
 			return r.match(SyncExclusive, { kind, key, scope }).find({ kind, key, scope })
 		})
 	),
-	syncPause: ChangeSet.empty(SyncSeats).insert(SyncPaused, []),
-	syncResume: ChangeSet.empty(SyncSeats).delete(SyncPaused, []),
+	syncPause: ChangeSet.empty(syncCoordination).insert(SyncPaused, []),
+	syncResume: ChangeSet.empty(syncCoordination).delete(SyncPaused, []),
 	syncPausedAll: deferrable(
-		query(SyncSeats).rule((r) => {
+		query(syncCoordination).rule((r) => {
 			const { target } = v(SyncPaused, "syncPaused")
 			return r.match(SyncPaused, { target }).find({ target })
 		})

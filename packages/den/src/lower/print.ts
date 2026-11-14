@@ -1,3 +1,4 @@
+import { regex } from "arkregex"
 import { Array as Arr, Option, Order, String as Str } from "effect"
 import type {
 	EdgeIR,
@@ -15,12 +16,11 @@ import type {
  * The printer: a lowered flow as three TypeScript modules the app commits beside its schema, which `den generate`
  * writes and which compile with the app's own code.
  *
- * - the fragment: rosters, contracts, relations and laws, plain grizzle values the app spreads into its `schema(...)`,
- *   and the den relations the flow's app role must hold to commit its steps;
- * - the programs: den's role and its coordination role over the app's schema, their programs, and the commits and
- *   declared reads over the flow's app role, written over the app's concrete schema, since grizzle at its pin builds no
- *   program generic over a schema (the seam POROUS replaces with programs over the fragment, and this module with
- *   nothing);
+ * - the fragment: rosters, contracts and relations, and two grizzle fragments the app lists in its `schema(...)`, the
+ *   flow's graph and its coordination group, each with its laws, beside the den relations the flow's app role inserts
+ *   into to commit its steps;
+ * - the programs: den's role's and its coordination role's programs over those fragments, the roles over the app's
+ *   schema that hold them whole and serve them, and the commits, requests and declared reads over the flow's app role;
  * - the binding: the ledger port over the programs' served handles, converting den's values to facts and rows back.
  */
 
@@ -134,6 +134,7 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		...(used("closed") ? ["closedId"] : []),
 		"contained",
 		...(Arr.isReadonlyArrayNonEmpty(l.brands) ? ["contract"] : []),
+		"fragment",
 		"key",
 		...(used("natural") ? ["natural"] : []),
 		"on",
@@ -156,7 +157,9 @@ const naming = (l: Lowered) => {
 	const n = (suffix: string) => `${p}${suffix}`
 	const snake = Str.camelToSnake(Str.uncapitalize(l.prefix))
 	return {
-		fragment: n("Fragment"),
+		graph: n("Graph"),
+		coordination: n("Coordination"),
+		writerInserts: n("Writer"),
 		den: `${l.prefix}Den`,
 		denName: `${snake}_den`,
 		seats: `${l.prefix}Seats`,
@@ -196,12 +199,57 @@ const writerRelationsOf = (l: Lowered): ReadonlyArray<string> => {
 	])
 }
 
-/** The fragment module: the flow's rosters, contracts, relations, laws, and its app role's den relations. */
+/** An identifier of a printed module's text, for the names the module uses. */
+const IDENTIFIER = regex("[A-Za-z_$][A-Za-z0-9_$]*", "g")
+
+/** Every identifier of a module's text. */
+const identifiersOf = (text: string): ReadonlySet<string> =>
+	new Set(Arr.map(Arr.fromIterable(Str.matchAll(IDENTIFIER)(text)), (found) => found[0]))
+
+/**
+ * The rosters the binding reads by value, which the fragment module exports: the root kinds an exclusivity seat names,
+ * the pausable targets, and the resources.
+ */
+const boundRostersOf = (l: Lowered): ReadonlyArray<string> => {
+	const relations = Arr.map(l.relations, (rel) => rel.name)
+	const r = (s: string) => `${l.prefix}${s}`
+	return [
+		...(Arr.contains(relations, r("Exclusive")) ? [r("Join")] : []),
+		r("Pausable"),
+		...(Arr.contains(relations, r("Seat")) ? [r("Resource")] : [])
+	]
+}
+
+/** The relations a law names. */
+const lawRelations = (law: LawIR): ReadonlyArray<string> => {
+	switch (law.kind) {
+		case "contained":
+			return [law.from.relation, law.to.relation]
+		case "key":
+			return [law.side.relation]
+		case "race":
+		case "check":
+			return [law.relation]
+	}
+}
+
+/**
+ * The fragment module: the flow's rosters, contracts and relations, and two grizzle fragments the app lists in its
+ * schema, each with every roster: the graph, its relations and laws, which den's role and the flow's app role hold
+ * whole; and the coordination group, which den's coordination role holds whole and no law of the graph names. Beside
+ * them, the den relations the flow's app role inserts into.
+ */
 export const printFragment = (l: Lowered, place: Placement): string => {
 	const n = naming(l)
 	const reads = l.read
 	const writer = writerRelationsOf(l)
 	const rosterNames = Arr.map(l.rosters, (r) => r.name)
+	const coordination = new Set(l.coordination)
+	const graphRelations = Arr.filter(
+		Arr.map(l.relations, (r) => r.name),
+		(r) => !coordination.has(r)
+	)
+	const coordinating = (law: LawIR) => Arr.every(lawRelations(law), (r) => coordination.has(r))
 	return `${lines([
 		`/** The fragment den lowered the flow ${l.prefix} to; \`den generate\` writes it, and nothing edits it. */`,
 		`import { ${commas(fragmentImportsOf(l))} } from "@bjornpagen/grizzle"`,
@@ -214,7 +262,8 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 		"",
 		...Arr.map(
 			l.rosters,
-			(r) => `export const ${r.name} = closed(${q(r.name)}, [${commas(Arr.map(r.handles, q))}])`
+			(r) =>
+				`${Arr.contains(boundRostersOf(l), r.name) ? "export " : ""}const ${r.name} = closed(${q(r.name)}, [${commas(Arr.map(r.handles, q))}])`
 		),
 		"",
 		...Arr.map(
@@ -225,12 +274,21 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 				)} }, [${commas(Arr.map(r.key, q))}])`
 		),
 		"",
-		`/** The flow's declarations, in order, its laws, and the den relations its app role \`${l.writer}\` holds and inserts into. */`,
-		`export const ${n.fragment} = Object.freeze({`,
-		`\trelations: [${commas([...rosterNames, ...Arr.map(l.relations, (r) => r.name)])}] as const,`,
-		`\tlaws: Object.freeze([${commas(Arr.map(l.laws, lawExpr))}]),`,
-		`\twriter: Object.freeze({ relations: Object.freeze({ ${commas([...rosterNames, ...writer])} }), insert: [${commas(Arr.map(writer, q))}] as const })`,
-		"})"
+		`/** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role \`${l.writer}\` hold whole. */`,
+		`export const ${n.graph} = fragment([${commas([...rosterNames, ...graphRelations])}], [${commas(
+			Arr.map(
+				Arr.filter(l.laws, (law) => !coordinating(law)),
+				lawExpr
+			)
+		)}])`,
+		"",
+		`/** The flow's coordination group: its rosters, seats, holds, exclusivity seats and pauses, which den's coordination role holds whole. */`,
+		`export const ${n.coordination} = fragment([${commas([...rosterNames, ...l.coordination])}], [${commas(
+			Arr.map(Arr.filter(l.laws, coordinating), lawExpr)
+		)}])`,
+		"",
+		`/** The den relations the flow's app role \`${l.writer}\` inserts into: each step's commit's, and each app root's request's. */`,
+		`export const ${n.writerInserts} = [${commas(Arr.map(writer, q))}] as const`
 	])}\n`
 }
 
@@ -286,7 +344,12 @@ const admittingOf = (l: Lowered): ReadonlyArray<string> => {
 	])
 }
 
-/** The programs module: den's roles over the app's schema, their programs and workloads, and the app role's commits. */
+/**
+ * The programs module: den's role's and its coordination role's programs over the flow's graph and coordination
+ * fragments, the roles over the app's schema that serve them, and the commits and requests over the flow's app role,
+ * which write den's facts beside the app's own in one call. A commit or a request stays a program over the app role
+ * until a union of a fragment's ChangeSet with the app's types its members' rows.
+ */
 export const printPrograms = (l: Lowered, place: Placement): string => {
 	const n = naming(l)
 	const P = l.prefix
@@ -307,10 +370,10 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const denPrograms: Array<readonly [string, string]> = [
 		[
 			n.program("Claim"),
-			`ChangeSet.empty(${n.den})
+			`ChangeSet.empty(${n.graph})
 	.insert(${r("Claim")}, [])
 	.read("held", (delta) =>
-		query(${n.den})
+		query(${n.graph})
 			.rule((r) => {
 				const { step, attempt, holder } = v(delta.added(${r("Claim")}), "added")
 				return r.match(delta.added(${r("Claim")}), { step, attempt, holder }).find({ step, attempt, holder })
@@ -321,17 +384,17 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			})
 	)`
 		],
-		[n.program("Retry"), `ChangeSet.empty(${n.den}).insert(${r("Retry")}, [])`],
+		[n.program("Retry"), `ChangeSet.empty(${n.graph}).insert(${r("Retry")}, [])`],
 		[
 			n.program("Refuse"),
-			`ChangeSet.empty(${n.den})${members([r("Result"), r("Failed"), r("Held"), r("Refusal")], none, app)}`
+			`ChangeSet.empty(${n.graph})${members([r("Result"), r("Failed"), r("Held"), r("Refusal")], none, app)}`
 		],
 		[
 			n.program("Exhaust"),
-			`ChangeSet.empty(${n.den})${members([r("Result"), r("Failed"), r("Held"), r("Exhausted")], none, app)}`
+			`ChangeSet.empty(${n.graph})${members([r("Result"), r("Failed"), r("Held"), r("Exhausted")], none, app)}`
 		],
-		[n.program("Admit"), `ChangeSet.empty(${n.den})${members(admittingOf(l), none, app)}`],
-		[n.program("Skip"), `ChangeSet.empty(${n.den}).insert(${r("Skipped")}, [])`],
+		[n.program("Admit"), `ChangeSet.empty(${n.graph})${members(admittingOf(l), none, app)}`],
+		[n.program("Skip"), `ChangeSet.empty(${n.graph}).insert(${r("Skipped")}, [])`],
 		[n.program("SkippedOf"), r("Skipped")],
 		[n.program("StepOf"), r("Step")],
 		[n.program("ResultOf"), r("Result")],
@@ -344,21 +407,21 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		...(exclusiveKeys ? [[n.program("ExclusiveKeyOf"), r("ExclusiveKey")] as const] : []),
 		[
 			n.program("ClaimsOf"),
-			`query(${n.den}).rule((r) => {
+			`query(${n.graph}).rule((r) => {
 	const { step, attempt, holder, until } = v(${r("Claim")}, "claim")
 	return r.match(${r("Claim")}, { step, attempt, holder, until }).where(r.eq(step, ${stepParam})).find({ step, attempt, holder, until })
 })`
 		],
 		[
 			n.program("RetriesOf"),
-			`query(${n.den}).rule((r) => {
+			`query(${n.graph}).rule((r) => {
 	const { step, attempt, at, spent } = v(${r("Retry")}, "retry")
 	return r.match(${r("Retry")}, { step, attempt, at, spent }).where(r.eq(step, ${stepParam})).find({ step, attempt, at, spent })
 })`
 		],
 		[
 			n.program("UnendedSteps"),
-			`query(${n.den}).rule((r) => {
+			`query(${n.graph}).rule((r) => {
 	const { step, scope } = v(${r("Step")}, "step")
 	return r
 		.match(${r("Step")}, { step, scope })
@@ -368,7 +431,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		],
 		[
 			n.program("OpenChildren"),
-			`query(${n.den})
+			`query(${n.graph})
 	.rule((r) => {
 		const { scope, parent } = v(${r("Within")}, "within")
 		return r.match(${r("Within")}, { scope, parent }).where(r.eq(parent, ${scopeParam}), r.not(${r("Admitted")}, { scope })).find({ child: scope })
@@ -385,61 +448,61 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		],
 		[
 			n.program("Finished"),
-			`query(${n.den}).rule((r) => {
+			`query(${n.graph}).rule((r) => {
 	const { scope, step } = v(${r("Finish")}, "finish")
 	return r.match(${r("Finish")}, { scope, step }).match(${r("Result")}, { step }).where(r.eq(scope, ${scopeParam})).find({ step })
 })`
 		],
 		[
 			n.program("Pending"),
-			deferred(`query(${n.den}).rule((r) => {
+			deferred(`query(${n.graph}).rule((r) => {
 	const { step, kind, scope } = v(${r("Step")}, "step")
 	return r.match(${r("Step")}, { step, kind, scope }).where(r.not(${r("Result")}, { step })).find({ step, kind, scope })
 })`)
 		],
 		[
 			n.program("PendingClaims"),
-			deferred(`query(${n.den}).rule((r) => {
+			deferred(`query(${n.graph}).rule((r) => {
 	const { step, attempt, until } = v(${r("Claim")}, "claim")
 	return r.match(${r("Claim")}, { step, attempt, until }).where(r.not(${r("Result")}, { step })).find({ step, attempt, until })
 })`)
 		],
 		[
 			n.program("PendingRetries"),
-			deferred(`query(${n.den}).rule((r) => {
+			deferred(`query(${n.graph}).rule((r) => {
 	const { step, attempt, at, spent } = v(${r("Retry")}, "retry")
 	return r.match(${r("Retry")}, { step, attempt, at, spent }).where(r.not(${r("Result")}, { step })).find({ step, attempt, at, spent })
 })`)
 		],
 		[
 			n.program("PendingDues"),
-			deferred(`query(${n.den}).rule((r) => {
+			deferred(`query(${n.graph}).rule((r) => {
 	const { step, at } = v(${r("Due")}, "due")
 	return r.match(${r("Due")}, { step, at }).where(r.not(${r("Result")}, { step })).find({ step, at })
 })`)
 		],
 		[
 			n.program("Requested"),
-			deferred(`query(${n.den}).rule((r) => {
+			deferred(`query(${n.graph}).rule((r) => {
 	const { scope, kind } = v(${r("Scope")}, "scope")
 	return r.match(${r("Scope")}, { scope, kind }).where(r.not(${r("Admitted")}, { scope }), r.not(${r("Skipped")}, { scope })).find({ scope, kind })
 })`)
 		],
 		[
 			n.program("Running"),
-			deferred(`query(${n.den}).rule((r) => {
+			deferred(`query(${n.graph}).rule((r) => {
 	const { scope, kind } = v(${r("Scope")}, "scope")
 	const { step } = v(${r("Finish")}, "finish")
 	return r.match(${r("Scope")}, { scope, kind }).match(${r("Finish")}, { scope, step }).where(r.not(${r("Result")}, { step })).find({ scope, kind })
 })`)
 		],
-		[n.program("Withins"), deferred(allOf(n.den, r("Within"), ["scope", "parent"]))],
-		[n.program("Roots"), deferred(allOf(n.den, r("Root"), ["scope", "key", "at"]))],
+		[n.program("Withins"), deferred(allOf(n.graph, r("Within"), ["scope", "parent"]))],
+		[n.program("Roots"), deferred(allOf(n.graph, r("Root"), ["scope", "key", "at"]))],
 		...(exclusiveKeys
 			? [
 					[
 						n.program("ExclusiveKeys"),
-						deferred(allOf(n.den, r("ExclusiveKey"), ["scope", "key", "id"]))
+						deferred(allOf(n.graph, r("ExclusiveKey"), ["scope", "key", "id"]))
 					] as const
 				]
 			: []),
@@ -462,7 +525,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		Option.map(s.error, (e) =>
 			denPrograms.push([
 				n.program(`Fail${s.name}`),
-				`ChangeSet.empty(${n.den})${members(
+				`ChangeSet.empty(${n.graph})${members(
 					[
 						r("Result"),
 						r("Failed"),
@@ -481,13 +544,13 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		Option.map(j.finish.error, (e) =>
 			denPrograms.push([
 				n.program(`Fail${j.finish.name}`),
-				`ChangeSet.empty(${n.den})${members([r("Result"), r("Failed"), r("Held"), ...valueRelations(e)], none, app)}`
+				`ChangeSet.empty(${n.graph})${members([r("Result"), r("Failed"), r("Held"), ...valueRelations(e)], none, app)}`
 			])
 		)
 		if (Option.isSome(j.root) && !isApp(j)) {
 			denPrograms.push([
 				n.program(`Request${j.name}`),
-				`ChangeSet.empty(${n.den})${members(
+				`ChangeSet.empty(${n.graph})${members(
 					[
 						r("Scope"),
 						r("Root"),
@@ -503,7 +566,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			if (read.kind === "scope") {
 				denPrograms.push([
 					n.program(`Endings${j.name}${read.name}`),
-					`query(${n.den}).rule((r) => {
+					`query(${n.graph}).rule((r) => {
 	const { scope, parent } = v(${r("Within")}, "within")
 	const { step } = v(${r("Finish")}, "finish")
 	const { outcome } = v(${r("Result")}, "result")
@@ -521,7 +584,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			const cols = Arr.map(read.output.shape.columns, (c) => c.name)
 			denPrograms.push([
 				n.program(`Outputs${j.name}${read.name}`),
-				`query(${n.den}).rule((r) => {
+				`query(${n.graph}).rule((r) => {
 	const { step, scope } = v(${r("Step")}, "step")
 	const { ${commas(cols)} } = v(${read.output.relation}, "output")
 	return r
@@ -534,7 +597,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			Arr.forEach(read.output.sidecars, (side) =>
 				denPrograms.push([
 					n.program(`Outputs${j.name}${read.name}${Str.capitalize(side.column.name)}`),
-					`query(${n.den}).rule((r) => {
+					`query(${n.graph}).rule((r) => {
 	const { step, scope } = v(${r("Step")}, "step")
 	const { value } = v(${side.relation}, "value")
 	return r
@@ -547,7 +610,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			)
 			denPrograms.push([
 				n.program(`Failures${j.name}${read.name}`),
-				`query(${n.den}).rule((r) => {
+				`query(${n.graph}).rule((r) => {
 	const { step, scope } = v(${r("Step")}, "step")
 	return r
 		.match(${r("Step")}, { step, kind: ${q(read.name)}, scope })
@@ -565,31 +628,40 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		seatsPrograms.push(
 			[
 				n.program("Provision"),
-				`ChangeSet.empty(${n.seats}).insert(${r("Seat")}, []).delete(${r("Seat")}, [])`
+				`ChangeSet.empty(${n.coordination}).insert(${r("Seat")}, []).delete(${r("Seat")}, [])`
 			],
 			[
 				n.program("Take"),
-				`ChangeSet.sequence(ChangeSet.empty(${n.seats}).delete(${r("Hold")}, []), ChangeSet.empty(${n.seats}).insert(${r("Hold")}, []))`
+				`ChangeSet.sequence(ChangeSet.empty(${n.coordination}).delete(${r("Hold")}, []), ChangeSet.empty(${n.coordination}).insert(${r("Hold")}, []))`
 			],
-			[n.program("GiveBack"), `ChangeSet.empty(${n.seats}).delete(${r("Hold")}, [])`],
-			[n.program("Seats"), deferred(allOf(n.seats, r("Seat"), ["resource", "seat"]))],
+			[n.program("GiveBack"), `ChangeSet.empty(${n.coordination}).delete(${r("Hold")}, [])`],
+			[n.program("Seats"), deferred(allOf(n.coordination, r("Seat"), ["resource", "seat"]))],
 			[
 				n.program("Holds"),
-				deferred(allOf(n.seats, r("Hold"), ["resource", "seat", "holder", "until"]))
+				deferred(allOf(n.coordination, r("Hold"), ["resource", "seat", "holder", "until"]))
 			]
 		)
 	}
 	if (has(r("Exclusive"))) {
 		seatsPrograms.push(
-			[n.program("HoldExclusive"), `ChangeSet.empty(${n.seats}).insert(${r("Exclusive")}, [])`],
-			[n.program("ReleaseExclusive"), `ChangeSet.empty(${n.seats}).delete(${r("Exclusive")}, [])`],
-			[n.program("Exclusives"), deferred(allOf(n.seats, r("Exclusive"), ["kind", "key", "scope"]))]
+			[
+				n.program("HoldExclusive"),
+				`ChangeSet.empty(${n.coordination}).insert(${r("Exclusive")}, [])`
+			],
+			[
+				n.program("ReleaseExclusive"),
+				`ChangeSet.empty(${n.coordination}).delete(${r("Exclusive")}, [])`
+			],
+			[
+				n.program("Exclusives"),
+				deferred(allOf(n.coordination, r("Exclusive"), ["kind", "key", "scope"]))
+			]
 		)
 	}
 	seatsPrograms.push(
-		[n.program("Pause"), `ChangeSet.empty(${n.seats}).insert(${r("Paused")}, [])`],
-		[n.program("Resume"), `ChangeSet.empty(${n.seats}).delete(${r("Paused")}, [])`],
-		[n.program("PausedAll"), deferred(allOf(n.seats, r("Paused"), ["target"]))]
+		[n.program("Pause"), `ChangeSet.empty(${n.coordination}).insert(${r("Paused")}, [])`],
+		[n.program("Resume"), `ChangeSet.empty(${n.coordination}).delete(${r("Paused")}, [])`],
+		[n.program("PausedAll"), deferred(allOf(n.coordination, r("Paused"), ["target"]))]
 	)
 
 	const commitPrograms: Array<readonly [string, string]> = []
@@ -649,24 +721,17 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			)}`
 	)
 
-	const fragmentNames = [...rosterNames, ...allRelations]
 	const block = (name: string, programs: ReadonlyArray<readonly [string, string]>) => [
 		`export const ${name} = Object.freeze({`,
 		...Arr.map(programs, ([member, program]) => `\t${member}: ${indented("\t")(program)},`),
 		"})"
 	]
-	return `${lines([
-		`/** The programs den lowered the flow ${P} to, over the schema ${app}; \`den generate\` writes them, and nothing edits them. */`,
-		`import { ChangeSet, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"`,
-		`import { ${app} } from ${q(place.schema.from)}`,
-		`import { ${W} } from ${q(place.writer.from)}`,
-		`import { ${commas(fragmentNames)} } from ${q(place.fragment)}`,
-		"",
+	const body = lines([
 		`/** den's role for the flow ${P}: claims, retries, failures, admissions, requests, and every read the scheduler makes. */`,
-		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([...rosterNames, ...Arr.filter(allRelations, (rel) => !Arr.contains(coordination, rel)), ...idleEntries])} }, { insert: [${commas(Arr.map(den, q))}] })`,
+		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([`...${n.graph}.relations`, ...idleEntries])} }, { insert: [${commas(Arr.map(den, q))}] })`,
 		"",
 		`/** den's coordination role for the flow ${P}: seats, holds, exclusivity seats and pauses, the seat module's (LEASE replaces it). */`,
-		`export const ${n.seats} = role(${app}, ${q(n.seatsName)}, { ${commas([...rosterNames, ...coordination])} }, { write: [${commas(Arr.map(coordination, q))}] })`,
+		`export const ${n.seats} = role(${app}, ${q(n.seatsName)}, { ...${n.coordination}.relations }, { write: [${commas(Arr.map(coordination, q))}] })`,
 		"",
 		...block(n.denPrograms, denPrograms),
 		"",
@@ -687,6 +752,19 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 					`export const ${n.requests} = Object.freeze({ ${commas(requests)} })`
 				]
 			: [])
+	])
+	const tokens = identifiersOf(body)
+	const imported = Arr.filter([...rosterNames, ...allRelations, n.graph, n.coordination], (name) =>
+		tokens.has(name)
+	)
+	return `${lines([
+		`/** The programs den lowered the flow ${P} to, over its fragments, and its roles over the schema ${app}; \`den generate\` writes them, and nothing edits them. */`,
+		`import { ${commas(Arr.filter(["ChangeSet", "deferrable", "query", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
+		`import { ${app} } from ${q(place.schema.from)}`,
+		`import { ${W} } from ${q(place.writer.from)}`,
+		`import { ${commas(imported)} } from ${q(place.fragment)}`,
+		"",
+		body
 	])}\n`
 }
 
@@ -1147,11 +1225,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"\t}",
 		"}"
 	])
-	const fragmentValues = [
-		...(exclusives ? [r("Join")] : []),
-		r("Pausable"),
-		...(resources ? [r("Resource")] : [])
-	]
+	const fragmentValues = boundRostersOf(l)
 	const fragmentImports = Arr.dedupe([...spawning, ...fragmentValues])
 	const fragmentTypes = Arr.filter(fragmentImports, (name) => !Arr.contains(fragmentValues, name))
 	const valueReaders = [...Arr.map(l.steps, (s) => s.input), ...Arr.map(l.joins, (j) => j.input)]
