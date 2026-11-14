@@ -136,7 +136,8 @@ output into `select(PResult, outcome = done)`) certifies.
 5. **Endings.** `transient` is retried in place, within the claim's deadline, with no attempt spent; `unavailable`,
    `transport`, `input`, `outsideWorld`, `route`, `token*` and `failed` spend the attempt (`retry`, due at `until`);
    `refused` on `PResult`, `PHeld` or `PClaim` (or the attempts' `pred` law) is `lost`, on any other law `failed` with
-   `PRefusal(step, law id)`; `stale` is `fenced` (acknowledge and exit); `commitUnknown` reads `PHeld` back and is
+   `PRefusal(step, law id)`; `stale` and `credentialRefused` are `fenced` (the attempt recorded unspent where it
+   can be, acknowledge and exit); `commitUnknown` reads `PHeld` back and is
    `done` when it holds this attempt. A body's typed error is `failed` with `PKError`; a defect, an interruption or a
    body past its deadline spends the attempt. Past a lane's ceiling of attempts, the claim is made and `PExhausted`
    recorded: `failed`.

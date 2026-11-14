@@ -208,7 +208,22 @@ const databaseLayer = Layer.effect(Database, installed)
  */
 const pool = Object.freeze({ max: 4, min: 0, idleTimeoutMs: connectTimeoutMillis.value })
 
-/** The worker and app logins' layers over the suite's database, over the installation's live source. */
+/** The app's loader, which den's commits run under. */
+const openLoader = Db.open(AppServed.roles.loader, {})
+
+/**
+ * The app's loader as a deployment configured with another login's secret opens it: its login offers the worker's
+ * password, which the app's role refuses, so every call on it meets `credentialRefused`.
+ */
+class Misconfigured extends Context.Service<
+	Misconfigured,
+	{ readonly loader: Effect.Success<typeof openLoader> }
+>()("@bjornpagen/den/integration/support/slice/Misconfigured") {}
+
+/**
+ * The worker and app logins' layers over the suite's database, and the misconfigured loader, over the installation's
+ * live source.
+ */
 const loginsLayer = Layer.unwrap(
 	Effect.map(Database, (db) => {
 		const connection = (password: Redacted.Redacted) => ({
@@ -216,9 +231,14 @@ const loginsLayer = Layer.unwrap(
 			rolePrefix: db.rolePrefix
 		})
 		const live = LiveSource.layer({ ...connection(db.decoder), login: WorkerServed })
+		const misconfigured = Layer.effect(
+			Misconfigured,
+			Effect.map(openLoader, (loader) => ({ loader }))
+		).pipe(Layer.provide(DbLayer.make({ ...connection(db.worker), login: AppServed, pool })))
 		return Layer.mergeAll(
 			DbLayer.make({ ...connection(db.worker), login: WorkerServed, pool }),
-			DbLayer.make({ ...connection(db.app), login: AppServed, pool })
+			DbLayer.make({ ...connection(db.app), login: AppServed, pool }),
+			misconfigured
 		).pipe(Layer.provide(live))
 	})
 )
@@ -273,39 +293,65 @@ const travelling = <R>(ledger: Ledger<R>, opened: number): Ledger<R> => ({
 	)
 })
 
+/** Ledgers by their flow's name. */
+const byFlow = (all: ReadonlyArray<Ledger<Faults>>): Ledgers<Faults> =>
+	new Map(Arr.map(all, (l) => [l.flow, l] as const))
+
 /**
  * The slice's four flows' ledgers over Dbs opened on the worker's den and coordinator roles and the app's loader, each
- * reading the database's instant moved on by the time the suite's clock travels from here.
+ * reading the database's instant moved on by the time the suite's clock travels from here; and `misconfigured`, the
+ * same four committing through the misconfigured loader, whose every commit meets `credentialRefused` while their own
+ * roles' calls are let in.
  */
 export const openLedgers = Effect.gen(function* () {
 	const opened = yield* Clock.currentTimeMillis
-	const loader = yield* Db.open(AppServed.roles.loader, {})
+	const loader = yield* openLoader
+	const refusing = (yield* Misconfigured).loader.workload
 	const commits = loader.workload
-	const chainBound = chainLedger({
-		den: (yield* Db.open(WorkerServed.roles.chain_den, {})).workload,
-		coordinator: (yield* Db.open(WorkerServed.roles.chain_coordinator, {})).workload,
-		commits
-	})
-	const fanBound = fanLedger({
-		den: (yield* Db.open(WorkerServed.roles.fan_den, {})).workload,
-		coordinator: (yield* Db.open(WorkerServed.roles.fan_coordinator, {})).workload,
-		commits
-	})
-	const syncBound = syncLedger({
-		den: (yield* Db.open(WorkerServed.roles.sync_den, {})).workload,
-		coordinator: (yield* Db.open(WorkerServed.roles.sync_coordinator, {})).workload,
-		commits
-	})
-	const retryBound = retryLedger({
-		den: (yield* Db.open(WorkerServed.roles.retry_den, {})).workload,
-		coordinator: (yield* Db.open(WorkerServed.roles.retry_coordinator, {})).workload,
-		commits
-	})
+	const roles = {
+		chain: {
+			den: (yield* Db.open(WorkerServed.roles.chain_den, {})).workload,
+			coordinator: (yield* Db.open(WorkerServed.roles.chain_coordinator, {})).workload
+		},
+		fan: {
+			den: (yield* Db.open(WorkerServed.roles.fan_den, {})).workload,
+			coordinator: (yield* Db.open(WorkerServed.roles.fan_coordinator, {})).workload
+		},
+		sync: {
+			den: (yield* Db.open(WorkerServed.roles.sync_den, {})).workload,
+			coordinator: (yield* Db.open(WorkerServed.roles.sync_coordinator, {})).workload
+		},
+		retry: {
+			den: (yield* Db.open(WorkerServed.roles.retry_den, {})).workload,
+			coordinator: (yield* Db.open(WorkerServed.roles.retry_coordinator, {})).workload
+		}
+	}
+	const chainBound = chainLedger({ ...roles.chain, commits })
+	const fanBound = fanLedger({ ...roles.fan, commits })
+	const syncBound = syncLedger({ ...roles.sync, commits })
+	const retryBound = retryLedger({ ...roles.retry, commits })
 	const chain = { ...chainBound, ledger: travelling(chainBound.ledger, opened) }
 	const fan = { ...fanBound, ledger: travelling(fanBound.ledger, opened) }
 	const sync = { ...syncBound, ledger: travelling(syncBound.ledger, opened) }
 	const retry = { ...retryBound, ledger: travelling(retryBound.ledger, opened) }
 	const all: ReadonlyArray<Ledger<Faults>> = [chain.ledger, fan.ledger, sync.ledger, retry.ledger]
-	const ledgers: Ledgers<Faults> = new Map(Arr.map(all, (l) => [l.flow, l] as const))
-	return { chain, fan, sync, retry, all, ledgers, loader }
+	const refused: ReadonlyArray<Ledger<Faults>> = Arr.map(
+		[
+			chainLedger({ ...roles.chain, commits: refusing }).ledger,
+			fanLedger({ ...roles.fan, commits: refusing }).ledger,
+			syncLedger({ ...roles.sync, commits: refusing }).ledger,
+			retryLedger({ ...roles.retry, commits: refusing }).ledger
+		],
+		(ledger) => travelling(ledger, opened)
+	)
+	return {
+		chain,
+		fan,
+		sync,
+		retry,
+		all,
+		ledgers: byFlow(all),
+		misconfigured: { all: refused, ledgers: byFlow(refused) },
+		loader
+	}
 })

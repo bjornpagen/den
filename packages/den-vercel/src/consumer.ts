@@ -51,8 +51,9 @@ const acknowledge: RetryHandler = () => ({ acknowledge: true })
 
 /**
  * The consumer's route: each delivery decoded once with the wake contract's schema and served by `serve`, then
- * acknowledged, a `fenced` ending (the deploy fence, `stale`) as much as any other. Its lease is the function's
- * lifetime, so the queue delivers a wake again only once the invocation that held it can no longer be running.
+ * acknowledged, a `fenced` ending (the deployment's fault, `stale` or `credentialRefused`) as much as any other. Its
+ * lease is the function's lifetime, so the queue delivers a wake again only once the invocation that held it can no
+ * longer be running.
  */
 export const consumer = <A, R>(serve: Serve<A, R>): Effect.Effect<Route, never, R | VercelQueue> =>
 	Effect.gen(function* () {

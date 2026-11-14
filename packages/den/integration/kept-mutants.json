@@ -1,0 +1,16 @@
+[
+	{
+		"name": "a refused credential spends its attempt",
+		"file": "src/runtime/turn.ts",
+		"original": "\t\t\t\tcase \"stale\":\n\t\t\t\tcase \"credentialRefused\":\n\t\t\t\t\treturn ended(ledger, runner, turn, spentSoFar, { kind: \"fenced\", fault: error }, wake)\n",
+		"replacement": "\t\t\t\tcase \"stale\":\n\t\t\t\t\treturn ended(ledger, runner, turn, spentSoFar, { kind: \"fenced\", fault: error }, wake)\n\t\t\t\tcase \"credentialRefused\":\n\t\t\t\t\treturn ended(ledger, runner, turn, spentSoFar, { kind: \"spent\" }, wake)\n",
+		"killers": ["integration/credential.test.ts"]
+	},
+	{
+		"name": "a fenced attempt records nothing, so its claim's lapse spends it",
+		"file": "src/runtime/turn.ts",
+		"original": "\t\t\t\treturn yield* recorded(ledger, unspent, wake, { kind: \"fenced\", wake, fault: how.fault })\n",
+		"replacement": "\t\t\t\treturn { kind: \"fenced\", wake, fault: how.fault } satisfies Ending\n",
+		"killers": ["integration/credential.test.ts"]
+	}
+]

@@ -44,11 +44,11 @@ export interface Onward {
  * retry's due instant from a reading, and rings a timer with the duration between two readings.
  *
  * Endings come from grizzle's CallError: `transient` is a wait, retried in place within the deadline and, past it,
- * recorded with no attempt spent; `unavailable`, `credentialRefused` and `transport`, which change nothing, spend an
- * attempt, as every other refusal of the call does; `refused` is `lost` when the law is a
- * key another fact already holds, and `failed` naming the law otherwise; `stale` is the deploy fence, on which this
- * deployment acknowledges its wake and exits. A defect is no state of its own: the attempt ends spent, and its detail
- * goes to the turn's span.
+ * recorded with no attempt spent; `unavailable` and `transport`, which change nothing, spend an attempt, as every
+ * other refusal of the call does; `refused` is `lost` when the law is a key another fact already holds, and `failed`
+ * naming the law otherwise; `stale` and `credentialRefused` are the deployment's faults (Fault), on which this
+ * deployment spends nothing, acknowledges its wake and exits. A defect is no state of its own: the attempt ends spent,
+ * and its detail goes to the turn's span.
  */
 
 /** Why a turn waits without spending an attempt. */
@@ -68,7 +68,7 @@ export type Wait =
  * a root not admitted because another live root of its kind holds its exclusivity seat, recorded as such; `failed`
  * by its typed error, a law that refused its commit, or its ladder's end; `retry`, an attempt spent and the next due at
  * an instant; `waiting`, no attempt spent, rung again at an instant or by the relay; `lost`, another fact already holds
- * its key; `fenced`, the database holds another snapshot than this deployment's, which acknowledges its wake and exits.
+ * its key; `fenced`, a call met the deployment's fault, named, on which it acknowledges its wake and exits.
  */
 export type Ending =
 	| { readonly kind: "done"; readonly wake: Wake; readonly spawned: Spawned }
@@ -83,7 +83,27 @@ export type Ending =
 			readonly until: Option.Option<Instant>
 	  }
 	| { readonly kind: "lost"; readonly wake: Wake }
-	| { readonly kind: "fenced"; readonly wake: Wake }
+	| { readonly kind: "fenced"; readonly wake: Wake; readonly fault: Fault }
+
+/**
+ * The deployment's faults: `stale`, the database holds another snapshot than this deployment's, and
+ * `credentialRefused`, the database does not let one of this deployment's logins in. A call that meets either changed
+ * nothing, and no retry of it can succeed until the deployment changes, so a turn that meets one fences: it spends no
+ * attempt, which would turn one misconfiguration into a run of failed steps, records a claimed attempt as one that
+ * spent nothing where its own login still can (`ended`), rings nothing, and names the fault in its ending.
+ */
+export type Fault = Extract<CallError, { readonly kind: "stale" | "credentialRefused" }>
+
+/** The deployment's fault `error` is, if it is one. */
+const faultOf = (error: CallError): Option.Option<Fault> =>
+	error.kind === "stale" || error.kind === "credentialRefused" ? Option.some(error) : Option.none()
+
+/** The ending of a call's failure: fenced on the deployment's fault, `otherwise` on any other. */
+const fencedOr = (error: CallError, wake: Wake, otherwise: Ending): Ending =>
+	Option.match(faultOf(error), {
+		onSome: (fault): Ending => ({ kind: "fenced", wake, fault }),
+		onNone: () => otherwise
+	})
 
 /** A turn's ending and the wakes it rings on. */
 export interface Served {
@@ -284,11 +304,22 @@ export const runnerOf = <I, Rows, O, E, W, R>(
 	})
 })
 
-/** The reads a turn needs, any failure but the fence a wait with no attempt spent. */
+/** The reads a turn needs, any failure but the deployment's fault a wait with no attempt spent. */
 const readOr = <A>(read: Effect.Effect<A, CallError>, wake: Wake): Effect.Effect<A, Ending> =>
-	Effect.mapError(read, (error): Ending =>
-		error.kind === "stale"
-			? { kind: "fenced", wake }
+	Effect.mapError(read, (error) =>
+		fencedOr(error, wake, { kind: "waiting", wake, why: "unread", until: Option.none() })
+	)
+
+/**
+ * The ending of a write that failed: fenced on the deployment's fault, lost when another fact already holds its key,
+ * and otherwise a wait with no attempt spent.
+ */
+const unwritten = (flow: string, error: CallError, wake: Wake): Ending =>
+	fencedOr(
+		error,
+		wake,
+		lostRace(flow, error)
+			? { kind: "lost", wake }
 			: { kind: "waiting", wake, why: "unread", until: Option.none() }
 	)
 
@@ -426,41 +457,61 @@ const settled = <R>(
 	}).pipe(Effect.orElseSucceed((): ReadonlyArray<Onward> => []))
 
 /**
- * An attempt that ended without a result: its retry recorded, the next due a rung after a reading of the database's
- * instant, or the step failed once its ladder is spent; `spent` false is a wait, recorded due at once.
+ * How a claimed attempt ended without a result: `spent`, its attempt spent; `waited`, a wait that spends nothing; or
+ * `fenced`, a call met the deployment's fault, which spends nothing either.
+ */
+type Unfinished =
+	| { readonly kind: "spent" }
+	| { readonly kind: "waited" }
+	| { readonly kind: "fenced"; readonly fault: Fault }
+
+/**
+ * An attempt that ended without a result, recorded at a reading of the database's instant: a spent one's retry due a
+ * rung later, or the step failed once its ladder is spent; one that spent nothing recorded as such, due at once, so no
+ * lapse of its claim counts it spent. A wait rings its next attempt at once; a fenced attempt rings nothing, and the
+ * census rings its step at its next tick, so a fault no retry clears is met once a tick until the deployment changes,
+ * and never fails the step.
  */
 const ended = <R>(
 	ledger: Ledger<R>,
 	runner: StepRunner<R>,
 	turn: Turn,
 	spentSoFar: number,
-	spent: boolean,
+	how: Unfinished,
 	wake: Wake
 ): Effect.Effect<Ending> =>
 	Effect.gen(function* () {
 		const at = yield* readOr(ledger.now, wake)
-		const total = spentSoFar + (spent ? 1 : 0)
-		if (spent && !allows(runner.retry, total)) {
-			return yield* recorded(ledger, ledger.exhaust(turn.step, turn.attempt), wake, {
-				kind: "failed",
-				wake,
-				why: "attempts"
-			})
+		const next = stepWake(ledger.flow, turn.step, turn.attempt + 1n)
+		const unspent = ledger.retry({ step: turn.step, attempt: turn.attempt, at, spent: false })
+		switch (how.kind) {
+			case "spent": {
+				const total = spentSoFar + 1
+				if (!allows(runner.retry, total)) {
+					return yield* recorded(ledger, ledger.exhaust(turn.step, turn.attempt), wake, {
+						kind: "failed",
+						wake,
+						why: "attempts"
+					})
+				}
+				const due = instantOf(Number(at) + rungMillis(total))
+				return yield* recorded(
+					ledger,
+					ledger.retry({ step: turn.step, attempt: turn.attempt, at: due, spent: true }),
+					wake,
+					{ kind: "retry", wake: next, due }
+				)
+			}
+			case "waited":
+				return yield* recorded(ledger, unspent, wake, {
+					kind: "waiting",
+					wake: next,
+					why: "transient",
+					until: Option.some(at)
+				})
+			case "fenced":
+				return yield* recorded(ledger, unspent, wake, { kind: "fenced", wake, fault: how.fault })
 		}
-		const due = spent ? instantOf(Number(at) + rungMillis(total)) : at
-		return yield* recorded(
-			ledger,
-			ledger.retry({ step: turn.step, attempt: turn.attempt, at: due, spent }),
-			wake,
-			spent
-				? { kind: "retry", wake: stepWake(ledger.flow, turn.step, turn.attempt + 1n), due }
-				: {
-						kind: "waiting",
-						wake: stepWake(ledger.flow, turn.step, turn.attempt + 1n),
-						why: "transient",
-						until: Option.some(due)
-					}
-		)
 	}).pipe(Effect.catch((ending: Ending) => Effect.succeed(ending)))
 
 /** The ending a write's outcome gives: `ok` once written, lost when another fact holds its key, else a wait. */
@@ -471,12 +522,7 @@ const recorded = <R>(
 	ok: Ending
 ): Effect.Effect<Ending> =>
 	Effect.match(write, {
-		onFailure: (error): Ending =>
-			error.kind === "stale"
-				? { kind: "fenced", wake }
-				: lostRace(ledger.flow, error)
-					? { kind: "lost", wake }
-					: { kind: "waiting", wake, why: "unread", until: Option.none() },
+		onFailure: (error) => unwritten(ledger.flow, error, wake),
 		onSuccess: (): Ending => ok
 	})
 
@@ -495,17 +541,18 @@ const endingOf = <R>(
 		case "failed":
 			return Effect.succeed({ kind: "failed", wake, why: "error" })
 		case "waited":
-			return ended(ledger, runner, turn, spentSoFar, false, wake)
+			return ended(ledger, runner, turn, spentSoFar, { kind: "waited" }, wake)
 		case "spent":
 			return Effect.andThen(
 				Effect.annotateCurrentSpan("den.spent", ran.detail),
-				ended(ledger, runner, turn, spentSoFar, true, wake)
+				ended(ledger, runner, turn, spentSoFar, { kind: "spent" }, wake)
 			)
 		case "error": {
 			const error = ran.error
 			switch (error.kind) {
 				case "stale":
-					return Effect.succeed({ kind: "fenced", wake })
+				case "credentialRefused":
+					return ended(ledger, runner, turn, spentSoFar, { kind: "fenced", fault: error }, wake)
 				case "refused":
 					return lostRace(ledger.flow, error)
 						? Effect.succeed({ kind: "lost", wake })
@@ -518,12 +565,11 @@ const endingOf = <R>(
 					return Effect.flatMap(Effect.option(ledger.heldOf(turn.step)), (held) =>
 						Option.contains(Option.flatten(held), turn.attempt)
 							? Effect.succeed<Ending>({ kind: "done", wake, spawned: { steps: [], finishes: [] } })
-							: ended(ledger, runner, turn, spentSoFar, true, wake)
+							: ended(ledger, runner, turn, spentSoFar, { kind: "spent" }, wake)
 					)
 				case "transient":
-					return ended(ledger, runner, turn, spentSoFar, false, wake)
+					return ended(ledger, runner, turn, spentSoFar, { kind: "waited" }, wake)
 				case "unavailable":
-				case "credentialRefused":
 				case "transport":
 				case "input":
 				case "outsideWorld":
@@ -533,7 +579,7 @@ const endingOf = <R>(
 				case "failed":
 					return Effect.andThen(
 						Effect.annotateCurrentSpan("den.spent", error.message),
-						ended(ledger, runner, turn, spentSoFar, true, wake)
+						ended(ledger, runner, turn, spentSoFar, { kind: "spent" }, wake)
 					)
 			}
 		}
@@ -643,14 +689,7 @@ const serveStep = <R>(
 					Effect.retry(ledger.claim(claim), { while: (error) => error.kind === "transient" })
 				)
 				if (claimed._tag === "Failure") {
-					const error = claimed.failure
-					return served(
-						error.kind === "stale"
-							? { kind: "fenced", wake }
-							: lostRace(ledger.flow, error)
-								? { kind: "lost", wake }
-								: { kind: "waiting", wake, why: "unread", until: Option.none() }
-					)
+					return served(unwritten(ledger.flow, claimed.failure, wake))
 				}
 				if (!claimed.success) {
 					return served({ kind: "lost", wake })
@@ -761,14 +800,7 @@ const serveAdmit = <R>(
 		}
 		const admitted = yield* Effect.result(root.admit(scope, at))
 		if (admitted._tag === "Failure") {
-			const error = admitted.failure
-			return served(
-				error.kind === "stale"
-					? { kind: "fenced", wake }
-					: lostRace(ledger.flow, error)
-						? { kind: "lost", wake }
-						: { kind: "waiting", wake, why: "unread", until: Option.none() }
-			)
+			return served(unwritten(ledger.flow, admitted.failure, wake))
 		}
 		if (Option.isNone(admitted.success)) {
 			return served({ kind: "lost", wake })
