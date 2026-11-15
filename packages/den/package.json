@@ -33,10 +33,9 @@
 		"./transport": "./src/transport.ts"
 	},
 	"scripts": {
-		"typecheck": "effect-tsgo tsrs --noEmit -p tsconfig.json",
-		"typecheck:full": "effect-tsgo tsrs --noEmit -p tsconfig.json --incremental false",
-		"superlint": "superlint",
-		"oxlint": "oxlint",
+		"typecheck": "toolchain-typecheck",
+		"typecheck:full": "toolchain-typecheck --incremental false",
+		"oxlint": "toolchain-oxlint",
 		"test": "vitest run --config vitest.config.ts",
 		"test:network": "vitest run --config vitest.network.config.ts",
 		"generate:slice": "node integration/slice/generate.ts && oxfmt integration/slice/generated"

@@ -31,10 +31,9 @@
 		"./workloads/timeback": "./src/workloads/timeback.ts"
 	},
 	"scripts": {
-		"typecheck": "effect-tsgo tsrs --noEmit -p tsconfig.json",
-		"typecheck:full": "effect-tsgo tsrs --noEmit -p tsconfig.json --incremental false",
-		"superlint": "superlint",
-		"oxlint": "oxlint",
+		"typecheck": "toolchain-typecheck",
+		"typecheck:full": "toolchain-typecheck --incremental false",
+		"oxlint": "toolchain-oxlint",
 		"test": "vitest run"
 	},
 	"dependencies": {

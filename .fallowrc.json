@@ -1,5 +1,7 @@
 {
 	"$schema": "./node_modules/fallow/schema.json",
+	// The commit gate's AST-only oxlint configuration, which the gate names by path.
+	"entry": ["oxlint.ast.config.ts"],
 	"ignorePatterns": ["vendor/**"],
 	// The tsconfig's @effect/language-service plugin is no package: it is @effect/tsgo's, patched into TypeScript.
 	"ignoreDependencies": ["@effect/language-service"],
@@ -43,7 +45,7 @@
 		],
 		"coverage": {
 			"requireAllFiles": true,
-			"allowUnmatched": ["oxlint.config.ts", "toolchain.config.ts"]
+			"allowUnmatched": ["oxlint.config.ts", "oxlint.ast.config.ts", "toolchain.config.ts"]
 		}
 	}
 }

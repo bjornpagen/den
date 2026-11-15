@@ -19,6 +19,7 @@ export default defineConfig(
 		restrictedGlobals: [],
 		restrictedProperties: [],
 		unassignedImports: [],
+		environment: { library: [], readers: [] },
 		ceremony: [],
 		plugin: {
 			"bearer-owners": {
@@ -40,6 +41,31 @@ export default defineConfig(
 			},
 			"no-raw-sql": { sources: [], writers: [] },
 			"no-dynamic-imports": { allowed: [] },
+			"no-spread-argument": { tuples: [] },
+			"no-case-list": {
+				searches: [
+					{ module: "@bjornpagen/testing/explore", name: "exhaust", space: "generator" },
+					{ module: "@bjornpagen/testing/explore", name: "explore", space: "draw" }
+				],
+				generators: [
+					{ module: "@bjornpagen/testing/gen", names: ["element"], draws: "list" },
+					{ module: "@bjornpagen/testing/gen", names: ["constant"], draws: "value" },
+					{ module: "@bjornpagen/testing/gen", names: ["map", "span"], draws: "each" },
+					{
+						module: "@bjornpagen/testing/gen",
+						names: ["oneOf", "weighted", "proportional"],
+						draws: "union"
+					},
+					{ module: "@bjornpagen/testing/explore", names: ["drawn", "sketched"], draws: "each" }
+				],
+				cases: [
+					"packages/den/test/",
+					"packages/den/integration/",
+					"packages/den-model/src/",
+					"packages/den-vercel/test/",
+					"packages/edullm/"
+				]
+			},
 			"test-no-prose-search": {
 				fields: ["capability", "what"],
 				textHelpers: ["containsText", "lacksText", "contains", "lacks"],

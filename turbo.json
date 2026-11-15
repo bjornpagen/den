@@ -40,16 +40,6 @@
 			],
 			"outputs": []
 		},
-		"superlint": {
-			"description": "The dev tools' rules and den's toolchain.config.ts are inputs too.",
-			"dependsOn": ["^source"],
-			"inputs": [
-				"$TURBO_DEFAULT$",
-				"$TURBO_ROOT$/toolchain.config.ts",
-				"$TURBO_ROOT$/vendor/toolchain/packages/devtools/src/**",
-				"$TURBO_ROOT$/vendor/toolchain/packages/devtools/tsconfig.base.json"
-			]
-		},
 		"oxlint": {
 			"description": "The dev tools' preset and plugin and den's toolchain.config.ts are inputs too.",
 			"dependsOn": ["^source"],
@@ -66,8 +56,11 @@
 			"outputs": ["node_modules/.cache/tsconfig.tsbuildinfo"]
 		},
 		"//#typecheck:full": {},
-		"//#superlint": {},
 		"//#oxlint": {},
+		"//#workspace-gate": {
+			"description": "The toolchain's repository-wide checks: every tsconfig's Effect plugin block and diagnostics and the tree's file names, read as JSON and git's file list, never a TypeScript program. Uncached: it reads the whole tree in about a second, which a cache would have to hash.",
+			"cache": false
+		},
 		"//#format": {},
 		"//#dead-code": {},
 		"//#architecture": {},
