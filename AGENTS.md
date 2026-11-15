@@ -11,11 +11,12 @@ Code, types and lint rules are the documentation. The only comments are JSDoc on
 tools read. Write JSDoc and Markdown only for what code cannot express: why a design exists, what it rejects, and
 outside facts. State rules in plain words; never narrate history.
 
-Lint (oxlint and the dev tools' plugin, superlint, fallow) and Effect's diagnostics record owner decisions: strengthen
-them, never weaken them to let code through. Inline suppressions are refused; a file a rule must spare is named in
-config. Rules rejected on purpose live in `toolchain.config.ts`'s `rejected`, lint rules and Effect's diagnostics
-each with its reason; turning one back on needs the owner. A rule that forces worse code is rejected, never kept with
-an allow-list or worked around.
+Lint (oxlint with the dev tools' preset and plugin, the workspace gate, fallow), the testing library's reporter and
+Effect's diagnostics record owner decisions: strengthen them, never weaken them to let code through. Inline
+suppressions are refused; a file a rule must spare is named in `oxlint.config.ts`'s overrides, with its reason. Rules
+rejected on purpose live in `toolchain.config.ts`'s `rejected`, lint rules and Effect's diagnostics each with its
+reason; turning one back on needs the owner. A rule that forces worse code is rejected, never kept with an allow-list
+or worked around.
 
 ## Design
 
@@ -56,7 +57,8 @@ A Turborepo workspace of private packages named `@den/<name>`, each exporting it
   `packages/den-vercel`: the Vercel Queues transport. `packages/edullm`: the outside systems of den's first use.
 - `vendor/grizzle`: grizzle, a git submodule pinned on its `main` branch.
 - `vendor/toolchain`: the shared toolchain, a git submodule pinned at its commit, whose packages run from source:
-  `@bjornpagen/devtools` (the lint preset, the tsconfig base, the oxlint plugin and superlint with its packs) and
+  `@bjornpagen/devtools` (the oxlint preset and plugin, whose rules read syntax alone, the tsconfig base, the
+  workspace gate and the hooks' gate) and
   `@bjornpagen/testing`, the choice-stream testing library every suite runs on (`explore`, `exhaust`, `commands`,
   `interleave`, the shrinker, `pnpm fuzz`, `pnpm mutate`). den keeps only its own decisions, in `toolchain.config.ts`
   and `oxlint.config.ts`; the toolchain's fixes land in its repository, and den takes them by moving the submodule.
@@ -71,11 +73,14 @@ Inside a package, import through its own `#` map with the real extension; across
   den builds on Effect's newest release.
 - TypeScript 7.1 beta with Effect's language service, from `@effect/tsgo`; `pnpm install` patches it in.
 - After every edit, run `pnpm types`: every project's typecheck, incremental, so a rerun checks again only what
-  changed.
-- The hooks run the gates (lefthook, which `pnpm install` installs): a commit checks the format of the files it stages
-  and runs `pnpm types`; a push runs `pnpm check`, the whole gate: every project's typecheck from scratch, superlint
-  and type-aware oxlint, oxfmt, fallow (`dead-code`, `architecture`) and `pnpm dedupe --check`. Never commit or push
-  with `--no-verify`. `pnpm test` runs the suites that need no database.
+  changed. The root's `pnpm typecheck` checks the root's config files alone.
+- The hooks run the toolchain's gate (lefthook, which `pnpm install` installs), each on a snapshot of exactly what it
+  lets through, never the working tree: a commit runs `pnpm types`, oxfmt's check of the files it stages and the
+  AST-only oxlint (`oxlint.ast.config.ts`) on them; a push runs `pnpm check`, the whole gate: every project's typecheck
+  from scratch, type-aware oxlint, the workspace gate, oxfmt, fallow (`dead-code`, `architecture`) and
+  `pnpm dedupe --check`. Never commit or push with `--no-verify`. `pnpm test` runs the suites that need no database;
+  every test case must run a search (`explore`, `exhaust` or `interleave`), and the reporter fails a run where one
+  passed without.
 
 ## Working here
 
