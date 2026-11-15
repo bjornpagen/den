@@ -77,8 +77,10 @@ Inside a package, import through its own `#` map with the real extension; across
 - The hooks run the toolchain's gate (lefthook, which `pnpm install` installs), each on a snapshot of exactly what it
   lets through, never the working tree: a commit runs `pnpm types`, oxfmt's check of the files it stages and the
   AST-only oxlint (`oxlint.ast.config.ts`) on them; a push runs `pnpm check`, the whole gate: every project's typecheck
-  from scratch, type-aware oxlint, the workspace gate, oxfmt, fallow (`dead-code`, `architecture`) and
-  `pnpm dedupe --check`. Never commit or push with `--no-verify`. `pnpm test` runs the suites that need no database;
+  (incremental), type-aware oxlint, the workspace gate, oxfmt, fallow (`dead-code`, `architecture`) and
+  `pnpm dedupe --check`, and once a day `pnpm check:full`, the same gate from scratch: every typecheck without build
+  info, every task forced past its cache. A package's checks wait on its dependencies' `surface` (their source but
+  tests, SQL, docs and scratch), so a change to only those re-checks nothing downstream. Never commit or push with `--no-verify`. `pnpm test` runs the suites that need no database;
   every test case must run a search (`explore`, `exhaust` or `interleave`), and the reporter fails a run where one
   passed without.
 

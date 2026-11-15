@@ -61,7 +61,6 @@ it.effect("the census runs its tick only for the cron secret, and says how the t
 				kept: [],
 				runs: 200,
 				shrink: boundedShrink(40),
-				concurrency: 1,
 				steerEvery: 16,
 				caseHang
 			},

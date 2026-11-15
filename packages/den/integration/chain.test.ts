@@ -74,7 +74,6 @@ layer(sliceLayer)("the chain flow", (it) => {
 					kept: [],
 					runs: 12,
 					shrink: boundedShrink(8),
-					concurrency: 1,
 					steerEvery: 4,
 					caseHang
 				},

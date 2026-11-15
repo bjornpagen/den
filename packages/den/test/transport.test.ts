@@ -154,7 +154,6 @@ it.effect("a wake round-trips, and a ring's key names its wake and its cause", (
 				kept: [],
 				runs: 300,
 				shrink: boundedShrink(40),
-				concurrency: 1,
 				steerEvery: 16,
 				caseHang
 			},
@@ -292,7 +291,6 @@ it.effect(
 					kept: [],
 					runs: 200,
 					shrink: boundedShrink(40),
-					concurrency: 1,
 					steerEvery: 16,
 					caseHang
 				},

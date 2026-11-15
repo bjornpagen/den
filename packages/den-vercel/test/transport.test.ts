@@ -158,7 +158,6 @@ it.effect("every wake a ring sends is delivered at least once or healed by a cen
 				kept: [],
 				runs: 200,
 				shrink: boundedShrink(40),
-				concurrency: 1,
 				steerEvery: 16,
 				caseHang
 			},
@@ -298,7 +297,6 @@ it.effect(
 					kept: [],
 					runs: 100,
 					shrink: boundedShrink(40),
-					concurrency: 1,
 					steerEvery: 16,
 					caseHang
 				},
@@ -404,7 +402,6 @@ it.effect(
 					kept: [],
 					runs: 100,
 					shrink: boundedShrink(40),
-					concurrency: 1,
 					steerEvery: 16,
 					caseHang
 				},

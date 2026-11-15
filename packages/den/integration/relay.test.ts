@@ -57,7 +57,6 @@ layer(sliceLayer, { excludeTestServices: true })("the relay", (it) => {
 					kept: [],
 					runs: 4,
 					shrink: boundedShrink(2),
-					concurrency: 1,
 					steerEvery: 2,
 					caseHang
 				},

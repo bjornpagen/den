@@ -68,7 +68,6 @@ layer(sliceLayer)("the census", (it) => {
 						kept: [],
 						runs: 8,
 						shrink: boundedShrink(4),
-						concurrency: 1,
 						steerEvery: 4,
 						caseHang
 					},

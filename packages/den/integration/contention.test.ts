@@ -74,7 +74,6 @@ layer(sliceLayer)("exact seats", (it) => {
 						kept: [],
 						runs: 8,
 						shrink: boundedShrink(4),
-						concurrency: 1,
 						steerEvery: 4,
 						caseHang
 					},

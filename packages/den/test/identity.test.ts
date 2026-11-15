@@ -58,7 +58,6 @@ layer(Digest.layerWebCrypto)("derived identity", (it) => {
 					kept: [],
 					runs: 100,
 					shrink: boundedShrink(40),
-					concurrency: 1,
 					steerEvery: 16,
 					caseHang
 				},

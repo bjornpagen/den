@@ -306,7 +306,6 @@ layer(sliceLayer)("the differential harness", (it) => {
 					kept: [],
 					runs: 12,
 					shrink: boundedShrink(6),
-					concurrency: 1,
 					steerEvery: 4,
 					caseHang
 				},

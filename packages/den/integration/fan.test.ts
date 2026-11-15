@@ -54,7 +54,6 @@ layer(sliceLayer)("the fan-out flow", (it) => {
 					kept: [],
 					runs: 10,
 					shrink: boundedShrink(8),
-					concurrency: 1,
 					steerEvery: 4,
 					caseHang
 				},

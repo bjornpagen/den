@@ -66,7 +66,6 @@ layer(sliceLayer)("pauses", (it) => {
 						kept: [],
 						runs: 12,
 						shrink: boundedShrink(4),
-						concurrency: 1,
 						steerEvery: 3,
 						caseHang
 					},

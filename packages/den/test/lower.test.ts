@@ -243,7 +243,6 @@ it.effect(
 					kept: [],
 					runs: 160,
 					shrink: boundedShrink(40),
-					concurrency: 1,
 					steerEvery: 16,
 					caseHang
 				},

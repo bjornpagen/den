@@ -60,7 +60,6 @@ layer(sliceLayer)("exclusivity", (it) => {
 					kept: [],
 					runs: 6,
 					shrink: boundedShrink(4),
-					concurrency: 1,
 					steerEvery: 3,
 					caseHang
 				},

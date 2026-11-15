@@ -591,7 +591,6 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 						kept: [],
 						runs: 300,
 						shrink: boundedShrink(60),
-						concurrency: 1,
 						steerEvery: 16,
 						caseHang
 					},
@@ -756,7 +755,6 @@ layer(Digest.layerWebCrypto)("windows", (it) => {
 					kept: [],
 					runs: 200,
 					shrink: boundedShrink(40),
-					concurrency: 1,
 					steerEvery: 16,
 					caseHang
 				},
@@ -826,7 +824,6 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 						kept: [],
 						runs: 100,
 						shrink: boundedShrink(40),
-						concurrency: 1,
 						steerEvery: 16,
 						caseHang
 					},

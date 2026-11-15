@@ -135,7 +135,6 @@ it.effect("the consumer acknowledges every delivery, a stale ending included", (
 				kept: [],
 				runs: 200,
 				shrink: boundedShrink(40),
-				concurrency: 1,
 				steerEvery: 16,
 				caseHang
 			},

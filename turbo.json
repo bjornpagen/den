@@ -2,38 +2,35 @@
 	"$schema": "https://turbo.build/schema.json",
 	"agentGuidance": false,
 	"concurrency": "100%",
-	"globalDependencies": [
-		"pnpm-workspace.yaml",
-		"pnpm-lock.yaml",
-		"tsconfig.json",
-		"tsconfig.base.json",
-		"oxlint.config.ts"
-	],
+	"globalDependencies": ["tsconfig.json", "tsconfig.base.json", "oxlint.config.ts"],
 	"globalEnv": ["NODE_ENV"],
-	"globalPassThroughEnv": [
-		"TMPDIR",
-		"NODE_OPTIONS",
-		"TOOLCHAIN_TEST_WORKERS",
-		"TOOLCHAIN_TSGOLINT_PROCS",
-		"TOOLCHAIN_TS_CHECKERS"
-	],
+	"globalPassThroughEnv": ["TMPDIR", "NODE_OPTIONS"],
 	"tasks": {
-		"source": {
-			"description": "Carries each package's source hash to its dependents, so a check reruns when a package it loads changes, without waiting for that package's checks.",
-			"dependsOn": ["^source"]
+		"surface": {
+			"description": "What a dependent can read of a package: its whole source but its tests, SQL, docs and scratch, which nothing imports. A package's checks wait on its dependencies' surface, not their whole source, so a commit that changes only a dependency's tests, migration SQL or docs re-checks nothing downstream. The build waits on the whole source.",
+			"dependsOn": ["^surface"],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"!**/*.test.ts",
+				"!**/*.test.tsx",
+				"!**/*.sql",
+				"!**/docs/**",
+				"!**/work/**"
+			],
+			"outputs": []
 		},
 		"typecheck": {
-			"description": "Every project checks its own sources with --noEmit and reads its dependencies' sources directly, so no check waits on another's, and reruns when a package it loads changes, the submodule's grizzle packages among them; grizzle's packages keep their own gates. It is incremental: each project keeps its state in its own node_modules/.cache, so a rerun rechecks only what changed.",
-			"dependsOn": ["^source"],
+			"description": "Every project checks its own sources with --noEmit and reads its dependencies' sources directly, so no check waits on another's, and reruns when a package it loads changes, the submodule's grizzle packages among them; grizzle's packages keep their own gates. It is incremental: each project keeps its state in its own node_modules/.cache, which is no output (a replay restores none, and the checker compares each file's hash with what it holds), so a rerun rechecks only what changed. typecheck:full is the same check from scratch, which `pnpm check:full` runs once a day, so build info's open stale-result bugs (TypeScript #64386, #64591) live a day at most.",
+			"dependsOn": ["^surface"],
 			"inputs": [
 				"$TURBO_DEFAULT$",
 				"$TURBO_ROOT$/vendor/toolchain/packages/devtools/tsconfig.base.json"
 			],
-			"outputs": ["node_modules/.cache/tsconfig.tsbuildinfo"]
+			"outputs": []
 		},
 		"typecheck:full": {
-			"description": "The typecheck pnpm check runs: every project checked from scratch (--incremental false), cached apart from typecheck, so no incremental state, stale or not, decides the gate.",
-			"dependsOn": ["^source"],
+			"description": "typecheck without build info, cached apart from typecheck: `pnpm check:full`, which the push gate runs once a day, runs it, so no result rests on build info for longer.",
+			"dependsOn": ["^surface"],
 			"inputs": [
 				"$TURBO_DEFAULT$",
 				"$TURBO_ROOT$/vendor/toolchain/packages/devtools/tsconfig.base.json"
@@ -41,8 +38,8 @@
 			"outputs": []
 		},
 		"oxlint": {
-			"description": "The dev tools' preset and plugin and den's toolchain.config.ts are inputs too.",
-			"dependsOn": ["^source"],
+			"description": "The dev tools' preset and plugin and den's toolchain.config.ts are inputs too. Type-aware lint reads the types a package imports, so it waits on its dependencies' surface, as typecheck does.",
+			"dependsOn": ["^surface"],
 			"inputs": [
 				"$TURBO_DEFAULT$",
 				"$TURBO_ROOT$/toolchain.config.ts",
@@ -50,10 +47,10 @@
 			]
 		},
 		"test": {
-			"dependsOn": ["^source"]
+			"dependsOn": ["^surface"]
 		},
 		"//#typecheck": {
-			"outputs": ["node_modules/.cache/tsconfig.tsbuildinfo"]
+			"outputs": []
 		},
 		"//#typecheck:full": {},
 		"//#oxlint": {},
@@ -64,6 +61,15 @@
 		"//#format": {},
 		"//#dead-code": {},
 		"//#architecture": {},
-		"//#dedupe": {}
+		"//#dedupe": {
+			"description": "pnpm dedupe --check reads the manifests, the lockfile, the workspace file and .npmrc, never source.",
+			"inputs": [
+				"**/package.json",
+				"pnpm-lock.yaml",
+				"pnpm-workspace.yaml",
+				".npmrc",
+				"!**/node_modules/**"
+			]
+		}
 	}
 }

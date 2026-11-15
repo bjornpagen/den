@@ -82,7 +82,6 @@ layer(sliceLayer)("a stale holder", (it) => {
 					kept: [],
 					runs: 8,
 					shrink: boundedShrink(4),
-					concurrency: 1,
 					steerEvery: 4,
 					caseHang
 				},
@@ -198,8 +197,7 @@ layer(sliceLayer)("a stale holder", (it) => {
 						oracle: {
 							kind: "second-implementation",
 							name: "PostgreSQL's transaction_timestamp() in milliseconds, read by the cluster's owner between two readings"
-						},
-						concurrency: 1
+						}
 					},
 					(ledger, c) =>
 						Effect.gen(function* () {

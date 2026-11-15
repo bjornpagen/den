@@ -107,9 +107,7 @@ layer(sliceLayer)("a refused credential", (it) => {
 						oracle: {
 							kind: "specification",
 							name: "refused commits fenced and recorded, deaths spent, no body run while broken, every step done once the credential is right"
-						},
-						/** Every case shares the suite's database, its ledgers, its transport and its clock. */
-						concurrency: 1
+						}
 					},
 					(run, c) =>
 						Effect.gen(function* () {

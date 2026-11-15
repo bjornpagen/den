@@ -19,7 +19,7 @@ import { Data, Duration, Effect, Formatter } from "effect"
 export const exploration = <S, F extends string>(
 	fields: Readonly<{
 		suite: string
-		draw: Draw<S, S>
+		draw: Draw<S, S, F>
 		coverage: Coverage<F>
 		runs: number
 		shrink: number
@@ -33,7 +33,6 @@ export const exploration = <S, F extends string>(
 	kept: [],
 	runs: fields.runs,
 	shrink: boundedShrink(fields.shrink),
-	concurrency: 1,
 	steerEvery: 16,
 	caseHang: Duration.infinity,
 	oracle: fields.oracle

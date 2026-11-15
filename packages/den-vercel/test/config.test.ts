@@ -214,7 +214,6 @@ it.effect("the check reports exactly the edits of den's entries", (ctx) =>
 				kept: [],
 				runs: 200,
 				shrink: boundedShrink(40),
-				concurrency: 1,
 				steerEvery: 16,
 				caseHang
 			},
