@@ -183,21 +183,6 @@ const installed = Effect.acquireRelease(
 export const migrateIn = (directory: string) =>
 	Effect.flatMap(Database, (db) => grizzle("migrate", db.env, directory))
 
-/**
- * PostgreSQL's own instant in the suite's database, `transaction_timestamp()` in milliseconds since the epoch, floored,
- * read by the cluster's owner in a transaction of its own: what a clocked read in milliseconds binds.
- */
-export const databaseMillis = Effect.flatMap(Database, (db) =>
-	Effect.map(
-		asOwner(
-			db.cluster,
-			db.database,
-			"SELECT floor(extract(epoch FROM transaction_timestamp()) * 1000)::bigint::text AS name"
-		),
-		(rows) => Arr.map(rows, BigInt)
-	)
-)
-
 /** The suite's database, installed for the layer's scope. */
 const databaseLayer = Layer.effect(Database, installed)
 

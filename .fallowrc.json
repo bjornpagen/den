@@ -1,7 +1,8 @@
 {
 	"$schema": "./node_modules/fallow/schema.json",
-	// The commit gate's AST-only oxlint configuration, which the gate names by path.
-	"entry": ["oxlint.ast.config.ts"],
+	// The commit gate's AST-only oxlint configuration, which the gate names by path; the vertical slice's grizzle config,
+	// which the integration suites hand the grizzle CLI by path (integration/support/slice.ts).
+	"entry": ["oxlint.ast.config.ts", "packages/den/integration/slice/grizzle.config.ts"],
 	"ignorePatterns": ["vendor/**"],
 	// The tsconfig's @effect/language-service plugin is no package: it is @effect/tsgo's, patched into TypeScript.
 	"ignoreDependencies": ["@effect/language-service"],

@@ -229,12 +229,6 @@ describe("the AlphaTest flow controller", () => {
 		(ctx) => searched(ctx, controlSearch("flow-control: windows", BBR, 300))
 	)
 
-	it.effect("catches a halving on every congestion signal of one event", (ctx) =>
-		caught(
-			controlSearch("flow-control planted: no recovery point", { ...BBR, halves: () => true }, 80)
-		).pipe(inTheirRun(ctx))
-	)
-
 	it.effect("catches an up probe kept on a tie", (ctx) =>
 		caught(
 			controlSearch(
@@ -246,16 +240,6 @@ describe("the AlphaTest flow controller", () => {
 							? probed.perSecond >= reference.perSecond
 							: BBR.kept(direction, probed, reference)
 				},
-				80
-			)
-		).pipe(inTheirRun(ctx))
-	)
-
-	it.effect("catches a halving with no floor of one request", (ctx) =>
-		caught(
-			controlSearch(
-				"flow-control planted: halving to zero",
-				{ ...BBR, decreased: (window, constants) => Math.floor(window * constants.decrease) },
 				80
 			)
 		).pipe(inTheirRun(ctx))

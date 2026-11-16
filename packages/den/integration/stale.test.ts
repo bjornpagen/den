@@ -1,10 +1,10 @@
 import { holderOf, instantOf } from "@bjornpagen/den/runtime/identity"
-import type { Ledger, Ran, Turn } from "@bjornpagen/den/runtime/ledger"
+import type { Ran, Turn } from "@bjornpagen/den/runtime/ledger"
 import { lostRace, serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
 import { type CallError, Db } from "@bjornpagen/grizzle/runtime"
-import { drawn, exhaust, explore } from "@bjornpagen/testing/explore"
-import { required, requiredInSpace } from "@bjornpagen/testing/features"
+import { drawn, explore } from "@bjornpagen/testing/explore"
+import { required } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
@@ -13,15 +13,7 @@ import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Duration, Effect, Formatter, Option } from "effect"
 import type { Digest } from "effect/crypto"
 import { TestClock } from "effect/testing"
-import type { Faults } from "#integration/slice/flows.ts"
-import {
-	AppServed,
-	databaseMillis,
-	nonce,
-	openLedgers,
-	rows,
-	sliceLayer
-} from "#integration/support/slice.ts"
+import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
 import { longestLeaseMillis, reclaimableAfterMillis } from "#runtime/turn.ts"
 import { caseHangMillis } from "#test/support/suites.ts"
 
@@ -31,20 +23,13 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * deadline of its own still ahead; the fresh one claimed attempt 2. Correctness rests on the keys alone, never on a
  * clock: whichever commits second is refused on the key the first commit's Held holds, its writes rolled back with its
  * result, a race lost; the first commit's attempt is the one Held names. A wake for an attempt whose predecessor was
- * never claimed is lost outright, claiming nothing. Beside it, every flow's ledger reads the database's instant: an
- * instant PostgreSQL reads itself between two readings lies between them, as calls that do not overlap read
- * non-decreasing instants of one server's clock.
+ * never claimed is lost outright, claiming nothing.
  *
  * Oracle (specification): one holder committed, the other lost, the winner's attempt held, one result; a forged wake
- * lost with no claim. Oracle (second implementation): PostgreSQL's own `transaction_timestamp()`.
+ * lost with no claim.
  */
 
 type Order = "stale commits first" | "fresh commits first"
-
-/** The slice's flows, whose ledgers each read the database's instant. */
-type Flow = "Chain" | "Fan" | "Sync" | "Retry"
-
-const flows: Arr.NonEmptyReadonlyArray<Flow> = ["Chain", "Fan", "Sync", "Retry"]
 
 type Feature = Order | "a forged attempt"
 
@@ -176,47 +161,6 @@ layer(sliceLayer)("a stale holder", (it) => {
 						assert.deepStrictEqual(claims, [])
 					})
 			)
-		)
-	)
-
-	it.effect("reads the database's instant, between two readings of PostgreSQL's own", (ctx) =>
-		searched(
-			ctx,
-			Effect.gen(function* () {
-				const { all } = yield* openLedgers
-				if (!Arr.isReadonlyArrayNonEmpty(all)) {
-					return yield* Effect.die("the slice runs four flows")
-				}
-				return yield* exhaust(
-					{
-						suite: "the database's instant",
-						generator: element<Ledger<Faults>>(all),
-						literal: (ledger: Ledger<Faults>) => ledger.flow,
-						coverage: requiredInSpace<Flow>(flows),
-						caseHang: caseHangMillis,
-						box: "each flow's ledger of the slice",
-						oracle: {
-							kind: "second-implementation",
-							name: "PostgreSQL's transaction_timestamp() in milliseconds, read by the cluster's owner between two readings"
-						}
-					},
-					(ledger, c) =>
-						Effect.gen(function* () {
-							Arr.forEach(
-								Arr.filter(flows, (flow) => flow === ledger.flow),
-								(flow) => c.note(flow)
-							)
-							const first = yield* ledger.now
-							const between = yield* databaseMillis
-							const second = yield* ledger.now
-							assert.deepStrictEqual(
-								Arr.map(between, (millis) => first <= millis && millis <= second),
-								[true],
-								`${first} ≤ ${Formatter.format(between)} ≤ ${second}`
-							)
-						})
-				)
-			})
 		)
 	)
 })

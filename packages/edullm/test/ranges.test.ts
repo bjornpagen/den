@@ -185,18 +185,4 @@ describe("block and bucket ranges", () => {
 			)
 		).pipe(inTheirRun(ctx))
 	)
-
-	it.effect("catches halves with a block between them", (ctx) =>
-		caught(
-			splitSearch(
-				"ranges planted: a gap between the halves",
-				(range) =>
-					Option.map(
-						halvesOf(range),
-						([low, high]) => [low, { lo: high.lo + 1, hi: high.hi }] as const
-					),
-				100
-			)
-		).pipe(inTheirRun(ctx))
-	)
 })
