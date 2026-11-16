@@ -1,4 +1,4 @@
-import { standard } from "@bjornpagen/devtools/preset"
+import { LIMIT_TESTS, standard } from "@bjornpagen/devtools/preset"
 import { CLOCK_RULES, EVERY_FILE_RULES, TEST_RULES } from "@bjornpagen/testing/oxlint"
 import { defineConfig } from "oxlint"
 import toolchain from "#toolchain.config.ts"
@@ -9,6 +9,18 @@ const ZOD = {
 	name: "zod",
 	message:
 		"Zod is banned. Effect Schema admits a foreign value once at its boundary, into a type that carries the proof."
+} as const
+
+/**
+ * Where den's limits are minted and written (@den/limits), and the test files the limit rules leave alone: the dev
+ * tools' list, and the vertical slice's suites and their support (integration/).
+ */
+const LIMITS = {
+	packages: ["packages/limits"],
+	tests: {
+		suffixes: LIMIT_TESTS.suffixes,
+		directories: [...LIMIT_TESTS.directories, "integration"]
+	}
 } as const
 
 /** den's lists for the shared standard; everything else comes from the dev tools' preset. */
@@ -27,6 +39,8 @@ export default defineConfig(
 			},
 			"side-effect-free": { modules: [] },
 			"import-doors": { doors: [] },
+			"limits-sole-mint": LIMITS,
+			"no-bare-limit": LIMITS,
 			"brands-sole-mint": {
 				mints: [
 					{
@@ -81,6 +95,14 @@ export default defineConfig(
 			everyFile: EVERY_FILE_RULES,
 			clock: { files: [], rules: CLOCK_RULES }
 		},
-		overrides: []
+		overrides: [
+			{
+				/** den's test support packages, the reference model and simulator (den-model) and the outside systems' fakes
+				 * (edullm): what is left in them are a search's generator bounds and draw weights, a test's own inputs, as
+				 * the limit rules leave a test file's alone; the limits they model are read from @den/limits all the same. */
+				files: ["packages/den-model/**", "packages/edullm/**"],
+				rules: { "devtools/no-bare-limit": "off", "devtools/limits-sole-mint": "off" }
+			}
+		]
 	})
 )
