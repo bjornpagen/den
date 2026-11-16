@@ -368,12 +368,6 @@ importers:
 
   vendor/grizzle/packages/engine:
     dependencies:
-      '@bjornpagen/limit':
-        specifier: workspace:*
-        version: link:../../../toolchain/packages/limit
-      '@grizzle/limits':
-        specifier: workspace:*
-        version: link:../limits
       arkregex:
         specifier: 'catalog:'
         version: 0.0.14
@@ -387,15 +381,9 @@ importers:
       '@bjornpagen/grizzle-engine':
         specifier: workspace:*
         version: link:../engine
-      '@bjornpagen/limit':
-        specifier: workspace:*
-        version: link:../../../toolchain/packages/limit
       '@effect/platform-node':
         specifier: 'catalog:'
         version: 4.1.4(effect@4.1.4)(redis@6.3.1)
-      '@grizzle/limits':
-        specifier: workspace:*
-        version: link:../limits
     devDependencies:
       '@types/pg':
         specifier: 'catalog:'
@@ -406,12 +394,6 @@ importers:
       pg:
         specifier: 'catalog:'
         version: 8.23.1
-
-  vendor/grizzle/packages/limits:
-    dependencies:
-      '@bjornpagen/limit':
-        specifier: workspace:*
-        version: link:../../../toolchain/packages/limit
 
   vendor/toolchain/packages/devtools:
     dependencies:
@@ -434,9 +416,6 @@ importers:
         specifier: 'catalog:'
         version: 7.1.0-beta
     devDependencies:
-      '@bjornpagen/limits':
-        specifier: workspace:*
-        version: link:../limits
       '@bjornpagen/testing':
         specifier: workspace:*
         version: link:../testing
@@ -450,22 +429,8 @@ importers:
         specifier: 'catalog:'
         version: 5.1.0(@types/node@26.6.6)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0))
 
-  vendor/toolchain/packages/limit: {}
-
-  vendor/toolchain/packages/limits:
-    dependencies:
-      '@bjornpagen/limit':
-        specifier: workspace:*
-        version: link:../limit
-
   vendor/toolchain/packages/testing:
     dependencies:
-      '@bjornpagen/limit':
-        specifier: workspace:*
-        version: link:../limit
-      '@bjornpagen/limits':
-        specifier: workspace:*
-        version: link:../limits
       '@effect/platform-node':
         specifier: 'catalog:'
         version: 4.1.4(effect@4.1.4)(redis@6.3.1)
@@ -490,6 +455,13 @@ importers:
       vitest:
         specifier: ^5.1.0
         version: 5.1.0(@types/node@26.6.6)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0))
+    devDependencies:
+      '@types/pg':
+        specifier: 'catalog:'
+        version: 8.23.1
+      pg:
+        specifier: 'catalog:'
+        version: 8.23.1
 
 packages:
 
