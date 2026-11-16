@@ -3,20 +3,27 @@
 # scripts/pg/build.sh makes. It never touches grizzle's cluster (port 5433) or its data directory. The data directory
 # carries the pinned version it was initialized from, and start refuses it once the pin moves on.
 #   pg.sh init [--force]   TLS material, configuration, the den_dev owner role and the template database
-#   pg.sh start | stop | status
+#   pg.sh start | stop | status             start issues the TLS material again once it has expired
 #   pg.sh psql [database] [psql args...]    verify-full TLS as den_dev
 #   pg.sh admin [database] [psql args...]   bootstrap superuser over the socket
 #   pg.sh reset                             drop every test database and every role but the bootstrap ones
 #   pg.sh env                               the cluster's coordinates, one KEY=value per line, for the suites
 set -euo pipefail
 
-PIN="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/vendor/grizzle/scripts/pg/pin.env"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PIN="$ROOT/vendor/grizzle/scripts/pg/pin.env"
 if [[ ! -f "$PIN" ]]; then
 	echo "grizzle's PostgreSQL pin $PIN is missing; run git submodule update --init" >&2
 	exit 1
 fi
 # One setting of grizzle's pin, read in a subshell so none of the pin's other settings reaches this script.
 pinned() { (source "$PIN" && printf '%s' "${!1}"); }
+# One limit's value, read from den's limits package (packages/limits/src/<module>.ts) when it is needed, so this script
+# holds no copy of a number: limit <module> <name>.
+limit() {
+	node --input-type=module -e 'process.stdout.write(String((await import(process.argv[1]))[process.argv[2]].value))' \
+		"$ROOT/packages/limits/src/$1.ts" "$2"
+}
 
 PG_VERSION="$(pinned PG_PIN_VERSION)"
 PREFIX="$(pinned GRIZZLE_PG_PREFIX)"
@@ -63,6 +70,28 @@ tls_psql() {
 		"host=localhost port=$PG_PORT dbname=$db user=$DEV_ROLE sslmode=verify-full sslrootcert=$TLS/ca.crt" "$@"
 }
 
+# The cluster's CA and the server's certificate, each for openssl's default lifetime: start issues both again once
+# either has expired, so the cluster needs no lifetime of its own.
+issue_tls() {
+	(
+		cd "$TLS"
+		openssl req -x509 -new -nodes -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -sha256 \
+			-subj "/CN=den local development CA" -keyout ca.key -out ca.crt 2>/dev/null
+		openssl req -new -nodes -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -sha256 \
+			-subj "/CN=localhost" -keyout server.key -out server.csr 2>/dev/null
+		printf "subjectAltName=DNS:localhost,IP:127.0.0.1,IP:::1\nextendedKeyUsage=serverAuth\n" >server.ext
+		openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -sha256 \
+			-extfile server.ext -out server.crt 2>/dev/null
+		rm -f server.csr server.ext ca.srl
+		chmod 600 ./*.key
+	)
+}
+
+tls_current() {
+	openssl x509 -checkend 0 -noout -in "$TLS/ca.crt" >/dev/null &&
+		openssl x509 -checkend 0 -noout -in "$TLS/server.crt" >/dev/null
+}
+
 init() {
 	if [[ -d "$STATE" ]]; then
 		if [[ "${1:-}" != "--force" ]]; then
@@ -74,18 +103,7 @@ init() {
 	fi
 	mkdir -p "$TLS" "$LOG" "$SOCKET"
 	chmod 700 "$STATE"
-	(
-		cd "$TLS"
-		openssl req -x509 -new -nodes -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -sha256 -days 3650 \
-			-subj "/CN=den local development CA" -keyout ca.key -out ca.crt 2>/dev/null
-		openssl req -new -nodes -newkey ec -pkeyopt ec_paramgen_curve:prime256v1 -sha256 \
-			-subj "/CN=localhost" -keyout server.key -out server.csr 2>/dev/null
-		printf "subjectAltName=DNS:localhost,IP:127.0.0.1,IP:::1\nextendedKeyUsage=serverAuth\n" >server.ext
-		openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -sha256 -days 3650 \
-			-extfile server.ext -out server.crt 2>/dev/null
-		rm -f server.csr server.ext ca.srl
-		chmod 600 ./*.key
-	)
+	issue_tls
 	openssl rand -hex 24 >"$PASSWORD_FILE"
 	chmod 600 "$PASSWORD_FILE"
 
@@ -93,8 +111,9 @@ init() {
 		--locale-provider=builtin --builtin-locale=C.UTF-8 --locale=C.UTF-8 \
 		--auth-local=peer --auth-host=reject >/dev/null
 
-	# Every live source's leader holds one replication slot and one walsender, and each holds a connection: a bound of
-	# max_connections (PostgreSQL's default, 100) for both can never be the one that runs out.
+	local replication pred_locks
+	replication="$(limit cluster replicationSlotsAndSenders)"
+	pred_locks="$(limit cluster maxPredLocksPerTransaction)"
 	cat >>"$DATA/postgresql.conf" <<EOF
 
 # den's cluster (scripts/pg.sh). Everything else is the PostgreSQL $PG_VERSION default.
@@ -108,10 +127,10 @@ ssl_min_protocol_version = 'TLSv1.3'
 password_encryption = 'scram-sha-256'
 # grizzle's live reads decode the WAL, and grizzle migrate refuses a cluster below logical.
 wal_level = logical
-max_replication_slots = 100
-max_wal_senders = 100
-# Every grizzle transaction that is not certified READ COMMITTED is SERIALIZABLE: grizzle's README asks for 2048.
-max_pred_locks_per_transaction = 2048
+# packages/limits/src/cluster.ts, with each number's evidence.
+max_replication_slots = $replication
+max_wal_senders = $replication
+max_pred_locks_per_transaction = $pred_locks
 logging_collector = on
 log_directory = '$LOG'
 log_filename = 'postgresql-%Y-%m-%d.log'
@@ -156,6 +175,10 @@ case "${1:-}" in
 		;;
 	start)
 		require_stamp
+		if ! tls_current; then
+			issue_tls
+			running && "$(bin pg_ctl)" -D "$DATA" reload >/dev/null
+		fi
 		running || "$(bin pg_ctl)" -D "$DATA" -l "$LOG/startup.log" -w start >/dev/null
 		echo "PostgreSQL $PG_VERSION running on localhost:$PG_PORT"
 		;;

@@ -1,10 +1,10 @@
-import { caseHang } from "@bjornpagen/den/limits"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { characterOf, type Gen, oneOf, option, string } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, it } from "@effect/vitest"
 import { Effect, Formatter, Option, Redacted } from "effect"
 import { census } from "#census.ts"
@@ -62,7 +62,7 @@ it.effect("the census runs its tick only for the cron secret, and says how the t
 				runs: 200,
 				shrink: boundedShrink(40),
 				steerEvery: 16,
-				caseHang
+				caseHang: caseHangMillis.value
 			},
 			(drawnCall, c) =>
 				Effect.gen(function* () {

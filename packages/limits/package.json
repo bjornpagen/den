@@ -1,0 +1,36 @@
+{
+	"name": "@den/limits",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Every number den bounds something by, each a Limit of @bjornpagen/limit with its evidence, minted here and nowhere else, one module per domain, and read by its .value; scripts/pg.sh reads the cluster's from src/cluster.ts with node. The limits skill is the policy.",
+	"type": "module",
+	"sideEffects": false,
+	"imports": {
+		"#*": "./src/*"
+	},
+	"exports": {
+		"./alphatest": "./src/alphatest.ts",
+		"./bastion": "./src/bastion.ts",
+		"./claim": "./src/claim.ts",
+		"./cluster": "./src/cluster.ts",
+		"./flow-control": "./src/flow-control.ts",
+		"./postgres": "./src/postgres.ts",
+		"./qti": "./src/qti.ts",
+		"./suites": "./src/suites.ts",
+		"./vercel-cron": "./src/vercel-cron.ts",
+		"./vercel-functions": "./src/vercel-functions.ts",
+		"./vercel-queues": "./src/vercel-queues.ts"
+	},
+	"scripts": {
+		"typecheck": "toolchain-typecheck",
+		"typecheck:full": "toolchain-typecheck --incremental false",
+		"oxlint": "toolchain-oxlint"
+	},
+	"dependencies": {
+		"@bjornpagen/limit": "workspace:*"
+	},
+	"devDependencies": {
+		"@bjornpagen/devtools": "workspace:*",
+		"@types/node": "catalog:"
+	}
+}

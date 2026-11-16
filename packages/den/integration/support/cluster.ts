@@ -1,6 +1,6 @@
 import net from "node:net"
-import { connectTimeoutMillis } from "@bjornpagen/den/limits"
 import type { DbConnection } from "@bjornpagen/grizzle/runtime"
+import { connectTimeoutMillis } from "@den/limits/cluster"
 import { Config, Effect, FileSystem, Path, Redacted, String as Str } from "effect"
 import pgDriver from "pg"
 

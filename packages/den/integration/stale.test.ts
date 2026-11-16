@@ -1,4 +1,3 @@
-import { caseHang, longestLeaseMillis, reclaimableAfterMillis } from "@bjornpagen/den/limits"
 import { holderOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import type { Ledger, Ran, Turn } from "@bjornpagen/den/runtime/ledger"
 import { lostRace, serve } from "@bjornpagen/den/runtime/turn"
@@ -10,6 +9,8 @@ import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { longestLeaseMillis, reclaimableAfterMillis } from "@den/limits/claim"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Duration, Effect, Formatter, Option } from "effect"
 import type { Digest } from "effect/crypto"
@@ -83,7 +84,7 @@ layer(sliceLayer)("a stale holder", (it) => {
 					runs: 8,
 					shrink: boundedShrink(4),
 					steerEvery: 4,
-					caseHang
+					caseHang: caseHangMillis.value
 				},
 				(race, c) =>
 					Effect.gen(function* () {
@@ -192,7 +193,7 @@ layer(sliceLayer)("a stale holder", (it) => {
 						generator: element<Ledger<Faults>>(all),
 						literal: (ledger: Ledger<Faults>) => ledger.flow,
 						coverage: requiredInSpace<Flow>(flows),
-						caseHang,
+						caseHang: caseHangMillis.value,
 						box: "each flow's ledger of the slice",
 						oracle: {
 							kind: "second-implementation",

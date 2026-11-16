@@ -4,6 +4,8 @@ import { array, boolean, element, type Gen, int, oneOf, option } from "@bjornpag
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { backoffFirstMillis, backoffLastMillis } from "@den/limits/claim"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import {
 	Array as Arr,
@@ -26,7 +28,6 @@ import {
 	utcHours,
 	type Window
 } from "#algebra/kinds.ts"
-import { backoffFirstMillis, backoffLastMillis, caseHang } from "#limits.ts"
 import { eligible, isOpen, opensAt } from "#runtime/eligible.ts"
 import {
 	exclusiveId,
@@ -592,7 +593,7 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 						runs: 300,
 						shrink: boundedShrink(60),
 						steerEvery: 16,
-						caseHang
+						caseHang: caseHangMillis.value
 					},
 					(w, c) =>
 						Effect.gen(function* () {
@@ -756,7 +757,7 @@ layer(Digest.layerWebCrypto)("windows", (it) => {
 					runs: 200,
 					shrink: boundedShrink(40),
 					steerEvery: 16,
-					caseHang
+					caseHang: caseHangMillis.value
 				},
 				(wc, c) =>
 					Effect.sync(() => {
@@ -825,7 +826,7 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 						runs: 100,
 						shrink: boundedShrink(40),
 						steerEvery: 16,
-						caseHang
+						caseHang: caseHangMillis.value
 					},
 					(l, c) =>
 						Effect.gen(function* () {

@@ -1,4 +1,3 @@
-import { caseHang, longestLeaseMillis } from "@bjornpagen/den/limits"
 import { holderOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import type { HoldRow } from "@bjornpagen/den/runtime/ledger"
 import { giveBack, take } from "@bjornpagen/den/runtime/seats"
@@ -11,6 +10,8 @@ import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { longestLeaseMillis } from "@den/limits/claim"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, HashMap, Option, Ref } from "effect"
 import { ringOnAndDrain } from "#integration/support/run.ts"
@@ -75,7 +76,7 @@ layer(sliceLayer)("exact seats", (it) => {
 						runs: 8,
 						shrink: boundedShrink(4),
 						steerEvery: 4,
-						caseHang
+						caseHang: caseHangMillis.value
 					},
 					(drawnTakers, c) =>
 						Effect.gen(function* () {

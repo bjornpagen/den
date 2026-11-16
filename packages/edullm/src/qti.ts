@@ -1,4 +1,5 @@
 import type { Gen } from "@bjornpagen/testing/gen"
+import { qtiPageLimit } from "@den/limits/qti"
 import { Array as Arr, Context, Effect, Layer, Option, Order, Ref, Schema } from "effect"
 import type { Nature } from "#nature.ts"
 
@@ -13,19 +14,6 @@ import type { Nature } from "#nature.ts"
 /** The collections the sync reads (edullm's `QTI_COLLECTIONS`, the three list endpoints of the QTI API). */
 export const COLLECTIONS = ["assessment-items", "assessment-tests", "stimuli"] as const
 export type Collection = (typeof COLLECTIONS)[number]
-
-/**
- * The most documents one page of a list may hold.
- *
- * @limitKind published
- * @owner the QTI REST API
- * @unit documents a page
- * @scope one `after` page of one collection's list read
- * @constraint hard quota (the list endpoints' `limit` parameter)
- * @source https://qti.alpha-1edtech.ai/openapi.yaml `limit` "maximum: 1000"
- * @verified 2026-10-30
- */
-export const QTI_PAGE_LIMIT = 1000
 
 /** A document as the source holds it: its identifier and when it last changed. */
 export type Document = Readonly<{ id: string; updatedAt: number }>
@@ -132,7 +120,7 @@ export const makeQti = (world: World, nature: Nature): Effect.Effect<QtiApi["Ser
 				}
 				const held = yield* Ref.get(documents)
 				const matching = listed(held[request.collection], request)
-				const items = Arr.take(matching, Math.min(request.limit, QTI_PAGE_LIMIT))
+				const items = Arr.take(matching, Math.min(request.limit, qtiPageLimit.value))
 				const next =
 					matching.length > items.length
 						? Option.map(Arr.last(items), (last) => last.id)

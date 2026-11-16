@@ -1,9 +1,9 @@
-import { connectTimeoutMillis } from "@bjornpagen/den/limits"
 import { instantOf } from "@bjornpagen/den/runtime/identity"
 import type { Ledger } from "@bjornpagen/den/runtime/ledger"
 import type { Ledgers } from "@bjornpagen/den/runtime/turn"
 import { inProcess } from "@bjornpagen/den/transport"
 import { Db, DbLayer, LiveSource, roleNameOf, served } from "@bjornpagen/grizzle/runtime"
+import { connectTimeoutMillis } from "@den/limits/cluster"
 import { NodeServices } from "@effect/platform-node"
 import {
 	Array as Arr,

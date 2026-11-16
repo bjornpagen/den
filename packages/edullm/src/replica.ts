@@ -1,4 +1,9 @@
 import { type Gen, int } from "@bjornpagen/testing/gen"
+import {
+	bastionBytesPerSecond,
+	bastionKeysPerSecondPerSession,
+	bastionSeats
+} from "@den/limits/bastion"
 import { Array as Arr, Context, Effect, HashMap, Layer, Option, Ref, Schema } from "effect"
 import { Digest } from "effect/crypto"
 import { bodyOf, FieldCount, PGCOPY, type Tuple } from "#copy-binary.ts"
@@ -34,22 +39,8 @@ export const pageBodyOf = (rows: ReadonlyArray<Row>): Uint8Array =>
 	bodyOf(PGCOPY, 0, Arr.map(rows, tupleOf))
 
 /**
- * The bastion's capacity as the operator holds it, and the replica's rates through it at that hold.
- *
- * @limitKind measured
- * @owner the shared Timeback SSM bastion, held by edullm's operator
- * @unit sessions; bytes a second; keys a second
- * @scope the Timeback replica fake's bastion
- * @evidence edullm `packages/platform/pipeline/src/limits.ts` `LANE_WIDTHS.timeback` and `PRUNE_FETCH_KEYS`
- * @observed 2026-09-16 06:37–07:37Z (the eight-slot trial); 2026-10-15T17:41Z (the key rate)
- * @environment Vercel production iad1, Timeback's Aurora PostgreSQL 17.7 through the shared us-east-1 SSM bastion
- * @workload eight concurrent COPY sessions of whole relations (545 COPY attempts, 538 pages); `resources`' key scan,
- * 2,490,370 keys, with eight leases on the bastion
- * @result 18,820,212,728 bytes in the hour, 5,227,836.87 bytes a second, bastion CPU 67.41% mean and 71.16% max; 2,490,370
- * keys in 178,630 ms, 13,941 keys a second a lease
- * @decision eight seats, the operator's 60–70% CPU band; a session's share is the hour's bytes over the eight, and a
- * session past the eighth shares the same bytes with every other session open
- * @revalidate a bastion CPU above 70% at eight sessions, or a widening trial (mean CPU ≤ 60% and ≤ 11 sessions)
+ * The bastion's capacity as the operator holds it, and the replica's rates through it at that hold: a session's share is
+ * the bytes over the seats, and a session past the last seat shares the same bytes with every other session open.
  */
 export type Bastion = Readonly<{
 	seats: number
@@ -57,11 +48,11 @@ export type Bastion = Readonly<{
 	keysPerSecondPerSession: number
 }>
 
-/** The bastion as the operator held it on 2026-09-16 and 2026-10-15 (`Bastion`'s evidence). */
+/** The bastion as the operator held it on 2026-09-16 and 2026-10-15 (@den/limits/bastion, with each record). */
 export const MEASURED_BASTION: Bastion = {
-	seats: 8,
-	bytesPerSecond: 5_227_836.87,
-	keysPerSecondPerSession: 13_941
+	seats: bastionSeats.value,
+	bytesPerSecond: bastionBytesPerSecond.value,
+	keysPerSecondPerSession: bastionKeysPerSecondPerSession.value
 }
 
 /** What a statement meets on its own: nothing, or one of the failures edullm's copy ladder names. */

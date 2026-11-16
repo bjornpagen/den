@@ -1,10 +1,12 @@
 import { natural, pg, relation } from "@bjornpagen/grizzle"
+import { published } from "@bjornpagen/limit"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { boolean, element, type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, it } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Option, Schema, String as Str } from "effect"
 import { type AnyFlow, flow } from "#algebra/flow.ts"
@@ -29,7 +31,6 @@ import {
 	writer,
 	writesNothing
 } from "#algebra/kinds.ts"
-import { caseHang, published } from "#limits.ts"
 import { type LawIR, lower } from "#lower/fragment.ts"
 import { type Placement, printFragment } from "#lower/print.ts"
 
@@ -244,7 +245,7 @@ it.effect(
 					runs: 160,
 					shrink: boundedShrink(40),
 					steerEvery: 16,
-					caseHang
+					caseHang: caseHangMillis.value
 				},
 				(sketch, c) =>
 					Effect.sync(() => {

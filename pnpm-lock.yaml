@@ -271,6 +271,12 @@ importers:
       '@bjornpagen/grizzle':
         specifier: workspace:*
         version: link:../../vendor/grizzle/packages/grizzle
+      '@bjornpagen/limit':
+        specifier: workspace:*
+        version: link:../../vendor/toolchain/packages/limit
+      '@den/limits':
+        specifier: workspace:*
+        version: link:../limits
       '@types/pg':
         specifier: 'catalog:'
         version: 8.23.1
@@ -311,6 +317,9 @@ importers:
       '@bjornpagen/testing':
         specifier: workspace:*
         version: link:../../vendor/toolchain/packages/testing
+      '@den/limits':
+        specifier: workspace:*
+        version: link:../limits
       effect:
         specifier: 'catalog:'
         version: 4.1.4
@@ -327,6 +336,9 @@ importers:
       '@bjornpagen/den':
         specifier: workspace:*
         version: link:../den
+      '@den/limits':
+        specifier: workspace:*
+        version: link:../limits
       '@vercel/queue':
         specifier: 'catalog:'
         version: 0.11.0
@@ -355,6 +367,9 @@ importers:
       '@bjornpagen/testing':
         specifier: workspace:*
         version: link:../../vendor/toolchain/packages/testing
+      '@den/limits':
+        specifier: workspace:*
+        version: link:../limits
       effect:
         specifier: 'catalog:'
         version: 4.1.4
@@ -365,6 +380,19 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 5.1.0(@types/node@26.6.6)(vite@8.3.8(@types/node@26.6.6)(jiti@2.7.0))
+
+  packages/limits:
+    dependencies:
+      '@bjornpagen/limit':
+        specifier: workspace:*
+        version: link:../../vendor/toolchain/packages/limit
+    devDependencies:
+      '@bjornpagen/devtools':
+        specifier: workspace:*
+        version: link:../../vendor/toolchain/packages/devtools
+      '@types/node':
+        specifier: 26.6.6
+        version: 26.6.6
 
   vendor/grizzle/packages/engine:
     dependencies:

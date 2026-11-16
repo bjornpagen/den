@@ -4,6 +4,7 @@ import { constant, type Gen, int, weighted } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { searched } from "@bjornpagen/testing/vitest"
 import { runOfTest } from "@bjornpagen/testing/vitest/run"
+import { throttleRequestsLeast, throttleRequestsMost } from "@den/limits/alphatest"
 import { describe, it } from "@effect/vitest"
 import { Array as Arr, Effect, HashMap, Option } from "effect"
 import {
@@ -68,7 +69,14 @@ const scenarioGen: Gen<Scenario> = (source) => {
 		congestion: source.draw(
 			weighted([
 				[1, constant(Option.none())],
-				[1, (s) => Option.some({ requests: s.draw(int(40, 68)), weather: stormy })]
+				[
+					1,
+					(s) =>
+						Option.some({
+							requests: s.draw(int(throttleRequestsLeast.value, throttleRequestsMost.value)),
+							weather: stormy
+						})
+				]
 			])
 		)
 	}

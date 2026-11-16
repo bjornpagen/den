@@ -1,4 +1,3 @@
-import { caseHang } from "@bjornpagen/den/limits"
 import { type Wake, WakeSchema, wakeText } from "@bjornpagen/den/transport"
 import { type Case, drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
@@ -16,10 +15,11 @@ import {
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { caseHangMillis } from "@den/limits/suites"
+import { maxDeliveries } from "@den/limits/vercel-queues"
 import { assert, it } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Option, Schema } from "effect"
 import { consumer } from "#consumer.ts"
-import { maxDeliveries } from "#limits.ts"
 import { TOPIC, VercelQueue, WakeJson } from "#queue.ts"
 import { type Fates, fake } from "#test/fake.ts"
 import { type Encoded, encodedWake } from "#test/wakes.ts"
@@ -136,7 +136,7 @@ it.effect("the consumer acknowledges every delivery, a stale ending included", (
 				runs: 200,
 				shrink: boundedShrink(40),
 				steerEvery: 16,
-				caseHang
+				caseHang: caseHangMillis.value
 			},
 			(drawnDeliveries, c) =>
 				Effect.gen(function* () {

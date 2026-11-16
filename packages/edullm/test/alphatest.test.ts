@@ -12,6 +12,7 @@ import {
 } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { searched } from "@bjornpagen/testing/vitest"
+import { listingPageRows, throttleRequestsMost } from "@den/limits/alphatest"
 import { describe, it } from "@effect/vitest"
 import { Array as Arr, Effect, HashMap, Option } from "effect"
 import {
@@ -19,7 +20,6 @@ import {
 	classify,
 	KINDS,
 	type Kind,
-	LISTING_PAGE_ROWS,
 	listingOf,
 	type Logged,
 	makeAlphaTest,
@@ -70,7 +70,7 @@ const requestGen = (targets: number): Gen<Request> =>
 			(source) => ({
 				kind: "listing",
 				page: source.draw(int(1, 6)),
-				limit: source.draw(production(LISTING_PAGE_ROWS, [50, 250, 1000]))
+				limit: source.draw(production(listingPageRows.value, [50, 250, 1000]))
 			})
 		],
 		[
@@ -98,7 +98,7 @@ const scenarioGen: Gen<Scenario> = (source) => {
 		world: {
 			knees: MEASURED_KNEES,
 			throttle: {
-				requests: source.draw(int(1, 68)),
+				requests: source.draw(int(1, throttleRequestsMost.value)),
 				windowMillis: source.draw(production(1000, [500, 2000])),
 				retryAfter: source.draw(option(int(1, 30)))
 			},
@@ -179,14 +179,14 @@ const judged = (scenario: Scenario, log: ReadonlyArray<Logged>, c: Case<Seen>) =
 			}
 			if (read.request.kind === "listing") {
 				const page = yield* listingOf(response.body)
-				const size = Math.min(read.request.limit, LISTING_PAGE_ROWS)
+				const size = Math.min(read.request.limit, listingPageRows.value)
 				const first = (read.request.page - 1) * size
 				const expected = Math.max(0, Math.min(size, world.listingRows - first))
 				if (expected === 0) {
 					c.note("listing-past-end")
 				} else if (expected < size) {
 					c.note("listing-partial")
-				} else if (read.request.limit > LISTING_PAGE_ROWS) {
+				} else if (read.request.limit > listingPageRows.value) {
 					c.note("listing-capped")
 				}
 				yield* law(

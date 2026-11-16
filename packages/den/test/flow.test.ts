@@ -1,8 +1,10 @@
+import { derived, published } from "@bjornpagen/limit"
 import { exhaust } from "@bjornpagen/testing/explore"
 import { requiredInSpace } from "@bjornpagen/testing/features"
 import { element } from "@bjornpagen/testing/gen"
 import { searched } from "@bjornpagen/testing/vitest"
 import { testWorkers } from "@bjornpagen/testing/workers"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, it } from "@effect/vitest"
 import { Array as Arr, Effect, Exit, Formatter, Option, Schema } from "effect"
 import { flow } from "#algebra/flow.ts"
@@ -27,7 +29,6 @@ import {
 	writer,
 	writesNothing
 } from "#algebra/kinds.ts"
-import { caseHang, derived, published } from "#limits.ts"
 
 /**
  * A flow's declaration-time checks: a well-formed flow is accepted, and each fault is refused with Refused when the
@@ -161,7 +162,7 @@ it.effect("accepts a well-formed flow and refuses each fault when it is declared
 				generator: element(Fault.literals),
 				literal: Formatter.format,
 				coverage: requiredInSpace<Fault>(Fault.literals),
-				caseHang,
+				caseHang: caseHangMillis.value,
 				box: "a flow of two steps on one resource, a scope and a root, with each single fault",
 				oracle: {
 					kind: "specification",

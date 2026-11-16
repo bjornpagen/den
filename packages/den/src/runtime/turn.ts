@@ -1,8 +1,8 @@
 import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
+import { backoffFirstMillis, backoffLastMillis, leaseMarginMillis } from "@den/limits/claim"
 import { Array as Arr, Cause, Duration, Effect, Exit, Option, Order, Random } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Ladder } from "#algebra/kinds.ts"
-import { backoffFirstMillis, backoffLastMillis, leaseMarginMillis } from "#limits.ts"
 import { opensAt, isOpen } from "#runtime/eligible.ts"
 import {
 	finishStep,

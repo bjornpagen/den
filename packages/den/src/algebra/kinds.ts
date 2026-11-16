@@ -1,7 +1,8 @@
 import type { AnyRelation, Fact, Written } from "@bjornpagen/grizzle"
+import type { Limit } from "@bjornpagen/limit"
+import { censusPeriodSeconds } from "@den/limits/vercel-cron"
 import { regex } from "arkregex"
 import { Array as Arr, type Cron, Data, Duration, type Effect, type Schema } from "effect"
-import { censusPeriodSeconds, type Limit } from "#limits.ts"
 
 /**
  * The declarations of den's algebra (the proposal's section 4): step kinds, scope kinds, roots, spawn edges and

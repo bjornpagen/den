@@ -1,10 +1,12 @@
-import { functionLifetimeSeconds, caseHang } from "@bjornpagen/den/limits"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { characterOf, type Gen, int, oneOf, option, string } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { caseHangMillis } from "@den/limits/suites"
+import { functionLifetimeSeconds } from "@den/limits/vercel-functions"
+import { maxDeliveries } from "@den/limits/vercel-queues"
 import { assert, it } from "@effect/vitest"
 import {
 	Array as Arr,
@@ -17,7 +19,6 @@ import {
 	String as Str
 } from "effect"
 import { check, fragment, type Routes } from "#config.ts"
-import { maxDeliveries } from "#limits.ts"
 import { TOPIC } from "#queue.ts"
 
 /**
@@ -215,7 +216,7 @@ it.effect("the check reports exactly the edits of den's entries", (ctx) =>
 				runs: 200,
 				shrink: boundedShrink(40),
 				steerEvery: 16,
-				caseHang
+				caseHang: caseHangMillis.value
 			},
 			({ routes, edit: drawnEdit }, c) =>
 				Effect.gen(function* () {

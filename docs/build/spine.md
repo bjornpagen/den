@@ -7,11 +7,13 @@ where the proposal leaves a decision open, the spine makes the simplest one cons
 
 ## What was built
 
-`packages/den` (`@bjornpagen/den`, private), each module its own subpath export (`@bjornpagen/den/runtime/turn`, …):
+`packages/den` (`@bjornpagen/den`, private), each module its own subpath export (`@bjornpagen/den/runtime/turn`, …).
+Its limits (Vercel's function lifetime, the lease, the invocation budget and the retry ladder derived from it,
+PostgreSQL's `authentication_timeout` and the connect timeout derived from it, the suites' case hang guard) are
+`@den/limits`'s (`packages/limits`):
 
 | module | what it holds |
 |---|---|
-| `src/limits.ts` | the one mint of limits (`published`, `measured`, `derived`, from grizzle's `core/limits.ts`), and den's: Vercel's 800 s function lifetime (published, verified 2026-11-11), the lease and the invocation budget derived from it, the first reclaimable instant, PostgreSQL's `authentication_timeout` (published) and the connect timeout derived from it, and the suites' case hang guard (measured, from Vitest's run record) |
 | `src/transport.ts` | the wake contract: `Wake` `{ lane, step, attempt }`, each field branded (`den/LaneName`, `DenStep`, `den/Attempt` ≥ 1), decoded by `WakeSchema`; `idempotencyKey` (`${lane}:${step}:${attempt}`); `Transport`, a `Context.Service` whose `send` never fails; the in-process transport over an unbounded `Queue` |
 | `src/algebra/kinds.ts` | `lane` (width, window, pause, ceiling of attempts), `step`, `awaiting`, `scope`, `root`, `edge`, `writes`; spawns typed by their kind (`Page.of(input)`); bodies `input → Effect<{ output, writes }, E, R>`; `Refused` |
 | `src/algebra/flow.ts` | `flow(name, { lanes, kinds, edges })` and its declaration-time checks (below) |

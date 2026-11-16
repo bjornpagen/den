@@ -1,4 +1,6 @@
-import { functionLifetimeSeconds } from "@bjornpagen/den/limits"
+import { censusStepMinutes } from "@den/limits/vercel-cron"
+import { functionLifetimeSeconds } from "@den/limits/vercel-functions"
+import { maxDeliveries } from "@den/limits/vercel-queues"
 import {
 	Array as Arr,
 	Effect,
@@ -9,7 +11,6 @@ import {
 	Schema,
 	String as Str
 } from "effect"
-import { censusStepMinutes, maxDeliveries } from "#limits.ts"
 import { TOPIC } from "#queue.ts"
 
 /**

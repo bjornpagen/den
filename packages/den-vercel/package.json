@@ -13,7 +13,6 @@
 		"./census": "./src/census.ts",
 		"./config": "./src/config.ts",
 		"./consumer": "./src/consumer.ts",
-		"./limits": "./src/limits.ts",
 		"./live": "./src/live.ts",
 		"./queue": "./src/queue.ts",
 		"./send": "./src/send.ts"
@@ -26,6 +25,7 @@
 	},
 	"dependencies": {
 		"@bjornpagen/den": "workspace:*",
+		"@den/limits": "workspace:*",
 		"@vercel/queue": "catalog:",
 		"effect": "catalog:"
 	},

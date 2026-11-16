@@ -22,25 +22,33 @@
 			{
 				"name": "edullm",
 				"patterns": ["packages/edullm/**"]
+			},
+			{
+				"name": "limits",
+				"patterns": ["packages/limits/**"]
 			}
 		],
 		"rules": [
 			{
 				// den's own suites hold the engine to the reference model, which imports nothing of den.
 				"from": "den",
-				"allow": ["den-model"]
+				"allow": ["den-model", "limits"]
 			},
 			{
 				"from": "den-model",
-				"allow": []
+				"allow": ["limits"]
 			},
 			{
 				"from": "den-vercel",
-				"allow": ["den"]
+				"allow": ["den", "limits"]
 			},
 			{
 				"from": "edullm",
-				"allow": ["den", "den-vercel"]
+				"allow": ["den", "den-vercel", "limits"]
+			},
+			{
+				"from": "limits",
+				"allow": []
 			}
 		],
 		"coverage": {

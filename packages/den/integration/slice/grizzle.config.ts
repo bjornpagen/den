@@ -1,6 +1,6 @@
 import net from "node:net"
-import { connectTimeoutMillis } from "@bjornpagen/den/limits"
 import { CredentialError, defineConfig } from "@bjornpagen/grizzle"
+import { connectTimeoutMillis } from "@den/limits/cluster"
 import { Config, Effect } from "effect"
 import pgDriver from "pg"
 import { App } from "#integration/slice/app.ts"

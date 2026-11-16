@@ -1,4 +1,3 @@
-import { censusPeriodSeconds, caseHang } from "@bjornpagen/den/limits"
 import {
 	type Cause,
 	idempotencyKey,
@@ -13,6 +12,14 @@ import { constant, element, type Gen, int, oneOf, weighted } from "@bjornpagen/t
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { caseHangMillis } from "@den/limits/suites"
+import { censusPeriodSeconds } from "@den/limits/vercel-cron"
+import {
+	batchMessages,
+	maxDelaySeconds,
+	maxDeliveries,
+	visibilityTimeoutSeconds
+} from "@den/limits/vercel-queues"
 import { assert, it } from "@effect/vitest"
 import {
 	Array as Arr,
@@ -25,7 +32,6 @@ import {
 	Schema
 } from "effect"
 import { consumer } from "#consumer.ts"
-import { batchMessages, maxDelaySeconds, maxDeliveries, visibilityTimeoutSeconds } from "#limits.ts"
 import { TOPIC, VercelQueue, WakeJson } from "#queue.ts"
 import { sender } from "#send.ts"
 import { type Fake, type Fates, fake, faultless, type Submitted } from "#test/fake.ts"
@@ -159,7 +165,7 @@ it.effect("every wake a ring sends is delivered at least once or healed by a cen
 				runs: 200,
 				shrink: boundedShrink(40),
 				steerEvery: 16,
-				caseHang
+				caseHang: caseHangMillis.value
 			},
 			(drawnRun, c) =>
 				Effect.gen(function* () {
@@ -298,7 +304,7 @@ it.effect(
 					runs: 100,
 					shrink: boundedShrink(40),
 					steerEvery: 16,
-					caseHang
+					caseHang: caseHangMillis.value
 				},
 				(encoded, c) =>
 					Effect.gen(function* () {
@@ -403,7 +409,7 @@ it.effect(
 					runs: 100,
 					shrink: boundedShrink(40),
 					steerEvery: 16,
-					caseHang
+					caseHang: caseHangMillis.value
 				},
 				(drawnTimer, c) =>
 					Effect.gen(function* () {

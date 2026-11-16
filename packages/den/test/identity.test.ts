@@ -4,11 +4,11 @@ import { boolean, characterOf, type Gen, string } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { regex } from "arkregex"
 import { Array as Arr, Effect, Formatter } from "effect"
 import { Digest } from "effect/crypto"
-import { caseHang } from "#limits.ts"
 import {
 	edgeScope,
 	edgeStep,
@@ -59,7 +59,7 @@ layer(Digest.layerWebCrypto)("derived identity", (it) => {
 					runs: 100,
 					shrink: boundedShrink(40),
 					steerEvery: 16,
-					caseHang
+					caseHang: caseHangMillis.value
 				},
 				([a, b], c) =>
 					Effect.gen(function* () {

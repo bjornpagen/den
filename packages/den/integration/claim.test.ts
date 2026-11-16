@@ -1,4 +1,3 @@
-import { caseHang, longestLeaseMillis } from "@bjornpagen/den/limits"
 import { holderOf, instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
@@ -7,6 +6,8 @@ import { requiredInSpace } from "@bjornpagen/testing/features"
 import { int } from "@bjornpagen/testing/gen"
 import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
 import { searched } from "@bjornpagen/testing/vitest"
+import { longestLeaseMillis } from "@den/limits/claim"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Option, Ref } from "effect"
 import type { Digest } from "effect/crypto"
@@ -37,7 +38,7 @@ layer(sliceLayer)("the claim race", (it) => {
 					generator: int(1, 2),
 					literal: Formatter.format,
 					coverage: requiredInSpace<Feature>(["one page", "two pages"]),
-					caseHang,
+					caseHang: caseHangMillis.value,
 					box: "two claimers of one chain's first page, a run of one or two pages",
 					oracle: {
 						kind: "postgresql",

@@ -1,3 +1,11 @@
+import {
+	congestionDivisor,
+	minLatencyFilterSeconds,
+	probeDownGain,
+	probeUpGain,
+	probeWaitLeastSeconds,
+	probeWaitSpreadSeconds
+} from "@den/limits/flow-control"
 import { Array as Arr, Option } from "effect"
 
 /**
@@ -12,66 +20,29 @@ import { Array as Arr, Option } from "effect"
  * caller passes, so a run is a function of its inputs.
  */
 
-/** BBR's and TCP's constants, as `Rules` read them. */
+/** BBR's and TCP's constants, as `Rules` read them; each is a limit of @den/limits/flow-control, with its source. */
 export type Constants = Readonly<{
-	/**
-	 * BBR's ProbeBW pacing gains: a probe moves the window up to `ceil(up × window)`, down to `max(1, floor(down ×
-	 * window))`.
-	 *
-	 * @limitKind published
-	 * @owner the AlphaTest flow controller
-	 * @unit ratio of the window
-	 * @scope one probe of one batch
-	 * @constraint protocol constant
-	 * @source https://datatracker.ietf.org/doc/html/draft-ietf-ccwg-bbr-06 §5.3.3.5 "using a BBR.pacing_gain of 1.25";
-	 * §5.3.3.1 "switching to a BBR.pacing_gain of 0.90"
-	 * @verified 2026-10-31
-	 */
+	/** BBR's ProbeBW pacing gains: a probe moves the window up to `ceil(up × window)`, down to `max(1, floor(down ×
+	 * window))`. */
 	gain: Readonly<{ up: number; down: number }>
-	/**
-	 * How long the window cruises before it probes: `least` plus a uniform share of `spread`.
-	 *
-	 * @limitKind published
-	 * @owner the AlphaTest flow controller
-	 * @unit milliseconds
-	 * @scope one cycle of one batch
-	 * @constraint protocol constant
-	 * @source https://datatracker.ietf.org/doc/html/draft-ietf-ccwg-bbr-06 §5.3.3.8.3 "BBR.bw_probe_wait = 2 +
-	 * random_float_between(0.0, 1.0)"
-	 * @verified 2026-10-31
-	 */
+	/** How long the window cruises before it probes, in milliseconds: `least` plus a uniform share of `spread`. */
 	probeWait: Readonly<{ least: number; spread: number }>
-	/**
-	 * How long a min-latency sample stands before any later sample replaces it.
-	 *
-	 * @limitKind published
-	 * @owner the AlphaTest flow controller
-	 * @unit milliseconds
-	 * @scope the min-latency measurement of one batch
-	 * @constraint protocol constant
-	 * @source https://datatracker.ietf.org/doc/html/draft-ietf-ccwg-bbr-06 §2.16.1 "BBR.MinRTTFilterLen is 10 secs"
-	 * @verified 2026-10-31
-	 */
+	/** How long a min-latency sample stands before any later sample replaces it, in milliseconds. */
 	minLatencyFilter: number
-	/**
-	 * The share of the window a congestion event keeps, never below one request.
-	 *
-	 * @limitKind published
-	 * @owner the AlphaTest flow controller
-	 * @unit ratio of the window
-	 * @scope one congestion event of one batch
-	 * @constraint protocol constant
-	 * @source https://www.rfc-editor.org/rfc/rfc5681#section-3.1 "ssthresh = max (FlightSize / 2, 2*SMSS)"
-	 * @verified 2026-10-31
-	 */
+	/** The share of the window a congestion event keeps, never below one request. */
 	decrease: number
 }>
 
+const MILLIS_PER_SECOND = 1000
+
 export const CONSTANTS: Constants = {
-	gain: { up: 1.25, down: 0.9 },
-	probeWait: { least: 2000, spread: 1000 },
-	minLatencyFilter: 10_000,
-	decrease: 0.5
+	gain: { up: probeUpGain.value, down: probeDownGain.value },
+	probeWait: {
+		least: probeWaitLeastSeconds.value * MILLIS_PER_SECOND,
+		spread: probeWaitSpreadSeconds.value * MILLIS_PER_SECOND
+	},
+	minLatencyFilter: minLatencyFilterSeconds.value * MILLIS_PER_SECOND,
+	decrease: 1 / congestionDivisor.value
 }
 
 /** A kind's discovered flow, carried from one batch to the next: the window, and the measured max rate and min latency. */
@@ -169,8 +140,6 @@ export const BBR: Rules = {
 	decreased: (window, constants) => Math.max(1, Math.floor(window * constants.decrease)),
 	kept: keptBySpread
 }
-
-const MILLIS_PER_SECOND = 1000
 
 /** The window requests are sent up to: the probe window while probing, the window otherwise. */
 export const windowOf = (controller: Controller): number =>

@@ -7,9 +7,14 @@ its flow and rings a step's attempt or a scope's admission, and `send` takes rin
 
 ## What was built
 
+The transport's limits are `@den/limits`'s `vercel-queues` and `vercel-cron` modules: the visibility timeout (derived
+from `functionLifetimeSeconds`), the deliveries Vercel retries at a trigger's configured delay (32, published) and
+`maxDeliveries` derived from it, the batch size (100, published), the default retention (24 h, published), the longest
+delay (derived), the idempotency key's length (256, published), the census cron's step (derived from
+`censusPeriodSeconds`).
+
 | module | what it holds |
 |---|---|
-| `src/limits.ts` | the transport's limits, minted by den's mints: the visibility timeout (derived from `functionLifetimeSeconds`), the deliveries Vercel retries at a trigger's configured delay (32, published) and `maxDeliveries` derived from it, the batch size (100, published), the default retention (24 h, published), the longest delay (derived), the idempotency key's length (256, published), the census cron's step (derived from `censusPeriodSeconds`) |
 | `src/queue.ts` | the topic `den-wakes`; `WakeJson`, the contract's schema over JSON text, the one codec both ways; `text`, the client's serializer (JSON text as UTF-8, read back as text); `Queue`, what den asks of the client (`sendBatch`, `handleCallback`), and the `VercelQueue` service |
 | `src/live.ts` | `live`: `@vercel/queue`'s `QueueClient` with the `text` serializer and every other option at the client's default (region, OIDC, the deployment a send is pinned to) |
 | `src/send.ts` | `messageOf` (a ring to its message: payload, the contract's key, its delay in whole seconds rounded up), `sender` and `transport` (den's `Transport` over the client, batches of 100, every failed message or batch logged, never a failure) |

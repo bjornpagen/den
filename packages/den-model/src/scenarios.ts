@@ -8,7 +8,8 @@ import {
 	weighted
 } from "@bjornpagen/testing/gen"
 import { type Swarm, swarm, weightOf } from "@bjornpagen/testing/swarm"
-import { Array as Arr, Option, Record } from "effect"
+import { retentionSeconds } from "@den/limits/vercel-queues"
+import { Array as Arr, Duration, Option, Record } from "effect"
 import type { By } from "#facts.ts"
 import { type Counts, type Ladder, ordinals, type Window } from "#program.ts"
 import { type Fault, FAULTS, type Nature, type Platform } from "#simulator.ts"
@@ -29,17 +30,11 @@ export const natureOf = <F extends string>(c: Case<F>, faults: Swarm<Fault>): Na
 })
 
 /**
- * How long the transport deduplicates a key: Vercel Queues drops a later send of a key it has seen for the shorter of
- * the message's retention and 24 hours, processed or not (https://vercel.com/docs/queues/concepts), so at the model's tick of a
- * minute a key is spent for a day, longer than any run.
- *
- * @limitKind published
- * @owner the model's transport
- * @unit ticks of a minute
- * @scope the deduplication window of every simulated send
- * @derivation 24 hours of 60 minutes, the window Vercel's client types, README and KB give
+ * How long the transport deduplicates a key, in the model's ticks of a minute: Vercel Queues drops a later send of a key
+ * it has seen for the original message's whole retention, processed or not, and den's sends name no retention, so a key
+ * is spent for Vercel's default retention, longer than any run.
  */
-const VERCEL_DEDUP_TICKS = 24 * 60
+const VERCEL_DEDUP_TICKS = Duration.toMinutes(Duration.seconds(retentionSeconds.value))
 
 /** The platform's settings, drawn small, so a case's whole run fits in a few hundred events, its dedup window Vercel's. */
 export const platformGen: Gen<Platform> = (source) => ({

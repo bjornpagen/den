@@ -1,4 +1,3 @@
-import { caseHang } from "@bjornpagen/den/limits"
 import type { AnyLogin } from "@bjornpagen/grizzle"
 import { served } from "@bjornpagen/grizzle/runtime"
 import { exhaust } from "@bjornpagen/testing/explore"
@@ -6,6 +5,7 @@ import { requiredInSpace } from "@bjornpagen/testing/features"
 import { element } from "@bjornpagen/testing/gen"
 import { searched } from "@bjornpagen/testing/vitest"
 import { testWorkers } from "@bjornpagen/testing/workers"
+import { caseHangMillis } from "@den/limits/suites"
 import { NodeServices } from "@effect/platform-node"
 import { assert, layer } from "@effect/vitest"
 import {
@@ -130,7 +130,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("certification", (it) =
 								"a coordinator role",
 								"an app role"
 							]),
-							caseHang,
+							caseHang: caseHangMillis.value,
 							box: "every role of the slice's worker and app logins",
 							oracle: {
 								kind: "postgresql",

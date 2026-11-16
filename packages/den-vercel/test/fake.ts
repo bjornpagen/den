@@ -1,3 +1,4 @@
+import { batchMessages, idempotencyKeyLength, retentionSeconds } from "@den/limits/vercel-queues"
 import type {
 	BatchSendMessage,
 	BatchSendResult,
@@ -5,7 +6,6 @@ import type {
 	MessageMetadata
 } from "@vercel/queue"
 import { Array as Arr, DateTime, Effect, Option, Order, Schema } from "effect"
-import { batchMessages, idempotencyKeyLength, retentionSeconds } from "#limits.ts"
 import { type CallbackOptions, type Queue, text } from "#queue.ts"
 
 /**

@@ -1,4 +1,3 @@
-import { caseHang } from "@bjornpagen/den/limits"
 import { pause, resume } from "@bjornpagen/den/runtime/seats"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
@@ -7,6 +6,7 @@ import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Option } from "effect"
 import { openLedgers, sliceLayer } from "#integration/support/slice.ts"
@@ -67,7 +67,7 @@ layer(sliceLayer)("pauses", (it) => {
 						runs: 12,
 						shrink: boundedShrink(4),
 						steerEvery: 3,
-						caseHang
+						caseHang: caseHangMillis.value
 					},
 					(drawnOperators, c) =>
 						Effect.gen(function* () {

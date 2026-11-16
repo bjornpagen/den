@@ -1,4 +1,3 @@
-import { backoffLastMillis, caseHang } from "@bjornpagen/den/limits"
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
@@ -8,6 +7,8 @@ import { type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { backoffLastMillis } from "@den/limits/claim"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Duration, Effect, Formatter, HashMap, Ref } from "effect"
 import { TestClock } from "effect/testing"
@@ -72,7 +73,7 @@ layer(sliceLayer)("retry ladders", (it) => {
 						runs: 8,
 						shrink: boundedShrink(4),
 						steerEvery: 4,
-						caseHang
+						caseHang: caseHangMillis.value
 					},
 					(run, c) =>
 						Effect.gen(function* () {

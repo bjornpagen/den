@@ -110,6 +110,6 @@ export default toolchain({
 		}
 	},
 	exceptions: [],
-	effectFree: [],
+	effectFree: ["packages/limits"],
 	packs: [grizzle()]
 })

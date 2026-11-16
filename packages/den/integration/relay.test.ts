@@ -1,4 +1,3 @@
-import { caseHang } from "@bjornpagen/den/limits"
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { relay } from "@bjornpagen/den/runtime/relay"
 import { type Ring, Transport } from "@bjornpagen/den/transport"
@@ -9,6 +8,7 @@ import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Fiber, Formatter, Option, Queue, Stream } from "effect"
 import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
@@ -58,7 +58,7 @@ layer(sliceLayer, { excludeTestServices: true })("the relay", (it) => {
 					runs: 4,
 					shrink: boundedShrink(2),
 					steerEvery: 2,
-					caseHang
+					caseHang: caseHangMillis.value
 				},
 				(run, c) =>
 					Effect.gen(function* () {

@@ -41,11 +41,11 @@ W4 (Gold) has no outside system: its views are the app's own SQL.
 
 ## Measured numbers
 
-Each carries its evidence in its JSDoc, citing edullm's `limits.ts`: the AlphaTest knees
-(`MEASURED_KNEES`), the 200-row listing page (`LISTING_PAGE_ROWS`), the gateway's 40–68 requests a second (drawn by a
-simulation, never fixed), the bastion's eight seats at 5,227,836.87 bytes a second and 13,941 keys a second a session
-(`MEASURED_BASTION`), the 65,536 print buckets, QTI's published 1,000-document page, BBR's and TCP's published constants.
-The package's lint scope admits no bare time, retry or concurrency bound, so every such number is a caller's input: the
+Each is a limit of `@den/limits` with its evidence, citing edullm's `limits.ts`: the AlphaTest knees, the 200-row
+listing page and the gateway's 40–68 requests a second (drawn by a simulation, never fixed) in `alphatest`; the
+bastion's eight seats at 5,227,836.87 bytes a second and 13,941 keys a second a session in `bastion`; QTI's published
+1,000-document page in `qti`; BBR's and TCP's published constants in `flow-control`. The 65,536 print buckets are a
+format's width (`@formatConstant`), no limit. Every other time, retry or concurrency bound is a caller's input: the
 suites draw edullm's values in force with `production`, small ones a sixth of the time.
 
 ## The searches

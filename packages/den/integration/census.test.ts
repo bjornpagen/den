@@ -1,4 +1,3 @@
-import { caseHang, longestLeaseMillis, reclaimableAfterMillis } from "@bjornpagen/den/limits"
 import { tick } from "@bjornpagen/den/runtime/census"
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { holderOf, instantOf } from "@bjornpagen/den/runtime/identity"
@@ -11,6 +10,8 @@ import { boolean, type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { longestLeaseMillis, reclaimableAfterMillis } from "@den/limits/claim"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Duration, Effect, Formatter, Option, Ref } from "effect"
 import { TestClock } from "effect/testing"
@@ -69,7 +70,7 @@ layer(sliceLayer)("the census", (it) => {
 						runs: 8,
 						shrink: boundedShrink(4),
 						steerEvery: 4,
-						caseHang
+						caseHang: caseHangMillis.value
 					},
 					(loss, c) =>
 						Effect.gen(function* () {

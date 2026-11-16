@@ -1,4 +1,3 @@
-import { caseHang, longestLeaseMillis } from "@bjornpagen/den/limits"
 import { lower } from "@bjornpagen/den/lower/fragment"
 import { printFragment } from "@bjornpagen/den/lower/print"
 import { holderOf, instantOf, rootScope, startedStep } from "@bjornpagen/den/runtime/identity"
@@ -8,6 +7,8 @@ import { requiredInSpace } from "@bjornpagen/testing/features"
 import { boolean, type Gen } from "@bjornpagen/testing/gen"
 import { searched } from "@bjornpagen/testing/vitest"
 import { testWorkers } from "@bjornpagen/testing/workers"
+import { longestLeaseMillis } from "@den/limits/claim"
+import { caseHangMillis } from "@den/limits/suites"
 import { NodeServices } from "@effect/platform-node"
 import { assert, layer } from "@effect/vitest"
 import {
@@ -130,7 +131,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("seat counts", (it) => 
 								generator: seatOne,
 								literal: Formatter.format,
 								coverage: requiredInSpace<Feature>(["never taken", "held", "freed"]),
-								caseHang,
+								caseHang: caseHangMillis.value,
 								box: "seat 1 of the Pool's two, never taken, held or freed, beside seat 0 held",
 								oracle: {
 									kind: "postgresql",

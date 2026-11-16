@@ -1,7 +1,7 @@
 import { idempotencyKey, type Ring, Transport } from "@bjornpagen/den/transport"
+import { batchMessages, maxDelaySeconds } from "@den/limits/vercel-queues"
 import type { BatchSendMessage } from "@vercel/queue"
 import { Array as Arr, Duration, Effect, Layer, Option, Schema } from "effect"
-import { batchMessages, maxDelaySeconds } from "#limits.ts"
 import { type Queue, TOPIC, VercelQueue, WakeJson } from "#queue.ts"
 
 /**
@@ -25,7 +25,7 @@ class SendFailed extends Schema.TaggedError<SendFailed, { readonly brand: unique
 export const messageOf = (ring: Ring): Effect.Effect<Option.Option<BatchSendMessage<string>>> =>
 	Effect.map(Effect.orDie(Schema.encodeEffect(WakeJson)(ring.wake)), (payload) => {
 		const key = idempotencyKey(ring)
-		const delaySeconds = Math.ceil(Duration.toMillis(ring.delay) / 1000)
+		const delaySeconds = Math.ceil(Duration.toSeconds(ring.delay))
 		if (delaySeconds > maxDelaySeconds.value) {
 			return Option.none()
 		}

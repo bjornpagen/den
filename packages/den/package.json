@@ -13,7 +13,6 @@
 	"exports": {
 		"./algebra/flow": "./src/algebra/flow.ts",
 		"./algebra/kinds": "./src/algebra/kinds.ts",
-		"./limits": "./src/limits.ts",
 		"./lower/fragment": "./src/lower/fragment.ts",
 		"./lower/generate": "./src/lower/generate.ts",
 		"./lower/keys": "./src/lower/keys.ts",
@@ -42,6 +41,8 @@
 	},
 	"dependencies": {
 		"@bjornpagen/grizzle": "workspace:*",
+		"@bjornpagen/limit": "workspace:*",
+		"@den/limits": "workspace:*",
 		"@types/pg": "catalog:",
 		"arkregex": "catalog:",
 		"effect": "catalog:",

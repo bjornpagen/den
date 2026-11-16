@@ -1,4 +1,3 @@
-import { caseHang, longestLeaseMillis } from "@bjornpagen/den/limits"
 import { tick } from "@bjornpagen/den/runtime/census"
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { instantOf } from "@bjornpagen/den/runtime/identity"
@@ -11,6 +10,8 @@ import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { longestLeaseMillis } from "@den/limits/claim"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Random } from "effect"
 import { ringOnAndDrain } from "#integration/support/run.ts"
@@ -63,7 +64,7 @@ layer(sliceLayer)("a precondition root", (it) => {
 					runs: 6,
 					shrink: boundedShrink(4),
 					steerEvery: 3,
-					caseHang
+					caseHang: caseHangMillis.value
 				},
 				(run, c) =>
 					Effect.gen(function* () {

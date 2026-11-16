@@ -22,7 +22,7 @@ import {
 	writes,
 	writesNothing
 } from "@bjornpagen/den/algebra/kinds"
-import { published } from "@bjornpagen/den/limits"
+import { published } from "@bjornpagen/limit"
 import { Array as Arr, Context, Effect, Option, Schema } from "effect"
 import {
 	Built,

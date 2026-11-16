@@ -1,4 +1,3 @@
-import { backoffLastMillis, caseHang } from "@bjornpagen/den/limits"
 import { tickAll } from "@bjornpagen/den/runtime/census"
 import { drain } from "@bjornpagen/den/runtime/drive"
 import type { StepKey } from "@bjornpagen/den/runtime/identity"
@@ -10,6 +9,8 @@ import { exhaust } from "@bjornpagen/testing/explore"
 import { requiredInSpace } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
 import { searched } from "@bjornpagen/testing/vitest"
+import { backoffLastMillis } from "@den/limits/claim"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Duration, Effect, Formatter, HashMap, Option, Order, Ref } from "effect"
 import { TestClock } from "effect/testing"
@@ -102,7 +103,7 @@ layer(sliceLayer)("a refused credential", (it) => {
 							"broken for one tick",
 							"broken for several ticks"
 						]),
-						caseHang,
+						caseHang: caseHangMillis.value,
 						box: "a two-attempt ladder dead at most once, then its commit refused, beside a never-ending one, the deployment broken one to three ticks after",
 						oracle: {
 							kind: "specification",

@@ -1,6 +1,6 @@
+import { invocationBudgetMillis } from "@den/limits/vercel-functions"
 import { Array as Arr, Duration, Effect, Option, Ref } from "effect"
 import type { Digest } from "effect/crypto"
-import { invocationBudgetMillis } from "#limits.ts"
 import { now } from "#runtime/clock.ts"
 import { type Ending, invoke, type Ledgers } from "#runtime/turn.ts"
 import { InProcess, type Transport } from "#transport.ts"

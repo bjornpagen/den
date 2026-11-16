@@ -1,4 +1,3 @@
-import { caseHang, longestLeaseMillis } from "@bjornpagen/den/limits"
 import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
@@ -9,6 +8,8 @@ import { type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { longestLeaseMillis } from "@den/limits/claim"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter } from "effect"
 import { admitAndDrain, ringOnAndDrain } from "#integration/support/run.ts"
@@ -61,7 +62,7 @@ layer(sliceLayer)("exclusivity", (it) => {
 					runs: 6,
 					shrink: boundedShrink(4),
 					steerEvery: 3,
-					caseHang
+					caseHang: caseHangMillis.value
 				},
 				(run, c) =>
 					Effect.gen(function* () {

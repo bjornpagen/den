@@ -1,9 +1,3 @@
-import {
-	backoffFirstMillis,
-	backoffLastMillis,
-	caseHang,
-	longestLeaseMillis
-} from "@bjornpagen/den/limits"
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
 import { drawn, explore } from "@bjornpagen/testing/explore"
@@ -12,6 +6,8 @@ import { element, type Gen, int, oneOf } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { backoffFirstMillis, backoffLastMillis, longestLeaseMillis } from "@den/limits/claim"
+import { caseHangMillis } from "@den/limits/suites"
 import type { Datum } from "@den/model/datum"
 import type { Fact } from "@den/model/facts"
 import { rootText } from "@den/model/identity"
@@ -307,7 +303,7 @@ layer(sliceLayer)("the differential harness", (it) => {
 					runs: 12,
 					shrink: boundedShrink(6),
 					steerEvery: 4,
-					caseHang
+					caseHang: caseHangMillis.value
 				},
 				(program, c) =>
 					Effect.gen(function* () {

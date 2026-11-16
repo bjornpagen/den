@@ -12,9 +12,9 @@ import {
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, it } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, HashSet, Schema, String as Str } from "effect"
-import { caseHang } from "#limits.ts"
 import { type Cause, idempotencyKey, WakeSchema } from "#transport.ts"
 
 /**
@@ -155,7 +155,7 @@ it.effect("a wake round-trips, and a ring's key names its wake and its cause", (
 				runs: 300,
 				shrink: boundedShrink(40),
 				steerEvery: 16,
-				caseHang
+				caseHang: caseHangMillis.value
 			},
 			([first, second], c) =>
 				Effect.gen(function* () {
@@ -292,7 +292,7 @@ it.effect(
 					runs: 200,
 					shrink: boundedShrink(40),
 					steerEvery: 16,
-					caseHang
+					caseHang: caseHangMillis.value
 				},
 				(r, c) =>
 					Effect.gen(function* () {

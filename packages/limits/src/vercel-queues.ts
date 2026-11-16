@@ -1,13 +1,9 @@
-import {
-	censusPeriodSeconds,
-	derived,
-	functionLifetimeSeconds,
-	published
-} from "@bjornpagen/den/limits"
+import { derived, published } from "@bjornpagen/limit"
+import { functionLifetimeSeconds } from "#vercel-functions.ts"
 
 /**
- * The numbers den's Vercel Queues transport bounds something by, minted by den's own mints: what Vercel Queues
- * publishes, and what follows from it and from den's limits.
+ * Vercel Queues: what it publishes of a message, a send and a delivery, and what den's transport derives from it and
+ * from the function lifetime (the limits skill, .agents/skills/limits; this package's README).
  */
 
 /**
@@ -16,7 +12,7 @@ import {
  * lease while the handler runs, so this bounds how long a dead holder's wake stays hidden, never how long a turn runs.
  */
 export const visibilityTimeoutSeconds = derived({
-	owner: "den's Vercel Queues consumer",
+	owner: "den's Vercel Queues consumer (packages/den-vercel/src/consumer.ts)",
 	unit: "seconds",
 	scope:
 		"one delivery's lease, from the client's last renewal until the queue may deliver the wake again",
@@ -38,7 +34,7 @@ export const configuredRetryDeliveries = published({
 	constraint: "protocol constant",
 	source: "https://vercel.com/docs/queues/pricing",
 	quote: "Retry behavior (first 32 attempts) | - | - | Configured delay",
-	verified: "2026-11-11"
+	verified: "2026-11-16"
 })
 
 /**
@@ -48,7 +44,7 @@ export const configuredRetryDeliveries = published({
  * finish one would otherwise spend until the message expires.
  */
 export const maxDeliveries = derived({
-	owner: "den's Vercel Queues trigger",
+	owner: "den's Vercel Queues trigger (packages/den-vercel/src/config.ts)",
 	unit: "deliveries",
 	scope:
 		"the deliveries of one wake message, after which the queue drops it and the census rings its step",
@@ -67,12 +63,12 @@ export const batchMessages = published({
 	constraint: "hard quota",
 	source: "https://vercel.com/docs/queues/sdk",
 	quote: "Use `sendBatch` to publish 1 to 100 messages in a single request.",
-	verified: "2026-11-11"
+	verified: "2026-11-16"
 })
 
 /**
- * How long a message lives when its send names no retention: its idempotency key deduplicates for as long, and no
- * delay may reach past it.
+ * How long a message lives when its send names no retention, as every den send does: its idempotency key
+ * deduplicates for its whole retention, and no delay may reach past it.
  */
 export const retentionSeconds = published({
 	value: 86_400,
@@ -82,7 +78,7 @@ export const retentionSeconds = published({
 	constraint: "configurable default",
 	source: "https://vercel.com/docs/queues/pricing",
 	quote: "Message retention (TTL) | 60 seconds | 7 days | 24 hours",
-	verified: "2026-11-11"
+	verified: "2026-11-16"
 })
 
 /**
@@ -91,7 +87,7 @@ export const retentionSeconds = published({
  * sent; the census rings its step once it is due.
  */
 export const maxDelaySeconds = derived({
-	owner: "den's Vercel Queues transport",
+	owner: "den's Vercel Queues transport (packages/den-vercel/src/send.ts)",
 	unit: "seconds",
 	scope: "the delaySeconds of one wake sent with a delay",
 	from: [retentionSeconds, maxDeliveries, visibilityTimeoutSeconds],
@@ -111,16 +107,5 @@ export const idempotencyKeyLength = published({
 	source: "https://vercel.com/docs/queues/sdk",
 	quote:
 		"Deduplication key for the message. The deduplication window is the message's retention period. Maximum 256 characters",
-	verified: "2026-11-11"
-})
-
-/** The census cron's step, in the minutes a cron expression's minute field counts: one tick per census period. */
-export const censusStepMinutes = derived({
-	owner: "den's census cron",
-	unit: "minutes",
-	scope: "the step of the census cron's minute field, `*/n`",
-	from: [censusPeriodSeconds],
-	derivation:
-		"the census ticks once per censusPeriodSeconds, which a minute field counts in minutes",
-	compute: ([period]) => period.value / 60
+	verified: "2026-11-16"
 })

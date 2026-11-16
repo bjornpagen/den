@@ -1,7 +1,7 @@
 import type { Wake } from "@bjornpagen/den/transport"
+import { visibilityTimeoutSeconds } from "@den/limits/vercel-queues"
 import type { MessageMetadata, RetryHandler } from "@vercel/queue"
 import { Effect, Schema } from "effect"
-import { visibilityTimeoutSeconds } from "#limits.ts"
 import { VercelQueue, WakeJson } from "#queue.ts"
 
 /**

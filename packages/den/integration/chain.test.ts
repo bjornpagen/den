@@ -1,4 +1,3 @@
-import { caseHang } from "@bjornpagen/den/limits"
 import { type Ending, serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
@@ -8,6 +7,7 @@ import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
+import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Order } from "effect"
 import { admitAndDrain } from "#integration/support/run.ts"
@@ -75,7 +75,7 @@ layer(sliceLayer)("the chain flow", (it) => {
 					runs: 12,
 					shrink: boundedShrink(8),
 					steerEvery: 4,
-					caseHang
+					caseHang: caseHangMillis.value
 				},
 				(run, c) =>
 					Effect.gen(function* () {
