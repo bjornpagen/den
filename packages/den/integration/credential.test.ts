@@ -39,10 +39,9 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * deployment stays broken, however many ticks; and with the credential right, each step ends done at the attempt after
  * its fence, having run its body once more, and the root's finish once both have.
  *
- * Its plants, kept mutants (kept-mutants.json, `pnpm mutate --package packages/den --kept
- * packages/den/integration/kept-mutants.json --config vitest.network.config.ts`), each turn it red: a refused
- * credential counted as a spent attempt, a fence that records nothing, whose claim's lapse then spends it, and a census
- * that rings fenced steps without asking whether the deployment's login is let in.
+ * Its plants, kept mutants (kept-mutants.json), each turn it red: a refused credential counted as a spent attempt, a
+ * fence that records nothing, whose claim's lapse then spends it, and a census that rings fenced steps without asking
+ * whether the deployment's login is let in.
  */
 
 type Feature =

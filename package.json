@@ -31,7 +31,6 @@
 		"test": "turbo run test --filter=./packages/*",
 		"test:network": "pnpm --filter @bjornpagen/den test:network",
 		"fuzz": "node vendor/toolchain/packages/testing/scripts/fuzz.ts",
-		"mutate": "node vendor/toolchain/packages/testing/scripts/mutate.ts",
 		"pg": "scripts/pg.sh"
 	},
 	"devDependencies": {

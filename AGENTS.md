@@ -62,7 +62,7 @@ A Turborepo workspace of private packages named `@den/<name>`, each exporting it
 - `vendor/toolchain`: the shared toolchain, a git submodule pinned at its commit, whose packages run from source:
   `@bjornpagen/devtools` (the oxlint preset and plugin, whose rules read syntax alone, the tsconfig base, the
   workspace gate and the hooks' gate) and `@bjornpagen/testing`, the choice-stream testing library every suite runs on (`explore`, `exhaust`, `commands`,
-  `interleave`, the shrinker, `pnpm fuzz`, `pnpm mutate`). den keeps only its own decisions, in `toolchain.config.ts`
+  `interleave`, the shrinker, `pnpm fuzz`). den keeps only its own decisions, in `toolchain.config.ts`
   and `oxlint.config.ts`; the toolchain's fixes land in its repository, and den takes them by moving the submodule.
 - `docs/`: the goals, the decisions, the proposal and the build notes.
 
