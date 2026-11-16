@@ -202,7 +202,6 @@ layer(sliceLayer)("exact seats", (it) => {
 									read: () => Effect.die("the race reads no final state")
 								},
 								{
-									name: "five takers of two seats",
 									sessions: {
 										s0: { moves: ["take", "give"], after: Option.none() },
 										s1: { moves: ["take", "give"], after: Option.none() },

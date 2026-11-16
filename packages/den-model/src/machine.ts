@@ -97,8 +97,23 @@ export type Parameters = Readonly<{
 	retire: undefined
 }>
 
-/** What the ledger refuses a call with: every answer that commits nothing. */
-export type Refusal = Exclude<Answer, "accepted" | "exhausted">
+/** What the ledger refuses a call with: every answer that commits nothing, the machine's roster of refusals. */
+const REFUSALS = [
+	"unchanged",
+	"lost",
+	"gone",
+	"stale",
+	"early",
+	"closed",
+	"paused",
+	"full",
+	"behind",
+	"live",
+	"held",
+	"retired",
+	"blocked"
+] as const satisfies ReadonlyArray<Answer>
+export type Refusal = (typeof REFUSALS)[number]
 
 /** A ledger answer as a verdict: committed facts are accepted with the state after them, anything else is refused. */
 const verdictOf = (
@@ -145,6 +160,7 @@ export const flatMachine = (flat: Flat, rules: Rules): Machine<Model, Parameters
 	const { admission, kind, key, steps } = flatOf(flat)
 	return {
 		initial: { state: emptyState, now: 0, leases: [] },
+		refusals: REFUSALS,
 		commands: {
 			admit: {
 				weight: 1,

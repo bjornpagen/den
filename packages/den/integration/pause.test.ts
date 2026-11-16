@@ -119,7 +119,6 @@ layer(sliceLayer)("pauses", (it) => {
 									read: () => Effect.die("the judgment reads the live pauses itself")
 								},
 								{
-									name: "two operators of one target",
 									sessions: {
 										a: { moves: drawnOperators.a, after: Option.none() },
 										b: { moves: drawnOperators.b, after: Option.none() }

@@ -215,7 +215,6 @@ layer(Digest.layerWebCrypto)("Bronze", (it) => {
 							yield* interleave(
 								driver,
 								{
-									name: "racing puts",
 									sessions: {
 										first: { moves: race.puts.first, after: Option.none() },
 										second: { moves: race.puts.second, after: Option.none() },

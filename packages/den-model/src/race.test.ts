@@ -269,7 +269,6 @@ const raceSearch = (race: Race, rules: Rules, laws: ReadonlyArray<Law>, c: Case<
 	return interleave(
 		driver,
 		{
-			name: "claim, seat and commit",
 			sessions: {
 				first: { moves: ["claim", "commit"], after: Option.none() },
 				second: { moves: ["claim", "commit"], after: Option.none() },
@@ -278,7 +277,7 @@ const raceSearch = (race: Race, rules: Rules, laws: ReadonlyArray<Law>, c: Case<
 			exclusive: [],
 			state: Option.some("trace")
 		},
-		{ kind: "every", limit: 1000, reduction: "none" },
+		{ kind: "every", reduction: "none" },
 		(ran) =>
 			Option.match(ran.state, {
 				onNone: () => Effect.void,

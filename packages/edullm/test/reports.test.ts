@@ -242,7 +242,6 @@ describe("Timeback's report endpoint", () => {
 						return interleave(
 							driver,
 							{
-								name: "racing deliveries",
 								sessions: {
 									redelivery: { moves: race.moves.redelivery, after: Option.none() },
 									stretch: { moves: race.moves.stretch, after: Option.none() },

@@ -27,9 +27,6 @@ type Outcome = "claimed" | "lost" | "other"
 
 type Feature = "one page" | "two pages"
 
-/** The interleavings of two sessions of one move each: issue and join orders, the search's runaway guard. */
-const orders = 6
-
 layer(sliceLayer)("the claim race", (it) => {
 	it.effect("admits one claimer of an attempt in every interleaving", (ctx) =>
 		searched(
@@ -125,7 +122,6 @@ layer(sliceLayer)("the claim race", (it) => {
 								read: () => Effect.die("the race reads no final state")
 							},
 							{
-								name: "claim race",
 								sessions: {
 									first: { moves: ["claim"], after: Option.none() },
 									second: { moves: ["claim"], after: Option.none() }
@@ -133,7 +129,7 @@ layer(sliceLayer)("the claim race", (it) => {
 								exclusive: [],
 								state: Option.none()
 							},
-							{ kind: "every", limit: orders, reduction: "none" },
+							{ kind: "every", reduction: "none" },
 							judge
 						)
 					})
