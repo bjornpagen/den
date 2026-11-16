@@ -396,6 +396,12 @@ importers:
 
   vendor/grizzle/packages/engine:
     dependencies:
+      '@bjornpagen/limit':
+        specifier: workspace:*
+        version: link:../../../toolchain/packages/limit
+      '@grizzle/limits':
+        specifier: workspace:*
+        version: link:../limits
       arkregex:
         specifier: 'catalog:'
         version: 0.0.14
@@ -409,9 +415,15 @@ importers:
       '@bjornpagen/grizzle-engine':
         specifier: workspace:*
         version: link:../engine
+      '@bjornpagen/limit':
+        specifier: workspace:*
+        version: link:../../../toolchain/packages/limit
       '@effect/platform-node':
         specifier: 'catalog:'
         version: 4.1.4(effect@4.1.4)(redis@6.3.1)
+      '@grizzle/limits':
+        specifier: workspace:*
+        version: link:../limits
     devDependencies:
       '@types/pg':
         specifier: 'catalog:'
@@ -422,6 +434,12 @@ importers:
       pg:
         specifier: 'catalog:'
         version: 8.23.1
+
+  vendor/grizzle/packages/limits:
+    dependencies:
+      '@bjornpagen/limit':
+        specifier: workspace:*
+        version: link:../../../toolchain/packages/limit
 
   vendor/toolchain/packages/devtools:
     dependencies:
@@ -470,6 +488,9 @@ importers:
 
   vendor/toolchain/packages/testing:
     dependencies:
+      '@bjornpagen/limit':
+        specifier: workspace:*
+        version: link:../limit
       '@bjornpagen/limits':
         specifier: workspace:*
         version: link:../limits
