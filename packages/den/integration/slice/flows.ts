@@ -22,7 +22,6 @@ import {
 	writes,
 	writesNothing
 } from "@bjornpagen/den/algebra/kinds"
-import { published } from "@bjornpagen/limit"
 import { Array as Arr, Context, Effect, Option, Schema } from "effect"
 import {
 	Built,
@@ -189,17 +188,17 @@ export const chain = flow("Chain", {
 /**
  * The fan-out's shared bottleneck: two seats, the box of grizzle's own work-queue law suite, in which two leases meet at
  * a seat as often as they miss it.
+ *
+ * @limitKind published
+ * @owner the slice's contention box, after grizzle's work-queue law suite
+ * @unit seats
+ * @scope the squares of every batch, across every run, holding a seat of the Pool while they run
+ * @constraint compile-time constant
+ * @source https://github.com/bjornpagen/grizzle/blob/a226cbac/test/support/laws/boxes.ts
+ * @quote Two resources of two seats each: two leases meet at a seat as often as they miss it.
+ * @verified 2026-11-11
  */
-export const poolSeats = published({
-	value: 2,
-	owner: "the slice's contention box, after grizzle's work-queue law suite",
-	unit: "seats",
-	scope: "the squares of every batch, across every run, holding a seat of the Pool while they run",
-	constraint: "compile-time constant",
-	source: "https://github.com/bjornpagen/grizzle/blob/a226cbac/test/support/laws/boxes.ts",
-	quote: "Two resources of two seats each: two leases meet at a seat as often as they miss it.",
-	verified: "2026-11-11"
-})
+export const poolSeats = 2
 
 const pool = resource("Pool", poolSeats)
 

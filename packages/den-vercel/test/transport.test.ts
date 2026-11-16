@@ -1,3 +1,5 @@
+import { censusPeriodSeconds } from "@bjornpagen/den/algebra/kinds"
+import { caseHangMillis } from "@bjornpagen/den/test/support/suites"
 import {
 	type Cause,
 	idempotencyKey,
@@ -12,14 +14,6 @@ import { constant, element, type Gen, int, oneOf, weighted } from "@bjornpagen/t
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { caseHangMillis } from "@den/limits/suites"
-import { censusPeriodSeconds } from "@den/limits/vercel-cron"
-import {
-	batchMessages,
-	maxDelaySeconds,
-	maxDeliveries,
-	visibilityTimeoutSeconds
-} from "@den/limits/vercel-queues"
 import { assert, it } from "@effect/vitest"
 import {
 	Array as Arr,
@@ -33,6 +27,7 @@ import {
 } from "effect"
 import { consumer } from "#consumer.ts"
 import { TOPIC, VercelQueue, WakeJson } from "#queue.ts"
+import { batchMessages, maxDelaySeconds, maxDeliveries, visibilityTimeoutSeconds } from "#send.ts"
 import { sender } from "#send.ts"
 import { type Fake, type Fates, fake, faultless, type Submitted } from "#test/fake.ts"
 import {
@@ -129,12 +124,12 @@ const faulty = (c: Case<Healing>, budget: number): Fates => {
 	}
 }
 
-const period = censusPeriodSeconds.value * 1000
+const period = censusPeriodSeconds * 1000
 
 const run: Gen<Run> = (source) => ({
 	rings: source.draw(rings({ min: 1, max: 5 })),
 	faults: source.draw(int(0, 6)),
-	maxDeliveries: source.draw(oneOf([int(1, 2), constant(maxDeliveries.value)]))
+	maxDeliveries: source.draw(oneOf([int(1, 2), constant(maxDeliveries)]))
 })
 
 it.effect("every wake a ring sends is delivered at least once or healed by a census", (ctx) =>
@@ -165,7 +160,7 @@ it.effect("every wake a ring sends is delivered at least once or healed by a cen
 				runs: 200,
 				shrink: boundedShrink(40),
 				steerEvery: 16,
-				caseHang: caseHangMillis.value
+				caseHang: caseHangMillis
 			},
 			(drawnRun, c) =>
 				Effect.gen(function* () {
@@ -189,7 +184,7 @@ it.effect("every wake a ring sends is delivered at least once or healed by a cen
 						Equal.equals
 					)
 					const unheard = () => Arr.filter(wakes, (wake) => !heard.has(wakeText(wake)))
-					const lease = visibilityTimeoutSeconds.value * 1000
+					const lease = visibilityTimeoutSeconds * 1000
 					const horizon = (drawnRun.faults + 1) * (drawnRun.maxDeliveries * lease + 2 * period)
 					yield* send(sent)
 					while (Arr.isReadonlyArrayNonEmpty(unheard()) && queue.now() <= horizon) {
@@ -271,7 +266,7 @@ type Keying =
 
 const many: Gen<ReadonlyArray<EncodedRing>> = oneOf([
 	rings({ min: 1, max: 8 }),
-	rings({ min: batchMessages.value + 1, max: 2 * batchMessages.value + 5 })
+	rings({ min: batchMessages + 1, max: 2 * batchMessages + 5 })
 ])
 
 it.effect(
@@ -304,12 +299,12 @@ it.effect(
 					runs: 100,
 					shrink: boundedShrink(40),
 					steerEvery: 16,
-					caseHang: caseHangMillis.value
+					caseHang: caseHangMillis
 				},
 				(encoded, c) =>
 					Effect.gen(function* () {
 						const sent = yield* Effect.forEach(encoded, (ring) => ringFrom(ring, Duration.zero))
-						const queue = fake({ topic: TOPIC, maxDeliveries: maxDeliveries.value }, faultless)
+						const queue = fake({ topic: TOPIC, maxDeliveries: maxDeliveries }, faultless)
 						const { send, route: routeOf } = harness(queue)
 						const heard = new Map<string, number>()
 						const route = yield* routeOf((wake) =>
@@ -321,7 +316,7 @@ it.effect(
 						yield* queue.deliverDue(route)
 						const submitted = queue.submitted()
 						assert.strictEqual(submitted.length, sent.length)
-						assert.strictEqual(queue.batches(), Math.ceil(sent.length / batchMessages.value))
+						assert.strictEqual(queue.batches(), Math.ceil(sent.length / batchMessages))
 						const payloads = yield* Effect.orDie(
 							Effect.forEach(submitted, (s) => Schema.decodeEffect(WakeJson)(s.payload))
 						)
@@ -357,7 +352,7 @@ it.effect(
 						if (wakes.length > 1) {
 							c.note("distinct wakes")
 						}
-						if (sent.length > batchMessages.value) {
+						if (sent.length > batchMessages) {
 							c.note("more rings than one batch holds")
 						}
 						assert.deepStrictEqual(
@@ -382,7 +377,7 @@ const timer: Gen<Timer> = (source) => ({
 		oneOf([
 			constant(0),
 			int(1, 5_000),
-			int(maxDelaySeconds.value * 1000 - 2_000, maxDelaySeconds.value * 1000 + 2_000)
+			int(maxDelaySeconds * 1000 - 2_000, maxDelaySeconds * 1000 + 2_000)
 		])
 	)
 })
@@ -409,13 +404,13 @@ it.effect(
 					runs: 100,
 					shrink: boundedShrink(40),
 					steerEvery: 16,
-					caseHang: caseHangMillis.value
+					caseHang: caseHangMillis
 				},
 				(drawnTimer, c) =>
 					Effect.gen(function* () {
 						const ring = yield* ringFrom(drawnTimer.ring, Duration.millis(drawnTimer.delayMillis))
 						const wake = ring.wake
-						const queue = fake({ topic: TOPIC, maxDeliveries: maxDeliveries.value }, faultless)
+						const queue = fake({ topic: TOPIC, maxDeliveries: maxDeliveries }, faultless)
 						const heard: Array<Wake> = []
 						const route = yield* consumer((delivered: Wake) =>
 							Effect.sync(() => heard.push(delivered))
@@ -424,7 +419,7 @@ it.effect(
 						yield* send([ring])
 						const dueSeconds = Math.ceil(drawnTimer.delayMillis / 1000)
 						const due = dueSeconds * 1000
-						if (dueSeconds > maxDelaySeconds.value) {
+						if (dueSeconds > maxDelaySeconds) {
 							c.note("past the longest delay")
 							assert.deepStrictEqual(queue.submitted(), [])
 							return

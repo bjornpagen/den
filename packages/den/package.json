@@ -29,7 +29,8 @@
 		"./runtime/retire": "./src/runtime/retire.ts",
 		"./runtime/seats": "./src/runtime/seats.ts",
 		"./runtime/turn": "./src/runtime/turn.ts",
-		"./transport": "./src/transport.ts"
+		"./transport": "./src/transport.ts",
+		"./test/support/suites": "./test/support/suites.ts"
 	},
 	"scripts": {
 		"typecheck": "toolchain-typecheck",
@@ -41,8 +42,6 @@
 	},
 	"dependencies": {
 		"@bjornpagen/grizzle": "workspace:*",
-		"@bjornpagen/limit": "workspace:*",
-		"@den/limits": "workspace:*",
 		"@types/pg": "catalog:",
 		"arkregex": "catalog:",
 		"effect": "catalog:",

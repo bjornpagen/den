@@ -10,12 +10,12 @@ import { boolean, type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { longestLeaseMillis, reclaimableAfterMillis } from "@den/limits/claim"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Duration, Effect, Formatter, Option, Ref } from "effect"
 import { TestClock } from "effect/testing"
 import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
+import { longestLeaseMillis, reclaimableAfterMillis } from "#runtime/turn.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * The census heals what the doorbell loses and rings what time made eligible. A chain's wakes are dropped (its
@@ -70,7 +70,7 @@ layer(sliceLayer)("the census", (it) => {
 						runs: 8,
 						shrink: boundedShrink(4),
 						steerEvery: 4,
-						caseHang: caseHangMillis.value
+						caseHang: caseHangMillis
 					},
 					(loss, c) =>
 						Effect.gen(function* () {
@@ -87,7 +87,7 @@ layer(sliceLayer)("the census", (it) => {
 								pages: BigInt(loss.pages)
 							})
 							assert.isTrue(requested.fresh)
-							const ends = instantOf(Number(at) + longestLeaseMillis.value)
+							const ends = instantOf(Number(at) + longestLeaseMillis)
 							const flow = FlowName.make("Chain")
 							const first = loss.admitted
 								? yield* Effect.map(
@@ -112,7 +112,7 @@ layer(sliceLayer)("the census", (it) => {
 									)
 								)
 								yield* Ref.set(held, [])
-								yield* TestClock.adjust(Duration.millis(reclaimableAfterMillis.value))
+								yield* TestClock.adjust(Duration.millis(reclaimableAfterMillis))
 							}
 							yield* Ref.set(held, [])
 							const finished = Effect.map(

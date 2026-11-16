@@ -4,9 +4,9 @@ import { constant, type Gen, int, weighted } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { searched } from "@bjornpagen/testing/vitest"
 import { runOfTest } from "@bjornpagen/testing/vitest/run"
-import { throttleRequestsLeast, throttleRequestsMost } from "@den/limits/alphatest"
 import { describe, it } from "@effect/vitest"
 import { Array as Arr, Effect, HashMap, Option } from "effect"
+import { throttleRequestsLeast, throttleRequestsMost } from "#alphatest.ts"
 import {
 	AlphaTestApi,
 	type Knee,
@@ -73,7 +73,7 @@ const scenarioGen: Gen<Scenario> = (source) => {
 					1,
 					(s) =>
 						Option.some({
-							requests: s.draw(int(throttleRequestsLeast.value, throttleRequestsMost.value)),
+							requests: s.draw(int(throttleRequestsLeast, throttleRequestsMost)),
 							weather: stormy
 						})
 				]

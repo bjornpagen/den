@@ -10,7 +10,7 @@ where the proposal leaves a decision open, the spine makes the simplest one cons
 `packages/den` (`@bjornpagen/den`, private), each module its own subpath export (`@bjornpagen/den/runtime/turn`, …).
 Its limits (Vercel's function lifetime, the lease, the invocation budget and the retry ladder derived from it,
 PostgreSQL's `authentication_timeout` and the connect timeout derived from it, the suites' case hang guard) are
-`@den/limits`'s (`packages/limits`):
+constants with their evidence beside the code they bound (`src/runtime/turn.ts`, the suites' `test/support/suites.ts`).
 
 | module | what it holds |
 |---|---|

@@ -1,15 +1,74 @@
 import { type Gen, int } from "@bjornpagen/testing/gen"
-import {
-	bastionBytesPerSecond,
-	bastionKeysPerSecondPerSession,
-	bastionSeats
-} from "@den/limits/bastion"
 import { Array as Arr, Context, Effect, HashMap, Layer, Option, Ref, Schema } from "effect"
 import { Digest } from "effect/crypto"
 import { bodyOf, FieldCount, PGCOPY, type Tuple } from "#copy-binary.ts"
 import { digestOf, type Mark, markOf, type Print, printOf } from "#fingerprint.ts"
 import type { Nature } from "#nature.ts"
 import type { Range } from "#ranges.ts"
+
+/**
+ * The bastion sessions the operator holds: the fake's seats.
+ *
+ * @limitKind measured
+ * @owner the shared Timeback SSM bastion, held by edullm's operator
+ * @unit sessions
+ * @scope the Timeback replica fake's bastion, its sessions at once
+ * @evidence edullm 28ddb047f packages/platform/pipeline/src/limits.ts LANE_WIDTHS.timeback, from the eight-slot
+ *   trial's copy receipt, source lifecycle, bastion midpoint and close captures, and the 08:40:18Z follow-up
+ * @observed 2026-09-16 06:37:15Z–07:37:15Z, and the follow-up 07:40–08:40Z
+ * @environment Vercel production iad1, Timeback's Aurora PostgreSQL 17.7 through the shared us-east-1 SSM bastion,
+ *   other principals' sessions on it
+ * @workload eight concurrent COPY sessions of whole relations across both origins: 545 completed COPY attempts, 538
+ *   retained pages
+ * @result bastion CPU 67.41% mean and 71.16% max over the hour, every principal included; the follow-up hour 66.96%
+ *   mean and 71.71% max, with eight supplied-principal and five other-owner sessions
+ * @decision eight, under the operator's 60–70% mean-CPU hold band; both widening prerequisites failed, so eight is
+ *   retained
+ * @revalidate a bastion mean CPU above 70% at eight sessions; other-owner sessions at most 3 for a full hour; a
+ *   widening trial (mean CPU at most 60% and at most 11 sessions)
+ */
+const bastionSeats = 8
+
+/**
+ * The replica's bytes a second through the bastion at the operator's hold, shared by every session open.
+ *
+ * @limitKind measured
+ * @owner the shared Timeback SSM bastion, held by edullm's operator
+ * @unit bytes a second
+ * @scope the Timeback replica fake's bastion, every session's COPY bytes together
+ * @evidence edullm 28ddb047f packages/platform/pipeline/src/limits.ts LANE_WIDTHS.timeback, from the eight-slot
+ *   trial's copy receipt, source lifecycle, bastion midpoint and close captures, and the 08:40:18Z follow-up
+ * @observed 2026-09-16 06:37:15Z–07:37:15Z, and the follow-up 07:40–08:40Z
+ * @environment Vercel production iad1, Timeback's Aurora PostgreSQL 17.7 through the shared us-east-1 SSM bastion,
+ *   other principals' sessions on it
+ * @workload eight concurrent COPY sessions of whole relations across both origins: 545 completed COPY attempts, 538
+ *   retained pages
+ * @result 18,820,212,728 bytes and 17,468,347 rows over 3,600 seconds: 5,227,836.87 bytes a second
+ * @decision a session's share is these bytes over the eight seats, and a session past the eighth shares the same bytes
+ *   with every other session open
+ * @revalidate a bastion mean CPU above 70% at eight sessions; other-owner sessions at most 3 for a full hour; a
+ *   widening trial (mean CPU at most 60% and at most 11 sessions)
+ */
+const bastionBytesPerSecond = 5_227_836.87
+
+/**
+ * The keys a second one bastion session's key scan streams.
+ *
+ * @limitKind measured
+ * @owner the shared Timeback SSM bastion, held by edullm's operator
+ * @unit keys a second
+ * @scope one session's key scan in the Timeback replica fake
+ * @evidence edullm 28ddb047f packages/platform/pipeline/src/limits.ts PRUNE_FETCH_KEYS, from the 2026-10-15 refresh's
+ *   replica stream
+ * @observed 2026-10-15 17:41Z
+ * @environment Vercel production iad1, Timeback's Aurora PostgreSQL 17.7 through the shared us-east-1 SSM bastion
+ * @workload resources' key scan, 2,490,370 keys, with eight leases on the bastion
+ * @result 2,490,370 keys in 178,630 ms: 13,941 keys a second, the slowest measured (component_resources and
+ *   resources_metadata streamed 13,993 and 13,948)
+ * @decision the fake streams a session's keys at the slowest measured rate
+ * @revalidate a key scan slower than this; a bastion or Aurora change
+ */
+const bastionKeysPerSecondPerSession = 13_941
 
 /**
  * Timeback's read replica as edullm's W1 meets it: PostgreSQL behind a shared SSM bastion, read by `COPY … TO STDOUT
@@ -48,11 +107,11 @@ export type Bastion = Readonly<{
 	keysPerSecondPerSession: number
 }>
 
-/** The bastion as the operator held it on 2026-09-16 and 2026-10-15 (@den/limits/bastion, with each record). */
+/** The bastion as the operator held it on 2026-09-16 and 2026-10-15 (with each record). */
 export const MEASURED_BASTION: Bastion = {
-	seats: bastionSeats.value,
-	bytesPerSecond: bastionBytesPerSecond.value,
-	keysPerSecondPerSession: bastionKeysPerSecondPerSession.value
+	seats: bastionSeats,
+	bytesPerSecond: bastionBytesPerSecond,
+	keysPerSecondPerSession: bastionKeysPerSecondPerSession
 }
 
 /** What a statement meets on its own: nothing, or one of the failures edullm's copy ladder names. */

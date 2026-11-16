@@ -5,7 +5,6 @@ import { requiredInSpace } from "@bjornpagen/testing/features"
 import { element } from "@bjornpagen/testing/gen"
 import { searched } from "@bjornpagen/testing/vitest"
 import { testWorkers } from "@bjornpagen/testing/workers"
-import { caseHangMillis } from "@den/limits/suites"
 import { NodeServices } from "@effect/platform-node"
 import { assert, layer } from "@effect/vitest"
 import {
@@ -22,6 +21,7 @@ import {
 } from "effect"
 import { ChildProcess } from "effect/process"
 import config from "#integration/slice/grizzle.config.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * What `grizzle generate` certifies. Every den role of the worker login, each flow's own, runs READ
@@ -130,7 +130,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("certification", (it) =
 								"a coordinator role",
 								"an app role"
 							]),
-							caseHang: caseHangMillis.value,
+							caseHang: caseHangMillis,
 							box: "every role of the slice's worker and app logins",
 							oracle: {
 								kind: "postgresql",

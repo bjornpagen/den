@@ -6,12 +6,12 @@ import { requiredInSpace } from "@bjornpagen/testing/features"
 import { int } from "@bjornpagen/testing/gen"
 import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
 import { searched } from "@bjornpagen/testing/vitest"
-import { longestLeaseMillis } from "@den/limits/claim"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Option, Ref } from "effect"
 import type { Digest } from "effect/crypto"
 import { openLedgers, sliceLayer } from "#integration/support/slice.ts"
+import { longestLeaseMillis } from "#runtime/turn.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * A claim is a race at `(step, attempt)`, decided at READ COMMITTED by the claim's primary key alone, which Claim
@@ -38,7 +38,7 @@ layer(sliceLayer)("the claim race", (it) => {
 					generator: int(1, 2),
 					literal: Formatter.format,
 					coverage: requiredInSpace<Feature>(["one page", "two pages"]),
-					caseHang: caseHangMillis.value,
+					caseHang: caseHangMillis,
 					box: "two claimers of one chain's first page, a run of one or two pages",
 					oracle: {
 						kind: "postgresql",
@@ -61,7 +61,7 @@ layer(sliceLayer)("the claim race", (it) => {
 							const served = yield* serve(
 								ledgers,
 								{ _tag: "Admit", flow: FlowName.make("Chain"), scope: requested.scope },
-								instantOf(Number(at) + longestLeaseMillis.value)
+								instantOf(Number(at) + longestLeaseMillis)
 							)
 							const first =
 								served.ending.kind === "admitted"
@@ -83,7 +83,7 @@ layer(sliceLayer)("the claim race", (it) => {
 										step,
 										attempt: 1n,
 										holder,
-										until: instantOf(Number(at) + longestLeaseMillis.value)
+										until: instantOf(Number(at) + longestLeaseMillis)
 									})
 								)
 								return outcome._tag === "Success" ? (outcome.success ? "claimed" : "lost") : "other"

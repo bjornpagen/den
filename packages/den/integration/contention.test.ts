@@ -10,12 +10,12 @@ import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { longestLeaseMillis } from "@den/limits/claim"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, HashMap, Option, Ref } from "effect"
 import { ringOnAndDrain } from "#integration/support/run.ts"
 import { nonce, openLedgers, sliceLayer } from "#integration/support/slice.ts"
+import { longestLeaseMillis } from "#runtime/turn.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * Exact seats: the Pool holds two seats and a batch, admitted with its root, makes five squares eligible at once. Five
@@ -76,7 +76,7 @@ layer(sliceLayer)("exact seats", (it) => {
 						runs: 8,
 						shrink: boundedShrink(4),
 						steerEvery: 4,
-						caseHang: caseHangMillis.value
+						caseHang: caseHangMillis
 					},
 					(drawnTakers, c) =>
 						Effect.gen(function* () {
@@ -86,7 +86,7 @@ layer(sliceLayer)("exact seats", (it) => {
 							const at = yield* fan.ledger.now
 							const requested = yield* fan.request.FanRun(batch, at, { batch, size: 5n })
 							assert.isTrue(requested.fresh)
-							const ends = instantOf(Number(at) + longestLeaseMillis.value)
+							const ends = instantOf(Number(at) + longestLeaseMillis)
 							const admitted = yield* serve(
 								ledgers,
 								{ _tag: "Admit", flow: FlowName.make("Fan"), scope: requested.scope },
@@ -136,7 +136,7 @@ layer(sliceLayer)("exact seats", (it) => {
 									}
 									const instant = yield* ledger.now
 									const until = instantOf(
-										taker.lapsed ? Number(instant) - 1 : Number(instant) + longestLeaseMillis.value
+										taker.lapsed ? Number(instant) - 1 : Number(instant) + longestLeaseMillis
 									)
 									const taken = yield* take(ledger, ["Pool"], taker.holder, until, instant)
 									if (Option.isSome(taken)) {

@@ -1,4 +1,3 @@
-import { batchMessages, idempotencyKeyLength, retentionSeconds } from "@den/limits/vercel-queues"
 import type {
 	BatchSendMessage,
 	BatchSendResult,
@@ -7,6 +6,22 @@ import type {
 } from "@vercel/queue"
 import { Array as Arr, DateTime, Effect, Option, Order, Schema } from "effect"
 import { type CallbackOptions, type Queue, text } from "#queue.ts"
+import { batchMessages, retentionSeconds } from "#send.ts"
+
+/**
+ * The longest idempotency key a send may carry; a longer one is refused with a 400.
+ *
+ * @limitKind published
+ * @owner Vercel Queues, a send's idempotency key
+ * @unit characters
+ * @scope the idempotencyKey of one message
+ * @constraint hard quota
+ * @source https://vercel.com/docs/queues/sdk
+ * @quote Deduplication key for the message. The deduplication window is the message's retention period. Maximum 256
+ *   characters
+ * @verified 2026-11-16
+ */
+const idempotencyKeyLength = 256
 
 /**
  * A fake of `@vercel/queue`'s client, over a broker of its own with a clock the suite moves: it keeps what Vercel Queues
@@ -164,8 +179,8 @@ export const fake = (trigger: Trigger, fates: Fates): Fake => {
 			submitted.push({ topic, at: now, payload: message.payload, key, delaySeconds, outcome })
 		}
 		const invalid =
-			Option.exists(key, (k) => k.length > idempotencyKeyLength.value) ||
-			Option.exists(delaySeconds, (delay) => delay > retentionSeconds.value)
+			Option.exists(key, (k) => k.length > idempotencyKeyLength) ||
+			Option.exists(delaySeconds, (delay) => delay > retentionSeconds)
 		if (invalid) {
 			record("invalid")
 			return { status: "failed", statusCode: 400, error: "invalid message", retryable: false }
@@ -181,7 +196,7 @@ export const fake = (trigger: Trigger, fates: Fates): Fake => {
 		}
 		minted += 1
 		const id = `message-${minted}`
-		const expiresAt = now + retentionSeconds.value * 1000
+		const expiresAt = now + retentionSeconds * 1000
 		held.set(id, {
 			id,
 			topic,
@@ -200,7 +215,7 @@ export const fake = (trigger: Trigger, fates: Fates): Fake => {
 	}
 
 	const sendBatch: Queue["sendBatch"] = (topic, messages) => {
-		if (messages.length < 1 || messages.length > batchMessages.value) {
+		if (messages.length < 1 || messages.length > batchMessages) {
 			return Promise.reject(new RangeError("Batch size must be between 1 and 100 messages"))
 		}
 		batches += 1

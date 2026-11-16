@@ -1,8 +1,8 @@
 import net from "node:net"
 import type { DbConnection } from "@bjornpagen/grizzle/runtime"
-import { connectTimeoutMillis } from "@den/limits/cluster"
 import { Config, Effect, FileSystem, Path, Redacted, String as Str } from "effect"
 import pgDriver from "pg"
+import { connectTimeoutMillis } from "#integration/slice/grizzle.config.ts"
 
 /**
  * den's own PostgreSQL 19 cluster (scripts/pg.sh): localhost on port 5435, verify-full TLS against its CA, the owner
@@ -48,5 +48,5 @@ export const connectionTo = (
 	},
 	database,
 	password,
-	connectTimeoutMs: connectTimeoutMillis.value
+	connectTimeoutMs: connectTimeoutMillis
 })

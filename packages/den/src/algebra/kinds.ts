@@ -1,8 +1,22 @@
 import type { AnyRelation, Fact, Written } from "@bjornpagen/grizzle"
-import type { Limit } from "@bjornpagen/limit"
-import { censusPeriodSeconds } from "@den/limits/vercel-cron"
 import { regex } from "arkregex"
 import { Array as Arr, type Cron, Data, Duration, type Effect, type Schema } from "effect"
+
+/**
+ * How often the census can tick: Vercel Cron's minimum interval on the Pro and Enterprise plans. A window shorter than
+ * this could hold no tick, so den refuses one, and the first rung of a retry ladder waits this long. Vercel calls Cron
+ * Jobs legacy, to be migrated to Schedules; the interval stands until den moves.
+ *
+ * @limitKind published
+ * @owner Vercel Cron Jobs, Pro and Enterprise plans
+ * @unit seconds
+ * @scope the interval between two census ticks, at its shortest
+ * @constraint hard quota
+ * @source https://vercel.com/docs/schedules/cron-jobs/usage-and-pricing
+ * @quote | **Pro** | 100 cron jobs | Once per minute | Per-minute |
+ * @verified 2026-11-16
+ */
+export const censusPeriodSeconds = 60
 
 /**
  * The declarations of den's algebra (the proposal's section 4): step kinds, scope kinds, roots, spawn edges and
@@ -42,12 +56,12 @@ const positive = (declaration: string, what: string, n: number): void => {
 export interface Resource<Name extends string = string> {
 	readonly _tag: "Resource"
 	readonly name: Name
-	readonly seats: Limit
+	readonly seats: number
 }
 
-export const resource = <const Name extends string>(name: Name, seats: Limit): Resource<Name> => {
+export const resource = <const Name extends string>(name: Name, seats: number): Resource<Name> => {
 	named("resource", name)
-	positive(`resource ${name}`, "seats", seats.value)
+	positive(`resource ${name}`, "seats", seats)
 	return { _tag: "Resource", name, seats }
 }
 
@@ -98,9 +112,7 @@ export const utcHours = (opens: number, closes: number): Window => {
 	if (closes <= opens || closes > HOURS_IN_DAY) {
 		throw new Refused({ declaration, why: "it closes after it opens, within one day" })
 	}
-	if (
-		Duration.isLessThan(Duration.hours(closes - opens), Duration.seconds(censusPeriodSeconds.value))
-	) {
+	if (Duration.isLessThan(Duration.hours(closes - opens), Duration.seconds(censusPeriodSeconds))) {
 		throw new Refused({ declaration, why: "it is shorter than the census's period" })
 	}
 	return { kind: "utcHours", opens, closes }
@@ -203,13 +215,13 @@ export type RowsOf<D> = D extends { readonly kind: "rows"; readonly relation: in
 	: ReadonlyArray<never>
 
 /** When a step is first due: as soon as it is spawned, or a delay after (W5's timer, W6's delay). */
-export type Due = { readonly kind: "spawned" } | { readonly kind: "after"; readonly millis: Limit }
+export type Due = { readonly kind: "spawned" } | { readonly kind: "after"; readonly millis: number }
 
 /** Due when spawned. */
 export const atSpawn: Due = { kind: "spawned" }
 
 /** Due `millis` after its spawn: an exact timer, which rides the transport's delay with the census as its net. */
-export const after = (millis: Limit): Due => ({ kind: "after", millis })
+export const after = (millis: number): Due => ({ kind: "after", millis })
 
 /** What a body returns: its output and its writes into the app's relations, committed with its result in one call. */
 export interface Done<O, W extends WritesDeclaration> {

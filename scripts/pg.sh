@@ -18,13 +18,6 @@ if [[ ! -f "$PIN" ]]; then
 fi
 # One setting of grizzle's pin, read in a subshell so none of the pin's other settings reaches this script.
 pinned() { (source "$PIN" && printf '%s' "${!1}"); }
-# One limit's value, read from den's limits package (packages/limits/src/<module>.ts) when it is needed, so this script
-# holds no copy of a number: limit <module> <name>.
-limit() {
-	node --input-type=module -e 'process.stdout.write(String((await import(process.argv[1]))[process.argv[2]].value))' \
-		"$ROOT/packages/limits/src/$1.ts" "$2"
-}
-
 PG_VERSION="$(pinned PG_PIN_VERSION)"
 PREFIX="$(pinned GRIZZLE_PG_PREFIX)"
 PG_PORT=5435
@@ -111,9 +104,30 @@ init() {
 		--locale-provider=builtin --builtin-locale=C.UTF-8 --locale=C.UTF-8 \
 		--auth-local=peer --auth-host=reject >/dev/null
 
-	local replication pred_locks
-	replication="$(limit cluster replicationSlotsAndSenders)"
-	pred_locks="$(limit cluster maxPredLocksPerTransaction)"
+	# The cluster's max_replication_slots and max_wal_senders, one bound for both: every live source's leader holds one
+	# replication slot and one walsender, and each walsender holds a connection.
+	#
+	# @limitKind derived
+	# @unit replication slots, and walsenders
+	# @derivation a walsender is a connection and a leader holds a slot with its walsender, so a bound of
+	#   max_connections, which the cluster leaves at its default, can never be the one that runs out
+	# @from max_connections, PostgreSQL 19's default of 100 connections (published, configurable default;
+	#   https://www.postgresql.org/docs/19/runtime-config-connection.html: "Determines the maximum number of concurrent
+	#   connections to the database server. The default is typically 100 connections, but might be less if your kernel
+	#   settings will not support it (as determined during initdb)."; verified 2026-11-16)
+	local replication=100
+	# The cluster's max_pred_locks_per_transaction: every grizzle transaction that is not certified READ COMMITTED is
+	# SERIALIZABLE, and its writes and plain reads take predicate locks, which grizzle leaves the operator to size.
+	#
+	# @limitKind published
+	# @owner grizzle, the operator's PostgreSQL settings its README recommends (vendor/grizzle)
+	# @unit predicate locks
+	# @constraint advisory threshold
+	# @source https://github.com/bjornpagen/grizzle/blob/8c0b69ea7f434cdbf51975f3c71eb4dac98c53d9/README.md#L1305
+	# @quote **`max_pred_locks_per_transaction = 2048`**, recommended: a server-start setting, about 115 MB of shared
+	#   memory at 200 connections.
+	# @verified 2026-11-16
+	local pred_locks=2048
 	cat >>"$DATA/postgresql.conf" <<EOF
 
 # den's cluster (scripts/pg.sh). Everything else is the PostgreSQL $PG_VERSION default.
@@ -127,7 +141,7 @@ ssl_min_protocol_version = 'TLSv1.3'
 password_encryption = 'scram-sha-256'
 # grizzle's live reads decode the WAL, and grizzle migrate refuses a cluster below logical.
 wal_level = logical
-# packages/limits/src/cluster.ts, with each number's evidence.
+# The two locals above, with each number's evidence.
 max_replication_slots = $replication
 max_wal_senders = $replication
 max_pred_locks_per_transaction = $pred_locks

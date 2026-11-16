@@ -1,3 +1,4 @@
+import { caseHangMillis } from "@bjornpagen/den/test/support/suites"
 import { type Wake, WakeSchema, wakeText } from "@bjornpagen/den/transport"
 import { type Case, drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
@@ -15,12 +16,11 @@ import {
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { caseHangMillis } from "@den/limits/suites"
-import { maxDeliveries } from "@den/limits/vercel-queues"
 import { assert, it } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Option, Schema } from "effect"
 import { consumer } from "#consumer.ts"
 import { TOPIC, VercelQueue, WakeJson } from "#queue.ts"
+import { maxDeliveries } from "#send.ts"
 import { type Fates, fake } from "#test/fake.ts"
 import { type Encoded, encodedWake } from "#test/wakes.ts"
 
@@ -136,12 +136,12 @@ it.effect("the consumer acknowledges every delivery, a stale ending included", (
 				runs: 200,
 				shrink: boundedShrink(40),
 				steerEvery: 16,
-				caseHang: caseHangMillis.value
+				caseHang: caseHangMillis
 			},
 			(drawnDeliveries, c) =>
 				Effect.gen(function* () {
 					const queue = fake(
-						{ topic: TOPIC, maxDeliveries: maxDeliveries.value },
+						{ topic: TOPIC, maxDeliveries: maxDeliveries },
 						losing(c, drawnDeliveries.losses)
 					)
 					const bodies = yield* Effect.forEach(drawnDeliveries.bodies, (b) =>

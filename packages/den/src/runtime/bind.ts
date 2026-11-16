@@ -32,7 +32,7 @@ export const dueAt = (due: Due, at: Instant): Instant => {
 		case "spawned":
 			return at
 		case "after":
-			return instantOf(Number(at) + due.millis.value)
+			return instantOf(Number(at) + due.millis)
 	}
 }
 

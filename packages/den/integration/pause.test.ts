@@ -6,10 +6,10 @@ import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Option } from "effect"
 import { openLedgers, sliceLayer } from "#integration/support/slice.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * A pause is a chain of turns: `Paused(target, turn)`, each turn after the first contained in its predecessor's
@@ -67,7 +67,7 @@ layer(sliceLayer)("pauses", (it) => {
 						runs: 12,
 						shrink: boundedShrink(4),
 						steerEvery: 3,
-						caseHang: caseHangMillis.value
+						caseHang: caseHangMillis
 					},
 					(drawnOperators, c) =>
 						Effect.gen(function* () {

@@ -9,8 +9,6 @@ import { exhaust } from "@bjornpagen/testing/explore"
 import { requiredInSpace } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
 import { searched } from "@bjornpagen/testing/vitest"
-import { backoffLastMillis } from "@den/limits/claim"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Duration, Effect, Formatter, HashMap, Option, Order, Ref } from "effect"
 import { TestClock } from "effect/testing"
@@ -24,6 +22,8 @@ import {
 	rows,
 	sliceLayer
 } from "#integration/support/slice.ts"
+import { backoffLastMillis } from "#runtime/turn.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * A refused credential fences, spends nothing, and runs no body again while it stands. A deployment whose app login
@@ -71,7 +71,7 @@ interface Planned {
 /** One round: the suite's clock a longest rung on, a census tick of every flow, the transport drained. */
 const round = (all: ReadonlyArray<Ledger<Faults>>, ledgers: Ledgers<Faults>) =>
 	Effect.gen(function* () {
-		yield* TestClock.adjust(Duration.millis(backoffLastMillis.value))
+		yield* TestClock.adjust(Duration.millis(backoffLastMillis))
 		yield* tickAll(all)
 		return yield* drain(ledgers)
 	})
@@ -103,7 +103,7 @@ layer(sliceLayer)("a refused credential", (it) => {
 							"broken for one tick",
 							"broken for several ticks"
 						]),
-						caseHang: caseHangMillis.value,
+						caseHang: caseHangMillis,
 						box: "a two-attempt ladder dead at most once, then its commit refused, beside a never-ending one, the deployment broken one to three ticks after",
 						oracle: {
 							kind: "specification",

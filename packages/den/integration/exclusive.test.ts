@@ -8,12 +8,12 @@ import { type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { longestLeaseMillis } from "@den/limits/claim"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter } from "effect"
 import { admitAndDrain, ringOnAndDrain } from "#integration/support/run.ts"
 import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
+import { longestLeaseMillis } from "#runtime/turn.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * Exclusivity: a sync root holds a seat per relation for its whole life. Several roots for one relation are requested
@@ -62,7 +62,7 @@ layer(sliceLayer)("exclusivity", (it) => {
 					runs: 6,
 					shrink: boundedShrink(4),
 					steerEvery: 3,
-					caseHang: caseHangMillis.value
+					caseHang: caseHangMillis
 				},
 				(run, c) =>
 					Effect.gen(function* () {
@@ -79,7 +79,7 @@ layer(sliceLayer)("exclusivity", (it) => {
 							request
 						)
 						assert.isTrue(Arr.every([first, ...rest], (r) => r.fresh))
-						const ends = instantOf(Number(at) + longestLeaseMillis.value)
+						const ends = instantOf(Number(at) + longestLeaseMillis)
 						const admit = (scope: typeof first.scope) =>
 							serve(ledgers, { _tag: "Admit", flow: FlowName.make("Sync"), scope }, ends)
 						const winner = yield* admit(first.scope)

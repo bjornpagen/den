@@ -1,7 +1,7 @@
-import { invocationBudgetMillis } from "@den/limits/vercel-functions"
 import { Array as Arr, Duration, Effect, Option, Ref } from "effect"
 import type { Digest } from "effect/crypto"
 import { now } from "#runtime/clock.ts"
+import { invocationBudgetMillis } from "#runtime/turn.ts"
 import { type Ending, invoke, type Ledgers } from "#runtime/turn.ts"
 import { InProcess, type Transport } from "#transport.ts"
 
@@ -15,7 +15,7 @@ export const drain = <R>(
 ): Effect.Effect<ReadonlyArray<Ending>, never, R | Digest.Digest | Transport | InProcess> =>
 	Effect.gen(function* () {
 		const { held } = yield* InProcess
-		const budget = Duration.millis(invocationBudgetMillis.value)
+		const budget = Duration.millis(invocationBudgetMillis)
 		const deliver = (
 			done: ReadonlyArray<Ending>
 		): Effect.Effect<ReadonlyArray<Ending>, never, R | Digest.Digest | Transport | InProcess> =>

@@ -9,8 +9,6 @@ import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { longestLeaseMillis, reclaimableAfterMillis } from "@den/limits/claim"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Duration, Effect, Formatter, Option } from "effect"
 import type { Digest } from "effect/crypto"
@@ -24,6 +22,8 @@ import {
 	rows,
 	sliceLayer
 } from "#integration/support/slice.ts"
+import { longestLeaseMillis, reclaimableAfterMillis } from "#runtime/turn.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * Two holders of one step, a stale one and a fresh one, each with its own attempt: the stale one claimed attempt 1 and
@@ -84,7 +84,7 @@ layer(sliceLayer)("a stale holder", (it) => {
 					runs: 8,
 					shrink: boundedShrink(4),
 					steerEvery: 4,
-					caseHang: caseHangMillis.value
+					caseHang: caseHangMillis
 				},
 				(race, c) =>
 					Effect.gen(function* () {
@@ -99,7 +99,7 @@ layer(sliceLayer)("a stale holder", (it) => {
 							pages: BigInt(race.pages)
 						})
 						assert.isTrue(requested.fresh)
-						const ends = (from: bigint) => instantOf(Number(from) + longestLeaseMillis.value)
+						const ends = (from: bigint) => instantOf(Number(from) + longestLeaseMillis)
 						const admitted = yield* serve(
 							ledgers,
 							{ _tag: "Admit", flow, scope: requested.scope },
@@ -131,7 +131,7 @@ layer(sliceLayer)("a stale holder", (it) => {
 								return turn
 							})
 						const first = yield* claimAt(1n)
-						yield* TestClock.adjust(Duration.millis(reclaimableAfterMillis.value))
+						yield* TestClock.adjust(Duration.millis(reclaimableAfterMillis))
 						const fresh = yield* claimAt(2n)
 						const stale: Turn = { ...first, deadline: fresh.deadline, until: fresh.until }
 						const [early, late] =
@@ -193,7 +193,7 @@ layer(sliceLayer)("a stale holder", (it) => {
 						generator: element<Ledger<Faults>>(all),
 						literal: (ledger: Ledger<Faults>) => ledger.flow,
 						coverage: requiredInSpace<Flow>(flows),
-						caseHang: caseHangMillis.value,
+						caseHang: caseHangMillis,
 						box: "each flow's ledger of the slice",
 						oracle: {
 							kind: "second-implementation",

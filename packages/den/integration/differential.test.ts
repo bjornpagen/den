@@ -6,8 +6,6 @@ import { element, type Gen, int, oneOf } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { backoffFirstMillis, backoffLastMillis, longestLeaseMillis } from "@den/limits/claim"
-import { caseHangMillis } from "@den/limits/suites"
 import type { Datum } from "@den/model/datum"
 import type { Fact } from "@den/model/facts"
 import { rootText } from "@den/model/identity"
@@ -31,6 +29,8 @@ import { chain, poolSeats } from "#integration/slice/flows.ts"
 import { admitAndDrain } from "#integration/support/run.ts"
 import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
 import { agreed, factsOf, type Graph } from "#integration/support/trace.ts"
+import { backoffFirstMillis, backoffLastMillis, longestLeaseMillis } from "#runtime/turn.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * The differential harness: the engine's committed facts against the reference model's (`@den/model`) on generated
@@ -74,13 +74,13 @@ const programs: Gen<Program> = oneOf<Program>([
 const ladderOf = (attempts: number): Ladder => ({
 	_tag: "Attempts",
 	attempts,
-	first: backoffFirstMillis.value,
-	last: backoffLastMillis.value
+	first: backoffFirstMillis,
+	last: backoffLastMillis
 })
 
 /** How the model runs a kind: den's longest lease, its resources, and its ladder. */
 const runsOf = (holds: ReadonlyArray<Resource>, ladder: Ladder): Runs => ({
-	lease: longestLeaseMillis.value,
+	lease: longestLeaseMillis,
 	holds,
 	ladder
 })
@@ -171,7 +171,7 @@ const ChainRun: RootKind<ChainIn, Datum, never> = {
 	}
 }
 
-const pool: Resource = { name: "Pool", seats: poolSeats.value }
+const pool: Resource = { name: "Pool", seats: poolSeats }
 
 interface SquareIn {
 	readonly batch: string
@@ -303,7 +303,7 @@ layer(sliceLayer)("the differential harness", (it) => {
 					runs: 12,
 					shrink: boundedShrink(6),
 					steerEvery: 4,
-					caseHang: caseHangMillis.value
+					caseHang: caseHangMillis
 				},
 				(program, c) =>
 					Effect.gen(function* () {
@@ -348,7 +348,7 @@ layer(sliceLayer)("the differential harness", (it) => {
 									}
 									case "fan": {
 										c.note(chosen.size === 0 ? "an empty batch" : "a fan-out")
-										if (chosen.size > poolSeats.value) {
+										if (chosen.size > poolSeats) {
 											c.note("a contended pool")
 										}
 										const requested = yield* fanLedger.request.FanRun(key, at, {

@@ -1,8 +1,8 @@
 import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
-import { backoffFirstMillis, backoffLastMillis, leaseMarginMillis } from "@den/limits/claim"
 import { Array as Arr, Cause, Duration, Effect, Exit, Option, Order, Random } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Ladder } from "#algebra/kinds.ts"
+import { censusPeriodSeconds } from "#algebra/kinds.ts"
 import { opensAt, isOpen } from "#runtime/eligible.ts"
 import {
 	finishStep,
@@ -27,6 +27,121 @@ import type {
 } from "#runtime/ledger.ts"
 import { giveBack, holdExclusive, releaseExclusive, exclusiveOf, take } from "#runtime/seats.ts"
 import { AttemptNumber, type FlowName, type Ring, Transport, type Wake } from "#transport.ts"
+
+/**
+ * How long a PostgreSQL server lets a client take to authenticate before it closes the connection, by default: no
+ * connection attempt to a server at its default can usefully take longer.
+ *
+ * @limitKind published
+ * @owner PostgreSQL 19, the authentication_timeout setting
+ * @unit seconds
+ * @scope one client's authentication on one connection, from its start until the server closes the connection
+ * @constraint configurable default
+ * @source https://www.postgresql.org/docs/19/runtime-config-connection.html
+ * @quote Maximum amount of time allowed to complete client authentication. [...] The default is one minute (1m).
+ * @verified 2026-11-16
+ */
+export const authenticationTimeoutSeconds = 60
+
+/**
+ * How far a claim's lease outlasts its turn's deadline. After its deadline a holder's last acts are its commit and the
+ * giving back of its seats, each a call whose session a server at its default lets take at most this long to
+ * authenticate, so a lease this much past the deadline still holds while its holder can be committing. Seats are exact
+ * while the clocks of two holders differ by less than this margin, which DBCLOCK removes by taking the database's
+ * instant.
+ *
+ * @limitKind derived
+ * @owner den's claim protocol (packages/den/src/runtime/turn.ts)
+ * @unit milliseconds
+ * @scope the interval from a turn's deadline to its claim's and its seats' `until`
+ * @derivation the commit and the seats' give-back after the deadline each open a session, which the server closes once
+ *   authentication_timeout passes
+ * @from {@link authenticationTimeoutSeconds}
+ */
+const leaseMarginMillis = authenticationTimeoutSeconds * 1000
+
+/**
+ * The longest a Vercel function invocation lives, Fluid compute on the Pro and Enterprise plans: past it Vercel
+ * terminates the invocation. Every unit of den's work fits one invocation (the proposal's ninth principle). Vercel's
+ * longer durations are a beta, configured per function, which den does not take.
+ *
+ * @limitKind published
+ * @owner Vercel Functions, Fluid compute, Pro and Enterprise plans
+ * @unit seconds
+ * @scope one function invocation, from its start until Vercel terminates it
+ * @constraint hard quota
+ * @source https://vercel.com/docs/functions/configuring-functions/duration
+ * @quote The 800 second maximum is generally available for Pro and Enterprise teams.
+ * @verified 2026-11-16
+ */
+export const functionLifetimeSeconds = 800
+
+/**
+ * The most milliseconds one invocation spends taking turns: its whole lifetime. A turn starts only while its deadline
+ * and the lease margin still fit inside what is left of it.
+ *
+ * @limitKind derived
+ * @owner den's runtime (packages/den/src/runtime/drive.ts)
+ * @unit milliseconds
+ * @scope one invocation's turns, from the instant it was woken
+ * @derivation an invocation takes turns only while the platform keeps it alive
+ * @from {@link functionLifetimeSeconds}
+ */
+export const invocationBudgetMillis = functionLifetimeSeconds * 1000
+
+/**
+ * The longest a claim's lease can be: a turn's deadline is what its invocation has left less the margin, so its lease
+ * ends no later than the invocation that took it can live.
+ *
+ * @limitKind derived
+ * @owner den's claim protocol (packages/den/src/runtime/turn.ts)
+ * @unit milliseconds
+ * @scope the interval from a claim's instant to its `until`, at its longest
+ * @derivation deadline plus margin is at most the invocation's remaining budget, which is at most its whole budget
+ * @from {@link invocationBudgetMillis}
+ */
+export const longestLeaseMillis = invocationBudgetMillis
+
+/**
+ * The first instant after the longest lease at which its step may be claimed again: a lease holds through its `until`,
+ * and the caller's clock reads whole milliseconds, so the next instant it can read is one millisecond later.
+ *
+ * @limitKind derived
+ * @owner den's claim protocol
+ * @unit milliseconds
+ * @scope the interval from a claim's instant to the first instant the census rings its step's next attempt, at the
+ *   longest
+ * @derivation a claim stands while `until >= now`, and the clock's resolution is one millisecond, so one past the
+ *   lease is the first instant it no longer stands
+ * @from {@link longestLeaseMillis}
+ */
+export const reclaimableAfterMillis = longestLeaseMillis + 1
+
+/**
+ * The first rung of every retry ladder: one census period, the soonest the census rings a step again if the wake its
+ * failed turn sent with a delay is lost.
+ *
+ * @limitKind derived
+ * @owner den's retry ladder (packages/den/src/runtime/turn.ts)
+ * @unit milliseconds
+ * @scope the wait from a spent attempt's end to the next attempt's due instant, at the first rung
+ * @derivation the census's period, so a lost delayed wake costs at most one more rung
+ * @from {@link censusPeriodSeconds}
+ */
+export const backoffFirstMillis = censusPeriodSeconds * 1000
+
+/**
+ * The last rung of every retry ladder: the longest lease, so a step is never due again later than a dead holder's step
+ * would be reclaimed.
+ *
+ * @limitKind derived
+ * @owner den's retry ladder (packages/den/src/runtime/turn.ts)
+ * @unit milliseconds
+ * @scope the wait from a spent attempt's end to the next attempt's due instant, at its longest
+ * @derivation rungs double from the first until they reach the longest lease, which a reclaim waits at most
+ * @from {@link longestLeaseMillis}
+ */
+export const backoffLastMillis = longestLeaseMillis
 
 /** A wake a turn rings on, and its delay: `invoke` names the turn as its cause. */
 export interface Onward {
@@ -132,7 +247,7 @@ const stepWake = (flow: FlowName, step: StepKey, attempt: bigint): Wake => ({
  * lease.
  */
 export const rungMillis = (spent: number): number =>
-	Math.min(backoffFirstMillis.value * 2 ** Math.max(0, spent - 1), backoffLastMillis.value)
+	Math.min(backoffFirstMillis * 2 ** Math.max(0, spent - 1), backoffLastMillis)
 
 /** Whether a ladder allows another attempt after `spent` spent ones. */
 const allows = (ladder: Ladder, spent: number): boolean =>
@@ -700,7 +815,7 @@ const serveStep = <R>(
 		const spentSoFar = spentBefore(claims, retries, fenced, next)
 		const nonce = yield* Random.nextInt
 		const holder = yield* holderOf(step, Number(next), nonce)
-		const margin = leaseMarginMillis.value
+		const margin = leaseMarginMillis
 		const deadline = instantOf(Number(ends) - margin)
 		const until = ends
 		const exhausted = !allows(runner.retry, spentSoFar)
@@ -896,7 +1011,7 @@ export const invoke = <R>(
 				const at = reading.success
 				const end = Option.getOrElse(ends, () => instantOf(Number(at) + Duration.toMillis(budget)))
 				const cause = { _tag: "Turn", by: serving, at: Number(at) } as const
-				if (Number(at) + leaseMarginMillis.value >= Number(end)) {
+				if (Number(at) + leaseMarginMillis >= Number(end)) {
 					yield* transport.send([{ wake: serving, delay: Duration.zero, cause }])
 					return endings
 				}

@@ -1,8 +1,8 @@
 import type { Wake } from "@bjornpagen/den/transport"
-import { visibilityTimeoutSeconds } from "@den/limits/vercel-queues"
 import type { MessageMetadata, RetryHandler } from "@vercel/queue"
 import { Effect, Schema } from "effect"
 import { VercelQueue, WakeJson } from "#queue.ts"
+import { visibilityTimeoutSeconds } from "#send.ts"
 
 /**
  * The push consumer: one route on the one topic, for every wake of every flow. It decodes a delivery once, hands the
@@ -61,7 +61,7 @@ export const consumer = <A, R>(serve: Serve<A, R>): Effect.Effect<Route, never, 
 		const context = yield* Effect.context<R>()
 		const run = Effect.runPromiseWith(context)
 		return queue.handleCallback((payload, metadata) => run(delivered(serve, payload, metadata)), {
-			visibilityTimeoutSeconds: visibilityTimeoutSeconds.value,
+			visibilityTimeoutSeconds: visibilityTimeoutSeconds,
 			retry: acknowledge
 		})
 	})

@@ -41,7 +41,7 @@ W4 (Gold) has no outside system: its views are the app's own SQL.
 
 ## Measured numbers
 
-Each is a limit of `@den/limits` with its evidence, citing edullm's `limits.ts`: the AlphaTest knees, the 200-row
+Each is a constant of the fake that reads it, with its evidence in its JSDoc, citing edullm's `limits.ts`: the AlphaTest knees, the 200-row
 listing page and the gateway's 40–68 requests a second (drawn by a simulation, never fixed) in `alphatest`; the
 bastion's eight seats at 5,227,836.87 bytes a second and 13,941 keys a second a session in `bastion`; QTI's published
 1,000-document page in `qti`; BBR's and TCP's published constants in `flow-control`. The 65,536 print buckets are a

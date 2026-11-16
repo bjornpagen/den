@@ -3,7 +3,6 @@ import type { Ledger } from "@bjornpagen/den/runtime/ledger"
 import type { Ledgers } from "@bjornpagen/den/runtime/turn"
 import { inProcess } from "@bjornpagen/den/transport"
 import { Db, DbLayer, LiveSource, roleNameOf, served } from "@bjornpagen/grizzle/runtime"
-import { connectTimeoutMillis } from "@den/limits/cluster"
 import { NodeServices } from "@effect/platform-node"
 import {
 	Array as Arr,
@@ -27,6 +26,7 @@ import { chainLedger } from "#integration/slice/generated/chain.binding.ts"
 import { fanLedger } from "#integration/slice/generated/fan.binding.ts"
 import { retryLedger } from "#integration/slice/generated/retry.binding.ts"
 import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
+import { connectTimeoutMillis } from "#integration/slice/grizzle.config.ts"
 import type { AppLogin, Worker } from "#integration/slice/logins.ts"
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
@@ -206,7 +206,7 @@ const databaseLayer = Layer.effect(Database, installed)
  * read), each closed once idle as long as a connection attempt may take, so no session outlives the cases that opened
  * it for long.
  */
-const pool = Object.freeze({ max: 4, min: 0, idleTimeoutMs: connectTimeoutMillis.value })
+const pool = Object.freeze({ max: 4, min: 0, idleTimeoutMs: connectTimeoutMillis })
 
 /** The app's loader, which den's commits run under. */
 const openLoader = Db.open(AppServed.roles.loader, {})

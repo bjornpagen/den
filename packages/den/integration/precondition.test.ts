@@ -10,12 +10,12 @@ import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { longestLeaseMillis } from "@den/limits/claim"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Random } from "effect"
 import { ringOnAndDrain } from "#integration/support/run.ts"
 import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
+import { longestLeaseMillis } from "#runtime/turn.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * A precondition root, as W4's Gold build: admitted only while the chain flow has no step pending. A chain is admitted
@@ -64,7 +64,7 @@ layer(sliceLayer)("a precondition root", (it) => {
 					runs: 6,
 					shrink: boundedShrink(4),
 					steerEvery: 3,
-					caseHang: caseHangMillis.value
+					caseHang: caseHangMillis
 				},
 				(run, c) =>
 					Effect.gen(function* () {
@@ -72,7 +72,7 @@ layer(sliceLayer)("a precondition root", (it) => {
 						const { chain, sync, ledgers } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
 						const at = yield* chain.ledger.now
-						const ends = instantOf(Number(at) + longestLeaseMillis.value)
+						const ends = instantOf(Number(at) + longestLeaseMillis)
 						const build = yield* Effect.map(Random.nextInt, (n) => BigInt(Math.abs(n)))
 						const tag = yield* nonce
 						const chained = yield* chain.request.ChainRun(`gold-${tag}`, at, {

@@ -1,7 +1,21 @@
 import type { Gen } from "@bjornpagen/testing/gen"
-import { qtiPageLimit } from "@den/limits/qti"
 import { Array as Arr, Context, Effect, Layer, Option, Order, Ref, Schema } from "effect"
 import type { Nature } from "#nature.ts"
+
+/**
+ * The most documents one page of a list may hold, on every list endpoint's `limit` parameter.
+ *
+ * @limitKind published
+ * @owner the QTI REST API, the list endpoints' `limit` parameter
+ * @unit documents a page
+ * @scope one `after` page of one collection's list read
+ * @constraint hard quota
+ * @source https://qti.alpha-1edtech.ai/openapi.yaml
+ * @quote name: limit schema: default: 10 description: Number of items per page [...] type: integer minimum: 1 maximum:
+ *   1000
+ * @verified 2026-11-16
+ */
+const qtiPageLimit = 1000
 
 /**
  * The QTI REST API as edullm's W3 reads it: three collections, each listed by an `after` cursor chain over a frozen
@@ -120,7 +134,7 @@ export const makeQti = (world: World, nature: Nature): Effect.Effect<QtiApi["Ser
 				}
 				const held = yield* Ref.get(documents)
 				const matching = listed(held[request.collection], request)
-				const items = Arr.take(matching, Math.min(request.limit, qtiPageLimit.value))
+				const items = Arr.take(matching, Math.min(request.limit, qtiPageLimit))
 				const next =
 					matching.length > items.length
 						? Option.map(Arr.last(items), (last) => last.id)

@@ -1,4 +1,4 @@
-import { grizzle, limits, toolchain } from "@bjornpagen/devtools/config"
+import { grizzle, toolchain } from "@bjornpagen/devtools/config"
 
 /** den's toolchain: the rules and diagnostics it rejects, its Effect-free packages and its packs; the grizzle and limits
  * packs' names are oxlint.config.ts's. */
@@ -110,6 +110,6 @@ export default toolchain({
 		}
 	},
 	exceptions: [],
-	effectFree: ["packages/limits"],
-	packs: [grizzle(), limits()]
+	effectFree: [],
+	packs: [grizzle()]
 })

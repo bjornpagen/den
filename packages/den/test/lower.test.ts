@@ -1,12 +1,10 @@
 import { natural, pg, relation } from "@bjornpagen/grizzle"
-import { published } from "@bjornpagen/limit"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { boolean, element, type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, it } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, Option, Schema, String as Str } from "effect"
 import { type AnyFlow, flow } from "#algebra/flow.ts"
@@ -33,6 +31,7 @@ import {
 } from "#algebra/kinds.ts"
 import { type LawIR, lower } from "#lower/fragment.ts"
 import { type Placement, printFragment } from "#lower/print.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * Lowering a flow: every relation and roster it declares carries the flow's prefix, every law names only relations the
@@ -106,17 +105,19 @@ const fieldOf = (form: Form): FieldSchema => {
 /** An app relation a step may read: a feed's weight. */
 const Weight = relation("Weight", { feed: pg.bigint, factor: natural }, ["feed", "factor"])
 
-/** The box of grizzle's own work-queue law suite: two seats. */
-const boxSeats = published({
-	value: 2,
-	owner: "the lowering suite's resource, after grizzle's work-queue law suite",
-	unit: "seats",
-	scope: "the steps of a lowered flow that use the Pool",
-	constraint: "compile-time constant",
-	source: "https://github.com/bjornpagen/grizzle/blob/a226cbac/test/support/laws/boxes.ts",
-	quote: "Two resources of two seats each: two leases meet at a seat as often as they miss it.",
-	verified: "2026-11-11"
-})
+/**
+ * The box of grizzle's own work-queue law suite: two seats.
+ *
+ * @limitKind published
+ * @owner the lowering suite's resource, after grizzle's work-queue law suite
+ * @unit seats
+ * @scope the steps of a lowered flow that use the Pool
+ * @constraint compile-time constant
+ * @source https://github.com/bjornpagen/grizzle/blob/a226cbac/test/support/laws/boxes.ts
+ * @quote Two resources of two seats each: two leases meet at a seat as often as they miss it.
+ * @verified 2026-11-11
+ */
+const boxSeats = 2
 
 const finishing = {
 	reads: [],
@@ -245,7 +246,7 @@ it.effect(
 					runs: 160,
 					shrink: boundedShrink(40),
 					steerEvery: 16,
-					caseHang: caseHangMillis.value
+					caseHang: caseHangMillis
 				},
 				(sketch, c) =>
 					Effect.sync(() => {

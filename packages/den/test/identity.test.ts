@@ -4,7 +4,6 @@ import { boolean, characterOf, type Gen, string } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { regex } from "arkregex"
 import { Array as Arr, Effect, Formatter } from "effect"
@@ -18,6 +17,7 @@ import {
 	startedScope,
 	startedStep
 } from "#runtime/identity.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * Derived identity: a root's scope is a function of its flow, kind and idempotency key, a spawned step or scope of its
@@ -59,7 +59,7 @@ layer(Digest.layerWebCrypto)("derived identity", (it) => {
 					runs: 100,
 					shrink: boundedShrink(40),
 					steerEvery: 16,
-					caseHang: caseHangMillis.value
+					caseHang: caseHangMillis
 				},
 				([a, b], c) =>
 					Effect.gen(function* () {

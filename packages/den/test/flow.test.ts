@@ -1,10 +1,8 @@
-import { derived, published } from "@bjornpagen/limit"
 import { exhaust } from "@bjornpagen/testing/explore"
 import { requiredInSpace } from "@bjornpagen/testing/features"
 import { element } from "@bjornpagen/testing/gen"
 import { searched } from "@bjornpagen/testing/vitest"
 import { testWorkers } from "@bjornpagen/testing/workers"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, it } from "@effect/vitest"
 import { Array as Arr, Effect, Exit, Formatter, Option, Schema } from "effect"
 import { flow } from "#algebra/flow.ts"
@@ -29,6 +27,7 @@ import {
 	writer,
 	writesNothing
 } from "#algebra/kinds.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * A flow's declaration-time checks: a well-formed flow is accepted, and each fault is refused with Refused when the
@@ -56,27 +55,31 @@ const Fault = Schema.Literals([
 ])
 type Fault = typeof Fault.Type
 
-/** The box of grizzle's own work-queue law suite: two seats, where two leases meet at a seat as often as they miss. */
-const boxSeats = published({
-	value: 2,
-	owner: "the flow checks' resource, after grizzle's work-queue law suite",
-	unit: "seats",
-	scope: "the steps of the checked flow that use the Pool",
-	constraint: "compile-time constant",
-	source: "https://github.com/bjornpagen/grizzle/blob/a226cbac/test/support/laws/boxes.ts",
-	quote: "Two resources of two seats each: two leases meet at a seat as often as they miss it.",
-	verified: "2026-11-11"
-})
+/**
+ * The box of grizzle's own work-queue law suite: two seats, where two leases meet at a seat as often as they miss.
+ *
+ * @limitKind published
+ * @owner the flow checks' resource, after grizzle's work-queue law suite
+ * @unit seats
+ * @scope the steps of the checked flow that use the Pool
+ * @constraint compile-time constant
+ * @source https://github.com/bjornpagen/grizzle/blob/a226cbac/test/support/laws/boxes.ts
+ * @quote Two resources of two seats each: two leases meet at a seat as often as they miss it.
+ * @verified 2026-11-11
+ */
+const boxSeats = 2
 
-/** A resource with none of the box's seats, the count a resource is refused for. */
-const noSeats = derived({
-	owner: "the flow checks' refused resource",
-	unit: "seats",
-	scope: "a resource declared with no seat, which den refuses",
-	from: [boxSeats],
-	derivation: "the box's seats less themselves: a resource that holds no seat bounds nothing",
-	compute: ([box]) => box.value - box.value
-})
+/**
+ * A resource with none of the box's seats, the count a resource is refused for.
+ *
+ * @limitKind derived
+ * @owner the flow checks' refused resource
+ * @unit seats
+ * @scope a resource declared with no seat, which den refuses
+ * @derivation the box's seats less themselves: a resource that holds no seat bounds nothing
+ * @from {@link boxSeats}
+ */
+const noSeats = boxSeats - boxSeats
 
 const Empty = Schema.Struct({})
 
@@ -162,7 +165,7 @@ it.effect("accepts a well-formed flow and refuses each fault when it is declared
 				generator: element(Fault.literals),
 				literal: Formatter.format,
 				coverage: requiredInSpace<Fault>(Fault.literals),
-				caseHang: caseHangMillis.value,
+				caseHang: caseHangMillis,
 				box: "a flow of two steps on one resource, a scope and a root, with each single fault",
 				oracle: {
 					kind: "specification",

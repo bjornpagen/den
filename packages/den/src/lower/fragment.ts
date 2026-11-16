@@ -814,7 +814,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const coordination: Array<string> = []
 	const resourceRows = Arr.map(flow.resources, (r) => ({
 		handle: r.name,
-		count: BigInt(r.seats.value)
+		count: BigInt(r.seats)
 	}))
 	const counts: Option.Option<CountsIR> = Arr.isReadonlyArrayNonEmpty(resourceRows)
 		? Option.some({
@@ -930,7 +930,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		steps: stepsIR,
 		joins: joinsIR,
 		edges: edgesIR,
-		resources: Arr.map(flow.resources, (r) => ({ name: r.name, seats: r.seats.value })),
+		resources: Arr.map(flow.resources, (r) => ({ name: r.name, seats: r.seats })),
 		pausable,
 		spawning,
 		requesting,

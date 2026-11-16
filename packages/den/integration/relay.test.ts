@@ -8,10 +8,10 @@ import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Fiber, Formatter, Option, Queue, Stream } from "effect"
 import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * The relay, the transactional outbox by log tailing: it watches the chain flow's served reads through grizzle's live
@@ -58,7 +58,7 @@ layer(sliceLayer, { excludeTestServices: true })("the relay", (it) => {
 					runs: 4,
 					shrink: boundedShrink(2),
 					steerEvery: 2,
-					caseHang: caseHangMillis.value
+					caseHang: caseHangMillis
 				},
 				(run, c) =>
 					Effect.gen(function* () {

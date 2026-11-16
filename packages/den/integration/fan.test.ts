@@ -6,11 +6,11 @@ import { type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter } from "effect"
 import { admitAndDrain } from "#integration/support/run.ts"
 import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * The fan-out flow: a root admits one batch scope, whose admission starts one square per number from 1 to its size,
@@ -55,7 +55,7 @@ layer(sliceLayer)("the fan-out flow", (it) => {
 					runs: 10,
 					shrink: boundedShrink(8),
 					steerEvery: 4,
-					caseHang: caseHangMillis.value
+					caseHang: caseHangMillis
 				},
 				(run, c) =>
 					Effect.gen(function* () {

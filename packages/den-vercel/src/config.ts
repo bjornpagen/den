@@ -1,6 +1,5 @@
-import { censusStepMinutes } from "@den/limits/vercel-cron"
-import { functionLifetimeSeconds } from "@den/limits/vercel-functions"
-import { maxDeliveries } from "@den/limits/vercel-queues"
+import { censusPeriodSeconds } from "@bjornpagen/den/algebra/kinds"
+import { functionLifetimeSeconds } from "@bjornpagen/den/runtime/turn"
 import {
 	Array as Arr,
 	Effect,
@@ -12,6 +11,19 @@ import {
 	String as Str
 } from "effect"
 import { TOPIC } from "#queue.ts"
+import { maxDeliveries } from "#send.ts"
+
+/**
+ * The census cron's step, in the minutes a cron expression's minute field counts: one tick per census period.
+ *
+ * @limitKind derived
+ * @owner den's census cron (packages/den-vercel/src/config.ts)
+ * @unit minutes
+ * @scope the step of the census cron's minute field, `*\/n`
+ * @derivation the census ticks once per censusPeriodSeconds, which a minute field counts in minutes
+ * @from {@link censusPeriodSeconds}
+ */
+const censusStepMinutes = censusPeriodSeconds / 60
 
 /**
  * den's part of a host's `vercel.json`, which cannot import TypeScript: the one queue trigger, the census cron, and
@@ -59,19 +71,19 @@ export interface Fragment {
 }
 
 /** The census's tick: once per census period, the finest interval Vercel Cron runs on Pro. */
-const CENSUS_SCHEDULE = `*/${censusStepMinutes.value} * * * *`
+const CENSUS_SCHEDULE = `*/${censusStepMinutes} * * * *`
 
 /**
  * den's consumer: it lives as long as Vercel lets an invocation live, which every lease and budget of den's runtime
  * assumes (Vercel's default is shorter), on the one topic, every wake delivered at most `maxDeliveries` times.
  */
 const CONSUMER: ConsumerFunction = {
-	maxDuration: functionLifetimeSeconds.value,
-	experimentalTriggers: [{ type: "queue/v2beta", topic: TOPIC, maxDeliveries: maxDeliveries.value }]
+	maxDuration: functionLifetimeSeconds,
+	experimentalTriggers: [{ type: "queue/v2beta", topic: TOPIC, maxDeliveries: maxDeliveries }]
 }
 
 /** The census route: an invocation's whole lifetime for a tick of every flow. */
-const CENSUS: CensusFunction = { maxDuration: functionLifetimeSeconds.value }
+const CENSUS: CensusFunction = { maxDuration: functionLifetimeSeconds }
 
 /** den's fragment for a host's routes. */
 export const fragment = (routes: Routes): Fragment => ({

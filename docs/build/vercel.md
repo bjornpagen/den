@@ -7,7 +7,7 @@ its flow and rings a step's attempt or a scope's admission, and `send` takes rin
 
 ## What was built
 
-The transport's limits are `@den/limits`'s `vercel-queues` and `vercel-cron` modules: the visibility timeout (derived
+The transport's limits are constants of `src/send.ts` and `src/config.ts`, each with its evidence: the visibility timeout (derived
 from `functionLifetimeSeconds`), the deliveries Vercel retries at a trigger's configured delay (32, published) and
 `maxDeliveries` derived from it, the batch size (100, published), the default retention (24 h, published), the longest
 delay (derived), the idempotency key's length (256, published), the census cron's step (derived from

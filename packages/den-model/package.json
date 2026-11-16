@@ -38,7 +38,6 @@
 	},
 	"dependencies": {
 		"@bjornpagen/testing": "workspace:*",
-		"@den/limits": "workspace:*",
 		"effect": "catalog:"
 	},
 	"devDependencies": {

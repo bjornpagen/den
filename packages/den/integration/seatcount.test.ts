@@ -7,8 +7,6 @@ import { requiredInSpace } from "@bjornpagen/testing/features"
 import { boolean, type Gen } from "@bjornpagen/testing/gen"
 import { searched } from "@bjornpagen/testing/vitest"
 import { testWorkers } from "@bjornpagen/testing/workers"
-import { longestLeaseMillis } from "@den/limits/claim"
-import { caseHangMillis } from "@den/limits/suites"
 import { NodeServices } from "@effect/platform-node"
 import { assert, layer } from "@effect/vitest"
 import {
@@ -25,6 +23,8 @@ import {
 import { ChildProcess } from "effect/process"
 import { fan } from "#integration/slice/flows.ts"
 import { migrateIn, openLedgers, sliceLayer } from "#integration/support/slice.ts"
+import { longestLeaseMillis } from "#runtime/turn.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * A resource's seat count is a closed relation of the flow's declaration, and every live hold's seat is checked below
@@ -131,7 +131,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("seat counts", (it) => 
 								generator: seatOne,
 								literal: Formatter.format,
 								coverage: requiredInSpace<Feature>(["never taken", "held", "freed"]),
-								caseHang: caseHangMillis.value,
+								caseHang: caseHangMillis,
 								box: "seat 1 of the Pool's two, never taken, held or freed, beside seat 0 held",
 								oracle: {
 									kind: "postgresql",
@@ -146,7 +146,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("seat counts", (it) => 
 									const { fan: ledgers } = yield* openLedgers
 									const ledger = ledgers.ledger
 									const at = yield* ledger.now
-									const until = instantOf(Number(at) + longestLeaseMillis.value)
+									const until = instantOf(Number(at) + longestLeaseMillis)
 									const scope = yield* rootScope("Fan", "FanRun", "seat counts")
 									const holder = (ordinal: number) =>
 										Effect.flatMap(startedStep(scope, ordinal), (step) =>

@@ -47,14 +47,10 @@ or worked around.
   go: no shims, aliases or readers of an old form.
 - **Zero config.** Configuration that restates a library's default is deleted.
 - **Every limit has evidence.** A number that bounds concurrency, retries, timeouts, batch or page size, a capacity or
-  a budget is a `Limit` of `@bjornpagen/limit`, minted with its evidence (published, measured, derived or provisional)
-  in `packages/limits` (`@den/limits`, one module per domain) and read by its `.value`; a cap that guards nothing is
-  deleted, not minted. The policy is the limits skill (`.agents/skills/limits`), the inventory the package's README.
-  The dev tools' `no-bare-limit` refuses a bare number where a limit belongs and `limits-sole-mint` a mint outside
-  `packages/limits`; test files, `integration/` and the test support packages `packages/den-model` and
-  `packages/edullm` are exempt (`oxlint.config.ts`), and read their limits from `@den/limits` all the same.
-  `scripts/pg.sh` reads the cluster's settings from `packages/limits/src/cluster.ts` with `node`, so no shell script
-  holds a copy of a number.
+  a budget is a plain constant in the module that uses it, its evidence in its JSDoc (`@limitKind` published,
+  measured, derived or provisional, with `@owner`, `@unit`, `@scope` and its kind's tags); a cap that guards nothing
+  is deleted. The policy is the indefensible-numbers skill (`.agents/skills/indefensible-numbers`). `scripts/pg.sh`
+  holds the cluster's two settings as locals, each with its evidence above it.
 
 ## Workspace
 
@@ -62,13 +58,10 @@ A Turborepo workspace of private packages named `@den/<name>`, each exporting it
 
 - `packages/den` (`@bjornpagen/den`): the library. `packages/den-model`: its reference model and simulator.
   `packages/den-vercel`: the Vercel Queues transport. `packages/edullm`: the outside systems of den's first use.
-  `packages/limits` (`@den/limits`): every limit den bounds something by, with its evidence.
 - `vendor/grizzle`: grizzle, a git submodule pinned on its `main` branch.
 - `vendor/toolchain`: the shared toolchain, a git submodule pinned at its commit, whose packages run from source:
   `@bjornpagen/devtools` (the oxlint preset and plugin, whose rules read syntax alone, the tsconfig base, the
-  workspace gate and the hooks' gate), `@bjornpagen/limit` (the `Limit` and its four mints), `@bjornpagen/limits`
-  (the toolchain's own limits, which the testing library and the gate read) and
-  `@bjornpagen/testing`, the choice-stream testing library every suite runs on (`explore`, `exhaust`, `commands`,
+  workspace gate and the hooks' gate) and `@bjornpagen/testing`, the choice-stream testing library every suite runs on (`explore`, `exhaust`, `commands`,
   `interleave`, the shrinker, `pnpm fuzz`, `pnpm mutate`). den keeps only its own decisions, in `toolchain.config.ts`
   and `oxlint.config.ts`; the toolchain's fixes land in its repository, and den takes them by moving the submodule.
 - `docs/`: the goals, the decisions, the proposal and the build notes.

@@ -7,8 +7,6 @@ import { type Gen, int } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { backoffLastMillis } from "@den/limits/claim"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import { Array as Arr, Duration, Effect, Formatter, HashMap, Ref } from "effect"
 import { TestClock } from "effect/testing"
@@ -21,6 +19,8 @@ import {
 	rows,
 	sliceLayer
 } from "#integration/support/slice.ts"
+import { backoffLastMillis } from "#runtime/turn.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * Retry ladders, written out: `Steadfast` never stops retrying (W6's reports), `Brittle` ends after two spent attempts.
@@ -73,7 +73,7 @@ layer(sliceLayer)("retry ladders", (it) => {
 						runs: 8,
 						shrink: boundedShrink(4),
 						steerEvery: 4,
-						caseHang: caseHangMillis.value
+						caseHang: caseHangMillis
 					},
 					(run, c) =>
 						Effect.gen(function* () {
@@ -98,10 +98,7 @@ layer(sliceLayer)("retry ladders", (it) => {
 							assert.isTrue(requested.fresh)
 							yield* admitAndDrain(ledgers, FlowName.make("Retry"), [requested.scope])
 							yield* Effect.forEach(Array.from({ length: run.steadfast + run.brittle + 2 }), () =>
-								Effect.andThen(
-									TestClock.adjust(Duration.millis(backoffLastMillis.value)),
-									drain(ledgers)
-								)
+								Effect.andThen(TestClock.adjust(Duration.millis(backoffLastMillis)), drain(ledgers))
 							)
 							const results = yield* rows(app.workload.retryResults.once({ params: {}, facts: {} }))
 							const claims = yield* rows(app.workload.retryClaims.once({ params: {}, facts: {} }))

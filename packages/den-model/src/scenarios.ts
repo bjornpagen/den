@@ -8,12 +8,26 @@ import {
 	weighted
 } from "@bjornpagen/testing/gen"
 import { type Swarm, swarm, weightOf } from "@bjornpagen/testing/swarm"
-import { retentionSeconds } from "@den/limits/vercel-queues"
 import { Array as Arr, Duration, Option, Record } from "effect"
 import type { By } from "#facts.ts"
 import { type Counts, type Ladder, ordinals, type Window } from "#program.ts"
 import { type Fault, FAULTS, type Nature, type Platform } from "#simulator.ts"
 import type { Behaviour, Running, Shape, Sub, Timer } from "#workloads/synthetic.ts"
+
+/**
+ * How long a message lives when its send names no retention, as every den send does: its idempotency key
+ * deduplicates for its whole retention, and no delay may reach past it.
+ *
+ * @limitKind published
+ * @owner Vercel Queues, a message's retention
+ * @unit seconds
+ * @scope one message, from its send until the queue deletes it whatever its state
+ * @constraint configurable default
+ * @source https://vercel.com/docs/queues/pricing
+ * @quote Message retention (TTL) | 60 seconds | 7 days | 24 hours
+ * @verified 2026-11-16
+ */
+const retentionSeconds = 86_400
 
 /**
  * The simulator's nature drawn from a case's tape: each choice a decision of the case, so a run replays from its token
@@ -34,7 +48,7 @@ export const natureOf = <F extends string>(c: Case<F>, faults: Swarm<Fault>): Na
  * it has seen for the original message's whole retention, processed or not, and den's sends name no retention, so a key
  * is spent for Vercel's default retention, longer than any run.
  */
-const VERCEL_DEDUP_TICKS = Duration.toMinutes(Duration.seconds(retentionSeconds.value))
+const VERCEL_DEDUP_TICKS = Duration.toMinutes(Duration.seconds(retentionSeconds))
 
 /** The platform's settings, drawn small, so a case's whole run fits in a few hundred events, its dedup window Vercel's. */
 export const platformGen: Gen<Platform> = (source) => ({

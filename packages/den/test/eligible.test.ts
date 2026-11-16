@@ -4,8 +4,6 @@ import { array, boolean, element, type Gen, int, oneOf, option } from "@bjornpag
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { backoffFirstMillis, backoffLastMillis } from "@den/limits/claim"
-import { caseHangMillis } from "@den/limits/suites"
 import { assert, layer } from "@effect/vitest"
 import {
 	Array as Arr,
@@ -53,7 +51,9 @@ import type {
 	Snapshot,
 	StepRunner
 } from "#runtime/ledger.ts"
+import { backoffFirstMillis, backoffLastMillis } from "#runtime/turn.ts"
 import { rungMillis, spentBefore } from "#runtime/turn.ts"
+import { caseHangMillis } from "#test/support/suites.ts"
 import { FlowName, type Wake, wakeText } from "#transport.ts"
 
 /**
@@ -593,7 +593,7 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 						runs: 300,
 						shrink: boundedShrink(60),
 						steerEvery: 16,
-						caseHang: caseHangMillis.value
+						caseHang: caseHangMillis
 					},
 					(w, c) =>
 						Effect.gen(function* () {
@@ -757,7 +757,7 @@ layer(Digest.layerWebCrypto)("windows", (it) => {
 					runs: 200,
 					shrink: boundedShrink(40),
 					steerEvery: 16,
-					caseHang: caseHangMillis.value
+					caseHang: caseHangMillis
 				},
 				(wc, c) =>
 					Effect.sync(() => {
@@ -826,7 +826,7 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 						runs: 100,
 						shrink: boundedShrink(40),
 						steerEvery: 16,
-						caseHang: caseHangMillis.value
+						caseHang: caseHangMillis
 					},
 					(l, c) =>
 						Effect.gen(function* () {
@@ -834,13 +834,13 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 							c.note(
 								l.spent === 1
 									? "the first rung"
-									: rung === backoffLastMillis.value
+									: rung === backoffLastMillis
 										? "the last rung"
 										: "a doubled rung"
 							)
-							assert.strictEqual(rungMillis(1), backoffFirstMillis.value)
-							assert.isAtLeast(rung, backoffFirstMillis.value)
-							assert.isAtMost(rung, backoffLastMillis.value)
+							assert.strictEqual(rungMillis(1), backoffFirstMillis)
+							assert.isAtLeast(rung, backoffFirstMillis)
+							assert.isAtMost(rung, backoffLastMillis)
 							assert.isAtMost(rung, rungMillis(l.spent + 1))
 							const ladder = yield* rootScope(flowName, "Run", "ladder")
 							const step = yield* startedStep(ladder, 0)

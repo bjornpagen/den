@@ -1,12 +1,11 @@
+import { functionLifetimeSeconds } from "@bjornpagen/den/runtime/turn"
+import { caseHangMillis } from "@bjornpagen/den/test/support/suites"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { characterOf, type Gen, int, oneOf, option, string } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { caseHangMillis } from "@den/limits/suites"
-import { functionLifetimeSeconds } from "@den/limits/vercel-functions"
-import { maxDeliveries } from "@den/limits/vercel-queues"
 import { assert, it } from "@effect/vitest"
 import {
 	Array as Arr,
@@ -20,6 +19,7 @@ import {
 } from "effect"
 import { check, fragment, type Routes } from "#config.ts"
 import { TOPIC } from "#queue.ts"
+import { maxDeliveries } from "#send.ts"
 
 /**
  * The vercel.json check: a host's file holding den's fragment beside the host's own entries passes, and one edit of it
@@ -63,7 +63,7 @@ const edit: Gen<Edit> = oneOf<Edit>([
 	(s) => ({ kind: "census lifetime", to: s.draw(option(int(799, 801))) }),
 	(s) => ({
 		kind: "consumer ceiling",
-		to: s.draw(int(maxDeliveries.value - 1, maxDeliveries.value + 1))
+		to: s.draw(int(maxDeliveries - 1, maxDeliveries + 1))
 	}),
 	(s) => ({ kind: "consumer topic", to: s.draw(topic) }),
 	() => ({ kind: "consumer trigger removed" }),
@@ -96,9 +96,9 @@ const touchesDen = (e: Edit, census: string): boolean => {
 	switch (e.kind) {
 		case "consumer lifetime":
 		case "census lifetime":
-			return !Option.contains(e.to, functionLifetimeSeconds.value)
+			return !Option.contains(e.to, functionLifetimeSeconds)
 		case "consumer ceiling":
-			return e.to !== maxDeliveries.value
+			return e.to !== maxDeliveries
 		case "consumer topic":
 			return e.to !== TOPIC
 		case "another consumer":
@@ -216,7 +216,7 @@ it.effect("the check reports exactly the edits of den's entries", (ctx) =>
 				runs: 200,
 				shrink: boundedShrink(40),
 				steerEvery: 16,
-				caseHang: caseHangMillis.value
+				caseHang: caseHangMillis
 			},
 			({ routes, edit: drawnEdit }, c) =>
 				Effect.gen(function* () {
