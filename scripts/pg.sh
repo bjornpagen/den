@@ -141,6 +141,12 @@ ssl_min_protocol_version = 'TLSv1.3'
 password_encryption = 'scram-sha-256'
 # grizzle's live reads decode the WAL, and grizzle migrate refuses a cluster below logical.
 wal_level = logical
+# The cluster never waits for the disk. A suite's database is a clone of the template made for it and dropped after it,
+# and every DROP DATABASE forces a checkpoint it waits for, which with fsync on syncs every file the cluster wrote since
+# the last one. No answer a suite reads changes: the WAL is still written and its flush pointer still advances past every
+# commit. What it gives up is surviving a crash of the machine, which a test cluster, made again by init, never needs.
+# grizzle's local test clusters hold the same (vendor/grizzle/packages/pg/src/settings.ts, clusterSettings).
+fsync = off
 # The two locals above, with each number's evidence.
 max_replication_slots = $replication
 max_wal_senders = $replication
