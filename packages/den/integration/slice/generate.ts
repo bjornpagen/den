@@ -1,5 +1,6 @@
 import { generate } from "@bjornpagen/den/lower/generate"
-import { NodeRuntime, NodeServices } from "@effect/platform-node"
+import * as NodeRuntime from "@effect/platform-node/NodeRuntime"
+import * as NodeServices from "@effect/platform-node/NodeServices"
 import { Effect } from "effect"
 import { chain, fan, retry, sync } from "#integration/slice/flows.ts"
 
