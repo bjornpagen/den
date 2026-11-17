@@ -184,5 +184,5 @@
 			}
 		]
 	},
-	"include": ["oxlint.config.ts", "oxlint.ast.config.ts"]
+	"include": ["oxlint.config.ts", "oxlint.ast.config.ts", "toolchain.config.ts"]
 }
