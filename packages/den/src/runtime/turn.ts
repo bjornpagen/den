@@ -711,6 +711,7 @@ const endingOf = <R>(
 				case "unavailable":
 				case "transport":
 				case "input":
+				case "paramRejected":
 				case "outsideWorld":
 				case "route":
 				case "tokenRefused":

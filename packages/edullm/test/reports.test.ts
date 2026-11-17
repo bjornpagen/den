@@ -101,7 +101,7 @@ const driverOf = (race: Race, c: Case<Seen>) => {
 					)
 				}
 			}),
-		waitOf: () => Effect.succeedNone,
+		waitOf: () => Effect.never,
 		quiesce: () => Effect.void,
 		outcome: (_move, ended) => ({
 			key:

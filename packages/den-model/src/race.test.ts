@@ -171,7 +171,7 @@ const driverOf = (race: Race, rules: Rules) => {
 			record(ledger.admit(state, admission, "app", now))
 		}),
 		run: (session, move) => Effect.sync(() => run(session, move)),
-		waitOf: () => Effect.succeedNone,
+		waitOf: () => Effect.never,
 		quiesce: () => Effect.void,
 		outcome: (_move, ended) => ({
 			key: ended.kind === "ended" ? ended.outcome : "cancelled",

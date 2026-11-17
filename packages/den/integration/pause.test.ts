@@ -107,7 +107,7 @@ layer(sliceLayer)("pauses", (it) => {
 								{
 									reset: Effect.void,
 									run,
-									waitOf: () => Effect.succeedNone,
+									waitOf: () => Effect.never,
 									quiesce: () => Effect.void,
 									outcome: (_move, ended) => ({
 										key: ended.kind === "ended" ? ended.outcome : "cancelled",

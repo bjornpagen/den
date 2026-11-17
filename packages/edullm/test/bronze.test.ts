@@ -81,7 +81,7 @@ const driverOf = (race: Race, c: Case<Seen>, digest: Digest.Digest["Service"]) =
 			bucket = Option.some(fresh)
 		}),
 		run: (_session, body) => put(body),
-		waitOf: () => Effect.succeedNone,
+		waitOf: () => Effect.never,
 		quiesce: () => Effect.void,
 		outcome: (_body, ended) => ({
 			key:
