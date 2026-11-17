@@ -8,7 +8,7 @@ import { connectTimeoutMillis } from "#integration/slice/grizzle.config.ts"
  * den's own PostgreSQL 19 cluster (scripts/pg.sh): localhost on port 5435, verify-full TLS against its CA, the owner
  * role den_dev, whose password lies beside the cluster's data. A suite reaches it only through these coordinates.
  */
-export const clusterPort = 5487
+export const clusterPort = 5435
 export const ownerRole = "den_dev"
 export const templateDatabase = "den_template"
 export const testDatabasePrefix = "den_t_"
@@ -24,7 +24,7 @@ export const readCluster = Effect.gen(function* () {
 	const fs = yield* FileSystem.FileSystem
 	const path = yield* Path.Path
 	const home = yield* Config.String("HOME")
-	const state = path.join(home, ".cache", "grizzle-release", "TESTSYS", "DEN-CONV", "pg5487")
+	const state = path.join(home, ".local", "var", "den", "pg")
 	const ca = yield* fs.readFileString(path.join(state, "tls", "ca.crt"))
 	const written = yield* fs.readFileString(path.join(state, `${ownerRole}.password`))
 	const cluster: Cluster = { ca, password: Redacted.make(Str.trim(written)) }
