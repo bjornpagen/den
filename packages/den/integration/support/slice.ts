@@ -3,47 +3,58 @@ import type { Ledger } from "@bjornpagen/den/runtime/ledger"
 import type { Ledgers } from "@bjornpagen/den/runtime/turn"
 import { inProcess } from "@bjornpagen/den/transport"
 import { Db, DbLayer, LiveSource, roleNameOf, served } from "@bjornpagen/grizzle/runtime"
+import { NeedFailed } from "@bjornpagen/testing/property"
+import { Database, type DatabaseNeed, Template } from "@bjornpagen/testing/resources"
 import * as NodeServices from "@effect/platform-node/NodeServices"
+import { regex } from "arkregex"
 import {
 	Array as Arr,
 	Clock,
 	Context,
 	Data,
 	Effect,
+	FileSystem,
 	HashMap,
+	type PlatformError,
 	Layer,
 	Option,
+	Path,
 	Random,
 	Redacted,
+	Record as Rec,
 	Ref,
-	Stream
+	Stream,
+	String as Str
 } from "effect"
 import { Digest } from "effect/crypto"
 import { ChildProcess } from "effect/process"
+import { TestClock } from "effect/testing"
 import pg from "pg"
 import { Faults } from "#integration/slice/flows.ts"
 import { chainLedger } from "#integration/slice/generated/chain.binding.ts"
 import { fanLedger } from "#integration/slice/generated/fan.binding.ts"
 import { retryLedger } from "#integration/slice/generated/retry.binding.ts"
 import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
-import { connectTimeoutMillis } from "#integration/slice/grizzle.config.ts"
 import type { AppLogin, Worker } from "#integration/slice/logins.ts"
+import initMigration from "#integration/slice/migrations/slice/20261114214053_init/meta.json" with { type: "json" }
+import fanFreedMigration from "#integration/slice/migrations/slice/20261115213330_add_rule_capture_of_fan_freed_and_more/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
+import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
 import {
 	type Cluster,
 	clusterPort,
+	connectTimeoutMillis,
 	connectionTo,
-	ownerRole,
-	readCluster,
-	templateDatabase,
-	testDatabasePrefix
+	ownerRole
 } from "#integration/support/cluster.ts"
 
 /**
- * A suite's own database on den's cluster: created from the template, migrated by `grizzle migrate` from the slice's
- * committed migrations under a role prefix of its own (PostgreSQL roles are cluster-wide), its logins and its live
- * source's decoder login given passwords, and uninstalled and dropped when the suite's scope closes.
+ * The vertical slice installed on den's cluster, as the needs of the integration properties: a template of the slice
+ * migrated by `grizzle migrate` from its committed migrations under a role prefix of its own, built once on the cluster
+ * and cloned for every case (sliceCase, liveSliceCase), and, for a case that streams from the installation's live
+ * source, an installation of its own on a clone of den_template (installedSliceCase). Every case's database is its own,
+ * and dropped once the case ends.
  */
 
 const WorkerServed = served<typeof Worker>(workerFile, "worker")
@@ -54,6 +65,48 @@ const sliceDir = `${import.meta.dirname}/../slice`
 
 /** The grizzle command line, run from its source. */
 const grizzleBin = `${import.meta.dirname}/../../../../vendor/grizzle/packages/grizzle/src/cli/main.ts`
+
+/**
+ * The slice's committed migrations, by folder, each its meta.json (every statement of the folder, which `grizzle
+ * check` holds to its files): what `grizzle migrate` applies, so the slice template's identity, its module's import
+ * closure, changes with any of them. sliceTemplate's need refuses a run whose migrations directory holds a folder this
+ * record lacks, or lacks one it holds (committedFolders).
+ */
+const committed = Object.freeze({
+	"20261114214053_init": initMigration,
+	"20261115213330_add_rule_capture_of_fan_freed_and_more": fanFreedMigration
+})
+
+/** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
+const migrationFolder = regex("^[0-9]{14}_")
+
+/**
+ * Fails unless the slice's migrations directory holds exactly the folders `committed` records, so a migration drafted
+ * after this module was written fails every case that would clone a template built without it.
+ */
+const committedFolders = Effect.gen(function* () {
+	const fs = yield* FileSystem.FileSystem
+	const path = yield* Path.Path
+	const entries = yield* fs.readDirectory(path.join(sliceDir, "migrations", "slice"))
+	const onDisk = Arr.sort(
+		Arr.filter(entries, (entry) => migrationFolder.test(entry)),
+		Str.Order
+	)
+	const recorded = Arr.sort(Rec.keys(committed), Str.Order)
+	if (Arr.join(onDisk, " ") !== Arr.join(recorded, " ")) {
+		return yield* NeedFailed.make({
+			need: "den slice",
+			message: `the slice's migrations are ${Arr.join(onDisk, ", ")}, but integration/support/slice.ts records ${Arr.join(recorded, ", ")}: import each folder's meta.json into \`committed\``
+		})
+	}
+}).pipe(
+	Effect.catchTag("PlatformError", (error) =>
+		NeedFailed.make({
+			need: "den slice",
+			message: `reading the slice's migrations: ${error.message}`
+		})
+	)
+)
 
 /** A failure of the suite's setup: a command or statement that did not do what the suite needs. */
 class SetupFailed extends Data.TaggedError("SetupFailed")<{ readonly message: string }> {}
@@ -125,7 +178,7 @@ export const grizzle = (
 	)
 
 /**
- * The installed database a suite runs in: its name, its role prefix, the environment a grizzle command over it reads,
+ * The installed database a case runs in: its name, its role prefix, the environment a grizzle command over it reads,
  * and its logins' passwords.
  */
 interface Installed {
@@ -138,64 +191,146 @@ interface Installed {
 	readonly decoder: Redacted.Redacted
 }
 
-class Database extends Context.Service<Database, Installed>()(
-	"@bjornpagen/den/integration/support/slice/Database"
+class Installation extends Context.Service<Installation, Installed>()(
+	"@bjornpagen/den/integration/support/slice/Installation"
 ) {}
 
-/** A fresh name of the suite's own, from a draw of Effect's Random. */
-const freshName = Effect.map(Random.nextInt, (n) => Math.abs(n).toString(36))
+/** The environment a grizzle command over `database` under `rolePrefix` reads (grizzle.config.ts). */
+const envOf = (cluster: Cluster, database: string, rolePrefix: string) => ({
+	DEN_PG_PORT: String(clusterPort),
+	DEN_PG_CA: cluster.ca,
+	DEN_PG_ROLE: ownerRole,
+	DEN_PG_PASSWORD: Redacted.value(cluster.password),
+	DEN_DATABASE: database,
+	DEN_ROLE_PREFIX: rolePrefix
+})
 
-const installed = Effect.acquireRelease(
+/** The slice's three logins whose passwords a case's layers present: the worker's, the app's and the decoder's. */
+const loginsOf = (rolePrefix: string) => ({
+	worker: roleNameOf(WorkerServed, { rolePrefix }),
+	app: roleNameOf(AppServed, { rolePrefix }),
+	decoder: roleNameOf(WorkerServed.decoder, { rolePrefix })
+})
+
+/**
+ * Installs the slice into `database`, an empty clone of den_template, under `rolePrefix`: `grizzle migrate` from the
+ * slice's committed migrations, then each login given its password.
+ */
+const install = (
+	cluster: Cluster,
+	database: string,
+	rolePrefix: string,
+	passwords: Readonly<{
+		worker: Redacted.Redacted
+		app: Redacted.Redacted
+		decoder: Redacted.Redacted
+	}>
+) =>
 	Effect.gen(function* () {
-		const cluster = yield* readCluster
-		const suffix = yield* freshName
-		const database = `${testDatabasePrefix}${suffix}`
-		const rolePrefix = `t${suffix}`
-		const env = {
-			DEN_PG_PORT: String(clusterPort),
-			DEN_PG_CA: cluster.ca,
-			DEN_PG_ROLE: ownerRole,
-			DEN_PG_PASSWORD: Redacted.value(cluster.password),
-			DEN_DATABASE: database,
-			DEN_ROLE_PREFIX: rolePrefix
-		}
-		yield* asOwner(cluster, ownerRole, `CREATE DATABASE "${database}" TEMPLATE ${templateDatabase}`)
+		const env = envOf(cluster, database, rolePrefix)
 		yield* grizzle("migrate", env, sliceDir)
-		const password = Effect.map(Effect.all([freshName, freshName]), ([a, b]) =>
-			Redacted.make(`p${a}${b}`)
-		)
-		const worker = yield* password
-		const app = yield* password
-		const decoder = yield* password
+		const roles = loginsOf(rolePrefix)
 		const set = (role: string, secret: Redacted.Redacted) =>
 			asOwner(cluster, ownerRole, `ALTER ROLE "${role}" PASSWORD '${Redacted.value(secret)}'`)
-		yield* set(roleNameOf(WorkerServed, { rolePrefix }), worker)
-		yield* set(roleNameOf(AppServed, { rolePrefix }), app)
-		yield* set(roleNameOf(WorkerServed.decoder, { rolePrefix }), decoder)
-		const done: Installed = { cluster, database, rolePrefix, env, worker, app, decoder }
-		return { done, env }
-	}),
-	({ done, env }) =>
-		Effect.gen(function* () {
-			yield* grizzle("uninstall", env, sliceDir)
-			yield* asOwner(done.cluster, ownerRole, `DROP DATABASE "${done.database}" WITH (FORCE)`)
-		}).pipe(Effect.orDie)
-).pipe(Effect.map(({ done }) => done))
+		yield* set(roles.worker, passwords.worker)
+		yield* set(roles.app, passwords.app)
+		yield* set(roles.decoder, passwords.decoder)
+		const installed: Installed = { cluster, database, rolePrefix, env, ...passwords }
+		return installed
+	})
 
 /**
- * Migrates the suite's database by the configuration in `directory`, a copy of the slice whose migrations continue the
- * slice's: grizzle migrate's output, or the SetupFailed its refusal ends with.
+ * The role prefix of the slice template named `template` (`den_t_tpl_<32 hex digits>`, the toolchain's name for it):
+ * `t` and its first 12 hex digits, so every worker that clones it, and its build, derive the same prefix, and two
+ * templates' roles stay apart.
  */
-export const migrateIn = (directory: string) =>
-	Effect.flatMap(Database, (db) => grizzle("migrate", db.env, directory))
-
-/** The suite's database, installed for the layer's scope. */
-const databaseLayer = Layer.effect(Database, installed)
+const templatePrefixOf = (template: string): string => `t${Str.slice(-32, -20)(template)}`
 
 /**
- * A login's pool: four sessions, the most one suite's cases hold at once (a relay's watches beside a claim and a
- * read), each closed once idle as long as a connection attempt may take, so no session outlives the cases that opened
- * it for long.
+ * The password of a login of the slice template: the owner's password, then the role's name, so only who holds the
+ * owner's password knows it, each login's differs from every other's (a login offered another's password is refused,
+ * as the misconfigured loader is), and every worker that clones the template logs in without the template keeping a
+ * credential.
+ */
+const templatePassword = (cluster: Cluster, role: string): Redacted.Redacted =>
+	Redacted.make(`${Redacted.value(cluster.password)}:${role}`)
+
+/** The passwords of the template under `rolePrefix`'s three logins (templatePassword). */
+const templatePasswords = (cluster: Cluster, rolePrefix: string) => {
+	const roles = loginsOf(rolePrefix)
+	return {
+		worker: templatePassword(cluster, roles.worker),
+		app: templatePassword(cluster, roles.app),
+		decoder: templatePassword(cluster, roles.decoder)
+	}
+}
+
+/**
+ * Drops the roles an earlier build of the same template left on the cluster, before this build makes them again. A
+ * template's roles are the cluster's, named by its prefix, and outlive its database: collection drops a stale or
+ * unused template's database, never its roles, so a template built again under the same identity met them still
+ * there and its migration refused them (42710). They own nothing once the database they were made in is gone; a role
+ * that still owns something, in a clone another run holds, fails its drop and so the build.
+ */
+const dropLeftRoles = (cluster: Cluster, rolePrefix: string) =>
+	Effect.flatMap(
+		asOwner(
+			cluster,
+			ownerRole,
+			`SELECT rolname AS name FROM pg_catalog.pg_roles WHERE starts_with(rolname, '${rolePrefix}_') ORDER BY rolname DESC`
+		),
+		(left) =>
+			Effect.forEach(left, (role) => asOwner(cluster, ownerRole, `DROP ROLE "${role}"`), {
+				discard: true
+			})
+	)
+
+/** A setup failure as the need `need` fails with it. */
+const setupNeedFailed = (need: string) => (cause: SetupFailed | PlatformError.PlatformError) =>
+	NeedFailed.make({ need, message: cause.message })
+
+/**
+ * The slice installed, as a template: built once on the cluster from den_template by `grizzle migrate` under the
+ * template's own role prefix (templatePrefixOf), its logins given the passwords the template derives
+ * (templatePassword). Its identity is this module's import closure, which holds the slice's committed migrations
+ * (`committed`), its snapshot, its served files and the generated bindings, so a change to any of them is a new
+ * template. Its roles are the cluster's, shared by every clone, which is sound for logging in; a case that streams from
+ * the live source, whose replication slot the decoder login names, takes an installation of its own instead
+ * (installedSliceCase).
+ */
+const sliceTemplate = Template.database({
+	declaredIn: import.meta,
+	name: "den slice",
+	content: { migrations: Rec.keys(committed), snapshot: snapshotFile.fingerprint },
+	from: Template.cluster,
+	build: (target) =>
+		Effect.mapError(
+			Effect.gen(function* () {
+				const rolePrefix = templatePrefixOf(target.name)
+				yield* dropLeftRoles(target.member.cluster, rolePrefix)
+				yield* install(
+					target.member.cluster,
+					target.name,
+					rolePrefix,
+					templatePasswords(target.member.cluster, rolePrefix)
+				)
+			}),
+			setupNeedFailed("den slice template")
+		)
+})
+
+/** An empty database, den_template's clone, as a template: what a case installs the slice into itself. */
+const emptyTemplate = Template.database({
+	declaredIn: import.meta,
+	name: "den empty",
+	content: {},
+	from: Template.cluster,
+	build: () => Effect.void
+})
+
+/**
+ * A login's pool: four sessions, the most one case holds at once (a relay's watches beside a claim and a read), each
+ * closed once idle as long as a connection attempt may take, so no session outlives the cases that opened it for long.
  */
 const pool = Object.freeze({ max: 4, min: 0, idleTimeoutMs: connectTimeoutMillis })
 
@@ -212,27 +347,25 @@ class Misconfigured extends Context.Service<
 >()("@bjornpagen/den/integration/support/slice/Misconfigured") {}
 
 /**
- * The worker and app logins' layers over the suite's database, and the misconfigured loader, over the installation's
- * live source.
+ * The worker and app logins' layers over the case's database, and the misconfigured loader, over the installation's
+ * live source, which connects nothing until a Db's first watch.
  */
-const loginsLayer = Layer.unwrap(
-	Effect.map(Database, (db) => {
-		const connection = (password: Redacted.Redacted) => ({
-			...connectionTo(db.cluster, db.database, password),
-			rolePrefix: db.rolePrefix
-		})
-		const live = LiveSource.layer({ ...connection(db.decoder), login: WorkerServed })
-		const misconfigured = Layer.effect(
-			Misconfigured,
-			Effect.map(openLoader, (loader) => ({ loader }))
-		).pipe(Layer.provide(DbLayer.make({ ...connection(db.worker), login: AppServed, pool })))
-		return Layer.mergeAll(
-			DbLayer.make({ ...connection(db.worker), login: WorkerServed, pool }),
-			DbLayer.make({ ...connection(db.app), login: AppServed, pool }),
-			misconfigured
-		).pipe(Layer.provide(live))
+const loginsLayer = (installed: Installed) => {
+	const connection = (password: Redacted.Redacted) => ({
+		...connectionTo(installed.cluster, installed.database, password),
+		rolePrefix: installed.rolePrefix
 	})
-)
+	const live = LiveSource.layer({ ...connection(installed.decoder), login: WorkerServed })
+	const misconfigured = Layer.effect(
+		Misconfigured,
+		Effect.map(openLoader, (loader) => ({ loader }))
+	).pipe(Layer.provide(DbLayer.make({ ...connection(installed.worker), login: AppServed, pool })))
+	return Layer.mergeAll(
+		DbLayer.make({ ...connection(installed.worker), login: WorkerServed, pool }),
+		DbLayer.make({ ...connection(installed.app), login: AppServed, pool }),
+		misconfigured
+	).pipe(Layer.provide(live))
+}
 
 /**
  * The faults the retry suites plant, as a service: each key's remaining deaths, counted down by its bodies, and how many
@@ -270,17 +403,138 @@ const faultsLayer = Layer.effectContext(
 	)
 )
 
-/** Everything a slice suite runs on: its database, both logins, the in-process transport, SHA-256 and the faults. */
-export const sliceLayer = loginsLayer.pipe(
-	Layer.provideMerge(databaseLayer),
-	Layer.provideMerge(Layer.mergeAll(inProcess, Digest.layerWebCrypto, faultsLayer)),
-	Layer.provideMerge(NodeServices.layer)
-)
+/**
+ * Everything a slice case runs on, over its installation: its database, both logins, the in-process transport, SHA-256
+ * and the faults, on the platform.
+ */
+const caseLayer = (installed: Installed) =>
+	loginsLayer(installed).pipe(
+		Layer.provideMerge(Layer.succeed(Installation, installed)),
+		Layer.provideMerge(Layer.mergeAll(inProcess, Digest.layerWebCrypto, faultsLayer)),
+		Layer.provideMerge(NodeServices.layer)
+	)
 
-/** A name no other case of the suite's database holds: a draw of Effect's Random, which every case draws apart. */
-export const nonce: Effect.Effect<string> = Effect.map(Random.nextInt, (n) =>
-	Math.abs(n).toString(36)
-)
+/**
+ * A case's clock: the TestClock a case moves to let a lease lapse or a retry come due (as @effect/vitest gave every
+ * suite but those streaming or migrating), or the machine's, for a case whose live reads and child processes wait on
+ * real time.
+ */
+type CaseClock = "test" | "live"
+
+/**
+ * The services of a slice case, built in the case's scope under the case's clock, so its transport's delays and its
+ * logins' pools read the clock the case moves, as @effect/vitest built a suite's layer over its TestClock.
+ */
+const caseOf = (installed: Installed, clock: CaseClock) =>
+	Layer.build(
+		clock === "test"
+			? Layer.provideMerge(caseLayer(installed), TestClock.layer())
+			: caseLayer(installed)
+	)
+
+/** The services of every slice case, whatever its clock. */
+export type SliceCase = Layer.Success<ReturnType<typeof caseLayer>>
+
+/** The installation a case over a clone of the slice template has: the clone, under the template's prefix. */
+const clonedInstallation = (cluster: Cluster, database: string, template: string): Installed => {
+	const rolePrefix = templatePrefixOf(template)
+	return {
+		cluster,
+		database,
+		rolePrefix,
+		env: envOf(cluster, database, rolePrefix),
+		...templatePasswords(cluster, rolePrefix)
+	}
+}
+
+/** A case's services as a need's take: what building them can fail with, as the need's failure. */
+const builtAs = (need: string) => (cause: unknown) =>
+	NeedFailed.make({ need, message: `building a slice case: ${String(cause)}` })
+
+/**
+ * Each case its own clone of the slice template (Database.fresh), and its services built over it under `clock`: the
+ * template's logins, the in-process transport, the faults. A run whose migrations directory disagrees with
+ * `committed` fails every case (committedFolders).
+ */
+const clonedCase = (clock: CaseClock): DatabaseNeed<Context.Context<SliceCase>> => {
+	const fresh = Database.fresh(sliceTemplate)
+	const key = `den slice clone, ${clock} clock`
+	return {
+		key,
+		template: sliceTemplate,
+		open: Effect.andThen(
+			committedFolders,
+			Effect.map(fresh.open, (take) =>
+				Effect.flatMap(take, (db) =>
+					Effect.mapError(
+						caseOf(clonedInstallation(db.member.cluster, db.name, db.template), clock),
+						builtAs(key)
+					)
+				)
+			)
+		)
+	}
+}
+
+/** A clone of the slice template a case's own, under the TestClock: what most slice properties need. */
+export const sliceCase = clonedCase("test")
+
+/** A clone of the slice template a case's own, under the machine's clock: for a case whose commands wait on real time. */
+export const liveSliceCase = clonedCase("live")
+
+/** A fresh name of the case's own, from a draw of Effect's Random. */
+const freshName = Effect.map(Random.nextInt, (n) => Math.abs(n).toString(36))
+
+/**
+ * The slice installed by the case itself into its own clone of den_template, under a role prefix of its own and fresh
+ * passwords, and uninstalled (its roles and its live source's replication slot dropped) once the case ends, before the
+ * clone is: so the case's live source claims a slot no other case names.
+ */
+const ownInstallation = (database: Database) =>
+	Effect.acquireRelease(
+		Effect.gen(function* () {
+			const suffix = yield* freshName
+			const password = Effect.map(Effect.all([freshName, freshName]), ([a, b]) =>
+				Redacted.make(`p${a}${b}`)
+			)
+			return yield* install(database.member.cluster, database.name, `t${suffix}`, {
+				worker: yield* password,
+				app: yield* password,
+				decoder: yield* password
+			})
+		}),
+		(installed) => Effect.orDie(grizzle("uninstall", installed.env, sliceDir))
+	)
+
+/**
+ * Each case an installation of its own (ownInstallation) on its own clone of den_template, under the machine's clock:
+ * for a case that streams from the live source, whose replication slot its decoder login names, so two clones of one
+ * installation would claim one slot.
+ */
+export const installedSliceCase: DatabaseNeed<Context.Context<SliceCase>> = {
+	key: "den slice installed, live clock",
+	template: emptyTemplate,
+	open: Effect.zipWith(
+		Effect.context<NodeServices.NodeServices>(),
+		Database.fresh(emptyTemplate).open,
+		(platform, take) =>
+			Effect.flatMap(take, (db) =>
+				Effect.mapError(
+					Effect.flatMap(Effect.provideContext(ownInstallation(db), platform), (installed) =>
+						caseOf(installed, "live")
+					),
+					builtAs("den slice installed, live clock")
+				)
+			)
+	)
+}
+
+/**
+ * Migrates the case's database by the configuration in `directory`, a copy of the slice whose migrations continue the
+ * slice's: grizzle migrate's output, or the SetupFailed its refusal ends with.
+ */
+export const migrateIn = (directory: string) =>
+	Effect.flatMap(Installation, (installed) => grizzle("migrate", installed.env, directory))
 
 /** A read's rows, as an array. */
 export const rows = <A, E>(

@@ -6,6 +6,7 @@
 	"entry": [
 		"oxlint.ast.config.ts",
 		"packages/den/integration/slice/grizzle.config.ts",
+		"packages/den/test.config.ts",
 		"packages/edullm/test.config.ts"
 	],
 	"ignorePatterns": ["vendor/**"],

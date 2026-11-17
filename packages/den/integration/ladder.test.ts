@@ -1,26 +1,15 @@
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
-import { drawn, explore } from "@bjornpagen/testing/explore"
-import { required } from "@bjornpagen/testing/features"
+import { assert } from "@bjornpagen/testing/assert"
+import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
-import { notesOnly } from "@bjornpagen/testing/sense"
-import { boundedShrink } from "@bjornpagen/testing/shrink"
-import { searched } from "@bjornpagen/testing/vitest"
-import { assert, layer } from "@effect/vitest"
-import { Array as Arr, Duration, Effect, Formatter, HashMap, Ref } from "effect"
+import { type Case, property } from "@bjornpagen/testing/property"
+import { Array as Arr, Duration, Effect, HashMap, Ref } from "effect"
 import { TestClock } from "effect/testing"
 import { admitAndDrain } from "#integration/support/run.ts"
-import {
-	AppServed,
-	nonce,
-	openLedgers,
-	Planted,
-	rows,
-	sliceLayer
-} from "#integration/support/slice.ts"
+import { AppServed, openLedgers, Planted, rows, sliceCase } from "#integration/support/slice.ts"
 import { backoffLastMillis } from "#runtime/turn.ts"
-import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * Retry ladders, written out: `Steadfast` never stops retrying (W6's reports), `Brittle` ends after two spent attempts.
@@ -47,98 +36,100 @@ const runs: Gen<Run> = (source) => ({
 	copy: source.draw(int(0, 9_999))
 })
 
-layer(sliceLayer)("retry ladders", (it) => {
-	it.effect(
-		"retries a never-ending ladder until it succeeds, and fails one past its attempts",
-		(ctx) =>
-			searched(
-				ctx,
-				explore(
-					{
-						suite: "retry ladders",
-						oracle: {
-							kind: "specification",
-							name: "the never-ending step done after its deaths; the two-attempt step done or exhausted at two"
-						},
-						draw: drawn(runs),
-						literal: Formatter.format,
-						coverage: required<Feature>(
-							["a long never-ending ladder", "brittle done", "brittle exhausted"],
-							{
-								cases: 8,
-								sense: notesOnly
-							}
-						),
-						kept: [],
-						runs: 8,
-						shrink: boundedShrink(4),
-						steerEvery: 4,
-						caseHang: caseHangMillis
-					},
-					(run, c) =>
-						Effect.gen(function* () {
-							if (run.steadfast > 2) {
-								c.note("a long never-ending ladder")
-							}
-							c.note(run.brittle < 2 ? "brittle done" : "brittle exhausted")
-							const { retry, ledgers } = yield* openLedgers
-							const app = yield* Db.open(AppServed.roles.auditor, {})
-							const { faults } = yield* Planted
-							const tag = yield* nonce
-							const steadfast = `steadfast-${tag}`
-							const brittle = `brittle-${tag}`
-							yield* Ref.update(faults, (map) =>
-								HashMap.set(HashMap.set(map, steadfast, run.steadfast), brittle, run.brittle)
-							)
-							const at = yield* retry.ledger.now
-							const requested = yield* retry.request.Ladders(`ladders-${tag}`, at, {
-								steadfast,
-								brittle
-							})
-							assert.isTrue(requested.fresh)
-							yield* admitAndDrain(ledgers, FlowName.make("Retry"), [requested.scope])
-							yield* Effect.forEach(Array.from({ length: run.steadfast + run.brittle + 2 }), () =>
-								Effect.andThen(TestClock.adjust(Duration.millis(backoffLastMillis)), drain(ledgers))
-							)
-							const results = yield* rows(app.workload.retryResults.once({ params: {}, facts: {} }))
-							const claims = yield* rows(app.workload.retryClaims.once({ params: {}, facts: {} }))
-							const exhausted = yield* rows(
-								app.workload.retryExhausted.once({ params: {}, facts: {} })
-							)
-							const mine = Arr.filter(results, (r) => r.scope === requested.scope)
-							const of = (kind: string) => Arr.filter(mine, (r) => r.kind === kind)
-							const claimsOf = (kind: string) =>
-								Arr.flatMap(of(kind), (r) => Arr.filter(claims, (cl) => cl.step === r.step)).length
-							assert.deepStrictEqual(
-								Arr.map(of("Steadfast"), (r) => r.outcome),
-								["done"]
-							)
-							assert.strictEqual(claimsOf("Steadfast"), run.steadfast + 1)
-							if (run.brittle < 2) {
-								assert.deepStrictEqual(
-									Arr.map(of("Brittle"), (r) => r.outcome),
-									["done"]
-								)
-								assert.strictEqual(claimsOf("Brittle"), run.brittle + 1)
-							} else {
-								assert.deepStrictEqual(
-									Arr.map(of("Brittle"), (r) => r.outcome),
-									["failed"]
-								)
-								assert.strictEqual(claimsOf("Brittle"), 2)
-								assert.isTrue(
-									Arr.some(
-										exhausted,
-										(e) => Arr.some(of("Brittle"), (r) => r.step === e.step) && e.attempts === 2n
-									)
-								)
-							}
-							assert.deepStrictEqual(
-								Arr.map(of("LaddersFinish"), (r) => r.outcome),
-								["done"]
-							)
+/**
+ * Retries a never-ending ladder until it succeeds, and fails one past its attempts.
+ *
+ * Budget: its suite's count before the conversion (retry ladders: 8 independent cases and 8 steered, Vitest at den
+ * dc5bd11).
+ */
+export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.explore(runs, {
+	needs: { slice: sliceCase },
+	situations: [
+		"a long never-ending ladder",
+		"brittle done",
+		"brittle exhausted"
+	] satisfies ReadonlyArray<Reached<Feature>>,
+	check:
+		({ slice }, c: Case<Feature>) =>
+		(run) =>
+			Effect.flatMap(slice, (services) =>
+				Effect.provideContext(
+					Effect.gen(function* () {
+						if (run.steadfast > 2) {
+							c.note("a long never-ending ladder")
+						}
+						c.note(run.brittle < 2 ? "brittle done" : "brittle exhausted")
+						const { retry, ledgers } = yield* openLedgers
+						const app = yield* Db.open(AppServed.roles.auditor, {})
+						const { faults } = yield* Planted
+						const steadfast = "steadfast"
+						const brittle = "brittle"
+						yield* Ref.update(faults, (map) =>
+							HashMap.set(HashMap.set(map, steadfast, run.steadfast), brittle, run.brittle)
+						)
+						const at = yield* retry.ledger.now
+						const requested = yield* retry.request.Ladders("ladders", at, {
+							steadfast,
+							brittle
 						})
+						assert.isTrue(requested.fresh)
+						yield* admitAndDrain(ledgers, FlowName.make("Retry"), [requested.scope])
+						yield* Effect.forEach(Array.from({ length: run.steadfast + run.brittle + 2 }), () =>
+							Effect.andThen(TestClock.adjust(Duration.millis(backoffLastMillis)), drain(ledgers))
+						)
+						const results = yield* rows(app.workload.retryResults.once({ params: {}, facts: {} }))
+						const claims = yield* rows(app.workload.retryClaims.once({ params: {}, facts: {} }))
+						const exhausted = yield* rows(
+							app.workload.retryExhausted.once({ params: {}, facts: {} })
+						)
+						const mine = Arr.filter(results, (r) => r.scope === requested.scope)
+						const of = (kind: string) => Arr.filter(mine, (r) => r.kind === kind)
+						const claimsOf = (kind: string) =>
+							Arr.flatMap(of(kind), (r) => Arr.filter(claims, (cl) => cl.step === r.step)).length
+						assert.deepStrictEqual(
+							Arr.map(of("Steadfast"), (r) => r.outcome),
+							["done"]
+						)
+						assert.strictEqual(claimsOf("Steadfast"), run.steadfast + 1)
+						if (run.brittle < 2) {
+							assert.deepStrictEqual(
+								Arr.map(of("Brittle"), (r) => r.outcome),
+								["done"]
+							)
+							assert.strictEqual(claimsOf("Brittle"), run.brittle + 1)
+						} else {
+							assert.deepStrictEqual(
+								Arr.map(of("Brittle"), (r) => r.outcome),
+								["failed"]
+							)
+							assert.strictEqual(claimsOf("Brittle"), 2)
+							assert.isTrue(
+								Arr.some(
+									exhausted,
+									(e) => Arr.some(of("Brittle"), (r) => r.step === e.step) && e.attempts === 2n
+								)
+							)
+						}
+						assert.deepStrictEqual(
+							Arr.map(of("LaddersFinish"), (r) => r.outcome),
+							["done"]
+						)
+					}),
+					services
 				)
-			)
-	)
+			),
+	oracle: {
+		kind: "specification",
+		name: "the never-ending step done after its deaths; the two-attempt step done or exhausted at two"
+	},
+	budget: { runs: 8, steered: 8 },
+	kept: [],
+	kills: [
+		{
+			file: "packages/den/src/runtime/drive.ts",
+			original: "\t\t\t\t\t({ h }) => h.at <= Number(at)",
+			replacement: "\t\t\t\t\t({ h }) => h.at > Number(at)",
+			why: "Operator mutant (comparison) at packages/den/src/runtime/drive.ts:27 in deliver: `<=` becomes `>`; the property fails (lane CATCH, den 9cffaba)."
+		}
+	]
 })

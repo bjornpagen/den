@@ -2,16 +2,12 @@ import { drain } from "@bjornpagen/den/runtime/drive"
 import { relay } from "@bjornpagen/den/runtime/relay"
 import { type Ring, Transport } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
-import { drawn, explore } from "@bjornpagen/testing/explore"
-import { required } from "@bjornpagen/testing/features"
+import { assert } from "@bjornpagen/testing/assert"
+import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
-import { notesOnly } from "@bjornpagen/testing/sense"
-import { boundedShrink } from "@bjornpagen/testing/shrink"
-import { searched } from "@bjornpagen/testing/vitest"
-import { assert, layer } from "@effect/vitest"
+import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Fiber, Formatter, Option, Queue, Stream } from "effect"
-import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
-import { caseHangMillis } from "#test/support/suites.ts"
+import { AppServed, openLedgers, rows, installedSliceCase } from "#integration/support/slice.ts"
 
 /**
  * The relay, the transactional outbox by log tailing: it watches the chain flow's served reads through grizzle's live
@@ -37,30 +33,19 @@ const runs: Gen<Run> = (source) => ({
 	copy: source.draw(int(0, 99_999))
 })
 
-layer(sliceLayer, { excludeTestServices: true })("the relay", (it) => {
-	it.effect("rings a root the app requested in its own transaction", (ctx) =>
-		searched(
-			ctx,
-			explore(
-				{
-					suite: "relay",
-					oracle: {
-						kind: "postgresql",
-						name: "the live source's decoding of the app's commit, rung as the root's admission"
-					},
-					draw: drawn(runs),
-					literal: Formatter.format,
-					coverage: required<Feature>(["news", "sport", "a relay ring"], {
-						cases: 4,
-						sense: notesOnly
-					}),
-					kept: [],
-					runs: 4,
-					shrink: boundedShrink(2),
-					steerEvery: 2,
-					caseHang: caseHangMillis
-				},
-				(run, c) =>
+/**
+ * Rings a root the app requested in its own transaction.
+ *
+ * Budget: its suite's count before the conversion (relay: 4 independent cases and 4 steered, Vitest at den dc5bd11).
+ */
+export const theRelayRingsARootTheAppRequestedInItsOwnTransaction = property.explore(runs, {
+	needs: { slice: installedSliceCase },
+	situations: ["news", "sport", "a relay ring"] satisfies ReadonlyArray<Reached<Feature>>,
+	check:
+		({ slice }, c: Case<Feature>) =>
+		(run) =>
+			Effect.flatMap(slice, (services) =>
+				Effect.provideContext(
 					Effect.gen(function* () {
 						c.note(run.feed)
 						const { chain, ledgers, loader } = yield* openLedgers
@@ -73,7 +58,7 @@ layer(sliceLayer, { excludeTestServices: true })("the relay", (it) => {
 								})
 							)
 						)
-						const order = `order-${yield* nonce}`
+						const order = "order"
 						const at = yield* chain.ledger.now
 						const request = yield* chain.requestFacts.Ordered(order, at, {
 							feed: run.feed,
@@ -107,8 +92,24 @@ layer(sliceLayer, { excludeTestServices: true })("the relay", (it) => {
 						assert.isTrue(
 							Arr.some(finishes, (f) => f.scope === request.scope && f.outcome === "done")
 						)
-					})
-			)
-		)
-	)
+					}),
+					services
+				)
+			),
+	oracle: {
+		kind: "postgresql",
+		name: "the live source's decoding of the app's commit, rung as the root's admission"
+	},
+	budget: { runs: 4, steered: 4 },
+	kept: [],
+	kills: [
+		{
+			file: "packages/den/src/runtime/eligible.ts",
+			original:
+				'\t\treturn !(\n\t\t\tprecondition.kind === "idle" &&\n\t\t\tArr.some(precondition.flows, (f) => Arr.contains(snapshot.busy, f))\n\t\t)',
+			replacement:
+				'\t\treturn (\n\t\t\tprecondition.kind === "idle" &&\n\t\t\tArr.some(precondition.flows, (f) => Arr.contains(snapshot.busy, f))\n\t\t)',
+			why: 'Operator mutant (negation) at packages/den/src/runtime/eligible.ts:128 in eligible: `!( precondition.kind === "idle" && Arr.some(precondition.flows, (f) => Arr.conta` becomes `( precondition.kind === "idle" && Arr.some(precondition.flows, (f) => Arr.contai`; the property fails (lane CATCH, den 9cffaba).'
+		}
+	]
 })

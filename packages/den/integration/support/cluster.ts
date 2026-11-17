@@ -2,7 +2,7 @@ import net from "node:net"
 import type { DbConnection } from "@bjornpagen/grizzle/runtime"
 import { Config, Effect, FileSystem, Path, Redacted, String as Str } from "effect"
 import pgDriver from "pg"
-import { connectTimeoutMillis } from "#integration/slice/grizzle.config.ts"
+import { authenticationTimeoutSeconds } from "#runtime/turn.ts"
 
 /**
  * den's own PostgreSQL 19 cluster (scripts/pg.sh): localhost on port 5435, verify-full TLS against its CA, the owner
@@ -12,6 +12,19 @@ export const clusterPort = 5435
 export const ownerRole = "den_dev"
 export const templateDatabase = "den_template"
 export const testDatabasePrefix = "den_t_"
+
+/**
+ * How long one connection attempt to den's cluster may take: as long as the server lets it authenticate.
+ *
+ * @limitKind derived
+ * @owner den's suites on its own cluster (scripts/pg.sh)
+ * @unit milliseconds
+ * @scope one connection attempt of a suite's DbLayer, and the CancelRequest an interrupted statement sends
+ * @derivation the cluster runs at PostgreSQL's default authentication_timeout, past which it closes the connection
+ *   itself
+ * @from {@link authenticationTimeoutSeconds}
+ */
+export const connectTimeoutMillis = authenticationTimeoutSeconds * 1000
 
 /** What a suite needs of the cluster: its CA and its owner's password. */
 export interface Cluster {

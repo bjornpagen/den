@@ -1,16 +1,12 @@
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
-import { drawn, explore } from "@bjornpagen/testing/explore"
-import { required } from "@bjornpagen/testing/features"
+import { assert } from "@bjornpagen/testing/assert"
+import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
-import { notesOnly } from "@bjornpagen/testing/sense"
-import { boundedShrink } from "@bjornpagen/testing/shrink"
-import { searched } from "@bjornpagen/testing/vitest"
-import { assert, layer } from "@effect/vitest"
-import { Array as Arr, Effect, Formatter } from "effect"
+import { type Case, property } from "@bjornpagen/testing/property"
+import { Array as Arr, Effect } from "effect"
 import { admitAndDrain } from "#integration/support/run.ts"
-import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
-import { caseHangMillis } from "#test/support/suites.ts"
+import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
  * The fan-out flow: a root admits one batch scope, whose admission starts one square per number from 1 to its size,
@@ -31,33 +27,24 @@ interface Run {
 
 const runs: Gen<Run> = (source) => ({ size: source.draw(int(0, 5)), copy: source.draw(int(0, 9)) })
 
-layer(sliceLayer)("the fan-out flow", (it) => {
-	it.effect("tallies every square once all have ended, the root after the batch", (ctx) =>
-		searched(
-			ctx,
-			explore(
-				{
-					suite: "fan-out flow",
-					oracle: {
-						kind: "specification",
-						name: "a tally of every square, one done finish per scope, the root's after the batch's, every seat given back"
-					},
-					draw: drawn(runs),
-					literal: Formatter.format,
-					coverage: required<Feature>(
-						["an empty batch", "fewer squares than seats", "more squares than seats"],
-						{
-							cases: 10,
-							sense: notesOnly
-						}
-					),
-					kept: [],
-					runs: 10,
-					shrink: boundedShrink(8),
-					steerEvery: 4,
-					caseHang: caseHangMillis
-				},
-				(run, c) =>
+/**
+ * Tallies every square once all have ended, the root after the batch.
+ *
+ * Budget: its suite's count before the conversion (fan-out flow: 10 independent cases and 10 steered, Vitest at den
+ * dc5bd11).
+ */
+export const theFanOutFlowTalliesEverySquare = property.explore(runs, {
+	needs: { slice: sliceCase },
+	situations: [
+		"an empty batch",
+		"fewer squares than seats",
+		"more squares than seats"
+	] satisfies ReadonlyArray<Reached<Feature>>,
+	check:
+		({ slice }, c: Case<Feature>) =>
+		(run) =>
+			Effect.flatMap(slice, (services) =>
+				Effect.provideContext(
 					Effect.gen(function* () {
 						c.note(
 							run.size === 0
@@ -68,7 +55,7 @@ layer(sliceLayer)("the fan-out flow", (it) => {
 						)
 						const { fan, ledgers } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
-						const batch = `b-${run.size}-${yield* nonce}`
+						const batch = `b-${run.size}`
 						const at = yield* fan.ledger.now
 						const requested = yield* fan.request.FanRun(batch, at, {
 							batch,
@@ -79,7 +66,10 @@ layer(sliceLayer)("the fan-out flow", (it) => {
 						const tallies = yield* rows(app.workload.tallies.once({ params: {}, facts: {} }))
 						const n = BigInt(run.size)
 						assert.deepStrictEqual(
-							Arr.filter(tallies, (t) => t.batch === batch),
+							Arr.map(
+								Arr.filter(tallies, (t) => t.batch === batch),
+								(t) => ({ batch: t.batch, count: t.count, total: t.total })
+							),
 							[{ batch, count: n, total: (n * (n + 1n) * (2n * n + 1n)) / 6n }]
 						)
 						const settled = yield* rows(app.workload.settled.once({ params: {}, facts: {} }))
@@ -90,8 +80,22 @@ layer(sliceLayer)("the fan-out flow", (it) => {
 						)
 						const holds = yield* fan.ledger.coordination.holds
 						assert.deepStrictEqual(holds, [])
-					})
-			)
-		)
-	)
+					}),
+					services
+				)
+			),
+	oracle: {
+		kind: "specification",
+		name: "a tally of every square, one done finish per scope, the root's after the batch's, every seat given back"
+	},
+	budget: { runs: 10, steered: 10 },
+	kept: [],
+	kills: [
+		{
+			file: "packages/den/src/runtime/turn.ts",
+			original: "\t\t\t\tif (Number(at) + leaseMarginMillis >= Number(end)) {",
+			replacement: "\t\t\t\tif (Number(at) + leaseMarginMillis < Number(end)) {",
+			why: "Operator mutant (comparison) at packages/den/src/runtime/turn.ts:1014 in loop: `>=` becomes `<`; the property fails (lane CATCH, den 9cffaba)."
+		}
+	]
 })

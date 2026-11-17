@@ -1,11 +1,9 @@
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
-import { drawn, explore } from "@bjornpagen/testing/explore"
-import { required } from "@bjornpagen/testing/features"
+import { assert } from "@bjornpagen/testing/assert"
+import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int, oneOf } from "@bjornpagen/testing/gen"
-import { notesOnly } from "@bjornpagen/testing/sense"
-import { boundedShrink } from "@bjornpagen/testing/shrink"
-import { searched } from "@bjornpagen/testing/vitest"
+import { type Case, property } from "@bjornpagen/testing/property"
 import type { Datum } from "@den/model/datum"
 import type { Fact } from "@den/model/facts"
 import { rootText } from "@den/model/identity"
@@ -23,14 +21,12 @@ import {
 	type StepKind,
 	stepOf
 } from "@den/model/program"
-import { assert, layer } from "@effect/vitest"
-import { Array as Arr, Effect, Formatter, HashMap, Option, String as Str } from "effect"
+import { Array as Arr, Effect, HashMap, Option, String as Str } from "effect"
 import { chain, poolSeats } from "#integration/slice/flows.ts"
 import { admitAndDrain } from "#integration/support/run.ts"
-import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
+import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 import { agreed, factsOf, type Graph } from "#integration/support/trace.ts"
 import { backoffFirstMillis, backoffLastMillis, longestLeaseMillis } from "#runtime/turn.ts"
-import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * The differential harness: the engine's committed facts against the reference model's (`@den/model`) on generated
@@ -275,214 +271,233 @@ const modelRun = (
 	return Arr.flatten(log)
 }
 
-layer(sliceLayer)("the differential harness", (it) => {
-	it.effect("commits the facts the reference model commits, on generated programs", (ctx) =>
-		searched(
-			ctx,
-			explore(
-				{
-					suite: "differential",
-					oracle: {
-						kind: "second-implementation",
-						name: "the reference model's ledger, sharing no code with den"
-					},
-					draw: drawn(programs),
-					literal: Formatter.format,
-					coverage: required<Feature>(
-						[
-							"a chain",
-							"a long chain",
-							"a weighted feed",
-							"a fan-out",
-							"an empty batch",
-							"a contended pool"
-						],
-						{ cases: 12, sense: notesOnly }
-					),
-					kept: [],
-					runs: 12,
-					shrink: boundedShrink(6),
-					steerEvery: 4,
-					caseHang: caseHangMillis
-				},
-				(program, c) =>
-					Effect.gen(function* () {
-						const { chain: chainLedger, fan: fanLedger, ledgers, loader } = yield* openLedgers
-						const app = yield* Db.open(AppServed.roles.auditor, {})
-						const key = `diff-${yield* nonce}`
-						const at = yield* chainLedger.ledger.now
-						const begin = (chosen: Program) =>
-							Effect.gen(function* () {
-								switch (chosen.kind) {
-									case "chain": {
-										c.note(chosen.pages > 2 ? "a long chain" : "a chain")
-										if (chosen.factor > 0) {
-											c.note("a weighted feed")
-											yield* loader.workload.weigh.once({
-												params: {},
-												facts: {
-													insert: { Weight: [{ feed: chosen.feed, factor: BigInt(chosen.factor) }] }
-												}
+/**
+ * Commits the facts the reference model commits, on generated programs.
+ *
+ * Budget: its suite's count before the conversion (differential: 12 independent cases and 12 steered, Vitest at den
+ * dc5bd11).
+ */
+export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = property.explore(
+	programs,
+	{
+		needs: { slice: sliceCase },
+		situations: [
+			"a chain",
+			"a long chain",
+			"a weighted feed",
+			"a fan-out",
+			"an empty batch",
+			"a contended pool"
+		] satisfies ReadonlyArray<Reached<Feature>>,
+		check:
+			({ slice }, c: Case<Feature>) =>
+			(program) =>
+				Effect.flatMap(slice, (services) =>
+					Effect.provideContext(
+						Effect.gen(function* () {
+							const { chain: chainLedger, fan: fanLedger, ledgers, loader } = yield* openLedgers
+							const app = yield* Db.open(AppServed.roles.auditor, {})
+							const key = "diff"
+							const at = yield* chainLedger.ledger.now
+							const begin = (chosen: Program) =>
+								Effect.gen(function* () {
+									switch (chosen.kind) {
+										case "chain": {
+											c.note(chosen.pages > 2 ? "a long chain" : "a chain")
+											if (chosen.factor > 0) {
+												c.note("a weighted feed")
+												yield* loader.workload.weigh.once({
+													params: {},
+													facts: {
+														insert: {
+															Weight: [{ feed: chosen.feed, factor: BigInt(chosen.factor) }]
+														}
+													}
+												})
+											}
+											const stored = yield* rows(
+												app.workload.weights.once({ params: {}, facts: {} })
+											)
+											const factor = Arr.reduce(
+												Arr.filter(stored, (w) => w.feed === chosen.feed),
+												0,
+												(sum, w) => sum + Number(w.factor)
+											)
+											const requested = yield* chainLedger.request.ChainRun(key, at, {
+												feed: chosen.feed,
+												pages: BigInt(chosen.pages)
 											})
-										}
-										const stored = yield* rows(app.workload.weights.once({ params: {}, facts: {} }))
-										const factor = Arr.reduce(
-											Arr.filter(stored, (w) => w.feed === chosen.feed),
-											0,
-											(sum, w) => sum + Number(w.factor)
-										)
-										const requested = yield* chainLedger.request.ChainRun(key, at, {
-											feed: chosen.feed,
-											pages: BigInt(chosen.pages)
-										})
-										const model = modelRun(
-											admissionOf(ChainRun, key, { feed: chosen.feed, pages: chosen.pages }),
-											factor > 0 ? Option.some({ feed: chosen.feed, factor }) : Option.none()
-										)
-										return {
-											scope: requested.scope,
-											flow: FlowName.make("Chain"),
-											model,
-											root: "ChainRun"
-										}
-									}
-									case "fan": {
-										c.note(chosen.size === 0 ? "an empty batch" : "a fan-out")
-										if (chosen.size > poolSeats) {
-											c.note("a contended pool")
-										}
-										const requested = yield* fanLedger.request.FanRun(key, at, {
-											batch: key,
-											size: BigInt(chosen.size)
-										})
-										const model = modelRun(
-											admissionOf(FanRun, key, { batch: key, size: chosen.size }),
-											Option.none()
-										)
-										return {
-											scope: requested.scope,
-											flow: FlowName.make("Fan"),
-											model,
-											root: "FanRun"
-										}
-									}
-								}
-							})
-						const started = yield* begin(program)
-						yield* admitAndDrain(ledgers, started.flow, [started.scope])
-						const w = app.workload
-						const none = { params: {}, facts: {} } as const
-						const scopes = [
-							...(yield* rows(w.chainScopes.once(none))),
-							...(yield* rows(w.fanScopes.once(none)))
-						]
-						const kindOf = (scope: string) =>
-							Option.getOrElse(
-								Option.map(
-									Arr.findFirst(scopes, (s) => s.scope === scope),
-									(s): string => s.kind
-								),
-								() => ""
-							)
-						const roots = [
-							...(yield* rows(w.chainRoots.once(none))),
-							...(yield* rows(w.fanRoots.once(none)))
-						]
-						const admitted = [
-							...(yield* rows(w.chainAdmittedAll.once(none))),
-							...(yield* rows(w.fanAdmittedAll.once(none)))
-						]
-						const withins = [
-							...(yield* rows(w.chainWithins.once(none))),
-							...(yield* rows(w.fanWithins.once(none)))
-						]
-						const pageAfters = yield* rows(w.chainPageAfters.once(none))
-						const pageNexts = yield* rows(w.chainPageNexts.once(none))
-						const optional = (
-							sidecar: ReadonlyArray<{ readonly step: string; readonly value: string }>,
-							step: string
-						) =>
-							Arr.map(
-								Arr.filter(sidecar, (o) => o.step === step),
-								(o) => o.value
-							)
-						const nexts = yield* rows(w.chainNexts.once(none))
-						const pageInputs = yield* rows(w.chainPageInputs.once(none))
-						const squareInputs = yield* rows(w.fanSquareInputs.once(none))
-						const pageOutputs = yield* rows(w.chainPageOutputs.once(none))
-						const squareOutputs = yield* rows(w.fanSquareOutputs.once(none))
-						const graph: Graph = {
-							roots: Arr.map(roots, (r) => ({ scope: r.scope, kind: kindOf(r.scope), key: r.key })),
-							admitted: Arr.map(admitted, (a): string => a.scope),
-							withins: Arr.map(withins, (x) => ({
-								scope: x.scope,
-								parent: x.parent,
-								kind: kindOf(x.scope)
-							})),
-							startSteps: [
-								...(yield* rows(w.chainStartSteps.once(none))),
-								...(yield* rows(w.fanStartSteps.once(none)))
-							],
-							startScopes: [
-								...(yield* rows(w.chainStartScopes.once(none))),
-								...(yield* rows(w.fanStartScopes.once(none)))
-							],
-							edges: Arr.map(nexts, (e) => ({ edge: "Next", ...e, scope: false })),
-							finishes: [
-								...(yield* rows(w.chainFinishSteps.once(none))),
-								...(yield* rows(w.fanFinishSteps.once(none)))
-							],
-							steps: [
-								...(yield* rows(w.chainSteps.once(none))),
-								...(yield* rows(w.fanSteps.once(none)))
-							],
-							inputs: new Map<string, Datum>([
-								...Arr.map(
-									pageInputs,
-									(i) =>
-										[
-											i.step,
-											{
-												feed: i.feed,
-												seq: Number(i.seq),
-												pages: Number(i.pages),
-												after: optional(pageAfters, i.step)
+											const model = modelRun(
+												admissionOf(ChainRun, key, { feed: chosen.feed, pages: chosen.pages }),
+												factor > 0 ? Option.some({ feed: chosen.feed, factor }) : Option.none()
+											)
+											return {
+												scope: requested.scope,
+												flow: FlowName.make("Chain"),
+												model,
+												root: "ChainRun"
 											}
-										] as const
-								),
-								...Arr.map(
-									squareInputs,
-									(i) => [i.step, { batch: i.batch, n: Number(i.n) }] as const
+										}
+										case "fan": {
+											c.note(chosen.size === 0 ? "an empty batch" : "a fan-out")
+											if (chosen.size > poolSeats) {
+												c.note("a contended pool")
+											}
+											const requested = yield* fanLedger.request.FanRun(key, at, {
+												batch: key,
+												size: BigInt(chosen.size)
+											})
+											const model = modelRun(
+												admissionOf(FanRun, key, { batch: key, size: chosen.size }),
+												Option.none()
+											)
+											return {
+												scope: requested.scope,
+												flow: FlowName.make("Fan"),
+												model,
+												root: "FanRun"
+											}
+										}
+									}
+								})
+							const started = yield* begin(program)
+							yield* admitAndDrain(ledgers, started.flow, [started.scope])
+							const w = app.workload
+							const none = { params: {}, facts: {} } as const
+							const scopes = [
+								...(yield* rows(w.chainScopes.once(none))),
+								...(yield* rows(w.fanScopes.once(none)))
+							]
+							const kindOf = (scope: string) =>
+								Option.getOrElse(
+									Option.map(
+										Arr.findFirst(scopes, (s) => s.scope === scope),
+										(s): string => s.kind
+									),
+									() => ""
 								)
-							]),
-							results: [
-								...(yield* rows(w.chainResults.once(none))),
-								...(yield* rows(w.fanResults.once(none)))
-							],
-							outputs: new Map<string, Datum>([
-								...Arr.map(
-									pageOutputs,
-									(o) =>
-										[
-											o.step,
-											{
-												seq: Number(o.seq),
-												items: Number(o.items),
-												next: optional(pageNexts, o.step)
-											}
-										] as const
-								),
-								...Arr.map(squareOutputs, (o) => [o.step, { square: Number(o.square) }] as const)
-							])
-						}
-						const mine = (texts: ReadonlyArray<string>) =>
-							Arr.filter(texts, Str.includes(rootText({ kind: started.root, key })))
-						const engine = mine(agreed(factsOf(graph)))
-						assert.deepStrictEqual(engine, mine(agreed(started.model)))
-						assert.isTrue(Arr.contains(engine, `admitted ${rootText({ kind: started.root, key })}`))
-						assert.isTrue(Arr.some(engine, Str.startsWith("finished ")))
-					})
-			)
-		)
-	)
-})
+							const roots = [
+								...(yield* rows(w.chainRoots.once(none))),
+								...(yield* rows(w.fanRoots.once(none)))
+							]
+							const admitted = [
+								...(yield* rows(w.chainAdmittedAll.once(none))),
+								...(yield* rows(w.fanAdmittedAll.once(none)))
+							]
+							const withins = [
+								...(yield* rows(w.chainWithins.once(none))),
+								...(yield* rows(w.fanWithins.once(none)))
+							]
+							const pageAfters = yield* rows(w.chainPageAfters.once(none))
+							const pageNexts = yield* rows(w.chainPageNexts.once(none))
+							const optional = (
+								sidecar: ReadonlyArray<{ readonly step: string; readonly value: string }>,
+								step: string
+							) =>
+								Arr.map(
+									Arr.filter(sidecar, (o) => o.step === step),
+									(o) => o.value
+								)
+							const nexts = yield* rows(w.chainNexts.once(none))
+							const pageInputs = yield* rows(w.chainPageInputs.once(none))
+							const squareInputs = yield* rows(w.fanSquareInputs.once(none))
+							const pageOutputs = yield* rows(w.chainPageOutputs.once(none))
+							const squareOutputs = yield* rows(w.fanSquareOutputs.once(none))
+							const graph: Graph = {
+								roots: Arr.map(roots, (r) => ({
+									scope: r.scope,
+									kind: kindOf(r.scope),
+									key: r.key
+								})),
+								admitted: Arr.map(admitted, (a): string => a.scope),
+								withins: Arr.map(withins, (x) => ({
+									scope: x.scope,
+									parent: x.parent,
+									kind: kindOf(x.scope)
+								})),
+								startSteps: [
+									...(yield* rows(w.chainStartSteps.once(none))),
+									...(yield* rows(w.fanStartSteps.once(none)))
+								],
+								startScopes: [
+									...(yield* rows(w.chainStartScopes.once(none))),
+									...(yield* rows(w.fanStartScopes.once(none)))
+								],
+								edges: Arr.map(nexts, (e) => ({ edge: "Next", ...e, scope: false })),
+								finishes: [
+									...(yield* rows(w.chainFinishSteps.once(none))),
+									...(yield* rows(w.fanFinishSteps.once(none)))
+								],
+								steps: [
+									...(yield* rows(w.chainSteps.once(none))),
+									...(yield* rows(w.fanSteps.once(none)))
+								],
+								inputs: new Map<string, Datum>([
+									...Arr.map(
+										pageInputs,
+										(i) =>
+											[
+												i.step,
+												{
+													feed: i.feed,
+													seq: Number(i.seq),
+													pages: Number(i.pages),
+													after: optional(pageAfters, i.step)
+												}
+											] as const
+									),
+									...Arr.map(
+										squareInputs,
+										(i) => [i.step, { batch: i.batch, n: Number(i.n) }] as const
+									)
+								]),
+								results: [
+									...(yield* rows(w.chainResults.once(none))),
+									...(yield* rows(w.fanResults.once(none)))
+								],
+								outputs: new Map<string, Datum>([
+									...Arr.map(
+										pageOutputs,
+										(o) =>
+											[
+												o.step,
+												{
+													seq: Number(o.seq),
+													items: Number(o.items),
+													next: optional(pageNexts, o.step)
+												}
+											] as const
+									),
+									...Arr.map(squareOutputs, (o) => [o.step, { square: Number(o.square) }] as const)
+								])
+							}
+							const mine = (texts: ReadonlyArray<string>) =>
+								Arr.filter(texts, Str.includes(rootText({ kind: started.root, key })))
+							const engine = mine(agreed(factsOf(graph)))
+							assert.deepStrictEqual(engine, mine(agreed(started.model)))
+							assert.isTrue(
+								Arr.contains(engine, `admitted ${rootText({ kind: started.root, key })}`)
+							)
+							assert.isTrue(Arr.some(engine, Str.startsWith("finished ")))
+						}),
+						services
+					)
+				),
+		oracle: {
+			kind: "second-implementation",
+			name: "the reference model's ledger, sharing no code with den"
+		},
+		budget: { runs: 12, steered: 12 },
+		kept: [],
+		kills: [
+			{
+				file: "packages/den/src/transport.ts",
+				original:
+					"\t\t\t\t\t\tRef.update(held, (list) => [\n\t\t\t\t\t\t\t...list,\n\t\t\t\t\t\t\t...Arr.map(rings, (ring) => ({\n\t\t\t\t\t\t\t\twake: ring.wake,\n\t\t\t\t\t\t\t\tat: millis + Duration.toMillis(ring.delay)\n\t\t\t\t\t\t\t}))\n\t\t\t\t\t\t])",
+				replacement:
+					"\t\t\t\t\t\tRef.update(held, (list) => [...Arr.map(rings, (ring) => ({\n\t\t\t\t\t\t\t\twake: ring.wake,\n\t\t\t\t\t\t\t\tat: millis + Duration.toMillis(ring.delay)\n\t\t\t\t\t\t\t}))])",
+				why: "Operator mutant (element) at packages/den/src/transport.ts:137 in <module>: `[ ...list, ...Arr.map(rings, (ring) => ({ wake: ring.wake, at: millis + Duration` becomes `[...Arr.map(rings, (ring) => ({ wake: ring.wake, at: millis + Duration.toMillis(`; the property fails (lane CATCH, den 9cffaba)."
+			}
+		]
+	}
+)

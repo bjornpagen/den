@@ -5,25 +5,16 @@ import type { Ledger } from "@bjornpagen/den/runtime/ledger"
 import type { Ending, Ledgers } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
-import { exhaust } from "@bjornpagen/testing/explore"
-import { requiredInSpace } from "@bjornpagen/testing/features"
-import { type Gen, int } from "@bjornpagen/testing/gen"
-import { searched } from "@bjornpagen/testing/vitest"
-import { assert, layer } from "@effect/vitest"
-import { Array as Arr, Duration, Effect, Formatter, HashMap, Option, Order, Ref } from "effect"
+import { assert } from "@bjornpagen/testing/assert"
+import type { Reached } from "@bjornpagen/testing/features"
+import { finite, type Gen, int } from "@bjornpagen/testing/gen"
+import { type Case, property } from "@bjornpagen/testing/property"
+import { Array as Arr, Duration, Effect, HashMap, Option, Order, Ref } from "effect"
 import { TestClock } from "effect/testing"
 import type { Faults } from "#integration/slice/flows.ts"
 import { admitAndDrain } from "#integration/support/run.ts"
-import {
-	AppServed,
-	nonce,
-	openLedgers,
-	Planted,
-	rows,
-	sliceLayer
-} from "#integration/support/slice.ts"
+import { AppServed, openLedgers, Planted, rows, sliceCase } from "#integration/support/slice.ts"
 import { backoffLastMillis } from "#runtime/turn.ts"
-import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * A refused credential fences, spends nothing, and runs no body again while it stands. A deployment whose app login
@@ -39,9 +30,9 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * deployment stays broken, however many ticks; and with the credential right, each step ends done at the attempt after
  * its fence, having run its body once more, and the root's finish once both have.
  *
- * Its plants, kept mutants (kept-mutants.json), each turn it red: a refused credential counted as a spent attempt, a
- * fence that records nothing, whose claim's lapse then spends it, and a census that rings fenced steps without asking
- * whether the deployment's login is let in.
+ * Its kills, each turns it red: a refused credential counted as a spent attempt, a fence that records nothing, whose
+ * claim's lapse then spends it, and a census that rings fenced steps without asking whether the deployment's login is
+ * let in.
  */
 
 type Feature =
@@ -85,31 +76,27 @@ const refusedAt = (step: StepKey, ending: Ending): boolean =>
 	ending.fault.kind === "credentialRefused" &&
 	ending.fault.reason === "passwordRefused"
 
-layer(sliceLayer)("a refused credential", (it) => {
-	it.effect(
-		"fences its commits, spends no attempt, runs no body while it stands, and the steps end done once it is set right",
-		(ctx) =>
-			searched(
-				ctx,
-				exhaust(
-					{
-						suite: "refused credential",
-						generator: runs,
-						literal: Formatter.format,
-						coverage: requiredInSpace<Feature>([
-							"fenced at its first attempt",
-							"fenced after a spent attempt",
-							"broken for one tick",
-							"broken for several ticks"
-						]),
-						caseHang: caseHangMillis,
-						box: "a two-attempt ladder dead at most once, then its commit refused, beside a never-ending one, the deployment broken one to three ticks after",
-						oracle: {
-							kind: "specification",
-							name: "refused commits fenced and recorded, deaths spent, no body run while broken, every step done once the credential is right"
-						}
-					},
-					(run, c) =>
+/**
+ * Fences its commits, spends no attempt, runs no body while it stands, and the steps end done once it is set right.
+ *
+ * Box: its suite's, every case of it.
+ */
+export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = property.exhaust(
+	finite(runs),
+	{
+		box: "a two-attempt ladder dead at most once, then its commit refused, beside a never-ending one, the deployment broken one to three ticks after",
+		needs: { slice: sliceCase },
+		situations: [
+			"fenced at its first attempt",
+			"fenced after a spent attempt",
+			"broken for one tick",
+			"broken for several ticks"
+		] satisfies ReadonlyArray<Reached<Feature>>,
+		check:
+			({ slice }, c: Case<Feature>) =>
+			(run) =>
+				Effect.flatMap(slice, (services) =>
+					Effect.provideContext(
 						Effect.gen(function* () {
 							c.note(
 								run.deaths > 0 ? "fenced after a spent attempt" : "fenced at its first attempt"
@@ -118,10 +105,9 @@ layer(sliceLayer)("a refused credential", (it) => {
 							const { retry, ledgers, all, misconfigured } = yield* openLedgers
 							const app = yield* Db.open(AppServed.roles.auditor, {})
 							const { faults, runs: ran } = yield* Planted
-							const tag = yield* nonce
 							const steps: ReadonlyArray<Planned> = [
-								{ kind: "Steadfast", key: `steadfast-${tag}`, deaths: 0 },
-								{ kind: "Brittle", key: `brittle-${tag}`, deaths: run.deaths }
+								{ kind: "Steadfast", key: "steadfast", deaths: 0 },
+								{ kind: "Brittle", key: "brittle", deaths: run.deaths }
 							]
 							yield* Ref.update(faults, (map) =>
 								Arr.reduce(steps, map, (acc, s) => HashMap.set(acc, s.key, s.deaths))
@@ -129,9 +115,9 @@ layer(sliceLayer)("a refused credential", (it) => {
 							const runsOf = (key: string) =>
 								Effect.map(Ref.get(ran), (map) => Option.getOrElse(HashMap.get(map, key), () => 0))
 							const at = yield* retry.ledger.now
-							const requested = yield* retry.request.Ladders(`refused-${tag}`, at, {
-								steadfast: `steadfast-${tag}`,
-								brittle: `brittle-${tag}`
+							const requested = yield* retry.request.Ladders("refused", at, {
+								steadfast: "steadfast",
+								brittle: "brittle"
 							})
 							assert.isTrue(requested.fresh)
 							const first = yield* admitAndDrain(misconfigured.ledgers, FlowName.make("Retry"), [
@@ -196,8 +182,46 @@ layer(sliceLayer)("a refused credential", (it) => {
 								Arr.map(of("LaddersFinish"), (r) => r.outcome),
 								["done"]
 							)
-						})
-				)
-			)
-	)
-})
+						}),
+						services
+					)
+				),
+		oracle: {
+			kind: "specification",
+			name: "refused commits fenced and recorded, deaths spent, no body run while broken, every step done once the credential is right"
+		},
+		kept: [],
+		kills: [
+			{
+				file: "packages/den/src/runtime/turn.ts",
+				original:
+					"\t\t\tBigInt(wake.attempt) !== next ||\n\t\t\tOption.exists(latest, (c) => stands(c, retries, fenced, at))",
+				replacement: "\t\t\tOption.exists(latest, (c) => stands(c, retries, fenced, at))",
+				why: "Operator mutant (disjunct) at packages/den/src/runtime/turn.ts:768 in serveStep: `BigInt(wake.attempt) !== next || Option.exists(latest, (c) => stands(c, retries,` becomes `Option.exists(latest, (c) => stands(c, retries, fenced, at))`; the property fails (lane CATCH, den 9cffaba)."
+			},
+			{
+				file: "packages/den/src/runtime/turn.ts",
+				original:
+					'\t\t\t\tcase "stale":\n\t\t\t\tcase "credentialRefused":\n\t\t\t\t\treturn ended(ledger, runner, turn, spentSoFar, { kind: "fenced", fault: error }, wake)\n',
+				replacement:
+					'\t\t\t\tcase "stale":\n\t\t\t\t\treturn ended(ledger, runner, turn, spentSoFar, { kind: "fenced", fault: error }, wake)\n\t\t\t\tcase "credentialRefused":\n\t\t\t\t\treturn ended(ledger, runner, turn, spentSoFar, { kind: "spent" }, wake)\n',
+				why: "A refused credential spends its attempt; the property fails on it (one of den's kept mutants before the conversion)."
+			},
+			{
+				file: "packages/den/src/runtime/turn.ts",
+				original:
+					'\t\t\tcase "fenced":\n\t\t\t\treturn yield* recorded(\n\t\t\t\t\tledger,\n\t\t\t\t\tledger.fence({ step: turn.step, attempt: turn.attempt }),\n\t\t\t\t\twake,\n\t\t\t\t\t{ kind: "fenced", wake, fault: how.fault }\n\t\t\t\t)\n',
+				replacement:
+					'\t\t\tcase "fenced":\n\t\t\t\treturn { kind: "fenced", wake, fault: how.fault } satisfies Ending\n',
+				why: "A fenced attempt records nothing, so its claim's lapse spends it; the property fails on it (one of den's kept mutants before the conversion)."
+			},
+			{
+				file: "packages/den/src/runtime/census.ts",
+				original:
+					"\t\tconst letIn = Arr.isReadonlyArrayNonEmpty(found.fenced)\n\t\t\t? yield* Effect.isSuccess(ledger.authenticated)\n\t\t\t: false\n",
+				replacement: "\t\tconst letIn = Arr.isReadonlyArrayNonEmpty(found.fenced)\n",
+				why: "The census rings fenced steps without asking whether the deployment's login is let in; the property fails on it (one of den's kept mutants before the conversion)."
+			}
+		]
+	}
+)

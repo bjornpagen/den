@@ -1,15 +1,11 @@
 import { pause, resume } from "@bjornpagen/den/runtime/seats"
-import { drawn, explore } from "@bjornpagen/testing/explore"
-import { required } from "@bjornpagen/testing/features"
+import { assert } from "@bjornpagen/testing/assert"
+import type { Reached } from "@bjornpagen/testing/features"
 import { array, boolean, type Gen } from "@bjornpagen/testing/gen"
 import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
-import { notesOnly } from "@bjornpagen/testing/sense"
-import { boundedShrink } from "@bjornpagen/testing/shrink"
-import { searched } from "@bjornpagen/testing/vitest"
-import { assert, layer } from "@effect/vitest"
-import { Array as Arr, Effect, Formatter, Option } from "effect"
-import { openLedgers, sliceLayer } from "#integration/support/slice.ts"
-import { caseHangMillis } from "#test/support/suites.ts"
+import { type Case, property } from "@bjornpagen/testing/property"
+import { Array as Arr, Effect, Option } from "effect"
+import { openLedgers, sliceCase } from "#integration/support/slice.ts"
 
 /**
  * A pause is a chain of turns: `Paused(target, turn)`, each turn after the first contained in its predecessor's
@@ -44,99 +40,104 @@ const operators: Gen<Operators> = (source) => ({ a: source.draw(moves), b: sourc
 
 const target = "Pool"
 
-layer(sliceLayer)("pauses", (it) => {
-	it.effect(
-		"pauses and resumes a target as one live turn at a time, in any drawn interleaving",
-		(ctx) =>
-			searched(
-				ctx,
-				explore(
-					{
-						suite: "pauses",
-						oracle: {
-							kind: "specification",
-							name: "a flag each pause sets and each resume clears, at once, read back as the live pauses"
-						},
-						draw: drawn(operators),
-						literal: Formatter.format,
-						coverage: required<Feature>(
-							["both last paused", "both last resumed", "their last moves differ"],
-							{ cases: 9, sense: notesOnly }
-						),
-						kept: [],
-						runs: 12,
-						shrink: boundedShrink(4),
-						steerEvery: 3,
-						caseHang: caseHangMillis
-					},
-					(drawnOperators, c) =>
-						Effect.gen(function* () {
-							const { fan } = yield* openLedgers
-							const ledger = fan.ledger
-							const live = Effect.map(ledger.coordination.paused, (rows) =>
-								Arr.filter(rows, (row) => row.target === target)
-							)
-							const paused = Effect.map(live, (rows) => {
-								assert.isAtMost(rows.length, 1)
-								return Arr.isReadonlyArrayNonEmpty(rows)
-							})
-							yield* resume(ledger, target)
-							const cleared = yield* paused
-							assert.isFalse(cleared)
-							const run = (_session: Session, move: Move): Effect.Effect<Move> =>
-								Effect.gen(function* () {
-									yield* move === "pause" ? pause(ledger, target) : resume(ledger, target)
-									yield* paused
-									return move
-								}).pipe(Effect.orDie)
-							const lastA = Arr.lastNonEmpty(drawnOperators.a)
-							const lastB = Arr.lastNonEmpty(drawnOperators.b)
-							c.note(
-								lastA !== lastB
-									? "their last moves differ"
-									: lastA === "pause"
-										? "both last paused"
-										: "both last resumed"
-							)
-							const judge = (_record: Interleaving<Session, Move, Move, never, never, never>) =>
-								Effect.gen(function* () {
-									const ended = yield* paused
-									assert.isTrue(Arr.contains([lastA, lastB], ended ? "pause" : "resume"))
-								}).pipe(Effect.orDie)
-							yield* interleave(
-								{
-									reset: Effect.void,
-									run,
-									waitOf: () => Effect.never,
-									quiesce: () => Effect.void,
-									outcome: (_move, ended) => ({
-										key: ended.kind === "ended" ? ended.outcome : "cancelled",
-										session: "continues"
-									}),
-									release: () => Effect.void,
-									commute: () => false,
-									onWait: () => "wait",
-									read: () => Effect.die("the judgment reads the live pauses itself")
-								},
-								{
-									sessions: {
-										a: { moves: drawnOperators.a, after: Option.none() },
-										b: { moves: drawnOperators.b, after: Option.none() }
-									},
-									exclusive: [],
-									state: Option.none()
-								},
-								{ kind: "drawn", nature: c },
-								judge
-							)
-							yield* pause(ledger, target)
-							const pausedAfter = yield* paused
-							assert.isTrue(pausedAfter)
-							yield* resume(ledger, target)
-							const resumedAfter = yield* paused
-							assert.isFalse(resumedAfter)
+/**
+ * Pauses and resumes a target as one live turn at a time, in any drawn interleaving.
+ *
+ * Budget: its suite's count before the conversion (pauses: 12 independent cases and 9 steered, Vitest at den dc5bd11).
+ */
+export const pausesAndResumesATargetAsOneLiveTurnAtATime = property.explore(operators, {
+	needs: { slice: sliceCase },
+	situations: [
+		"both last paused",
+		"both last resumed",
+		"their last moves differ"
+	] satisfies ReadonlyArray<Reached<Feature>>,
+	check:
+		({ slice }, c: Case<Feature>) =>
+		(drawnOperators) =>
+			Effect.flatMap(slice, (services) =>
+				Effect.provideContext(
+					Effect.gen(function* () {
+						const { fan } = yield* openLedgers
+						const ledger = fan.ledger
+						const live = Effect.map(ledger.coordination.paused, (rows) =>
+							Arr.filter(rows, (row) => row.target === target)
+						)
+						const paused = Effect.map(live, (rows) => {
+							assert.isAtMost(rows.length, 1)
+							return Arr.isReadonlyArrayNonEmpty(rows)
 						})
+						yield* resume(ledger, target)
+						const cleared = yield* paused
+						assert.isFalse(cleared)
+						const run = (_session: Session, move: Move): Effect.Effect<Move> =>
+							Effect.gen(function* () {
+								yield* move === "pause" ? pause(ledger, target) : resume(ledger, target)
+								yield* paused
+								return move
+							}).pipe(Effect.orDie)
+						const lastA = Arr.lastNonEmpty(drawnOperators.a)
+						const lastB = Arr.lastNonEmpty(drawnOperators.b)
+						c.note(
+							lastA !== lastB
+								? "their last moves differ"
+								: lastA === "pause"
+									? "both last paused"
+									: "both last resumed"
+						)
+						const judge = (_record: Interleaving<Session, Move, Move, never, never, never>) =>
+							Effect.gen(function* () {
+								const ended = yield* paused
+								assert.isTrue(Arr.contains([lastA, lastB], ended ? "pause" : "resume"))
+							}).pipe(Effect.orDie)
+						yield* interleave(
+							{
+								reset: Effect.void,
+								run,
+								waitOf: () => Effect.never,
+								quiesce: () => Effect.void,
+								outcome: (_move, ended) => ({
+									key: ended.kind === "ended" ? ended.outcome : "cancelled",
+									session: "continues"
+								}),
+								release: () => Effect.void,
+								commute: () => false,
+								onWait: () => "wait",
+								read: () => Effect.die("the judgment reads the live pauses itself")
+							},
+							{
+								sessions: {
+									a: { moves: drawnOperators.a, after: Option.none() },
+									b: { moves: drawnOperators.b, after: Option.none() }
+								},
+								exclusive: [],
+								state: Option.none()
+							},
+							{ kind: "drawn", nature: c },
+							judge
+						)
+						yield* pause(ledger, target)
+						const pausedAfter = yield* paused
+						assert.isTrue(pausedAfter)
+						yield* resume(ledger, target)
+						const resumedAfter = yield* paused
+						assert.isFalse(resumedAfter)
+					}),
+					services
 				)
-			)
-	)
+			),
+	oracle: {
+		kind: "specification",
+		name: "a flag each pause sets and each resume clears, at once, read back as the live pauses"
+	},
+	budget: { runs: 12, steered: 9 },
+	kept: [],
+	kills: [
+		{
+			file: "packages/den/src/runtime/seats.ts",
+			original: "\t\tif (Arr.some(live, (row) => row.target === target)) {",
+			replacement: "\t\tif (Arr.some(live, (row) => false)) {",
+			why: "Operator mutant (boolean-return) at packages/den/src/runtime/seats.ts:225 in pause: `row.target === target` becomes `false`; the property fails (lane CATCH, den 9cffaba)."
+		}
+	]
 })

@@ -3,19 +3,15 @@ import type { Ran, Turn } from "@bjornpagen/den/runtime/ledger"
 import { lostRace, serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
 import { type CallError, Db } from "@bjornpagen/grizzle/runtime"
-import { drawn, explore } from "@bjornpagen/testing/explore"
-import { required } from "@bjornpagen/testing/features"
+import { assert } from "@bjornpagen/testing/assert"
+import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
-import { notesOnly } from "@bjornpagen/testing/sense"
-import { boundedShrink } from "@bjornpagen/testing/shrink"
-import { searched } from "@bjornpagen/testing/vitest"
-import { assert, layer } from "@effect/vitest"
-import { Array as Arr, Duration, Effect, Formatter, Option } from "effect"
+import { type Case, property } from "@bjornpagen/testing/property"
+import { Array as Arr, Duration, Effect, Option } from "effect"
 import type { Digest } from "effect/crypto"
 import { TestClock } from "effect/testing"
-import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
+import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis, reclaimableAfterMillis } from "#runtime/turn.ts"
-import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * Two holders of one step, a stale one and a fresh one, each with its own attempt: the stale one claimed attempt 1 and
@@ -45,40 +41,31 @@ const races: Gen<Race> = (source) => ({
 	copy: source.draw(int(0, 99_999))
 })
 
-layer(sliceLayer)("a stale holder", (it) => {
-	it.effect("loses when another attempt's commit holds its step", (ctx) =>
-		searched(
-			ctx,
-			explore(
-				{
-					suite: "stale holder",
-					oracle: {
-						kind: "specification",
-						name: "one holder committed, the other lost, the winner's attempt held, a forged attempt lost"
-					},
-					draw: drawn(races),
-					literal: Formatter.format,
-					coverage: required<Feature>(
-						["stale commits first", "fresh commits first", "a forged attempt"],
-						{
-							cases: 8,
-							sense: notesOnly
-						}
-					),
-					kept: [],
-					runs: 8,
-					shrink: boundedShrink(4),
-					steerEvery: 4,
-					caseHang: caseHangMillis
-				},
-				(race, c) =>
+/**
+ * Loses when another attempt's commit holds its step.
+ *
+ * Budget: its suite's count before the conversion (stale holder: 8 independent cases and 8 steered, Vitest at den
+ * dc5bd11).
+ */
+export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.explore(races, {
+	needs: { slice: sliceCase },
+	situations: [
+		"stale commits first",
+		"fresh commits first",
+		"a forged attempt"
+	] satisfies ReadonlyArray<Reached<Feature>>,
+	check:
+		({ slice }, c: Case<Feature>) =>
+		(race) =>
+			Effect.flatMap(slice, (services) =>
+				Effect.provideContext(
 					Effect.gen(function* () {
 						c.note(race.order)
 						const { chain, ledgers } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
 						const flow = FlowName.make("Chain")
 						const at = yield* chain.ledger.now
-						const key = `stale-${yield* nonce}`
+						const key = "stale"
 						const requested = yield* chain.request.ChainRun(key, at, {
 							feed: "sport",
 							pages: BigInt(race.pages)
@@ -159,8 +146,22 @@ layer(sliceLayer)("a stale holder", (it) => {
 						assert.strictEqual(forged.ending.kind, "lost")
 						const claims = yield* chain.ledger.claimsOf(otherPage.value.step)
 						assert.deepStrictEqual(claims, [])
-					})
-			)
-		)
-	)
+					}),
+					services
+				)
+			),
+	oracle: {
+		kind: "specification",
+		name: "one holder committed, the other lost, the winner's attempt held, a forged attempt lost"
+	},
+	budget: { runs: 8, steered: 8 },
+	kept: [],
+	kills: [
+		{
+			file: "packages/den/src/runtime/turn.ts",
+			original: "\t\t\tBigInt(wake.attempt) !== next ||",
+			replacement: "\t\t\tBigInt(wake.attempt) === next ||",
+			why: "Operator mutant (comparison) at packages/den/src/runtime/turn.ts:768 in serveStep: `!==` becomes `===`; the property fails (lane CATCH, den 9cffaba)."
+		}
+	]
 })

@@ -1,17 +1,13 @@
 import { type Ending, serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
-import { drawn, explore } from "@bjornpagen/testing/explore"
-import { required } from "@bjornpagen/testing/features"
+import { assert } from "@bjornpagen/testing/assert"
+import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
-import { notesOnly } from "@bjornpagen/testing/sense"
-import { boundedShrink } from "@bjornpagen/testing/shrink"
-import { searched } from "@bjornpagen/testing/vitest"
-import { assert, layer } from "@effect/vitest"
-import { Array as Arr, Effect, Formatter, Order } from "effect"
+import { type Case, property } from "@bjornpagen/testing/property"
+import { Array as Arr, Effect, Order } from "effect"
 import { admitAndDrain } from "#integration/support/run.ts"
-import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
-import { caseHangMillis } from "#test/support/suites.ts"
+import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
  * The chain flow end to end on PostgreSQL 19: an operator requests a root, its admission starts page 0 of a feed, each
@@ -47,37 +43,27 @@ const runs: Gen<Run> = (source) => ({
 	copy: source.draw(int(0, 9))
 })
 
-layer(sliceLayer)("the chain flow", (it) => {
-	it.effect("runs a feed's pages to its cursor, each page's read recorded with its result", (ctx) =>
-		searched(
-			ctx,
-			explore(
-				{
-					suite: "chain flow",
-					oracle: {
-						kind: "specification",
-						name: "n typed pages with their reads recorded, their items, one finish, the cursor at n − 1, no change on a rerun"
-					},
-					draw: drawn(runs),
-					literal: Formatter.format,
-					coverage: required<Feature>(
-						[
-							"one page",
-							"several pages",
-							"a weight read",
-							"no weight",
-							"first request",
-							"request again"
-						],
-						{ cases: 12, sense: notesOnly }
-					),
-					kept: [],
-					runs: 12,
-					shrink: boundedShrink(8),
-					steerEvery: 4,
-					caseHang: caseHangMillis
-				},
-				(run, c) =>
+/**
+ * Runs a feed's pages to its cursor, each page's read recorded with its result.
+ *
+ * Budget: its suite's count before the conversion (chain flow: 12 independent cases and 12 steered, Vitest at den
+ * dc5bd11).
+ */
+export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
+	needs: { slice: sliceCase },
+	situations: [
+		"one page",
+		"several pages",
+		"a weight read",
+		"no weight",
+		"first request",
+		"request again"
+	] satisfies ReadonlyArray<Reached<Feature>>,
+	check:
+		({ slice }, c: Case<Feature>) =>
+		(run) =>
+			Effect.flatMap(slice, (services) =>
+				Effect.provideContext(
 					Effect.gen(function* () {
 						c.note(run.pages === 1 ? "one page" : "several pages")
 						const { chain, ledgers, loader } = yield* openLedgers
@@ -88,7 +74,7 @@ layer(sliceLayer)("the chain flow", (it) => {
 								facts: { insert: { Weight: [{ feed: run.feed, factor: BigInt(run.factor) }] } }
 							})
 						}
-						const key = `${run.feed}-${run.pages}-${run.factor}-${yield* nonce}`
+						const key = `${run.feed}-${run.pages}-${run.factor}`
 						const at = yield* chain.ledger.now
 						const requested = yield* chain.request.ChainRun(key, at, {
 							feed: run.feed,
@@ -160,8 +146,22 @@ layer(sliceLayer)("the chain flow", (it) => {
 						assert.isTrue(Arr.every(rerung, (ending) => ending.kind === "lost"))
 						const after = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
 						assert.strictEqual(Arr.filter(after, (page) => page.scope === scope).length, run.pages)
-					})
-			)
-		)
-	)
+					}),
+					services
+				)
+			),
+	oracle: {
+		kind: "specification",
+		name: "n typed pages with their reads recorded, their items, one finish, the cursor at n − 1, no change on a rerun"
+	},
+	budget: { runs: 12, steered: 12 },
+	kept: [],
+	kills: [
+		{
+			file: "packages/den/src/runtime/turn.ts",
+			original: "\tDuration.millis(Math.max(0, Number(until) - Number(at)))",
+			replacement: "\tDuration.millis(Math.max(0, Number(at) - Number(until)))",
+			why: "Operator mutant (operand-swap) at packages/den/src/runtime/turn.ts:235 in delayTo: `Number(until) - Number(at)` becomes `Number(at) - Number(until)`; the property fails (lane CATCH, den 9cffaba)."
+		}
+	]
 })

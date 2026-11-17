@@ -2,18 +2,14 @@ import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
-import { drawn, explore } from "@bjornpagen/testing/explore"
-import { required } from "@bjornpagen/testing/features"
+import { assert } from "@bjornpagen/testing/assert"
+import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
-import { notesOnly } from "@bjornpagen/testing/sense"
-import { boundedShrink } from "@bjornpagen/testing/shrink"
-import { searched } from "@bjornpagen/testing/vitest"
-import { assert, layer } from "@effect/vitest"
-import { Array as Arr, Effect, Formatter } from "effect"
+import { type Case, property } from "@bjornpagen/testing/property"
+import { Array as Arr, Effect } from "effect"
 import { admitAndDrain, ringOnAndDrain } from "#integration/support/run.ts"
-import { AppServed, nonce, openLedgers, rows, sliceLayer } from "#integration/support/slice.ts"
+import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
-import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * Exclusivity: a sync root holds a seat per relation for its whole life. Several roots for one relation are requested
@@ -38,38 +34,29 @@ const runs: Gen<Run> = (source) => ({
 	copy: source.draw(int(0, 9_999))
 })
 
-layer(sliceLayer)("exclusivity", (it) => {
-	it.effect("admits one live sync per relation and skips the others while it lives", (ctx) =>
-		searched(
-			ctx,
-			explore(
-				{
-					suite: "exclusivity",
-					oracle: {
-						kind: "specification",
-						name: "one admitted live root per relation; the others skipped, naming it; a later root admitted once it finished"
-					},
-					draw: drawn(runs),
-					literal: Formatter.format,
-					coverage: required<Feature>(
-						["one skipped", "two skipped", "admitted after the seat was given back"],
-						{
-							cases: 6,
-							sense: notesOnly
-						}
-					),
-					kept: [],
-					runs: 6,
-					shrink: boundedShrink(4),
-					steerEvery: 3,
-					caseHang: caseHangMillis
-				},
-				(run, c) =>
+/**
+ * Admits one live sync per relation and skips the others while it lives.
+ *
+ * Budget: its suite's count before the conversion (exclusivity: 6 independent cases and 6 steered, Vitest at den
+ * dc5bd11).
+ */
+export const exclusivityAdmitsOneLiveSyncPerRelation = property.explore(runs, {
+	needs: { slice: sliceCase },
+	situations: [
+		"one skipped",
+		"two skipped",
+		"admitted after the seat was given back"
+	] satisfies ReadonlyArray<Reached<Feature>>,
+	check:
+		({ slice }, c: Case<Feature>) =>
+		(run) =>
+			Effect.flatMap(slice, (services) =>
+				Effect.provideContext(
 					Effect.gen(function* () {
 						c.note(run.roots === 2 ? "one skipped" : "two skipped")
 						const { sync, ledgers } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
-						const relation = `rel-${yield* nonce}`
+						const relation = "rel"
 						const at = yield* sync.ledger.now
 						const request = (n: number) =>
 							sync.request.SyncRun(`${relation}-${n}`, at, { relation, run: BigInt(n) })
@@ -123,8 +110,22 @@ layer(sliceLayer)("exclusivity", (it) => {
 							),
 							[0, 1]
 						)
-					})
-			)
-		)
-	)
+					}),
+					services
+				)
+			),
+	oracle: {
+		kind: "specification",
+		name: "one admitted live root per relation; the others skipped, naming it; a later root admitted once it finished"
+	},
+	budget: { runs: 6, steered: 6 },
+	kept: [],
+	kills: [
+		{
+			file: "packages/den/src/runtime/turn.ts",
+			original: "\t\t\t\tif (!claimed.success) {",
+			replacement: "\t\t\t\tif (claimed.success) {",
+			why: "Operator mutant (negation) at packages/den/src/runtime/turn.ts:839 in serveStep: `!claimed.success` becomes `claimed.success`; the property fails (lane CATCH, den 9cffaba)."
+		}
+	]
 })

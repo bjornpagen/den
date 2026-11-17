@@ -37,7 +37,7 @@
 		"typecheck:full": "toolchain-typecheck --incremental false",
 		"oxlint": "toolchain-oxlint",
 		"test": "vitest run --config vitest.config.ts",
-		"test:network": "vitest run --config vitest.network.config.ts",
+		"test:network": "toolchain-test run",
 		"generate:slice": "node integration/slice/generate.ts && oxfmt integration/slice/generated"
 	},
 	"dependencies": {

@@ -1,17 +1,15 @@
 import { holderOf, instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
-import { exhaust } from "@bjornpagen/testing/explore"
-import { requiredInSpace } from "@bjornpagen/testing/features"
-import { int } from "@bjornpagen/testing/gen"
+import { assert } from "@bjornpagen/testing/assert"
+import type { Reached } from "@bjornpagen/testing/features"
+import { finite, int } from "@bjornpagen/testing/gen"
 import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
-import { searched } from "@bjornpagen/testing/vitest"
-import { assert, layer } from "@effect/vitest"
-import { Array as Arr, Effect, Formatter, Option, Ref } from "effect"
+import { type Case, property } from "@bjornpagen/testing/property"
+import { Array as Arr, Effect, Option, Ref } from "effect"
 import type { Digest } from "effect/crypto"
-import { openLedgers, sliceLayer } from "#integration/support/slice.ts"
+import { openLedgers, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
-import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * A claim is a race at `(step, attempt)`, decided at READ COMMITTED by the claim's primary key alone, which Claim
@@ -28,24 +26,20 @@ type Outcome = "claimed" | "lost" | "other"
 
 type Feature = "one page" | "two pages"
 
-layer(sliceLayer)("the claim race", (it) => {
-	it.effect("admits one claimer of an attempt in every interleaving", (ctx) =>
-		searched(
-			ctx,
-			exhaust(
-				{
-					suite: "claim race",
-					generator: int(1, 2),
-					literal: Formatter.format,
-					coverage: requiredInSpace<Feature>(["one page", "two pages"]),
-					caseHang: caseHangMillis,
-					box: "two claimers of one chain's first page, a run of one or two pages",
-					oracle: {
-						kind: "postgresql",
-						name: "the claim's primary key, over every interleaving of two claimers"
-					}
-				},
-				(pages, c) =>
+/**
+ * Admits one claimer of an attempt in every interleaving.
+ *
+ * Box: its suite's, every case of it (two claimers of one chain's first page, a run of one or two pages).
+ */
+export const admitsOneClaimerOfAnAttemptInEveryInterleaving = property.exhaust(finite(int(1, 2)), {
+	box: "two claimers of one chain's first page, a run of one or two pages",
+	needs: { slice: sliceCase },
+	situations: ["one page", "two pages"] satisfies ReadonlyArray<Reached<Feature>>,
+	check:
+		({ slice }, c: Case<Feature>) =>
+		(pages) =>
+			Effect.flatMap(slice, (services) =>
+				Effect.provideContext(
 					Effect.gen(function* () {
 						c.note(pages === 1 ? "one page" : "two pages")
 						const { chain, ledgers } = yield* openLedgers
@@ -133,8 +127,21 @@ layer(sliceLayer)("the claim race", (it) => {
 							{ kind: "every", reduction: "none" },
 							judge
 						)
-					})
-			)
-		)
-	)
+					}),
+					services
+				)
+			),
+	oracle: {
+		kind: "postgresql",
+		name: "the claim's primary key, over every interleaving of two claimers"
+	},
+	kept: [],
+	kills: [
+		{
+			file: "packages/den/src/runtime/turn.ts",
+			original: "\t\tconst shut = Arr.filter(windows, (w) => !isOpen(w, at))",
+			replacement: "\t\tconst shut = Arr.filter(windows, (w) => true)",
+			why: "Operator mutant (boolean-return) at packages/den/src/runtime/turn.ts:485 in gate: `!isOpen(w, at)` becomes `true`; the property fails (lane CATCH, den 9cffaba)."
+		}
+	]
 })

@@ -59,7 +59,15 @@ export default defineConfig(
 				cases: ["packages/den-model/src/", "packages/edullm/"],
 				dictionaries: []
 			},
-			"single-permit-owners": { owners: [] },
+			"single-permit-owners": {
+				owners: [
+					{
+						file: "packages/den/integration/support/runner.ts",
+						reason:
+							"An owner session's turn (ownerSession's `turn`): one connection's wire carries one statement and its answer at a time, so the toolchain's concurrent callers of the session take turns on it."
+					}
+				]
+			},
 			"test-no-prose-search": {
 				fields: ["capability", "what"],
 				textHelpers: ["containsText", "lacksText", "contains", "lacks"],

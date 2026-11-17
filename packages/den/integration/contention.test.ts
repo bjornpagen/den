@@ -3,19 +3,15 @@ import type { HoldRow } from "@bjornpagen/den/runtime/ledger"
 import { giveBack, take } from "@bjornpagen/den/runtime/seats"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
-import { drawn, explore } from "@bjornpagen/testing/explore"
-import { required } from "@bjornpagen/testing/features"
+import { assert } from "@bjornpagen/testing/assert"
+import type { Reached } from "@bjornpagen/testing/features"
 import { boolean, type Gen, int } from "@bjornpagen/testing/gen"
 import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
-import { notesOnly } from "@bjornpagen/testing/sense"
-import { boundedShrink } from "@bjornpagen/testing/shrink"
-import { searched } from "@bjornpagen/testing/vitest"
-import { assert, layer } from "@effect/vitest"
-import { Array as Arr, Effect, Formatter, HashMap, Option, Ref } from "effect"
+import { type Case, property } from "@bjornpagen/testing/property"
+import { Array as Arr, Effect, HashMap, Option, Ref } from "effect"
 import { ringOnAndDrain } from "#integration/support/run.ts"
-import { nonce, openLedgers, sliceLayer } from "#integration/support/slice.ts"
+import { openLedgers, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
-import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * Exact seats: the Pool holds two seats and a batch, admitted with its root, makes five squares eligible at once. Five
@@ -53,180 +49,186 @@ const takers: Gen<Takers> = (source) => ({
 const sameTurn = (a: HoldRow, b: HoldRow): boolean =>
 	a.resource === b.resource && a.seat === b.seat && a.turn === b.turn
 
-layer(sliceLayer)("exact seats", (it) => {
-	it.effect(
-		"never seats more than two of five eligible squares at once, in any drawn interleaving",
-		(ctx) =>
-			searched(
-				ctx,
-				explore(
-					{
-						suite: "exact seats",
-						oracle: {
-							kind: "postgresql",
-							name: "each seat's chain of turns, read as the live holds after every move of five takers of two seats"
-						},
-						draw: drawn(takers),
-						literal: Formatter.format,
-						coverage: required<Feature>(
-							["a full pool", "both seats held", "a seat taken again", "a lapsed seat taken over"],
-							{ cases: 8, sense: notesOnly }
-						),
-						kept: [],
-						runs: 8,
-						shrink: boundedShrink(4),
-						steerEvery: 4,
-						caseHang: caseHangMillis
-					},
-					(drawnTakers, c) =>
-						Effect.gen(function* () {
-							const { fan, ledgers } = yield* openLedgers
-							const ledger = fan.ledger
-							const batch = `contended-${yield* nonce}`
-							const at = yield* fan.ledger.now
-							const requested = yield* fan.request.FanRun(batch, at, { batch, size: 5n })
-							assert.isTrue(requested.fresh)
-							const ends = instantOf(Number(at) + longestLeaseMillis)
-							const admitted = yield* serve(
-								ledgers,
-								{ _tag: "Admit", flow: FlowName.make("Fan"), scope: requested.scope },
-								ends
-							)
-							const squares =
-								admitted.ending.kind === "admitted" ? admitted.ending.spawned.steps : []
-							assert.strictEqual(squares.length, 5)
-							const pairs = yield* Effect.forEach(
-								Arr.zip(Arr.zip(sessions, drawnTakers.lapsed), squares),
-								([[session, lapsed], square]) =>
-									Effect.map(
-										holderOf(square.step, 1, drawnTakers.copy),
-										(holder) => [session, { holder, lapsed }] as const
-									)
-							)
-							const takersOf = HashMap.fromIterable(pairs)
-							const held = yield* Ref.make(HashMap.empty<Session, ReadonlyArray<HoldRow>>())
-							const peak = yield* Ref.make(0)
-							const seen = yield* Ref.make(0)
-							const holders = Arr.map(pairs, ([, t]) => t.holder)
-							/** What every move leaves: at most one live hold a seat, each a taker's. */
-							const exact = Effect.gen(function* () {
-								const live = yield* ledger.coordination.holds
-								yield* Ref.update(peak, (p) => Math.max(p, live.length))
-								assert.isAtMost(live.length, 2)
-								assert.strictEqual(
-									Arr.dedupeWith(live, (a, b) => a.seat === b.seat).length,
-									live.length
+/**
+ * Never seats more than two of five eligible squares at once, in any drawn interleaving.
+ *
+ * Budget: its suite's count before the conversion (exact seats: 8 independent cases and 8 steered, Vitest at den
+ * dc5bd11).
+ */
+export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore(takers, {
+	needs: { slice: sliceCase },
+	situations: [
+		"a full pool",
+		"both seats held",
+		"a seat taken again",
+		"a lapsed seat taken over"
+	] satisfies ReadonlyArray<Reached<Feature>>,
+	check:
+		({ slice }, c: Case<Feature>) =>
+		(drawnTakers) =>
+			Effect.flatMap(slice, (services) =>
+				Effect.provideContext(
+					Effect.gen(function* () {
+						const { fan, ledgers } = yield* openLedgers
+						const ledger = fan.ledger
+						const batch = "contended"
+						const at = yield* fan.ledger.now
+						const requested = yield* fan.request.FanRun(batch, at, { batch, size: 5n })
+						assert.isTrue(requested.fresh)
+						const ends = instantOf(Number(at) + longestLeaseMillis)
+						const admitted = yield* serve(
+							ledgers,
+							{ _tag: "Admit", flow: FlowName.make("Fan"), scope: requested.scope },
+							ends
+						)
+						const squares = admitted.ending.kind === "admitted" ? admitted.ending.spawned.steps : []
+						assert.strictEqual(squares.length, 5)
+						const pairs = yield* Effect.forEach(
+							Arr.zip(Arr.zip(sessions, drawnTakers.lapsed), squares),
+							([[session, lapsed], square]) =>
+								Effect.map(
+									holderOf(square.step, 1, drawnTakers.copy),
+									(holder) => [session, { holder, lapsed }] as const
 								)
-								assert.isTrue(Arr.every(live, (row) => Arr.contains(holders, row.holder)))
-								return live
-							})
-							const run = (session: Session, move: Move): Effect.Effect<Outcome> =>
-								Effect.gen(function* () {
-									const before = yield* Ref.get(held)
-									const mine = Option.getOrElse(HashMap.get(before, session), () => [])
-									const taker = Option.getOrThrow(HashMap.get(takersOf, session))
-									if (move === "give") {
-										if (Arr.isReadonlyArrayEmpty(mine)) {
-											return "idle" satisfies Outcome
-										}
-										yield* giveBack(ledger, mine)
-										yield* Ref.update(held, HashMap.remove(session))
-										yield* exact
-										return "given" satisfies Outcome
-									}
-									const instant = yield* ledger.now
-									const until = instantOf(
-										taker.lapsed ? Number(instant) - 1 : Number(instant) + longestLeaseMillis
-									)
-									const taken = yield* take(ledger, ["Pool"], taker.holder, until, instant)
-									if (Option.isSome(taken)) {
-										yield* Ref.update(seen, (n) => n + 1)
-										yield* Ref.update(held, HashMap.set(session, taken.value))
-										if (Arr.some(taken.value, (hold) => hold.turn > 0n)) {
-											const over = Arr.some(taken.value, (hold) =>
-												Arr.some(Arr.flatten(HashMap.toValues(before)), (other) =>
-													sameTurn(other, { ...hold, turn: hold.turn - 1n })
-												)
-											)
-											if (over) {
-												c.note("a lapsed seat taken over")
-											}
-										}
-									}
-									const live = yield* exact
-									if (!taker.lapsed) {
-										assert.isTrue(
-											Arr.every(
-												Option.getOrElse(taken, () => []),
-												(hold) => Arr.some(live, (row) => sameTurn(row, hold))
-											)
-										)
-									}
-									return Option.isNone(taken)
-										? ("full" satisfies Outcome)
-										: ("held" satisfies Outcome)
-								}).pipe(Effect.orDie)
-							const judge = (record: Interleaving<Session, Move, Outcome, never, never, never>) =>
-								Effect.sync(() => {
-									const outcomes = Arr.flatMap(record.order, (r) =>
-										Option.toArray(
-											Option.flatMap(r.result, (result) =>
-												result.ended.kind === "ended"
-													? Option.some(result.ended.outcome)
-													: Option.none()
-											)
-										)
-									)
-									if (Arr.contains(outcomes, "full")) {
-										c.note("a full pool")
-									}
-								})
-							yield* interleave(
-								{
-									reset: Effect.void,
-									run,
-									waitOf: () => Effect.never,
-									quiesce: () => Effect.void,
-									outcome: (_move, ended) => ({
-										key: ended.kind === "ended" ? ended.outcome : "cancelled",
-										session: "continues"
-									}),
-									release: (session) =>
-										Effect.flatMap(Ref.get(held), (map) =>
-											giveBack(
-												ledger,
-												Option.getOrElse(HashMap.get(map, session), () => [])
-											)
-										),
-									commute: () => false,
-									onWait: () => "wait",
-									read: () => Effect.die("the race reads no final state")
-								},
-								{
-									sessions: {
-										s0: { moves: ["take", "give"], after: Option.none() },
-										s1: { moves: ["take", "give"], after: Option.none() },
-										s2: { moves: ["take", "give"], after: Option.none() },
-										s3: { moves: ["take", "give"], after: Option.none() },
-										s4: { moves: ["take", "give"], after: Option.none() }
-									},
-									exclusive: [],
-									state: Option.none()
-								},
-								{ kind: "drawn", nature: c },
-								judge
+						)
+						const takersOf = HashMap.fromIterable(pairs)
+						const held = yield* Ref.make(HashMap.empty<Session, ReadonlyArray<HoldRow>>())
+						const peak = yield* Ref.make(0)
+						const seen = yield* Ref.make(0)
+						const holders = Arr.map(pairs, ([, t]) => t.holder)
+						/** What every move leaves: at most one live hold a seat, each a taker's. */
+						const exact = Effect.gen(function* () {
+							const live = yield* ledger.coordination.holds
+							yield* Ref.update(peak, (p) => Math.max(p, live.length))
+							assert.isAtMost(live.length, 2)
+							assert.strictEqual(
+								Arr.dedupeWith(live, (a, b) => a.seat === b.seat).length,
+								live.length
 							)
-							if ((yield* Ref.get(peak)) === 2) {
-								c.note("both seats held")
-							}
-							if ((yield* Ref.get(seen)) > 2) {
-								c.note("a seat taken again")
-							}
-							yield* ringOnAndDrain(ledgers, admitted)
-							const left = yield* ledger.coordination.holds
-							assert.deepStrictEqual(left, [])
+							assert.isTrue(Arr.every(live, (row) => Arr.contains(holders, row.holder)))
+							return live
 						})
+						const run = (session: Session, move: Move): Effect.Effect<Outcome> =>
+							Effect.gen(function* () {
+								const before = yield* Ref.get(held)
+								const mine = Option.getOrElse(HashMap.get(before, session), () => [])
+								const taker = Option.getOrThrow(HashMap.get(takersOf, session))
+								if (move === "give") {
+									if (Arr.isReadonlyArrayEmpty(mine)) {
+										return "idle" satisfies Outcome
+									}
+									yield* giveBack(ledger, mine)
+									yield* Ref.update(held, HashMap.remove(session))
+									yield* exact
+									return "given" satisfies Outcome
+								}
+								const instant = yield* ledger.now
+								const until = instantOf(
+									taker.lapsed ? Number(instant) - 1 : Number(instant) + longestLeaseMillis
+								)
+								const taken = yield* take(ledger, ["Pool"], taker.holder, until, instant)
+								if (Option.isSome(taken)) {
+									yield* Ref.update(seen, (n) => n + 1)
+									yield* Ref.update(held, HashMap.set(session, taken.value))
+									if (Arr.some(taken.value, (hold) => hold.turn > 0n)) {
+										const over = Arr.some(taken.value, (hold) =>
+											Arr.some(Arr.flatten(HashMap.toValues(before)), (other) =>
+												sameTurn(other, { ...hold, turn: hold.turn - 1n })
+											)
+										)
+										if (over) {
+											c.note("a lapsed seat taken over")
+										}
+									}
+								}
+								const live = yield* exact
+								if (!taker.lapsed) {
+									assert.isTrue(
+										Arr.every(
+											Option.getOrElse(taken, () => []),
+											(hold) => Arr.some(live, (row) => sameTurn(row, hold))
+										)
+									)
+								}
+								return Option.isNone(taken)
+									? ("full" satisfies Outcome)
+									: ("held" satisfies Outcome)
+							}).pipe(Effect.orDie)
+						const judge = (record: Interleaving<Session, Move, Outcome, never, never, never>) =>
+							Effect.sync(() => {
+								const outcomes = Arr.flatMap(record.order, (r) =>
+									Option.toArray(
+										Option.flatMap(r.result, (result) =>
+											result.ended.kind === "ended"
+												? Option.some(result.ended.outcome)
+												: Option.none()
+										)
+									)
+								)
+								if (Arr.contains(outcomes, "full")) {
+									c.note("a full pool")
+								}
+							})
+						yield* interleave(
+							{
+								reset: Effect.void,
+								run,
+								waitOf: () => Effect.never,
+								quiesce: () => Effect.void,
+								outcome: (_move, ended) => ({
+									key: ended.kind === "ended" ? ended.outcome : "cancelled",
+									session: "continues"
+								}),
+								release: (session) =>
+									Effect.flatMap(Ref.get(held), (map) =>
+										giveBack(
+											ledger,
+											Option.getOrElse(HashMap.get(map, session), () => [])
+										)
+									),
+								commute: () => false,
+								onWait: () => "wait",
+								read: () => Effect.die("the race reads no final state")
+							},
+							{
+								sessions: {
+									s0: { moves: ["take", "give"], after: Option.none() },
+									s1: { moves: ["take", "give"], after: Option.none() },
+									s2: { moves: ["take", "give"], after: Option.none() },
+									s3: { moves: ["take", "give"], after: Option.none() },
+									s4: { moves: ["take", "give"], after: Option.none() }
+								},
+								exclusive: [],
+								state: Option.none()
+							},
+							{ kind: "drawn", nature: c },
+							judge
+						)
+						if ((yield* Ref.get(peak)) === 2) {
+							c.note("both seats held")
+						}
+						if ((yield* Ref.get(seen)) > 2) {
+							c.note("a seat taken again")
+						}
+						yield* ringOnAndDrain(ledgers, admitted)
+						const left = yield* ledger.coordination.holds
+						assert.deepStrictEqual(left, [])
+					}),
+					services
 				)
-			)
-	)
+			),
+	oracle: {
+		kind: "postgresql",
+		name: "each seat's chain of turns, read as the live holds after every move of five takers of two seats"
+	},
+	budget: { runs: 8, steered: 8 },
+	kept: [],
+	kills: [
+		{
+			file: "packages/den/src/runtime/turn.ts",
+			original: "\t\tconst deadline = instantOf(Number(ends) - margin)",
+			replacement: "\t\tconst deadline = instantOf(margin - Number(ends))",
+			why: "Operator mutant (operand-swap) at packages/den/src/runtime/turn.ts:819 in serveStep: `Number(ends) - margin` becomes `margin - Number(ends)`; the property fails (lane CATCH, den 9cffaba)."
+		}
+	]
 })
