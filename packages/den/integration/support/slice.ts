@@ -93,10 +93,9 @@ const asOwner = (cluster: Cluster, database: string, statement: string) =>
 
 /**
  * Runs a grizzle command over the configuration in `directory` (the slice's own, or a copy of it), for the database and
- * role prefix `env` names. The command keeps compiled code as the test process that runs it does: it is given the
- * process's own compile cache (Node's NODE_COMPILE_CACHE, which the testing library's setup enables wherever coverage is
- * never read), so it loads grizzle's modules from the V8 code the run's processes already compiled instead of compiling
- * all of grizzle again, and where the process keeps none, neither does the command.
+ * role prefix `env` names. The command inherits the test process's environment, and with it the compile cache the
+ * testing library's setup hands to every process a test starts, so it loads grizzle's modules from the V8 code the
+ * run's processes already compiled.
  */
 export const grizzle = (
 	command: string,
@@ -105,18 +104,10 @@ export const grizzle = (
 ) =>
 	Effect.scoped(
 		Effect.gen(function* () {
-			const compileCache = yield* Effect.sync(() =>
-				process.getBuiltinModule("node:module").getCompileCacheDir()
-			)
 			const handle = yield* ChildProcess.make(
 				process.execPath,
 				[grizzleBin, command, "grizzle.config.ts"],
-				{
-					cwd: directory,
-					env: { ...env, NODE_COMPILE_CACHE: compileCache },
-					extendEnv: true,
-					stdin: "ignore"
-				}
+				{ cwd: directory, env, extendEnv: true, stdin: "ignore" }
 			)
 			const [stdout, stderr, code] = yield* Effect.all(
 				[
