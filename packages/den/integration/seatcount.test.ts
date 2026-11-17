@@ -17,12 +17,10 @@ import {
 	Layer,
 	Option,
 	Path,
-	Stream,
 	String as Str
 } from "effect"
-import { ChildProcess } from "effect/process"
 import { fan } from "#integration/slice/flows.ts"
-import { migrateIn, openLedgers, sliceLayer } from "#integration/support/slice.ts"
+import { grizzle, migrateIn, openLedgers, sliceLayer } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
 import { caseHangMillis } from "#test/support/suites.ts"
 
@@ -55,7 +53,6 @@ const featureOf = (seat: Seat): Feature =>
 	!seat.taken ? "never taken" : seat.freed ? "freed" : "held"
 
 const sliceDir = `${import.meta.dirname}/slice`
-const grizzleBin = `${import.meta.dirname}/../../../vendor/grizzle/packages/grizzle/src/cli/main.ts`
 
 /**
  * A copy of the slice, beside it, whose Pool holds one seat: every module of it read under the copy's own specifiers,
@@ -103,16 +100,7 @@ const lowered = Effect.gen(function* () {
 			flow: { from: `${specifier}flows.ts`, name: "fan" }
 		})
 	)
-	const handle = yield* ChildProcess.make(
-		process.execPath,
-		[grizzleBin, "generate", "grizzle.config.ts"],
-		{ cwd: copy, extendEnv: true, stdin: "ignore" }
-	)
-	const [out, code] = yield* Effect.all(
-		[Stream.mkString(Stream.decodeText(handle.stdout)), handle.exitCode],
-		{ concurrency: "unbounded" }
-	)
-	assert.strictEqual(code, 0, out)
+	yield* grizzle("generate", {}, copy)
 	return copy
 })
 
