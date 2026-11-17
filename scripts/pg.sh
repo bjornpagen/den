@@ -128,6 +128,22 @@ init() {
 	#   memory at 200 connections.
 	# @verified 2026-11-16
 	local pred_locks=2048
+	# The cluster's client_connection_check_interval: a backend polls its client's socket this often while it runs a
+	# statement, so the backend of a test process killed mid-statement (a hang guard, a SIGKILL) ends at its next poll
+	# and lets go of its transaction id and its locks, where without it the backend runs on until the statement ends,
+	# and every logical slot's creation (a live source's) waits for every transaction id running when it starts. An
+	# idle session is never polled.
+	#
+	# @limitKind measured
+	# @owner grizzle's local test clusters (vendor/grizzle/packages/pg/src/settings.ts, clientCheckInterval), whose
+	#   evidence is this number's
+	# @unit milliseconds
+	# @source https://github.com/bjornpagen/grizzle/blob/e713f6c59bcdad5d21e1f54c210a1ab0df78a7ec/packages/pg/src/settings.ts#L14-L40
+	# @result polls cost nothing measurable on a statement of seconds (median 5,762.8 ms at 0, 5,754.7 ms at 1,000);
+	#   backends of SIGKILLed clients left pg_stat_activity 1,000 to 1,017 ms after the kill at 1,000, where orphans at
+	#   0 ran 44 minutes to 5.7 hours
+	# @verified 2026-11-17
+	local client_check=1000
 	cat >>"$DATA/postgresql.conf" <<EOF
 
 # den's cluster (scripts/pg.sh). Everything else is the PostgreSQL $PG_VERSION default.
@@ -147,10 +163,11 @@ wal_level = logical
 # commit. What it gives up is surviving a crash of the machine, which a test cluster, made again by init, never needs.
 # grizzle's local test clusters hold the same (vendor/grizzle/packages/pg/src/settings.ts, clusterSettings).
 fsync = off
-# The two locals above, with each number's evidence.
+# The three locals above, with each number's evidence.
 max_replication_slots = $replication
 max_wal_senders = $replication
 max_pred_locks_per_transaction = $pred_locks
+client_connection_check_interval = $client_check
 logging_collector = on
 log_directory = '$LOG'
 log_filename = 'postgresql-%Y-%m-%d.log'
