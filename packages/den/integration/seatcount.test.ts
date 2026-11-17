@@ -36,21 +36,19 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * existing rows violate (its validation's integrity_constraint_violation, SQLSTATE 23000, naming the law).
  */
 
-type Feature = "never taken" | "held" | "freed"
+/** What became of seat 1 after seat 0 was taken: never taken, or taken and then held or given back. */
+type Seat = "never taken" | "held" | "freed"
 
-/** What became of seat 1: whether it was taken after seat 0, and whether its hold was then given back. */
-interface Seat {
-	readonly taken: boolean
-	readonly freed: boolean
+/**
+ * Seat 1's fate, each of the three a case of its own: whether it was taken after seat 0, and only once it was, whether
+ * its hold was then given back.
+ */
+const seatOne: Gen<Seat> = (source) => {
+	if (!source.draw(boolean)) {
+		return "never taken"
+	}
+	return source.draw(boolean) ? "freed" : "held"
 }
-
-const seatOne: Gen<Seat> = (source) => ({
-	taken: source.draw(boolean),
-	freed: source.draw(boolean)
-})
-
-const featureOf = (seat: Seat): Feature =>
-	!seat.taken ? "never taken" : seat.freed ? "freed" : "held"
 
 const sliceDir = `${import.meta.dirname}/slice`
 
@@ -118,7 +116,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("seat counts", (it) => 
 								suite: "seat counts",
 								generator: seatOne,
 								literal: Formatter.format,
-								coverage: requiredInSpace<Feature>(["never taken", "held", "freed"]),
+								coverage: requiredInSpace<Seat>(["never taken", "held", "freed"]),
 								caseHang: caseHangMillis,
 								box: "seat 1 of the Pool's two, never taken, held or freed, beside seat 0 held",
 								oracle: {
@@ -130,7 +128,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("seat counts", (it) => 
 							},
 							(seat, c) =>
 								Effect.gen(function* () {
-									c.note(featureOf(seat))
+									c.note(seat)
 									const { fan: ledgers } = yield* openLedgers
 									const ledger = ledgers.ledger
 									const at = yield* ledger.now
@@ -150,7 +148,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("seat counts", (it) => 
 										),
 										Option.some([0n])
 									)
-									if (seat.taken) {
+									if (seat !== "never taken") {
 										const second = yield* takeOne(1)
 										assert.deepStrictEqual(
 											Option.map(
@@ -159,7 +157,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("seat counts", (it) => 
 											),
 											Option.some([1n])
 										)
-										if (seat.freed) {
+										if (seat === "freed") {
 											yield* giveBack(
 												ledger,
 												Option.getOrElse(second, () => [])
@@ -174,7 +172,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("seat counts", (it) => 
 												  Str.includes("fan_seat_below_count")(migrated.failure.message)
 												? "refused by the seat law"
 												: migrated.failure.message,
-										seat.taken && !seat.freed ? "refused by the seat law" : "admitted"
+										seat === "held" ? "refused by the seat law" : "admitted"
 									)
 								}).pipe(
 									(body) =>
