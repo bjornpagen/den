@@ -2,11 +2,11 @@ import { int } from "@bjornpagen/testing/gen"
 import { Array as Arr, Effect } from "effect"
 import { AlphaTestApi, type Answered, classify, type Request } from "#alphatest.ts"
 import {
+	BBR,
 	type Controller,
 	controllerOf,
 	type Flow,
 	flowOf,
-	type Rules,
 	type Sent,
 	windowOf
 } from "#flow-control.ts"
@@ -43,13 +43,12 @@ const endOf = (answered: Answered): Transition["event"] => {
 }
 
 /**
- * A batch of reads through the controller, as edullm's `fetchAll` runs one: a request starts whenever one ends, up to
+ * A batch of reads through edullm's controller, BBR, as its `fetchAll` runs one: a request starts whenever one ends, up to
  * the window; each read's end is a delivery (a final answer), a congestion signal (the throttle, a transient status, the
  * transport failing) or neither (a refused credential). Time is the fake's: the batch moves to each read's completion
  * in order. The uniform draws BBR's probe wait takes come from the nature.
  */
 export const batchOf = (
-	rules: Rules,
 	items: ReadonlyArray<Request>,
 	flow: Flow,
 	startAt: number,
@@ -57,7 +56,7 @@ export const batchOf = (
 ) =>
 	Effect.gen(function* () {
 		const api = yield* AlphaTestApi
-		const control = controllerOf(rules)
+		const control = controllerOf(BBR)
 		const uniform = () => nature.draw(int(0, 999)) / 1000
 		let controller = control.start(flow, startAt, uniform())
 		let now = startAt

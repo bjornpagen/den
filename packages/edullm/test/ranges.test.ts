@@ -1,55 +1,47 @@
-import { type Case, drawn, explore, Run } from "@bjornpagen/testing/explore"
-import { required } from "@bjornpagen/testing/features"
-import { type Gen, int } from "@bjornpagen/testing/gen"
-import { notesOnly } from "@bjornpagen/testing/sense"
-import { searched } from "@bjornpagen/testing/vitest"
-import { runOfTest } from "@bjornpagen/testing/vitest/run"
-import { describe, it } from "@effect/vitest"
+/**
+ * Block and bucket ranges: a relation's heap window, its blocks and the bytes a block holds drawn small, cut into root
+ * pages under a drawn page budget, so a block alone may exceed it; and a range of up to 64 blocks halved at its
+ * midpoint, then each half again, until no half splits. A window's root pages tile it, each as wide as the budget
+ * allows and at least one block; a range's halves tile it, and halving ends at its single blocks within ⌈log2 width⌉
+ * splits.
+ *
+ * Oracle (specification): a window's pages tile it, each as wide as the page budget allows and at least one block; a
+ * split's halves tile their range, none is empty, and halving ends at single blocks within ⌈log2 width⌉ splits.
+ */
+import type { Reached } from "@bjornpagen/testing/features"
+import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Option } from "effect"
-import { halvesOf, type HeapWindow, type Range, rootPagesOf, tiles, widthOf } from "#ranges.ts"
-import { caught, exploration, law } from "#test/support/search.ts"
+import { halvesOf, type Range, rootPagesOf, tiles, widthOf } from "#ranges.ts"
+import {
+	type Cut,
+	cutGen,
+	type CutSeen,
+	leavesOf,
+	rangeGen,
+	type SplitSeen
+} from "#test/ranges.fixtures.ts"
+import { law } from "#test/support/law.ts"
 
-type Pages = (window: HeapWindow, pageBytes: number) => ReadonlyArray<Range>
-type Halves = (range: Range) => Option.Option<readonly [Range, Range]>
-
-type Cut = Readonly<{ window: HeapWindow; pageBytes: number }>
-
-type CutSeen = "empty" | "one-page" | "several-pages" | "last-shorter" | "block-over-budget"
-
-const cutGen: Gen<Cut> = (source) => {
-	const from = source.draw(int(0, 20))
-	return {
-		window: {
-			from,
-			blocks: from + source.draw(int(0, 40)),
-			bytesPerBlock: source.draw(int(1, 50))
-		},
-		pageBytes: source.draw(int(1, 200))
-	}
-}
-
-const cutSearch = (suite: string, pagesOf: Pages, runs: number) =>
-	explore(
-		exploration({
-			suite,
-			draw: drawn(cutGen),
-			coverage: required<CutSeen>(
-				["empty", "one-page", "several-pages", "last-shorter", "block-over-budget"],
-				{
-					cases: 150,
-					sense: notesOnly
-				}
-			),
-			runs,
-			shrink: 200,
-			oracle: {
-				kind: "specification",
-				name: "a window's pages tile it, each as wide as the page budget allows and at least one block"
-			}
-		}),
-		({ window, pageBytes }: Cut, c: Case<CutSeen>) =>
+/**
+ * Block and bucket ranges: a window's root pages tile it within the page budget.
+ *
+ * Budget: its suite's count before the conversion (ranges: root pages: 400 independent cases and 150 steered, Vitest at
+ * den dc5bd11).
+ */
+export const cuts = property.explore(cutGen, {
+	needs: {},
+	situations: [
+		"empty",
+		"one-page",
+		"several-pages",
+		"last-shorter",
+		"block-over-budget"
+	] satisfies ReadonlyArray<Reached<CutSeen>>,
+	check:
+		(_, c: Case<CutSeen>) =>
+		({ window, pageBytes }: Cut) =>
 			Effect.gen(function* () {
-				const pages = pagesOf(window, pageBytes)
+				const pages = rootPagesOf(window, pageBytes)
 				const width = Math.max(1, Math.floor(pageBytes / window.bytesPerBlock))
 				c.note(pages.length === 0 ? "empty" : pages.length === 1 ? "one-page" : "several-pages")
 				if (window.bytesPerBlock > pageBytes) {
@@ -76,113 +68,108 @@ const cutSearch = (suite: string, pagesOf: Pages, runs: number) =>
 					Arr.every(Arr.dropRight(pages, 1), (page) => widthOf(page) === width),
 					() => "a page before the last is narrower than the budget allows"
 				)
-			})
-	)
-
-type SplitSeen = "unit" | "even" | "odd" | "deep"
-
-/** Every leaf of a range halved until no half splits, and the depth it took. */
-const leavesOf = (
-	halves: Halves,
-	range: Range,
-	depth: number
-): Readonly<{ leaves: ReadonlyArray<Range>; depth: number }> =>
-	Option.match(halves(range), {
-		onNone: () => ({ leaves: [range], depth }),
-		onSome: ([low, high]) => {
-			const left = leavesOf(halves, low, depth + 1)
-			const right = leavesOf(halves, high, depth + 1)
-			return { leaves: [...left.leaves, ...right.leaves], depth: Math.max(left.depth, right.depth) }
+			}),
+	oracle: {
+		kind: "specification",
+		name: "a window's pages tile it, each as wide as the page budget allows and at least one block"
+	},
+	budget: { runs: 400, steered: 150 },
+	kept: [],
+	kills: [
+		{
+			file: "packages/edullm/src/ranges.ts",
+			original: "\tconst width = Math.max(1, Math.floor(pageBytes / window.bytesPerBlock))",
+			replacement: "\tconst width = Math.max(1, Math.ceil(pageBytes / window.bytesPerBlock))",
+			why: "Pages whose width is rounded up past the budget hold more bytes than a page may; the cuts property fails on a page budget no whole number of blocks fills."
+		},
+		{
+			file: "packages/edullm/src/ranges.ts",
+			original: "\t\tpages.push({ lo, hi: Math.min(lo + width, window.blocks) })",
+			replacement: "\t\tpages.push({ lo, hi: Math.min(lo + width, window.blocks - 1) })",
+			why: "A cut that drops the window's last block leaves it unread; the cuts property fails on any window with a block."
+		},
+		{
+			file: "packages/edullm/src/ranges.ts",
+			original: "\tfor (let lo = window.from; lo < window.blocks; lo += width) {",
+			replacement: "\tfor (let lo = window.from; lo >= window.blocks; lo += width) {",
+			why: "Operator mutant (comparison) at packages/edullm/src/ranges.ts:29 in rootPagesOf: `<` becomes `>=`; the property fails (lane CATCH, den 9cffaba)."
+		},
+		{
+			file: "packages/edullm/src/ranges.ts",
+			original: "\t\tpages.push({ lo, hi: Math.min(lo + width, window.blocks) })",
+			replacement: "\t\t{}",
+			why: "Operator mutant (statement) at packages/edullm/src/ranges.ts:30 in rootPagesOf: `pages.push({ lo, hi: Math.min(lo + width, window.blocks) })` becomes `{}`; the property fails (lane CATCH, den 9cffaba)."
+		},
+		{
+			file: "packages/edullm/src/ranges.ts",
+			original: "export const widthOf = (range: Range): number => range.hi - range.lo",
+			replacement: "export const widthOf = (range: Range): number => range.lo - range.hi",
+			why: "Operator mutant (operand-swap) at packages/edullm/src/ranges.ts:13 in widthOf: `range.hi - range.lo` becomes `range.lo - range.hi`; the property fails (lane CATCH, den 9cffaba)."
 		}
-	})
+	]
+})
 
-const splitSearch = (suite: string, halves: Halves, runs: number) =>
-	explore(
-		exploration({
-			suite,
-			draw: drawn((source): Range => {
-				const lo = source.draw(int(0, 1000))
-				return { lo, hi: lo + source.draw(int(1, 64)) }
-			}),
-			coverage: required<SplitSeen>(["unit", "even", "odd", "deep"], {
-				cases: 100,
-				sense: notesOnly
-			}),
-			runs,
-			shrink: 200,
-			oracle: {
-				kind: "specification",
-				name: "a split's halves tile their range, none is empty, and halving ends at single blocks within ⌈log2 width⌉ splits"
-			}
-		}),
-		(range: Range, c: Case<SplitSeen>) =>
-			Effect.gen(function* () {
-				const width = widthOf(range)
-				c.note(width === 1 ? "unit" : width % 2 === 0 ? "even" : "odd")
-				const split = halves(range)
-				yield* law(
-					"unit ranges never split",
-					width > 1 || Option.isNone(split),
-					() => "a one-wide range split"
-				)
-				yield* Option.match(split, {
-					onNone: () => Effect.void,
-					onSome: ([low, high]) =>
-						law(
-							"halves tile",
-							tiles([low, high], range.lo, range.hi),
-							() => "the halves do not tile their range"
-						)
-				})
-				const { leaves, depth } = leavesOf(halves, range, 0)
-				if (depth >= 4) {
-					c.note("deep")
-				}
-				yield* law(
-					"halving ends at single blocks",
-					tiles(leaves, range.lo, range.hi) && Arr.every(leaves, (leaf) => widthOf(leaf) === 1),
-					() => "the leaves of repeated halving are not the range's single blocks"
-				)
-				yield* law(
-					"logarithmic depth",
-					2 ** depth < 2 * width,
-					() => `halving took ${String(depth)} splits for a width of ${String(width)}`
-				)
+/**
+ * Block and bucket ranges: a range's halves tile it, down to single blocks.
+ *
+ * Budget: its suite's count before the conversion (ranges: halves: 400 independent cases and 100 steered, Vitest at den
+ * dc5bd11).
+ */
+export const halves = property.explore(rangeGen, {
+	needs: {},
+	situations: ["unit", "even", "odd", "deep"] satisfies ReadonlyArray<Reached<SplitSeen>>,
+	check: (_, c: Case<SplitSeen>) => (range: Range) =>
+		Effect.gen(function* () {
+			const width = widthOf(range)
+			c.note(width === 1 ? "unit" : width % 2 === 0 ? "even" : "odd")
+			const split = halvesOf(range)
+			yield* law(
+				"unit ranges never split",
+				width > 1 || Option.isNone(split),
+				() => "a one-wide range split"
+			)
+			yield* Option.match(split, {
+				onNone: () => Effect.void,
+				onSome: ([low, high]) =>
+					law(
+						"halves tile",
+						tiles([low, high], range.lo, range.hi),
+						() => "the halves do not tile their range"
+					)
 			})
-	)
-
-const inTheirRun = (ctx: Parameters<Parameters<typeof it.effect>[1]>[0]) =>
-	Effect.provideServiceEffect(Run, runOfTest(ctx))
-
-describe("block and bucket ranges", () => {
-	it.effect("a window's root pages tile it within the page budget", (ctx) =>
-		searched(ctx, cutSearch("ranges: root pages", rootPagesOf, 400))
-	)
-
-	it.effect("a range's halves tile it, down to single blocks", (ctx) =>
-		searched(ctx, splitSearch("ranges: halves", halvesOf, 400))
-	)
-
-	it.effect("catches pages whose width is rounded up past the budget", (ctx) =>
-		caught(
-			cutSearch(
-				"ranges planted: page width rounded up",
-				(window, pageBytes) => rootPagesOf(window, pageBytes + window.bytesPerBlock - 1),
-				100
+			const { leaves, depth } = leavesOf(range, 0)
+			if (depth >= 4) {
+				c.note("deep")
+			}
+			yield* law(
+				"halving ends at single blocks",
+				tiles(leaves, range.lo, range.hi) && Arr.every(leaves, (leaf) => widthOf(leaf) === 1),
+				() => "the leaves of repeated halving are not the range's single blocks"
 			)
-		).pipe(inTheirRun(ctx))
-	)
-
-	it.effect("catches a cut that drops the window's last block", (ctx) =>
-		caught(
-			cutSearch(
-				"ranges planted: last block dropped",
-				(window, pageBytes) =>
-					Arr.map(rootPagesOf(window, pageBytes), (page) =>
-						page.hi === window.blocks ? { lo: page.lo, hi: page.hi - 1 } : page
-					),
-				100
+			yield* law(
+				"logarithmic depth",
+				2 ** depth < 2 * width,
+				() => `halving took ${String(depth)} splits for a width of ${String(width)}`
 			)
-		).pipe(inTheirRun(ctx))
-	)
+		}),
+	oracle: {
+		kind: "specification",
+		name: "a split's halves tile their range, none is empty, and halving ends at single blocks within ⌈log2 width⌉ splits"
+	},
+	budget: { runs: 400, steered: 100 },
+	kept: [],
+	kills: [
+		{
+			file: "packages/edullm/src/ranges.ts",
+			original: "\t\t{ lo: midpoint, hi: range.hi }",
+			replacement: "\t\t{ lo: midpoint + 1, hi: range.hi }",
+			why: "Halves with a block between them leave the block at the midpoint in neither; the halves property fails on any range wider than one."
+		},
+		{
+			file: "packages/edullm/src/ranges.ts",
+			original: "\tconst midpoint = range.lo + Math.floor(widthOf(range) / 2)",
+			replacement: "\tconst midpoint = range.lo + Math.floor(widthOf(range) / 3)",
+			why: "Operator mutant (bound) at packages/edullm/src/ranges.ts:44 in halvesOf: `2` becomes `3`; the property fails (lane CATCH, den 9cffaba)."
+		}
+	]
 })

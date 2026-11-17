@@ -27,14 +27,10 @@
 		"typecheck": "toolchain-typecheck",
 		"typecheck:full": "toolchain-typecheck --incremental false",
 		"oxlint": "toolchain-oxlint",
-		"test": "vitest run"
+		"test": "toolchain-test run"
 	},
 	"dependencies": {
 		"@bjornpagen/testing": "workspace:*",
 		"effect": "catalog:"
-	},
-	"devDependencies": {
-		"@effect/vitest": "catalog:",
-		"vitest": "catalog:"
 	}
 }
