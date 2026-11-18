@@ -8,6 +8,8 @@
   `ChangeSet.retire` (`runtime/retire.ts` is its seam; `docs/build/repin.md` holds grizzle's rulings on den's use), then
   GUARD and SCHEMAMAP.
 - **The assignment engine (owner, 2026-11-18):** named reads with nearest reads, finite numbers, vectors, arrays and
-  tagged unions are built (`docs/decisions.md`); retirement is its next need.
+  tagged unions are built (`docs/decisions.md`). Waiting on grizzle: a step's reads in one snapshot and a nearest read
+  from a stored row's vector (asked 2026-11-18), then retirement (RETIRE3); the seat history's restatement for
+  retirement waits on Bjorn.
 - **Wave 2b:** the operator surface, the eight workloads as den flows on the fakes of `packages/edullm`, differential
   runs at scale, an adversarial review.

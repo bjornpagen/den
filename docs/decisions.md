@@ -101,10 +101,19 @@
   - Recorded, never searched again: which rows an HNSW search returns depends on the index and the database owner's
     pgvector settings as well as the facts (grizzle's README), so the record is what the step saw.
   - Without the neighbours' vectors: at 1536 dimensions each is 6 KiB that the body never sees.
-  - Rejected: a search by an anchor row's own vector named by key, which grizzle serves in no one statement and den
-    would run as two calls on two snapshots inside one read; a search the body runs itself, which would give a body
-    the database (proposal, section 3.7); the neighbours as one array or JSON column, a blob; ranking every vector of
-    a rows read in den, which reads the whole relation for every decision and uses no index.
+  - Rejected: a search the body runs itself, which would give a body the database (proposal, section 3.7); the
+    neighbours as one array or JSON column, a blob; ranking every vector of a rows read in den, which reads the whole
+    relation for every decision and uses no index; and a search from a stored row's vector chained in den as two calls
+    on two snapshots, which grizzle is asked to serve in one statement instead (below).
+- **A step's recorded reads describe one moment of the database, and a nearest read may search from a stored row's
+  vector (edullm-1f, 2026-11-18, under Bjorn's order that a gap the engine needs is fixed upstream, never worked
+  around).** Every named read of a step runs in one READ ONLY snapshot, and `nearest(...)` takes a stored row's vector
+  by key (the engine searches from a missed question's stored embedding). grizzle serves neither yet: a query vector
+  must read no row (`check/approximate/trace.ts`), and an attachment must read its parent's columns
+  (`AttachedParentUnbound`) while a search may not (`check/approximate/attach.ts`), so no one member holds a nearest
+  read beside another read. Both are asked of grizzle (2026-11-18): a query vector that is one stored row's vector by
+  key, and independent reads in one READ ONLY transaction. Until they land, each read is its own call, and the input
+  carries the query vector.
 - **A number is `Schema.Finite`, held finite by the database (2026-11-18).** Effect's `schemaNumber` diagnostic
   refuses `Schema.Number`, so a number field is `Schema.Finite`, lowered to double precision under a row check
   (`Compute.isFinite`), so the database holds what the schema states.
