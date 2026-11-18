@@ -56,7 +56,16 @@ den still takes this, from the grizzle session's report:
 
 - **RETIRE (c70cbed8, 1f935498, f14a46da).** `retirable(header, bodies)` with a declared `retirement` field; adopting a
   unit rewrites each body table once in its migration. Holds (commit 2, f14a46da) grant EXECUTE on each unit's hold to
-  its holding roles, with `UnheldGroup` refusals. The retire API (commit 4) is still to come, so den's retirement seam
-  stays a seam until then.
+  its holding roles, with `UnheldGroup` refusals. The retire API is not on grizzle's main; grizzle's lane RETIRE3
+  builds it (the hold before a unit body's first statement, `ChangeSet.retire`, the role option `retire`, retired
+  counts, grants), and den's retirement seam stays a seam until it lands. The grizzle session's rulings on den's use
+  (2026-11-18): every graph relation carries its root's key as a column, `root: DenScope`, contained in `<P>Root`, so a
+  retired unit's fence refuses an insert by that key row by row (a unit reached through `Within`'s tree would make
+  every insert's check recursive); a stale holder's insert and a root requested again under a retired key are both
+  refused; the inserters stay READ COMMITTED with the retire call in a role of its own; an app row that references a
+  body row refuses the retirement (NO ACTION) unless the app declares its relation among the unit's bodies; and
+  grizzle retires whole units only, never a chain's prefix, so the coordination group's chains of turns, each turn
+  proved from its predecessor's `Freed`, must be restated before they can be retired: one current row per seat, or
+  each turn a unit whose containment reads only its live predecessor.
 
-Still to come from the grizzle session: RETIRE's `ChangeSet.retire` API (commit 4), then GUARD and SCHEMAMAP.
+Still to come from the grizzle session: RETIRE3's `ChangeSet.retire`, then GUARD and SCHEMAMAP.
