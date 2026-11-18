@@ -8,26 +8,31 @@ import {
 	edge,
 	exclusiveBy,
 	idle,
+	nearest,
 	never,
-	noReads,
 	operator,
-	reads,
+	rows,
 	resource,
 	root,
 	scope,
 	shared,
 	step,
 	unconditional,
+	vector,
 	writer,
 	writes,
 	writesNothing
 } from "@bjornpagen/den/algebra/kinds"
-import { Array as Arr, Context, Effect, Option, Schema } from "effect"
+import { Array as Arr, Context, Effect, Option, Order, Schema } from "effect"
 import {
+	Assigned,
 	Built,
 	Copied,
 	Cursor,
+	embeddingDimensions,
 	Item,
+	Passage,
+	Seen,
 	Settled,
 	Tally,
 	Weight
@@ -35,10 +40,12 @@ import {
 import type { Loader } from "#integration/slice/roles.ts"
 
 /**
- * The slice's four flows: a chain whose pages read a weight before their bodies run, started by an operator or by the
+ * The slice's five flows: a chain whose pages read a weight before their bodies run, started by an operator or by the
  * app's own write; a fan-out whose squares share a resource of two seats; a sync whose roots hold an exclusivity seat
- * per relation, beside a Gold build admitted only while the chain has nothing pending; and two retry ladders, one that
- * ends and one that never does. Every flow writes the app's relations under its app role `loader`.
+ * per relation, beside a Gold build admitted only while the chain has nothing pending; two retry ladders, one that ends
+ * and one that never does; and an assignment, the assignment engine's shape, whose one step reads the passages nearest
+ * its query vector and the passages its learner has seen. Every flow writes the app's relations under its app role
+ * `loader`.
  */
 
 const loader = writer<typeof Loader>("loader")
@@ -77,13 +84,15 @@ const Page = step(
 		input: PageInput,
 		output: PageRead,
 		error: Schema.Never,
-		reads: reads(Weight, ["feed"], (page: typeof PageInput.Type) => ({ feed: page.feed })),
+		reads: {
+			weights: rows(Weight, ["feed"], (page: typeof PageInput.Type) => ({ feed: page.feed }))
+		},
 		uses: [],
 		retry: attempts(3),
 		due: atSpawn,
 		writes: writes({ insert: [Item], put: [], delete: [] })
 	},
-	(page, weights) => {
+	(page, { weights }) => {
 		const factor = Arr.reduce(weights, 0n, (sum, w) => sum + w.factor)
 		const items = (page.seq + 1n) * (factor > 0n ? factor : 1n)
 		return Effect.succeed({
@@ -209,7 +218,7 @@ const Square = step(
 		input: Schema.Struct({ batch: Schema.String, n: Schema.BigInt }),
 		output: Schema.Struct({ square: Schema.BigInt }),
 		error: Schema.Never,
-		reads: noReads,
+		reads: {},
 		uses: [pool],
 		retry: attempts(3),
 		due: atSpawn,
@@ -283,7 +292,7 @@ const Copy = step(
 		input: SyncInput,
 		output: Schema.Struct({ run: Schema.BigInt }),
 		error: Schema.Never,
-		reads: noReads,
+		reads: {},
 		uses: [],
 		retry: attempts(3),
 		due: atSpawn,
@@ -325,7 +334,7 @@ const Build = step(
 		input: Schema.Struct({ build: Schema.BigInt }),
 		output: Schema.Struct({ build: Schema.BigInt }),
 		error: Schema.Never,
-		reads: noReads,
+		reads: {},
 		uses: [],
 		retry: attempts(3),
 		due: atSpawn,
@@ -386,7 +395,7 @@ const Steadfast = step(
 		input: Attempted,
 		output: Attempted,
 		error: Schema.Never,
-		reads: noReads,
+		reads: {},
 		uses: [],
 		retry: never,
 		due: atSpawn,
@@ -402,7 +411,7 @@ const Brittle = step(
 		input: Attempted,
 		output: Attempted,
 		error: Schema.Never,
-		reads: noReads,
+		reads: {},
 		uses: [],
 		retry: attempts(2),
 		due: atSpawn,
@@ -432,5 +441,95 @@ const Ladders = root("Ladders", {
 export const retry = flow("Retry", {
 	writes: loader,
 	kinds: [Steadfast, Brittle, Ladders],
+	edges: []
+})
+
+/** An assignment's question: a learner, a topic, and the query vector its passages are ranked by. */
+const Probe = Schema.Struct({
+	learner: Schema.String,
+	topic: Schema.String,
+	near: vector(embeddingDimensions)
+})
+
+/**
+ * How many passages an assignment's nearest read finds at most, the suite's own size: within the topics' sizes the
+ * suite draws, so a topic holds more passages than are found as often as fewer.
+ */
+export const assignedAmong = 3
+
+/**
+ * Decides an assignment: of the passages of its topic nearest its query vector, the nearest its learner has not seen,
+ * or none when every one found is seen. Both reads are recorded with its result, so the decision's whole context is a
+ * fact of the graph.
+ */
+const Decide = step(
+	"Decide",
+	{
+		input: Probe,
+		output: Schema.Struct({ chosen: Schema.Option(Schema.String) }),
+		error: Schema.Never,
+		reads: {
+			nearest: nearest(
+				Passage,
+				"embedding",
+				assignedAmong,
+				["topic"],
+				(probe: typeof Probe.Type) => ({
+					topic: probe.topic,
+					embedding: probe.near
+				})
+			),
+			seen: rows(Seen, ["learner"], (probe: typeof Probe.Type) => ({ learner: probe.learner }))
+		},
+		uses: [],
+		retry: attempts(3),
+		due: atSpawn,
+		writes: writes({ insert: [Assigned], put: [], delete: [] })
+	},
+	(probe, found) => {
+		const seen = new Set(Arr.map(found.seen, (row) => row.passage))
+		const chosen = Arr.findFirst(
+			Arr.sort(
+				found.nearest,
+				Order.mapInput(Order.Number, (row: (typeof found.nearest)[number]) => row.distance)
+			),
+			(row) => !seen.has(row.passage)
+		)
+		return Effect.succeed({
+			output: { chosen: Option.map(chosen, (row) => row.passage) },
+			writes: {
+				insert: {
+					Assigned: Option.toArray(
+						Option.map(chosen, (row) => ({ learner: probe.learner, passage: row.passage }))
+					)
+				},
+				put: {},
+				delete: {}
+			}
+		})
+	}
+)
+
+/** An operator's assignment of one learner, its one step the decision. */
+const Assignment = root("Assignment", {
+	trigger: operator,
+	input: Probe,
+	children: [Decide],
+	start: (probe) => [Decide.of(probe)],
+	exclusive: shared,
+	window: always,
+	precondition: unconditional,
+	finish: {
+		reads: [Decide],
+		error: Schema.Never,
+		retry: attempts(3),
+		writes: writesNothing,
+		body: () => Effect.succeed({ insert: {}, put: {}, delete: {} })
+	}
+})
+
+export const assign = flow("Assign", {
+	writes: loader,
+	kinds: [Decide, Assignment],
 	edges: []
 })

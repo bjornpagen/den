@@ -1,4 +1,4 @@
-import { Array as Arr, Option, Record, type Schema } from "effect"
+import { Array as Arr, Option, Record, Schema } from "effect"
 import {
 	type ColumnSchema,
 	type ErrorSchema,
@@ -8,18 +8,20 @@ import {
 } from "#algebra/kinds.ts"
 
 /**
- * Effect Schema, lowered to typed columns: a struct to a relation keyed by its owner, text, bigint and boolean to their
- * PostgreSQL types, a literal union of texts to a closed roster, a brand to a contract of its base, and an Option to a
+ * Effect Schema, lowered to typed columns: a struct to a relation keyed by its owner, text, bigint, finite number and
+ * boolean to their PostgreSQL types (a finite number to double precision, held finite by a row check), den's vector to
+ * pgvector's, a literal union of texts to a closed roster, a brand to a contract of its base, and an Option to a
  * relation of its own, holding a row exactly when the value is there. `Unknown` and `Any` have no typed home and never
  * reach here: the algebra's types admit only these forms, and anything else is refused by name.
  */
 
-/** A column's base PostgreSQL type. */
-export type Base = "text" | "bigint" | "boolean"
+/** A column's base PostgreSQL type: text, bigint, double precision or boolean. */
+export type Base = "text" | "bigint" | "double" | "boolean"
 
 /** What a column holds. */
 export type ColumnType =
 	| { readonly kind: "base"; readonly base: Base }
+	| { readonly kind: "vector"; readonly dimensions: number }
 	| { readonly kind: "roster"; readonly handles: readonly [string, ...Array<string>] }
 	| { readonly kind: "brand"; readonly brand: string; readonly base: Base }
 
@@ -40,6 +42,9 @@ export const noShape: Shape = { columns: [], options: [] }
 
 const baseOf = (declaration: string, field: string, schema: Schema.Top): Base => {
 	const ast = schema.ast
+	if (ast === Schema.Finite.ast) {
+		return "double"
+	}
 	if (ast.checks !== undefined) {
 		throw new Refused({
 			declaration,
@@ -57,7 +62,7 @@ const baseOf = (declaration: string, field: string, schema: Schema.Top): Base =>
 	}
 	throw new Refused({
 		declaration,
-		why: `field ${field} is a ${ast._tag}, which has no typed home: use text, a bigint, a boolean, a literal union of texts, a brand of one or an Option of one`
+		why: `field ${field} is a ${ast._tag}, which has no typed home: use text, a bigint, Schema.Finite, a boolean, a vector, a literal union of texts, a brand of one or an Option of one`
 	})
 }
 
@@ -74,6 +79,9 @@ const textsOf = (
 }
 
 const columnOf = (declaration: string, field: string, schema: ColumnSchema): ColumnType => {
+	if ("dimensions" in schema) {
+		return { kind: "vector", dimensions: schema.dimensions }
+	}
 	if ("identifier" in schema) {
 		return {
 			kind: "brand",

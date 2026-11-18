@@ -1,4 +1,5 @@
 import { contained, on, schema } from "@bjornpagen/grizzle"
+import { assignCoordination, assignGraph } from "#integration/slice/generated/assign.fragment.ts"
 import {
 	ChainResult,
 	chainCoordination,
@@ -12,6 +13,7 @@ import {
 import { retryCoordination, retryGraph } from "#integration/slice/generated/retry.fragment.ts"
 import { syncCoordination, syncGraph } from "#integration/slice/generated/sync.fragment.ts"
 import {
+	Assigned,
 	Audit,
 	Built,
 	Copied,
@@ -19,12 +21,14 @@ import {
 	Feed,
 	Item,
 	Order,
+	Passage,
+	Seen,
 	Settled,
 	Tally,
 	Weight
 } from "#integration/slice/relations.ts"
 
-/** The toy app's own level, each of den's four flows listed as its graph and its coordination fragments. */
+/** The toy app's own level, each of den's five flows listed as its graph and its coordination fragments. */
 const Listed = schema(
 	"Slice",
 	[
@@ -38,6 +42,9 @@ const Listed = schema(
 		Copied,
 		Built,
 		Audit,
+		Passage,
+		Seen,
+		Assigned,
 		chainGraph,
 		chainCoordination,
 		fanGraph,
@@ -45,7 +52,9 @@ const Listed = schema(
 		syncGraph,
 		syncCoordination,
 		retryGraph,
-		retryCoordination
+		retryCoordination,
+		assignGraph,
+		assignCoordination
 	],
 	[contained(on(Audit, "step"), on(ChainResult, "step"))]
 )

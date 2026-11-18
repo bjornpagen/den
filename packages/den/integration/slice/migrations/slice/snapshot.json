@@ -5,10 +5,135 @@
 				"check": "__natural_hcnvygsglu"
 			},
 			"__text_t4rwovzmqj": {
-				"check": "__copied_pattern_relation_43bo7updbu"
+				"check": "__assign_decide_nearest_read_pattern_passage_7ovh7m5g22"
 			}
 		},
 		"tables": {
+			"assign_admitted": {
+				"__assign_admitted_fk_scope_vfepaqjqyi": "__assign_admitted_in_assign_scope_y6fa6gxhpy",
+				"__assign_admitted_pk_gj2obtfaxk": "__assign_admitted_pk_scope_hsg7p36e67"
+			},
+			"assign_assignment_input": {
+				"__assign_assignment_input_fk_scope_tag_kind_4hflxzmwtj": "__assign_assignment_input_in_assign_scope_ct63dboysj",
+				"__assign_assignment_input_pk_rhoa22jovt": "__assign_assignment_input_pk_scope_i4s4fsw755"
+			},
+			"assign_claim": {
+				"__assign_claim_fk_step_4p6buiqtrc": "__assign_claim_in_assign_step_vewg6lrpae",
+				"__assign_claim_fk_step_pred_attempt_2byinvx4o3": "__assign_claim_attempt_in_assign_claim_hgk3cncsq4",
+				"__assign_claim_pk_gy4yhzk2me": "__assign_claim_pk_step_attempt_cvkap2ilms",
+				"attempt_from_one": "__assign_claim_check_attempt_from_one_xedytqz7p5"
+			},
+			"assign_decide_input": {
+				"__assign_decide_input_fk_step_tag_kind_decide_xsqmsuqet4": "__assign_decide_input_in_assign_step_pjyllanzb2",
+				"__assign_decide_input_pk_phi7dovwvq": "__assign_decide_input_pk_step_ojoqk37m3p"
+			},
+			"assign_decide_nearest_read": {
+				"__assign_decide_nearest_read_fk_step_ahvahshsfy": "__assign_decide_nearest_read_in_assign_result_hrxykmbknf",
+				"__assign_decide_nearest_read_pk_jc4zqvfwss": "__assign_decide_nearest_read_pk_step_ordinal_3xxz2n2yp5"
+			},
+			"assign_decide_output": {
+				"__assign_decide_output_fk_step_6birgjscft": "__assign_decide_output_in_assign_done_qz4o73tfyd",
+				"__assign_decide_output_fk_step_uegzp2ojlf": "__assign_decide_output_in_assign_decide_input_5zyqark5b5",
+				"__assign_decide_output_pk_tf6r7wtfse": "__assign_decide_output_pk_step_yej2fjrcx4"
+			},
+			"assign_decide_output_chosen": {
+				"__assign_decide_output_chosen_fk_step_khpc4l7ijm": "__assign_decide_output_chosen_in_assign_decide_sxxjrmapcz",
+				"__assign_decide_output_chosen_pk_iwcppigpd6": "__assign_decide_output_chosen_pk_step_kap3q5clfa"
+			},
+			"assign_decide_seen_read": {
+				"__assign_decide_seen_read_fk_step_xfllym5krc": "__assign_decide_seen_read_in_assign_result_pbyqumn7zj",
+				"__assign_decide_seen_read_pk_sczf2f7gz7": "__assign_decide_seen_read_pk_step_ordinal_44y3iznebr"
+			},
+			"assign_done": {
+				"__assign_done_fk_step_tag_outcome_done_e5hddkaj3g": "__assign_done_in_assign_result_uf3hvv7kbu",
+				"__assign_done_pk_gzil7jvxpz": "__assign_done_pk_step_inof2ufzs6"
+			},
+			"assign_due": {
+				"__assign_due_fk_step_dbtohril7u": "__assign_due_in_assign_step_lpb4l3rs7u",
+				"__assign_due_pk_mgahvzt6eh": "__assign_due_pk_step_ydcguagdcv"
+			},
+			"assign_exhausted": {
+				"__assign_exhausted_fk_step_cxx7syotgn": "__assign_exhausted_in_assign_failed_oph5ym7qoj",
+				"__assign_exhausted_pk_utz6lwqgv6": "__assign_exhausted_pk_step_4r4b4beplf"
+			},
+			"assign_failed": {
+				"__assign_failed_fk_step_tag_outcome_failed_rzgbd4gb37": "__assign_failed_in_assign_result_6qypciswdz",
+				"__assign_failed_pk_ygxslcya4o": "__assign_failed_pk_step_2kpu7hzg7d"
+			},
+			"assign_fenced": {
+				"__assign_fenced_fk_step_attempt_2rttvkznpl": "__assign_fenced_in_assign_claim_czwgst3u3g",
+				"__assign_fenced_pk_y6jyfviepa": "__assign_fenced_pk_step_attempt_3wj42hnc7j"
+			},
+			"assign_finish": {
+				"__assign_finish_fk_scope_dics3axamv": "__assign_finish_in_assign_admitted_3brhqnhdl3",
+				"__assign_finish_fk_step_i3ke2hxa66": "__assign_finish_in_assign_step_cjrsfhnoxe",
+				"__assign_finish_key_step_nthyxvagme": "__assign_finish_key_step_acqafwo47h",
+				"__assign_finish_pk_kfe2ztwv2z": "__assign_finish_pk_scope_c5t4esgqja"
+			},
+			"assign_held": {
+				"__assign_held_fk_step_attempt_fklmb2xym3": "__assign_held_in_assign_claim_boni5zfs5i",
+				"__assign_held_fk_step_ww2k5nnc4c": "__assign_held_in_assign_result_xcjhmgwk3f",
+				"__assign_held_pk_by245z7t45": "__assign_held_pk_step_pcxfc7mtic"
+			},
+			"assign_paused": {
+				"__assign_paused_fk_target_pred_turn_xgirbknudp": "__assign_paused_in_assign_resumed_jlpyh3bxvb",
+				"__assign_paused_pk_ulo4grv4e2": "__assign_paused_pk_target_turn_krhu4plsww"
+			},
+			"assign_refusal": {
+				"__assign_refusal_fk_step_aqlyzlq3fc": "__assign_refusal_in_assign_failed_25awxz6f5e",
+				"__assign_refusal_pk_xs5e4ryh4k": "__assign_refusal_pk_step_zcimns2k4g"
+			},
+			"assign_result": {
+				"__assign_result_fk_step_4pnas55m6w": "__assign_result_in_assign_step_ieutfsrtfg",
+				"__assign_result_key_step_outcome_4i7igve5uz": "__assign_result_pk_step_aqz63rj27f",
+				"__assign_result_pk_i2yxmpkyzr": "__assign_result_pk_step_aqz63rj27f"
+			},
+			"assign_resumed": {
+				"__assign_resumed_fk_target_turn_3xan3ax2be": "__assign_resumed_in_assign_paused_ubkakyu3tt",
+				"__assign_resumed_pk_vy5pj6hbez": "__assign_resumed_pk_target_turn_xeig7qweos"
+			},
+			"assign_retry": {
+				"__assign_retry_fk_step_attempt_benkemwswa": "__assign_retry_in_assign_claim_36q2s3rmrs",
+				"__assign_retry_pk_4dcm5yzzhe": "__assign_retry_pk_step_attempt_bx73h33pfz"
+			},
+			"assign_root": {
+				"__assign_root_fk_scope_344txuecsh": "__assign_root_in_assign_scope_pigejdibm4",
+				"__assign_root_pk_b23qqyryx4": "__assign_root_pk_scope_n5uoolib3w"
+			},
+			"assign_scope": {
+				"__assign_scope_key_scope_kind_vvjb4nuh5r": "__assign_scope_pk_scope_scidr4nrwk",
+				"__assign_scope_pk_xytntbncid": "__assign_scope_pk_scope_scidr4nrwk"
+			},
+			"assign_skipped": {
+				"__assign_skipped_fk_by_wh4scgpwln": "__assign_skipped_in_assign_admitted_olcw5mpttt",
+				"__assign_skipped_fk_scope_6ks53lak4r": "__assign_skipped_in_assign_root_w27kcjx3p2",
+				"__assign_skipped_pk_5qhgbueof7": "__assign_skipped_pk_scope_ploloaztgw"
+			},
+			"assign_start_scope": {
+				"__assign_start_scope_fk_child_niiue7y5lb": "__assign_start_scope_in_assign_scope_wd5xpts64o",
+				"__assign_start_scope_fk_scope_rpodhhkcp6": "__assign_start_scope_in_assign_admitted_om5ehjohzl",
+				"__assign_start_scope_key_child_hlw5b67j2d": "__assign_start_scope_key_child_rk5cuwzi3d",
+				"__assign_start_scope_pk_ldqdb5b25z": "__assign_start_scope_pk_scope_ordinal_bnnj5jn2pm"
+			},
+			"assign_start_step": {
+				"__assign_start_step_fk_scope_qt2dm2vnjb": "__assign_start_step_in_assign_admitted_5kplqnpa2y",
+				"__assign_start_step_fk_step_2sej5uze4v": "__assign_start_step_in_assign_step_xoggshn3cr",
+				"__assign_start_step_key_step_b3r7vmxqkm": "__assign_start_step_key_step_ybq6x2rdxq",
+				"__assign_start_step_pk_jjcfkvptmp": "__assign_start_step_pk_scope_ordinal_up4eemsh3l"
+			},
+			"assign_step": {
+				"__assign_step_fk_scope_gkjcwbwjuf": "__assign_step_in_assign_admitted_niwiotdahy",
+				"__assign_step_key_step_kind_5vttbbv3md": "__assign_step_pk_step_vx56xa5n5m",
+				"__assign_step_pk_2oc4ehvfzd": "__assign_step_pk_step_vx56xa5n5m"
+			},
+			"assign_within": {
+				"__assign_within_fk_parent_kq5ksmcoez": "__assign_within_in_assign_scope_adbhaqmq4t",
+				"__assign_within_fk_scope_2yvr2lbtxd": "__assign_within_in_assign_scope_t7yi4s6clj",
+				"__assign_within_pk_vvbm6qryed": "__assign_within_pk_scope_mney62jhin"
+			},
+			"assigned": {
+				"__assigned_pk_72xowecbf7": "__assigned_pk_learner_ogs732lrn5"
+			},
 			"audit": {
 				"__audit_fk_step_zgfyapbfme": "__audit_in_chain_result_lnwfzi4o3s",
 				"__audit_pk_dcvpvv5cjz": "__audit_pk_step_lew2zfy6bw"
@@ -88,9 +213,9 @@
 				"__chain_page_output_next_fk_step_azw5pfnnsa": "__chain_page_output_next_in_chain_page_output_p6kzvp5jkn",
 				"__chain_page_output_next_pk_h55uzx4bbq": "__chain_page_output_next_pk_step_tdebtakd2s"
 			},
-			"chain_page_read": {
-				"__chain_page_read_fk_step_wj2fe2lazd": "__chain_page_read_in_chain_result_pj5grk5vib",
-				"__chain_page_read_pk_yets7gftg6": "__chain_page_read_pk_step_ordinal_nl6z437kay"
+			"chain_page_weights_read": {
+				"__chain_page_weights_read_fk_step_gpovo4cp33": "__chain_page_weights_read_in_chain_result_tfegcmqjvg",
+				"__chain_page_weights_read_pk_mvr5jc4gry": "__chain_page_weights_read_pk_step_ordinal_l4cctxl2sd"
 			},
 			"chain_paused": {
 				"__chain_paused_fk_target_pred_turn_mokmv27wuy": "__chain_paused_in_chain_resumed_xxjpa5xxji",
@@ -284,6 +409,9 @@
 			"order": {
 				"__order_pk_qodq3est7o": "__order_pk_order_kjcux64qhs"
 			},
+			"passage": {
+				"__passage_pk_kayjlxd3gv": "__passage_pk_passage_mykbwvlyip"
+			},
 			"retry_admitted": {
 				"__retry_admitted_fk_scope_o3jg25sttd": "__retry_admitted_in_retry_scope_utzh4qgtea",
 				"__retry_admitted_pk_qyp7cminjx": "__retry_admitted_pk_scope_sj5xf4iwju"
@@ -402,6 +530,9 @@
 				"__retry_within_fk_parent_d2h4ezdtjn": "__retry_within_in_retry_scope_bcvdxqqz4f",
 				"__retry_within_fk_scope_zng7hmvot6": "__retry_within_in_retry_scope_sgyo2ojzgr",
 				"__retry_within_pk_t64odgwbuc": "__retry_within_pk_scope_xmnuisrop4"
+			},
+			"seen": {
+				"__seen_pk_g4ptcxwowb": "__seen_pk_learner_passage_z5kbmlojhe"
 			},
 			"settled": {
 				"__settled_pk_yitdz6z3ts": "__settled_pk_batch_qfhu63z7q7"
@@ -579,6 +710,10 @@
 		},
 		"fkCycles": [
 			[
+				"AssignPaused",
+				"AssignResumed"
+			],
+			[
 				"ChainPaused",
 				"ChainResumed"
 			],
@@ -606,6 +741,60 @@
 		"live": {
 			"kind": "source",
 			"tables": {
+				"assign_admitted": [
+					"scope"
+				],
+				"assign_assignment_input": [
+					"scope"
+				],
+				"assign_claim": [
+					"step"
+				],
+				"assign_decide_input": [
+					"step"
+				],
+				"assign_decide_nearest_read": [],
+				"assign_decide_output": [],
+				"assign_decide_output_chosen": [],
+				"assign_decide_seen_read": [],
+				"assign_due": [
+					"step"
+				],
+				"assign_fenced": [
+					"step"
+				],
+				"assign_finish": [
+					"scope"
+				],
+				"assign_held": [
+					"step"
+				],
+				"assign_paused": [],
+				"assign_result": [
+					"step"
+				],
+				"assign_resumed": [],
+				"assign_retry": [
+					"step"
+				],
+				"assign_root": [
+					"scope"
+				],
+				"assign_scope": [
+					"scope"
+				],
+				"assign_skipped": [
+					"scope"
+				],
+				"assign_step": [
+					"scope",
+					"step"
+				],
+				"assign_within": [
+					"parent",
+					"scope"
+				],
+				"assigned": [],
 				"audit": [],
 				"built": [],
 				"chain_admitted": [
@@ -641,7 +830,7 @@
 				],
 				"chain_page_output": [],
 				"chain_page_output_next": [],
-				"chain_page_read": [],
+				"chain_page_weights_read": [],
 				"chain_paused": [],
 				"chain_result": [
 					"step"
@@ -729,6 +918,9 @@
 					"scope"
 				],
 				"item": [],
+				"passage": [
+					"topic"
+				],
 				"retry_admitted": [
 					"scope"
 				],
@@ -783,6 +975,9 @@
 				"retry_within": [
 					"parent",
 					"scope"
+				],
+				"seen": [
+					"learner"
 				],
 				"settled": [],
 				"sync_admitted": [
@@ -854,9 +1049,28 @@
 		},
 		"params": {
 			"contracts": [],
-			"domains": []
+			"domains": [
+				"__param_learner_um3dilfdml",
+				"__param_topic_q7i3hfsnkd"
+			]
 		},
 		"references": [
+			{
+				"law": "__assign_assignment_input_in_assign_scope_ct63dboysj",
+				"part": 0
+			},
+			{
+				"law": "__assign_decide_input_in_assign_step_pjyllanzb2",
+				"part": 0
+			},
+			{
+				"law": "__assign_done_in_assign_result_uf3hvv7kbu",
+				"part": 0
+			},
+			{
+				"law": "__assign_failed_in_assign_result_6qypciswdz",
+				"part": 0
+			},
 			{
 				"law": "__chain_chain_run_input_in_chain_scope_wqljp2wcfi",
 				"part": 0
@@ -944,6 +1158,1046 @@
 		],
 		"tables": {
 			"slice": {
+				"assign_admitted": {
+					"indexes": {
+						"__assign_admitted_pk_gj2obtfaxk": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_admitted_pk_scope_hsg7p36e67"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_admitted_in_assign_scope_y6fa6gxhpy"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignAdmitted"
+				},
+				"assign_assignment_input": {
+					"indexes": {
+						"__assign_assignment_input_pk_rhoa22jovt": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_assignment_input_pk_scope_i4s4fsw755"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_assignment_input_in_assign_scope_ct63dboysj"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignAssignmentInput"
+				},
+				"assign_claim": {
+					"indexes": {
+						"__assign_claim_ix_step_fxyms_236_d_4_pred_attempt_x24ydo4nq6": {
+							"columns": [
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "step",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__assign_claim_attempt_in_assign_claim_hgk3cncsq4"
+									]
+								},
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "attempt",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__assign_claim_attempt_in_assign_claim_hgk3cncsq4"
+									]
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_claim_attempt_in_assign_claim_hgk3cncsq4"
+								}
+							]
+						},
+						"__assign_claim_pk_gy4yhzk2me": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_claim_pk_step_attempt_cvkap2ilms"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_claim_in_assign_step_vewg6lrpae"
+								}
+							]
+						}
+					},
+					"relation": "AssignClaim"
+				},
+				"assign_decide_input": {
+					"indexes": {
+						"__assign_decide_input_pk_phi7dovwvq": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_decide_input_pk_step_ojoqk37m3p"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_decide_input_in_assign_step_pjyllanzb2"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignDecideInput"
+				},
+				"assign_decide_nearest_read": {
+					"indexes": {
+						"__assign_decide_nearest_read_pk_jc4zqvfwss": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "ordinal",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_decide_nearest_read_pk_step_ordinal_3xxz2n2yp5"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_decide_nearest_read_in_assign_result_hrxykmbknf"
+								}
+							]
+						}
+					},
+					"relation": "AssignDecideNearestRead"
+				},
+				"assign_decide_output": {
+					"indexes": {
+						"__assign_decide_output_pk_tf6r7wtfse": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_decide_output_pk_step_yej2fjrcx4"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_decide_output_in_assign_decide_input_5zyqark5b5"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_decide_output_in_assign_done_qz4o73tfyd"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignDecideOutput"
+				},
+				"assign_decide_output_chosen": {
+					"indexes": {
+						"__assign_decide_output_chosen_pk_iwcppigpd6": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_decide_output_chosen_pk_step_kap3q5clfa"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_decide_output_chosen_in_assign_decide_sxxjrmapcz"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignDecideOutputChosen"
+				},
+				"assign_decide_seen_read": {
+					"indexes": {
+						"__assign_decide_seen_read_pk_sczf2f7gz7": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "ordinal",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_decide_seen_read_pk_step_ordinal_44y3iznebr"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_decide_seen_read_in_assign_result_pbyqumn7zj"
+								}
+							]
+						}
+					},
+					"relation": "AssignDecideSeenRead"
+				},
+				"assign_done": {
+					"indexes": {
+						"__assign_done_pk_gzil7jvxpz": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_done_pk_step_inof2ufzs6"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_done_in_assign_result_uf3hvv7kbu"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignDone"
+				},
+				"assign_due": {
+					"indexes": {
+						"__assign_due_pk_mgahvzt6eh": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_due_pk_step_ydcguagdcv"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_due_in_assign_step_lpb4l3rs7u"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignDue"
+				},
+				"assign_exhausted": {
+					"indexes": {
+						"__assign_exhausted_pk_utz6lwqgv6": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_exhausted_pk_step_4r4b4beplf"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_exhausted_in_assign_failed_oph5ym7qoj"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignExhausted"
+				},
+				"assign_failed": {
+					"indexes": {
+						"__assign_failed_pk_ygxslcya4o": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_failed_pk_step_2kpu7hzg7d"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_failed_in_assign_result_6qypciswdz"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignFailed"
+				},
+				"assign_fenced": {
+					"indexes": {
+						"__assign_fenced_pk_y6jyfviepa": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_fenced_pk_step_attempt_3wj42hnc7j"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_fenced_in_assign_claim_czwgst3u3g"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignFenced"
+				},
+				"assign_finish": {
+					"indexes": {
+						"__assign_finish_key_step_nthyxvagme": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_finish_key_step_acqafwo47h"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_finish_in_assign_step_cjrsfhnoxe"
+								}
+							]
+						},
+						"__assign_finish_pk_kfe2ztwv2z": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_finish_pk_scope_c5t4esgqja"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_finish_in_assign_admitted_3brhqnhdl3"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignFinish"
+				},
+				"assign_held": {
+					"indexes": {
+						"__assign_held_pk_by245z7t45": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_held_pk_step_pcxfc7mtic"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_held_in_assign_claim_boni5zfs5i"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_held_in_assign_result_xcjhmgwk3f"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignHeld"
+				},
+				"assign_paused": {
+					"indexes": {
+						"__assign_paused_ix_target_pred_turn_qryngij_6_c_4_u3nbuiteko": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "target",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "turn",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__assign_paused_in_assign_resumed_jlpyh3bxvb"
+									]
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_paused_in_assign_resumed_jlpyh3bxvb"
+								}
+							]
+						},
+						"__assign_paused_pk_ulo4grv4e2": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "target",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "turn",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_paused_pk_target_turn_krhu4plsww"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignPaused"
+				},
+				"assign_refusal": {
+					"indexes": {
+						"__assign_refusal_pk_xs5e4ryh4k": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_refusal_pk_step_zcimns2k4g"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_refusal_in_assign_failed_25awxz6f5e"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignRefusal"
+				},
+				"assign_result": {
+					"indexes": {
+						"__assign_result_key_step_outcome_4i7igve5uz": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "outcome",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_result_pk_step_aqz63rj27f"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_done_in_assign_result_uf3hvv7kbu"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_failed_in_assign_result_6qypciswdz"
+								}
+							]
+						},
+						"__assign_result_pk_i2yxmpkyzr": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_result_pk_step_aqz63rj27f"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_result_in_assign_step_ieutfsrtfg"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignResult"
+				},
+				"assign_resumed": {
+					"indexes": {
+						"__assign_resumed_pk_vy5pj6hbez": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "target",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "turn",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_resumed_pk_target_turn_xeig7qweos"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_resumed_in_assign_paused_ubkakyu3tt"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignResumed"
+				},
+				"assign_retry": {
+					"indexes": {
+						"__assign_retry_pk_4dcm5yzzhe": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_retry_pk_step_attempt_bx73h33pfz"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_retry_in_assign_claim_36q2s3rmrs"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignRetry"
+				},
+				"assign_root": {
+					"indexes": {
+						"__assign_root_pk_b23qqyryx4": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_root_pk_scope_n5uoolib3w"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_root_in_assign_scope_pigejdibm4"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignRoot"
+				},
+				"assign_scope": {
+					"indexes": {
+						"__assign_scope_key_scope_kind_vvjb4nuh5r": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "kind",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_scope_pk_scope_scidr4nrwk"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_assignment_input_in_assign_scope_ct63dboysj"
+								}
+							]
+						},
+						"__assign_scope_pk_xytntbncid": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_scope_pk_scope_scidr4nrwk"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignScope"
+				},
+				"assign_skipped": {
+					"indexes": {
+						"__assign_skipped_ix_by_phe5rdziqg": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "by",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_skipped_in_assign_admitted_olcw5mpttt"
+								}
+							]
+						},
+						"__assign_skipped_pk_5qhgbueof7": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_skipped_pk_scope_ploloaztgw"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_skipped_in_assign_root_w27kcjx3p2"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignSkipped"
+				},
+				"assign_start_scope": {
+					"indexes": {
+						"__assign_start_scope_key_child_hlw5b67j2d": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "child",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_start_scope_key_child_rk5cuwzi3d"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_start_scope_in_assign_scope_wd5xpts64o"
+								}
+							]
+						},
+						"__assign_start_scope_pk_ldqdb5b25z": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "ordinal",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_start_scope_pk_scope_ordinal_bnnj5jn2pm"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_start_scope_in_assign_admitted_om5ehjohzl"
+								}
+							]
+						}
+					},
+					"relation": "AssignStartScope"
+				},
+				"assign_start_step": {
+					"indexes": {
+						"__assign_start_step_key_step_b3r7vmxqkm": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_start_step_key_step_ybq6x2rdxq"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_start_step_in_assign_step_xoggshn3cr"
+								}
+							]
+						},
+						"__assign_start_step_pk_jjcfkvptmp": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "ordinal",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_start_step_pk_scope_ordinal_up4eemsh3l"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_start_step_in_assign_admitted_5kplqnpa2y"
+								}
+							]
+						}
+					},
+					"relation": "AssignStartStep"
+				},
+				"assign_step": {
+					"indexes": {
+						"__assign_step_ix_scope_kind_4jyx7qz4gq": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "kind",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_step_in_assign_admitted_niwiotdahy"
+								}
+							]
+						},
+						"__assign_step_key_step_kind_5vttbbv3md": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "kind",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_step_pk_step_vx56xa5n5m"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_decide_input_in_assign_step_pjyllanzb2"
+								}
+							]
+						},
+						"__assign_step_pk_2oc4ehvfzd": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_step_pk_step_vx56xa5n5m"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignStep"
+				},
+				"assign_within": {
+					"indexes": {
+						"__assign_within_ix_parent_pf64og3aei": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "parent",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_within_in_assign_scope_adbhaqmq4t"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__assign_within_pk_vvbm6qryed": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_within_pk_scope_mney62jhin"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_within_in_assign_scope_t7yi4s6clj"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignWithin"
+				},
+				"assigned": {
+					"indexes": {
+						"__assigned_pk_72xowecbf7": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "learner",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assigned_pk_learner_ogs732lrn5"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "Assigned"
+				},
 				"audit": {
 					"indexes": {
 						"__audit_pk_dcvpvv5cjz": {
@@ -1522,9 +2776,9 @@
 					},
 					"relation": "ChainPageOutputNext"
 				},
-				"chain_page_read": {
+				"chain_page_weights_read": {
 					"indexes": {
-						"__chain_page_read_pk_yets7gftg6": {
+						"__chain_page_weights_read_pk_mvr5jc4gry": {
 							"columns": [
 								{
 									"direction": "asc",
@@ -1540,19 +2794,19 @@
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__chain_page_read_pk_step_ordinal_nl6z437kay"
+									"law": "__chain_page_weights_read_pk_step_ordinal_l4cctxl2sd"
 								},
 								{
 									"kind": "access"
 								},
 								{
 									"kind": "law",
-									"law": "__chain_page_read_in_chain_result_pj5grk5vib"
+									"law": "__chain_page_weights_read_in_chain_result_tfegcmqjvg"
 								}
 							]
 						}
 					},
-					"relation": "ChainPageRead"
+					"relation": "ChainPageWeightsRead"
 				},
 				"chain_paused": {
 					"indexes": {
@@ -3272,6 +4526,57 @@
 					},
 					"relation": "Order"
 				},
+				"passage": {
+					"indexes": {
+						"__passage_ix_embedding_ujugi77ft2": {
+							"columns": [
+								{
+									"direction": "none",
+									"field": "embedding",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__passage_ix_topic_lzh6djzwn4": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "topic",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__passage_pk_kayjlxd3gv": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "passage",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__passage_pk_passage_mykbwvlyip"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "Passage"
+				},
 				"retry_admitted": {
 					"indexes": {
 						"__retry_admitted_pk_qyp7cminjx": {
@@ -4259,6 +5564,34 @@
 						}
 					},
 					"relation": "RetryWithin"
+				},
+				"seen": {
+					"indexes": {
+						"__seen_pk_g4ptcxwowb": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "learner",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "passage",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__seen_pk_learner_passage_z5kbmlojhe"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "Seen"
 				},
 				"settled": {
 					"indexes": {
@@ -5485,11 +6818,77 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "70f67bb059dbb12c35d319dcaa197e1772bcedc9a8cf9f8ffdff5b033ab39b82",
+	"fingerprint": "46cc1e01f3a22fc12f4abc90bb4195be110f9da6693b9e53aa7e252e6cb0e27c",
 	"levels": [
 		{
-			"fingerprint": "42bb30364bf7539afd67b09f5297d842b22354ecae5b753a460789bb79e23924",
+			"fingerprint": "e4ccdfe146d20eb09babd99df80fe9a3ab0fac98fdb1e3979286b6101c48dcec",
 			"laws": [
+				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_y6fa6gxhpy"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"AssignAdmitted"},"law":"__assign_admitted_pk_scope_hsg7p36e67"},
+				{"described":{"from":{"relation":"AssignAssignmentInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Assignment"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_assignment_input_in_assign_scope_ct63dboysj"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"AssignAssignmentInput"},"law":"__assign_assignment_input_pk_scope_i4s4fsw755"},
+				{"described":{"from":{"relation":"AssignClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:2"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"}]},"kind":"contained","to":{"relation":"AssignClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]}},"law":"__assign_claim_attempt_in_assign_claim_hgk3cncsq4"},
+				{"described":{"kind":"check","name":"AttemptFromOne","relation":"AssignClaim"},"law":"__assign_claim_check_attempt_from_one_xedytqz7p5"},
+				{"described":{"from":{"relation":"AssignClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_claim_in_assign_step_vewg6lrpae"},
+				{"described":{"fields":["step","attempt"],"kind":"primaryKey","relation":"AssignClaim"},"law":"__assign_claim_pk_step_attempt_cvkap2ilms"},
+				{"described":{"from":{"relation":"AssignDecideInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignStep","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Decide"}}]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_decide_input_in_assign_step_pjyllanzb2"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"AssignDecideInput"},"law":"__assign_decide_input_pk_step_ojoqk37m3p"},
+				{"described":{"from":{"relation":"AssignDecideNearestRead","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_decide_nearest_read_in_assign_result_hrxykmbknf"},
+				{"described":{"fields":["step","ordinal"],"kind":"primaryKey","relation":"AssignDecideNearestRead"},"law":"__assign_decide_nearest_read_pk_step_ordinal_3xxz2n2yp5"},
+				{"described":{"from":{"relation":"AssignDecideOutputChosen","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignDecideOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_decide_output_chosen_in_assign_decide_sxxjrmapcz"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"AssignDecideOutputChosen"},"law":"__assign_decide_output_chosen_pk_step_kap3q5clfa"},
+				{"described":{"from":{"relation":"AssignDecideOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignDecideInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_decide_output_in_assign_decide_input_5zyqark5b5"},
+				{"described":{"from":{"relation":"AssignDecideOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_decide_output_in_assign_done_qz4o73tfyd"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"AssignDecideOutput"},"law":"__assign_decide_output_pk_step_yej2fjrcx4"},
+				{"described":{"from":{"relation":"AssignDecideSeenRead","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_decide_seen_read_in_assign_result_pbyqumn7zj"},
+				{"described":{"fields":["step","ordinal"],"kind":"primaryKey","relation":"AssignDecideSeenRead"},"law":"__assign_decide_seen_read_pk_step_ordinal_44y3iznebr"},
+				{"described":{"from":{"relation":"AssignDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"done"}}]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_done_in_assign_result_uf3hvv7kbu"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"AssignDone"},"law":"__assign_done_pk_step_inof2ufzs6"},
+				{"described":{"from":{"relation":"AssignDue","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_due_in_assign_step_lpb4l3rs7u"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"AssignDue"},"law":"__assign_due_pk_step_ydcguagdcv"},
+				{"described":{"from":{"relation":"AssignExhausted","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_exhausted_in_assign_failed_oph5ym7qoj"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"AssignExhausted"},"law":"__assign_exhausted_pk_step_4r4b4beplf"},
+				{"described":{"from":{"relation":"AssignFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"failed"}}]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_failed_in_assign_result_6qypciswdz"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"AssignFailed"},"law":"__assign_failed_pk_step_2kpu7hzg7d"},
+				{"described":{"from":{"relation":"AssignFenced","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]},"kind":"contained","to":{"relation":"AssignClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]}},"law":"__assign_fenced_in_assign_claim_czwgst3u3g"},
+				{"described":{"fields":["step","attempt"],"kind":"primaryKey","relation":"AssignFenced"},"law":"__assign_fenced_pk_step_attempt_3wj42hnc7j"},
+				{"described":{"from":{"relation":"AssignFinish","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_finish_in_assign_admitted_3brhqnhdl3"},
+				{"described":{"from":{"relation":"AssignFinish","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_finish_in_assign_step_cjrsfhnoxe"},
+				{"described":{"kind":"key","side":{"relation":"AssignFinish","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_finish_key_step_acqafwo47h"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"AssignFinish"},"law":"__assign_finish_pk_scope_c5t4esgqja"},
+				{"described":{"from":{"relation":"AssignHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]},"kind":"contained","to":{"relation":"AssignClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]}},"law":"__assign_held_in_assign_claim_boni5zfs5i"},
+				{"described":{"from":{"relation":"AssignHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_held_in_assign_result_xcjhmgwk3f"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"AssignHeld"},"law":"__assign_held_pk_step_pcxfc7mtic"},
+				{"described":{"from":{"relation":"AssignPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"AssignResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__assign_paused_in_assign_resumed_jlpyh3bxvb"},
+				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"AssignPaused"},"law":"__assign_paused_pk_target_turn_krhu4plsww"},
+				{"described":{"from":{"relation":"AssignRefusal","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_refusal_in_assign_failed_25awxz6f5e"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"AssignRefusal"},"law":"__assign_refusal_pk_step_zcimns2k4g"},
+				{"described":{"from":{"relation":"AssignResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_result_in_assign_step_ieutfsrtfg"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"AssignResult"},"law":"__assign_result_pk_step_aqz63rj27f"},
+				{"described":{"from":{"relation":"AssignResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]},"kind":"contained","to":{"relation":"AssignPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__assign_resumed_in_assign_paused_ubkakyu3tt"},
+				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"AssignResumed"},"law":"__assign_resumed_pk_target_turn_xeig7qweos"},
+				{"described":{"from":{"relation":"AssignRetry","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]},"kind":"contained","to":{"relation":"AssignClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]}},"law":"__assign_retry_in_assign_claim_36q2s3rmrs"},
+				{"described":{"fields":["step","attempt"],"kind":"primaryKey","relation":"AssignRetry"},"law":"__assign_retry_pk_step_attempt_bx73h33pfz"},
+				{"described":{"from":{"relation":"AssignRoot","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_root_in_assign_scope_pigejdibm4"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"AssignRoot"},"law":"__assign_root_pk_scope_n5uoolib3w"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"AssignScope"},"law":"__assign_scope_pk_scope_scidr4nrwk"},
+				{"described":{"from":{"relation":"AssignSkipped","selection":{"conjuncts":[]},"terms":[{"field":"by","kind":"field"}]},"kind":"contained","to":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_skipped_in_assign_admitted_olcw5mpttt"},
+				{"described":{"from":{"relation":"AssignSkipped","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_skipped_in_assign_root_w27kcjx3p2"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"AssignSkipped"},"law":"__assign_skipped_pk_scope_ploloaztgw"},
+				{"described":{"from":{"relation":"AssignStartScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_start_scope_in_assign_admitted_om5ehjohzl"},
+				{"described":{"from":{"relation":"AssignStartScope","selection":{"conjuncts":[]},"terms":[{"field":"child","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_start_scope_in_assign_scope_wd5xpts64o"},
+				{"described":{"kind":"key","side":{"relation":"AssignStartScope","selection":{"conjuncts":[]},"terms":[{"field":"child","kind":"field"}]}},"law":"__assign_start_scope_key_child_rk5cuwzi3d"},
+				{"described":{"fields":["scope","ordinal"],"kind":"primaryKey","relation":"AssignStartScope"},"law":"__assign_start_scope_pk_scope_ordinal_bnnj5jn2pm"},
+				{"described":{"from":{"relation":"AssignStartStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_start_step_in_assign_admitted_5kplqnpa2y"},
+				{"described":{"from":{"relation":"AssignStartStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"AssignStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_start_step_in_assign_step_xoggshn3cr"},
+				{"described":{"kind":"key","side":{"relation":"AssignStartStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__assign_start_step_key_step_ybq6x2rdxq"},
+				{"described":{"fields":["scope","ordinal"],"kind":"primaryKey","relation":"AssignStartStep"},"law":"__assign_start_step_pk_scope_ordinal_up4eemsh3l"},
+				{"described":{"from":{"relation":"AssignStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_step_in_assign_admitted_niwiotdahy"},
+				{"described":{"fields":["step"],"kind":"primaryKey","relation":"AssignStep"},"law":"__assign_step_pk_step_vx56xa5n5m"},
+				{"described":{"from":{"relation":"AssignWithin","selection":{"conjuncts":[]},"terms":[{"field":"parent","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_within_in_assign_scope_adbhaqmq4t"},
+				{"described":{"from":{"relation":"AssignWithin","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_within_in_assign_scope_t7yi4s6clj"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"AssignWithin"},"law":"__assign_within_pk_scope_mney62jhin"},
+				{"described":{"fields":["learner"],"kind":"primaryKey","relation":"Assigned"},"law":"__assigned_pk_learner_ogs732lrn5"},
 				{"described":{"from":{"relation":"Audit","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__audit_in_chain_result_lnwfzi4o3s"},
 				{"described":{"fields":["step"],"kind":"primaryKey","relation":"Audit"},"law":"__audit_pk_step_lew2zfy6bw"},
 				{"described":{"fields":["build"],"kind":"primaryKey","relation":"Built"},"law":"__built_pk_build_iy4nih3fhq"},
@@ -5533,8 +6932,8 @@
 				{"described":{"from":{"relation":"ChainPageOutputNext","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainPageOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_page_output_next_in_chain_page_output_p6kzvp5jkn"},
 				{"described":{"fields":["step"],"kind":"primaryKey","relation":"ChainPageOutputNext"},"law":"__chain_page_output_next_pk_step_tdebtakd2s"},
 				{"described":{"fields":["step"],"kind":"primaryKey","relation":"ChainPageOutput"},"law":"__chain_page_output_pk_step_4wgq3mptl4"},
-				{"described":{"from":{"relation":"ChainPageRead","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_page_read_in_chain_result_pj5grk5vib"},
-				{"described":{"fields":["step","ordinal"],"kind":"primaryKey","relation":"ChainPageRead"},"law":"__chain_page_read_pk_step_ordinal_nl6z437kay"},
+				{"described":{"from":{"relation":"ChainPageWeightsRead","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_page_weights_read_in_chain_result_tfegcmqjvg"},
+				{"described":{"fields":["step","ordinal"],"kind":"primaryKey","relation":"ChainPageWeightsRead"},"law":"__chain_page_weights_read_pk_step_ordinal_l4cctxl2sd"},
 				{"described":{"from":{"relation":"ChainPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"ChainResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__chain_paused_in_chain_resumed_xxjpa5xxji"},
 				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"ChainPaused"},"law":"__chain_paused_pk_target_turn_4lwyl2ewln"},
 				{"described":{"from":{"relation":"ChainRefusal","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ChainFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]}},"law":"__chain_refusal_in_chain_failed_k3e4bfo3st"},
@@ -5639,6 +7038,7 @@
 				{"described":{"fields":["feed","seq","n"],"kind":"primaryKey","relation":"Item"},"law":"__item_pk_feed_seq_n_y4mrwtlrwm"},
 				{"described":{"contract":"natural","kind":"contract"},"law":"__natural_hcnvygsglu"},
 				{"described":{"fields":["order"],"kind":"primaryKey","relation":"Order"},"law":"__order_pk_order_kjcux64qhs"},
+				{"described":{"fields":["passage"],"kind":"primaryKey","relation":"Passage"},"law":"__passage_pk_passage_mykbwvlyip"},
 				{"described":{"from":{"relation":"RetryAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"RetryScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_admitted_in_retry_scope_utzh4qgtea"},
 				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"RetryAdmitted"},"law":"__retry_admitted_pk_scope_sj5xf4iwju"},
 				{"described":{"from":{"relation":"RetryBrittleInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"RetryStep","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Brittle"}}]},"terms":[{"field":"step","kind":"field"}]}},"law":"__retry_brittle_input_in_retry_step_cjqwrcygmc"},
@@ -5703,6 +7103,7 @@
 				{"described":{"from":{"relation":"RetryWithin","selection":{"conjuncts":[]},"terms":[{"field":"parent","kind":"field"}]},"kind":"contained","to":{"relation":"RetryScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_within_in_retry_scope_bcvdxqqz4f"},
 				{"described":{"from":{"relation":"RetryWithin","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"RetryScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_within_in_retry_scope_sgyo2ojzgr"},
 				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"RetryWithin"},"law":"__retry_within_pk_scope_xmnuisrop4"},
+				{"described":{"fields":["learner","passage"],"kind":"primaryKey","relation":"Seen"},"law":"__seen_pk_learner_passage_z5kbmlojhe"},
 				{"described":{"contract":"Seq","kind":"contract"},"law":"__seq_fssxeyunev"},
 				{"described":{"fields":["batch"],"kind":"primaryKey","relation":"Settled"},"law":"__settled_pk_batch_qfhu63z7q7"},
 				{"described":{"from":{"relation":"SyncAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"SyncScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_admitted_in_sync_scope_mc22ysssnj"},
@@ -5784,7 +7185,7 @@
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "805c1c6ac81b0c3570d643b46c0190a71b028722dc334a58ee617d4771932eac",
+			"fingerprint": "0bb15288d18937ffb91a8a0b6c0fe3ec8b6c66b5d09e808a2e5068567c8c06ee",
 			"laws": [
 				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"}
 			],
@@ -5795,6 +7196,126 @@
 	"live": {
 		"kind": "reads",
 		"tables": [
+			{
+				"relation": "AssignAdmitted",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "AssignAssignmentInput",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "AssignClaim",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "AssignDecideInput",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "AssignDecideNearestRead",
+				"routes": []
+			},
+			{
+				"relation": "AssignDecideOutput",
+				"routes": []
+			},
+			{
+				"relation": "AssignDecideOutputChosen",
+				"routes": []
+			},
+			{
+				"relation": "AssignDecideSeenRead",
+				"routes": []
+			},
+			{
+				"relation": "AssignDue",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "AssignFenced",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "AssignFinish",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "AssignHeld",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "AssignPaused",
+				"routes": []
+			},
+			{
+				"relation": "AssignResult",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "AssignResumed",
+				"routes": []
+			},
+			{
+				"relation": "AssignRetry",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "AssignRoot",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "AssignScope",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "AssignSkipped",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "AssignStep",
+				"routes": [
+					"scope",
+					"step"
+				]
+			},
+			{
+				"relation": "AssignWithin",
+				"routes": [
+					"parent",
+					"scope"
+				]
+			},
+			{
+				"relation": "Assigned",
+				"routes": []
+			},
 			{
 				"relation": "Audit",
 				"routes": []
@@ -5876,7 +7397,7 @@
 				"routes": []
 			},
 			{
-				"relation": "ChainPageRead",
+				"relation": "ChainPageWeightsRead",
 				"routes": []
 			},
 			{
@@ -6078,6 +7599,12 @@
 				"routes": []
 			},
 			{
+				"relation": "Passage",
+				"routes": [
+					"topic"
+				]
+			},
+			{
 				"relation": "RetryAdmitted",
 				"routes": [
 					"scope"
@@ -6193,6 +7720,12 @@
 				"routes": [
 					"parent",
 					"scope"
+				]
+			},
+			{
+				"relation": "Seen",
+				"routes": [
+					"learner"
 				]
 			},
 			{
@@ -6339,6 +7872,38 @@
 		"views": []
 	},
 	"rosters": {
+		"AssignJoin": [
+			{
+				"handle": "Assignment",
+				"kind": "live"
+			}
+		],
+		"AssignKind": [
+			{
+				"handle": "Decide",
+				"kind": "live"
+			},
+			{
+				"handle": "AssignmentFinish",
+				"kind": "live"
+			}
+		],
+		"AssignOutcome": [
+			{
+				"handle": "done",
+				"kind": "live"
+			},
+			{
+				"handle": "failed",
+				"kind": "live"
+			}
+		],
+		"AssignPausable": [
+			{
+				"handle": "Assignment",
+				"kind": "live"
+			}
+		],
 		"ChainChainRunInputFeed": [
 			{
 				"handle": "news",

@@ -7,11 +7,13 @@ import type {
 	JoinIR,
 	LawIR,
 	Lowered,
+	ReadIR,
 	SideIR,
 	StepIR,
 	ValueIR,
 	WritesIR
 } from "#lower/fragment.ts"
+import type { Base } from "#lower/schema.ts"
 
 /**
  * The printer: a lowered flow as three TypeScript modules the app commits beside its schema, which `den generate`
@@ -64,19 +66,23 @@ const fieldExpr = (type: FieldType): string => {
 			return type.brand
 		case "app":
 			return `${type.relation}.fields.${type.field}`
+		case "vector":
+			return `pg.vector(${type.dimensions})`
 		case "base":
 			switch (type.base) {
 				case "text":
 					return "Text"
 				case "bigint":
 					return "pg.bigint"
+				case "double":
+					return `pg["double precision"]`
 				case "boolean":
 					return "pg.boolean"
 			}
 	}
 }
 
-const baseExpr = (base: "text" | "bigint" | "boolean"): string => fieldExpr({ kind: "base", base })
+const baseExpr = (base: Base): string => fieldExpr({ kind: "base", base })
 
 const sideExpr = (side: SideIR): string => {
 	const source = (() => {
@@ -102,7 +108,12 @@ const lawExpr = (law: LawIR): string => {
 		case "race":
 			return `race(${law.relation})`
 		case "check":
-			return `check(${q(law.name)}, ${law.relation}, (row) => row.ge(row.${law.field}, ${law.atLeast}n))`
+			switch (law.holds.kind) {
+				case "atLeast":
+					return `check(${q(law.name)}, ${law.relation}, (row) => row.ge(row.${law.field}, ${law.holds.bound}n))`
+				case "finite":
+					return `check(${q(law.name)}, ${law.relation}, (row) => Compute.isFinite(row.${law.field}))`
+			}
 	}
 }
 
@@ -123,7 +134,7 @@ const denKeysOf = (l: Lowered): ReadonlyArray<string> => {
 const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 	const fields = fieldsOf(l)
 	const used = (kind: FieldType["kind"]) => Arr.some(fields, (t) => t.kind === kind)
-	const base = (b: "bigint" | "boolean") =>
+	const base = (b: Exclude<Base, "text">) =>
 		Arr.some(fields, (t) => t.kind === "base" && t.base === b) ||
 		Arr.some(l.brands, (br) => br.base === b)
 	const sides = Arr.flatMap(l.laws, (law) =>
@@ -131,6 +142,9 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 	)
 	const seated = Option.isSome(l.seats)
 	return [
+		...(Arr.some(l.laws, (law) => law.kind === "check" && law.holds.kind === "finite")
+			? ["Compute"]
+			: []),
 		...(seated || Arr.some(l.laws, (law) => law.kind === "check") ? ["check"] : []),
 		"closed",
 		...(used("closed") ? ["closedId"] : []),
@@ -141,7 +155,7 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		"key",
 		...(used("natural") ? ["natural"] : []),
 		"on",
-		...(base("bigint") || base("boolean") ? ["pg"] : []),
+		...(base("bigint") || base("double") || base("boolean") || used("vector") ? ["pg"] : []),
 		...(Arr.some(sides, (sd) => Arr.some(sd.terms, (t) => t.pred)) ? ["pred"] : []),
 		...(seated ? ["query"] : []),
 		...(Arr.some(l.laws, (law) => law.kind === "race") ? ["race"] : []),
@@ -199,7 +213,7 @@ const writerRelationsOf = (l: Lowered): ReadonlyArray<string> => {
 		`${P}Done`,
 		`${P}Held`,
 		...Arr.flatMap(l.steps, (s) => valueRelations(s.output)),
-		...Arr.flatMap(l.steps, (s) => Option.toArray(Option.map(s.reads, (r) => r.record))),
+		...Arr.flatMap(l.steps, (s) => Arr.map(s.reads, (r) => r.record)),
 		...(anySpawn ? l.spawning : []),
 		...(appRoots ? l.requesting : [])
 	])
@@ -418,6 +432,37 @@ const commitOf = (
 }
 
 /**
+ * A step's declared read over the app's schema, under its app role `writer`: the rows of the relation whose fields `by`
+ * equal the parameters of their names, or, for a nearest read, those rows scored by the cosine distance of their
+ * vector to the parameter of the vector field's name and searched by `approximateNearest`, delivered without the
+ * vector and with their distance.
+ */
+const readOf = (rd: ReadIR, app: string, writer: string): string => {
+	const rel = `${app}.relations.${rd.relation}`
+	const matched = rd.kind === "nearest" ? [...rd.fields, rd.vector] : rd.fields
+	const where = Arr.isReadonlyArrayNonEmpty(rd.by)
+		? `
+		.where(${commas(Arr.map(rd.by, (f) => `r.eq(${f}, r.param(${q(f)}, ${rel}.fields.${f}))`))})`
+		: ""
+	const found =
+		rd.kind === "nearest"
+			? commas([
+					...rd.fields,
+					`distance: Compute.cosineDistance(${rd.vector}, r.param(${q(rd.vector)}, ${rel}.fields.${rd.vector}))`
+				])
+			: commas(rd.fields)
+	const rule = `query(${writer}).rule((r) => {
+	const { ${commas(matched)} } = v(${rel}, "row")
+	return r
+		.match(${rel}, { ${commas(matched)} })${where}
+		.find({ ${found} })
+})`
+	return rd.kind === "nearest"
+		? `${rule}.approximateNearest({ by: "distance", take: ${rd.take} })`
+		: rule
+}
+
+/**
  * The programs module: den's programs over the flow's graph and coordination fragments, the roles over the app's
  * schema that hold them whole and serve them, each commit's union of den's facts with the app's writes, each app root's
  * request over the graph, which the app unions with its own write, and the declared reads over the flow's app role.
@@ -629,7 +674,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 						r("Failed"),
 						r("Held"),
 						...valueRelations(e),
-						...Option.toArray(Option.map(s.reads, (rd) => rd.record))
+						...Arr.map(s.reads, (rd) => rd.record)
 					],
 					none,
 					app
@@ -683,8 +728,12 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			denPrograms.push([
 				n.program(`Outputs${j.name}${read.name}`),
 				`query(${n.graph}).rule((r) => {
-	const { step, scope } = v(${r("Step")}, "step")
-	const { ${commas(cols)} } = v(${read.output.relation}, "output")
+	const { step, scope } = v(${r("Step")}, "step")${
+		Arr.isReadonlyArrayNonEmpty(cols)
+			? `
+	const { ${commas(cols)} } = v(${read.output.relation}, "output")`
+			: ""
+	}
 	return r
 		.match(${r("Step")}, { step, kind: ${q(read.name)}, scope })
 		.match(${read.output.relation}, { ${commas(["step", ...cols])} })
@@ -785,27 +834,17 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 					r("Done"),
 					r("Held"),
 					...valueRelations(s.output),
-					...Option.toArray(Option.map(s.reads, (rd) => rd.record)),
+					...Arr.map(s.reads, (rd) => rd.record),
 					...spawns
 				],
 				s.writes,
 				app
 			)
 		])
-		Option.map(s.reads, (rd) =>
+		Arr.forEach(s.reads, (rd) =>
 			commitPrograms.push([
-				n.program(`Read${s.name}`),
-				deferred(`query(${W}).rule((r) => {
-	const { ${commas(rd.fields)} } = v(${app}.relations.${rd.relation}, "row")
-	return r
-		.match(${app}.relations.${rd.relation}, { ${commas(rd.fields)} })${
-			Arr.isReadonlyArrayNonEmpty(rd.by)
-				? `
-		.where(${commas(Arr.map(rd.by, (f) => `r.eq(${f}, r.param(${q(f)}, ${app}.relations.${rd.relation}.fields.${f}))`))})`
-				: ""
-		}
-		.find({ ${commas(rd.fields)} })
-})`)
+				n.program(`Read${s.name}${Str.capitalize(rd.name)}`),
+				deferred(readOf(rd, app, W))
 			])
 		)
 	})
@@ -869,7 +908,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	)
 	return `${lines([
 		`/** The programs den lowered the flow ${P} to, over its fragments, and its roles over the schema ${app}; \`den generate\` writes them, and nothing edits them. */`,
-		`import { ${commas(Arr.filter(["ChangeSet", "clocked", "deferrable", "query", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
+		`import { ${commas(Arr.filter(["ChangeSet", "Compute", "clocked", "deferrable", "query", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
 		`import { DenInstant } from "@bjornpagen/den/lower/keys"`,
 		`import { ${app} } from ${q(place.schema.from)}`,
 		`import { ${W} } from ${q(place.writer.from)}`,
@@ -1045,13 +1084,12 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				: [])
 		])
 
-	const recordFacts = (s: StepIR, rows: string, step: string): ReadonlyArray<string> =>
-		Option.match(s.reads, {
-			onNone: () => [],
-			onSome: (rd) => [
-				`${rd.record}: Arr.map(${rows}, (row, ordinal) => ({ ...row, step: ${step}, ordinal: BigInt(ordinal) }))`
-			]
-		})
+	const recordFacts = (s: StepIR, found: string, step: string): ReadonlyArray<string> =>
+		Arr.map(
+			s.reads,
+			(rd) =>
+				`${rd.record}: Arr.map(${found}.${rd.name}, (row, ordinal) => ({ ...row, step: ${step}, ordinal: BigInt(ordinal) }))`
+		)
 
 	const failPort = (
 		name: string,
@@ -1077,11 +1115,15 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			? `Effect.map(Effect.all([${commas(Arr.map(s.edges, (e) => edgeGrowth(e, "done")))}]), (parts) => Arr.reduce(parts, nothingGrown, joined))`
 			: "Effect.succeed(nothingGrown)"
 		const spawnRows = Arr.isReadonlyArrayNonEmpty(s.edges) ? ["...grown.rows"] : []
-		const read = Option.match(s.reads, {
-			onNone: () => "read: () => Effect.succeed([])",
-			onSome: () =>
-				`read: (input) => Effect.map(h.commits.${n.program(`Read${s.name}`)}.once({ params: ${kindAt(s.index)}.reads.params(input), facts: {} }), rowsOf)`
-		})
+		const read = Arr.isReadonlyArrayNonEmpty(s.reads)
+			? `read: (input) => Effect.all({ ${commas(
+					Arr.map(
+						s.reads,
+						(rd) =>
+							`${rd.name}: Effect.map(h.commits.${n.program(`Read${s.name}${Str.capitalize(rd.name)}`)}.once({ params: ${kindAt(s.index)}.reads.${rd.name}.params(input), facts: {} }), rowsOf)`
+					)
+				)} }, { concurrency: "unbounded" })`
+			: "read: () => Effect.succeed({})"
 		return lines([
 			`runnerOf(${kindAt(s.index)}, {`,
 			`\tinput: (step) => ${readerOf(s.input)}(step),`,

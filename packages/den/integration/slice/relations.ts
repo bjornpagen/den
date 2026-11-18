@@ -6,7 +6,8 @@ import { closed, closedId, natural, pg, relation, str } from "@bjornpagen/grizzl
  * pages hold, each feed's weight (which a page reads before its body runs), each feed's cursor as insert-only
  * position facts (the latest is the cursor), the orders the app writes beside a root it requests in its own
  * transaction, each batch's tally, the batches whose whole run finished, the relations a sync copied, the builds the
- * Gold step made, and an auditor's notes on den's results.
+ * Gold step made, an auditor's notes on den's results, and the assignment engine's shape in miniature: passages and their
+ * embeddings, the passages a learner has seen, and the passage each assignment gave a learner.
  */
 export const Feed = closed("Feed", ["news", "sport"])
 
@@ -46,6 +47,25 @@ export const Copied = relation("Copied", { relation: Name, run: natural }, ["rel
 
 /** A build the Gold step made, by its number. */
 export const Built = relation("Built", { build: natural }, ["build"])
+
+/**
+ * The dimensions of a passage's embedding, the suite's own width: four, where a production embedding (Gemini Embedding
+ * 2) has 1536, so the suite's vectors stay small; nothing in den depends on the count.
+ */
+export const embeddingDimensions = 4
+
+/** A passage of a topic and its embedding, which a nearest read ranks by. */
+export const Passage = relation(
+	"Passage",
+	{ passage: Name, topic: Name, embedding: pg.vector(embeddingDimensions) },
+	["passage"]
+)
+
+/** A passage a learner has seen. */
+export const Seen = relation("Seen", { learner: Name, passage: Name }, ["learner", "passage"])
+
+/** The passage an assignment gave a learner. */
+export const Assigned = relation("Assigned", { learner: Name, passage: Name }, ["learner"])
 
 /** An auditor's note on a step's result, which references den's Result relation. */
 export const Audit = relation("Audit", { step: DenStep, note: Text }, ["step"])

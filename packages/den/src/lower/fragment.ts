@@ -43,6 +43,7 @@ export type FieldType =
 	| { readonly kind: "closed"; readonly roster: string }
 	| { readonly kind: "brand"; readonly brand: string }
 	| { readonly kind: "base"; readonly base: Base }
+	| { readonly kind: "vector"; readonly dimensions: number }
 	| { readonly kind: "app"; readonly relation: string; readonly field: string }
 
 /** A lowered relation: its name, its fields in order, and its primary key. */
@@ -87,8 +88,13 @@ export type LawIR =
 			readonly name: string
 			readonly relation: string
 			readonly field: string
-			readonly atLeast: bigint
+			readonly holds: Holds
 	  }
+
+/** What a row check holds of its field: a bound it is at least, or that it is finite. */
+export type Holds =
+	| { readonly kind: "atLeast"; readonly bound: bigint }
+	| { readonly kind: "finite" }
 
 /**
  * A closed relation of counts keyed by a roster, fixed by the flow's declaration: each resource's seats. Its rows are
@@ -144,13 +150,21 @@ export interface EdgeIR {
 	readonly relation: string
 }
 
-/** A step's declared read, lowered: the app relation it reads, the fields it reads by, and the relation it records in. */
-export interface ReadIR {
+/**
+ * A step's declared read, lowered: its name, the app relation it reads, the fields it reads by, the fields it delivers
+ * and the relation it records them in, row by row under the step and an ordinal. A nearest read also names the vector
+ * field it ranks by, which it does not deliver, and its bound, and records each row's distance beside it.
+ */
+export type ReadIR = {
+	readonly name: string
 	readonly relation: string
 	readonly by: ReadonlyArray<string>
-	readonly fields: readonly [string, ...Array<string>]
+	readonly fields: ReadonlyArray<string>
 	readonly record: string
-}
+} & (
+	| { readonly kind: "rows" }
+	| { readonly kind: "nearest"; readonly vector: string; readonly take: number }
+)
 
 /** A step kind, lowered. */
 export interface StepIR {
@@ -159,7 +173,7 @@ export interface StepIR {
 	readonly input: ValueIR
 	readonly output: ValueIR
 	readonly error: Option.Option<ValueIR>
-	readonly reads: Option.Option<ReadIR>
+	readonly reads: ReadonlyArray<ReadIR>
 	readonly writes: WritesIR
 	readonly edges: ReadonlyArray<EdgeIR>
 	readonly uses: ReadonlyArray<string>
@@ -305,6 +319,8 @@ export const lower = (flow: AnyFlow): Lowered => {
 		switch (column.type.kind) {
 			case "base":
 				return { kind: "base", base: column.type.base }
+			case "vector":
+				return { kind: "vector", dimensions: column.type.dimensions }
 			case "brand":
 				brand({ name: column.type.brand, base: column.type.base })
 				return { kind: "brand", brand: column.type.brand }
@@ -315,6 +331,22 @@ export const lower = (flow: AnyFlow): Lowered => {
 			}
 		}
 	}
+	/**
+	 * Holds every double column of `relationName` finite by a row check, as `Schema.Finite`, the one number schema den
+	 * lowers, states of its values.
+	 */
+	const finite = (relationName: string, columns: ReadonlyArray<Column>): void =>
+		Arr.forEach(columns, (c) => {
+			if ((c.type.kind === "base" || c.type.kind === "brand") && c.type.base === "double") {
+				laws.push({
+					kind: "check",
+					name: `${relationName}${capitalized(c.name)}Finite`,
+					relation: relationName,
+					field: c.name,
+					holds: { kind: "finite" }
+				})
+			}
+		})
 	const kinds = flow.kinds
 	const steps = stepsOf(kinds)
 	const joins = joinsOf(kinds)
@@ -547,7 +579,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 			name: "AttemptFromOne",
 			relation: Claim,
 			field: "attempt",
-			atLeast: 1n
+			holds: { kind: "atLeast", bound: 1n }
 		},
 		into(
 			{
@@ -590,6 +622,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 			key: [key]
 		})
 		Arr.forEach(owned, (to) => laws.push(into(side(relationName, [key]), to)))
+		finite(relationName, shape.columns)
 		const sidecars = Arr.map(shape.options, (column) => {
 			const sidecar = relation({
 				name: `${relationName}${capitalized(column.name)}`,
@@ -600,6 +633,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 				key: [key]
 			})
 			laws.push(into(side(sidecar, [key]), side(relationName, [key])))
+			finite(sidecar, [{ name: "value", type: column.type }])
 			return { column, relation: sidecar }
 		})
 		return { relation: relationName, owner, shape, sidecars }
@@ -661,44 +695,59 @@ export const lower = (flow: AnyFlow): Lowered => {
 		return { name: e.name, index, from: e.from.name, to: e.to.name, toKind, relation: edgeRelation }
 	})
 
-	const readOf = (s: AnyStepKind): Option.Option<ReadIR> => {
-		const declared = s.reads
-		if (declared.kind === "none") {
-			return Option.none()
-		}
-		const declaration = `step ${s.name}`
-		const fields = fieldNamesOf(declaration, declared.relation)
-		Arr.forEach(declared.by, (field) => {
-			if (!Arr.contains(fields, field)) {
-				throw new Refused({
-					declaration,
-					why: `it reads ${declared.relation.name} by ${field}, no field of it`
-				})
+	const readsOf = (s: AnyStepKind): ReadonlyArray<ReadIR> =>
+		Arr.map(Record.toEntries(s.reads), ([readName, declared]): ReadIR => {
+			const declaration = `step ${s.name}, its read ${readName}`
+			const fields = fieldNamesOf(declaration, declared.relation)
+			Arr.forEach(declared.by, (field) => {
+				if (!Arr.contains(fields, field)) {
+					throw new Refused({
+						declaration,
+						why: `it reads ${declared.relation.name} by ${field}, no field of it`
+					})
+				}
+			})
+			const reserved =
+				declared.kind === "nearest" ? ["step", "ordinal", "distance"] : ["step", "ordinal"]
+			Arr.forEach(fields, (field) => {
+				if (Arr.contains(reserved, field)) {
+					throw new Refused({
+						declaration,
+						why: `the relation ${declared.relation.name} it reads has a field ${field}, which its record keeps for itself`
+					})
+				}
+			})
+			const delivered =
+				declared.kind === "nearest"
+					? Arr.filter(fields, (field) => field !== declared.vector)
+					: fields
+			const record = relation({
+				name: name(`${s.name}${capitalized(readName)}Read`),
+				fields: [
+					{ name: "step", type: stepKey },
+					{ name: "ordinal", type: natural },
+					...Arr.map(delivered, (field) => ({
+						name: field,
+						type: { kind: "app", relation: declared.relation.name, field } satisfies FieldType
+					})),
+					...(declared.kind === "nearest"
+						? [{ name: "distance", type: { kind: "base", base: "double" } satisfies FieldType }]
+						: [])
+				],
+				key: ["step", "ordinal"]
+			})
+			laws.push(into(side(record, ["step"]), side(Result, ["step"])))
+			const read = {
+				name: readName,
+				relation: declared.relation.name,
+				by: declared.by,
+				fields: delivered,
+				record
 			}
+			return declared.kind === "nearest"
+				? { ...read, kind: "nearest", vector: declared.vector, take: declared.take }
+				: { ...read, kind: "rows" }
 		})
-		Arr.forEach(fields, (field) => {
-			if (field === "step" || field === "ordinal") {
-				throw new Refused({
-					declaration,
-					why: `the relation ${declared.relation.name} it reads has a field ${field}, which its record keeps for itself`
-				})
-			}
-		})
-		const record = relation({
-			name: name(`${s.name}Read`),
-			fields: [
-				{ name: "step", type: stepKey },
-				{ name: "ordinal", type: natural },
-				...Arr.map(fields, (field) => ({
-					name: field,
-					type: { kind: "app", relation: declared.relation.name, field } satisfies FieldType
-				}))
-			],
-			key: ["step", "ordinal"]
-		})
-		laws.push(into(side(record, ["step"]), side(Result, ["step"])))
-		return Option.some({ relation: declared.relation.name, by: declared.by, fields, record })
-	}
 
 	const stepsIR: ReadonlyArray<StepIR> = Arr.map(steps, (s) => {
 		const declaration = `step ${s.name}`
@@ -719,7 +768,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 			input,
 			output,
 			error,
-			reads: readOf(s),
+			reads: readsOf(s),
 			writes: writesOf(s.writes),
 			edges: Arr.filter(edgesIR, (e) => e.from === s.name),
 			uses: Arr.map(s.uses, (r) => r.name),
@@ -936,9 +985,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		requesting,
 		coordination,
 		app: { insert: union("insert"), put: union("put"), delete: union("delete") },
-		read: Arr.dedupe(
-			Arr.flatMap(stepsIR, (s) => Option.toArray(Option.map(s.reads, (r) => r.relation)))
-		),
+		read: Arr.dedupe(Arr.flatMap(stepsIR, (s) => Arr.map(s.reads, (r) => r.relation))),
 		idle: Arr.dedupe(
 			Arr.flatMap(joinsIR, (j) => Option.match(j.root, { onNone: () => [], onSome: (r) => r.idle }))
 		)

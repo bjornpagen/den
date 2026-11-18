@@ -1,4 +1,4 @@
-import { natural, pg, relation } from "@bjornpagen/grizzle"
+import { natural, pg, relation, Vector } from "@bjornpagen/grizzle"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { boolean, element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -17,15 +17,16 @@ import {
 	edge,
 	exclusiveBy,
 	type FieldSchema,
-	noReads,
+	nearest,
 	operator,
-	reads,
+	rows,
 	resource,
 	root,
 	scope,
 	shared,
 	step,
 	unconditional,
+	vector,
 	writer,
 	writesNothing
 } from "#algebra/kinds.ts"
@@ -45,10 +46,21 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * chain, with its seat counts and its seat level, the live holds checked below them, exactly when a step uses a resource.
  *
  * Oracle (specification): the proposal's sections 5 and 6, over flows of up to three steps, chained or not, of each
- * field form, with or without a resource, an exclusive root, a child scope, a declared read and a typed error.
+ * field form, with or without a resource, an exclusive root, a child scope, a rows read, a nearest read and a typed
+ * error. A nearest read records its neighbours without the vector they were ranked by and with their distance, and a
+ * finite number is held finite by a row check.
  */
 
-const Form = Schema.Literals(["text", "bigint", "boolean", "literals", "brand", "option"])
+const Form = Schema.Literals([
+	"text",
+	"bigint",
+	"finite",
+	"boolean",
+	"vector",
+	"literals",
+	"brand",
+	"option"
+])
 type Form = typeof Form.Type
 
 type Feature =
@@ -58,8 +70,12 @@ type Feature =
 	| "a resource"
 	| "an exclusive root"
 	| "a child scope"
-	| "a declared read"
+	| "a rows read"
+	| "a nearest read"
 	| "a typed error"
+
+/** Which reads the first step declares: none, a rows read, a nearest read, or both. */
+const Reading = Schema.Literals(["none", "rows", "nearest", "both"])
 
 interface Sketch {
 	readonly prefix: "Alpha" | "Beta"
@@ -69,7 +85,7 @@ interface Sketch {
 	readonly resource: boolean
 	readonly exclusive: boolean
 	readonly scoped: boolean
-	readonly read: boolean
+	readonly reads: typeof Reading.Type
 	readonly typed: boolean
 }
 
@@ -81,7 +97,7 @@ const sketches: Gen<Sketch> = (source) => ({
 	resource: source.draw(boolean),
 	exclusive: source.draw(boolean),
 	scoped: source.draw(boolean),
-	read: source.draw(boolean),
+	reads: source.draw(element(Reading.literals)),
 	typed: source.draw(boolean)
 })
 
@@ -91,6 +107,10 @@ const fieldOf = (form: Form): FieldSchema => {
 			return Schema.String
 		case "bigint":
 			return Schema.BigInt
+		case "finite":
+			return Schema.Finite
+		case "vector":
+			return vector(passageDimensions)
 		case "boolean":
 			return Schema.Boolean
 		case "literals":
@@ -104,6 +124,32 @@ const fieldOf = (form: Form): FieldSchema => {
 
 /** An app relation a step may read: a feed's weight. */
 const Weight = relation("Weight", { feed: pg.bigint, factor: natural }, ["feed", "factor"])
+
+/** The suite's own vector width. */
+const passageDimensions = 4
+
+/** An app relation a step's nearest read ranks: a passage and its embedding. */
+const Passage = relation(
+	"Passage",
+	{ passage: pg.bigint, embedding: pg.vector(passageDimensions) },
+	["passage"]
+)
+
+/** How many passages a nearest read finds at most, the suite's own size. */
+const passagesFound = 2
+
+/** The query vector a nearest read takes, the same for every input. */
+const query = Vector.make(Float32Array.from([1, 0, 0, 0]), passageDimensions)
+
+/** The reads a sketch's first step declares. */
+const readsOf = (reading: typeof Reading.Type) => ({
+	...(reading === "rows" || reading === "both"
+		? { weights: rows(Weight, ["feed"], () => ({ feed: 0n })) }
+		: {}),
+	...(reading === "nearest" || reading === "both"
+		? { passages: nearest(Passage, "embedding", passagesFound, [], () => ({ embedding: query })) }
+		: {})
+})
 
 /**
  * The box of grizzle's own work-queue law suite: two seats.
@@ -138,7 +184,7 @@ const built = (sketch: Sketch): AnyFlow => {
 			input: value,
 			output: value,
 			error: sketch.typed ? Schema.Struct({ code: Schema.String }) : Schema.Never,
-			reads: sketch.read ? reads(Weight, ["feed"], () => ({ feed: 0n })) : noReads,
+			reads: readsOf(sketch.reads),
 			uses: sketch.resource ? [pool] : [],
 			retry: attempts(1),
 			due: atSpawn,
@@ -153,7 +199,7 @@ const built = (sketch: Sketch): AnyFlow => {
 				input: value,
 				output: value,
 				error: Schema.Never,
-				reads: noReads,
+				reads: {},
 				uses: [],
 				retry: attempts(1),
 				due: atSpawn,
@@ -180,7 +226,7 @@ const built = (sketch: Sketch): AnyFlow => {
 			input: value,
 			output: value,
 			error: Schema.Never,
-			reads: noReads,
+			reads: {},
 			uses: [],
 			retry: attempts(1),
 			due: atSpawn,
@@ -237,7 +283,8 @@ it.effect(
 							"a resource",
 							"an exclusive root",
 							"a child scope",
-							"a declared read",
+							"a rows read",
+							"a nearest read",
 							"a typed error"
 						],
 						{ cases: 80, sense: notesOnly }
@@ -261,8 +308,15 @@ it.effect(
 						if (sketch.scoped) {
 							c.note("a child scope")
 						}
-						if (sketch.read) {
-							c.note("a declared read")
+						const reading = {
+							rows: sketch.reads === "rows" || sketch.reads === "both",
+							nearest: sketch.reads === "nearest" || sketch.reads === "both"
+						}
+						if (reading.rows) {
+							c.note("a rows read")
+						}
+						if (reading.nearest) {
+							c.note("a nearest read")
 						}
 						if (sketch.typed) {
 							c.note("a typed error")
@@ -318,7 +372,43 @@ it.effect(
 								)
 							)
 						}
-						assert.strictEqual(has("S0Read"), sketch.read)
+						assert.strictEqual(has("S0WeightsRead"), reading.rows)
+						assert.strictEqual(has("S0PassagesRead"), reading.nearest)
+						const fieldsOf = (name: string) =>
+							Option.map(
+								Arr.findFirst(lowered.relations, (r) => r.name === name),
+								(r) => Arr.map(r.fields, (field) => [field.name, field.type.kind] as const)
+							)
+						if (reading.nearest) {
+							assert.deepStrictEqual(
+								fieldsOf(`${P}S0PassagesRead`),
+								Option.some([
+									["step", "key"],
+									["ordinal", "natural"],
+									["passage", "app"],
+									["distance", "base"]
+								])
+							)
+						}
+						assert.strictEqual(
+							Arr.some(
+								lowered.laws,
+								(law) =>
+									law.kind === "check" &&
+									law.relation === `${P}S0Input` &&
+									law.field === "value" &&
+									law.holds.kind === "finite"
+							),
+							sketch.form === "finite"
+						)
+						if (sketch.form === "vector") {
+							assert.deepStrictEqual(
+								Option.map(fieldsOf(`${P}S0Input`), (fields) =>
+									Arr.map(fields, ([, kind]) => kind)
+								),
+								Option.some(["key", "vector"])
+							)
+						}
 
 						const chains = [
 							...(sketch.resource

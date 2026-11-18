@@ -329,7 +329,7 @@ export const fanLedger = (h: FanHandles) => {
 					fan.kinds[0],
 					{
 						input: (step) => readFanSquareInput(step),
-						read: () => Effect.succeed([]),
+						read: () => Effect.succeed({}),
 						commit: (done, _at) =>
 							Effect.gen(function* () {
 								const grown = yield* Effect.succeed(nothingGrown)

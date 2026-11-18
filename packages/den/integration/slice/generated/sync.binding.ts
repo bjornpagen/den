@@ -342,7 +342,7 @@ export const syncLedger = (h: SyncHandles) => {
 					sync.kinds[0],
 					{
 						input: (step) => readSyncCopyInput(step),
-						read: () => Effect.succeed([]),
+						read: () => Effect.succeed({}),
 						commit: (done, _at) =>
 							Effect.gen(function* () {
 								const grown = yield* Effect.succeed(nothingGrown)
@@ -371,7 +371,7 @@ export const syncLedger = (h: SyncHandles) => {
 					sync.kinds[2],
 					{
 						input: (step) => readSyncBuildInput(step),
-						read: () => Effect.succeed([]),
+						read: () => Effect.succeed({}),
 						commit: (done, _at) =>
 							Effect.gen(function* () {
 								const grown = yield* Effect.succeed(nothingGrown)

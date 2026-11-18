@@ -110,8 +110,8 @@ export const ChainPageOutput = relation(
 export const ChainPageOutputNext = relation("ChainPageOutputNext", { step: DenStep, value: Text }, [
 	"step"
 ])
-export const ChainPageRead = relation(
-	"ChainPageRead",
+export const ChainPageWeightsRead = relation(
+	"ChainPageWeightsRead",
 	{ step: DenStep, ordinal: natural, feed: Weight.fields.feed, factor: Weight.fields.factor },
 	["step", "ordinal"]
 )
@@ -162,7 +162,7 @@ export const chainGraph = fragment(
 		ChainNext,
 		ChainPageOutput,
 		ChainPageOutputNext,
-		ChainPageRead
+		ChainPageWeightsRead
 	],
 	[
 		contained(on(ChainRoot, "scope"), on(ChainScope, "scope")),
@@ -242,7 +242,7 @@ export const chainGraph = fragment(
 		contained(on(ChainPageOutput, "step"), on(ChainPageInput, "step")),
 		contained(on(ChainPageOutput, "step"), on(ChainDone, "step")),
 		contained(on(ChainPageOutputNext, "step"), on(ChainPageOutput, "step")),
-		contained(on(ChainPageRead, "step"), on(ChainResult, "step"))
+		contained(on(ChainPageWeightsRead, "step"), on(ChainResult, "step"))
 	]
 )
 
@@ -272,7 +272,7 @@ export const chainWriter = [
 	"ChainHeld",
 	"ChainPageOutput",
 	"ChainPageOutputNext",
-	"ChainPageRead",
+	"ChainPageWeightsRead",
 	"ChainStep",
 	"ChainDue",
 	"ChainScope",

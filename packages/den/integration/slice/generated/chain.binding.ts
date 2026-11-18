@@ -306,12 +306,17 @@ export const chainLedger = (h: ChainHandles) => {
 					{
 						input: (step) => readChainPageInput(step),
 						read: (input) =>
-							Effect.map(
-								h.commits.chainReadPage.once({
-									params: chain.kinds[0].reads.params(input),
-									facts: {}
-								}),
-								rowsOf
+							Effect.all(
+								{
+									weights: Effect.map(
+										h.commits.chainReadPageWeights.once({
+											params: chain.kinds[0].reads.weights.params(input),
+											facts: {}
+										}),
+										rowsOf
+									)
+								},
+								{ concurrency: "unbounded" }
 							),
 						commit: (done, at) =>
 							Effect.gen(function* () {
@@ -363,7 +368,7 @@ export const chainLedger = (h: ChainHandles) => {
 											ChainPageOutputNext: Option.toArray(
 												Option.map(done.output.next, (value) => ({ step: done.turn.step, value }))
 											),
-											ChainPageRead: Arr.map(done.rows, (row, ordinal) => ({
+											ChainPageWeightsRead: Arr.map(done.rows.weights, (row, ordinal) => ({
 												...row,
 												step: done.turn.step,
 												ordinal: BigInt(ordinal)

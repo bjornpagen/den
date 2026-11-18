@@ -36,7 +36,7 @@ import {
 	ChainNext,
 	ChainPageOutput,
 	ChainPageOutputNext,
-	ChainPageRead,
+	ChainPageWeightsRead,
 	ChainPaused,
 	ChainResumed,
 	chainGraph,
@@ -74,7 +74,7 @@ export const ChainDen = role(
 			"ChainPageInputAfter",
 			"ChainChainRunInput",
 			"ChainOrderedInput",
-			"ChainPageRead"
+			"ChainPageWeightsRead"
 		]
 	}
 )
@@ -388,7 +388,7 @@ export const chainCommitPrograms = Object.freeze({
 			.insert(ChainHeld, [])
 			.insert(ChainPageOutput, [])
 			.insert(ChainPageOutputNext, [])
-			.insert(ChainPageRead, [])
+			.insert(ChainPageWeightsRead, [])
 			.insert(ChainStep, [])
 			.insert(ChainDue, [])
 			.insert(ChainScope, [])
@@ -402,7 +402,7 @@ export const chainCommitPrograms = Object.freeze({
 			.insert(ChainNext, []),
 		ChangeSet.empty(Loader).insert(App.relations.Item, [])
 	),
-	chainReadPage: deferrable(
+	chainReadPageWeights: deferrable(
 		query(Loader).rule((r) => {
 			const { feed, factor } = v(App.relations.Weight, "row")
 			return r

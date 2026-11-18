@@ -196,6 +196,13 @@ GRANT pg_signal_backend TO $DEV_ROLE;
 CREATE DATABASE $TEMPLATE_DB OWNER $DEV_ROLE TEMPLATE template0 ENCODING 'UTF8'
 	LOCALE_PROVIDER builtin BUILTIN_LOCALE 'C.UTF-8' LOCALE 'C.UTF-8' IS_TEMPLATE true;
 SQL
+	# pgvector is no trusted extension, so the owner, a migration identity that is no superuser, cannot create it: the
+	# template carries it in vector_ext, the schema grizzle compiles a vector field's type and operators into, and a
+	# migration's "create if absent" finds it there (vendor/grizzle's scripts/pg/init.sh does the same).
+	admin_psql -d "$TEMPLATE_DB" <<SQL
+CREATE SCHEMA vector_ext AUTHORIZATION $DEV_ROLE;
+CREATE EXTENSION vector SCHEMA vector_ext;
+SQL
 	admin_psql -d postgres -c "CREATE DATABASE $DEV_ROLE OWNER $DEV_ROLE TEMPLATE $TEMPLATE_DB"
 	# A session inside the template would make every clone fail.
 	admin_psql -d postgres -c "ALTER DATABASE $TEMPLATE_DB ALLOW_CONNECTIONS false"

@@ -31,6 +31,7 @@ import { ChildProcess } from "effect/process"
 import { TestClock } from "effect/testing"
 import pg from "pg"
 import { Faults } from "#integration/slice/flows.ts"
+import { assignLedger } from "#integration/slice/generated/assign.binding.ts"
 import { chainLedger } from "#integration/slice/generated/chain.binding.ts"
 import { fanLedger } from "#integration/slice/generated/fan.binding.ts"
 import { retryLedger } from "#integration/slice/generated/retry.binding.ts"
@@ -39,6 +40,7 @@ import type { AppLogin, Worker } from "#integration/slice/logins.ts"
 import initMigration from "#integration/slice/migrations/slice/20261114214053_init/meta.json" with { type: "json" }
 import fanFreedMigration from "#integration/slice/migrations/slice/20261115213330_add_rule_capture_of_fan_freed_and_more/meta.json" with { type: "json" }
 import netWriteMigration from "#integration/slice/migrations/slice/20261118094004_add_fan_hold_capture_delete_and_more/meta.json" with { type: "json" }
+import readsMigration from "#integration/slice/migrations/slice/20261118100351_named_and_nearest_reads/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -76,7 +78,8 @@ const grizzleBin = `${import.meta.dirname}/../../../../vendor/grizzle/packages/g
 const committed = Object.freeze({
 	"20261114214053_init": initMigration,
 	"20261115213330_add_rule_capture_of_fan_freed_and_more": fanFreedMigration,
-	"20261118094004_add_fan_hold_capture_delete_and_more": netWriteMigration
+	"20261118094004_add_fan_hold_capture_delete_and_more": netWriteMigration,
+	"20261118100351_named_and_nearest_reads": readsMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
@@ -561,9 +564,9 @@ const byFlow = (all: ReadonlyArray<Ledger<Faults>>): Ledgers<Faults> =>
 	new Map(Arr.map(all, (l) => [l.flow, l] as const))
 
 /**
- * The slice's four flows' ledgers over Dbs opened on the worker's den and coordinator roles and the app's loader, each
+ * The slice's five flows' ledgers over Dbs opened on the worker's den and coordinator roles and the app's loader, each
  * reading the database's instant moved on by the time the suite's clock travels from here; and `misconfigured`, the
- * same four committing through the misconfigured loader, whose every commit meets `credentialRefused` while their own
+ * same five committing through the misconfigured loader, whose every commit meets `credentialRefused` while their own
  * roles' calls are let in.
  */
 export const openLedgers = Effect.gen(function* () {
@@ -587,23 +590,36 @@ export const openLedgers = Effect.gen(function* () {
 		retry: {
 			den: (yield* Db.open(WorkerServed.roles.retry_den, {})).workload,
 			coordinator: (yield* Db.open(WorkerServed.roles.retry_coordinator, {})).workload
+		},
+		assign: {
+			den: (yield* Db.open(WorkerServed.roles.assign_den, {})).workload,
+			coordinator: (yield* Db.open(WorkerServed.roles.assign_coordinator, {})).workload
 		}
 	}
 	const chainBound = chainLedger({ ...roles.chain, commits })
 	const fanBound = fanLedger({ ...roles.fan, commits })
 	const syncBound = syncLedger({ ...roles.sync, commits })
 	const retryBound = retryLedger({ ...roles.retry, commits })
+	const assignBound = assignLedger({ ...roles.assign, commits })
 	const chain = { ...chainBound, ledger: travelling(chainBound.ledger, opened) }
 	const fan = { ...fanBound, ledger: travelling(fanBound.ledger, opened) }
 	const sync = { ...syncBound, ledger: travelling(syncBound.ledger, opened) }
 	const retry = { ...retryBound, ledger: travelling(retryBound.ledger, opened) }
-	const all: ReadonlyArray<Ledger<Faults>> = [chain.ledger, fan.ledger, sync.ledger, retry.ledger]
+	const assign = { ...assignBound, ledger: travelling(assignBound.ledger, opened) }
+	const all: ReadonlyArray<Ledger<Faults>> = [
+		chain.ledger,
+		fan.ledger,
+		sync.ledger,
+		retry.ledger,
+		assign.ledger
+	]
 	const refused: ReadonlyArray<Ledger<Faults>> = Arr.map(
 		[
 			chainLedger({ ...roles.chain, commits: refusing }).ledger,
 			fanLedger({ ...roles.fan, commits: refusing }).ledger,
 			syncLedger({ ...roles.sync, commits: refusing }).ledger,
-			retryLedger({ ...roles.retry, commits: refusing }).ledger
+			retryLedger({ ...roles.retry, commits: refusing }).ledger,
+			assignLedger({ ...roles.assign, commits: refusing }).ledger
 		],
 		(ledger) => travelling(ledger, opened)
 	)
@@ -612,6 +628,7 @@ export const openLedgers = Effect.gen(function* () {
 		fan,
 		sync,
 		retry,
+		assign,
 		all,
 		ledgers: byFlow(all),
 		misconfigured: { all: refused, ledgers: byFlow(refused) },

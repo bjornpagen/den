@@ -15,9 +15,9 @@ constants with their evidence beside the code they bound (`src/runtime/turn.ts`,
 | module | what it holds |
 |---|---|
 | `src/transport.ts` | the wake contract: `Wake` `{ lane, step, attempt }`, each field branded (`den/LaneName`, `DenStep`, `den/Attempt` ≥ 1), decoded by `WakeSchema`; `idempotencyKey` (`${lane}:${step}:${attempt}`); `Transport`, a `Context.Service` whose `send` never fails; the in-process transport over an unbounded `Queue` |
-| `src/algebra/kinds.ts` | `lane` (width, window, pause, ceiling of attempts), `step`, `awaiting`, `scope`, `root`, `edge`, `writes`; spawns typed by their kind (`Page.of(input)`); bodies `input → Effect<{ output, writes }, E, R>`; `Refused` |
+| `src/algebra/kinds.ts` | `lane` (width, window, pause, ceiling of attempts), `step`, `awaiting`, `scope`, `root`, `edge`, `writes`; a step's reads by name, each `rows` (equality over one relation) or `nearest` (grizzle's `approximateNearest` by a vector field); `vector(n)`; spawns typed by their kind (`Page.of(input)`); bodies `(input, found) → Effect<{ output, writes }, E, R>`, `found` each read's rows by its name; `Refused` |
 | `src/algebra/flow.ts` | `flow(name, { lanes, kinds, edges })` and its declaration-time checks (below) |
-| `src/lower/schema.ts` | Effect Schema to columns: `String`, `BigInt`, `Boolean`, a literal union of texts (a roster), a brand of one (a contract), an `Option` of one (a relation of its own); anything else, a refinement by a check included, `Refused` |
+| `src/lower/schema.ts` | Effect Schema to columns: `String`, `BigInt`, `Finite` (double precision, held finite by a row check), `Boolean`, den's `vector(n)` (`pg.vector(n)`), a literal union of texts (a roster), a brand of one (a contract), an `Option` of one (a relation of its own); anything else, a refinement by a check included, `Refused` |
 | `src/lower/fragment.ts` | a flow to its fragment as data (`Lowered`): rosters, contracts, relations, laws, and the kinds, joins and edges the printer reads |
 | `src/lower/print.ts`, `generate.ts` | the fragment, the programs and the binding printed as three TypeScript modules the app commits (`den generate`) |
 | `src/lower/merge.ts` | den's clash check: the app's relations and a fragment merged, a shared name refused |
@@ -60,9 +60,11 @@ kinds and roots), `POutcome` (`done`, `failed`); relations `PScope`, `PRoot`, `P
 (scope → its finish step, the finish's key race), `PClaim` (step, attempt, holder, until), `PResult` (one per step,
 done or failed), `PHeld` (the attempt whose commit holds the result), `PRefusal` (the law's id), `PExhausted`; per
 step kind `PKInput` and `PKOutput` (and `PKError` for a typed error), per join `PJInput`, per finish `PJFinishError`,
-per Option field a relation of its own, and per edge kind `PE` (from, ordinal, to). Every law is a key, a native
-containment or a row check: attempts run gap-free from 1 (`AttemptFromOne`, and a `pred` containment over attempts ≥ 2);
-an edge's sides are contained in its kinds' input relations; an output in its kind's input and in its done result.
+per Option field a relation of its own, per declared read `PKNRead` (step, ordinal, the fields it delivers, and a
+nearest read's `distance`), and per edge kind `PE` (from, ordinal, to). Every law is a key, a native containment or a
+row check: attempts run gap-free from 1 (`AttemptFromOne`, and a `pred` containment over attempts ≥ 2); a finite
+number's column is finite; an edge's sides are contained in its kinds' input relations; an output in its kind's input
+and in its done result; a read's record in its step's result.
 
 ## What `grizzle generate` certified
 

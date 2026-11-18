@@ -1,6 +1,13 @@
 import { ChangeSet, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
+	AssignDecideNearestRead,
+	AssignDecideOutputChosen,
+	AssignDecideSeenRead,
+	AssignResult,
+	AssignStep
+} from "#integration/slice/generated/assign.fragment.ts"
+import {
 	ChainAdmitted,
 	ChainChainRunInput,
 	ChainClaim,
@@ -11,7 +18,7 @@ import {
 	ChainPageInputAfter,
 	ChainPageOutput,
 	ChainPageOutputNext,
-	ChainPageRead,
+	ChainPageWeightsRead,
 	ChainResult,
 	ChainRoot,
 	ChainScope,
@@ -50,12 +57,15 @@ import {
 	SyncSkipped
 } from "#integration/slice/generated/sync.fragment.ts"
 import {
+	Assigned,
 	Audit,
 	Built,
 	Copied,
 	Cursor,
 	Item,
 	Order,
+	Passage,
+	Seen,
 	Settled,
 	Tally,
 	Weight
@@ -64,7 +74,7 @@ import { Loader } from "#integration/slice/roles.ts"
 
 /**
  * The app's own programs, apart from den's: its auditor role and its reads, and its writer role's own writes (an order
- * requesting a chain in its own transaction, a feed's weight). The certification suite certifies them alone, as an
+ * requesting a chain in its own transaction, a feed's weight, a passage and its embedding, a passage a learner saw). The certification suite certifies them alone, as an
  * installation with no den program would.
  */
 
@@ -77,6 +87,12 @@ export const Auditor = role(
 	App,
 	"auditor",
 	{
+		Assigned,
+		AssignDecideNearestRead,
+		AssignDecideOutputChosen,
+		AssignDecideSeenRead,
+		AssignResult,
+		AssignStep,
 		Audit,
 		Built,
 		ChainAdmitted,
@@ -89,7 +105,7 @@ export const Auditor = role(
 		ChainPageInputAfter,
 		ChainPageOutput,
 		ChainPageOutputNext,
-		ChainPageRead,
+		ChainPageWeightsRead,
 		ChainResult,
 		ChainRoot,
 		ChainScope,
@@ -143,9 +159,9 @@ const pages = query(Auditor).rule((r) => {
 
 /** The weight rows each page read before its body ran, recorded with its result. */
 const pageReads = query(Auditor).rule((r) => {
-	const { step, ordinal, feed, factor } = v(ChainPageRead, "read")
+	const { step, ordinal, feed, factor } = v(ChainPageWeightsRead, "read")
 	return r
-		.match(ChainPageRead, { step, ordinal, feed, factor })
+		.match(ChainPageWeightsRead, { step, ordinal, feed, factor })
 		.find({ step, ordinal, feed, factor })
 })
 
@@ -243,6 +259,43 @@ const retryClaims = query(Auditor).rule((r) => {
 const retryExhausted = query(Auditor).rule((r) => {
 	const { step, attempts } = v(RetryExhausted, "exhausted")
 	return r.match(RetryExhausted, { step, attempts }).find({ step, attempts })
+})
+
+/** Every assignment step's result, with its scope. */
+const assignResults = query(Auditor).rule((r) => {
+	const { step, kind, scope } = v(AssignStep, "step")
+	const { outcome } = v(AssignResult, "result")
+	return r
+		.match(AssignStep, { step, kind, scope })
+		.match(AssignResult, { step, outcome })
+		.find({ step, kind, scope, outcome })
+})
+
+/** The passages each decision's nearest read found, recorded with its result: each one's ordinal and distance. */
+const nearestReads = query(Auditor).rule((r) => {
+	const { step, ordinal, passage, topic, distance } = v(AssignDecideNearestRead, "read")
+	return r
+		.match(AssignDecideNearestRead, { step, ordinal, passage, topic, distance })
+		.find({ step, ordinal, passage, topic, distance })
+})
+
+/** The seen passages each decision read, recorded with its result. */
+const seenReads = query(Auditor).rule((r) => {
+	const { step, ordinal, learner, passage } = v(AssignDecideSeenRead, "read")
+	return r
+		.match(AssignDecideSeenRead, { step, ordinal, learner, passage })
+		.find({ step, ordinal, learner, passage })
+})
+
+/** The passage each decision chose, where it chose one. */
+const chosen = query(Auditor).rule((r) => {
+	const { step, value } = v(AssignDecideOutputChosen, "chosen")
+	return r.match(AssignDecideOutputChosen, { step, value }).find({ step, value })
+})
+
+const assigned = query(Auditor).rule((r) => {
+	const { learner, passage } = v(Assigned, "assigned")
+	return r.match(Assigned, { learner, passage }).find({ learner, passage })
 })
 
 /** An audited result: the app joining den's facts with its own. */
@@ -395,6 +448,11 @@ export const auditWorkload = workload(Auditor, {
 	retryResults,
 	retryClaims,
 	retryExhausted,
+	assignResults,
+	nearestReads,
+	seenReads,
+	chosen,
+	assigned,
 	...every
 })
 
@@ -404,5 +462,7 @@ export const auditWorkload = workload(Auditor, {
  */
 export const appWorkload = workload(Loader, {
 	order: ChangeSet.union(ChangeSet.empty(Loader).insert(Order, []), chainRequests.Ordered),
-	weigh: ChangeSet.empty(Loader).insert(App.relations.Weight, [])
+	weigh: ChangeSet.empty(Loader).insert(App.relations.Weight, []),
+	place: ChangeSet.empty(Loader).insert(Passage, []),
+	see: ChangeSet.empty(Loader).insert(Seen, [])
 })

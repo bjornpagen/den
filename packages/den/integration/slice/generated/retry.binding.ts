@@ -266,7 +266,7 @@ export const retryLedger = (h: RetryHandles) => {
 					retry.kinds[0],
 					{
 						input: (step) => readRetrySteadfastInput(step),
-						read: () => Effect.succeed([]),
+						read: () => Effect.succeed({}),
 						commit: (done, _at) =>
 							Effect.gen(function* () {
 								const grown = yield* Effect.succeed(nothingGrown)
@@ -294,7 +294,7 @@ export const retryLedger = (h: RetryHandles) => {
 					retry.kinds[1],
 					{
 						input: (step) => readRetryBrittleInput(step),
-						read: () => Effect.succeed([]),
+						read: () => Effect.succeed({}),
 						commit: (done, _at) =>
 							Effect.gen(function* () {
 								const grown = yield* Effect.succeed(nothingGrown)
