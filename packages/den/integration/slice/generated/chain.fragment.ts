@@ -14,6 +14,8 @@ import {
 	pred,
 	race,
 	relation,
+	retirable,
+	retirement,
 	select
 } from "@bjornpagen/grizzle"
 import { Weight } from "#integration/slice/relations.ts"
@@ -28,92 +30,138 @@ export const ChainPageInputFeed = closed.unordered("ChainPageInputFeed", ["news"
 export const ChainChainRunInputFeed = closed.unordered("ChainChainRunInputFeed", ["news", "sport"])
 export const ChainOrderedInputFeed = closed.unordered("ChainOrderedInputFeed", ["news", "sport"])
 
-export const ChainScope = relation("ChainScope", { scope: DenScope, kind: closedId(ChainJoin) }, [
-	"scope"
+export const ChainScope = relation(
+	"ChainScope",
+	{ scope: DenScope, kind: closedId(ChainJoin), root: DenScope },
+	["scope", "root"]
+)
+export const ChainRoot = relation(
+	"ChainRoot",
+	{ scope: DenScope, key: Text, at: DenInstant, retired: retirement },
+	["scope"]
+)
+export const ChainWithin = relation(
+	"ChainWithin",
+	{ scope: DenScope, parent: DenScope, root: DenScope },
+	["scope", "root"]
+)
+export const ChainAdmitted = relation("ChainAdmitted", { scope: DenScope, root: DenScope }, [
+	"scope",
+	"root"
 ])
-export const ChainRoot = relation("ChainRoot", { scope: DenScope, key: Text, at: DenInstant }, [
-	"scope"
-])
-export const ChainWithin = relation("ChainWithin", { scope: DenScope, parent: DenScope }, ["scope"])
-export const ChainAdmitted = relation("ChainAdmitted", { scope: DenScope }, ["scope"])
-export const ChainSkipped = relation("ChainSkipped", { scope: DenScope, by: DenScope }, ["scope"])
+export const ChainSkipped = relation(
+	"ChainSkipped",
+	{ scope: DenScope, by: DenScope, root: DenScope },
+	["scope", "root"]
+)
 export const ChainStep = relation(
 	"ChainStep",
-	{ step: DenStep, kind: closedId(ChainKind), scope: DenScope },
-	["step"]
+	{ step: DenStep, kind: closedId(ChainKind), scope: DenScope, root: DenScope },
+	["step", "root"]
 )
 export const ChainStartStep = relation(
 	"ChainStartStep",
-	{ scope: DenScope, ordinal: natural, step: DenStep },
-	["scope", "ordinal"]
+	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
+	["scope", "ordinal", "root"]
 )
 export const ChainStartScope = relation(
 	"ChainStartScope",
-	{ scope: DenScope, ordinal: natural, child: DenScope },
-	["scope", "ordinal"]
+	{ scope: DenScope, ordinal: natural, child: DenScope, root: DenScope },
+	["scope", "ordinal", "root"]
 )
-export const ChainFinish = relation("ChainFinish", { scope: DenScope, step: DenStep }, ["scope"])
-export const ChainDue = relation("ChainDue", { step: DenStep, at: DenInstant }, ["step"])
+export const ChainFinish = relation(
+	"ChainFinish",
+	{ scope: DenScope, step: DenStep, root: DenScope },
+	["scope", "root"]
+)
+export const ChainDue = relation("ChainDue", { step: DenStep, at: DenInstant, root: DenScope }, [
+	"step",
+	"root"
+])
 export const ChainClaim = relation(
 	"ChainClaim",
-	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant },
-	["step", "attempt"]
+	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant, root: DenScope },
+	["step", "attempt", "root"]
 )
 export const ChainRetry = relation(
 	"ChainRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean },
-	["step", "attempt"]
+	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean, root: DenScope },
+	["step", "attempt", "root"]
 )
-export const ChainFenced = relation("ChainFenced", { step: DenStep, attempt: natural }, [
-	"step",
-	"attempt"
-])
+export const ChainFenced = relation(
+	"ChainFenced",
+	{ step: DenStep, attempt: natural, root: DenScope },
+	["step", "attempt", "root"]
+)
 export const ChainResult = relation(
 	"ChainResult",
-	{ step: DenStep, outcome: closedId(ChainOutcome) },
-	["step"]
+	{ step: DenStep, outcome: closedId(ChainOutcome), root: DenScope },
+	["step", "root"]
 )
-export const ChainDone = relation("ChainDone", { step: DenStep }, ["step"])
-export const ChainFailed = relation("ChainFailed", { step: DenStep }, ["step"])
-export const ChainHeld = relation("ChainHeld", { step: DenStep, attempt: natural }, ["step"])
-export const ChainRefusal = relation("ChainRefusal", { step: DenStep, law: Text }, ["step"])
-export const ChainExhausted = relation("ChainExhausted", { step: DenStep, attempts: natural }, [
-	"step"
+export const ChainDone = relation("ChainDone", { step: DenStep, root: DenScope }, ["step", "root"])
+export const ChainFailed = relation("ChainFailed", { step: DenStep, root: DenScope }, [
+	"step",
+	"root"
 ])
+export const ChainHeld = relation(
+	"ChainHeld",
+	{ step: DenStep, attempt: natural, root: DenScope },
+	["step", "root"]
+)
+export const ChainRefusal = relation("ChainRefusal", { step: DenStep, law: Text, root: DenScope }, [
+	"step",
+	"root"
+])
+export const ChainExhausted = relation(
+	"ChainExhausted",
+	{ step: DenStep, attempts: natural, root: DenScope },
+	["step", "root"]
+)
 export const ChainPageInput = relation(
 	"ChainPageInput",
-	{ step: DenStep, feed: closedId(ChainPageInputFeed), seq: Seq, pages: pg.bigint },
-	["step"]
+	{ step: DenStep, feed: closedId(ChainPageInputFeed), seq: Seq, pages: pg.bigint, root: DenScope },
+	["step", "root"]
 )
-export const ChainPageInputAfter = relation("ChainPageInputAfter", { step: DenStep, value: Text }, [
-	"step"
-])
+export const ChainPageInputAfter = relation(
+	"ChainPageInputAfter",
+	{ step: DenStep, value: Text, root: DenScope },
+	["step", "root"]
+)
 export const ChainChainRunInput = relation(
 	"ChainChainRunInput",
-	{ scope: DenScope, feed: closedId(ChainChainRunInputFeed), pages: pg.bigint },
-	["scope"]
+	{ scope: DenScope, feed: closedId(ChainChainRunInputFeed), pages: pg.bigint, root: DenScope },
+	["scope", "root"]
 )
 export const ChainOrderedInput = relation(
 	"ChainOrderedInput",
-	{ scope: DenScope, feed: closedId(ChainOrderedInputFeed), pages: pg.bigint },
-	["scope"]
+	{ scope: DenScope, feed: closedId(ChainOrderedInputFeed), pages: pg.bigint, root: DenScope },
+	["scope", "root"]
 )
-export const ChainNext = relation("ChainNext", { from: DenStep, ordinal: natural, to: DenStep }, [
-	"from",
-	"ordinal"
-])
+export const ChainNext = relation(
+	"ChainNext",
+	{ from: DenStep, ordinal: natural, to: DenStep, root: DenScope },
+	["from", "ordinal", "root"]
+)
 export const ChainPageOutput = relation(
 	"ChainPageOutput",
-	{ step: DenStep, seq: Seq, items: pg.bigint },
-	["step"]
+	{ step: DenStep, seq: Seq, items: pg.bigint, root: DenScope },
+	["step", "root"]
 )
-export const ChainPageOutputNext = relation("ChainPageOutputNext", { step: DenStep, value: Text }, [
-	"step"
-])
+export const ChainPageOutputNext = relation(
+	"ChainPageOutputNext",
+	{ step: DenStep, value: Text, root: DenScope },
+	["step", "root"]
+)
 export const ChainPageWeightsRead = relation(
 	"ChainPageWeightsRead",
-	{ step: DenStep, ordinal: natural, feed: Weight.fields.feed, factor: Weight.fields.factor },
-	["step", "ordinal"]
+	{
+		step: DenStep,
+		ordinal: natural,
+		feed: Weight.fields.feed,
+		factor: Weight.fields.factor,
+		root: DenScope
+	},
+	["step", "ordinal", "root"]
 )
 export const ChainPaused = relation(
 	"ChainPaused",
@@ -165,84 +213,120 @@ export const chainGraph = fragment(
 		ChainPageWeightsRead
 	],
 	[
-		contained(on(ChainRoot, "scope"), on(ChainScope, "scope")),
-		contained(on(ChainWithin, "scope"), on(ChainScope, "scope")),
-		contained(on(ChainWithin, "parent"), on(ChainScope, "scope")),
-		contained(on(ChainAdmitted, "scope"), on(ChainScope, "scope")),
+		contained(on(ChainWithin, "scope", "root"), on(ChainScope, "scope", "root")),
+		contained(on(ChainWithin, "parent", "root"), on(ChainScope, "scope", "root")),
+		contained(on(ChainAdmitted, "scope", "root"), on(ChainScope, "scope", "root")),
 		contained(on(ChainSkipped, "scope"), on(ChainRoot, "scope")),
-		contained(on(ChainSkipped, "by"), on(ChainAdmitted, "scope")),
-		contained(on(ChainStep, "scope"), on(ChainAdmitted, "scope")),
-		contained(on(ChainStartStep, "scope"), on(ChainAdmitted, "scope")),
-		contained(on(ChainStartStep, "step"), on(ChainStep, "step")),
-		key(on(ChainStartStep, "step")),
-		contained(on(ChainStartScope, "scope"), on(ChainAdmitted, "scope")),
-		contained(on(ChainStartScope, "child"), on(ChainScope, "scope")),
-		key(on(ChainStartScope, "child")),
-		contained(on(ChainFinish, "scope"), on(ChainAdmitted, "scope")),
-		contained(on(ChainFinish, "step"), on(ChainStep, "step")),
-		key(on(ChainFinish, "step")),
-		contained(on(ChainDue, "step"), on(ChainStep, "step")),
-		contained(on(ChainClaim, "step"), on(ChainStep, "step")),
+		contained(on(ChainSkipped, "by"), on(ChainRoot, "scope")),
+		contained(on(ChainStep, "scope", "root"), on(ChainAdmitted, "scope", "root")),
+		contained(on(ChainStartStep, "scope", "root"), on(ChainAdmitted, "scope", "root")),
+		contained(on(ChainStartStep, "step", "root"), on(ChainStep, "step", "root")),
+		key(on(ChainStartStep, "step", "root")),
+		contained(on(ChainStartScope, "scope", "root"), on(ChainAdmitted, "scope", "root")),
+		contained(on(ChainStartScope, "child", "root"), on(ChainScope, "scope", "root")),
+		key(on(ChainStartScope, "child", "root")),
+		contained(on(ChainFinish, "scope", "root"), on(ChainAdmitted, "scope", "root")),
+		contained(on(ChainFinish, "step", "root"), on(ChainStep, "step", "root")),
+		key(on(ChainFinish, "step", "root")),
+		contained(on(ChainDue, "step", "root"), on(ChainStep, "step", "root")),
+		contained(on(ChainClaim, "step", "root"), on(ChainStep, "step", "root")),
 		race(ChainClaim),
 		check("AttemptFromOne", ChainClaim, (row) => row.ge(row.attempt, 1n)),
 		contained(
 			on(
 				select(ChainClaim, (row) => row.ge(row.attempt, 2n)),
 				"step",
-				pred("attempt")
+				pred("attempt"),
+				"root"
 			),
-			on(ChainClaim, "step", "attempt")
+			on(ChainClaim, "step", "attempt", "root")
 		),
-		contained(on(ChainRetry, "step", "attempt"), on(ChainClaim, "step", "attempt")),
-		contained(on(ChainFenced, "step", "attempt"), on(ChainClaim, "step", "attempt")),
-		contained(on(ChainResult, "step"), on(ChainStep, "step")),
-		contained(on(ChainHeld, "step", "attempt"), on(ChainClaim, "step", "attempt")),
-		contained(on(ChainHeld, "step"), on(ChainResult, "step")),
+		contained(on(ChainRetry, "step", "attempt", "root"), on(ChainClaim, "step", "attempt", "root")),
 		contained(
-			on(ChainDone, "step"),
+			on(ChainFenced, "step", "attempt", "root"),
+			on(ChainClaim, "step", "attempt", "root")
+		),
+		contained(on(ChainResult, "step", "root"), on(ChainStep, "step", "root")),
+		contained(on(ChainHeld, "step", "attempt", "root"), on(ChainClaim, "step", "attempt", "root")),
+		contained(on(ChainHeld, "step", "root"), on(ChainResult, "step", "root")),
+		contained(
+			on(ChainDone, "step", "root"),
 			on(
 				select(ChainResult, (row) => row.eq(row.outcome, "done")),
-				"step"
+				"step",
+				"root"
 			)
 		),
 		contained(
-			on(ChainFailed, "step"),
+			on(ChainFailed, "step", "root"),
 			on(
 				select(ChainResult, (row) => row.eq(row.outcome, "failed")),
-				"step"
+				"step",
+				"root"
 			)
 		),
-		contained(on(ChainRefusal, "step"), on(ChainFailed, "step")),
-		contained(on(ChainExhausted, "step"), on(ChainFailed, "step")),
+		contained(on(ChainRefusal, "step", "root"), on(ChainFailed, "step", "root")),
+		contained(on(ChainExhausted, "step", "root"), on(ChainFailed, "step", "root")),
 		contained(
-			on(ChainPageInput, "step"),
+			on(ChainPageInput, "step", "root"),
 			on(
 				select(ChainStep, (row) => row.eq(row.kind, "Page")),
-				"step"
+				"step",
+				"root"
 			)
 		),
-		contained(on(ChainPageInputAfter, "step"), on(ChainPageInput, "step")),
+		contained(on(ChainPageInputAfter, "step", "root"), on(ChainPageInput, "step", "root")),
 		contained(
-			on(ChainChainRunInput, "scope"),
+			on(ChainChainRunInput, "scope", "root"),
 			on(
 				select(ChainScope, (row) => row.eq(row.kind, "ChainRun")),
-				"scope"
+				"scope",
+				"root"
 			)
 		),
 		contained(
-			on(ChainOrderedInput, "scope"),
+			on(ChainOrderedInput, "scope", "root"),
 			on(
 				select(ChainScope, (row) => row.eq(row.kind, "Ordered")),
-				"scope"
+				"scope",
+				"root"
 			)
 		),
-		contained(on(ChainNext, "from"), on(ChainPageInput, "step")),
-		contained(on(ChainNext, "to"), on(ChainPageInput, "step")),
-		key(on(ChainNext, "to")),
-		contained(on(ChainPageOutput, "step"), on(ChainPageInput, "step")),
-		contained(on(ChainPageOutput, "step"), on(ChainDone, "step")),
-		contained(on(ChainPageOutputNext, "step"), on(ChainPageOutput, "step")),
-		contained(on(ChainPageWeightsRead, "step"), on(ChainResult, "step"))
+		contained(on(ChainNext, "from", "root"), on(ChainPageInput, "step", "root")),
+		contained(on(ChainNext, "to", "root"), on(ChainPageInput, "step", "root")),
+		key(on(ChainNext, "to", "root")),
+		contained(on(ChainPageOutput, "step", "root"), on(ChainPageInput, "step", "root")),
+		contained(on(ChainPageOutput, "step", "root"), on(ChainDone, "step", "root")),
+		contained(on(ChainPageOutputNext, "step", "root"), on(ChainPageOutput, "step", "root")),
+		contained(on(ChainPageWeightsRead, "step", "root"), on(ChainResult, "step", "root")),
+		retirable(ChainRoot, [
+			on(ChainScope, "root"),
+			on(ChainWithin, "root"),
+			on(ChainAdmitted, "root"),
+			on(ChainSkipped, "root"),
+			on(ChainStep, "root"),
+			on(ChainStartStep, "root"),
+			on(ChainStartScope, "root"),
+			on(ChainFinish, "root"),
+			on(ChainDue, "root"),
+			on(ChainClaim, "root"),
+			on(ChainRetry, "root"),
+			on(ChainFenced, "root"),
+			on(ChainResult, "root"),
+			on(ChainDone, "root"),
+			on(ChainFailed, "root"),
+			on(ChainHeld, "root"),
+			on(ChainRefusal, "root"),
+			on(ChainExhausted, "root"),
+			on(ChainPageInput, "root"),
+			on(ChainPageInputAfter, "root"),
+			on(ChainChainRunInput, "root"),
+			on(ChainOrderedInput, "root"),
+			on(ChainNext, "root"),
+			on(ChainPageOutput, "root"),
+			on(ChainPageOutputNext, "root"),
+			on(ChainPageWeightsRead, "root")
+		])
 	]
 )
 

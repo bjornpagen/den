@@ -58,7 +58,7 @@ const Listed = schema(
 		assignGraph,
 		assignCoordination
 	],
-	[contained(on(Audit, "step"), on(ChainResult, "step"))]
+	[contained(on(Audit, "step", "root"), on(ChainResult, "step", "root"))]
 )
 
 /**

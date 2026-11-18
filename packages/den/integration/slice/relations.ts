@@ -1,4 +1,4 @@
-import { DenStep, Text } from "@bjornpagen/den/lower/keys"
+import { DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
 import { closed, closedId, natural, pg, relation, str } from "@bjornpagen/grizzle"
 
 /**
@@ -73,5 +73,8 @@ export const Concluded = relation("Concluded", { learner: Name, served: Name, we
 	"learner"
 ])
 
-/** An auditor's note on a step's result, which references den's Result relation. */
-export const Audit = relation("Audit", { step: DenStep, note: Text }, ["step"])
+/**
+ * An auditor's note on a step's result, which references den's Result relation by its key, the step and its root, and
+ * so keeps the step's graph from retiring while it stands.
+ */
+export const Audit = relation("Audit", { step: DenStep, root: DenScope, note: Text }, ["step"])

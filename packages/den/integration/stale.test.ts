@@ -91,9 +91,10 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 								const from = yield* chain.ledger.now
 								const holder = yield* holderOf(step, Number(attempt), race.copy)
 								const until = ends(from)
-								yield* chain.ledger.claim({ step, attempt, holder, until })
+								yield* chain.ledger.claim({ step, root: requested.scope, attempt, holder, until })
 								const turn: Turn = {
 									step,
+									root: requested.scope,
 									attempt,
 									scope: requested.scope,
 									holder,

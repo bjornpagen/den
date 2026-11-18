@@ -138,6 +138,8 @@ const ledgerOf = (seats: number, window: Window): Ledger<never> => ({
 	refuse: unread,
 	exhaust: unread,
 	skip: unread,
+	finishedRoots: Effect.die("eligibility reads a snapshot, never the finished roots"),
+	retire: unread,
 	snapshot: Effect.die("eligibility reads only the snapshot"),
 	changes: Stream.empty,
 	coordination: {

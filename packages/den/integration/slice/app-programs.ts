@@ -326,12 +326,33 @@ const assigned = query(Auditor).rule((r) => {
 	return r.match(Assigned, { learner, passage }).find({ learner, passage })
 })
 
+/** Every row of the chain's graph that a step's key names, by its root: its steps, results and page inputs. */
+const chainGraphRows = query(Auditor)
+	.rule((r) => {
+		const { step, root } = v(ChainStep, "step")
+		return r.match(ChainStep, { step, root }).find({ step, root })
+	})
+	.rule((r) => {
+		const { step, root } = v(ChainResult, "result")
+		return r.match(ChainResult, { step, root }).find({ step, root })
+	})
+	.rule((r) => {
+		const { step, root } = v(ChainPageInput, "input")
+		return r.match(ChainPageInput, { step, root }).find({ step, root })
+	})
+
+/** Every chain root's scope, its header, which a retirement keeps. */
+const chainHeaders = query(Auditor).rule((r) => {
+	const { scope, key } = v(ChainRoot, "root")
+	return r.match(ChainRoot, { scope, key }).find({ scope, key })
+})
+
 /** An audited result: the app joining den's facts with its own. */
 const audited = query(Auditor).rule((r) => {
-	const { step, note } = v(Audit, "audit")
+	const { step, root, note } = v(Audit, "audit")
 	return r
-		.match(Audit, { step, note })
-		.match(ChainResult, { step, outcome: "done" })
+		.match(Audit, { step, root, note })
+		.match(ChainResult, { step, root, outcome: "done" })
 		.find({ step, note })
 })
 
@@ -476,6 +497,8 @@ export const auditWorkload = workload(Auditor, {
 	retryResults,
 	retryClaims,
 	retryExhausted,
+	chainGraphRows,
+	chainHeaders,
 	assignResults,
 	nearestReads,
 	seenReads,

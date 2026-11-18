@@ -53,6 +53,7 @@ export type FieldType =
 	| { readonly kind: "brand"; readonly brand: string }
 	| { readonly kind: "base"; readonly base: Base }
 	| { readonly kind: "vector"; readonly dimensions: number }
+	| { readonly kind: "retirement" }
 	| { readonly kind: "app"; readonly relation: string; readonly field: string }
 
 /** A lowered relation: its name, its fields in order, and its primary key. */
@@ -99,6 +100,7 @@ export type LawIR =
 			readonly field: string
 			readonly holds: Holds
 	  }
+	| { readonly kind: "retirable"; readonly header: string; readonly bodies: ReadonlyArray<string> }
 
 /** What a row check holds of its field: a bound it is at least, or that it is finite. */
 export type Holds =
@@ -580,12 +582,11 @@ export const lower = (flow: AnyFlow): Lowered => {
 
 	Arr.forEach(exclusiveKeys, (k) => laws.push(into(side(k, ["scope"]), side(Scope, ["scope"]))))
 	laws.push(
-		into(side(Root, ["scope"]), side(Scope, ["scope"])),
 		into(side(Within, ["scope"]), side(Scope, ["scope"])),
 		into(side(Within, ["parent"]), side(Scope, ["scope"])),
 		into(side(Admitted, ["scope"]), side(Scope, ["scope"])),
 		into(side(Skipped, ["scope"]), side(Root, ["scope"])),
-		into(side(Skipped, ["by"]), side(Admitted, ["scope"])),
+		into(side(Skipped, ["by"]), side(Root, ["scope"])),
 		into(side(Step, ["scope"]), side(Admitted, ["scope"])),
 		into(side(StartStep, ["scope"]), side(Admitted, ["scope"])),
 		into(side(StartStep, ["step"]), side(Step, ["step"])),
@@ -638,6 +639,19 @@ export const lower = (flow: AnyFlow): Lowered => {
 	): ValueIR => {
 		const shape = "columns" in schema ? schema : shapeOf(declaration, schema)
 		const key = owner === "step" ? "step" : "scope"
+		const fieldNames = [
+			...Arr.map([...shape.columns, ...shape.options], (c) => c.name),
+			...Arr.map(shape.arrays, (a) => a.name),
+			...Arr.map(shape.unions, (u) => u.name)
+		]
+		Arr.forEach(fieldNames, (field) => {
+			if (field === key || field === "root") {
+				throw new Refused({
+					declaration,
+					why: `its field ${field} is one its relation keeps for itself`
+				})
+			}
+		})
 		relation({
 			name: relationName,
 			fields: [
@@ -794,7 +808,9 @@ export const lower = (flow: AnyFlow): Lowered => {
 				}
 			})
 			const reserved =
-				declared.kind === "nearest" ? ["step", "ordinal", "distance"] : ["step", "ordinal"]
+				declared.kind === "nearest"
+					? ["step", "ordinal", "root", "distance"]
+					: ["step", "ordinal", "root"]
 			Arr.forEach(fields, (field) => {
 				if (Arr.contains(reserved, field)) {
 					throw new Refused({
@@ -1035,6 +1051,47 @@ export const lower = (flow: AnyFlow): Lowered => {
 	]
 	const union = (op: keyof WritesIR) => Arr.dedupe(Arr.flatMap(appWrites, (w) => w[op]))
 
+	/**
+	 * Every root's graph is one retirable unit of grizzle's: its header the root, every other graph relation a body
+	 * carrying its root's scope as `root`, in every key it holds and on both sides of every containment between bodies,
+	 * which every row of one graph shares, and the header holding its group's retirement. The coordination group is no
+	 * part of any unit: its chains of turns outlive the graphs whose steps took them.
+	 */
+	const bodies = new Set(
+		Arr.filter(
+			Arr.map(relations, (r) => r.name),
+			(r) => r !== Root && !Arr.contains(coordination, r)
+		)
+	)
+	const rootField = { name: "root", type: scopeKey }
+	const rooted = Arr.map(relations, (r): RelationIR => {
+		if (bodies.has(r.name)) {
+			return { ...r, fields: [...r.fields, rootField], key: [...r.key, "root"] }
+		}
+		return r.name === Root
+			? { ...r, fields: [...r.fields, { name: "retired", type: { kind: "retirement" } }] }
+			: r
+	})
+	const rootTerm = { field: "root", pred: false }
+	const onRoot = (on: SideIR): SideIR => ({ ...on, terms: [...on.terms, rootTerm] })
+	const rootedLaws: ReadonlyArray<LawIR> = [
+		...Arr.map(laws, (law): LawIR => {
+			switch (law.kind) {
+				case "contained":
+					return bodies.has(law.from.relation) && bodies.has(law.to.relation)
+						? { ...law, from: onRoot(law.from), to: onRoot(law.to) }
+						: law
+				case "key":
+					return bodies.has(law.side.relation) ? { ...law, side: onRoot(law.side) } : law
+				case "race":
+				case "check":
+				case "retirable":
+					return law
+			}
+		}),
+		{ kind: "retirable", header: Root, bodies: Array.from(bodies) }
+	]
+
 	const names = [
 		...Arr.map(relations, (r) => r.name),
 		...Arr.map(rosters, (r) => r.name),
@@ -1056,8 +1113,8 @@ export const lower = (flow: AnyFlow): Lowered => {
 		rosters,
 		brands,
 		seats,
-		relations,
-		laws,
+		relations: rooted,
+		laws: rootedLaws,
 		steps: stepsIR,
 		joins: joinsIR,
 		edges: edgesIR,

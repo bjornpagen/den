@@ -72,9 +72,12 @@ export const admitsOneClaimerOfAnAttemptInEveryInterleaving = property.exhaust(f
 								const step = Option.getOrThrow(held)
 								const at = yield* chain.ledger.now
 								const holder = yield* holderOf(step, 1, session === "first" ? 0 : 1)
+								const located = yield* Effect.orDie(chain.ledger.stepOf(step))
+								const root = Option.getOrThrow(located).root
 								const outcome = yield* Effect.result(
 									chain.ledger.claim({
 										step,
+										root,
 										attempt: 1n,
 										holder,
 										until: instantOf(Number(at) + longestLeaseMillis)

@@ -18,10 +18,31 @@ import type { FlowName } from "#transport.ts"
 /** A step's outcome, its Result: done with its output, or failed. */
 export type Outcome = "done" | "failed"
 
-/** Where a step is: its kind and its owning scope. */
+/** Where a step is: its kind, its owning scope, and its root, the retirable unit its graph is a group of. */
 export interface Located {
 	readonly kind: string
 	readonly scope: ScopeKey
+	readonly root: ScopeKey
+}
+
+/**
+ * A row as written: every row of a root's graph carries its root's scope, the group of grizzle's retirable unit it
+ * belongs to, which every write holds and a retirement removes whole.
+ */
+export type Rooted<A> = A & { readonly root: ScopeKey }
+
+/** A step's attempt, in its root's graph: what a refusal or an exhaustion records its ending against. */
+export interface StepAt {
+	readonly step: StepKey
+	readonly root: ScopeKey
+	readonly attempt: bigint
+}
+
+/** A root whose graph has ended: its finish has a result, or it was recorded skipped, with its kind and instant. */
+export interface FinishedRoot {
+	readonly scope: ScopeKey
+	readonly kind: string
+	readonly at: Instant
 }
 
 /** A step a commit or an admission spawned, with the instant it is first due. */
@@ -74,9 +95,10 @@ export interface FencedRow {
 	readonly attempt: bigint
 }
 
-/** A turn of a step, once claimed: the step, its attempt and scope, and its claim's deadline and lease. */
+/** A turn of a step, once claimed: the step, its attempt, scope and root, and its claim's deadline and lease. */
 export interface Turn {
 	readonly step: StepKey
+	readonly root: ScopeKey
 	readonly attempt: bigint
 	readonly scope: ScopeKey
 	readonly holder: Holder
@@ -267,20 +289,21 @@ export interface Ledger<R> {
 	 * Claims a step's attempt, a race at its key: whether the claim holding `(step, attempt)` is `claim`'s holder's, this
 	 * call's or an earlier one of the same holder, or another holder's, which this call met and wrote nothing beside.
 	 */
-	readonly claim: (claim: ClaimRow) => Effect.Effect<boolean, CallError>
-	readonly retry: (retry: RetryRow) => Effect.Effect<WriteOutcome<unknown>, CallError>
-	readonly fence: (fenced: FencedRow) => Effect.Effect<WriteOutcome<unknown>, CallError>
-	readonly refuse: (
-		step: StepKey,
-		attempt: bigint,
-		law: string
-	) => Effect.Effect<WriteOutcome<unknown>, CallError>
-	readonly exhaust: (
-		step: StepKey,
-		attempt: bigint
-	) => Effect.Effect<WriteOutcome<unknown>, CallError>
+	readonly claim: (claim: Rooted<ClaimRow>) => Effect.Effect<boolean, CallError>
+	readonly retry: (retry: Rooted<RetryRow>) => Effect.Effect<WriteOutcome<unknown>, CallError>
+	readonly fence: (fenced: Rooted<FencedRow>) => Effect.Effect<WriteOutcome<unknown>, CallError>
+	readonly refuse: (at: StepAt, law: string) => Effect.Effect<WriteOutcome<unknown>, CallError>
+	readonly exhaust: (at: StepAt) => Effect.Effect<WriteOutcome<unknown>, CallError>
 	/** Records a root not admitted because another live root of its kind, `by`, holds its exclusivity seat. */
 	readonly skip: (scope: ScopeKey, by: ScopeKey) => Effect.Effect<WriteOutcome<unknown>, CallError>
+	/** The roots whose graphs have ended and are not yet retired, a retirement's candidates. */
+	readonly finishedRoots: Effect.Effect<ReadonlyArray<FinishedRoot>, CallError>
+	/**
+	 * Retires a root's graph whole, grizzle's retirement of the flow's unit under den's retiring role: every row its
+	 * graph holds goes, its header stays retired, and its key never starts a graph again. An app row that references
+	 * one of its rows refuses it, naming the relation.
+	 */
+	readonly retire: (root: ScopeKey) => Effect.Effect<WriteOutcome<unknown>, CallError>
 	readonly snapshot: Effect.Effect<Snapshot, CallError>
 	/**
 	 * The relay's watch: one signal per change of the served reads eligibility depends on (pending steps, live scopes,

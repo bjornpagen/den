@@ -210,7 +210,7 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 			{
 				file: "packages/den/src/runtime/turn.ts",
 				original:
-					'\t\t\tcase "fenced":\n\t\t\t\treturn yield* recorded(\n\t\t\t\t\tledger,\n\t\t\t\t\tledger.fence({ step: turn.step, attempt: turn.attempt }),\n\t\t\t\t\twake,\n\t\t\t\t\t{ kind: "fenced", wake, fault: how.fault }\n\t\t\t\t)\n',
+					'\t\t\tcase "fenced":\n\t\t\t\treturn yield* recorded(\n\t\t\t\t\tledger,\n\t\t\t\t\tledger.fence({ step: turn.step, root: turn.root, attempt: turn.attempt }),\n\t\t\t\t\twake,\n\t\t\t\t\t{ kind: "fenced", wake, fault: how.fault }\n\t\t\t\t)\n',
 				replacement:
 					'\t\t\tcase "fenced":\n\t\t\t\treturn { kind: "fenced", wake, fault: how.fault } satisfies Ending\n',
 				why: "A fenced attempt records nothing, so its claim's lapse spends it; the property fails on it (one of den's kept mutants before the conversion)."

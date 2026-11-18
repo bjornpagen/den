@@ -52,6 +52,7 @@ import type {
 import type {
 	fanDenPrograms,
 	fanCoordinatorPrograms,
+	fanRetirerPrograms,
 	fanCommitPrograms
 } from "#integration/slice/generated/fan.programs.ts"
 
@@ -64,6 +65,9 @@ export interface FanHandles {
 		readonly [K in keyof typeof fanCoordinatorPrograms]: MemberHandle<
 			(typeof fanCoordinatorPrograms)[K]
 		>
+	}
+	readonly retirer: {
+		readonly [K in keyof typeof fanRetirerPrograms]: MemberHandle<(typeof fanRetirerPrograms)[K]>
 	}
 	readonly commits: {
 		readonly [K in keyof typeof fanCommitPrograms]: MemberHandle<(typeof fanCommitPrograms)[K]>
@@ -156,6 +160,7 @@ export const fanLedger = (h: FanHandles) => {
 		}
 	})
 	const startBatch = (
+		root: ScopeKey,
 		scope: ScopeKey,
 		input: Parameters<(typeof fan.kinds)[1]["start"]>[0],
 		at: Instant
@@ -167,10 +172,12 @@ export const fanLedger = (h: FanHandles) => {
 					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 						rows: {
 							...noRows,
-							FanStep: [{ step: key, kind: "Square", scope: scope }],
-							FanDue: [{ step: key, at: dueAt(fan.kinds[0].due, at) }],
-							FanStartStep: [{ scope, ordinal: BigInt(ordinal), step: key }],
-							FanSquareInput: [{ step: key, batch: spawn.input.batch, n: spawn.input.n }]
+							FanStep: [{ step: key, kind: "Square", scope: scope, root: root }],
+							FanDue: [{ step: key, at: dueAt(fan.kinds[0].due, at), root: root }],
+							FanStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+							FanSquareInput: [
+								{ step: key, root: root, batch: spawn.input.batch, n: spawn.input.n }
+							]
 						},
 						spawned: {
 							steps: [{ step: key, kind: "Square", due: dueAt(fan.kinds[0].due, at) }],
@@ -181,6 +188,7 @@ export const fanLedger = (h: FanHandles) => {
 			(parts) => Arr.reduce(parts, nothingGrown, joined)
 		)
 	const startFanRun = (
+		root: ScopeKey,
 		scope: ScopeKey,
 		input: Parameters<(typeof fan.kinds)[2]["start"]>[0],
 		at: Instant
@@ -191,19 +199,19 @@ export const fanLedger = (h: FanHandles) => {
 				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
 					Effect.flatMap(startedScope(scope, ordinal), (key) =>
 						Effect.flatMap(finishStep(key), (finish) =>
-							Effect.map(startBatch(key, spawn.input, at), (inner): Grown =>
+							Effect.map(startBatch(root, key, spawn.input, at), (inner): Grown =>
 								joined(inner, {
 									rows: {
 										...noRows,
-										FanScope: [{ scope: key, kind: "Batch" }],
-										FanWithin: [{ scope: key, parent: scope }],
-										FanAdmitted: [{ scope: key }],
-										FanFinish: [{ scope: key, step: finish }],
-										FanStep: [{ step: finish, kind: "BatchFinish", scope: key }],
-										FanDue: [{ step: finish, at }],
-										FanStartScope: [{ scope, ordinal: BigInt(ordinal), child: key }],
+										FanScope: [{ scope: key, kind: "Batch", root: root }],
+										FanWithin: [{ scope: key, parent: scope, root: root }],
+										FanAdmitted: [{ scope: key, root: root }],
+										FanFinish: [{ scope: key, step: finish, root: root }],
+										FanStep: [{ step: finish, kind: "BatchFinish", scope: key, root: root }],
+										FanDue: [{ step: finish, at, root: root }],
+										FanStartScope: [{ scope, ordinal: BigInt(ordinal), child: key, root }],
 										FanBatchInput: [
-											{ scope: key, batch: spawn.input.batch, size: spawn.input.size }
+											{ scope: key, root: root, batch: spawn.input.batch, size: spawn.input.size }
 										]
 									},
 									spawned: { steps: [], finishes: hasChildren(inner, key) ? [] : [finish] }
@@ -306,9 +314,11 @@ export const fanLedger = (h: FanHandles) => {
 							params: {},
 							facts: {
 								insert: {
-									FanScope: [{ scope, kind: "FanRun" as const }],
+									FanScope: [{ scope, kind: "FanRun" as const, root: scope }],
 									FanRoot: [{ scope, key, at }],
-									FanFanRunInput: [{ scope: scope, batch: input.batch, size: input.size }]
+									FanFanRunInput: [
+										{ scope: scope, root: scope, batch: input.batch, size: input.size }
+									]
 								}
 							}
 						})
@@ -337,10 +347,14 @@ export const fanLedger = (h: FanHandles) => {
 									params: {},
 									facts: {
 										insert: {
-											FanResult: [{ step: done.turn.step, outcome: "done" }],
-											FanDone: [{ step: done.turn.step }],
-											FanHeld: [{ step: done.turn.step, attempt: done.turn.attempt }],
-											FanSquareOutput: [{ step: done.turn.step, square: done.output.square }]
+											FanResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+											FanDone: [{ step: done.turn.step, root: done.turn.root }],
+											FanHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
+											FanSquareOutput: [
+												{ step: done.turn.step, root: done.turn.root, square: done.output.square }
+											]
 										}
 									}
 								})
@@ -406,9 +420,11 @@ export const fanLedger = (h: FanHandles) => {
 									params: {},
 									facts: {
 										insert: {
-											FanResult: [{ step: done.turn.step, outcome: "done" }],
-											FanDone: [{ step: done.turn.step }],
-											FanHeld: [{ step: done.turn.step, attempt: done.turn.attempt }],
+											FanResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+											FanDone: [{ step: done.turn.step, root: done.turn.root }],
+											FanHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
 											Tally: done.writes.insert.Tally
 										}
 									}
@@ -467,9 +483,11 @@ export const fanLedger = (h: FanHandles) => {
 									params: {},
 									facts: {
 										insert: {
-											FanResult: [{ step: done.turn.step, outcome: "done" }],
-											FanDone: [{ step: done.turn.step }],
-											FanHeld: [{ step: done.turn.step, attempt: done.turn.attempt }],
+											FanResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+											FanDone: [{ step: done.turn.step, root: done.turn.root }],
+											FanHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
 											Settled: done.writes.insert.Settled
 										}
 									}
@@ -497,23 +515,23 @@ export const fanLedger = (h: FanHandles) => {
 							if (Option.isNone(input)) {
 								return Option.none()
 							}
-							const grown = yield* startFanRun(scope, input.value, at)
+							const grown = yield* startFanRun(scope, scope, input.value, at)
 							const finish = yield* finishStep(scope)
 							const steps: ReadonlyArray<Written<typeof FanStep>> = [
 								...grown.rows.FanStep,
-								{ step: finish, kind: "FanRunFinish", scope }
+								{ step: finish, kind: "FanRunFinish", scope, root: scope }
 							]
 							const dues: ReadonlyArray<Written<typeof FanDue>> = [
 								...grown.rows.FanDue,
-								{ step: finish, at }
+								{ step: finish, at, root: scope }
 							]
 							const admitted: ReadonlyArray<Written<typeof FanAdmitted>> = [
 								...grown.rows.FanAdmitted,
-								{ scope }
+								{ scope, root: scope }
 							]
 							const finishes: ReadonlyArray<Written<typeof FanFinish>> = [
 								...grown.rows.FanFinish,
-								{ scope, step: finish }
+								{ scope, step: finish, root: scope }
 							]
 							const outcome = yield* h.den.fanAdmit.once({
 								params: {},
@@ -548,7 +566,7 @@ export const fanLedger = (h: FanHandles) => {
 		]),
 		stepOf: (step) =>
 			Effect.map(h.den.fanStepOf.once({ params: { step }, facts: {} }), (rows) =>
-				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope }))
+				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope, root: row.root }))
 			),
 		resultOf: (step) =>
 			Effect.map(h.den.fanResultOf.once({ params: { step }, facts: {} }), (rows) =>
@@ -617,32 +635,40 @@ export const fanLedger = (h: FanHandles) => {
 			),
 		retry: (row) => h.den.fanRetry.once({ params: {}, facts: { insert: { FanRetry: [row] } } }),
 		fence: (row) => h.den.fanFence.once({ params: {}, facts: { insert: { FanFenced: [row] } } }),
-		refuse: (step, attempt, law) =>
+		refuse: ({ step, root, attempt }, law) =>
 			h.den.fanRefuse.once({
 				params: {},
 				facts: {
 					insert: {
-						FanResult: [{ step, outcome: "failed" }],
-						FanFailed: [{ step }],
-						FanHeld: [{ step, attempt }],
-						FanRefusal: [{ step, law }]
+						FanResult: [{ step, root, outcome: "failed" }],
+						FanFailed: [{ step, root }],
+						FanHeld: [{ step, root, attempt }],
+						FanRefusal: [{ step, root, law }]
 					}
 				}
 			}),
 		skip: (scope, by) =>
-			h.den.fanSkip.once({ params: {}, facts: { insert: { FanSkipped: [{ scope, by }] } } }),
-		exhaust: (step, attempt) =>
+			h.den.fanSkip.once({
+				params: {},
+				facts: { insert: { FanSkipped: [{ scope, by, root: scope }] } }
+			}),
+		exhaust: ({ step, root, attempt }) =>
 			h.den.fanExhaust.once({
 				params: {},
 				facts: {
 					insert: {
-						FanResult: [{ step, outcome: "failed" }],
-						FanFailed: [{ step }],
-						FanHeld: [{ step, attempt }],
-						FanExhausted: [{ step, attempts: attempt }]
+						FanResult: [{ step, root, outcome: "failed" }],
+						FanFailed: [{ step, root }],
+						FanHeld: [{ step, root, attempt }],
+						FanExhausted: [{ step, root, attempts: attempt }]
 					}
 				}
 			}),
+		finishedRoots: Effect.map(h.den.fanFinishedRoots.once({ params: {}, facts: {} }), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))
+		),
+		retire: (root) =>
+			h.retirer.fanRetire.once({ params: {}, facts: { retire: { FanRoot: [{ scope: root }] } } }),
 		snapshot: Effect.gen(function* () {
 			const steps = yield* Effect.map(h.den.fanPending.once({ params: {}, facts: {} }), rowsOf)
 			const claims = yield* Effect.map(

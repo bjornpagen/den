@@ -165,15 +165,92 @@ export const assignDenPrograms = Object.freeze({
 		.insert(AssignDecideInputModeNearest, [])
 		.insert(AssignDecideInputModeWithin, []),
 	assignSkip: ChangeSet.empty(assignGraph).insert(AssignSkipped, []),
-	assignSkippedOf: AssignSkipped,
-	assignStepOf: AssignStep,
-	assignResultOf: AssignResult,
-	assignHeldOf: AssignHeld,
-	assignDueOf: AssignDue,
-	assignScopeOf: AssignScope,
-	assignWithinOf: AssignWithin,
-	assignAdmittedOf: AssignAdmitted,
-	assignRootOf: AssignRoot,
+	assignSkippedOf: query(assignGraph).rule((r) => {
+		const { scope, by, root } = v(AssignSkipped, "assignSkipped")
+		return r
+			.match(AssignSkipped, { scope, by, root })
+			.where(r.eq(scope, r.param("scope", AssignSkipped.fields.scope)))
+			.find({ scope, by, root })
+	}),
+	assignStepOf: query(assignGraph).rule((r) => {
+		const { step, kind, scope, root } = v(AssignStep, "assignStep")
+		return r
+			.match(AssignStep, { step, kind, scope, root })
+			.where(r.eq(step, r.param("step", AssignStep.fields.step)))
+			.find({ step, kind, scope, root })
+	}),
+	assignResultOf: query(assignGraph).rule((r) => {
+		const { step, outcome, root } = v(AssignResult, "assignResult")
+		return r
+			.match(AssignResult, { step, outcome, root })
+			.where(r.eq(step, r.param("step", AssignResult.fields.step)))
+			.find({ step, outcome, root })
+	}),
+	assignHeldOf: query(assignGraph).rule((r) => {
+		const { step, attempt, root } = v(AssignHeld, "assignHeld")
+		return r
+			.match(AssignHeld, { step, attempt, root })
+			.where(r.eq(step, r.param("step", AssignHeld.fields.step)))
+			.find({ step, attempt, root })
+	}),
+	assignDueOf: query(assignGraph).rule((r) => {
+		const { step, at, root } = v(AssignDue, "assignDue")
+		return r
+			.match(AssignDue, { step, at, root })
+			.where(r.eq(step, r.param("step", AssignDue.fields.step)))
+			.find({ step, at, root })
+	}),
+	assignScopeOf: query(assignGraph).rule((r) => {
+		const { scope, kind, root } = v(AssignScope, "assignScope")
+		return r
+			.match(AssignScope, { scope, kind, root })
+			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.find({ scope, kind, root })
+	}),
+	assignWithinOf: query(assignGraph).rule((r) => {
+		const { scope, parent, root } = v(AssignWithin, "assignWithin")
+		return r
+			.match(AssignWithin, { scope, parent, root })
+			.where(r.eq(scope, r.param("scope", AssignWithin.fields.scope)))
+			.find({ scope, parent, root })
+	}),
+	assignAdmittedOf: query(assignGraph).rule((r) => {
+		const { scope, root } = v(AssignAdmitted, "assignAdmitted")
+		return r
+			.match(AssignAdmitted, { scope, root })
+			.where(r.eq(scope, r.param("scope", AssignAdmitted.fields.scope)))
+			.find({ scope, root })
+	}),
+	assignRootOf: query(assignGraph).rule((r) => {
+		const { scope, key, at } = v(AssignRoot, "assignRoot")
+		return r
+			.match(AssignRoot, { scope, key, at })
+			.where(r.eq(scope, r.param("scope", AssignRoot.fields.scope)))
+			.find({ scope, key, at })
+	}),
+	assignFinishedRoots: deferrable(
+		query(assignGraph)
+			.rule((r) => {
+				const { scope, key, at } = v(AssignRoot, "root")
+				const { kind } = v(AssignScope, "scope")
+				const { step } = v(AssignFinish, "finish")
+				return r
+					.match(AssignRoot, { scope, key, at })
+					.match(AssignScope, { scope, kind })
+					.match(AssignFinish, { scope, step })
+					.match(AssignResult, { step })
+					.find({ scope, kind, at })
+			})
+			.rule((r) => {
+				const { scope, key, at } = v(AssignRoot, "root")
+				const { kind } = v(AssignScope, "scope")
+				return r
+					.match(AssignRoot, { scope, key, at })
+					.match(AssignScope, { scope, kind })
+					.match(AssignSkipped, { scope })
+					.find({ scope, kind, at })
+			})
+	),
 	assignClaimsOf: query(assignGraph).rule((r) => {
 		const { step, attempt, holder, until } = v(AssignClaim, "claim")
 		return r
@@ -314,9 +391,27 @@ export const assignDenPrograms = Object.freeze({
 			return r.match(AssignRoot, { scope, key, at }).find({ scope, key, at })
 		})
 	),
-	assignReadAssignDecideInput: AssignDecideInput,
-	assignReadAssignDecideInputModeNearest: AssignDecideInputModeNearest,
-	assignReadAssignDecideInputModeWithin: AssignDecideInputModeWithin,
+	assignReadAssignDecideInput: query(assignGraph).rule((r) => {
+		const { step, learner, topic, near, mode, root } = v(AssignDecideInput, "assignDecideInput")
+		return r
+			.match(AssignDecideInput, { step, learner, topic, near, mode, root })
+			.where(r.eq(step, r.param("step", AssignDecideInput.fields.step)))
+			.find({ step, learner, topic, near, mode, root })
+	}),
+	assignReadAssignDecideInputModeNearest: query(assignGraph).rule((r) => {
+		const { step, root } = v(AssignDecideInputModeNearest, "assignDecideInputModeNearest")
+		return r
+			.match(AssignDecideInputModeNearest, { step, root })
+			.where(r.eq(step, r.param("step", AssignDecideInputModeNearest.fields.step)))
+			.find({ step, root })
+	}),
+	assignReadAssignDecideInputModeWithin: query(assignGraph).rule((r) => {
+		const { step, radius, root } = v(AssignDecideInputModeWithin, "assignDecideInputModeWithin")
+		return r
+			.match(AssignDecideInputModeWithin, { step, radius, root })
+			.where(r.eq(step, r.param("step", AssignDecideInputModeWithin.fields.step)))
+			.find({ step, radius, root })
+	}),
 	assignReadAssignDecideInputExclude: query(assignGraph).rule((r) => {
 		const { step, ordinal, value } = v(AssignDecideInputExclude, "part")
 		return r
@@ -324,9 +419,33 @@ export const assignDenPrograms = Object.freeze({
 			.where(r.eq(step, r.param("step", AssignDecideInputExclude.fields.step)))
 			.find({ step, ordinal, value })
 	}),
-	assignReadAssignAssignmentInput: AssignAssignmentInput,
-	assignReadAssignAssignmentInputModeNearest: AssignAssignmentInputModeNearest,
-	assignReadAssignAssignmentInputModeWithin: AssignAssignmentInputModeWithin,
+	assignReadAssignAssignmentInput: query(assignGraph).rule((r) => {
+		const { scope, learner, topic, near, mode, root } = v(
+			AssignAssignmentInput,
+			"assignAssignmentInput"
+		)
+		return r
+			.match(AssignAssignmentInput, { scope, learner, topic, near, mode, root })
+			.where(r.eq(scope, r.param("scope", AssignAssignmentInput.fields.scope)))
+			.find({ scope, learner, topic, near, mode, root })
+	}),
+	assignReadAssignAssignmentInputModeNearest: query(assignGraph).rule((r) => {
+		const { scope, root } = v(AssignAssignmentInputModeNearest, "assignAssignmentInputModeNearest")
+		return r
+			.match(AssignAssignmentInputModeNearest, { scope, root })
+			.where(r.eq(scope, r.param("scope", AssignAssignmentInputModeNearest.fields.scope)))
+			.find({ scope, root })
+	}),
+	assignReadAssignAssignmentInputModeWithin: query(assignGraph).rule((r) => {
+		const { scope, radius, root } = v(
+			AssignAssignmentInputModeWithin,
+			"assignAssignmentInputModeWithin"
+		)
+		return r
+			.match(AssignAssignmentInputModeWithin, { scope, radius, root })
+			.where(r.eq(scope, r.param("scope", AssignAssignmentInputModeWithin.fields.scope)))
+			.find({ scope, radius, root })
+	}),
 	assignReadAssignAssignmentInputExclude: query(assignGraph).rule((r) => {
 		const { scope, ordinal, value } = v(AssignAssignmentInputExclude, "part")
 		return r
@@ -409,6 +528,20 @@ export const assignCoordinatorPrograms = Object.freeze({
 })
 
 export const assignCoordinatorWorkload = workload(AssignCoordinator, assignCoordinatorPrograms)
+
+/** den's retiring role for the flow Assign: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else, so every inserter of the graph stays READ COMMITTED. */
+export const AssignRetirer = role(
+	App,
+	"assign_retirer",
+	{ ...assignGraph.relations },
+	{ retire: ["AssignRoot"] }
+)
+
+export const assignRetirerPrograms = Object.freeze({
+	assignRetire: ChangeSet.empty(assignGraph).retire(AssignRoot, [])
+})
+
+export const assignRetirerWorkload = workload(AssignRetirer, assignRetirerPrograms)
 
 /** The commits and declared reads of the flow Assign, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const assignCommitPrograms = Object.freeze({

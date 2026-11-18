@@ -143,15 +143,92 @@ export const fanDenPrograms = Object.freeze({
 		.insert(FanSquareInput, [])
 		.insert(FanBatchInput, []),
 	fanSkip: ChangeSet.empty(fanGraph).insert(FanSkipped, []),
-	fanSkippedOf: FanSkipped,
-	fanStepOf: FanStep,
-	fanResultOf: FanResult,
-	fanHeldOf: FanHeld,
-	fanDueOf: FanDue,
-	fanScopeOf: FanScope,
-	fanWithinOf: FanWithin,
-	fanAdmittedOf: FanAdmitted,
-	fanRootOf: FanRoot,
+	fanSkippedOf: query(fanGraph).rule((r) => {
+		const { scope, by, root } = v(FanSkipped, "fanSkipped")
+		return r
+			.match(FanSkipped, { scope, by, root })
+			.where(r.eq(scope, r.param("scope", FanSkipped.fields.scope)))
+			.find({ scope, by, root })
+	}),
+	fanStepOf: query(fanGraph).rule((r) => {
+		const { step, kind, scope, root } = v(FanStep, "fanStep")
+		return r
+			.match(FanStep, { step, kind, scope, root })
+			.where(r.eq(step, r.param("step", FanStep.fields.step)))
+			.find({ step, kind, scope, root })
+	}),
+	fanResultOf: query(fanGraph).rule((r) => {
+		const { step, outcome, root } = v(FanResult, "fanResult")
+		return r
+			.match(FanResult, { step, outcome, root })
+			.where(r.eq(step, r.param("step", FanResult.fields.step)))
+			.find({ step, outcome, root })
+	}),
+	fanHeldOf: query(fanGraph).rule((r) => {
+		const { step, attempt, root } = v(FanHeld, "fanHeld")
+		return r
+			.match(FanHeld, { step, attempt, root })
+			.where(r.eq(step, r.param("step", FanHeld.fields.step)))
+			.find({ step, attempt, root })
+	}),
+	fanDueOf: query(fanGraph).rule((r) => {
+		const { step, at, root } = v(FanDue, "fanDue")
+		return r
+			.match(FanDue, { step, at, root })
+			.where(r.eq(step, r.param("step", FanDue.fields.step)))
+			.find({ step, at, root })
+	}),
+	fanScopeOf: query(fanGraph).rule((r) => {
+		const { scope, kind, root } = v(FanScope, "fanScope")
+		return r
+			.match(FanScope, { scope, kind, root })
+			.where(r.eq(scope, r.param("scope", FanScope.fields.scope)))
+			.find({ scope, kind, root })
+	}),
+	fanWithinOf: query(fanGraph).rule((r) => {
+		const { scope, parent, root } = v(FanWithin, "fanWithin")
+		return r
+			.match(FanWithin, { scope, parent, root })
+			.where(r.eq(scope, r.param("scope", FanWithin.fields.scope)))
+			.find({ scope, parent, root })
+	}),
+	fanAdmittedOf: query(fanGraph).rule((r) => {
+		const { scope, root } = v(FanAdmitted, "fanAdmitted")
+		return r
+			.match(FanAdmitted, { scope, root })
+			.where(r.eq(scope, r.param("scope", FanAdmitted.fields.scope)))
+			.find({ scope, root })
+	}),
+	fanRootOf: query(fanGraph).rule((r) => {
+		const { scope, key, at } = v(FanRoot, "fanRoot")
+		return r
+			.match(FanRoot, { scope, key, at })
+			.where(r.eq(scope, r.param("scope", FanRoot.fields.scope)))
+			.find({ scope, key, at })
+	}),
+	fanFinishedRoots: deferrable(
+		query(fanGraph)
+			.rule((r) => {
+				const { scope, key, at } = v(FanRoot, "root")
+				const { kind } = v(FanScope, "scope")
+				const { step } = v(FanFinish, "finish")
+				return r
+					.match(FanRoot, { scope, key, at })
+					.match(FanScope, { scope, kind })
+					.match(FanFinish, { scope, step })
+					.match(FanResult, { step })
+					.find({ scope, kind, at })
+			})
+			.rule((r) => {
+				const { scope, key, at } = v(FanRoot, "root")
+				const { kind } = v(FanScope, "scope")
+				return r
+					.match(FanRoot, { scope, key, at })
+					.match(FanScope, { scope, kind })
+					.match(FanSkipped, { scope })
+					.find({ scope, kind, at })
+			})
+	),
 	fanClaimsOf: query(fanGraph).rule((r) => {
 		const { step, attempt, holder, until } = v(FanClaim, "claim")
 		return r
@@ -283,8 +360,20 @@ export const fanDenPrograms = Object.freeze({
 			return r.match(FanRoot, { scope, key, at }).find({ scope, key, at })
 		})
 	),
-	fanReadFanSquareInput: FanSquareInput,
-	fanReadFanBatchInput: FanBatchInput,
+	fanReadFanSquareInput: query(fanGraph).rule((r) => {
+		const { step, batch, n, root } = v(FanSquareInput, "fanSquareInput")
+		return r
+			.match(FanSquareInput, { step, batch, n, root })
+			.where(r.eq(step, r.param("step", FanSquareInput.fields.step)))
+			.find({ step, batch, n, root })
+	}),
+	fanReadFanBatchInput: query(fanGraph).rule((r) => {
+		const { scope, batch, size, root } = v(FanBatchInput, "fanBatchInput")
+		return r
+			.match(FanBatchInput, { scope, batch, size, root })
+			.where(r.eq(scope, r.param("scope", FanBatchInput.fields.scope)))
+			.find({ scope, batch, size, root })
+	}),
 	fanOutputsBatchSquare: query(fanGraph).rule((r) => {
 		const { step, scope } = v(FanStep, "step")
 		const { square } = v(FanSquareOutput, "output")
@@ -302,7 +391,13 @@ export const fanDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", FanScope.fields.scope)))
 			.find({ step })
 	}),
-	fanReadFanFanRunInput: FanFanRunInput,
+	fanReadFanFanRunInput: query(fanGraph).rule((r) => {
+		const { scope, batch, size, root } = v(FanFanRunInput, "fanFanRunInput")
+		return r
+			.match(FanFanRunInput, { scope, batch, size, root })
+			.where(r.eq(scope, r.param("scope", FanFanRunInput.fields.scope)))
+			.find({ scope, batch, size, root })
+	}),
 	fanRequestFanRun: ChangeSet.empty(fanGraph)
 		.insert(FanScope, [])
 		.insert(FanRoot, [])
@@ -360,6 +455,20 @@ export const fanCoordinatorPrograms = Object.freeze({
 })
 
 export const fanCoordinatorWorkload = workload(FanCoordinator, fanCoordinatorPrograms)
+
+/** den's retiring role for the flow Fan: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else, so every inserter of the graph stays READ COMMITTED. */
+export const FanRetirer = role(
+	App,
+	"fan_retirer",
+	{ ...fanGraph.relations },
+	{ retire: ["FanRoot"] }
+)
+
+export const fanRetirerPrograms = Object.freeze({
+	fanRetire: ChangeSet.empty(fanGraph).retire(FanRoot, [])
+})
+
+export const fanRetirerWorkload = workload(FanRetirer, fanRetirerPrograms)
 
 /** The commits and declared reads of the flow Fan, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const fanCommitPrograms = Object.freeze({

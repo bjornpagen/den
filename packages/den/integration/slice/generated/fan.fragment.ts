@@ -15,6 +15,8 @@ import {
 	query,
 	race,
 	relation,
+	retirable,
+	retirement,
 	select,
 	v
 } from "@bjornpagen/grizzle"
@@ -31,72 +33,108 @@ const FanSeats = closed.relation(
 	[{ resource: "Pool", seats: 2n }]
 )
 
-export const FanScope = relation("FanScope", { scope: DenScope, kind: closedId(FanJoin) }, [
-	"scope"
+export const FanScope = relation(
+	"FanScope",
+	{ scope: DenScope, kind: closedId(FanJoin), root: DenScope },
+	["scope", "root"]
+)
+export const FanRoot = relation(
+	"FanRoot",
+	{ scope: DenScope, key: Text, at: DenInstant, retired: retirement },
+	["scope"]
+)
+export const FanWithin = relation(
+	"FanWithin",
+	{ scope: DenScope, parent: DenScope, root: DenScope },
+	["scope", "root"]
+)
+export const FanAdmitted = relation("FanAdmitted", { scope: DenScope, root: DenScope }, [
+	"scope",
+	"root"
 ])
-export const FanRoot = relation("FanRoot", { scope: DenScope, key: Text, at: DenInstant }, [
-	"scope"
-])
-export const FanWithin = relation("FanWithin", { scope: DenScope, parent: DenScope }, ["scope"])
-export const FanAdmitted = relation("FanAdmitted", { scope: DenScope }, ["scope"])
-export const FanSkipped = relation("FanSkipped", { scope: DenScope, by: DenScope }, ["scope"])
+export const FanSkipped = relation(
+	"FanSkipped",
+	{ scope: DenScope, by: DenScope, root: DenScope },
+	["scope", "root"]
+)
 export const FanStep = relation(
 	"FanStep",
-	{ step: DenStep, kind: closedId(FanKind), scope: DenScope },
-	["step"]
+	{ step: DenStep, kind: closedId(FanKind), scope: DenScope, root: DenScope },
+	["step", "root"]
 )
 export const FanStartStep = relation(
 	"FanStartStep",
-	{ scope: DenScope, ordinal: natural, step: DenStep },
-	["scope", "ordinal"]
+	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
+	["scope", "ordinal", "root"]
 )
 export const FanStartScope = relation(
 	"FanStartScope",
-	{ scope: DenScope, ordinal: natural, child: DenScope },
-	["scope", "ordinal"]
+	{ scope: DenScope, ordinal: natural, child: DenScope, root: DenScope },
+	["scope", "ordinal", "root"]
 )
-export const FanFinish = relation("FanFinish", { scope: DenScope, step: DenStep }, ["scope"])
-export const FanDue = relation("FanDue", { step: DenStep, at: DenInstant }, ["step"])
+export const FanFinish = relation("FanFinish", { scope: DenScope, step: DenStep, root: DenScope }, [
+	"scope",
+	"root"
+])
+export const FanDue = relation("FanDue", { step: DenStep, at: DenInstant, root: DenScope }, [
+	"step",
+	"root"
+])
 export const FanClaim = relation(
 	"FanClaim",
-	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant },
-	["step", "attempt"]
+	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant, root: DenScope },
+	["step", "attempt", "root"]
 )
 export const FanRetry = relation(
 	"FanRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean },
-	["step", "attempt"]
+	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean, root: DenScope },
+	["step", "attempt", "root"]
 )
-export const FanFenced = relation("FanFenced", { step: DenStep, attempt: natural }, [
+export const FanFenced = relation(
+	"FanFenced",
+	{ step: DenStep, attempt: natural, root: DenScope },
+	["step", "attempt", "root"]
+)
+export const FanResult = relation(
+	"FanResult",
+	{ step: DenStep, outcome: closedId(FanOutcome), root: DenScope },
+	["step", "root"]
+)
+export const FanDone = relation("FanDone", { step: DenStep, root: DenScope }, ["step", "root"])
+export const FanFailed = relation("FanFailed", { step: DenStep, root: DenScope }, ["step", "root"])
+export const FanHeld = relation("FanHeld", { step: DenStep, attempt: natural, root: DenScope }, [
 	"step",
-	"attempt"
+	"root"
 ])
-export const FanResult = relation("FanResult", { step: DenStep, outcome: closedId(FanOutcome) }, [
-	"step"
+export const FanRefusal = relation("FanRefusal", { step: DenStep, law: Text, root: DenScope }, [
+	"step",
+	"root"
 ])
-export const FanDone = relation("FanDone", { step: DenStep }, ["step"])
-export const FanFailed = relation("FanFailed", { step: DenStep }, ["step"])
-export const FanHeld = relation("FanHeld", { step: DenStep, attempt: natural }, ["step"])
-export const FanRefusal = relation("FanRefusal", { step: DenStep, law: Text }, ["step"])
-export const FanExhausted = relation("FanExhausted", { step: DenStep, attempts: natural }, ["step"])
+export const FanExhausted = relation(
+	"FanExhausted",
+	{ step: DenStep, attempts: natural, root: DenScope },
+	["step", "root"]
+)
 export const FanSquareInput = relation(
 	"FanSquareInput",
-	{ step: DenStep, batch: Text, n: pg.bigint },
-	["step"]
+	{ step: DenStep, batch: Text, n: pg.bigint, root: DenScope },
+	["step", "root"]
 )
 export const FanBatchInput = relation(
 	"FanBatchInput",
-	{ scope: DenScope, batch: Text, size: pg.bigint },
-	["scope"]
+	{ scope: DenScope, batch: Text, size: pg.bigint, root: DenScope },
+	["scope", "root"]
 )
 export const FanFanRunInput = relation(
 	"FanFanRunInput",
-	{ scope: DenScope, batch: Text, size: pg.bigint },
-	["scope"]
+	{ scope: DenScope, batch: Text, size: pg.bigint, root: DenScope },
+	["scope", "root"]
 )
-export const FanSquareOutput = relation("FanSquareOutput", { step: DenStep, square: pg.bigint }, [
-	"step"
-])
+export const FanSquareOutput = relation(
+	"FanSquareOutput",
+	{ step: DenStep, square: pg.bigint, root: DenScope },
+	["step", "root"]
+)
 export const FanHold = relation(
 	"FanHold",
 	{
@@ -155,78 +193,107 @@ export const fanGraph = fragment(
 		FanSquareOutput
 	],
 	[
-		contained(on(FanRoot, "scope"), on(FanScope, "scope")),
-		contained(on(FanWithin, "scope"), on(FanScope, "scope")),
-		contained(on(FanWithin, "parent"), on(FanScope, "scope")),
-		contained(on(FanAdmitted, "scope"), on(FanScope, "scope")),
+		contained(on(FanWithin, "scope", "root"), on(FanScope, "scope", "root")),
+		contained(on(FanWithin, "parent", "root"), on(FanScope, "scope", "root")),
+		contained(on(FanAdmitted, "scope", "root"), on(FanScope, "scope", "root")),
 		contained(on(FanSkipped, "scope"), on(FanRoot, "scope")),
-		contained(on(FanSkipped, "by"), on(FanAdmitted, "scope")),
-		contained(on(FanStep, "scope"), on(FanAdmitted, "scope")),
-		contained(on(FanStartStep, "scope"), on(FanAdmitted, "scope")),
-		contained(on(FanStartStep, "step"), on(FanStep, "step")),
-		key(on(FanStartStep, "step")),
-		contained(on(FanStartScope, "scope"), on(FanAdmitted, "scope")),
-		contained(on(FanStartScope, "child"), on(FanScope, "scope")),
-		key(on(FanStartScope, "child")),
-		contained(on(FanFinish, "scope"), on(FanAdmitted, "scope")),
-		contained(on(FanFinish, "step"), on(FanStep, "step")),
-		key(on(FanFinish, "step")),
-		contained(on(FanDue, "step"), on(FanStep, "step")),
-		contained(on(FanClaim, "step"), on(FanStep, "step")),
+		contained(on(FanSkipped, "by"), on(FanRoot, "scope")),
+		contained(on(FanStep, "scope", "root"), on(FanAdmitted, "scope", "root")),
+		contained(on(FanStartStep, "scope", "root"), on(FanAdmitted, "scope", "root")),
+		contained(on(FanStartStep, "step", "root"), on(FanStep, "step", "root")),
+		key(on(FanStartStep, "step", "root")),
+		contained(on(FanStartScope, "scope", "root"), on(FanAdmitted, "scope", "root")),
+		contained(on(FanStartScope, "child", "root"), on(FanScope, "scope", "root")),
+		key(on(FanStartScope, "child", "root")),
+		contained(on(FanFinish, "scope", "root"), on(FanAdmitted, "scope", "root")),
+		contained(on(FanFinish, "step", "root"), on(FanStep, "step", "root")),
+		key(on(FanFinish, "step", "root")),
+		contained(on(FanDue, "step", "root"), on(FanStep, "step", "root")),
+		contained(on(FanClaim, "step", "root"), on(FanStep, "step", "root")),
 		race(FanClaim),
 		check("AttemptFromOne", FanClaim, (row) => row.ge(row.attempt, 1n)),
 		contained(
 			on(
 				select(FanClaim, (row) => row.ge(row.attempt, 2n)),
 				"step",
-				pred("attempt")
+				pred("attempt"),
+				"root"
 			),
-			on(FanClaim, "step", "attempt")
+			on(FanClaim, "step", "attempt", "root")
 		),
-		contained(on(FanRetry, "step", "attempt"), on(FanClaim, "step", "attempt")),
-		contained(on(FanFenced, "step", "attempt"), on(FanClaim, "step", "attempt")),
-		contained(on(FanResult, "step"), on(FanStep, "step")),
-		contained(on(FanHeld, "step", "attempt"), on(FanClaim, "step", "attempt")),
-		contained(on(FanHeld, "step"), on(FanResult, "step")),
+		contained(on(FanRetry, "step", "attempt", "root"), on(FanClaim, "step", "attempt", "root")),
+		contained(on(FanFenced, "step", "attempt", "root"), on(FanClaim, "step", "attempt", "root")),
+		contained(on(FanResult, "step", "root"), on(FanStep, "step", "root")),
+		contained(on(FanHeld, "step", "attempt", "root"), on(FanClaim, "step", "attempt", "root")),
+		contained(on(FanHeld, "step", "root"), on(FanResult, "step", "root")),
 		contained(
-			on(FanDone, "step"),
+			on(FanDone, "step", "root"),
 			on(
 				select(FanResult, (row) => row.eq(row.outcome, "done")),
-				"step"
+				"step",
+				"root"
 			)
 		),
 		contained(
-			on(FanFailed, "step"),
+			on(FanFailed, "step", "root"),
 			on(
 				select(FanResult, (row) => row.eq(row.outcome, "failed")),
-				"step"
+				"step",
+				"root"
 			)
 		),
-		contained(on(FanRefusal, "step"), on(FanFailed, "step")),
-		contained(on(FanExhausted, "step"), on(FanFailed, "step")),
+		contained(on(FanRefusal, "step", "root"), on(FanFailed, "step", "root")),
+		contained(on(FanExhausted, "step", "root"), on(FanFailed, "step", "root")),
 		contained(
-			on(FanSquareInput, "step"),
+			on(FanSquareInput, "step", "root"),
 			on(
 				select(FanStep, (row) => row.eq(row.kind, "Square")),
-				"step"
+				"step",
+				"root"
 			)
 		),
 		contained(
-			on(FanBatchInput, "scope"),
+			on(FanBatchInput, "scope", "root"),
 			on(
 				select(FanScope, (row) => row.eq(row.kind, "Batch")),
-				"scope"
+				"scope",
+				"root"
 			)
 		),
 		contained(
-			on(FanFanRunInput, "scope"),
+			on(FanFanRunInput, "scope", "root"),
 			on(
 				select(FanScope, (row) => row.eq(row.kind, "FanRun")),
-				"scope"
+				"scope",
+				"root"
 			)
 		),
-		contained(on(FanSquareOutput, "step"), on(FanSquareInput, "step")),
-		contained(on(FanSquareOutput, "step"), on(FanDone, "step"))
+		contained(on(FanSquareOutput, "step", "root"), on(FanSquareInput, "step", "root")),
+		contained(on(FanSquareOutput, "step", "root"), on(FanDone, "step", "root")),
+		retirable(FanRoot, [
+			on(FanScope, "root"),
+			on(FanWithin, "root"),
+			on(FanAdmitted, "root"),
+			on(FanSkipped, "root"),
+			on(FanStep, "root"),
+			on(FanStartStep, "root"),
+			on(FanStartScope, "root"),
+			on(FanFinish, "root"),
+			on(FanDue, "root"),
+			on(FanClaim, "root"),
+			on(FanRetry, "root"),
+			on(FanFenced, "root"),
+			on(FanResult, "root"),
+			on(FanDone, "root"),
+			on(FanFailed, "root"),
+			on(FanHeld, "root"),
+			on(FanRefusal, "root"),
+			on(FanExhausted, "root"),
+			on(FanSquareInput, "root"),
+			on(FanBatchInput, "root"),
+			on(FanFanRunInput, "root"),
+			on(FanSquareOutput, "root")
+		])
 	]
 )
 

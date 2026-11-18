@@ -52,20 +52,21 @@ for the coordination group, and DBCLOCK:
   they were opened (`integration/support/slice.ts`), and `stale.test.ts` holds each flow's reading between two of
   PostgreSQL's own.
 
-den still takes this, from the grizzle session's report:
-
-- **RETIRE (c70cbed8, 1f935498, f14a46da).** `retirable(header, bodies)` with a declared `retirement` field; adopting a
-  unit rewrites each body table once in its migration. Holds (commit 2, f14a46da) grant EXECUTE on each unit's hold to
-  its holding roles, with `UnheldGroup` refusals. The retire API is not on grizzle's main; grizzle's lane RETIRE3
-  builds it (the hold before a unit body's first statement, `ChangeSet.retire`, the role option `retire`, retired
-  counts, grants), and den's retirement seam stays a seam until it lands. The grizzle session's rulings on den's use
-  (2026-11-18): every graph relation carries its root's key as a column, `root: DenScope`, contained in `<P>Root`, so a
+- **RETIRE (c70cbed8, 1f935498, f14a46da, and RETIRE3's c782217b2).** Each flow's graph is one retirable unit:
+  `retirable(<P>Root, [on(<Rel>, "root"), …])`, the header `<P>Root` with its `retired: retirement` field, every other
+  graph relation a body carrying `root: DenScope` in every key it holds and on both sides of every containment between
+  bodies. `<p>_retirer`, a role of its own whose option `retire` names the header, serves
+  `ChangeSet.empty(<p>Graph).retire(<P>Root, [])`; `runtime/retire.ts` retires every ended root nothing still needs, a
+  call each. Every role, the retirers included, certifies READ COMMITTED. Two laws moved: the header is no longer
+  contained in `<P>Scope`, since a header that references a body would block its own retirement, and a skipped root's
+  `by` names the holder's header, not its `Admitted` row, a fact of another unit that may retire first. The grizzle
+  session's rulings on den's use (2026-11-18): every graph relation carries its root's key as a column, `root: DenScope`, contained in `<P>Root`, so a
   retired unit's fence refuses an insert by that key row by row (a unit reached through `Within`'s tree would make
   every insert's check recursive); a stale holder's insert and a root requested again under a retired key are both
   refused; the inserters stay READ COMMITTED with the retire call in a role of its own; an app row that references a
   body row refuses the retirement (NO ACTION) unless the app declares its relation among the unit's bodies; and
   grizzle retires whole units only, never a chain's prefix, so the coordination group's chains of turns, each turn
   proved from its predecessor's `Freed`, must be restated before they can be retired: one current row per seat, or
-  each turn a unit whose containment reads only its live predecessor.
+  each turn a unit whose containment reads only its live predecessor. That restatement waits on the owner.
 
-Still to come from the grizzle session: RETIRE3's `ChangeSet.retire`, then GUARD and SCHEMAMAP.
+Still to come from the grizzle session: GUARD and SCHEMAMAP.

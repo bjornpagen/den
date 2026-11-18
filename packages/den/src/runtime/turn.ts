@@ -20,6 +20,7 @@ import type {
 	Ledger,
 	Ran,
 	RetryRow,
+	Rooted,
 	ScopeView,
 	Spawned,
 	StepRunner,
@@ -622,7 +623,7 @@ const ended = <R>(
 			case "spent": {
 				const total = spentSoFar + 1
 				if (!allows(runner.retry, total)) {
-					return yield* recorded(ledger, ledger.exhaust(turn.step, turn.attempt), wake, {
+					return yield* recorded(ledger, ledger.exhaust(turn), wake, {
 						kind: "failed",
 						wake,
 						why: "attempts"
@@ -631,7 +632,13 @@ const ended = <R>(
 				const due = instantOf(Number(at) + rungMillis(total))
 				return yield* recorded(
 					ledger,
-					ledger.retry({ step: turn.step, attempt: turn.attempt, at: due, spent: true }),
+					ledger.retry({
+						step: turn.step,
+						root: turn.root,
+						attempt: turn.attempt,
+						at: due,
+						spent: true
+					}),
 					wake,
 					{ kind: "retry", wake: next, due }
 				)
@@ -639,14 +646,20 @@ const ended = <R>(
 			case "waited":
 				return yield* recorded(
 					ledger,
-					ledger.retry({ step: turn.step, attempt: turn.attempt, at, spent: false }),
+					ledger.retry({
+						step: turn.step,
+						root: turn.root,
+						attempt: turn.attempt,
+						at,
+						spent: false
+					}),
 					wake,
 					{ kind: "waiting", wake: next, why: "transient", until: Option.some(at) }
 				)
 			case "fenced":
 				return yield* recorded(
 					ledger,
-					ledger.fence({ step: turn.step, attempt: turn.attempt }),
+					ledger.fence({ step: turn.step, root: turn.root, attempt: turn.attempt }),
 					wake,
 					{ kind: "fenced", wake, fault: how.fault }
 				)
@@ -695,7 +708,7 @@ const endingOf = <R>(
 				case "refused":
 					return lostRace(ledger.flow, error)
 						? Effect.succeed({ kind: "lost", wake })
-						: recorded(ledger, ledger.refuse(turn.step, turn.attempt, lawOf(error)), wake, {
+						: recorded(ledger, ledger.refuse(turn, lawOf(error)), wake, {
 								kind: "failed",
 								wake,
 								why: "law"
@@ -751,7 +764,7 @@ const serveStep = <R>(
 		if (Option.isNone(located)) {
 			return served({ kind: "lost", wake })
 		}
-		const { kind, scope } = located.value
+		const { kind, scope, root } = located.value
 		const runner = ledger.steps.get(kind)
 		if (runner === undefined) {
 			return served({ kind: "lost", wake })
@@ -830,7 +843,7 @@ const serveStep = <R>(
 			ledger,
 			holds.value,
 			Effect.gen(function* () {
-				const claim: ClaimRow = { step, attempt: next, holder, until }
+				const claim: Rooted<ClaimRow> = { step, root, attempt: next, holder, until }
 				const claimed = yield* Effect.result(
 					Effect.retry(ledger.claim(claim), { while: (error) => error.kind === "transient" })
 				)
@@ -840,9 +853,9 @@ const serveStep = <R>(
 				if (!claimed.success) {
 					return served({ kind: "lost", wake })
 				}
-				const turn: Turn = { step, attempt: next, scope, holder, deadline, until }
+				const turn: Turn = { step, root, attempt: next, scope, holder, deadline, until }
 				if (exhausted) {
-					const failed = yield* recorded(ledger, ledger.exhaust(step, next), wake, {
+					const failed = yield* recorded(ledger, ledger.exhaust(turn), wake, {
 						kind: "failed",
 						wake,
 						why: "attempts"

@@ -51,6 +51,7 @@ import type {
 import type {
 	chainDenPrograms,
 	chainCoordinatorPrograms,
+	chainRetirerPrograms,
 	chainCommitPrograms
 } from "#integration/slice/generated/chain.programs.ts"
 
@@ -62,6 +63,11 @@ export interface ChainHandles {
 	readonly coordinator: {
 		readonly [K in keyof typeof chainCoordinatorPrograms]: MemberHandle<
 			(typeof chainCoordinatorPrograms)[K]
+		>
+	}
+	readonly retirer: {
+		readonly [K in keyof typeof chainRetirerPrograms]: MemberHandle<
+			(typeof chainRetirerPrograms)[K]
 		>
 	}
 	readonly commits: {
@@ -134,6 +140,7 @@ export const chainLedger = (h: ChainHandles) => {
 		}
 	})
 	const startChainRun = (
+		root: ScopeKey,
 		scope: ScopeKey,
 		input: Parameters<(typeof chain.kinds)[1]["start"]>[0],
 		at: Instant
@@ -145,19 +152,20 @@ export const chainLedger = (h: ChainHandles) => {
 					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 						rows: {
 							...noRows,
-							ChainStep: [{ step: key, kind: "Page", scope: scope }],
-							ChainDue: [{ step: key, at: dueAt(chain.kinds[0].due, at) }],
-							ChainStartStep: [{ scope, ordinal: BigInt(ordinal), step: key }],
+							ChainStep: [{ step: key, kind: "Page", scope: scope, root: root }],
+							ChainDue: [{ step: key, at: dueAt(chain.kinds[0].due, at), root: root }],
+							ChainStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
 							ChainPageInput: [
 								{
 									step: key,
+									root: root,
 									feed: spawn.input.feed,
 									seq: spawn.input.seq,
 									pages: spawn.input.pages
 								}
 							],
 							ChainPageInputAfter: Option.toArray(
-								Option.map(spawn.input.after, (value) => ({ step: key, value }))
+								Option.map(spawn.input.after, (value) => ({ step: key, root: root, value }))
 							)
 						},
 						spawned: {
@@ -169,6 +177,7 @@ export const chainLedger = (h: ChainHandles) => {
 			(parts) => Arr.reduce(parts, nothingGrown, joined)
 		)
 	const startOrdered = (
+		root: ScopeKey,
 		scope: ScopeKey,
 		input: Parameters<(typeof chain.kinds)[2]["start"]>[0],
 		at: Instant
@@ -180,19 +189,20 @@ export const chainLedger = (h: ChainHandles) => {
 					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 						rows: {
 							...noRows,
-							ChainStep: [{ step: key, kind: "Page", scope: scope }],
-							ChainDue: [{ step: key, at: dueAt(chain.kinds[0].due, at) }],
-							ChainStartStep: [{ scope, ordinal: BigInt(ordinal), step: key }],
+							ChainStep: [{ step: key, kind: "Page", scope: scope, root: root }],
+							ChainDue: [{ step: key, at: dueAt(chain.kinds[0].due, at), root: root }],
+							ChainStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
 							ChainPageInput: [
 								{
 									step: key,
+									root: root,
 									feed: spawn.input.feed,
 									seq: spawn.input.seq,
 									pages: spawn.input.pages
 								}
 							],
 							ChainPageInputAfter: Option.toArray(
-								Option.map(spawn.input.after, (value) => ({ step: key, value }))
+								Option.map(spawn.input.after, (value) => ({ step: key, root: root, value }))
 							)
 						},
 						spawned: {
@@ -282,9 +292,11 @@ export const chainLedger = (h: ChainHandles) => {
 							params: {},
 							facts: {
 								insert: {
-									ChainScope: [{ scope, kind: "ChainRun" as const }],
+									ChainScope: [{ scope, kind: "ChainRun" as const, root: scope }],
 									ChainRoot: [{ scope, key, at }],
-									ChainChainRunInput: [{ scope: scope, feed: input.feed, pages: input.pages }]
+									ChainChainRunInput: [
+										{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
+									]
 								}
 							}
 						})
@@ -329,16 +341,44 @@ export const chainLedger = (h: ChainHandles) => {
 													Effect.map(edgeStep(done.turn.step, "Next", ordinal), (key): Grown => ({
 														rows: {
 															...noRows,
-															ChainStep: [{ step: key, kind: "Page", scope: done.turn.scope }],
-															ChainDue: [{ step: key, at: dueAt(chain.kinds[0].due, at) }],
+															ChainStep: [
+																{
+																	step: key,
+																	kind: "Page",
+																	scope: done.turn.scope,
+																	root: done.turn.root
+																}
+															],
+															ChainDue: [
+																{
+																	step: key,
+																	at: dueAt(chain.kinds[0].due, at),
+																	root: done.turn.root
+																}
+															],
 															ChainNext: [
-																{ from: done.turn.step, ordinal: BigInt(ordinal), to: key }
+																{
+																	from: done.turn.step,
+																	ordinal: BigInt(ordinal),
+																	to: key,
+																	root: done.turn.root
+																}
 															],
 															ChainPageInput: [
-																{ step: key, feed: input.feed, seq: input.seq, pages: input.pages }
+																{
+																	step: key,
+																	root: done.turn.root,
+																	feed: input.feed,
+																	seq: input.seq,
+																	pages: input.pages
+																}
 															],
 															ChainPageInputAfter: Option.toArray(
-																Option.map(input.after, (value) => ({ step: key, value }))
+																Option.map(input.after, (value) => ({
+																	step: key,
+																	root: done.turn.root,
+																	value
+																}))
 															)
 														},
 														spawned: {
@@ -359,18 +399,32 @@ export const chainLedger = (h: ChainHandles) => {
 									facts: {
 										insert: {
 											...grown.rows,
-											ChainResult: [{ step: done.turn.step, outcome: "done" }],
-											ChainDone: [{ step: done.turn.step }],
-											ChainHeld: [{ step: done.turn.step, attempt: done.turn.attempt }],
+											ChainResult: [
+												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+											],
+											ChainDone: [{ step: done.turn.step, root: done.turn.root }],
+											ChainHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
 											ChainPageOutput: [
-												{ step: done.turn.step, seq: done.output.seq, items: done.output.items }
+												{
+													step: done.turn.step,
+													root: done.turn.root,
+													seq: done.output.seq,
+													items: done.output.items
+												}
 											],
 											ChainPageOutputNext: Option.toArray(
-												Option.map(done.output.next, (value) => ({ step: done.turn.step, value }))
+												Option.map(done.output.next, (value) => ({
+													step: done.turn.step,
+													root: done.turn.root,
+													value
+												}))
 											),
 											ChainPageWeightsRead: Arr.map(done.rows.weights, (row, ordinal) => ({
 												...row,
 												step: done.turn.step,
+												root: done.turn.root,
 												ordinal: BigInt(ordinal)
 											})),
 											Item: done.writes.insert.Item
@@ -450,9 +504,13 @@ export const chainLedger = (h: ChainHandles) => {
 									params: {},
 									facts: {
 										insert: {
-											ChainResult: [{ step: done.turn.step, outcome: "done" }],
-											ChainDone: [{ step: done.turn.step }],
-											ChainHeld: [{ step: done.turn.step, attempt: done.turn.attempt }],
+											ChainResult: [
+												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+											],
+											ChainDone: [{ step: done.turn.step, root: done.turn.root }],
+											ChainHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
 											Cursor: done.writes.insert.Cursor
 										}
 									}
@@ -530,9 +588,13 @@ export const chainLedger = (h: ChainHandles) => {
 									params: {},
 									facts: {
 										insert: {
-											ChainResult: [{ step: done.turn.step, outcome: "done" }],
-											ChainDone: [{ step: done.turn.step }],
-											ChainHeld: [{ step: done.turn.step, attempt: done.turn.attempt }],
+											ChainResult: [
+												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+											],
+											ChainDone: [{ step: done.turn.step, root: done.turn.root }],
+											ChainHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
 											Cursor: done.writes.insert.Cursor
 										}
 									}
@@ -560,23 +622,23 @@ export const chainLedger = (h: ChainHandles) => {
 							if (Option.isNone(input)) {
 								return Option.none()
 							}
-							const grown = yield* startChainRun(scope, input.value, at)
+							const grown = yield* startChainRun(scope, scope, input.value, at)
 							const finish = yield* finishStep(scope)
 							const steps: ReadonlyArray<Written<typeof ChainStep>> = [
 								...grown.rows.ChainStep,
-								{ step: finish, kind: "ChainRunFinish", scope }
+								{ step: finish, kind: "ChainRunFinish", scope, root: scope }
 							]
 							const dues: ReadonlyArray<Written<typeof ChainDue>> = [
 								...grown.rows.ChainDue,
-								{ step: finish, at }
+								{ step: finish, at, root: scope }
 							]
 							const admitted: ReadonlyArray<Written<typeof ChainAdmitted>> = [
 								...grown.rows.ChainAdmitted,
-								{ scope }
+								{ scope, root: scope }
 							]
 							const finishes: ReadonlyArray<Written<typeof ChainFinish>> = [
 								...grown.rows.ChainFinish,
-								{ scope, step: finish }
+								{ scope, step: finish, root: scope }
 							]
 							const outcome = yield* h.den.chainAdmit.once({
 								params: {},
@@ -622,23 +684,23 @@ export const chainLedger = (h: ChainHandles) => {
 							if (Option.isNone(input)) {
 								return Option.none()
 							}
-							const grown = yield* startOrdered(scope, input.value, at)
+							const grown = yield* startOrdered(scope, scope, input.value, at)
 							const finish = yield* finishStep(scope)
 							const steps: ReadonlyArray<Written<typeof ChainStep>> = [
 								...grown.rows.ChainStep,
-								{ step: finish, kind: "OrderedFinish", scope }
+								{ step: finish, kind: "OrderedFinish", scope, root: scope }
 							]
 							const dues: ReadonlyArray<Written<typeof ChainDue>> = [
 								...grown.rows.ChainDue,
-								{ step: finish, at }
+								{ step: finish, at, root: scope }
 							]
 							const admitted: ReadonlyArray<Written<typeof ChainAdmitted>> = [
 								...grown.rows.ChainAdmitted,
-								{ scope }
+								{ scope, root: scope }
 							]
 							const finishes: ReadonlyArray<Written<typeof ChainFinish>> = [
 								...grown.rows.ChainFinish,
-								{ scope, step: finish }
+								{ scope, step: finish, root: scope }
 							]
 							const outcome = yield* h.den.chainAdmit.once({
 								params: {},
@@ -673,7 +735,7 @@ export const chainLedger = (h: ChainHandles) => {
 		]),
 		stepOf: (step) =>
 			Effect.map(h.den.chainStepOf.once({ params: { step }, facts: {} }), (rows) =>
-				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope }))
+				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope, root: row.root }))
 			),
 		resultOf: (step) =>
 			Effect.map(h.den.chainResultOf.once({ params: { step }, facts: {} }), (rows) =>
@@ -745,31 +807,42 @@ export const chainLedger = (h: ChainHandles) => {
 		retry: (row) => h.den.chainRetry.once({ params: {}, facts: { insert: { ChainRetry: [row] } } }),
 		fence: (row) =>
 			h.den.chainFence.once({ params: {}, facts: { insert: { ChainFenced: [row] } } }),
-		refuse: (step, attempt, law) =>
+		refuse: ({ step, root, attempt }, law) =>
 			h.den.chainRefuse.once({
 				params: {},
 				facts: {
 					insert: {
-						ChainResult: [{ step, outcome: "failed" }],
-						ChainFailed: [{ step }],
-						ChainHeld: [{ step, attempt }],
-						ChainRefusal: [{ step, law }]
+						ChainResult: [{ step, root, outcome: "failed" }],
+						ChainFailed: [{ step, root }],
+						ChainHeld: [{ step, root, attempt }],
+						ChainRefusal: [{ step, root, law }]
 					}
 				}
 			}),
 		skip: (scope, by) =>
-			h.den.chainSkip.once({ params: {}, facts: { insert: { ChainSkipped: [{ scope, by }] } } }),
-		exhaust: (step, attempt) =>
+			h.den.chainSkip.once({
+				params: {},
+				facts: { insert: { ChainSkipped: [{ scope, by, root: scope }] } }
+			}),
+		exhaust: ({ step, root, attempt }) =>
 			h.den.chainExhaust.once({
 				params: {},
 				facts: {
 					insert: {
-						ChainResult: [{ step, outcome: "failed" }],
-						ChainFailed: [{ step }],
-						ChainHeld: [{ step, attempt }],
-						ChainExhausted: [{ step, attempts: attempt }]
+						ChainResult: [{ step, root, outcome: "failed" }],
+						ChainFailed: [{ step, root }],
+						ChainHeld: [{ step, root, attempt }],
+						ChainExhausted: [{ step, root, attempts: attempt }]
 					}
 				}
+			}),
+		finishedRoots: Effect.map(h.den.chainFinishedRoots.once({ params: {}, facts: {} }), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))
+		),
+		retire: (root) =>
+			h.retirer.chainRetire.once({
+				params: {},
+				facts: { retire: { ChainRoot: [{ scope: root }] } }
 			}),
 		snapshot: Effect.gen(function* () {
 			const steps = yield* Effect.map(h.den.chainPending.once({ params: {}, facts: {} }), rowsOf)
@@ -863,9 +936,9 @@ export const chainLedger = (h: ChainHandles) => {
 				Effect.map(rootScope("Chain", "Ordered", key), (scope) => ({
 					scope,
 					facts: {
-						ChainScope: [{ scope, kind: "Ordered" as const }],
+						ChainScope: [{ scope, kind: "Ordered" as const, root: scope }],
 						ChainRoot: [{ scope, key, at }],
-						ChainOrderedInput: [{ scope: scope, feed: input.feed, pages: input.pages }]
+						ChainOrderedInput: [{ scope: scope, root: scope, feed: input.feed, pages: input.pages }]
 					}
 				}))
 		}

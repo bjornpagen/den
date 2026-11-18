@@ -14,6 +14,8 @@ import {
 	pred,
 	race,
 	relation,
+	retirable,
+	retirement,
 	select
 } from "@bjornpagen/grizzle"
 import { Passage, Seen } from "#integration/slice/relations.ts"
@@ -37,60 +39,95 @@ export const AssignDecideOutputStage = closed.unordered("AssignDecideOutputStage
 
 export const AssignScope = relation(
 	"AssignScope",
-	{ scope: DenScope, kind: closedId(AssignJoin) },
+	{ scope: DenScope, kind: closedId(AssignJoin), root: DenScope },
+	["scope", "root"]
+)
+export const AssignRoot = relation(
+	"AssignRoot",
+	{ scope: DenScope, key: Text, at: DenInstant, retired: retirement },
 	["scope"]
 )
-export const AssignRoot = relation("AssignRoot", { scope: DenScope, key: Text, at: DenInstant }, [
-	"scope"
+export const AssignWithin = relation(
+	"AssignWithin",
+	{ scope: DenScope, parent: DenScope, root: DenScope },
+	["scope", "root"]
+)
+export const AssignAdmitted = relation("AssignAdmitted", { scope: DenScope, root: DenScope }, [
+	"scope",
+	"root"
 ])
-export const AssignWithin = relation("AssignWithin", { scope: DenScope, parent: DenScope }, [
-	"scope"
-])
-export const AssignAdmitted = relation("AssignAdmitted", { scope: DenScope }, ["scope"])
-export const AssignSkipped = relation("AssignSkipped", { scope: DenScope, by: DenScope }, ["scope"])
+export const AssignSkipped = relation(
+	"AssignSkipped",
+	{ scope: DenScope, by: DenScope, root: DenScope },
+	["scope", "root"]
+)
 export const AssignStep = relation(
 	"AssignStep",
-	{ step: DenStep, kind: closedId(AssignKind), scope: DenScope },
-	["step"]
+	{ step: DenStep, kind: closedId(AssignKind), scope: DenScope, root: DenScope },
+	["step", "root"]
 )
 export const AssignStartStep = relation(
 	"AssignStartStep",
-	{ scope: DenScope, ordinal: natural, step: DenStep },
-	["scope", "ordinal"]
+	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
+	["scope", "ordinal", "root"]
 )
 export const AssignStartScope = relation(
 	"AssignStartScope",
-	{ scope: DenScope, ordinal: natural, child: DenScope },
-	["scope", "ordinal"]
+	{ scope: DenScope, ordinal: natural, child: DenScope, root: DenScope },
+	["scope", "ordinal", "root"]
 )
-export const AssignFinish = relation("AssignFinish", { scope: DenScope, step: DenStep }, ["scope"])
-export const AssignDue = relation("AssignDue", { step: DenStep, at: DenInstant }, ["step"])
+export const AssignFinish = relation(
+	"AssignFinish",
+	{ scope: DenScope, step: DenStep, root: DenScope },
+	["scope", "root"]
+)
+export const AssignDue = relation("AssignDue", { step: DenStep, at: DenInstant, root: DenScope }, [
+	"step",
+	"root"
+])
 export const AssignClaim = relation(
 	"AssignClaim",
-	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant },
-	["step", "attempt"]
+	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant, root: DenScope },
+	["step", "attempt", "root"]
 )
 export const AssignRetry = relation(
 	"AssignRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean },
-	["step", "attempt"]
+	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean, root: DenScope },
+	["step", "attempt", "root"]
 )
-export const AssignFenced = relation("AssignFenced", { step: DenStep, attempt: natural }, [
-	"step",
-	"attempt"
-])
+export const AssignFenced = relation(
+	"AssignFenced",
+	{ step: DenStep, attempt: natural, root: DenScope },
+	["step", "attempt", "root"]
+)
 export const AssignResult = relation(
 	"AssignResult",
-	{ step: DenStep, outcome: closedId(AssignOutcome) },
-	["step"]
+	{ step: DenStep, outcome: closedId(AssignOutcome), root: DenScope },
+	["step", "root"]
 )
-export const AssignDone = relation("AssignDone", { step: DenStep }, ["step"])
-export const AssignFailed = relation("AssignFailed", { step: DenStep }, ["step"])
-export const AssignHeld = relation("AssignHeld", { step: DenStep, attempt: natural }, ["step"])
-export const AssignRefusal = relation("AssignRefusal", { step: DenStep, law: Text }, ["step"])
-export const AssignExhausted = relation("AssignExhausted", { step: DenStep, attempts: natural }, [
-	"step"
+export const AssignDone = relation("AssignDone", { step: DenStep, root: DenScope }, [
+	"step",
+	"root"
 ])
+export const AssignFailed = relation("AssignFailed", { step: DenStep, root: DenScope }, [
+	"step",
+	"root"
+])
+export const AssignHeld = relation(
+	"AssignHeld",
+	{ step: DenStep, attempt: natural, root: DenScope },
+	["step", "root"]
+)
+export const AssignRefusal = relation(
+	"AssignRefusal",
+	{ step: DenStep, law: Text, root: DenScope },
+	["step", "root"]
+)
+export const AssignExhausted = relation(
+	"AssignExhausted",
+	{ step: DenStep, attempts: natural, root: DenScope },
+	["step", "root"]
+)
 export const AssignDecideInput = relation(
 	"AssignDecideInput",
 	{
@@ -98,24 +135,25 @@ export const AssignDecideInput = relation(
 		learner: Text,
 		topic: Text,
 		near: pg.vector(4),
-		mode: closedId(AssignDecideInputMode)
+		mode: closedId(AssignDecideInputMode),
+		root: DenScope
 	},
-	["step"]
+	["step", "root"]
 )
 export const AssignDecideInputExclude = relation(
 	"AssignDecideInputExclude",
-	{ step: DenStep, ordinal: natural, value: Text },
-	["step", "ordinal"]
+	{ step: DenStep, ordinal: natural, value: Text, root: DenScope },
+	["step", "ordinal", "root"]
 )
 export const AssignDecideInputModeNearest = relation(
 	"AssignDecideInputModeNearest",
-	{ step: DenStep },
-	["step"]
+	{ step: DenStep, root: DenScope },
+	["step", "root"]
 )
 export const AssignDecideInputModeWithin = relation(
 	"AssignDecideInputModeWithin",
-	{ step: DenStep, radius: pg["double precision"] },
-	["step"]
+	{ step: DenStep, radius: pg["double precision"], root: DenScope },
+	["step", "root"]
 )
 export const AssignAssignmentInput = relation(
 	"AssignAssignmentInput",
@@ -124,29 +162,35 @@ export const AssignAssignmentInput = relation(
 		learner: Text,
 		topic: Text,
 		near: pg.vector(4),
-		mode: closedId(AssignAssignmentInputMode)
+		mode: closedId(AssignAssignmentInputMode),
+		root: DenScope
 	},
-	["scope"]
+	["scope", "root"]
 )
 export const AssignAssignmentInputExclude = relation(
 	"AssignAssignmentInputExclude",
-	{ scope: DenScope, ordinal: natural, value: Text },
-	["scope", "ordinal"]
+	{ scope: DenScope, ordinal: natural, value: Text, root: DenScope },
+	["scope", "ordinal", "root"]
 )
 export const AssignAssignmentInputModeNearest = relation(
 	"AssignAssignmentInputModeNearest",
-	{ scope: DenScope },
-	["scope"]
+	{ scope: DenScope, root: DenScope },
+	["scope", "root"]
 )
 export const AssignAssignmentInputModeWithin = relation(
 	"AssignAssignmentInputModeWithin",
-	{ scope: DenScope, radius: pg["double precision"] },
-	["scope"]
+	{ scope: DenScope, radius: pg["double precision"], root: DenScope },
+	["scope", "root"]
 )
 export const AssignDecideOutput = relation(
 	"AssignDecideOutput",
-	{ step: DenStep, confidence: pg["double precision"], stage: closedId(AssignDecideOutputStage) },
-	["step"]
+	{
+		step: DenStep,
+		confidence: pg["double precision"],
+		stage: closedId(AssignDecideOutputStage),
+		root: DenScope
+	},
+	["step", "root"]
 )
 export const AssignDecideOutputWeighed = relation(
 	"AssignDecideOutputWeighed",
@@ -155,19 +199,20 @@ export const AssignDecideOutputWeighed = relation(
 		ordinal: natural,
 		passage: Text,
 		distance: pg["double precision"],
-		passed: pg.boolean
+		passed: pg.boolean,
+		root: DenScope
 	},
-	["step", "ordinal"]
+	["step", "ordinal", "root"]
 )
 export const AssignDecideOutputStageServe = relation(
 	"AssignDecideOutputStageServe",
-	{ step: DenStep, passage: Text, distance: pg["double precision"] },
-	["step"]
+	{ step: DenStep, passage: Text, distance: pg["double precision"], root: DenScope },
+	["step", "root"]
 )
 export const AssignDecideOutputStageRest = relation(
 	"AssignDecideOutputStageRest",
-	{ step: DenStep },
-	["step"]
+	{ step: DenStep, root: DenScope },
+	["step", "root"]
 )
 export const AssignDecideNearestRead = relation(
 	"AssignDecideNearestRead",
@@ -176,14 +221,21 @@ export const AssignDecideNearestRead = relation(
 		ordinal: natural,
 		passage: Passage.fields.passage,
 		topic: Passage.fields.topic,
-		distance: pg["double precision"]
+		distance: pg["double precision"],
+		root: DenScope
 	},
-	["step", "ordinal"]
+	["step", "ordinal", "root"]
 )
 export const AssignDecideSeenRead = relation(
 	"AssignDecideSeenRead",
-	{ step: DenStep, ordinal: natural, learner: Seen.fields.learner, passage: Seen.fields.passage },
-	["step", "ordinal"]
+	{
+		step: DenStep,
+		ordinal: natural,
+		learner: Seen.fields.learner,
+		passage: Seen.fields.passage,
+		root: DenScope
+	},
+	["step", "ordinal", "root"]
 )
 export const AssignPaused = relation(
 	"AssignPaused",
@@ -241,199 +293,267 @@ export const assignGraph = fragment(
 		AssignDecideSeenRead
 	],
 	[
-		contained(on(AssignRoot, "scope"), on(AssignScope, "scope")),
-		contained(on(AssignWithin, "scope"), on(AssignScope, "scope")),
-		contained(on(AssignWithin, "parent"), on(AssignScope, "scope")),
-		contained(on(AssignAdmitted, "scope"), on(AssignScope, "scope")),
+		contained(on(AssignWithin, "scope", "root"), on(AssignScope, "scope", "root")),
+		contained(on(AssignWithin, "parent", "root"), on(AssignScope, "scope", "root")),
+		contained(on(AssignAdmitted, "scope", "root"), on(AssignScope, "scope", "root")),
 		contained(on(AssignSkipped, "scope"), on(AssignRoot, "scope")),
-		contained(on(AssignSkipped, "by"), on(AssignAdmitted, "scope")),
-		contained(on(AssignStep, "scope"), on(AssignAdmitted, "scope")),
-		contained(on(AssignStartStep, "scope"), on(AssignAdmitted, "scope")),
-		contained(on(AssignStartStep, "step"), on(AssignStep, "step")),
-		key(on(AssignStartStep, "step")),
-		contained(on(AssignStartScope, "scope"), on(AssignAdmitted, "scope")),
-		contained(on(AssignStartScope, "child"), on(AssignScope, "scope")),
-		key(on(AssignStartScope, "child")),
-		contained(on(AssignFinish, "scope"), on(AssignAdmitted, "scope")),
-		contained(on(AssignFinish, "step"), on(AssignStep, "step")),
-		key(on(AssignFinish, "step")),
-		contained(on(AssignDue, "step"), on(AssignStep, "step")),
-		contained(on(AssignClaim, "step"), on(AssignStep, "step")),
+		contained(on(AssignSkipped, "by"), on(AssignRoot, "scope")),
+		contained(on(AssignStep, "scope", "root"), on(AssignAdmitted, "scope", "root")),
+		contained(on(AssignStartStep, "scope", "root"), on(AssignAdmitted, "scope", "root")),
+		contained(on(AssignStartStep, "step", "root"), on(AssignStep, "step", "root")),
+		key(on(AssignStartStep, "step", "root")),
+		contained(on(AssignStartScope, "scope", "root"), on(AssignAdmitted, "scope", "root")),
+		contained(on(AssignStartScope, "child", "root"), on(AssignScope, "scope", "root")),
+		key(on(AssignStartScope, "child", "root")),
+		contained(on(AssignFinish, "scope", "root"), on(AssignAdmitted, "scope", "root")),
+		contained(on(AssignFinish, "step", "root"), on(AssignStep, "step", "root")),
+		key(on(AssignFinish, "step", "root")),
+		contained(on(AssignDue, "step", "root"), on(AssignStep, "step", "root")),
+		contained(on(AssignClaim, "step", "root"), on(AssignStep, "step", "root")),
 		race(AssignClaim),
 		check("AttemptFromOne", AssignClaim, (row) => row.ge(row.attempt, 1n)),
 		contained(
 			on(
 				select(AssignClaim, (row) => row.ge(row.attempt, 2n)),
 				"step",
-				pred("attempt")
+				pred("attempt"),
+				"root"
 			),
-			on(AssignClaim, "step", "attempt")
+			on(AssignClaim, "step", "attempt", "root")
 		),
-		contained(on(AssignRetry, "step", "attempt"), on(AssignClaim, "step", "attempt")),
-		contained(on(AssignFenced, "step", "attempt"), on(AssignClaim, "step", "attempt")),
-		contained(on(AssignResult, "step"), on(AssignStep, "step")),
-		contained(on(AssignHeld, "step", "attempt"), on(AssignClaim, "step", "attempt")),
-		contained(on(AssignHeld, "step"), on(AssignResult, "step")),
 		contained(
-			on(AssignDone, "step"),
+			on(AssignRetry, "step", "attempt", "root"),
+			on(AssignClaim, "step", "attempt", "root")
+		),
+		contained(
+			on(AssignFenced, "step", "attempt", "root"),
+			on(AssignClaim, "step", "attempt", "root")
+		),
+		contained(on(AssignResult, "step", "root"), on(AssignStep, "step", "root")),
+		contained(
+			on(AssignHeld, "step", "attempt", "root"),
+			on(AssignClaim, "step", "attempt", "root")
+		),
+		contained(on(AssignHeld, "step", "root"), on(AssignResult, "step", "root")),
+		contained(
+			on(AssignDone, "step", "root"),
 			on(
 				select(AssignResult, (row) => row.eq(row.outcome, "done")),
-				"step"
+				"step",
+				"root"
 			)
 		),
 		contained(
-			on(AssignFailed, "step"),
+			on(AssignFailed, "step", "root"),
 			on(
 				select(AssignResult, (row) => row.eq(row.outcome, "failed")),
-				"step"
+				"step",
+				"root"
 			)
 		),
-		contained(on(AssignRefusal, "step"), on(AssignFailed, "step")),
-		contained(on(AssignExhausted, "step"), on(AssignFailed, "step")),
+		contained(on(AssignRefusal, "step", "root"), on(AssignFailed, "step", "root")),
+		contained(on(AssignExhausted, "step", "root"), on(AssignFailed, "step", "root")),
 		contained(
-			on(AssignDecideInput, "step"),
+			on(AssignDecideInput, "step", "root"),
 			on(
 				select(AssignStep, (row) => row.eq(row.kind, "Decide")),
-				"step"
+				"step",
+				"root"
 			)
 		),
-		contained(on(AssignDecideInputExclude, "step"), on(AssignDecideInput, "step")),
+		contained(on(AssignDecideInputExclude, "step", "root"), on(AssignDecideInput, "step", "root")),
 		contained(
 			on(
 				select(AssignDecideInputExclude, (row) => row.ge(row.ordinal, 1n)),
 				"step",
-				pred("ordinal")
+				pred("ordinal"),
+				"root"
 			),
-			on(AssignDecideInputExclude, "step", "ordinal")
+			on(AssignDecideInputExclude, "step", "ordinal", "root")
 		),
 		contained(
-			on(AssignDecideInputModeNearest, "step"),
+			on(AssignDecideInputModeNearest, "step", "root"),
 			on(
 				select(AssignDecideInput, (row) => row.eq(row.mode, "Nearest")),
-				"step"
+				"step",
+				"root"
 			)
 		),
 		contained(
 			on(
 				select(AssignDecideInput, (row) => row.eq(row.mode, "Nearest")),
-				"step"
+				"step",
+				"root"
 			),
-			on(AssignDecideInputModeNearest, "step")
+			on(AssignDecideInputModeNearest, "step", "root")
 		),
 		contained(
-			on(AssignDecideInputModeWithin, "step"),
+			on(AssignDecideInputModeWithin, "step", "root"),
 			on(
 				select(AssignDecideInput, (row) => row.eq(row.mode, "Within")),
-				"step"
+				"step",
+				"root"
 			)
 		),
 		contained(
 			on(
 				select(AssignDecideInput, (row) => row.eq(row.mode, "Within")),
-				"step"
+				"step",
+				"root"
 			),
-			on(AssignDecideInputModeWithin, "step")
+			on(AssignDecideInputModeWithin, "step", "root")
 		),
 		check("AssignDecideInputModeWithinRadiusFinite", AssignDecideInputModeWithin, (row) =>
 			Compute.isFinite(row.radius)
 		),
 		contained(
-			on(AssignAssignmentInput, "scope"),
+			on(AssignAssignmentInput, "scope", "root"),
 			on(
 				select(AssignScope, (row) => row.eq(row.kind, "Assignment")),
-				"scope"
+				"scope",
+				"root"
 			)
 		),
-		contained(on(AssignAssignmentInputExclude, "scope"), on(AssignAssignmentInput, "scope")),
+		contained(
+			on(AssignAssignmentInputExclude, "scope", "root"),
+			on(AssignAssignmentInput, "scope", "root")
+		),
 		contained(
 			on(
 				select(AssignAssignmentInputExclude, (row) => row.ge(row.ordinal, 1n)),
 				"scope",
-				pred("ordinal")
+				pred("ordinal"),
+				"root"
 			),
-			on(AssignAssignmentInputExclude, "scope", "ordinal")
+			on(AssignAssignmentInputExclude, "scope", "ordinal", "root")
 		),
 		contained(
-			on(AssignAssignmentInputModeNearest, "scope"),
+			on(AssignAssignmentInputModeNearest, "scope", "root"),
 			on(
 				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Nearest")),
-				"scope"
+				"scope",
+				"root"
 			)
 		),
 		contained(
 			on(
 				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Nearest")),
-				"scope"
+				"scope",
+				"root"
 			),
-			on(AssignAssignmentInputModeNearest, "scope")
+			on(AssignAssignmentInputModeNearest, "scope", "root")
 		),
 		contained(
-			on(AssignAssignmentInputModeWithin, "scope"),
+			on(AssignAssignmentInputModeWithin, "scope", "root"),
 			on(
 				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Within")),
-				"scope"
+				"scope",
+				"root"
 			)
 		),
 		contained(
 			on(
 				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Within")),
-				"scope"
+				"scope",
+				"root"
 			),
-			on(AssignAssignmentInputModeWithin, "scope")
+			on(AssignAssignmentInputModeWithin, "scope", "root")
 		),
 		check("AssignAssignmentInputModeWithinRadiusFinite", AssignAssignmentInputModeWithin, (row) =>
 			Compute.isFinite(row.radius)
 		),
-		contained(on(AssignDecideOutput, "step"), on(AssignDecideInput, "step")),
-		contained(on(AssignDecideOutput, "step"), on(AssignDone, "step")),
+		contained(on(AssignDecideOutput, "step", "root"), on(AssignDecideInput, "step", "root")),
+		contained(on(AssignDecideOutput, "step", "root"), on(AssignDone, "step", "root")),
 		check("AssignDecideOutputConfidenceFinite", AssignDecideOutput, (row) =>
 			Compute.isFinite(row.confidence)
 		),
-		contained(on(AssignDecideOutputWeighed, "step"), on(AssignDecideOutput, "step")),
+		contained(
+			on(AssignDecideOutputWeighed, "step", "root"),
+			on(AssignDecideOutput, "step", "root")
+		),
 		contained(
 			on(
 				select(AssignDecideOutputWeighed, (row) => row.ge(row.ordinal, 1n)),
 				"step",
-				pred("ordinal")
+				pred("ordinal"),
+				"root"
 			),
-			on(AssignDecideOutputWeighed, "step", "ordinal")
+			on(AssignDecideOutputWeighed, "step", "ordinal", "root")
 		),
 		check("AssignDecideOutputWeighedDistanceFinite", AssignDecideOutputWeighed, (row) =>
 			Compute.isFinite(row.distance)
 		),
 		contained(
-			on(AssignDecideOutputStageServe, "step"),
+			on(AssignDecideOutputStageServe, "step", "root"),
 			on(
 				select(AssignDecideOutput, (row) => row.eq(row.stage, "Serve")),
-				"step"
+				"step",
+				"root"
 			)
 		),
 		contained(
 			on(
 				select(AssignDecideOutput, (row) => row.eq(row.stage, "Serve")),
-				"step"
+				"step",
+				"root"
 			),
-			on(AssignDecideOutputStageServe, "step")
+			on(AssignDecideOutputStageServe, "step", "root")
 		),
 		check("AssignDecideOutputStageServeDistanceFinite", AssignDecideOutputStageServe, (row) =>
 			Compute.isFinite(row.distance)
 		),
 		contained(
-			on(AssignDecideOutputStageRest, "step"),
+			on(AssignDecideOutputStageRest, "step", "root"),
 			on(
 				select(AssignDecideOutput, (row) => row.eq(row.stage, "Rest")),
-				"step"
+				"step",
+				"root"
 			)
 		),
 		contained(
 			on(
 				select(AssignDecideOutput, (row) => row.eq(row.stage, "Rest")),
-				"step"
+				"step",
+				"root"
 			),
-			on(AssignDecideOutputStageRest, "step")
+			on(AssignDecideOutputStageRest, "step", "root")
 		),
-		contained(on(AssignDecideNearestRead, "step"), on(AssignResult, "step")),
-		contained(on(AssignDecideSeenRead, "step"), on(AssignResult, "step"))
+		contained(on(AssignDecideNearestRead, "step", "root"), on(AssignResult, "step", "root")),
+		contained(on(AssignDecideSeenRead, "step", "root"), on(AssignResult, "step", "root")),
+		retirable(AssignRoot, [
+			on(AssignScope, "root"),
+			on(AssignWithin, "root"),
+			on(AssignAdmitted, "root"),
+			on(AssignSkipped, "root"),
+			on(AssignStep, "root"),
+			on(AssignStartStep, "root"),
+			on(AssignStartScope, "root"),
+			on(AssignFinish, "root"),
+			on(AssignDue, "root"),
+			on(AssignClaim, "root"),
+			on(AssignRetry, "root"),
+			on(AssignFenced, "root"),
+			on(AssignResult, "root"),
+			on(AssignDone, "root"),
+			on(AssignFailed, "root"),
+			on(AssignHeld, "root"),
+			on(AssignRefusal, "root"),
+			on(AssignExhausted, "root"),
+			on(AssignDecideInput, "root"),
+			on(AssignDecideInputExclude, "root"),
+			on(AssignDecideInputModeNearest, "root"),
+			on(AssignDecideInputModeWithin, "root"),
+			on(AssignAssignmentInput, "root"),
+			on(AssignAssignmentInputExclude, "root"),
+			on(AssignAssignmentInputModeNearest, "root"),
+			on(AssignAssignmentInputModeWithin, "root"),
+			on(AssignDecideOutput, "root"),
+			on(AssignDecideOutputWeighed, "root"),
+			on(AssignDecideOutputStageServe, "root"),
+			on(AssignDecideOutputStageRest, "root"),
+			on(AssignDecideNearestRead, "root"),
+			on(AssignDecideSeenRead, "root")
+		])
 	]
 )
 

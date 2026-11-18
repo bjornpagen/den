@@ -44,6 +44,8 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * relation in a containment; each chain's turns are keyed by its coordinates and turn, its ends contained in its turns
  * and each turn's predecessor in its ends; the exclusivity chain exists exactly when a root is exclusive, and the seat
  * chain, with its seat counts and its seat level, the live holds checked below them, exactly when a step uses a resource.
+ * Every graph relation but the root is a body of one retirable unit headed by the root: its root in every key and on
+ * both sides of every containment between bodies, and no coordination relation carries one.
  *
  * Oracle (specification): the proposal's sections 5 and 6, over flows of up to three steps, chained or not, of each
  * field form, with or without a resource, an exclusive root, a child scope, a rows read, a nearest read and a typed
@@ -341,13 +343,19 @@ it.effect(
 						const names = [...relations, ...counts, ...Arr.map(lowered.rosters, (r) => r.name)]
 						const has = (suffix: string) => Arr.contains(relations, `${P}${suffix}`)
 						assert.isTrue(Arr.every(names, Str.startsWith(P)))
-						const sides = Arr.flatMap(lowered.laws, (law) =>
-							law.kind === "contained"
-								? [law.from.relation, law.to.relation]
-								: law.kind === "key"
-									? [law.side.relation]
-									: [law.relation]
-						)
+						const sides = Arr.flatMap(lowered.laws, (law) => {
+							switch (law.kind) {
+								case "contained":
+									return [law.from.relation, law.to.relation]
+								case "key":
+									return [law.side.relation]
+								case "retirable":
+									return [law.header, ...law.bodies]
+								case "race":
+								case "check":
+									return [law.relation]
+							}
+						})
 						assert.isTrue(Arr.every(sides, (side) => Arr.contains(names, side)))
 						assert.strictEqual(
 							has("S0InputValue"),
@@ -361,15 +369,18 @@ it.effect(
 						const lawsFrom = (name: string) =>
 							Arr.filter(containmentsOf(lowered.laws), (law) => law.from.relation === name)
 						if (sketch.form === "array" || sketch.form === "structs") {
-							assert.deepStrictEqual(keyed(`${P}S0InputValue`), Option.some(["step", "ordinal"]))
+							assert.deepStrictEqual(
+								keyed(`${P}S0InputValue`),
+								Option.some(["step", "ordinal", "root"])
+							)
 							assert.deepStrictEqual(
 								Arr.map(lawsFrom(`${P}S0InputValue`), (law) => [
 									law.to.relation,
 									Arr.map(law.from.terms, (t) => `${t.pred ? "pred:" : ""}${t.field}`)
 								]),
 								[
-									[`${P}S0Input`, ["step"]],
-									[`${P}S0InputValue`, ["step", "pred:ordinal"]]
+									[`${P}S0Input`, ["step", "root"]],
+									[`${P}S0InputValue`, ["step", "pred:ordinal", "root"]]
 								]
 							)
 						}
@@ -439,7 +450,8 @@ it.effect(
 									["step", "key"],
 									["ordinal", "natural"],
 									["passage", "app"],
-									["distance", "base"]
+									["distance", "base"],
+									["root", "key"]
 								])
 							)
 						}
@@ -459,7 +471,7 @@ it.effect(
 								Option.map(fieldsOf(`${P}S0Input`), (fields) =>
 									Arr.map(fields, ([, kind]) => kind)
 								),
-								Option.some(["key", "vector"])
+								Option.some(["key", "vector", "key"])
 							)
 						}
 
@@ -542,6 +554,32 @@ it.effect(
 							sketch.resource
 						)
 						assert.strictEqual(has("ExclusiveKey"), sketch.exclusive)
+						const bodies = Arr.filter(
+							relations,
+							(name) => name !== `${P}Root` && !Arr.contains(lowered.coordination, name)
+						)
+						assert.deepStrictEqual(
+							Arr.flatMap(lowered.laws, (law) =>
+								law.kind === "retirable" ? [[law.header, ...law.bodies]] : []
+							),
+							[[`${P}Root`, ...bodies]]
+						)
+						assert.isTrue(
+							Arr.every(lowered.relations, (rel) =>
+								Arr.contains(bodies, rel.name)
+									? Arr.contains(rel.key, "root") &&
+										Arr.some(rel.fields, (field) => field.name === "root")
+									: !Arr.some(rel.fields, (field) => field.name === "root")
+							)
+						)
+						assert.isTrue(
+							Arr.every(containmentsOf(lowered.laws), (law) =>
+								Arr.contains(bodies, law.from.relation) && Arr.contains(bodies, law.to.relation)
+									? Arr.some(law.from.terms, (t) => t.field === "root") &&
+										Arr.some(law.to.terms, (t) => t.field === "root")
+									: true
+							)
+						)
 					})
 			)
 		)

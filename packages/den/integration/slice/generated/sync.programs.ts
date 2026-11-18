@@ -144,16 +144,99 @@ export const syncDenPrograms = Object.freeze({
 		.insert(SyncCopyInput, [])
 		.insert(SyncBuildInput, []),
 	syncSkip: ChangeSet.empty(syncGraph).insert(SyncSkipped, []),
-	syncSkippedOf: SyncSkipped,
-	syncStepOf: SyncStep,
-	syncResultOf: SyncResult,
-	syncHeldOf: SyncHeld,
-	syncDueOf: SyncDue,
-	syncScopeOf: SyncScope,
-	syncWithinOf: SyncWithin,
-	syncAdmittedOf: SyncAdmitted,
-	syncRootOf: SyncRoot,
-	syncExclusiveKeyOf: SyncExclusiveKey,
+	syncSkippedOf: query(syncGraph).rule((r) => {
+		const { scope, by, root } = v(SyncSkipped, "syncSkipped")
+		return r
+			.match(SyncSkipped, { scope, by, root })
+			.where(r.eq(scope, r.param("scope", SyncSkipped.fields.scope)))
+			.find({ scope, by, root })
+	}),
+	syncStepOf: query(syncGraph).rule((r) => {
+		const { step, kind, scope, root } = v(SyncStep, "syncStep")
+		return r
+			.match(SyncStep, { step, kind, scope, root })
+			.where(r.eq(step, r.param("step", SyncStep.fields.step)))
+			.find({ step, kind, scope, root })
+	}),
+	syncResultOf: query(syncGraph).rule((r) => {
+		const { step, outcome, root } = v(SyncResult, "syncResult")
+		return r
+			.match(SyncResult, { step, outcome, root })
+			.where(r.eq(step, r.param("step", SyncResult.fields.step)))
+			.find({ step, outcome, root })
+	}),
+	syncHeldOf: query(syncGraph).rule((r) => {
+		const { step, attempt, root } = v(SyncHeld, "syncHeld")
+		return r
+			.match(SyncHeld, { step, attempt, root })
+			.where(r.eq(step, r.param("step", SyncHeld.fields.step)))
+			.find({ step, attempt, root })
+	}),
+	syncDueOf: query(syncGraph).rule((r) => {
+		const { step, at, root } = v(SyncDue, "syncDue")
+		return r
+			.match(SyncDue, { step, at, root })
+			.where(r.eq(step, r.param("step", SyncDue.fields.step)))
+			.find({ step, at, root })
+	}),
+	syncScopeOf: query(syncGraph).rule((r) => {
+		const { scope, kind, root } = v(SyncScope, "syncScope")
+		return r
+			.match(SyncScope, { scope, kind, root })
+			.where(r.eq(scope, r.param("scope", SyncScope.fields.scope)))
+			.find({ scope, kind, root })
+	}),
+	syncWithinOf: query(syncGraph).rule((r) => {
+		const { scope, parent, root } = v(SyncWithin, "syncWithin")
+		return r
+			.match(SyncWithin, { scope, parent, root })
+			.where(r.eq(scope, r.param("scope", SyncWithin.fields.scope)))
+			.find({ scope, parent, root })
+	}),
+	syncAdmittedOf: query(syncGraph).rule((r) => {
+		const { scope, root } = v(SyncAdmitted, "syncAdmitted")
+		return r
+			.match(SyncAdmitted, { scope, root })
+			.where(r.eq(scope, r.param("scope", SyncAdmitted.fields.scope)))
+			.find({ scope, root })
+	}),
+	syncRootOf: query(syncGraph).rule((r) => {
+		const { scope, key, at } = v(SyncRoot, "syncRoot")
+		return r
+			.match(SyncRoot, { scope, key, at })
+			.where(r.eq(scope, r.param("scope", SyncRoot.fields.scope)))
+			.find({ scope, key, at })
+	}),
+	syncExclusiveKeyOf: query(syncGraph).rule((r) => {
+		const { scope, key, id, root } = v(SyncExclusiveKey, "syncExclusiveKey")
+		return r
+			.match(SyncExclusiveKey, { scope, key, id, root })
+			.where(r.eq(scope, r.param("scope", SyncExclusiveKey.fields.scope)))
+			.find({ scope, key, id, root })
+	}),
+	syncFinishedRoots: deferrable(
+		query(syncGraph)
+			.rule((r) => {
+				const { scope, key, at } = v(SyncRoot, "root")
+				const { kind } = v(SyncScope, "scope")
+				const { step } = v(SyncFinish, "finish")
+				return r
+					.match(SyncRoot, { scope, key, at })
+					.match(SyncScope, { scope, kind })
+					.match(SyncFinish, { scope, step })
+					.match(SyncResult, { step })
+					.find({ scope, kind, at })
+			})
+			.rule((r) => {
+				const { scope, key, at } = v(SyncRoot, "root")
+				const { kind } = v(SyncScope, "scope")
+				return r
+					.match(SyncRoot, { scope, key, at })
+					.match(SyncScope, { scope, kind })
+					.match(SyncSkipped, { scope })
+					.find({ scope, kind, at })
+			})
+	),
 	syncClaimsOf: query(syncGraph).rule((r) => {
 		const { step, attempt, holder, until } = v(SyncClaim, "claim")
 		return r
@@ -303,15 +386,39 @@ export const syncDenPrograms = Object.freeze({
 				.find({ step })
 		})
 	),
-	syncReadSyncCopyInput: SyncCopyInput,
-	syncReadSyncBuildInput: SyncBuildInput,
-	syncReadSyncSyncRunInput: SyncSyncRunInput,
+	syncReadSyncCopyInput: query(syncGraph).rule((r) => {
+		const { step, relation, run, root } = v(SyncCopyInput, "syncCopyInput")
+		return r
+			.match(SyncCopyInput, { step, relation, run, root })
+			.where(r.eq(step, r.param("step", SyncCopyInput.fields.step)))
+			.find({ step, relation, run, root })
+	}),
+	syncReadSyncBuildInput: query(syncGraph).rule((r) => {
+		const { step, build, root } = v(SyncBuildInput, "syncBuildInput")
+		return r
+			.match(SyncBuildInput, { step, build, root })
+			.where(r.eq(step, r.param("step", SyncBuildInput.fields.step)))
+			.find({ step, build, root })
+	}),
+	syncReadSyncSyncRunInput: query(syncGraph).rule((r) => {
+		const { scope, relation, run, root } = v(SyncSyncRunInput, "syncSyncRunInput")
+		return r
+			.match(SyncSyncRunInput, { scope, relation, run, root })
+			.where(r.eq(scope, r.param("scope", SyncSyncRunInput.fields.scope)))
+			.find({ scope, relation, run, root })
+	}),
 	syncRequestSyncRun: ChangeSet.empty(syncGraph)
 		.insert(SyncScope, [])
 		.insert(SyncRoot, [])
 		.insert(SyncExclusiveKey, [])
 		.insert(SyncSyncRunInput, []),
-	syncReadSyncGoldInput: SyncGoldInput,
+	syncReadSyncGoldInput: query(syncGraph).rule((r) => {
+		const { scope, build, root } = v(SyncGoldInput, "syncGoldInput")
+		return r
+			.match(SyncGoldInput, { scope, build, root })
+			.where(r.eq(scope, r.param("scope", SyncGoldInput.fields.scope)))
+			.find({ scope, build, root })
+	}),
 	syncRequestGold: ChangeSet.empty(syncGraph)
 		.insert(SyncScope, [])
 		.insert(SyncRoot, [])
@@ -358,6 +465,20 @@ export const syncCoordinatorPrograms = Object.freeze({
 })
 
 export const syncCoordinatorWorkload = workload(SyncCoordinator, syncCoordinatorPrograms)
+
+/** den's retiring role for the flow Sync: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else, so every inserter of the graph stays READ COMMITTED. */
+export const SyncRetirer = role(
+	App,
+	"sync_retirer",
+	{ ...syncGraph.relations },
+	{ retire: ["SyncRoot"] }
+)
+
+export const syncRetirerPrograms = Object.freeze({
+	syncRetire: ChangeSet.empty(syncGraph).retire(SyncRoot, [])
+})
+
+export const syncRetirerWorkload = workload(SyncRetirer, syncRetirerPrograms)
 
 /** The commits and declared reads of the flow Sync, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const syncCommitPrograms = Object.freeze({

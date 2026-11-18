@@ -154,8 +154,9 @@ output into `select(PResult, outcome = done)`) certifies.
    at run time.
 9. **A finish step** lives in the scope it finishes, is no child of it for completeness, and spawns nothing yet; a
    scope is done once its finish step has a result (done or failed).
-10. **Retirement.** Not built: any delete of a den relation decertifies every inserter of it (`privileges`) at
-    `a226cbac`. Graphs grow until RETIRE lands.
+10. **Retirement.** Built on grizzle's RETIRE (`docs/build/repin.md`): `runtime/retire.ts` retires each ended root's
+    graph whole once its exclusivity seat is given back and the census no longer requests its key; an app row that
+    references it keeps it. The app's census runs it beside its tick.
 11. **Stopping.** Not built.
 12. **The relay.** Not built: a committing turn sends its children's wakes itself after its commit, and the census heals
     any it loses.
@@ -166,7 +167,7 @@ output into `select(PResult, outcome = done)`) certifies.
 |---|---|---|
 | POROUS | `src/lower/print.ts` (`printPrograms`, `printBinding`), the generated `*.programs.ts` and `*.binding.ts` | programs built once over the fragment, and a binding written over their handles, in place of printed modules |
 | LEASE | `src/runtime/turn.ts` `claimed`, the `PClaim` relation and the census's lapsed-claim read | grizzle's certified lease race |
-| RETIRE | none yet: nothing retires | a retirement of a finished root's graph whole |
+| RETIRE | taken: `src/runtime/retire.ts`, the fragment's retirable unit and each flow's retiring role | a retirement of a finished root's graph whole |
 | DBCLOCK | `Clock.currentTimeMillis` in `runtime/turn.ts` (`serve`, `claimed`, the runner's deadline) and `runtime/census.ts` (`tick`) | the database's instant, as a query term |
 | CLASH | `src/lower/merge.ts` | grizzle refusing a fragment's clashes itself |
 | DELTAMET | `concluded`'s read-back of `PHeld` after `commitUnknown` | the winner's row in the same call |

@@ -4,68 +4,88 @@ import { App } from "#integration/slice/app.ts"
 import {
 	AssignCoordinator,
 	AssignDen,
+	AssignRetirer,
 	assignCommits,
 	assignCoordinatorWorkload,
-	assignDenWorkload
+	assignDenWorkload,
+	assignRetirerWorkload
 } from "#integration/slice/generated/assign.programs.ts"
 import {
 	ChainDen,
 	ChainCoordinator,
+	ChainRetirer,
 	chainCommits,
 	chainDenWorkload,
-	chainCoordinatorWorkload
+	chainCoordinatorWorkload,
+	chainRetirerWorkload
 } from "#integration/slice/generated/chain.programs.ts"
 import {
 	FanDen,
 	FanCoordinator,
+	FanRetirer,
 	fanCommits,
 	fanDenWorkload,
-	fanCoordinatorWorkload
+	fanCoordinatorWorkload,
+	fanRetirerWorkload
 } from "#integration/slice/generated/fan.programs.ts"
 import {
 	RetryDen,
 	RetryCoordinator,
+	RetryRetirer,
 	retryCommits,
 	retryDenWorkload,
-	retryCoordinatorWorkload
+	retryCoordinatorWorkload,
+	retryRetirerWorkload
 } from "#integration/slice/generated/retry.programs.ts"
 import {
 	SyncDen,
 	SyncCoordinator,
+	SyncRetirer,
 	syncCommits,
 	syncDenWorkload,
-	syncCoordinatorWorkload
+	syncCoordinatorWorkload,
+	syncRetirerWorkload
 } from "#integration/slice/generated/sync.programs.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's runtime login: each flow's den role and coordinator role. */
+/** den's runtime login: each flow's den role, coordinator role and retiring role. */
 export const Worker = login(
 	App,
 	"worker",
 	[
 		ChainDen,
 		ChainCoordinator,
+		ChainRetirer,
 		FanDen,
 		FanCoordinator,
+		FanRetirer,
 		SyncDen,
 		SyncCoordinator,
+		SyncRetirer,
 		RetryDen,
 		RetryCoordinator,
+		RetryRetirer,
 		AssignDen,
-		AssignCoordinator
+		AssignCoordinator,
+		AssignRetirer
 	],
 	{
 		workload: [
 			chainDenWorkload,
 			chainCoordinatorWorkload,
+			chainRetirerWorkload,
 			fanDenWorkload,
 			fanCoordinatorWorkload,
+			fanRetirerWorkload,
 			syncDenWorkload,
 			syncCoordinatorWorkload,
+			syncRetirerWorkload,
 			retryDenWorkload,
 			retryCoordinatorWorkload,
+			retryRetirerWorkload,
 			assignDenWorkload,
-			assignCoordinatorWorkload
+			assignCoordinatorWorkload,
+			assignRetirerWorkload
 		]
 	}
 )

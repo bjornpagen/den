@@ -20,6 +20,8 @@ import {
 	pred,
 	race,
 	relation,
+	retirable,
+	retirement,
 	select
 } from "@bjornpagen/grizzle"
 
@@ -33,85 +35,127 @@ export const SyncJoin = closed.unordered("SyncJoin", ["SyncRun", "Gold"])
 export const SyncOutcome = closed.unordered("SyncOutcome", ["done", "failed"])
 export const SyncPausable = closed.unordered("SyncPausable", ["SyncRun", "Gold"])
 
-export const SyncScope = relation("SyncScope", { scope: DenScope, kind: closedId(SyncJoin) }, [
-	"scope"
-])
-export const SyncRoot = relation("SyncRoot", { scope: DenScope, key: Text, at: DenInstant }, [
-	"scope"
-])
-export const SyncWithin = relation("SyncWithin", { scope: DenScope, parent: DenScope }, ["scope"])
-export const SyncExclusiveKey = relation(
-	"SyncExclusiveKey",
-	{ scope: DenScope, key: Text, id: DenExclusive },
+export const SyncScope = relation(
+	"SyncScope",
+	{ scope: DenScope, kind: closedId(SyncJoin), root: DenScope },
+	["scope", "root"]
+)
+export const SyncRoot = relation(
+	"SyncRoot",
+	{ scope: DenScope, key: Text, at: DenInstant, retired: retirement },
 	["scope"]
 )
-export const SyncAdmitted = relation("SyncAdmitted", { scope: DenScope }, ["scope"])
-export const SyncSkipped = relation("SyncSkipped", { scope: DenScope, by: DenScope }, ["scope"])
+export const SyncWithin = relation(
+	"SyncWithin",
+	{ scope: DenScope, parent: DenScope, root: DenScope },
+	["scope", "root"]
+)
+export const SyncExclusiveKey = relation(
+	"SyncExclusiveKey",
+	{ scope: DenScope, key: Text, id: DenExclusive, root: DenScope },
+	["scope", "root"]
+)
+export const SyncAdmitted = relation("SyncAdmitted", { scope: DenScope, root: DenScope }, [
+	"scope",
+	"root"
+])
+export const SyncSkipped = relation(
+	"SyncSkipped",
+	{ scope: DenScope, by: DenScope, root: DenScope },
+	["scope", "root"]
+)
 export const SyncStep = relation(
 	"SyncStep",
-	{ step: DenStep, kind: closedId(SyncKind), scope: DenScope },
-	["step"]
+	{ step: DenStep, kind: closedId(SyncKind), scope: DenScope, root: DenScope },
+	["step", "root"]
 )
 export const SyncStartStep = relation(
 	"SyncStartStep",
-	{ scope: DenScope, ordinal: natural, step: DenStep },
-	["scope", "ordinal"]
+	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
+	["scope", "ordinal", "root"]
 )
 export const SyncStartScope = relation(
 	"SyncStartScope",
-	{ scope: DenScope, ordinal: natural, child: DenScope },
-	["scope", "ordinal"]
+	{ scope: DenScope, ordinal: natural, child: DenScope, root: DenScope },
+	["scope", "ordinal", "root"]
 )
-export const SyncFinish = relation("SyncFinish", { scope: DenScope, step: DenStep }, ["scope"])
-export const SyncDue = relation("SyncDue", { step: DenStep, at: DenInstant }, ["step"])
+export const SyncFinish = relation(
+	"SyncFinish",
+	{ scope: DenScope, step: DenStep, root: DenScope },
+	["scope", "root"]
+)
+export const SyncDue = relation("SyncDue", { step: DenStep, at: DenInstant, root: DenScope }, [
+	"step",
+	"root"
+])
 export const SyncClaim = relation(
 	"SyncClaim",
-	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant },
-	["step", "attempt"]
+	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant, root: DenScope },
+	["step", "attempt", "root"]
 )
 export const SyncRetry = relation(
 	"SyncRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean },
-	["step", "attempt"]
+	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean, root: DenScope },
+	["step", "attempt", "root"]
 )
-export const SyncFenced = relation("SyncFenced", { step: DenStep, attempt: natural }, [
-	"step",
-	"attempt"
-])
+export const SyncFenced = relation(
+	"SyncFenced",
+	{ step: DenStep, attempt: natural, root: DenScope },
+	["step", "attempt", "root"]
+)
 export const SyncResult = relation(
 	"SyncResult",
-	{ step: DenStep, outcome: closedId(SyncOutcome) },
-	["step"]
+	{ step: DenStep, outcome: closedId(SyncOutcome), root: DenScope },
+	["step", "root"]
 )
-export const SyncDone = relation("SyncDone", { step: DenStep }, ["step"])
-export const SyncFailed = relation("SyncFailed", { step: DenStep }, ["step"])
-export const SyncHeld = relation("SyncHeld", { step: DenStep, attempt: natural }, ["step"])
-export const SyncRefusal = relation("SyncRefusal", { step: DenStep, law: Text }, ["step"])
-export const SyncExhausted = relation("SyncExhausted", { step: DenStep, attempts: natural }, [
-	"step"
+export const SyncDone = relation("SyncDone", { step: DenStep, root: DenScope }, ["step", "root"])
+export const SyncFailed = relation("SyncFailed", { step: DenStep, root: DenScope }, [
+	"step",
+	"root"
 ])
+export const SyncHeld = relation("SyncHeld", { step: DenStep, attempt: natural, root: DenScope }, [
+	"step",
+	"root"
+])
+export const SyncRefusal = relation("SyncRefusal", { step: DenStep, law: Text, root: DenScope }, [
+	"step",
+	"root"
+])
+export const SyncExhausted = relation(
+	"SyncExhausted",
+	{ step: DenStep, attempts: natural, root: DenScope },
+	["step", "root"]
+)
 export const SyncCopyInput = relation(
 	"SyncCopyInput",
-	{ step: DenStep, relation: Text, run: pg.bigint },
-	["step"]
+	{ step: DenStep, relation: Text, run: pg.bigint, root: DenScope },
+	["step", "root"]
 )
-export const SyncBuildInput = relation("SyncBuildInput", { step: DenStep, build: pg.bigint }, [
-	"step"
-])
+export const SyncBuildInput = relation(
+	"SyncBuildInput",
+	{ step: DenStep, build: pg.bigint, root: DenScope },
+	["step", "root"]
+)
 export const SyncSyncRunInput = relation(
 	"SyncSyncRunInput",
-	{ scope: DenScope, relation: Text, run: pg.bigint },
-	["scope"]
+	{ scope: DenScope, relation: Text, run: pg.bigint, root: DenScope },
+	["scope", "root"]
 )
-export const SyncGoldInput = relation("SyncGoldInput", { scope: DenScope, build: pg.bigint }, [
-	"scope"
-])
-export const SyncCopyOutput = relation("SyncCopyOutput", { step: DenStep, run: pg.bigint }, [
-	"step"
-])
-export const SyncBuildOutput = relation("SyncBuildOutput", { step: DenStep, build: pg.bigint }, [
-	"step"
-])
+export const SyncGoldInput = relation(
+	"SyncGoldInput",
+	{ scope: DenScope, build: pg.bigint, root: DenScope },
+	["scope", "root"]
+)
+export const SyncCopyOutput = relation(
+	"SyncCopyOutput",
+	{ step: DenStep, run: pg.bigint, root: DenScope },
+	["step", "root"]
+)
+export const SyncBuildOutput = relation(
+	"SyncBuildOutput",
+	{ step: DenStep, build: pg.bigint, root: DenScope },
+	["step", "root"]
+)
 export const SyncExclusive = relation(
 	"SyncExclusive",
 	{ kind: closedId(SyncJoin), key: DenExclusive, turn: natural, scope: DenScope },
@@ -168,88 +212,121 @@ export const syncGraph = fragment(
 		SyncBuildOutput
 	],
 	[
-		contained(on(SyncExclusiveKey, "scope"), on(SyncScope, "scope")),
-		contained(on(SyncRoot, "scope"), on(SyncScope, "scope")),
-		contained(on(SyncWithin, "scope"), on(SyncScope, "scope")),
-		contained(on(SyncWithin, "parent"), on(SyncScope, "scope")),
-		contained(on(SyncAdmitted, "scope"), on(SyncScope, "scope")),
+		contained(on(SyncExclusiveKey, "scope", "root"), on(SyncScope, "scope", "root")),
+		contained(on(SyncWithin, "scope", "root"), on(SyncScope, "scope", "root")),
+		contained(on(SyncWithin, "parent", "root"), on(SyncScope, "scope", "root")),
+		contained(on(SyncAdmitted, "scope", "root"), on(SyncScope, "scope", "root")),
 		contained(on(SyncSkipped, "scope"), on(SyncRoot, "scope")),
-		contained(on(SyncSkipped, "by"), on(SyncAdmitted, "scope")),
-		contained(on(SyncStep, "scope"), on(SyncAdmitted, "scope")),
-		contained(on(SyncStartStep, "scope"), on(SyncAdmitted, "scope")),
-		contained(on(SyncStartStep, "step"), on(SyncStep, "step")),
-		key(on(SyncStartStep, "step")),
-		contained(on(SyncStartScope, "scope"), on(SyncAdmitted, "scope")),
-		contained(on(SyncStartScope, "child"), on(SyncScope, "scope")),
-		key(on(SyncStartScope, "child")),
-		contained(on(SyncFinish, "scope"), on(SyncAdmitted, "scope")),
-		contained(on(SyncFinish, "step"), on(SyncStep, "step")),
-		key(on(SyncFinish, "step")),
-		contained(on(SyncDue, "step"), on(SyncStep, "step")),
-		contained(on(SyncClaim, "step"), on(SyncStep, "step")),
+		contained(on(SyncSkipped, "by"), on(SyncRoot, "scope")),
+		contained(on(SyncStep, "scope", "root"), on(SyncAdmitted, "scope", "root")),
+		contained(on(SyncStartStep, "scope", "root"), on(SyncAdmitted, "scope", "root")),
+		contained(on(SyncStartStep, "step", "root"), on(SyncStep, "step", "root")),
+		key(on(SyncStartStep, "step", "root")),
+		contained(on(SyncStartScope, "scope", "root"), on(SyncAdmitted, "scope", "root")),
+		contained(on(SyncStartScope, "child", "root"), on(SyncScope, "scope", "root")),
+		key(on(SyncStartScope, "child", "root")),
+		contained(on(SyncFinish, "scope", "root"), on(SyncAdmitted, "scope", "root")),
+		contained(on(SyncFinish, "step", "root"), on(SyncStep, "step", "root")),
+		key(on(SyncFinish, "step", "root")),
+		contained(on(SyncDue, "step", "root"), on(SyncStep, "step", "root")),
+		contained(on(SyncClaim, "step", "root"), on(SyncStep, "step", "root")),
 		race(SyncClaim),
 		check("AttemptFromOne", SyncClaim, (row) => row.ge(row.attempt, 1n)),
 		contained(
 			on(
 				select(SyncClaim, (row) => row.ge(row.attempt, 2n)),
 				"step",
-				pred("attempt")
+				pred("attempt"),
+				"root"
 			),
-			on(SyncClaim, "step", "attempt")
+			on(SyncClaim, "step", "attempt", "root")
 		),
-		contained(on(SyncRetry, "step", "attempt"), on(SyncClaim, "step", "attempt")),
-		contained(on(SyncFenced, "step", "attempt"), on(SyncClaim, "step", "attempt")),
-		contained(on(SyncResult, "step"), on(SyncStep, "step")),
-		contained(on(SyncHeld, "step", "attempt"), on(SyncClaim, "step", "attempt")),
-		contained(on(SyncHeld, "step"), on(SyncResult, "step")),
+		contained(on(SyncRetry, "step", "attempt", "root"), on(SyncClaim, "step", "attempt", "root")),
+		contained(on(SyncFenced, "step", "attempt", "root"), on(SyncClaim, "step", "attempt", "root")),
+		contained(on(SyncResult, "step", "root"), on(SyncStep, "step", "root")),
+		contained(on(SyncHeld, "step", "attempt", "root"), on(SyncClaim, "step", "attempt", "root")),
+		contained(on(SyncHeld, "step", "root"), on(SyncResult, "step", "root")),
 		contained(
-			on(SyncDone, "step"),
+			on(SyncDone, "step", "root"),
 			on(
 				select(SyncResult, (row) => row.eq(row.outcome, "done")),
-				"step"
+				"step",
+				"root"
 			)
 		),
 		contained(
-			on(SyncFailed, "step"),
+			on(SyncFailed, "step", "root"),
 			on(
 				select(SyncResult, (row) => row.eq(row.outcome, "failed")),
-				"step"
+				"step",
+				"root"
 			)
 		),
-		contained(on(SyncRefusal, "step"), on(SyncFailed, "step")),
-		contained(on(SyncExhausted, "step"), on(SyncFailed, "step")),
+		contained(on(SyncRefusal, "step", "root"), on(SyncFailed, "step", "root")),
+		contained(on(SyncExhausted, "step", "root"), on(SyncFailed, "step", "root")),
 		contained(
-			on(SyncCopyInput, "step"),
+			on(SyncCopyInput, "step", "root"),
 			on(
 				select(SyncStep, (row) => row.eq(row.kind, "Copy")),
-				"step"
+				"step",
+				"root"
 			)
 		),
 		contained(
-			on(SyncBuildInput, "step"),
+			on(SyncBuildInput, "step", "root"),
 			on(
 				select(SyncStep, (row) => row.eq(row.kind, "Build")),
-				"step"
+				"step",
+				"root"
 			)
 		),
 		contained(
-			on(SyncSyncRunInput, "scope"),
+			on(SyncSyncRunInput, "scope", "root"),
 			on(
 				select(SyncScope, (row) => row.eq(row.kind, "SyncRun")),
-				"scope"
+				"scope",
+				"root"
 			)
 		),
 		contained(
-			on(SyncGoldInput, "scope"),
+			on(SyncGoldInput, "scope", "root"),
 			on(
 				select(SyncScope, (row) => row.eq(row.kind, "Gold")),
-				"scope"
+				"scope",
+				"root"
 			)
 		),
-		contained(on(SyncCopyOutput, "step"), on(SyncCopyInput, "step")),
-		contained(on(SyncCopyOutput, "step"), on(SyncDone, "step")),
-		contained(on(SyncBuildOutput, "step"), on(SyncBuildInput, "step")),
-		contained(on(SyncBuildOutput, "step"), on(SyncDone, "step"))
+		contained(on(SyncCopyOutput, "step", "root"), on(SyncCopyInput, "step", "root")),
+		contained(on(SyncCopyOutput, "step", "root"), on(SyncDone, "step", "root")),
+		contained(on(SyncBuildOutput, "step", "root"), on(SyncBuildInput, "step", "root")),
+		contained(on(SyncBuildOutput, "step", "root"), on(SyncDone, "step", "root")),
+		retirable(SyncRoot, [
+			on(SyncScope, "root"),
+			on(SyncWithin, "root"),
+			on(SyncExclusiveKey, "root"),
+			on(SyncAdmitted, "root"),
+			on(SyncSkipped, "root"),
+			on(SyncStep, "root"),
+			on(SyncStartStep, "root"),
+			on(SyncStartScope, "root"),
+			on(SyncFinish, "root"),
+			on(SyncDue, "root"),
+			on(SyncClaim, "root"),
+			on(SyncRetry, "root"),
+			on(SyncFenced, "root"),
+			on(SyncResult, "root"),
+			on(SyncDone, "root"),
+			on(SyncFailed, "root"),
+			on(SyncHeld, "root"),
+			on(SyncRefusal, "root"),
+			on(SyncExhausted, "root"),
+			on(SyncCopyInput, "root"),
+			on(SyncBuildInput, "root"),
+			on(SyncSyncRunInput, "root"),
+			on(SyncGoldInput, "root"),
+			on(SyncCopyOutput, "root"),
+			on(SyncBuildOutput, "root")
+		])
 	]
 )
 

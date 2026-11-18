@@ -101,7 +101,9 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 								c.note("a dead holder")
 								const step = first.value.step
 								const holder = yield* holderOf(step, 1, loss.copy)
-								yield* chain.ledger.claim({ step, attempt: 1n, holder, until: ends })
+								const located = yield* chain.ledger.stepOf(step)
+								const root = Option.getOrThrow(located).root
+								yield* chain.ledger.claim({ step, root, attempt: 1n, holder, until: ends })
 								const standing = yield* tick(chain.ledger)
 								assert.isFalse(
 									Arr.some(

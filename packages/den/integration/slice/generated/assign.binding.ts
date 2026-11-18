@@ -53,6 +53,7 @@ import type {
 import type {
 	assignDenPrograms,
 	assignCoordinatorPrograms,
+	assignRetirerPrograms,
 	assignCommitPrograms
 } from "#integration/slice/generated/assign.programs.ts"
 
@@ -64,6 +65,11 @@ export interface AssignHandles {
 	readonly coordinator: {
 		readonly [K in keyof typeof assignCoordinatorPrograms]: MemberHandle<
 			(typeof assignCoordinatorPrograms)[K]
+		>
+	}
+	readonly retirer: {
+		readonly [K in keyof typeof assignRetirerPrograms]: MemberHandle<
+			(typeof assignRetirerPrograms)[K]
 		>
 	}
 	readonly commits: {
@@ -150,6 +156,7 @@ export const assignLedger = (h: AssignHandles) => {
 		}
 	})
 	const startAssignment = (
+		root: ScopeKey,
 		scope: ScopeKey,
 		input: Parameters<(typeof assign.kinds)[1]["start"]>[0],
 		at: Instant
@@ -161,12 +168,13 @@ export const assignLedger = (h: AssignHandles) => {
 					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 						rows: {
 							...noRows,
-							AssignStep: [{ step: key, kind: "Decide", scope: scope }],
-							AssignDue: [{ step: key, at: dueAt(assign.kinds[0].due, at) }],
-							AssignStartStep: [{ scope, ordinal: BigInt(ordinal), step: key }],
+							AssignStep: [{ step: key, kind: "Decide", scope: scope, root: root }],
+							AssignDue: [{ step: key, at: dueAt(assign.kinds[0].due, at), root: root }],
+							AssignStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
 							AssignDecideInput: [
 								{
 									step: key,
+									root: root,
 									learner: spawn.input.learner,
 									topic: spawn.input.topic,
 									near: spawn.input.near,
@@ -175,14 +183,15 @@ export const assignLedger = (h: AssignHandles) => {
 							],
 							AssignDecideInputExclude: Arr.map(spawn.input.exclude, (element, index) => ({
 								step: key,
+								root: root,
 								ordinal: BigInt(index),
 								value: element
 							})),
 							AssignDecideInputModeNearest: Arr.flatMap([spawn.input.mode], (variant) =>
-								variant._tag === "Nearest" ? [{ step: key }] : []
+								variant._tag === "Nearest" ? [{ step: key, root: root }] : []
 							),
 							AssignDecideInputModeWithin: Arr.flatMap([spawn.input.mode], (variant) =>
-								variant._tag === "Within" ? [{ step: key, radius: variant.radius }] : []
+								variant._tag === "Within" ? [{ step: key, root: root, radius: variant.radius }] : []
 							)
 						},
 						spawned: {
@@ -327,11 +336,12 @@ export const assignLedger = (h: AssignHandles) => {
 							params: {},
 							facts: {
 								insert: {
-									AssignScope: [{ scope, kind: "Assignment" as const }],
+									AssignScope: [{ scope, kind: "Assignment" as const, root: scope }],
 									AssignRoot: [{ scope, key, at }],
 									AssignAssignmentInput: [
 										{
 											scope: scope,
+											root: scope,
 											learner: input.learner,
 											topic: input.topic,
 											near: input.near,
@@ -340,14 +350,17 @@ export const assignLedger = (h: AssignHandles) => {
 									],
 									AssignAssignmentInputExclude: Arr.map(input.exclude, (element, index) => ({
 										scope: scope,
+										root: scope,
 										ordinal: BigInt(index),
 										value: element
 									})),
 									AssignAssignmentInputModeNearest: Arr.flatMap([input.mode], (variant) =>
-										variant._tag === "Nearest" ? [{ scope: scope }] : []
+										variant._tag === "Nearest" ? [{ scope: scope, root: scope }] : []
 									),
 									AssignAssignmentInputModeWithin: Arr.flatMap([input.mode], (variant) =>
-										variant._tag === "Within" ? [{ scope: scope, radius: variant.radius }] : []
+										variant._tag === "Within"
+											? [{ scope: scope, root: scope, radius: variant.radius }]
+											: []
 									)
 								}
 							}
@@ -396,18 +409,24 @@ export const assignLedger = (h: AssignHandles) => {
 									params: {},
 									facts: {
 										insert: {
-											AssignResult: [{ step: done.turn.step, outcome: "done" }],
-											AssignDone: [{ step: done.turn.step }],
-											AssignHeld: [{ step: done.turn.step, attempt: done.turn.attempt }],
+											AssignResult: [
+												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+											],
+											AssignDone: [{ step: done.turn.step, root: done.turn.root }],
+											AssignHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
 											AssignDecideOutput: [
 												{
 													step: done.turn.step,
+													root: done.turn.root,
 													confidence: done.output.confidence,
 													stage: done.output.stage._tag
 												}
 											],
 											AssignDecideOutputWeighed: Arr.map(done.output.weighed, (element, index) => ({
 												step: done.turn.step,
+												root: done.turn.root,
 												ordinal: BigInt(index),
 												passage: element.passage,
 												distance: element.distance,
@@ -418,6 +437,7 @@ export const assignLedger = (h: AssignHandles) => {
 													? [
 															{
 																step: done.turn.step,
+																root: done.turn.root,
 																passage: variant.passage,
 																distance: variant.distance
 															}
@@ -425,16 +445,20 @@ export const assignLedger = (h: AssignHandles) => {
 													: []
 											),
 											AssignDecideOutputStageRest: Arr.flatMap([done.output.stage], (variant) =>
-												variant._tag === "Rest" ? [{ step: done.turn.step }] : []
+												variant._tag === "Rest"
+													? [{ step: done.turn.step, root: done.turn.root }]
+													: []
 											),
 											AssignDecideNearestRead: Arr.map(done.rows.nearest, (row, ordinal) => ({
 												...row,
 												step: done.turn.step,
+												root: done.turn.root,
 												ordinal: BigInt(ordinal)
 											})),
 											AssignDecideSeenRead: Arr.map(done.rows.seen, (row, ordinal) => ({
 												...row,
 												step: done.turn.step,
+												root: done.turn.root,
 												ordinal: BigInt(ordinal)
 											})),
 											Assigned: done.writes.insert.Assigned
@@ -554,9 +578,13 @@ export const assignLedger = (h: AssignHandles) => {
 									params: {},
 									facts: {
 										insert: {
-											AssignResult: [{ step: done.turn.step, outcome: "done" }],
-											AssignDone: [{ step: done.turn.step }],
-											AssignHeld: [{ step: done.turn.step, attempt: done.turn.attempt }],
+											AssignResult: [
+												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+											],
+											AssignDone: [{ step: done.turn.step, root: done.turn.root }],
+											AssignHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
 											Concluded: done.writes.insert.Concluded
 										}
 									}
@@ -584,23 +612,23 @@ export const assignLedger = (h: AssignHandles) => {
 							if (Option.isNone(input)) {
 								return Option.none()
 							}
-							const grown = yield* startAssignment(scope, input.value, at)
+							const grown = yield* startAssignment(scope, scope, input.value, at)
 							const finish = yield* finishStep(scope)
 							const steps: ReadonlyArray<Written<typeof AssignStep>> = [
 								...grown.rows.AssignStep,
-								{ step: finish, kind: "AssignmentFinish", scope }
+								{ step: finish, kind: "AssignmentFinish", scope, root: scope }
 							]
 							const dues: ReadonlyArray<Written<typeof AssignDue>> = [
 								...grown.rows.AssignDue,
-								{ step: finish, at }
+								{ step: finish, at, root: scope }
 							]
 							const admitted: ReadonlyArray<Written<typeof AssignAdmitted>> = [
 								...grown.rows.AssignAdmitted,
-								{ scope }
+								{ scope, root: scope }
 							]
 							const finishes: ReadonlyArray<Written<typeof AssignFinish>> = [
 								...grown.rows.AssignFinish,
-								{ scope, step: finish }
+								{ scope, step: finish, root: scope }
 							]
 							const outcome = yield* h.den.assignAdmit.once({
 								params: {},
@@ -637,7 +665,7 @@ export const assignLedger = (h: AssignHandles) => {
 		]),
 		stepOf: (step) =>
 			Effect.map(h.den.assignStepOf.once({ params: { step }, facts: {} }), (rows) =>
-				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope }))
+				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope, root: row.root }))
 			),
 		resultOf: (step) =>
 			Effect.map(h.den.assignResultOf.once({ params: { step }, facts: {} }), (rows) =>
@@ -712,31 +740,42 @@ export const assignLedger = (h: AssignHandles) => {
 			h.den.assignRetry.once({ params: {}, facts: { insert: { AssignRetry: [row] } } }),
 		fence: (row) =>
 			h.den.assignFence.once({ params: {}, facts: { insert: { AssignFenced: [row] } } }),
-		refuse: (step, attempt, law) =>
+		refuse: ({ step, root, attempt }, law) =>
 			h.den.assignRefuse.once({
 				params: {},
 				facts: {
 					insert: {
-						AssignResult: [{ step, outcome: "failed" }],
-						AssignFailed: [{ step }],
-						AssignHeld: [{ step, attempt }],
-						AssignRefusal: [{ step, law }]
+						AssignResult: [{ step, root, outcome: "failed" }],
+						AssignFailed: [{ step, root }],
+						AssignHeld: [{ step, root, attempt }],
+						AssignRefusal: [{ step, root, law }]
 					}
 				}
 			}),
 		skip: (scope, by) =>
-			h.den.assignSkip.once({ params: {}, facts: { insert: { AssignSkipped: [{ scope, by }] } } }),
-		exhaust: (step, attempt) =>
+			h.den.assignSkip.once({
+				params: {},
+				facts: { insert: { AssignSkipped: [{ scope, by, root: scope }] } }
+			}),
+		exhaust: ({ step, root, attempt }) =>
 			h.den.assignExhaust.once({
 				params: {},
 				facts: {
 					insert: {
-						AssignResult: [{ step, outcome: "failed" }],
-						AssignFailed: [{ step }],
-						AssignHeld: [{ step, attempt }],
-						AssignExhausted: [{ step, attempts: attempt }]
+						AssignResult: [{ step, root, outcome: "failed" }],
+						AssignFailed: [{ step, root }],
+						AssignHeld: [{ step, root, attempt }],
+						AssignExhausted: [{ step, root, attempts: attempt }]
 					}
 				}
+			}),
+		finishedRoots: Effect.map(h.den.assignFinishedRoots.once({ params: {}, facts: {} }), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))
+		),
+		retire: (root) =>
+			h.retirer.assignRetire.once({
+				params: {},
+				facts: { retire: { AssignRoot: [{ scope: root }] } }
 			}),
 		snapshot: Effect.gen(function* () {
 			const steps = yield* Effect.map(h.den.assignPending.once({ params: {}, facts: {} }), rowsOf)

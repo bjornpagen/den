@@ -49,6 +49,7 @@ import type {
 import type {
 	retryDenPrograms,
 	retryCoordinatorPrograms,
+	retryRetirerPrograms,
 	retryCommitPrograms
 } from "#integration/slice/generated/retry.programs.ts"
 
@@ -60,6 +61,11 @@ export interface RetryHandles {
 	readonly coordinator: {
 		readonly [K in keyof typeof retryCoordinatorPrograms]: MemberHandle<
 			(typeof retryCoordinatorPrograms)[K]
+		>
+	}
+	readonly retirer: {
+		readonly [K in keyof typeof retryRetirerPrograms]: MemberHandle<
+			(typeof retryRetirerPrograms)[K]
 		>
 	}
 	readonly commits: {
@@ -129,6 +135,7 @@ export const retryLedger = (h: RetryHandles) => {
 		}
 	})
 	const startLadders = (
+		root: ScopeKey,
 		scope: ScopeKey,
 		input: Parameters<(typeof retry.kinds)[2]["start"]>[0],
 		at: Instant
@@ -142,10 +149,10 @@ export const retryLedger = (h: RetryHandles) => {
 							return Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 								rows: {
 									...noRows,
-									RetryStep: [{ step: key, kind: "Steadfast", scope: scope }],
-									RetryDue: [{ step: key, at: dueAt(retry.kinds[0].due, at) }],
-									RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key }],
-									RetrySteadfastInput: [{ step: key, key: spawn.input.key }]
+									RetryStep: [{ step: key, kind: "Steadfast", scope: scope, root: root }],
+									RetryDue: [{ step: key, at: dueAt(retry.kinds[0].due, at), root: root }],
+									RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+									RetrySteadfastInput: [{ step: key, root: root, key: spawn.input.key }]
 								},
 								spawned: {
 									steps: [{ step: key, kind: "Steadfast", due: dueAt(retry.kinds[0].due, at) }],
@@ -156,10 +163,10 @@ export const retryLedger = (h: RetryHandles) => {
 							return Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 								rows: {
 									...noRows,
-									RetryStep: [{ step: key, kind: "Brittle", scope: scope }],
-									RetryDue: [{ step: key, at: dueAt(retry.kinds[1].due, at) }],
-									RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key }],
-									RetryBrittleInput: [{ step: key, key: spawn.input.key }]
+									RetryStep: [{ step: key, kind: "Brittle", scope: scope, root: root }],
+									RetryDue: [{ step: key, at: dueAt(retry.kinds[1].due, at), root: root }],
+									RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+									RetryBrittleInput: [{ step: key, root: root, key: spawn.input.key }]
 								},
 								spawned: {
 									steps: [{ step: key, kind: "Brittle", due: dueAt(retry.kinds[1].due, at) }],
@@ -241,10 +248,15 @@ export const retryLedger = (h: RetryHandles) => {
 							params: {},
 							facts: {
 								insert: {
-									RetryScope: [{ scope, kind: "Ladders" as const }],
+									RetryScope: [{ scope, kind: "Ladders" as const, root: scope }],
 									RetryRoot: [{ scope, key, at }],
 									RetryLaddersInput: [
-										{ scope: scope, steadfast: input.steadfast, brittle: input.brittle }
+										{
+											scope: scope,
+											root: scope,
+											steadfast: input.steadfast,
+											brittle: input.brittle
+										}
 									]
 								}
 							}
@@ -274,10 +286,16 @@ export const retryLedger = (h: RetryHandles) => {
 									params: {},
 									facts: {
 										insert: {
-											RetryResult: [{ step: done.turn.step, outcome: "done" }],
-											RetryDone: [{ step: done.turn.step }],
-											RetryHeld: [{ step: done.turn.step, attempt: done.turn.attempt }],
-											RetrySteadfastOutput: [{ step: done.turn.step, key: done.output.key }]
+											RetryResult: [
+												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+											],
+											RetryDone: [{ step: done.turn.step, root: done.turn.root }],
+											RetryHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
+											RetrySteadfastOutput: [
+												{ step: done.turn.step, root: done.turn.root, key: done.output.key }
+											]
 										}
 									}
 								})
@@ -302,10 +320,16 @@ export const retryLedger = (h: RetryHandles) => {
 									params: {},
 									facts: {
 										insert: {
-											RetryResult: [{ step: done.turn.step, outcome: "done" }],
-											RetryDone: [{ step: done.turn.step }],
-											RetryHeld: [{ step: done.turn.step, attempt: done.turn.attempt }],
-											RetryBrittleOutput: [{ step: done.turn.step, key: done.output.key }]
+											RetryResult: [
+												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+											],
+											RetryDone: [{ step: done.turn.step, root: done.turn.root }],
+											RetryHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
+											RetryBrittleOutput: [
+												{ step: done.turn.step, root: done.turn.root, key: done.output.key }
+											]
 										}
 									}
 								})
@@ -386,9 +410,13 @@ export const retryLedger = (h: RetryHandles) => {
 									params: {},
 									facts: {
 										insert: {
-											RetryResult: [{ step: done.turn.step, outcome: "done" }],
-											RetryDone: [{ step: done.turn.step }],
-											RetryHeld: [{ step: done.turn.step, attempt: done.turn.attempt }]
+											RetryResult: [
+												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+											],
+											RetryDone: [{ step: done.turn.step, root: done.turn.root }],
+											RetryHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											]
 										}
 									}
 								}),
@@ -415,23 +443,23 @@ export const retryLedger = (h: RetryHandles) => {
 							if (Option.isNone(input)) {
 								return Option.none()
 							}
-							const grown = yield* startLadders(scope, input.value, at)
+							const grown = yield* startLadders(scope, scope, input.value, at)
 							const finish = yield* finishStep(scope)
 							const steps: ReadonlyArray<Written<typeof RetryStep>> = [
 								...grown.rows.RetryStep,
-								{ step: finish, kind: "LaddersFinish", scope }
+								{ step: finish, kind: "LaddersFinish", scope, root: scope }
 							]
 							const dues: ReadonlyArray<Written<typeof RetryDue>> = [
 								...grown.rows.RetryDue,
-								{ step: finish, at }
+								{ step: finish, at, root: scope }
 							]
 							const admitted: ReadonlyArray<Written<typeof RetryAdmitted>> = [
 								...grown.rows.RetryAdmitted,
-								{ scope }
+								{ scope, root: scope }
 							]
 							const finishes: ReadonlyArray<Written<typeof RetryFinish>> = [
 								...grown.rows.RetryFinish,
-								{ scope, step: finish }
+								{ scope, step: finish, root: scope }
 							]
 							const outcome = yield* h.den.retryAdmit.once({
 								params: {},
@@ -466,7 +494,7 @@ export const retryLedger = (h: RetryHandles) => {
 		]),
 		stepOf: (step) =>
 			Effect.map(h.den.retryStepOf.once({ params: { step }, facts: {} }), (rows) =>
-				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope }))
+				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope, root: row.root }))
 			),
 		resultOf: (step) =>
 			Effect.map(h.den.retryResultOf.once({ params: { step }, facts: {} }), (rows) =>
@@ -538,31 +566,42 @@ export const retryLedger = (h: RetryHandles) => {
 		retry: (row) => h.den.retryRetry.once({ params: {}, facts: { insert: { RetryRetry: [row] } } }),
 		fence: (row) =>
 			h.den.retryFence.once({ params: {}, facts: { insert: { RetryFenced: [row] } } }),
-		refuse: (step, attempt, law) =>
+		refuse: ({ step, root, attempt }, law) =>
 			h.den.retryRefuse.once({
 				params: {},
 				facts: {
 					insert: {
-						RetryResult: [{ step, outcome: "failed" }],
-						RetryFailed: [{ step }],
-						RetryHeld: [{ step, attempt }],
-						RetryRefusal: [{ step, law }]
+						RetryResult: [{ step, root, outcome: "failed" }],
+						RetryFailed: [{ step, root }],
+						RetryHeld: [{ step, root, attempt }],
+						RetryRefusal: [{ step, root, law }]
 					}
 				}
 			}),
 		skip: (scope, by) =>
-			h.den.retrySkip.once({ params: {}, facts: { insert: { RetrySkipped: [{ scope, by }] } } }),
-		exhaust: (step, attempt) =>
+			h.den.retrySkip.once({
+				params: {},
+				facts: { insert: { RetrySkipped: [{ scope, by, root: scope }] } }
+			}),
+		exhaust: ({ step, root, attempt }) =>
 			h.den.retryExhaust.once({
 				params: {},
 				facts: {
 					insert: {
-						RetryResult: [{ step, outcome: "failed" }],
-						RetryFailed: [{ step }],
-						RetryHeld: [{ step, attempt }],
-						RetryExhausted: [{ step, attempts: attempt }]
+						RetryResult: [{ step, root, outcome: "failed" }],
+						RetryFailed: [{ step, root }],
+						RetryHeld: [{ step, root, attempt }],
+						RetryExhausted: [{ step, root, attempts: attempt }]
 					}
 				}
+			}),
+		finishedRoots: Effect.map(h.den.retryFinishedRoots.once({ params: {}, facts: {} }), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))
+		),
+		retire: (root) =>
+			h.retirer.retryRetire.once({
+				params: {},
+				facts: { retire: { RetryRoot: [{ scope: root }] } }
 			}),
 		snapshot: Effect.gen(function* () {
 			const steps = yield* Effect.map(h.den.retryPending.once({ params: {}, facts: {} }), rowsOf)
