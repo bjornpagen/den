@@ -1,4 +1,4 @@
-import { natural, pg, relation, Vector } from "@bjornpagen/grizzle"
+import { natural, pg, relation } from "@bjornpagen/grizzle"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { boolean, element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -11,6 +11,7 @@ import { type AnyFlow, flow } from "#algebra/flow.ts"
 import {
 	type AnyEdge,
 	type AnyStepKind,
+	anchor,
 	always,
 	atSpawn,
 	attempts,
@@ -26,7 +27,6 @@ import {
 	shared,
 	step,
 	unconditional,
-	vector,
 	writer,
 	writesNothing
 } from "#algebra/kinds.ts"
@@ -58,7 +58,6 @@ const Form = Schema.Literals([
 	"bigint",
 	"finite",
 	"boolean",
-	"vector",
 	"literals",
 	"brand",
 	"option",
@@ -114,8 +113,6 @@ const fieldOf = (form: Form): FieldSchema => {
 			return Schema.BigInt
 		case "finite":
 			return Schema.Finite
-		case "vector":
-			return vector(passageDimensions)
 		case "boolean":
 			return Schema.Boolean
 		case "literals":
@@ -149,8 +146,12 @@ const Passage = relation(
 /** How many passages a nearest read finds at most, the suite's own size. */
 const passagesFound = 2
 
-/** The query vector a nearest read takes, the same for every input. */
-const query = Vector.make(Float32Array.from([1, 0, 0, 0]), passageDimensions)
+/** The anchor a nearest read searches from: a question's stored embedding, named by its key. */
+const Question = relation(
+	"Question",
+	{ question: pg.bigint, embedding: pg.vector(passageDimensions) },
+	["question"]
+)
 
 /** The reads a sketch's first step declares. */
 const readsOf = (reading: typeof Reading.Type) => ({
@@ -158,7 +159,18 @@ const readsOf = (reading: typeof Reading.Type) => ({
 		? { weights: rows(Weight, ["feed"], () => ({ feed: 0n })) }
 		: {}),
 	...(reading === "nearest" || reading === "both"
-		? { passages: nearest(Passage, "embedding", passagesFound, [], () => ({ embedding: query })) }
+		? {
+				passages: nearest(
+					Passage,
+					"embedding",
+					passagesFound,
+					[],
+					anchor(Question, "embedding"),
+					() => ({
+						anchor: { question: 0n }
+					})
+				)
+			}
 		: {})
 })
 
@@ -466,14 +478,6 @@ it.effect(
 							),
 							sketch.form === "finite"
 						)
-						if (sketch.form === "vector") {
-							assert.deepStrictEqual(
-								Option.map(fieldsOf(`${P}S0Input`), (fields) =>
-									Arr.map(fields, ([, kind]) => kind)
-								),
-								Option.some(["key", "vector", "key"])
-							)
-						}
 
 						const chains = [
 							...(sketch.resource

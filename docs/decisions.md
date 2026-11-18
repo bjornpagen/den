@@ -84,36 +84,33 @@
   Gateway for a structured decision, which becomes the step's recorded output exactly once, and writes the app's
   Decision, Stage and ItemSession rows in the same commit; at publish time a chain of pages embeds the content with
   gemini-embedding-2. A feature the engine needs is built; nothing beside it is.
-- **A step's reads are named, and a read may be a nearest-neighbour search (settled by the engine's need,
-  2026-11-18).** A step declares `reads: { name: rows(R, by, params) | nearest(R, vector, take, by, params) }`. Each is
-  taken in a deferrable read-only call of its own after the claim and before the body, the calls side by side, and
-  recorded with the result in `<P><Step><Name>Read(step, ordinal, …)`; the body sees each read's rows by its name. A
-  nearest read is grizzle's `approximateNearest` over `Compute.cosineDistance(vector, param)` on pgvector's HNSW index,
-  which `grizzle generate` installs from the served read: at most `take` rows of `R` whose fields `by` equal the
-  parameters, nearest by the field `vector` to the vector the parameter of that field's name holds, which `params`
-  takes from the step's input (den's `vector(n)`, lowered to `pg.vector(n)`). Each neighbour is delivered and recorded
-  without the vector it was ranked by and with its `distance`.
+- **A step's reads are named, taken in one statement, and a read may be a nearest-neighbour search from a stored row
+  (settled by the engine's need, 2026-11-18; one snapshot and the stored anchor by edullm-1f the same day, under
+  Bjorn's order that a gap the engine needs is fixed upstream, never worked around).** A step declares
+  `reads: { name: rows(R, by, params) | nearest(R, vector, take, by, anchor(A, field), params) }`. Every read of a step
+  is one statement, grizzle's `query(W).reads({ … })` (DENREADS, f21623e76), served deferrable after the claim and
+  before the body, so its reads see one snapshot and what they record describes one moment of the database; each is
+  recorded with the result in `<P><Step><Name>Read(step, ordinal, …)`, and the body sees each read's rows by its name.
+  A nearest read is grizzle's `approximateNearest` on pgvector's HNSW index, which `grizzle generate` installs from the
+  served read: at most `take` rows of `R` whose fields `by` equal the parameters, nearest by the cosine distance of
+  their field `vector` to the field `field` of the row of `A` whose whole key `params` gives under `anchor` (the
+  engine's missed question), which grizzle reads once, before the one index scan; an anchor key that holds no row
+  finds none. Each neighbour is delivered and recorded without the vector it was ranked by and with its `distance`.
   - Named, because a decision reads several relations: the child's ledger and the nearest content. One read a step
     would put each in a step of its own and carry its rows through outputs. The reference model already names reads.
-  - The query vector is the input's, because grizzle's eligibility check (`check/approximate`) refuses a search whose
-    query vector reads a row: a search bound to an outer row would run once per row. A vector a body computes, a
-    model's embedding of what the child needs, reaches the read on an edge, as any read that depends on a body does.
+  - One statement, because a step's record is its input: reads taken on several snapshots would record a moment that
+    never was. Each read's parameters are its own under its name, `<read>.<parameter>`.
+  - From a stored row, because the engine searches from a missed question's stored embedding; a query vector the input
+    carried was den's work-around while grizzle could not, and it is gone with den's step field of vectors, which
+    nothing else needed. A vector a body computes would reach a read on an edge, as any read that depends on a body
+    does, once a need for one appears.
   - Recorded, never searched again: which rows an HNSW search returns depends on the index and the database owner's
     pgvector settings as well as the facts (grizzle's README), so the record is what the step saw.
   - Without the neighbours' vectors: at 1536 dimensions each is 6 KiB that the body never sees.
   - Rejected: a search the body runs itself, which would give a body the database (proposal, section 3.7); the
     neighbours as one array or JSON column, a blob; ranking every vector of a rows read in den, which reads the whole
     relation for every decision and uses no index; and a search from a stored row's vector chained in den as two calls
-    on two snapshots, which grizzle is asked to serve in one statement instead (below).
-- **A step's recorded reads describe one moment of the database, and a nearest read may search from a stored row's
-  vector (edullm-1f, 2026-11-18, under Bjorn's order that a gap the engine needs is fixed upstream, never worked
-  around).** Every named read of a step runs in one READ ONLY snapshot, and `nearest(...)` takes a stored row's vector
-  by key (the engine searches from a missed question's stored embedding). grizzle serves neither yet: a query vector
-  must read no row (`check/approximate/trace.ts`), and an attachment must read its parent's columns
-  (`AttachedParentUnbound`) while a search may not (`check/approximate/attach.ts`), so no one member holds a nearest
-  read beside another read. Both are asked of grizzle (2026-11-18): a query vector that is one stored row's vector by
-  key, and independent reads in one READ ONLY transaction. Until they land, each read is its own call, and the input
-  carries the query vector.
+    on two snapshots.
 - **A number is `Schema.Finite`, held finite by the database (2026-11-18).** Effect's `schemaNumber` diagnostic
   refuses `Schema.Number`, so a number field is `Schema.Finite`, lowered to double precision under a row check
   (`Compute.isFinite`), so the database holds what the schema states.

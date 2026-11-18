@@ -8,8 +8,8 @@
   (`runtime/retire.ts`, `docs/build/repin.md`); the coordination group's chains of turns still grow, until the owner
   rules how they are restated. Then GUARD and SCHEMAMAP.
 - **The assignment engine (owner, 2026-11-18):** named reads with nearest reads, finite numbers, vectors, arrays and
-  tagged unions are built (`docs/decisions.md`), and finished graphs retire. Next: a step's reads in one snapshot and a
-  nearest read from a stored row's vector, on grizzle's DENREADS; the seat history's restatement for retirement waits
-  on Bjorn.
+  tagged unions are built (`docs/decisions.md`), a step's reads are one statement and a nearest read searches from a
+  stored row's vector (grizzle's DENREADS), and finished graphs retire. The seat history's restatement for retirement
+  waits on Bjorn.
 - **Wave 2b:** the operator surface, the eight workloads as den flows on the fakes of `packages/edullm`, differential
   runs at scale, an adversarial review.

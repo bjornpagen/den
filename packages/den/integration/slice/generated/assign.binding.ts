@@ -4,6 +4,7 @@ import {
 	fresh,
 	held,
 	one,
+	only,
 	ordered,
 	readingOf,
 	rowsOf,
@@ -177,7 +178,7 @@ export const assignLedger = (h: AssignHandles) => {
 									root: root,
 									learner: spawn.input.learner,
 									topic: spawn.input.topic,
-									near: spawn.input.near,
+									missed: spawn.input.missed,
 									mode: spawn.input.mode._tag
 								}
 							],
@@ -234,7 +235,7 @@ export const assignLedger = (h: AssignHandles) => {
 					(unions) => ({
 						learner: found.learner,
 						topic: found.topic,
-						near: found.near,
+						missed: found.missed,
 						exclude: Arr.map(ordered(family0), (e) => e.value),
 						mode: unions.mode
 					})
@@ -279,7 +280,7 @@ export const assignLedger = (h: AssignHandles) => {
 					(unions) => ({
 						learner: found.learner,
 						topic: found.topic,
-						near: found.near,
+						missed: found.missed,
 						exclude: Arr.map(ordered(family0), (e) => e.value),
 						mode: unions.mode
 					})
@@ -344,7 +345,7 @@ export const assignLedger = (h: AssignHandles) => {
 											root: scope,
 											learner: input.learner,
 											topic: input.topic,
-											near: input.near,
+											missed: input.missed,
 											mode: input.mode._tag
 										}
 									],
@@ -382,26 +383,22 @@ export const assignLedger = (h: AssignHandles) => {
 					assign.kinds[0],
 					{
 						input: (step) => readAssignDecideInput(step),
-						read: (input) =>
-							Effect.all(
-								{
-									nearest: Effect.map(
-										h.commits.assignReadDecideNearest.once({
-											params: assign.kinds[0].reads.nearest.params(input),
-											facts: {}
-										}),
-										rowsOf
-									),
-									seen: Effect.map(
-										h.commits.assignReadDecideSeen.once({
-											params: assign.kinds[0].reads.seen.params(input),
-											facts: {}
-										}),
-										rowsOf
-									)
-								},
-								{ concurrency: "unbounded" }
-							),
+						read: (input) => {
+							const nearest = assign.kinds[0].reads.nearest.params(input)
+							const seen = assign.kinds[0].reads.seen.params(input)
+							return Effect.flatMap(
+								h.commits.assignReadDecide.once({
+									params: {
+										"nearest.topic": nearest.topic,
+										"nearest.anchor.question": nearest.anchor.question,
+										"seen.learner": seen.learner
+									},
+									facts: {}
+								}),
+								(rows) =>
+									Effect.map(only(rows), (row) => ({ nearest: row.nearest, seen: row.seen }))
+							)
+						},
 						commit: (done, _at) =>
 							Effect.gen(function* () {
 								const grown = yield* Effect.succeed(nothingGrown)

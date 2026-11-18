@@ -541,6 +541,9 @@
 			"item": {
 				"__item_pk_ai4obgmq4k": "__item_pk_feed_seq_n_y4mrwtlrwm"
 			},
+			"missed": {
+				"__missed_pk_yzhoj6jwnt": "__missed_pk_question_6tqtipmgbw"
+			},
 			"order": {
 				"__order_pk_qodq3est7o": "__order_pk_order_kjcux64qhs"
 			},
@@ -1137,6 +1140,9 @@
 					"scope"
 				],
 				"item": [],
+				"missed": [
+					"question"
+				],
 				"passage": [
 					"topic"
 				],
@@ -1269,8 +1275,9 @@
 		"params": {
 			"contracts": [],
 			"domains": [
-				"__param_learner_um3dilfdml",
-				"__param_topic_q7i3hfsnkd"
+				"__param_nearest_anchor_question_elxa5ygyai",
+				"__param_nearest_topic_4eruqlfauv",
+				"__param_seen_learner_exdgowkpja"
 			]
 		},
 		"references": [
@@ -7790,6 +7797,29 @@
 					},
 					"relation": "Item"
 				},
+				"missed": {
+					"indexes": {
+						"__missed_pk_yzhoj6jwnt": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "question",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__missed_pk_question_6tqtipmgbw"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "Missed"
+				},
 				"order": {
 					"indexes": {
 						"__order_pk_qodq3est7o": {
@@ -7815,20 +7845,6 @@
 				},
 				"passage": {
 					"indexes": {
-						"__passage_ix_embedding_ujugi77ft2": {
-							"columns": [
-								{
-									"direction": "none",
-									"field": "embedding",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__passage_ix_topic_lzh6djzwn4": {
 							"columns": [
 								{
@@ -11556,10 +11572,10 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "e69afa1d72e75a0e398db92cf2334d5582559fd314f9cb6f4e46e5a34bd2f6c5",
+	"fingerprint": "1bf772eff0efb8cdd86e06e839d45ae68a030387c40901200d8cc20d460084f3",
 	"levels": [
 		{
-			"fingerprint": "ea7fdcbd446a18875736d67a707b20e861f1c359b8ff503cf2f0edc7e91ef9df",
+			"fingerprint": "5d14d7101b5199eba61b1bee4a003f372e1b7932d20d109e45cfbc589ee67600",
 			"laws": [
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_root_56frawwv2n"},
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_s3xk3phh7y"},
@@ -11882,6 +11898,7 @@
 				{"described":{"from":{"relation":"FanWithin","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_within_in_fan_scope_qohkwqidqi"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"FanWithin"},"law":"__fan_within_pk_scope_root_cezmybwbla"},
 				{"described":{"fields":["feed","seq","n"],"kind":"primaryKey","relation":"Item"},"law":"__item_pk_feed_seq_n_y4mrwtlrwm"},
+				{"described":{"fields":["question"],"kind":"primaryKey","relation":"Missed"},"law":"__missed_pk_question_6tqtipmgbw"},
 				{"described":{"contract":"natural","kind":"contract"},"law":"__natural_hcnvygsglu"},
 				{"described":{"fields":["order"],"kind":"primaryKey","relation":"Order"},"law":"__order_pk_order_kjcux64qhs"},
 				{"described":{"fields":["passage"],"kind":"primaryKey","relation":"Passage"},"law":"__passage_pk_passage_mykbwvlyip"},
@@ -12077,7 +12094,7 @@
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "3d1016629d46adf5285a6d9a93563bfe74d1371b6e83b4246bff2427b6fa4727",
+			"fingerprint": "715d916f32b29e6cb00d5ab2ed797b707da7db9769c93353720e3ff7c52e9caa",
 			"laws": [
 				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"}
 			],
@@ -12537,6 +12554,12 @@
 			{
 				"relation": "Item",
 				"routes": []
+			},
+			{
+				"relation": "Missed",
+				"routes": [
+					"question"
+				]
 			},
 			{
 				"relation": "Passage",

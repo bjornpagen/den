@@ -392,11 +392,11 @@ export const assignDenPrograms = Object.freeze({
 		})
 	),
 	assignReadAssignDecideInput: query(assignGraph).rule((r) => {
-		const { step, learner, topic, near, mode, root } = v(AssignDecideInput, "assignDecideInput")
+		const { step, learner, topic, missed, mode, root } = v(AssignDecideInput, "assignDecideInput")
 		return r
-			.match(AssignDecideInput, { step, learner, topic, near, mode, root })
+			.match(AssignDecideInput, { step, learner, topic, missed, mode, root })
 			.where(r.eq(step, r.param("step", AssignDecideInput.fields.step)))
-			.find({ step, learner, topic, near, mode, root })
+			.find({ step, learner, topic, missed, mode, root })
 	}),
 	assignReadAssignDecideInputModeNearest: query(assignGraph).rule((r) => {
 		const { step, root } = v(AssignDecideInputModeNearest, "assignDecideInputModeNearest")
@@ -420,14 +420,14 @@ export const assignDenPrograms = Object.freeze({
 			.find({ step, ordinal, value })
 	}),
 	assignReadAssignAssignmentInput: query(assignGraph).rule((r) => {
-		const { scope, learner, topic, near, mode, root } = v(
+		const { scope, learner, topic, missed, mode, root } = v(
 			AssignAssignmentInput,
 			"assignAssignmentInput"
 		)
 		return r
-			.match(AssignAssignmentInput, { scope, learner, topic, near, mode, root })
+			.match(AssignAssignmentInput, { scope, learner, topic, missed, mode, root })
 			.where(r.eq(scope, r.param("scope", AssignAssignmentInput.fields.scope)))
-			.find({ scope, learner, topic, near, mode, root })
+			.find({ scope, learner, topic, missed, mode, root })
 	}),
 	assignReadAssignAssignmentInputModeNearest: query(assignGraph).rule((r) => {
 		const { scope, root } = v(AssignAssignmentInputModeNearest, "assignAssignmentInputModeNearest")
@@ -562,31 +562,32 @@ export const assignCommitPrograms = Object.freeze({
 			.insert(AssignDecideSeenRead, []),
 		ChangeSet.empty(Loader).insert(App.relations.Assigned, [])
 	),
-	assignReadDecideNearest: deferrable(
-		query(Loader)
-			.rule((r) => {
-				const { passage, topic, embedding } = v(App.relations.Passage, "row")
-				return r
-					.match(App.relations.Passage, { passage, topic, embedding })
-					.where(r.eq(topic, r.param("topic", App.relations.Passage.fields.topic)))
-					.find({
-						passage,
-						topic,
-						distance: Compute.cosineDistance(
-							embedding,
-							r.param("embedding", App.relations.Passage.fields.embedding)
+	assignReadDecide: deferrable(
+		query(Loader).reads({
+			nearest: query(Loader)
+				.rule((r) => {
+					const { passage, topic, embedding } = v(App.relations.Passage, "row")
+					const anchor = v(App.relations.Missed, "anchor")
+					return r
+						.match(App.relations.Missed, { question: anchor.question, embedding: anchor.embedding })
+						.match(App.relations.Passage, { passage, topic, embedding })
+						.where(
+							r.eq(
+								anchor.question,
+								r.param("anchor.question", App.relations.Missed.fields.question)
+							),
+							r.eq(topic, r.param("topic", App.relations.Passage.fields.topic))
 						)
-					})
+						.find({ passage, topic, distance: Compute.cosineDistance(embedding, anchor.embedding) })
+				})
+				.approximateNearest({ by: "distance", take: 3 }),
+			seen: query(Loader).rule((r) => {
+				const { learner, passage } = v(App.relations.Seen, "row")
+				return r
+					.match(App.relations.Seen, { learner, passage })
+					.where(r.eq(learner, r.param("learner", App.relations.Seen.fields.learner)))
+					.find({ learner, passage })
 			})
-			.approximateNearest({ by: "distance", take: 3 })
-	),
-	assignReadDecideSeen: deferrable(
-		query(Loader).rule((r) => {
-			const { learner, passage } = v(App.relations.Seen, "row")
-			return r
-				.match(App.relations.Seen, { learner, passage })
-				.where(r.eq(learner, r.param("learner", App.relations.Seen.fields.learner)))
-				.find({ learner, passage })
 		})
 	),
 	assignCommitAssignmentFinish: ChangeSet.union(

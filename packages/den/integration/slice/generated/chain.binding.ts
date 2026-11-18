@@ -3,6 +3,7 @@ import {
 	dueAt,
 	fresh,
 	one,
+	only,
 	readingOf,
 	rowsOf,
 	scheduleOf,
@@ -317,19 +318,16 @@ export const chainLedger = (h: ChainHandles) => {
 					chain.kinds[0],
 					{
 						input: (step) => readChainPageInput(step),
-						read: (input) =>
-							Effect.all(
-								{
-									weights: Effect.map(
-										h.commits.chainReadPageWeights.once({
-											params: chain.kinds[0].reads.weights.params(input),
-											facts: {}
-										}),
-										rowsOf
-									)
-								},
-								{ concurrency: "unbounded" }
-							),
+						read: (input) => {
+							const weights = chain.kinds[0].reads.weights.params(input)
+							return Effect.flatMap(
+								h.commits.chainReadPage.once({
+									params: { "weights.feed": weights.feed },
+									facts: {}
+								}),
+								(rows) => Effect.map(only(rows), (row) => ({ weights: row.weights }))
+							)
+						},
 						commit: (done, at) =>
 							Effect.gen(function* () {
 								const grown = yield* Effect.map(

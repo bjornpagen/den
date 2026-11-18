@@ -1,6 +1,14 @@
 import type { AnyRelation, Fact, Vector, Written } from "@bjornpagen/grizzle"
 import { regex } from "arkregex"
-import { Array as Arr, type Cron, Data, Duration, type Effect, Record as Rec, Schema } from "effect"
+import {
+	Array as Arr,
+	type Cron,
+	Data,
+	Duration,
+	type Effect,
+	Record as Rec,
+	type Schema
+} from "effect"
 
 /**
  * How often the census can tick: Vercel Cron's minimum interval on the Pro and Enterprise plans. A window shorter than
@@ -119,28 +127,7 @@ export const utcHours = (opens: number, closes: number): Window => {
 }
 
 /**
- * A vector of `dimensions` binary32 components, grizzle's `Vector`: a query vector a step's input carries to its nearest
- * read, or one a body embedded. It lowers to `pg.vector(dimensions)`, and its schema value carries its dimensions, as
- * a brand's carries its identifier, since the AST of a declaration holds neither.
- */
-export interface VectorSchema<N extends number = number> extends Schema.declare<Vector<N>> {
-	readonly dimensions: N
-}
-
-/** The schema of a vector of `dimensions` components: a Float32Array of that length, which grizzle reads as a Vector. */
-export const vector = <const N extends number>(dimensions: N): VectorSchema<N> => {
-	positive("vector", "dimensions", dimensions)
-	return Object.assign(
-		Schema.declare(
-			(u: unknown): u is Vector<N> => u instanceof Float32Array && u.length === dimensions,
-			{ title: `Vector(${String(dimensions)})` }
-		),
-		{ dimensions }
-	)
-}
-
-/**
- * A column's schema: text, a bigint, a finite number, a boolean, a vector, a literal union of texts, or a brand of one.
+ * A column's schema: text, a bigint, a finite number, a boolean, a literal union of texts, or a brand of one.
  * A number is `Schema.Finite`, which lowers to double precision under a row check that holds it finite.
  */
 export type ColumnSchema =
@@ -148,7 +135,6 @@ export type ColumnSchema =
 	| Schema.BigInt
 	| Schema.Finite
 	| Schema.Boolean
-	| VectorSchema
 	| Schema.Literal<string>
 	| Schema.Literals<ReadonlyArray<string>>
 	| Schema.brand<Schema.String | Schema.BigInt | Schema.Finite | Schema.Boolean, string>
@@ -240,20 +226,22 @@ export type VectorFieldOf<R extends AnyRelation> = {
 	string
 
 /**
- * A step's declared read, taken in a read-only call of its own after the claim and before the body, and recorded with
- * its result row by row, so every input a step saw is a fact of the graph (W1's fingerprint, W5's presence, W7's
- * intents, the assignment engine's nearest content). Two forms:
+ * A step's declared reads, all taken in one statement after the claim and before the body (grizzle's `reads`), so they
+ * read one snapshot of the database, and recorded with its result row by row, so every input a step saw is a fact of
+ * the graph, describing one moment (W1's fingerprint, W5's presence, W7's intents, the assignment engine's ledger rows
+ * and nearest content). Two forms:
  *
  * - `rows`: the rows of one of the app's relations whose fields `by` equal what `params` takes from the step's input;
  * - `nearest`: at most `take` rows of one of the app's relations whose fields `by` equal what `params` takes, nearest
- *   by the cosine distance of their field `vector` to the vector `params` gives under that field's own name, through
- *   grizzle's `approximateNearest` over pgvector's HNSW index. Each row arrives without the vector it was ranked by
- *   and with its `distance`, and that is what is recorded: the neighbours and how near each was, never their vectors.
+ *   by the cosine distance of their field `vector` to the stored vector of an anchor, the row of the anchor relation
+ *   whose whole key `params` gives under `anchor` (the engine's missed question), through grizzle's
+ *   `approximateNearest` over pgvector's HNSW index. Each row arrives without the vector it was ranked by and with its
+ *   `distance`, and that is what is recorded: the neighbours and how near each was, never their vectors. An anchor key
+ *   that holds no row finds none.
  *
  * Which rows a nearest read finds depends on the index and the database owner's pgvector settings as well as on the
  * facts (grizzle's README, "Every answer is a function of the facts"), so the record, not a second search, is what the
- * step saw. A read that depends on what a body computed, a query vector a model embeds among them, becomes its own
- * step, joined by an edge that carries it.
+ * step saw. A read that depends on what a body computed becomes its own step, joined by an edge.
  */
 export type Read<I = never> =
 	| {
@@ -268,10 +256,11 @@ export type Read<I = never> =
 			readonly vector: string
 			readonly take: number
 			readonly by: ReadonlyArray<string>
+			readonly anchor: { readonly relation: AnyRelation; readonly vector: string }
 			readonly params: (input: I) => Readonly<Record<string, unknown>>
 	  }
 
-/** A step's declared reads, by name: none, one, or several, each taken before the body runs and recorded. */
+/** A step's declared reads, by name: none, one, or several, taken together before the body runs and recorded. */
 export type Reads<I = never> = { readonly [name: string]: Read<I> }
 
 /** A declared read of `relation`'s rows whose fields `by` hold what `params` gives. */
@@ -289,42 +278,69 @@ export const rows = <R extends AnyRelation, const By extends keyof Fact<R> & str
 	params: (input: I) => Pick<Fact<R>, By>
 ): RowsRead<R, I, By> => ({ kind: "rows", relation, by, params })
 
-/** A declared read of at most `take` rows of `relation` nearest by `vector`, among those whose fields `by` hold. */
+/** A relation's whole key, as a fact's fields: what names one of its rows. */
+export type KeyOf<A extends AnyRelation> = Pick<Fact<A>, A["primaryKey"][number] & keyof Fact<A>>
+
+/** The stored vector a nearest read ranks by: the field `vector` of the row of `relation` its whole key names. */
+export interface Anchor<A extends AnyRelation, AV extends VectorFieldOf<A>> {
+	readonly relation: A
+	readonly vector: AV
+}
+
+/** The anchor of a nearest read: the field `vector` of one row of `relation`, named by its whole key. */
+export const anchor = <A extends AnyRelation, const AV extends VectorFieldOf<A>>(
+	relation: A,
+	vector: AV
+): Anchor<A, AV> => ({ relation, vector })
+
+/** What a nearest read takes from the input: the fields it filters by, and the anchor's whole key. */
+export type NearParams<R extends AnyRelation, By extends string, A extends AnyRelation> = Pick<
+	Fact<R>,
+	By & keyof Fact<R>
+> & { readonly anchor: KeyOf<A> }
+
+/** A declared read of at most `take` rows of `relation` nearest an anchor's vector by `vector`, among those `by` holds. */
 export interface NearestRead<
 	R extends AnyRelation,
 	I,
 	V extends VectorFieldOf<R>,
 	By extends keyof Fact<R> & string,
-	Take extends number
+	Take extends number,
+	A extends AnyRelation,
+	AV extends VectorFieldOf<A>
 > {
 	readonly kind: "nearest"
 	readonly relation: R
 	readonly vector: V
 	readonly take: Take
 	readonly by: ReadonlyArray<By>
-	readonly params: (input: I) => Pick<Fact<R>, By | V>
+	readonly anchor: Anchor<A, AV>
+	readonly params: (input: I) => NearParams<R, By, A>
 }
 
 /**
  * At most `take` rows of `relation`, among those whose fields `by` hold what `params` gives, nearest by the cosine
- * distance of their vector field `ranked` to the vector `params` gives under `ranked`'s name. `take` is the result's bound,
- * the caller's number with its evidence; den refuses one that is no positive integer.
+ * distance of their vector field `ranked` to the vector of the anchor's row its whole key, `params`' `anchor`, names.
+ * `take` is the result's bound, the caller's number with its evidence; den refuses one that is no positive integer.
  */
 export const nearest = <
 	R extends AnyRelation,
 	const V extends VectorFieldOf<R>,
 	const Take extends number,
-	const By extends Exclude<keyof Fact<R> & string, V>,
+	const By extends Exclude<keyof Fact<R> & string, V | "anchor">,
+	A extends AnyRelation,
+	const AV extends VectorFieldOf<A>,
 	I
 >(
 	relation: R,
 	ranked: V,
 	take: Take,
 	by: ReadonlyArray<By>,
-	params: (input: I) => Pick<Fact<R>, By | V>
-): NearestRead<R, I, V, By, Take> => {
+	near: Anchor<A, AV>,
+	params: (input: I) => NearParams<R, By, A>
+): NearestRead<R, I, V, By, Take, A, AV> => {
 	positive(`nearest ${relation.name}`, "take", take)
-	return { kind: "nearest", relation, vector: ranked, take, by, params }
+	return { kind: "nearest", relation, vector: ranked, take, by, anchor: near, params }
 }
 
 /** What a nearest read finds of one row: the row but the vector it was ranked by, and its distance to the query. */

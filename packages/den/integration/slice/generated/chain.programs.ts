@@ -517,13 +517,15 @@ export const chainCommitPrograms = Object.freeze({
 			.insert(ChainNext, []),
 		ChangeSet.empty(Loader).insert(App.relations.Item, [])
 	),
-	chainReadPageWeights: deferrable(
-		query(Loader).rule((r) => {
-			const { feed, factor } = v(App.relations.Weight, "row")
-			return r
-				.match(App.relations.Weight, { feed, factor })
-				.where(r.eq(feed, r.param("feed", App.relations.Weight.fields.feed)))
-				.find({ feed, factor })
+	chainReadPage: deferrable(
+		query(Loader).reads({
+			weights: query(Loader).rule((r) => {
+				const { feed, factor } = v(App.relations.Weight, "row")
+				return r
+					.match(App.relations.Weight, { feed, factor })
+					.where(r.eq(feed, r.param("feed", App.relations.Weight.fields.feed)))
+					.find({ feed, factor })
+			})
 		})
 	),
 	chainCommitChainRunFinish: ChangeSet.union(

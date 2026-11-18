@@ -44,6 +44,7 @@ import readsMigration from "#integration/slice/migrations/slice/20261118100351_n
 import valuesMigration from "#integration/slice/migrations/slice/20261118104939_structured_values/meta.json" with { type: "json" }
 import judgeMigration from "#integration/slice/migrations/slice/20261118120625_rule_judge_of_grizzle_c782217b/meta.json" with { type: "json" }
 import retirableMigration from "#integration/slice/migrations/slice/20261118123236_retirable_graphs/meta.json" with { type: "json" }
+import anchoredMigration from "#integration/slice/migrations/slice/20261118125628_anchored_nearest_reads_in_one_statement/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -85,7 +86,8 @@ const committed = Object.freeze({
 	"20261118100351_named_and_nearest_reads": readsMigration,
 	"20261118104939_structured_values": valuesMigration,
 	"20261118120625_rule_judge_of_grizzle_c782217b": judgeMigration,
-	"20261118123236_retirable_graphs": retirableMigration
+	"20261118123236_retirable_graphs": retirableMigration,
+	"20261118125628_anchored_nearest_reads_in_one_statement": anchoredMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */

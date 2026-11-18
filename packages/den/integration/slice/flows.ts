@@ -5,6 +5,7 @@ import {
 	type Ending,
 	atSpawn,
 	attempts,
+	anchor,
 	edge,
 	exclusiveBy,
 	idle,
@@ -18,7 +19,6 @@ import {
 	shared,
 	step,
 	unconditional,
-	vector,
 	writer,
 	writes,
 	writesNothing
@@ -30,8 +30,8 @@ import {
 	Concluded,
 	Copied,
 	Cursor,
-	embeddingDimensions,
 	Item,
+	Missed,
 	Passage,
 	Seen,
 	Settled,
@@ -45,7 +45,7 @@ import type { Loader } from "#integration/slice/roles.ts"
  * app's own write; a fan-out whose squares share a resource of two seats; a sync whose roots hold an exclusivity seat
  * per relation, beside a Gold build admitted only while the chain has nothing pending; two retry ladders, one that ends
  * and one that never does; and an assignment, the assignment engine's shape, whose one step reads the passages nearest
- * its query vector and the passages its learner has seen. Every flow writes the app's relations under its app role
+ * a missed question's stored embedding and the passages its learner has seen, in one snapshot. Every flow writes the app's relations under its app role
  * `loader`.
  */
 
@@ -446,13 +446,14 @@ export const retry = flow("Retry", {
 })
 
 /**
- * An assignment's question: a learner, a topic, the query vector its passages are ranked by, passages to pass over
- * beside those the learner has seen, and how near a passage must be: the nearest one found, or one within a radius.
+ * An assignment's question: a learner, a topic, the question it missed, whose stored embedding its passages are ranked
+ * by, passages to pass over beside those the learner has seen, and how near a passage must be: the nearest one found,
+ * or one within a radius.
  */
 const Probe = Schema.Struct({
 	learner: Schema.String,
 	topic: Schema.String,
-	near: vector(embeddingDimensions),
+	missed: Schema.String,
 	exclude: Schema.Array(Schema.String),
 	mode: Schema.TaggedUnion({ Nearest: {}, Within: { radius: Schema.Finite } })
 })
@@ -506,7 +507,7 @@ const decide = (
 }
 
 /**
- * Decides an assignment, as a model would answer: of the passages of its topic nearest its query vector, the nearest
+ * Decides an assignment, as a model would answer: of the passages of its topic nearest the question it missed, the nearest
  * its learner has neither seen nor been told to pass over, within its radius if it names one, or rest. Both reads are
  * recorded with its result, so the decision's whole context is a fact of the graph, and the decision itself is its
  * output, recorded once.
@@ -523,9 +524,10 @@ const Decide = step(
 				"embedding",
 				assignedAmong,
 				["topic"],
+				anchor(Missed, "embedding"),
 				(probe: typeof Probe.Type) => ({
 					topic: probe.topic,
-					embedding: probe.near
+					anchor: { question: probe.missed }
 				})
 			),
 			seen: rows(Seen, ["learner"], (probe: typeof Probe.Type) => ({ learner: probe.learner }))

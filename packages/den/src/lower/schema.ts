@@ -11,11 +11,11 @@ import {
 
 /**
  * Effect Schema, lowered to typed relations: a struct to a relation keyed by its owner; text, bigint, finite number and
- * boolean to their PostgreSQL types (a finite number to double precision, held finite by a row check), den's vector to
- * pgvector's, a literal union of texts to a closed roster, a brand to a contract of its base; an Option to a relation
- * of its own, holding a row exactly when the value is there; an array to an ordered family; and a tagged union to its
- * tag and a relation per variant. `Unknown` and `Any` have no typed home and never reach here: the algebra's types
- * admit only these forms, and anything else is refused by name.
+ * boolean to their PostgreSQL types (a finite number to double precision, held finite by a row check), a literal union
+ * of texts to a closed roster, a brand to a contract of its base; an Option to a relation of its own, holding a row
+ * exactly when the value is there; an array to an ordered family; and a tagged union to its tag and a relation per
+ * variant. `Unknown` and `Any` have no typed home and never reach here: the algebra's types admit only these forms, and
+ * anything else is refused by name.
  */
 
 /** A column's base PostgreSQL type: text, bigint, double precision or boolean. */
@@ -24,7 +24,6 @@ export type Base = "text" | "bigint" | "double" | "boolean"
 /** What a column holds. */
 export type ColumnType =
 	| { readonly kind: "base"; readonly base: Base }
-	| { readonly kind: "vector"; readonly dimensions: number }
 	| { readonly kind: "roster"; readonly handles: readonly [string, ...Array<string>] }
 	| { readonly kind: "brand"; readonly brand: string; readonly base: Base }
 
@@ -93,7 +92,7 @@ const baseOf = (declaration: string, field: string, schema: Schema.Top): Base =>
 	}
 	throw new Refused({
 		declaration,
-		why: `field ${field} is a ${ast._tag}, which has no typed home: use text, a bigint, Schema.Finite, a boolean, a vector, a literal union of texts or a brand of one, an Option of one, an array of columns or of structs of them, or a tagged union of structs of columns`
+		why: `field ${field} is a ${ast._tag}, which has no typed home: use text, a bigint, Schema.Finite, a boolean, a literal union of texts or a brand of one, an Option of one, an array of columns or of structs of them, or a tagged union of structs of columns`
 	})
 }
 
@@ -110,14 +109,11 @@ const textsOf = (
 }
 
 /**
- * A column's type, read off its schema value: a vector's dimensions and a brand's identifier ride on the value, which
- * the AST does not hold. A variant's fields arrive as any schema (TaggedUnionSchema), so each form is read by what its
- * value holds, and anything else is a base or refused.
+ * A column's type, read off its schema value: a brand's identifier rides on the value, which the AST does not hold. A
+ * variant's fields arrive as any schema (TaggedUnionSchema), so each form is read by what its value holds, and anything
+ * else is a base or refused.
  */
 const columnOf = (declaration: string, field: string, schema: Schema.Top): ColumnType => {
-	if ("dimensions" in schema && typeof schema.dimensions === "number") {
-		return { kind: "vector", dimensions: schema.dimensions }
-	}
 	if (
 		"identifier" in schema &&
 		typeof schema.identifier === "string" &&

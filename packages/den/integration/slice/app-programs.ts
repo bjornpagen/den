@@ -66,6 +66,7 @@ import {
 	Copied,
 	Cursor,
 	Item,
+	Missed,
 	Order,
 	Passage,
 	Seen,
@@ -518,5 +519,6 @@ export const appWorkload = workload(Loader, {
 	order: ChangeSet.union(ChangeSet.empty(Loader).insert(Order, []), chainRequests.Ordered),
 	weigh: ChangeSet.empty(Loader).insert(App.relations.Weight, []),
 	place: ChangeSet.empty(Loader).insert(Passage, []),
+	miss: ChangeSet.empty(Loader).insert(Missed, []),
 	see: ChangeSet.empty(Loader).insert(Seen, [])
 })

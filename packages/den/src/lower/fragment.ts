@@ -52,7 +52,6 @@ export type FieldType =
 	| { readonly kind: "closed"; readonly roster: string }
 	| { readonly kind: "brand"; readonly brand: string }
 	| { readonly kind: "base"; readonly base: Base }
-	| { readonly kind: "vector"; readonly dimensions: number }
 	| { readonly kind: "retirement" }
 	| { readonly kind: "app"; readonly relation: string; readonly field: string }
 
@@ -180,7 +179,8 @@ export interface EdgeIR {
 /**
  * A step's declared read, lowered: its name, the app relation it reads, the fields it reads by, the fields it delivers
  * and the relation it records them in, row by row under the step and an ordinal. A nearest read also names the vector
- * field it ranks by, which it does not deliver, and its bound, and records each row's distance beside it.
+ * field it ranks by, which it does not deliver, its bound, and its anchor: the relation, the vector field and the whole
+ * key of the stored row whose vector it ranks by; it records each row's distance beside it.
  */
 export type ReadIR = {
 	readonly name: string
@@ -190,7 +190,16 @@ export type ReadIR = {
 	readonly record: string
 } & (
 	| { readonly kind: "rows" }
-	| { readonly kind: "nearest"; readonly vector: string; readonly take: number }
+	| {
+			readonly kind: "nearest"
+			readonly vector: string
+			readonly take: number
+			readonly anchor: {
+				readonly relation: string
+				readonly vector: string
+				readonly key: readonly [string, ...Array<string>]
+			}
+	  }
 )
 
 /** A step kind, lowered. */
@@ -346,8 +355,6 @@ export const lower = (flow: AnyFlow): Lowered => {
 		switch (column.type.kind) {
 			case "base":
 				return { kind: "base", base: column.type.base }
-			case "vector":
-				return { kind: "vector", dimensions: column.type.dimensions }
 			case "brand":
 				brand({ name: column.type.brand, base: column.type.base })
 				return { kind: "brand", brand: column.type.brand }
@@ -846,9 +853,23 @@ export const lower = (flow: AnyFlow): Lowered => {
 				fields: delivered,
 				record
 			}
-			return declared.kind === "nearest"
-				? { ...read, kind: "nearest", vector: declared.vector, take: declared.take }
-				: { ...read, kind: "rows" }
+			if (declared.kind === "rows") {
+				return { ...read, kind: "rows" }
+			}
+			const key = declared.anchor.relation.primaryKey
+			if (!Arr.isReadonlyArrayNonEmpty(key)) {
+				throw new Refused({
+					declaration,
+					why: `its anchor ${declared.anchor.relation.name} has no key to name a row by`
+				})
+			}
+			return {
+				...read,
+				kind: "nearest",
+				vector: declared.vector,
+				take: declared.take,
+				anchor: { relation: declared.anchor.relation.name, vector: declared.anchor.vector, key }
+			}
 		})
 
 	const stepsIR: ReadonlyArray<StepIR> = Arr.map(steps, (s) => {

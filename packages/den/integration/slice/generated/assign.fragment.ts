@@ -134,7 +134,7 @@ export const AssignDecideInput = relation(
 		step: DenStep,
 		learner: Text,
 		topic: Text,
-		near: pg.vector(4),
+		missed: Text,
 		mode: closedId(AssignDecideInputMode),
 		root: DenScope
 	},
@@ -161,7 +161,7 @@ export const AssignAssignmentInput = relation(
 		scope: DenScope,
 		learner: Text,
 		topic: Text,
-		near: pg.vector(4),
+		missed: Text,
 		mode: closedId(AssignAssignmentInputMode),
 		root: DenScope
 	},

@@ -14,14 +14,18 @@ import { exclusiveId, type Instant, instantOf, type ScopeKey } from "#runtime/id
 export const one = <A>(rows: Iterable<A>): Option.Option<A> => Arr.head(Arr.fromIterable(rows))
 
 /**
- * The instant a clocked read of the database's clock answered, its one row's `now`: a query of no relation that finds
- * a parameter answers exactly one row.
+ * The one row a read of exactly one row answered (a clocked read of the database's instant, a step's record of reads):
+ * none is a broken contract, and dies.
  */
-export const readingOf = <I>(rows: Iterable<{ readonly now: I }>): Effect.Effect<I> =>
+export const only = <A>(rows: Iterable<A>): Effect.Effect<A> =>
 	Option.match(one(rows), {
-		onNone: () => Effect.die("a clocked read of the database's instant answered no row"),
-		onSome: (row) => Effect.succeed(row.now)
+		onNone: () => Effect.die("a read of exactly one row answered none"),
+		onSome: (row) => Effect.succeed(row)
 	})
+
+/** The instant a clocked read of the database's clock answered, its one row's `now`. */
+export const readingOf = <I>(rows: Iterable<{ readonly now: I }>): Effect.Effect<I> =>
+	Effect.map(only(rows), (row) => row.now)
 
 /** A read's rows, as an array. */
 export const rowsOf = <A>(rows: Iterable<A>): ReadonlyArray<A> => Arr.fromIterable(rows)

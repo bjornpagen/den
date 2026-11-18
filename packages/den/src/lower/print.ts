@@ -67,8 +67,6 @@ const fieldExpr = (type: FieldType): string => {
 			return type.brand
 		case "app":
 			return `${type.relation}.fields.${type.field}`
-		case "vector":
-			return `pg.vector(${type.dimensions})`
 		case "retirement":
 			return "retirement"
 		case "base":
@@ -160,7 +158,7 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		"key",
 		...(used("natural") ? ["natural"] : []),
 		"on",
-		...(base("bigint") || base("double") || base("boolean") || used("vector") ? ["pg"] : []),
+		...(base("bigint") || base("double") || base("boolean") ? ["pg"] : []),
 		...(Arr.some(sides, (sd) => Arr.some(sd.terms, (t) => t.pred)) ? ["pred"] : []),
 		...(seated ? ["query"] : []),
 		...(Arr.some(l.laws, (law) => law.kind === "race") ? ["race"] : []),
@@ -463,36 +461,57 @@ const commitOf = (
 		: `ChangeSet.union(${den}, ChangeSet.empty(${writer})${members([], app, appRef)})`
 }
 
+/** The parameters a step's read takes from its input, each by the name it has inside the read's own query. */
+const paramsOf = (rd: ReadIR): ReadonlyArray<string> =>
+	rd.kind === "nearest" ? [...rd.by, ...Arr.map(rd.anchor.key, (k) => `anchor.${k}`)] : rd.by
+
 /**
  * A step's declared read over the app's schema, under its app role `writer`: the rows of the relation whose fields `by`
  * equal the parameters of their names, or, for a nearest read, those rows scored by the cosine distance of their
- * vector to the parameter of the vector field's name and searched by `approximateNearest`, delivered without the
- * vector and with their distance.
+ * vector to the vector of the anchor's row its whole key names, each key field the parameter `anchor.<field>`, and
+ * searched by `approximateNearest`, delivered without the vector and with their distance.
  */
 const readOf = (rd: ReadIR, app: string, writer: string): string => {
 	const rel = `${app}.relations.${rd.relation}`
-	const matched = rd.kind === "nearest" ? [...rd.fields, rd.vector] : rd.fields
-	const where = Arr.isReadonlyArrayNonEmpty(rd.by)
-		? `
-		.where(${commas(Arr.map(rd.by, (f) => `r.eq(${f}, r.param(${q(f)}, ${rel}.fields.${f}))`))})`
-		: ""
-	const found =
-		rd.kind === "nearest"
-			? commas([
-					...rd.fields,
-					`distance: Compute.cosineDistance(${rd.vector}, r.param(${q(rd.vector)}, ${rel}.fields.${rd.vector}))`
-				])
-			: commas(rd.fields)
-	const rule = `query(${writer}).rule((r) => {
-	const { ${commas(matched)} } = v(${rel}, "row")
+	const by = Arr.map(rd.by, (f) => `r.eq(${f}, r.param(${q(f)}, ${rel}.fields.${f}))`)
+	if (rd.kind === "rows") {
+		return `query(${writer}).rule((r) => {
+	const { ${commas(rd.fields)} } = v(${rel}, "row")
 	return r
-		.match(${rel}, { ${commas(matched)} })${where}
-		.find({ ${found} })
+		.match(${rel}, { ${commas(rd.fields)} })${
+			Arr.isReadonlyArrayNonEmpty(by)
+				? `
+		.where(${commas(by)})`
+				: ""
+		}
+		.find({ ${commas(rd.fields)} })
 })`
-	return rd.kind === "nearest"
-		? `${rule}.approximateNearest({ by: "distance", take: ${rd.take} })`
-		: rule
+	}
+	const anchored = `${app}.relations.${rd.anchor.relation}`
+	const keyed = Arr.map(
+		rd.anchor.key,
+		(k) => `r.eq(anchor.${k}, r.param(${q(`anchor.${k}`)}, ${anchored}.fields.${k}))`
+	)
+	return `query(${writer})
+	.rule((r) => {
+		const { ${commas([...rd.fields, rd.vector])} } = v(${rel}, "row")
+		const anchor = v(${anchored}, "anchor")
+		return r
+			.match(${anchored}, { ${commas([...Arr.map(rd.anchor.key, (k) => `${k}: anchor.${k}`), `${rd.anchor.vector}: anchor.${rd.anchor.vector}`])} })
+			.match(${rel}, { ${commas([...rd.fields, rd.vector])} })
+			.where(${commas([...keyed, ...by])})
+			.find({ ${commas([...rd.fields, `distance: Compute.cosineDistance(${rd.vector}, anchor.${rd.anchor.vector})`])} })
+	})
+	.approximateNearest({ by: "distance", take: ${rd.take} })`
 }
+
+/**
+ * A step's declared reads as one read, grizzle's record of named queries: one statement, so every read a step declares
+ * sees one snapshot and what it records describes one moment of the database. Each read's parameters are its own
+ * under its name, `<read>.<parameter>`.
+ */
+const readsOf = (reads: readonly [ReadIR, ...Array<ReadIR>], app: string, writer: string): string =>
+	`query(${writer}).reads({ ${commas(Arr.map(reads, (rd) => `${rd.name}: ${readOf(rd, app, writer)}`))} })`
 
 /**
  * The programs module: den's programs over the flow's graph and coordination fragments, the roles over the app's
@@ -941,12 +960,9 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 				app
 			)
 		])
-		Arr.forEach(s.reads, (rd) =>
-			commitPrograms.push([
-				n.program(`Read${s.name}${Str.capitalize(rd.name)}`),
-				deferred(readOf(rd, app, W))
-			])
-		)
+		if (Arr.isReadonlyArrayNonEmpty(s.reads)) {
+			commitPrograms.push([n.program(`Read${s.name}`), deferred(readsOf(s.reads, app, W))])
+		}
 	})
 	Arr.forEach(l.joins, (j) =>
 		commitPrograms.push([
@@ -1342,14 +1358,19 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			? `Effect.map(Effect.all([${commas(Arr.map(s.edges, (e) => edgeGrowth(e, "done")))}]), (parts) => Arr.reduce(parts, nothingGrown, joined))`
 			: "Effect.succeed(nothingGrown)"
 		const spawnRows = Arr.isReadonlyArrayNonEmpty(s.edges) ? ["...grown.rows"] : []
+		const params = Arr.flatMap(s.reads, (rd) =>
+			Arr.map(paramsOf(rd), (param) => `${q(`${rd.name}.${param}`)}: ${rd.name}.${param}`)
+		)
 		const read = Arr.isReadonlyArrayNonEmpty(s.reads)
-			? `read: (input) => Effect.all({ ${commas(
-					Arr.map(
+			? lines([
+					"read: (input) => {",
+					...Arr.map(
 						s.reads,
-						(rd) =>
-							`${rd.name}: Effect.map(h.commits.${n.program(`Read${s.name}${Str.capitalize(rd.name)}`)}.once({ params: ${kindAt(s.index)}.reads.${rd.name}.params(input), facts: {} }), rowsOf)`
-					)
-				)} }, { concurrency: "unbounded" })`
+						(rd) => `\tconst ${rd.name} = ${kindAt(s.index)}.reads.${rd.name}.params(input)`
+					),
+					`\treturn Effect.flatMap(h.commits.${n.program(`Read${s.name}`)}.once({ params: { ${commas(params)} }, facts: {} }), (rows) => Effect.map(only(rows), (row) => ({ ${commas(Arr.map(s.reads, (rd) => `${rd.name}: row.${rd.name}`))} })))`,
+					"}"
+				])
 			: "read: () => Effect.succeed({})"
 		return lines([
 			`runnerOf(${kindAt(s.index)}, {`,
@@ -1659,7 +1680,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`/** The ledger port of the flow ${P} over its served programs; \`den generate\` writes it, and nothing edits it. */`,
 		`import type { Written } from "@bjornpagen/grizzle"`,
 		`import type { CallError, MemberHandle } from "@bjornpagen/grizzle/runtime"`,
-		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishUnions ? ["held"] : []), "one", ...(families ? ["ordered"] : []), "readingOf", "rowsOf", "scheduleOf", "signals"])} } from "@bjornpagen/den/runtime/bind"`,
+		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishUnions ? ["held"] : []), "one", ...(Arr.some(l.steps, (st) => Arr.isReadonlyArrayNonEmpty(st.reads)) ? ["only"] : []), ...(families ? ["ordered"] : []), "readingOf", "rowsOf", "scheduleOf", "signals"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
 		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), ...(resources ? ["HoldRow"] : []), "Ledger", "PauseRow", "ScopeView", ...(resources ? ["SeatTurn"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
 		`import { runnerOf } from "@bjornpagen/den/runtime/turn"`,
