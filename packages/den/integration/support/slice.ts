@@ -38,6 +38,7 @@ import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
 import type { AppLogin, Worker } from "#integration/slice/logins.ts"
 import initMigration from "#integration/slice/migrations/slice/20261114214053_init/meta.json" with { type: "json" }
 import fanFreedMigration from "#integration/slice/migrations/slice/20261115213330_add_rule_capture_of_fan_freed_and_more/meta.json" with { type: "json" }
+import netWriteMigration from "#integration/slice/migrations/slice/20261118094004_add_fan_hold_capture_delete_and_more/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -74,7 +75,8 @@ const grizzleBin = `${import.meta.dirname}/../../../../vendor/grizzle/packages/g
  */
 const committed = Object.freeze({
 	"20261114214053_init": initMigration,
-	"20261115213330_add_rule_capture_of_fan_freed_and_more": fanFreedMigration
+	"20261115213330_add_rule_capture_of_fan_freed_and_more": fanFreedMigration,
+	"20261118094004_add_fan_hold_capture_delete_and_more": netWriteMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
