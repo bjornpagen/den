@@ -8,6 +8,7 @@ import { syncGraph, syncWriter } from "#integration/slice/generated/sync.fragmen
 import {
 	Assigned,
 	Built,
+	Concluded,
 	Copied,
 	Cursor,
 	Item,
@@ -21,7 +22,7 @@ import {
 
 /**
  * The app's writer role: it inserts the app's items, cursors, orders, tallies, settled batches, copies, builds,
- * passages, seen passages and assignments, and reads the weights its pages read and the passages and seen passages its
+ * passages, seen passages, assignments and their conclusions, and reads the weights its pages read and the passages and seen passages its
  * decisions read. Every flow names it as the role its steps write under, so den adds its commits to
  * it: it holds each flow's graph whole, which serves den's commits, and inserts into what each flow's `Writer` lists.
  */
@@ -40,6 +41,7 @@ export const Loader = role(
 		Passage,
 		Seen,
 		Assigned,
+		Concluded,
 		...chainGraph.relations,
 		...fanGraph.relations,
 		...syncGraph.relations,
@@ -59,6 +61,7 @@ export const Loader = role(
 			"Passage",
 			"Seen",
 			"Assigned",
+			"Concluded",
 			...chainWriter,
 			...fanWriter,
 			...syncWriter,

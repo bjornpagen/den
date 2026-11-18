@@ -2,7 +2,9 @@ import { ChangeSet, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
 	AssignDecideNearestRead,
-	AssignDecideOutputChosen,
+	AssignDecideOutput,
+	AssignDecideOutputStageServe,
+	AssignDecideOutputWeighed,
 	AssignDecideSeenRead,
 	AssignResult,
 	AssignStep
@@ -60,6 +62,7 @@ import {
 	Assigned,
 	Audit,
 	Built,
+	Concluded,
 	Copied,
 	Cursor,
 	Item,
@@ -89,12 +92,15 @@ export const Auditor = role(
 	{
 		Assigned,
 		AssignDecideNearestRead,
-		AssignDecideOutputChosen,
+		AssignDecideOutput,
+		AssignDecideOutputStageServe,
+		AssignDecideOutputWeighed,
 		AssignDecideSeenRead,
 		AssignResult,
 		AssignStep,
 		Audit,
 		Built,
+		Concluded,
 		ChainAdmitted,
 		ChainChainRunInput,
 		ChainClaim,
@@ -287,10 +293,32 @@ const seenReads = query(Auditor).rule((r) => {
 		.find({ step, ordinal, learner, passage })
 })
 
-/** The passage each decision chose, where it chose one. */
-const chosen = query(Auditor).rule((r) => {
-	const { step, value } = v(AssignDecideOutputChosen, "chosen")
-	return r.match(AssignDecideOutputChosen, { step, value }).find({ step, value })
+/** Each decision as its output row holds it: its stage's tag and its confidence. */
+const decisions = query(Auditor).rule((r) => {
+	const { step, stage, confidence } = v(AssignDecideOutput, "decision")
+	return r.match(AssignDecideOutput, { step, stage, confidence }).find({ step, stage, confidence })
+})
+
+/** The passage each decision that serves one serves, at its distance: its stage's variant. */
+const servings = query(Auditor).rule((r) => {
+	const { step, passage, distance } = v(AssignDecideOutputStageServe, "served")
+	return r
+		.match(AssignDecideOutputStageServe, { step, passage, distance })
+		.find({ step, passage, distance })
+})
+
+/** The passages each decision weighed, its array as an ordered family. */
+const weighings = query(Auditor).rule((r) => {
+	const { step, ordinal, passage, distance, passed } = v(AssignDecideOutputWeighed, "weighed")
+	return r
+		.match(AssignDecideOutputWeighed, { step, ordinal, passage, distance, passed })
+		.find({ step, ordinal, passage, distance, passed })
+})
+
+/** Each assignment's conclusion, which its finish wrote from the decision it read back. */
+const concluded = query(Auditor).rule((r) => {
+	const { learner, served, weighed } = v(Concluded, "concluded")
+	return r.match(Concluded, { learner, served, weighed }).find({ learner, served, weighed })
 })
 
 const assigned = query(Auditor).rule((r) => {
@@ -451,7 +479,10 @@ export const auditWorkload = workload(Auditor, {
 	assignResults,
 	nearestReads,
 	seenReads,
-	chosen,
+	decisions,
+	servings,
+	weighings,
+	concluded,
 	assigned,
 	...every
 })

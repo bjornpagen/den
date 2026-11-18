@@ -27,6 +27,7 @@ import { Array as Arr, Context, Effect, Option, Order, Schema } from "effect"
 import {
 	Assigned,
 	Built,
+	Concluded,
 	Copied,
 	Cursor,
 	embeddingDimensions,
@@ -444,11 +445,31 @@ export const retry = flow("Retry", {
 	edges: []
 })
 
-/** An assignment's question: a learner, a topic, and the query vector its passages are ranked by. */
+/**
+ * An assignment's question: a learner, a topic, the query vector its passages are ranked by, passages to pass over
+ * beside those the learner has seen, and how near a passage must be: the nearest one found, or one within a radius.
+ */
 const Probe = Schema.Struct({
 	learner: Schema.String,
 	topic: Schema.String,
-	near: vector(embeddingDimensions)
+	near: vector(embeddingDimensions),
+	exclude: Schema.Array(Schema.String),
+	mode: Schema.TaggedUnion({ Nearest: {}, Within: { radius: Schema.Finite } })
+})
+
+/**
+ * A decision, the shape of a model's structured answer: what it serves (a passage at its distance, or rest), every
+ * passage it weighed in the order it weighed them, and how sure it is.
+ */
+const Decision = Schema.Struct({
+	stage: Schema.TaggedUnion({
+		Serve: { passage: Schema.String, distance: Schema.Finite },
+		Rest: {}
+	}),
+	weighed: Schema.Array(
+		Schema.Struct({ passage: Schema.String, distance: Schema.Finite, passed: Schema.Boolean })
+	),
+	confidence: Schema.Finite
 })
 
 /**
@@ -457,16 +478,44 @@ const Probe = Schema.Struct({
  */
 export const assignedAmong = 3
 
+/** What an assignment decides from the passages it found and those it passes over. */
+const decide = (
+	mode: typeof Probe.Type.mode,
+	found: ReadonlyArray<{ readonly passage: string; readonly distance: number }>,
+	passed: ReadonlySet<string>
+): typeof Decision.Type => {
+	const weighed = Arr.map(
+		Arr.sort(
+			found,
+			Order.mapInput(Order.Number, (row: { readonly distance: number }) => row.distance)
+		),
+		(row) => ({ passage: row.passage, distance: row.distance, passed: passed.has(row.passage) })
+	)
+	const near = (distance: number) => mode._tag === "Nearest" || distance <= mode.radius
+	return Option.match(
+		Arr.findFirst(weighed, (row) => !row.passed && near(row.distance)),
+		{
+			onNone: () => ({ stage: { _tag: "Rest" as const }, weighed, confidence: 0 }),
+			onSome: (row) => ({
+				stage: { _tag: "Serve" as const, passage: row.passage, distance: row.distance },
+				weighed,
+				confidence: 1 - row.distance / 2
+			})
+		}
+	)
+}
+
 /**
- * Decides an assignment: of the passages of its topic nearest its query vector, the nearest its learner has not seen,
- * or none when every one found is seen. Both reads are recorded with its result, so the decision's whole context is a
- * fact of the graph.
+ * Decides an assignment, as a model would answer: of the passages of its topic nearest its query vector, the nearest
+ * its learner has neither seen nor been told to pass over, within its radius if it names one, or rest. Both reads are
+ * recorded with its result, so the decision's whole context is a fact of the graph, and the decision itself is its
+ * output, recorded once.
  */
 const Decide = step(
 	"Decide",
 	{
 		input: Probe,
-		output: Schema.Struct({ chosen: Schema.Option(Schema.String) }),
+		output: Decision,
 		error: Schema.Never,
 		reads: {
 			nearest: nearest(
@@ -487,21 +536,19 @@ const Decide = step(
 		writes: writes({ insert: [Assigned], put: [], delete: [] })
 	},
 	(probe, found) => {
-		const seen = new Set(Arr.map(found.seen, (row) => row.passage))
-		const chosen = Arr.findFirst(
-			Arr.sort(
-				found.nearest,
-				Order.mapInput(Order.Number, (row: (typeof found.nearest)[number]) => row.distance)
-			),
-			(row) => !seen.has(row.passage)
+		const decision = decide(
+			probe.mode,
+			found.nearest,
+			new Set([...Arr.map(found.seen, (row) => row.passage), ...probe.exclude])
 		)
 		return Effect.succeed({
-			output: { chosen: Option.map(chosen, (row) => row.passage) },
+			output: decision,
 			writes: {
 				insert: {
-					Assigned: Option.toArray(
-						Option.map(chosen, (row) => ({ learner: probe.learner, passage: row.passage }))
-					)
+					Assigned:
+						decision.stage._tag === "Serve"
+							? [{ learner: probe.learner, passage: decision.stage.passage }]
+							: []
 				},
 				put: {},
 				delete: {}
@@ -510,7 +557,10 @@ const Decide = step(
 	}
 )
 
-/** An operator's assignment of one learner, its one step the decision. */
+/**
+ * An operator's assignment of one learner, its one step the decision; its finish reads the decision back from the
+ * graph and concludes the learner's assignment with what it served and how many passages it weighed.
+ */
 const Assignment = root("Assignment", {
 	trigger: operator,
 	input: Probe,
@@ -523,8 +573,29 @@ const Assignment = root("Assignment", {
 		reads: [Decide],
 		error: Schema.Never,
 		retry: attempts(3),
-		writes: writesNothing,
-		body: () => Effect.succeed({ insert: {}, put: {}, delete: {} })
+		writes: writes({ insert: [Concluded], put: [], delete: [] }),
+		body: (
+			probe: typeof Probe.Type,
+			endings: { readonly Decide: ReadonlyArray<Ending<typeof Decision.Type>> }
+		) =>
+			Effect.succeed({
+				insert: {
+					Concluded: Arr.flatMap(endings.Decide, (ending) =>
+						ending._tag === "Done"
+							? [
+									{
+										learner: probe.learner,
+										served:
+											ending.output.stage._tag === "Serve" ? ending.output.stage.passage : "rest",
+										weighed: BigInt(ending.output.weighed.length)
+									}
+								]
+							: []
+					)
+				},
+				put: {},
+				delete: {}
+			})
 	}
 })
 

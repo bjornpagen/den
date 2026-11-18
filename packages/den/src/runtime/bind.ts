@@ -1,13 +1,13 @@
 import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, type Cron, Effect, Option, Stream } from "effect"
+import { Array as Arr, type Cron, Effect, Option, Order, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Due, Exclusive, Trigger } from "#algebra/kinds.ts"
 import { exclusiveId, type Instant, instantOf, type ScopeKey } from "#runtime/identity.ts"
 
 /**
  * What every printed binding shares (lower/print.ts): reading a key member's one row, the database's instant and a
- * read's rows, a spawn's due instant, a scope's exclusivity key and a root's schedule, and a watch's events as the
- * relay's signals.
+ * read's rows, an array's elements in order and a value's tagged unions, a spawn's due instant, a scope's exclusivity
+ * key and a root's schedule, and a watch's events as the relay's signals.
  */
 
 /** The one row a key member found, if it found one. */
@@ -25,6 +25,25 @@ export const readingOf = <I>(rows: Iterable<{ readonly now: I }>): Effect.Effect
 
 /** A read's rows, as an array. */
 export const rowsOf = <A>(rows: Iterable<A>): ReadonlyArray<A> => Arr.fromIterable(rows)
+
+/** An ordered family's rows, an array's elements, in their order. */
+export const ordered = <A extends { readonly ordinal: bigint }>(
+	rows: Iterable<A>
+): ReadonlyArray<A> =>
+	Arr.sort(
+		Arr.fromIterable(rows),
+		Order.mapInput(Order.BigInt, (row: A) => row.ordinal)
+	)
+
+/**
+ * A value whose tagged unions each found the row of the variant its tag names, which the database holds there by law:
+ * none is a broken law, and dies.
+ */
+export const held = <A>(value: Option.Option<A>): Effect.Effect<A> =>
+	Option.match(value, {
+		onNone: () => Effect.die("a tagged union's tag names a variant with no row"),
+		onSome: (found) => Effect.succeed(found)
+	})
 
 /** The instant a step spawned at `at` is first due. */
 export const dueAt = (due: Due, at: Instant): Instant => {

@@ -1,17 +1,18 @@
 import { regex } from "arkregex"
 import { Array as Arr, Option, Order, String as Str } from "effect"
-import type {
-	CountsIR,
-	EdgeIR,
-	FieldType,
-	JoinIR,
-	LawIR,
-	Lowered,
-	ReadIR,
-	SideIR,
-	StepIR,
-	ValueIR,
-	WritesIR
+import {
+	type CountsIR,
+	type EdgeIR,
+	type FieldType,
+	type JoinIR,
+	type LawIR,
+	type Lowered,
+	type ReadIR,
+	type SideIR,
+	type StepIR,
+	type ValueIR,
+	valueRelations,
+	type WritesIR
 } from "#lower/fragment.ts"
 import type { Base } from "#lower/schema.ts"
 
@@ -164,11 +165,6 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		...(seated ? ["v"] : [])
 	]
 }
-
-const valueRelations = (v: ValueIR): ReadonlyArray<string> => [
-	v.relation,
-	...Arr.map(v.sidecars, (s) => s.relation)
-]
 
 /** The names a flow's printed programs and handles take, under its prefix. */
 const naming = (l: Lowered) => {
@@ -661,8 +657,22 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 				] as const
 		)
 	]
-	const denValueReads = (v: ValueIR) =>
-		Arr.forEach(valueRelations(v), (rel) => denPrograms.push([n.program(`Read${rel}`), rel]))
+	const denValueReads = (v: ValueIR) => {
+		Arr.forEach(
+			[
+				v.relation,
+				...Arr.map(v.sidecars, (side) => side.relation),
+				...Arr.flatMap(v.unions, (u) => Arr.map(u.variants, (vr) => vr.relation))
+			],
+			(rel) => denPrograms.push([n.program(`Read${rel}`), rel])
+		)
+		Arr.forEach(v.families, (f) =>
+			denPrograms.push([
+				n.program(`Read${f.relation}`),
+				ownedOf(n.graph, v, f.relation, familyFields(f))
+			])
+		)
+	}
 	Arr.forEach(l.steps, (s) => {
 		denValueReads(s.input)
 		Option.map(s.error, (e) =>
@@ -724,37 +734,69 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 				])
 				return
 			}
-			const cols = Arr.map(read.output.shape.columns, (c) => c.name)
-			denPrograms.push([
-				n.program(`Outputs${j.name}${read.name}`),
-				`query(${n.graph}).rule((r) => {
+			const output = read.output
+			const outputsOf = (
+				relation: string,
+				fields: ReadonlyArray<string>,
+				label: string
+			): string => `query(${n.graph}).rule((r) => {
 	const { step, scope } = v(${r("Step")}, "step")${
-		Arr.isReadonlyArrayNonEmpty(cols)
+		Arr.isReadonlyArrayNonEmpty(fields)
 			? `
-	const { ${commas(cols)} } = v(${read.output.relation}, "output")`
+	const { ${commas(fields)} } = v(${relation}, ${q(label)})`
 			: ""
 	}
 	return r
 		.match(${r("Step")}, { step, kind: ${q(read.name)}, scope })
-		.match(${read.output.relation}, { ${commas(["step", ...cols])} })
+		.match(${relation}, { ${commas(["step", ...fields])} })
 		.where(r.eq(scope, ${scopeParam}))
-		.find({ ${commas(["step", ...cols])} })
+		.find({ ${commas(["step", ...fields])} })
 })`
-			])
-			Arr.forEach(read.output.sidecars, (side) =>
-				denPrograms.push([
-					n.program(`Outputs${j.name}${read.name}${Str.capitalize(side.column.name)}`),
-					`query(${n.graph}).rule((r) => {
-	const { step, scope } = v(${r("Step")}, "step")
-	const { value } = v(${side.relation}, "value")
-	return r
-		.match(${r("Step")}, { step, kind: ${q(read.name)}, scope })
-		.match(${side.relation}, { step, value })
-		.where(r.eq(scope, ${scopeParam}))
-		.find({ step, value })
-})`
-				])
-			)
+			const outputs = `Outputs${j.name}${read.name}`
+			const parts: ReadonlyArray<readonly [string, string]> = [
+				[
+					n.program(outputs),
+					outputsOf(
+						output.relation,
+						[
+							...Arr.map(output.shape.columns, (c) => c.name),
+							...Arr.map(output.unions, (u) => u.field.name)
+						],
+						"output"
+					)
+				],
+				...Arr.map(
+					output.sidecars,
+					(side) =>
+						[
+							n.program(`${outputs}${Str.capitalize(side.column.name)}`),
+							outputsOf(side.relation, ["value"], "value")
+						] as const
+				),
+				...Arr.map(
+					output.families,
+					(f) =>
+						[
+							n.program(`${outputs}${Str.capitalize(f.field.name)}`),
+							outputsOf(f.relation, familyFields(f), "part")
+						] as const
+				),
+				...Arr.flatMap(output.unions, (u) =>
+					Arr.map(
+						u.variants,
+						(vr) =>
+							[
+								n.program(`${outputs}${Str.capitalize(u.field.name)}${vr.variant.tag}`),
+								outputsOf(
+									vr.relation,
+									Arr.map(vr.variant.columns, (c) => c.name),
+									"part"
+								)
+							] as const
+					)
+				)
+			]
+			Arr.forEach(parts, (part) => denPrograms.push(part))
 			denPrograms.push([
 				n.program(`Failures${j.name}${read.name}`),
 				`query(${n.graph}).rule((r) => {
@@ -920,20 +962,119 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 
 /** A value's facts for one owner `key` and value `x`: its row, and a row of each optional field it holds. */
 const factsOf = (v: ValueIR, key: string, x: string): ReadonlyArray<string> => [
-	`${v.relation}: [{ ${commas([`${v.owner}: ${key}`, ...Arr.map(v.shape.columns, (c) => `${c.name}: ${x}.${c.name}`)])} }]`,
+	`${v.relation}: [{ ${commas([
+		`${v.owner}: ${key}`,
+		...Arr.map(v.shape.columns, (c) => `${c.name}: ${x}.${c.name}`),
+		...Arr.map(v.unions, (u) => `${u.field.name}: ${x}.${u.field.name}._tag`)
+	])} }]`,
 	...Arr.map(
 		v.sidecars,
 		(s) =>
 			`${s.relation}: Option.toArray(Option.map(${x}.${s.column.name}, (value) => ({ ${v.owner}: ${key}, value })))`
+	),
+	...Arr.map(
+		v.families,
+		(f) =>
+			`${f.relation}: Arr.map(${x}.${f.field.name}, (element, index) => ({ ${commas([
+				`${v.owner}: ${key}`,
+				"ordinal: BigInt(index)",
+				...(f.field.element.kind === "value"
+					? ["value: element"]
+					: Arr.map(f.field.element.columns, (c) => `${c.name}: element.${c.name}`))
+			])} }))`
+	),
+	...Arr.flatMap(v.unions, (u) =>
+		Arr.map(
+			u.variants,
+			(vr) =>
+				`${vr.relation}: Arr.flatMap([${x}.${u.field.name}], (variant) => (variant._tag === ${q(vr.variant.tag)} ? [{ ${commas(
+					[
+						`${v.owner}: ${key}`,
+						...Arr.map(vr.variant.columns, (c) => `${c.name}: variant.${c.name}`)
+					]
+				)} }] : []))`
+		)
 	)
 ]
 
-/** The value of a row `row` of `v` read by key, with each optional field read by its own handle. */
-const valueOf = (v: ValueIR, row: string, side: (index: number) => string): string =>
-	`({ ${commas([
+/** Where a value's parts are found as it is read: each option's row, each array's rows and each variant's row. */
+interface Parts {
+	readonly side: (index: number) => string
+	readonly family: (index: number) => string
+	readonly variant: (union: number, index: number) => string
+}
+
+/** A tagged union's value, as an Option: the variant `row`'s tag names, from the row its relation holds. */
+const unionOf = (v: ValueIR, at: number, row: string, parts: Parts): string => {
+	const u = Arr.getUnsafe(v.unions, at)
+	const arm = (j: number): string => {
+		const vr = Arr.getUnsafe(u.variants, j)
+		const fields = commas([
+			`_tag: ${q(vr.variant.tag)} as const`,
+			...Arr.map(vr.variant.columns, (c) => `${c.name}: part.${c.name}`)
+		])
+		const mapped = `Option.map(${parts.variant(at, j)}, (${Arr.isReadonlyArrayNonEmpty(vr.variant.columns) ? "part" : ""}) => ({ ${fields} }))`
+		return j === u.variants.length - 1
+			? mapped
+			: `${row}.${u.field.name} === ${q(vr.variant.tag)} ? ${mapped} : ${arm(j + 1)}`
+	}
+	return arm(0)
+}
+
+/**
+ * The value of a row `row` of `v`, its parts found where `parts` says: an object, or, when it holds a tagged union, an
+ * Option of one, none where a variant's row is missing.
+ */
+const valueOf = (v: ValueIR, row: string, parts: Parts): string => {
+	const object = `({ ${commas([
 		...Arr.map(v.shape.columns, (c) => `${c.name}: ${row}.${c.name}`),
-		...Arr.map(v.sidecars, (s, i) => `${s.column.name}: Option.map(${side(i)}, (o) => o.value)`)
+		...Arr.map(
+			v.sidecars,
+			(s, i) => `${s.column.name}: Option.map(${parts.side(i)}, (o) => o.value)`
+		),
+		...Arr.map(
+			v.families,
+			(f, i) =>
+				`${f.field.name}: Arr.map(ordered(${parts.family(i)}), (e) => ${
+					f.field.element.kind === "value"
+						? "e.value"
+						: `({ ${commas(Arr.map(f.field.element.columns, (c) => `${c.name}: e.${c.name}`))} })`
+				})`
+		),
+		...Arr.map(v.unions, (u) => `${u.field.name}: unions.${u.field.name}`)
 	])} })`
+	return Arr.isReadonlyArrayEmpty(v.unions)
+		? object
+		: `Option.map(Option.all({ ${commas(Arr.map(v.unions, (u, i) => `${u.field.name}: ${unionOf(v, i, row, parts)}`))} }), (unions) => ${object})`
+}
+
+/** Whether a value holds a tagged union, so that reading it back answers an Option. */
+const unioned = (v: ValueIR): boolean => Arr.isReadonlyArrayNonEmpty(v.unions)
+
+/**
+ * A query of a value's family or variant relation `relation`, of fields `fields` beside its owner, for the owner the
+ * parameter of its key names.
+ */
+const ownedOf = (
+	graph: string,
+	v: ValueIR,
+	relation: string,
+	fields: ReadonlyArray<string>
+): string => {
+	const all = [v.owner, ...fields]
+	return `query(${graph}).rule((r) => {
+	const { ${commas(all)} } = v(${relation}, "part")
+	return r.match(${relation}, { ${commas(all)} }).where(r.eq(${v.owner}, r.param(${q(v.owner)}, ${relation}.fields.${v.owner}))).find({ ${commas(all)} })
+})`
+}
+
+/** A family's fields beside its owner: its ordinal and its element's columns. */
+const familyFields = (f: ValueIR["families"][number]): ReadonlyArray<string> => [
+	"ordinal",
+	...(f.field.element.kind === "value"
+		? ["value"]
+		: Arr.map(f.field.element.columns, (c) => c.name))
+]
 
 /** The binding module: the ledger port over the programs' served handles. */
 export const printBinding = (l: Lowered, place: Placement): string => {
@@ -972,7 +1113,23 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				(s, i) =>
 					`\tconst side${i} = yield* ${keyRead(n.program(`Read${s.relation}`), v.owner, v.owner)}`
 			),
-			`\treturn Option.map(row, (found) => ${valueOf(v, "found", (i) => `side${i}`)})`,
+			...Arr.map(
+				v.families,
+				(f, i) =>
+					`\tconst family${i} = yield* Effect.map(h.den.${n.program(`Read${f.relation}`)}.once({ params: { ${v.owner} }, facts: {} }), rowsOf)`
+			),
+			...Arr.flatMap(v.unions, (u, i) =>
+				Arr.map(
+					u.variants,
+					(vr, j) =>
+						`\tconst variant${i}_${j} = yield* ${keyRead(n.program(`Read${vr.relation}`), v.owner, v.owner)}`
+				)
+			),
+			`\treturn Option.${unioned(v) ? "flatMap" : "map"}(row, (found) => ${valueOf(v, "found", {
+				side: (i) => `side${i}`,
+				family: (i) => `family${i}`,
+				variant: (i, j) => `variant${i}_${j}`
+			})})`,
 			"})"
 		])
 		return `const ${readerOf(v)} = (${v.owner}: ${keyType}) => ${indented("\t")(body)}`
@@ -1157,21 +1314,36 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 					`\t\tconst ${read.name} = Arr.map(endings${read.name}, (row) => (row.outcome === "done" ? { _tag: "Done" as const } : { _tag: "Failed" as const }))`
 				])
 			}
-			const cols = Arr.map(read.output.shape.columns, (c) => `${c.name}: row.${c.name}`)
-			const sides = Arr.map(
-				read.output.sidecars,
-				(s, i) =>
-					`${s.column.name}: Option.map(Arr.findFirst(side${read.name}${i}, (o) => o.step === row.step), (o) => o.value)`
-			)
+			const output = read.output
+			const outputs = `Outputs${j.name}${read.name}`
+			const all = (name: string, program: string) =>
+				`\t\tconst ${name} = yield* Effect.map(h.den.${n.program(program)}.once({ params: { scope }, facts: {} }), rowsOf)`
+			const value = valueOf(output, "row", {
+				side: (i) => `Arr.findFirst(side${read.name}${i}, (o) => o.step === row.step)`,
+				family: (i) => `Arr.filter(family${read.name}${i}, (o) => o.step === row.step)`,
+				variant: (i, k) => `Arr.findFirst(variant${read.name}${i}_${k}, (o) => o.step === row.step)`
+			})
+			const done = unioned(output)
+				? `...(yield* Effect.forEach(rows${read.name}, (row) => Effect.map(held(${value}), (output) => ({ _tag: "Done" as const, output }))))`
+				: `...Arr.map(rows${read.name}, (row) => ({ _tag: "Done" as const, output: ${value} }))`
 			return lines([
-				`\t\tconst rows${read.name} = yield* Effect.map(h.den.${n.program(`Outputs${j.name}${read.name}`)}.once({ params: { scope }, facts: {} }), rowsOf)`,
-				...Arr.map(
-					read.output.sidecars,
-					(s, i) =>
-						`\t\tconst side${read.name}${i} = yield* Effect.map(h.den.${n.program(`Outputs${j.name}${read.name}${Str.capitalize(s.column.name)}`)}.once({ params: { scope }, facts: {} }), rowsOf)`
+				all(`rows${read.name}`, outputs),
+				...Arr.map(output.sidecars, (s, i) =>
+					all(`side${read.name}${i}`, `${outputs}${Str.capitalize(s.column.name)}`)
 				),
-				`\t\tconst failures${read.name} = yield* Effect.map(h.den.${n.program(`Failures${j.name}${read.name}`)}.once({ params: { scope }, facts: {} }), rowsOf)`,
-				`\t\tconst ${read.name} = [...Arr.map(rows${read.name}, (row) => ({ _tag: "Done" as const, output: { ${commas([...cols, ...sides])} } })), ...Arr.map(failures${read.name}, () => ({ _tag: "Failed" as const }))]`
+				...Arr.map(output.families, (f, i) =>
+					all(`family${read.name}${i}`, `${outputs}${Str.capitalize(f.field.name)}`)
+				),
+				...Arr.flatMap(output.unions, (u, i) =>
+					Arr.map(u.variants, (vr, k) =>
+						all(
+							`variant${read.name}${i}_${k}`,
+							`${outputs}${Str.capitalize(u.field.name)}${vr.variant.tag}`
+						)
+					)
+				),
+				all(`failures${read.name}`, `Failures${j.name}${read.name}`),
+				`\t\tconst ${read.name} = [${done}, ...Arr.map(failures${read.name}, () => ({ _tag: "Failed" as const }))]`
 			])
 		})
 		const kind = kindAt(j.index)
@@ -1388,6 +1560,13 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const fragmentImports = Arr.dedupe([...spawning, ...fragmentValues])
 	const fragmentTypes = Arr.filter(fragmentImports, (name) => !Arr.contains(fragmentValues, name))
 	const valueReaders = [...Arr.map(l.steps, (s) => s.input), ...Arr.map(l.joins, (j) => j.input)]
+	const finishOutputs = Arr.flatMap(l.joins, (j) =>
+		Arr.flatMap(j.finish.reads, (ended) => (ended.kind === "step" ? [ended.output] : []))
+	)
+	const finishUnions = Arr.some(finishOutputs, unioned)
+	const families = Arr.some([...valueReaders, ...finishOutputs], (v) =>
+		Arr.isReadonlyArrayNonEmpty(v.families)
+	)
 	const identity = Arr.dedupe([
 		...(Arr.some(l.edges, (e) => e.toKind === "scope") ? ["edgeScope"] : []),
 		...(Arr.some(l.edges, (e) => e.toKind === "step") ? ["edgeStep"] : []),
@@ -1408,7 +1587,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`/** The ledger port of the flow ${P} over its served programs; \`den generate\` writes it, and nothing edits it. */`,
 		`import type { Written } from "@bjornpagen/grizzle"`,
 		`import type { CallError, MemberHandle } from "@bjornpagen/grizzle/runtime"`,
-		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), "one", "readingOf", "rowsOf", "scheduleOf", "signals"])} } from "@bjornpagen/den/runtime/bind"`,
+		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishUnions ? ["held"] : []), "one", ...(families ? ["ordered"] : []), "readingOf", "rowsOf", "scheduleOf", "signals"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
 		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), ...(resources ? ["HoldRow"] : []), "Ledger", "PauseRow", "ScopeView", ...(resources ? ["SeatTurn"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
 		`import { runnerOf } from "@bjornpagen/den/runtime/turn"`,

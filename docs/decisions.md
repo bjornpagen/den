@@ -108,3 +108,17 @@
 - **A number is `Schema.Finite`, held finite by the database (2026-11-18).** Effect's `schemaNumber` diagnostic
   refuses `Schema.Number`, so a number field is `Schema.Finite`, lowered to double precision under a row check
   (`Compute.isFinite`), so the database holds what the schema states.
+- **A model's structured answer is relations (settled by the engine's need, 2026-11-18).** A step's input, output and
+  error take, beside columns and Options, an array of columns or of structs of columns and a tagged union of structs
+  of columns, as the proposal's section 6 planned. An array is an ordered family, `<Owner><Field>(owner, ordinal, …)`
+  keyed by both, contained in its owner and each ordinal past 0 in its predecessor, so it is gap-free from 0 as a
+  claim's attempts are. A tagged union is its tag, a roster column of its owner's row, and a relation per variant,
+  `<Owner><Field><Tag>(owner, …)`, contained in the owner's rows of that tag and containing them, so a variant's row
+  exists exactly where the tag names it; a missing one is a broken law, and reading it back dies. Every role still
+  certifies READ COMMITTED. So a decision (what to serve, the items it weighed, how sure it is) is typed rows the app
+  joins, committed with the step's result once, and read back whole by the scope's finish.
+  - Rejected: a JSON or jsonb column of the answer, a blob; one wide relation of every variant's fields, nullable
+    where a variant lacks them (no nullable column, proposal section 6); variant relations with no tag column, where
+    "exactly one variant" would need a key across relations; an array column (`text[]`), which no law reads into and
+    no query joins; unions and arrays nested past one struct, records and recursion, which no answer the engine asks
+    for needs yet.

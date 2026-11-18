@@ -2,7 +2,9 @@ import {
 	any,
 	dueAt,
 	fresh,
+	held,
 	one,
+	ordered,
 	readingOf,
 	rowsOf,
 	scheduleOf,
@@ -43,7 +45,10 @@ import type {
 	AssignFinish,
 	AssignStartStep,
 	AssignStartScope,
-	AssignDecideInput
+	AssignDecideInput,
+	AssignDecideInputExclude,
+	AssignDecideInputModeNearest,
+	AssignDecideInputModeWithin
 } from "#integration/slice/generated/assign.fragment.ts"
 import type {
 	assignDenPrograms,
@@ -78,6 +83,9 @@ interface Rows {
 	readonly AssignStartStep: ReadonlyArray<Written<typeof AssignStartStep>>
 	readonly AssignStartScope: ReadonlyArray<Written<typeof AssignStartScope>>
 	readonly AssignDecideInput: ReadonlyArray<Written<typeof AssignDecideInput>>
+	readonly AssignDecideInputExclude: ReadonlyArray<Written<typeof AssignDecideInputExclude>>
+	readonly AssignDecideInputModeNearest: ReadonlyArray<Written<typeof AssignDecideInputModeNearest>>
+	readonly AssignDecideInputModeWithin: ReadonlyArray<Written<typeof AssignDecideInputModeWithin>>
 }
 
 interface Grown {
@@ -103,7 +111,10 @@ export const assignLedger = (h: AssignHandles) => {
 		AssignFinish: [],
 		AssignStartStep: [],
 		AssignStartScope: [],
-		AssignDecideInput: []
+		AssignDecideInput: [],
+		AssignDecideInputExclude: [],
+		AssignDecideInputModeNearest: [],
+		AssignDecideInputModeWithin: []
 	}
 	const nothingGrown: Grown = { rows: noRows, spawned: { steps: [], finishes: [] } }
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
@@ -119,7 +130,19 @@ export const assignLedger = (h: AssignHandles) => {
 			AssignFinish: [...a.rows.AssignFinish, ...b.rows.AssignFinish],
 			AssignStartStep: [...a.rows.AssignStartStep, ...b.rows.AssignStartStep],
 			AssignStartScope: [...a.rows.AssignStartScope, ...b.rows.AssignStartScope],
-			AssignDecideInput: [...a.rows.AssignDecideInput, ...b.rows.AssignDecideInput]
+			AssignDecideInput: [...a.rows.AssignDecideInput, ...b.rows.AssignDecideInput],
+			AssignDecideInputExclude: [
+				...a.rows.AssignDecideInputExclude,
+				...b.rows.AssignDecideInputExclude
+			],
+			AssignDecideInputModeNearest: [
+				...a.rows.AssignDecideInputModeNearest,
+				...b.rows.AssignDecideInputModeNearest
+			],
+			AssignDecideInputModeWithin: [
+				...a.rows.AssignDecideInputModeWithin,
+				...b.rows.AssignDecideInputModeWithin
+			]
 		},
 		spawned: {
 			steps: [...a.spawned.steps, ...b.spawned.steps],
@@ -146,9 +169,21 @@ export const assignLedger = (h: AssignHandles) => {
 									step: key,
 									learner: spawn.input.learner,
 									topic: spawn.input.topic,
-									near: spawn.input.near
+									near: spawn.input.near,
+									mode: spawn.input.mode._tag
 								}
-							]
+							],
+							AssignDecideInputExclude: Arr.map(spawn.input.exclude, (element, index) => ({
+								step: key,
+								ordinal: BigInt(index),
+								value: element
+							})),
+							AssignDecideInputModeNearest: Arr.flatMap([spawn.input.mode], (variant) =>
+								variant._tag === "Nearest" ? [{ step: key }] : []
+							),
+							AssignDecideInputModeWithin: Arr.flatMap([spawn.input.mode], (variant) =>
+								variant._tag === "Within" ? [{ step: key, radius: variant.radius }] : []
+							)
 						},
 						spawned: {
 							steps: [{ step: key, kind: "Decide", due: dueAt(assign.kinds[0].due, at) }],
@@ -164,11 +199,38 @@ export const assignLedger = (h: AssignHandles) => {
 				h.den.assignReadAssignDecideInput.once({ params: { step: step }, facts: {} }),
 				one
 			)
-			return Option.map(row, (found) => ({
-				learner: found.learner,
-				topic: found.topic,
-				near: found.near
-			}))
+			const family0 = yield* Effect.map(
+				h.den.assignReadAssignDecideInputExclude.once({ params: { step }, facts: {} }),
+				rowsOf
+			)
+			const variant0_0 = yield* Effect.map(
+				h.den.assignReadAssignDecideInputModeNearest.once({ params: { step: step }, facts: {} }),
+				one
+			)
+			const variant0_1 = yield* Effect.map(
+				h.den.assignReadAssignDecideInputModeWithin.once({ params: { step: step }, facts: {} }),
+				one
+			)
+			return Option.flatMap(row, (found) =>
+				Option.map(
+					Option.all({
+						mode:
+							found.mode === "Nearest"
+								? Option.map(variant0_0, () => ({ _tag: "Nearest" as const }))
+								: Option.map(variant0_1, (part) => ({
+										_tag: "Within" as const,
+										radius: part.radius
+									}))
+					}),
+					(unions) => ({
+						learner: found.learner,
+						topic: found.topic,
+						near: found.near,
+						exclude: Arr.map(ordered(family0), (e) => e.value),
+						mode: unions.mode
+					})
+				)
+			)
 		})
 	const readAssignAssignmentInput = (scope: ScopeKey) =>
 		Effect.gen(function* () {
@@ -176,11 +238,44 @@ export const assignLedger = (h: AssignHandles) => {
 				h.den.assignReadAssignAssignmentInput.once({ params: { scope: scope }, facts: {} }),
 				one
 			)
-			return Option.map(row, (found) => ({
-				learner: found.learner,
-				topic: found.topic,
-				near: found.near
-			}))
+			const family0 = yield* Effect.map(
+				h.den.assignReadAssignAssignmentInputExclude.once({ params: { scope }, facts: {} }),
+				rowsOf
+			)
+			const variant0_0 = yield* Effect.map(
+				h.den.assignReadAssignAssignmentInputModeNearest.once({
+					params: { scope: scope },
+					facts: {}
+				}),
+				one
+			)
+			const variant0_1 = yield* Effect.map(
+				h.den.assignReadAssignAssignmentInputModeWithin.once({
+					params: { scope: scope },
+					facts: {}
+				}),
+				one
+			)
+			return Option.flatMap(row, (found) =>
+				Option.map(
+					Option.all({
+						mode:
+							found.mode === "Nearest"
+								? Option.map(variant0_0, () => ({ _tag: "Nearest" as const }))
+								: Option.map(variant0_1, (part) => ({
+										_tag: "Within" as const,
+										radius: part.radius
+									}))
+					}),
+					(unions) => ({
+						learner: found.learner,
+						topic: found.topic,
+						near: found.near,
+						exclude: Arr.map(ordered(family0), (e) => e.value),
+						mode: unions.mode
+					})
+				)
+			)
 		})
 	const coordination: Ledger<never>["coordination"] = {
 		seatTurns: Effect.succeed([]),
@@ -235,8 +330,25 @@ export const assignLedger = (h: AssignHandles) => {
 									AssignScope: [{ scope, kind: "Assignment" as const }],
 									AssignRoot: [{ scope, key, at }],
 									AssignAssignmentInput: [
-										{ scope: scope, learner: input.learner, topic: input.topic, near: input.near }
-									]
+										{
+											scope: scope,
+											learner: input.learner,
+											topic: input.topic,
+											near: input.near,
+											mode: input.mode._tag
+										}
+									],
+									AssignAssignmentInputExclude: Arr.map(input.exclude, (element, index) => ({
+										scope: scope,
+										ordinal: BigInt(index),
+										value: element
+									})),
+									AssignAssignmentInputModeNearest: Arr.flatMap([input.mode], (variant) =>
+										variant._tag === "Nearest" ? [{ scope: scope }] : []
+									),
+									AssignAssignmentInputModeWithin: Arr.flatMap([input.mode], (variant) =>
+										variant._tag === "Within" ? [{ scope: scope, radius: variant.radius }] : []
+									)
 								}
 							}
 						})
@@ -287,9 +399,33 @@ export const assignLedger = (h: AssignHandles) => {
 											AssignResult: [{ step: done.turn.step, outcome: "done" }],
 											AssignDone: [{ step: done.turn.step }],
 											AssignHeld: [{ step: done.turn.step, attempt: done.turn.attempt }],
-											AssignDecideOutput: [{ step: done.turn.step }],
-											AssignDecideOutputChosen: Option.toArray(
-												Option.map(done.output.chosen, (value) => ({ step: done.turn.step, value }))
+											AssignDecideOutput: [
+												{
+													step: done.turn.step,
+													confidence: done.output.confidence,
+													stage: done.output.stage._tag
+												}
+											],
+											AssignDecideOutputWeighed: Arr.map(done.output.weighed, (element, index) => ({
+												step: done.turn.step,
+												ordinal: BigInt(index),
+												passage: element.passage,
+												distance: element.distance,
+												passed: element.passed
+											})),
+											AssignDecideOutputStageServe: Arr.flatMap([done.output.stage], (variant) =>
+												variant._tag === "Serve"
+													? [
+															{
+																step: done.turn.step,
+																passage: variant.passage,
+																distance: variant.distance
+															}
+														]
+													: []
+											),
+											AssignDecideOutputStageRest: Arr.flatMap([done.output.stage], (variant) =>
+												variant._tag === "Rest" ? [{ step: done.turn.step }] : []
 											),
 											AssignDecideNearestRead: Arr.map(done.rows.nearest, (row, ordinal) => ({
 												...row,
@@ -347,8 +483,22 @@ export const assignLedger = (h: AssignHandles) => {
 									h.den.assignOutputsAssignmentDecide.once({ params: { scope }, facts: {} }),
 									rowsOf
 								)
-								const sideDecide0 = yield* Effect.map(
-									h.den.assignOutputsAssignmentDecideChosen.once({ params: { scope }, facts: {} }),
+								const familyDecide0 = yield* Effect.map(
+									h.den.assignOutputsAssignmentDecideWeighed.once({ params: { scope }, facts: {} }),
+									rowsOf
+								)
+								const variantDecide0_0 = yield* Effect.map(
+									h.den.assignOutputsAssignmentDecideStageServe.once({
+										params: { scope },
+										facts: {}
+									}),
+									rowsOf
+								)
+								const variantDecide0_1 = yield* Effect.map(
+									h.den.assignOutputsAssignmentDecideStageRest.once({
+										params: { scope },
+										facts: {}
+									}),
 									rowsOf
 								)
 								const failuresDecide = yield* Effect.map(
@@ -356,15 +506,43 @@ export const assignLedger = (h: AssignHandles) => {
 									rowsOf
 								)
 								const Decide = [
-									...Arr.map(rowsDecide, (row) => ({
-										_tag: "Done" as const,
-										output: {
-											chosen: Option.map(
-												Arr.findFirst(sideDecide0, (o) => o.step === row.step),
-												(o) => o.value
-											)
-										}
-									})),
+									...(yield* Effect.forEach(rowsDecide, (row) =>
+										Effect.map(
+											held(
+												Option.map(
+													Option.all({
+														stage:
+															row.stage === "Serve"
+																? Option.map(
+																		Arr.findFirst(variantDecide0_0, (o) => o.step === row.step),
+																		(part) => ({
+																			_tag: "Serve" as const,
+																			passage: part.passage,
+																			distance: part.distance
+																		})
+																	)
+																: Option.map(
+																		Arr.findFirst(variantDecide0_1, (o) => o.step === row.step),
+																		() => ({ _tag: "Rest" as const })
+																	)
+													}),
+													(unions) => ({
+														confidence: row.confidence,
+														weighed: Arr.map(
+															ordered(Arr.filter(familyDecide0, (o) => o.step === row.step)),
+															(e) => ({
+																passage: e.passage,
+																distance: e.distance,
+																passed: e.passed
+															})
+														),
+														stage: unions.stage
+													})
+												)
+											),
+											(output) => ({ _tag: "Done" as const, output })
+										)
+									)),
 									...Arr.map(failuresDecide, () => ({ _tag: "Failed" as const }))
 								]
 								return Option.some({ input: input.value, endings: { Decide } })
@@ -378,7 +556,8 @@ export const assignLedger = (h: AssignHandles) => {
 										insert: {
 											AssignResult: [{ step: done.turn.step, outcome: "done" }],
 											AssignDone: [{ step: done.turn.step }],
-											AssignHeld: [{ step: done.turn.step, attempt: done.turn.attempt }]
+											AssignHeld: [{ step: done.turn.step, attempt: done.turn.attempt }],
+											Concluded: done.writes.insert.Concluded
 										}
 									}
 								}),
@@ -432,6 +611,9 @@ export const assignLedger = (h: AssignHandles) => {
 										AssignStartStep: grown.rows.AssignStartStep,
 										AssignStartScope: grown.rows.AssignStartScope,
 										AssignDecideInput: grown.rows.AssignDecideInput,
+										AssignDecideInputExclude: grown.rows.AssignDecideInputExclude,
+										AssignDecideInputModeNearest: grown.rows.AssignDecideInputModeNearest,
+										AssignDecideInputModeWithin: grown.rows.AssignDecideInputModeWithin,
 										AssignStep: steps,
 										AssignDue: dues,
 										AssignAdmitted: admitted,

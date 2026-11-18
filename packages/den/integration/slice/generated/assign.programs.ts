@@ -16,6 +16,9 @@ import {
 	AssignJoin,
 	AssignOutcome,
 	AssignPausable,
+	AssignDecideInputMode,
+	AssignAssignmentInputMode,
+	AssignDecideOutputStage,
 	AssignScope,
 	AssignRoot,
 	AssignWithin,
@@ -36,9 +39,17 @@ import {
 	AssignRefusal,
 	AssignExhausted,
 	AssignDecideInput,
+	AssignDecideInputExclude,
+	AssignDecideInputModeNearest,
+	AssignDecideInputModeWithin,
 	AssignAssignmentInput,
+	AssignAssignmentInputExclude,
+	AssignAssignmentInputModeNearest,
+	AssignAssignmentInputModeWithin,
 	AssignDecideOutput,
-	AssignDecideOutputChosen,
+	AssignDecideOutputWeighed,
+	AssignDecideOutputStageServe,
+	AssignDecideOutputStageRest,
 	AssignDecideNearestRead,
 	AssignDecideSeenRead,
 	AssignPaused,
@@ -75,7 +86,13 @@ export const AssignDen = role(
 			"AssignRefusal",
 			"AssignExhausted",
 			"AssignDecideInput",
+			"AssignDecideInputExclude",
+			"AssignDecideInputModeNearest",
+			"AssignDecideInputModeWithin",
 			"AssignAssignmentInput",
+			"AssignAssignmentInputExclude",
+			"AssignAssignmentInputModeNearest",
+			"AssignAssignmentInputModeWithin",
 			"AssignDecideNearestRead",
 			"AssignDecideSeenRead"
 		]
@@ -86,7 +103,17 @@ export const AssignDen = role(
 export const AssignCoordinator = role(
 	App,
 	"assign_coordinator",
-	{ AssignKind, AssignJoin, AssignOutcome, AssignPausable, AssignPaused, AssignResumed },
+	{
+		AssignKind,
+		AssignJoin,
+		AssignOutcome,
+		AssignPausable,
+		AssignDecideInputMode,
+		AssignAssignmentInputMode,
+		AssignDecideOutputStage,
+		AssignPaused,
+		AssignResumed
+	},
 	{ insert: ["AssignPaused", "AssignResumed"] }
 )
 
@@ -133,7 +160,10 @@ export const assignDenPrograms = Object.freeze({
 		.insert(AssignDue, [])
 		.insert(AssignScope, [])
 		.insert(AssignWithin, [])
-		.insert(AssignDecideInput, []),
+		.insert(AssignDecideInput, [])
+		.insert(AssignDecideInputExclude, [])
+		.insert(AssignDecideInputModeNearest, [])
+		.insert(AssignDecideInputModeWithin, []),
 	assignSkip: ChangeSet.empty(assignGraph).insert(AssignSkipped, []),
 	assignSkippedOf: AssignSkipped,
 	assignStepOf: AssignStep,
@@ -285,27 +315,66 @@ export const assignDenPrograms = Object.freeze({
 		})
 	),
 	assignReadAssignDecideInput: AssignDecideInput,
+	assignReadAssignDecideInputModeNearest: AssignDecideInputModeNearest,
+	assignReadAssignDecideInputModeWithin: AssignDecideInputModeWithin,
+	assignReadAssignDecideInputExclude: query(assignGraph).rule((r) => {
+		const { step, ordinal, value } = v(AssignDecideInputExclude, "part")
+		return r
+			.match(AssignDecideInputExclude, { step, ordinal, value })
+			.where(r.eq(step, r.param("step", AssignDecideInputExclude.fields.step)))
+			.find({ step, ordinal, value })
+	}),
 	assignReadAssignAssignmentInput: AssignAssignmentInput,
+	assignReadAssignAssignmentInputModeNearest: AssignAssignmentInputModeNearest,
+	assignReadAssignAssignmentInputModeWithin: AssignAssignmentInputModeWithin,
+	assignReadAssignAssignmentInputExclude: query(assignGraph).rule((r) => {
+		const { scope, ordinal, value } = v(AssignAssignmentInputExclude, "part")
+		return r
+			.match(AssignAssignmentInputExclude, { scope, ordinal, value })
+			.where(r.eq(scope, r.param("scope", AssignAssignmentInputExclude.fields.scope)))
+			.find({ scope, ordinal, value })
+	}),
 	assignRequestAssignment: ChangeSet.empty(assignGraph)
 		.insert(AssignScope, [])
 		.insert(AssignRoot, [])
-		.insert(AssignAssignmentInput, []),
+		.insert(AssignAssignmentInput, [])
+		.insert(AssignAssignmentInputExclude, [])
+		.insert(AssignAssignmentInputModeNearest, [])
+		.insert(AssignAssignmentInputModeWithin, []),
 	assignOutputsAssignmentDecide: query(assignGraph).rule((r) => {
 		const { step, scope } = v(AssignStep, "step")
+		const { confidence, stage } = v(AssignDecideOutput, "output")
 		return r
 			.match(AssignStep, { step, kind: "Decide", scope })
-			.match(AssignDecideOutput, { step })
+			.match(AssignDecideOutput, { step, confidence, stage })
+			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.find({ step, confidence, stage })
+	}),
+	assignOutputsAssignmentDecideWeighed: query(assignGraph).rule((r) => {
+		const { step, scope } = v(AssignStep, "step")
+		const { ordinal, passage, distance, passed } = v(AssignDecideOutputWeighed, "part")
+		return r
+			.match(AssignStep, { step, kind: "Decide", scope })
+			.match(AssignDecideOutputWeighed, { step, ordinal, passage, distance, passed })
+			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.find({ step, ordinal, passage, distance, passed })
+	}),
+	assignOutputsAssignmentDecideStageServe: query(assignGraph).rule((r) => {
+		const { step, scope } = v(AssignStep, "step")
+		const { passage, distance } = v(AssignDecideOutputStageServe, "part")
+		return r
+			.match(AssignStep, { step, kind: "Decide", scope })
+			.match(AssignDecideOutputStageServe, { step, passage, distance })
+			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.find({ step, passage, distance })
+	}),
+	assignOutputsAssignmentDecideStageRest: query(assignGraph).rule((r) => {
+		const { step, scope } = v(AssignStep, "step")
+		return r
+			.match(AssignStep, { step, kind: "Decide", scope })
+			.match(AssignDecideOutputStageRest, { step })
 			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
 			.find({ step })
-	}),
-	assignOutputsAssignmentDecideChosen: query(assignGraph).rule((r) => {
-		const { step, scope } = v(AssignStep, "step")
-		const { value } = v(AssignDecideOutputChosen, "value")
-		return r
-			.match(AssignStep, { step, kind: "Decide", scope })
-			.match(AssignDecideOutputChosen, { step, value })
-			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
-			.find({ step, value })
 	}),
 	assignFailuresAssignmentDecide: query(assignGraph).rule((r) => {
 		const { step, scope } = v(AssignStep, "step")
@@ -353,7 +422,9 @@ export const assignCommitPrograms = Object.freeze({
 			.insert(AssignDone, [])
 			.insert(AssignHeld, [])
 			.insert(AssignDecideOutput, [])
-			.insert(AssignDecideOutputChosen, [])
+			.insert(AssignDecideOutputWeighed, [])
+			.insert(AssignDecideOutputStageServe, [])
+			.insert(AssignDecideOutputStageRest, [])
 			.insert(AssignDecideNearestRead, [])
 			.insert(AssignDecideSeenRead, []),
 		ChangeSet.empty(Loader).insert(App.relations.Assigned, [])
@@ -385,10 +456,13 @@ export const assignCommitPrograms = Object.freeze({
 				.find({ learner, passage })
 		})
 	),
-	assignCommitAssignmentFinish: ChangeSet.empty(assignGraph)
-		.insert(AssignResult, [])
-		.insert(AssignDone, [])
-		.insert(AssignHeld, [])
+	assignCommitAssignmentFinish: ChangeSet.union(
+		ChangeSet.empty(assignGraph)
+			.insert(AssignResult, [])
+			.insert(AssignDone, [])
+			.insert(AssignHeld, []),
+		ChangeSet.empty(Loader).insert(App.relations.Concluded, [])
+	)
 })
 
 export const assignCommits = workload(Loader, assignCommitPrograms)

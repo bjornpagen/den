@@ -12,29 +12,41 @@ import { admitAndDrain } from "#integration/support/run.ts"
 import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
- * The assignment flow end to end on PostgreSQL 19 with pgvector: an operator requests an assignment of a learner with a
- * topic and a query vector, and its one step reads, before its body runs, the passages of the topic nearest the query
- * vector (a nearest read, grizzle's `approximateNearest` over the passages' HNSW index) and the passages the learner has
- * seen (a rows read), then assigns the nearest it has not seen.
+ * The assignment flow end to end on PostgreSQL 19 with pgvector, the assignment engine's shape: an operator requests an
+ * assignment of a learner with a topic, a query vector, passages to pass over and a mode (the nearest passage found, or
+ * one within a radius). Its one step reads, before its body runs, the passages of the topic nearest the query vector (a
+ * nearest read, grizzle's `approximateNearest` over the passages' HNSW index) and the passages the learner has seen (a
+ * rows read), and answers a decision of a model's shape: a tagged union of what it serves, an array of structs of what
+ * it weighed, and a finite confidence. The root's finish reads the decision back from the graph and concludes it.
  *
- * Oracle (second implementation): the exact search, computed here from the same vectors. The nearest read's record holds as
- * many passages as the topic holds, up to the bound, each of the topic, each at its exact cosine distance, and their
- * distances are the topic's smallest; the seen read's record is exactly the learner's seen passages; and the chosen
- * passage, its output and the app's Assigned row agree with what the body computes from the two records, so the
- * records are what the body saw.
+ * Oracle (second implementation): the exact cosine search over the same vectors, and the decision recomputed here from
+ * the two records. The nearest read's record holds as many passages as the topic holds, up to the bound, each of the
+ * topic at its exact cosine distance, their distances the topic's smallest; the seen read's record is the learner's
+ * seen passages; the decision's tag, its variant's row, its weighed family (gap-free from 0, in order) and its
+ * confidence are what the records and the input's array and union give; the finish's conclusion, from the decision it
+ * read back, agrees; and the app's Assigned row is the served passage's.
  */
 
 type Feature =
 	| "more passages of the topic than are found"
 	| "no more passages of the topic than are found"
-	| "a seen passage among the nearest"
-	| "a passage assigned"
-	| "every passage found seen"
+	| "a passed passage among the nearest"
+	| "within a radius"
+	| "served"
+	| "rest"
 
 /** The ratio a distance pgvector computes in binary32 may lie from the exact one, well above its rounding. */
 const tolerance = 1e-5
 
 const topics = ["near", "far"] as const
+
+/** The modes the suite draws: the nearest passage, or one within a radius of the query. */
+const modes = [
+	{ _tag: "Nearest" },
+	{ _tag: "Within", radius: 0.25 },
+	{ _tag: "Within", radius: 0.75 },
+	{ _tag: "Within", radius: 1.5 }
+] as const
 
 interface Placed {
 	readonly topic: (typeof topics)[number]
@@ -44,7 +56,9 @@ interface Placed {
 interface Run {
 	readonly passages: ReadonlyArray<Placed>
 	readonly seen: ReadonlyArray<number>
+	readonly exclude: ReadonlyArray<number>
 	readonly near: ReadonlyArray<number>
+	readonly mode: (typeof modes)[number]
 }
 
 /** Four small whole components, never all zero, so every vector has a cosine distance. */
@@ -62,15 +76,13 @@ const runs: Gen<Run> = (source) => {
 			max: 8
 		})
 	)
+	const ats = Arr.map(passages, (_, at) => at)
 	return {
 		passages,
-		seen: source.draw(
-			subset(
-				Arr.map(passages, (_, at) => at),
-				{ min: 0, max: passages.length }
-			)
-		),
-		near: source.draw(components)
+		seen: source.draw(subset(ats, { min: 0, max: passages.length })),
+		exclude: source.draw(subset(ats, { min: 0, max: passages.length })),
+		near: source.draw(components),
+		mode: source.draw(element(modes))
 	}
 }
 
@@ -86,18 +98,26 @@ const cosine = (a: ReadonlyArray<number>, b: ReadonlyArray<number>): number => {
 
 const close = (a: number, b: number): boolean => Math.abs(a - b) <= tolerance
 
+const byOrdinal = Order.mapInput(Order.BigInt, (r: { readonly ordinal: bigint }) => r.ordinal)
+const byDistance = Order.mapInput(Order.Number, (r: { readonly distance: number }) => r.distance)
+
+/** The ordinals `0 … count − 1` as a family's rows hold them, none for a count of 0. */
+const ordinals = (count: number): ReadonlyArray<bigint> =>
+	Array.from({ length: count }, (_, ordinal) => BigInt(ordinal))
+
 /**
- * Assigns a learner the nearest passage of a topic it has not seen, its nearest and its seen reads recorded with its
- * result.
+ * Decides a learner's assignment from the passages nearest its query and those it has seen, as a model would answer:
+ * the decision is recorded once with both reads, and its finish reads it back whole.
  */
-export const anAssignmentReadsThePassagesNearestItsQueryAndRecordsThem = property.explore(runs, {
+export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = property.explore(runs, {
 	needs: { slice: sliceCase },
 	situations: [
 		"more passages of the topic than are found",
 		"no more passages of the topic than are found",
-		"a seen passage among the nearest",
-		"a passage assigned",
-		"every passage found seen"
+		"a passed passage among the nearest",
+		"within a radius",
+		"served",
+		"rest"
 	] satisfies ReadonlyArray<Reached<Feature>>,
 	check:
 		({ slice }, c: Case<Feature>) =>
@@ -108,7 +128,11 @@ export const anAssignmentReadsThePassagesNearestItsQueryAndRecordsThem = propert
 						const { assign, ledgers, loader } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
 						const learner = "learner"
-						const named = Arr.map(run.passages, (placed, at) => ({ ...placed, passage: `p-${at}` }))
+						const nameOf = (at: number) => `p-${at}`
+						const named = Arr.map(run.passages, (placed, at) => ({
+							...placed,
+							passage: nameOf(at)
+						}))
 						yield* loader.workload.place.once({
 							params: {},
 							facts: {
@@ -121,27 +145,35 @@ export const anAssignmentReadsThePassagesNearestItsQueryAndRecordsThem = propert
 								}
 							}
 						})
-						const seenNames = Arr.map(run.seen, (at) => `p-${at}`)
+						const seenNames = Arr.map(run.seen, nameOf)
 						yield* loader.workload.see.once({
 							params: {},
 							facts: { insert: { Seen: Arr.map(seenNames, (passage) => ({ learner, passage })) } }
 						})
+						const excluded = Arr.map(run.exclude, nameOf)
 						const at = yield* assign.ledger.now
 						const requested = yield* assign.request.Assignment("assignment", at, {
 							learner,
 							topic: "near",
-							near: vectorOf(run.near)
+							near: vectorOf(run.near),
+							exclude: excluded,
+							mode: run.mode
 						})
 						assert.isTrue(requested.fresh)
 						yield* admitAndDrain(ledgers, FlowName.make("Assign"), [requested.scope])
 
 						const results = yield* rows(app.workload.assignResults.once({ params: {}, facts: {} }))
-						const decided = Arr.filter(
-							results,
-							(r) => r.scope === requested.scope && r.kind === "Decide"
-						)
+						const mine = Arr.filter(results, (r) => r.scope === requested.scope)
+						const decided = Arr.filter(mine, (r) => r.kind === "Decide")
 						assert.deepStrictEqual(
 							Arr.map(decided, (r) => r.outcome),
+							["done"]
+						)
+						assert.deepStrictEqual(
+							Arr.map(
+								Arr.filter(mine, (r) => r.kind === "AssignmentFinish"),
+								(r) => r.outcome
+							),
 							["done"]
 						)
 						const step = Arr.getUnsafe(decided, 0).step
@@ -149,7 +181,12 @@ export const anAssignmentReadsThePassagesNearestItsQueryAndRecordsThem = propert
 							app.workload.nearestReads.once({ params: {}, facts: {} })
 						)
 						const recordedSeen = yield* rows(app.workload.seenReads.once({ params: {}, facts: {} }))
-						const recordedChosen = yield* rows(app.workload.chosen.once({ params: {}, facts: {} }))
+						const decisions = yield* rows(app.workload.decisions.once({ params: {}, facts: {} }))
+						const served = yield* rows(app.workload.servings.once({ params: {}, facts: {} }))
+						const weighed = yield* rows(app.workload.weighings.once({ params: {}, facts: {} }))
+						const concluded = yield* rows(app.workload.concluded.once({ params: {}, facts: {} }))
+						const assigned = yield* rows(app.workload.assigned.once({ params: {}, facts: {} }))
+
 						const ofTopic = Arr.filter(named, (p) => p.topic === "near")
 						c.note(
 							ofTopic.length > assignedAmong
@@ -158,11 +195,11 @@ export const anAssignmentReadsThePassagesNearestItsQueryAndRecordsThem = propert
 						)
 						const nearest = Arr.sort(
 							Arr.filter(recordedNearest, (r) => r.step === step),
-							Order.mapInput(Order.BigInt, (r: { readonly ordinal: bigint }) => r.ordinal)
+							byOrdinal
 						)
 						assert.deepStrictEqual(
 							Arr.map(nearest, (r) => r.ordinal),
-							Array.from({ length: nearest.length }, (_, ordinal) => BigInt(ordinal))
+							ordinals(nearest.length)
 						)
 						assert.strictEqual(nearest.length, Math.min(assignedAmong, ofTopic.length))
 						const exact = new Map(
@@ -182,39 +219,89 @@ export const anAssignmentReadsThePassagesNearestItsQueryAndRecordsThem = propert
 							Order.Number
 						)
 						assert.isTrue(Arr.every(Arr.zip(found, smallest), ([a, b]) => close(a, b)))
-
-						const seen = Arr.filter(recordedSeen, (r) => r.step === step)
 						assert.deepStrictEqual(
 							Arr.sort(
-								Arr.map(seen, (r) => r.passage),
+								Arr.map(
+									Arr.filter(recordedSeen, (r) => r.step === step),
+									(r) => r.passage
+								),
 								Order.String
 							),
 							Arr.sort(seenNames, Order.String)
 						)
-						const seenSet = new Set(seenNames)
-						if (Arr.some(nearest, (r) => seenSet.has(r.passage))) {
-							c.note("a seen passage among the nearest")
+
+						const passed = new Set([...seenNames, ...excluded])
+						const expectedWeighed = Arr.map(Arr.sort(nearest, byDistance), (r) => ({
+							passage: r.passage,
+							distance: r.distance,
+							passed: passed.has(r.passage)
+						}))
+						if (Arr.some(expectedWeighed, (r) => r.passed)) {
+							c.note("a passed passage among the nearest")
 						}
-						const expected = Option.map(
-							Arr.findFirst(
-								Arr.sort(
-									nearest,
-									Order.mapInput(Order.Number, (r: { readonly distance: number }) => r.distance)
-								),
-								(r) => !seenSet.has(r.passage)
-							),
-							(r) => r.passage
+						const mode = run.mode
+						if (mode._tag === "Within") {
+							c.note("within a radius")
+						}
+						const chosen = Arr.findFirst(
+							expectedWeighed,
+							(r) => !r.passed && (mode._tag === "Nearest" || r.distance <= mode.radius)
 						)
-						c.note(Option.isSome(expected) ? "a passage assigned" : "every passage found seen")
-						const chosen = Arr.filter(recordedChosen, (r) => r.step === step)
+						c.note(Option.isSome(chosen) ? "served" : "rest")
+						const family = Arr.sort(
+							Arr.filter(weighed, (r) => r.step === step),
+							byOrdinal
+						)
 						assert.deepStrictEqual(
-							Arr.map(chosen, (r) => r.value),
-							Option.toArray(expected)
+							Arr.map(family, (r) => r.ordinal),
+							ordinals(family.length)
 						)
-						const assigned = yield* rows(app.workload.assigned.once({ params: {}, facts: {} }))
+						assert.deepStrictEqual(
+							Arr.map(family, (r) => ({
+								passage: r.passage,
+								distance: r.distance,
+								passed: r.passed
+							})),
+							expectedWeighed
+						)
+						assert.deepStrictEqual(
+							Arr.map(
+								Arr.filter(decisions, (r) => r.step === step),
+								(r) => ({ stage: r.stage, confidence: r.confidence })
+							),
+							[
+								Option.match(chosen, {
+									onNone: () => ({ stage: "Rest", confidence: 0 }),
+									onSome: (r) => ({ stage: "Serve", confidence: 1 - r.distance / 2 })
+								})
+							]
+						)
+						assert.deepStrictEqual(
+							Arr.map(
+								Arr.filter(served, (r) => r.step === step),
+								(r) => ({ passage: r.passage, distance: r.distance })
+							),
+							Option.toArray(
+								Option.map(chosen, (r) => ({ passage: r.passage, distance: r.distance }))
+							)
+						)
+						assert.deepStrictEqual(
+							Arr.map(concluded, (r) => ({
+								learner: r.learner,
+								served: r.served,
+								weighed: r.weighed
+							})),
+							[
+								{
+									learner,
+									served: Option.match(chosen, { onNone: () => "rest", onSome: (r) => r.passage }),
+									weighed: BigInt(expectedWeighed.length)
+								}
+							]
+						)
 						assert.deepStrictEqual(
 							Arr.map(assigned, (r) => r.passage),
-							Option.toArray(expected)
+							Option.toArray(Option.map(chosen, (r) => r.passage))
 						)
 					}),
 					services
@@ -222,7 +309,7 @@ export const anAssignmentReadsThePassagesNearestItsQueryAndRecordsThem = propert
 			),
 	oracle: {
 		kind: "second-implementation",
-		name: "the exact cosine search over the same vectors, and the body's choice recomputed from the two records"
+		name: "the exact cosine search over the same vectors, and the decision recomputed from the two records"
 	},
 	budget: { runs: 12, steered: 12 },
 	kept: [],

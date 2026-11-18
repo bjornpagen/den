@@ -59,7 +59,10 @@ const Form = Schema.Literals([
 	"vector",
 	"literals",
 	"brand",
-	"option"
+	"option",
+	"array",
+	"structs",
+	"union"
 ])
 type Form = typeof Form.Type
 
@@ -119,6 +122,12 @@ const fieldOf = (form: Form): FieldSchema => {
 			return Schema.BigInt.pipe(Schema.brand("Level"))
 		case "option":
 			return Schema.Option(Schema.String)
+		case "array":
+			return Schema.Array(Schema.BigInt)
+		case "structs":
+			return Schema.Array(Schema.Struct({ item: Schema.String, weight: Schema.Finite }))
+		case "union":
+			return Schema.TaggedUnion({ Serve: { item: Schema.String }, Rest: {} })
 	}
 }
 
@@ -340,7 +349,51 @@ it.effect(
 									: [law.relation]
 						)
 						assert.isTrue(Arr.every(sides, (side) => Arr.contains(names, side)))
-						assert.strictEqual(has("S0InputValue"), sketch.form === "option")
+						assert.strictEqual(
+							has("S0InputValue"),
+							sketch.form === "option" || sketch.form === "array" || sketch.form === "structs"
+						)
+						const keyed = (name: string) =>
+							Option.map(
+								Arr.findFirst(lowered.relations, (r) => r.name === name),
+								(r): ReadonlyArray<string> => r.key
+							)
+						const lawsFrom = (name: string) =>
+							Arr.filter(containmentsOf(lowered.laws), (law) => law.from.relation === name)
+						if (sketch.form === "array" || sketch.form === "structs") {
+							assert.deepStrictEqual(keyed(`${P}S0InputValue`), Option.some(["step", "ordinal"]))
+							assert.deepStrictEqual(
+								Arr.map(lawsFrom(`${P}S0InputValue`), (law) => [
+									law.to.relation,
+									Arr.map(law.from.terms, (t) => `${t.pred ? "pred:" : ""}${t.field}`)
+								]),
+								[
+									[`${P}S0Input`, ["step"]],
+									[`${P}S0InputValue`, ["step", "pred:ordinal"]]
+								]
+							)
+						}
+						assert.strictEqual(
+							has("S0InputValueServe") && has("S0InputValueRest"),
+							sketch.form === "union"
+						)
+						if (sketch.form === "union") {
+							Arr.forEach(["Serve", "Rest"], (tag) => {
+								const variant = `${P}S0InputValue${tag}`
+								const tagged = (law: Extract<LawIR, { readonly kind: "contained" }>["to"]) =>
+									law.relation === `${P}S0Input` &&
+									law.selection.kind === "handle" &&
+									law.selection.field === "value" &&
+									law.selection.handle === tag
+								assert.isTrue(Arr.some(lawsFrom(variant), (law) => tagged(law.to)))
+								assert.isTrue(
+									Arr.some(
+										containmentsOf(lowered.laws),
+										(law) => tagged(law.from) && law.to.relation === variant
+									)
+								)
+							})
+						}
 						assert.strictEqual(
 							printFragment(lower(f), placement),
 							printFragment(lowered, placement)

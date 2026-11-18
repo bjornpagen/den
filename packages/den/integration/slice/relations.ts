@@ -7,7 +7,8 @@ import { closed, closedId, natural, pg, relation, str } from "@bjornpagen/grizzl
  * position facts (the latest is the cursor), the orders the app writes beside a root it requests in its own
  * transaction, each batch's tally, the batches whose whole run finished, the relations a sync copied, the builds the
  * Gold step made, an auditor's notes on den's results, and the assignment engine's shape in miniature: passages and their
- * embeddings, the passages a learner has seen, and the passage each assignment gave a learner.
+ * embeddings, the passages a learner has seen, the passage each assignment gave a learner, and each assignment's
+ * conclusion.
  */
 export const Feed = closed("Feed", ["news", "sport"])
 
@@ -66,6 +67,11 @@ export const Seen = relation("Seen", { learner: Name, passage: Name }, ["learner
 
 /** The passage an assignment gave a learner. */
 export const Assigned = relation("Assigned", { learner: Name, passage: Name }, ["learner"])
+
+/** An assignment's conclusion, which its finish reads back from the graph: what it served, and how many it weighed. */
+export const Concluded = relation("Concluded", { learner: Name, served: Name, weighed: natural }, [
+	"learner"
+])
 
 /** An auditor's note on a step's result, which references den's Result relation. */
 export const Audit = relation("Audit", { step: DenStep, note: Text }, ["step"])

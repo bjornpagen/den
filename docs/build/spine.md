@@ -17,7 +17,7 @@ constants with their evidence beside the code they bound (`src/runtime/turn.ts`,
 | `src/transport.ts` | the wake contract: `Wake` `{ lane, step, attempt }`, each field branded (`den/LaneName`, `DenStep`, `den/Attempt` ≥ 1), decoded by `WakeSchema`; `idempotencyKey` (`${lane}:${step}:${attempt}`); `Transport`, a `Context.Service` whose `send` never fails; the in-process transport over an unbounded `Queue` |
 | `src/algebra/kinds.ts` | `lane` (width, window, pause, ceiling of attempts), `step`, `awaiting`, `scope`, `root`, `edge`, `writes`; a step's reads by name, each `rows` (equality over one relation) or `nearest` (grizzle's `approximateNearest` by a vector field); `vector(n)`; spawns typed by their kind (`Page.of(input)`); bodies `(input, found) → Effect<{ output, writes }, E, R>`, `found` each read's rows by its name; `Refused` |
 | `src/algebra/flow.ts` | `flow(name, { lanes, kinds, edges })` and its declaration-time checks (below) |
-| `src/lower/schema.ts` | Effect Schema to columns: `String`, `BigInt`, `Finite` (double precision, held finite by a row check), `Boolean`, den's `vector(n)` (`pg.vector(n)`), a literal union of texts (a roster), a brand of one (a contract), an `Option` of one (a relation of its own); anything else, a refinement by a check included, `Refused` |
+| `src/lower/schema.ts` | Effect Schema to relations: columns of `String`, `BigInt`, `Finite` (double precision, held finite by a row check), `Boolean`, den's `vector(n)` (`pg.vector(n)`), a literal union of texts (a roster) or a brand of one (a contract); an `Option` of a column (a relation of its own); an `Array` of columns or of structs of them (an ordered family keyed by owner and a gap-free ordinal from 0); a `TaggedUnion` of structs of columns (its tag a roster column of the owner's row, a relation per variant holding a row exactly where the tag names it); anything else, a refinement by a check included, `Refused` |
 | `src/lower/fragment.ts` | a flow to its fragment as data (`Lowered`): rosters, contracts, relations, laws, and the kinds, joins and edges the printer reads |
 | `src/lower/print.ts`, `generate.ts` | the fragment, the programs and the binding printed as three TypeScript modules the app commits (`den generate`) |
 | `src/lower/merge.ts` | den's clash check: the app's relations and a fragment merged, a shared name refused |
@@ -197,8 +197,9 @@ PostgreSQL (`pnpm test:network`, six files, each its own database):
 
 ## What wave 2 builds next
 
-- **lowering-complete** (`src/lower/schema.ts`, `fragment.ts`, `print.ts`): tagged unions as a header and `alternatives`,
-  arrays as ordered families, records, recursion as trees, Effect's built-in checks as CHECKs and patterns, numbers;
+- **lowering-complete** (`src/lower/schema.ts`, `fragment.ts`, `print.ts`): tagged unions, arrays and finite numbers are
+  built (the assignment engine's structured answer); records, recursion as trees, unions and arrays nested deeper than
+  one struct, and Effect's built-in checks as CHECKs and patterns are not;
   feed edges (several parents, run once all have results); edges and spawns from a finish (Timeback's prune after its
   pages); edges that spawn a child scope and awaits exercised end to end (both are lowered and printed; neither is
   under a suite yet); a `den check` that holds the committed

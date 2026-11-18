@@ -16,7 +16,16 @@ import {
 	type Trigger,
 	type WritesDeclaration
 } from "#algebra/kinds.ts"
-import { type Base, type Column, errorShapeOf, type Shape, shapeOf } from "#lower/schema.ts"
+import {
+	type ArrayField,
+	type Base,
+	type Column,
+	errorShapeOf,
+	type Shape,
+	shapeOf,
+	type UnionField,
+	type Variant
+} from "#lower/schema.ts"
 
 /**
  * A flow lowered to a fragment, as data: the rosters, contracts, relations and laws the app lists in its own
@@ -125,13 +134,29 @@ export interface SeatsIR {
 	readonly bound: string
 }
 
-/** A value as relations: its owner's relation and, for each optional field, the relation of its own. */
+/**
+ * A value as relations: its owner's relation; for each optional field, the relation of its own; for each array, its
+ * ordered family; for each tagged union, a relation per variant.
+ */
 export interface ValueIR {
 	readonly relation: string
 	readonly owner: "step" | "scope"
 	readonly shape: Shape
 	readonly sidecars: ReadonlyArray<{ readonly column: Column; readonly relation: string }>
+	readonly families: ReadonlyArray<{ readonly field: ArrayField; readonly relation: string }>
+	readonly unions: ReadonlyArray<{
+		readonly field: UnionField
+		readonly variants: ReadonlyArray<{ readonly variant: Variant; readonly relation: string }>
+	}>
 }
+
+/** Every relation of a value: its owner's, each option's, each array's family and each tagged union's variants. */
+export const valueRelations = (value: ValueIR): ReadonlyArray<string> => [
+	value.relation,
+	...Arr.map(value.sidecars, (s) => s.relation),
+	...Arr.map(value.families, (f) => f.relation),
+	...Arr.flatMap(value.unions, (u) => Arr.map(u.variants, (v) => v.relation))
+]
 
 /** The relation names a step's writes name, by operation. */
 export interface WritesIR {
@@ -617,7 +642,14 @@ export const lower = (flow: AnyFlow): Lowered => {
 			name: relationName,
 			fields: [
 				{ name: key, type: ownerKey(owner) },
-				...Arr.map(shape.columns, (c) => ({ name: c.name, type: fieldOf(relationName, c) }))
+				...Arr.map(shape.columns, (c) => ({ name: c.name, type: fieldOf(relationName, c) })),
+				...Arr.map(shape.unions, (u) => ({
+					name: u.name,
+					type: fieldOf(relationName, {
+						name: u.name,
+						type: { kind: "roster", handles: Arr.map(u.variants, (variant) => variant.tag) }
+					})
+				}))
 			],
 			key: [key]
 		})
@@ -636,7 +668,61 @@ export const lower = (flow: AnyFlow): Lowered => {
 			finite(sidecar, [{ name: "value", type: column.type }])
 			return { column, relation: sidecar }
 		})
-		return { relation: relationName, owner, shape, sidecars }
+		const families = Arr.map(shape.arrays, (field) => {
+			const familyName = `${relationName}${capitalized(field.name)}`
+			const columns =
+				field.element.kind === "value"
+					? [{ name: "value", type: field.element.type }]
+					: field.element.columns
+			const family = relation({
+				name: familyName,
+				fields: [
+					{ name: key, type: ownerKey(owner) },
+					{ name: "ordinal", type: natural },
+					...Arr.map(columns, (c) => ({ name: c.name, type: fieldOf(familyName, c) }))
+				],
+				key: [key, "ordinal"]
+			})
+			laws.push(
+				into(side(family, [key]), side(relationName, [key])),
+				into(
+					{
+						relation: family,
+						selection: { kind: "atLeast", field: "ordinal", bound: 1n },
+						terms: [
+							{ field: key, pred: false },
+							{ field: "ordinal", pred: true }
+						]
+					},
+					side(family, [key, "ordinal"])
+				)
+			)
+			finite(family, columns)
+			return { field, relation: family }
+		})
+		const unions = Arr.map(shape.unions, (field) => ({
+			field,
+			variants: Arr.map(field.variants, (variant) => {
+				const variantName = `${relationName}${capitalized(field.name)}${variant.tag}`
+				const tagged = sideOf(relationName, [key], {
+					kind: "handle",
+					field: field.name,
+					handle: variant.tag
+				})
+				const held = relation({
+					name: variantName,
+					fields: [
+						{ name: key, type: ownerKey(owner) },
+						...Arr.map(variant.columns, (c) => ({ name: c.name, type: fieldOf(variantName, c) }))
+					],
+					key: [key]
+				})
+				laws.push(into(side(held, [key]), tagged), into(tagged, side(held, [key])))
+				finite(held, variant.columns)
+				return { variant, relation: held }
+			})
+		}))
+		return { relation: relationName, owner, shape, sidecars, families, unions }
 	}
 
 	const at = (kindName: string): number =>
@@ -918,10 +1004,6 @@ export const lower = (flow: AnyFlow): Lowered => {
 		)
 	)
 
-	const valueRelations = (value: ValueIR): ReadonlyArray<string> => [
-		value.relation,
-		...Arr.map(value.sidecars, (s) => s.relation)
-	]
 	const spawning = [
 		Step,
 		Due,

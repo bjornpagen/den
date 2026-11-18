@@ -1,6 +1,7 @@
 import { DenHolder, DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Assign to; `den generate` writes it, and nothing edits it. */
 import {
+	Compute,
 	check,
 	closed,
 	closedId,
@@ -21,6 +22,9 @@ export const AssignKind = closed("AssignKind", ["Decide", "AssignmentFinish"])
 export const AssignJoin = closed("AssignJoin", ["Assignment"])
 export const AssignOutcome = closed("AssignOutcome", ["done", "failed"])
 export const AssignPausable = closed("AssignPausable", ["Assignment"])
+export const AssignDecideInputMode = closed("AssignDecideInputMode", ["Nearest", "Within"])
+export const AssignAssignmentInputMode = closed("AssignAssignmentInputMode", ["Nearest", "Within"])
+export const AssignDecideOutputStage = closed("AssignDecideOutputStage", ["Serve", "Rest"])
 
 export const AssignScope = relation(
 	"AssignScope",
@@ -80,18 +84,80 @@ export const AssignExhausted = relation("AssignExhausted", { step: DenStep, atte
 ])
 export const AssignDecideInput = relation(
 	"AssignDecideInput",
-	{ step: DenStep, learner: Text, topic: Text, near: pg.vector(4) },
+	{
+		step: DenStep,
+		learner: Text,
+		topic: Text,
+		near: pg.vector(4),
+		mode: closedId(AssignDecideInputMode)
+	},
+	["step"]
+)
+export const AssignDecideInputExclude = relation(
+	"AssignDecideInputExclude",
+	{ step: DenStep, ordinal: natural, value: Text },
+	["step", "ordinal"]
+)
+export const AssignDecideInputModeNearest = relation(
+	"AssignDecideInputModeNearest",
+	{ step: DenStep },
+	["step"]
+)
+export const AssignDecideInputModeWithin = relation(
+	"AssignDecideInputModeWithin",
+	{ step: DenStep, radius: pg["double precision"] },
 	["step"]
 )
 export const AssignAssignmentInput = relation(
 	"AssignAssignmentInput",
-	{ scope: DenScope, learner: Text, topic: Text, near: pg.vector(4) },
+	{
+		scope: DenScope,
+		learner: Text,
+		topic: Text,
+		near: pg.vector(4),
+		mode: closedId(AssignAssignmentInputMode)
+	},
 	["scope"]
 )
-export const AssignDecideOutput = relation("AssignDecideOutput", { step: DenStep }, ["step"])
-export const AssignDecideOutputChosen = relation(
-	"AssignDecideOutputChosen",
-	{ step: DenStep, value: Text },
+export const AssignAssignmentInputExclude = relation(
+	"AssignAssignmentInputExclude",
+	{ scope: DenScope, ordinal: natural, value: Text },
+	["scope", "ordinal"]
+)
+export const AssignAssignmentInputModeNearest = relation(
+	"AssignAssignmentInputModeNearest",
+	{ scope: DenScope },
+	["scope"]
+)
+export const AssignAssignmentInputModeWithin = relation(
+	"AssignAssignmentInputModeWithin",
+	{ scope: DenScope, radius: pg["double precision"] },
+	["scope"]
+)
+export const AssignDecideOutput = relation(
+	"AssignDecideOutput",
+	{ step: DenStep, confidence: pg["double precision"], stage: closedId(AssignDecideOutputStage) },
+	["step"]
+)
+export const AssignDecideOutputWeighed = relation(
+	"AssignDecideOutputWeighed",
+	{
+		step: DenStep,
+		ordinal: natural,
+		passage: Text,
+		distance: pg["double precision"],
+		passed: pg.boolean
+	},
+	["step", "ordinal"]
+)
+export const AssignDecideOutputStageServe = relation(
+	"AssignDecideOutputStageServe",
+	{ step: DenStep, passage: Text, distance: pg["double precision"] },
+	["step"]
+)
+export const AssignDecideOutputStageRest = relation(
+	"AssignDecideOutputStageRest",
+	{ step: DenStep },
 	["step"]
 )
 export const AssignDecideNearestRead = relation(
@@ -128,6 +194,9 @@ export const assignGraph = fragment(
 		AssignJoin,
 		AssignOutcome,
 		AssignPausable,
+		AssignDecideInputMode,
+		AssignAssignmentInputMode,
+		AssignDecideOutputStage,
 		AssignScope,
 		AssignRoot,
 		AssignWithin,
@@ -148,9 +217,17 @@ export const assignGraph = fragment(
 		AssignRefusal,
 		AssignExhausted,
 		AssignDecideInput,
+		AssignDecideInputExclude,
+		AssignDecideInputModeNearest,
+		AssignDecideInputModeWithin,
 		AssignAssignmentInput,
+		AssignAssignmentInputExclude,
+		AssignAssignmentInputModeNearest,
+		AssignAssignmentInputModeWithin,
 		AssignDecideOutput,
-		AssignDecideOutputChosen,
+		AssignDecideOutputWeighed,
+		AssignDecideOutputStageServe,
+		AssignDecideOutputStageRest,
 		AssignDecideNearestRead,
 		AssignDecideSeenRead
 	],
@@ -211,6 +288,46 @@ export const assignGraph = fragment(
 				"step"
 			)
 		),
+		contained(on(AssignDecideInputExclude, "step"), on(AssignDecideInput, "step")),
+		contained(
+			on(
+				select(AssignDecideInputExclude, (row) => row.ge(row.ordinal, 1n)),
+				"step",
+				pred("ordinal")
+			),
+			on(AssignDecideInputExclude, "step", "ordinal")
+		),
+		contained(
+			on(AssignDecideInputModeNearest, "step"),
+			on(
+				select(AssignDecideInput, (row) => row.eq(row.mode, "Nearest")),
+				"step"
+			)
+		),
+		contained(
+			on(
+				select(AssignDecideInput, (row) => row.eq(row.mode, "Nearest")),
+				"step"
+			),
+			on(AssignDecideInputModeNearest, "step")
+		),
+		contained(
+			on(AssignDecideInputModeWithin, "step"),
+			on(
+				select(AssignDecideInput, (row) => row.eq(row.mode, "Within")),
+				"step"
+			)
+		),
+		contained(
+			on(
+				select(AssignDecideInput, (row) => row.eq(row.mode, "Within")),
+				"step"
+			),
+			on(AssignDecideInputModeWithin, "step")
+		),
+		check("AssignDecideInputModeWithinRadiusFinite", AssignDecideInputModeWithin, (row) =>
+			Compute.isFinite(row.radius)
+		),
 		contained(
 			on(AssignAssignmentInput, "scope"),
 			on(
@@ -218,9 +335,94 @@ export const assignGraph = fragment(
 				"scope"
 			)
 		),
+		contained(on(AssignAssignmentInputExclude, "scope"), on(AssignAssignmentInput, "scope")),
+		contained(
+			on(
+				select(AssignAssignmentInputExclude, (row) => row.ge(row.ordinal, 1n)),
+				"scope",
+				pred("ordinal")
+			),
+			on(AssignAssignmentInputExclude, "scope", "ordinal")
+		),
+		contained(
+			on(AssignAssignmentInputModeNearest, "scope"),
+			on(
+				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Nearest")),
+				"scope"
+			)
+		),
+		contained(
+			on(
+				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Nearest")),
+				"scope"
+			),
+			on(AssignAssignmentInputModeNearest, "scope")
+		),
+		contained(
+			on(AssignAssignmentInputModeWithin, "scope"),
+			on(
+				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Within")),
+				"scope"
+			)
+		),
+		contained(
+			on(
+				select(AssignAssignmentInput, (row) => row.eq(row.mode, "Within")),
+				"scope"
+			),
+			on(AssignAssignmentInputModeWithin, "scope")
+		),
+		check("AssignAssignmentInputModeWithinRadiusFinite", AssignAssignmentInputModeWithin, (row) =>
+			Compute.isFinite(row.radius)
+		),
 		contained(on(AssignDecideOutput, "step"), on(AssignDecideInput, "step")),
 		contained(on(AssignDecideOutput, "step"), on(AssignDone, "step")),
-		contained(on(AssignDecideOutputChosen, "step"), on(AssignDecideOutput, "step")),
+		check("AssignDecideOutputConfidenceFinite", AssignDecideOutput, (row) =>
+			Compute.isFinite(row.confidence)
+		),
+		contained(on(AssignDecideOutputWeighed, "step"), on(AssignDecideOutput, "step")),
+		contained(
+			on(
+				select(AssignDecideOutputWeighed, (row) => row.ge(row.ordinal, 1n)),
+				"step",
+				pred("ordinal")
+			),
+			on(AssignDecideOutputWeighed, "step", "ordinal")
+		),
+		check("AssignDecideOutputWeighedDistanceFinite", AssignDecideOutputWeighed, (row) =>
+			Compute.isFinite(row.distance)
+		),
+		contained(
+			on(AssignDecideOutputStageServe, "step"),
+			on(
+				select(AssignDecideOutput, (row) => row.eq(row.stage, "Serve")),
+				"step"
+			)
+		),
+		contained(
+			on(
+				select(AssignDecideOutput, (row) => row.eq(row.stage, "Serve")),
+				"step"
+			),
+			on(AssignDecideOutputStageServe, "step")
+		),
+		check("AssignDecideOutputStageServeDistanceFinite", AssignDecideOutputStageServe, (row) =>
+			Compute.isFinite(row.distance)
+		),
+		contained(
+			on(AssignDecideOutputStageRest, "step"),
+			on(
+				select(AssignDecideOutput, (row) => row.eq(row.stage, "Rest")),
+				"step"
+			)
+		),
+		contained(
+			on(
+				select(AssignDecideOutput, (row) => row.eq(row.stage, "Rest")),
+				"step"
+			),
+			on(AssignDecideOutputStageRest, "step")
+		),
 		contained(on(AssignDecideNearestRead, "step"), on(AssignResult, "step")),
 		contained(on(AssignDecideSeenRead, "step"), on(AssignResult, "step"))
 	]
@@ -228,7 +430,17 @@ export const assignGraph = fragment(
 
 /** The flow's coordination group: its rosters, its seat counts, and its chains of holds, exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const assignCoordination = fragment(
-	[AssignKind, AssignJoin, AssignOutcome, AssignPausable, AssignPaused, AssignResumed],
+	[
+		AssignKind,
+		AssignJoin,
+		AssignOutcome,
+		AssignPausable,
+		AssignDecideInputMode,
+		AssignAssignmentInputMode,
+		AssignDecideOutputStage,
+		AssignPaused,
+		AssignResumed
+	],
 	[
 		contained(on(AssignResumed, "target", "turn"), on(AssignPaused, "target", "turn")),
 		contained(on(AssignPaused, "target", pred("turn")), on(AssignResumed, "target", "turn"))
@@ -241,7 +453,9 @@ export const assignWriter = [
 	"AssignDone",
 	"AssignHeld",
 	"AssignDecideOutput",
-	"AssignDecideOutputChosen",
+	"AssignDecideOutputWeighed",
+	"AssignDecideOutputStageServe",
+	"AssignDecideOutputStageRest",
 	"AssignDecideNearestRead",
 	"AssignDecideSeenRead"
 ] as const

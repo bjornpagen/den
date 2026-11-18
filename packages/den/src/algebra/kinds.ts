@@ -153,8 +153,36 @@ export type ColumnSchema =
 	| Schema.Literals<ReadonlyArray<string>>
 	| Schema.brand<Schema.String | Schema.BigInt | Schema.Finite | Schema.Boolean, string>
 
-/** A field's schema: a column, or an Option of one, which lowers to a relation of its own. */
-export type FieldSchema = ColumnSchema | Schema.Option<ColumnSchema>
+/** The fields of a struct an array holds or a tagged union's variant carries: columns. */
+export type ColumnFields = { readonly [field: string]: ColumnSchema }
+
+/** What an array holds: a column, or a struct of columns. */
+export type ElementSchema = ColumnSchema | Schema.Struct<ColumnFields>
+
+/**
+ * A tagged union's schema as den reads it, `Schema.TaggedUnion`'s: its cases by tag, each a struct whose fields den
+ * lowers, its `_tag` among them. TypeScript cannot state a tagged union of column structs, since a variant's
+ * constructor takes its tag as optional and the union's guards hold it invariant, so lowering refuses a variant field
+ * that is no column.
+ */
+export interface TaggedUnionSchema extends Schema.Top {
+	readonly cases: {
+		readonly [tag: string]: { readonly fields: { readonly [field: string]: Schema.Top } }
+	}
+}
+
+/**
+ * A field's schema: a column; an Option of one, which lowers to a relation of its own; an array of columns or of
+ * structs of them, which lowers to an ordered family, a relation keyed by its owner and a gap-free ordinal from 0; or a
+ * tagged union (`Schema.TaggedUnion`) of structs of columns, which lowers to its tag, a roster column of its owner's
+ * row, and a relation per variant keyed by its owner, which holds a row exactly when the tag names that variant. A
+ * model's structured answer is a struct of these.
+ */
+export type FieldSchema =
+	| ColumnSchema
+	| Schema.Option<ColumnSchema>
+	| Schema.$Array<ElementSchema>
+	| TaggedUnionSchema
 
 /** A step's input, output or error: a struct of fields den lowers to typed relations. */
 export type Stored = Schema.Struct<{ readonly [field: string]: FieldSchema }>
