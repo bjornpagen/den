@@ -10,7 +10,7 @@ import { closed, closedId, natural, pg, relation, str } from "@bjornpagen/grizzl
  * embeddings, the passages a learner has seen, the passage each assignment gave a learner, and each assignment's
  * conclusion.
  */
-export const Feed = closed("Feed", ["news", "sport"])
+export const Feed = closed.unordered("Feed", ["news", "sport"])
 
 /** A batch's or a relation's name, bounded so it can key a row. */
 const Name = str.regex("^[a-z0-9-]{1,64}$")

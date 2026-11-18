@@ -7439,10 +7439,10 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "a367a3a662e3811a5d34102102f7c479fffe06fc181ce69ac8314a0ae649d2a6",
+	"fingerprint": "e2bfa36c2002310da03bd9330de7338522aba4caf9b7f075a97ddc571c912559",
 	"levels": [
 		{
-			"fingerprint": "f9104c4026af3a365221c977f1de75c6973153c397fd3146bf2c4b2ab47fffca",
+			"fingerprint": "4b8f41f6aed197c7b56055872fb1952580bb158c122c711f1c5220a5ea5ff93c",
 			"laws": [
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_y6fa6gxhpy"},
 				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"AssignAdmitted"},"law":"__assign_admitted_pk_scope_hsg7p36e67"},
@@ -7837,7 +7837,7 @@
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "3348af6178646d1e9819b727b9d6279740163759f5543055ba60906e2175e6f6",
+			"fingerprint": "b8da2f01b0056f41768ab01d72ad6a31bdecdb19b262e6895ec9cea037efa70a",
 			"laws": [
 				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"}
 			],

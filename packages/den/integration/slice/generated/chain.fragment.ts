@@ -20,13 +20,13 @@ import { Weight } from "#integration/slice/relations.ts"
 
 const Seq = contract("Seq", pg.bigint)
 
-export const ChainKind = closed("ChainKind", ["Page", "ChainRunFinish", "OrderedFinish"])
-export const ChainJoin = closed("ChainJoin", ["ChainRun", "Ordered"])
-export const ChainOutcome = closed("ChainOutcome", ["done", "failed"])
-export const ChainPausable = closed("ChainPausable", ["ChainRun", "Ordered"])
-export const ChainPageInputFeed = closed("ChainPageInputFeed", ["news", "sport"])
-export const ChainChainRunInputFeed = closed("ChainChainRunInputFeed", ["news", "sport"])
-export const ChainOrderedInputFeed = closed("ChainOrderedInputFeed", ["news", "sport"])
+export const ChainKind = closed.unordered("ChainKind", ["Page", "ChainRunFinish", "OrderedFinish"])
+export const ChainJoin = closed.unordered("ChainJoin", ["ChainRun", "Ordered"])
+export const ChainOutcome = closed.unordered("ChainOutcome", ["done", "failed"])
+export const ChainPausable = closed.unordered("ChainPausable", ["ChainRun", "Ordered"])
+export const ChainPageInputFeed = closed.unordered("ChainPageInputFeed", ["news", "sport"])
+export const ChainChainRunInputFeed = closed.unordered("ChainChainRunInputFeed", ["news", "sport"])
+export const ChainOrderedInputFeed = closed.unordered("ChainOrderedInputFeed", ["news", "sport"])
 
 export const ChainScope = relation("ChainScope", { scope: DenScope, kind: closedId(ChainJoin) }, [
 	"scope"

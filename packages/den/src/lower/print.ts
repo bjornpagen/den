@@ -293,7 +293,8 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 		"",
 		...Arr.map(
 			l.rosters,
-			(r) => `export const ${r.name} = closed(${q(r.name)}, [${commas(Arr.map(r.handles, q))}])`
+			(r) =>
+				`export const ${r.name} = closed.unordered(${q(r.name)}, [${commas(Arr.map(r.handles, q))}])`
 		),
 		...Arr.map(counts, countsExpr),
 		"",

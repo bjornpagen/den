@@ -23,10 +23,15 @@ import {
 	select
 } from "@bjornpagen/grizzle"
 
-export const SyncKind = closed("SyncKind", ["Copy", "Build", "SyncRunFinish", "GoldFinish"])
-export const SyncJoin = closed("SyncJoin", ["SyncRun", "Gold"])
-export const SyncOutcome = closed("SyncOutcome", ["done", "failed"])
-export const SyncPausable = closed("SyncPausable", ["SyncRun", "Gold"])
+export const SyncKind = closed.unordered("SyncKind", [
+	"Copy",
+	"Build",
+	"SyncRunFinish",
+	"GoldFinish"
+])
+export const SyncJoin = closed.unordered("SyncJoin", ["SyncRun", "Gold"])
+export const SyncOutcome = closed.unordered("SyncOutcome", ["done", "failed"])
+export const SyncPausable = closed.unordered("SyncPausable", ["SyncRun", "Gold"])
 
 export const SyncScope = relation("SyncScope", { scope: DenScope, kind: closedId(SyncJoin) }, [
 	"scope"

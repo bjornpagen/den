@@ -19,11 +19,11 @@ import {
 	v
 } from "@bjornpagen/grizzle"
 
-export const FanKind = closed("FanKind", ["Square", "BatchFinish", "FanRunFinish"])
-export const FanJoin = closed("FanJoin", ["Batch", "FanRun"])
-export const FanOutcome = closed("FanOutcome", ["done", "failed"])
-export const FanPausable = closed("FanPausable", ["Pool", "FanRun"])
-export const FanResource = closed("FanResource", ["Pool"])
+export const FanKind = closed.unordered("FanKind", ["Square", "BatchFinish", "FanRunFinish"])
+export const FanJoin = closed.unordered("FanJoin", ["Batch", "FanRun"])
+export const FanOutcome = closed.unordered("FanOutcome", ["done", "failed"])
+export const FanPausable = closed.unordered("FanPausable", ["Pool", "FanRun"])
+export const FanResource = closed.unordered("FanResource", ["Pool"])
 const FanSeats = closed.relation(
 	"FanSeats",
 	{ resource: closedId(FanResource), seats: natural },

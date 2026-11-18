@@ -16,10 +16,10 @@ import {
 	select
 } from "@bjornpagen/grizzle"
 
-export const RetryKind = closed("RetryKind", ["Steadfast", "Brittle", "LaddersFinish"])
-export const RetryJoin = closed("RetryJoin", ["Ladders"])
-export const RetryOutcome = closed("RetryOutcome", ["done", "failed"])
-export const RetryPausable = closed("RetryPausable", ["Ladders"])
+export const RetryKind = closed.unordered("RetryKind", ["Steadfast", "Brittle", "LaddersFinish"])
+export const RetryJoin = closed.unordered("RetryJoin", ["Ladders"])
+export const RetryOutcome = closed.unordered("RetryOutcome", ["done", "failed"])
+export const RetryPausable = closed.unordered("RetryPausable", ["Ladders"])
 
 export const RetryScope = relation("RetryScope", { scope: DenScope, kind: closedId(RetryJoin) }, [
 	"scope"

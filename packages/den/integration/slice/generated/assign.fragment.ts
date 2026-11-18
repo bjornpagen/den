@@ -18,13 +18,22 @@ import {
 } from "@bjornpagen/grizzle"
 import { Passage, Seen } from "#integration/slice/relations.ts"
 
-export const AssignKind = closed("AssignKind", ["Decide", "AssignmentFinish"])
-export const AssignJoin = closed("AssignJoin", ["Assignment"])
-export const AssignOutcome = closed("AssignOutcome", ["done", "failed"])
-export const AssignPausable = closed("AssignPausable", ["Assignment"])
-export const AssignDecideInputMode = closed("AssignDecideInputMode", ["Nearest", "Within"])
-export const AssignAssignmentInputMode = closed("AssignAssignmentInputMode", ["Nearest", "Within"])
-export const AssignDecideOutputStage = closed("AssignDecideOutputStage", ["Serve", "Rest"])
+export const AssignKind = closed.unordered("AssignKind", ["Decide", "AssignmentFinish"])
+export const AssignJoin = closed.unordered("AssignJoin", ["Assignment"])
+export const AssignOutcome = closed.unordered("AssignOutcome", ["done", "failed"])
+export const AssignPausable = closed.unordered("AssignPausable", ["Assignment"])
+export const AssignDecideInputMode = closed.unordered("AssignDecideInputMode", [
+	"Nearest",
+	"Within"
+])
+export const AssignAssignmentInputMode = closed.unordered("AssignAssignmentInputMode", [
+	"Nearest",
+	"Within"
+])
+export const AssignDecideOutputStage = closed.unordered("AssignDecideOutputStage", [
+	"Serve",
+	"Rest"
+])
 
 export const AssignScope = relation(
 	"AssignScope",
