@@ -933,16 +933,18 @@ type Hands = Readonly<{
 }>
 
 /**
- * The patience the fair phase grants a pending step before its next move. A step's next move waits at most for its
- * holder's lease to run out, its retry or its timer to fall due, or the windows over it to open, and then for the
- * census's next tick, which is at most a period away and rings it, so it is delivered and claimed that tick. The
- * patience is the sum of the longest of each: every step has a move within it, under fair scheduling.
+ * The patience the fair phase grants a pending step before its next move, counted from the last move `since`. A step's
+ * next move waits at most for its holder's lease to run out, its retry or its timer to fall due, or the windows over it
+ * to open, and then for the census's next tick, which is at most a period away and rings it, so it is delivered and
+ * claimed that tick. The patience is the sum of the longest of each: every step has a move within it, under fair
+ * scheduling. A due instant counts from the last move, never from the instant judged: judged from it, a timer re-armed
+ * at the last move and due later than the rest of the patience would be called stalled before it fell due.
  */
 export const patienceOf = (
 	state: State,
 	program: Program,
 	platform: Platform,
-	now: number
+	since: number
 ): number => {
 	const rows = HashMap.toValues(state.steps)
 	const longest = (values: ReadonlyArray<number>) => Arr.reduce(values, 0, Math.max)
@@ -951,7 +953,7 @@ export const patienceOf = (
 		longest(
 			Arr.flatMap(rows, (row) =>
 				Option.isNone(endingOf(row))
-					? Option.toArray(Option.map(dueAtOf(row), (due) => due - now))
+					? Option.toArray(Option.map(dueAtOf(row), (due) => due - since))
 					: []
 			)
 		) +
@@ -1034,7 +1036,7 @@ const fair = (setup: Setup, world: World, hands: Hands): Run => {
 			if (quiet) {
 				return { _tag: "Quiescent", at: world.now }
 			}
-			const patience = patienceOf(world.state, program, platform, world.now)
+			const patience = patienceOf(world.state, program, platform, lastMove)
 			if (Arr.isReadonlyArrayNonEmpty(pending) && world.now - lastMove > patience) {
 				return { _tag: "Stalled", at: world.now, since: lastMove, patience, pending }
 			}
