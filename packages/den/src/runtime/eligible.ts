@@ -1,5 +1,5 @@
 import { Array as Arr, DateTime, HashMap, Option, Order } from "effect"
-import { HOURS_IN_DAY, type Window } from "#algebra/kinds.ts"
+import { HOURS_IN_DAY, type Resource, type Window } from "#algebra/kinds.ts"
 import { type Instant, instantOf, type ScopeKey, type StepKey } from "#runtime/identity.ts"
 import type { ExclusiveRow, Ledger, ScopeView, Snapshot } from "#runtime/ledger.ts"
 import { AttemptNumber, type Wake } from "#transport.ts"
@@ -64,8 +64,8 @@ export interface Eligible {
  */
 interface Candidate {
 	readonly step: StepKey
-	readonly attempt: number
-	readonly uses: ReadonlyArray<string>
+	readonly attempt: bigint
+	readonly uses: ReadonlyArray<Resource>
 	readonly age: Instant
 	readonly due: Instant
 	readonly waited: "time" | "deployment"
@@ -79,10 +79,60 @@ const BY_ORDER: Order.Order<Candidate> = Order.combine(
 	Order.mapInput(Order.String, (c: Candidate) => c.step)
 )
 
+/** A claim of a step's attempt, as far as its standing reads it: the attempt and its lease's end. */
+interface Claimed {
+	readonly attempt: bigint
+	readonly until: Instant
+}
+
 /** Claims, latest attempt first. */
-const LATEST: Order.Order<Snapshot["claims"][number]> = Order.flip(
-	Order.mapInput(Order.BigInt, (c: Snapshot["claims"][number]) => c.attempt)
+const LATEST: Order.Order<Claimed> = Order.flip(
+	Order.mapInput(Order.BigInt, (c: Claimed) => c.attempt)
 )
+
+/**
+ * Where a step's attempts stand at `at`, the one reading of a step's claims, retries and fences that the relay's and
+ * the census's eligibility and a turn share: `first`, never claimed, its first attempt due at its Due; `held`, its
+ * latest claim's lease stands and its attempt recorded neither a retry nor a fence, either of which ended it; or
+ * `next`, its next attempt, due at once after a fence (waiting on the deployment), at its retry's instant, or once its
+ * latest claim's lease lapsed.
+ */
+export type Standing =
+	| { readonly kind: "first" }
+	| { readonly kind: "held" }
+	| {
+			readonly kind: "next"
+			readonly attempt: bigint
+			readonly due: Instant
+			readonly waited: "time" | "deployment"
+	  }
+
+/** Where a step's attempts stand at `at`, from its claims, retries and fences. */
+export const standing = (
+	claims: ReadonlyArray<Claimed>,
+	retries: ReadonlyArray<{ readonly attempt: bigint; readonly at: Instant }>,
+	fenced: ReadonlyArray<{ readonly attempt: bigint }>,
+	at: Instant
+): Standing =>
+	Option.match(Arr.head(Arr.sort(claims, LATEST)), {
+		onNone: (): Standing => ({ kind: "first" }),
+		onSome: (latest): Standing => {
+			const attempt = latest.attempt + 1n
+			if (Arr.some(fenced, (f) => f.attempt === latest.attempt)) {
+				return { kind: "next", attempt, due: at, waited: "deployment" }
+			}
+			return Option.match(
+				Arr.findFirst(retries, (r) => r.attempt === latest.attempt),
+				{
+					onSome: (retry): Standing => ({ kind: "next", attempt, due: retry.at, waited: "time" }),
+					onNone: (): Standing =>
+						latest.until >= at
+							? { kind: "held" }
+							: { kind: "next", attempt, due: instantOf(Number(latest.until) + 1), waited: "time" }
+				}
+			)
+		}
+	})
 
 /** The wakes due at `now` in a snapshot, and the exclusivity seats to give back. */
 export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot, now: Instant): Eligible => {
@@ -140,72 +190,55 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot, now: Instant)
 		if (runner === undefined || Option.isNone(view(p.scope))) {
 			return []
 		}
-		const claims = Arr.filter(snapshot.claims, (c) => c.step === p.step)
-		const latest = Arr.head(Arr.sort(claims, LATEST))
-		const retried = (attempt: bigint) =>
-			Arr.some(snapshot.retries, (r) => r.step === p.step && r.attempt === attempt)
-		const fenced = (attempt: bigint) =>
-			Arr.some(snapshot.fenced, (f) => f.step === p.step && f.attempt === attempt)
-		if (Option.exists(latest, (c) => c.until >= now && !retried(c.attempt) && !fenced(c.attempt))) {
+		const stands = standing(
+			Arr.filter(snapshot.claims, (c) => c.step === p.step),
+			Arr.filter(snapshot.retries, (r) => r.step === p.step),
+			Arr.filter(snapshot.fenced, (f) => f.step === p.step),
+			now
+		)
+		if (stands.kind === "held") {
 			return []
 		}
-		const waited = Option.exists(latest, (c) => fenced(c.attempt)) ? "deployment" : "time"
-		const due = Option.match(latest, {
-			onNone: () =>
-				Option.getOrElse(
-					Option.map(
-						Arr.findFirst(snapshot.dues, (d) => d.step === p.step),
-						(d) => d.at
-					),
-					() => now
-				),
-			onSome: (c) =>
-				fenced(c.attempt)
-					? now
-					: Option.getOrElse(
+		const { attempt, due, waited } =
+			stands.kind === "next"
+				? stands
+				: {
+						attempt: 1n,
+						due: Option.getOrElse(
 							Option.map(
-								Arr.findFirst(
-									snapshot.retries,
-									(r) => r.step === p.step && r.attempt === c.attempt
-								),
-								(r) => r.at
+								Arr.findFirst(snapshot.dues, (d) => d.step === p.step),
+								(d) => d.at
 							),
-							() => instantOf(Number(c.until) + 1)
-						)
-		})
+							() => now
+						),
+						waited: "time" as const
+					}
 		if (due > now) {
 			return []
 		}
 		if (Option.isSome(runner.finishes) && unended(p.scope, p.step)) {
 			return []
 		}
-		if (!open(p.scope) || rootPaused(p.scope) || Arr.some(runner.uses, paused)) {
+		if (!open(p.scope) || rootPaused(p.scope) || Arr.some(runner.uses, (r) => paused(r.name))) {
 			return []
 		}
-		const attempt = Option.match(latest, { onNone: () => 1, onSome: (c) => Number(c.attempt) + 1 })
 		return [{ step: p.step, attempt, uses: runner.uses, age: ageOf(p.scope), due, waited }]
 	})
 
-	const free = HashMap.fromIterable(
-		Arr.map(
-			ledger.resources,
-			(r) =>
-				[
-					r.name,
-					r.seats -
-						Arr.filter(snapshot.holds, (h) => h.resource === r.name && h.until >= now).length
-				] as const
-		)
-	)
-	const seated = (left: HashMap.HashMap<string, number>, c: Candidate) =>
-		Arr.every(c.uses, (r) => Option.getOrElse(HashMap.get(left, r), () => 0) > 0)
+	const held = (r: Resource): number =>
+		Arr.filter(snapshot.holds, (h) => h.resource === r.name && h.until >= now).length
 	const { chosen } = Arr.reduce(
 		Arr.sort(candidates, BY_ORDER),
-		{ left: free, chosen: Arr.empty<Candidate>() },
+		{ taken: HashMap.empty<string, number>(), chosen: Arr.empty<Candidate>() },
 		(acc, c) =>
-			seated(acc.left, c)
+			Arr.every(
+				c.uses,
+				(r) => r.seats - held(r) - Option.getOrElse(HashMap.get(acc.taken, r.name), () => 0) > 0
+			)
 				? {
-						left: Arr.reduce(c.uses, acc.left, (left, r) => HashMap.modify(left, r, (n) => n - 1)),
+						taken: Arr.reduce(c.uses, acc.taken, (taken, r) =>
+							HashMap.set(taken, r.name, Option.getOrElse(HashMap.get(taken, r.name), () => 0) + 1)
+						),
 						chosen: [...acc.chosen, c]
 					}
 				: acc
@@ -216,7 +249,7 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot, now: Instant)
 		_tag: "Step",
 		flow: ledger.flow,
 		step: c.step,
-		attempt: AttemptNumber.make(c.attempt)
+		attempt: AttemptNumber.make(Number(c.attempt))
 	})
 	const waitedOn = (waited: Candidate["waited"]) =>
 		Arr.map(

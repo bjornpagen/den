@@ -7,7 +7,7 @@ import type { Reached } from "@bjornpagen/testing/features"
 import { boolean, finite, type Gen } from "@bjornpagen/testing/gen"
 import { type Case, type Need, NeedFailed, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, FileSystem, Option, Path, String as Str } from "effect"
-import { fan } from "#integration/slice/flows.ts"
+import { fan, pool } from "#integration/slice/flows.ts"
 import { grizzle, liveSliceCase, migrateIn, openLedgers } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
 
@@ -127,7 +127,7 @@ export const admitsLoweringASeatCountExactlyWhenNoLiveHoldSitsAtOrAboveTheNewCou
 							const holder = (ordinal: number) =>
 								Effect.flatMap(startedStep(scope, ordinal), (step) => holderOf(step, 1, ordinal))
 							const takeOne = (ordinal: number) =>
-								Effect.flatMap(holder(ordinal), (h) => take(ledger, ["Pool"], h, until, at))
+								Effect.flatMap(holder(ordinal), (h) => take(ledger, [pool], h, until, at))
 							const first = yield* takeOne(0)
 							assert.deepStrictEqual(
 								Option.map(

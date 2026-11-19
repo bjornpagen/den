@@ -347,7 +347,6 @@ export const fanLedger = (h: FanHandles) => {
 		authenticated: Effect.asVoid(
 			settled(h.commits.fanAuthenticated.once({ params: {}, facts: {} }))
 		),
-		resources: [{ name: "Pool", seats: 2 }],
 		steps: new Map([
 			[
 				"Square",

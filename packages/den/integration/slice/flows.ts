@@ -210,7 +210,8 @@ export const chain = flow("Chain", {
  */
 export const poolSeats = 2
 
-const pool = resource("Pool", poolSeats)
+/** The fan flow's one resource, its Pool. */
+export const pool = resource("Pool", poolSeats)
 
 /** Squares one number of a batch, holding a seat of the Pool while it runs. */
 const Square = step(

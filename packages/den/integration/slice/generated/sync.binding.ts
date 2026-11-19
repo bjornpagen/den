@@ -362,7 +362,6 @@ export const syncLedger = (h: SyncHandles) => {
 		authenticated: Effect.asVoid(
 			settled(h.commits.syncAuthenticated.once({ params: {}, facts: {} }))
 		),
-		resources: [],
 		steps: new Map([
 			[
 				"Copy",

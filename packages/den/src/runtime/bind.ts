@@ -3,6 +3,7 @@ import { Array as Arr, type Cron, Effect, Option, Order, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Due, Exclusive, Trigger } from "#algebra/kinds.ts"
 import { exclusiveId, type Instant, instantOf, type ScopeKey } from "#runtime/identity.ts"
+import { refusedOnKey } from "#runtime/ledger.ts"
 
 /**
  * What every printed binding shares (lower/print.ts): every call settled, reading a key member's one row, the
@@ -121,12 +122,7 @@ export const fresh = (
 	write.pipe(
 		Effect.map((outcome) => outcome.kind === "accepted"),
 		Effect.catchIf(
-			(error: Settled) =>
-				error.kind === "refused" &&
-				Arr.some(
-					error.refused.laws,
-					({ law }) => law.kind === "primaryKey" && law.relation === `${flow}Root`
-				),
+			(error: Settled) => refusedOnKey(error, [`${flow}Root`]),
 			() => Effect.succeed(false)
 		)
 	)

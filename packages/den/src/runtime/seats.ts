@@ -1,5 +1,6 @@
 import type { Settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option } from "effect"
+import type { Resource } from "#algebra/kinds.ts"
 import type { Holder, Instant, ScopeKey } from "#runtime/identity.ts"
 import type {
 	ExclusiveAt,
@@ -9,6 +10,7 @@ import type {
 	Ledger,
 	SeatTurn
 } from "#runtime/ledger.ts"
+import { refusedOnKey } from "#runtime/ledger.ts"
 
 /**
  * The seat module: exact seats as chains of turns. A seat's turns run from 0, each held by one holder until it is
@@ -23,11 +25,6 @@ import type {
  * insert at a turn a stale read chose meets that turn's old row, which says nothing of who holds the seat now. A
  * refusal on a turn's key and a fresh read do.
  */
-
-/** Whether a refusal names a turn's key of `relation`: another caller took that turn first. */
-const takenBy = (error: Settled, relation: string): boolean =>
-	error.kind === "refused" &&
-	Arr.some(error.refused.laws, ({ law }) => law.kind === "primaryKey" && law.relation === relation)
 
 /** A chain's next turn: one past its latest, or its first, 0, when it has none. */
 const nextTurn = (latest: Option.Option<bigint>): bigint =>
@@ -89,7 +86,7 @@ const freeSeat = (
  */
 export const take = <R>(
 	ledger: Ledger<R>,
-	resources: ReadonlyArray<string>,
+	resources: ReadonlyArray<Resource>,
 	holder: Holder,
 	until: Instant,
 	now: Instant
@@ -102,19 +99,7 @@ export const take = <R>(
 				const holds = yield* coordination.holds
 				const picked = Option.all(
 					Arr.map(resources, (resource) =>
-						freeSeat(
-							resource,
-							Option.getOrElse(
-								Option.map(
-									Arr.findFirst(ledger.resources, (r) => r.name === resource),
-									(r) => r.seats
-								),
-								() => 0
-							),
-							turns,
-							holds,
-							now
-						)
+						freeSeat(resource.name, resource.seats, turns, holds, now)
 					)
 				)
 				if (Option.isNone(picked)) {
@@ -125,7 +110,7 @@ export const take = <R>(
 				return yield* coordination.take(lapsed, taken).pipe(
 					Effect.as(Option.some(taken)),
 					Effect.catchIf(
-						(error: Settled) => takenBy(error, `${ledger.flow}Hold`),
+						(error: Settled) => refusedOnKey(error, [`${ledger.flow}Hold`]),
 						() => take(ledger, resources, holder, until, now)
 					)
 				)
@@ -183,7 +168,7 @@ export const holdExclusive = <R>(
 			.pipe(
 				Effect.as(true),
 				Effect.catchIf(
-					(error: Settled) => takenBy(error, `${ledger.flow}Exclusive`),
+					(error: Settled) => refusedOnKey(error, [`${ledger.flow}Exclusive`]),
 					() => holdExclusive(ledger, seat)
 				)
 			)
@@ -227,7 +212,7 @@ export const pause = <R>(ledger: Ledger<R>, target: string): Effect.Effect<void,
 		)
 		yield* ledger.coordination.pause({ target, turn }).pipe(
 			Effect.catchIf(
-				(error: Settled) => takenBy(error, `${ledger.flow}Paused`),
+				(error: Settled) => refusedOnKey(error, [`${ledger.flow}Paused`]),
 				() => pause(ledger, target)
 			)
 		)

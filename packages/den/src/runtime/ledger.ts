@@ -1,7 +1,7 @@
 import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
-import type { Cron, Effect, Option, Stream } from "effect"
+import { Array as Arr, type Cron, type Effect, type Option, type Stream } from "effect"
 import type { Digest } from "effect/crypto"
-import type { Ladder, Precondition, Window } from "#algebra/kinds.ts"
+import type { Ladder, Precondition, Resource, Window } from "#algebra/kinds.ts"
 import type { ExclusiveId, Holder, Instant, ScopeKey, StepKey } from "#runtime/identity.ts"
 import type { FlowName } from "#transport.ts"
 
@@ -14,6 +14,14 @@ import type { FlowName } from "#transport.ts"
  * coordinator role (the turns of seats, exclusivity seats and pauses: the seat module's) and the flow's app role (each
  * step's commit, with the app's writes).
  */
+
+/** Whether a call was refused on the primary key of one of `relations`: another fact already holds that key. */
+export const refusedOnKey = (error: Settled, relations: ReadonlyArray<string>): boolean =>
+	error.kind === "refused" &&
+	Arr.some(
+		error.refused.laws,
+		({ law }) => law.kind === "primaryKey" && Arr.contains(relations, law.relation)
+	)
 
 /** A step's outcome, its Result: done with its output, or failed. */
 export type Outcome = "done" | "failed"
@@ -121,7 +129,7 @@ export type Ran =
 /** A step kind's runner: what the scheduler reads of its declaration, and its turn after the claim. */
 export interface StepRunner<R> {
 	readonly kind: string
-	readonly uses: ReadonlyArray<string>
+	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
 	/** The scope it finishes, for a finish; none for a step kind. */
 	readonly finishes: Option.Option<string>
@@ -269,7 +277,6 @@ export interface Ledger<R> {
 	 * runs no body, so the census rings a fenced attempt's step again only once it succeeds.
 	 */
 	readonly authenticated: Effect.Effect<void, Settled>
-	readonly resources: ReadonlyArray<{ readonly name: string; readonly seats: number }>
 	readonly steps: ReadonlyMap<string, StepRunner<R>>
 	readonly roots: ReadonlyMap<string, RootRunner>
 	readonly stepOf: (step: StepKey) => Effect.Effect<Option.Option<Located>, Settled>

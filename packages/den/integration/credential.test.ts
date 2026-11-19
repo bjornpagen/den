@@ -194,10 +194,9 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 		kills: [
 			{
 				file: "packages/den/src/runtime/turn.ts",
-				original:
-					"\t\t\tBigInt(wake.attempt) !== next ||\n\t\t\tOption.exists(latest, (c) => stands(c, retries, fenced, at))",
-				replacement: "\t\t\tOption.exists(latest, (c) => stands(c, retries, fenced, at))",
-				why: "Operator mutant (disjunct) at packages/den/src/runtime/turn.ts:768 in serveStep: `BigInt(wake.attempt) !== next || Option.exists(latest, (c) => stands(c, retries,` becomes `Option.exists(latest, (c) => stands(c, retries, fenced, at))`; the property fails (lane CATCH, den 9cffaba)."
+				original: "\t\tif (BigInt(wake.attempt) !== next) {",
+				replacement: "\t\tif (false) {",
+				why: "A turn serves a wake of any attempt once no claim holds its step, so a stale wake of an earlier attempt runs its body again (lane CATCH's disjunct of den 9cffaba, moved where the attempt is checked)."
 			},
 			{
 				file: "packages/den/src/runtime/turn.ts",

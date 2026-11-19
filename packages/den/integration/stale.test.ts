@@ -160,9 +160,9 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 	kills: [
 		{
 			file: "packages/den/src/runtime/turn.ts",
-			original: "\t\t\tBigInt(wake.attempt) !== next ||",
-			replacement: "\t\t\tBigInt(wake.attempt) === next ||",
-			why: "Operator mutant (comparison) at packages/den/src/runtime/turn.ts:768 in serveStep: `!==` becomes `===`; the property fails (lane CATCH, den 9cffaba)."
+			original: "\t\tif (BigInt(wake.attempt) !== next) {",
+			replacement: "\t\tif (BigInt(wake.attempt) === next) {",
+			why: "A turn loses exactly the wake of its step's next attempt and serves every other (lane CATCH's comparison of den 9cffaba, moved where the attempt is checked)."
 		}
 	]
 })

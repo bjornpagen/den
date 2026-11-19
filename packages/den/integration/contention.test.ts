@@ -9,6 +9,7 @@ import { boolean, type Gen, int } from "@bjornpagen/testing/gen"
 import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, HashMap, Option, Ref } from "effect"
+import { pool } from "#integration/slice/flows.ts"
 import { ringOnAndDrain } from "#integration/support/run.ts"
 import { openLedgers, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
@@ -126,7 +127,7 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 								const until = instantOf(
 									taker.lapsed ? Number(instant) - 1 : Number(instant) + longestLeaseMillis
 								)
-								const taken = yield* take(ledger, ["Pool"], taker.holder, until, instant)
+								const taken = yield* take(ledger, [pool], taker.holder, until, instant)
 								if (Option.isSome(taken)) {
 									yield* Ref.update(seen, (n) => n + 1)
 									yield* Ref.update(held, HashMap.set(session, taken.value))

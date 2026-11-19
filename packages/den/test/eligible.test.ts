@@ -22,6 +22,8 @@ import {
 	attempts,
 	idle,
 	type Precondition,
+	type Resource,
+	resource,
 	unconditional,
 	utcHours,
 	type Window
@@ -81,7 +83,7 @@ const unread = () => Effect.die("eligibility reads only the snapshot")
 
 const runnerOf = (
 	kind: string,
-	uses: ReadonlyArray<string>,
+	uses: ReadonlyArray<Resource>,
 	finishes: Option.Option<string>
 ): StepRunner<never> => ({
 	kind,
@@ -109,9 +111,8 @@ const ledgerOf = (seats: number, window: Window): Ledger<never> => ({
 	flow: flowName,
 	now: Effect.die("eligibility judges the instant it is given"),
 	authenticated: Effect.die("the census asks after the deployment, never eligibility"),
-	resources: [{ name: "Pool", seats }],
 	steps: new Map([
-		["Work", runnerOf("Work", ["Pool"], Option.none())],
+		["Work", runnerOf("Work", [resource("Pool", seats)], Option.none())],
 		["Free", runnerOf("Free", [], Option.none())],
 		["RunFinish", runnerOf("RunFinish", [], Option.some("Run"))],
 		["BatchFinish", runnerOf("BatchFinish", [], Option.some("Batch"))],

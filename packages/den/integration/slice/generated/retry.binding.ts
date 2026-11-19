@@ -280,7 +280,6 @@ export const retryLedger = (h: RetryHandles) => {
 		authenticated: Effect.asVoid(
 			settled(h.commits.retryAuthenticated.once({ params: {}, facts: {} }))
 		),
-		resources: [],
 		steps: new Map([
 			[
 				"Steadfast",

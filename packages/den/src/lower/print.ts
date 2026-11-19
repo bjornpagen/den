@@ -1739,7 +1739,6 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\t\tflow: FlowName.make(${q(P)}),`,
 		`\t\tnow: Effect.flatMap(settled(h.den.${n.program("Now")}.once({ params: {}, facts: {} })), readingOf),`,
 		`\t\tauthenticated: Effect.asVoid(settled(h.commits.${n.program("Authenticated")}.once({ params: {}, facts: {} }))),`,
-		`\t\tresources: [${commas(Arr.map(l.resources, (res) => `{ name: ${q(res.name)}, seats: ${res.seats} }`))}],`,
 		"\t\tsteps: new Map([",
 		...Arr.map(l.steps, (s) => `\t\t\t[${q(s.name)}, ${indented("\t\t\t")(stepRunner(s))}],`),
 		...Arr.map(

@@ -320,7 +320,6 @@ export const chainLedger = (h: ChainHandles) => {
 		authenticated: Effect.asVoid(
 			settled(h.commits.chainAuthenticated.once({ params: {}, facts: {} }))
 		),
-		resources: [],
 		steps: new Map([
 			[
 				"Page",

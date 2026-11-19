@@ -399,7 +399,6 @@ export const assignLedger = (h: AssignHandles) => {
 		authenticated: Effect.asVoid(
 			settled(h.commits.assignAuthenticated.once({ params: {}, facts: {} }))
 		),
-		resources: [],
 		steps: new Map([
 			[
 				"Decide",

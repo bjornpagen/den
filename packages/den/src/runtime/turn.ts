@@ -1,9 +1,9 @@
 import type { Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Cause, Duration, Effect, Exit, Option, Order, Random } from "effect"
+import { Array as Arr, Cause, Duration, Effect, Exit, Option, Random } from "effect"
 import type { Digest } from "effect/crypto"
-import type { Ladder } from "#algebra/kinds.ts"
+import type { Ladder, Resource } from "#algebra/kinds.ts"
 import { censusPeriodSeconds } from "#algebra/kinds.ts"
-import { opensAt, isOpen } from "#runtime/eligible.ts"
+import { opensAt, isOpen, standing } from "#runtime/eligible.ts"
 import {
 	finishStep,
 	holderOf,
@@ -26,6 +26,7 @@ import type {
 	StepRunner,
 	Turn
 } from "#runtime/ledger.ts"
+import { refusedOnKey } from "#runtime/ledger.ts"
 import { giveBack, holdExclusive, releaseExclusive, exclusiveOf, take } from "#runtime/seats.ts"
 import { AttemptNumber, type FlowName, type Ring, Transport, type Wake } from "#transport.ts"
 
@@ -281,25 +282,20 @@ export const spentBefore = (
  * the holder it met.
  */
 export const lostRace = (flow: string, error: Settled): boolean =>
-	error.kind === "refused" &&
-	Arr.some(
-		error.refused.laws,
-		({ law }) =>
-			(law.kind === "primaryKey" &&
-				Arr.contains(
-					[
-						`${flow}Result`,
-						`${flow}Held`,
-						`${flow}Retry`,
-						`${flow}Fenced`,
-						`${flow}Admitted`,
-						`${flow}Due`,
-						`${flow}Root`
-					],
-					law.relation
-				)) ||
-			(law.kind === "contained" && law.from.relation === `${flow}Claim`)
-	)
+	refusedOnKey(error, [
+		`${flow}Result`,
+		`${flow}Held`,
+		`${flow}Retry`,
+		`${flow}Fenced`,
+		`${flow}Admitted`,
+		`${flow}Due`,
+		`${flow}Root`
+	]) ||
+	(error.kind === "refused" &&
+		Arr.some(
+			error.refused.laws,
+			({ law }) => law.kind === "contained" && law.from.relation === `${flow}Claim`
+		))
 
 /** The law a refusal names first, by its identity, as a Refusal row records it. */
 const lawOf = (error: Extract<Settled, { readonly kind: "refused" }>): string =>
@@ -341,7 +337,7 @@ export interface StepPort<I, Rows, O, E, W> {
 /** What a runner runs: a step kind's body, or a finish's over its scope's input and its children's endings. */
 export interface Runnable<I, Rows, O, E, W, R> {
 	readonly name: string
-	readonly uses: ReadonlyArray<{ readonly name: string }>
+	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
 	readonly body: (
 		input: I,
@@ -360,7 +356,7 @@ export const runnerOf = <I, Rows, O, E, W, R>(
 	finishes: Option.Option<string>
 ): StepRunner<R> => ({
 	kind: runnable.name,
-	uses: Arr.map(runnable.uses, (r) => r.name),
+	uses: runnable.uses,
 	retry: runnable.retry,
 	finishes,
 	run: Effect.fn(`den.turn.${runnable.name}`)(function* (
@@ -469,7 +465,7 @@ const chainOf = <R>(
 const gate = <R>(
 	ledger: Ledger<R>,
 	chain: ReadonlyArray<ScopeView>,
-	uses: ReadonlyArray<string>,
+	uses: ReadonlyArray<Resource>,
 	at: Instant
 ): Effect.Effect<
 	Option.Option<{ readonly why: Wait; readonly until: Option.Option<Instant> }>,
@@ -492,33 +488,14 @@ const gate = <R>(
 		const root = Arr.findFirst(chain, (s) => Option.isSome(s.root))
 		if (
 			Option.exists(root, (s) => Arr.contains(paused, s.kind)) ||
-			Arr.some(uses, (u) => Arr.contains(paused, u))
+			Arr.some(uses, (u) => Arr.contains(paused, u.name))
 		) {
 			return Option.some({ why: "paused", until: Option.none() } as const)
 		}
 		return Option.none()
 	})
 
-/** Claims, latest attempt first. */
-const LATEST: Order.Order<ClaimRow> = Order.flip(
-	Order.mapInput(Order.BigInt, (c: ClaimRow) => c.attempt)
-)
-
-/**
- * Whether a claim still holds its step at `at`: its lease stands and its attempt recorded neither a retry nor a fence,
- * either of which ended it.
- */
-const stands = (
-	claim: ClaimRow,
-	retries: ReadonlyArray<RetryRow>,
-	fenced: ReadonlyArray<FencedRow>,
-	at: Instant
-): boolean =>
-	claim.until >= at &&
-	!Arr.some(retries, (r) => r.attempt === claim.attempt) &&
-	!Arr.some(fenced, (f) => f.attempt === claim.attempt)
-
-/** The wake for a step's next attempt, as its claims, retries and fences stand: none while a claim stands. */
+/** The wake for a step's next attempt, as its claims, retries and fences stand (Standing): none while a claim holds it. */
 const nextWake = <R>(
 	ledger: Ledger<R>,
 	step: StepKey
@@ -532,12 +509,18 @@ const nextWake = <R>(
 		const claims = yield* ledger.claimsOf(step)
 		const retries = yield* ledger.retriesOf(step)
 		const fenced = yield* ledger.fencedOf(step)
-		const latest = Arr.head(Arr.sort(claims, LATEST))
-		if (Option.exists(latest, (c) => stands(c, retries, fenced, at))) {
-			return Option.none()
+		const stands = standing(claims, retries, fenced, at)
+		switch (stands.kind) {
+			case "held":
+				return Option.none()
+			case "first":
+				return Option.some({ wake: stepWake(ledger.flow, step, 1n), delay: Duration.zero })
+			case "next":
+				return Option.some({
+					wake: stepWake(ledger.flow, step, stands.attempt),
+					delay: Duration.zero
+				})
 		}
-		const attempt = Option.match(latest, { onNone: () => 1n, onSome: (c) => c.attempt + 1n })
-		return Option.some({ wake: stepWake(ledger.flow, step, attempt), delay: Duration.zero })
 	})
 
 /** The wakes of what a commit or an admission spawned: each step after its delay, an exact timer, and each ready finish. */
@@ -770,33 +753,21 @@ const serveStep = <R>(
 		const claims = yield* readOr(ledger.claimsOf(step), wake)
 		const retries = yield* readOr(ledger.retriesOf(step), wake)
 		const fenced = yield* readOr(ledger.fencedOf(step), wake)
-		const latest = Arr.head(Arr.sort(claims, LATEST))
-		const next = Option.match(latest, { onNone: () => 1n, onSome: (c) => c.attempt + 1n })
-		if (
-			BigInt(wake.attempt) !== next ||
-			Option.exists(latest, (c) => stands(c, retries, fenced, at))
-		) {
+		const stands = standing(claims, retries, fenced, at)
+		if (stands.kind === "held") {
 			return served({ kind: "lost", wake })
 		}
-		const due = yield* Option.match(latest, {
-			onNone: () =>
-				Effect.map(
-					readOr(ledger.dueOf(step), wake),
-					Option.getOrElse(() => at)
-				),
-			onSome: (c) =>
-				Effect.succeed(
-					Arr.some(fenced, (f) => f.attempt === c.attempt)
-						? at
-						: Option.getOrElse(
-								Option.map(
-									Arr.findFirst(retries, (r) => r.attempt === c.attempt),
-									(r) => r.at
-								),
-								() => instantOf(Number(c.until) + 1)
-							)
-				)
-		})
+		const next = stands.kind === "next" ? stands.attempt : 1n
+		if (BigInt(wake.attempt) !== next) {
+			return served({ kind: "lost", wake })
+		}
+		const due =
+			stands.kind === "next"
+				? stands.due
+				: yield* Effect.map(
+						readOr(ledger.dueOf(step), wake),
+						Option.getOrElse(() => at)
+					)
 		if (due > at) {
 			return {
 				ending: { kind: "waiting", wake, why: "due", until: Option.some(due) },
