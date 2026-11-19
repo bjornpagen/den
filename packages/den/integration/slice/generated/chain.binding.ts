@@ -283,12 +283,7 @@ export const chainLedger = (h: ChainHandles) => {
 				)
 			)
 	}
-	const busyOf = (flow: string): Effect.Effect<boolean, Settled> => {
-		switch (flow) {
-			default:
-				return Effect.succeed(false)
-		}
-	}
+	const busyFlows: Effect.Effect<ReadonlyArray<string>, Settled> = Effect.succeed([])
 	const request = {
 		ChainRun: (key: string, at: Instant, input: Parameters<(typeof chain.kinds)[1]["start"]>[0]) =>
 			Effect.flatMap(rootScope("Chain", "ChainRun", key), (scope) =>
@@ -822,7 +817,7 @@ export const chainLedger = (h: ChainHandles) => {
 			),
 		finished: (scope) =>
 			h.den.chainFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
-		busy: busyOf,
+		busy: busyFlows,
 		claim: (row) =>
 			Effect.map(
 				settled(h.den.chainClaim.once({ params: {}, facts: { insert: { ChainClaim: [row] } } })),
@@ -922,7 +917,7 @@ export const chainLedger = (h: ChainHandles) => {
 				coordination.paused,
 				Arr.map((row) => row.target)
 			)
-			const busy = yield* Effect.filter([], (flow) => busyOf(flow))
+			const busy = yield* busyFlows
 			const view = (scope: ScopeKey, kind: string, admitted: boolean): ScopeView => ({
 				scope,
 				kind,

@@ -1598,7 +1598,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"\tconst holds = yield* coordination.holds",
 		"\tconst exclusives = yield* coordination.exclusives",
 		"\tconst paused = yield* Effect.map(coordination.paused, Arr.map((row) => row.target))",
-		`\tconst busy = yield* Effect.filter([${commas(Arr.map(l.idle, q))}], (flow) => busyOf(flow))`,
+		"\tconst busy = yield* busyFlows",
 		"\tconst view = (scope: ScopeKey, kind: string, admitted: boolean): ScopeView => ({",
 		"\t\tscope,",
 		"\t\tkind,",
@@ -1638,18 +1638,20 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			(f) => `signals(h.den.${n.program(`Busy${f}`)}.watch({ params: {}, facts: {} }))`
 		)
 	]
-	const busyOf = lines([
-		"(flow: string): Effect.Effect<boolean, Settled> => {",
-		"\tswitch (flow) {",
-		...Arr.map(
-			l.idle,
-			(f) =>
-				`\t\tcase ${q(f)}: return h.den.${n.program(`Busy${f}`)}.once({ params: {}, facts: {} }).pipe(settled, any)`
-		),
-		"\t\tdefault: return Effect.succeed(false)",
-		"\t}",
-		"}"
-	])
+	const busyFlows = Arr.isReadonlyArrayNonEmpty(l.idle)
+		? lines([
+				"Effect.map(",
+				"\tEffect.all([",
+				...Arr.map(
+					l.idle,
+					(f) =>
+						`\t\tEffect.map(h.den.${n.program(`Busy${f}`)}.once({ params: {}, facts: {} }).pipe(settled, any), (busy): ReadonlyArray<string> => (busy ? [${q(f)}] : [])),`
+				),
+				"\t]),",
+				"\tArr.flatten",
+				")"
+			])
+		: "Effect.succeed([])"
 	const fragmentValues = boundRostersOf(l)
 	const fragmentImports = Arr.dedupe([...spawning, ...fragmentValues])
 	const fragmentTypes = Arr.filter(fragmentImports, (name) => !Arr.contains(fragmentValues, name))
@@ -1733,7 +1735,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		...Arr.map(l.joins, (j) => `\t${indented("\t")(startOf(j))}`),
 		...Arr.map(valueReaders, (v) => `\t${indented("\t")(readerDef(v))}`),
 		`\tconst coordination: Ledger<never>["coordination"] = ${indented("\t")(coordination)}`,
-		`\tconst busyOf = ${indented("\t")(busyOf)}`,
+		`\tconst busyFlows: Effect.Effect<ReadonlyArray<string>, Settled> = ${indented("\t")(busyFlows)}`,
 		`\tconst request = { ${commas(Arr.map(denRoots, requestOf))} }`,
 		`\tconst ledger: Ledger<FlowNeeds<typeof ${F}>> = {`,
 		`\t\tflow: FlowName.make(${q(P)}),`,
@@ -1776,7 +1778,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"\t\t}),",
 		`\t\tunended: (scope) => Effect.flatMap(h.den.${n.program("UnendedSteps")}.once({ params: { scope }, facts: {} }).pipe(settled, any), (steps) => steps ? Effect.succeed(true) : h.den.${n.program("OpenChildren")}.once({ params: { scope }, facts: {} }).pipe(settled, any)),`,
 		`\t\tfinished: (scope) => h.den.${n.program("Finished")}.once({ params: { scope }, facts: {} }).pipe(settled, any),`,
-		"\t\tbusy: busyOf,",
+		"\t\tbusy: busyFlows,",
 		`\t\tclaim: (row) => Effect.map(settled(h.den.${n.program("Claim")}.once({ params: {}, facts: { insert: { ${r("Claim")}: [row] } } })), (outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)),`,
 		`\t\tretry: (row) => settled(h.den.${n.program("Retry")}.once({ params: {}, facts: { insert: { ${r("Retry")}: [row] } } })),`,
 		`\t\tfence: (row) => settled(h.den.${n.program("Fence")}.once({ params: {}, facts: { insert: { ${r("Fenced")}: [row] } } })),`,

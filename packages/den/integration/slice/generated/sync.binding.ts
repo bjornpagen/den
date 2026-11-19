@@ -297,14 +297,15 @@ export const syncLedger = (h: SyncHandles) => {
 				)
 			)
 	}
-	const busyOf = (flow: string): Effect.Effect<boolean, Settled> => {
-		switch (flow) {
-			case "Chain":
-				return h.den.syncBusyChain.once({ params: {}, facts: {} }).pipe(settled, any)
-			default:
-				return Effect.succeed(false)
-		}
-	}
+	const busyFlows: Effect.Effect<ReadonlyArray<string>, Settled> = Effect.map(
+		Effect.all([
+			Effect.map(
+				h.den.syncBusyChain.once({ params: {}, facts: {} }).pipe(settled, any),
+				(busy): ReadonlyArray<string> => (busy ? ["Chain"] : [])
+			)
+		]),
+		Arr.flatten
+	)
 	const request = {
 		SyncRun: (key: string, at: Instant, input: Parameters<(typeof sync.kinds)[1]["start"]>[0]) =>
 			Effect.flatMap(rootScope("Sync", "SyncRun", key), (scope) =>
@@ -757,7 +758,7 @@ export const syncLedger = (h: SyncHandles) => {
 			),
 		finished: (scope) =>
 			h.den.syncFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
-		busy: busyOf,
+		busy: busyFlows,
 		claim: (row) =>
 			Effect.map(
 				settled(h.den.syncClaim.once({ params: {}, facts: { insert: { SyncClaim: [row] } } })),
@@ -860,7 +861,7 @@ export const syncLedger = (h: SyncHandles) => {
 				coordination.paused,
 				Arr.map((row) => row.target)
 			)
-			const busy = yield* Effect.filter(["Chain"], (flow) => busyOf(flow))
+			const busy = yield* busyFlows
 			const view = (scope: ScopeKey, kind: string, admitted: boolean): ScopeView => ({
 				scope,
 				kind,

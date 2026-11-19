@@ -238,12 +238,7 @@ export const retryLedger = (h: RetryHandles) => {
 				)
 			)
 	}
-	const busyOf = (flow: string): Effect.Effect<boolean, Settled> => {
-		switch (flow) {
-			default:
-				return Effect.succeed(false)
-		}
-	}
+	const busyFlows: Effect.Effect<ReadonlyArray<string>, Settled> = Effect.succeed([])
 	const request = {
 		Ladders: (key: string, at: Instant, input: Parameters<(typeof retry.kinds)[2]["start"]>[0]) =>
 			Effect.flatMap(rootScope("Retry", "Ladders", key), (scope) =>
@@ -581,7 +576,7 @@ export const retryLedger = (h: RetryHandles) => {
 			),
 		finished: (scope) =>
 			h.den.retryFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
-		busy: busyOf,
+		busy: busyFlows,
 		claim: (row) =>
 			Effect.map(
 				settled(h.den.retryClaim.once({ params: {}, facts: { insert: { RetryClaim: [row] } } })),
@@ -681,7 +676,7 @@ export const retryLedger = (h: RetryHandles) => {
 				coordination.paused,
 				Arr.map((row) => row.target)
 			)
-			const busy = yield* Effect.filter([], (flow) => busyOf(flow))
+			const busy = yield* busyFlows
 			const view = (scope: ScopeKey, kind: string, admitted: boolean): ScopeView => ({
 				scope,
 				kind,

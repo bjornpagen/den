@@ -898,8 +898,8 @@ const serveAdmit = <R>(
 		}
 		const precondition = root.precondition
 		if (precondition.kind === "idle") {
-			const busy = yield* readOr(Effect.forEach(precondition.flows, ledger.busy), wake)
-			if (Arr.some(busy, (b) => b)) {
+			const busy = yield* readOr(ledger.busy, wake)
+			if (Arr.some(precondition.flows, (f) => Arr.contains(busy, f))) {
 				return served({ kind: "waiting", wake, why: "precondition", until: Option.none() })
 			}
 		}
@@ -967,26 +967,20 @@ export const invoke = <R>(
 ): Effect.Effect<ReadonlyArray<Ending>, never, R | Digest.Digest | Transport> =>
 	Effect.gen(function* () {
 		const transport = yield* Transport
+		/** A reading of the instant of the ledger a wake names, or the ending of a wake no ledger serves. */
+		const readingOf = (serving: Wake): Effect.Effect<Instant, Ending> => {
+			const ledger = ledgers.get(serving.flow)
+			return ledger === undefined
+				? Effect.fail({ kind: "lost", wake: serving })
+				: readOr(ledger.now, serving)
+		}
 		const loop = (
-			current: Option.Option<Wake>,
-			ends: Option.Option<Instant>,
+			serving: Wake,
+			at: Instant,
+			end: Instant,
 			endings: ReadonlyArray<Ending>
 		): Effect.Effect<ReadonlyArray<Ending>, never, R | Digest.Digest | Transport> =>
 			Effect.gen(function* () {
-				if (Option.isNone(current)) {
-					return endings
-				}
-				const serving = current.value
-				const ledger = ledgers.get(serving.flow)
-				if (ledger === undefined) {
-					return [...endings, { kind: "lost", wake: serving } satisfies Ending]
-				}
-				const reading = yield* Effect.result(readOr(ledger.now, serving))
-				if (reading._tag === "Failure") {
-					return [...endings, reading.failure]
-				}
-				const at = reading.success
-				const end = Option.getOrElse(ends, () => instantOf(Number(at) + Duration.toMillis(budget)))
 				const cause = { _tag: "Turn", by: serving, at: Number(at) } as const
 				if (Number(at) + leaseMarginMillis >= Number(end)) {
 					yield* transport.send([{ wake: serving, delay: Duration.zero, cause }])
@@ -995,12 +989,24 @@ export const invoke = <R>(
 				const turn = yield* serve(ledgers, serving, end)
 				const rung = Arr.map(turn.onward, (o): Ring => ({ ...o, cause }))
 				const [first, ...rest] = rung
-				const continues = first !== undefined && Duration.isZero(first.delay)
-				yield* transport.send(continues ? rest : rung)
-				return yield* loop(continues ? Option.some(first.wake) : Option.none(), Option.some(end), [
-					...endings,
-					turn.ending
-				])
+				const sofar = [...endings, turn.ending]
+				if (first === undefined || !Duration.isZero(first.delay)) {
+					yield* transport.send(rung)
+					return sofar
+				}
+				yield* transport.send(rest)
+				const next = yield* Effect.result(readingOf(first.wake))
+				return next._tag === "Failure"
+					? [...sofar, next.failure]
+					: yield* loop(first.wake, next.success, end, sofar)
 			})
-		return yield* loop(Option.some(wake), Option.none(), [])
+		const started = yield* Effect.result(readingOf(wake))
+		return started._tag === "Failure"
+			? [started.failure]
+			: yield* loop(
+					wake,
+					started.success,
+					instantOf(Number(started.success) + Duration.toMillis(budget)),
+					[]
+				)
 	})

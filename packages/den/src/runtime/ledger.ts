@@ -291,8 +291,8 @@ export interface Ledger<R> {
 	readonly unended: (scope: ScopeKey) => Effect.Effect<boolean, Settled>
 	/** Whether a scope's finish has its result. */
 	readonly finished: (scope: ScopeKey) => Effect.Effect<boolean, Settled>
-	/** Whether a flow a precondition names holds a pending step. */
-	readonly busy: (flow: string) => Effect.Effect<boolean, Settled>
+	/** The flows this flow's preconditions name that hold a pending step. */
+	readonly busy: Effect.Effect<ReadonlyArray<string>, Settled>
 	/**
 	 * Claims a step's attempt, a race at its key: whether the claim holding `(step, attempt)` is `claim`'s holder's, this
 	 * call's or an earlier one of the same holder, or another holder's, which this call met and wrote nothing beside.

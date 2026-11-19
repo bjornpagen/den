@@ -310,12 +310,7 @@ export const fanLedger = (h: FanHandles) => {
 				)
 			)
 	}
-	const busyOf = (flow: string): Effect.Effect<boolean, Settled> => {
-		switch (flow) {
-			default:
-				return Effect.succeed(false)
-		}
-	}
+	const busyFlows: Effect.Effect<ReadonlyArray<string>, Settled> = Effect.succeed([])
 	const request = {
 		FanRun: (key: string, at: Instant, input: Parameters<(typeof fan.kinds)[2]["start"]>[0]) =>
 			Effect.flatMap(rootScope("Fan", "FanRun", key), (scope) =>
@@ -661,7 +656,7 @@ export const fanLedger = (h: FanHandles) => {
 			),
 		finished: (scope) =>
 			h.den.fanFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
-		busy: busyOf,
+		busy: busyFlows,
 		claim: (row) =>
 			Effect.map(
 				settled(h.den.fanClaim.once({ params: {}, facts: { insert: { FanClaim: [row] } } })),
@@ -758,7 +753,7 @@ export const fanLedger = (h: FanHandles) => {
 				coordination.paused,
 				Arr.map((row) => row.target)
 			)
-			const busy = yield* Effect.filter([], (flow) => busyOf(flow))
+			const busy = yield* busyFlows
 			const view = (scope: ScopeKey, kind: string, admitted: boolean): ScopeView => ({
 				scope,
 				kind,

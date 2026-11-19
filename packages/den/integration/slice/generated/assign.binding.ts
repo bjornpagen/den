@@ -337,12 +337,7 @@ export const assignLedger = (h: AssignHandles) => {
 				)
 			)
 	}
-	const busyOf = (flow: string): Effect.Effect<boolean, Settled> => {
-		switch (flow) {
-			default:
-				return Effect.succeed(false)
-		}
-	}
+	const busyFlows: Effect.Effect<ReadonlyArray<string>, Settled> = Effect.succeed([])
 	const request = {
 		Assignment: (
 			key: string,
@@ -775,7 +770,7 @@ export const assignLedger = (h: AssignHandles) => {
 			),
 		finished: (scope) =>
 			h.den.assignFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
-		busy: busyOf,
+		busy: busyFlows,
 		claim: (row) =>
 			Effect.map(
 				settled(h.den.assignClaim.once({ params: {}, facts: { insert: { AssignClaim: [row] } } })),
@@ -875,7 +870,7 @@ export const assignLedger = (h: AssignHandles) => {
 				coordination.paused,
 				Arr.map((row) => row.target)
 			)
-			const busy = yield* Effect.filter([], (flow) => busyOf(flow))
+			const busy = yield* busyFlows
 			const view = (scope: ScopeKey, kind: string, admitted: boolean): ScopeView => ({
 				scope,
 				kind,

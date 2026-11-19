@@ -132,7 +132,7 @@ const ledgerOf = (seats: number, window: Window): Ledger<never> => ({
 	scopeOf: unread,
 	unended: unread,
 	finished: unread,
-	busy: unread,
+	busy: Effect.die("eligibility reads the snapshot's busy flows"),
 	claim: unread,
 	retry: unread,
 	fence: unread,
