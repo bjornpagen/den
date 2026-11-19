@@ -7,6 +7,7 @@
 	"sideEffects": false,
 	"imports": {
 		"#integration/*": "./integration/*",
+		"#pg.config.ts": "./pg.config.ts",
 		"#test/*": "./test/*",
 		"#*": "./src/*"
 	},
@@ -37,6 +38,7 @@
 		"oxlint": "toolchain-oxlint",
 		"test": "vitest run --config vitest.config.ts",
 		"test:network": "toolchain-test run",
+		"pg": "toolchain-pg",
 		"generate:slice": "node integration/slice/generate.ts && oxfmt integration/slice/generated"
 	},
 	"dependencies": {
@@ -48,6 +50,7 @@
 	},
 	"devDependencies": {
 		"@bjornpagen/devtools": "workspace:*",
+		"@bjornpagen/grizzle-pg": "workspace:*",
 		"@den/model": "workspace:*",
 		"@bjornpagen/testing": "workspace:*",
 		"@effect/platform-node": "catalog:",

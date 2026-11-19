@@ -4,7 +4,7 @@ import type { Ledgers } from "@bjornpagen/den/runtime/turn"
 import { inProcess } from "@bjornpagen/den/transport"
 import { Db, DbLayer, LiveSource, roleNameOf, served } from "@bjornpagen/grizzle/runtime"
 import { NeedFailed } from "@bjornpagen/testing/property"
-import { Database, type DatabaseNeed, Template } from "@bjornpagen/testing/resources"
+import { Database, type DatabaseNeed, type PgMember, Template } from "@bjornpagen/testing/resources"
 import * as NodeServices from "@effect/platform-node/NodeServices"
 import { regex } from "arkregex"
 import {
@@ -48,13 +48,7 @@ import anchoredMigration from "#integration/slice/migrations/slice/2026111812562
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
-import {
-	type Cluster,
-	clusterPort,
-	connectTimeoutMillis,
-	connectionTo,
-	ownerRole
-} from "#integration/support/cluster.ts"
+import { connectTimeoutMillis, connectionTo } from "#integration/support/cluster.ts"
 
 /**
  * The vertical slice installed on den's cluster, as the needs of the integration properties: a template of the slice
@@ -125,25 +119,25 @@ const committedFolders = Effect.gen(function* () {
 class SetupFailed extends Data.TaggedError("SetupFailed")<{ readonly message: string }> {}
 
 /** Runs one statement as the cluster's owner, in `database`, and returns its rows' first column. */
-const asOwner = (cluster: Cluster, database: string, statement: string) =>
+const asOwner = (member: PgMember, database: string, statement: string) =>
 	Effect.acquireUseRelease(
 		Effect.tap(
 			Effect.sync(
 				() =>
 					new pg.Client({
 						host: "localhost",
-						port: clusterPort,
-						user: ownerRole,
-						password: Redacted.value(cluster.password),
+						port: member.port,
+						user: member.owner,
+						password: Redacted.value(member.password),
 						database,
-						ssl: { ca: cluster.ca, servername: "localhost" }
+						ssl: { ca: member.ca, servername: "localhost" }
 					})
 			),
 			(client) =>
 				Effect.tryPromise({
 					try: () => client.connect(),
 					catch: (cause) =>
-						new SetupFailed({ message: `connecting as ${ownerRole}: ${String(cause)}` })
+						new SetupFailed({ message: `connecting as ${member.owner}: ${String(cause)}` })
 				})
 		),
 		(client) =>
@@ -195,7 +189,7 @@ export const grizzle = (
  * and its logins' passwords.
  */
 interface Installed {
-	readonly cluster: Cluster
+	readonly member: PgMember
 	readonly database: string
 	readonly rolePrefix: string
 	readonly env: Readonly<Record<string, string>>
@@ -209,11 +203,11 @@ class Installation extends Context.Service<Installation, Installed>()(
 ) {}
 
 /** The environment a grizzle command over `database` under `rolePrefix` reads (grizzle.config.ts). */
-const envOf = (cluster: Cluster, database: string, rolePrefix: string) => ({
-	DEN_PG_PORT: String(clusterPort),
-	DEN_PG_CA: cluster.ca,
-	DEN_PG_ROLE: ownerRole,
-	DEN_PG_PASSWORD: Redacted.value(cluster.password),
+const envOf = (member: PgMember, database: string, rolePrefix: string) => ({
+	DEN_PG_PORT: String(member.port),
+	DEN_PG_CA: member.ca,
+	DEN_PG_ROLE: member.owner,
+	DEN_PG_PASSWORD: Redacted.value(member.password),
 	DEN_DATABASE: database,
 	DEN_ROLE_PREFIX: rolePrefix
 })
@@ -230,7 +224,7 @@ const loginsOf = (rolePrefix: string) => ({
  * slice's committed migrations, then each login given its password.
  */
 const install = (
-	cluster: Cluster,
+	member: PgMember,
 	database: string,
 	rolePrefix: string,
 	passwords: Readonly<{
@@ -240,15 +234,15 @@ const install = (
 	}>
 ) =>
 	Effect.gen(function* () {
-		const env = envOf(cluster, database, rolePrefix)
+		const env = envOf(member, database, rolePrefix)
 		yield* grizzle("migrate", env, sliceDir)
 		const roles = loginsOf(rolePrefix)
 		const set = (role: string, secret: Redacted.Redacted) =>
-			asOwner(cluster, ownerRole, `ALTER ROLE "${role}" PASSWORD '${Redacted.value(secret)}'`)
+			asOwner(member, member.owner, `ALTER ROLE "${role}" PASSWORD '${Redacted.value(secret)}'`)
 		yield* set(roles.worker, passwords.worker)
 		yield* set(roles.app, passwords.app)
 		yield* set(roles.decoder, passwords.decoder)
-		const installed: Installed = { cluster, database, rolePrefix, env, ...passwords }
+		const installed: Installed = { member, database, rolePrefix, env, ...passwords }
 		return installed
 	})
 
@@ -265,16 +259,16 @@ const templatePrefixOf = (template: string): string => `t${Str.slice(-32, -20)(t
  * as the misconfigured loader is), and every worker that clones the template logs in without the template keeping a
  * credential.
  */
-const templatePassword = (cluster: Cluster, role: string): Redacted.Redacted =>
-	Redacted.make(`${Redacted.value(cluster.password)}:${role}`)
+const templatePassword = (member: PgMember, role: string): Redacted.Redacted =>
+	Redacted.make(`${Redacted.value(member.password)}:${role}`)
 
 /** The passwords of the template under `rolePrefix`'s three logins (templatePassword). */
-const templatePasswords = (cluster: Cluster, rolePrefix: string) => {
+const templatePasswords = (member: PgMember, rolePrefix: string) => {
 	const roles = loginsOf(rolePrefix)
 	return {
-		worker: templatePassword(cluster, roles.worker),
-		app: templatePassword(cluster, roles.app),
-		decoder: templatePassword(cluster, roles.decoder)
+		worker: templatePassword(member, roles.worker),
+		app: templatePassword(member, roles.app),
+		decoder: templatePassword(member, roles.decoder)
 	}
 }
 
@@ -285,15 +279,15 @@ const templatePasswords = (cluster: Cluster, rolePrefix: string) => {
  * there and its migration refused them (42710). They own nothing once the database they were made in is gone; a role
  * that still owns something, in a clone another run holds, fails its drop and so the build.
  */
-const dropLeftRoles = (cluster: Cluster, rolePrefix: string) =>
+const dropLeftRoles = (member: PgMember, rolePrefix: string) =>
 	Effect.flatMap(
 		asOwner(
-			cluster,
-			ownerRole,
+			member,
+			member.owner,
 			`SELECT rolname AS name FROM pg_catalog.pg_roles WHERE starts_with(rolname, '${rolePrefix}_') ORDER BY rolname DESC`
 		),
 		(left) =>
-			Effect.forEach(left, (role) => asOwner(cluster, ownerRole, `DROP ROLE "${role}"`), {
+			Effect.forEach(left, (role) => asOwner(member, member.owner, `DROP ROLE "${role}"`), {
 				discard: true
 			})
 	)
@@ -320,12 +314,12 @@ const sliceTemplate = Template.database({
 		Effect.mapError(
 			Effect.gen(function* () {
 				const rolePrefix = templatePrefixOf(target.name)
-				yield* dropLeftRoles(target.member.cluster, rolePrefix)
+				yield* dropLeftRoles(target.member, rolePrefix)
 				yield* install(
-					target.member.cluster,
+					target.member,
 					target.name,
 					rolePrefix,
-					templatePasswords(target.member.cluster, rolePrefix)
+					templatePasswords(target.member, rolePrefix)
 				)
 			}),
 			setupNeedFailed("den slice template")
@@ -365,7 +359,7 @@ class Misconfigured extends Context.Service<
  */
 const loginsLayer = (installed: Installed) => {
 	const connection = (password: Redacted.Redacted) => ({
-		...connectionTo(installed.cluster, installed.database, password),
+		...connectionTo(installed.member, installed.database, password),
 		rolePrefix: installed.rolePrefix
 	})
 	const live = LiveSource.layer({ ...connection(installed.decoder), login: WorkerServed })
@@ -449,14 +443,14 @@ const caseOf = (installed: Installed, clock: CaseClock) =>
 export type SliceCase = Layer.Success<ReturnType<typeof caseLayer>>
 
 /** The installation a case over a clone of the slice template has: the clone, under the template's prefix. */
-const clonedInstallation = (cluster: Cluster, database: string, template: string): Installed => {
+const clonedInstallation = (member: PgMember, database: string, template: string): Installed => {
 	const rolePrefix = templatePrefixOf(template)
 	return {
-		cluster,
+		member,
 		database,
 		rolePrefix,
-		env: envOf(cluster, database, rolePrefix),
-		...templatePasswords(cluster, rolePrefix)
+		env: envOf(member, database, rolePrefix),
+		...templatePasswords(member, rolePrefix)
 	}
 }
 
@@ -480,7 +474,7 @@ const clonedCase = (clock: CaseClock): DatabaseNeed<Context.Context<SliceCase>> 
 			Effect.map(fresh.open, (take) =>
 				Effect.flatMap(take, (db) =>
 					Effect.mapError(
-						caseOf(clonedInstallation(db.member.cluster, db.name, db.template), clock),
+						caseOf(clonedInstallation(db.member, db.name, db.template), clock),
 						builtAs(key)
 					)
 				)
@@ -510,7 +504,7 @@ const ownInstallation = (database: Database) =>
 			const password = Effect.map(Effect.all([freshName, freshName]), ([a, b]) =>
 				Redacted.make(`p${a}${b}`)
 			)
-			return yield* install(database.member.cluster, database.name, `t${suffix}`, {
+			return yield* install(database.member, database.name, `t${suffix}`, {
 				worker: yield* password,
 				app: yield* password,
 				decoder: yield* password

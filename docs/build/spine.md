@@ -40,11 +40,12 @@ and `grizzle check` passes.
 - **Fan-out** (`Fan`): root `FanRun` starts one `Batch` scope, which starts one `Square` per number up to its size; the
   batch's finish tallies them once all have results; the root's finish runs after the batch's and inserts `Settled`.
 
-The cluster: `scripts/pg.sh` (`init [--force]`, `start`, `stop`, `status`, `psql`, `admin`, `reset`, `env`), run as
-`pnpm pg …`; the build `vendor/grizzle`'s `scripts/pg/pin.env` pins, data at `~/.local/var/den/pg/data`, port 5435,
-verify-full TLS with its own CA (grizzle speaks nothing else), `wal_level=logical`, 100 replication slots and senders
-(= `max_connections`), `max_pred_locks_per_transaction = 2048`, owner role `den_dev` (LOGIN CREATEDB CREATEROLE
-REPLICATION) and the template `den_template`. Each test file creates a database of its own from the template, runs
+The cluster: `packages/den/pg.config.ts`, the testing library's `localCluster` (`toolchain-pg init`, `start`, `stop`,
+`status`, `psql`, `admin`, `reset`, `env`, run as `pnpm pg …`), made and started by the runner's first need; the build
+`vendor/grizzle`'s `scripts/pg/pin.env` pins, its state under `~/.local/var/toolchain-pg/5443`, port 5443, verify-full
+TLS with its own CA (grizzle speaks nothing else), logical WAL, a replication slot and walsender per worker,
+`max_pred_locks_per_transaction = 2048`, owner role `den_dev` and the template `den_template` with pgvector in
+`vector_ext`. Each test file creates a database of its own from the template, runs
 `grizzle migrate` from the committed migrations under a role prefix of its own (roles are cluster-wide), gives its
 logins passwords, and runs `grizzle uninstall` and drops the database when it ends. grizzle's cluster (5433) is never
 touched.

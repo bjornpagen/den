@@ -1,23 +1,15 @@
 import net from "node:net"
 import type { DbConnection } from "@bjornpagen/grizzle/runtime"
-import { Config, Effect, FileSystem, Path, Redacted, String as Str } from "effect"
+import type { PgMember } from "@bjornpagen/testing/resources"
+import type { Redacted } from "effect"
 import pgDriver from "pg"
 import { authenticationTimeoutSeconds } from "#runtime/turn.ts"
-
-/**
- * den's own PostgreSQL 19 cluster (scripts/pg.sh): localhost on port 5435, verify-full TLS against its CA, the owner
- * role den_dev, whose password lies beside the cluster's data. A suite reaches it only through these coordinates.
- */
-export const clusterPort = 5435
-export const ownerRole = "den_dev"
-export const templateDatabase = "den_template"
-export const testDatabasePrefix = "den_t_"
 
 /**
  * How long one connection attempt to den's cluster may take: as long as the server lets it authenticate.
  *
  * @limitKind derived
- * @owner den's suites on its own cluster (scripts/pg.sh)
+ * @owner den's suites on its own cluster (pg.config.ts)
  * @unit milliseconds
  * @scope one connection attempt of a suite's DbLayer, and the CancelRequest an interrupted statement sends
  * @derivation the cluster runs at PostgreSQL's default authentication_timeout, past which it closes the connection
@@ -26,27 +18,9 @@ export const testDatabasePrefix = "den_t_"
  */
 export const connectTimeoutMillis = authenticationTimeoutSeconds * 1000
 
-/** What a suite needs of the cluster: its CA and its owner's password. */
-export interface Cluster {
-	readonly ca: string
-	readonly password: Redacted.Redacted
-}
-
-/** Reads the cluster's CA and its owner's password from where scripts/pg.sh wrote them. */
-export const readCluster = Effect.gen(function* () {
-	const fs = yield* FileSystem.FileSystem
-	const path = yield* Path.Path
-	const home = yield* Config.String("HOME")
-	const state = path.join(home, ".local", "var", "den", "pg")
-	const ca = yield* fs.readFileString(path.join(state, "tls", "ca.crt"))
-	const written = yield* fs.readFileString(path.join(state, `${ownerRole}.password`))
-	const cluster: Cluster = { ca, password: Redacted.make(Str.trim(written)) }
-	return cluster
-})
-
-/** A connection to `database` on the cluster, without its role. */
+/** A connection to `database` on `member` over verify-full TLS against the member's CA, under `password`. */
 export const connectionTo = (
-	cluster: Cluster,
+	member: PgMember,
 	database: string,
 	password: Redacted.Redacted
 ): DbConnection => ({
@@ -54,9 +28,9 @@ export const connectionTo = (
 	transport: {
 		kind: "sslRequest",
 		host: "localhost",
-		port: clusterPort,
+		port: member.port,
 		open: () => new net.Socket(),
-		ca: cluster.ca,
+		ca: member.ca,
 		servername: "localhost"
 	},
 	database,

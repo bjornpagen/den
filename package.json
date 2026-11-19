@@ -30,7 +30,7 @@
 		"test": "turbo run test --filter=./packages/*",
 		"test:network": "pnpm --filter @bjornpagen/den test:network",
 		"fuzz": "node vendor/toolchain/packages/testing/scripts/fuzz.ts",
-		"pg": "scripts/pg.sh"
+		"pg": "pnpm --filter @bjornpagen/den pg"
 	},
 	"devDependencies": {
 		"@bjornpagen/devtools": "workspace:*",

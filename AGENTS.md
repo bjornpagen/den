@@ -49,8 +49,8 @@ or worked around.
 - **Every limit has evidence.** A number that bounds concurrency, retries, timeouts, batch or page size, a capacity or
   a budget is a plain constant in the module that uses it, its evidence in its JSDoc (`@limitKind` published,
   measured, derived or provisional, with `@owner`, `@unit`, `@scope` and its kind's tags); a cap that guards nothing
-  is deleted. The policy is the indefensible-numbers skill (`.agents/skills/indefensible-numbers`). `scripts/pg.sh`
-  holds the cluster's three settings as locals, each with its evidence above it.
+  is deleted. The policy is the indefensible-numbers skill (`.agents/skills/indefensible-numbers`). den's cluster is
+  `packages/den/pg.config.ts`, the testing library's `localCluster`, its one sized count with its evidence beside it.
 
 ## Workspace
 

@@ -16,7 +16,7 @@
  * @observed 2026-11-16 07:27:05 to 07:27:35 UTC
  * @environment cassowary, Ubuntu 26.04 on an AWS Graviton3 (Neoverse-V1, arm64) instance, 64 CPUs and 247 GiB, load
  *   average 17.6 to 21.3 from other sessions; Node 26.13.1, Vitest 5.1.0, toolchain 4b24be8; den's PostgreSQL 19rc2
- *   cluster (scripts/pg.sh), each network file in a database of its own
+ *   cluster, each network file in a database of its own
  * @workload every suite that sets caseHang: den's five unit files and den-vercel's four, then den's fifteen network
  *   files on the cluster, every file of a package at once
  * @result every file passed; the slowest, integration/seatcount.test.ts, in 19,635 ms, every network file but

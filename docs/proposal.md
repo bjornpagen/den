@@ -215,7 +215,8 @@ outbox send path, the second scheduler, removing old deployments by hand.
 
 `vendor/grizzle` is a git submodule pinned on grizzle's `main` branch, its `engine` and `grizzle` packages in the
 workspace, whose exports name their TypeScript sources. Effect 4.1.4. A PostgreSQL 19 cluster of den's own
-(`pnpm pg`), from the build grizzle's `scripts/pg/pin.env` pins, with `wal_level=logical`.
+(`packages/den/pg.config.ts`, the testing library's `localCluster`), from the build grizzle's `scripts/pg/pin.env`
+pins, with logical WAL.
 
 ## 15. grizzle's part
 
