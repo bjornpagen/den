@@ -1,4 +1,4 @@
-import type { AnyRelation, Fact, Vector, Written } from "@bjornpagen/grizzle"
+import type { AnyRelation, Fact, Vector, Addition } from "@bjornpagen/grizzle"
 import { regex } from "arkregex"
 import {
 	Array as Arr,
@@ -193,9 +193,9 @@ export interface WritesDeclaration<
 
 /** The facts a body returns for each relation its step declares, under each operation. */
 export type Writes<W extends WritesDeclaration> = {
-	readonly insert: { readonly [R in W["insert"][number] as R["name"]]: ReadonlyArray<Written<R>> }
-	readonly put: { readonly [R in W["put"][number] as R["name"]]: ReadonlyArray<Written<R>> }
-	readonly delete: { readonly [R in W["delete"][number] as R["name"]]: ReadonlyArray<Written<R>> }
+	readonly insert: { readonly [R in W["insert"][number] as R["name"]]: ReadonlyArray<Addition<R>> }
+	readonly put: { readonly [R in W["put"][number] as R["name"]]: ReadonlyArray<Addition<R>> }
+	readonly delete: { readonly [R in W["delete"][number] as R["name"]]: ReadonlyArray<Addition<R>> }
 }
 
 /** The relations a step inserts into, puts and deletes from. */

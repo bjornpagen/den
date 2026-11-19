@@ -108,7 +108,10 @@ export const Worker = login(App, "worker", [AppRole, ...qtiPrograms.roles])
   typechecks is open (grizzle ask 1).
 - Every generated name carries its flow's prefix; den's merge checks clashes until grizzle does (ask 2).
 - den's fragment has no derived relation and no rule over a query.
-- Every den role is designed to certify READ COMMITTED, so it never drags an app role to SERIALIZABLE.
+- Each den role certifies at the level grizzle certifies its writes: its coordinator READ COMMITTED, its own role and
+  its retirer SERIALIZABLE, since a selection-sided containment of the graph is judged as a rule (Bjorn, 2026-11-19:
+  correctness first, performance after it), and every call runs again on a transient refusal
+  ([build/repin.md](build/repin.md)).
 - One installation, one snapshot, one migrations chain: adding a flow or upgrading den is an ordinary migration of the
   app.
 - On grizzle's `live` branch every login that serves a read already needs the live source; den adds nothing

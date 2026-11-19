@@ -529,7 +529,7 @@ export const assignCoordinatorPrograms = Object.freeze({
 
 export const assignCoordinatorWorkload = workload(AssignCoordinator, assignCoordinatorPrograms)
 
-/** den's retiring role for the flow Assign: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else, so every inserter of the graph stays READ COMMITTED. */
+/** den's retiring role for the flow Assign: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else: a role of its own, as grizzle's retirement asks. */
 export const AssignRetirer = role(
 	App,
 	"assign_retirer",

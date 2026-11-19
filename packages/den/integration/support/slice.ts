@@ -37,14 +37,7 @@ import { fanLedger } from "#integration/slice/generated/fan.binding.ts"
 import { retryLedger } from "#integration/slice/generated/retry.binding.ts"
 import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
 import type { AppLogin, Worker } from "#integration/slice/logins.ts"
-import initMigration from "#integration/slice/migrations/slice/20261114214053_init/meta.json" with { type: "json" }
-import fanFreedMigration from "#integration/slice/migrations/slice/20261115213330_add_rule_capture_of_fan_freed_and_more/meta.json" with { type: "json" }
-import netWriteMigration from "#integration/slice/migrations/slice/20261118094004_add_fan_hold_capture_delete_and_more/meta.json" with { type: "json" }
-import readsMigration from "#integration/slice/migrations/slice/20261118100351_named_and_nearest_reads/meta.json" with { type: "json" }
-import valuesMigration from "#integration/slice/migrations/slice/20261118104939_structured_values/meta.json" with { type: "json" }
-import judgeMigration from "#integration/slice/migrations/slice/20261118120625_rule_judge_of_grizzle_c782217b/meta.json" with { type: "json" }
-import retirableMigration from "#integration/slice/migrations/slice/20261118123236_retirable_graphs/meta.json" with { type: "json" }
-import anchoredMigration from "#integration/slice/migrations/slice/20261118125628_anchored_nearest_reads_in_one_statement/meta.json" with { type: "json" }
+import initMigration from "#integration/slice/migrations/slice/20261119164935_init/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -64,8 +57,8 @@ export const AppServed = served<typeof AppLogin>(appFile, "app")
 /** The slice's directory, where its migrations and a suite's configuration lie. */
 const sliceDir = `${import.meta.dirname}/../slice`
 
-/** The grizzle command line, run from its source. */
-const grizzleBin = `${import.meta.dirname}/../../../../vendor/grizzle/packages/grizzle/src/cli/main.ts`
+/** The grizzle command line, as @bjornpagen/grizzle publishes it: its package's bin, which pnpm links into den's. */
+const grizzleBin = `${import.meta.dirname}/../../node_modules/.bin/grizzle`
 
 /**
  * The slice's committed migrations, by folder, each its meta.json (every statement of the folder, which `grizzle
@@ -74,14 +67,7 @@ const grizzleBin = `${import.meta.dirname}/../../../../vendor/grizzle/packages/g
  * record lacks, or lacks one it holds (committedFolders).
  */
 const committed = Object.freeze({
-	"20261114214053_init": initMigration,
-	"20261115213330_add_rule_capture_of_fan_freed_and_more": fanFreedMigration,
-	"20261118094004_add_fan_hold_capture_delete_and_more": netWriteMigration,
-	"20261118100351_named_and_nearest_reads": readsMigration,
-	"20261118104939_structured_values": valuesMigration,
-	"20261118120625_rule_judge_of_grizzle_c782217b": judgeMigration,
-	"20261118123236_retirable_graphs": retirableMigration,
-	"20261118125628_anchored_nearest_reads_in_one_statement": anchoredMigration
+	"20261119164935_init": initMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
@@ -164,11 +150,12 @@ export const grizzle = (
 ) =>
 	Effect.scoped(
 		Effect.gen(function* () {
-			const handle = yield* ChildProcess.make(
-				process.execPath,
-				[grizzleBin, command, "grizzle.config.ts"],
-				{ cwd: directory, env, extendEnv: true, stdin: "ignore" }
-			)
+			const handle = yield* ChildProcess.make(grizzleBin, [command, "grizzle.config.ts"], {
+				cwd: directory,
+				env,
+				extendEnv: true,
+				stdin: "ignore"
+			})
 			const [stdout, stderr, code] = yield* Effect.all(
 				[
 					Stream.mkString(Stream.decodeText(handle.stdout)),

@@ -433,7 +433,7 @@ export const retryCoordinatorPrograms = Object.freeze({
 
 export const retryCoordinatorWorkload = workload(RetryCoordinator, retryCoordinatorPrograms)
 
-/** den's retiring role for the flow Retry: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else, so every inserter of the graph stays READ COMMITTED. */
+/** den's retiring role for the flow Retry: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else: a role of its own, as grizzle's retirement asks. */
 export const RetryRetirer = role(
 	App,
 	"retry_retirer",

@@ -466,7 +466,7 @@ export const syncCoordinatorPrograms = Object.freeze({
 
 export const syncCoordinatorWorkload = workload(SyncCoordinator, syncCoordinatorPrograms)
 
-/** den's retiring role for the flow Sync: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else, so every inserter of the graph stays READ COMMITTED. */
+/** den's retiring role for the flow Sync: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else: a role of its own, as grizzle's retirement asks. */
 export const SyncRetirer = role(
 	App,
 	"sync_retirer",

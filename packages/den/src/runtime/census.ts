@@ -1,4 +1,4 @@
-import type { CallError } from "@bjornpagen/grizzle/runtime"
+import type { Settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Cron, Duration, Effect } from "effect"
 import type { Digest } from "effect/crypto"
 import { eligible } from "#runtime/eligible.ts"
@@ -25,7 +25,7 @@ export interface Tick {
 /** One census tick of one flow, at a reading of the database's instant. */
 export const tick = <R>(
 	ledger: Ledger<R>
-): Effect.Effect<Tick, CallError, Digest.Digest | Transport> =>
+): Effect.Effect<Tick, Settled, Digest.Digest | Transport> =>
 	Effect.gen(function* () {
 		const at = yield* ledger.now
 		yield* Effect.forEach(ledger.scheduled, (s) =>
@@ -50,7 +50,7 @@ export const tick = <R>(
 /** The census's rings of several flows, each ticked at a reading of its own, in their order. */
 export const tickAll = <R>(
 	ledgers: ReadonlyArray<Ledger<R>>
-): Effect.Effect<ReadonlyArray<Ring>, CallError, Digest.Digest | Transport> =>
+): Effect.Effect<ReadonlyArray<Ring>, Settled, Digest.Digest | Transport> =>
 	Effect.map(
 		Effect.forEach(ledgers, (ledger) => tick(ledger)),
 		(ticks) => Arr.flatMap(ticks, (t) => t.rings)

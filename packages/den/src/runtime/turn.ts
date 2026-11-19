@@ -1,4 +1,4 @@
-import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
+import type { Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Cause, Duration, Effect, Exit, Option, Order, Random } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Ladder } from "#algebra/kinds.ts"
@@ -151,8 +151,8 @@ export interface Onward {
 }
 
 /**
- * One turn, in three calls: the claim, a race at `(step, attempt)` certified READ COMMITTED, whose loser meets the
- * winner's claim and goes no further; the step's declared reads in one read-only call; and the commit, its result, the
+ * One turn, in three calls: the claim, a race at `(step, attempt)`, whose loser meets the winner's claim and goes no
+ * further; the step's declared reads in one read-only call; and the commit, its result, the
  * rows its reads found, the body's writes and its spawns, in one call under the flow's app role. Before the claim the
  * turn takes a seat of each resource the step uses (the seat module), and after its last write it gives them back.
  *
@@ -160,8 +160,9 @@ export interface Onward {
  * database's instant (the ledger's `now`), stamps its claim's lease from the invocation's end in that clock and a
  * retry's due instant from a reading, and rings a timer with the duration between two readings.
  *
- * Endings come from grizzle's CallError: `transient` is a wait, retried in place within the deadline and, past it,
- * recorded with no attempt spent; `unavailable` and `transport`, which change nothing, spend an attempt, as every
+ * Endings come from grizzle's CallError, which a call meets once it is no longer `transient` (Settled): a write still
+ * running again on transient refusals at the turn's deadline is a wait, recorded with no attempt spent; `unavailable`
+ * and `transport`, which change nothing, spend an attempt, as every
  * other refusal of the call does; `refused` is `lost` when the law is a key another fact already holds, and `failed`
  * naming the law otherwise; `stale` and `credentialRefused` are the deployment's faults (Fault), on which this
  * deployment spends nothing, acknowledges its wake and exits. A defect is no state of its own: the attempt ends spent,
@@ -210,14 +211,14 @@ export type Ending =
  * on the deployment, where its own login still can (`ended`), rings nothing, and names the fault in its ending. A stale
  * deployment's record never lands, since its every call meets `stale`: its claim's lapse spends the attempt, as before.
  */
-export type Fault = Extract<CallError, { readonly kind: "stale" | "credentialRefused" }>
+export type Fault = Extract<Settled, { readonly kind: "stale" | "credentialRefused" }>
 
 /** The deployment's fault `error` is, if it is one. */
-const faultOf = (error: CallError): Option.Option<Fault> =>
+const faultOf = (error: Settled): Option.Option<Fault> =>
 	error.kind === "stale" || error.kind === "credentialRefused" ? Option.some(error) : Option.none()
 
 /** The ending of a call's failure: fenced on the deployment's fault, `otherwise` on any other. */
-const fencedOr = (error: CallError, wake: Wake, otherwise: Ending): Ending =>
+const fencedOr = (error: Settled, wake: Wake, otherwise: Ending): Ending =>
 	Option.match(faultOf(error), {
 		onSome: (fault): Ending => ({ kind: "fenced", wake, fault }),
 		onNone: () => otherwise
@@ -279,7 +280,7 @@ export const spentBefore = (
  * already wrote. A claim at this attempt by another holder refuses nothing: Claim races its key, and the claim reports
  * the holder it met.
  */
-export const lostRace = (flow: string, error: CallError): boolean =>
+export const lostRace = (flow: string, error: Settled): boolean =>
 	error.kind === "refused" &&
 	Arr.some(
 		error.refused.laws,
@@ -301,29 +302,24 @@ export const lostRace = (flow: string, error: CallError): boolean =>
 	)
 
 /** The law a refusal names first, by its identity, as a Refusal row records it. */
-const lawOf = (error: Extract<CallError, { readonly kind: "refused" }>): string =>
+const lawOf = (error: Extract<Settled, { readonly kind: "refused" }>): string =>
 	String(error.refused.laws[0].id)
 
 /**
- * Retries a write while it is refused as transient, which changed nothing, until `deadline`, judged at a reading of the
- * database's instant `clock` takes.
+ * A write within `deadline`, judged at a reading of the database's instant `clock` takes: none where it was still
+ * running at the deadline, as a write run again on each transient refusal can be (Settled).
  */
 export const written = <A, R>(
-	write: Effect.Effect<A, CallError, R>,
-	clock: Effect.Effect<Instant, CallError>,
+	write: Effect.Effect<A, Settled, R>,
+	clock: Effect.Effect<Instant, Settled>,
 	deadline: Instant
-): Effect.Effect<Option.Option<A>, CallError, R> =>
-	Effect.flatMap(clock, (at) =>
-		Effect.timeoutOption(
-			Effect.retry(write, { while: (error) => error.kind === "transient" }),
-			delayTo(at, deadline)
-		)
-	)
+): Effect.Effect<Option.Option<A>, Settled, R> =>
+	Effect.flatMap(clock, (at) => Effect.timeoutOption(write, delayTo(at, deadline)))
 
 /** A step kind's typed port: its input, its declared read, its commit and its typed failure. */
 export interface StepPort<I, Rows, O, E, W> {
-	readonly input: (step: StepKey) => Effect.Effect<Option.Option<I>, CallError>
-	readonly read: (input: I) => Effect.Effect<Rows, CallError>
+	readonly input: (step: StepKey) => Effect.Effect<Option.Option<I>, Settled>
+	readonly read: (input: I) => Effect.Effect<Rows, Settled>
 	readonly commit: (
 		done: {
 			readonly turn: Turn
@@ -333,13 +329,13 @@ export interface StepPort<I, Rows, O, E, W> {
 			readonly writes: W
 		},
 		at: Instant
-	) => Effect.Effect<Committed, CallError, Digest.Digest>
+	) => Effect.Effect<Committed, Settled, Digest.Digest>
 	readonly fail: (failed: {
 		readonly turn: Turn
 		readonly input: I
 		readonly rows: Rows
 		readonly error: E
-	}) => Effect.Effect<WriteOutcome<unknown>, CallError>
+	}) => Effect.Effect<WriteOutcome<unknown>, Settled>
 }
 
 /** What a runner runs: a step kind's body, or a finish's over its scope's input and its children's endings. */
@@ -370,7 +366,7 @@ export const runnerOf = <I, Rows, O, E, W, R>(
 	run: Effect.fn(`den.turn.${runnable.name}`)(function* (
 		turn: Turn,
 		at: Instant,
-		clock: Effect.Effect<Instant, CallError>
+		clock: Effect.Effect<Instant, Settled>
 	) {
 		const input = yield* Effect.result(port.input(turn.step))
 		if (input._tag === "Failure") {
@@ -429,7 +425,7 @@ export const runnerOf = <I, Rows, O, E, W, R>(
 })
 
 /** The reads a turn needs, any failure but the deployment's fault a wait with no attempt spent. */
-const readOr = <A>(read: Effect.Effect<A, CallError>, wake: Wake): Effect.Effect<A, Ending> =>
+const readOr = <A>(read: Effect.Effect<A, Settled>, wake: Wake): Effect.Effect<A, Ending> =>
 	Effect.mapError(read, (error) =>
 		fencedOr(error, wake, { kind: "waiting", wake, why: "unread", until: Option.none() })
 	)
@@ -438,7 +434,7 @@ const readOr = <A>(read: Effect.Effect<A, CallError>, wake: Wake): Effect.Effect
  * The ending of a write that failed: fenced on the deployment's fault, lost when another fact already holds its key,
  * and otherwise a wait with no attempt spent.
  */
-const unwritten = (flow: string, error: CallError, wake: Wake): Ending =>
+const unwritten = (flow: string, error: Settled, wake: Wake): Ending =>
 	fencedOr(
 		error,
 		wake,
@@ -451,11 +447,11 @@ const unwritten = (flow: string, error: CallError, wake: Wake): Ending =>
 const chainOf = <R>(
 	ledger: Ledger<R>,
 	scope: ScopeKey
-): Effect.Effect<ReadonlyArray<ScopeView>, CallError> => {
+): Effect.Effect<ReadonlyArray<ScopeView>, Settled> => {
 	const walk = (
 		at: ScopeKey,
 		seen: ReadonlyArray<ScopeView>
-	): Effect.Effect<ReadonlyArray<ScopeView>, CallError> =>
+	): Effect.Effect<ReadonlyArray<ScopeView>, Settled> =>
 		Effect.flatMap(ledger.scopeOf(at), (found) =>
 			Option.match(found, {
 				onNone: () => Effect.succeed(seen),
@@ -477,7 +473,7 @@ const gate = <R>(
 	at: Instant
 ): Effect.Effect<
 	Option.Option<{ readonly why: Wait; readonly until: Option.Option<Instant> }>,
-	CallError
+	Settled
 > =>
 	Effect.gen(function* () {
 		const windows = Arr.flatMap(chain, (s) =>
@@ -526,7 +522,7 @@ const stands = (
 const nextWake = <R>(
 	ledger: Ledger<R>,
 	step: StepKey
-): Effect.Effect<Option.Option<Onward>, CallError> =>
+): Effect.Effect<Option.Option<Onward>, Settled> =>
 	Effect.gen(function* () {
 		const at = yield* ledger.now
 		const result = yield* ledger.resultOf(step)
@@ -669,7 +665,7 @@ const ended = <R>(
 /** The ending a write's outcome gives: `ok` once written, lost when another fact holds its key, else a wait. */
 const recorded = <R>(
 	ledger: Ledger<R>,
-	write: Effect.Effect<WriteOutcome<unknown>, CallError>,
+	write: Effect.Effect<WriteOutcome<unknown>, Settled>,
 	wake: Wake,
 	ok: Ending
 ): Effect.Effect<Ending> =>
@@ -719,8 +715,6 @@ const endingOf = <R>(
 							? Effect.succeed<Ending>({ kind: "done", wake, spawned: { steps: [], finishes: [] } })
 							: ended(ledger, runner, turn, spentSoFar, { kind: "spent" }, wake)
 					)
-				case "transient":
-					return ended(ledger, runner, turn, spentSoFar, { kind: "waited" }, wake)
 				case "unavailable":
 				case "transport":
 				case "input":
@@ -844,9 +838,7 @@ const serveStep = <R>(
 			holds.value,
 			Effect.gen(function* () {
 				const claim: Rooted<ClaimRow> = { step, root, attempt: next, holder, until }
-				const claimed = yield* Effect.result(
-					Effect.retry(ledger.claim(claim), { while: (error) => error.kind === "transient" })
-				)
+				const claimed = yield* Effect.result(ledger.claim(claim))
 				if (claimed._tag === "Failure") {
 					return served(unwritten(ledger.flow, claimed.failure, wake))
 				}

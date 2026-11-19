@@ -30,8 +30,8 @@ import type {
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Chain over its served programs; `den generate` writes it, and nothing edits it. */
-import type { Written } from "@bjornpagen/grizzle"
-import type { CallError, MemberHandle } from "@bjornpagen/grizzle/runtime"
+import type { Addition } from "@bjornpagen/grizzle"
+import { type MemberHandle, type Settled, settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import { chain } from "#integration/slice/flows.ts"
@@ -77,17 +77,17 @@ export interface ChainHandles {
 }
 
 interface Rows {
-	readonly ChainStep: ReadonlyArray<Written<typeof ChainStep>>
-	readonly ChainDue: ReadonlyArray<Written<typeof ChainDue>>
-	readonly ChainScope: ReadonlyArray<Written<typeof ChainScope>>
-	readonly ChainWithin: ReadonlyArray<Written<typeof ChainWithin>>
-	readonly ChainAdmitted: ReadonlyArray<Written<typeof ChainAdmitted>>
-	readonly ChainFinish: ReadonlyArray<Written<typeof ChainFinish>>
-	readonly ChainStartStep: ReadonlyArray<Written<typeof ChainStartStep>>
-	readonly ChainStartScope: ReadonlyArray<Written<typeof ChainStartScope>>
-	readonly ChainPageInput: ReadonlyArray<Written<typeof ChainPageInput>>
-	readonly ChainPageInputAfter: ReadonlyArray<Written<typeof ChainPageInputAfter>>
-	readonly ChainNext: ReadonlyArray<Written<typeof ChainNext>>
+	readonly ChainStep: ReadonlyArray<Addition<typeof ChainStep>>
+	readonly ChainDue: ReadonlyArray<Addition<typeof ChainDue>>
+	readonly ChainScope: ReadonlyArray<Addition<typeof ChainScope>>
+	readonly ChainWithin: ReadonlyArray<Addition<typeof ChainWithin>>
+	readonly ChainAdmitted: ReadonlyArray<Addition<typeof ChainAdmitted>>
+	readonly ChainFinish: ReadonlyArray<Addition<typeof ChainFinish>>
+	readonly ChainStartStep: ReadonlyArray<Addition<typeof ChainStartStep>>
+	readonly ChainStartScope: ReadonlyArray<Addition<typeof ChainStartScope>>
+	readonly ChainPageInput: ReadonlyArray<Addition<typeof ChainPageInput>>
+	readonly ChainPageInputAfter: ReadonlyArray<Addition<typeof ChainPageInputAfter>>
+	readonly ChainNext: ReadonlyArray<Addition<typeof ChainNext>>
 }
 
 interface Grown {
@@ -217,11 +217,11 @@ export const chainLedger = (h: ChainHandles) => {
 	const readChainPageInput = (step: StepKey) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				h.den.chainReadChainPageInput.once({ params: { step: step }, facts: {} }),
+				settled(h.den.chainReadChainPageInput.once({ params: { step: step }, facts: {} })),
 				one
 			)
 			const side0 = yield* Effect.map(
-				h.den.chainReadChainPageInputAfter.once({ params: { step: step }, facts: {} }),
+				settled(h.den.chainReadChainPageInputAfter.once({ params: { step: step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({
@@ -234,7 +234,7 @@ export const chainLedger = (h: ChainHandles) => {
 	const readChainChainRunInput = (scope: ScopeKey) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				h.den.chainReadChainChainRunInput.once({ params: { scope: scope }, facts: {} }),
+				settled(h.den.chainReadChainChainRunInput.once({ params: { scope: scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ feed: found.feed, pages: found.pages }))
@@ -242,7 +242,7 @@ export const chainLedger = (h: ChainHandles) => {
 	const readChainOrderedInput = (scope: ScopeKey) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				h.den.chainReadChainOrderedInput.once({ params: { scope: scope }, facts: {} }),
+				settled(h.den.chainReadChainOrderedInput.once({ params: { scope: scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ feed: found.feed, pages: found.pages }))
@@ -252,11 +252,13 @@ export const chainLedger = (h: ChainHandles) => {
 		holds: Effect.succeed([]),
 		exclusiveTurns: Effect.succeed([]),
 		exclusives: Effect.succeed([]),
-		pauseTurns: Effect.map(h.coordinator.chainPauseTurns.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		pauseTurns: Effect.map(
+			settled(h.coordinator.chainPauseTurns.once({ params: {}, facts: {} })),
+			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
 		),
-		paused: Effect.map(h.coordinator.chainPausedAll.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		paused: Effect.map(
+			settled(h.coordinator.chainPausedAll.once({ params: {}, facts: {} })),
+			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
 		),
 		take: () => Effect.void,
 		giveBack: () => Effect.void,
@@ -264,20 +266,24 @@ export const chainLedger = (h: ChainHandles) => {
 		releaseExclusive: () => Effect.void,
 		pause: (row) =>
 			Effect.asVoid(
-				h.coordinator.chainPause.once({
-					params: {},
-					facts: { insert: { ChainPaused: pausesOf([row]) } }
-				})
+				settled(
+					h.coordinator.chainPause.once({
+						params: {},
+						facts: { insert: { ChainPaused: pausesOf([row]) } }
+					})
+				)
 			),
 		resume: (row) =>
 			Effect.asVoid(
-				h.coordinator.chainResume.once({
-					params: {},
-					facts: { insert: { ChainResumed: pausesOf([row]) } }
-				})
+				settled(
+					h.coordinator.chainResume.once({
+						params: {},
+						facts: { insert: { ChainResumed: pausesOf([row]) } }
+					})
+				)
 			)
 	}
-	const busyOf = (flow: string): Effect.Effect<boolean, CallError> => {
+	const busyOf = (flow: string): Effect.Effect<boolean, Settled> => {
 		switch (flow) {
 			default:
 				return Effect.succeed(false)
@@ -289,18 +295,20 @@ export const chainLedger = (h: ChainHandles) => {
 				Effect.map(
 					fresh(
 						"Chain",
-						h.den.chainRequestChainRun.once({
-							params: {},
-							facts: {
-								insert: {
-									ChainScope: [{ scope, kind: "ChainRun" as const, root: scope }],
-									ChainRoot: [{ scope, key, at }],
-									ChainChainRunInput: [
-										{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
-									]
+						settled(
+							h.den.chainRequestChainRun.once({
+								params: {},
+								facts: {
+									insert: {
+										ChainScope: [{ scope, kind: "ChainRun" as const, root: scope }],
+										ChainRoot: [{ scope, key, at }],
+										ChainChainRunInput: [
+											{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
+										]
+									}
 								}
-							}
-						})
+							})
+						)
 					),
 					(accepted) => ({ scope, fresh: accepted })
 				)
@@ -308,8 +316,10 @@ export const chainLedger = (h: ChainHandles) => {
 	}
 	const ledger: Ledger<FlowNeeds<typeof chain>> = {
 		flow: FlowName.make("Chain"),
-		now: Effect.flatMap(h.den.chainNow.once({ params: {}, facts: {} }), readingOf),
-		authenticated: Effect.asVoid(h.commits.chainAuthenticated.once({ params: {}, facts: {} })),
+		now: Effect.flatMap(settled(h.den.chainNow.once({ params: {}, facts: {} })), readingOf),
+		authenticated: Effect.asVoid(
+			settled(h.commits.chainAuthenticated.once({ params: {}, facts: {} }))
+		),
 		resources: [],
 		steps: new Map([
 			[
@@ -321,10 +331,12 @@ export const chainLedger = (h: ChainHandles) => {
 						read: (input) => {
 							const weights = chain.kinds[0].reads.weights.params(input)
 							return Effect.flatMap(
-								h.commits.chainReadPage.once({
-									params: { "weights.feed": weights.feed },
-									facts: {}
-								}),
+								settled(
+									h.commits.chainReadPage.once({
+										params: { "weights.feed": weights.feed },
+										facts: {}
+									})
+								),
 								(rows) => Effect.map(only(rows), (row) => ({ weights: row.weights }))
 							)
 						},
@@ -392,43 +404,45 @@ export const chainLedger = (h: ChainHandles) => {
 									]),
 									(parts) => Arr.reduce(parts, nothingGrown, joined)
 								)
-								const outcome = yield* h.commits.chainCommitPage.once({
-									params: {},
-									facts: {
-										insert: {
-											...grown.rows,
-											ChainResult: [
-												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-											],
-											ChainDone: [{ step: done.turn.step, root: done.turn.root }],
-											ChainHeld: [
-												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-											],
-											ChainPageOutput: [
-												{
+								const outcome = yield* settled(
+									h.commits.chainCommitPage.once({
+										params: {},
+										facts: {
+											insert: {
+												...grown.rows,
+												ChainResult: [
+													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+												],
+												ChainDone: [{ step: done.turn.step, root: done.turn.root }],
+												ChainHeld: [
+													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+												],
+												ChainPageOutput: [
+													{
+														step: done.turn.step,
+														root: done.turn.root,
+														seq: done.output.seq,
+														items: done.output.items
+													}
+												],
+												ChainPageOutputNext: Option.toArray(
+													Option.map(done.output.next, (value) => ({
+														step: done.turn.step,
+														root: done.turn.root,
+														value
+													}))
+												),
+												ChainPageWeightsRead: Arr.map(done.rows.weights, (row, ordinal) => ({
+													...row,
 													step: done.turn.step,
 													root: done.turn.root,
-													seq: done.output.seq,
-													items: done.output.items
-												}
-											],
-											ChainPageOutputNext: Option.toArray(
-												Option.map(done.output.next, (value) => ({
-													step: done.turn.step,
-													root: done.turn.root,
-													value
-												}))
-											),
-											ChainPageWeightsRead: Arr.map(done.rows.weights, (row, ordinal) => ({
-												...row,
-												step: done.turn.step,
-												root: done.turn.root,
-												ordinal: BigInt(ordinal)
-											})),
-											Item: done.writes.insert.Item
+													ordinal: BigInt(ordinal)
+												})),
+												Item: done.writes.insert.Item
+											}
 										}
-									}
-								})
+									})
+								)
 								return { outcome, spawned: grown.spawned }
 							}),
 						fail: (failed) => Effect.die(failed.error)
@@ -456,7 +470,7 @@ export const chainLedger = (h: ChainHandles) => {
 						input: (step) =>
 							Effect.gen(function* () {
 								const located = yield* Effect.map(
-									h.den.chainStepOf.once({ params: { step }, facts: {} }),
+									settled(h.den.chainStepOf.once({ params: { step }, facts: {} })),
 									one
 								)
 								if (Option.isNone(located)) {
@@ -468,15 +482,17 @@ export const chainLedger = (h: ChainHandles) => {
 									return Option.none()
 								}
 								const rowsPage = yield* Effect.map(
-									h.den.chainOutputsChainRunPage.once({ params: { scope }, facts: {} }),
+									settled(h.den.chainOutputsChainRunPage.once({ params: { scope }, facts: {} })),
 									rowsOf
 								)
 								const sidePage0 = yield* Effect.map(
-									h.den.chainOutputsChainRunPageNext.once({ params: { scope }, facts: {} }),
+									settled(
+										h.den.chainOutputsChainRunPageNext.once({ params: { scope }, facts: {} })
+									),
 									rowsOf
 								)
 								const failuresPage = yield* Effect.map(
-									h.den.chainFailuresChainRunPage.once({ params: { scope }, facts: {} }),
+									settled(h.den.chainFailuresChainRunPage.once({ params: { scope }, facts: {} })),
 									rowsOf
 								)
 								const Page = [
@@ -498,21 +514,23 @@ export const chainLedger = (h: ChainHandles) => {
 						read: () => Effect.succeed([]),
 						commit: (done) =>
 							Effect.map(
-								h.commits.chainCommitChainRunFinish.once({
-									params: {},
-									facts: {
-										insert: {
-											ChainResult: [
-												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-											],
-											ChainDone: [{ step: done.turn.step, root: done.turn.root }],
-											ChainHeld: [
-												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-											],
-											Cursor: done.writes.insert.Cursor
+								settled(
+									h.commits.chainCommitChainRunFinish.once({
+										params: {},
+										facts: {
+											insert: {
+												ChainResult: [
+													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+												],
+												ChainDone: [{ step: done.turn.step, root: done.turn.root }],
+												ChainHeld: [
+													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+												],
+												Cursor: done.writes.insert.Cursor
+											}
 										}
-									}
-								}),
+									})
+								),
 								(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
 							),
 						fail: (failed) => Effect.die(failed.error)
@@ -540,7 +558,7 @@ export const chainLedger = (h: ChainHandles) => {
 						input: (step) =>
 							Effect.gen(function* () {
 								const located = yield* Effect.map(
-									h.den.chainStepOf.once({ params: { step }, facts: {} }),
+									settled(h.den.chainStepOf.once({ params: { step }, facts: {} })),
 									one
 								)
 								if (Option.isNone(located)) {
@@ -552,15 +570,15 @@ export const chainLedger = (h: ChainHandles) => {
 									return Option.none()
 								}
 								const rowsPage = yield* Effect.map(
-									h.den.chainOutputsOrderedPage.once({ params: { scope }, facts: {} }),
+									settled(h.den.chainOutputsOrderedPage.once({ params: { scope }, facts: {} })),
 									rowsOf
 								)
 								const sidePage0 = yield* Effect.map(
-									h.den.chainOutputsOrderedPageNext.once({ params: { scope }, facts: {} }),
+									settled(h.den.chainOutputsOrderedPageNext.once({ params: { scope }, facts: {} })),
 									rowsOf
 								)
 								const failuresPage = yield* Effect.map(
-									h.den.chainFailuresOrderedPage.once({ params: { scope }, facts: {} }),
+									settled(h.den.chainFailuresOrderedPage.once({ params: { scope }, facts: {} })),
 									rowsOf
 								)
 								const Page = [
@@ -582,21 +600,23 @@ export const chainLedger = (h: ChainHandles) => {
 						read: () => Effect.succeed([]),
 						commit: (done) =>
 							Effect.map(
-								h.commits.chainCommitOrderedFinish.once({
-									params: {},
-									facts: {
-										insert: {
-											ChainResult: [
-												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-											],
-											ChainDone: [{ step: done.turn.step, root: done.turn.root }],
-											ChainHeld: [
-												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-											],
-											Cursor: done.writes.insert.Cursor
+								settled(
+									h.commits.chainCommitOrderedFinish.once({
+										params: {},
+										facts: {
+											insert: {
+												ChainResult: [
+													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+												],
+												ChainDone: [{ step: done.turn.step, root: done.turn.root }],
+												ChainHeld: [
+													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+												],
+												Cursor: done.writes.insert.Cursor
+											}
 										}
-									}
-								}),
+									})
+								),
 								(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
 							),
 						fail: (failed) => Effect.die(failed.error)
@@ -622,39 +642,41 @@ export const chainLedger = (h: ChainHandles) => {
 							}
 							const grown = yield* startChainRun(scope, scope, input.value, at)
 							const finish = yield* finishStep(scope)
-							const steps: ReadonlyArray<Written<typeof ChainStep>> = [
+							const steps: ReadonlyArray<Addition<typeof ChainStep>> = [
 								...grown.rows.ChainStep,
 								{ step: finish, kind: "ChainRunFinish", scope, root: scope }
 							]
-							const dues: ReadonlyArray<Written<typeof ChainDue>> = [
+							const dues: ReadonlyArray<Addition<typeof ChainDue>> = [
 								...grown.rows.ChainDue,
 								{ step: finish, at, root: scope }
 							]
-							const admitted: ReadonlyArray<Written<typeof ChainAdmitted>> = [
+							const admitted: ReadonlyArray<Addition<typeof ChainAdmitted>> = [
 								...grown.rows.ChainAdmitted,
 								{ scope, root: scope }
 							]
-							const finishes: ReadonlyArray<Written<typeof ChainFinish>> = [
+							const finishes: ReadonlyArray<Addition<typeof ChainFinish>> = [
 								...grown.rows.ChainFinish,
 								{ scope, step: finish, root: scope }
 							]
-							const outcome = yield* h.den.chainAdmit.once({
-								params: {},
-								facts: {
-									insert: {
-										ChainScope: grown.rows.ChainScope,
-										ChainWithin: grown.rows.ChainWithin,
-										ChainStartStep: grown.rows.ChainStartStep,
-										ChainStartScope: grown.rows.ChainStartScope,
-										ChainPageInput: grown.rows.ChainPageInput,
-										ChainPageInputAfter: grown.rows.ChainPageInputAfter,
-										ChainStep: steps,
-										ChainDue: dues,
-										ChainAdmitted: admitted,
-										ChainFinish: finishes
+							const outcome = yield* settled(
+								h.den.chainAdmit.once({
+									params: {},
+									facts: {
+										insert: {
+											ChainScope: grown.rows.ChainScope,
+											ChainWithin: grown.rows.ChainWithin,
+											ChainStartStep: grown.rows.ChainStartStep,
+											ChainStartScope: grown.rows.ChainStartScope,
+											ChainPageInput: grown.rows.ChainPageInput,
+											ChainPageInputAfter: grown.rows.ChainPageInputAfter,
+											ChainStep: steps,
+											ChainDue: dues,
+											ChainAdmitted: admitted,
+											ChainFinish: finishes
+										}
 									}
-								}
-							})
+								})
+							)
 							return Option.some({
 								outcome,
 								spawned: {
@@ -684,39 +706,41 @@ export const chainLedger = (h: ChainHandles) => {
 							}
 							const grown = yield* startOrdered(scope, scope, input.value, at)
 							const finish = yield* finishStep(scope)
-							const steps: ReadonlyArray<Written<typeof ChainStep>> = [
+							const steps: ReadonlyArray<Addition<typeof ChainStep>> = [
 								...grown.rows.ChainStep,
 								{ step: finish, kind: "OrderedFinish", scope, root: scope }
 							]
-							const dues: ReadonlyArray<Written<typeof ChainDue>> = [
+							const dues: ReadonlyArray<Addition<typeof ChainDue>> = [
 								...grown.rows.ChainDue,
 								{ step: finish, at, root: scope }
 							]
-							const admitted: ReadonlyArray<Written<typeof ChainAdmitted>> = [
+							const admitted: ReadonlyArray<Addition<typeof ChainAdmitted>> = [
 								...grown.rows.ChainAdmitted,
 								{ scope, root: scope }
 							]
-							const finishes: ReadonlyArray<Written<typeof ChainFinish>> = [
+							const finishes: ReadonlyArray<Addition<typeof ChainFinish>> = [
 								...grown.rows.ChainFinish,
 								{ scope, step: finish, root: scope }
 							]
-							const outcome = yield* h.den.chainAdmit.once({
-								params: {},
-								facts: {
-									insert: {
-										ChainScope: grown.rows.ChainScope,
-										ChainWithin: grown.rows.ChainWithin,
-										ChainStartStep: grown.rows.ChainStartStep,
-										ChainStartScope: grown.rows.ChainStartScope,
-										ChainPageInput: grown.rows.ChainPageInput,
-										ChainPageInputAfter: grown.rows.ChainPageInputAfter,
-										ChainStep: steps,
-										ChainDue: dues,
-										ChainAdmitted: admitted,
-										ChainFinish: finishes
+							const outcome = yield* settled(
+								h.den.chainAdmit.once({
+									params: {},
+									facts: {
+										insert: {
+											ChainScope: grown.rows.ChainScope,
+											ChainWithin: grown.rows.ChainWithin,
+											ChainStartStep: grown.rows.ChainStartStep,
+											ChainStartScope: grown.rows.ChainStartScope,
+											ChainPageInput: grown.rows.ChainPageInput,
+											ChainPageInputAfter: grown.rows.ChainPageInputAfter,
+											ChainStep: steps,
+											ChainDue: dues,
+											ChainAdmitted: admitted,
+											ChainFinish: finishes
+										}
 									}
-								}
-							})
+								})
+							)
 							return Option.some({
 								outcome,
 								spawned: {
@@ -732,51 +756,51 @@ export const chainLedger = (h: ChainHandles) => {
 			]
 		]),
 		stepOf: (step) =>
-			Effect.map(h.den.chainStepOf.once({ params: { step }, facts: {} }), (rows) =>
+			Effect.map(settled(h.den.chainStepOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope, root: row.root }))
 			),
 		resultOf: (step) =>
-			Effect.map(h.den.chainResultOf.once({ params: { step }, facts: {} }), (rows) =>
+			Effect.map(settled(h.den.chainResultOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => row.outcome)
 			),
 		heldOf: (step) =>
-			Effect.map(h.den.chainHeldOf.once({ params: { step }, facts: {} }), (rows) =>
+			Effect.map(settled(h.den.chainHeldOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => row.attempt)
 			),
 		dueOf: (step) =>
-			Effect.map(h.den.chainDueOf.once({ params: { step }, facts: {} }), (rows) =>
+			Effect.map(settled(h.den.chainDueOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => row.at)
 			),
 		claimsOf: (step) =>
-			Effect.map(h.den.chainClaimsOf.once({ params: { step }, facts: {} }), rowsOf),
+			Effect.map(settled(h.den.chainClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
 		retriesOf: (step) =>
-			Effect.map(h.den.chainRetriesOf.once({ params: { step }, facts: {} }), rowsOf),
+			Effect.map(settled(h.den.chainRetriesOf.once({ params: { step }, facts: {} })), rowsOf),
 		fencedOf: (step) =>
-			Effect.map(h.den.chainFencedOf.once({ params: { step }, facts: {} }), rowsOf),
+			Effect.map(settled(h.den.chainFencedOf.once({ params: { step }, facts: {} })), rowsOf),
 		scopeOf: (scope) =>
 			Effect.gen(function* () {
 				const row = yield* Effect.map(
-					h.den.chainScopeOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.chainScopeOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				if (Option.isNone(row)) {
 					return Option.none()
 				}
 				const parent = yield* Effect.map(
-					h.den.chainWithinOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.chainWithinOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				const admitted = yield* Effect.map(
-					h.den.chainAdmittedOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.chainAdmittedOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				const skipped = yield* Effect.map(
-					h.den.chainSkippedOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.chainSkippedOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				const key = Option.none<{ readonly id: ExclusiveId }>()
 				const root = yield* Effect.map(
-					h.den.chainRootOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.chainRootOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				return Option.some({
@@ -790,80 +814,108 @@ export const chainLedger = (h: ChainHandles) => {
 				})
 			}),
 		unended: (scope) =>
-			Effect.flatMap(any(h.den.chainUnendedSteps.once({ params: { scope }, facts: {} })), (steps) =>
-				steps
-					? Effect.succeed(true)
-					: any(h.den.chainOpenChildren.once({ params: { scope }, facts: {} }))
+			Effect.flatMap(
+				h.den.chainUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
+				(steps) =>
+					steps
+						? Effect.succeed(true)
+						: h.den.chainOpenChildren.once({ params: { scope }, facts: {} }).pipe(settled, any)
 			),
-		finished: (scope) => any(h.den.chainFinished.once({ params: { scope }, facts: {} })),
+		finished: (scope) =>
+			h.den.chainFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: busyOf,
 		claim: (row) =>
 			Effect.map(
-				h.den.chainClaim.once({ params: {}, facts: { insert: { ChainClaim: [row] } } }),
+				settled(h.den.chainClaim.once({ params: {}, facts: { insert: { ChainClaim: [row] } } })),
 				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
 			),
-		retry: (row) => h.den.chainRetry.once({ params: {}, facts: { insert: { ChainRetry: [row] } } }),
+		retry: (row) =>
+			settled(h.den.chainRetry.once({ params: {}, facts: { insert: { ChainRetry: [row] } } })),
 		fence: (row) =>
-			h.den.chainFence.once({ params: {}, facts: { insert: { ChainFenced: [row] } } }),
+			settled(h.den.chainFence.once({ params: {}, facts: { insert: { ChainFenced: [row] } } })),
 		refuse: ({ step, root, attempt }, law) =>
-			h.den.chainRefuse.once({
-				params: {},
-				facts: {
-					insert: {
-						ChainResult: [{ step, root, outcome: "failed" }],
-						ChainFailed: [{ step, root }],
-						ChainHeld: [{ step, root, attempt }],
-						ChainRefusal: [{ step, root, law }]
+			settled(
+				h.den.chainRefuse.once({
+					params: {},
+					facts: {
+						insert: {
+							ChainResult: [{ step, root, outcome: "failed" }],
+							ChainFailed: [{ step, root }],
+							ChainHeld: [{ step, root, attempt }],
+							ChainRefusal: [{ step, root, law }]
+						}
 					}
-				}
-			}),
+				})
+			),
 		skip: (scope, by) =>
-			h.den.chainSkip.once({
-				params: {},
-				facts: { insert: { ChainSkipped: [{ scope, by, root: scope }] } }
-			}),
+			settled(
+				h.den.chainSkip.once({
+					params: {},
+					facts: { insert: { ChainSkipped: [{ scope, by, root: scope }] } }
+				})
+			),
 		exhaust: ({ step, root, attempt }) =>
-			h.den.chainExhaust.once({
-				params: {},
-				facts: {
-					insert: {
-						ChainResult: [{ step, root, outcome: "failed" }],
-						ChainFailed: [{ step, root }],
-						ChainHeld: [{ step, root, attempt }],
-						ChainExhausted: [{ step, root, attempts: attempt }]
+			settled(
+				h.den.chainExhaust.once({
+					params: {},
+					facts: {
+						insert: {
+							ChainResult: [{ step, root, outcome: "failed" }],
+							ChainFailed: [{ step, root }],
+							ChainHeld: [{ step, root, attempt }],
+							ChainExhausted: [{ step, root, attempts: attempt }]
+						}
 					}
-				}
-			}),
-		finishedRoots: Effect.map(h.den.chainFinishedRoots.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))
+				})
+			),
+		finishedRoots: Effect.map(
+			settled(h.den.chainFinishedRoots.once({ params: {}, facts: {} })),
+			(rows) => Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))
 		),
 		retire: (root) =>
-			h.retirer.chainRetire.once({
-				params: {},
-				facts: { retire: { ChainRoot: [{ scope: root }] } }
-			}),
+			settled(
+				h.retirer.chainRetire.once({
+					params: {},
+					facts: { retire: { ChainRoot: [{ scope: root }] } }
+				})
+			),
 		snapshot: Effect.gen(function* () {
-			const steps = yield* Effect.map(h.den.chainPending.once({ params: {}, facts: {} }), rowsOf)
+			const steps = yield* Effect.map(
+				settled(h.den.chainPending.once({ params: {}, facts: {} })),
+				rowsOf
+			)
 			const claims = yield* Effect.map(
-				h.den.chainPendingClaims.once({ params: {}, facts: {} }),
+				settled(h.den.chainPendingClaims.once({ params: {}, facts: {} })),
 				rowsOf
 			)
 			const retries = yield* Effect.map(
-				h.den.chainPendingRetries.once({ params: {}, facts: {} }),
+				settled(h.den.chainPendingRetries.once({ params: {}, facts: {} })),
 				rowsOf
 			)
 			const fenced = yield* Effect.map(
-				h.den.chainPendingFenced.once({ params: {}, facts: {} }),
+				settled(h.den.chainPendingFenced.once({ params: {}, facts: {} })),
 				rowsOf
 			)
-			const dues = yield* Effect.map(h.den.chainPendingDues.once({ params: {}, facts: {} }), rowsOf)
+			const dues = yield* Effect.map(
+				settled(h.den.chainPendingDues.once({ params: {}, facts: {} })),
+				rowsOf
+			)
 			const requested = yield* Effect.map(
-				h.den.chainRequested.once({ params: {}, facts: {} }),
+				settled(h.den.chainRequested.once({ params: {}, facts: {} })),
 				rowsOf
 			)
-			const running = yield* Effect.map(h.den.chainRunning.once({ params: {}, facts: {} }), rowsOf)
-			const withins = yield* Effect.map(h.den.chainWithins.once({ params: {}, facts: {} }), rowsOf)
-			const roots = yield* Effect.map(h.den.chainRoots.once({ params: {}, facts: {} }), rowsOf)
+			const running = yield* Effect.map(
+				settled(h.den.chainRunning.once({ params: {}, facts: {} })),
+				rowsOf
+			)
+			const withins = yield* Effect.map(
+				settled(h.den.chainWithins.once({ params: {}, facts: {} })),
+				rowsOf
+			)
+			const roots = yield* Effect.map(
+				settled(h.den.chainRoots.once({ params: {}, facts: {} })),
+				rowsOf
+			)
 			const keys: ReadonlyArray<{ readonly scope: ScopeKey; readonly id: ExclusiveId }> = []
 			const holds = yield* coordination.holds
 			const exclusives = yield* coordination.exclusives

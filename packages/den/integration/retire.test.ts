@@ -205,3 +205,63 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 		}
 	]
 })
+
+type Together = "two roots" | "more than two roots"
+
+const together: Gen<ReadonlyArray<number>> = array(int(1, 3), { min: 2, max: 6 })
+
+/**
+ * Retires every one of several finished roots no app row pins, their retirements run at once: den's retiring role
+ * certifies SERIALIZABLE, so two retirements can meet each other and one be refused as transient, which changed
+ * nothing, and its call runs again until it retires.
+ *
+ * Oracle (specification): grizzle's README, "Retirable units" and its CallError table (a `transient` changed nothing
+ * and is safe to run again), and runtime/retire.ts: every finished root with no audit retires, none is kept.
+ */
+export const concurrentRetirementsOfFinishedRootsAllRetire = property.explore(together, {
+	needs: { slice: sliceCase },
+	situations: ["two roots", "more than two roots"] satisfies ReadonlyArray<Reached<Together>>,
+	check:
+		({ slice }, c: Case<Together>) =>
+		(pages) =>
+			Effect.flatMap(slice, (services) =>
+				Effect.provideContext(
+					Effect.gen(function* () {
+						c.note(pages.length === 2 ? "two roots" : "more than two roots")
+						const { chain, ledgers } = yield* openLedgers
+						const app = yield* Db.open(AppServed.roles.auditor, {})
+						const at = yield* chain.ledger.now
+						const requested = yield* Effect.forEach(pages, (n, index) =>
+							chain.request.ChainRun(`together-${index}`, at, { feed: "news", pages: BigInt(n) })
+						)
+						const scopes = Arr.map(requested, (r) => r.scope)
+						yield* admitAndDrain(ledgers, FlowName.make("Chain"), scopes)
+						const retirements = yield* retire(chain.ledger)
+						assert.deepStrictEqual(
+							Arr.sort(
+								Arr.flatMap(retirements, (r) => (r.kind === "retired" ? [r.root] : [])),
+								byScope
+							),
+							Arr.sort(scopes, byScope)
+						)
+						const left = yield* rows(app.workload.chainGraphRows.once({ params: {}, facts: {} }))
+						assert.deepStrictEqual(left, [])
+					}),
+					services
+				)
+			),
+	oracle: {
+		kind: "specification",
+		name: "grizzle's retirable units under SERIALIZABLE: every finished unpinned root retires, a transient run again"
+	},
+	budget: { runs: 8, steered: 8 },
+	kept: [],
+	kills: [
+		{
+			file: "packages/den/integration/slice/generated/chain.binding.ts",
+			original: "settled(\n\t\t\t\th.retirer.chainRetire.once(",
+			replacement: "(\n\t\t\t\th.retirer.chainRetire.once(",
+			why: "the binding's retirement ends on a transient refusal, so a retirement another one met is kept"
+		}
+	]
+})

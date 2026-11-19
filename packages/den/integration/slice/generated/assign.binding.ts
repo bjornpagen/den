@@ -31,8 +31,8 @@ import type {
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Assign over its served programs; `den generate` writes it, and nothing edits it. */
-import type { Written } from "@bjornpagen/grizzle"
-import type { CallError, MemberHandle } from "@bjornpagen/grizzle/runtime"
+import type { Addition } from "@bjornpagen/grizzle"
+import { type MemberHandle, type Settled, settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import { assign } from "#integration/slice/flows.ts"
@@ -81,18 +81,20 @@ export interface AssignHandles {
 }
 
 interface Rows {
-	readonly AssignStep: ReadonlyArray<Written<typeof AssignStep>>
-	readonly AssignDue: ReadonlyArray<Written<typeof AssignDue>>
-	readonly AssignScope: ReadonlyArray<Written<typeof AssignScope>>
-	readonly AssignWithin: ReadonlyArray<Written<typeof AssignWithin>>
-	readonly AssignAdmitted: ReadonlyArray<Written<typeof AssignAdmitted>>
-	readonly AssignFinish: ReadonlyArray<Written<typeof AssignFinish>>
-	readonly AssignStartStep: ReadonlyArray<Written<typeof AssignStartStep>>
-	readonly AssignStartScope: ReadonlyArray<Written<typeof AssignStartScope>>
-	readonly AssignDecideInput: ReadonlyArray<Written<typeof AssignDecideInput>>
-	readonly AssignDecideInputExclude: ReadonlyArray<Written<typeof AssignDecideInputExclude>>
-	readonly AssignDecideInputModeNearest: ReadonlyArray<Written<typeof AssignDecideInputModeNearest>>
-	readonly AssignDecideInputModeWithin: ReadonlyArray<Written<typeof AssignDecideInputModeWithin>>
+	readonly AssignStep: ReadonlyArray<Addition<typeof AssignStep>>
+	readonly AssignDue: ReadonlyArray<Addition<typeof AssignDue>>
+	readonly AssignScope: ReadonlyArray<Addition<typeof AssignScope>>
+	readonly AssignWithin: ReadonlyArray<Addition<typeof AssignWithin>>
+	readonly AssignAdmitted: ReadonlyArray<Addition<typeof AssignAdmitted>>
+	readonly AssignFinish: ReadonlyArray<Addition<typeof AssignFinish>>
+	readonly AssignStartStep: ReadonlyArray<Addition<typeof AssignStartStep>>
+	readonly AssignStartScope: ReadonlyArray<Addition<typeof AssignStartScope>>
+	readonly AssignDecideInput: ReadonlyArray<Addition<typeof AssignDecideInput>>
+	readonly AssignDecideInputExclude: ReadonlyArray<Addition<typeof AssignDecideInputExclude>>
+	readonly AssignDecideInputModeNearest: ReadonlyArray<
+		Addition<typeof AssignDecideInputModeNearest>
+	>
+	readonly AssignDecideInputModeWithin: ReadonlyArray<Addition<typeof AssignDecideInputModeWithin>>
 }
 
 interface Grown {
@@ -206,19 +208,23 @@ export const assignLedger = (h: AssignHandles) => {
 	const readAssignDecideInput = (step: StepKey) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				h.den.assignReadAssignDecideInput.once({ params: { step: step }, facts: {} }),
+				settled(h.den.assignReadAssignDecideInput.once({ params: { step: step }, facts: {} })),
 				one
 			)
 			const family0 = yield* Effect.map(
-				h.den.assignReadAssignDecideInputExclude.once({ params: { step }, facts: {} }),
+				settled(h.den.assignReadAssignDecideInputExclude.once({ params: { step }, facts: {} })),
 				rowsOf
 			)
 			const variant0_0 = yield* Effect.map(
-				h.den.assignReadAssignDecideInputModeNearest.once({ params: { step: step }, facts: {} }),
+				settled(
+					h.den.assignReadAssignDecideInputModeNearest.once({ params: { step: step }, facts: {} })
+				),
 				one
 			)
 			const variant0_1 = yield* Effect.map(
-				h.den.assignReadAssignDecideInputModeWithin.once({ params: { step: step }, facts: {} }),
+				settled(
+					h.den.assignReadAssignDecideInputModeWithin.once({ params: { step: step }, facts: {} })
+				),
 				one
 			)
 			return Option.flatMap(row, (found) =>
@@ -245,25 +251,33 @@ export const assignLedger = (h: AssignHandles) => {
 	const readAssignAssignmentInput = (scope: ScopeKey) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				h.den.assignReadAssignAssignmentInput.once({ params: { scope: scope }, facts: {} }),
+				settled(
+					h.den.assignReadAssignAssignmentInput.once({ params: { scope: scope }, facts: {} })
+				),
 				one
 			)
 			const family0 = yield* Effect.map(
-				h.den.assignReadAssignAssignmentInputExclude.once({ params: { scope }, facts: {} }),
+				settled(
+					h.den.assignReadAssignAssignmentInputExclude.once({ params: { scope }, facts: {} })
+				),
 				rowsOf
 			)
 			const variant0_0 = yield* Effect.map(
-				h.den.assignReadAssignAssignmentInputModeNearest.once({
-					params: { scope: scope },
-					facts: {}
-				}),
+				settled(
+					h.den.assignReadAssignAssignmentInputModeNearest.once({
+						params: { scope: scope },
+						facts: {}
+					})
+				),
 				one
 			)
 			const variant0_1 = yield* Effect.map(
-				h.den.assignReadAssignAssignmentInputModeWithin.once({
-					params: { scope: scope },
-					facts: {}
-				}),
+				settled(
+					h.den.assignReadAssignAssignmentInputModeWithin.once({
+						params: { scope: scope },
+						facts: {}
+					})
+				),
 				one
 			)
 			return Option.flatMap(row, (found) =>
@@ -292,11 +306,13 @@ export const assignLedger = (h: AssignHandles) => {
 		holds: Effect.succeed([]),
 		exclusiveTurns: Effect.succeed([]),
 		exclusives: Effect.succeed([]),
-		pauseTurns: Effect.map(h.coordinator.assignPauseTurns.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		pauseTurns: Effect.map(
+			settled(h.coordinator.assignPauseTurns.once({ params: {}, facts: {} })),
+			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
 		),
-		paused: Effect.map(h.coordinator.assignPausedAll.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		paused: Effect.map(
+			settled(h.coordinator.assignPausedAll.once({ params: {}, facts: {} })),
+			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
 		),
 		take: () => Effect.void,
 		giveBack: () => Effect.void,
@@ -304,20 +320,24 @@ export const assignLedger = (h: AssignHandles) => {
 		releaseExclusive: () => Effect.void,
 		pause: (row) =>
 			Effect.asVoid(
-				h.coordinator.assignPause.once({
-					params: {},
-					facts: { insert: { AssignPaused: pausesOf([row]) } }
-				})
+				settled(
+					h.coordinator.assignPause.once({
+						params: {},
+						facts: { insert: { AssignPaused: pausesOf([row]) } }
+					})
+				)
 			),
 		resume: (row) =>
 			Effect.asVoid(
-				h.coordinator.assignResume.once({
-					params: {},
-					facts: { insert: { AssignResumed: pausesOf([row]) } }
-				})
+				settled(
+					h.coordinator.assignResume.once({
+						params: {},
+						facts: { insert: { AssignResumed: pausesOf([row]) } }
+					})
+				)
 			)
 	}
-	const busyOf = (flow: string): Effect.Effect<boolean, CallError> => {
+	const busyOf = (flow: string): Effect.Effect<boolean, Settled> => {
 		switch (flow) {
 			default:
 				return Effect.succeed(false)
@@ -333,39 +353,41 @@ export const assignLedger = (h: AssignHandles) => {
 				Effect.map(
 					fresh(
 						"Assign",
-						h.den.assignRequestAssignment.once({
-							params: {},
-							facts: {
-								insert: {
-									AssignScope: [{ scope, kind: "Assignment" as const, root: scope }],
-									AssignRoot: [{ scope, key, at }],
-									AssignAssignmentInput: [
-										{
+						settled(
+							h.den.assignRequestAssignment.once({
+								params: {},
+								facts: {
+									insert: {
+										AssignScope: [{ scope, kind: "Assignment" as const, root: scope }],
+										AssignRoot: [{ scope, key, at }],
+										AssignAssignmentInput: [
+											{
+												scope: scope,
+												root: scope,
+												learner: input.learner,
+												topic: input.topic,
+												missed: input.missed,
+												mode: input.mode._tag
+											}
+										],
+										AssignAssignmentInputExclude: Arr.map(input.exclude, (element, index) => ({
 											scope: scope,
 											root: scope,
-											learner: input.learner,
-											topic: input.topic,
-											missed: input.missed,
-											mode: input.mode._tag
-										}
-									],
-									AssignAssignmentInputExclude: Arr.map(input.exclude, (element, index) => ({
-										scope: scope,
-										root: scope,
-										ordinal: BigInt(index),
-										value: element
-									})),
-									AssignAssignmentInputModeNearest: Arr.flatMap([input.mode], (variant) =>
-										variant._tag === "Nearest" ? [{ scope: scope, root: scope }] : []
-									),
-									AssignAssignmentInputModeWithin: Arr.flatMap([input.mode], (variant) =>
-										variant._tag === "Within"
-											? [{ scope: scope, root: scope, radius: variant.radius }]
-											: []
-									)
+											ordinal: BigInt(index),
+											value: element
+										})),
+										AssignAssignmentInputModeNearest: Arr.flatMap([input.mode], (variant) =>
+											variant._tag === "Nearest" ? [{ scope: scope, root: scope }] : []
+										),
+										AssignAssignmentInputModeWithin: Arr.flatMap([input.mode], (variant) =>
+											variant._tag === "Within"
+												? [{ scope: scope, root: scope, radius: variant.radius }]
+												: []
+										)
+									}
 								}
-							}
-						})
+							})
+						)
 					),
 					(accepted) => ({ scope, fresh: accepted })
 				)
@@ -373,8 +395,10 @@ export const assignLedger = (h: AssignHandles) => {
 	}
 	const ledger: Ledger<FlowNeeds<typeof assign>> = {
 		flow: FlowName.make("Assign"),
-		now: Effect.flatMap(h.den.assignNow.once({ params: {}, facts: {} }), readingOf),
-		authenticated: Effect.asVoid(h.commits.assignAuthenticated.once({ params: {}, facts: {} })),
+		now: Effect.flatMap(settled(h.den.assignNow.once({ params: {}, facts: {} })), readingOf),
+		authenticated: Effect.asVoid(
+			settled(h.commits.assignAuthenticated.once({ params: {}, facts: {} }))
+		),
 		resources: [],
 		steps: new Map([
 			[
@@ -387,14 +411,16 @@ export const assignLedger = (h: AssignHandles) => {
 							const nearest = assign.kinds[0].reads.nearest.params(input)
 							const seen = assign.kinds[0].reads.seen.params(input)
 							return Effect.flatMap(
-								h.commits.assignReadDecide.once({
-									params: {
-										"nearest.topic": nearest.topic,
-										"nearest.anchor.question": nearest.anchor.question,
-										"seen.learner": seen.learner
-									},
-									facts: {}
-								}),
+								settled(
+									h.commits.assignReadDecide.once({
+										params: {
+											"nearest.topic": nearest.topic,
+											"nearest.anchor.question": nearest.anchor.question,
+											"seen.learner": seen.learner
+										},
+										facts: {}
+									})
+								),
 								(rows) =>
 									Effect.map(only(rows), (row) => ({ nearest: row.nearest, seen: row.seen }))
 							)
@@ -402,66 +428,71 @@ export const assignLedger = (h: AssignHandles) => {
 						commit: (done, _at) =>
 							Effect.gen(function* () {
 								const grown = yield* Effect.succeed(nothingGrown)
-								const outcome = yield* h.commits.assignCommitDecide.once({
-									params: {},
-									facts: {
-										insert: {
-											AssignResult: [
-												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-											],
-											AssignDone: [{ step: done.turn.step, root: done.turn.root }],
-											AssignHeld: [
-												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-											],
-											AssignDecideOutput: [
-												{
+								const outcome = yield* settled(
+									h.commits.assignCommitDecide.once({
+										params: {},
+										facts: {
+											insert: {
+												AssignResult: [
+													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+												],
+												AssignDone: [{ step: done.turn.step, root: done.turn.root }],
+												AssignHeld: [
+													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+												],
+												AssignDecideOutput: [
+													{
+														step: done.turn.step,
+														root: done.turn.root,
+														confidence: done.output.confidence,
+														stage: done.output.stage._tag
+													}
+												],
+												AssignDecideOutputWeighed: Arr.map(
+													done.output.weighed,
+													(element, index) => ({
+														step: done.turn.step,
+														root: done.turn.root,
+														ordinal: BigInt(index),
+														passage: element.passage,
+														distance: element.distance,
+														passed: element.passed
+													})
+												),
+												AssignDecideOutputStageServe: Arr.flatMap([done.output.stage], (variant) =>
+													variant._tag === "Serve"
+														? [
+																{
+																	step: done.turn.step,
+																	root: done.turn.root,
+																	passage: variant.passage,
+																	distance: variant.distance
+																}
+															]
+														: []
+												),
+												AssignDecideOutputStageRest: Arr.flatMap([done.output.stage], (variant) =>
+													variant._tag === "Rest"
+														? [{ step: done.turn.step, root: done.turn.root }]
+														: []
+												),
+												AssignDecideNearestRead: Arr.map(done.rows.nearest, (row, ordinal) => ({
+													...row,
 													step: done.turn.step,
 													root: done.turn.root,
-													confidence: done.output.confidence,
-													stage: done.output.stage._tag
-												}
-											],
-											AssignDecideOutputWeighed: Arr.map(done.output.weighed, (element, index) => ({
-												step: done.turn.step,
-												root: done.turn.root,
-												ordinal: BigInt(index),
-												passage: element.passage,
-												distance: element.distance,
-												passed: element.passed
-											})),
-											AssignDecideOutputStageServe: Arr.flatMap([done.output.stage], (variant) =>
-												variant._tag === "Serve"
-													? [
-															{
-																step: done.turn.step,
-																root: done.turn.root,
-																passage: variant.passage,
-																distance: variant.distance
-															}
-														]
-													: []
-											),
-											AssignDecideOutputStageRest: Arr.flatMap([done.output.stage], (variant) =>
-												variant._tag === "Rest"
-													? [{ step: done.turn.step, root: done.turn.root }]
-													: []
-											),
-											AssignDecideNearestRead: Arr.map(done.rows.nearest, (row, ordinal) => ({
-												...row,
-												step: done.turn.step,
-												root: done.turn.root,
-												ordinal: BigInt(ordinal)
-											})),
-											AssignDecideSeenRead: Arr.map(done.rows.seen, (row, ordinal) => ({
-												...row,
-												step: done.turn.step,
-												root: done.turn.root,
-												ordinal: BigInt(ordinal)
-											})),
-											Assigned: done.writes.insert.Assigned
+													ordinal: BigInt(ordinal)
+												})),
+												AssignDecideSeenRead: Arr.map(done.rows.seen, (row, ordinal) => ({
+													...row,
+													step: done.turn.step,
+													root: done.turn.root,
+													ordinal: BigInt(ordinal)
+												})),
+												Assigned: done.writes.insert.Assigned
+											}
 										}
-									}
-								})
+									})
+								)
 								return { outcome, spawned: grown.spawned }
 							}),
 						fail: (failed) => Effect.die(failed.error)
@@ -489,7 +520,7 @@ export const assignLedger = (h: AssignHandles) => {
 						input: (step) =>
 							Effect.gen(function* () {
 								const located = yield* Effect.map(
-									h.den.assignStepOf.once({ params: { step }, facts: {} }),
+									settled(h.den.assignStepOf.once({ params: { step }, facts: {} })),
 									one
 								)
 								if (Option.isNone(located)) {
@@ -501,29 +532,42 @@ export const assignLedger = (h: AssignHandles) => {
 									return Option.none()
 								}
 								const rowsDecide = yield* Effect.map(
-									h.den.assignOutputsAssignmentDecide.once({ params: { scope }, facts: {} }),
+									settled(
+										h.den.assignOutputsAssignmentDecide.once({ params: { scope }, facts: {} })
+									),
 									rowsOf
 								)
 								const familyDecide0 = yield* Effect.map(
-									h.den.assignOutputsAssignmentDecideWeighed.once({ params: { scope }, facts: {} }),
+									settled(
+										h.den.assignOutputsAssignmentDecideWeighed.once({
+											params: { scope },
+											facts: {}
+										})
+									),
 									rowsOf
 								)
 								const variantDecide0_0 = yield* Effect.map(
-									h.den.assignOutputsAssignmentDecideStageServe.once({
-										params: { scope },
-										facts: {}
-									}),
+									settled(
+										h.den.assignOutputsAssignmentDecideStageServe.once({
+											params: { scope },
+											facts: {}
+										})
+									),
 									rowsOf
 								)
 								const variantDecide0_1 = yield* Effect.map(
-									h.den.assignOutputsAssignmentDecideStageRest.once({
-										params: { scope },
-										facts: {}
-									}),
+									settled(
+										h.den.assignOutputsAssignmentDecideStageRest.once({
+											params: { scope },
+											facts: {}
+										})
+									),
 									rowsOf
 								)
 								const failuresDecide = yield* Effect.map(
-									h.den.assignFailuresAssignmentDecide.once({ params: { scope }, facts: {} }),
+									settled(
+										h.den.assignFailuresAssignmentDecide.once({ params: { scope }, facts: {} })
+									),
 									rowsOf
 								)
 								const Decide = [
@@ -571,21 +615,23 @@ export const assignLedger = (h: AssignHandles) => {
 						read: () => Effect.succeed([]),
 						commit: (done) =>
 							Effect.map(
-								h.commits.assignCommitAssignmentFinish.once({
-									params: {},
-									facts: {
-										insert: {
-											AssignResult: [
-												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-											],
-											AssignDone: [{ step: done.turn.step, root: done.turn.root }],
-											AssignHeld: [
-												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-											],
-											Concluded: done.writes.insert.Concluded
+								settled(
+									h.commits.assignCommitAssignmentFinish.once({
+										params: {},
+										facts: {
+											insert: {
+												AssignResult: [
+													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+												],
+												AssignDone: [{ step: done.turn.step, root: done.turn.root }],
+												AssignHeld: [
+													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+												],
+												Concluded: done.writes.insert.Concluded
+											}
 										}
-									}
-								}),
+									})
+								),
 								(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
 							),
 						fail: (failed) => Effect.die(failed.error)
@@ -611,41 +657,43 @@ export const assignLedger = (h: AssignHandles) => {
 							}
 							const grown = yield* startAssignment(scope, scope, input.value, at)
 							const finish = yield* finishStep(scope)
-							const steps: ReadonlyArray<Written<typeof AssignStep>> = [
+							const steps: ReadonlyArray<Addition<typeof AssignStep>> = [
 								...grown.rows.AssignStep,
 								{ step: finish, kind: "AssignmentFinish", scope, root: scope }
 							]
-							const dues: ReadonlyArray<Written<typeof AssignDue>> = [
+							const dues: ReadonlyArray<Addition<typeof AssignDue>> = [
 								...grown.rows.AssignDue,
 								{ step: finish, at, root: scope }
 							]
-							const admitted: ReadonlyArray<Written<typeof AssignAdmitted>> = [
+							const admitted: ReadonlyArray<Addition<typeof AssignAdmitted>> = [
 								...grown.rows.AssignAdmitted,
 								{ scope, root: scope }
 							]
-							const finishes: ReadonlyArray<Written<typeof AssignFinish>> = [
+							const finishes: ReadonlyArray<Addition<typeof AssignFinish>> = [
 								...grown.rows.AssignFinish,
 								{ scope, step: finish, root: scope }
 							]
-							const outcome = yield* h.den.assignAdmit.once({
-								params: {},
-								facts: {
-									insert: {
-										AssignScope: grown.rows.AssignScope,
-										AssignWithin: grown.rows.AssignWithin,
-										AssignStartStep: grown.rows.AssignStartStep,
-										AssignStartScope: grown.rows.AssignStartScope,
-										AssignDecideInput: grown.rows.AssignDecideInput,
-										AssignDecideInputExclude: grown.rows.AssignDecideInputExclude,
-										AssignDecideInputModeNearest: grown.rows.AssignDecideInputModeNearest,
-										AssignDecideInputModeWithin: grown.rows.AssignDecideInputModeWithin,
-										AssignStep: steps,
-										AssignDue: dues,
-										AssignAdmitted: admitted,
-										AssignFinish: finishes
+							const outcome = yield* settled(
+								h.den.assignAdmit.once({
+									params: {},
+									facts: {
+										insert: {
+											AssignScope: grown.rows.AssignScope,
+											AssignWithin: grown.rows.AssignWithin,
+											AssignStartStep: grown.rows.AssignStartStep,
+											AssignStartScope: grown.rows.AssignStartScope,
+											AssignDecideInput: grown.rows.AssignDecideInput,
+											AssignDecideInputExclude: grown.rows.AssignDecideInputExclude,
+											AssignDecideInputModeNearest: grown.rows.AssignDecideInputModeNearest,
+											AssignDecideInputModeWithin: grown.rows.AssignDecideInputModeWithin,
+											AssignStep: steps,
+											AssignDue: dues,
+											AssignAdmitted: admitted,
+											AssignFinish: finishes
+										}
 									}
-								}
-							})
+								})
+							)
 							return Option.some({
 								outcome,
 								spawned: {
@@ -661,51 +709,51 @@ export const assignLedger = (h: AssignHandles) => {
 			]
 		]),
 		stepOf: (step) =>
-			Effect.map(h.den.assignStepOf.once({ params: { step }, facts: {} }), (rows) =>
+			Effect.map(settled(h.den.assignStepOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope, root: row.root }))
 			),
 		resultOf: (step) =>
-			Effect.map(h.den.assignResultOf.once({ params: { step }, facts: {} }), (rows) =>
+			Effect.map(settled(h.den.assignResultOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => row.outcome)
 			),
 		heldOf: (step) =>
-			Effect.map(h.den.assignHeldOf.once({ params: { step }, facts: {} }), (rows) =>
+			Effect.map(settled(h.den.assignHeldOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => row.attempt)
 			),
 		dueOf: (step) =>
-			Effect.map(h.den.assignDueOf.once({ params: { step }, facts: {} }), (rows) =>
+			Effect.map(settled(h.den.assignDueOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => row.at)
 			),
 		claimsOf: (step) =>
-			Effect.map(h.den.assignClaimsOf.once({ params: { step }, facts: {} }), rowsOf),
+			Effect.map(settled(h.den.assignClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
 		retriesOf: (step) =>
-			Effect.map(h.den.assignRetriesOf.once({ params: { step }, facts: {} }), rowsOf),
+			Effect.map(settled(h.den.assignRetriesOf.once({ params: { step }, facts: {} })), rowsOf),
 		fencedOf: (step) =>
-			Effect.map(h.den.assignFencedOf.once({ params: { step }, facts: {} }), rowsOf),
+			Effect.map(settled(h.den.assignFencedOf.once({ params: { step }, facts: {} })), rowsOf),
 		scopeOf: (scope) =>
 			Effect.gen(function* () {
 				const row = yield* Effect.map(
-					h.den.assignScopeOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.assignScopeOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				if (Option.isNone(row)) {
 					return Option.none()
 				}
 				const parent = yield* Effect.map(
-					h.den.assignWithinOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.assignWithinOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				const admitted = yield* Effect.map(
-					h.den.assignAdmittedOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.assignAdmittedOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				const skipped = yield* Effect.map(
-					h.den.assignSkippedOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.assignSkippedOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				const key = Option.none<{ readonly id: ExclusiveId }>()
 				const root = yield* Effect.map(
-					h.den.assignRootOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.assignRootOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				return Option.some({
@@ -720,85 +768,107 @@ export const assignLedger = (h: AssignHandles) => {
 			}),
 		unended: (scope) =>
 			Effect.flatMap(
-				any(h.den.assignUnendedSteps.once({ params: { scope }, facts: {} })),
+				h.den.assignUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
 				(steps) =>
 					steps
 						? Effect.succeed(true)
-						: any(h.den.assignOpenChildren.once({ params: { scope }, facts: {} }))
+						: h.den.assignOpenChildren.once({ params: { scope }, facts: {} }).pipe(settled, any)
 			),
-		finished: (scope) => any(h.den.assignFinished.once({ params: { scope }, facts: {} })),
+		finished: (scope) =>
+			h.den.assignFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: busyOf,
 		claim: (row) =>
 			Effect.map(
-				h.den.assignClaim.once({ params: {}, facts: { insert: { AssignClaim: [row] } } }),
+				settled(h.den.assignClaim.once({ params: {}, facts: { insert: { AssignClaim: [row] } } })),
 				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
 			),
 		retry: (row) =>
-			h.den.assignRetry.once({ params: {}, facts: { insert: { AssignRetry: [row] } } }),
+			settled(h.den.assignRetry.once({ params: {}, facts: { insert: { AssignRetry: [row] } } })),
 		fence: (row) =>
-			h.den.assignFence.once({ params: {}, facts: { insert: { AssignFenced: [row] } } }),
+			settled(h.den.assignFence.once({ params: {}, facts: { insert: { AssignFenced: [row] } } })),
 		refuse: ({ step, root, attempt }, law) =>
-			h.den.assignRefuse.once({
-				params: {},
-				facts: {
-					insert: {
-						AssignResult: [{ step, root, outcome: "failed" }],
-						AssignFailed: [{ step, root }],
-						AssignHeld: [{ step, root, attempt }],
-						AssignRefusal: [{ step, root, law }]
+			settled(
+				h.den.assignRefuse.once({
+					params: {},
+					facts: {
+						insert: {
+							AssignResult: [{ step, root, outcome: "failed" }],
+							AssignFailed: [{ step, root }],
+							AssignHeld: [{ step, root, attempt }],
+							AssignRefusal: [{ step, root, law }]
+						}
 					}
-				}
-			}),
+				})
+			),
 		skip: (scope, by) =>
-			h.den.assignSkip.once({
-				params: {},
-				facts: { insert: { AssignSkipped: [{ scope, by, root: scope }] } }
-			}),
+			settled(
+				h.den.assignSkip.once({
+					params: {},
+					facts: { insert: { AssignSkipped: [{ scope, by, root: scope }] } }
+				})
+			),
 		exhaust: ({ step, root, attempt }) =>
-			h.den.assignExhaust.once({
-				params: {},
-				facts: {
-					insert: {
-						AssignResult: [{ step, root, outcome: "failed" }],
-						AssignFailed: [{ step, root }],
-						AssignHeld: [{ step, root, attempt }],
-						AssignExhausted: [{ step, root, attempts: attempt }]
+			settled(
+				h.den.assignExhaust.once({
+					params: {},
+					facts: {
+						insert: {
+							AssignResult: [{ step, root, outcome: "failed" }],
+							AssignFailed: [{ step, root }],
+							AssignHeld: [{ step, root, attempt }],
+							AssignExhausted: [{ step, root, attempts: attempt }]
+						}
 					}
-				}
-			}),
-		finishedRoots: Effect.map(h.den.assignFinishedRoots.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))
+				})
+			),
+		finishedRoots: Effect.map(
+			settled(h.den.assignFinishedRoots.once({ params: {}, facts: {} })),
+			(rows) => Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))
 		),
 		retire: (root) =>
-			h.retirer.assignRetire.once({
-				params: {},
-				facts: { retire: { AssignRoot: [{ scope: root }] } }
-			}),
+			settled(
+				h.retirer.assignRetire.once({
+					params: {},
+					facts: { retire: { AssignRoot: [{ scope: root }] } }
+				})
+			),
 		snapshot: Effect.gen(function* () {
-			const steps = yield* Effect.map(h.den.assignPending.once({ params: {}, facts: {} }), rowsOf)
+			const steps = yield* Effect.map(
+				settled(h.den.assignPending.once({ params: {}, facts: {} })),
+				rowsOf
+			)
 			const claims = yield* Effect.map(
-				h.den.assignPendingClaims.once({ params: {}, facts: {} }),
+				settled(h.den.assignPendingClaims.once({ params: {}, facts: {} })),
 				rowsOf
 			)
 			const retries = yield* Effect.map(
-				h.den.assignPendingRetries.once({ params: {}, facts: {} }),
+				settled(h.den.assignPendingRetries.once({ params: {}, facts: {} })),
 				rowsOf
 			)
 			const fenced = yield* Effect.map(
-				h.den.assignPendingFenced.once({ params: {}, facts: {} }),
+				settled(h.den.assignPendingFenced.once({ params: {}, facts: {} })),
 				rowsOf
 			)
 			const dues = yield* Effect.map(
-				h.den.assignPendingDues.once({ params: {}, facts: {} }),
+				settled(h.den.assignPendingDues.once({ params: {}, facts: {} })),
 				rowsOf
 			)
 			const requested = yield* Effect.map(
-				h.den.assignRequested.once({ params: {}, facts: {} }),
+				settled(h.den.assignRequested.once({ params: {}, facts: {} })),
 				rowsOf
 			)
-			const running = yield* Effect.map(h.den.assignRunning.once({ params: {}, facts: {} }), rowsOf)
-			const withins = yield* Effect.map(h.den.assignWithins.once({ params: {}, facts: {} }), rowsOf)
-			const roots = yield* Effect.map(h.den.assignRoots.once({ params: {}, facts: {} }), rowsOf)
+			const running = yield* Effect.map(
+				settled(h.den.assignRunning.once({ params: {}, facts: {} })),
+				rowsOf
+			)
+			const withins = yield* Effect.map(
+				settled(h.den.assignWithins.once({ params: {}, facts: {} })),
+				rowsOf
+			)
+			const roots = yield* Effect.map(
+				settled(h.den.assignRoots.once({ params: {}, facts: {} })),
+				rowsOf
+			)
 			const keys: ReadonlyArray<{ readonly scope: ScopeKey; readonly id: ExclusiveId }> = []
 			const holds = yield* coordination.holds
 			const exclusives = yield* coordination.exclusives

@@ -1,4 +1,4 @@
-import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
+import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import type { Cron, Effect, Option, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Ladder, Precondition, Window } from "#algebra/kinds.ts"
@@ -77,7 +77,7 @@ export interface ClaimRow {
 
 /**
  * An attempt that ended without a result: the step, the attempt, when the next is due, and whether it spent the attempt
- * (`false` for a wait, a transient refusal that outlasted the turn's deadline).
+ * (`false` for a wait: a write still running at the turn's deadline, run again on each transient refusal).
  */
 export interface RetryRow {
 	readonly step: StepKey
@@ -107,13 +107,14 @@ export interface Turn {
 }
 
 /**
- * What a kind's runner did: committed, recorded a typed failure, met a write's error, waited out its deadline on a
- * transient refusal, or spent its attempt (a defect, an interruption, its deadline), the detail for its span.
+ * What a kind's runner did: committed, recorded a typed failure, met a write's error, waited out its deadline with a
+ * write still running (run again on each transient refusal), or spent its attempt (a defect, an interruption, its
+ * deadline), the detail for its span.
  */
 export type Ran =
 	| { readonly kind: "committed"; readonly committed: Committed }
 	| { readonly kind: "failed" }
-	| { readonly kind: "error"; readonly error: CallError }
+	| { readonly kind: "error"; readonly error: Settled }
 	| { readonly kind: "waited" }
 	| { readonly kind: "spent"; readonly detail: string }
 
@@ -131,7 +132,7 @@ export interface StepRunner<R> {
 	readonly run: (
 		turn: Turn,
 		at: Instant,
-		clock: Effect.Effect<Instant, CallError>
+		clock: Effect.Effect<Instant, Settled>
 	) => Effect.Effect<Ran, never, R | Digest.Digest>
 }
 
@@ -146,7 +147,7 @@ export interface RootRunner {
 	readonly admit: (
 		scope: ScopeKey,
 		now: Instant
-	) => Effect.Effect<Option.Option<Committed>, CallError, Digest.Digest>
+	) => Effect.Effect<Option.Option<Committed>, Settled, Digest.Digest>
 }
 
 /** A scope as the scheduler sees it: its kind, its parent, whether it is admitted, and its exclusivity key. */
@@ -232,22 +233,22 @@ export interface Snapshot {
  * turns, a take of turns, and an end of turns.
  */
 export interface Coordination {
-	readonly seatTurns: Effect.Effect<ReadonlyArray<SeatTurn>, CallError>
-	readonly holds: Effect.Effect<ReadonlyArray<HoldRow>, CallError>
-	readonly exclusiveTurns: Effect.Effect<ReadonlyArray<ExclusiveTurn>, CallError>
-	readonly exclusives: Effect.Effect<ReadonlyArray<ExclusiveRow>, CallError>
-	readonly pauseTurns: Effect.Effect<ReadonlyArray<PauseRow>, CallError>
-	readonly paused: Effect.Effect<ReadonlyArray<PauseRow>, CallError>
+	readonly seatTurns: Effect.Effect<ReadonlyArray<SeatTurn>, Settled>
+	readonly holds: Effect.Effect<ReadonlyArray<HoldRow>, Settled>
+	readonly exclusiveTurns: Effect.Effect<ReadonlyArray<ExclusiveTurn>, Settled>
+	readonly exclusives: Effect.Effect<ReadonlyArray<ExclusiveRow>, Settled>
+	readonly pauseTurns: Effect.Effect<ReadonlyArray<PauseRow>, Settled>
+	readonly paused: Effect.Effect<ReadonlyArray<PauseRow>, Settled>
 	/** Frees `lapsed` and holds `taken` in one call, refused whole on any turn another holder took first. */
 	readonly take: (
 		lapsed: ReadonlyArray<SeatTurn>,
 		taken: ReadonlyArray<HoldRow>
-	) => Effect.Effect<void, CallError>
-	readonly giveBack: (holds: ReadonlyArray<SeatTurn>) => Effect.Effect<void, CallError>
-	readonly holdExclusive: (row: ExclusiveRow) => Effect.Effect<void, CallError>
-	readonly releaseExclusive: (rows: ReadonlyArray<ExclusiveTurn>) => Effect.Effect<void, CallError>
-	readonly pause: (row: PauseRow) => Effect.Effect<void, CallError>
-	readonly resume: (row: PauseRow) => Effect.Effect<void, CallError>
+	) => Effect.Effect<void, Settled>
+	readonly giveBack: (holds: ReadonlyArray<SeatTurn>) => Effect.Effect<void, Settled>
+	readonly holdExclusive: (row: ExclusiveRow) => Effect.Effect<void, Settled>
+	readonly releaseExclusive: (rows: ReadonlyArray<ExclusiveTurn>) => Effect.Effect<void, Settled>
+	readonly pause: (row: PauseRow) => Effect.Effect<void, Settled>
+	readonly resume: (row: PauseRow) => Effect.Effect<void, Settled>
 }
 
 /**
@@ -262,49 +263,49 @@ export interface Ledger<R> {
 	 * lease, due instant and window is judged at a reading of it, and a claim's lease and a retry's due instant are
 	 * stamped from one, so no host's clock judges anything.
 	 */
-	readonly now: Effect.Effect<Instant, CallError>
+	readonly now: Effect.Effect<Instant, Settled>
 	/**
 	 * Whether the deployment's commits' login is let in: one cheap read under it, which authenticates a session and
 	 * runs no body, so the census rings a fenced attempt's step again only once it succeeds.
 	 */
-	readonly authenticated: Effect.Effect<void, CallError>
+	readonly authenticated: Effect.Effect<void, Settled>
 	readonly resources: ReadonlyArray<{ readonly name: string; readonly seats: number }>
 	readonly steps: ReadonlyMap<string, StepRunner<R>>
 	readonly roots: ReadonlyMap<string, RootRunner>
-	readonly stepOf: (step: StepKey) => Effect.Effect<Option.Option<Located>, CallError>
-	readonly resultOf: (step: StepKey) => Effect.Effect<Option.Option<Outcome>, CallError>
-	readonly heldOf: (step: StepKey) => Effect.Effect<Option.Option<bigint>, CallError>
-	readonly claimsOf: (step: StepKey) => Effect.Effect<ReadonlyArray<ClaimRow>, CallError>
-	readonly retriesOf: (step: StepKey) => Effect.Effect<ReadonlyArray<RetryRow>, CallError>
-	readonly fencedOf: (step: StepKey) => Effect.Effect<ReadonlyArray<FencedRow>, CallError>
-	readonly dueOf: (step: StepKey) => Effect.Effect<Option.Option<Instant>, CallError>
-	readonly scopeOf: (scope: ScopeKey) => Effect.Effect<Option.Option<ScopeView>, CallError>
+	readonly stepOf: (step: StepKey) => Effect.Effect<Option.Option<Located>, Settled>
+	readonly resultOf: (step: StepKey) => Effect.Effect<Option.Option<Outcome>, Settled>
+	readonly heldOf: (step: StepKey) => Effect.Effect<Option.Option<bigint>, Settled>
+	readonly claimsOf: (step: StepKey) => Effect.Effect<ReadonlyArray<ClaimRow>, Settled>
+	readonly retriesOf: (step: StepKey) => Effect.Effect<ReadonlyArray<RetryRow>, Settled>
+	readonly fencedOf: (step: StepKey) => Effect.Effect<ReadonlyArray<FencedRow>, Settled>
+	readonly dueOf: (step: StepKey) => Effect.Effect<Option.Option<Instant>, Settled>
+	readonly scopeOf: (scope: ScopeKey) => Effect.Effect<Option.Option<ScopeView>, Settled>
 	/** Whether some child of a scope, a step but its finish or a child scope, has not ended. */
-	readonly unended: (scope: ScopeKey) => Effect.Effect<boolean, CallError>
+	readonly unended: (scope: ScopeKey) => Effect.Effect<boolean, Settled>
 	/** Whether a scope's finish has its result. */
-	readonly finished: (scope: ScopeKey) => Effect.Effect<boolean, CallError>
+	readonly finished: (scope: ScopeKey) => Effect.Effect<boolean, Settled>
 	/** Whether a flow a precondition names holds a pending step. */
-	readonly busy: (flow: string) => Effect.Effect<boolean, CallError>
+	readonly busy: (flow: string) => Effect.Effect<boolean, Settled>
 	/**
 	 * Claims a step's attempt, a race at its key: whether the claim holding `(step, attempt)` is `claim`'s holder's, this
 	 * call's or an earlier one of the same holder, or another holder's, which this call met and wrote nothing beside.
 	 */
-	readonly claim: (claim: Rooted<ClaimRow>) => Effect.Effect<boolean, CallError>
-	readonly retry: (retry: Rooted<RetryRow>) => Effect.Effect<WriteOutcome<unknown>, CallError>
-	readonly fence: (fenced: Rooted<FencedRow>) => Effect.Effect<WriteOutcome<unknown>, CallError>
-	readonly refuse: (at: StepAt, law: string) => Effect.Effect<WriteOutcome<unknown>, CallError>
-	readonly exhaust: (at: StepAt) => Effect.Effect<WriteOutcome<unknown>, CallError>
+	readonly claim: (claim: Rooted<ClaimRow>) => Effect.Effect<boolean, Settled>
+	readonly retry: (retry: Rooted<RetryRow>) => Effect.Effect<WriteOutcome<unknown>, Settled>
+	readonly fence: (fenced: Rooted<FencedRow>) => Effect.Effect<WriteOutcome<unknown>, Settled>
+	readonly refuse: (at: StepAt, law: string) => Effect.Effect<WriteOutcome<unknown>, Settled>
+	readonly exhaust: (at: StepAt) => Effect.Effect<WriteOutcome<unknown>, Settled>
 	/** Records a root not admitted because another live root of its kind, `by`, holds its exclusivity seat. */
-	readonly skip: (scope: ScopeKey, by: ScopeKey) => Effect.Effect<WriteOutcome<unknown>, CallError>
+	readonly skip: (scope: ScopeKey, by: ScopeKey) => Effect.Effect<WriteOutcome<unknown>, Settled>
 	/** The roots whose graphs have ended and are not yet retired, a retirement's candidates. */
-	readonly finishedRoots: Effect.Effect<ReadonlyArray<FinishedRoot>, CallError>
+	readonly finishedRoots: Effect.Effect<ReadonlyArray<FinishedRoot>, Settled>
 	/**
 	 * Retires a root's graph whole, grizzle's retirement of the flow's unit under den's retiring role: every row its
 	 * graph holds goes, its header stays retired, and its key never starts a graph again. An app row that references
 	 * one of its rows refuses it, naming the relation.
 	 */
-	readonly retire: (root: ScopeKey) => Effect.Effect<WriteOutcome<unknown>, CallError>
-	readonly snapshot: Effect.Effect<Snapshot, CallError>
+	readonly retire: (root: ScopeKey) => Effect.Effect<WriteOutcome<unknown>, Settled>
+	readonly snapshot: Effect.Effect<Snapshot, Settled>
 	/**
 	 * The relay's watch: one signal per change of the served reads eligibility depends on (pending steps, live scopes,
 	 * holds, exclusivity seats, pauses and the flows a precondition names), each through grizzle's live source, and the
@@ -316,7 +317,7 @@ export interface Ledger<R> {
 	readonly scheduled: ReadonlyArray<{
 		readonly kind: string
 		readonly cron: Cron.Cron
-		readonly request: (at: Instant) => Effect.Effect<unknown, CallError, Digest.Digest>
+		readonly request: (at: Instant) => Effect.Effect<unknown, Settled, Digest.Digest>
 	}>
 }
 

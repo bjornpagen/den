@@ -12,10 +12,10 @@ import { openLedgers, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
 
 /**
- * A claim is a race at `(step, attempt)`, decided at READ COMMITTED by the claim's primary key alone, which Claim
- * races. Two claimers of one step's first attempt, each under its own holder, in every order of their moves, each move
- * in flight beside the other's: exactly one claim holds the key, and the other meets it and reports another holder's,
- * a race lost, refused by nothing.
+ * A claim is a race at `(step, attempt)`, decided by the claim's primary key alone, which Claim races. Two claimers
+ * of one step's first attempt, each under its own holder, in every order of their moves, each move in flight beside
+ * the other's: exactly one claim holds the key, and the other meets it and reports another holder's, a race lost,
+ * refused by nothing.
  *
  * Oracle (postgresql): PostgreSQL's unique index, which grizzle's insert protocol arbitrates by ON CONFLICT DO SELECT,
  * over every interleaving the testing library's `every` strategy runs.

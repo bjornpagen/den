@@ -34,7 +34,8 @@ import {
  * declarations of one name that differ as `DuplicateIdentity`.
  *
  * Two groups of relations, by who writes them, each insert-only for every role, its every law a key, a containment or
- * a row check, so every den role and the app's writer role certify READ COMMITTED. The graph (scopes, steps, claims,
+ * a row check; each role certifies at the level grizzle's generate gives its writes (docs/build/repin.md), and every
+ * call of each runs again on a transient refusal (runtime/ledger.ts Settled). The graph (scopes, steps, claims,
  * results, values, edges) is written by den's role and the app's writer role. The coordination group is written by
  * den's coordinator role alone: each seat, exclusivity seat and pause is a chain of turns, a turn held and then ended
  * (`Hold`/`Freed`, `Exclusive`/`Released`, `Paused`/`Resumed`), each turn after the first contained in its

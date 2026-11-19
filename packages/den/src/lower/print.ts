@@ -1006,7 +1006,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		"",
 		`export const ${n.coordinatorWorkload} = workload(${n.coordinator}, ${n.coordinatorPrograms})`,
 		"",
-		`/** den's retiring role for the flow ${P}: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else, so every inserter of the graph stays READ COMMITTED. */`,
+		`/** den's retiring role for the flow ${P}: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else: a role of its own, as grizzle's retirement asks. */`,
 		`export const ${n.retirer} = role(${app}, ${q(n.retirerName)}, { ...${n.graph}.relations }, { retire: [${q(r("Root"))}] })`,
 		"",
 		`export const ${n.retirerPrograms} = Object.freeze({ ${n.program("Retire")}: ChangeSet.empty(${n.graph}).retire(${r("Root")}, []) })`,
@@ -1174,7 +1174,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const exclusiveKeys = has(r("ExclusiveKey"))
 	const rowsType = lines([
 		"interface Rows {",
-		...Arr.map(spawning, (rel) => `\treadonly ${rel}: ReadonlyArray<Written<typeof ${rel}>>`),
+		...Arr.map(spawning, (rel) => `\treadonly ${rel}: ReadonlyArray<Addition<typeof ${rel}>>`),
 		"}"
 	])
 	const noRows = `const noRows: Rows = { ${commas(Arr.map(spawning, (rel) => `${rel}: []`))} }`
@@ -1185,7 +1185,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"})"
 	])
 	const keyRead = (handle: string, key: string, owner: "step" | "scope") =>
-		`Effect.map(h.den.${handle}.once({ params: { ${owner}: ${key} }, facts: {} }), one)`
+		`Effect.map(settled(h.den.${handle}.once({ params: { ${owner}: ${key} }, facts: {} })), one)`
 	const readerOf = (v: ValueIR): string => `read${v.relation}`
 	const readerDef = (v: ValueIR): string => {
 		const keyType = v.owner === "step" ? "StepKey" : "ScopeKey"
@@ -1200,7 +1200,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			...Arr.map(
 				v.families,
 				(f, i) =>
-					`\tconst family${i} = yield* Effect.map(h.den.${n.program(`Read${f.relation}`)}.once({ params: { ${v.owner} }, facts: {} }), rowsOf)`
+					`\tconst family${i} = yield* Effect.map(settled(h.den.${n.program(`Read${f.relation}`)}.once({ params: { ${v.owner} }, facts: {} })), rowsOf)`
 			),
 			...Arr.flatMap(v.unions, (u, i) =>
 				Arr.map(
@@ -1342,7 +1342,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		Option.match(error, {
 			onNone: () => "fail: (failed) => Effect.die(failed.error)",
 			onSome: (e) =>
-				`fail: (failed) => h.den.${n.program(`Fail${name}`)}.once({ params: {}, facts: { insert: { ${commas(
+				`fail: (failed) => settled(h.den.${n.program(`Fail${name}`)}.once({ params: {}, facts: { insert: { ${commas(
 					[
 						`${r("Result")}: [{ step: failed.turn.step, root: failed.turn.root, outcome: "failed" }]`,
 						`${r("Failed")}: [{ step: failed.turn.step, root: failed.turn.root }]`,
@@ -1350,7 +1350,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 						...factsOf(e, "failed.turn.step", "failed.error", "failed.turn.root"),
 						...records("failed.rows", "failed.turn")
 					]
-				)} } } })`
+				)} } } }))`
 		})
 
 	const stepRunner = (s: StepIR): string => {
@@ -1368,7 +1368,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 						s.reads,
 						(rd) => `\tconst ${rd.name} = ${kindAt(s.index)}.reads.${rd.name}.params(input)`
 					),
-					`\treturn Effect.flatMap(h.commits.${n.program(`Read${s.name}`)}.once({ params: { ${commas(params)} }, facts: {} }), (rows) => Effect.map(only(rows), (row) => ({ ${commas(Arr.map(s.reads, (rd) => `${rd.name}: row.${rd.name}`))} })))`,
+					`\treturn Effect.flatMap(settled(h.commits.${n.program(`Read${s.name}`)}.once({ params: { ${commas(params)} }, facts: {} })), (rows) => Effect.map(only(rows), (row) => ({ ${commas(Arr.map(s.reads, (rd) => `${rd.name}: row.${rd.name}`))} })))`,
 					"}"
 				])
 			: "read: () => Effect.succeed({})"
@@ -1378,7 +1378,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			`\t${read},`,
 			`\tcommit: (done, ${Arr.some(s.edges, (e) => e.toKind === "step") ? "at" : "_at"}) => Effect.gen(function* () {`,
 			`\t\tconst grown = yield* ${grow}`,
-			`\t\tconst outcome = yield* h.commits.${n.program(`Commit${s.name}`)}.once({ params: {}, facts: { ${opsOf(
+			`\t\tconst outcome = yield* settled(h.commits.${n.program(`Commit${s.name}`)}.once({ params: {}, facts: { ${opsOf(
 				[
 					...spawnRows,
 					`${r("Result")}: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }]`,
@@ -1389,7 +1389,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				],
 				s.writes,
 				"done"
-			)} } })`,
+			)} } }))`,
 			"\t\treturn { outcome, spawned: grown.spawned }",
 			"\t}),",
 			`\t${failPort(s.name, s.error, (rows, turn) => recordFacts(s, rows, turn))}`,
@@ -1401,14 +1401,14 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		const reads = Arr.map(j.finish.reads, (read) => {
 			if (read.kind === "scope") {
 				return lines([
-					`\t\tconst endings${read.name} = yield* Effect.map(h.den.${n.program(`Endings${j.name}${read.name}`)}.once({ params: { scope }, facts: {} }), rowsOf)`,
+					`\t\tconst endings${read.name} = yield* Effect.map(settled(h.den.${n.program(`Endings${j.name}${read.name}`)}.once({ params: { scope }, facts: {} })), rowsOf)`,
 					`\t\tconst ${read.name} = Arr.map(endings${read.name}, (row) => (row.outcome === "done" ? { _tag: "Done" as const } : { _tag: "Failed" as const }))`
 				])
 			}
 			const output = read.output
 			const outputs = `Outputs${j.name}${read.name}`
 			const all = (name: string, program: string) =>
-				`\t\tconst ${name} = yield* Effect.map(h.den.${n.program(program)}.once({ params: { scope }, facts: {} }), rowsOf)`
+				`\t\tconst ${name} = yield* Effect.map(settled(h.den.${n.program(program)}.once({ params: { scope }, facts: {} })), rowsOf)`
 			const value = valueOf(output, "row", {
 				side: (i) => `Arr.findFirst(side${read.name}${i}, (o) => o.step === row.step)`,
 				family: (i) => `Arr.filter(family${read.name}${i}, (o) => o.step === row.step)`,
@@ -1448,7 +1448,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			"\t},",
 			"\t{",
 			"\t\tinput: (step) => Effect.gen(function* () {",
-			`\t\tconst located = yield* Effect.map(h.den.${n.program("StepOf")}.once({ params: { step }, facts: {} }), one)`,
+			`\t\tconst located = yield* Effect.map(settled(h.den.${n.program("StepOf")}.once({ params: { step }, facts: {} })), one)`,
 			"\t\tif (Option.isNone(located)) {",
 			"\t\t\treturn Option.none()",
 			"\t\t}",
@@ -1461,7 +1461,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			`\t\treturn Option.some({ input: input.value, endings: { ${commas(Arr.map(j.finish.reads, (read) => read.name))} } })`,
 			"\t}),",
 			"\t\tread: () => Effect.succeed([]),",
-			`\t\tcommit: (done) => Effect.map(h.commits.${n.program(`Commit${j.finish.name}`)}.once({ params: {}, facts: { ${opsOf(
+			`\t\tcommit: (done) => Effect.map(settled(h.commits.${n.program(`Commit${j.finish.name}`)}.once({ params: {}, facts: { ${opsOf(
 				[
 					`${r("Result")}: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }]`,
 					`${r("Done")}: [{ step: done.turn.step, root: done.turn.root }]`,
@@ -1469,7 +1469,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				],
 				j.finish.writes,
 				"done"
-			)} } }), (outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })),`,
+			)} } })), (outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })),`,
 			`\t\t${failPort(j.finish.name, j.finish.error, () => [])}`,
 			"\t},",
 			`\tOption.some(${q(j.name)})`,
@@ -1486,11 +1486,11 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			"\t}",
 			`\tconst grown = yield* start${j.name}(scope, scope, input.value, at)`,
 			"\tconst finish = yield* finishStep(scope)",
-			`\tconst steps: ReadonlyArray<Written<typeof ${r("Step")}>> = [...grown.rows.${r("Step")}, { step: finish, kind: ${q(j.finish.name)}, scope, root: scope }]`,
-			`\tconst dues: ReadonlyArray<Written<typeof ${r("Due")}>> = [...grown.rows.${r("Due")}, { step: finish, at, root: scope }]`,
-			`\tconst admitted: ReadonlyArray<Written<typeof ${r("Admitted")}>> = [...grown.rows.${r("Admitted")}, { scope, root: scope }]`,
-			`\tconst finishes: ReadonlyArray<Written<typeof ${r("Finish")}>> = [...grown.rows.${r("Finish")}, { scope, step: finish, root: scope }]`,
-			`\tconst outcome = yield* h.den.${n.program("Admit")}.once({ params: {}, facts: { insert: { ${commas(
+			`\tconst steps: ReadonlyArray<Addition<typeof ${r("Step")}>> = [...grown.rows.${r("Step")}, { step: finish, kind: ${q(j.finish.name)}, scope, root: scope }]`,
+			`\tconst dues: ReadonlyArray<Addition<typeof ${r("Due")}>> = [...grown.rows.${r("Due")}, { step: finish, at, root: scope }]`,
+			`\tconst admitted: ReadonlyArray<Addition<typeof ${r("Admitted")}>> = [...grown.rows.${r("Admitted")}, { scope, root: scope }]`,
+			`\tconst finishes: ReadonlyArray<Addition<typeof ${r("Finish")}>> = [...grown.rows.${r("Finish")}, { scope, step: finish, root: scope }]`,
+			`\tconst outcome = yield* settled(h.den.${n.program("Admit")}.once({ params: {}, facts: { insert: { ${commas(
 				[
 					...Arr.map(
 						Arr.filter(
@@ -1506,7 +1506,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 					`${r("Admitted")}: admitted`,
 					`${r("Finish")}: finishes`
 				]
-			)} } } })`,
+			)} } } }))`,
 			"\treturn Option.some({ outcome, spawned: { steps: grown.spawned.steps, finishes: [...grown.spawned.finishes, ...(hasChildren(grown, scope) ? [] : [finish])] } })",
 			"})"
 		])
@@ -1531,7 +1531,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			? isExclusive(j)
 				? `${j.name}: ${signature} => Effect.flatMap(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => Effect.map(exclusiveRows(${q(P)}, ${q(j.name)}, ${kindAt(j.index)}.exclusive, input, scope), (keys) => ${facts}))`
 				: `${j.name}: ${signature} => Effect.map(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${facts})`
-			: `${j.name}: ${signature} => Effect.flatMap(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${keys(`Effect.map(fresh(${q(P)}, h.den.${n.program(`Request${j.name}`)}.once({ params: {}, facts: { insert: { ${commas(requestFacts(j))} } } })), (accepted) => ({ scope, fresh: accepted }))`)})`
+			: `${j.name}: ${signature} => Effect.flatMap(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${keys(`Effect.map(fresh(${q(P)}, settled(h.den.${n.program(`Request${j.name}`)}.once({ params: {}, facts: { insert: { ${commas(requestFacts(j))} } } }))), (accepted) => ({ scope, fresh: accepted }))`)})`
 	}
 	const denRoots = Arr.filter(roots, (j) => !isApp(j))
 	const appRoots = Arr.filter(roots, isApp)
@@ -1541,11 +1541,12 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`(name: string): Option.Option<${scoped(roster)}> => Arr.findFirst(${roster}.handles, (handle) => handle === name)`
 	const resources = has(r("Hold"))
 	const exclusives = has(r("Exclusive"))
-	const call = (program: string) => `h.coordinator.${n.program(program)}.once`
+	const call = (program: string, input: string) =>
+		`settled(h.coordinator.${n.program(program)}.once(${input}))`
 	const read = (program: string, row: string) =>
-		`Effect.map(${call(program)}({ params: {}, facts: {} }), (rows) => Arr.map(rowsOf(rows), (row) => (${row})))`
+		`Effect.map(${call(program, "{ params: {}, facts: {} }")}, (rows) => Arr.map(rowsOf(rows), (row) => (${row})))`
 	const write = (program: string, facts: string) =>
-		`Effect.asVoid(${call(program)}({ params: {}, facts: { insert: { ${facts} } } }))`
+		`Effect.asVoid(${call(program, `{ params: {}, facts: { insert: { ${facts} } } }`)})`
 	const coordination = lines([
 		"{",
 		resources
@@ -1579,7 +1580,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"}"
 	])
 	const all = (handle: string) =>
-		`Effect.map(h.den.${handle}.once({ params: {}, facts: {} }), rowsOf)`
+		`Effect.map(settled(h.den.${handle}.once({ params: {}, facts: {} })), rowsOf)`
 	const snapshot = lines([
 		"Effect.gen(function* () {",
 		`\tconst steps = yield* ${all(n.program("Pending"))}`,
@@ -1638,12 +1639,12 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		)
 	]
 	const busyOf = lines([
-		"(flow: string): Effect.Effect<boolean, CallError> => {",
+		"(flow: string): Effect.Effect<boolean, Settled> => {",
 		"\tswitch (flow) {",
 		...Arr.map(
 			l.idle,
 			(f) =>
-				`\t\tcase ${q(f)}: return any(h.den.${n.program(`Busy${f}`)}.once({ params: {}, facts: {} }))`
+				`\t\tcase ${q(f)}: return h.den.${n.program(`Busy${f}`)}.once({ params: {}, facts: {} }).pipe(settled, any)`
 		),
 		"\t\tdefault: return Effect.succeed(false)",
 		"\t}",
@@ -1678,8 +1679,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	])
 	return `${lines([
 		`/** The ledger port of the flow ${P} over its served programs; \`den generate\` writes it, and nothing edits it. */`,
-		`import type { Written } from "@bjornpagen/grizzle"`,
-		`import type { CallError, MemberHandle } from "@bjornpagen/grizzle/runtime"`,
+		`import type { Addition } from "@bjornpagen/grizzle"`,
+		`import { type MemberHandle, type Settled, settled } from "@bjornpagen/grizzle/runtime"`,
 		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishUnions ? ["held"] : []), "one", ...(Arr.some(l.steps, (st) => Arr.isReadonlyArrayNonEmpty(st.reads)) ? ["only"] : []), ...(families ? ["ordered"] : []), "readingOf", "rowsOf", "scheduleOf", "signals"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
 		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), ...(resources ? ["HoldRow"] : []), "Ledger", "PauseRow", "ScopeView", ...(resources ? ["SeatTurn"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
@@ -1736,8 +1737,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\tconst request = { ${commas(Arr.map(denRoots, requestOf))} }`,
 		`\tconst ledger: Ledger<FlowNeeds<typeof ${F}>> = {`,
 		`\t\tflow: FlowName.make(${q(P)}),`,
-		`\t\tnow: Effect.flatMap(h.den.${n.program("Now")}.once({ params: {}, facts: {} }), readingOf),`,
-		`\t\tauthenticated: Effect.asVoid(h.commits.${n.program("Authenticated")}.once({ params: {}, facts: {} })),`,
+		`\t\tnow: Effect.flatMap(settled(h.den.${n.program("Now")}.once({ params: {}, facts: {} })), readingOf),`,
+		`\t\tauthenticated: Effect.asVoid(settled(h.commits.${n.program("Authenticated")}.once({ params: {}, facts: {} }))),`,
 		`\t\tresources: [${commas(Arr.map(l.resources, (res) => `{ name: ${q(res.name)}, seats: ${res.seats} }`))}],`,
 		"\t\tsteps: new Map([",
 		...Arr.map(l.steps, (s) => `\t\t\t[${q(s.name)}, ${indented("\t\t\t")(stepRunner(s))}],`),
@@ -1753,13 +1754,13 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				`\t\t\t[${q(j.name)}, { kind: ${q(j.name)}, exclusive: ${isExclusive(j)}, window: ${kindAt(j.index)}.window, precondition: ${kindAt(j.index)}.precondition, finish: ${q(j.finish.name)}, admit: ${indented("\t\t\t")(admitOf(j))} }],`
 		),
 		"\t\t]),",
-		`\t\tstepOf: (step) => Effect.map(h.den.${n.program("StepOf")}.once({ params: { step }, facts: {} }), (rows) => Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope, root: row.root }))),`,
-		`\t\tresultOf: (step) => Effect.map(h.den.${n.program("ResultOf")}.once({ params: { step }, facts: {} }), (rows) => Option.map(one(rows), (row) => row.outcome)),`,
-		`\t\theldOf: (step) => Effect.map(h.den.${n.program("HeldOf")}.once({ params: { step }, facts: {} }), (rows) => Option.map(one(rows), (row) => row.attempt)),`,
-		`\t\tdueOf: (step) => Effect.map(h.den.${n.program("DueOf")}.once({ params: { step }, facts: {} }), (rows) => Option.map(one(rows), (row) => row.at)),`,
-		`\t\tclaimsOf: (step) => Effect.map(h.den.${n.program("ClaimsOf")}.once({ params: { step }, facts: {} }), rowsOf),`,
-		`\t\tretriesOf: (step) => Effect.map(h.den.${n.program("RetriesOf")}.once({ params: { step }, facts: {} }), rowsOf),`,
-		`\t\tfencedOf: (step) => Effect.map(h.den.${n.program("FencedOf")}.once({ params: { step }, facts: {} }), rowsOf),`,
+		`\t\tstepOf: (step) => Effect.map(settled(h.den.${n.program("StepOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope, root: row.root }))),`,
+		`\t\tresultOf: (step) => Effect.map(settled(h.den.${n.program("ResultOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.outcome)),`,
+		`\t\theldOf: (step) => Effect.map(settled(h.den.${n.program("HeldOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.attempt)),`,
+		`\t\tdueOf: (step) => Effect.map(settled(h.den.${n.program("DueOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.at)),`,
+		`\t\tclaimsOf: (step) => Effect.map(settled(h.den.${n.program("ClaimsOf")}.once({ params: { step }, facts: {} })), rowsOf),`,
+		`\t\tretriesOf: (step) => Effect.map(settled(h.den.${n.program("RetriesOf")}.once({ params: { step }, facts: {} })), rowsOf),`,
+		`\t\tfencedOf: (step) => Effect.map(settled(h.den.${n.program("FencedOf")}.once({ params: { step }, facts: {} })), rowsOf),`,
 		"\t\tscopeOf: (scope) => Effect.gen(function* () {",
 		`\t\t\tconst row = yield* ${keyRead(n.program("ScopeOf"), "scope", "scope")}`,
 		"\t\t\tif (Option.isNone(row)) {",
@@ -1774,17 +1775,17 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\t\t\tconst root = yield* ${keyRead(n.program("RootOf"), "scope", "scope")}`,
 		"\t\t\treturn Option.some({ scope, kind: row.value.kind, parent: Option.map(parent, (w) => w.parent), admitted: Option.isSome(admitted), skipped: Option.isSome(skipped), key: Option.map(key, (k) => k.id), root: Option.map(root, (o) => ({ key: o.key, at: o.at })) })",
 		"\t\t}),",
-		`\t\tunended: (scope) => Effect.flatMap(any(h.den.${n.program("UnendedSteps")}.once({ params: { scope }, facts: {} })), (steps) => steps ? Effect.succeed(true) : any(h.den.${n.program("OpenChildren")}.once({ params: { scope }, facts: {} }))),`,
-		`\t\tfinished: (scope) => any(h.den.${n.program("Finished")}.once({ params: { scope }, facts: {} })),`,
+		`\t\tunended: (scope) => Effect.flatMap(h.den.${n.program("UnendedSteps")}.once({ params: { scope }, facts: {} }).pipe(settled, any), (steps) => steps ? Effect.succeed(true) : h.den.${n.program("OpenChildren")}.once({ params: { scope }, facts: {} }).pipe(settled, any)),`,
+		`\t\tfinished: (scope) => h.den.${n.program("Finished")}.once({ params: { scope }, facts: {} }).pipe(settled, any),`,
 		"\t\tbusy: busyOf,",
-		`\t\tclaim: (row) => Effect.map(h.den.${n.program("Claim")}.once({ params: {}, facts: { insert: { ${r("Claim")}: [row] } } }), (outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)),`,
-		`\t\tretry: (row) => h.den.${n.program("Retry")}.once({ params: {}, facts: { insert: { ${r("Retry")}: [row] } } }),`,
-		`\t\tfence: (row) => h.den.${n.program("Fence")}.once({ params: {}, facts: { insert: { ${r("Fenced")}: [row] } } }),`,
-		`\t\trefuse: ({ step, root, attempt }, law) => h.den.${n.program("Refuse")}.once({ params: {}, facts: { insert: { ${r("Result")}: [{ step, root, outcome: "failed" }], ${r("Failed")}: [{ step, root }], ${r("Held")}: [{ step, root, attempt }], ${r("Refusal")}: [{ step, root, law }] } } }),`,
-		`\t\tskip: (scope, by) => h.den.${n.program("Skip")}.once({ params: {}, facts: { insert: { ${r("Skipped")}: [{ scope, by, root: scope }] } } }),`,
-		`\t\texhaust: ({ step, root, attempt }) => h.den.${n.program("Exhaust")}.once({ params: {}, facts: { insert: { ${r("Result")}: [{ step, root, outcome: "failed" }], ${r("Failed")}: [{ step, root }], ${r("Held")}: [{ step, root, attempt }], ${r("Exhausted")}: [{ step, root, attempts: attempt }] } } }),`,
-		`\t\tfinishedRoots: Effect.map(h.den.${n.program("FinishedRoots")}.once({ params: {}, facts: {} }), (rows) => Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))),`,
-		`\t\tretire: (root) => h.retirer.${n.program("Retire")}.once({ params: {}, facts: { retire: { ${r("Root")}: [{ scope: root }] } } }),`,
+		`\t\tclaim: (row) => Effect.map(settled(h.den.${n.program("Claim")}.once({ params: {}, facts: { insert: { ${r("Claim")}: [row] } } })), (outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)),`,
+		`\t\tretry: (row) => settled(h.den.${n.program("Retry")}.once({ params: {}, facts: { insert: { ${r("Retry")}: [row] } } })),`,
+		`\t\tfence: (row) => settled(h.den.${n.program("Fence")}.once({ params: {}, facts: { insert: { ${r("Fenced")}: [row] } } })),`,
+		`\t\trefuse: ({ step, root, attempt }, law) => settled(h.den.${n.program("Refuse")}.once({ params: {}, facts: { insert: { ${r("Result")}: [{ step, root, outcome: "failed" }], ${r("Failed")}: [{ step, root }], ${r("Held")}: [{ step, root, attempt }], ${r("Refusal")}: [{ step, root, law }] } } })),`,
+		`\t\tskip: (scope, by) => settled(h.den.${n.program("Skip")}.once({ params: {}, facts: { insert: { ${r("Skipped")}: [{ scope, by, root: scope }] } } })),`,
+		`\t\texhaust: ({ step, root, attempt }) => settled(h.den.${n.program("Exhaust")}.once({ params: {}, facts: { insert: { ${r("Result")}: [{ step, root, outcome: "failed" }], ${r("Failed")}: [{ step, root }], ${r("Held")}: [{ step, root, attempt }], ${r("Exhausted")}: [{ step, root, attempts: attempt }] } } })),`,
+		`\t\tfinishedRoots: Effect.map(settled(h.den.${n.program("FinishedRoots")}.once({ params: {}, facts: {} })), (rows) => Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))),`,
+		`\t\tretire: (root) => settled(h.retirer.${n.program("Retire")}.once({ params: {}, facts: { retire: { ${r("Root")}: [{ scope: root }] } } })),`,
 		`\t\tsnapshot: ${indented("\t\t")(snapshot)},`,
 		`\t\tchanges: Stream.mergeAll([${commas(watched)}], { concurrency: "unbounded" }),`,
 		"\t\tcoordination,",

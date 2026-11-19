@@ -1,4 +1,4 @@
-import type { CallError } from "@bjornpagen/grizzle/runtime"
+import type { Settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option } from "effect"
 import type { Holder, Instant, ScopeKey } from "#runtime/identity.ts"
 import type {
@@ -24,15 +24,8 @@ import type {
  * refusal on a turn's key and a fresh read do.
  */
 
-/**
- * A coordination call, retried in place on `transient`: a deadlock between two calls that take several turns in
- * opposite orders, which changed nothing.
- */
-const retried = <A>(call: Effect.Effect<A, CallError>): Effect.Effect<A, CallError> =>
-	Effect.retry(call, { while: (error) => error.kind === "transient" })
-
 /** Whether a refusal names a turn's key of `relation`: another caller took that turn first. */
-const takenBy = (error: CallError, relation: string): boolean =>
+const takenBy = (error: Settled, relation: string): boolean =>
 	error.kind === "refused" &&
 	Arr.some(error.refused.laws, ({ law }) => law.kind === "primaryKey" && law.relation === relation)
 
@@ -100,13 +93,13 @@ export const take = <R>(
 	holder: Holder,
 	until: Instant,
 	now: Instant
-): Effect.Effect<Option.Option<ReadonlyArray<HoldRow>>, CallError> =>
+): Effect.Effect<Option.Option<ReadonlyArray<HoldRow>>, Settled> =>
 	Arr.isReadonlyArrayEmpty(resources)
 		? Effect.succeedSome([])
 		: Effect.gen(function* () {
 				const coordination = ledger.coordination
-				const turns = yield* retried(coordination.seatTurns)
-				const holds = yield* retried(coordination.holds)
+				const turns = yield* coordination.seatTurns
+				const holds = yield* coordination.holds
 				const picked = Option.all(
 					Arr.map(resources, (resource) =>
 						freeSeat(
@@ -129,10 +122,10 @@ export const take = <R>(
 				}
 				const taken = Arr.map(picked.value, (p): HoldRow => ({ ...p.seat, holder, until }))
 				const lapsed = Arr.flatMap(picked.value, (p) => Option.toArray(p.lapsed))
-				return yield* retried(coordination.take(lapsed, taken)).pipe(
+				return yield* coordination.take(lapsed, taken).pipe(
 					Effect.as(Option.some(taken)),
 					Effect.catchIf(
-						(error: CallError) => takenBy(error, `${ledger.flow}Hold`),
+						(error: Settled) => takenBy(error, `${ledger.flow}Hold`),
 						() => take(ledger, resources, holder, until, now)
 					)
 				)
@@ -148,14 +141,14 @@ export const giveBack = <R>(
 ): Effect.Effect<void> =>
 	Arr.isReadonlyArrayEmpty(holds)
 		? Effect.void
-		: retried(ledger.coordination.giveBack(holds)).pipe(Effect.ignore)
+		: ledger.coordination.giveBack(holds).pipe(Effect.ignore)
 
 /** The live turn of the exclusivity seat `seat`, if one holds it. */
 const liveExclusive = <R>(
 	ledger: Ledger<R>,
 	seat: ExclusiveAt
-): Effect.Effect<Option.Option<ExclusiveRow>, CallError> =>
-	Effect.map(retried(ledger.coordination.exclusives), (rows) =>
+): Effect.Effect<Option.Option<ExclusiveRow>, Settled> =>
+	Effect.map(ledger.coordination.exclusives, (rows) =>
 		Arr.findFirst(rows, (row) => row.kind === seat.kind && row.key === seat.key)
 	)
 
@@ -167,33 +160,33 @@ const liveExclusive = <R>(
 export const holdExclusive = <R>(
 	ledger: Ledger<R>,
 	seat: ExclusiveAt & { readonly scope: ScopeKey }
-): Effect.Effect<boolean, CallError> =>
+): Effect.Effect<boolean, Settled> =>
 	Effect.gen(function* () {
 		const live = yield* liveExclusive(ledger, seat)
 		if (Option.isSome(live)) {
 			return live.value.scope === seat.scope
 		}
-		const turns = yield* retried(ledger.coordination.exclusiveTurns)
+		const turns = yield* ledger.coordination.exclusiveTurns
 		const turn = nextTurn(
 			Option.map(
 				Arr.findFirst(turns, (t) => t.kind === seat.kind && t.key === seat.key),
 				(t) => t.turn
 			)
 		)
-		return yield* retried(
-			ledger.coordination.holdExclusive({
+		return yield* ledger.coordination
+			.holdExclusive({
 				kind: seat.kind,
 				key: seat.key,
 				turn,
 				scope: seat.scope
 			})
-		).pipe(
-			Effect.as(true),
-			Effect.catchIf(
-				(error: CallError) => takenBy(error, `${ledger.flow}Exclusive`),
-				() => holdExclusive(ledger, seat)
+			.pipe(
+				Effect.as(true),
+				Effect.catchIf(
+					(error: Settled) => takenBy(error, `${ledger.flow}Exclusive`),
+					() => holdExclusive(ledger, seat)
+				)
 			)
-		)
 	})
 
 /** Releases the live turns of exclusivity seats whose scopes finished. */
@@ -203,14 +196,14 @@ export const releaseExclusive = <R>(
 ): Effect.Effect<void> =>
 	Arr.isReadonlyArrayEmpty(rows)
 		? Effect.void
-		: retried(ledger.coordination.releaseExclusive(rows)).pipe(Effect.ignore)
+		: ledger.coordination.releaseExclusive(rows).pipe(Effect.ignore)
 
 /** The live exclusivity seat a scope holds, if it holds one. */
 export const exclusiveOf = <R>(
 	ledger: Ledger<R>,
 	scope: ScopeKey
-): Effect.Effect<ReadonlyArray<ExclusiveRow>, CallError> =>
-	Effect.map(retried(ledger.coordination.exclusives), (rows) =>
+): Effect.Effect<ReadonlyArray<ExclusiveRow>, Settled> =>
+	Effect.map(ledger.coordination.exclusives, (rows) =>
 		Arr.filter(rows, (row) => row.scope === scope)
 	)
 
@@ -219,33 +212,33 @@ export const exclusiveOf = <R>(
  * stays paused at its live turn; another target's pause is taken at its next turn, and a turn another pauser took
  * first is judged again from a fresh read.
  */
-export const pause = <R>(ledger: Ledger<R>, target: string): Effect.Effect<void, CallError> =>
+export const pause = <R>(ledger: Ledger<R>, target: string): Effect.Effect<void, Settled> =>
 	Effect.gen(function* () {
-		const live = yield* retried(ledger.coordination.paused)
+		const live = yield* ledger.coordination.paused
 		if (Arr.some(live, (row) => row.target === target)) {
 			return
 		}
-		const turns = yield* retried(ledger.coordination.pauseTurns)
+		const turns = yield* ledger.coordination.pauseTurns
 		const turn = nextTurn(
 			Option.map(
 				Arr.findFirst(turns, (t) => t.target === target),
 				(t) => t.turn
 			)
 		)
-		yield* retried(ledger.coordination.pause({ target, turn })).pipe(
+		yield* ledger.coordination.pause({ target, turn }).pipe(
 			Effect.catchIf(
-				(error: CallError) => takenBy(error, `${ledger.flow}Paused`),
+				(error: Settled) => takenBy(error, `${ledger.flow}Paused`),
 				() => pause(ledger, target)
 			)
 		)
 	})
 
 /** Resumes a paused resource or root kind: its live pause's turn resumed, nothing for a target not paused. */
-export const resume = <R>(ledger: Ledger<R>, target: string): Effect.Effect<void, CallError> =>
-	Effect.flatMap(retried(ledger.coordination.paused), (live) =>
+export const resume = <R>(ledger: Ledger<R>, target: string): Effect.Effect<void, Settled> =>
+	Effect.flatMap(ledger.coordination.paused, (live) =>
 		Effect.forEach(
 			Arr.filter(live, (row) => row.target === target),
-			(row) => retried(ledger.coordination.resume(row)),
+			(row) => ledger.coordination.resume(row),
 			{ discard: true }
 		)
 	)

@@ -128,3 +128,12 @@
     "exactly one variant" would need a key across relations; an array column (`text[]`), which no law reads into and
     no query joins; unions and arrays nested past one struct, records and recursion, which no answer the engine asks
     for needs yet.
+
+## Owner ruling, 2026-11-19: correctness first
+
+- **Correct first, fast after (Bjorn, 2026-11-19).** "We need to do whatever we need for it to be theoretically
+  correct, and performance only after correctness." grizzle judges a selection-sided containment whole, as a rule over
+  a query, and keeps a plain containment into a declared key a foreign key; so den's own roles, its retirers and the
+  app's committing role certify SERIALIZABLE, and den takes that. A call refused as `transient` changed nothing and
+  runs again until it ends otherwise, with no bound; a transient is never an ending, a record or a retirement's
+  outcome ([build/repin.md](build/repin.md), Certificates).

@@ -1,13 +1,13 @@
-import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
+import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, type Cron, Effect, Option, Order, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Due, Exclusive, Trigger } from "#algebra/kinds.ts"
 import { exclusiveId, type Instant, instantOf, type ScopeKey } from "#runtime/identity.ts"
 
 /**
- * What every printed binding shares (lower/print.ts): reading a key member's one row, the database's instant and a
- * read's rows, an array's elements in order and a value's tagged unions, a spawn's due instant, a scope's exclusivity
- * key and a root's schedule, and a watch's events as the relay's signals.
+ * What every printed binding shares (lower/print.ts): every call settled, reading a key member's one row, the
+ * database's instant and a read's rows, an array's elements in order and a value's tagged unions, a spawn's due
+ * instant, a scope's exclusivity key and a root's schedule, and a watch's events as the relay's signals.
  */
 
 /** The one row a key member found, if it found one. */
@@ -116,12 +116,12 @@ export const signals = <E extends { readonly kind: string; readonly error?: Call
  */
 export const fresh = (
 	flow: string,
-	write: Effect.Effect<WriteOutcome<unknown>, CallError>
-): Effect.Effect<boolean, CallError> =>
+	write: Effect.Effect<WriteOutcome<unknown>, Settled>
+): Effect.Effect<boolean, Settled> =>
 	write.pipe(
 		Effect.map((outcome) => outcome.kind === "accepted"),
 		Effect.catchIf(
-			(error: CallError) =>
+			(error: Settled) =>
 				error.kind === "refused" &&
 				Arr.some(
 					error.refused.laws,
@@ -133,6 +133,6 @@ export const fresh = (
 
 /** Whether a read found any row. */
 export const any = <A>(
-	read: Effect.Effect<Iterable<A>, CallError>
-): Effect.Effect<boolean, CallError> =>
+	read: Effect.Effect<Iterable<A>, Settled>
+): Effect.Effect<boolean, Settled> =>
 	Effect.map(read, (rows) => Arr.isReadonlyArrayNonEmpty(Arr.fromIterable(rows)))

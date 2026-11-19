@@ -29,8 +29,8 @@ import type {
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Sync over its served programs; `den generate` writes it, and nothing edits it. */
-import type { Written } from "@bjornpagen/grizzle"
-import type { CallError, MemberHandle } from "@bjornpagen/grizzle/runtime"
+import type { Addition } from "@bjornpagen/grizzle"
+import { type MemberHandle, type Settled, settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import { sync } from "#integration/slice/flows.ts"
@@ -73,16 +73,16 @@ export interface SyncHandles {
 }
 
 interface Rows {
-	readonly SyncStep: ReadonlyArray<Written<typeof SyncStep>>
-	readonly SyncDue: ReadonlyArray<Written<typeof SyncDue>>
-	readonly SyncScope: ReadonlyArray<Written<typeof SyncScope>>
-	readonly SyncWithin: ReadonlyArray<Written<typeof SyncWithin>>
-	readonly SyncAdmitted: ReadonlyArray<Written<typeof SyncAdmitted>>
-	readonly SyncFinish: ReadonlyArray<Written<typeof SyncFinish>>
-	readonly SyncStartStep: ReadonlyArray<Written<typeof SyncStartStep>>
-	readonly SyncStartScope: ReadonlyArray<Written<typeof SyncStartScope>>
-	readonly SyncCopyInput: ReadonlyArray<Written<typeof SyncCopyInput>>
-	readonly SyncBuildInput: ReadonlyArray<Written<typeof SyncBuildInput>>
+	readonly SyncStep: ReadonlyArray<Addition<typeof SyncStep>>
+	readonly SyncDue: ReadonlyArray<Addition<typeof SyncDue>>
+	readonly SyncScope: ReadonlyArray<Addition<typeof SyncScope>>
+	readonly SyncWithin: ReadonlyArray<Addition<typeof SyncWithin>>
+	readonly SyncAdmitted: ReadonlyArray<Addition<typeof SyncAdmitted>>
+	readonly SyncFinish: ReadonlyArray<Addition<typeof SyncFinish>>
+	readonly SyncStartStep: ReadonlyArray<Addition<typeof SyncStartStep>>
+	readonly SyncStartScope: ReadonlyArray<Addition<typeof SyncStartScope>>
+	readonly SyncCopyInput: ReadonlyArray<Addition<typeof SyncCopyInput>>
+	readonly SyncBuildInput: ReadonlyArray<Addition<typeof SyncBuildInput>>
 }
 
 interface Grown {
@@ -198,7 +198,7 @@ export const syncLedger = (h: SyncHandles) => {
 	const readSyncCopyInput = (step: StepKey) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				h.den.syncReadSyncCopyInput.once({ params: { step: step }, facts: {} }),
+				settled(h.den.syncReadSyncCopyInput.once({ params: { step: step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ relation: found.relation, run: found.run }))
@@ -206,7 +206,7 @@ export const syncLedger = (h: SyncHandles) => {
 	const readSyncBuildInput = (step: StepKey) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				h.den.syncReadSyncBuildInput.once({ params: { step: step }, facts: {} }),
+				settled(h.den.syncReadSyncBuildInput.once({ params: { step: step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ build: found.build }))
@@ -214,7 +214,7 @@ export const syncLedger = (h: SyncHandles) => {
 	const readSyncSyncRunInput = (scope: ScopeKey) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				h.den.syncReadSyncSyncRunInput.once({ params: { scope: scope }, facts: {} }),
+				settled(h.den.syncReadSyncSyncRunInput.once({ params: { scope: scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ relation: found.relation, run: found.run }))
@@ -222,7 +222,7 @@ export const syncLedger = (h: SyncHandles) => {
 	const readSyncGoldInput = (scope: ScopeKey) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				h.den.syncReadSyncGoldInput.once({ params: { scope: scope }, facts: {} }),
+				settled(h.den.syncReadSyncGoldInput.once({ params: { scope: scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ build: found.build }))
@@ -231,64 +231,76 @@ export const syncLedger = (h: SyncHandles) => {
 		seatTurns: Effect.succeed([]),
 		holds: Effect.succeed([]),
 		exclusiveTurns: Effect.map(
-			h.coordinator.syncExclusiveTurns.once({ params: {}, facts: {} }),
+			settled(h.coordinator.syncExclusiveTurns.once({ params: {}, facts: {} })),
 			(rows) => Arr.map(rowsOf(rows), (row) => ({ kind: row.kind, key: row.key, turn: row.turn }))
 		),
-		exclusives: Effect.map(h.coordinator.syncExclusives.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => ({
-				kind: row.kind,
-				key: row.key,
-				turn: row.turn,
-				scope: row.scope
-			}))
+		exclusives: Effect.map(
+			settled(h.coordinator.syncExclusives.once({ params: {}, facts: {} })),
+			(rows) =>
+				Arr.map(rowsOf(rows), (row) => ({
+					kind: row.kind,
+					key: row.key,
+					turn: row.turn,
+					scope: row.scope
+				}))
 		),
-		pauseTurns: Effect.map(h.coordinator.syncPauseTurns.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		pauseTurns: Effect.map(
+			settled(h.coordinator.syncPauseTurns.once({ params: {}, facts: {} })),
+			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
 		),
-		paused: Effect.map(h.coordinator.syncPausedAll.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		paused: Effect.map(
+			settled(h.coordinator.syncPausedAll.once({ params: {}, facts: {} })),
+			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
 		),
 		take: () => Effect.void,
 		giveBack: () => Effect.void,
 		holdExclusive: (row) =>
 			Effect.asVoid(
-				h.coordinator.syncHoldExclusive.once({
-					params: {},
-					facts: {
-						insert: {
-							SyncExclusive: Arr.flatMap(exclusiveTurnsOf([row]), (turn) => [
-								{ ...turn, scope: row.scope }
-							])
+				settled(
+					h.coordinator.syncHoldExclusive.once({
+						params: {},
+						facts: {
+							insert: {
+								SyncExclusive: Arr.flatMap(exclusiveTurnsOf([row]), (turn) => [
+									{ ...turn, scope: row.scope }
+								])
+							}
 						}
-					}
-				})
+					})
+				)
 			),
 		releaseExclusive: (rows) =>
 			Effect.asVoid(
-				h.coordinator.syncReleaseExclusive.once({
-					params: {},
-					facts: { insert: { SyncReleased: exclusiveTurnsOf(rows) } }
-				})
+				settled(
+					h.coordinator.syncReleaseExclusive.once({
+						params: {},
+						facts: { insert: { SyncReleased: exclusiveTurnsOf(rows) } }
+					})
+				)
 			),
 		pause: (row) =>
 			Effect.asVoid(
-				h.coordinator.syncPause.once({
-					params: {},
-					facts: { insert: { SyncPaused: pausesOf([row]) } }
-				})
+				settled(
+					h.coordinator.syncPause.once({
+						params: {},
+						facts: { insert: { SyncPaused: pausesOf([row]) } }
+					})
+				)
 			),
 		resume: (row) =>
 			Effect.asVoid(
-				h.coordinator.syncResume.once({
-					params: {},
-					facts: { insert: { SyncResumed: pausesOf([row]) } }
-				})
+				settled(
+					h.coordinator.syncResume.once({
+						params: {},
+						facts: { insert: { SyncResumed: pausesOf([row]) } }
+					})
+				)
 			)
 	}
-	const busyOf = (flow: string): Effect.Effect<boolean, CallError> => {
+	const busyOf = (flow: string): Effect.Effect<boolean, Settled> => {
 		switch (flow) {
 			case "Chain":
-				return any(h.den.syncBusyChain.once({ params: {}, facts: {} }))
+				return h.den.syncBusyChain.once({ params: {}, facts: {} }).pipe(settled, any)
 			default:
 				return Effect.succeed(false)
 		}
@@ -302,19 +314,21 @@ export const syncLedger = (h: SyncHandles) => {
 						Effect.map(
 							fresh(
 								"Sync",
-								h.den.syncRequestSyncRun.once({
-									params: {},
-									facts: {
-										insert: {
-											SyncScope: [{ scope, kind: "SyncRun" as const, root: scope }],
-											SyncRoot: [{ scope, key, at }],
-											SyncExclusiveKey: Arr.map(keys, (k) => ({ ...k, root: scope })),
-											SyncSyncRunInput: [
-												{ scope: scope, root: scope, relation: input.relation, run: input.run }
-											]
+								settled(
+									h.den.syncRequestSyncRun.once({
+										params: {},
+										facts: {
+											insert: {
+												SyncScope: [{ scope, kind: "SyncRun" as const, root: scope }],
+												SyncRoot: [{ scope, key, at }],
+												SyncExclusiveKey: Arr.map(keys, (k) => ({ ...k, root: scope })),
+												SyncSyncRunInput: [
+													{ scope: scope, root: scope, relation: input.relation, run: input.run }
+												]
+											}
 										}
-									}
-								})
+									})
+								)
 							),
 							(accepted) => ({ scope, fresh: accepted })
 						)
@@ -325,16 +339,18 @@ export const syncLedger = (h: SyncHandles) => {
 				Effect.map(
 					fresh(
 						"Sync",
-						h.den.syncRequestGold.once({
-							params: {},
-							facts: {
-								insert: {
-									SyncScope: [{ scope, kind: "Gold" as const, root: scope }],
-									SyncRoot: [{ scope, key, at }],
-									SyncGoldInput: [{ scope: scope, root: scope, build: input.build }]
+						settled(
+							h.den.syncRequestGold.once({
+								params: {},
+								facts: {
+									insert: {
+										SyncScope: [{ scope, kind: "Gold" as const, root: scope }],
+										SyncRoot: [{ scope, key, at }],
+										SyncGoldInput: [{ scope: scope, root: scope, build: input.build }]
+									}
 								}
-							}
-						})
+							})
+						)
 					),
 					(accepted) => ({ scope, fresh: accepted })
 				)
@@ -342,8 +358,10 @@ export const syncLedger = (h: SyncHandles) => {
 	}
 	const ledger: Ledger<FlowNeeds<typeof sync>> = {
 		flow: FlowName.make("Sync"),
-		now: Effect.flatMap(h.den.syncNow.once({ params: {}, facts: {} }), readingOf),
-		authenticated: Effect.asVoid(h.commits.syncAuthenticated.once({ params: {}, facts: {} })),
+		now: Effect.flatMap(settled(h.den.syncNow.once({ params: {}, facts: {} })), readingOf),
+		authenticated: Effect.asVoid(
+			settled(h.commits.syncAuthenticated.once({ params: {}, facts: {} }))
+		),
 		resources: [],
 		steps: new Map([
 			[
@@ -356,22 +374,26 @@ export const syncLedger = (h: SyncHandles) => {
 						commit: (done, _at) =>
 							Effect.gen(function* () {
 								const grown = yield* Effect.succeed(nothingGrown)
-								const outcome = yield* h.commits.syncCommitCopy.once({
-									params: {},
-									facts: {
-										insert: {
-											SyncResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
-											SyncDone: [{ step: done.turn.step, root: done.turn.root }],
-											SyncHeld: [
-												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-											],
-											SyncCopyOutput: [
-												{ step: done.turn.step, root: done.turn.root, run: done.output.run }
-											],
-											Copied: done.writes.insert.Copied
+								const outcome = yield* settled(
+									h.commits.syncCommitCopy.once({
+										params: {},
+										facts: {
+											insert: {
+												SyncResult: [
+													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+												],
+												SyncDone: [{ step: done.turn.step, root: done.turn.root }],
+												SyncHeld: [
+													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+												],
+												SyncCopyOutput: [
+													{ step: done.turn.step, root: done.turn.root, run: done.output.run }
+												],
+												Copied: done.writes.insert.Copied
+											}
 										}
-									}
-								})
+									})
+								)
 								return { outcome, spawned: grown.spawned }
 							}),
 						fail: (failed) => Effect.die(failed.error)
@@ -389,22 +411,26 @@ export const syncLedger = (h: SyncHandles) => {
 						commit: (done, _at) =>
 							Effect.gen(function* () {
 								const grown = yield* Effect.succeed(nothingGrown)
-								const outcome = yield* h.commits.syncCommitBuild.once({
-									params: {},
-									facts: {
-										insert: {
-											SyncResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
-											SyncDone: [{ step: done.turn.step, root: done.turn.root }],
-											SyncHeld: [
-												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-											],
-											SyncBuildOutput: [
-												{ step: done.turn.step, root: done.turn.root, build: done.output.build }
-											],
-											Built: done.writes.insert.Built
+								const outcome = yield* settled(
+									h.commits.syncCommitBuild.once({
+										params: {},
+										facts: {
+											insert: {
+												SyncResult: [
+													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+												],
+												SyncDone: [{ step: done.turn.step, root: done.turn.root }],
+												SyncHeld: [
+													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+												],
+												SyncBuildOutput: [
+													{ step: done.turn.step, root: done.turn.root, build: done.output.build }
+												],
+												Built: done.writes.insert.Built
+											}
 										}
-									}
-								})
+									})
+								)
 								return { outcome, spawned: grown.spawned }
 							}),
 						fail: (failed) => Effect.die(failed.error)
@@ -432,7 +458,7 @@ export const syncLedger = (h: SyncHandles) => {
 						input: (step) =>
 							Effect.gen(function* () {
 								const located = yield* Effect.map(
-									h.den.syncStepOf.once({ params: { step }, facts: {} }),
+									settled(h.den.syncStepOf.once({ params: { step }, facts: {} })),
 									one
 								)
 								if (Option.isNone(located)) {
@@ -448,18 +474,22 @@ export const syncLedger = (h: SyncHandles) => {
 						read: () => Effect.succeed([]),
 						commit: (done) =>
 							Effect.map(
-								h.commits.syncCommitSyncRunFinish.once({
-									params: {},
-									facts: {
-										insert: {
-											SyncResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
-											SyncDone: [{ step: done.turn.step, root: done.turn.root }],
-											SyncHeld: [
-												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-											]
+								settled(
+									h.commits.syncCommitSyncRunFinish.once({
+										params: {},
+										facts: {
+											insert: {
+												SyncResult: [
+													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+												],
+												SyncDone: [{ step: done.turn.step, root: done.turn.root }],
+												SyncHeld: [
+													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+												]
+											}
 										}
-									}
-								}),
+									})
+								),
 								(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
 							),
 						fail: (failed) => Effect.die(failed.error)
@@ -487,7 +517,7 @@ export const syncLedger = (h: SyncHandles) => {
 						input: (step) =>
 							Effect.gen(function* () {
 								const located = yield* Effect.map(
-									h.den.syncStepOf.once({ params: { step }, facts: {} }),
+									settled(h.den.syncStepOf.once({ params: { step }, facts: {} })),
 									one
 								)
 								if (Option.isNone(located)) {
@@ -503,18 +533,22 @@ export const syncLedger = (h: SyncHandles) => {
 						read: () => Effect.succeed([]),
 						commit: (done) =>
 							Effect.map(
-								h.commits.syncCommitGoldFinish.once({
-									params: {},
-									facts: {
-										insert: {
-											SyncResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
-											SyncDone: [{ step: done.turn.step, root: done.turn.root }],
-											SyncHeld: [
-												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-											]
+								settled(
+									h.commits.syncCommitGoldFinish.once({
+										params: {},
+										facts: {
+											insert: {
+												SyncResult: [
+													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+												],
+												SyncDone: [{ step: done.turn.step, root: done.turn.root }],
+												SyncHeld: [
+													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+												]
+											}
 										}
-									}
-								}),
+									})
+								),
 								(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
 							),
 						fail: (failed) => Effect.die(failed.error)
@@ -540,39 +574,41 @@ export const syncLedger = (h: SyncHandles) => {
 							}
 							const grown = yield* startSyncRun(scope, scope, input.value, at)
 							const finish = yield* finishStep(scope)
-							const steps: ReadonlyArray<Written<typeof SyncStep>> = [
+							const steps: ReadonlyArray<Addition<typeof SyncStep>> = [
 								...grown.rows.SyncStep,
 								{ step: finish, kind: "SyncRunFinish", scope, root: scope }
 							]
-							const dues: ReadonlyArray<Written<typeof SyncDue>> = [
+							const dues: ReadonlyArray<Addition<typeof SyncDue>> = [
 								...grown.rows.SyncDue,
 								{ step: finish, at, root: scope }
 							]
-							const admitted: ReadonlyArray<Written<typeof SyncAdmitted>> = [
+							const admitted: ReadonlyArray<Addition<typeof SyncAdmitted>> = [
 								...grown.rows.SyncAdmitted,
 								{ scope, root: scope }
 							]
-							const finishes: ReadonlyArray<Written<typeof SyncFinish>> = [
+							const finishes: ReadonlyArray<Addition<typeof SyncFinish>> = [
 								...grown.rows.SyncFinish,
 								{ scope, step: finish, root: scope }
 							]
-							const outcome = yield* h.den.syncAdmit.once({
-								params: {},
-								facts: {
-									insert: {
-										SyncScope: grown.rows.SyncScope,
-										SyncWithin: grown.rows.SyncWithin,
-										SyncStartStep: grown.rows.SyncStartStep,
-										SyncStartScope: grown.rows.SyncStartScope,
-										SyncCopyInput: grown.rows.SyncCopyInput,
-										SyncBuildInput: grown.rows.SyncBuildInput,
-										SyncStep: steps,
-										SyncDue: dues,
-										SyncAdmitted: admitted,
-										SyncFinish: finishes
+							const outcome = yield* settled(
+								h.den.syncAdmit.once({
+									params: {},
+									facts: {
+										insert: {
+											SyncScope: grown.rows.SyncScope,
+											SyncWithin: grown.rows.SyncWithin,
+											SyncStartStep: grown.rows.SyncStartStep,
+											SyncStartScope: grown.rows.SyncStartScope,
+											SyncCopyInput: grown.rows.SyncCopyInput,
+											SyncBuildInput: grown.rows.SyncBuildInput,
+											SyncStep: steps,
+											SyncDue: dues,
+											SyncAdmitted: admitted,
+											SyncFinish: finishes
+										}
 									}
-								}
-							})
+								})
+							)
 							return Option.some({
 								outcome,
 								spawned: {
@@ -602,39 +638,41 @@ export const syncLedger = (h: SyncHandles) => {
 							}
 							const grown = yield* startGold(scope, scope, input.value, at)
 							const finish = yield* finishStep(scope)
-							const steps: ReadonlyArray<Written<typeof SyncStep>> = [
+							const steps: ReadonlyArray<Addition<typeof SyncStep>> = [
 								...grown.rows.SyncStep,
 								{ step: finish, kind: "GoldFinish", scope, root: scope }
 							]
-							const dues: ReadonlyArray<Written<typeof SyncDue>> = [
+							const dues: ReadonlyArray<Addition<typeof SyncDue>> = [
 								...grown.rows.SyncDue,
 								{ step: finish, at, root: scope }
 							]
-							const admitted: ReadonlyArray<Written<typeof SyncAdmitted>> = [
+							const admitted: ReadonlyArray<Addition<typeof SyncAdmitted>> = [
 								...grown.rows.SyncAdmitted,
 								{ scope, root: scope }
 							]
-							const finishes: ReadonlyArray<Written<typeof SyncFinish>> = [
+							const finishes: ReadonlyArray<Addition<typeof SyncFinish>> = [
 								...grown.rows.SyncFinish,
 								{ scope, step: finish, root: scope }
 							]
-							const outcome = yield* h.den.syncAdmit.once({
-								params: {},
-								facts: {
-									insert: {
-										SyncScope: grown.rows.SyncScope,
-										SyncWithin: grown.rows.SyncWithin,
-										SyncStartStep: grown.rows.SyncStartStep,
-										SyncStartScope: grown.rows.SyncStartScope,
-										SyncCopyInput: grown.rows.SyncCopyInput,
-										SyncBuildInput: grown.rows.SyncBuildInput,
-										SyncStep: steps,
-										SyncDue: dues,
-										SyncAdmitted: admitted,
-										SyncFinish: finishes
+							const outcome = yield* settled(
+								h.den.syncAdmit.once({
+									params: {},
+									facts: {
+										insert: {
+											SyncScope: grown.rows.SyncScope,
+											SyncWithin: grown.rows.SyncWithin,
+											SyncStartStep: grown.rows.SyncStartStep,
+											SyncStartScope: grown.rows.SyncStartScope,
+											SyncCopyInput: grown.rows.SyncCopyInput,
+											SyncBuildInput: grown.rows.SyncBuildInput,
+											SyncStep: steps,
+											SyncDue: dues,
+											SyncAdmitted: admitted,
+											SyncFinish: finishes
+										}
 									}
-								}
-							})
+								})
+							)
 							return Option.some({
 								outcome,
 								spawned: {
@@ -650,54 +688,54 @@ export const syncLedger = (h: SyncHandles) => {
 			]
 		]),
 		stepOf: (step) =>
-			Effect.map(h.den.syncStepOf.once({ params: { step }, facts: {} }), (rows) =>
+			Effect.map(settled(h.den.syncStepOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope, root: row.root }))
 			),
 		resultOf: (step) =>
-			Effect.map(h.den.syncResultOf.once({ params: { step }, facts: {} }), (rows) =>
+			Effect.map(settled(h.den.syncResultOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => row.outcome)
 			),
 		heldOf: (step) =>
-			Effect.map(h.den.syncHeldOf.once({ params: { step }, facts: {} }), (rows) =>
+			Effect.map(settled(h.den.syncHeldOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => row.attempt)
 			),
 		dueOf: (step) =>
-			Effect.map(h.den.syncDueOf.once({ params: { step }, facts: {} }), (rows) =>
+			Effect.map(settled(h.den.syncDueOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => row.at)
 			),
 		claimsOf: (step) =>
-			Effect.map(h.den.syncClaimsOf.once({ params: { step }, facts: {} }), rowsOf),
+			Effect.map(settled(h.den.syncClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
 		retriesOf: (step) =>
-			Effect.map(h.den.syncRetriesOf.once({ params: { step }, facts: {} }), rowsOf),
+			Effect.map(settled(h.den.syncRetriesOf.once({ params: { step }, facts: {} })), rowsOf),
 		fencedOf: (step) =>
-			Effect.map(h.den.syncFencedOf.once({ params: { step }, facts: {} }), rowsOf),
+			Effect.map(settled(h.den.syncFencedOf.once({ params: { step }, facts: {} })), rowsOf),
 		scopeOf: (scope) =>
 			Effect.gen(function* () {
 				const row = yield* Effect.map(
-					h.den.syncScopeOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.syncScopeOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				if (Option.isNone(row)) {
 					return Option.none()
 				}
 				const parent = yield* Effect.map(
-					h.den.syncWithinOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.syncWithinOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				const admitted = yield* Effect.map(
-					h.den.syncAdmittedOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.syncAdmittedOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				const skipped = yield* Effect.map(
-					h.den.syncSkippedOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.syncSkippedOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				const key = yield* Effect.map(
-					h.den.syncExclusiveKeyOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.syncExclusiveKeyOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				const root = yield* Effect.map(
-					h.den.syncRootOf.once({ params: { scope: scope }, facts: {} }),
+					settled(h.den.syncRootOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				return Option.some({
@@ -711,78 +749,110 @@ export const syncLedger = (h: SyncHandles) => {
 				})
 			}),
 		unended: (scope) =>
-			Effect.flatMap(any(h.den.syncUnendedSteps.once({ params: { scope }, facts: {} })), (steps) =>
-				steps
-					? Effect.succeed(true)
-					: any(h.den.syncOpenChildren.once({ params: { scope }, facts: {} }))
+			Effect.flatMap(
+				h.den.syncUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
+				(steps) =>
+					steps
+						? Effect.succeed(true)
+						: h.den.syncOpenChildren.once({ params: { scope }, facts: {} }).pipe(settled, any)
 			),
-		finished: (scope) => any(h.den.syncFinished.once({ params: { scope }, facts: {} })),
+		finished: (scope) =>
+			h.den.syncFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: busyOf,
 		claim: (row) =>
 			Effect.map(
-				h.den.syncClaim.once({ params: {}, facts: { insert: { SyncClaim: [row] } } }),
+				settled(h.den.syncClaim.once({ params: {}, facts: { insert: { SyncClaim: [row] } } })),
 				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
 			),
-		retry: (row) => h.den.syncRetry.once({ params: {}, facts: { insert: { SyncRetry: [row] } } }),
-		fence: (row) => h.den.syncFence.once({ params: {}, facts: { insert: { SyncFenced: [row] } } }),
+		retry: (row) =>
+			settled(h.den.syncRetry.once({ params: {}, facts: { insert: { SyncRetry: [row] } } })),
+		fence: (row) =>
+			settled(h.den.syncFence.once({ params: {}, facts: { insert: { SyncFenced: [row] } } })),
 		refuse: ({ step, root, attempt }, law) =>
-			h.den.syncRefuse.once({
-				params: {},
-				facts: {
-					insert: {
-						SyncResult: [{ step, root, outcome: "failed" }],
-						SyncFailed: [{ step, root }],
-						SyncHeld: [{ step, root, attempt }],
-						SyncRefusal: [{ step, root, law }]
+			settled(
+				h.den.syncRefuse.once({
+					params: {},
+					facts: {
+						insert: {
+							SyncResult: [{ step, root, outcome: "failed" }],
+							SyncFailed: [{ step, root }],
+							SyncHeld: [{ step, root, attempt }],
+							SyncRefusal: [{ step, root, law }]
+						}
 					}
-				}
-			}),
+				})
+			),
 		skip: (scope, by) =>
-			h.den.syncSkip.once({
-				params: {},
-				facts: { insert: { SyncSkipped: [{ scope, by, root: scope }] } }
-			}),
+			settled(
+				h.den.syncSkip.once({
+					params: {},
+					facts: { insert: { SyncSkipped: [{ scope, by, root: scope }] } }
+				})
+			),
 		exhaust: ({ step, root, attempt }) =>
-			h.den.syncExhaust.once({
-				params: {},
-				facts: {
-					insert: {
-						SyncResult: [{ step, root, outcome: "failed" }],
-						SyncFailed: [{ step, root }],
-						SyncHeld: [{ step, root, attempt }],
-						SyncExhausted: [{ step, root, attempts: attempt }]
+			settled(
+				h.den.syncExhaust.once({
+					params: {},
+					facts: {
+						insert: {
+							SyncResult: [{ step, root, outcome: "failed" }],
+							SyncFailed: [{ step, root }],
+							SyncHeld: [{ step, root, attempt }],
+							SyncExhausted: [{ step, root, attempts: attempt }]
+						}
 					}
-				}
-			}),
-		finishedRoots: Effect.map(h.den.syncFinishedRoots.once({ params: {}, facts: {} }), (rows) =>
-			Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))
+				})
+			),
+		finishedRoots: Effect.map(
+			settled(h.den.syncFinishedRoots.once({ params: {}, facts: {} })),
+			(rows) => Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))
 		),
 		retire: (root) =>
-			h.retirer.syncRetire.once({ params: {}, facts: { retire: { SyncRoot: [{ scope: root }] } } }),
+			settled(
+				h.retirer.syncRetire.once({
+					params: {},
+					facts: { retire: { SyncRoot: [{ scope: root }] } }
+				})
+			),
 		snapshot: Effect.gen(function* () {
-			const steps = yield* Effect.map(h.den.syncPending.once({ params: {}, facts: {} }), rowsOf)
+			const steps = yield* Effect.map(
+				settled(h.den.syncPending.once({ params: {}, facts: {} })),
+				rowsOf
+			)
 			const claims = yield* Effect.map(
-				h.den.syncPendingClaims.once({ params: {}, facts: {} }),
+				settled(h.den.syncPendingClaims.once({ params: {}, facts: {} })),
 				rowsOf
 			)
 			const retries = yield* Effect.map(
-				h.den.syncPendingRetries.once({ params: {}, facts: {} }),
+				settled(h.den.syncPendingRetries.once({ params: {}, facts: {} })),
 				rowsOf
 			)
 			const fenced = yield* Effect.map(
-				h.den.syncPendingFenced.once({ params: {}, facts: {} }),
+				settled(h.den.syncPendingFenced.once({ params: {}, facts: {} })),
 				rowsOf
 			)
-			const dues = yield* Effect.map(h.den.syncPendingDues.once({ params: {}, facts: {} }), rowsOf)
+			const dues = yield* Effect.map(
+				settled(h.den.syncPendingDues.once({ params: {}, facts: {} })),
+				rowsOf
+			)
 			const requested = yield* Effect.map(
-				h.den.syncRequested.once({ params: {}, facts: {} }),
+				settled(h.den.syncRequested.once({ params: {}, facts: {} })),
 				rowsOf
 			)
-			const running = yield* Effect.map(h.den.syncRunning.once({ params: {}, facts: {} }), rowsOf)
-			const withins = yield* Effect.map(h.den.syncWithins.once({ params: {}, facts: {} }), rowsOf)
-			const roots = yield* Effect.map(h.den.syncRoots.once({ params: {}, facts: {} }), rowsOf)
+			const running = yield* Effect.map(
+				settled(h.den.syncRunning.once({ params: {}, facts: {} })),
+				rowsOf
+			)
+			const withins = yield* Effect.map(
+				settled(h.den.syncWithins.once({ params: {}, facts: {} })),
+				rowsOf
+			)
+			const roots = yield* Effect.map(
+				settled(h.den.syncRoots.once({ params: {}, facts: {} })),
+				rowsOf
+			)
 			const keys = yield* Effect.map(
-				h.den.syncExclusiveKeys.once({ params: {}, facts: {} }),
+				settled(h.den.syncExclusiveKeys.once({ params: {}, facts: {} })),
 				rowsOf
 			)
 			const holds = yield* coordination.holds

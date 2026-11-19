@@ -8,8 +8,8 @@ has no other read-back), POROUS (each flow is two grizzle fragments the app list
 group; den's programs are written over them, and each commit is a union of den's facts with the app's writes), LEASE
 for the coordination group, and DBCLOCK:
 
-- **LEASE for the coordination group (28496788).** The group is insert-only, and every den role, each flow's
-  coordinator role included, certifies READ COMMITTED (`certification.test.ts`). Each seat, exclusivity seat and pause is
+- **LEASE for the coordination group (28496788).** The group is insert-only, and each flow's coordinator role
+  certifies READ COMMITTED. Each seat, exclusivity seat and pause is
   a chain of turns: `<P>Hold(resource, seat, turn, holder, until)` keyed by `(resource, seat, turn)`, `<P>Freed(resource,
   seat, turn)` contained in it, and `contained(on(<P>Hold, "resource", "seat", pred("turn")), on(<P>Freed, "resource",
   "seat", "turn"))`, so a turn after the first needs its predecessor freed and a seat holds at most one live hold, which
@@ -57,16 +57,40 @@ for the coordination group, and DBCLOCK:
   graph relation a body carrying `root: DenScope` in every key it holds and on both sides of every containment between
   bodies. `<p>_retirer`, a role of its own whose option `retire` names the header, serves
   `ChangeSet.empty(<p>Graph).retire(<P>Root, [])`; `runtime/retire.ts` retires every ended root nothing still needs, a
-  call each. Every role, the retirers included, certifies READ COMMITTED. Two laws moved: the header is no longer
+  call each. Each role certifies as **Certificates** below says. Two laws moved: the header is no longer
   contained in `<P>Scope`, since a header that references a body would block its own retirement, and a skipped root's
   `by` names the holder's header, not its `Admitted` row, a fact of another unit that may retire first. The grizzle
   session's rulings on den's use (2026-11-18): every graph relation carries its root's key as a column, `root: DenScope`, contained in `<P>Root`, so a
   retired unit's fence refuses an insert by that key row by row (a unit reached through `Within`'s tree would make
   every insert's check recursive); a stale holder's insert and a root requested again under a retired key are both
-  refused; the inserters stay READ COMMITTED with the retire call in a role of its own; an app row that references a
+  refused; the retire call is a role of its own; an app row that references a
   body row refuses the retirement (NO ACTION) unless the app declares its relation among the unit's bodies; and
   grizzle retires whole units only, never a chain's prefix, so the coordination group's chains of turns, each turn
   proved from its predecessor's `Freed`, must be restated before they can be retired: one current row per seat, or
   each turn a unit whose containment reads only its live predecessor. That restatement waits on the owner.
+
+- **Certificates, and every call settled (grizzle's SELECTWHOLE, bb62f0fa1; Bjorn's ruling of 2026-11-19).** A
+  containment with a selected side is judged whole, as a rule over a query, where the relations it reads are immutable
+  and its two sides join within one unit: each step's and scope's input in its Step or Scope of its kind
+  (`select(<P>Step, kind = …)`), each Done and Failed in its Result of its outcome, and the Assign flow's tagged
+  unions' variant pairs, both ways. A plain containment into a declared key stays a foreign key, and so does each
+  retirement fence. A write can break such a rule through a row another role writes, so every role that writes one
+  certifies SERIALIZABLE (`laws`): each flow's `<p>_den` and `<p>_retirer`, and the app's `loader`, which commits the
+  steps. Each flow's `<p>_coordinator` and the app's `auditor` certify READ COMMITTED; the app's and the worker's
+  logins fence ChainResult, each of their writes of it locking it in exclusive mode before its snapshot, for the
+  auditor's read committed foreign key checks into it. Bjorn ruled that den does
+  whatever it needs to be correct, and performance only after correctness, so den takes those certificates.
+
+  Under SERIALIZABLE a call can be refused as `transient`, which changed nothing, and grizzle never runs a call again
+  of its own. So the ledger port fails only with grizzle's `Settled`, every CallError but `transient`: the printed
+  binding runs each of its calls through grizzle's `settled` (@bjornpagen/grizzle/runtime), again at once while it is refused as
+  transient, with no bound, since PostgreSQL cancels a transaction for a serialization failure only once another
+  transaction of the conflict has committed, so the next run reads that work and does not fail on conflicts with the
+  same transactions (README-SSI), and a deadlock cancels one of its two transactions, the other going on. No ending,
+  record or retirement of den's holds a transient: the turn's retries of its claim and writes and the seat module's
+  are the port's, a write still running at its turn's deadline is a wait that spends nothing, and two retirements of
+  one flow, which run at once, both retire (`retire.test.ts`'s
+  `concurrentRetirementsOfFinishedRootsAllRetire`, whose kill ends the binding's retirement on a transient refusal and
+  keeps the root).
 
 Still to come from the grizzle session: GUARD and SCHEMAMAP.
