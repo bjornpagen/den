@@ -81,11 +81,15 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 							admitted.ending.kind === "admitted"
 								? Arr.head(admitted.ending.spawned.steps)
 								: Option.none()
-						const runner = chain.ledger.steps.get("Page")
-						if (Option.isNone(page) || runner === undefined) {
-							return yield* Effect.die("a chain admits its first page, and runs Page")
+						if (Option.isNone(page)) {
+							return yield* Effect.die("a chain admits its first page")
 						}
 						const step = page.value.step
+						const located = yield* chain.ledger.stepOf(step)
+						if (Option.isNone(located)) {
+							return yield* Effect.die("an admitted page is located")
+						}
+						const runner = located.value.runner
 						const claimAt = (attempt: bigint) =>
 							Effect.gen(function* () {
 								const from = yield* chain.ledger.now

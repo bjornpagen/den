@@ -725,11 +725,7 @@ const serveStep = <R>(
 		if (Option.isNone(located)) {
 			return served({ kind: "lost", wake })
 		}
-		const { kind, scope, root } = located.value
-		const runner = ledger.steps.get(kind)
-		if (runner === undefined) {
-			return served({ kind: "lost", wake })
-		}
+		const { runner, scope, root } = located.value
 		const result = yield* readOr(ledger.resultOf(step), wake)
 		if (Option.isSome(result)) {
 			return served({ kind: "lost", wake })

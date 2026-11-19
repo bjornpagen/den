@@ -107,17 +107,19 @@ const rootOf = (
 	admit: unread
 })
 
-const ledgerOf = (seats: number, window: Window): Ledger<never> => ({
+/** The fake flow's runners by kind, its Work using the Pool of `seats` seats. */
+const runnersOf = (seats: number) => ({
+	Work: runnerOf("Work", [resource("Pool", seats)], Option.none()),
+	Free: runnerOf("Free", [], Option.none()),
+	RunFinish: runnerOf("RunFinish", [], Option.some("Run")),
+	BatchFinish: runnerOf("BatchFinish", [], Option.some("Batch")),
+	SyncFinish: runnerOf("SyncFinish", [], Option.some("Sync"))
+})
+
+const ledgerOf = (window: Window): Ledger<never> => ({
 	flow: flowName,
 	now: Effect.die("eligibility judges the instant it is given"),
 	authenticated: Effect.die("the census asks after the deployment, never eligibility"),
-	steps: new Map([
-		["Work", runnerOf("Work", [resource("Pool", seats)], Option.none())],
-		["Free", runnerOf("Free", [], Option.none())],
-		["RunFinish", runnerOf("RunFinish", [], Option.some("Run"))],
-		["BatchFinish", runnerOf("BatchFinish", [], Option.some("Batch"))],
-		["SyncFinish", runnerOf("SyncFinish", [], Option.some("Sync"))]
-	]),
 	roots: new Map([
 		["Run", rootOf("Run", window, false, unconditional)],
 		["Sync", rootOf("Sync", always, true, idle("Other"))]
@@ -265,7 +267,7 @@ const world: Gen<World> = (source) => ({
 
 /** A built world: its snapshot, the case's instant, and the ledger's declarations. */
 interface Built {
-	readonly snapshot: Snapshot
+	readonly snapshot: Snapshot<never>
 	readonly now: Instant
 	readonly window: Window
 	readonly ledger: Ledger<never>
@@ -288,13 +290,14 @@ const built = (w: World) =>
 			onNone: () => always,
 			onSome: (s) => utcHours(s.opens, Math.min(24, s.opens + s.length))
 		})
-		const ledger = ledgerOf(w.seats, window)
+		const ledger = ledgerOf(window)
+		const runners = runnersOf(w.seats)
 		const scopes: Array<ScopeView> = []
-		const steps: Array<Snapshot["steps"][number]> = []
-		const claims: Array<Snapshot["claims"][number]> = []
+		const steps: Array<Snapshot<never>["steps"][number]> = []
+		const claims: Array<Snapshot<never>["claims"][number]> = []
 		const retries: Array<RetryRow> = []
 		const fenced: Array<FencedRow> = []
-		const dues: Array<Snapshot["dues"][number]> = []
+		const dues: Array<Snapshot<never>["dues"][number]> = []
 		const kinds = new Map<StepKey, string>()
 		const syncs: Array<ScopeKey> = []
 		const firstKey = yield* exclusiveId(flowName, "Sync", "k0")
@@ -317,7 +320,7 @@ const built = (w: World) =>
 			for (const { value: s, index: j } of indexed(r.steps)) {
 				const step = yield* startedStep(root, j)
 				kinds.set(step, s.kind)
-				steps.push({ step, kind: s.kind, scope: root })
+				steps.push({ step, runner: runners[s.kind], scope: root })
 				if (Option.isSome(s.due)) {
 					dues.push({ step, at: at(s.due.value) })
 				}
@@ -336,13 +339,13 @@ const built = (w: World) =>
 			}
 			const finish = yield* finishStep(root)
 			kinds.set(finish, "RunFinish")
-			steps.push({ step: finish, kind: "RunFinish", scope: root })
+			steps.push({ step: finish, runner: runners.RunFinish, scope: root })
 			for (const j of ordinals(r.batches)) {
 				const batch = yield* startedScope(root, 100 + j)
 				scopes.push({ place: "child", scope: batch, kind: "Batch", parent: root })
 				const batchFinish = yield* finishStep(batch)
 				kinds.set(batchFinish, "BatchFinish")
-				steps.push({ step: batchFinish, kind: "BatchFinish", scope: batch })
+				steps.push({ step: batchFinish, runner: runners.BatchFinish, scope: batch })
 			}
 		}
 		for (const { value: y, index: i } of indexed(w.syncs)) {
@@ -381,7 +384,7 @@ const built = (w: World) =>
 				until: at(h.until)
 			}))
 		)
-		const snapshot: Snapshot = {
+		const snapshot: Snapshot<never> = {
 			steps,
 			claims,
 			retries,
@@ -485,11 +488,11 @@ const specified = (
 			due > now ||
 			!open(p.scope) ||
 			rootPaused(p.scope) ||
-			(p.kind === "Work" && paused("Pool"))
+			(p.runner.kind === "Work" && paused("Pool"))
 		) {
 			return []
 		}
-		const finishes = Str.endsWith("Finish")(p.kind)
+		const finishes = Str.endsWith("Finish")(p.runner.kind)
 		const blocked =
 			Arr.some(snapshot.steps, (o) => o.scope === p.scope && o.step !== p.step) ||
 			Arr.some(snapshot.scopes, (s) => s.place === "child" && s.parent === p.scope)
@@ -497,7 +500,7 @@ const specified = (
 			return []
 		}
 		const attempt = Option.match(latest, { onNone: () => 1, onSome: (c) => Number(c.attempt) + 1 })
-		return [{ step: p.step, kind: p.kind, attempt, age: ageOf(p.scope), due, fenced }]
+		return [{ step: p.step, kind: p.runner.kind, attempt, age: ageOf(p.scope), due, fenced }]
 	})
 	const liveHolds = Arr.filter(snapshot.holds, (h) => h.until >= now).length
 	const free = Math.max(0, b.seats - liveHolds)
@@ -631,7 +634,7 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 							const retriedOf = (step: StepKey, attempt: bigint) =>
 								Arr.some(snapshot.retries, (r) => r.step === step && r.attempt === attempt) ||
 								Arr.some(snapshot.fenced, (f) => f.step === step && f.attempt === attempt)
-							const work = Arr.filter(snapshot.steps, (p) => p.kind === "Work")
+							const work = Arr.filter(snapshot.steps, (p) => p.runner.kind === "Work")
 							if (
 								pool > 0 &&
 								pool === Math.max(0, w.seats - liveHolds) &&
@@ -664,7 +667,9 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 							) {
 								c.note("a lapsed lease")
 							}
-							const finishes = Arr.filter(snapshot.steps, (p) => Str.endsWith("Finish")(p.kind))
+							const finishes = Arr.filter(snapshot.steps, (p) =>
+								Str.endsWith("Finish")(p.runner.kind)
+							)
 							if (Arr.some(finishes, (p) => ringsStep(found.wakes, p.step))) {
 								c.note("a finish rung")
 							}

@@ -337,192 +337,177 @@ export const fanLedger = (h: FanHandles) => {
 				)
 			)
 	}
+	const runners = {
+		Square: runnerOf(
+			fan.kinds[0],
+			{
+				input: (step) => readFanSquareInput(step),
+				read: () => Effect.succeed({}),
+				commit: (done, _at) =>
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
+							h.commits.fanCommitSquare.once({
+								params: {},
+								facts: {
+									insert: {
+										FanResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										FanDone: [{ step: done.turn.step, root: done.turn.root }],
+										FanHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										FanSquareOutput: [
+											{ step: done.turn.step, root: done.turn.root, square: done.output.square }
+										]
+									}
+								}
+							})
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.none()
+		),
+		BatchFinish: runnerOf(
+			{
+				name: "BatchFinish",
+				uses: [],
+				retry: fan.kinds[1].finish.retry,
+				body: (read: {
+					readonly input: Parameters<(typeof fan.kinds)[1]["start"]>[0]
+					readonly endings: Parameters<(typeof fan.kinds)[1]["finish"]["body"]>[1]
+				}) =>
+					Effect.map(fan.kinds[1].finish.body(read.input, read.endings), (writes) => ({
+						output: {},
+						writes
+					}))
+			},
+			{
+				input: (step) =>
+					Effect.gen(function* () {
+						const located = yield* Effect.map(
+							settled(h.den.fanStepOf.once({ params: { step }, facts: {} })),
+							one
+						)
+						if (Option.isNone(located)) {
+							return Option.none()
+						}
+						const scope = located.value.scope
+						const input = yield* readFanBatchInput(scope)
+						if (Option.isNone(input)) {
+							return Option.none()
+						}
+						const rowsSquare = yield* Effect.map(
+							settled(h.den.fanOutputsBatchSquare.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const failuresSquare = yield* Effect.map(
+							settled(h.den.fanFailuresBatchSquare.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const Square = [
+							...Arr.map(rowsSquare, (row) => ({
+								_tag: "Done" as const,
+								output: { square: row.square }
+							})),
+							...Arr.map(failuresSquare, () => ({ _tag: "Failed" as const }))
+						]
+						return Option.some({ input: input.value, endings: { Square } })
+					}),
+				read: () => Effect.succeed([]),
+				commit: (done) =>
+					Effect.map(
+						settled(
+							h.commits.fanCommitBatchFinish.once({
+								params: {},
+								facts: {
+									insert: {
+										FanResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										FanDone: [{ step: done.turn.step, root: done.turn.root }],
+										FanHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										Tally: done.writes.insert.Tally
+									}
+								}
+							})
+						),
+						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
+					),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.some("Batch")
+		),
+		FanRunFinish: runnerOf(
+			{
+				name: "FanRunFinish",
+				uses: [],
+				retry: fan.kinds[2].finish.retry,
+				body: (read: {
+					readonly input: Parameters<(typeof fan.kinds)[2]["start"]>[0]
+					readonly endings: Parameters<(typeof fan.kinds)[2]["finish"]["body"]>[1]
+				}) =>
+					Effect.map(fan.kinds[2].finish.body(read.input, read.endings), (writes) => ({
+						output: {},
+						writes
+					}))
+			},
+			{
+				input: (step) =>
+					Effect.gen(function* () {
+						const located = yield* Effect.map(
+							settled(h.den.fanStepOf.once({ params: { step }, facts: {} })),
+							one
+						)
+						if (Option.isNone(located)) {
+							return Option.none()
+						}
+						const scope = located.value.scope
+						const input = yield* readFanFanRunInput(scope)
+						if (Option.isNone(input)) {
+							return Option.none()
+						}
+						const endingsBatch = yield* Effect.map(
+							settled(h.den.fanEndingsFanRunBatch.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const Batch = Arr.map(endingsBatch, (row) =>
+							row.outcome === "done" ? { _tag: "Done" as const } : { _tag: "Failed" as const }
+						)
+						return Option.some({ input: input.value, endings: { Batch } })
+					}),
+				read: () => Effect.succeed([]),
+				commit: (done) =>
+					Effect.map(
+						settled(
+							h.commits.fanCommitFanRunFinish.once({
+								params: {},
+								facts: {
+									insert: {
+										FanResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										FanDone: [{ step: done.turn.step, root: done.turn.root }],
+										FanHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										Settled: done.writes.insert.Settled
+									}
+								}
+							})
+						),
+						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
+					),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.some("FanRun")
+		)
+	}
 	const ledger: Ledger<FlowNeeds<typeof fan>> = {
 		flow: FlowName.make("Fan"),
 		now: Effect.flatMap(settled(h.den.fanNow.once({ params: {}, facts: {} })), readingOf),
 		authenticated: Effect.asVoid(
 			settled(h.commits.fanAuthenticated.once({ params: {}, facts: {} }))
 		),
-		steps: new Map([
-			[
-				"Square",
-				runnerOf(
-					fan.kinds[0],
-					{
-						input: (step) => readFanSquareInput(step),
-						read: () => Effect.succeed({}),
-						commit: (done, _at) =>
-							Effect.gen(function* () {
-								const grown = yield* Effect.succeed(nothingGrown)
-								const outcome = yield* settled(
-									h.commits.fanCommitSquare.once({
-										params: {},
-										facts: {
-											insert: {
-												FanResult: [
-													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-												],
-												FanDone: [{ step: done.turn.step, root: done.turn.root }],
-												FanHeld: [
-													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-												],
-												FanSquareOutput: [
-													{ step: done.turn.step, root: done.turn.root, square: done.output.square }
-												]
-											}
-										}
-									})
-								)
-								return { outcome, spawned: grown.spawned }
-							}),
-						fail: (failed) => Effect.die(failed.error)
-					},
-					Option.none()
-				)
-			],
-			[
-				"BatchFinish",
-				runnerOf(
-					{
-						name: "BatchFinish",
-						uses: [],
-						retry: fan.kinds[1].finish.retry,
-						body: (read: {
-							readonly input: Parameters<(typeof fan.kinds)[1]["start"]>[0]
-							readonly endings: Parameters<(typeof fan.kinds)[1]["finish"]["body"]>[1]
-						}) =>
-							Effect.map(fan.kinds[1].finish.body(read.input, read.endings), (writes) => ({
-								output: {},
-								writes
-							}))
-					},
-					{
-						input: (step) =>
-							Effect.gen(function* () {
-								const located = yield* Effect.map(
-									settled(h.den.fanStepOf.once({ params: { step }, facts: {} })),
-									one
-								)
-								if (Option.isNone(located)) {
-									return Option.none()
-								}
-								const scope = located.value.scope
-								const input = yield* readFanBatchInput(scope)
-								if (Option.isNone(input)) {
-									return Option.none()
-								}
-								const rowsSquare = yield* Effect.map(
-									settled(h.den.fanOutputsBatchSquare.once({ params: { scope }, facts: {} })),
-									rowsOf
-								)
-								const failuresSquare = yield* Effect.map(
-									settled(h.den.fanFailuresBatchSquare.once({ params: { scope }, facts: {} })),
-									rowsOf
-								)
-								const Square = [
-									...Arr.map(rowsSquare, (row) => ({
-										_tag: "Done" as const,
-										output: { square: row.square }
-									})),
-									...Arr.map(failuresSquare, () => ({ _tag: "Failed" as const }))
-								]
-								return Option.some({ input: input.value, endings: { Square } })
-							}),
-						read: () => Effect.succeed([]),
-						commit: (done) =>
-							Effect.map(
-								settled(
-									h.commits.fanCommitBatchFinish.once({
-										params: {},
-										facts: {
-											insert: {
-												FanResult: [
-													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-												],
-												FanDone: [{ step: done.turn.step, root: done.turn.root }],
-												FanHeld: [
-													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-												],
-												Tally: done.writes.insert.Tally
-											}
-										}
-									})
-								),
-								(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-							),
-						fail: (failed) => Effect.die(failed.error)
-					},
-					Option.some("Batch")
-				)
-			],
-			[
-				"FanRunFinish",
-				runnerOf(
-					{
-						name: "FanRunFinish",
-						uses: [],
-						retry: fan.kinds[2].finish.retry,
-						body: (read: {
-							readonly input: Parameters<(typeof fan.kinds)[2]["start"]>[0]
-							readonly endings: Parameters<(typeof fan.kinds)[2]["finish"]["body"]>[1]
-						}) =>
-							Effect.map(fan.kinds[2].finish.body(read.input, read.endings), (writes) => ({
-								output: {},
-								writes
-							}))
-					},
-					{
-						input: (step) =>
-							Effect.gen(function* () {
-								const located = yield* Effect.map(
-									settled(h.den.fanStepOf.once({ params: { step }, facts: {} })),
-									one
-								)
-								if (Option.isNone(located)) {
-									return Option.none()
-								}
-								const scope = located.value.scope
-								const input = yield* readFanFanRunInput(scope)
-								if (Option.isNone(input)) {
-									return Option.none()
-								}
-								const endingsBatch = yield* Effect.map(
-									settled(h.den.fanEndingsFanRunBatch.once({ params: { scope }, facts: {} })),
-									rowsOf
-								)
-								const Batch = Arr.map(endingsBatch, (row) =>
-									row.outcome === "done" ? { _tag: "Done" as const } : { _tag: "Failed" as const }
-								)
-								return Option.some({ input: input.value, endings: { Batch } })
-							}),
-						read: () => Effect.succeed([]),
-						commit: (done) =>
-							Effect.map(
-								settled(
-									h.commits.fanCommitFanRunFinish.once({
-										params: {},
-										facts: {
-											insert: {
-												FanResult: [
-													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-												],
-												FanDone: [{ step: done.turn.step, root: done.turn.root }],
-												FanHeld: [
-													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-												],
-												Settled: done.writes.insert.Settled
-											}
-										}
-									})
-								),
-								(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-							),
-						fail: (failed) => Effect.die(failed.error)
-					},
-					Option.some("FanRun")
-				)
-			]
-		]),
 		roots: new Map([
 			[
 				"FanRun",
@@ -591,7 +576,11 @@ export const fanLedger = (h: FanHandles) => {
 		]),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.fanStepOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope, root: row.root }))
+				Option.map(one(rows), (row) => ({
+					runner: runners[row.kind],
+					scope: row.scope,
+					root: row.root
+				}))
 			),
 		resultOf: (step) =>
 			Effect.map(settled(h.den.fanResultOf.once({ params: { step }, facts: {} })), (rows) =>
@@ -798,7 +787,7 @@ export const fanLedger = (h: FanHandles) => {
 					}
 				)
 			return {
-				steps,
+				steps: Arr.map(steps, (s) => ({ step: s.step, runner: runners[s.kind], scope: s.scope })),
 				claims,
 				retries,
 				fenced,
@@ -811,7 +800,7 @@ export const fanLedger = (h: FanHandles) => {
 				exclusives,
 				paused,
 				busy
-			} satisfies Snapshot
+			} satisfies Snapshot<FlowNeeds<typeof fan>>
 		}),
 		changes: Stream.mergeAll(
 			[

@@ -358,206 +358,186 @@ export const syncLedger = (h: SyncHandles) => {
 				)
 			)
 	}
+	const runners = {
+		Copy: runnerOf(
+			sync.kinds[0],
+			{
+				input: (step) => readSyncCopyInput(step),
+				read: () => Effect.succeed({}),
+				commit: (done, _at) =>
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
+							h.commits.syncCommitCopy.once({
+								params: {},
+								facts: {
+									insert: {
+										SyncResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										SyncDone: [{ step: done.turn.step, root: done.turn.root }],
+										SyncHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										SyncCopyOutput: [
+											{ step: done.turn.step, root: done.turn.root, run: done.output.run }
+										],
+										Copied: done.writes.insert.Copied
+									}
+								}
+							})
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.none()
+		),
+		Build: runnerOf(
+			sync.kinds[2],
+			{
+				input: (step) => readSyncBuildInput(step),
+				read: () => Effect.succeed({}),
+				commit: (done, _at) =>
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
+							h.commits.syncCommitBuild.once({
+								params: {},
+								facts: {
+									insert: {
+										SyncResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										SyncDone: [{ step: done.turn.step, root: done.turn.root }],
+										SyncHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										SyncBuildOutput: [
+											{ step: done.turn.step, root: done.turn.root, build: done.output.build }
+										],
+										Built: done.writes.insert.Built
+									}
+								}
+							})
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.none()
+		),
+		SyncRunFinish: runnerOf(
+			{
+				name: "SyncRunFinish",
+				uses: [],
+				retry: sync.kinds[1].finish.retry,
+				body: (read: {
+					readonly input: Parameters<(typeof sync.kinds)[1]["start"]>[0]
+					readonly endings: Parameters<(typeof sync.kinds)[1]["finish"]["body"]>[1]
+				}) =>
+					Effect.map(sync.kinds[1].finish.body(read.input, read.endings), (writes) => ({
+						output: {},
+						writes
+					}))
+			},
+			{
+				input: (step) =>
+					Effect.gen(function* () {
+						const located = yield* Effect.map(
+							settled(h.den.syncStepOf.once({ params: { step }, facts: {} })),
+							one
+						)
+						if (Option.isNone(located)) {
+							return Option.none()
+						}
+						const scope = located.value.scope
+						const input = yield* readSyncSyncRunInput(scope)
+						if (Option.isNone(input)) {
+							return Option.none()
+						}
+						return Option.some({ input: input.value, endings: {} })
+					}),
+				read: () => Effect.succeed([]),
+				commit: (done) =>
+					Effect.map(
+						settled(
+							h.commits.syncCommitSyncRunFinish.once({
+								params: {},
+								facts: {
+									insert: {
+										SyncResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										SyncDone: [{ step: done.turn.step, root: done.turn.root }],
+										SyncHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										]
+									}
+								}
+							})
+						),
+						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
+					),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.some("SyncRun")
+		),
+		GoldFinish: runnerOf(
+			{
+				name: "GoldFinish",
+				uses: [],
+				retry: sync.kinds[3].finish.retry,
+				body: (read: {
+					readonly input: Parameters<(typeof sync.kinds)[3]["start"]>[0]
+					readonly endings: Parameters<(typeof sync.kinds)[3]["finish"]["body"]>[1]
+				}) =>
+					Effect.map(sync.kinds[3].finish.body(read.input, read.endings), (writes) => ({
+						output: {},
+						writes
+					}))
+			},
+			{
+				input: (step) =>
+					Effect.gen(function* () {
+						const located = yield* Effect.map(
+							settled(h.den.syncStepOf.once({ params: { step }, facts: {} })),
+							one
+						)
+						if (Option.isNone(located)) {
+							return Option.none()
+						}
+						const scope = located.value.scope
+						const input = yield* readSyncGoldInput(scope)
+						if (Option.isNone(input)) {
+							return Option.none()
+						}
+						return Option.some({ input: input.value, endings: {} })
+					}),
+				read: () => Effect.succeed([]),
+				commit: (done) =>
+					Effect.map(
+						settled(
+							h.commits.syncCommitGoldFinish.once({
+								params: {},
+								facts: {
+									insert: {
+										SyncResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										SyncDone: [{ step: done.turn.step, root: done.turn.root }],
+										SyncHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										]
+									}
+								}
+							})
+						),
+						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
+					),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.some("Gold")
+		)
+	}
 	const ledger: Ledger<FlowNeeds<typeof sync>> = {
 		flow: FlowName.make("Sync"),
 		now: Effect.flatMap(settled(h.den.syncNow.once({ params: {}, facts: {} })), readingOf),
 		authenticated: Effect.asVoid(
 			settled(h.commits.syncAuthenticated.once({ params: {}, facts: {} }))
 		),
-		steps: new Map([
-			[
-				"Copy",
-				runnerOf(
-					sync.kinds[0],
-					{
-						input: (step) => readSyncCopyInput(step),
-						read: () => Effect.succeed({}),
-						commit: (done, _at) =>
-							Effect.gen(function* () {
-								const grown = yield* Effect.succeed(nothingGrown)
-								const outcome = yield* settled(
-									h.commits.syncCommitCopy.once({
-										params: {},
-										facts: {
-											insert: {
-												SyncResult: [
-													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-												],
-												SyncDone: [{ step: done.turn.step, root: done.turn.root }],
-												SyncHeld: [
-													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-												],
-												SyncCopyOutput: [
-													{ step: done.turn.step, root: done.turn.root, run: done.output.run }
-												],
-												Copied: done.writes.insert.Copied
-											}
-										}
-									})
-								)
-								return { outcome, spawned: grown.spawned }
-							}),
-						fail: (failed) => Effect.die(failed.error)
-					},
-					Option.none()
-				)
-			],
-			[
-				"Build",
-				runnerOf(
-					sync.kinds[2],
-					{
-						input: (step) => readSyncBuildInput(step),
-						read: () => Effect.succeed({}),
-						commit: (done, _at) =>
-							Effect.gen(function* () {
-								const grown = yield* Effect.succeed(nothingGrown)
-								const outcome = yield* settled(
-									h.commits.syncCommitBuild.once({
-										params: {},
-										facts: {
-											insert: {
-												SyncResult: [
-													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-												],
-												SyncDone: [{ step: done.turn.step, root: done.turn.root }],
-												SyncHeld: [
-													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-												],
-												SyncBuildOutput: [
-													{ step: done.turn.step, root: done.turn.root, build: done.output.build }
-												],
-												Built: done.writes.insert.Built
-											}
-										}
-									})
-								)
-								return { outcome, spawned: grown.spawned }
-							}),
-						fail: (failed) => Effect.die(failed.error)
-					},
-					Option.none()
-				)
-			],
-			[
-				"SyncRunFinish",
-				runnerOf(
-					{
-						name: "SyncRunFinish",
-						uses: [],
-						retry: sync.kinds[1].finish.retry,
-						body: (read: {
-							readonly input: Parameters<(typeof sync.kinds)[1]["start"]>[0]
-							readonly endings: Parameters<(typeof sync.kinds)[1]["finish"]["body"]>[1]
-						}) =>
-							Effect.map(sync.kinds[1].finish.body(read.input, read.endings), (writes) => ({
-								output: {},
-								writes
-							}))
-					},
-					{
-						input: (step) =>
-							Effect.gen(function* () {
-								const located = yield* Effect.map(
-									settled(h.den.syncStepOf.once({ params: { step }, facts: {} })),
-									one
-								)
-								if (Option.isNone(located)) {
-									return Option.none()
-								}
-								const scope = located.value.scope
-								const input = yield* readSyncSyncRunInput(scope)
-								if (Option.isNone(input)) {
-									return Option.none()
-								}
-								return Option.some({ input: input.value, endings: {} })
-							}),
-						read: () => Effect.succeed([]),
-						commit: (done) =>
-							Effect.map(
-								settled(
-									h.commits.syncCommitSyncRunFinish.once({
-										params: {},
-										facts: {
-											insert: {
-												SyncResult: [
-													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-												],
-												SyncDone: [{ step: done.turn.step, root: done.turn.root }],
-												SyncHeld: [
-													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-												]
-											}
-										}
-									})
-								),
-								(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-							),
-						fail: (failed) => Effect.die(failed.error)
-					},
-					Option.some("SyncRun")
-				)
-			],
-			[
-				"GoldFinish",
-				runnerOf(
-					{
-						name: "GoldFinish",
-						uses: [],
-						retry: sync.kinds[3].finish.retry,
-						body: (read: {
-							readonly input: Parameters<(typeof sync.kinds)[3]["start"]>[0]
-							readonly endings: Parameters<(typeof sync.kinds)[3]["finish"]["body"]>[1]
-						}) =>
-							Effect.map(sync.kinds[3].finish.body(read.input, read.endings), (writes) => ({
-								output: {},
-								writes
-							}))
-					},
-					{
-						input: (step) =>
-							Effect.gen(function* () {
-								const located = yield* Effect.map(
-									settled(h.den.syncStepOf.once({ params: { step }, facts: {} })),
-									one
-								)
-								if (Option.isNone(located)) {
-									return Option.none()
-								}
-								const scope = located.value.scope
-								const input = yield* readSyncGoldInput(scope)
-								if (Option.isNone(input)) {
-									return Option.none()
-								}
-								return Option.some({ input: input.value, endings: {} })
-							}),
-						read: () => Effect.succeed([]),
-						commit: (done) =>
-							Effect.map(
-								settled(
-									h.commits.syncCommitGoldFinish.once({
-										params: {},
-										facts: {
-											insert: {
-												SyncResult: [
-													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-												],
-												SyncDone: [{ step: done.turn.step, root: done.turn.root }],
-												SyncHeld: [
-													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-												]
-											}
-										}
-									})
-								),
-								(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-							),
-						fail: (failed) => Effect.die(failed.error)
-					},
-					Option.some("Gold")
-				)
-			]
-		]),
 		roots: new Map([
 			[
 				"SyncRun",
@@ -690,7 +670,11 @@ export const syncLedger = (h: SyncHandles) => {
 		]),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.syncStepOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope, root: row.root }))
+				Option.map(one(rows), (row) => ({
+					runner: runners[row.kind],
+					scope: row.scope,
+					root: row.root
+				}))
 			),
 		resultOf: (step) =>
 			Effect.map(settled(h.den.syncResultOf.once({ params: { step }, facts: {} })), (rows) =>
@@ -906,7 +890,7 @@ export const syncLedger = (h: SyncHandles) => {
 					}
 				)
 			return {
-				steps,
+				steps: Arr.map(steps, (s) => ({ step: s.step, runner: runners[s.kind], scope: s.scope })),
 				claims,
 				retries,
 				fenced,
@@ -919,7 +903,7 @@ export const syncLedger = (h: SyncHandles) => {
 				exclusives,
 				paused,
 				busy
-			} satisfies Snapshot
+			} satisfies Snapshot<FlowNeeds<typeof sync>>
 		}),
 		changes: Stream.mergeAll(
 			[

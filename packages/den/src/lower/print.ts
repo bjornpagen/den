@@ -1605,7 +1605,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		'\t\t\tonNone: () => Arr.map(Option.toArray(Arr.findFirst(withins, (w) => w.scope === scope)), (w): ScopeView => ({ place: "child", scope, kind, parent: w.parent }))',
 		"\t\t})",
 		"\treturn {",
-		"\t\tsteps,",
+		"\t\tsteps: Arr.map(steps, (s) => ({ step: s.step, runner: runners[s.kind], scope: s.scope })),",
 		"\t\tclaims,",
 		"\t\tretries,",
 		"\t\tfenced,",
@@ -1615,7 +1615,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"\t\texclusives,",
 		"\t\tpaused,",
 		"\t\tbusy",
-		"\t} satisfies Snapshot",
+		`\t} satisfies Snapshot<FlowNeeds<typeof ${F}>>`,
 		"})"
 	])
 	const watched = [
@@ -1733,17 +1733,14 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\tconst coordination: Ledger<never>["coordination"] = ${indented("\t")(coordination)}`,
 		`\tconst busyFlows: Effect.Effect<ReadonlyArray<string>, Settled> = ${indented("\t")(busyFlows)}`,
 		`\tconst request = { ${commas(Arr.map(denRoots, requestOf))} }`,
+		"\tconst runners = {",
+		...Arr.map(l.steps, (s) => `\t\t${s.name}: ${indented("\t\t")(stepRunner(s))},`),
+		...Arr.map(l.joins, (j) => `\t\t${j.finish.name}: ${indented("\t\t")(finishRunner(j))},`),
+		"\t}",
 		`\tconst ledger: Ledger<FlowNeeds<typeof ${F}>> = {`,
 		`\t\tflow: FlowName.make(${q(P)}),`,
 		`\t\tnow: Effect.flatMap(settled(h.den.${n.program("Now")}.once({ params: {}, facts: {} })), readingOf),`,
 		`\t\tauthenticated: Effect.asVoid(settled(h.commits.${n.program("Authenticated")}.once({ params: {}, facts: {} }))),`,
-		"\t\tsteps: new Map([",
-		...Arr.map(l.steps, (s) => `\t\t\t[${q(s.name)}, ${indented("\t\t\t")(stepRunner(s))}],`),
-		...Arr.map(
-			l.joins,
-			(j) => `\t\t\t[${q(j.finish.name)}, ${indented("\t\t\t")(finishRunner(j))}],`
-		),
-		"\t\t]),",
 		"\t\troots: new Map([",
 		...Arr.map(
 			roots,
@@ -1751,7 +1748,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				`\t\t\t[${q(j.name)}, { kind: ${q(j.name)}, exclusive: ${isExclusive(j)}, window: ${kindAt(j.index)}.window, precondition: ${kindAt(j.index)}.precondition, finish: ${q(j.finish.name)}, admit: ${indented("\t\t\t")(admitOf(j))} }],`
 		),
 		"\t\t]),",
-		`\t\tstepOf: (step) => Effect.map(settled(h.den.${n.program("StepOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope, root: row.root }))),`,
+		`\t\tstepOf: (step) => Effect.map(settled(h.den.${n.program("StepOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => ({ runner: runners[row.kind], scope: row.scope, root: row.root }))),`,
 		`\t\tresultOf: (step) => Effect.map(settled(h.den.${n.program("ResultOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.outcome)),`,
 		`\t\theldOf: (step) => Effect.map(settled(h.den.${n.program("HeldOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.attempt)),`,
 		`\t\tdueOf: (step) => Effect.map(settled(h.den.${n.program("DueOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.at)),`,

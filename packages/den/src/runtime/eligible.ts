@@ -142,7 +142,7 @@ export const standing = (
 	})
 
 /** The wakes due at `now` in a snapshot, and the exclusivity seats to give back. */
-export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot, now: Instant): Eligible => {
+export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Instant): Eligible => {
 	const scopes = HashMap.fromIterable(Arr.map(snapshot.scopes, (s) => [s.scope, s] as const))
 	const view = (scope: ScopeKey): Option.Option<ScopeView> => HashMap.get(scopes, scope)
 	const rootOf = (scope: ScopeKey): Option.Option<RootView> =>
@@ -169,9 +169,9 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot, now: Instant)
 		Arr.some(snapshot.scopes, (s) => Option.contains(parentOf(s), scope))
 
 	const candidates = Arr.flatMap(snapshot.steps, (p): ReadonlyArray<Candidate> => {
-		const runner = ledger.steps.get(p.kind)
+		const runner = p.runner
 		const root = rootOf(p.scope)
-		if (runner === undefined || Option.isNone(view(p.scope)) || Option.isNone(root)) {
+		if (Option.isNone(view(p.scope)) || Option.isNone(root)) {
 			return []
 		}
 		const stands = standing(

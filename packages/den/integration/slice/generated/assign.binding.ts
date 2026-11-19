@@ -389,252 +389,221 @@ export const assignLedger = (h: AssignHandles) => {
 				)
 			)
 	}
+	const runners = {
+		Decide: runnerOf(
+			assign.kinds[0],
+			{
+				input: (step) => readAssignDecideInput(step),
+				read: (input) => {
+					const nearest = assign.kinds[0].reads.nearest.params(input)
+					const seen = assign.kinds[0].reads.seen.params(input)
+					return Effect.flatMap(
+						settled(
+							h.commits.assignReadDecide.once({
+								params: {
+									"nearest.topic": nearest.topic,
+									"nearest.anchor.question": nearest.anchor.question,
+									"seen.learner": seen.learner
+								},
+								facts: {}
+							})
+						),
+						(rows) => Effect.map(only(rows), (row) => ({ nearest: row.nearest, seen: row.seen }))
+					)
+				},
+				commit: (done, _at) =>
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
+							h.commits.assignCommitDecide.once({
+								params: {},
+								facts: {
+									insert: {
+										AssignResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										AssignDone: [{ step: done.turn.step, root: done.turn.root }],
+										AssignHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										AssignDecideOutput: [
+											{
+												step: done.turn.step,
+												root: done.turn.root,
+												confidence: done.output.confidence,
+												stage: done.output.stage._tag
+											}
+										],
+										AssignDecideOutputWeighed: Arr.map(done.output.weighed, (element, index) => ({
+											step: done.turn.step,
+											root: done.turn.root,
+											ordinal: BigInt(index),
+											passage: element.passage,
+											distance: element.distance,
+											passed: element.passed
+										})),
+										AssignDecideOutputStageServe: Arr.flatMap([done.output.stage], (variant) =>
+											variant._tag === "Serve"
+												? [
+														{
+															step: done.turn.step,
+															root: done.turn.root,
+															passage: variant.passage,
+															distance: variant.distance
+														}
+													]
+												: []
+										),
+										AssignDecideOutputStageRest: Arr.flatMap([done.output.stage], (variant) =>
+											variant._tag === "Rest"
+												? [{ step: done.turn.step, root: done.turn.root }]
+												: []
+										),
+										AssignDecideNearestRead: Arr.map(done.rows.nearest, (row, ordinal) => ({
+											...row,
+											step: done.turn.step,
+											root: done.turn.root,
+											ordinal: BigInt(ordinal)
+										})),
+										AssignDecideSeenRead: Arr.map(done.rows.seen, (row, ordinal) => ({
+											...row,
+											step: done.turn.step,
+											root: done.turn.root,
+											ordinal: BigInt(ordinal)
+										})),
+										Assigned: done.writes.insert.Assigned
+									}
+								}
+							})
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.none()
+		),
+		AssignmentFinish: runnerOf(
+			{
+				name: "AssignmentFinish",
+				uses: [],
+				retry: assign.kinds[1].finish.retry,
+				body: (read: {
+					readonly input: Parameters<(typeof assign.kinds)[1]["start"]>[0]
+					readonly endings: Parameters<(typeof assign.kinds)[1]["finish"]["body"]>[1]
+				}) =>
+					Effect.map(assign.kinds[1].finish.body(read.input, read.endings), (writes) => ({
+						output: {},
+						writes
+					}))
+			},
+			{
+				input: (step) =>
+					Effect.gen(function* () {
+						const located = yield* Effect.map(
+							settled(h.den.assignStepOf.once({ params: { step }, facts: {} })),
+							one
+						)
+						if (Option.isNone(located)) {
+							return Option.none()
+						}
+						const scope = located.value.scope
+						const input = yield* readAssignAssignmentInput(scope)
+						if (Option.isNone(input)) {
+							return Option.none()
+						}
+						const rowsDecide = yield* Effect.map(
+							settled(h.den.assignOutputsAssignmentDecide.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const familyDecide0 = yield* Effect.map(
+							settled(
+								h.den.assignOutputsAssignmentDecideWeighed.once({ params: { scope }, facts: {} })
+							),
+							rowsOf
+						)
+						const variantDecide0_0 = yield* Effect.map(
+							settled(
+								h.den.assignOutputsAssignmentDecideStageServe.once({ params: { scope }, facts: {} })
+							),
+							rowsOf
+						)
+						const variantDecide0_1 = yield* Effect.map(
+							settled(
+								h.den.assignOutputsAssignmentDecideStageRest.once({ params: { scope }, facts: {} })
+							),
+							rowsOf
+						)
+						const failuresDecide = yield* Effect.map(
+							settled(h.den.assignFailuresAssignmentDecide.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const Decide = [
+							...(yield* Effect.forEach(rowsDecide, (row) =>
+								Effect.map(
+									held(
+										Option.map(
+											Option.all({
+												stage:
+													row.stage === "Serve"
+														? Option.map(
+																Arr.findFirst(variantDecide0_0, (o) => o.step === row.step),
+																(part) => ({
+																	_tag: "Serve" as const,
+																	passage: part.passage,
+																	distance: part.distance
+																})
+															)
+														: Option.map(
+																Arr.findFirst(variantDecide0_1, (o) => o.step === row.step),
+																() => ({ _tag: "Rest" as const })
+															)
+											}),
+											(unions) => ({
+												confidence: row.confidence,
+												weighed: Arr.map(
+													ordered(Arr.filter(familyDecide0, (o) => o.step === row.step)),
+													(e) => ({ passage: e.passage, distance: e.distance, passed: e.passed })
+												),
+												stage: unions.stage
+											})
+										)
+									),
+									(output) => ({ _tag: "Done" as const, output })
+								)
+							)),
+							...Arr.map(failuresDecide, () => ({ _tag: "Failed" as const }))
+						]
+						return Option.some({ input: input.value, endings: { Decide } })
+					}),
+				read: () => Effect.succeed([]),
+				commit: (done) =>
+					Effect.map(
+						settled(
+							h.commits.assignCommitAssignmentFinish.once({
+								params: {},
+								facts: {
+									insert: {
+										AssignResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										AssignDone: [{ step: done.turn.step, root: done.turn.root }],
+										AssignHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										Concluded: done.writes.insert.Concluded
+									}
+								}
+							})
+						),
+						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
+					),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.some("Assignment")
+		)
+	}
 	const ledger: Ledger<FlowNeeds<typeof assign>> = {
 		flow: FlowName.make("Assign"),
 		now: Effect.flatMap(settled(h.den.assignNow.once({ params: {}, facts: {} })), readingOf),
 		authenticated: Effect.asVoid(
 			settled(h.commits.assignAuthenticated.once({ params: {}, facts: {} }))
 		),
-		steps: new Map([
-			[
-				"Decide",
-				runnerOf(
-					assign.kinds[0],
-					{
-						input: (step) => readAssignDecideInput(step),
-						read: (input) => {
-							const nearest = assign.kinds[0].reads.nearest.params(input)
-							const seen = assign.kinds[0].reads.seen.params(input)
-							return Effect.flatMap(
-								settled(
-									h.commits.assignReadDecide.once({
-										params: {
-											"nearest.topic": nearest.topic,
-											"nearest.anchor.question": nearest.anchor.question,
-											"seen.learner": seen.learner
-										},
-										facts: {}
-									})
-								),
-								(rows) =>
-									Effect.map(only(rows), (row) => ({ nearest: row.nearest, seen: row.seen }))
-							)
-						},
-						commit: (done, _at) =>
-							Effect.gen(function* () {
-								const grown = yield* Effect.succeed(nothingGrown)
-								const outcome = yield* settled(
-									h.commits.assignCommitDecide.once({
-										params: {},
-										facts: {
-											insert: {
-												AssignResult: [
-													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-												],
-												AssignDone: [{ step: done.turn.step, root: done.turn.root }],
-												AssignHeld: [
-													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-												],
-												AssignDecideOutput: [
-													{
-														step: done.turn.step,
-														root: done.turn.root,
-														confidence: done.output.confidence,
-														stage: done.output.stage._tag
-													}
-												],
-												AssignDecideOutputWeighed: Arr.map(
-													done.output.weighed,
-													(element, index) => ({
-														step: done.turn.step,
-														root: done.turn.root,
-														ordinal: BigInt(index),
-														passage: element.passage,
-														distance: element.distance,
-														passed: element.passed
-													})
-												),
-												AssignDecideOutputStageServe: Arr.flatMap([done.output.stage], (variant) =>
-													variant._tag === "Serve"
-														? [
-																{
-																	step: done.turn.step,
-																	root: done.turn.root,
-																	passage: variant.passage,
-																	distance: variant.distance
-																}
-															]
-														: []
-												),
-												AssignDecideOutputStageRest: Arr.flatMap([done.output.stage], (variant) =>
-													variant._tag === "Rest"
-														? [{ step: done.turn.step, root: done.turn.root }]
-														: []
-												),
-												AssignDecideNearestRead: Arr.map(done.rows.nearest, (row, ordinal) => ({
-													...row,
-													step: done.turn.step,
-													root: done.turn.root,
-													ordinal: BigInt(ordinal)
-												})),
-												AssignDecideSeenRead: Arr.map(done.rows.seen, (row, ordinal) => ({
-													...row,
-													step: done.turn.step,
-													root: done.turn.root,
-													ordinal: BigInt(ordinal)
-												})),
-												Assigned: done.writes.insert.Assigned
-											}
-										}
-									})
-								)
-								return { outcome, spawned: grown.spawned }
-							}),
-						fail: (failed) => Effect.die(failed.error)
-					},
-					Option.none()
-				)
-			],
-			[
-				"AssignmentFinish",
-				runnerOf(
-					{
-						name: "AssignmentFinish",
-						uses: [],
-						retry: assign.kinds[1].finish.retry,
-						body: (read: {
-							readonly input: Parameters<(typeof assign.kinds)[1]["start"]>[0]
-							readonly endings: Parameters<(typeof assign.kinds)[1]["finish"]["body"]>[1]
-						}) =>
-							Effect.map(assign.kinds[1].finish.body(read.input, read.endings), (writes) => ({
-								output: {},
-								writes
-							}))
-					},
-					{
-						input: (step) =>
-							Effect.gen(function* () {
-								const located = yield* Effect.map(
-									settled(h.den.assignStepOf.once({ params: { step }, facts: {} })),
-									one
-								)
-								if (Option.isNone(located)) {
-									return Option.none()
-								}
-								const scope = located.value.scope
-								const input = yield* readAssignAssignmentInput(scope)
-								if (Option.isNone(input)) {
-									return Option.none()
-								}
-								const rowsDecide = yield* Effect.map(
-									settled(
-										h.den.assignOutputsAssignmentDecide.once({ params: { scope }, facts: {} })
-									),
-									rowsOf
-								)
-								const familyDecide0 = yield* Effect.map(
-									settled(
-										h.den.assignOutputsAssignmentDecideWeighed.once({
-											params: { scope },
-											facts: {}
-										})
-									),
-									rowsOf
-								)
-								const variantDecide0_0 = yield* Effect.map(
-									settled(
-										h.den.assignOutputsAssignmentDecideStageServe.once({
-											params: { scope },
-											facts: {}
-										})
-									),
-									rowsOf
-								)
-								const variantDecide0_1 = yield* Effect.map(
-									settled(
-										h.den.assignOutputsAssignmentDecideStageRest.once({
-											params: { scope },
-											facts: {}
-										})
-									),
-									rowsOf
-								)
-								const failuresDecide = yield* Effect.map(
-									settled(
-										h.den.assignFailuresAssignmentDecide.once({ params: { scope }, facts: {} })
-									),
-									rowsOf
-								)
-								const Decide = [
-									...(yield* Effect.forEach(rowsDecide, (row) =>
-										Effect.map(
-											held(
-												Option.map(
-													Option.all({
-														stage:
-															row.stage === "Serve"
-																? Option.map(
-																		Arr.findFirst(variantDecide0_0, (o) => o.step === row.step),
-																		(part) => ({
-																			_tag: "Serve" as const,
-																			passage: part.passage,
-																			distance: part.distance
-																		})
-																	)
-																: Option.map(
-																		Arr.findFirst(variantDecide0_1, (o) => o.step === row.step),
-																		() => ({ _tag: "Rest" as const })
-																	)
-													}),
-													(unions) => ({
-														confidence: row.confidence,
-														weighed: Arr.map(
-															ordered(Arr.filter(familyDecide0, (o) => o.step === row.step)),
-															(e) => ({
-																passage: e.passage,
-																distance: e.distance,
-																passed: e.passed
-															})
-														),
-														stage: unions.stage
-													})
-												)
-											),
-											(output) => ({ _tag: "Done" as const, output })
-										)
-									)),
-									...Arr.map(failuresDecide, () => ({ _tag: "Failed" as const }))
-								]
-								return Option.some({ input: input.value, endings: { Decide } })
-							}),
-						read: () => Effect.succeed([]),
-						commit: (done) =>
-							Effect.map(
-								settled(
-									h.commits.assignCommitAssignmentFinish.once({
-										params: {},
-										facts: {
-											insert: {
-												AssignResult: [
-													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-												],
-												AssignDone: [{ step: done.turn.step, root: done.turn.root }],
-												AssignHeld: [
-													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-												],
-												Concluded: done.writes.insert.Concluded
-											}
-										}
-									})
-								),
-								(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-							),
-						fail: (failed) => Effect.die(failed.error)
-					},
-					Option.some("Assignment")
-				)
-			]
-		]),
 		roots: new Map([
 			[
 				"Assignment",
@@ -705,7 +674,11 @@ export const assignLedger = (h: AssignHandles) => {
 		]),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.assignStepOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope, root: row.root }))
+				Option.map(one(rows), (row) => ({
+					runner: runners[row.kind],
+					scope: row.scope,
+					root: row.root
+				}))
 			),
 		resultOf: (step) =>
 			Effect.map(settled(h.den.assignResultOf.once({ params: { step }, facts: {} })), (rows) =>
@@ -915,7 +888,7 @@ export const assignLedger = (h: AssignHandles) => {
 					}
 				)
 			return {
-				steps,
+				steps: Arr.map(steps, (s) => ({ step: s.step, runner: runners[s.kind], scope: s.scope })),
 				claims,
 				retries,
 				fenced,
@@ -928,7 +901,7 @@ export const assignLedger = (h: AssignHandles) => {
 				exclusives,
 				paused,
 				busy
-			} satisfies Snapshot
+			} satisfies Snapshot<FlowNeeds<typeof assign>>
 		}),
 		changes: Stream.mergeAll(
 			[

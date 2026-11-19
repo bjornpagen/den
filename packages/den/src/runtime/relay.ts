@@ -33,7 +33,7 @@ export type RelayEnd = Option.Option<CallError>
 const encoder = new TextEncoder()
 
 /** A snapshot's canonical text: each part's rows as text, sorted, so two reads of one committed state agree. */
-const textOf = (snapshot: Snapshot): string => {
+const textOf = <R>(snapshot: Snapshot<R>): string => {
 	const rows = (part: ReadonlyArray<unknown>) =>
 		Arr.join(
 			Arr.sort(
@@ -44,7 +44,7 @@ const textOf = (snapshot: Snapshot): string => {
 		)
 	return Arr.join(
 		[
-			rows(snapshot.steps),
+			rows(Arr.map(snapshot.steps, (s) => ({ step: s.step, kind: s.runner.kind, scope: s.scope }))),
 			rows(snapshot.claims),
 			rows(snapshot.retries),
 			rows(snapshot.fenced),

@@ -26,9 +26,9 @@ export const refusedOnKey = (error: Settled, relations: ReadonlyArray<string>): 
 /** A step's outcome, its Result: done with its output, or failed. */
 export type Outcome = "done" | "failed"
 
-/** Where a step is: its kind, its owning scope, and its root, the retirable unit its graph is a group of. */
-export interface Located {
-	readonly kind: string
+/** Where a step is: its kind's runner, its owning scope, and its root, the retirable unit its graph is a group of. */
+export interface Located<R> {
+	readonly runner: StepRunner<R>
 	readonly scope: ScopeKey
 	readonly root: ScopeKey
 }
@@ -235,10 +235,10 @@ export interface PauseRow {
  * the coordination group's live holds, exclusivity seats and paused targets; and, for each flow a precondition names,
  * whether it holds a pending step.
  */
-export interface Snapshot {
+export interface Snapshot<R> {
 	readonly steps: ReadonlyArray<{
 		readonly step: StepKey
-		readonly kind: string
+		readonly runner: StepRunner<R>
 		readonly scope: ScopeKey
 	}>
 	readonly claims: ReadonlyArray<{
@@ -298,9 +298,8 @@ export interface Ledger<R> {
 	 * runs no body, so the census rings a fenced attempt's step again only once it succeeds.
 	 */
 	readonly authenticated: Effect.Effect<void, Settled>
-	readonly steps: ReadonlyMap<string, StepRunner<R>>
 	readonly roots: ReadonlyMap<string, RootRunner>
-	readonly stepOf: (step: StepKey) => Effect.Effect<Option.Option<Located>, Settled>
+	readonly stepOf: (step: StepKey) => Effect.Effect<Option.Option<Located<R>>, Settled>
 	readonly resultOf: (step: StepKey) => Effect.Effect<Option.Option<Outcome>, Settled>
 	readonly heldOf: (step: StepKey) => Effect.Effect<Option.Option<bigint>, Settled>
 	readonly claimsOf: (step: StepKey) => Effect.Effect<ReadonlyArray<ClaimRow>, Settled>
@@ -333,7 +332,7 @@ export interface Ledger<R> {
 	 * one of its rows refuses it, naming the relation.
 	 */
 	readonly retire: (root: ScopeKey) => Effect.Effect<WriteOutcome<unknown>, Settled>
-	readonly snapshot: Effect.Effect<Snapshot, Settled>
+	readonly snapshot: Effect.Effect<Snapshot<R>, Settled>
 	/**
 	 * The relay's watch: one signal per change of the served reads eligibility depends on (pending steps, live scopes,
 	 * holds, exclusivity seats, pauses and the flows a precondition names), each through grizzle's live source, and the

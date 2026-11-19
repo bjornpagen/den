@@ -310,316 +310,290 @@ export const chainLedger = (h: ChainHandles) => {
 				)
 			)
 	}
+	const runners = {
+		Page: runnerOf(
+			chain.kinds[0],
+			{
+				input: (step) => readChainPageInput(step),
+				read: (input) => {
+					const weights = chain.kinds[0].reads.weights.params(input)
+					return Effect.flatMap(
+						settled(
+							h.commits.chainReadPage.once({ params: { "weights.feed": weights.feed }, facts: {} })
+						),
+						(rows) => Effect.map(only(rows), (row) => ({ weights: row.weights }))
+					)
+				},
+				commit: (done, at) =>
+					Effect.gen(function* () {
+						const grown = yield* Effect.map(
+							Effect.all([
+								Effect.map(
+									Effect.forEach(
+										chain.edges[0].next(done.input, done.output),
+										(input, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
+											Effect.map(edgeStep(done.turn.step, "Next", ordinal), (key): Grown => ({
+												rows: {
+													...noRows,
+													ChainStep: [
+														{
+															step: key,
+															kind: "Page",
+															scope: done.turn.scope,
+															root: done.turn.root
+														}
+													],
+													ChainDue: [
+														{ step: key, at: dueAt(chain.kinds[0].due, at), root: done.turn.root }
+													],
+													ChainNext: [
+														{
+															from: done.turn.step,
+															ordinal: BigInt(ordinal),
+															to: key,
+															root: done.turn.root
+														}
+													],
+													ChainPageInput: [
+														{
+															step: key,
+															root: done.turn.root,
+															feed: input.feed,
+															seq: input.seq,
+															pages: input.pages
+														}
+													],
+													ChainPageInputAfter: Option.toArray(
+														Option.map(input.after, (value) => ({
+															step: key,
+															root: done.turn.root,
+															value
+														}))
+													)
+												},
+												spawned: {
+													steps: [{ step: key, kind: "Page", due: dueAt(chain.kinds[0].due, at) }],
+													finishes: []
+												}
+											}))
+									),
+									(parts) => Arr.reduce(parts, nothingGrown, joined)
+								)
+							]),
+							(parts) => Arr.reduce(parts, nothingGrown, joined)
+						)
+						const outcome = yield* settled(
+							h.commits.chainCommitPage.once({
+								params: {},
+								facts: {
+									insert: {
+										...grown.rows,
+										ChainResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										ChainDone: [{ step: done.turn.step, root: done.turn.root }],
+										ChainHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										ChainPageOutput: [
+											{
+												step: done.turn.step,
+												root: done.turn.root,
+												seq: done.output.seq,
+												items: done.output.items
+											}
+										],
+										ChainPageOutputNext: Option.toArray(
+											Option.map(done.output.next, (value) => ({
+												step: done.turn.step,
+												root: done.turn.root,
+												value
+											}))
+										),
+										ChainPageWeightsRead: Arr.map(done.rows.weights, (row, ordinal) => ({
+											...row,
+											step: done.turn.step,
+											root: done.turn.root,
+											ordinal: BigInt(ordinal)
+										})),
+										Item: done.writes.insert.Item
+									}
+								}
+							})
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.none()
+		),
+		ChainRunFinish: runnerOf(
+			{
+				name: "ChainRunFinish",
+				uses: [],
+				retry: chain.kinds[1].finish.retry,
+				body: (read: {
+					readonly input: Parameters<(typeof chain.kinds)[1]["start"]>[0]
+					readonly endings: Parameters<(typeof chain.kinds)[1]["finish"]["body"]>[1]
+				}) =>
+					Effect.map(chain.kinds[1].finish.body(read.input, read.endings), (writes) => ({
+						output: {},
+						writes
+					}))
+			},
+			{
+				input: (step) =>
+					Effect.gen(function* () {
+						const located = yield* Effect.map(
+							settled(h.den.chainStepOf.once({ params: { step }, facts: {} })),
+							one
+						)
+						if (Option.isNone(located)) {
+							return Option.none()
+						}
+						const scope = located.value.scope
+						const input = yield* readChainChainRunInput(scope)
+						if (Option.isNone(input)) {
+							return Option.none()
+						}
+						const rowsPage = yield* Effect.map(
+							settled(h.den.chainOutputsChainRunPage.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const sidePage0 = yield* Effect.map(
+							settled(h.den.chainOutputsChainRunPageNext.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const failuresPage = yield* Effect.map(
+							settled(h.den.chainFailuresChainRunPage.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const Page = [
+							...Arr.map(rowsPage, (row) => ({
+								_tag: "Done" as const,
+								output: {
+									seq: row.seq,
+									items: row.items,
+									next: Option.map(
+										Arr.findFirst(sidePage0, (o) => o.step === row.step),
+										(o) => o.value
+									)
+								}
+							})),
+							...Arr.map(failuresPage, () => ({ _tag: "Failed" as const }))
+						]
+						return Option.some({ input: input.value, endings: { Page } })
+					}),
+				read: () => Effect.succeed([]),
+				commit: (done) =>
+					Effect.map(
+						settled(
+							h.commits.chainCommitChainRunFinish.once({
+								params: {},
+								facts: {
+									insert: {
+										ChainResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										ChainDone: [{ step: done.turn.step, root: done.turn.root }],
+										ChainHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										Cursor: done.writes.insert.Cursor
+									}
+								}
+							})
+						),
+						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
+					),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.some("ChainRun")
+		),
+		OrderedFinish: runnerOf(
+			{
+				name: "OrderedFinish",
+				uses: [],
+				retry: chain.kinds[2].finish.retry,
+				body: (read: {
+					readonly input: Parameters<(typeof chain.kinds)[2]["start"]>[0]
+					readonly endings: Parameters<(typeof chain.kinds)[2]["finish"]["body"]>[1]
+				}) =>
+					Effect.map(chain.kinds[2].finish.body(read.input, read.endings), (writes) => ({
+						output: {},
+						writes
+					}))
+			},
+			{
+				input: (step) =>
+					Effect.gen(function* () {
+						const located = yield* Effect.map(
+							settled(h.den.chainStepOf.once({ params: { step }, facts: {} })),
+							one
+						)
+						if (Option.isNone(located)) {
+							return Option.none()
+						}
+						const scope = located.value.scope
+						const input = yield* readChainOrderedInput(scope)
+						if (Option.isNone(input)) {
+							return Option.none()
+						}
+						const rowsPage = yield* Effect.map(
+							settled(h.den.chainOutputsOrderedPage.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const sidePage0 = yield* Effect.map(
+							settled(h.den.chainOutputsOrderedPageNext.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const failuresPage = yield* Effect.map(
+							settled(h.den.chainFailuresOrderedPage.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const Page = [
+							...Arr.map(rowsPage, (row) => ({
+								_tag: "Done" as const,
+								output: {
+									seq: row.seq,
+									items: row.items,
+									next: Option.map(
+										Arr.findFirst(sidePage0, (o) => o.step === row.step),
+										(o) => o.value
+									)
+								}
+							})),
+							...Arr.map(failuresPage, () => ({ _tag: "Failed" as const }))
+						]
+						return Option.some({ input: input.value, endings: { Page } })
+					}),
+				read: () => Effect.succeed([]),
+				commit: (done) =>
+					Effect.map(
+						settled(
+							h.commits.chainCommitOrderedFinish.once({
+								params: {},
+								facts: {
+									insert: {
+										ChainResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										ChainDone: [{ step: done.turn.step, root: done.turn.root }],
+										ChainHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										Cursor: done.writes.insert.Cursor
+									}
+								}
+							})
+						),
+						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
+					),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.some("Ordered")
+		)
+	}
 	const ledger: Ledger<FlowNeeds<typeof chain>> = {
 		flow: FlowName.make("Chain"),
 		now: Effect.flatMap(settled(h.den.chainNow.once({ params: {}, facts: {} })), readingOf),
 		authenticated: Effect.asVoid(
 			settled(h.commits.chainAuthenticated.once({ params: {}, facts: {} }))
 		),
-		steps: new Map([
-			[
-				"Page",
-				runnerOf(
-					chain.kinds[0],
-					{
-						input: (step) => readChainPageInput(step),
-						read: (input) => {
-							const weights = chain.kinds[0].reads.weights.params(input)
-							return Effect.flatMap(
-								settled(
-									h.commits.chainReadPage.once({
-										params: { "weights.feed": weights.feed },
-										facts: {}
-									})
-								),
-								(rows) => Effect.map(only(rows), (row) => ({ weights: row.weights }))
-							)
-						},
-						commit: (done, at) =>
-							Effect.gen(function* () {
-								const grown = yield* Effect.map(
-									Effect.all([
-										Effect.map(
-											Effect.forEach(
-												chain.edges[0].next(done.input, done.output),
-												(input, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
-													Effect.map(edgeStep(done.turn.step, "Next", ordinal), (key): Grown => ({
-														rows: {
-															...noRows,
-															ChainStep: [
-																{
-																	step: key,
-																	kind: "Page",
-																	scope: done.turn.scope,
-																	root: done.turn.root
-																}
-															],
-															ChainDue: [
-																{
-																	step: key,
-																	at: dueAt(chain.kinds[0].due, at),
-																	root: done.turn.root
-																}
-															],
-															ChainNext: [
-																{
-																	from: done.turn.step,
-																	ordinal: BigInt(ordinal),
-																	to: key,
-																	root: done.turn.root
-																}
-															],
-															ChainPageInput: [
-																{
-																	step: key,
-																	root: done.turn.root,
-																	feed: input.feed,
-																	seq: input.seq,
-																	pages: input.pages
-																}
-															],
-															ChainPageInputAfter: Option.toArray(
-																Option.map(input.after, (value) => ({
-																	step: key,
-																	root: done.turn.root,
-																	value
-																}))
-															)
-														},
-														spawned: {
-															steps: [
-																{ step: key, kind: "Page", due: dueAt(chain.kinds[0].due, at) }
-															],
-															finishes: []
-														}
-													}))
-											),
-											(parts) => Arr.reduce(parts, nothingGrown, joined)
-										)
-									]),
-									(parts) => Arr.reduce(parts, nothingGrown, joined)
-								)
-								const outcome = yield* settled(
-									h.commits.chainCommitPage.once({
-										params: {},
-										facts: {
-											insert: {
-												...grown.rows,
-												ChainResult: [
-													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-												],
-												ChainDone: [{ step: done.turn.step, root: done.turn.root }],
-												ChainHeld: [
-													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-												],
-												ChainPageOutput: [
-													{
-														step: done.turn.step,
-														root: done.turn.root,
-														seq: done.output.seq,
-														items: done.output.items
-													}
-												],
-												ChainPageOutputNext: Option.toArray(
-													Option.map(done.output.next, (value) => ({
-														step: done.turn.step,
-														root: done.turn.root,
-														value
-													}))
-												),
-												ChainPageWeightsRead: Arr.map(done.rows.weights, (row, ordinal) => ({
-													...row,
-													step: done.turn.step,
-													root: done.turn.root,
-													ordinal: BigInt(ordinal)
-												})),
-												Item: done.writes.insert.Item
-											}
-										}
-									})
-								)
-								return { outcome, spawned: grown.spawned }
-							}),
-						fail: (failed) => Effect.die(failed.error)
-					},
-					Option.none()
-				)
-			],
-			[
-				"ChainRunFinish",
-				runnerOf(
-					{
-						name: "ChainRunFinish",
-						uses: [],
-						retry: chain.kinds[1].finish.retry,
-						body: (read: {
-							readonly input: Parameters<(typeof chain.kinds)[1]["start"]>[0]
-							readonly endings: Parameters<(typeof chain.kinds)[1]["finish"]["body"]>[1]
-						}) =>
-							Effect.map(chain.kinds[1].finish.body(read.input, read.endings), (writes) => ({
-								output: {},
-								writes
-							}))
-					},
-					{
-						input: (step) =>
-							Effect.gen(function* () {
-								const located = yield* Effect.map(
-									settled(h.den.chainStepOf.once({ params: { step }, facts: {} })),
-									one
-								)
-								if (Option.isNone(located)) {
-									return Option.none()
-								}
-								const scope = located.value.scope
-								const input = yield* readChainChainRunInput(scope)
-								if (Option.isNone(input)) {
-									return Option.none()
-								}
-								const rowsPage = yield* Effect.map(
-									settled(h.den.chainOutputsChainRunPage.once({ params: { scope }, facts: {} })),
-									rowsOf
-								)
-								const sidePage0 = yield* Effect.map(
-									settled(
-										h.den.chainOutputsChainRunPageNext.once({ params: { scope }, facts: {} })
-									),
-									rowsOf
-								)
-								const failuresPage = yield* Effect.map(
-									settled(h.den.chainFailuresChainRunPage.once({ params: { scope }, facts: {} })),
-									rowsOf
-								)
-								const Page = [
-									...Arr.map(rowsPage, (row) => ({
-										_tag: "Done" as const,
-										output: {
-											seq: row.seq,
-											items: row.items,
-											next: Option.map(
-												Arr.findFirst(sidePage0, (o) => o.step === row.step),
-												(o) => o.value
-											)
-										}
-									})),
-									...Arr.map(failuresPage, () => ({ _tag: "Failed" as const }))
-								]
-								return Option.some({ input: input.value, endings: { Page } })
-							}),
-						read: () => Effect.succeed([]),
-						commit: (done) =>
-							Effect.map(
-								settled(
-									h.commits.chainCommitChainRunFinish.once({
-										params: {},
-										facts: {
-											insert: {
-												ChainResult: [
-													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-												],
-												ChainDone: [{ step: done.turn.step, root: done.turn.root }],
-												ChainHeld: [
-													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-												],
-												Cursor: done.writes.insert.Cursor
-											}
-										}
-									})
-								),
-								(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-							),
-						fail: (failed) => Effect.die(failed.error)
-					},
-					Option.some("ChainRun")
-				)
-			],
-			[
-				"OrderedFinish",
-				runnerOf(
-					{
-						name: "OrderedFinish",
-						uses: [],
-						retry: chain.kinds[2].finish.retry,
-						body: (read: {
-							readonly input: Parameters<(typeof chain.kinds)[2]["start"]>[0]
-							readonly endings: Parameters<(typeof chain.kinds)[2]["finish"]["body"]>[1]
-						}) =>
-							Effect.map(chain.kinds[2].finish.body(read.input, read.endings), (writes) => ({
-								output: {},
-								writes
-							}))
-					},
-					{
-						input: (step) =>
-							Effect.gen(function* () {
-								const located = yield* Effect.map(
-									settled(h.den.chainStepOf.once({ params: { step }, facts: {} })),
-									one
-								)
-								if (Option.isNone(located)) {
-									return Option.none()
-								}
-								const scope = located.value.scope
-								const input = yield* readChainOrderedInput(scope)
-								if (Option.isNone(input)) {
-									return Option.none()
-								}
-								const rowsPage = yield* Effect.map(
-									settled(h.den.chainOutputsOrderedPage.once({ params: { scope }, facts: {} })),
-									rowsOf
-								)
-								const sidePage0 = yield* Effect.map(
-									settled(h.den.chainOutputsOrderedPageNext.once({ params: { scope }, facts: {} })),
-									rowsOf
-								)
-								const failuresPage = yield* Effect.map(
-									settled(h.den.chainFailuresOrderedPage.once({ params: { scope }, facts: {} })),
-									rowsOf
-								)
-								const Page = [
-									...Arr.map(rowsPage, (row) => ({
-										_tag: "Done" as const,
-										output: {
-											seq: row.seq,
-											items: row.items,
-											next: Option.map(
-												Arr.findFirst(sidePage0, (o) => o.step === row.step),
-												(o) => o.value
-											)
-										}
-									})),
-									...Arr.map(failuresPage, () => ({ _tag: "Failed" as const }))
-								]
-								return Option.some({ input: input.value, endings: { Page } })
-							}),
-						read: () => Effect.succeed([]),
-						commit: (done) =>
-							Effect.map(
-								settled(
-									h.commits.chainCommitOrderedFinish.once({
-										params: {},
-										facts: {
-											insert: {
-												ChainResult: [
-													{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-												],
-												ChainDone: [{ step: done.turn.step, root: done.turn.root }],
-												ChainHeld: [
-													{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-												],
-												Cursor: done.writes.insert.Cursor
-											}
-										}
-									})
-								),
-								(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-							),
-						fail: (failed) => Effect.die(failed.error)
-					},
-					Option.some("Ordered")
-				)
-			]
-		]),
 		roots: new Map([
 			[
 				"ChainRun",
@@ -752,7 +726,11 @@ export const chainLedger = (h: ChainHandles) => {
 		]),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.chainStepOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => ({ kind: row.kind, scope: row.scope, root: row.root }))
+				Option.map(one(rows), (row) => ({
+					runner: runners[row.kind],
+					scope: row.scope,
+					root: row.root
+				}))
 			),
 		resultOf: (step) =>
 			Effect.map(settled(h.den.chainResultOf.once({ params: { step }, facts: {} })), (rows) =>
@@ -962,7 +940,7 @@ export const chainLedger = (h: ChainHandles) => {
 					}
 				)
 			return {
-				steps,
+				steps: Arr.map(steps, (s) => ({ step: s.step, runner: runners[s.kind], scope: s.scope })),
 				claims,
 				retries,
 				fenced,
@@ -975,7 +953,7 @@ export const chainLedger = (h: ChainHandles) => {
 				exclusives,
 				paused,
 				busy
-			} satisfies Snapshot
+			} satisfies Snapshot<FlowNeeds<typeof chain>>
 		}),
 		changes: Stream.mergeAll(
 			[
