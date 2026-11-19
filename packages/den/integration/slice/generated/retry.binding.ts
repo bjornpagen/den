@@ -19,6 +19,7 @@ import {
 } from "@bjornpagen/den/runtime/identity"
 import type {
 	FlowNeeds,
+	Admission,
 	Ledger,
 	PauseRow,
 	ScopeView,
@@ -539,10 +540,22 @@ export const retryLedger = (h: RetryHandles) => {
 				if (Option.isNone(row)) {
 					return Option.none()
 				}
-				const parent = yield* Effect.map(
-					settled(h.den.retryWithinOf.once({ params: { scope: scope }, facts: {} })),
+				const root = yield* Effect.map(
+					settled(h.den.retryRootOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
+				if (Option.isNone(root)) {
+					const within = yield* Effect.map(
+						settled(h.den.retryWithinOf.once({ params: { scope: scope }, facts: {} })),
+						one
+					)
+					return Option.map(within, (w): ScopeView => ({
+						place: "child",
+						scope,
+						kind: row.value.kind,
+						parent: w.parent
+					}))
+				}
 				const admitted = yield* Effect.map(
 					settled(h.den.retryAdmittedOf.once({ params: { scope: scope }, facts: {} })),
 					one
@@ -552,18 +565,19 @@ export const retryLedger = (h: RetryHandles) => {
 					one
 				)
 				const key = Option.none<{ readonly id: ExclusiveId }>()
-				const root = yield* Effect.map(
-					settled(h.den.retryRootOf.once({ params: { scope: scope }, facts: {} })),
-					one
-				)
-				return Option.some({
+				const admission: Admission = Option.isSome(admitted)
+					? "admitted"
+					: Option.isSome(skipped)
+						? "skipped"
+						: "requested"
+				return Option.some<ScopeView>({
+					place: "root",
 					scope,
 					kind: row.value.kind,
-					parent: Option.map(parent, (w) => w.parent),
-					admitted: Option.isSome(admitted),
-					skipped: Option.isSome(skipped),
-					key: Option.map(key, (k) => k.id),
-					root: Option.map(root, (o) => ({ key: o.key, at: o.at }))
+					key: root.value.key,
+					at: root.value.at,
+					admission,
+					exclusive: Option.map(key, (k) => k.id)
 				})
 			}),
 		unended: (scope) =>
@@ -677,24 +691,35 @@ export const retryLedger = (h: RetryHandles) => {
 				Arr.map((row) => row.target)
 			)
 			const busy = yield* busyFlows
-			const view = (scope: ScopeKey, kind: string, admitted: boolean): ScopeView => ({
-				scope,
-				kind,
-				parent: Option.map(
-					Arr.findFirst(withins, (w) => w.scope === scope),
-					(w) => w.parent
-				),
-				admitted,
-				skipped: false,
-				key: Option.map(
-					Arr.findFirst(keys, (k) => k.scope === scope),
-					(k) => k.id
-				),
-				root: Option.map(
+			const view = (
+				scope: ScopeKey,
+				kind: string,
+				admission: Admission
+			): ReadonlyArray<ScopeView> =>
+				Option.match(
 					Arr.findFirst(roots, (o) => o.scope === scope),
-					(o) => ({ key: o.key, at: o.at })
+					{
+						onSome: (o): ReadonlyArray<ScopeView> => [
+							{
+								place: "root",
+								scope,
+								kind,
+								key: o.key,
+								at: o.at,
+								admission,
+								exclusive: Option.map(
+									Arr.findFirst(keys, (k) => k.scope === scope),
+									(k) => k.id
+								)
+							}
+						],
+						onNone: () =>
+							Arr.map(
+								Option.toArray(Arr.findFirst(withins, (w) => w.scope === scope)),
+								(w): ScopeView => ({ place: "child", scope, kind, parent: w.parent })
+							)
+					}
 				)
-			})
 			return {
 				steps,
 				claims,
@@ -702,8 +727,8 @@ export const retryLedger = (h: RetryHandles) => {
 				fenced,
 				dues,
 				scopes: [
-					...Arr.map(requested, (s) => view(s.scope, s.kind, false)),
-					...Arr.map(running, (s) => view(s.scope, s.kind, true))
+					...Arr.flatMap(requested, (s) => view(s.scope, s.kind, "requested")),
+					...Arr.flatMap(running, (s) => view(s.scope, s.kind, "admitted"))
 				],
 				holds,
 				exclusives,

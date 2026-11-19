@@ -117,9 +117,9 @@ export const aPreconditionRootAdmitsTheGoldBuildOnlyOnceTheChainHasNothingPendin
 		kills: [
 			{
 				file: "packages/den/src/runtime/turn.ts",
-				original: "\t\tconst shut = Arr.filter(windows, (w) => !isOpen(w, at))",
-				replacement: "\t\tconst shut = Arr.filter(windows, (w) => true)",
-				why: "Operator mutant (boolean-return) at packages/den/src/runtime/turn.ts:485 in gate: `!isOpen(w, at)` becomes `true`; the property fails (lane CATCH, den 9cffaba)."
+				original: "\t\tif (Option.exists(window, (w) => !isOpen(w, at))) {",
+				replacement: "\t\tif (Option.exists(window, (w) => true)) {",
+				why: "A root's window reads as shut at every instant, so its work always waits (lane CATCH's boolean-return of den 9cffaba, in gate's one window test where it moved)."
 			}
 		]
 	})

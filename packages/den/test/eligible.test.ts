@@ -303,13 +303,13 @@ const built = (w: World) =>
 		for (const { value: r, index: i } of indexed(w.roots)) {
 			const root = yield* rootScope(flowName, "Run", `r${i}`)
 			scopes.push({
+				place: "root",
 				scope: root,
 				kind: "Run",
-				parent: Option.none(),
-				admitted: r.admitted,
-				skipped: false,
-				key: Option.none(),
-				root: Option.some({ key: `r${i}`, at: at(r.age - 10) })
+				key: `r${i}`,
+				at: at(r.age - 10),
+				admission: r.admitted ? "admitted" : "requested",
+				exclusive: Option.none()
 			})
 			if (!r.admitted) {
 				continue
@@ -339,15 +339,7 @@ const built = (w: World) =>
 			steps.push({ step: finish, kind: "RunFinish", scope: root })
 			for (const j of ordinals(r.batches)) {
 				const batch = yield* startedScope(root, 100 + j)
-				scopes.push({
-					scope: batch,
-					kind: "Batch",
-					parent: Option.some(root),
-					admitted: true,
-					skipped: false,
-					key: Option.none(),
-					root: Option.none()
-				})
+				scopes.push({ place: "child", scope: batch, kind: "Batch", parent: root })
 				const batchFinish = yield* finishStep(batch)
 				kinds.set(batchFinish, "BatchFinish")
 				steps.push({ step: batchFinish, kind: "BatchFinish", scope: batch })
@@ -357,13 +349,13 @@ const built = (w: World) =>
 			const sync = yield* rootScope(flowName, "Sync", `s${i}`)
 			syncs.push(sync)
 			scopes.push({
+				place: "root",
 				scope: sync,
 				kind: "Sync",
-				parent: Option.none(),
-				admitted: false,
-				skipped: y.skipped,
-				key: Option.some(keyOf(y.key)),
-				root: Option.some({ key: `s${i}`, at: at(y.age - 10) })
+				key: `s${i}`,
+				at: at(y.age - 10),
+				admission: y.skipped ? "skipped" : "requested",
+				exclusive: Option.some(keyOf(y.key))
 			})
 		}
 		const dead = yield* rootScope(flowName, "Sync", "finished")
@@ -420,11 +412,13 @@ const specified = (
 	const viewOf = (scope: ScopeKey) => Arr.findFirst(snapshot.scopes, (s) => s.scope === scope)
 	const rootViewOf = (scope: ScopeKey): Option.Option<ScopeView> =>
 		Option.flatMap(viewOf(scope), (s) =>
-			Option.isSome(s.root) ? Option.some(s) : Option.flatMap(s.parent, rootViewOf)
+			s.place === "root" ? Option.some(s) : rootViewOf(s.parent)
 		)
 	const ageOf = (scope: ScopeKey) =>
 		Option.getOrElse(
-			Option.flatMap(rootViewOf(scope), (s) => Option.map(s.root, (r) => r.at)),
+			Option.flatMap(rootViewOf(scope), (s) =>
+				s.place === "root" ? Option.some(s.at) : Option.none()
+			),
 			() => now
 		)
 	const open = (scope: ScopeKey) =>
@@ -433,9 +427,8 @@ const specified = (
 	const rootPaused = (scope: ScopeKey) => Option.exists(rootViewOf(scope), (r) => paused(r.kind))
 
 	const admitted = Arr.flatMap(snapshot.scopes, (s): ReadonlyArray<string> =>
-		Option.isSome(s.root) &&
-		!s.admitted &&
-		!s.skipped &&
+		s.place === "root" &&
+		s.admission === "requested" &&
 		open(s.scope) &&
 		!paused(s.kind) &&
 		!(s.kind === "Sync" && Arr.contains(snapshot.busy, "Other"))
@@ -499,7 +492,7 @@ const specified = (
 		const finishes = Str.endsWith("Finish")(p.kind)
 		const blocked =
 			Arr.some(snapshot.steps, (o) => o.scope === p.scope && o.step !== p.step) ||
-			Arr.some(snapshot.scopes, (s) => Option.contains(s.parent, p.scope))
+			Arr.some(snapshot.scopes, (s) => s.place === "child" && s.parent === p.scope)
 		if (finishes && blocked) {
 			return []
 		}
@@ -680,7 +673,10 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 									finishes,
 									(p) =>
 										(Arr.some(snapshot.steps, (o) => o.scope === p.scope && o.step !== p.step) ||
-											Arr.some(snapshot.scopes, (s) => Option.contains(s.parent, p.scope))) &&
+											Arr.some(
+												snapshot.scopes,
+												(s) => s.place === "child" && s.parent === p.scope
+											)) &&
 										!ringsStep(found.wakes, p.step)
 								)
 							) {
@@ -688,7 +684,7 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 							}
 							const waiting = Arr.filter(
 								snapshot.scopes,
-								(s) => Option.isSome(s.root) && !s.admitted
+								(s) => s.place === "root" && s.admission !== "admitted"
 							)
 							if (Arr.some(waiting, (s) => ringsAdmit(found.wakes, s.scope))) {
 								c.note("a root admitted")
@@ -697,12 +693,15 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 								w.otherBusy &&
 								Arr.some(
 									waiting,
-									(s) => s.kind === "Sync" && !s.skipped && !ringsAdmit(found.wakes, s.scope)
+									(s) =>
+										s.kind === "Sync" &&
+										!(s.place === "root" && s.admission === "skipped") &&
+										!ringsAdmit(found.wakes, s.scope)
 								)
 							) {
 								c.note("a root held back by its precondition")
 							}
-							if (Arr.some(waiting, (s) => s.skipped)) {
+							if (Arr.some(waiting, (s) => s.place === "root" && s.admission === "skipped")) {
 								c.note("a skipped root")
 							}
 							if (Arr.isReadonlyArrayNonEmpty(found.release)) {

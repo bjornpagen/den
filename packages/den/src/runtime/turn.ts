@@ -21,12 +21,12 @@ import type {
 	Ran,
 	RetryRow,
 	Rooted,
-	ScopeView,
+	RootView,
 	Spawned,
 	StepRunner,
 	Turn
 } from "#runtime/ledger.ts"
-import { refusedOnKey } from "#runtime/ledger.ts"
+import { parentOf, refusedOnKey } from "#runtime/ledger.ts"
 import { giveBack, holdExclusive, releaseExclusive, exclusiveOf, take } from "#runtime/seats.ts"
 import { AttemptNumber, type FlowName, type Ring, Transport, type Wake } from "#transport.ts"
 
@@ -439,32 +439,22 @@ const unwritten = (flow: string, error: Settled, wake: Wake): Ending =>
 			: { kind: "waiting", wake, why: "unread", until: Option.none() }
 	)
 
-/** The scopes from `scope` up to its root, each as the scheduler sees it. */
-const chainOf = <R>(
+/** The root of `scope`'s graph, read upward through its parents: none once a scope on the way is gone. */
+const rootOf = <R>(
 	ledger: Ledger<R>,
 	scope: ScopeKey
-): Effect.Effect<ReadonlyArray<ScopeView>, Settled> => {
-	const walk = (
-		at: ScopeKey,
-		seen: ReadonlyArray<ScopeView>
-	): Effect.Effect<ReadonlyArray<ScopeView>, Settled> =>
-		Effect.flatMap(ledger.scopeOf(at), (found) =>
-			Option.match(found, {
-				onNone: () => Effect.succeed(seen),
-				onSome: (s) =>
-					Option.match(s.parent, {
-						onNone: () => Effect.succeed([...seen, s]),
-						onSome: (parent) => walk(parent, [...seen, s])
-					})
-			})
-		)
-	return walk(scope, [])
-}
+): Effect.Effect<Option.Option<RootView>, Settled> =>
+	Effect.flatMap(ledger.scopeOf(scope), (found) =>
+		Option.match(found, {
+			onNone: () => Effect.succeedNone,
+			onSome: (s) => (s.place === "root" ? Effect.succeedSome(s) : rootOf(ledger, s.parent))
+		})
+	)
 
-/** Why a scope chain keeps its work waiting at `at`: a window shut, or its root kind or a resource paused. */
+/** Why work under `root` keeps waiting at `at`: its root kind's window shut, or its root kind or a resource paused. */
 const gate = <R>(
 	ledger: Ledger<R>,
-	chain: ReadonlyArray<ScopeView>,
+	root: Option.Option<RootView>,
 	uses: ReadonlyArray<Resource>,
 	at: Instant
 ): Effect.Effect<
@@ -472,22 +462,19 @@ const gate = <R>(
 	Settled
 > =>
 	Effect.gen(function* () {
-		const windows = Arr.flatMap(chain, (s) =>
-			Option.toArray(Option.map(Option.fromNullishOr(ledger.roots.get(s.kind)), (j) => j.window))
+		const window = Option.flatMap(root, (r) =>
+			Option.map(Option.fromNullishOr(ledger.roots.get(r.kind)), (j) => j.window)
 		)
-		const shut = Arr.filter(windows, (w) => !isOpen(w, at))
-		if (Arr.isReadonlyArrayNonEmpty(shut)) {
-			const until = Arr.reduce(shut, at, (latest, w) => {
-				const opens = opensAt(w, at)
-				return opens > latest ? opens : latest
-			})
-			return Option.some({ why: "window", until: Option.some(until) } as const)
+		if (Option.exists(window, (w) => !isOpen(w, at))) {
+			return Option.some({
+				why: "window",
+				until: Option.map(window, (w) => opensAt(w, at))
+			} as const)
 		}
 		const live = yield* ledger.coordination.paused
 		const paused = Arr.map(live, (row) => row.target)
-		const root = Arr.findFirst(chain, (s) => Option.isSome(s.root))
 		if (
-			Option.exists(root, (s) => Arr.contains(paused, s.kind)) ||
+			Option.exists(root, (r) => Arr.contains(paused, r.kind)) ||
 			Arr.some(uses, (u) => Arr.contains(paused, u.name))
 		) {
 			return Option.some({ why: "paused", until: Option.none() } as const)
@@ -562,10 +549,7 @@ const settled = <R>(
 			return [...children, ...Option.toArray(finish)]
 		}
 		yield* Effect.flatMap(exclusiveOf(ledger, scope), (rows) => releaseExclusive(ledger, rows))
-		const parent = yield* Effect.map(
-			ledger.scopeOf(scope),
-			Option.flatMap((s) => s.parent)
-		)
+		const parent = yield* Effect.map(ledger.scopeOf(scope), Option.flatMap(parentOf))
 		const upward = Option.isSome(parent) ? yield* ready(parent.value) : Option.none()
 		return [...children, ...Option.toArray(upward)]
 	}).pipe(Effect.orElseSucceed((): ReadonlyArray<Onward> => []))
@@ -774,8 +758,8 @@ const serveStep = <R>(
 				onward: [{ wake, delay: delayTo(at, due) }]
 			} satisfies Served
 		}
-		const chain = yield* readOr(chainOf(ledger, scope), wake)
-		const shut = yield* readOr(gate(ledger, chain, runner.uses, at), wake)
+		const graph = yield* readOr(rootOf(ledger, scope), wake)
+		const shut = yield* readOr(gate(ledger, graph, runner.uses, at), wake)
 		if (Option.isSome(shut)) {
 			return {
 				ending: { kind: "waiting", wake, why: shut.value.why, until: shut.value.until },
@@ -878,7 +862,11 @@ const serveAdmit = <R>(
 		const scope = wake.scope
 		const at = yield* readOr(ledger.now, wake)
 		const viewed = yield* readOr(ledger.scopeOf(scope), wake)
-		if (Option.isNone(viewed) || viewed.value.admitted || viewed.value.skipped) {
+		if (
+			Option.isNone(viewed) ||
+			viewed.value.place === "child" ||
+			viewed.value.admission !== "requested"
+		) {
 			return served({ kind: "lost", wake })
 		}
 		const view = viewed.value
@@ -886,7 +874,7 @@ const serveAdmit = <R>(
 		if (root === undefined) {
 			return served({ kind: "lost", wake })
 		}
-		const shut = yield* readOr(gate(ledger, [view], [], at), wake)
+		const shut = yield* readOr(gate(ledger, Option.some(view), [], at), wake)
 		if (Option.isSome(shut)) {
 			return {
 				ending: { kind: "waiting", wake, why: shut.value.why, until: shut.value.until },
@@ -903,8 +891,8 @@ const serveAdmit = <R>(
 				return served({ kind: "waiting", wake, why: "precondition", until: Option.none() })
 			}
 		}
-		if (Option.isSome(view.key)) {
-			const key = view.key.value
+		if (Option.isSome(view.exclusive)) {
+			const key = view.exclusive.value
 			const held = yield* readOr(holdExclusive(ledger, { kind: view.kind, key, scope }), wake)
 			if (!held) {
 				const holders = yield* readOr(ledger.coordination.exclusives, wake)

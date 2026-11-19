@@ -1,5 +1,5 @@
 import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, type Cron, type Effect, type Option, type Stream } from "effect"
+import { Array as Arr, type Cron, type Effect, Option, type Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Ladder, Precondition, Resource, Window } from "#algebra/kinds.ts"
 import type { ExclusiveId, Holder, Instant, ScopeKey, StepKey } from "#runtime/identity.ts"
@@ -158,16 +158,37 @@ export interface RootRunner {
 	) => Effect.Effect<Option.Option<Committed>, Settled, Digest.Digest>
 }
 
-/** A scope as the scheduler sees it: its kind, its parent, whether it is admitted, and its exclusivity key. */
-export interface ScopeView {
-	readonly scope: ScopeKey
-	readonly kind: string
-	readonly parent: Option.Option<ScopeKey>
-	readonly admitted: boolean
-	readonly skipped: boolean
-	readonly key: Option.Option<ExclusiveId>
-	readonly root: Option.Option<{ readonly key: string; readonly at: Instant }>
-}
+/** How a root stands toward its admission: requested and not yet admitted, admitted, or recorded skipped. */
+export type Admission = "requested" | "admitted" | "skipped"
+
+/**
+ * A scope as the scheduler sees it, by its place in its graph: a root, requested under its trigger's key at its
+ * instant, standing toward its admission, with the exclusivity key its scopes share when its kind is exclusive; or a
+ * child, admitted in the call that opened it under its parent.
+ */
+export type ScopeView =
+	| {
+			readonly place: "root"
+			readonly scope: ScopeKey
+			readonly kind: string
+			readonly key: string
+			readonly at: Instant
+			readonly admission: Admission
+			readonly exclusive: Option.Option<ExclusiveId>
+	  }
+	| {
+			readonly place: "child"
+			readonly scope: ScopeKey
+			readonly kind: string
+			readonly parent: ScopeKey
+	  }
+
+/** A root scope as the scheduler sees it. */
+export type RootView = Extract<ScopeView, { readonly place: "root" }>
+
+/** A scope's parent: a child's, and none for a root. */
+export const parentOf = (view: ScopeView): Option.Option<ScopeKey> =>
+	view.place === "child" ? Option.some(view.parent) : Option.none()
 
 /** A seat: a resource, and one of its seats, `0 … seats − 1`. */
 export interface SeatAt {

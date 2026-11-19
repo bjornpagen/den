@@ -1,7 +1,14 @@
 import { Array as Arr, DateTime, HashMap, Option, Order } from "effect"
 import { HOURS_IN_DAY, type Resource, type Window } from "#algebra/kinds.ts"
 import { type Instant, instantOf, type ScopeKey, type StepKey } from "#runtime/identity.ts"
-import type { ExclusiveRow, Ledger, ScopeView, Snapshot } from "#runtime/ledger.ts"
+import {
+	type ExclusiveRow,
+	type Ledger,
+	parentOf,
+	type RootView,
+	type ScopeView,
+	type Snapshot
+} from "#runtime/ledger.ts"
 import { AttemptNumber, type Wake } from "#transport.ts"
 
 /**
@@ -138,56 +145,33 @@ export const standing = (
 export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot, now: Instant): Eligible => {
 	const scopes = HashMap.fromIterable(Arr.map(snapshot.scopes, (s) => [s.scope, s] as const))
 	const view = (scope: ScopeKey): Option.Option<ScopeView> => HashMap.get(scopes, scope)
-	const chain = (scope: ScopeKey): ReadonlyArray<ScopeView> => {
-		const walk = (
-			at: Option.Option<ScopeView>,
-			seen: ReadonlyArray<ScopeView>
-		): ReadonlyArray<ScopeView> =>
-			Option.match(at, {
-				onNone: () => seen,
-				onSome: (s) => walk(Option.flatMap(s.parent, view), [...seen, s])
-			})
-		return walk(view(scope), [])
-	}
-	const rootOf = (scope: ScopeKey): Option.Option<ScopeView> =>
-		Arr.findFirst(chain(scope), (s) => Option.isSome(s.root))
-	const ageOf = (scope: ScopeKey): Instant =>
-		Option.getOrElse(
-			Option.flatMap(rootOf(scope), (s) => Option.map(s.root, (r) => r.at)),
-			() => now
-		)
-	const open = (scope: ScopeKey): boolean =>
-		Option.match(rootOf(scope), {
-			onNone: () => false,
-			onSome: (r) =>
-				Option.match(Option.fromNullishOr(ledger.roots.get(r.kind)), {
-					onNone: () => false,
-					onSome: (root) => isOpen(root.window, now)
-				})
-		})
+	const rootOf = (scope: ScopeKey): Option.Option<RootView> =>
+		Option.flatMap(view(scope), (s) => (s.place === "root" ? Option.some(s) : rootOf(s.parent)))
+	const open = (root: RootView): boolean =>
+		Option.exists(Option.fromNullishOr(ledger.roots.get(root.kind)), (r) => isOpen(r.window, now))
 	const paused = (target: string): boolean => Arr.contains(snapshot.paused, target)
-	const rootPaused = (scope: ScopeKey): boolean =>
-		Option.exists(rootOf(scope), (s) => paused(s.kind))
-
 	const admissions = Arr.filter(snapshot.scopes, (s) => {
-		const root = ledger.roots.get(s.kind)
-		if (s.admitted || s.skipped || root === undefined || !open(s.scope) || rootPaused(s.scope)) {
+		if (s.place === "child" || s.admission !== "requested" || !open(s) || paused(s.kind)) {
 			return false
 		}
-		const precondition = root.precondition
-		return !(
-			precondition.kind === "idle" &&
-			Arr.some(precondition.flows, (f) => Arr.contains(snapshot.busy, f))
+		const precondition = Option.map(
+			Option.fromNullishOr(ledger.roots.get(s.kind)),
+			(r) => r.precondition
+		)
+		return Option.exists(
+			precondition,
+			(p) => !(p.kind === "idle" && Arr.some(p.flows, (f) => Arr.contains(snapshot.busy, f)))
 		)
 	})
 
 	const unended = (scope: ScopeKey, except: StepKey): boolean =>
 		Arr.some(snapshot.steps, (p) => p.scope === scope && p.step !== except) ||
-		Arr.some(snapshot.scopes, (s) => Option.contains(s.parent, scope))
+		Arr.some(snapshot.scopes, (s) => Option.contains(parentOf(s), scope))
 
 	const candidates = Arr.flatMap(snapshot.steps, (p): ReadonlyArray<Candidate> => {
 		const runner = ledger.steps.get(p.kind)
-		if (runner === undefined || Option.isNone(view(p.scope))) {
+		const root = rootOf(p.scope)
+		if (runner === undefined || Option.isNone(view(p.scope)) || Option.isNone(root)) {
 			return []
 		}
 		const stands = standing(
@@ -219,10 +203,14 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot, now: Instant)
 		if (Option.isSome(runner.finishes) && unended(p.scope, p.step)) {
 			return []
 		}
-		if (!open(p.scope) || rootPaused(p.scope) || Arr.some(runner.uses, (r) => paused(r.name))) {
+		if (
+			!open(root.value) ||
+			paused(root.value.kind) ||
+			Arr.some(runner.uses, (r) => paused(r.name))
+		) {
 			return []
 		}
-		return [{ step: p.step, attempt, uses: runner.uses, age: ageOf(p.scope), due, waited }]
+		return [{ step: p.step, attempt, uses: runner.uses, age: root.value.at, due, waited }]
 	})
 
 	const held = (r: Resource): number =>

@@ -106,10 +106,10 @@ export const theRelayRingsARootTheAppRequestedInItsOwnTransaction = property.exp
 		{
 			file: "packages/den/src/runtime/eligible.ts",
 			original:
-				'\t\treturn !(\n\t\t\tprecondition.kind === "idle" &&\n\t\t\tArr.some(precondition.flows, (f) => Arr.contains(snapshot.busy, f))\n\t\t)',
+				'(p) => !(p.kind === "idle" && Arr.some(p.flows, (f) => Arr.contains(snapshot.busy, f)))',
 			replacement:
-				'\t\treturn (\n\t\t\tprecondition.kind === "idle" &&\n\t\t\tArr.some(precondition.flows, (f) => Arr.contains(snapshot.busy, f))\n\t\t)',
-			why: 'Operator mutant (negation) at packages/den/src/runtime/eligible.ts:128 in eligible: `!( precondition.kind === "idle" && Arr.some(precondition.flows, (f) => Arr.conta` becomes `( precondition.kind === "idle" && Arr.some(precondition.flows, (f) => Arr.contai`; the property fails (lane CATCH, den 9cffaba).'
+				'(p) => (p.kind === "idle" && Arr.some(p.flows, (f) => Arr.contains(snapshot.busy, f)))',
+			why: "A root is admitted only while a flow its precondition names is busy, where it waits for them all idle (lane CATCH's negation of den 9cffaba, where eligible.ts reads a root's precondition)."
 		}
 	]
 })
