@@ -20,16 +20,7 @@
 			"outputs": []
 		},
 		"typecheck": {
-			"description": "Every project checks its own sources with --noEmit and reads its dependencies' sources directly, so no check waits on another's, and reruns when a package it loads changes, the submodule's grizzle packages among them; grizzle's packages keep their own gates. It is incremental: each project keeps its state in its own node_modules/.cache, which is no output (a replay restores none, and the checker compares each file's hash with what it holds), so a rerun rechecks only what changed. typecheck:full is the same check from scratch, which `pnpm check:full` runs once a day, so build info's open stale-result bugs (TypeScript #64386, #64591) live a day at most.",
-			"dependsOn": ["^surface"],
-			"inputs": [
-				"$TURBO_DEFAULT$",
-				"$TURBO_ROOT$/vendor/toolchain/packages/devtools/tsconfig.base.json"
-			],
-			"outputs": []
-		},
-		"typecheck:full": {
-			"description": "typecheck without build info, cached apart from typecheck: `pnpm check:full`, which the push gate runs once a day, runs it, so no result rests on build info for longer.",
+			"description": "Every project checks its own sources with --noEmit and reads its dependencies' sources directly, so no check waits on another's, and reruns when a package it loads changes, the submodule's grizzle packages among them; grizzle's packages keep their own gates. It is incremental: each project keeps its state in its own node_modules/.cache, which is no output (a replay restores none, and the checker compares each file's hash with what it holds), so a rerun rechecks only what changed. `pnpm check:full`, which the push gate runs once a day, runs it from scratch, `-- --incremental false`, which turbo hashes apart, so build info's open stale-result bugs (TypeScript #64386, #64591) live a day at most.",
 			"dependsOn": ["^surface"],
 			"inputs": [
 				"$TURBO_DEFAULT$",
@@ -55,7 +46,6 @@
 		"//#typecheck": {
 			"outputs": []
 		},
-		"//#typecheck:full": {},
 		"//#oxlint": {},
 		"//#workspace-gate": {
 			"description": "The toolchain's repository-wide checks: every tsconfig's Effect plugin block and diagnostics and the tree's file names, read as JSON and git's file list, never a TypeScript program. Uncached: it reads the whole tree in about a second, which a cache would have to hash.",
