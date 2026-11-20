@@ -188,8 +188,10 @@ export const fanLedger = (h: FanHandles) => {
 				fan.kinds[2].start(input),
 				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
 					Effect.flatMap(startedScope(scope, ordinal), (key) =>
-						Effect.flatMap(finishStep(key), (finish) =>
-							Effect.map(startBatch(root, key, spawn.input), (inner): Grown =>
+						Effect.zipWith(
+							finishStep(key),
+							startBatch(root, key, spawn.input),
+							(finish, inner): Grown =>
 								joined(inner, {
 									rows: {
 										...noRows,
@@ -205,7 +207,6 @@ export const fanLedger = (h: FanHandles) => {
 									steps: [{ step: finish, kind: "BatchFinish", scope: key, delay: atOnce }],
 									spawned: { steps: [], finishes: hasChildren(inner, key) ? [] : [finish] }
 								})
-							)
 						)
 					)
 			),

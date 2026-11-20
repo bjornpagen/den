@@ -418,8 +418,10 @@ export const reviewLedger = (h: ReviewHandles) => {
 										review.edges[0].next(done.input, done.output),
 										(input, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
 											Effect.flatMap(edgeScope(done.turn.step, "Split", ordinal), (key) =>
-												Effect.flatMap(finishStep(key), (finish) =>
-													Effect.map(startQuestions(done.turn.root, key, input), (inner): Grown =>
+												Effect.zipWith(
+													finishStep(key),
+													startQuestions(done.turn.root, key, input),
+													(finish, inner): Grown =>
 														joined(inner, {
 															rows: {
 																...noRows,
@@ -460,7 +462,6 @@ export const reviewLedger = (h: ReviewHandles) => {
 																finishes: hasChildren(inner, key) ? [] : [finish]
 															}
 														})
-													)
 												)
 											)
 									),

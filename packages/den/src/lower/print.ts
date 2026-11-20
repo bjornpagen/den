@@ -1455,7 +1455,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		extra: string,
 		root: string
 	): string =>
-		`Effect.flatMap(finishStep(${key}), (finish) => Effect.map(start${j.name}(${root}, ${key}, ${input}), (inner): Grown => joined(inner, { rows: { ...noRows, ${commas(
+		`Effect.zipWith(finishStep(${key}), start${j.name}(${root}, ${key}, ${input}), (finish, inner): Grown => joined(inner, { rows: { ...noRows, ${commas(
 			[
 				`${r("Scope")}: [{ scope: ${key}, root: ${root} }]`,
 				`${r("Within")}: [{ scope: ${key}, parent: ${owner}, kind: ${q(j.name)}, root: ${root} }]`,
@@ -1464,7 +1464,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				extra,
 				...factsOf(j.input, key, input, root)
 			]
-		)} }, steps: [{ step: finish, kind: ${q(j.finish)}, scope: ${key}, delay: atOnce }], spawned: { steps: [], finishes: hasChildren(inner, ${key}) ? [] : [finish] } })))`
+		)} }, steps: [{ step: finish, kind: ${q(j.finish)}, scope: ${key}, delay: atOnce }], spawned: { steps: [], finishes: hasChildren(inner, ${key}) ? [] : [finish] } }))`
 
 	/** A step spawned under `owner` with key `key` and input `input`: its Step, first due by its kind, its input, and `extra`. */
 	const spawnedStep = (
