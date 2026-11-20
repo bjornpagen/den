@@ -319,10 +319,23 @@ export const chainDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", ChainChainRunInput.fields.scope)))
 			.find({ scope, feed, pages, root })
 	}),
-	chainRequestChainRun: ChangeSet.empty(chainGraph)
-		.insert(ChainScope, [])
-		.insert(ChainRoot, [])
-		.insert(ChainChainRunInput, []),
+	chainRequestChainRun: clocked(
+		ChangeSet.empty(chainGraph)
+			.insert(ChainScope, [])
+			.insert(ChainChainRunInput, [])
+			.insert(
+				ChainRoot,
+				query(chainGraph).rule((r) =>
+					r.find({
+						scope: r.param("chainChainRunScope", ChainRoot.fields.scope),
+						kind: ChainRootKind.handle("ChainRun"),
+						key: r.param("chainChainRunKey", ChainRoot.fields.key),
+						at: r.param("now", ChainRoot.fields.at)
+					})
+				)
+			),
+		{ now: "millis" }
+	),
 	chainOutputsChainRunPage: query(chainGraph).rule((r) => {
 		const { step, scope } = v(ChainStep, "step")
 		const { seq, items } = v(ChainPageOutput, "output")
@@ -473,6 +486,16 @@ export const chainCommits = workload(Loader, chainCommitPrograms)
 export const chainRequests = Object.freeze({
 	Ordered: ChangeSet.empty(chainGraph)
 		.insert(ChainScope, [])
-		.insert(ChainRoot, [])
 		.insert(ChainOrderedInput, [])
+		.insert(
+			ChainRoot,
+			query(chainGraph).rule((r) =>
+				r.find({
+					scope: r.param("chainOrderedScope", ChainRoot.fields.scope),
+					kind: ChainRootKind.handle("Ordered"),
+					key: r.param("chainOrderedKey", ChainRoot.fields.key),
+					at: r.param("now", ChainRoot.fields.at)
+				})
+			)
+		)
 })

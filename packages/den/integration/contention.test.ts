@@ -74,7 +74,7 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 						const ledger = fan.ledger
 						const batch = "contended"
 						const at = yield* fan.ledger.now
-						const requested = yield* fan.request.FanRun(batch, at, { batch, size: 5n })
+						const requested = yield* fan.request.FanRun(batch, { batch, size: 5n })
 						assert.ok(requested.fresh)
 						const ends = instantOf(Number(at) + longestLeaseMillis)
 						const admitted = yield* serve(

@@ -59,11 +59,11 @@ export const aPreconditionRootAdmitsTheGoldBuildOnlyOnceTheChainHasNothingPendin
 							const at = yield* chain.ledger.now
 							const ends = instantOf(Number(at) + longestLeaseMillis)
 							const build = 1n
-							const chained = yield* chain.request.ChainRun("gold", at, {
+							const chained = yield* chain.request.ChainRun("gold", {
 								feed: run.feed,
 								pages: BigInt(run.pages)
 							})
-							const gold = yield* sync.request.Gold("gold", at, { build })
+							const gold = yield* sync.request.Gold("gold", { build })
 							assert.ok(chained.fresh)
 							assert.ok(gold.fresh)
 							const chainAdmitted = yield* serve(

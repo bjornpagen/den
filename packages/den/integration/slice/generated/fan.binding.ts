@@ -6,7 +6,6 @@ import {
 	only,
 	readingOf,
 	rowsOf,
-	scheduleOf,
 	signals
 } from "@bjornpagen/den/runtime/bind"
 import {
@@ -319,18 +318,17 @@ export const fanLedger = (h: FanHandles) => {
 		resume: (target) => Effect.flatMap(pausableOf(target), resumeIn(pauseChains))
 	}
 	const request = {
-		FanRun: (key: string, at: Instant, input: Parameters<(typeof fan.kinds)[2]["start"]>[0]) =>
+		FanRun: (key: string, input: Parameters<(typeof fan.kinds)[2]["start"]>[0]) =>
 			Effect.flatMap(rootScope("Fan", "FanRun", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Fan",
 						settled(
 							h.den.fanRequestFanRun.once({
-								params: {},
+								params: { fanFanRunScope: scope, fanFanRunKey: key },
 								facts: {
 									insert: {
 										FanScope: [{ scope, root: scope }],
-										FanRoot: [{ scope, kind: "FanRun" as const, key, at }],
 										FanFanRunInput: [
 											{ scope: scope, root: scope, batch: input.batch, size: input.size }
 										]
@@ -751,15 +749,7 @@ export const fanLedger = (h: FanHandles) => {
 			{ concurrency: "unbounded" }
 		),
 		coordination,
-		scheduled: [
-			...Option.toArray(
-				Option.map(scheduleOf(fan.kinds[2].trigger), (s) => ({
-					kind: "FanRun",
-					cron: s.cron,
-					request: (at: Instant) => request.FanRun(String(at), at, s.input(at))
-				}))
-			)
-		]
+		scheduled: []
 	}
 	return {
 		ledger,

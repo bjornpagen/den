@@ -48,7 +48,7 @@ export const admitsOneClaimerOfAnAttemptInEveryInterleaving = property.exhaust(f
 						const reset = Effect.gen(function* () {
 							const n = yield* Ref.getAndUpdate(runs, (k) => k + 1)
 							const at = yield* chain.ledger.now
-							const requested = yield* chain.request.ChainRun(`claim-${pages}-${n}`, at, {
+							const requested = yield* chain.request.ChainRun(`claim-${pages}-${n}`, {
 								feed: "news",
 								pages: BigInt(pages)
 							})

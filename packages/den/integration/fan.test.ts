@@ -56,8 +56,7 @@ export const theFanOutFlowTalliesEverySquare = property.explore(runs, {
 						const { fan, ledgers } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
 						const batch = `b-${run.size}`
-						const at = yield* fan.ledger.now
-						const requested = yield* fan.request.FanRun(batch, at, {
+						const requested = yield* fan.request.FanRun(batch, {
 							batch,
 							size: BigInt(run.size)
 						})

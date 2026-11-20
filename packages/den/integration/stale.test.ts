@@ -66,7 +66,7 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 						const flow = FlowName.make("Chain")
 						const at = yield* chain.ledger.now
 						const key = "stale"
-						const requested = yield* chain.request.ChainRun(key, at, {
+						const requested = yield* chain.request.ChainRun(key, {
 							feed: "sport",
 							pages: BigInt(race.pages)
 						})
@@ -126,7 +126,7 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 						const pages = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
 						assert.equal(Arr.filter(pages, (p) => p.step === step).length, 1)
 						const forgedAt = yield* chain.ledger.now
-						const other = yield* chain.request.ChainRun(`${key}-forged`, forgedAt, {
+						const other = yield* chain.request.ChainRun(`${key}-forged`, {
 							feed: "sport",
 							pages: BigInt(race.pages)
 						})

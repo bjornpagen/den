@@ -6,7 +6,6 @@ import {
 	only,
 	readingOf,
 	rowsOf,
-	scheduleOf,
 	signals
 } from "@bjornpagen/den/runtime/bind"
 import {
@@ -289,18 +288,17 @@ export const chainLedger = (h: ChainHandles) => {
 		resume: (target) => Effect.flatMap(pausableOf(target), resumeIn(pauseChains))
 	}
 	const request = {
-		ChainRun: (key: string, at: Instant, input: Parameters<(typeof chain.kinds)[1]["start"]>[0]) =>
+		ChainRun: (key: string, input: Parameters<(typeof chain.kinds)[1]["start"]>[0]) =>
 			Effect.flatMap(rootScope("Chain", "ChainRun", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Chain",
 						settled(
 							h.den.chainRequestChainRun.once({
-								params: {},
+								params: { chainChainRunScope: scope, chainChainRunKey: key },
 								facts: {
 									insert: {
 										ChainScope: [{ scope, root: scope }],
-										ChainRoot: [{ scope, kind: "ChainRun" as const, key, at }],
 										ChainChainRunInput: [
 											{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
 										]
@@ -861,26 +859,18 @@ export const chainLedger = (h: ChainHandles) => {
 			{ concurrency: "unbounded" }
 		),
 		coordination,
-		scheduled: [
-			...Option.toArray(
-				Option.map(scheduleOf(chain.kinds[1].trigger), (s) => ({
-					kind: "ChainRun",
-					cron: s.cron,
-					request: (at: Instant) => request.ChainRun(String(at), at, s.input(at))
-				}))
-			)
-		]
+		scheduled: []
 	}
 	return {
 		ledger,
 		request,
 		requestFacts: {
-			Ordered: (key: string, at: Instant, input: Parameters<(typeof chain.kinds)[2]["start"]>[0]) =>
+			Ordered: (key: string, input: Parameters<(typeof chain.kinds)[2]["start"]>[0]) =>
 				Effect.map(rootScope("Chain", "Ordered", key), (scope) => ({
 					scope,
+					params: { chainOrderedScope: scope, chainOrderedKey: key },
 					facts: {
 						ChainScope: [{ scope, root: scope }],
-						ChainRoot: [{ scope, kind: "Ordered" as const, key, at }],
 						ChainOrderedInput: [{ scope: scope, root: scope, feed: input.feed, pages: input.pages }]
 					}
 				}))

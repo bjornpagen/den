@@ -114,8 +114,7 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 							)
 							const runsOf = (key: string) =>
 								Effect.map(Ref.get(ran), (map) => Option.getOrElse(HashMap.get(map, key), () => 0))
-							const at = yield* retry.ledger.now
-							const requested = yield* retry.request.Ladders("refused", at, {
+							const requested = yield* retry.request.Ladders("refused", {
 								steadfast: "steadfast",
 								brittle: "brittle"
 							})

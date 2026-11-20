@@ -8,7 +8,6 @@ import {
 	ordered,
 	readingOf,
 	rowsOf,
-	scheduleOf,
 	signals
 } from "@bjornpagen/den/runtime/bind"
 import {
@@ -339,22 +338,17 @@ export const assignLedger = (h: AssignHandles) => {
 		resume: (target) => Effect.flatMap(pausableOf(target), resumeIn(pauseChains))
 	}
 	const request = {
-		Assignment: (
-			key: string,
-			at: Instant,
-			input: Parameters<(typeof assign.kinds)[1]["start"]>[0]
-		) =>
+		Assignment: (key: string, input: Parameters<(typeof assign.kinds)[1]["start"]>[0]) =>
 			Effect.flatMap(rootScope("Assign", "Assignment", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Assign",
 						settled(
 							h.den.assignRequestAssignment.once({
-								params: {},
+								params: { assignAssignmentScope: scope, assignAssignmentKey: key },
 								facts: {
 									insert: {
 										AssignScope: [{ scope, root: scope }],
-										AssignRoot: [{ scope, kind: "Assignment" as const, key, at }],
 										AssignAssignmentInput: [
 											{
 												scope: scope,
@@ -825,15 +819,7 @@ export const assignLedger = (h: AssignHandles) => {
 			{ concurrency: "unbounded" }
 		),
 		coordination,
-		scheduled: [
-			...Option.toArray(
-				Option.map(scheduleOf(assign.kinds[1].trigger), (s) => ({
-					kind: "Assignment",
-					cron: s.cron,
-					request: (at: Instant) => request.Assignment(String(at), at, s.input(at))
-				}))
-			)
-		]
+		scheduled: []
 	}
 	return {
 		ledger,

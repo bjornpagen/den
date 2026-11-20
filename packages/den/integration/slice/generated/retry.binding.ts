@@ -6,7 +6,6 @@ import {
 	only,
 	readingOf,
 	rowsOf,
-	scheduleOf,
 	signals
 } from "@bjornpagen/den/runtime/bind"
 import {
@@ -245,18 +244,17 @@ export const retryLedger = (h: RetryHandles) => {
 		resume: (target) => Effect.flatMap(pausableOf(target), resumeIn(pauseChains))
 	}
 	const request = {
-		Ladders: (key: string, at: Instant, input: Parameters<(typeof retry.kinds)[2]["start"]>[0]) =>
+		Ladders: (key: string, input: Parameters<(typeof retry.kinds)[2]["start"]>[0]) =>
 			Effect.flatMap(rootScope("Retry", "Ladders", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Retry",
 						settled(
 							h.den.retryRequestLadders.once({
-								params: {},
+								params: { retryLaddersScope: scope, retryLaddersKey: key },
 								facts: {
 									insert: {
 										RetryScope: [{ scope, root: scope }],
-										RetryRoot: [{ scope, kind: "Ladders" as const, key, at }],
 										RetryLaddersInput: [
 											{
 												scope: scope,
@@ -646,15 +644,7 @@ export const retryLedger = (h: RetryHandles) => {
 			{ concurrency: "unbounded" }
 		),
 		coordination,
-		scheduled: [
-			...Option.toArray(
-				Option.map(scheduleOf(retry.kinds[2].trigger), (s) => ({
-					kind: "Ladders",
-					cron: s.cron,
-					request: (at: Instant) => request.Ladders(String(at), at, s.input(at))
-				}))
-			)
-		]
+		scheduled: []
 	}
 	return {
 		ledger,

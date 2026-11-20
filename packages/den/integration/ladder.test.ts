@@ -67,8 +67,7 @@ export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.
 						yield* Ref.update(faults, (map) =>
 							HashMap.set(HashMap.set(map, steadfast, run.steadfast), brittle, run.brittle)
 						)
-						const at = yield* retry.ledger.now
-						const requested = yield* retry.request.Ladders("ladders", at, {
+						const requested = yield* retry.request.Ladders("ladders", {
 							steadfast,
 							brittle
 						})

@@ -167,8 +167,7 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 							c.note("no stored anchor")
 						}
 						const excluded = Arr.map(run.exclude, nameOf)
-						const at = yield* assign.ledger.now
-						const requested = yield* assign.request.Assignment("assignment", at, {
+						const requested = yield* assign.request.Assignment("assignment", {
 							learner,
 							topic: "near",
 							missed: "missed",

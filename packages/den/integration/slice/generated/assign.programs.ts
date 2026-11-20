@@ -382,13 +382,26 @@ export const assignDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", AssignAssignmentInputExclude.fields.scope)))
 			.find({ scope, ordinal, value })
 	}),
-	assignRequestAssignment: ChangeSet.empty(assignGraph)
-		.insert(AssignScope, [])
-		.insert(AssignRoot, [])
-		.insert(AssignAssignmentInput, [])
-		.insert(AssignAssignmentInputExclude, [])
-		.insert(AssignAssignmentInputModeNearest, [])
-		.insert(AssignAssignmentInputModeWithin, []),
+	assignRequestAssignment: clocked(
+		ChangeSet.empty(assignGraph)
+			.insert(AssignScope, [])
+			.insert(AssignAssignmentInput, [])
+			.insert(AssignAssignmentInputExclude, [])
+			.insert(AssignAssignmentInputModeNearest, [])
+			.insert(AssignAssignmentInputModeWithin, [])
+			.insert(
+				AssignRoot,
+				query(assignGraph).rule((r) =>
+					r.find({
+						scope: r.param("assignAssignmentScope", AssignRoot.fields.scope),
+						kind: AssignRootKind.handle("Assignment"),
+						key: r.param("assignAssignmentKey", AssignRoot.fields.key),
+						at: r.param("now", AssignRoot.fields.at)
+					})
+				)
+			),
+		{ now: "millis" }
+	),
 	assignOutputsAssignmentDecide: query(assignGraph).rule((r) => {
 		const { step, scope } = v(AssignStep, "step")
 		const { confidence, stage } = v(AssignDecideOutput, "output")

@@ -213,6 +213,38 @@ const busyName = (flow: string): string => `${BUSY}${flow}`
 /** Whether a join is a root the app's own write requests. */
 const isApp = (j: JoinIR): boolean => Option.exists(j.root, (r) => r.trigger === "app")
 
+/**
+ * Whether a join is a root requested at the instant its request runs: an operator's or the app's, known by its kind and
+ * its trigger's idempotency key, so its instant is the request's own reading of the database's clock, where a scheduled
+ * root's is the instant its cron named, the request's data.
+ */
+const requestedNow = (j: JoinIR): boolean => Option.exists(j.root, (r) => r.trigger !== "schedule")
+
+/**
+ * The parameters a root's request names its scope and key by, the flow's and the kind's, so the app's write that unions
+ * several roots' requests binds each its own.
+ */
+const requestParams = (P: string, j: JoinIR) => ({
+	scope: `${lower1(P)}${j.name}Scope`,
+	key: `${lower1(P)}${j.name}Key`
+})
+
+/**
+ * A root's Root row as a request at its own instant inserts it: its scope and key the request's parameters, its kind
+ * the root kind's handle, and its instant the request's reading of the database's clock, `now`, which the clocked
+ * request binds, so no host names the instant a root was requested.
+ */
+const requestedRootOf = (
+	P: string,
+	j: JoinIR,
+	graph: string,
+	root: string,
+	kinds: string
+): string => {
+	const params = requestParams(P, j)
+	return `.insert(${root}, query(${graph}).rule((r) => r.find({ scope: r.param(${q(params.scope)}, ${root}.fields.scope), kind: ${kinds}.handle(${q(j.name)}), key: r.param(${q(params.key)}, ${root}.fields.key), at: r.param("now", ${root}.fields.at) })))`
+}
+
 /** Whether a join is a root that holds an exclusivity seat. */
 const isExclusive = (j: JoinIR): boolean => Option.exists(j.root, (r) => r.exclusive)
 
@@ -812,18 +844,19 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			])
 		)
 		if (Option.isSome(j.root) && !isApp(j)) {
+			const request = `ChangeSet.empty(${n.graph})${members(
+				[
+					r("Scope"),
+					...(requestedNow(j) ? [] : [r("Root")]),
+					...(isExclusive(j) ? [r("ExclusiveKey")] : []),
+					...valueRelations(j.input)
+				],
+				none,
+				app
+			)}${requestedNow(j) ? requestedRootOf(P, j, n.graph, r("Root"), r("RootKind")) : ""}`
 			denPrograms.push([
 				n.program(`Request${j.name}`),
-				`ChangeSet.empty(${n.graph})${members(
-					[
-						r("Scope"),
-						r("Root"),
-						...(isExclusive(j) ? [r("ExclusiveKey")] : []),
-						...valueRelations(j.input)
-					],
-					none,
-					app
-				)}`
+				requestedNow(j) ? `clocked(${request}, { now: "millis" })` : request
 			])
 		}
 		Arr.forEach(j.finish.reads, (read) => {
@@ -1000,15 +1033,10 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		appRoots,
 		(j) =>
 			`${j.name}: ChangeSet.empty(${n.graph})${members(
-				[
-					r("Scope"),
-					r("Root"),
-					...(isExclusive(j) ? [r("ExclusiveKey")] : []),
-					...valueRelations(j.input)
-				],
+				[r("Scope"), ...(isExclusive(j) ? [r("ExclusiveKey")] : []), ...valueRelations(j.input)],
 				none,
 				app
-			)}`
+			)}${requestedRootOf(P, j, n.graph, r("Root"), r("RootKind"))}`
 	)
 
 	const block = (name: string, programs: ReadonlyArray<readonly [string, string]>) => [
@@ -1518,7 +1546,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const roots = Arr.filter(l.joins, (j) => Option.isSome(j.root))
 	const requestFacts = (j: JoinIR): ReadonlyArray<string> => [
 		`${r("Scope")}: [{ scope, root: scope }]`,
-		`${r("Root")}: [{ scope, kind: ${q(j.name)} as const, key, at }]`,
+		...(requestedNow(j) ? [] : [`${r("Root")}: [{ scope, kind: ${q(j.name)} as const, key, at }]`]),
 		...(isExclusive(j)
 			? [`${r("ExclusiveKey")}: Arr.map(keys, (k) => ({ ...k, root: scope }))`]
 			: []),
@@ -1529,13 +1557,18 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			isExclusive(j)
 				? `Effect.flatMap(exclusiveRows(${q(P)}, ${q(j.name)}, ${kindAt(j.index)}.exclusive, input, scope), (keys) => ${body})`
 				: body
-		const signature = `(key: string, at: Instant, input: Parameters<(typeof ${kindAt(j.index)})["start"]>[0])`
-		const facts = `({ scope, facts: { ${commas(requestFacts(j))} } })`
+		const input = `input: Parameters<(typeof ${kindAt(j.index)})["start"]>[0]`
+		const signature = requestedNow(j)
+			? `(key: string, ${input})`
+			: `(key: string, at: Instant, ${input})`
+		const names = requestParams(P, j)
+		const params = requestedNow(j) ? `{ ${names.scope}: scope, ${names.key}: key }` : "{}"
+		const facts = `({ scope, params: ${params}, facts: { ${commas(requestFacts(j))} } })`
 		return isApp(j)
 			? isExclusive(j)
 				? `${j.name}: ${signature} => Effect.flatMap(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => Effect.map(exclusiveRows(${q(P)}, ${q(j.name)}, ${kindAt(j.index)}.exclusive, input, scope), (keys) => ${facts}))`
 				: `${j.name}: ${signature} => Effect.map(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${facts})`
-			: `${j.name}: ${signature} => Effect.flatMap(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${keys(`Effect.map(fresh(${q(P)}, settled(h.den.${n.program(`Request${j.name}`)}.once({ params: {}, facts: { insert: { ${commas(requestFacts(j))} } } }))), (accepted) => ({ scope, fresh: accepted }))`)})`
+			: `${j.name}: ${signature} => Effect.flatMap(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${keys(`Effect.map(fresh(${q(P)}, settled(h.den.${n.program(`Request${j.name}`)}.once({ params: ${params}, facts: { insert: { ${commas(requestFacts(j))} } } }))), (accepted) => ({ scope, fresh: accepted }))`)})`
 	}
 	const denRoots = Arr.filter(roots, (j) => !isApp(j))
 	const appRoots = Arr.filter(roots, isApp)
@@ -1663,7 +1696,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`/** The ledger port of the flow ${P} over its served programs; \`den generate\` writes it, and nothing edits it. */`,
 		`import type { Addition } from "@bjornpagen/grizzle"`,
 		`import { type MemberHandle, settled } from "@bjornpagen/grizzle/runtime"`,
-		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishUnions ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", "rowsOf", "scheduleOf", "signals"])} } from "@bjornpagen/den/runtime/bind"`,
+		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishUnions ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", "rowsOf", ...(Arr.some(denRoots, (j) => !requestedNow(j)) ? ["scheduleOf"] : []), "signals"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
 		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), ...(resources ? ["HoldRow"] : []), "Admission", "Ledger", "RootRunner", "ScopeView", ...(resources ? ["SeatTurn"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
 		`import { UnknownPauseTarget } from "@bjornpagen/den/runtime/ledger"`,
@@ -1782,7 +1815,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"\t\tcoordination,",
 		`\t\tscheduled: [${commas(
 			Arr.map(
-				denRoots,
+				Arr.filter(denRoots, (j) => !requestedNow(j)),
 				(j) =>
 					`...Option.toArray(Option.map(scheduleOf(${kindAt(j.index)}.trigger), (s) => ({ kind: ${q(j.name)}, cron: s.cron, request: (at: Instant) => request.${j.name}(String(at), at, s.input(at)) })))`
 			)

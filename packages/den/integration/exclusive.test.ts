@@ -59,7 +59,7 @@ export const exclusivityAdmitsOneLiveSyncPerRelation = property.explore(runs, {
 						const relation = "rel"
 						const at = yield* sync.ledger.now
 						const request = (n: number) =>
-							sync.request.SyncRun(`${relation}-${n}`, at, { relation, run: BigInt(n) })
+							sync.request.SyncRun(`${relation}-${n}`, { relation, run: BigInt(n) })
 						const first = yield* request(1)
 						const rest = yield* Effect.forEach(
 							Array.from({ length: run.roots - 1 }, (_, ordinal) => ordinal + 2),
@@ -91,7 +91,7 @@ export const exclusivityAdmitsOneLiveSyncPerRelation = property.explore(runs, {
 						yield* ringOnAndDrain(ledgers, winner)
 						const freed = yield* sync.ledger.coordination.exclusives
 						assert.deepEqual(freed, [])
-						const later = yield* sync.request.SyncRun(`${relation}-later`, at, {
+						const later = yield* sync.request.SyncRun(`${relation}-later`, {
 							relation,
 							run: 0n
 						})

@@ -61,7 +61,7 @@ export const theCensusKeepsTheSeatOfEveryRootAdmittedWhileItReads = property.exh
 								Array.from({ length: roots }, (_, ordinal) => ordinal),
 								(n) =>
 									Effect.gen(function* () {
-										const requested = yield* sync.request.SyncRun(`mid-read-${n}`, at, {
+										const requested = yield* sync.request.SyncRun(`mid-read-${n}`, {
 											relation: `mid-read-${n}`,
 											run: BigInt(n)
 										})

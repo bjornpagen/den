@@ -1,4 +1,4 @@
-import { ChangeSet, query, role, v, workload } from "@bjornpagen/grizzle"
+import { ChangeSet, clocked, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
 	AssignDecideNearestRead,
@@ -493,10 +493,16 @@ export const auditWorkload = workload(Auditor, {
 
 /**
  * The app's own write: an order and the chain it requests, in one transaction, so the root exists exactly when the
- * order does and the relay rings what the commit made eligible.
+ * order does and the relay rings what the commit made eligible; clocked, since the root's instant is the write's own
+ * reading of the database's clock.
  */
 export const appWorkload = workload(Loader, {
-	order: ChangeSet.union(ChangeSet.empty(Loader).insert(Order, []), chainRequests.Ordered),
+	order: clocked(
+		ChangeSet.union(ChangeSet.empty(Loader).insert(Order, []), chainRequests.Ordered),
+		{
+			now: "millis"
+		}
+	),
 	weigh: ChangeSet.empty(Loader).insert(App.relations.Weight, []),
 	place: ChangeSet.empty(Loader).insert(Passage, []),
 	miss: ChangeSet.empty(Loader).insert(Missed, []),

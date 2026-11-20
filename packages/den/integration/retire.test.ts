@@ -59,10 +59,9 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 					Effect.gen(function* () {
 						const { chain, ledgers } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
-						const at = yield* chain.ledger.now
 						const requested = yield* Effect.forEach(planned, (plan, index) =>
 							Effect.map(
-								chain.request.ChainRun(`root-${index}`, at, {
+								chain.request.ChainRun(`root-${index}`, {
 									feed: "news",
 									pages: BigInt(plan.pages)
 								}),
@@ -152,7 +151,7 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 							(r) =>
 								Effect.gen(function* () {
 									const again = yield* Effect.result(
-										chain.request.ChainRun(`root-${r.index}`, at, {
+										chain.request.ChainRun(`root-${r.index}`, {
 											feed: "news",
 											pages: BigInt(r.plan.pages)
 										})

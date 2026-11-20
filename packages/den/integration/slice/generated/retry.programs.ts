@@ -301,10 +301,23 @@ export const retryDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", RetryLaddersInput.fields.scope)))
 			.find({ scope, steadfast, brittle, root })
 	}),
-	retryRequestLadders: ChangeSet.empty(retryGraph)
-		.insert(RetryScope, [])
-		.insert(RetryRoot, [])
-		.insert(RetryLaddersInput, []),
+	retryRequestLadders: clocked(
+		ChangeSet.empty(retryGraph)
+			.insert(RetryScope, [])
+			.insert(RetryLaddersInput, [])
+			.insert(
+				RetryRoot,
+				query(retryGraph).rule((r) =>
+					r.find({
+						scope: r.param("retryLaddersScope", RetryRoot.fields.scope),
+						kind: RetryRootKind.handle("Ladders"),
+						key: r.param("retryLaddersKey", RetryRoot.fields.key),
+						at: r.param("now", RetryRoot.fields.at)
+					})
+				)
+			),
+		{ now: "millis" }
+	),
 	retryOutputsLaddersSteadfast: query(retryGraph).rule((r) => {
 		const { step, scope } = v(RetryStep, "step")
 		const { key } = v(RetrySteadfastOutput, "output")

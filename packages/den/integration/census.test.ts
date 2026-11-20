@@ -80,7 +80,7 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 							const app = yield* Db.open(AppServed.roles.auditor, {})
 							const at = yield* chain.ledger.now
 							const key = "census"
-							const requested = yield* chain.request.ChainRun(key, at, {
+							const requested = yield* chain.request.ChainRun(key, {
 								feed: "news",
 								pages: BigInt(loss.pages)
 							})

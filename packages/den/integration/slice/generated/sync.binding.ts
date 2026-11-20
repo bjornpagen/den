@@ -7,7 +7,6 @@ import {
 	only,
 	readingOf,
 	rowsOf,
-	scheduleOf,
 	signals
 } from "@bjornpagen/den/runtime/bind"
 import {
@@ -305,7 +304,7 @@ export const syncLedger = (h: SyncHandles) => {
 	const busyOf = (read: { readonly busyChain: ReadonlyArray<unknown> }): ReadonlyArray<string> =>
 		Arr.filter(["Chain"] as const, (flow) => Arr.isReadonlyArrayNonEmpty(read[`busy${flow}`]))
 	const request = {
-		SyncRun: (key: string, at: Instant, input: Parameters<(typeof sync.kinds)[1]["start"]>[0]) =>
+		SyncRun: (key: string, input: Parameters<(typeof sync.kinds)[1]["start"]>[0]) =>
 			Effect.flatMap(rootScope("Sync", "SyncRun", key), (scope) =>
 				Effect.flatMap(
 					exclusiveRows("Sync", "SyncRun", sync.kinds[1].exclusive, input, scope),
@@ -315,11 +314,10 @@ export const syncLedger = (h: SyncHandles) => {
 								"Sync",
 								settled(
 									h.den.syncRequestSyncRun.once({
-										params: {},
+										params: { syncSyncRunScope: scope, syncSyncRunKey: key },
 										facts: {
 											insert: {
 												SyncScope: [{ scope, root: scope }],
-												SyncRoot: [{ scope, kind: "SyncRun" as const, key, at }],
 												SyncExclusiveKey: Arr.map(keys, (k) => ({ ...k, root: scope })),
 												SyncSyncRunInput: [
 													{ scope: scope, root: scope, relation: input.relation, run: input.run }
@@ -333,18 +331,17 @@ export const syncLedger = (h: SyncHandles) => {
 						)
 				)
 			),
-		Gold: (key: string, at: Instant, input: Parameters<(typeof sync.kinds)[3]["start"]>[0]) =>
+		Gold: (key: string, input: Parameters<(typeof sync.kinds)[3]["start"]>[0]) =>
 			Effect.flatMap(rootScope("Sync", "Gold", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Sync",
 						settled(
 							h.den.syncRequestGold.once({
-								params: {},
+								params: { syncGoldScope: scope, syncGoldKey: key },
 								facts: {
 									insert: {
 										SyncScope: [{ scope, root: scope }],
-										SyncRoot: [{ scope, kind: "Gold" as const, key, at }],
 										SyncGoldInput: [{ scope: scope, root: scope, build: input.build }]
 									}
 								}
@@ -812,22 +809,7 @@ export const syncLedger = (h: SyncHandles) => {
 			{ concurrency: "unbounded" }
 		),
 		coordination,
-		scheduled: [
-			...Option.toArray(
-				Option.map(scheduleOf(sync.kinds[1].trigger), (s) => ({
-					kind: "SyncRun",
-					cron: s.cron,
-					request: (at: Instant) => request.SyncRun(String(at), at, s.input(at))
-				}))
-			),
-			...Option.toArray(
-				Option.map(scheduleOf(sync.kinds[3].trigger), (s) => ({
-					kind: "Gold",
-					cron: s.cron,
-					request: (at: Instant) => request.Gold(String(at), at, s.input(at))
-				}))
-			)
-		]
+		scheduled: []
 	}
 	return {
 		ledger,

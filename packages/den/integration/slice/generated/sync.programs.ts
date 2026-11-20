@@ -353,11 +353,24 @@ export const syncDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", SyncSyncRunInput.fields.scope)))
 			.find({ scope, relation, run, root })
 	}),
-	syncRequestSyncRun: ChangeSet.empty(syncGraph)
-		.insert(SyncScope, [])
-		.insert(SyncRoot, [])
-		.insert(SyncExclusiveKey, [])
-		.insert(SyncSyncRunInput, []),
+	syncRequestSyncRun: clocked(
+		ChangeSet.empty(syncGraph)
+			.insert(SyncScope, [])
+			.insert(SyncExclusiveKey, [])
+			.insert(SyncSyncRunInput, [])
+			.insert(
+				SyncRoot,
+				query(syncGraph).rule((r) =>
+					r.find({
+						scope: r.param("syncSyncRunScope", SyncRoot.fields.scope),
+						kind: SyncRootKind.handle("SyncRun"),
+						key: r.param("syncSyncRunKey", SyncRoot.fields.key),
+						at: r.param("now", SyncRoot.fields.at)
+					})
+				)
+			),
+		{ now: "millis" }
+	),
 	syncReadSyncGoldInput: query(syncGraph).rule((r) => {
 		const { scope, build, root } = v(SyncGoldInput, "syncGoldInput")
 		return r
@@ -365,10 +378,23 @@ export const syncDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", SyncGoldInput.fields.scope)))
 			.find({ scope, build, root })
 	}),
-	syncRequestGold: ChangeSet.empty(syncGraph)
-		.insert(SyncScope, [])
-		.insert(SyncRoot, [])
-		.insert(SyncGoldInput, [])
+	syncRequestGold: clocked(
+		ChangeSet.empty(syncGraph)
+			.insert(SyncScope, [])
+			.insert(SyncGoldInput, [])
+			.insert(
+				SyncRoot,
+				query(syncGraph).rule((r) =>
+					r.find({
+						scope: r.param("syncGoldScope", SyncRoot.fields.scope),
+						kind: SyncRootKind.handle("Gold"),
+						key: r.param("syncGoldKey", SyncRoot.fields.key),
+						at: r.param("now", SyncRoot.fields.at)
+					})
+				)
+			),
+		{ now: "millis" }
+	)
 })
 
 export const syncDenWorkload = workload(SyncDen, syncDenPrograms)

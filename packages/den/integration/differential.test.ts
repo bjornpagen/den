@@ -297,7 +297,6 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 							const { chain: chainLedger, fan: fanLedger, ledgers, loader } = yield* openLedgers
 							const app = yield* Db.open(AppServed.roles.auditor, {})
 							const key = "diff"
-							const at = yield* chainLedger.ledger.now
 							const begin = (chosen: Program) =>
 								Effect.gen(function* () {
 									switch (chosen.kind) {
@@ -322,7 +321,7 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 												0,
 												(sum, w) => sum + Number(w.factor)
 											)
-											const requested = yield* chainLedger.request.ChainRun(key, at, {
+											const requested = yield* chainLedger.request.ChainRun(key, {
 												feed: chosen.feed,
 												pages: BigInt(chosen.pages)
 											})
@@ -342,7 +341,7 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 											if (chosen.size > poolSeats) {
 												c.note("a contended pool")
 											}
-											const requested = yield* fanLedger.request.FanRun(key, at, {
+											const requested = yield* fanLedger.request.FanRun(key, {
 												batch: key,
 												size: BigInt(chosen.size)
 											})

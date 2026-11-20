@@ -382,10 +382,23 @@ export const fanDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", FanFanRunInput.fields.scope)))
 			.find({ scope, batch, size, root })
 	}),
-	fanRequestFanRun: ChangeSet.empty(fanGraph)
-		.insert(FanScope, [])
-		.insert(FanRoot, [])
-		.insert(FanFanRunInput, []),
+	fanRequestFanRun: clocked(
+		ChangeSet.empty(fanGraph)
+			.insert(FanScope, [])
+			.insert(FanFanRunInput, [])
+			.insert(
+				FanRoot,
+				query(fanGraph).rule((r) =>
+					r.find({
+						scope: r.param("fanFanRunScope", FanRoot.fields.scope),
+						kind: FanRootKind.handle("FanRun"),
+						key: r.param("fanFanRunKey", FanRoot.fields.key),
+						at: r.param("now", FanRoot.fields.at)
+					})
+				)
+			),
+		{ now: "millis" }
+	),
 	fanEndingsFanRunBatch: query(fanGraph).rule((r) => {
 		const { scope, parent } = v(FanWithin, "within")
 		const { step } = v(FanFinish, "finish")

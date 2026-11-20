@@ -75,8 +75,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 							})
 						}
 						const key = `${run.feed}-${run.pages}-${run.factor}`
-						const at = yield* chain.ledger.now
-						const requested = yield* chain.request.ChainRun(key, at, {
+						const requested = yield* chain.request.ChainRun(key, {
 							feed: run.feed,
 							pages: BigInt(run.pages)
 						})
@@ -121,7 +120,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 								(cursor) => cursor.feed === run.feed && cursor.position === BigInt(run.pages - 1)
 							)
 						)
-						const again = yield* chain.request.ChainRun(key, at, {
+						const again = yield* chain.request.ChainRun(key, {
 							feed: run.feed,
 							pages: BigInt(run.pages)
 						})
