@@ -24,7 +24,7 @@ const flow: Gen<string> = string(characterOf(["Q", ":", "s", "t", "e", "p", "a"]
 })
 
 /** A step's attempt. */
-const attempt: Gen<number> = int(1, 12)
+const attempt: Gen<number> = int(0, 11)
 
 /** A wake for a step's attempt. */
 const step: Gen<Encoded> = (source) => ({

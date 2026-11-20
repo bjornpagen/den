@@ -1,22 +1,21 @@
 import type { Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Cause, Duration, Effect, Exit, Option, Random } from "effect"
+import { Array as Arr, Cause, Duration, Effect, Exit, Option } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Ladder, Resource } from "#algebra/kinds.ts"
 import { censusPeriodSeconds } from "#algebra/kinds.ts"
-import { opensAt, isOpen, standing } from "#runtime/eligible.ts"
+import { isOpen, lapsedAttempt, opensAt, standing } from "#runtime/eligible.ts"
 import {
 	finishStep,
-	holderOf,
 	type Instant,
 	instantOf,
 	type ScopeKey,
 	type StepKey
 } from "#runtime/identity.ts"
 import type {
+	ClaimOf,
 	ClaimRow,
 	Committed,
 	FencedRow,
-	HoldRow,
 	Ledger,
 	Ran,
 	RetryRow,
@@ -27,7 +26,13 @@ import type {
 	Turn
 } from "#runtime/ledger.ts"
 import { parentOf, refusedOnKey } from "#runtime/ledger.ts"
-import { giveBack, holdExclusive, releaseExclusive, exclusiveOf, take } from "#runtime/seats.ts"
+import {
+	exclusiveOf,
+	holdExclusive,
+	releaseExclusive,
+	seatsFor,
+	seatTaken
+} from "#runtime/seats.ts"
 import { AttemptNumber, type FlowName, type Ring, Transport, type Wake } from "#transport.ts"
 
 /**
@@ -499,7 +504,7 @@ const nextWake = <R>(
 			case "held":
 				return Option.none()
 			case "first":
-				return Option.some({ wake: stepWake(ledger.flow, step, 1n), delay: Duration.zero })
+				return Option.some({ wake: stepWake(ledger.flow, step, 0n), delay: Duration.zero })
 			case "next":
 				return Option.some({
 					wake: stepWake(ledger.flow, step, stands.attempt),
@@ -511,11 +516,11 @@ const nextWake = <R>(
 /** The wakes of what a commit or an admission spawned: each step after its delay, an exact timer, and each ready finish. */
 const spawnedRings = (flow: FlowName, at: Instant, spawned: Spawned): ReadonlyArray<Onward> => [
 	...Arr.map(spawned.steps, (s) => ({
-		wake: stepWake(flow, s.step, 1n),
+		wake: stepWake(flow, s.step, 0n),
 		delay: delayTo(at, s.due)
 	})),
 	...Arr.map(spawned.finishes, (finish) => ({
-		wake: stepWake(flow, finish, 1n),
+		wake: stepWake(flow, finish, 0n),
 		delay: Duration.zero
 	}))
 ]
@@ -698,18 +703,58 @@ const endingOf = <R>(
 	}
 }
 
-/** Gives back a turn's holds, then passes its ending on. */
-const thenGiveBack = <R, A, E, X>(
+/** A claim's end: the attempt the database stamped, or the ending of a claim that found no seat, lost or failed. */
+type Claimed =
+	| { readonly kind: "claimed"; readonly attempt: bigint }
+	| { readonly kind: "ended"; readonly ending: Ending }
+
+/**
+ * Claims a step's next attempt until `until` with one seat of each resource it uses, in one write: the attempt the
+ * database stamped; waiting on seats when some resource has no seat free at `at`; lost when another claim of the step
+ * stands unended; or the ending of a write that failed. A seat another claim took between the read and the claim
+ * refuses the claim whole on the live holds' key, and the seats are picked again from a fresh read, so it ends once it
+ * claims or finds no seat free.
+ */
+const claimSeated = <R>(
 	ledger: Ledger<R>,
-	holds: ReadonlyArray<HoldRow>,
-	effect: Effect.Effect<A, E, X>
-): Effect.Effect<A, E, X> => Effect.ensuring(effect, giveBack(ledger, holds))
+	at: Instant,
+	wake: Wake,
+	claim: Rooted<Omit<ClaimOf, "seats">>,
+	uses: ReadonlyArray<Resource>
+): Effect.Effect<Claimed, Ending> =>
+	Effect.gen(function* () {
+		const live = Arr.isReadonlyArrayEmpty(uses) ? [] : yield* readOr(ledger.holds, wake)
+		const taken = seatsFor(uses, live, at)
+		if (Option.isNone(taken)) {
+			return {
+				kind: "ended",
+				ending: { kind: "waiting", wake, why: "seats", until: Option.none() }
+			} satisfies Claimed
+		}
+		const lapsed = [
+			...claim.lapsed,
+			...Arr.map(taken.value.lapsed, (h) => ({ step: h.step, root: h.root, attempt: h.attempt }))
+		]
+		const outcome = yield* Effect.result(
+			ledger.claim({ ...claim, seats: taken.value.seats, lapsed })
+		)
+		if (outcome._tag === "Success") {
+			return { kind: "claimed", attempt: outcome.success } satisfies Claimed
+		}
+		if (seatTaken(ledger.flow, outcome.failure)) {
+			return yield* claimSeated(ledger, at, wake, claim, uses)
+		}
+		return {
+			kind: "ended",
+			ending: unwritten(ledger.flow, outcome.failure, wake)
+		} satisfies Claimed
+	})
 
 /**
  * Serves one wake of a step's attempt: refuses a wake that names no pending step or not its next attempt, waits for its
  * due instant, its windows, its pauses and, for a finish, its scope's last child; fails it once its ladder is spent;
- * takes its seats, claims it until `ends` (its invocation's end), runs its kind's turn, gives its seats back, and rings
- * on what its end made eligible.
+ * claims it until `ends` (its invocation's end) with its seats in one write, runs its kind's turn, whose end gives its
+ * seats back, and rings on what its end made eligible.
  */
 const serveStep = <R>(
 	ledger: Ledger<R>,
@@ -735,7 +780,7 @@ const serveStep = <R>(
 		if (stands.kind === "held") {
 			return served({ kind: "lost", wake })
 		}
-		const next = stands.kind === "next" ? stands.attempt : 1n
+		const next = stands.kind === "next" ? stands.attempt : 0n
 		if (BigInt(wake.attempt) !== next) {
 			return served({ kind: "lost", wake })
 		}
@@ -764,44 +809,39 @@ const serveStep = <R>(
 			}
 		}
 		const spentSoFar = spentBefore(claims, retries, fenced, next)
-		const nonce = yield* Random.nextInt
-		const holder = yield* holderOf(step, Number(next), nonce)
-		const margin = leaseMarginMillis
-		const deadline = instantOf(Number(ends) - margin)
+		const deadline = instantOf(Number(ends) - leaseMarginMillis)
 		const until = ends
 		const exhausted = !allows(runner.retry, spentSoFar)
-		const holds = exhausted
-			? Option.some(Arr.empty<HoldRow>())
-			: yield* readOr(take(ledger, runner.uses, holder, until, at), wake)
-		if (Option.isNone(holds)) {
-			return served({ kind: "waiting", wake, why: "seats", until: Option.none() })
-		}
-		return yield* thenGiveBack(
-			ledger,
-			holds.value,
-			Effect.gen(function* () {
-				const claim: Rooted<ClaimRow> = { step, root, attempt: next, holder, until }
-				const claimed = yield* Effect.result(ledger.claim(claim))
-				if (claimed._tag === "Failure") {
-					return served(unwritten(ledger.flow, claimed.failure, wake))
-				}
-				if (!claimed.success) {
-					return served({ kind: "lost", wake })
-				}
-				const turn: Turn = { step, root, attempt: next, scope, holder, deadline, until }
-				if (exhausted) {
-					const failed = yield* recorded(ledger, ledger.exhaust(turn), wake, {
-						kind: "failed",
-						wake,
-						why: "attempts"
-					})
-					return { ending: failed, onward: yield* settledOn(ledger, runner, scope, failed) }
-				}
-				const ran = yield* runner.run(turn, at, ledger.now)
-				const ending = yield* endingOf(ledger, runner, turn, ran, spentSoFar, wake)
-				return { ending, onward: yield* settledOn(ledger, runner, scope, ending) }
+		const lapsed = Arr.map(
+			Option.toArray(lapsedAttempt(claims, retries, fenced, at)),
+			(attempt) => ({
+				step,
+				root,
+				attempt
 			})
 		)
+		const claimed = yield* claimSeated(
+			ledger,
+			at,
+			wake,
+			{ step, root, until, lapsed },
+			exhausted ? [] : runner.uses
+		)
+		if (claimed.kind === "ended") {
+			return served(claimed.ending)
+		}
+		const turn: Turn = { step, root, attempt: claimed.attempt, scope, deadline, until }
+		if (exhausted) {
+			const failed = yield* recorded(ledger, ledger.exhaust(turn), wake, {
+				kind: "failed",
+				wake,
+				why: "attempts"
+			})
+			return { ending: failed, onward: yield* settledOn(ledger, runner, scope, failed) }
+		}
+		const ran = yield* runner.run(turn, at, ledger.now)
+		const ending = yield* endingOf(ledger, runner, turn, ran, spentSoFar, wake)
+		return { ending, onward: yield* settledOn(ledger, runner, scope, ending) }
 	})
 
 /** What an ending rings on: a step's end settles its scope; a retry or a timed wait rings its own next attempt. */

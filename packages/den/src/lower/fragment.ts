@@ -44,12 +44,14 @@ import {
  */
 
 /** One of den's own key contracts, every flow's alike. */
-export type DenKey = "DenStep" | "DenScope" | "DenHolder" | "DenExclusive" | "DenInstant"
+export type DenKey = "DenStep" | "DenScope" | "DenExclusive" | "DenInstant"
 
 /** What a lowered field holds. */
 export type FieldType =
 	| { readonly kind: "key"; readonly contract: DenKey }
 	| { readonly kind: "natural" }
+	| { readonly kind: "place" }
+	| { readonly kind: "drawn" }
 	| { readonly kind: "closed"; readonly roster: string }
 	| { readonly kind: "brand"; readonly brand: string }
 	| { readonly kind: "base"; readonly base: Base }
@@ -101,6 +103,12 @@ export type LawIR =
 			readonly holds: Holds
 	  }
 	| { readonly kind: "retirable"; readonly header: string; readonly bodies: ReadonlyArray<string> }
+	| {
+			readonly kind: "ordered"
+			readonly member: SideIR
+			readonly owner: string
+			readonly count: string
+	  }
 
 /** What a row check holds of its field: a bound it is at least, or that it is finite. */
 export type Holds =
@@ -122,16 +130,18 @@ export interface CountsIR {
 }
 
 /**
- * A flow's seats: the closed relation of each resource's count; the chain of holds and frees; and the live holds, a
- * derived relation of the holds no free ended, with the check `bound` that holds each live hold's seat below its
- * resource's count. A fragment declares no derived relation, which reads a level below its own, so the live holds and
- * their check are the seat level: the schema that lists the flow's coordination fragment states them on a level over
- * itself. A freed turn is no live hold, so lowering a count is refused only while a live hold sits at or above it.
+ * A flow's seats: the closed relation of each resource's count; the holds, each a member of the claim that took it, so a
+ * claim and its seats are one write and a hold names its claim's step and attempt; and the live holds, a derived relation
+ * of the holds whose attempt has neither ended nor held its step's result, keyed by their seat, so a seat holds at most one
+ * live hold, with the check `bound` that holds each live hold's seat below its resource's count. A seat is given back
+ * when its claim's attempt ends, by the fact that ends it. A fragment declares no derived relation, which reads a level
+ * below its own, so the live holds, their key and their check are the seat level: the schema that lists the flow's graph
+ * states them on a level over itself. An ended attempt holds no live seat, so lowering a count is refused only while a
+ * live hold sits at or above it.
  */
 export interface SeatsIR {
 	readonly counts: CountsIR
 	readonly hold: string
-	readonly freed: string
 	readonly live: string
 	readonly bound: string
 }
@@ -406,6 +416,8 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const instant: FieldType = { kind: "key", contract: "DenInstant" }
 	const text: FieldType = { kind: "base", base: "text" }
 	const natural: FieldType = { kind: "natural" }
+	const place: FieldType = { kind: "place" }
+	const drawnCount: FieldType = { kind: "drawn" }
 	const ownerKey = (owner: "step" | "scope"): FieldType => (owner === "step" ? stepKey : scopeKey)
 
 	const kindNames = [...Arr.map(steps, (s) => s.name), ...Arr.map(joins, finishName)]
@@ -534,13 +546,32 @@ export const lower = (flow: AnyFlow): Lowered => {
 		],
 		key: ["scope"]
 	})
+	/**
+	 * A claim of a step's attempt, the attempt its place among the step's claims, which the database stamps from 0 as the
+	 * claim is inserted, so concurrent claimants serialize on the step's head and none chooses an attempt; with its lease's
+	 * end, and, for a flow with resources, its count of the seats it holds, its holds' family. The root stands before the
+	 * place, which is last in its key.
+	 */
 	const Claim = relation({
 		name: name("Claim"),
 		fields: [
 			{ name: "step", type: stepKey },
-			{ name: "attempt", type: natural },
-			{ name: "holder", type: { kind: "key", contract: "DenHolder" } },
-			{ name: "until", type: instant }
+			{ name: "attempt", type: place },
+			{ name: "until", type: instant },
+			...(Arr.isReadonlyArrayNonEmpty(flow.resources) ? [{ name: "holds", type: drawnCount }] : [])
+		],
+		key: ["step", "root", "attempt"]
+	})
+	/**
+	 * An attempt's end: a retry, a fence, or its lapse, which the next claim of its step or of one of its seats records
+	 * once its lease has passed. A claim after the first follows its predecessor's end, so a step holds at most one
+	 * unended claim, and a seat its claim held is free once the claim's attempt ends.
+	 */
+	const Ended = relation({
+		name: name("Ended"),
+		fields: [
+			{ name: "step", type: stepKey },
+			{ name: "attempt", type: natural }
 		],
 		key: ["step", "attempt"]
 	})
@@ -636,27 +667,20 @@ export const lower = (flow: AnyFlow): Lowered => {
 		into(side(Finish, ["step"]), side(Step, ["step"])),
 		keyOf(Finish, ["step"]),
 		into(side(Claim, ["step"]), side(Step, ["step"])),
-		{ kind: "race", relation: Claim },
-		{
-			kind: "check",
-			name: "AttemptFromOne",
-			relation: Claim,
-			field: "attempt",
-			holds: { kind: "atLeast", bound: 1n }
-		},
+		into(side(Ended, ["step", "attempt"]), side(Claim, ["step", "attempt"])),
 		into(
 			{
 				relation: Claim,
-				selection: { kind: "atLeast", field: "attempt", bound: 2n },
+				selection: { kind: "atLeast", field: "attempt", bound: 1n },
 				terms: [
 					{ field: "step", pred: false },
 					{ field: "attempt", pred: true }
 				]
 			},
-			side(Claim, ["step", "attempt"])
+			side(Ended, ["step", "attempt"])
 		),
-		into(side(Retry, ["step", "attempt"]), side(Claim, ["step", "attempt"])),
-		into(side(Fenced, ["step", "attempt"]), side(Claim, ["step", "attempt"])),
+		into(side(Retry, ["step", "attempt"]), side(Ended, ["step", "attempt"])),
+		into(side(Fenced, ["step", "attempt"]), side(Ended, ["step", "attempt"])),
 		into(side(Result, ["step"]), side(Step, ["step"])),
 		into(side(Held, ["step", "attempt"]), side(Claim, ["step", "attempt"])),
 		into(side(Held, ["step"]), side(Result, ["step"])),
@@ -1026,25 +1050,32 @@ export const lower = (flow: AnyFlow): Lowered => {
 				rows: resourceRows
 			})
 		: Option.none()
+	/**
+	 * A seat a claim holds, a member of its claim's ordered family: the claim's step, root and attempt, its place among the
+	 * claim's holds, and the resource's seat. It is written in the claim's own write and lapses with its claim, so it
+	 * carries no lease of its own and names no holder but its claim.
+	 */
 	const seats = Option.map(counts, (seatCounts): SeatsIR => {
-		const resourceField: FieldType = { kind: "closed", roster: seatCounts.key.roster }
-		const [Hold, Freed] = chainOf(
-			name("Hold"),
-			name("Freed"),
-			[
-				{ name: "resource", type: resourceField },
+		const Hold = relation({
+			name: name("Hold"),
+			fields: [
+				{ name: "step", type: stepKey },
+				{ name: "attempt", type: natural },
+				{ name: "at", type: drawnCount },
+				{ name: "resource", type: { kind: "closed", roster: seatCounts.key.roster } },
 				{ name: "seat", type: natural }
 			],
-			[
-				{ name: "holder", type: { kind: "key", contract: "DenHolder" } },
-				{ name: "until", type: instant }
-			]
-		)
-		coordination.push(Hold, Freed)
+			key: ["step", "root", "attempt", "at"]
+		})
+		laws.push({
+			kind: "ordered",
+			member: side(Hold, ["step", "root", "attempt", "at"]),
+			owner: Claim,
+			count: "holds"
+		})
 		return {
 			counts: seatCounts,
 			hold: Hold,
-			freed: Freed,
 			live: name("Live"),
 			bound: name("SeatBelowCount")
 		}
@@ -1116,7 +1147,11 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const rootField = { name: "root", type: scopeKey }
 	const rooted = Arr.map(relations, (r): RelationIR => {
 		if (bodies.has(r.name)) {
-			return { ...r, fields: [...r.fields, rootField], key: [...r.key, "root"] }
+			return {
+				...r,
+				fields: [...r.fields, rootField],
+				key: Arr.contains(r.key, "root") ? r.key : [...r.key, "root"]
+			}
 		}
 		return r.name === Root
 			? { ...r, fields: [...r.fields, { name: "retired", type: { kind: "retirement" } }] }
@@ -1136,6 +1171,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 				case "race":
 				case "check":
 				case "retirable":
+				case "ordered":
 					return law
 			}
 		}),

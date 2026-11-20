@@ -27,6 +27,7 @@ import {
 	AssignStartStep,
 	AssignFinish,
 	AssignClaim,
+	AssignEnded,
 	AssignRetry,
 	AssignFenced,
 	AssignResult,
@@ -71,6 +72,7 @@ export const AssignDen = role(
 			"AssignStartStep",
 			"AssignFinish",
 			"AssignClaim",
+			"AssignEnded",
 			"AssignRetry",
 			"AssignFenced",
 			"AssignResult",
@@ -139,23 +141,17 @@ export const assignDenPrograms = Object.freeze({
 	),
 	assignClaim: ChangeSet.empty(assignGraph)
 		.insert(AssignClaim, [])
+		.insert(AssignEnded, [])
 		.read("held", (delta) =>
-			query(assignGraph)
-				.rule((r) => {
-					const { step, attempt, holder } = v(delta.added(AssignClaim), "added")
-					return r
-						.match(delta.added(AssignClaim), { step, attempt, holder })
-						.find({ step, attempt, holder })
-				})
-				.rule((r) => {
-					const { step, attempt, holder } = v(delta.met(AssignClaim), "met")
-					return r
-						.match(delta.met(AssignClaim), { step, attempt, holder })
-						.find({ step, attempt, holder })
-				})
+			query(assignGraph).rule((r) => {
+				const { step, root, attempt } = v(delta.added(AssignClaim), "added")
+				return r
+					.match(delta.added(AssignClaim), { step, root, attempt })
+					.find({ step, root, attempt })
+			})
 		),
-	assignRetry: ChangeSet.empty(assignGraph).insert(AssignRetry, []),
-	assignFence: ChangeSet.empty(assignGraph).insert(AssignFenced, []),
+	assignRetry: ChangeSet.empty(assignGraph).insert(AssignEnded, []).insert(AssignRetry, []),
+	assignFence: ChangeSet.empty(assignGraph).insert(AssignEnded, []).insert(AssignFenced, []),
 	assignRefuse: ChangeSet.empty(assignGraph)
 		.insert(AssignResult, [])
 		.insert(AssignFailed, [])
@@ -239,11 +235,11 @@ export const assignDenPrograms = Object.freeze({
 			})
 	),
 	assignClaimsOf: query(assignGraph).rule((r) => {
-		const { step, attempt, holder, until } = v(AssignClaim, "claim")
+		const { step, attempt, until } = v(AssignClaim, "claim")
 		return r
-			.match(AssignClaim, { step, attempt, holder, until })
+			.match(AssignClaim, { step, attempt, until })
 			.where(r.eq(step, r.param("step", AssignStep.fields.step)))
-			.find({ step, attempt, holder, until })
+			.find({ step, attempt, until })
 	}),
 	assignRetriesOf: query(assignGraph).rule((r) => {
 		const { step, attempt, at, spent } = v(AssignRetry, "retry")

@@ -1,11 +1,12 @@
-import { holderOf, instantOf } from "@bjornpagen/den/runtime/identity"
-import type { HoldRow } from "@bjornpagen/den/runtime/ledger"
-import { giveBack, take } from "@bjornpagen/den/runtime/seats"
+import { instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
+import type { SeatAt } from "@bjornpagen/den/runtime/ledger"
+import { seatsFor, seatTaken } from "@bjornpagen/den/runtime/seats"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
+import type { Settled } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
-import { boolean, type Gen, int } from "@bjornpagen/testing/gen"
+import { boolean, type Gen } from "@bjornpagen/testing/gen"
 import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, HashMap, Option, Ref } from "effect"
@@ -16,15 +17,16 @@ import { longestLeaseMillis } from "#runtime/turn.ts"
 
 /**
  * Exact seats: the Pool holds two seats and a batch, admitted with its root, makes five squares eligible at once. Five
- * sessions, one per square, each take a seat of the Pool and give it back, in an interleaving drawn from the case's
- * tape, every move of each in flight beside the others'; some take under a lease already lapsed, which another taker
- * frees and takes over in one call. Then the batch runs to its end. No two live holds ever share a seat, so never more
- * than two hold a seat at once; a take that finds no seat free takes none; a standing lease is never taken over; a
- * lapsed hold given back after it was taken over frees nothing of its taker's; and every seat is free again at the end.
+ * sessions, one per square, each claim its square's first attempt with a seat of the Pool, the claim and its hold one
+ * write, and end the attempt, which gives the seat back, in an interleaving drawn from the case's tape, every move of
+ * each in flight beside the others'; some claim under a lease already lapsed, which another claim ends and takes over in
+ * its own write. Then the batch runs to its end. No two live holds ever share a seat, so never more than two hold a seat
+ * at once; a claim that finds no seat free claims nothing; a standing lease is never taken over; a lapsed attempt ended
+ * after it was taken over frees nothing of its taker's; and every seat is free again at the end.
  *
- * Oracle (postgresql): each seat's chain of turns, a turn keyed by `(resource, seat, turn)`, contained in its
- * predecessor's `Freed`, and checked below the Pool's count, read back as the live holds after every move, against the
- * holds each session took, over interleavings drawn by the testing library's `drawn` strategy.
+ * Oracle (postgresql): the live holds, each a claim's hold whose attempt has neither ended nor held its step's result,
+ * keyed by their seat and checked below the Pool's count, read back after every move, against the claims each session
+ * made, over interleavings drawn by the testing library's `drawn` strategy.
  */
 
 type Session = "s0" | "s1" | "s2" | "s3" | "s4"
@@ -35,20 +37,20 @@ type Feature = "a full pool" | "both seats held" | "a seat taken again" | "a lap
 
 const sessions: ReadonlyArray<Session> = ["s0", "s1", "s2", "s3", "s4"]
 
-/** A case: the holders' nonce, and which sessions take under a lease already lapsed. */
+/** A case: which sessions claim under a lease already lapsed. */
 interface Takers {
-	readonly copy: number
 	readonly lapsed: ReadonlyArray<boolean>
 }
 
 const takers: Gen<Takers> = (source) => ({
-	copy: source.draw(int(0, 9_999)),
 	lapsed: Arr.map(sessions, () => source.draw(boolean))
 })
 
-/** Whether two holds are one turn of one seat. */
-const sameTurn = (a: HoldRow, b: HoldRow): boolean =>
-	a.resource === b.resource && a.seat === b.seat && a.turn === b.turn
+/** A session's claim: its square's attempt and the seats it holds. */
+interface Holding {
+	readonly attempt: bigint
+	readonly seats: ReadonlyArray<SeatAt>
+}
 
 /**
  * Never seats more than two of five eligible squares at once, in any drawn interleaving.
@@ -84,67 +86,111 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 						)
 						const squares = admitted.ending.kind === "admitted" ? admitted.ending.spawned.steps : []
 						assert.equal(squares.length, 5)
-						const pairs = yield* Effect.forEach(
-							Arr.zip(Arr.zip(sessions, drawnTakers.lapsed), squares),
-							([[session, lapsed], square]) =>
-								Effect.map(
-									holderOf(square.step, 1, drawnTakers.copy),
-									(holder) => [session, { holder, lapsed }] as const
-								)
+						const takersOf = HashMap.fromIterable(
+							Arr.map(
+								Arr.zip(Arr.zip(sessions, drawnTakers.lapsed), squares),
+								([[session, lapsed], square]) => [session, { step: square.step, lapsed }] as const
+							)
 						)
-						const takersOf = HashMap.fromIterable(pairs)
-						const held = yield* Ref.make(HashMap.empty<Session, ReadonlyArray<HoldRow>>())
+						const steps: ReadonlyArray<StepKey> = Arr.map(squares, (square) => square.step)
+						const root = requested.scope
+						const held = yield* Ref.make(HashMap.empty<Session, Holding>())
+						/** A claim with whether it took over a lapsed hold. */
+						type Taken = Holding & { readonly over: boolean }
 						const peak = yield* Ref.make(0)
 						const seen = yield* Ref.make(0)
-						const holders = Arr.map(pairs, ([, t]) => t.holder)
-						/** What every move leaves: at most one live hold a seat, each a taker's. */
+						/** What every move leaves: at most one live hold a seat, each a square's claim. */
 						const exact = Effect.gen(function* () {
-							const live = yield* ledger.coordination.holds
+							const live = yield* ledger.holds
 							yield* Ref.update(peak, (p) => Math.max(p, live.length))
 							assert.ok(live.length <= 2)
 							assert.equal(Arr.dedupeWith(live, (a, b) => a.seat === b.seat).length, live.length)
-							assert.ok(Arr.every(live, (row) => Arr.contains(holders, row.holder)))
+							assert.ok(Arr.every(live, (row) => Arr.contains(steps, row.step)))
 							return live
 						})
+						/** Ends a session's attempt, which gives its seats back. */
+						const end = (step: StepKey, mine: Holding) =>
+							Effect.flatMap(ledger.now, (instant) =>
+								ledger.retry({ step, root, attempt: mine.attempt, at: instant, spent: false })
+							)
+						/** Claims a session's square with a seat of the Pool, picked again from a fresh read when another takes it. */
+						const claimSeat = (
+							step: StepKey,
+							lapsed: boolean
+						): Effect.Effect<Option.Option<Taken>, Settled> =>
+							Effect.gen(function* () {
+								const live = yield* ledger.holds
+								const instant = yield* ledger.now
+								const picked = seatsFor([pool], live, instant)
+								if (Option.isNone(picked)) {
+									return Option.none()
+								}
+								const until = instantOf(
+									lapsed ? Number(instant) - 1 : Number(instant) + longestLeaseMillis
+								)
+								const claimed = yield* Effect.result(
+									ledger.claim({
+										step,
+										root,
+										until,
+										seats: picked.value.seats,
+										lapsed: Arr.map(picked.value.lapsed, (h) => ({
+											step: h.step,
+											root: h.root,
+											attempt: h.attempt
+										}))
+									})
+								)
+								if (claimed._tag === "Success") {
+									return Option.some({
+										attempt: claimed.success,
+										seats: picked.value.seats,
+										over: Arr.isReadonlyArrayNonEmpty(picked.value.lapsed)
+									})
+								}
+								if (seatTaken("Fan", claimed.failure)) {
+									return yield* claimSeat(step, lapsed)
+								}
+								return yield* Effect.fail(claimed.failure)
+							})
 						const run = (session: Session, move: Move): Effect.Effect<Outcome> =>
 							Effect.gen(function* () {
 								const before = yield* Ref.get(held)
-								const mine = Option.getOrElse(HashMap.get(before, session), () => [])
+								const mine = HashMap.get(before, session)
 								const taker = Option.getOrThrow(HashMap.get(takersOf, session))
 								if (move === "give") {
-									if (Arr.isReadonlyArrayEmpty(mine)) {
+									if (Option.isNone(mine)) {
 										return "idle" satisfies Outcome
 									}
-									yield* giveBack(ledger, mine)
+									yield* end(taker.step, mine.value)
 									yield* Ref.update(held, HashMap.remove(session))
 									yield* exact
 									return "given" satisfies Outcome
 								}
-								const instant = yield* ledger.now
-								const until = instantOf(
-									taker.lapsed ? Number(instant) - 1 : Number(instant) + longestLeaseMillis
-								)
-								const taken = yield* take(ledger, [pool], taker.holder, until, instant)
+								const taken = yield* claimSeat(taker.step, taker.lapsed)
 								if (Option.isSome(taken)) {
 									yield* Ref.update(seen, (n) => n + 1)
-									yield* Ref.update(held, HashMap.set(session, taken.value))
-									if (Arr.some(taken.value, (hold) => hold.turn > 0n)) {
-										const over = Arr.some(taken.value, (hold) =>
-											Arr.some(Arr.flatten(HashMap.toValues(before)), (other) =>
-												sameTurn(other, { ...hold, turn: hold.turn - 1n })
-											)
-										)
-										if (over) {
-											c.note("a lapsed seat taken over")
-										}
+									yield* Ref.update(
+										held,
+										HashMap.set(session, { attempt: taken.value.attempt, seats: taken.value.seats })
+									)
+									if (taken.value.over) {
+										c.note("a lapsed seat taken over")
 									}
 								}
 								const live = yield* exact
 								if (!taker.lapsed) {
 									assert.ok(
-										Arr.every(
-											Option.getOrElse(taken, () => []),
-											(hold) => Arr.some(live, (row) => sameTurn(row, hold))
+										Arr.every(Option.toArray(taken), (mineNow) =>
+											Arr.every(mineNow.seats, (seat) =>
+												Arr.some(
+													live,
+													(row) =>
+														row.step === taker.step &&
+														row.attempt === mineNow.attempt &&
+														row.seat === seat.seat
+												)
+											)
 										)
 									)
 								}
@@ -179,10 +225,13 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 								}),
 								release: (session) =>
 									Effect.flatMap(Ref.get(held), (map) =>
-										giveBack(
-											ledger,
-											Option.getOrElse(HashMap.get(map, session), () => [])
-										)
+										Option.match(HashMap.get(map, session), {
+											onNone: () => Effect.void,
+											onSome: (mine) =>
+												Effect.ignore(
+													end(Option.getOrThrow(HashMap.get(takersOf, session)).step, mine)
+												)
+										})
 									),
 								commute: () => false,
 								onWait: () => "wait",
@@ -209,7 +258,7 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 							c.note("a seat taken again")
 						}
 						yield* ringOnAndDrain(ledgers, admitted)
-						const left = yield* ledger.coordination.holds
+						const left = yield* ledger.holds
 						assert.deepEqual(left, [])
 					}),
 					services
@@ -217,16 +266,16 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 			),
 	oracle: {
 		kind: "postgresql",
-		name: "each seat's chain of turns, read as the live holds after every move of five takers of two seats"
+		name: "the live holds keyed by their seat, read after every move of five claimers of two seats"
 	},
 	budget: { runs: 8, steered: 8 },
 	kept: [],
 	kills: [
 		{
 			file: "packages/den/src/runtime/turn.ts",
-			original: "\t\tconst deadline = instantOf(Number(ends) - margin)",
-			replacement: "\t\tconst deadline = instantOf(margin - Number(ends))",
-			why: "Operator mutant (operand-swap) at packages/den/src/runtime/turn.ts:819 in serveStep: `Number(ends) - margin` becomes `margin - Number(ends)`; the property fails (lane CATCH, den 9cffaba)."
+			original: "\t\tconst deadline = instantOf(Number(ends) - leaseMarginMillis)",
+			replacement: "\t\tconst deadline = instantOf(leaseMarginMillis - Number(ends))",
+			why: "Operator mutant (operand-swap) at packages/den/src/runtime/turn.ts:803 in serveStep: `Number(ends) - leaseMarginMillis` becomes `leaseMarginMillis - Number(ends)`; the property fails (lane CATCH, den 9cffaba)."
 		}
 	]
 })

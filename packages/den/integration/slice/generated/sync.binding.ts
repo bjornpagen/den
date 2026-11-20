@@ -255,8 +255,6 @@ export const syncLedger = (h: SyncHandles) => {
 			)
 	}
 	const coordination: Ledger<never>["coordination"] = {
-		seatTurns: Effect.succeed([]),
-		holds: Effect.succeed([]),
 		exclusiveTurns: Effect.map(
 			settled(h.coordinator.syncExclusiveTurns.once({ params: {}, facts: {} })),
 			(rows) => Arr.map(rowsOf(rows), (row) => ({ kind: row.kind, key: row.key, turn: row.turn }))
@@ -272,8 +270,6 @@ export const syncLedger = (h: SyncHandles) => {
 				}))
 		),
 		paused: pauseChains.live,
-		take: () => Effect.void,
-		giveBack: () => Effect.void,
 		holdExclusive: (row) =>
 			Effect.asVoid(
 				settled(
@@ -630,6 +626,7 @@ export const syncLedger = (h: SyncHandles) => {
 		authenticated: Effect.asVoid(
 			settled(h.commits.syncAuthenticated.once({ params: {}, facts: {} }))
 		),
+		holds: Effect.succeed([]),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.syncStepOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => ({
@@ -698,14 +695,44 @@ export const syncLedger = (h: SyncHandles) => {
 			Effect.map(only(rows), busyOf)
 		),
 		claim: (row) =>
-			Effect.map(
-				settled(h.den.syncClaim.once({ params: {}, facts: { insert: { SyncClaim: [row] } } })),
-				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
+			Effect.flatMap(
+				settled(
+					h.den.syncClaim.once({
+						params: {},
+						facts: {
+							insert: {
+								SyncClaim: [{ step: row.step, root: row.root, until: row.until }],
+								SyncEnded: row.lapsed
+							}
+						}
+					})
+				),
+				(outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)
 			),
 		retry: (row) =>
-			settled(h.den.syncRetry.once({ params: {}, facts: { insert: { SyncRetry: [row] } } })),
+			settled(
+				h.den.syncRetry.once({
+					params: {},
+					facts: {
+						insert: {
+							SyncEnded: [{ step: row.step, root: row.root, attempt: row.attempt }],
+							SyncRetry: [row]
+						}
+					}
+				})
+			),
 		fence: (row) =>
-			settled(h.den.syncFence.once({ params: {}, facts: { insert: { SyncFenced: [row] } } })),
+			settled(
+				h.den.syncFence.once({
+					params: {},
+					facts: {
+						insert: {
+							SyncEnded: [{ step: row.step, root: row.root, attempt: row.attempt }],
+							SyncFenced: [row]
+						}
+					}
+				})
+			),
 		refuse: ({ step, root, attempt }, law) =>
 			settled(
 				h.den.syncRefuse.once({

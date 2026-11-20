@@ -1,6 +1,6 @@
 import { tick } from "@bjornpagen/den/runtime/census"
 import { drain } from "@bjornpagen/den/runtime/drive"
-import { holderOf, instantOf } from "@bjornpagen/den/runtime/identity"
+import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName, InProcess } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
@@ -30,14 +30,12 @@ interface Loss {
 	readonly pages: number
 	readonly admitted: boolean
 	readonly deadHolder: boolean
-	readonly copy: number
 }
 
 const losses: Gen<Loss> = (source) => ({
 	pages: source.draw(int(1, 3)),
 	admitted: source.draw(boolean),
-	deadHolder: source.draw(boolean),
-	copy: source.draw(int(0, 99_999))
+	deadHolder: source.draw(boolean)
 })
 
 /**
@@ -47,8 +45,7 @@ const losses: Gen<Loss> = (source) => ({
 const deadHolders: Gen<Loss> = (source) => ({
 	pages: source.draw(int(1, 3)),
 	admitted: true,
-	deadHolder: true,
-	copy: source.draw(int(0, 99_999))
+	deadHolder: true
 })
 
 /**
@@ -100,10 +97,9 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 							if (loss.deadHolder && Option.isSome(first)) {
 								c.note("a dead holder")
 								const step = first.value.step
-								const holder = yield* holderOf(step, 1, loss.copy)
 								const located = yield* chain.ledger.stepOf(step)
 								const root = Option.getOrThrow(located).root
-								yield* chain.ledger.claim({ step, root, attempt: 1n, holder, until: ends })
+								yield* chain.ledger.claim({ step, root, until: ends, seats: [], lapsed: [] })
 								const standing = yield* tick(chain.ledger)
 								assert.equal(
 									Arr.some(

@@ -5,7 +5,7 @@
   the brief and unfinished.
 - **The repin's seams:** `vendor/grizzle` is on grizzle's `main`; LEASE for the coordination group and DBCLOCK are
   taken, and the seat bound is over the live holds alone. RETIRE is taken: a finished root's graph retires whole
-  (`runtime/retire.ts`, `docs/build/repin.md`); the coordination group's chains of turns still grow, until the owner
+  (`runtime/retire.ts`, `docs/build/repin.md`); the coordination group's chains of turns (exclusivity seats and pauses; a step's seats are its claim's and retire with its graph) still grow, until the owner
   rules how they are restated. Then GUARD and SCHEMAMAP.
 - **The assignment engine (owner, 2026-11-18):** named reads with nearest reads, finite numbers, vectors, arrays and
   tagged unions are built (`docs/decisions.md`), a step's reads are one statement and a nearest read searches from a

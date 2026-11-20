@@ -1,7 +1,6 @@
-import { DenHolder, DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
+import { DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Retry to; `den generate` writes it, and nothing edits it. */
 import {
-	check,
 	closed,
 	closedId,
 	contained,
@@ -9,9 +8,9 @@ import {
 	key,
 	natural,
 	on,
+	place,
 	pg,
 	pred,
-	race,
 	relation,
 	retirable,
 	retirement,
@@ -64,7 +63,12 @@ export const RetryFinish = relation(
 )
 export const RetryClaim = relation(
 	"RetryClaim",
-	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant, root: DenScope },
+	{ step: DenStep, attempt: place, until: DenInstant, root: DenScope },
+	["step", "root", "attempt"]
+)
+export const RetryEnded = relation(
+	"RetryEnded",
+	{ step: DenStep, attempt: natural, root: DenScope },
 	["step", "attempt", "root"]
 )
 export const RetryRetry = relation(
@@ -152,6 +156,7 @@ export const retryGraph = fragment(
 		RetryStartStep,
 		RetryFinish,
 		RetryClaim,
+		RetryEnded,
 		RetryRetry,
 		RetryFenced,
 		RetryResult,
@@ -178,21 +183,20 @@ export const retryGraph = fragment(
 		contained(on(RetryFinish, "step", "root"), on(RetryStep, "step", "root")),
 		key(on(RetryFinish, "step", "root")),
 		contained(on(RetryClaim, "step", "root"), on(RetryStep, "step", "root")),
-		race(RetryClaim),
-		check("AttemptFromOne", RetryClaim, (row) => row.ge(row.attempt, 1n)),
+		contained(on(RetryEnded, "step", "attempt", "root"), on(RetryClaim, "step", "attempt", "root")),
 		contained(
 			on(
-				select(RetryClaim, (row) => row.ge(row.attempt, 2n)),
+				select(RetryClaim, (row) => row.ge(row.attempt, 1n)),
 				"step",
 				pred("attempt"),
 				"root"
 			),
-			on(RetryClaim, "step", "attempt", "root")
+			on(RetryEnded, "step", "attempt", "root")
 		),
-		contained(on(RetryRetry, "step", "attempt", "root"), on(RetryClaim, "step", "attempt", "root")),
+		contained(on(RetryRetry, "step", "attempt", "root"), on(RetryEnded, "step", "attempt", "root")),
 		contained(
 			on(RetryFenced, "step", "attempt", "root"),
-			on(RetryClaim, "step", "attempt", "root")
+			on(RetryEnded, "step", "attempt", "root")
 		),
 		contained(on(RetryResult, "step", "root"), on(RetryStep, "step", "root")),
 		contained(on(RetryHeld, "step", "attempt", "root"), on(RetryClaim, "step", "attempt", "root")),
@@ -250,6 +254,7 @@ export const retryGraph = fragment(
 			on(RetryStartStep, "root"),
 			on(RetryFinish, "root"),
 			on(RetryClaim, "root"),
+			on(RetryEnded, "root"),
 			on(RetryRetry, "root"),
 			on(RetryFenced, "root"),
 			on(RetryResult, "root"),
@@ -267,7 +272,7 @@ export const retryGraph = fragment(
 	]
 )
 
-/** The flow's coordination group: its rosters, its seat counts, and its chains of holds, exclusivity seats and pauses, which den's coordinator role holds whole. */
+/** The flow's coordination group: its rosters, its seat counts, and its chains of exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const retryCoordination = fragment(
 	[RetryKind, RetryRootKind, RetryOutcome, RetryPausable, RetryPaused, RetryResumed],
 	[

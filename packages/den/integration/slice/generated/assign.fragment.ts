@@ -1,4 +1,4 @@
-import { DenHolder, DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
+import { DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Assign to; `den generate` writes it, and nothing edits it. */
 import {
 	Compute,
@@ -10,9 +10,9 @@ import {
 	key,
 	natural,
 	on,
+	place,
 	pg,
 	pred,
-	race,
 	relation,
 	retirable,
 	retirement,
@@ -78,7 +78,12 @@ export const AssignFinish = relation(
 )
 export const AssignClaim = relation(
 	"AssignClaim",
-	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant, root: DenScope },
+	{ step: DenStep, attempt: place, until: DenInstant, root: DenScope },
+	["step", "root", "attempt"]
+)
+export const AssignEnded = relation(
+	"AssignEnded",
+	{ step: DenStep, attempt: natural, root: DenScope },
 	["step", "attempt", "root"]
 )
 export const AssignRetry = relation(
@@ -257,6 +262,7 @@ export const assignGraph = fragment(
 		AssignStartStep,
 		AssignFinish,
 		AssignClaim,
+		AssignEnded,
 		AssignRetry,
 		AssignFenced,
 		AssignResult,
@@ -292,24 +298,26 @@ export const assignGraph = fragment(
 		contained(on(AssignFinish, "step", "root"), on(AssignStep, "step", "root")),
 		key(on(AssignFinish, "step", "root")),
 		contained(on(AssignClaim, "step", "root"), on(AssignStep, "step", "root")),
-		race(AssignClaim),
-		check("AttemptFromOne", AssignClaim, (row) => row.ge(row.attempt, 1n)),
+		contained(
+			on(AssignEnded, "step", "attempt", "root"),
+			on(AssignClaim, "step", "attempt", "root")
+		),
 		contained(
 			on(
-				select(AssignClaim, (row) => row.ge(row.attempt, 2n)),
+				select(AssignClaim, (row) => row.ge(row.attempt, 1n)),
 				"step",
 				pred("attempt"),
 				"root"
 			),
-			on(AssignClaim, "step", "attempt", "root")
+			on(AssignEnded, "step", "attempt", "root")
 		),
 		contained(
 			on(AssignRetry, "step", "attempt", "root"),
-			on(AssignClaim, "step", "attempt", "root")
+			on(AssignEnded, "step", "attempt", "root")
 		),
 		contained(
 			on(AssignFenced, "step", "attempt", "root"),
-			on(AssignClaim, "step", "attempt", "root")
+			on(AssignEnded, "step", "attempt", "root")
 		),
 		contained(on(AssignResult, "step", "root"), on(AssignStep, "step", "root")),
 		contained(
@@ -509,6 +517,7 @@ export const assignGraph = fragment(
 			on(AssignStartStep, "root"),
 			on(AssignFinish, "root"),
 			on(AssignClaim, "root"),
+			on(AssignEnded, "root"),
 			on(AssignRetry, "root"),
 			on(AssignFenced, "root"),
 			on(AssignResult, "root"),
@@ -535,7 +544,7 @@ export const assignGraph = fragment(
 	]
 )
 
-/** The flow's coordination group: its rosters, its seat counts, and its chains of holds, exclusivity seats and pauses, which den's coordinator role holds whole. */
+/** The flow's coordination group: its rosters, its seat counts, and its chains of exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const assignCoordination = fragment(
 	[
 		AssignKind,

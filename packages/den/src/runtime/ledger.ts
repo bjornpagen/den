@@ -2,7 +2,7 @@ import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runti
 import { Array as Arr, type Cron, Data, type Effect, Option, type Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Ladder, Precondition, Resource, Window } from "#algebra/kinds.ts"
-import type { ExclusiveId, Holder, Instant, ScopeKey, StepKey } from "#runtime/identity.ts"
+import type { ExclusiveId, Instant, ScopeKey, StepKey } from "#runtime/identity.ts"
 import type { FlowName } from "#transport.ts"
 
 /**
@@ -79,12 +79,33 @@ export interface Committed {
 	readonly spawned: Spawned
 }
 
-/** A claim, as the ledger's Claim relation holds it: the step, its attempt, who holds it and until when. */
+/**
+ * A claim, as the ledger's Claim relation holds it: the step, its attempt, its place among the step's claims, which the
+ * database stamps, and until when its lease holds. The claim is its turn's identity: no holder beside it.
+ */
 export interface ClaimRow {
 	readonly step: StepKey
 	readonly attempt: bigint
-	readonly holder: Holder
 	readonly until: Instant
+}
+
+/** An attempt of a step of a root's graph. */
+export interface AttemptOf {
+	readonly step: StepKey
+	readonly root: ScopeKey
+	readonly attempt: bigint
+}
+
+/**
+ * A claim as a turn asks for it: the step, until when, the seats it takes, which the claim's one write holds, and the
+ * attempts it names lapsed (its step's latest claim, and each claim holding one of its seats), whose ends the write
+ * records where the database's instant has passed their leases.
+ */
+export interface ClaimOf {
+	readonly step: StepKey
+	readonly until: Instant
+	readonly seats: ReadonlyArray<SeatAt>
+	readonly lapsed: ReadonlyArray<AttemptOf>
 }
 
 /**
@@ -113,7 +134,6 @@ export interface Turn {
 	readonly root: ScopeKey
 	readonly attempt: bigint
 	readonly scope: ScopeKey
-	readonly holder: Holder
 	readonly deadline: Instant
 	readonly until: Instant
 }
@@ -198,14 +218,8 @@ export interface SeatAt {
 	readonly seat: bigint
 }
 
-/** A seat's turn: the turns of a seat run from 0, each taken once the one before it was freed. */
-export interface SeatTurn extends SeatAt {
-	readonly turn: bigint
-}
-
-/** A seat's live hold, a turn not freed: who holds it and until when. */
-export interface HoldRow extends SeatTurn {
-	readonly holder: Holder
+/** A seat's live hold: the claim that holds it, an attempt that has neither ended nor held its step's result, and its lease. */
+export interface HoldRow extends SeatAt, AttemptOf {
 	readonly until: Instant
 }
 
@@ -272,22 +286,14 @@ export interface Snapshot<R> {
 }
 
 /**
- * den's coordinator role: the seat module's calls, each certified READ COMMITTED. A seat, an exclusivity seat and a
- * pause are each a chain of turns, inserted and never deleted: a read of each chain's latest turn, a read of its live
- * turns, a take of turns, and an end of turns.
+ * den's coordinator role: the seat module's calls, each certified READ COMMITTED. An exclusivity seat and a pause are
+ * each a chain of turns, inserted and never deleted: a read of each chain's latest turn, a read of its live turns, a
+ * take of turns, and an end of turns. A step's seats are its claim's, written and given back by den's role.
  */
 export interface Coordination {
-	readonly seatTurns: Effect.Effect<ReadonlyArray<SeatTurn>, Settled>
-	readonly holds: Effect.Effect<ReadonlyArray<HoldRow>, Settled>
 	readonly exclusiveTurns: Effect.Effect<ReadonlyArray<ExclusiveTurn>, Settled>
 	readonly exclusives: Effect.Effect<ReadonlyArray<ExclusiveRow>, Settled>
 	readonly paused: Effect.Effect<ReadonlyArray<PauseRow>, Settled>
-	/** Frees `lapsed` and holds `taken` in one call, refused whole on any turn another holder took first. */
-	readonly take: (
-		lapsed: ReadonlyArray<SeatTurn>,
-		taken: ReadonlyArray<HoldRow>
-	) => Effect.Effect<void, Settled>
-	readonly giveBack: (holds: ReadonlyArray<SeatTurn>) => Effect.Effect<void, Settled>
 	readonly holdExclusive: (row: ExclusiveRow) => Effect.Effect<void, Settled>
 	readonly releaseExclusive: (rows: ReadonlyArray<ExclusiveTurn>) => Effect.Effect<void, Settled>
 	/**
@@ -331,10 +337,14 @@ export interface Ledger<R> {
 	/** The flows this flow's preconditions name that hold a pending step, in one statement. */
 	readonly busy: Effect.Effect<ReadonlyArray<string>, Settled>
 	/**
-	 * Claims a step's attempt, a race at its key: whether the claim holding `(step, attempt)` is `claim`'s holder's, this
-	 * call's or an earlier one of the same holder, or another holder's, which this call met and wrote nothing beside.
+	 * Claims a step's next attempt with the seats it takes, one write: the attempt the database stamped, read back from
+	 * the write. The ends of the lapsed attempts of its step and of its seats' holders are recorded in it, so a seat a
+	 * lapsed claim held is free in the write that takes it. Refused whole when another claim of the step stands
+	 * unended (the claim's law of its predecessor's end) or another live hold holds one of its seats (the live holds' key).
 	 */
-	readonly claim: (claim: Rooted<ClaimRow>) => Effect.Effect<boolean, Settled>
+	readonly claim: (claim: Rooted<ClaimOf>) => Effect.Effect<bigint, Settled>
+	/** The live holds of the flow's seats, each with its claim and its claim's lease. */
+	readonly holds: Effect.Effect<ReadonlyArray<HoldRow>, Settled>
 	readonly retry: (retry: Rooted<RetryRow>) => Effect.Effect<WriteOutcome<unknown>, Settled>
 	readonly fence: (fenced: Rooted<FencedRow>) => Effect.Effect<WriteOutcome<unknown>, Settled>
 	readonly refuse: (at: StepAt, law: string) => Effect.Effect<WriteOutcome<unknown>, Settled>

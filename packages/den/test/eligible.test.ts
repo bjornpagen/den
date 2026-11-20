@@ -34,7 +34,6 @@ import {
 	type Instant,
 	instantOf,
 	finishStep,
-	holderOf,
 	rootScope,
 	type ScopeKey,
 	startedScope,
@@ -123,6 +122,7 @@ const ledger: Ledger<never> = {
 	finished: unread,
 	busy: Effect.die("eligibility reads the snapshot's busy flows"),
 	claim: unread,
+	holds: Effect.die("eligibility reads the snapshot's live holds"),
 	retry: unread,
 	fence: unread,
 	refuse: unread,
@@ -133,13 +133,9 @@ const ledger: Ledger<never> = {
 	snapshot: Effect.die("eligibility reads only the snapshot"),
 	changes: Stream.empty,
 	coordination: {
-		seatTurns: Effect.die("unread"),
-		holds: Effect.die("unread"),
 		exclusiveTurns: Effect.die("unread"),
 		exclusives: Effect.die("unread"),
 		paused: Effect.die("unread"),
-		take: unread,
-		giveBack: unread,
 		holdExclusive: unread,
 		releaseExclusive: unread,
 		pause: unread,
@@ -204,7 +200,7 @@ const stepSketch: Gen<StepSketch> = (source) => ({
 	kind: source.draw(boolean) ? "Work" : "Free",
 	claim: source.draw(
 		option((s) => ({
-			attempt: s.draw(int(1, 3)),
+			attempt: s.draw(int(0, 2)),
 			until: s.draw(offset),
 			end: s.draw(
 				option(
@@ -366,15 +362,14 @@ const built = (w: World) =>
 			(a, b) => a.key === b.key
 		)
 		const holdersStep = yield* startedStep(dead, 0)
-		const holds: ReadonlyArray<HoldRow> = yield* Effect.forEach(w.holds, (h, seat) =>
-			Effect.map(holderOf(holdersStep, seat + 1, seat), (holder): HoldRow => ({
-				resource: "Pool",
-				seat: BigInt(seat),
-				turn: 0n,
-				holder,
-				until: at(h.until)
-			}))
-		)
+		const holds: ReadonlyArray<HoldRow> = Arr.map(w.holds, (h, seat): HoldRow => ({
+			resource: "Pool",
+			seat: BigInt(seat),
+			step: holdersStep,
+			root: dead,
+			attempt: BigInt(seat),
+			until: at(h.until)
+		}))
 		const snapshot: Snapshot<never> = {
 			steps,
 			claims,
@@ -482,7 +477,7 @@ const specified = (
 		if (finishes && blocked) {
 			return []
 		}
-		const attempt = Option.match(latest, { onNone: () => 1, onSome: (c) => Number(c.attempt) + 1 })
+		const attempt = Option.match(latest, { onNone: () => 0, onSome: (c) => Number(c.attempt) + 1 })
 		return [{ step: p.step, kind: p.runner.kind, attempt, age: ageOf(p.scope), due, fenced }]
 	})
 	const liveHolds = Arr.filter(snapshot.holds, (h) => h.until >= now).length
@@ -834,14 +829,11 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 							assert.isAtMost(rung, rungMillis(l.spent + 1))
 							const ladder = yield* rootScope(flowName, "Run", "ladder")
 							const step = yield* startedStep(ladder, 0)
-							const claims: ReadonlyArray<ClaimRow> = yield* Effect.forEach(l.claims, (_, i) =>
-								Effect.map(holderOf(step, i + 1, i), (holder): ClaimRow => ({
-									step,
-									attempt: BigInt(i + 1),
-									holder,
-									until: instantOf(0)
-								}))
-							)
+							const claims: ReadonlyArray<ClaimRow> = Arr.map(l.claims, (_, i): ClaimRow => ({
+								step,
+								attempt: BigInt(i + 1),
+								until: instantOf(0)
+							}))
 							const retries: ReadonlyArray<RetryRow> = Arr.flatMap(l.claims, (cl, i) =>
 								Option.toArray(
 									Option.flatMap(cl.ended, (ended) =>

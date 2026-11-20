@@ -19,12 +19,11 @@ import {
 } from "@bjornpagen/den/runtime/identity"
 import type {
 	FlowNeeds,
-	HoldRow,
 	Admission,
 	Ledger,
 	RootRunner,
 	ScopeView,
-	SeatTurn,
+	SeatAt,
 	Snapshot,
 	Spawned
 } from "@bjornpagen/den/runtime/ledger"
@@ -102,26 +101,10 @@ const pausableOf = (
 	)
 const resourceOf = (name: string): Option.Option<(typeof FanResource)["handles"][number]> =>
 	Arr.findFirst(FanResource.handles, (handle) => handle === name)
-const seatTurnsOf = (turns: ReadonlyArray<SeatTurn>) =>
-	Arr.flatMap(turns, (turn) =>
+const holdsOf = (seats: ReadonlyArray<SeatAt>) =>
+	Arr.flatMap(seats, (taken) =>
 		Option.toArray(
-			Option.map(resourceOf(turn.resource), (resource) => ({
-				resource,
-				seat: turn.seat,
-				turn: turn.turn
-			}))
-		)
-	)
-const holdsOf = (holds: ReadonlyArray<HoldRow>) =>
-	Arr.flatMap(holds, (hold) =>
-		Option.toArray(
-			Option.map(resourceOf(hold.resource), (resource) => ({
-				resource,
-				seat: hold.seat,
-				turn: hold.turn,
-				holder: hold.holder,
-				until: hold.until
-			}))
+			Option.map(resourceOf(taken.resource), (resource) => ({ resource, seat: taken.seat }))
 		)
 	)
 
@@ -277,41 +260,9 @@ export const fanLedger = (h: FanHandles) => {
 			)
 	}
 	const coordination: Ledger<never>["coordination"] = {
-		seatTurns: Effect.map(
-			settled(h.coordinator.fanSeatTurns.once({ params: {}, facts: {} })),
-			(rows) =>
-				Arr.map(rowsOf(rows), (row) => ({ resource: row.resource, seat: row.seat, turn: row.turn }))
-		),
-		holds: Effect.map(settled(h.coordinator.fanHolds.once({ params: {}, facts: {} })), (rows) =>
-			Arr.map(rowsOf(rows), (row) => ({
-				resource: row.resource,
-				seat: row.seat,
-				turn: row.turn,
-				holder: row.holder,
-				until: row.until
-			}))
-		),
 		exclusiveTurns: Effect.succeed([]),
 		exclusives: Effect.succeed([]),
 		paused: pauseChains.live,
-		take: (lapsed, taken) =>
-			Effect.asVoid(
-				settled(
-					h.coordinator.fanTake.once({
-						params: {},
-						facts: { insert: { FanFreed: seatTurnsOf(lapsed), FanHold: holdsOf(taken) } }
-					})
-				)
-			),
-		giveBack: (holds) =>
-			Effect.asVoid(
-				settled(
-					h.coordinator.fanGiveBack.once({
-						params: {},
-						facts: { insert: { FanFreed: seatTurnsOf(holds) } }
-					})
-				)
-			),
 		holdExclusive: () => Effect.void,
 		releaseExclusive: () => Effect.void,
 		pause: (target) => Effect.flatMap(pausableOf(target), pauseIn(pauseChains)),
@@ -564,6 +515,7 @@ export const fanLedger = (h: FanHandles) => {
 		authenticated: Effect.asVoid(
 			settled(h.commits.fanAuthenticated.once({ params: {}, facts: {} }))
 		),
+		holds: Effect.map(settled(h.den.fanHolds.once({ params: {}, facts: {} })), rowsOf),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.fanStepOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => ({
@@ -641,14 +593,46 @@ export const fanLedger = (h: FanHandles) => {
 			h.den.fanFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
 		claim: (row) =>
-			Effect.map(
-				settled(h.den.fanClaim.once({ params: {}, facts: { insert: { FanClaim: [row] } } })),
-				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
+			Effect.flatMap(
+				settled(
+					h.den.fanClaim.once({
+						params: {},
+						facts: {
+							insert: {
+								FanClaim: [
+									{ step: row.step, root: row.root, until: row.until, holds: holdsOf(row.seats) }
+								],
+								FanEnded: row.lapsed
+							}
+						}
+					})
+				),
+				(outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)
 			),
 		retry: (row) =>
-			settled(h.den.fanRetry.once({ params: {}, facts: { insert: { FanRetry: [row] } } })),
+			settled(
+				h.den.fanRetry.once({
+					params: {},
+					facts: {
+						insert: {
+							FanEnded: [{ step: row.step, root: row.root, attempt: row.attempt }],
+							FanRetry: [row]
+						}
+					}
+				})
+			),
 		fence: (row) =>
-			settled(h.den.fanFence.once({ params: {}, facts: { insert: { FanFenced: [row] } } })),
+			settled(
+				h.den.fanFence.once({
+					params: {},
+					facts: {
+						insert: {
+							FanEnded: [{ step: row.step, root: row.root, attempt: row.attempt }],
+							FanFenced: [row]
+						}
+					}
+				})
+			),
 		refuse: ({ step, root, attempt }, law) =>
 			settled(
 				h.den.fanRefuse.once({
@@ -743,7 +727,7 @@ export const fanLedger = (h: FanHandles) => {
 				signals(h.den.fanPending.watch({ params: {}, facts: {} })),
 				signals(h.den.fanRequested.watch({ params: {}, facts: {} })),
 				signals(h.den.fanRunning.watch({ params: {}, facts: {} })),
-				signals(h.coordinator.fanHolds.watch({ params: {}, facts: {} })),
+				signals(h.den.fanHolds.watch({ params: {}, facts: {} })),
 				signals(h.coordinator.fanPausedAll.watch({ params: {}, facts: {} }))
 			],
 			{ concurrency: "unbounded" }

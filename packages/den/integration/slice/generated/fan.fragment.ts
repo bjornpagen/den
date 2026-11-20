@@ -1,4 +1,4 @@
-import { DenHolder, DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
+import { DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Fan to; `den generate` writes it, and nothing edits it. */
 import {
 	check,
@@ -6,14 +6,17 @@ import {
 	closedId,
 	contained,
 	derived,
+	drawn,
+	fin,
 	fragment,
 	key,
 	natural,
 	on,
+	ordered,
+	place,
 	pg,
 	pred,
 	query,
-	race,
 	relation,
 	retirable,
 	retirement,
@@ -75,9 +78,14 @@ export const FanFinish = relation("FanFinish", { scope: DenScope, step: DenStep,
 ])
 export const FanClaim = relation(
 	"FanClaim",
-	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant, root: DenScope },
-	["step", "attempt", "root"]
+	{ step: DenStep, attempt: place, until: DenInstant, holds: drawn(natural), root: DenScope },
+	["step", "root", "attempt"]
 )
+export const FanEnded = relation("FanEnded", { step: DenStep, attempt: natural, root: DenScope }, [
+	"step",
+	"attempt",
+	"root"
+])
 export const FanRetry = relation(
 	"FanRetry",
 	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean, root: DenScope },
@@ -128,21 +136,17 @@ export const FanSquareOutput = relation(
 	{ step: DenStep, square: pg.bigint, root: DenScope },
 	["step", "root"]
 )
-export const FanHold = relation(
+const FanHold = relation(
 	"FanHold",
 	{
+		step: DenStep,
+		attempt: natural,
+		at: drawn(natural),
 		resource: closedId(FanResource),
 		seat: natural,
-		turn: natural,
-		holder: DenHolder,
-		until: DenInstant
+		root: DenScope
 	},
-	["resource", "seat", "turn"]
-)
-export const FanFreed = relation(
-	"FanFreed",
-	{ resource: closedId(FanResource), seat: natural, turn: natural },
-	["resource", "seat", "turn"]
+	["step", "root", "attempt", "at"]
 )
 export const FanPaused = relation("FanPaused", { target: closedId(FanPausable), turn: natural }, [
 	"target",
@@ -172,6 +176,7 @@ export const fanGraph = fragment(
 		FanStartScope,
 		FanFinish,
 		FanClaim,
+		FanEnded,
 		FanRetry,
 		FanFenced,
 		FanResult,
@@ -183,7 +188,8 @@ export const fanGraph = fragment(
 		FanSquareInput,
 		FanBatchInput,
 		FanFanRunInput,
-		FanSquareOutput
+		FanSquareOutput,
+		FanHold
 	],
 	[
 		contained(on(FanWithin, "scope", "root"), on(FanScope, "scope", "root")),
@@ -202,19 +208,18 @@ export const fanGraph = fragment(
 		contained(on(FanFinish, "step", "root"), on(FanStep, "step", "root")),
 		key(on(FanFinish, "step", "root")),
 		contained(on(FanClaim, "step", "root"), on(FanStep, "step", "root")),
-		race(FanClaim),
-		check("AttemptFromOne", FanClaim, (row) => row.ge(row.attempt, 1n)),
+		contained(on(FanEnded, "step", "attempt", "root"), on(FanClaim, "step", "attempt", "root")),
 		contained(
 			on(
-				select(FanClaim, (row) => row.ge(row.attempt, 2n)),
+				select(FanClaim, (row) => row.ge(row.attempt, 1n)),
 				"step",
 				pred("attempt"),
 				"root"
 			),
-			on(FanClaim, "step", "attempt", "root")
+			on(FanEnded, "step", "attempt", "root")
 		),
-		contained(on(FanRetry, "step", "attempt", "root"), on(FanClaim, "step", "attempt", "root")),
-		contained(on(FanFenced, "step", "attempt", "root"), on(FanClaim, "step", "attempt", "root")),
+		contained(on(FanRetry, "step", "attempt", "root"), on(FanEnded, "step", "attempt", "root")),
+		contained(on(FanFenced, "step", "attempt", "root"), on(FanEnded, "step", "attempt", "root")),
 		contained(on(FanResult, "step", "root"), on(FanStep, "step", "root")),
 		contained(on(FanHeld, "step", "attempt", "root"), on(FanClaim, "step", "attempt", "root")),
 		contained(on(FanHeld, "step", "root"), on(FanResult, "step", "root")),
@@ -261,6 +266,7 @@ export const fanGraph = fragment(
 		),
 		contained(on(FanSquareOutput, "step", "root"), on(FanSquareInput, "step", "root")),
 		contained(on(FanSquareOutput, "step", "root"), on(FanDone, "step", "root")),
+		ordered(on(FanHold, "step", "root", "attempt", "at"), fin(FanClaim, "holds")),
 		retirable(FanRoot, [
 			on(FanScope, "root"),
 			on(FanWithin, "root"),
@@ -271,6 +277,7 @@ export const fanGraph = fragment(
 			on(FanStartScope, "root"),
 			on(FanFinish, "root"),
 			on(FanClaim, "root"),
+			on(FanEnded, "root"),
 			on(FanRetry, "root"),
 			on(FanFenced, "root"),
 			on(FanResult, "root"),
@@ -282,12 +289,13 @@ export const fanGraph = fragment(
 			on(FanSquareInput, "root"),
 			on(FanBatchInput, "root"),
 			on(FanFanRunInput, "root"),
-			on(FanSquareOutput, "root")
+			on(FanSquareOutput, "root"),
+			on(FanHold, "root")
 		])
 	]
 )
 
-/** The flow's coordination group: its rosters, its seat counts, and its chains of holds, exclusivity seats and pauses, which den's coordinator role holds whole. */
+/** The flow's coordination group: its rosters, its seat counts, and its chains of exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const fanCoordination = fragment(
 	[
 		FanKind,
@@ -297,38 +305,34 @@ export const fanCoordination = fragment(
 		FanPausable,
 		FanResource,
 		FanSeats,
-		FanHold,
-		FanFreed,
 		FanPaused,
 		FanResumed
 	],
 	[
-		contained(on(FanFreed, "resource", "seat", "turn"), on(FanHold, "resource", "seat", "turn")),
-		contained(
-			on(FanHold, "resource", "seat", pred("turn")),
-			on(FanFreed, "resource", "seat", "turn")
-		),
 		contained(on(FanResumed, "target", "turn"), on(FanPaused, "target", "turn")),
 		contained(on(FanPaused, "target", pred("turn")), on(FanResumed, "target", "turn"))
 	]
 )
 
-/** The flow's live holds: each hold whose turn no free ended, which the coordinator role reads as the seats' holders. */
+/** The flow's live holds: each hold whose claim's attempt has neither ended nor held its step's result, with its claim's lease, which den's role reads as the seats' holders. */
 const FanLive = derived(
 	"FanLive",
-	query(fanCoordination).rule((r) => {
-		const { resource, seat, turn, holder, until } = v(FanHold, "fanHold")
+	query(fanGraph).rule((r) => {
+		const { step, root, attempt, resource, seat } = v(FanHold, "fanHold")
+		const { until } = v(FanClaim, "fanClaim")
 		return r
-			.match(FanHold, { resource, seat, turn, holder, until })
-			.where(r.not(FanFreed, { resource, seat, turn }))
-			.find({ resource, seat, turn, holder, until })
+			.match(FanHold, { step, root, attempt, resource, seat })
+			.match(FanClaim, { step, root, attempt, until })
+			.where(r.not(FanEnded, { step, root, attempt }), r.not(FanHeld, { step, root, attempt }))
+			.find({ resource, seat, step, root, attempt, until })
 	})
 )
 
-/** The flow's seat level: its live holds, each held below its resource's count. A fragment declares no derived relation, so the schema that lists `fanCoordination` states these on a level over itself, `schema.extend(listing, name, [...fanSeatLevel.relations], [...fanSeatLevel.laws])`. */
+/** The flow's seat level: its live holds, at most one a seat, each held below its resource's count. A fragment declares no derived relation, so the schema that lists `fanGraph` states these on a level over itself, `schema.extend(listing, name, [...fanSeatLevel.relations], [...fanSeatLevel.laws])`. */
 export const fanSeatLevel = {
 	relations: [FanLive],
 	laws: [
+		key(on(FanLive, "resource", "seat")),
 		check("FanSeatBelowCount", FanLive, (row) =>
 			row.lt(row.seat, FanSeats.at("seats", row.resource))
 		)

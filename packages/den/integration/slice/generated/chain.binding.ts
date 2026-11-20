@@ -275,13 +275,9 @@ export const chainLedger = (h: ChainHandles) => {
 			)
 	}
 	const coordination: Ledger<never>["coordination"] = {
-		seatTurns: Effect.succeed([]),
-		holds: Effect.succeed([]),
 		exclusiveTurns: Effect.succeed([]),
 		exclusives: Effect.succeed([]),
 		paused: pauseChains.live,
-		take: () => Effect.void,
-		giveBack: () => Effect.void,
 		holdExclusive: () => Effect.void,
 		releaseExclusive: () => Effect.void,
 		pause: (target) => Effect.flatMap(pausableOf(target), pauseIn(pauseChains)),
@@ -691,6 +687,7 @@ export const chainLedger = (h: ChainHandles) => {
 		authenticated: Effect.asVoid(
 			settled(h.commits.chainAuthenticated.once({ params: {}, facts: {} }))
 		),
+		holds: Effect.succeed([]),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.chainStepOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => ({
@@ -753,14 +750,44 @@ export const chainLedger = (h: ChainHandles) => {
 			h.den.chainFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
 		claim: (row) =>
-			Effect.map(
-				settled(h.den.chainClaim.once({ params: {}, facts: { insert: { ChainClaim: [row] } } })),
-				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
+			Effect.flatMap(
+				settled(
+					h.den.chainClaim.once({
+						params: {},
+						facts: {
+							insert: {
+								ChainClaim: [{ step: row.step, root: row.root, until: row.until }],
+								ChainEnded: row.lapsed
+							}
+						}
+					})
+				),
+				(outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)
 			),
 		retry: (row) =>
-			settled(h.den.chainRetry.once({ params: {}, facts: { insert: { ChainRetry: [row] } } })),
+			settled(
+				h.den.chainRetry.once({
+					params: {},
+					facts: {
+						insert: {
+							ChainEnded: [{ step: row.step, root: row.root, attempt: row.attempt }],
+							ChainRetry: [row]
+						}
+					}
+				})
+			),
 		fence: (row) =>
-			settled(h.den.chainFence.once({ params: {}, facts: { insert: { ChainFenced: [row] } } })),
+			settled(
+				h.den.chainFence.once({
+					params: {},
+					facts: {
+						insert: {
+							ChainEnded: [{ step: row.step, root: row.root, attempt: row.attempt }],
+							ChainFenced: [row]
+						}
+					}
+				})
+			),
 		refuse: ({ step, root, attempt }, law) =>
 			settled(
 				h.den.chainRefuse.once({

@@ -21,7 +21,7 @@ constants with their evidence beside the code they bound (`src/runtime/turn.ts`,
 | `src/lower/fragment.ts` | a flow to its fragment as data (`Lowered`): rosters, contracts, relations, laws, and the kinds, joins and edges the printer reads |
 | `src/lower/print.ts`, `generate.ts` | the fragment, the programs and the binding printed as three TypeScript modules the app commits (`den generate`) |
 | `src/lower/merge.ts` | den's clash check: the app's relations and a fragment merged, a shared name refused |
-| `src/lower/keys.ts` | den's contracts (`DenStep`, `DenScope`, `DenHolder`, `DenInstant`) and `Text`, which an app's relation referencing den's facts types its column by |
+| `src/lower/keys.ts` | den's contracts (`DenStep`, `DenScope`, `DenExclusive`, `DenInstant`) and `Text`, which an app's relation referencing den's facts types its column by |
 | `src/runtime/identity.ts` | derived identity: the SHA-256 of a key's parts (Effect's `Digest`), grizzle's `sha256` |
 | `src/runtime/ledger.ts` | the ledger port, in den's own types, that a flow's generated binding fills |
 | `src/runtime/turn.ts` | one turn (`serve`), the claim (`claimed`), a kind's runner, endings from `CallError`, settling a scope (`settle`), a start's wakes (`begin`), one invocation under a budget (`invoke`) |
@@ -61,7 +61,7 @@ declares one), `POutcome` (`done`, `failed`); relations `PScope` (every scope of
 kind, its trigger's key and its instant), `PWithin` (a child scope: its parent and its kind), `PStep` (kind, owning
 scope, the instant its first attempt is due), `PStartStep`, `PStartScope` (a join's start edges, keyed by scope and
 ordinal; `PWithin` and `PStartScope` only where the flow declares a child scope), `PFinish`
-(scope → its finish step, the finish's key race), `PClaim` (step, attempt, holder, until), `PResult` (one per step,
+(scope → its finish step, the finish's key race), `PClaim` (step, its stamped attempt, until, and its holds' count), `PHold` (a claim's seats, its ordered family), `PEnded` (an attempt's end), `PResult` (one per step,
 done or failed), `PHeld` (the attempt whose commit holds the result), `PRefusal` (the law's id), `PExhausted`; per
 step kind `PKInput` and `PKOutput` (and `PKError` for a typed error), per join `PJInput`, per finish `PJFinishError`,
 per Option field a relation of its own, per declared read `PKNRead` (step, ordinal, the fields it delivers, and a
@@ -103,9 +103,9 @@ output into `select(PResult, outcome = done)`) certifies.
 3. **Every login that serves a read needs a live source**, even one that only calls `once`
    (`packages/grizzle/src/adapter/types/layer.ts:222`): the suites build `LiveSource.layer` for the installation with a
    credential that never connects.
-4. **Contracts of one definition share one domain**: `DenStep`, `DenHolder` (and `DenScope`) are one PostgreSQL domain
+4. **Contracts of one definition share one domain**: `DenStep`, `DenScope` and `DenExclusive` are one PostgreSQL domain
    over `sha256`'s text, told apart only by TypeScript's brands. As documented, not a defect; recorded because the database cannot
-   tell a holder from a step.
+   tell a scope from a step.
 5. **A role prefix is converted** (`m1` installs as `m_1__…`): take every name from `roleNameOf`, as the harness does.
 
 **Effect 4.1.4**
@@ -129,10 +129,10 @@ output into `select(PResult, outcome = done)`) certifies.
 
 ## Provisional, for the owner
 
-1. **Claim protocol.** A claim is an insert of `PClaim(step, attempt, holder, until)` keyed by `(step, attempt)`, a key
-   race certified READ COMMITTED; the holder is a fresh key per turn, so two claimers never meet as an identical row.
-   Attempts are gap-free from 1 by law, so a forged or stale wake for an attempt whose predecessor was never claimed
-   loses. A result is `PResult` plus `PHeld(step, attempt)`, keyed by step: whichever attempt commits first holds the
+1. **Claim protocol.** A claim is an insert of `PClaim(step, until)` whose attempt the database stamps, its place among
+   the step's claims from 0, with its seats nested under it, one write that reads its attempt back; a claim after the
+   first follows its predecessor's `PEnded`, so a second claimant is refused whole and a forged or stale wake for an
+   attempt that is not the step's next loses. A result is `PResult` plus `PHeld(step, attempt)`, keyed by step: whichever attempt commits first holds the
    step, and any later commit, stale or fresh, is refused on that key and ends `lost`, its writes rolled back with it.
    Correctness rests on keys alone, never on a clock (`stale.test.ts` runs the stale claimer with a skewed clock).
 2. **Width.** Enforced by the census (at most a lane's width minus its standing leases is rung); no law bounds it yet.
@@ -192,10 +192,10 @@ PostgreSQL (`pnpm test:network`, six files, each its own database):
   batch's, an empty batch included; a rerun changes nothing.
 - `stale.test.ts`: a stale claimer, in either commit order, ends `lost`; the winner's attempt is held; a forged attempt
   loses its claim.
-- `claim.test.ts`: two claimers of one attempt, every interleaving of their moves (`interleave`, `every`): one claim,
-  one refusal, one result.
+- `claim.test.ts`: two claimers of a step's first attempt, every interleaving of their moves (`interleave`, `every`):
+  one claim at attempt 0, the other refused as a race lost.
 - `census.test.ts`: every wake dropped, and a holder dead after its claim: ticks heal the run, never ringing a standing
-  lease, and the dead holder's step is held by attempt 2.
+  lease, and the dead holder's step is claimed again at attempt 1, its lapse recorded in that claim.
 - `certification.test.ts`: as above.
 
 `pnpm check`: 20 of 21 tasks pass; `dead-code` fails only on the fallow finding above.

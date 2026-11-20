@@ -1,7 +1,6 @@
-import { DenHolder, DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
+import { DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Chain to; `den generate` writes it, and nothing edits it. */
 import {
-	check,
 	closed,
 	closedId,
 	contained,
@@ -10,9 +9,9 @@ import {
 	key,
 	natural,
 	on,
+	place,
 	pg,
 	pred,
-	race,
 	relation,
 	retirable,
 	retirement,
@@ -71,7 +70,12 @@ export const ChainFinish = relation(
 )
 export const ChainClaim = relation(
 	"ChainClaim",
-	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant, root: DenScope },
+	{ step: DenStep, attempt: place, until: DenInstant, root: DenScope },
+	["step", "root", "attempt"]
+)
+export const ChainEnded = relation(
+	"ChainEnded",
+	{ step: DenStep, attempt: natural, root: DenScope },
 	["step", "attempt", "root"]
 )
 export const ChainRetry = relation(
@@ -183,6 +187,7 @@ export const chainGraph = fragment(
 		ChainStartStep,
 		ChainFinish,
 		ChainClaim,
+		ChainEnded,
 		ChainRetry,
 		ChainFenced,
 		ChainResult,
@@ -212,21 +217,20 @@ export const chainGraph = fragment(
 		contained(on(ChainFinish, "step", "root"), on(ChainStep, "step", "root")),
 		key(on(ChainFinish, "step", "root")),
 		contained(on(ChainClaim, "step", "root"), on(ChainStep, "step", "root")),
-		race(ChainClaim),
-		check("AttemptFromOne", ChainClaim, (row) => row.ge(row.attempt, 1n)),
+		contained(on(ChainEnded, "step", "attempt", "root"), on(ChainClaim, "step", "attempt", "root")),
 		contained(
 			on(
-				select(ChainClaim, (row) => row.ge(row.attempt, 2n)),
+				select(ChainClaim, (row) => row.ge(row.attempt, 1n)),
 				"step",
 				pred("attempt"),
 				"root"
 			),
-			on(ChainClaim, "step", "attempt", "root")
+			on(ChainEnded, "step", "attempt", "root")
 		),
-		contained(on(ChainRetry, "step", "attempt", "root"), on(ChainClaim, "step", "attempt", "root")),
+		contained(on(ChainRetry, "step", "attempt", "root"), on(ChainEnded, "step", "attempt", "root")),
 		contained(
 			on(ChainFenced, "step", "attempt", "root"),
-			on(ChainClaim, "step", "attempt", "root")
+			on(ChainEnded, "step", "attempt", "root")
 		),
 		contained(on(ChainResult, "step", "root"), on(ChainStep, "step", "root")),
 		contained(on(ChainHeld, "step", "attempt", "root"), on(ChainClaim, "step", "attempt", "root")),
@@ -287,6 +291,7 @@ export const chainGraph = fragment(
 			on(ChainStartStep, "root"),
 			on(ChainFinish, "root"),
 			on(ChainClaim, "root"),
+			on(ChainEnded, "root"),
 			on(ChainRetry, "root"),
 			on(ChainFenced, "root"),
 			on(ChainResult, "root"),
@@ -307,7 +312,7 @@ export const chainGraph = fragment(
 	]
 )
 
-/** The flow's coordination group: its rosters, its seat counts, and its chains of holds, exclusivity seats and pauses, which den's coordinator role holds whole. */
+/** The flow's coordination group: its rosters, its seat counts, and its chains of exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const chainCoordination = fragment(
 	[
 		ChainKind,

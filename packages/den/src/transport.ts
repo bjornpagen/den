@@ -24,8 +24,8 @@ export type StepText = typeof StepText.Type
 export const ScopeText = DigestText.pipe(Schema.brand("DenScope"))
 export type ScopeText = typeof ScopeText.Type
 
-/** The claim attempt a wake rings for: an integer of at least 1. */
-export const AttemptNumber = Schema.Int.check(Schema.isGreaterThanOrEqualTo(1)).pipe(
+/** The claim attempt a wake rings for: its place among the step's claims, from 0. */
+export const AttemptNumber = Schema.Int.check(Schema.isGreaterThanOrEqualTo(0)).pipe(
 	Schema.brand("den/Attempt")
 )
 export type AttemptNumber = typeof AttemptNumber.Type

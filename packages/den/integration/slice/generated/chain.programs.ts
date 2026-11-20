@@ -18,6 +18,7 @@ import {
 	ChainStartStep,
 	ChainFinish,
 	ChainClaim,
+	ChainEnded,
 	ChainRetry,
 	ChainFenced,
 	ChainResult,
@@ -56,6 +57,7 @@ export const ChainDen = role(
 			"ChainStartStep",
 			"ChainFinish",
 			"ChainClaim",
+			"ChainEnded",
 			"ChainRetry",
 			"ChainFenced",
 			"ChainResult",
@@ -119,23 +121,17 @@ export const chainDenPrograms = Object.freeze({
 	),
 	chainClaim: ChangeSet.empty(chainGraph)
 		.insert(ChainClaim, [])
+		.insert(ChainEnded, [])
 		.read("held", (delta) =>
-			query(chainGraph)
-				.rule((r) => {
-					const { step, attempt, holder } = v(delta.added(ChainClaim), "added")
-					return r
-						.match(delta.added(ChainClaim), { step, attempt, holder })
-						.find({ step, attempt, holder })
-				})
-				.rule((r) => {
-					const { step, attempt, holder } = v(delta.met(ChainClaim), "met")
-					return r
-						.match(delta.met(ChainClaim), { step, attempt, holder })
-						.find({ step, attempt, holder })
-				})
+			query(chainGraph).rule((r) => {
+				const { step, root, attempt } = v(delta.added(ChainClaim), "added")
+				return r
+					.match(delta.added(ChainClaim), { step, root, attempt })
+					.find({ step, root, attempt })
+			})
 		),
-	chainRetry: ChangeSet.empty(chainGraph).insert(ChainRetry, []),
-	chainFence: ChangeSet.empty(chainGraph).insert(ChainFenced, []),
+	chainRetry: ChangeSet.empty(chainGraph).insert(ChainEnded, []).insert(ChainRetry, []),
+	chainFence: ChangeSet.empty(chainGraph).insert(ChainEnded, []).insert(ChainFenced, []),
 	chainRefuse: ChangeSet.empty(chainGraph)
 		.insert(ChainResult, [])
 		.insert(ChainFailed, [])
@@ -217,11 +213,11 @@ export const chainDenPrograms = Object.freeze({
 			})
 	),
 	chainClaimsOf: query(chainGraph).rule((r) => {
-		const { step, attempt, holder, until } = v(ChainClaim, "claim")
+		const { step, attempt, until } = v(ChainClaim, "claim")
 		return r
-			.match(ChainClaim, { step, attempt, holder, until })
+			.match(ChainClaim, { step, attempt, until })
 			.where(r.eq(step, r.param("step", ChainStep.fields.step)))
-			.find({ step, attempt, holder, until })
+			.find({ step, attempt, until })
 	}),
 	chainRetriesOf: query(chainGraph).rule((r) => {
 		const { step, attempt, at, spent } = v(ChainRetry, "retry")

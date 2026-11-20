@@ -1,14 +1,6 @@
-import {
-	DenExclusive,
-	DenHolder,
-	DenInstant,
-	DenScope,
-	DenStep,
-	Text
-} from "@bjornpagen/den/lower/keys"
+import { DenExclusive, DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Sync to; `den generate` writes it, and nothing edits it. */
 import {
-	check,
 	closed,
 	closedId,
 	contained,
@@ -16,9 +8,9 @@ import {
 	key,
 	natural,
 	on,
+	place,
 	pg,
 	pred,
-	race,
 	relation,
 	retirable,
 	retirement,
@@ -75,7 +67,12 @@ export const SyncFinish = relation(
 )
 export const SyncClaim = relation(
 	"SyncClaim",
-	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant, root: DenScope },
+	{ step: DenStep, attempt: place, until: DenInstant, root: DenScope },
+	["step", "root", "attempt"]
+)
+export const SyncEnded = relation(
+	"SyncEnded",
+	{ step: DenStep, attempt: natural, root: DenScope },
 	["step", "attempt", "root"]
 )
 export const SyncRetry = relation(
@@ -178,6 +175,7 @@ export const syncGraph = fragment(
 		SyncStartStep,
 		SyncFinish,
 		SyncClaim,
+		SyncEnded,
 		SyncRetry,
 		SyncFenced,
 		SyncResult,
@@ -206,19 +204,18 @@ export const syncGraph = fragment(
 		contained(on(SyncFinish, "step", "root"), on(SyncStep, "step", "root")),
 		key(on(SyncFinish, "step", "root")),
 		contained(on(SyncClaim, "step", "root"), on(SyncStep, "step", "root")),
-		race(SyncClaim),
-		check("AttemptFromOne", SyncClaim, (row) => row.ge(row.attempt, 1n)),
+		contained(on(SyncEnded, "step", "attempt", "root"), on(SyncClaim, "step", "attempt", "root")),
 		contained(
 			on(
-				select(SyncClaim, (row) => row.ge(row.attempt, 2n)),
+				select(SyncClaim, (row) => row.ge(row.attempt, 1n)),
 				"step",
 				pred("attempt"),
 				"root"
 			),
-			on(SyncClaim, "step", "attempt", "root")
+			on(SyncEnded, "step", "attempt", "root")
 		),
-		contained(on(SyncRetry, "step", "attempt", "root"), on(SyncClaim, "step", "attempt", "root")),
-		contained(on(SyncFenced, "step", "attempt", "root"), on(SyncClaim, "step", "attempt", "root")),
+		contained(on(SyncRetry, "step", "attempt", "root"), on(SyncEnded, "step", "attempt", "root")),
+		contained(on(SyncFenced, "step", "attempt", "root"), on(SyncEnded, "step", "attempt", "root")),
 		contained(on(SyncResult, "step", "root"), on(SyncStep, "step", "root")),
 		contained(on(SyncHeld, "step", "attempt", "root"), on(SyncClaim, "step", "attempt", "root")),
 		contained(on(SyncHeld, "step", "root"), on(SyncResult, "step", "root")),
@@ -283,6 +280,7 @@ export const syncGraph = fragment(
 			on(SyncStartStep, "root"),
 			on(SyncFinish, "root"),
 			on(SyncClaim, "root"),
+			on(SyncEnded, "root"),
 			on(SyncRetry, "root"),
 			on(SyncFenced, "root"),
 			on(SyncResult, "root"),
@@ -301,7 +299,7 @@ export const syncGraph = fragment(
 	]
 )
 
-/** The flow's coordination group: its rosters, its seat counts, and its chains of holds, exclusivity seats and pauses, which den's coordinator role holds whole. */
+/** The flow's coordination group: its rosters, its seat counts, and its chains of exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const syncCoordination = fragment(
 	[
 		SyncKind,

@@ -19,6 +19,7 @@ import {
 	FanStartScope,
 	FanFinish,
 	FanClaim,
+	FanEnded,
 	FanRetry,
 	FanFenced,
 	FanResult,
@@ -31,8 +32,6 @@ import {
 	FanBatchInput,
 	FanFanRunInput,
 	FanSquareOutput,
-	FanHold,
-	FanFreed,
 	FanPaused,
 	FanResumed,
 	fanGraph,
@@ -46,15 +45,13 @@ export const FanDen = role(
 	"fan_den",
 	{
 		...fanGraph.relations,
-		FanHold,
-		FanFreed,
 		FanPaused,
 		FanResumed,
 		FanLive: query(App).rule((r) => {
-			const { resource, seat, turn, holder, until } = v(App.relations.FanLive, "live")
+			const { resource, seat, step, root, attempt, until } = v(App.relations.FanLive, "live")
 			return r
-				.match(App.relations.FanLive, { resource, seat, turn, holder, until })
-				.find({ resource, seat, turn, holder, until })
+				.match(App.relations.FanLive, { resource, seat, step, root, attempt, until })
+				.find({ resource, seat, step, root, attempt, until })
 		})
 	},
 	{
@@ -69,6 +66,7 @@ export const FanDen = role(
 			"FanStartScope",
 			"FanFinish",
 			"FanClaim",
+			"FanEnded",
 			"FanRetry",
 			"FanFenced",
 			"FanResult",
@@ -79,7 +77,8 @@ export const FanDen = role(
 			"FanExhausted",
 			"FanSquareInput",
 			"FanBatchInput",
-			"FanFanRunInput"
+			"FanFanRunInput",
+			"FanHold"
 		]
 	}
 )
@@ -95,18 +94,16 @@ export const FanCoordinator = role(
 		FanOutcome,
 		FanPausable,
 		FanResource,
-		FanHold,
-		FanFreed,
 		FanPaused,
 		FanResumed,
 		FanLive: query(App).rule((r) => {
-			const { resource, seat, turn, holder, until } = v(App.relations.FanLive, "live")
+			const { resource, seat, step, root, attempt, until } = v(App.relations.FanLive, "live")
 			return r
-				.match(App.relations.FanLive, { resource, seat, turn, holder, until })
-				.find({ resource, seat, turn, holder, until })
+				.match(App.relations.FanLive, { resource, seat, step, root, attempt, until })
+				.find({ resource, seat, step, root, attempt, until })
 		})
 	},
-	{ insert: ["FanHold", "FanFreed", "FanPaused", "FanResumed"] }
+	{ insert: ["FanPaused", "FanResumed"] }
 )
 
 const fanPendingRead = query(FanDen).rule((r) => {
@@ -137,23 +134,23 @@ export const fanDenPrograms = Object.freeze({
 	),
 	fanClaim: ChangeSet.empty(fanGraph)
 		.insert(FanClaim, [])
+		.insert(FanEnded, [])
 		.read("held", (delta) =>
-			query(fanGraph)
-				.rule((r) => {
-					const { step, attempt, holder } = v(delta.added(FanClaim), "added")
-					return r
-						.match(delta.added(FanClaim), { step, attempt, holder })
-						.find({ step, attempt, holder })
-				})
-				.rule((r) => {
-					const { step, attempt, holder } = v(delta.met(FanClaim), "met")
-					return r
-						.match(delta.met(FanClaim), { step, attempt, holder })
-						.find({ step, attempt, holder })
-				})
+			query(fanGraph).rule((r) => {
+				const { step, root, attempt } = v(delta.added(FanClaim), "added")
+				return r.match(delta.added(FanClaim), { step, root, attempt }).find({ step, root, attempt })
+			})
 		),
-	fanRetry: ChangeSet.empty(fanGraph).insert(FanRetry, []),
-	fanFence: ChangeSet.empty(fanGraph).insert(FanFenced, []),
+	fanRetry: ChangeSet.empty(fanGraph).insert(FanEnded, []).insert(FanRetry, []),
+	fanFence: ChangeSet.empty(fanGraph).insert(FanEnded, []).insert(FanFenced, []),
+	fanHolds: deferrable(
+		query(FanDen).rule((r) => {
+			const { resource, seat, step, root, attempt, until } = v(FanDen.relations.FanLive, "live")
+			return r
+				.match(FanDen.relations.FanLive, { resource, seat, step, root, attempt, until })
+				.find({ resource, seat, step, root, attempt, until })
+		})
+	),
 	fanRefuse: ChangeSet.empty(fanGraph)
 		.insert(FanResult, [])
 		.insert(FanFailed, [])
@@ -244,11 +241,11 @@ export const fanDenPrograms = Object.freeze({
 			})
 	),
 	fanClaimsOf: query(fanGraph).rule((r) => {
-		const { step, attempt, holder, until } = v(FanClaim, "claim")
+		const { step, attempt, until } = v(FanClaim, "claim")
 		return r
-			.match(FanClaim, { step, attempt, holder, until })
+			.match(FanClaim, { step, attempt, until })
 			.where(r.eq(step, r.param("step", FanStep.fields.step)))
-			.find({ step, attempt, holder, until })
+			.find({ step, attempt, until })
 	}),
 	fanRetriesOf: query(fanGraph).rule((r) => {
 		const { step, attempt, at, spent } = v(FanRetry, "retry")
@@ -330,10 +327,10 @@ export const fanDenPrograms = Object.freeze({
 				return r.match(FanRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
 			}),
 			holds: query(FanDen).rule((r) => {
-				const { resource, seat, turn, holder, until } = v(FanDen.relations.FanLive, "live")
+				const { resource, seat, step, root, attempt, until } = v(FanDen.relations.FanLive, "live")
 				return r
-					.match(FanDen.relations.FanLive, { resource, seat, turn, holder, until })
-					.find({ resource, seat, turn, holder, until })
+					.match(FanDen.relations.FanLive, { resource, seat, step, root, attempt, until })
+					.find({ resource, seat, step, root, attempt, until })
 			}),
 			paused: query(FanDen).rule((r) => {
 				const { target, turn } = v(FanPaused, "fanPaused")
@@ -415,22 +412,6 @@ export const fanDenPrograms = Object.freeze({
 export const fanDenWorkload = workload(FanDen, fanDenPrograms)
 
 export const fanCoordinatorPrograms = Object.freeze({
-	fanTake: ChangeSet.empty(fanCoordination).insert(FanFreed, []).insert(FanHold, []),
-	fanGiveBack: ChangeSet.empty(fanCoordination).insert(FanFreed, []),
-	fanSeatTurns: deferrable(
-		query(fanCoordination).rule((r) => {
-			const { resource, seat, turn } = v(FanHold, "fanHold")
-			return r.match(FanHold, { resource, seat, turn }).find({ resource, seat, turn: r.max(turn) })
-		})
-	),
-	fanHolds: deferrable(
-		query(FanCoordinator).rule((r) => {
-			const { resource, seat, turn, holder, until } = v(FanCoordinator.relations.FanLive, "live")
-			return r
-				.match(FanCoordinator.relations.FanLive, { resource, seat, turn, holder, until })
-				.find({ resource, seat, turn, holder, until })
-		})
-	),
 	fanPause: ChangeSet.empty(fanCoordination).insert(FanPaused, []),
 	fanResume: ChangeSet.empty(fanCoordination).insert(FanResumed, []),
 	fanPauseTurns: deferrable(

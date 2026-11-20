@@ -15,9 +15,6 @@ export type StepKey = string & Brand.Brand<"DenStep">
 /** A scope's key: the ledger's `DenScope`. */
 export type ScopeKey = string & Brand.Brand<"DenScope">
 
-/** A claim's holder: one turn's own key, the ledger's `DenHolder`. */
-export type Holder = string & Brand.Brand<"DenHolder">
-
 /** An exclusivity seat's key: the digest of a scope kind and the key text its input names, the ledger's `DenExclusive`. */
 export type ExclusiveId = string & Brand.Brand<"DenExclusive">
 
@@ -27,7 +24,6 @@ export type Instant = bigint & Brand.Brand<"DenInstant">
 /** The claim behind each mint, unchecked: a value made here by its derivation is a key of its kind. */
 const derivedStep: (value: string) => asserts value is StepKey = () => undefined
 const derivedScope: (value: string) => asserts value is ScopeKey = () => undefined
-const derivedHolder: (value: string) => asserts value is Holder = () => undefined
 const derivedExclusive: (value: string) => asserts value is ExclusiveId = () => undefined
 const readInstant: (value: bigint) => asserts value is Instant = () => undefined
 
@@ -83,12 +79,5 @@ export const finishStep = (scope: ScopeKey) => Effect.map(derive(["finish", scop
 export const exclusiveId = (flow: string, kind: string, key: string) =>
 	Effect.map(derive(["exclusive", flow, kind, key]), (value) => {
 		derivedExclusive(value)
-		return value
-	})
-
-/** A claim's holder for one turn of `step` at `attempt`, from a nonce the caller draws, so two turns never share one. */
-export const holderOf = (step: StepKey, attempt: number, nonce: number) =>
-	Effect.map(derive(["holder", step, String(attempt), String(nonce)]), (value) => {
-		derivedHolder(value)
 		return value
 	})

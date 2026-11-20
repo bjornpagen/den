@@ -47,10 +47,9 @@
 			},
 			"assign_claim": {
 				"__assign_claim_fk_root_tccogfd3gj": "__assign_claim_in_assign_root_z5feykvdp7",
-				"__assign_claim_fk_step_pred_attempt_root_wmdynbkcix": "__assign_claim_attempt_in_assign_claim_qrqixlsueh",
+				"__assign_claim_fk_step_pred_attempt_root_xr7gdduz2s": "__assign_claim_attempt_in_assign_ended_a3zkqu56wo",
 				"__assign_claim_fk_step_root_i4wvemd6lc": "__assign_claim_in_assign_step_uek4h53dmu",
-				"__assign_claim_pk_gy4yhzk2me": "__assign_claim_pk_step_attempt_root_oi726e6bjm",
-				"attempt_from_one": "__assign_claim_check_attempt_from_one_xedytqz7p5"
+				"__assign_claim_pk_gy4yhzk2me": "__assign_claim_pk_step_root_attempt_rtogcowqsy"
 			},
 			"assign_decide_input": {
 				"__assign_decide_input_fk_root_2ru7zbrfcg": "__assign_decide_input_in_assign_root_w7swe2pp6t",
@@ -126,6 +125,11 @@
 				"__assign_done_pk_gzil7jvxpz": "__assign_done_pk_step_root_hcrbsmey5g",
 				"__rule_assign_done_in_assign_result_mccxlev75g": "__assign_done_in_assign_result_ugagfnjgmb"
 			},
+			"assign_ended": {
+				"__assign_ended_fk_root_snn64so4y5": "__assign_ended_in_assign_root_ikfhiaixad",
+				"__assign_ended_fk_step_attempt_root_6glu7zitw6": "__assign_ended_in_assign_claim_necjnxemyf",
+				"__assign_ended_pk_nriwwbcneu": "__assign_ended_pk_step_attempt_root_skgoihtoq5"
+			},
 			"assign_exhausted": {
 				"__assign_exhausted_fk_root_vljhubi73b": "__assign_exhausted_in_assign_root_s6626uv2w6",
 				"__assign_exhausted_fk_step_root_juabgscovy": "__assign_exhausted_in_assign_failed_ymmh35mjrj",
@@ -138,7 +142,7 @@
 			},
 			"assign_fenced": {
 				"__assign_fenced_fk_root_53vovdvcd2": "__assign_fenced_in_assign_root_afiyfxo7kl",
-				"__assign_fenced_fk_step_attempt_root_ycfgkdukim": "__assign_fenced_in_assign_claim_go64zljodm",
+				"__assign_fenced_fk_step_attempt_root_ibfrwtujam": "__assign_fenced_in_assign_ended_nsmkjnviir",
 				"__assign_fenced_pk_y6jyfviepa": "__assign_fenced_pk_step_attempt_root_ldp4a2glhr"
 			},
 			"assign_finish": {
@@ -176,7 +180,7 @@
 			},
 			"assign_retry": {
 				"__assign_retry_fk_root_g7cxz6uouh": "__assign_retry_in_assign_root_ebgrh5fdqa",
-				"__assign_retry_fk_step_attempt_root_ezozngsv5b": "__assign_retry_in_assign_claim_aoq5fzor3j",
+				"__assign_retry_fk_step_attempt_root_gsye2j667t": "__assign_retry_in_assign_ended_zzkutu7emb",
 				"__assign_retry_pk_4dcm5yzzhe": "__assign_retry_pk_step_attempt_root_fkntv36hey"
 			},
 			"assign_root": {
@@ -229,15 +233,19 @@
 			},
 			"chain_claim": {
 				"__chain_claim_fk_root_e4z56epu62": "__chain_claim_in_chain_root_6wnf2d4tj4",
-				"__chain_claim_fk_step_pred_attempt_root_hf2626wosn": "__chain_claim_attempt_in_chain_claim_eckzxzhb3x",
+				"__chain_claim_fk_step_pred_attempt_root_zhusgp55bz": "__chain_claim_attempt_in_chain_ended_z2gsixmfpg",
 				"__chain_claim_fk_step_root_dz35k5kajb": "__chain_claim_in_chain_step_egaldy2qd5",
-				"__chain_claim_pk_nrr2rn3gui": "__chain_claim_pk_step_attempt_root_kbfzbxtg5a",
-				"attempt_from_one": "__chain_claim_check_attempt_from_one_gr4ciwsbbc"
+				"__chain_claim_pk_nrr2rn3gui": "__chain_claim_pk_step_root_attempt_22iqxp46y4"
 			},
 			"chain_done": {
 				"__chain_done_fk_root_p5unbx53ay": "__chain_done_in_chain_root_thglcgxgmx",
 				"__chain_done_pk_tyyx2hmu3r": "__chain_done_pk_step_root_ozrhewz5pa",
 				"__rule_chain_done_in_chain_result_wo66ka6omy": "__chain_done_in_chain_result_hxnxjn4nw3"
+			},
+			"chain_ended": {
+				"__chain_ended_fk_root_mzyjkgh7kn": "__chain_ended_in_chain_root_dtiw4jqmrz",
+				"__chain_ended_fk_step_attempt_root_hqs5hboik5": "__chain_ended_in_chain_claim_4aopzwr2rx",
+				"__chain_ended_pk_wusc7vjjx6": "__chain_ended_pk_step_attempt_root_ljxiu5ymkp"
 			},
 			"chain_exhausted": {
 				"__chain_exhausted_fk_root_az7it7tady": "__chain_exhausted_in_chain_root_pdoz3v5sv7",
@@ -251,7 +259,7 @@
 			},
 			"chain_fenced": {
 				"__chain_fenced_fk_root_dpd2zsy45p": "__chain_fenced_in_chain_root_motrwu45ih",
-				"__chain_fenced_fk_step_attempt_root_2h5dov2hfr": "__chain_fenced_in_chain_claim_acfwxwyznu",
+				"__chain_fenced_fk_step_attempt_root_wtvf2kpo3y": "__chain_fenced_in_chain_ended_hntz6fyzv2",
 				"__chain_fenced_pk_wwbie4qq5k": "__chain_fenced_pk_step_attempt_root_4ffxwv64ht"
 			},
 			"chain_finish": {
@@ -327,7 +335,7 @@
 			},
 			"chain_retry": {
 				"__chain_retry_fk_root_mrtnq2ndso": "__chain_retry_in_chain_root_lq5eky5wnv",
-				"__chain_retry_fk_step_attempt_root_dgakh6chs4": "__chain_retry_in_chain_claim_mtg3xj2hgx",
+				"__chain_retry_fk_step_attempt_root_mwa5szmjq5": "__chain_retry_in_chain_ended_swfm7yjlhb",
 				"__chain_retry_pk_522nodru3s": "__chain_retry_pk_step_attempt_root_6bl3ljjvof"
 			},
 			"chain_root": {
@@ -380,15 +388,25 @@
 			},
 			"fan_claim": {
 				"__fan_claim_fk_root_t3hwth6mh7": "__fan_claim_in_fan_root_6fnoywylvg",
-				"__fan_claim_fk_step_pred_attempt_root_msshdcusww": "__fan_claim_attempt_in_fan_claim_afbpo2wrxj",
+				"__fan_claim_fk_step_pred_attempt_root_b62fsp2zir": "__fan_claim_attempt_in_fan_ended_xlylgapk2m",
 				"__fan_claim_fk_step_root_6jsjsejmab": "__fan_claim_in_fan_step_ulehmstrh5",
-				"__fan_claim_pk_e7zimqppco": "__fan_claim_pk_step_attempt_root_tdmfyy25yp",
-				"attempt_from_one": "__fan_claim_check_attempt_from_one_pagmo5a6sv"
+				"__fan_claim_fk_step_root_attempt_pred_holds_jqx7ma7cam": "__fan_hold_ordered_fan_claim_holds_xtypeg3ezw",
+				"__fan_claim_key_step_root_attempt_holds_iqkydblyix": "__fan_claim_pk_step_root_attempt_crthgnfxsg",
+				"__fan_claim_pk_e7zimqppco": "__fan_claim_pk_step_root_attempt_crthgnfxsg",
+				"__rule_fan_live_check_fan_seat_below_count_yebtxevyos": "__fan_live_check_fan_seat_below_count_jcuojp5fnq",
+				"__rule_fan_live_key_resource_seat_fgvhftn6ao": "__fan_live_key_resource_seat_wqkc2jfkpw"
 			},
 			"fan_done": {
 				"__fan_done_fk_root_cfizuozacw": "__fan_done_in_fan_root_qirjz5jewc",
 				"__fan_done_pk_5u65252q52": "__fan_done_pk_step_root_t5vzgsxnex",
 				"__rule_fan_done_in_fan_result_dbzlqmyfjm": "__fan_done_in_fan_result_guvpmso3xz"
+			},
+			"fan_ended": {
+				"__fan_ended_fk_root_uaaz527dex": "__fan_ended_in_fan_root_o4yu4743cn",
+				"__fan_ended_fk_step_attempt_root_guai42fujd": "__fan_ended_in_fan_claim_cvzq5ehbbz",
+				"__fan_ended_pk_23aeteyyv7": "__fan_ended_pk_step_attempt_root_pq7eo6hvf5",
+				"__rule_fan_live_check_fan_seat_below_count_yebtxevyos": "__fan_live_check_fan_seat_below_count_jcuojp5fnq",
+				"__rule_fan_live_key_resource_seat_fgvhftn6ao": "__fan_live_key_resource_seat_wqkc2jfkpw"
 			},
 			"fan_exhausted": {
 				"__fan_exhausted_fk_root_mlbxyrjdjk": "__fan_exhausted_in_fan_root_zqjhaekrcu",
@@ -407,7 +425,7 @@
 			},
 			"fan_fenced": {
 				"__fan_fenced_fk_root_2vu32qtss5": "__fan_fenced_in_fan_root_alkg2wodls",
-				"__fan_fenced_fk_step_attempt_root_3hdoippknh": "__fan_fenced_in_fan_claim_6uvct342c7",
+				"__fan_fenced_fk_step_attempt_root_resahyn2ym": "__fan_fenced_in_fan_ended_cifmgv3gtb",
 				"__fan_fenced_pk_6tkvirerez": "__fan_fenced_pk_step_attempt_root_hhenuta4zz"
 			},
 			"fan_finish": {
@@ -417,21 +435,23 @@
 				"__fan_finish_key_step_root_xshxj2rwb2": "__fan_finish_key_step_root_tprz24wemj",
 				"__fan_finish_pk_6mb33urjra": "__fan_finish_pk_scope_root_wm6oaoezbi"
 			},
-			"fan_freed": {
-				"__fan_freed_fk_resource_seat_turn_5lyzcw65au": "__fan_freed_in_fan_hold_w5dtx6dw32",
-				"__fan_freed_pk_r3csmayfa7": "__fan_freed_pk_resource_seat_turn_ifmyx5qq5h",
-				"__rule_fan_live_check_fan_seat_below_count_yebtxevyos": "__fan_live_check_fan_seat_below_count_jcuojp5fnq"
-			},
 			"fan_held": {
 				"__fan_held_fk_root_cnpqjrp534": "__fan_held_in_fan_root_h7vpuxybsu",
 				"__fan_held_fk_step_attempt_root_c33imj7zo6": "__fan_held_in_fan_claim_cqha2yirnr",
 				"__fan_held_fk_step_root_ob2yj5i5h3": "__fan_held_in_fan_result_5akadqnjdt",
-				"__fan_held_pk_4ic6tjvac4": "__fan_held_pk_step_root_kj2bkraaas"
+				"__fan_held_pk_4ic6tjvac4": "__fan_held_pk_step_root_kj2bkraaas",
+				"__rule_fan_live_check_fan_seat_below_count_yebtxevyos": "__fan_live_check_fan_seat_below_count_jcuojp5fnq",
+				"__rule_fan_live_key_resource_seat_fgvhftn6ao": "__fan_live_key_resource_seat_wqkc2jfkpw"
 			},
 			"fan_hold": {
-				"__fan_hold_fk_resource_seat_pred_turn_vfz6ol7e57": "__fan_hold_in_fan_freed_jbaif55wxm",
-				"__fan_hold_pk_avuqdkljvb": "__fan_hold_pk_resource_seat_turn_pmyluo75er",
-				"__rule_fan_live_check_fan_seat_below_count_yebtxevyos": "__fan_live_check_fan_seat_below_count_jcuojp5fnq"
+				"__fan_hold_check_fan_hold_ordered_fan_claim_holds_bb3ww7vxet": "__fan_hold_ordered_fan_claim_holds_xtypeg3ezw",
+				"__fan_hold_fk_root_4at7ny23la": "__fan_hold_in_fan_root_2zoem2ecgr",
+				"__fan_hold_fk_step_root_attempt_copy_holds_jzk5g7klso": "__fan_hold_ordered_fan_claim_holds_xtypeg3ezw",
+				"__fan_hold_fk_step_root_attempt_pred_at_p4adu554h3": "__fan_hold_ordered_fan_claim_holds_xtypeg3ezw",
+				"__fan_hold_key_step_root_attempt_pred_at_kgbxki2ddu": "__fan_hold_pk_step_root_attempt_at_ysu6okxrga",
+				"__fan_hold_pk_avuqdkljvb": "__fan_hold_pk_step_root_attempt_at_ysu6okxrga",
+				"__rule_fan_live_check_fan_seat_below_count_yebtxevyos": "__fan_live_check_fan_seat_below_count_jcuojp5fnq",
+				"__rule_fan_live_key_resource_seat_fgvhftn6ao": "__fan_live_key_resource_seat_wqkc2jfkpw"
 			},
 			"fan_paused": {
 				"__fan_paused_fk_target_pred_turn_flvtnhgqoq": "__fan_paused_in_fan_resumed_x4ff7d67zu",
@@ -455,7 +475,7 @@
 			},
 			"fan_retry": {
 				"__fan_retry_fk_root_hoqgudhhyh": "__fan_retry_in_fan_root_xlpluv2ka6",
-				"__fan_retry_fk_step_attempt_root_mkghdiqon7": "__fan_retry_in_fan_claim_t6bvzhzmx6",
+				"__fan_retry_fk_step_attempt_root_jw7ijf5nre": "__fan_retry_in_fan_ended_7hvu4eg2yh",
 				"__fan_retry_pk_7xubce4v66": "__fan_retry_pk_step_attempt_root_62le6fs7mh"
 			},
 			"fan_root": {
@@ -541,15 +561,19 @@
 			},
 			"retry_claim": {
 				"__retry_claim_fk_root_ilxn6ulsuq": "__retry_claim_in_retry_root_dlxwxuhdyn",
-				"__retry_claim_fk_step_pred_attempt_root_jmq6tipywk": "__retry_claim_attempt_in_retry_claim_xflgekp4t5",
+				"__retry_claim_fk_step_pred_attempt_root_d5bu2ekplv": "__retry_claim_attempt_in_retry_ended_gu6jrnvgqr",
 				"__retry_claim_fk_step_root_zffmzj357l": "__retry_claim_in_retry_step_flk5c3ty6a",
-				"__retry_claim_pk_aayzt5ni6z": "__retry_claim_pk_step_attempt_root_2nfmvsdff7",
-				"attempt_from_one": "__retry_claim_check_attempt_from_one_vknf6ovf6f"
+				"__retry_claim_pk_aayzt5ni6z": "__retry_claim_pk_step_root_attempt_jzpuu4i7ad"
 			},
 			"retry_done": {
 				"__retry_done_fk_root_eegigvha5p": "__retry_done_in_retry_root_braao4mi3p",
 				"__retry_done_pk_vtkpce7rkq": "__retry_done_pk_step_root_eikwcx4hil",
 				"__rule_retry_done_in_retry_result_cluafk7ckl": "__retry_done_in_retry_result_yeyzwj6db7"
+			},
+			"retry_ended": {
+				"__retry_ended_fk_root_h23o2xvf4e": "__retry_ended_in_retry_root_koxaexnkls",
+				"__retry_ended_fk_step_attempt_root_25duapnk22": "__retry_ended_in_retry_claim_ji52426af5",
+				"__retry_ended_pk_hq35r7u2t2": "__retry_ended_pk_step_attempt_root_27ii3n27ne"
 			},
 			"retry_exhausted": {
 				"__retry_exhausted_fk_root_fetyfw4rhv": "__retry_exhausted_in_retry_root_rehvrphj6g",
@@ -563,7 +587,7 @@
 			},
 			"retry_fenced": {
 				"__retry_fenced_fk_root_q2hes57bil": "__retry_fenced_in_retry_root_lle7npqkvm",
-				"__retry_fenced_fk_step_attempt_root_b4uk64byz5": "__retry_fenced_in_retry_claim_ai2vceitdh",
+				"__retry_fenced_fk_step_attempt_root_laqomvgkpu": "__retry_fenced_in_retry_ended_yd4lbrrw5n",
 				"__retry_fenced_pk_umzicmiruo": "__retry_fenced_pk_step_attempt_root_6dv3ued2q7"
 			},
 			"retry_finish": {
@@ -606,7 +630,7 @@
 			},
 			"retry_retry": {
 				"__retry_retry_fk_root_gfdc3bi7a3": "__retry_retry_in_retry_root_cfgqtgjhsz",
-				"__retry_retry_fk_step_attempt_root_ldqa5lz2mu": "__retry_retry_in_retry_claim_vin37i6xqf",
+				"__retry_retry_fk_step_attempt_root_xrpolbmg32": "__retry_retry_in_retry_ended_n5j54vezxo",
 				"__retry_retry_pk_slrwn4rt5d": "__retry_retry_pk_step_attempt_root_viscgwkogr"
 			},
 			"retry_root": {
@@ -673,10 +697,9 @@
 			},
 			"sync_claim": {
 				"__sync_claim_fk_root_4qbs7pxn2t": "__sync_claim_in_sync_root_plc2souwel",
-				"__sync_claim_fk_step_pred_attempt_root_rrog54g4mf": "__sync_claim_attempt_in_sync_claim_yexxfkmoco",
+				"__sync_claim_fk_step_pred_attempt_root_ogqckwblbr": "__sync_claim_attempt_in_sync_ended_23yby26dmm",
 				"__sync_claim_fk_step_root_gvtcn764xc": "__sync_claim_in_sync_step_dmqfclzm5t",
-				"__sync_claim_pk_s2tqnziq4u": "__sync_claim_pk_step_attempt_root_gbvdrtppav",
-				"attempt_from_one": "__sync_claim_check_attempt_from_one_tjyxxuwpbj"
+				"__sync_claim_pk_s2tqnziq4u": "__sync_claim_pk_step_root_attempt_pvna4nosul"
 			},
 			"sync_copy_input": {
 				"__rule_sync_copy_input_in_sync_step_vskkdhyrbe": "__sync_copy_input_in_sync_step_nhvrrom3pv",
@@ -693,6 +716,11 @@
 				"__rule_sync_done_in_sync_result_vbj33bqeiu": "__sync_done_in_sync_result_tswlqm7hu6",
 				"__sync_done_fk_root_kbt6t66k7r": "__sync_done_in_sync_root_ycdb363p5p",
 				"__sync_done_pk_nllomjb7og": "__sync_done_pk_step_root_2eclqtmglp"
+			},
+			"sync_ended": {
+				"__sync_ended_fk_root_6yfa76vqgo": "__sync_ended_in_sync_root_uxu2wgnl4l",
+				"__sync_ended_fk_step_attempt_root_43aj3jw3bk": "__sync_ended_in_sync_claim_mqdrjokdxp",
+				"__sync_ended_pk_uxijjz7koz": "__sync_ended_pk_step_attempt_root_5gwut6z3js"
 			},
 			"sync_exclusive": {
 				"__sync_exclusive_fk_kind_key_pred_turn_opo5gkimc4": "__sync_exclusive_in_sync_released_uxaalxiffj",
@@ -715,7 +743,7 @@
 			},
 			"sync_fenced": {
 				"__sync_fenced_fk_root_pft7kt3u6c": "__sync_fenced_in_sync_root_42qjfgegsa",
-				"__sync_fenced_fk_step_attempt_root_5tuvabpoxw": "__sync_fenced_in_sync_claim_bkgur53cdg",
+				"__sync_fenced_fk_step_attempt_root_ddezsoici7": "__sync_fenced_in_sync_ended_ewztrudohn",
 				"__sync_fenced_pk_tszx4qm2gz": "__sync_fenced_pk_step_attempt_root_zse57q523u"
 			},
 			"sync_finish": {
@@ -762,7 +790,7 @@
 			},
 			"sync_retry": {
 				"__sync_retry_fk_root_wl34w4vs2m": "__sync_retry_in_sync_root_vfwwlbgk6b",
-				"__sync_retry_fk_step_attempt_root_7rpqzqdnqb": "__sync_retry_in_sync_claim_xf7kpyzuvz",
+				"__sync_retry_fk_step_attempt_root_wr6wrg43i4": "__sync_retry_in_sync_ended_u37r3zswll",
 				"__sync_retry_pk_6q52red7iw": "__sync_retry_pk_step_attempt_root_7ner4qf2a4"
 			},
 			"sync_root": {
@@ -838,24 +866,40 @@
 		},
 		"fkCycles": [
 			[
+				"AssignClaim",
+				"AssignEnded"
+			],
+			[
 				"AssignPaused",
 				"AssignResumed"
+			],
+			[
+				"ChainClaim",
+				"ChainEnded"
 			],
 			[
 				"ChainPaused",
 				"ChainResumed"
 			],
 			[
-				"FanFreed",
-				"FanHold"
+				"FanClaim",
+				"FanEnded"
 			],
 			[
 				"FanPaused",
 				"FanResumed"
 			],
 			[
+				"RetryClaim",
+				"RetryEnded"
+			],
+			[
 				"RetryPaused",
 				"RetryResumed"
+			],
+			[
+				"SyncClaim",
+				"SyncEnded"
 			],
 			[
 				"SyncExclusive",
@@ -997,6 +1041,7 @@
 				"fan_claim": [
 					"step"
 				],
+				"fan_ended": [],
 				"fan_fan_run_input": [
 					"scope"
 				],
@@ -1006,7 +1051,6 @@
 				"fan_finish": [
 					"scope"
 				],
-				"fan_freed": [],
 				"fan_held": [
 					"step"
 				],
@@ -1492,31 +1536,22 @@
 				},
 				"assign_claim": {
 					"indexes": {
-						"__assign_claim_ix_root_step_xwit6s2vsb": {
+						"__assign_claim_ix_root_wxxruhegpn": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "step",
 									"kind": "field"
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__assign_claim_in_assign_step_uek4h53dmu"
-								},
-								{
-									"kind": "law",
 									"law": "__assign_claim_in_assign_root_z5feykvdp7"
 								}
 							]
 						},
-						"__assign_claim_ix_step_fxyms_236_d_4_pred_attempt_gr25qcsssc": {
+						"__assign_claim_ix_step_ouvkclqzzd_pred_attempt_x7szewvena": {
 							"columns": [
 								{
 									"direction": "asc",
@@ -1526,7 +1561,7 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__assign_claim_attempt_in_assign_claim_qrqixlsueh"
+										"__assign_claim_attempt_in_assign_ended_a3zkqu56wo"
 									]
 								},
 								{
@@ -1537,7 +1572,7 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__assign_claim_attempt_in_assign_claim_qrqixlsueh"
+										"__assign_claim_attempt_in_assign_ended_a3zkqu56wo"
 									]
 								},
 								{
@@ -1548,14 +1583,14 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__assign_claim_attempt_in_assign_claim_qrqixlsueh"
+										"__assign_claim_attempt_in_assign_ended_a3zkqu56wo"
 									]
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__assign_claim_attempt_in_assign_claim_qrqixlsueh"
+									"law": "__assign_claim_attempt_in_assign_ended_a3zkqu56wo"
 								}
 							]
 						},
@@ -1568,22 +1603,26 @@
 								},
 								{
 									"direction": "asc",
-									"field": "attempt",
+									"field": "root",
 									"kind": "field"
 								},
 								{
 									"direction": "asc",
-									"field": "root",
+									"field": "attempt",
 									"kind": "field"
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__assign_claim_pk_step_attempt_root_oi726e6bjm"
+									"law": "__assign_claim_pk_step_root_attempt_rtogcowqsy"
 								},
 								{
 									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_claim_in_assign_step_uek4h53dmu"
 								}
 							]
 						}
@@ -2320,6 +2359,58 @@
 					},
 					"relation": "AssignDone"
 				},
+				"assign_ended": {
+					"indexes": {
+						"__assign_ended_ix_root_dw6oimqu3h": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_ended_in_assign_root_ikfhiaixad"
+								}
+							]
+						},
+						"__assign_ended_pk_nriwwbcneu": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__assign_ended_pk_step_attempt_root_skgoihtoq5"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_ended_in_assign_claim_necjnxemyf"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "AssignEnded"
+				},
 				"assign_exhausted": {
 					"indexes": {
 						"__assign_exhausted_ix_root_gsga5kdkq3": {
@@ -2461,7 +2552,7 @@
 								},
 								{
 									"kind": "law",
-									"law": "__assign_fenced_in_assign_claim_go64zljodm"
+									"law": "__assign_fenced_in_assign_ended_nsmkjnviir"
 								},
 								{
 									"kind": "access"
@@ -2874,7 +2965,7 @@
 								},
 								{
 									"kind": "law",
-									"law": "__assign_retry_in_assign_claim_aoq5fzor3j"
+									"law": "__assign_retry_in_assign_ended_zzkutu7emb"
 								},
 								{
 									"kind": "access"
@@ -2913,6 +3004,7 @@
 										"__assign_decide_output_weighed_in_assign_root_oxyguf7bzp",
 										"__assign_decide_seen_read_in_assign_root_3g7vaadpnf",
 										"__assign_done_in_assign_root_657cqkg66r",
+										"__assign_ended_in_assign_root_ikfhiaixad",
 										"__assign_exhausted_in_assign_root_s6626uv2w6",
 										"__assign_failed_in_assign_root_p77zpmn34c",
 										"__assign_fenced_in_assign_root_afiyfxo7kl",
@@ -3000,6 +3092,10 @@
 								{
 									"kind": "law",
 									"law": "__assign_done_in_assign_root_657cqkg66r"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_ended_in_assign_root_ikfhiaixad"
 								},
 								{
 									"kind": "law",
@@ -3511,31 +3607,22 @@
 				},
 				"chain_claim": {
 					"indexes": {
-						"__chain_claim_ix_root_step_vf7fvyvhwc": {
+						"__chain_claim_ix_root_i4kzudjuai": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "step",
 									"kind": "field"
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__chain_claim_in_chain_step_egaldy2qd5"
-								},
-								{
-									"kind": "law",
 									"law": "__chain_claim_in_chain_root_6wnf2d4tj4"
 								}
 							]
 						},
-						"__chain_claim_ix_step_fxyms_236_d_4_pred_attempt_dmkyo32uvz": {
+						"__chain_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_gdjkwebwlh": {
 							"columns": [
 								{
 									"direction": "asc",
@@ -3545,7 +3632,7 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__chain_claim_attempt_in_chain_claim_eckzxzhb3x"
+										"__chain_claim_attempt_in_chain_ended_z2gsixmfpg"
 									]
 								},
 								{
@@ -3556,7 +3643,7 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__chain_claim_attempt_in_chain_claim_eckzxzhb3x"
+										"__chain_claim_attempt_in_chain_ended_z2gsixmfpg"
 									]
 								},
 								{
@@ -3567,14 +3654,14 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__chain_claim_attempt_in_chain_claim_eckzxzhb3x"
+										"__chain_claim_attempt_in_chain_ended_z2gsixmfpg"
 									]
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__chain_claim_attempt_in_chain_claim_eckzxzhb3x"
+									"law": "__chain_claim_attempt_in_chain_ended_z2gsixmfpg"
 								}
 							]
 						},
@@ -3587,22 +3674,26 @@
 								},
 								{
 									"direction": "asc",
-									"field": "attempt",
+									"field": "root",
 									"kind": "field"
 								},
 								{
 									"direction": "asc",
-									"field": "root",
+									"field": "attempt",
 									"kind": "field"
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__chain_claim_pk_step_attempt_root_kbfzbxtg5a"
+									"law": "__chain_claim_pk_step_root_attempt_22iqxp46y4"
 								},
 								{
 									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_claim_in_chain_step_egaldy2qd5"
 								}
 							]
 						}
@@ -3660,6 +3751,58 @@
 						}
 					},
 					"relation": "ChainDone"
+				},
+				"chain_ended": {
+					"indexes": {
+						"__chain_ended_ix_root_e73xltety4": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_ended_in_chain_root_dtiw4jqmrz"
+								}
+							]
+						},
+						"__chain_ended_pk_wusc7vjjx6": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_ended_pk_step_attempt_root_ljxiu5ymkp"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_ended_in_chain_claim_4aopzwr2rx"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainEnded"
 				},
 				"chain_exhausted": {
 					"indexes": {
@@ -3802,7 +3945,7 @@
 								},
 								{
 									"kind": "law",
-									"law": "__chain_fenced_in_chain_claim_acfwxwyznu"
+									"law": "__chain_fenced_in_chain_ended_hntz6fyzv2"
 								},
 								{
 									"kind": "access"
@@ -4597,7 +4740,7 @@
 								},
 								{
 									"kind": "law",
-									"law": "__chain_retry_in_chain_claim_mtg3xj2hgx"
+									"law": "__chain_retry_in_chain_ended_swfm7yjlhb"
 								},
 								{
 									"kind": "access"
@@ -4623,6 +4766,7 @@
 										"__chain_chain_run_input_in_chain_root_a2bn7vy4pn",
 										"__chain_claim_in_chain_root_6wnf2d4tj4",
 										"__chain_done_in_chain_root_thglcgxgmx",
+										"__chain_ended_in_chain_root_dtiw4jqmrz",
 										"__chain_exhausted_in_chain_root_pdoz3v5sv7",
 										"__chain_failed_in_chain_root_bx23pnremu",
 										"__chain_fenced_in_chain_root_motrwu45ih",
@@ -4665,6 +4809,10 @@
 								{
 									"kind": "law",
 									"law": "__chain_done_in_chain_root_thglcgxgmx"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_ended_in_chain_root_dtiw4jqmrz"
 								},
 								{
 									"kind": "law",
@@ -5259,15 +5407,11 @@
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__fan_claim_in_fan_step_ulehmstrh5"
-								},
-								{
-									"kind": "law",
 									"law": "__fan_claim_in_fan_root_6fnoywylvg"
 								}
 							]
 						},
-						"__fan_claim_ix_step_fxyms_236_d_4_pred_attempt_k77hys4jpf": {
+						"__fan_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_7_scbit3alr4": {
 							"columns": [
 								{
 									"direction": "asc",
@@ -5277,7 +5421,7 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__fan_claim_attempt_in_fan_claim_afbpo2wrxj"
+										"__fan_claim_attempt_in_fan_ended_xlylgapk2m"
 									]
 								},
 								{
@@ -5288,7 +5432,7 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__fan_claim_attempt_in_fan_claim_afbpo2wrxj"
+										"__fan_claim_attempt_in_fan_ended_xlylgapk2m"
 									]
 								},
 								{
@@ -5299,14 +5443,48 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__fan_claim_attempt_in_fan_claim_afbpo2wrxj"
+										"__fan_claim_attempt_in_fan_ended_xlylgapk2m"
 									]
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__fan_claim_attempt_in_fan_claim_afbpo2wrxj"
+									"law": "__fan_claim_attempt_in_fan_ended_xlylgapk2m"
+								}
+							]
+						},
+						"__fan_claim_key_step_root_attempt_holds_iqkydblyix": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "holds",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_claim_pk_step_root_attempt_crthgnfxsg"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_hold_ordered_fan_claim_holds_xtypeg3ezw"
 								}
 							]
 						},
@@ -5319,22 +5497,38 @@
 								},
 								{
 									"direction": "asc",
-									"field": "attempt",
+									"field": "root",
 									"kind": "field"
 								},
 								{
 									"direction": "asc",
-									"field": "root",
+									"field": "attempt",
 									"kind": "field"
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__fan_claim_pk_step_attempt_root_tdmfyy25yp"
+									"law": "__fan_claim_pk_step_root_attempt_crthgnfxsg"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_hold_ordered_fan_claim_holds_xtypeg3ezw"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_live_check_fan_seat_below_count_jcuojp5fnq"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_live_key_resource_seat_wqkc2jfkpw"
 								},
 								{
 									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_claim_in_fan_step_ulehmstrh5"
 								}
 							]
 						}
@@ -5392,6 +5586,71 @@
 						}
 					},
 					"relation": "FanDone"
+				},
+				"fan_ended": {
+					"indexes": {
+						"__fan_ended_ix_root_step_unjzbpnw46": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_ended_in_fan_root_o4yu4743cn"
+								}
+							]
+						},
+						"__fan_ended_pk_23aeteyyv7": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_ended_pk_step_attempt_root_pq7eo6hvf5"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_ended_in_fan_claim_cvzq5ehbbz"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_live_check_fan_seat_below_count_jcuojp5fnq"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_live_key_resource_seat_wqkc2jfkpw"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanEnded"
 				},
 				"fan_exhausted": {
 					"indexes": {
@@ -5581,7 +5840,7 @@
 								},
 								{
 									"kind": "law",
-									"law": "__fan_fenced_in_fan_claim_6uvct342c7"
+									"law": "__fan_fenced_in_fan_ended_cifmgv3gtb"
 								},
 								{
 									"kind": "access"
@@ -5684,54 +5943,18 @@
 					},
 					"relation": "FanFinish"
 				},
-				"fan_freed": {
-					"indexes": {
-						"__fan_freed_pk_r3csmayfa7": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "resource",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "seat",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "turn",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__fan_freed_pk_resource_seat_turn_ifmyx5qq5h"
-								},
-								{
-									"kind": "law",
-									"law": "__fan_freed_in_fan_hold_w5dtx6dw32"
-								},
-								{
-									"kind": "law",
-									"law": "__fan_live_check_fan_seat_below_count_jcuojp5fnq"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						}
-					},
-					"relation": "FanFreed"
-				},
 				"fan_held": {
 					"indexes": {
-						"__fan_held_ix_root_6a5cilujsl": {
+						"__fan_held_ix_root_step_hgpfyg562f": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
 									"kind": "field"
 								}
 							],
@@ -5769,6 +5992,14 @@
 									"law": "__fan_held_in_fan_result_5akadqnjdt"
 								},
 								{
+									"kind": "law",
+									"law": "__fan_live_check_fan_seat_below_count_jcuojp5fnq"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_live_key_resource_seat_wqkc2jfkpw"
+								},
+								{
 									"kind": "access"
 								}
 							]
@@ -5778,7 +6009,7 @@
 				},
 				"fan_hold": {
 					"indexes": {
-						"__fan_hold_ix_resource_seat_pred_turn_qryngij_6_c_4_khwnztqprz": {
+						"__fan_hold_ix_resource_seat_s7bnw22355": {
 							"columns": [
 								{
 									"direction": "asc",
@@ -5789,23 +6020,67 @@
 									"direction": "asc",
 									"field": "seat",
 									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_live_key_resource_seat_wqkc2jfkpw"
+								}
+							]
+						},
+						"__fan_hold_ix_root_ral35akxi3": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_hold_in_fan_root_2zoem2ecgr"
+								}
+							]
+						},
+						"__fan_hold_key_step_root_attempt_pred_at_kgbxki2ddu": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
 									"holds": {
-										"field": "turn",
+										"field": "at",
 										"kind": "term"
 									},
 									"kind": "law",
 									"laws": [
-										"__fan_hold_in_fan_freed_jbaif55wxm"
+										"__fan_hold_ordered_fan_claim_holds_xtypeg3ezw"
 									]
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__fan_hold_in_fan_freed_jbaif55wxm"
+									"law": "__fan_hold_pk_step_root_attempt_at_ysu6okxrga"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_hold_ordered_fan_claim_holds_xtypeg3ezw"
 								}
 							]
 						},
@@ -5813,31 +6088,44 @@
 							"columns": [
 								{
 									"direction": "asc",
-									"field": "resource",
+									"field": "step",
 									"kind": "field"
 								},
 								{
 									"direction": "asc",
-									"field": "seat",
+									"field": "root",
 									"kind": "field"
 								},
 								{
 									"direction": "asc",
-									"field": "turn",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "at",
 									"kind": "field"
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__fan_hold_pk_resource_seat_turn_pmyluo75er"
+									"law": "__fan_hold_pk_step_root_attempt_at_ysu6okxrga"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_hold_ordered_fan_claim_holds_xtypeg3ezw"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_live_key_resource_seat_wqkc2jfkpw"
+								},
+								{
+									"kind": "access"
 								},
 								{
 									"kind": "law",
 									"law": "__fan_live_check_fan_seat_below_count_jcuojp5fnq"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						}
@@ -6103,7 +6391,7 @@
 								},
 								{
 									"kind": "law",
-									"law": "__fan_retry_in_fan_claim_t6bvzhzmx6"
+									"law": "__fan_retry_in_fan_ended_7hvu4eg2yh"
 								},
 								{
 									"kind": "access"
@@ -6129,12 +6417,14 @@
 										"__fan_batch_input_in_fan_root_wmhyrqhasn",
 										"__fan_claim_in_fan_root_6fnoywylvg",
 										"__fan_done_in_fan_root_qirjz5jewc",
+										"__fan_ended_in_fan_root_o4yu4743cn",
 										"__fan_exhausted_in_fan_root_zqjhaekrcu",
 										"__fan_failed_in_fan_root_l7x6w743lm",
 										"__fan_fan_run_input_in_fan_root_xx3vyjtcmh",
 										"__fan_fenced_in_fan_root_alkg2wodls",
 										"__fan_finish_in_fan_root_sxujrupst2",
 										"__fan_held_in_fan_root_h7vpuxybsu",
+										"__fan_hold_in_fan_root_2zoem2ecgr",
 										"__fan_refusal_in_fan_root_dmzsqf22kz",
 										"__fan_result_in_fan_root_yzj2pnujs2",
 										"__fan_retry_in_fan_root_xlpluv2ka6",
@@ -6172,6 +6462,10 @@
 								},
 								{
 									"kind": "law",
+									"law": "__fan_ended_in_fan_root_o4yu4743cn"
+								},
+								{
+									"kind": "law",
 									"law": "__fan_exhausted_in_fan_root_zqjhaekrcu"
 								},
 								{
@@ -6193,6 +6487,10 @@
 								{
 									"kind": "law",
 									"law": "__fan_held_in_fan_root_h7vpuxybsu"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_hold_in_fan_root_2zoem2ecgr"
 								},
 								{
 									"kind": "law",
@@ -7067,31 +7365,22 @@
 				},
 				"retry_claim": {
 					"indexes": {
-						"__retry_claim_ix_root_step_kvsdksyi7f": {
+						"__retry_claim_ix_root_l2dmax44om": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "step",
 									"kind": "field"
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__retry_claim_in_retry_step_flk5c3ty6a"
-								},
-								{
-									"kind": "law",
 									"law": "__retry_claim_in_retry_root_dlxwxuhdyn"
 								}
 							]
 						},
-						"__retry_claim_ix_step_fxyms_236_d_4_pred_attempt_srdfpfzfhz": {
+						"__retry_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_56kr6qlizb": {
 							"columns": [
 								{
 									"direction": "asc",
@@ -7101,7 +7390,7 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__retry_claim_attempt_in_retry_claim_xflgekp4t5"
+										"__retry_claim_attempt_in_retry_ended_gu6jrnvgqr"
 									]
 								},
 								{
@@ -7112,7 +7401,7 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__retry_claim_attempt_in_retry_claim_xflgekp4t5"
+										"__retry_claim_attempt_in_retry_ended_gu6jrnvgqr"
 									]
 								},
 								{
@@ -7123,14 +7412,14 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__retry_claim_attempt_in_retry_claim_xflgekp4t5"
+										"__retry_claim_attempt_in_retry_ended_gu6jrnvgqr"
 									]
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__retry_claim_attempt_in_retry_claim_xflgekp4t5"
+									"law": "__retry_claim_attempt_in_retry_ended_gu6jrnvgqr"
 								}
 							]
 						},
@@ -7143,22 +7432,26 @@
 								},
 								{
 									"direction": "asc",
-									"field": "attempt",
+									"field": "root",
 									"kind": "field"
 								},
 								{
 									"direction": "asc",
-									"field": "root",
+									"field": "attempt",
 									"kind": "field"
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__retry_claim_pk_step_attempt_root_2nfmvsdff7"
+									"law": "__retry_claim_pk_step_root_attempt_jzpuu4i7ad"
 								},
 								{
 									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__retry_claim_in_retry_step_flk5c3ty6a"
 								}
 							]
 						}
@@ -7216,6 +7509,58 @@
 						}
 					},
 					"relation": "RetryDone"
+				},
+				"retry_ended": {
+					"indexes": {
+						"__retry_ended_ix_root_qdnd63ykxk": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__retry_ended_in_retry_root_koxaexnkls"
+								}
+							]
+						},
+						"__retry_ended_pk_hq35r7u2t2": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__retry_ended_pk_step_attempt_root_27ii3n27ne"
+								},
+								{
+									"kind": "law",
+									"law": "__retry_ended_in_retry_claim_ji52426af5"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "RetryEnded"
 				},
 				"retry_exhausted": {
 					"indexes": {
@@ -7358,7 +7703,7 @@
 								},
 								{
 									"kind": "law",
-									"law": "__retry_fenced_in_retry_claim_ai2vceitdh"
+									"law": "__retry_fenced_in_retry_ended_yd4lbrrw5n"
 								},
 								{
 									"kind": "access"
@@ -7818,7 +8163,7 @@
 								},
 								{
 									"kind": "law",
-									"law": "__retry_retry_in_retry_claim_vin37i6xqf"
+									"law": "__retry_retry_in_retry_ended_n5j54vezxo"
 								},
 								{
 									"kind": "access"
@@ -7845,6 +8190,7 @@
 										"__retry_brittle_output_in_retry_root_j4pa6r4man",
 										"__retry_claim_in_retry_root_dlxwxuhdyn",
 										"__retry_done_in_retry_root_braao4mi3p",
+										"__retry_ended_in_retry_root_koxaexnkls",
 										"__retry_exhausted_in_retry_root_rehvrphj6g",
 										"__retry_failed_in_retry_root_wsuyinezd5",
 										"__retry_fenced_in_retry_root_lle7npqkvm",
@@ -7887,6 +8233,10 @@
 								{
 									"kind": "law",
 									"law": "__retry_done_in_retry_root_braao4mi3p"
+								},
+								{
+									"kind": "law",
+									"law": "__retry_ended_in_retry_root_koxaexnkls"
 								},
 								{
 									"kind": "law",
@@ -8551,31 +8901,22 @@
 				},
 				"sync_claim": {
 					"indexes": {
-						"__sync_claim_ix_root_step_e3c7mrrjvs": {
+						"__sync_claim_ix_root_rcsm3ggsvs": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "step",
 									"kind": "field"
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__sync_claim_in_sync_step_dmqfclzm5t"
-								},
-								{
-									"kind": "law",
 									"law": "__sync_claim_in_sync_root_plc2souwel"
 								}
 							]
 						},
-						"__sync_claim_ix_step_fxyms_236_d_4_pred_attempt_fgejxj3qxw": {
+						"__sync_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_jozknhvn35": {
 							"columns": [
 								{
 									"direction": "asc",
@@ -8585,7 +8926,7 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__sync_claim_attempt_in_sync_claim_yexxfkmoco"
+										"__sync_claim_attempt_in_sync_ended_23yby26dmm"
 									]
 								},
 								{
@@ -8596,7 +8937,7 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__sync_claim_attempt_in_sync_claim_yexxfkmoco"
+										"__sync_claim_attempt_in_sync_ended_23yby26dmm"
 									]
 								},
 								{
@@ -8607,14 +8948,14 @@
 									},
 									"kind": "law",
 									"laws": [
-										"__sync_claim_attempt_in_sync_claim_yexxfkmoco"
+										"__sync_claim_attempt_in_sync_ended_23yby26dmm"
 									]
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__sync_claim_attempt_in_sync_claim_yexxfkmoco"
+									"law": "__sync_claim_attempt_in_sync_ended_23yby26dmm"
 								}
 							]
 						},
@@ -8627,22 +8968,26 @@
 								},
 								{
 									"direction": "asc",
-									"field": "attempt",
+									"field": "root",
 									"kind": "field"
 								},
 								{
 									"direction": "asc",
-									"field": "root",
+									"field": "attempt",
 									"kind": "field"
 								}
 							],
 							"reasons": [
 								{
 									"kind": "law",
-									"law": "__sync_claim_pk_step_attempt_root_gbvdrtppav"
+									"law": "__sync_claim_pk_step_root_attempt_pvna4nosul"
 								},
 								{
 									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__sync_claim_in_sync_step_dmqfclzm5t"
 								}
 							]
 						}
@@ -8803,6 +9148,58 @@
 						}
 					},
 					"relation": "SyncDone"
+				},
+				"sync_ended": {
+					"indexes": {
+						"__sync_ended_ix_root_xi7qlk4cj4": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__sync_ended_in_sync_root_uxu2wgnl4l"
+								}
+							]
+						},
+						"__sync_ended_pk_uxijjz7koz": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__sync_ended_pk_step_attempt_root_5gwut6z3js"
+								},
+								{
+									"kind": "law",
+									"law": "__sync_ended_in_sync_claim_mqdrjokdxp"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "SyncEnded"
 				},
 				"sync_exclusive": {
 					"indexes": {
@@ -9056,7 +9453,7 @@
 								},
 								{
 									"kind": "law",
-									"law": "__sync_fenced_in_sync_claim_bkgur53cdg"
+									"law": "__sync_fenced_in_sync_ended_ewztrudohn"
 								},
 								{
 									"kind": "access"
@@ -9529,7 +9926,7 @@
 								},
 								{
 									"kind": "law",
-									"law": "__sync_retry_in_sync_claim_xf7kpyzuvz"
+									"law": "__sync_retry_in_sync_ended_u37r3zswll"
 								},
 								{
 									"kind": "access"
@@ -9558,6 +9955,7 @@
 										"__sync_copy_input_in_sync_root_gx3x62sjyf",
 										"__sync_copy_output_in_sync_root_jwc2iyb4qk",
 										"__sync_done_in_sync_root_ycdb363p5p",
+										"__sync_ended_in_sync_root_uxu2wgnl4l",
 										"__sync_exclusive_key_in_sync_root_usrzcv5vkn",
 										"__sync_exhausted_in_sync_root_gawi5stns6",
 										"__sync_failed_in_sync_root_32o4pmqdfq",
@@ -9608,6 +10006,10 @@
 								{
 									"kind": "law",
 									"law": "__sync_done_in_sync_root_ycdb363p5p"
+								},
+								{
+									"kind": "law",
+									"law": "__sync_ended_in_sync_root_uxu2wgnl4l"
 								},
 								{
 									"kind": "law",
@@ -10064,11 +10466,11 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "3f41c5916747339490d0f65fba61919706de2e5c2a7fe1f2815b79eaef62312d",
+	"fingerprint": "bed4d5e416a22459161d7d936ca4b0f2f50058464970fbb7e4b5a94c6f0a1805",
 	"format": 3,
 	"levels": [
 		{
-			"fingerprint": "8d8b1c8fb95ce12edad2bce9551385abeb0bfe9d0ac076488b1646c8f0c5add0",
+			"fingerprint": "588992ea80c1689b06d9e532c6889bb4b313f6cc094ccfac25a58ded85e05e80",
 			"laws": [
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_root_56frawwv2n"},
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_s3xk3phh7y"},
@@ -10089,11 +10491,10 @@
 				{"described":{"from":{"relation":"AssignAssignmentInputModeWithin","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_assignment_input_mode_within_in_assign_root_yuflfrqj2u"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"AssignAssignmentInputModeWithin"},"law":"__assign_assignment_input_mode_within_pk_scope_root_duqfdlyg4d"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"AssignAssignmentInput"},"law":"__assign_assignment_input_pk_scope_root_woewgxiecx"},
-				{"described":{"from":{"relation":"AssignClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:2"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_claim_attempt_in_assign_claim_qrqixlsueh"},
-				{"described":{"kind":"check","name":"AttemptFromOne","relation":"AssignClaim"},"law":"__assign_claim_check_attempt_from_one_xedytqz7p5"},
+				{"described":{"from":{"relation":"AssignClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_claim_attempt_in_assign_ended_a3zkqu56wo"},
 				{"described":{"from":{"relation":"AssignClaim","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_claim_in_assign_root_z5feykvdp7"},
 				{"described":{"from":{"relation":"AssignClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_claim_in_assign_step_uek4h53dmu"},
-				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"AssignClaim"},"law":"__assign_claim_pk_step_attempt_root_oi726e6bjm"},
+				{"described":{"fields":["step","root","attempt"],"kind":"primaryKey","relation":"AssignClaim"},"law":"__assign_claim_pk_step_root_attempt_rtogcowqsy"},
 				{"described":{"from":{"relation":"AssignDecideInputExclude","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignDecideInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_decide_input_exclude_in_assign_decide_input_m743og3dnf"},
 				{"described":{"from":{"relation":"AssignDecideInputExclude","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_decide_input_exclude_in_assign_root_2rs5khg6pm"},
 				{"described":{"from":{"relation":"AssignDecideInputExclude","selection":{"conjuncts":[{"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}]},"terms":[{"field":"step","kind":"field"},{"field":"ordinal","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignDecideInputExclude","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"ordinal","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_decide_input_exclude_ordinal_in_assign_67jqhktg3p"},
@@ -10138,13 +10539,16 @@
 				{"described":{"from":{"relation":"AssignDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"done"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_done_in_assign_result_ugagfnjgmb"},
 				{"described":{"from":{"relation":"AssignDone","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_done_in_assign_root_657cqkg66r"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"AssignDone"},"law":"__assign_done_pk_step_root_hcrbsmey5g"},
+				{"described":{"from":{"relation":"AssignEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_ended_in_assign_claim_necjnxemyf"},
+				{"described":{"from":{"relation":"AssignEnded","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_ended_in_assign_root_ikfhiaixad"},
+				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"AssignEnded"},"law":"__assign_ended_pk_step_attempt_root_skgoihtoq5"},
 				{"described":{"from":{"relation":"AssignExhausted","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_exhausted_in_assign_failed_ymmh35mjrj"},
 				{"described":{"from":{"relation":"AssignExhausted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_exhausted_in_assign_root_s6626uv2w6"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"AssignExhausted"},"law":"__assign_exhausted_pk_step_root_y2my3yghb6"},
 				{"described":{"from":{"relation":"AssignFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"failed"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_failed_in_assign_result_nnngibpxsc"},
 				{"described":{"from":{"relation":"AssignFailed","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_failed_in_assign_root_p77zpmn34c"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"AssignFailed"},"law":"__assign_failed_pk_step_root_goxb3ynyvm"},
-				{"described":{"from":{"relation":"AssignFenced","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_fenced_in_assign_claim_go64zljodm"},
+				{"described":{"from":{"relation":"AssignFenced","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_fenced_in_assign_ended_nsmkjnviir"},
 				{"described":{"from":{"relation":"AssignFenced","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_fenced_in_assign_root_afiyfxo7kl"},
 				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"AssignFenced"},"law":"__assign_fenced_pk_step_attempt_root_ldp4a2glhr"},
 				{"described":{"from":{"relation":"AssignFinish","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_finish_in_assign_admitted_4hc627s4jh"},
@@ -10166,7 +10570,7 @@
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"AssignResult"},"law":"__assign_result_pk_step_root_mzw6vriajo"},
 				{"described":{"from":{"relation":"AssignResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]},"kind":"contained","to":{"relation":"AssignPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__assign_resumed_in_assign_paused_ubkakyu3tt"},
 				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"AssignResumed"},"law":"__assign_resumed_pk_target_turn_xeig7qweos"},
-				{"described":{"from":{"relation":"AssignRetry","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_retry_in_assign_claim_aoq5fzor3j"},
+				{"described":{"from":{"relation":"AssignRetry","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_retry_in_assign_ended_zzkutu7emb"},
 				{"described":{"from":{"relation":"AssignRetry","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_retry_in_assign_root_ebgrh5fdqa"},
 				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"AssignRetry"},"law":"__assign_retry_pk_step_attempt_root_fkntv36hey"},
 				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"AssignRoot"},"law":"__assign_root_pk_scope_n5uoolib3w"},
@@ -10194,21 +10598,23 @@
 				{"described":{"from":{"relation":"ChainChainRunInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"ChainRun"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_chain_run_input_in_chain_root_6kgstyioeo"},
 				{"described":{"from":{"relation":"ChainChainRunInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_chain_run_input_in_chain_root_a2bn7vy4pn"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"ChainChainRunInput"},"law":"__chain_chain_run_input_pk_scope_root_5ozdi4uoi6"},
-				{"described":{"from":{"relation":"ChainClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:2"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_claim_attempt_in_chain_claim_eckzxzhb3x"},
-				{"described":{"kind":"check","name":"AttemptFromOne","relation":"ChainClaim"},"law":"__chain_claim_check_attempt_from_one_gr4ciwsbbc"},
+				{"described":{"from":{"relation":"ChainClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_claim_attempt_in_chain_ended_z2gsixmfpg"},
 				{"described":{"from":{"relation":"ChainClaim","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_claim_in_chain_root_6wnf2d4tj4"},
 				{"described":{"from":{"relation":"ChainClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_claim_in_chain_step_egaldy2qd5"},
-				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"ChainClaim"},"law":"__chain_claim_pk_step_attempt_root_kbfzbxtg5a"},
+				{"described":{"fields":["step","root","attempt"],"kind":"primaryKey","relation":"ChainClaim"},"law":"__chain_claim_pk_step_root_attempt_22iqxp46y4"},
 				{"described":{"from":{"relation":"ChainDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"done"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_done_in_chain_result_hxnxjn4nw3"},
 				{"described":{"from":{"relation":"ChainDone","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_done_in_chain_root_thglcgxgmx"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ChainDone"},"law":"__chain_done_pk_step_root_ozrhewz5pa"},
+				{"described":{"from":{"relation":"ChainEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_ended_in_chain_claim_4aopzwr2rx"},
+				{"described":{"from":{"relation":"ChainEnded","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_ended_in_chain_root_dtiw4jqmrz"},
+				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"ChainEnded"},"law":"__chain_ended_pk_step_attempt_root_ljxiu5ymkp"},
 				{"described":{"from":{"relation":"ChainExhausted","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_exhausted_in_chain_failed_bv263geeyf"},
 				{"described":{"from":{"relation":"ChainExhausted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_exhausted_in_chain_root_pdoz3v5sv7"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ChainExhausted"},"law":"__chain_exhausted_pk_step_root_rxahbabvca"},
 				{"described":{"from":{"relation":"ChainFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"failed"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_failed_in_chain_result_vya3y24kt7"},
 				{"described":{"from":{"relation":"ChainFailed","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_failed_in_chain_root_bx23pnremu"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ChainFailed"},"law":"__chain_failed_pk_step_root_6r4jrvbgzs"},
-				{"described":{"from":{"relation":"ChainFenced","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_fenced_in_chain_claim_acfwxwyznu"},
+				{"described":{"from":{"relation":"ChainFenced","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_fenced_in_chain_ended_hntz6fyzv2"},
 				{"described":{"from":{"relation":"ChainFenced","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_fenced_in_chain_root_motrwu45ih"},
 				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"ChainFenced"},"law":"__chain_fenced_pk_step_attempt_root_4ffxwv64ht"},
 				{"described":{"from":{"relation":"ChainFinish","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_finish_in_chain_admitted_d6662rgnky"},
@@ -10254,7 +10660,7 @@
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ChainResult"},"law":"__chain_result_pk_step_root_qv4vzbvwdb"},
 				{"described":{"from":{"relation":"ChainResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]},"kind":"contained","to":{"relation":"ChainPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__chain_resumed_in_chain_paused_odzto6zbtl"},
 				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"ChainResumed"},"law":"__chain_resumed_pk_target_turn_d36xl6aw2q"},
-				{"described":{"from":{"relation":"ChainRetry","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_retry_in_chain_claim_mtg3xj2hgx"},
+				{"described":{"from":{"relation":"ChainRetry","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_retry_in_chain_ended_swfm7yjlhb"},
 				{"described":{"from":{"relation":"ChainRetry","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_retry_in_chain_root_lq5eky5wnv"},
 				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"ChainRetry"},"law":"__chain_retry_pk_step_attempt_root_6bl3ljjvof"},
 				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"ChainRoot"},"law":"__chain_root_pk_scope_sdojfkmzws"},
@@ -10276,7 +10682,6 @@
 				{"described":{"fields":["relation","run"],"kind":"primaryKey","relation":"Copied"},"law":"__copied_pk_relation_run_r2fqzejpu3"},
 				{"described":{"fields":["feed","position"],"kind":"primaryKey","relation":"Cursor"},"law":"__cursor_pk_feed_position_hylioo6cog"},
 				{"described":{"contract":"DenExclusive","kind":"contract"},"law":"__den_exclusive_ygfujahibf"},
-				{"described":{"contract":"DenHolder","kind":"contract"},"law":"__den_holder_kytavffv25"},
 				{"described":{"contract":"DenInstant","kind":"contract"},"law":"__den_instant_st6jpyax5b"},
 				{"described":{"contract":"DenScope","kind":"contract"},"law":"__den_scope_g3mjgc2ytk"},
 				{"described":{"contract":"DenStep","kind":"contract"},"law":"__den_step_345ke2ya2t"},
@@ -10286,14 +10691,16 @@
 				{"described":{"from":{"relation":"FanBatchInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_batch_input_in_fan_root_wmhyrqhasn"},
 				{"described":{"from":{"relation":"FanBatchInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanWithin","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Batch"}}]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_batch_input_in_fan_within_sx7cuovskn"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"FanBatchInput"},"law":"__fan_batch_input_pk_scope_root_hsgaaei53l"},
-				{"described":{"from":{"relation":"FanClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:2"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_claim_attempt_in_fan_claim_afbpo2wrxj"},
-				{"described":{"kind":"check","name":"AttemptFromOne","relation":"FanClaim"},"law":"__fan_claim_check_attempt_from_one_pagmo5a6sv"},
+				{"described":{"from":{"relation":"FanClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_claim_attempt_in_fan_ended_xlylgapk2m"},
 				{"described":{"from":{"relation":"FanClaim","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_claim_in_fan_root_6fnoywylvg"},
 				{"described":{"from":{"relation":"FanClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_claim_in_fan_step_ulehmstrh5"},
-				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"FanClaim"},"law":"__fan_claim_pk_step_attempt_root_tdmfyy25yp"},
+				{"described":{"fields":["step","root","attempt"],"kind":"primaryKey","relation":"FanClaim"},"law":"__fan_claim_pk_step_root_attempt_crthgnfxsg"},
 				{"described":{"from":{"relation":"FanDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"done"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_done_in_fan_result_guvpmso3xz"},
 				{"described":{"from":{"relation":"FanDone","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_done_in_fan_root_qirjz5jewc"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"FanDone"},"law":"__fan_done_pk_step_root_t5vzgsxnex"},
+				{"described":{"from":{"relation":"FanEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_ended_in_fan_claim_cvzq5ehbbz"},
+				{"described":{"from":{"relation":"FanEnded","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_ended_in_fan_root_o4yu4743cn"},
+				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"FanEnded"},"law":"__fan_ended_pk_step_attempt_root_pq7eo6hvf5"},
 				{"described":{"from":{"relation":"FanExhausted","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_exhausted_in_fan_failed_jckt6yf3hm"},
 				{"described":{"from":{"relation":"FanExhausted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_exhausted_in_fan_root_zqjhaekrcu"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"FanExhausted"},"law":"__fan_exhausted_pk_step_root_bxvmdgloj3"},
@@ -10303,7 +10710,7 @@
 				{"described":{"from":{"relation":"FanFanRunInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_fan_run_input_in_fan_root_xx3vyjtcmh"},
 				{"described":{"from":{"relation":"FanFanRunInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"FanRun"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_fan_run_input_in_fan_root_z6cpi2vcoy"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"FanFanRunInput"},"law":"__fan_fan_run_input_pk_scope_root_d3caajpryt"},
-				{"described":{"from":{"relation":"FanFenced","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_fenced_in_fan_claim_6uvct342c7"},
+				{"described":{"from":{"relation":"FanFenced","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_fenced_in_fan_ended_cifmgv3gtb"},
 				{"described":{"from":{"relation":"FanFenced","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_fenced_in_fan_root_alkg2wodls"},
 				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"FanFenced"},"law":"__fan_fenced_pk_step_attempt_root_hhenuta4zz"},
 				{"described":{"from":{"relation":"FanFinish","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_finish_in_fan_admitted_ovvdost26h"},
@@ -10311,14 +10718,13 @@
 				{"described":{"from":{"relation":"FanFinish","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_finish_in_fan_step_5vy34iquru"},
 				{"described":{"kind":"key","side":{"relation":"FanFinish","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_finish_key_step_root_tprz24wemj"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"FanFinish"},"law":"__fan_finish_pk_scope_root_wm6oaoezbi"},
-				{"described":{"from":{"relation":"FanFreed","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"},{"field":"turn","kind":"field"}]},"kind":"contained","to":{"relation":"FanHold","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__fan_freed_in_fan_hold_w5dtx6dw32"},
-				{"described":{"fields":["resource","seat","turn"],"kind":"primaryKey","relation":"FanFreed"},"law":"__fan_freed_pk_resource_seat_turn_ifmyx5qq5h"},
 				{"described":{"from":{"relation":"FanHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_held_in_fan_claim_cqha2yirnr"},
 				{"described":{"from":{"relation":"FanHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_held_in_fan_result_5akadqnjdt"},
 				{"described":{"from":{"relation":"FanHeld","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_held_in_fan_root_h7vpuxybsu"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"FanHeld"},"law":"__fan_held_pk_step_root_kj2bkraaas"},
-				{"described":{"from":{"relation":"FanHold","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"FanFreed","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__fan_hold_in_fan_freed_jbaif55wxm"},
-				{"described":{"fields":["resource","seat","turn"],"kind":"primaryKey","relation":"FanHold"},"law":"__fan_hold_pk_resource_seat_turn_pmyluo75er"},
+				{"described":{"from":{"relation":"FanHold","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_hold_in_fan_root_2zoem2ecgr"},
+				{"described":{"kind":"family","member":{"relation":"FanHold","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"},{"field":"attempt","kind":"field"},{"field":"at","kind":"field"}]},"order":"ordered","slots":{"count":"holds","owner":"FanClaim"}},"law":"__fan_hold_ordered_fan_claim_holds_xtypeg3ezw"},
+				{"described":{"fields":["step","root","attempt","at"],"kind":"primaryKey","relation":"FanHold"},"law":"__fan_hold_pk_step_root_attempt_at_ysu6okxrga"},
 				{"described":{"from":{"relation":"FanPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"FanResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__fan_paused_in_fan_resumed_x4ff7d67zu"},
 				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"FanPaused"},"law":"__fan_paused_pk_target_turn_mlug66ps5n"},
 				{"described":{"from":{"relation":"FanRefusal","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_refusal_in_fan_failed_ktjpkijbf3"},
@@ -10329,7 +10735,7 @@
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"FanResult"},"law":"__fan_result_pk_step_root_izsegvvnad"},
 				{"described":{"from":{"relation":"FanResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]},"kind":"contained","to":{"relation":"FanPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__fan_resumed_in_fan_paused_u4lpxe77xh"},
 				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"FanResumed"},"law":"__fan_resumed_pk_target_turn_lqbel7glk5"},
-				{"described":{"from":{"relation":"FanRetry","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_retry_in_fan_claim_t6bvzhzmx6"},
+				{"described":{"from":{"relation":"FanRetry","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_retry_in_fan_ended_7hvu4eg2yh"},
 				{"described":{"from":{"relation":"FanRetry","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_retry_in_fan_root_xlpluv2ka6"},
 				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"FanRetry"},"law":"__fan_retry_pk_step_attempt_root_62le6fs7mh"},
 				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"FanRoot"},"law":"__fan_root_pk_scope_z55b3x6bzo"},
@@ -10378,21 +10784,23 @@
 				{"described":{"from":{"relation":"RetryBrittleOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_brittle_output_in_retry_done_nsdop7vq2v"},
 				{"described":{"from":{"relation":"RetryBrittleOutput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_brittle_output_in_retry_root_j4pa6r4man"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"RetryBrittleOutput"},"law":"__retry_brittle_output_pk_step_root_skf662wnqi"},
-				{"described":{"from":{"relation":"RetryClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:2"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_claim_attempt_in_retry_claim_xflgekp4t5"},
-				{"described":{"kind":"check","name":"AttemptFromOne","relation":"RetryClaim"},"law":"__retry_claim_check_attempt_from_one_vknf6ovf6f"},
+				{"described":{"from":{"relation":"RetryClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_claim_attempt_in_retry_ended_gu6jrnvgqr"},
 				{"described":{"from":{"relation":"RetryClaim","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_claim_in_retry_root_dlxwxuhdyn"},
 				{"described":{"from":{"relation":"RetryClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_claim_in_retry_step_flk5c3ty6a"},
-				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"RetryClaim"},"law":"__retry_claim_pk_step_attempt_root_2nfmvsdff7"},
+				{"described":{"fields":["step","root","attempt"],"kind":"primaryKey","relation":"RetryClaim"},"law":"__retry_claim_pk_step_root_attempt_jzpuu4i7ad"},
 				{"described":{"from":{"relation":"RetryDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"done"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_done_in_retry_result_yeyzwj6db7"},
 				{"described":{"from":{"relation":"RetryDone","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_done_in_retry_root_braao4mi3p"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"RetryDone"},"law":"__retry_done_pk_step_root_eikwcx4hil"},
+				{"described":{"from":{"relation":"RetryEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_ended_in_retry_claim_ji52426af5"},
+				{"described":{"from":{"relation":"RetryEnded","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_ended_in_retry_root_koxaexnkls"},
+				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"RetryEnded"},"law":"__retry_ended_pk_step_attempt_root_27ii3n27ne"},
 				{"described":{"from":{"relation":"RetryExhausted","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_exhausted_in_retry_failed_d7yltf6mxy"},
 				{"described":{"from":{"relation":"RetryExhausted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_exhausted_in_retry_root_rehvrphj6g"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"RetryExhausted"},"law":"__retry_exhausted_pk_step_root_xfa2suuydb"},
 				{"described":{"from":{"relation":"RetryFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"failed"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_failed_in_retry_result_kdzwljgaeg"},
 				{"described":{"from":{"relation":"RetryFailed","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_failed_in_retry_root_wsuyinezd5"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"RetryFailed"},"law":"__retry_failed_pk_step_root_wqkb64ukrj"},
-				{"described":{"from":{"relation":"RetryFenced","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_fenced_in_retry_claim_ai2vceitdh"},
+				{"described":{"from":{"relation":"RetryFenced","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_fenced_in_retry_ended_yd4lbrrw5n"},
 				{"described":{"from":{"relation":"RetryFenced","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_fenced_in_retry_root_lle7npqkvm"},
 				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"RetryFenced"},"law":"__retry_fenced_pk_step_attempt_root_6dv3ued2q7"},
 				{"described":{"from":{"relation":"RetryFinish","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_finish_in_retry_admitted_27xotj6ouf"},
@@ -10417,7 +10825,7 @@
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"RetryResult"},"law":"__retry_result_pk_step_root_krmujfesvi"},
 				{"described":{"from":{"relation":"RetryResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]},"kind":"contained","to":{"relation":"RetryPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__retry_resumed_in_retry_paused_xyeq3iuvx2"},
 				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"RetryResumed"},"law":"__retry_resumed_pk_target_turn_qctz7iyvsm"},
-				{"described":{"from":{"relation":"RetryRetry","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_retry_in_retry_claim_vin37i6xqf"},
+				{"described":{"from":{"relation":"RetryRetry","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_retry_in_retry_ended_n5j54vezxo"},
 				{"described":{"from":{"relation":"RetryRetry","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_retry_in_retry_root_cfgqtgjhsz"},
 				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"RetryRetry"},"law":"__retry_retry_pk_step_attempt_root_viscgwkogr"},
 				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"RetryRoot"},"law":"__retry_root_pk_scope_rd4zfpjgy6"},
@@ -10455,11 +10863,10 @@
 				{"described":{"from":{"relation":"SyncBuildOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_build_output_in_sync_done_4psvcsmbki"},
 				{"described":{"from":{"relation":"SyncBuildOutput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_build_output_in_sync_root_c67ldeejgl"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"SyncBuildOutput"},"law":"__sync_build_output_pk_step_root_5cdzryke67"},
-				{"described":{"from":{"relation":"SyncClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:2"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_claim_attempt_in_sync_claim_yexxfkmoco"},
-				{"described":{"kind":"check","name":"AttemptFromOne","relation":"SyncClaim"},"law":"__sync_claim_check_attempt_from_one_tjyxxuwpbj"},
+				{"described":{"from":{"relation":"SyncClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_claim_attempt_in_sync_ended_23yby26dmm"},
 				{"described":{"from":{"relation":"SyncClaim","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_claim_in_sync_root_plc2souwel"},
 				{"described":{"from":{"relation":"SyncClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_claim_in_sync_step_dmqfclzm5t"},
-				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"SyncClaim"},"law":"__sync_claim_pk_step_attempt_root_gbvdrtppav"},
+				{"described":{"fields":["step","root","attempt"],"kind":"primaryKey","relation":"SyncClaim"},"law":"__sync_claim_pk_step_root_attempt_pvna4nosul"},
 				{"described":{"from":{"relation":"SyncCopyInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_copy_input_in_sync_root_gx3x62sjyf"},
 				{"described":{"from":{"relation":"SyncCopyInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncStep","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Copy"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_copy_input_in_sync_step_nhvrrom3pv"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"SyncCopyInput"},"law":"__sync_copy_input_pk_step_root_zvufc5ytvd"},
@@ -10470,6 +10877,9 @@
 				{"described":{"from":{"relation":"SyncDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"done"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_done_in_sync_result_tswlqm7hu6"},
 				{"described":{"from":{"relation":"SyncDone","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_done_in_sync_root_ycdb363p5p"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"SyncDone"},"law":"__sync_done_pk_step_root_2eclqtmglp"},
+				{"described":{"from":{"relation":"SyncEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_ended_in_sync_claim_mqdrjokdxp"},
+				{"described":{"from":{"relation":"SyncEnded","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_ended_in_sync_root_uxu2wgnl4l"},
+				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"SyncEnded"},"law":"__sync_ended_pk_step_attempt_root_5gwut6z3js"},
 				{"described":{"from":{"relation":"SyncExclusive","selection":{"conjuncts":[]},"terms":[{"field":"kind","kind":"field"},{"field":"key","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"SyncReleased","selection":{"conjuncts":[]},"terms":[{"field":"kind","kind":"field"},{"field":"key","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__sync_exclusive_in_sync_released_uxaalxiffj"},
 				{"described":{"from":{"relation":"SyncExclusiveKey","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_exclusive_key_in_sync_root_usrzcv5vkn"},
 				{"described":{"from":{"relation":"SyncExclusiveKey","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_exclusive_key_in_sync_scope_fecbyetsbk"},
@@ -10481,7 +10891,7 @@
 				{"described":{"from":{"relation":"SyncFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"failed"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_failed_in_sync_result_f4xswckcbg"},
 				{"described":{"from":{"relation":"SyncFailed","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_failed_in_sync_root_32o4pmqdfq"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"SyncFailed"},"law":"__sync_failed_pk_step_root_n5clmcgrrb"},
-				{"described":{"from":{"relation":"SyncFenced","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_fenced_in_sync_claim_bkgur53cdg"},
+				{"described":{"from":{"relation":"SyncFenced","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_fenced_in_sync_ended_ewztrudohn"},
 				{"described":{"from":{"relation":"SyncFenced","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_fenced_in_sync_root_42qjfgegsa"},
 				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"SyncFenced"},"law":"__sync_fenced_pk_step_attempt_root_zse57q523u"},
 				{"described":{"from":{"relation":"SyncFinish","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_finish_in_sync_admitted_7esgcp5ftk"},
@@ -10508,7 +10918,7 @@
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"SyncResult"},"law":"__sync_result_pk_step_root_ntbvjaxhte"},
 				{"described":{"from":{"relation":"SyncResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]},"kind":"contained","to":{"relation":"SyncPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__sync_resumed_in_sync_paused_kcvrkk2m2o"},
 				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"SyncResumed"},"law":"__sync_resumed_pk_target_turn_uymw66ap2m"},
-				{"described":{"from":{"relation":"SyncRetry","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_retry_in_sync_claim_xf7kpyzuvz"},
+				{"described":{"from":{"relation":"SyncRetry","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_retry_in_sync_ended_u37r3zswll"},
 				{"described":{"from":{"relation":"SyncRetry","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_retry_in_sync_root_vfwwlbgk6b"},
 				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"SyncRetry"},"law":"__sync_retry_pk_step_attempt_root_7ner4qf2a4"},
 				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"SyncRoot"},"law":"__sync_root_pk_scope_uqnoijw2jr"},
@@ -10536,9 +10946,10 @@
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "00397e6bc48c115ccc15dff83b59a35efeff18d3fa424a602b7d5994a2f8b510",
+			"fingerprint": "f634b3086bc6904fd20880206209b3a262496a1500a48055d028943570f71d87",
 			"laws": [
-				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"}
+				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"},
+				{"described":{"kind":"key","side":{"relation":"FanLive","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"}]}},"law":"__fan_live_key_resource_seat_wqkc2jfkpw"}
 			],
 			"name": "SliceSeats",
 			"schema": "slice_seats"
@@ -10844,6 +11255,10 @@
 				]
 			},
 			{
+				"relation": "FanEnded",
+				"routes": []
+			},
+			{
 				"relation": "FanFanRunInput",
 				"routes": [
 					"scope"
@@ -10860,10 +11275,6 @@
 				"routes": [
 					"scope"
 				]
-			},
-			{
-				"relation": "FanFreed",
-				"routes": []
 			},
 			{
 				"relation": "FanHeld",

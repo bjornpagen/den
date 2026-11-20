@@ -141,6 +141,24 @@ export const standing = (
 		}
 	})
 
+/**
+ * The attempt of a step's latest claim whose lease has passed at `at` with neither a retry nor a fence recorded: a
+ * holder that vanished, whose end the step's next claim records.
+ */
+export const lapsedAttempt = (
+	claims: ReadonlyArray<Claimed>,
+	retries: ReadonlyArray<{ readonly attempt: bigint }>,
+	fenced: ReadonlyArray<{ readonly attempt: bigint }>,
+	at: Instant
+): Option.Option<bigint> =>
+	Option.flatMap(Arr.head(Arr.sort(claims, LATEST)), (latest) =>
+		latest.until < at &&
+		!Arr.some(retries, (r) => r.attempt === latest.attempt) &&
+		!Arr.some(fenced, (f) => f.attempt === latest.attempt)
+			? Option.some(latest.attempt)
+			: Option.none()
+	)
+
 /** The wakes due at `now` in a snapshot, and the exclusivity seats to give back. */
 export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Instant): Eligible => {
 	const scopes = HashMap.fromIterable(Arr.map(snapshot.scopes, (s) => [s.scope, s] as const))
@@ -183,7 +201,7 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 			stands.kind === "next"
 				? stands
 				: {
-						attempt: 1n,
+						attempt: 0n,
 						due: p.due,
 						waited: "time" as const
 					}

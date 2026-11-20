@@ -77,7 +77,7 @@ export const theFanOutFlowTalliesEverySquare = property.explore(runs, {
 						assert.ok(
 							Arr.some(finishes, (f) => f.scope === requested.scope && f.outcome === "done")
 						)
-						const holds = yield* fan.ledger.coordination.holds
+						const holds = yield* fan.ledger.holds
 						assert.deepEqual(holds, [])
 					}),
 					services

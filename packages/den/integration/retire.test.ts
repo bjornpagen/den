@@ -181,7 +181,7 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 													_tag: "Step",
 													flow: FlowName.make("Chain"),
 													step: page.step,
-													attempt: AttemptNumber.make(1)
+													attempt: AttemptNumber.make(0)
 												},
 												ends
 											),

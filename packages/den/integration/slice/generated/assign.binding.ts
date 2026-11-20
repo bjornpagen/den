@@ -325,13 +325,9 @@ export const assignLedger = (h: AssignHandles) => {
 			)
 	}
 	const coordination: Ledger<never>["coordination"] = {
-		seatTurns: Effect.succeed([]),
-		holds: Effect.succeed([]),
 		exclusiveTurns: Effect.succeed([]),
 		exclusives: Effect.succeed([]),
 		paused: pauseChains.live,
-		take: () => Effect.void,
-		giveBack: () => Effect.void,
 		holdExclusive: () => Effect.void,
 		releaseExclusive: () => Effect.void,
 		pause: (target) => Effect.flatMap(pausableOf(target), pauseIn(pauseChains)),
@@ -649,6 +645,7 @@ export const assignLedger = (h: AssignHandles) => {
 		authenticated: Effect.asVoid(
 			settled(h.commits.assignAuthenticated.once({ params: {}, facts: {} }))
 		),
+		holds: Effect.succeed([]),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.assignStepOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => ({
@@ -711,14 +708,44 @@ export const assignLedger = (h: AssignHandles) => {
 			h.den.assignFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
 		claim: (row) =>
-			Effect.map(
-				settled(h.den.assignClaim.once({ params: {}, facts: { insert: { AssignClaim: [row] } } })),
-				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
+			Effect.flatMap(
+				settled(
+					h.den.assignClaim.once({
+						params: {},
+						facts: {
+							insert: {
+								AssignClaim: [{ step: row.step, root: row.root, until: row.until }],
+								AssignEnded: row.lapsed
+							}
+						}
+					})
+				),
+				(outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)
 			),
 		retry: (row) =>
-			settled(h.den.assignRetry.once({ params: {}, facts: { insert: { AssignRetry: [row] } } })),
+			settled(
+				h.den.assignRetry.once({
+					params: {},
+					facts: {
+						insert: {
+							AssignEnded: [{ step: row.step, root: row.root, attempt: row.attempt }],
+							AssignRetry: [row]
+						}
+					}
+				})
+			),
 		fence: (row) =>
-			settled(h.den.assignFence.once({ params: {}, facts: { insert: { AssignFenced: [row] } } })),
+			settled(
+				h.den.assignFence.once({
+					params: {},
+					facts: {
+						insert: {
+							AssignEnded: [{ step: row.step, root: row.root, attempt: row.attempt }],
+							AssignFenced: [row]
+						}
+					}
+				})
+			),
 		refuse: ({ step, root, attempt }, law) =>
 			settled(
 				h.den.assignRefuse.once({

@@ -123,9 +123,9 @@ export const exclusivityAdmitsOneLiveSyncPerRelation = property.explore(runs, {
 	kills: [
 		{
 			file: "packages/den/src/runtime/turn.ts",
-			original: "\t\t\t\tif (!claimed.success) {",
-			replacement: "\t\t\t\tif (claimed.success) {",
-			why: "Operator mutant (negation) at packages/den/src/runtime/turn.ts:839 in serveStep: `!claimed.success` becomes `claimed.success`; the property fails (lane CATCH, den 9cffaba)."
+			original: '\t\tif (claimed.kind === "ended") {',
+			replacement: '\t\tif (claimed.kind !== "ended") {',
+			why: "Operator mutant (negation) at packages/den/src/runtime/turn.ts:830 in serveStep, where the claim's check moved when a claim came to answer its stamped attempt: a turn serves the ending of a claim that claimed and runs one that ended; the property fails (lane CATCH, den 9cffaba)."
 		}
 	]
 })

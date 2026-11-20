@@ -1,5 +1,5 @@
-import { holderOf, instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
-import { serve } from "@bjornpagen/den/runtime/turn"
+import { instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
+import { lostRace, serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
@@ -12,13 +12,14 @@ import { openLedgers, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
 
 /**
- * A claim is a race at `(step, attempt)`, decided by the claim's primary key alone, which Claim races. Two claimers
- * of one step's first attempt, each under its own holder, in every order of their moves, each move in flight beside
- * the other's: exactly one claim holds the key, and the other meets it and reports another holder's, a race lost,
- * refused by nothing.
+ * A claim's attempt is its place among its step's claims, which the database stamps, and a claim after the first
+ * follows its predecessor's end. Two claimers of one step's first attempt, in every order of their moves, each move in
+ * flight beside the other's: exactly one claims, at attempt 0, and the other is refused whole as a race lost, whether it
+ * stamps after the first's commit or its serialization failure is run again and stamps after it, since attempt 0 has
+ * not ended; the step holds one claim.
  *
- * Oracle (postgresql): PostgreSQL's unique index, which grizzle's insert protocol arbitrates by ON CONFLICT DO SELECT,
- * over every interleaving the testing library's `every` strategy runs.
+ * Oracle (postgresql): PostgreSQL's serializable isolation over the step's head and the claim's law of its predecessor's
+ * end, over every interleaving the testing library's `every` strategy runs.
  */
 
 type Session = "first" | "second"
@@ -66,24 +67,27 @@ export const admitsOneClaimerOfAnAttemptInEveryInterleaving = property.exhaust(f
 								Option.map(first, (s) => s.step)
 							)
 						}).pipe(Effect.orDie)
-						const claim = (session: Session): Effect.Effect<Outcome, never, Digest.Digest> =>
+						const claim = (_session: Session): Effect.Effect<Outcome, never, Digest.Digest> =>
 							Effect.gen(function* () {
 								const held = yield* Ref.get(current)
 								const step = Option.getOrThrow(held)
 								const at = yield* chain.ledger.now
-								const holder = yield* holderOf(step, 1, session === "first" ? 0 : 1)
 								const located = yield* Effect.orDie(chain.ledger.stepOf(step))
 								const root = Option.getOrThrow(located).root
 								const outcome = yield* Effect.result(
 									chain.ledger.claim({
 										step,
 										root,
-										attempt: 1n,
-										holder,
-										until: instantOf(Number(at) + longestLeaseMillis)
+										until: instantOf(Number(at) + longestLeaseMillis),
+										seats: [],
+										lapsed: []
 									})
 								)
-								return outcome._tag === "Success" ? (outcome.success ? "claimed" : "lost") : "other"
+								if (outcome._tag === "Success") {
+									assert.equal(outcome.success, 0n)
+									return "claimed"
+								}
+								return lostRace("Chain", outcome.failure) ? "lost" : "other"
 							}).pipe(Effect.orDie)
 						const judge = (run: Interleaving<Session, "claim", Outcome, never, never, never>) =>
 							Effect.gen(function* () {
@@ -136,7 +140,7 @@ export const admitsOneClaimerOfAnAttemptInEveryInterleaving = property.exhaust(f
 			),
 	oracle: {
 		kind: "postgresql",
-		name: "the claim's primary key, over every interleaving of two claimers"
+		name: "the step's stamped attempt and its predecessor's end, over every interleaving of two claimers"
 	},
 	kept: [],
 	kills: [

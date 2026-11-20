@@ -1,4 +1,4 @@
-import { holderOf, instantOf } from "@bjornpagen/den/runtime/identity"
+import { instantOf } from "@bjornpagen/den/runtime/identity"
 import type { Ran, Turn } from "@bjornpagen/den/runtime/ledger"
 import { lostRace, serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
@@ -14,9 +14,9 @@ import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/sl
 import { longestLeaseMillis, reclaimableAfterMillis } from "#runtime/turn.ts"
 
 /**
- * Two holders of one step, a stale one and a fresh one, each with its own attempt: the stale one claimed attempt 1 and
- * its lease lapsed at the database's instant while it still runs, as a holder paused past its lease does, with a
- * deadline of its own still ahead; the fresh one claimed attempt 2. Correctness rests on the keys alone, never on a
+ * Two holders of one step, a stale one and a fresh one, each with its own attempt: the stale one claimed attempt 0 and
+ * its lease lapsed while it still runs, as a holder paused past its lease does, with a deadline of its own still ahead;
+ * the fresh one claimed attempt 1, recording attempt 0's lapse in its claim. Correctness rests on the keys alone, never on a
  * clock: whichever commits second is refused on the key the first commit's Held holds, its writes rolled back with its
  * result, a race lost; the first commit's attempt is the one Held names. A wake for an attempt whose predecessor was
  * never claimed is lost outright, claiming nothing.
@@ -32,13 +32,11 @@ type Feature = Order | "a forged attempt"
 interface Race {
 	readonly order: Order
 	readonly pages: number
-	readonly copy: number
 }
 
 const races: Gen<Race> = (source) => ({
 	order: source.draw(element(["stale commits first", "fresh commits first"])),
-	pages: source.draw(int(1, 3)),
-	copy: source.draw(int(0, 99_999))
+	pages: source.draw(int(1, 3))
 })
 
 /**
@@ -90,26 +88,30 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 							return yield* Effect.die("an admitted page is located")
 						}
 						const runner = located.value.runner
-						const claimAt = (attempt: bigint) =>
+						const claimAt = (lapsed: ReadonlyArray<bigint>) =>
 							Effect.gen(function* () {
 								const from = yield* chain.ledger.now
-								const holder = yield* holderOf(step, Number(attempt), race.copy)
 								const until = ends(from)
-								yield* chain.ledger.claim({ step, root: requested.scope, attempt, holder, until })
+								const attempt = yield* chain.ledger.claim({
+									step,
+									root: requested.scope,
+									until,
+									seats: [],
+									lapsed: Arr.map(lapsed, (a) => ({ step, root: requested.scope, attempt: a }))
+								})
 								const turn: Turn = {
 									step,
 									root: requested.scope,
 									attempt,
 									scope: requested.scope,
-									holder,
 									deadline: instantOf(Number(until) - 1),
 									until
 								}
 								return turn
 							})
-						const first = yield* claimAt(1n)
+						const first = yield* claimAt([])
 						yield* TestClock.adjust(Duration.millis(reclaimableAfterMillis))
-						const fresh = yield* claimAt(2n)
+						const fresh = yield* claimAt([first.attempt])
 						const stale: Turn = { ...first, deadline: fresh.deadline, until: fresh.until }
 						const [early, late] =
 							race.order === "stale commits first" ? [stale, fresh] : [fresh, stale]
@@ -145,7 +147,7 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 						c.note("a forged attempt")
 						const forged = yield* serve(
 							ledgers,
-							{ _tag: "Step", flow, step: otherPage.value.step, attempt: AttemptNumber.make(2) },
+							{ _tag: "Step", flow, step: otherPage.value.step, attempt: AttemptNumber.make(1) },
 							ends(forgedAt)
 						)
 						assert.equal(forged.ending.kind, "lost")

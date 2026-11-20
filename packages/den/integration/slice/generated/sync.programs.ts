@@ -16,6 +16,7 @@ import {
 	SyncStartStep,
 	SyncFinish,
 	SyncClaim,
+	SyncEnded,
 	SyncRetry,
 	SyncFenced,
 	SyncResult,
@@ -63,6 +64,7 @@ export const SyncDen = role(
 			"SyncStartStep",
 			"SyncFinish",
 			"SyncClaim",
+			"SyncEnded",
 			"SyncRetry",
 			"SyncFenced",
 			"SyncResult",
@@ -132,23 +134,17 @@ export const syncDenPrograms = Object.freeze({
 	),
 	syncClaim: ChangeSet.empty(syncGraph)
 		.insert(SyncClaim, [])
+		.insert(SyncEnded, [])
 		.read("held", (delta) =>
-			query(syncGraph)
-				.rule((r) => {
-					const { step, attempt, holder } = v(delta.added(SyncClaim), "added")
-					return r
-						.match(delta.added(SyncClaim), { step, attempt, holder })
-						.find({ step, attempt, holder })
-				})
-				.rule((r) => {
-					const { step, attempt, holder } = v(delta.met(SyncClaim), "met")
-					return r
-						.match(delta.met(SyncClaim), { step, attempt, holder })
-						.find({ step, attempt, holder })
-				})
+			query(syncGraph).rule((r) => {
+				const { step, root, attempt } = v(delta.added(SyncClaim), "added")
+				return r
+					.match(delta.added(SyncClaim), { step, root, attempt })
+					.find({ step, root, attempt })
+			})
 		),
-	syncRetry: ChangeSet.empty(syncGraph).insert(SyncRetry, []),
-	syncFence: ChangeSet.empty(syncGraph).insert(SyncFenced, []),
+	syncRetry: ChangeSet.empty(syncGraph).insert(SyncEnded, []).insert(SyncRetry, []),
+	syncFence: ChangeSet.empty(syncGraph).insert(SyncEnded, []).insert(SyncFenced, []),
 	syncRefuse: ChangeSet.empty(syncGraph)
 		.insert(SyncResult, [])
 		.insert(SyncFailed, [])
@@ -237,11 +233,11 @@ export const syncDenPrograms = Object.freeze({
 			})
 	),
 	syncClaimsOf: query(syncGraph).rule((r) => {
-		const { step, attempt, holder, until } = v(SyncClaim, "claim")
+		const { step, attempt, until } = v(SyncClaim, "claim")
 		return r
-			.match(SyncClaim, { step, attempt, holder, until })
+			.match(SyncClaim, { step, attempt, until })
 			.where(r.eq(step, r.param("step", SyncStep.fields.step)))
-			.find({ step, attempt, holder, until })
+			.find({ step, attempt, until })
 	}),
 	syncRetriesOf: query(syncGraph).rule((r) => {
 		const { step, attempt, at, spent } = v(SyncRetry, "retry")

@@ -15,6 +15,7 @@ import {
 	RetryStartStep,
 	RetryFinish,
 	RetryClaim,
+	RetryEnded,
 	RetryRetry,
 	RetryFenced,
 	RetryResult,
@@ -50,6 +51,7 @@ export const RetryDen = role(
 			"RetryStartStep",
 			"RetryFinish",
 			"RetryClaim",
+			"RetryEnded",
 			"RetryRetry",
 			"RetryFenced",
 			"RetryResult",
@@ -101,23 +103,17 @@ export const retryDenPrograms = Object.freeze({
 	),
 	retryClaim: ChangeSet.empty(retryGraph)
 		.insert(RetryClaim, [])
+		.insert(RetryEnded, [])
 		.read("held", (delta) =>
-			query(retryGraph)
-				.rule((r) => {
-					const { step, attempt, holder } = v(delta.added(RetryClaim), "added")
-					return r
-						.match(delta.added(RetryClaim), { step, attempt, holder })
-						.find({ step, attempt, holder })
-				})
-				.rule((r) => {
-					const { step, attempt, holder } = v(delta.met(RetryClaim), "met")
-					return r
-						.match(delta.met(RetryClaim), { step, attempt, holder })
-						.find({ step, attempt, holder })
-				})
+			query(retryGraph).rule((r) => {
+				const { step, root, attempt } = v(delta.added(RetryClaim), "added")
+				return r
+					.match(delta.added(RetryClaim), { step, root, attempt })
+					.find({ step, root, attempt })
+			})
 		),
-	retryRetry: ChangeSet.empty(retryGraph).insert(RetryRetry, []),
-	retryFence: ChangeSet.empty(retryGraph).insert(RetryFenced, []),
+	retryRetry: ChangeSet.empty(retryGraph).insert(RetryEnded, []).insert(RetryRetry, []),
+	retryFence: ChangeSet.empty(retryGraph).insert(RetryEnded, []).insert(RetryFenced, []),
 	retryRefuse: ChangeSet.empty(retryGraph)
 		.insert(RetryResult, [])
 		.insert(RetryFailed, [])
@@ -199,11 +195,11 @@ export const retryDenPrograms = Object.freeze({
 			})
 	),
 	retryClaimsOf: query(retryGraph).rule((r) => {
-		const { step, attempt, holder, until } = v(RetryClaim, "claim")
+		const { step, attempt, until } = v(RetryClaim, "claim")
 		return r
-			.match(RetryClaim, { step, attempt, holder, until })
+			.match(RetryClaim, { step, attempt, until })
 			.where(r.eq(step, r.param("step", RetryStep.fields.step)))
-			.find({ step, attempt, holder, until })
+			.find({ step, attempt, until })
 	}),
 	retryRetriesOf: query(retryGraph).rule((r) => {
 		const { step, attempt, at, spent } = v(RetryRetry, "retry")

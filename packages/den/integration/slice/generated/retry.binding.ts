@@ -231,13 +231,9 @@ export const retryLedger = (h: RetryHandles) => {
 			)
 	}
 	const coordination: Ledger<never>["coordination"] = {
-		seatTurns: Effect.succeed([]),
-		holds: Effect.succeed([]),
 		exclusiveTurns: Effect.succeed([]),
 		exclusives: Effect.succeed([]),
 		paused: pauseChains.live,
-		take: () => Effect.void,
-		giveBack: () => Effect.void,
 		holdExclusive: () => Effect.void,
 		releaseExclusive: () => Effect.void,
 		pause: (target) => Effect.flatMap(pausableOf(target), pauseIn(pauseChains)),
@@ -476,6 +472,7 @@ export const retryLedger = (h: RetryHandles) => {
 		authenticated: Effect.asVoid(
 			settled(h.commits.retryAuthenticated.once({ params: {}, facts: {} }))
 		),
+		holds: Effect.succeed([]),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.retryStepOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => ({
@@ -538,14 +535,44 @@ export const retryLedger = (h: RetryHandles) => {
 			h.den.retryFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
 		claim: (row) =>
-			Effect.map(
-				settled(h.den.retryClaim.once({ params: {}, facts: { insert: { RetryClaim: [row] } } })),
-				(outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)
+			Effect.flatMap(
+				settled(
+					h.den.retryClaim.once({
+						params: {},
+						facts: {
+							insert: {
+								RetryClaim: [{ step: row.step, root: row.root, until: row.until }],
+								RetryEnded: row.lapsed
+							}
+						}
+					})
+				),
+				(outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)
 			),
 		retry: (row) =>
-			settled(h.den.retryRetry.once({ params: {}, facts: { insert: { RetryRetry: [row] } } })),
+			settled(
+				h.den.retryRetry.once({
+					params: {},
+					facts: {
+						insert: {
+							RetryEnded: [{ step: row.step, root: row.root, attempt: row.attempt }],
+							RetryRetry: [row]
+						}
+					}
+				})
+			),
 		fence: (row) =>
-			settled(h.den.retryFence.once({ params: {}, facts: { insert: { RetryFenced: [row] } } })),
+			settled(
+				h.den.retryFence.once({
+					params: {},
+					facts: {
+						insert: {
+							RetryEnded: [{ step: row.step, root: row.root, attempt: row.attempt }],
+							RetryFenced: [row]
+						}
+					}
+				})
+			),
 		refuse: ({ step, root, attempt }, law) =>
 			settled(
 				h.den.retryRefuse.once({

@@ -1,30 +1,30 @@
 import type { Settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option } from "effect"
 import type { Resource } from "#algebra/kinds.ts"
-import type { Holder, Instant, ScopeKey } from "#runtime/identity.ts"
+import type { Instant, ScopeKey } from "#runtime/identity.ts"
 import type {
 	ExclusiveAt,
 	ExclusiveRow,
 	ExclusiveTurn,
 	HoldRow,
 	Ledger,
-	SeatTurn
+	SeatAt
 } from "#runtime/ledger.ts"
 import { refusedOnKey } from "#runtime/ledger.ts"
 import type { FlowName } from "#transport.ts"
 
 /**
- * The seat module: exact seats as chains of turns. A seat's turns run from 0, each held by one holder until it is
- * freed, and a turn after the first is contained in its predecessor's `Freed`, so a seat holds at most one live hold,
- * its latest turn, and a bound is never exceeded; a hold's seat is checked below its resource's count, a closed
- * relation of the flow's declaration. A step takes a seat of each resource it uses before its claim and frees them
- * after its last write; a scope takes its exclusivity seat at its admission and releases it once its finish has its
- * result. Pauses are chains of the same shape. Nothing is deleted, so den's coordinator role certifies READ COMMITTED.
+ * The seat module. A step's seats are its claim's: a claim's one write holds them, each a member of the claim carrying
+ * its step and attempt, so a lost claim holds none, and a seat is given back by the fact that ends its claim's attempt (a
+ * retry, a fence, a result, or its lapse), so a turn gives nothing back. A seat holds at most one live hold, the live
+ * holds' key, and each live hold sits below its resource's count; a claim that takes a seat another live hold holds is
+ * refused whole on that key, and the turn picks its seats again from a fresh read. An exclusivity seat and a pause are
+ * chains of turns, inserted and never deleted, so den's coordinator role certifies READ COMMITTED.
  *
- * No relation here races: a take of several seats must win all or none, which one call refused whole on any turn
- * another holder took first gives, and a raced insert would not (it can win one seat and meet another); and a raced
- * insert at a turn a stale read chose meets that turn's old row, which says nothing of who holds the seat now. A
- * refusal on a turn's key and a fresh read do.
+ * No chain here races: a take of several turns must win all or none, which one call refused whole on any turn another
+ * holder took first gives, and a raced insert would not (it can win one turn and meet another); and a raced insert at a
+ * turn a stale read chose meets that turn's old row, which says nothing of who holds the seat now. A refusal on a turn's
+ * key and a fresh read do.
  */
 
 /** A chain's next turn: one past its latest, or its first, 0, when it has none. */
@@ -35,99 +35,53 @@ const nextTurn = (latest: Option.Option<bigint>): bigint =>
 const seatsOf = (count: number): ReadonlyArray<bigint> =>
 	Array.from({ length: count }, (_, seat) => BigInt(seat))
 
+/** A seat a claim takes, and the live hold whose lease lapsed there, if one did, whose end the claim's write records. */
+interface Taken {
+	readonly seat: SeatAt
+	readonly lapsed: Option.Option<HoldRow>
+}
+
 /**
- * The seat of `resource` a holder may take at `now`, and its turn: the lowest seat with no live hold, at its next turn,
- * or the lowest whose live hold lapsed (its `until` before `now`), at the turn after it, which the take frees in the
- * same call.
+ * The seats a claim takes at `now`, one of each of `resources`, each the lowest with no live hold or whose live hold's
+ * lease lapsed (its `until` before `now`), with the lapsed holds; none when some resource has no such seat.
  */
-const freeSeat = (
-	resource: string,
-	count: number,
-	turns: ReadonlyArray<SeatTurn>,
-	holds: ReadonlyArray<HoldRow>,
+export const seatsFor = (
+	resources: ReadonlyArray<Resource>,
+	live: ReadonlyArray<HoldRow>,
 	now: Instant
-): Option.Option<{ readonly seat: SeatTurn; readonly lapsed: Option.Option<SeatTurn> }> =>
-	Arr.head(
-		Arr.flatMap(seatsOf(count), (seat) => {
-			const live = Arr.findFirst(holds, (h) => h.resource === resource && h.seat === seat)
-			return Option.match(live, {
-				onNone: () => [
-					{
-						seat: {
-							resource,
-							seat,
-							turn: nextTurn(
-								Option.map(
-									Arr.findFirst(turns, (t) => t.resource === resource && t.seat === seat),
-									(t) => t.turn
-								)
-							)
-						},
-						lapsed: Option.none<SeatTurn>()
-					}
-				],
-				onSome: (h) =>
-					h.until < now
-						? [
-								{
-									seat: { resource, seat, turn: h.turn + 1n },
-									lapsed: Option.some<SeatTurn>({ resource, seat, turn: h.turn })
-								}
-							]
-						: []
-			})
+): Option.Option<{
+	readonly seats: ReadonlyArray<SeatAt>
+	readonly lapsed: ReadonlyArray<HoldRow>
+}> =>
+	Option.map(
+		Option.all(
+			Arr.map(resources, (resource) =>
+				Arr.findFirst(seatsOf(resource.seats), (seat): Option.Option<Taken> => {
+					const held = Arr.findFirst(live, (h) => h.resource === resource.name && h.seat === seat)
+					return Option.match(held, {
+						onNone: () =>
+							Option.some({ seat: { resource: resource.name, seat }, lapsed: Option.none() }),
+						onSome: (h) =>
+							h.until < now
+								? Option.some({ seat: { resource: resource.name, seat }, lapsed: Option.some(h) })
+								: Option.none()
+					})
+				})
+			)
+		),
+		(taken) => ({
+			seats: Arr.map(taken, (t) => t.seat),
+			lapsed: Arr.flatMap(taken, (t) => Option.toArray(t.lapsed))
 		})
 	)
 
-/**
- * Takes one seat of each of `resources` for `holder` until `until`, all in one call or none: the holds it took, or none
- * when some resource has no seat free at `now`. A turn another holder took between the reads and the take refuses the
- * take whole on that turn's key, and the take starts again from a fresh read, so it ends once it holds seats or finds
- * none free.
- */
-export const take = <R>(
-	ledger: Ledger<R>,
-	resources: ReadonlyArray<Resource>,
-	holder: Holder,
-	until: Instant,
-	now: Instant
-): Effect.Effect<Option.Option<ReadonlyArray<HoldRow>>, Settled> =>
-	Arr.isReadonlyArrayEmpty(resources)
-		? Effect.succeedSome([])
-		: Effect.gen(function* () {
-				const coordination = ledger.coordination
-				const turns = yield* coordination.seatTurns
-				const holds = yield* coordination.holds
-				const picked = Option.all(
-					Arr.map(resources, (resource) =>
-						freeSeat(resource.name, resource.seats, turns, holds, now)
-					)
-				)
-				if (Option.isNone(picked)) {
-					return Option.none()
-				}
-				const taken = Arr.map(picked.value, (p): HoldRow => ({ ...p.seat, holder, until }))
-				const lapsed = Arr.flatMap(picked.value, (p) => Option.toArray(p.lapsed))
-				return yield* coordination.take(lapsed, taken).pipe(
-					Effect.as(Option.some(taken)),
-					Effect.catchIf(
-						(error: Settled) => refusedOnKey(error, [`${ledger.flow}Hold`]),
-						() => take(ledger, resources, holder, until, now)
-					)
-				)
-			})
-
-/**
- * Gives back a turn's holds: each one's turn freed, so a hold whose lapsed turn another holder freed and took over is
- * left as it is (its `Freed` is the same row, no change).
- */
-export const giveBack = <R>(
-	ledger: Ledger<R>,
-	holds: ReadonlyArray<HoldRow>
-): Effect.Effect<void> =>
-	Arr.isReadonlyArrayEmpty(holds)
-		? Effect.void
-		: ledger.coordination.giveBack(holds).pipe(Effect.ignore)
+/** Whether a claim was refused because another live hold holds one of its seats: the live holds' key. */
+export const seatTaken = (flow: string, error: Settled): boolean =>
+	error.kind === "refused" &&
+	Arr.some(error.refused.laws, ({ law }) => {
+		const own = law.kind === "above" ? law.law : law
+		return own.kind === "key" && own.side.relation === `${flow}Live`
+	})
 
 /** The live turn of the exclusivity seat `seat`, if one holds it. */
 const liveExclusive = <R>(

@@ -365,6 +365,8 @@ it.effect(
 									return [law.side.relation]
 								case "retirable":
 									return [law.header, ...law.bodies]
+								case "ordered":
+									return [law.member.relation, law.owner]
 								case "race":
 								case "check":
 									return [law.relation]
@@ -482,9 +484,6 @@ it.effect(
 						)
 
 						const chains = [
-							...(sketch.resource
-								? [{ held: "Hold", ended: "Freed", at: ["resource", "seat"] }]
-								: []),
 							...(sketch.exclusive
 								? [{ held: "Exclusive", ended: "Released", at: ["kind", "key"] }]
 								: []),
@@ -530,19 +529,12 @@ it.effect(
 						assert.deepStrictEqual(
 							Option.map(lowered.seats, (seats) => [
 								seats.hold,
-								seats.freed,
 								seats.live,
 								seats.counts.name,
 								seats.bound
 							]),
 							sketch.resource
-								? Option.some([
-										`${P}Hold`,
-										`${P}Freed`,
-										`${P}Live`,
-										`${P}Seats`,
-										`${P}SeatBelowCount`
-									])
+								? Option.some([`${P}Hold`, `${P}Live`, `${P}Seats`, `${P}SeatBelowCount`])
 								: Option.none()
 						)
 						assert.deepStrictEqual(

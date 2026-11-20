@@ -9,34 +9,46 @@ group; den's programs are written over them, and each commit is a union of den's
 for the coordination group, and DBCLOCK:
 
 - **LEASE for the coordination group (28496788).** The group is insert-only, and each flow's coordinator role
-  certifies READ COMMITTED. Each seat, exclusivity seat and pause is
-  a chain of turns: `<P>Hold(resource, seat, turn, holder, until)` keyed by `(resource, seat, turn)`, `<P>Freed(resource,
-  seat, turn)` contained in it, and `contained(on(<P>Hold, "resource", "seat", pred("turn")), on(<P>Freed, "resource",
-  "seat", "turn"))`, so a turn after the first needs its predecessor freed and a seat holds at most one live hold, which
-  the database enforces. Taking a lapsed seat frees its turn and holds the next in one call; giving back inserts
-  `Freed`, which is the same row, no change, for a turn another holder already freed and took over. The live holds are the
-  holds with no `Freed`; a seat's next turn is one past its latest, `r.max(turn)` grouped by seat, or 0. Exclusivity seats
-  (`<P>Exclusive` and `<P>Released`, by `(kind, key, turn)`) and pauses (`<P>Paused` and `<P>Resumed`, by `(target,
-  turn)`) take the same shape. A resource's seat count is a closed relation, `closed.relation("<P>Seats", { resource,
-  seats }, ["resource"], …)` from the flow's declaration, and every live hold's seat is checked below it, so provisioning
-  is gone. The coordinator role (`<p>_coordinator`) holds the group's rosters and relations by name, since no role holds a
-  closed relation. None of
+  certifies READ COMMITTED. Each exclusivity seat and pause is a chain of turns: exclusivity seats (`<P>Exclusive` and
+  `<P>Released`, by `(kind, key, turn)`) and pauses (`<P>Paused` and `<P>Resumed`, by `(target, turn)`), each turn after
+  the first contained in its predecessor's end, so a chain holds at most one live turn, which the database enforces. A
+  resource's seat count is a closed relation, `closed.relation("<P>Seats", { resource, seats }, ["resource"], …)` from
+  the flow's declaration, and every live hold's seat is checked below it, so provisioning is gone. A step's seats are
+  its claim's (**Stamped claims** below), no longer a chain. The coordinator role (`<p>_coordinator`) holds the group's
+  rosters and relations by name, since no role holds a closed relation. None of
   these relations races: a multi-resource take must win every seat or none, which one call refused whole on any held key
   gives and a raced insert would not (it can win one seat and meet another), and a raced insert at a turn a stale read
   chose meets that turn's old row, which says nothing of who holds the key now; a refusal and a fresh read do. Until
   RETIRE, the turns accumulate as the graph does, and the status reads scan them as the graph's do.
 
   One outcome moved: **lowering a resource's seat count.** The provisioned seats let the census remove a seat once its
-  hold was given back. A freed turn now stays a row until RETIRE, so the seat bound is over the live holds alone:
-  `<P>Live`, a derived relation of the holds no `Freed` ended, under `check("<P>SeatBelowCount", <P>Live, (row) =>
-  row.lt(row.seat, <P>Seats.at("seats", row.resource)))`, a rule over a query. A fragment declares no derived relation,
-  so the fragment module exports them as `<p>SeatLevel`, and the schema that lists the coordination fragment states them
-  on a level over itself (the slice's `App`, `schema.extend(Listed, "SliceSeats", …)`). The coordinator role reads its
-  holds through a query entry over `<P>Live`, so a schema without the level fails to typecheck. grizzle's MONOTONE
-  (57c3a05f) certifies the coordinator READ COMMITTED beside the rule, which its writes can break only through the hold
-  each inserts. A migration that lowers a count is refused while a live hold sits at or above the new count and admitted
-  over freed turns (`seatcount.test.ts`, whose plant checks every hold). Growing a count is a migration that validates
-  at once.
+  hold was given back. A hold whose attempt ended now stays a row until its graph retires, so the seat bound is over the
+  live holds alone: `<P>Live`, a derived relation of the holds whose claim's attempt has neither an `<P>Ended` nor a
+  `<P>Held`, keyed by `(resource, seat)` and under `check("<P>SeatBelowCount", <P>Live, (row) => row.lt(row.seat,
+  <P>Seats.at("seats", row.resource)))`, rules over a query. A fragment declares no derived relation, so the fragment
+  module exports them as `<p>SeatLevel`, and the schema that lists the graph states them on a level over itself (the
+  slice's `App`, `schema.extend(Listed, "SliceSeats", …)`). den's role reads the live holds through a query entry over
+  `<P>Live`, so a schema without the level fails to typecheck. A migration that lowers a count is refused while a live
+  hold sits at or above the new count and admitted over ended attempts' holds (`seatcount.test.ts`, whose kill checks
+  every hold). Growing a count is a migration that validates at once.
+
+- **Stamped claims (grizzle 208ff7519, b8717adbb, 4fd74fbad).** A claim's attempt is its place among its step's claims,
+  `attempt: place`, stamped by the database from 0, so concurrent claimants serialize on the step's head and none
+  chooses an attempt; a turn learns its attempt from the claim's read-back of `delta.added(<P>Claim)`, which rides the
+  claim's one statement, and a claim is its turn's identity, with no holder and no nonce beside it (den-model's holder
+  was always `Claim{step, attempt}`). A claim's seats are members of its ordered family, `ordered(on(<P>Hold, "step",
+  "root", "attempt", "at"), fin(<P>Claim, "holds"))`, written in the claim's one write and carrying its step, root and
+  attempt, so a lost claim holds no seat and nothing gives seats back after one. An attempt's end is `<P>Ended(step,
+  attempt)`, written beside its `<P>Retry` and its `<P>Fenced` (each contained in it), or by the next claim of its step
+  or of one of its seats once its lease has passed at that turn's reading, as the call's own rows, since a call holds
+  every graph it touches; and `contained(on(select(<P>Claim, attempt ≥ 1), "step", pred("attempt")), on(<P>Ended,
+  "step", "attempt"))` makes a claim after the first follow its predecessor's end, so a claimant whose serialization
+  failure is run again, and stamps past a live attempt, is refused whole as a race lost. A seat is given back by the fact
+  that ends its claim's attempt. Seats were turn chains in the coordination group, which outlive the graphs whose steps
+  took them, and a chain's turn is proved from its predecessor's end, so a hold could be no claim's member while it was a
+  turn: retiring a graph would delete turns later turns are proved from. So the chain law goes with the turns, the
+  holds join the graph and retire with it (a retirable graph's attempts have all ended, so its holds are never live),
+  and a seat holds at most one live hold by the live holds' key.
 
 - **DBCLOCK (44cade74, 6172e92c, 8081e6ce).** `clocked(program, { now: unit })` binds `now` to
   `transaction_timestamp()`, one reading per call. Each flow's den role serves a clocked read of the database's instant
@@ -69,8 +81,9 @@ for the coordination group, and DBCLOCK:
   its own; an app row that references a
   body row refuses the retirement (NO ACTION) unless the app declares its relation among the unit's bodies; and
   grizzle retires whole units only, never a chain's prefix, so the coordination group's chains of turns, each turn
-  proved from its predecessor's `Freed`, must be restated before they can be retired: one current row per seat, or
-  each turn a unit whose containment reads only its live predecessor. That restatement waits on the owner.
+  proved from its predecessor's end, must be restated before they can be retired: one current row per exclusivity seat
+  or pause, or each turn a unit whose containment reads only its live predecessor. A step's seats are no chain since
+  stamped claims: they retire with their graph. The restatement of the exclusivity and pause chains waits on the owner.
 
 - **Certificates, and every call settled (grizzle's SELECTWHOLE, bb62f0fa1; Bjorn's ruling of 2026-11-19).** A
   containment with a selected side is judged whole, as a rule over a query, where the relations it reads are immutable
