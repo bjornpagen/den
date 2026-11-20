@@ -76,6 +76,13 @@ export const edullmsWorkloadsKeepEveryLawAndTheirOwn = property.explore(
 		},
 		budget: { runs: 500, steered: 300 },
 		kept: [],
-		kills: []
+		kills: [
+			{
+				file: "packages/den-model/src/ledger.ts",
+				original: "startChildren(tx, scoped, at)",
+				replacement: "{}",
+				why: "Operator mutant 93a89d49a1 at packages/den-model/src/ledger.ts:1200 in admitInto: `startChildren(tx, scoped, at)` becomes `{}`; the property fails (the census, lane TESTPOLICY2)."
+			}
+		]
 	}
 )
