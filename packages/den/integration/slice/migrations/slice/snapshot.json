@@ -7,6 +7,9 @@
 			"__domain_jevqauzmw6": {
 				"check": "__den_scope_g3mjgc2ytk"
 			},
+			"__domain_p7dj7oebtz": {
+				"check": "__den_delay_6gn6vitnwt"
+			},
 			"__text_t4rwovzmqj": {
 				"check": "__assign_decide_nearest_read_pattern_passage_7ovh7m5g22"
 			}
@@ -1197,7 +1200,13 @@
 			"views": []
 		},
 		"params": {
-			"contracts": [],
+			"contracts": [
+				{
+					"checked": true,
+					"digest": "db25dd39e94cd7f1ccb54e669ba299e617489799d273326e340a1a533e0b94bd",
+					"name": "DenDelay"
+				}
+			],
 			"domains": [
 				"__param_nearest_anchor_question_elxa5ygyai",
 				"__param_nearest_topic_4eruqlfauv",
@@ -10466,7 +10475,7 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "8e622bb9b83079333701c33f18edab64d630b01b40d01020e32f73cb46d81086",
+	"fingerprint": "1d6b363d7388b708fb3c04bc31ef0a58d9b5705fbb62d1bb4f73dbf8de754b24",
 	"format": 3,
 	"levels": [
 		{

@@ -2,7 +2,7 @@ import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runti
 import { Array as Arr, type Cron, Effect, Option, Order, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Due, Exclusive, Trigger } from "#algebra/kinds.ts"
-import { exclusiveId, type Instant, instantOf, type ScopeKey } from "#runtime/identity.ts"
+import { atOnce, type Delay, delayOf, exclusiveId, type ScopeKey } from "#runtime/identity.ts"
 import { refusedOnKey } from "#runtime/ledger.ts"
 
 /**
@@ -50,13 +50,13 @@ export const held = <A>(value: Option.Option<A>): Effect.Effect<A> =>
 		onSome: (found) => Effect.succeed(found)
 	})
 
-/** The instant a step spawned at `at` is first due. */
-export const dueAt = (due: Due, at: Instant): Instant => {
+/** How long after its spawn a step is first due, by its kind's declaration. */
+export const delayAfter = (due: Due): Delay => {
 	switch (due.kind) {
 		case "spawned":
-			return at
+			return atOnce
 		case "after":
-			return instantOf(Number(at) + due.millis)
+			return delayOf(due.millis)
 	}
 }
 

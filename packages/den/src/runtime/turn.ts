@@ -5,6 +5,8 @@ import type { Ladder, Resource } from "#algebra/kinds.ts"
 import { censusPeriodSeconds } from "#algebra/kinds.ts"
 import { isOpen, lapsedAttempt, opensAt, standing } from "#runtime/eligible.ts"
 import {
+	atOnce,
+	delayOf,
 	finishStep,
 	type Instant,
 	instantOf,
@@ -199,7 +201,7 @@ export type Ending =
 	| { readonly kind: "admitted"; readonly wake: Wake; readonly spawned: Spawned }
 	| { readonly kind: "skipped"; readonly wake: Wake; readonly by: ScopeKey }
 	| { readonly kind: "failed"; readonly wake: Wake; readonly why: "error" | "law" | "attempts" }
-	| { readonly kind: "retry"; readonly wake: Wake; readonly due: Instant }
+	| { readonly kind: "retry"; readonly wake: Wake; readonly delay: Duration.Duration }
 	| {
 			readonly kind: "waiting"
 			readonly wake: Wake
@@ -321,16 +323,13 @@ export const written = <A, R>(
 export interface StepPort<I, Rows, O, E, W> {
 	readonly input: (step: StepKey) => Effect.Effect<Option.Option<I>, Settled>
 	readonly read: (input: I) => Effect.Effect<Rows, Settled>
-	readonly commit: (
-		done: {
-			readonly turn: Turn
-			readonly input: I
-			readonly rows: Rows
-			readonly output: O
-			readonly writes: W
-		},
-		at: Instant
-	) => Effect.Effect<Committed, Settled, Digest.Digest>
+	readonly commit: (done: {
+		readonly turn: Turn
+		readonly input: I
+		readonly rows: Rows
+		readonly output: O
+		readonly writes: W
+	}) => Effect.Effect<Committed, Settled, Digest.Digest>
 	readonly fail: (failed: {
 		readonly turn: Turn
 		readonly input: I
@@ -403,17 +402,8 @@ export const runnerOf = <I, Rows, O, E, W, R>(
 			return { kind: "spent", detail: "the body ran past the turn's deadline" } satisfies Ran
 		}
 		const { output, writes } = exit.value.value
-		const reading = yield* Effect.result(clock)
-		if (reading._tag === "Failure") {
-			return { kind: "error", error: reading.failure } satisfies Ran
-		}
-		const committed = reading.success
 		return yield* Effect.match(
-			written(
-				port.commit({ turn, input: read, rows, output, writes }, committed),
-				clock,
-				turn.deadline
-			),
+			written(port.commit({ turn, input: read, rows, output, writes }), clock, turn.deadline),
 			{
 				onFailure: (error): Ran => ({ kind: "error", error }),
 				onSuccess: (outcome): Ran =>
@@ -514,10 +504,10 @@ const nextWake = <R>(
 	})
 
 /** The wakes of what a commit or an admission spawned: each step after its delay, an exact timer, and each ready finish. */
-const spawnedRings = (flow: FlowName, at: Instant, spawned: Spawned): ReadonlyArray<Onward> => [
+const spawnedRings = (flow: FlowName, spawned: Spawned): ReadonlyArray<Onward> => [
 	...Arr.map(spawned.steps, (s) => ({
 		wake: stepWake(flow, s.step, 0n),
-		delay: delayTo(at, s.due)
+		delay: Duration.millis(Number(s.delay))
 	})),
 	...Arr.map(spawned.finishes, (finish) => ({
 		wake: stepWake(flow, finish, 0n),
@@ -536,8 +526,7 @@ const settled = <R>(
 	spawned: Spawned
 ): Effect.Effect<ReadonlyArray<Onward>, never, Digest.Digest> =>
 	Effect.gen(function* () {
-		const at = yield* ledger.now
-		const children = spawnedRings(ledger.flow, at, spawned)
+		const children = spawnedRings(ledger.flow, spawned)
 		const ready = (s: ScopeKey) =>
 			Effect.flatMap(ledger.unended(s), (busy) =>
 				busy
@@ -595,18 +584,18 @@ const ended = <R>(
 						why: "attempts"
 					})
 				}
-				const due = instantOf(Number(at) + rungMillis(total))
+				const rung = rungMillis(total)
 				return yield* recorded(
 					ledger,
 					ledger.retry({
 						step: turn.step,
 						root: turn.root,
 						attempt: turn.attempt,
-						at: due,
+						delay: delayOf(rung),
 						spent: true
 					}),
 					wake,
-					{ kind: "retry", wake: next, due }
+					{ kind: "retry", wake: next, delay: Duration.millis(rung) }
 				)
 			}
 			case "waited":
@@ -616,7 +605,7 @@ const ended = <R>(
 						step: turn.step,
 						root: turn.root,
 						attempt: turn.attempt,
-						at,
+						delay: atOnce,
 						spent: false
 					}),
 					wake,
@@ -862,7 +851,7 @@ const settledOn = <R>(
 		case "failed":
 			return settled(ledger, runner, scope, { steps: [], finishes: [] })
 		case "retry":
-			return ringAt(ending.wake, ending.due)
+			return Effect.succeed([{ wake: ending.wake, delay: ending.delay }])
 		case "waiting":
 			return Option.match(ending.until, {
 				onNone: () => Effect.succeed([]),
@@ -933,7 +922,7 @@ const serveAdmit = <R>(
 				return served(skipped)
 			}
 		}
-		const admitted = yield* Effect.result(root.admit(scope, at))
+		const admitted = yield* Effect.result(root.admit(scope))
 		if (admitted._tag === "Failure") {
 			return served(unwritten(ledger.flow, admitted.failure, wake))
 		}
@@ -943,7 +932,7 @@ const serveAdmit = <R>(
 		const spawned = admitted.success.value.spawned
 		return {
 			ending: { kind: "admitted", wake, spawned },
-			onward: spawnedRings(ledger.flow, at, spawned)
+			onward: spawnedRings(ledger.flow, spawned)
 		}
 	})
 

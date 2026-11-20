@@ -1,4 +1,4 @@
-import { DenInstant } from "@bjornpagen/den/lower/keys"
+import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Assign to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
 import {
 	ChangeSet,
@@ -150,7 +150,29 @@ export const assignDenPrograms = Object.freeze({
 					.find({ step, root, attempt })
 			})
 		),
-	assignRetry: ChangeSet.empty(assignGraph).insert(AssignEnded, []).insert(AssignRetry, []),
+	assignRetry: clocked(
+		ChangeSet.empty(assignGraph)
+			.insert(AssignEnded, [])
+			.insert(
+				AssignRetry,
+				query(assignGraph).rule((r) =>
+					r.find({
+						step: r.param("step", AssignRetry.fields.step),
+						attempt: r.param("attempt", AssignRetry.fields.attempt),
+						at: Compute.cast(
+							Compute.add(
+								Compute.base(r.param("now", DenInstant)),
+								Compute.base(r.param("delay", DenDelay))
+							),
+							DenInstant
+						),
+						spent: r.param("spent", AssignRetry.fields.spent),
+						root: r.param("root", AssignRetry.fields.root)
+					})
+				)
+			),
+		{ now: "millis" }
+	),
 	assignFence: ChangeSet.empty(assignGraph).insert(AssignEnded, []).insert(AssignFenced, []),
 	assignRefuse: ChangeSet.empty(assignGraph)
 		.insert(AssignResult, [])
@@ -162,16 +184,40 @@ export const assignDenPrograms = Object.freeze({
 		.insert(AssignFailed, [])
 		.insert(AssignHeld, [])
 		.insert(AssignExhausted, []),
-	assignAdmit: ChangeSet.empty(assignGraph)
-		.insert(AssignAdmitted, [])
-		.insert(AssignFinish, [])
-		.insert(AssignStartStep, [])
-		.insert(AssignStep, [])
-		.insert(AssignScope, [])
-		.insert(AssignDecideInput, [])
-		.insert(AssignDecideInputExclude, [])
-		.insert(AssignDecideInputModeNearest, [])
-		.insert(AssignDecideInputModeWithin, []),
+	assignAdmit: clocked(
+		ChangeSet.empty(assignGraph)
+			.insert(AssignAdmitted, [])
+			.insert(AssignFinish, [])
+			.insert(AssignStartStep, [])
+			.insert(AssignScope, [])
+			.insert(AssignDecideInput, [])
+			.insert(AssignDecideInputExclude, [])
+			.insert(AssignDecideInputModeNearest, [])
+			.insert(AssignDecideInputModeWithin, [])
+			.insert(
+				AssignStep,
+				query(assignGraph).rule((r) => {
+					const steps = r.relation("steps", {
+						step: AssignStep.fields.step,
+						kind: AssignStep.fields.kind,
+						scope: AssignStep.fields.scope,
+						delay: DenDelay
+					})
+					const { step, kind, scope, delay } = v(steps, "spawned")
+					return r.match(steps, { step, kind, scope, delay }).find({
+						step,
+						kind,
+						scope,
+						due: Compute.cast(
+							Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(delay)),
+							DenInstant
+						),
+						root: r.param("root", AssignStep.fields.root)
+					})
+				})
+			),
+		{ now: "millis" }
+	),
 	assignSkip: ChangeSet.empty(assignGraph).insert(AssignSkipped, []),
 	assignSkippedOf: query(assignGraph).rule((r) => {
 		const { scope, by, root } = v(AssignSkipped, "assignSkipped")

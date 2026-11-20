@@ -1,6 +1,15 @@
-import { DenInstant } from "@bjornpagen/den/lower/keys"
+import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Chain to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
-import { ChangeSet, clocked, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
+import {
+	ChangeSet,
+	Compute,
+	clocked,
+	deferrable,
+	query,
+	role,
+	v,
+	workload
+} from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
 	ChainKind,
@@ -130,7 +139,29 @@ export const chainDenPrograms = Object.freeze({
 					.find({ step, root, attempt })
 			})
 		),
-	chainRetry: ChangeSet.empty(chainGraph).insert(ChainEnded, []).insert(ChainRetry, []),
+	chainRetry: clocked(
+		ChangeSet.empty(chainGraph)
+			.insert(ChainEnded, [])
+			.insert(
+				ChainRetry,
+				query(chainGraph).rule((r) =>
+					r.find({
+						step: r.param("step", ChainRetry.fields.step),
+						attempt: r.param("attempt", ChainRetry.fields.attempt),
+						at: Compute.cast(
+							Compute.add(
+								Compute.base(r.param("now", DenInstant)),
+								Compute.base(r.param("delay", DenDelay))
+							),
+							DenInstant
+						),
+						spent: r.param("spent", ChainRetry.fields.spent),
+						root: r.param("root", ChainRetry.fields.root)
+					})
+				)
+			),
+		{ now: "millis" }
+	),
 	chainFence: ChangeSet.empty(chainGraph).insert(ChainEnded, []).insert(ChainFenced, []),
 	chainRefuse: ChangeSet.empty(chainGraph)
 		.insert(ChainResult, [])
@@ -142,14 +173,38 @@ export const chainDenPrograms = Object.freeze({
 		.insert(ChainFailed, [])
 		.insert(ChainHeld, [])
 		.insert(ChainExhausted, []),
-	chainAdmit: ChangeSet.empty(chainGraph)
-		.insert(ChainAdmitted, [])
-		.insert(ChainFinish, [])
-		.insert(ChainStartStep, [])
-		.insert(ChainStep, [])
-		.insert(ChainScope, [])
-		.insert(ChainPageInput, [])
-		.insert(ChainPageInputAfter, []),
+	chainAdmit: clocked(
+		ChangeSet.empty(chainGraph)
+			.insert(ChainAdmitted, [])
+			.insert(ChainFinish, [])
+			.insert(ChainStartStep, [])
+			.insert(ChainScope, [])
+			.insert(ChainPageInput, [])
+			.insert(ChainPageInputAfter, [])
+			.insert(
+				ChainStep,
+				query(chainGraph).rule((r) => {
+					const steps = r.relation("steps", {
+						step: ChainStep.fields.step,
+						kind: ChainStep.fields.kind,
+						scope: ChainStep.fields.scope,
+						delay: DenDelay
+					})
+					const { step, kind, scope, delay } = v(steps, "spawned")
+					return r.match(steps, { step, kind, scope, delay }).find({
+						step,
+						kind,
+						scope,
+						due: Compute.cast(
+							Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(delay)),
+							DenInstant
+						),
+						root: r.param("root", ChainStep.fields.root)
+					})
+				})
+			),
+		{ now: "millis" }
+	),
 	chainSkip: ChangeSet.empty(chainGraph).insert(ChainSkipped, []),
 	chainSkippedOf: query(chainGraph).rule((r) => {
 		const { scope, by, root } = v(ChainSkipped, "chainSkipped")
@@ -437,23 +492,47 @@ export const chainCommitPrograms = Object.freeze({
 		query(chainGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
 	),
-	chainCommitPage: ChangeSet.union(
-		ChangeSet.empty(chainGraph)
-			.insert(ChainResult, [])
-			.insert(ChainDone, [])
-			.insert(ChainHeld, [])
-			.insert(ChainPageOutput, [])
-			.insert(ChainPageOutputNext, [])
-			.insert(ChainPageWeightsRead, [])
-			.insert(ChainStep, [])
-			.insert(ChainScope, [])
-			.insert(ChainAdmitted, [])
-			.insert(ChainFinish, [])
-			.insert(ChainStartStep, [])
-			.insert(ChainPageInput, [])
-			.insert(ChainPageInputAfter, [])
-			.insert(ChainNext, []),
-		ChangeSet.empty(Loader).insert(App.relations.Item, [])
+	chainCommitPage: clocked(
+		ChangeSet.union(
+			ChangeSet.empty(chainGraph)
+				.insert(ChainResult, [])
+				.insert(ChainDone, [])
+				.insert(ChainHeld, [])
+				.insert(ChainPageOutput, [])
+				.insert(ChainPageOutputNext, [])
+				.insert(ChainPageWeightsRead, [])
+				.insert(ChainScope, [])
+				.insert(ChainAdmitted, [])
+				.insert(ChainFinish, [])
+				.insert(ChainStartStep, [])
+				.insert(ChainPageInput, [])
+				.insert(ChainPageInputAfter, [])
+				.insert(ChainNext, [])
+				.insert(
+					ChainStep,
+					query(chainGraph).rule((r) => {
+						const steps = r.relation("steps", {
+							step: ChainStep.fields.step,
+							kind: ChainStep.fields.kind,
+							scope: ChainStep.fields.scope,
+							delay: DenDelay
+						})
+						const { step, kind, scope, delay } = v(steps, "spawned")
+						return r.match(steps, { step, kind, scope, delay }).find({
+							step,
+							kind,
+							scope,
+							due: Compute.cast(
+								Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(delay)),
+								DenInstant
+							),
+							root: r.param("root", ChainStep.fields.root)
+						})
+					})
+				),
+			ChangeSet.empty(Loader).insert(App.relations.Item, [])
+		),
+		{ now: "millis" }
 	),
 	chainReadPage: deferrable(
 		query(Loader).reads({

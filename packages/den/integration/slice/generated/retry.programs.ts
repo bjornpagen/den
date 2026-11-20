@@ -1,6 +1,15 @@
-import { DenInstant } from "@bjornpagen/den/lower/keys"
+import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Retry to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
-import { ChangeSet, clocked, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
+import {
+	ChangeSet,
+	Compute,
+	clocked,
+	deferrable,
+	query,
+	role,
+	v,
+	workload
+} from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
 	RetryKind,
@@ -112,7 +121,29 @@ export const retryDenPrograms = Object.freeze({
 					.find({ step, root, attempt })
 			})
 		),
-	retryRetry: ChangeSet.empty(retryGraph).insert(RetryEnded, []).insert(RetryRetry, []),
+	retryRetry: clocked(
+		ChangeSet.empty(retryGraph)
+			.insert(RetryEnded, [])
+			.insert(
+				RetryRetry,
+				query(retryGraph).rule((r) =>
+					r.find({
+						step: r.param("step", RetryRetry.fields.step),
+						attempt: r.param("attempt", RetryRetry.fields.attempt),
+						at: Compute.cast(
+							Compute.add(
+								Compute.base(r.param("now", DenInstant)),
+								Compute.base(r.param("delay", DenDelay))
+							),
+							DenInstant
+						),
+						spent: r.param("spent", RetryRetry.fields.spent),
+						root: r.param("root", RetryRetry.fields.root)
+					})
+				)
+			),
+		{ now: "millis" }
+	),
 	retryFence: ChangeSet.empty(retryGraph).insert(RetryEnded, []).insert(RetryFenced, []),
 	retryRefuse: ChangeSet.empty(retryGraph)
 		.insert(RetryResult, [])
@@ -124,14 +155,38 @@ export const retryDenPrograms = Object.freeze({
 		.insert(RetryFailed, [])
 		.insert(RetryHeld, [])
 		.insert(RetryExhausted, []),
-	retryAdmit: ChangeSet.empty(retryGraph)
-		.insert(RetryAdmitted, [])
-		.insert(RetryFinish, [])
-		.insert(RetryStartStep, [])
-		.insert(RetryStep, [])
-		.insert(RetryScope, [])
-		.insert(RetrySteadfastInput, [])
-		.insert(RetryBrittleInput, []),
+	retryAdmit: clocked(
+		ChangeSet.empty(retryGraph)
+			.insert(RetryAdmitted, [])
+			.insert(RetryFinish, [])
+			.insert(RetryStartStep, [])
+			.insert(RetryScope, [])
+			.insert(RetrySteadfastInput, [])
+			.insert(RetryBrittleInput, [])
+			.insert(
+				RetryStep,
+				query(retryGraph).rule((r) => {
+					const steps = r.relation("steps", {
+						step: RetryStep.fields.step,
+						kind: RetryStep.fields.kind,
+						scope: RetryStep.fields.scope,
+						delay: DenDelay
+					})
+					const { step, kind, scope, delay } = v(steps, "spawned")
+					return r.match(steps, { step, kind, scope, delay }).find({
+						step,
+						kind,
+						scope,
+						due: Compute.cast(
+							Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(delay)),
+							DenInstant
+						),
+						root: r.param("root", RetryStep.fields.root)
+					})
+				})
+			),
+		{ now: "millis" }
+	),
 	retrySkip: ChangeSet.empty(retryGraph).insert(RetrySkipped, []),
 	retrySkippedOf: query(retryGraph).rule((r) => {
 		const { scope, by, root } = v(RetrySkipped, "retrySkipped")

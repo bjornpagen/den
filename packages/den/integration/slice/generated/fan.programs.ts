@@ -1,6 +1,15 @@
-import { DenInstant } from "@bjornpagen/den/lower/keys"
+import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Fan to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
-import { ChangeSet, clocked, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
+import {
+	ChangeSet,
+	Compute,
+	clocked,
+	deferrable,
+	query,
+	role,
+	v,
+	workload
+} from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
 	FanKind,
@@ -141,7 +150,29 @@ export const fanDenPrograms = Object.freeze({
 				return r.match(delta.added(FanClaim), { step, root, attempt }).find({ step, root, attempt })
 			})
 		),
-	fanRetry: ChangeSet.empty(fanGraph).insert(FanEnded, []).insert(FanRetry, []),
+	fanRetry: clocked(
+		ChangeSet.empty(fanGraph)
+			.insert(FanEnded, [])
+			.insert(
+				FanRetry,
+				query(fanGraph).rule((r) =>
+					r.find({
+						step: r.param("step", FanRetry.fields.step),
+						attempt: r.param("attempt", FanRetry.fields.attempt),
+						at: Compute.cast(
+							Compute.add(
+								Compute.base(r.param("now", DenInstant)),
+								Compute.base(r.param("delay", DenDelay))
+							),
+							DenInstant
+						),
+						spent: r.param("spent", FanRetry.fields.spent),
+						root: r.param("root", FanRetry.fields.root)
+					})
+				)
+			),
+		{ now: "millis" }
+	),
 	fanFence: ChangeSet.empty(fanGraph).insert(FanEnded, []).insert(FanFenced, []),
 	fanHolds: deferrable(
 		query(FanDen).rule((r) => {
@@ -161,16 +192,40 @@ export const fanDenPrograms = Object.freeze({
 		.insert(FanFailed, [])
 		.insert(FanHeld, [])
 		.insert(FanExhausted, []),
-	fanAdmit: ChangeSet.empty(fanGraph)
-		.insert(FanAdmitted, [])
-		.insert(FanFinish, [])
-		.insert(FanStartStep, [])
-		.insert(FanStep, [])
-		.insert(FanScope, [])
-		.insert(FanWithin, [])
-		.insert(FanStartScope, [])
-		.insert(FanSquareInput, [])
-		.insert(FanBatchInput, []),
+	fanAdmit: clocked(
+		ChangeSet.empty(fanGraph)
+			.insert(FanAdmitted, [])
+			.insert(FanFinish, [])
+			.insert(FanStartStep, [])
+			.insert(FanScope, [])
+			.insert(FanWithin, [])
+			.insert(FanStartScope, [])
+			.insert(FanSquareInput, [])
+			.insert(FanBatchInput, [])
+			.insert(
+				FanStep,
+				query(fanGraph).rule((r) => {
+					const steps = r.relation("steps", {
+						step: FanStep.fields.step,
+						kind: FanStep.fields.kind,
+						scope: FanStep.fields.scope,
+						delay: DenDelay
+					})
+					const { step, kind, scope, delay } = v(steps, "spawned")
+					return r.match(steps, { step, kind, scope, delay }).find({
+						step,
+						kind,
+						scope,
+						due: Compute.cast(
+							Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(delay)),
+							DenInstant
+						),
+						root: r.param("root", FanStep.fields.root)
+					})
+				})
+			),
+		{ now: "millis" }
+	),
 	fanSkip: ChangeSet.empty(fanGraph).insert(FanSkipped, []),
 	fanSkippedOf: query(fanGraph).rule((r) => {
 		const { scope, by, root } = v(FanSkipped, "fanSkipped")

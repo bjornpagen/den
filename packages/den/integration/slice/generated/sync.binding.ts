@@ -1,6 +1,6 @@
 import {
 	any,
-	dueAt,
+	delayAfter,
 	exclusiveRows,
 	fresh,
 	one,
@@ -10,8 +10,9 @@ import {
 	signals
 } from "@bjornpagen/den/runtime/bind"
 import {
+	atOnce,
+	type Delay,
 	finishStep,
-	type Instant,
 	rootScope,
 	type ScopeKey,
 	startedStep,
@@ -39,13 +40,13 @@ import type { Digest } from "effect/crypto"
 import { sync } from "#integration/slice/flows.ts"
 import { SyncRootKind, SyncPausable } from "#integration/slice/generated/sync.fragment.ts"
 import type {
-	SyncStep,
 	SyncScope,
 	SyncAdmitted,
 	SyncFinish,
 	SyncStartStep,
 	SyncCopyInput,
-	SyncBuildInput
+	SyncBuildInput,
+	SyncKind
 } from "#integration/slice/generated/sync.fragment.ts"
 import type {
 	syncDenPrograms,
@@ -73,7 +74,6 @@ export interface SyncHandles {
 }
 
 interface Rows {
-	readonly SyncStep: ReadonlyArray<Addition<typeof SyncStep>>
 	readonly SyncScope: ReadonlyArray<Addition<typeof SyncScope>>
 	readonly SyncAdmitted: ReadonlyArray<Addition<typeof SyncAdmitted>>
 	readonly SyncFinish: ReadonlyArray<Addition<typeof SyncFinish>>
@@ -82,8 +82,17 @@ interface Rows {
 	readonly SyncBuildInput: ReadonlyArray<Addition<typeof SyncBuildInput>>
 }
 
+/** A step a call spawns, as the call names it: the database writes its due instant, its delay after the call's reading. */
+interface SpawnRow {
+	readonly step: StepKey
+	readonly kind: (typeof SyncKind)["handles"][number]
+	readonly scope: ScopeKey
+	readonly delay: Delay
+}
+
 interface Grown {
 	readonly rows: Rows
+	readonly steps: ReadonlyArray<SpawnRow>
 	readonly spawned: Spawned
 }
 
@@ -106,7 +115,6 @@ const exclusiveTurnsOf = (turns: ReadonlyArray<ExclusiveTurn>) =>
 /** The ledger of the flow Sync over its handles, with the requests of its roots. */
 export const syncLedger = (h: SyncHandles) => {
 	const noRows: Rows = {
-		SyncStep: [],
 		SyncScope: [],
 		SyncAdmitted: [],
 		SyncFinish: [],
@@ -114,12 +122,11 @@ export const syncLedger = (h: SyncHandles) => {
 		SyncCopyInput: [],
 		SyncBuildInput: []
 	}
-	const nothingGrown: Grown = { rows: noRows, spawned: { steps: [], finishes: [] } }
+	const nothingGrown: Grown = { rows: noRows, steps: [], spawned: { steps: [], finishes: [] } }
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
 		Arr.some(grown.rows.SyncStartStep, (s) => s.scope === scope)
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
-			SyncStep: [...a.rows.SyncStep, ...b.rows.SyncStep],
 			SyncScope: [...a.rows.SyncScope, ...b.rows.SyncScope],
 			SyncAdmitted: [...a.rows.SyncAdmitted, ...b.rows.SyncAdmitted],
 			SyncFinish: [...a.rows.SyncFinish, ...b.rows.SyncFinish],
@@ -127,6 +134,7 @@ export const syncLedger = (h: SyncHandles) => {
 			SyncCopyInput: [...a.rows.SyncCopyInput, ...b.rows.SyncCopyInput],
 			SyncBuildInput: [...a.rows.SyncBuildInput, ...b.rows.SyncBuildInput]
 		},
+		steps: [...a.steps, ...b.steps],
 		spawned: {
 			steps: [...a.spawned.steps, ...b.spawned.steps],
 			finishes: [...a.spawned.finishes, ...b.spawned.finishes]
@@ -135,8 +143,7 @@ export const syncLedger = (h: SyncHandles) => {
 	const startSyncRun = (
 		root: ScopeKey,
 		scope: ScopeKey,
-		input: Parameters<(typeof sync.kinds)[1]["start"]>[0],
-		at: Instant
+		input: Parameters<(typeof sync.kinds)[1]["start"]>[0]
 	): Effect.Effect<Grown, never, Digest.Digest> =>
 		Effect.map(
 			Effect.forEach(
@@ -145,22 +152,16 @@ export const syncLedger = (h: SyncHandles) => {
 					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 						rows: {
 							...noRows,
-							SyncStep: [
-								{
-									step: key,
-									kind: "Copy",
-									scope: scope,
-									due: dueAt(sync.kinds[0].due, at),
-									root: root
-								}
-							],
 							SyncStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
 							SyncCopyInput: [
 								{ step: key, root: root, relation: spawn.input.relation, run: spawn.input.run }
 							]
 						},
+						steps: [
+							{ step: key, kind: "Copy", scope: scope, delay: delayAfter(sync.kinds[0].due) }
+						],
 						spawned: {
-							steps: [{ step: key, kind: "Copy", due: dueAt(sync.kinds[0].due, at) }],
+							steps: [{ step: key, kind: "Copy", delay: delayAfter(sync.kinds[0].due) }],
 							finishes: []
 						}
 					}))
@@ -170,8 +171,7 @@ export const syncLedger = (h: SyncHandles) => {
 	const startGold = (
 		root: ScopeKey,
 		scope: ScopeKey,
-		input: Parameters<(typeof sync.kinds)[3]["start"]>[0],
-		at: Instant
+		input: Parameters<(typeof sync.kinds)[3]["start"]>[0]
 	): Effect.Effect<Grown, never, Digest.Digest> =>
 		Effect.map(
 			Effect.forEach(
@@ -180,20 +180,14 @@ export const syncLedger = (h: SyncHandles) => {
 					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 						rows: {
 							...noRows,
-							SyncStep: [
-								{
-									step: key,
-									kind: "Build",
-									scope: scope,
-									due: dueAt(sync.kinds[2].due, at),
-									root: root
-								}
-							],
 							SyncStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
 							SyncBuildInput: [{ step: key, root: root, build: spawn.input.build }]
 						},
+						steps: [
+							{ step: key, kind: "Build", scope: scope, delay: delayAfter(sync.kinds[2].due) }
+						],
 						spawned: {
-							steps: [{ step: key, kind: "Build", due: dueAt(sync.kinds[2].due, at) }],
+							steps: [{ step: key, kind: "Build", delay: delayAfter(sync.kinds[2].due) }],
 							finishes: []
 						}
 					}))
@@ -354,7 +348,7 @@ export const syncLedger = (h: SyncHandles) => {
 			{
 				input: (step) => readSyncCopyInput(step),
 				read: () => Effect.succeed({}),
-				commit: (done, _at) =>
+				commit: (done) =>
 					Effect.gen(function* () {
 						const grown = yield* Effect.succeed(nothingGrown)
 						const outcome = yield* settled(
@@ -386,7 +380,7 @@ export const syncLedger = (h: SyncHandles) => {
 			{
 				input: (step) => readSyncBuildInput(step),
 				read: () => Effect.succeed({}),
-				commit: (done, _at) =>
+				commit: (done) =>
 					Effect.gen(function* () {
 						const grown = yield* Effect.succeed(nothingGrown)
 						const outcome = yield* settled(
@@ -526,17 +520,17 @@ export const syncLedger = (h: SyncHandles) => {
 		SyncRun: {
 			window: sync.kinds[1].window,
 			precondition: sync.kinds[1].precondition,
-			admit: (scope: ScopeKey, at: Instant) =>
+			admit: (scope: ScopeKey) =>
 				Effect.gen(function* () {
 					const input = yield* readSyncSyncRunInput(scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
-					const grown = yield* startSyncRun(scope, scope, input.value, at)
+					const grown = yield* startSyncRun(scope, scope, input.value)
 					const finish = yield* finishStep(scope)
-					const steps: ReadonlyArray<Addition<typeof SyncStep>> = [
-						...grown.rows.SyncStep,
-						{ step: finish, kind: "SyncRunFinish", scope, due: at, root: scope }
+					const steps: ReadonlyArray<SpawnRow> = [
+						...grown.steps,
+						{ step: finish, kind: "SyncRunFinish", scope, delay: atOnce }
 					]
 					const admitted: ReadonlyArray<Addition<typeof SyncAdmitted>> = [
 						...grown.rows.SyncAdmitted,
@@ -548,14 +542,13 @@ export const syncLedger = (h: SyncHandles) => {
 					]
 					const outcome = yield* settled(
 						h.den.syncAdmit.once({
-							params: {},
+							params: { steps, root: scope },
 							facts: {
 								insert: {
 									SyncScope: grown.rows.SyncScope,
 									SyncStartStep: grown.rows.SyncStartStep,
 									SyncCopyInput: grown.rows.SyncCopyInput,
 									SyncBuildInput: grown.rows.SyncBuildInput,
-									SyncStep: steps,
 									SyncAdmitted: admitted,
 									SyncFinish: finishes
 								}
@@ -574,17 +567,17 @@ export const syncLedger = (h: SyncHandles) => {
 		Gold: {
 			window: sync.kinds[3].window,
 			precondition: sync.kinds[3].precondition,
-			admit: (scope: ScopeKey, at: Instant) =>
+			admit: (scope: ScopeKey) =>
 				Effect.gen(function* () {
 					const input = yield* readSyncGoldInput(scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
-					const grown = yield* startGold(scope, scope, input.value, at)
+					const grown = yield* startGold(scope, scope, input.value)
 					const finish = yield* finishStep(scope)
-					const steps: ReadonlyArray<Addition<typeof SyncStep>> = [
-						...grown.rows.SyncStep,
-						{ step: finish, kind: "GoldFinish", scope, due: at, root: scope }
+					const steps: ReadonlyArray<SpawnRow> = [
+						...grown.steps,
+						{ step: finish, kind: "GoldFinish", scope, delay: atOnce }
 					]
 					const admitted: ReadonlyArray<Addition<typeof SyncAdmitted>> = [
 						...grown.rows.SyncAdmitted,
@@ -596,14 +589,13 @@ export const syncLedger = (h: SyncHandles) => {
 					]
 					const outcome = yield* settled(
 						h.den.syncAdmit.once({
-							params: {},
+							params: { steps, root: scope },
 							facts: {
 								insert: {
 									SyncScope: grown.rows.SyncScope,
 									SyncStartStep: grown.rows.SyncStartStep,
 									SyncCopyInput: grown.rows.SyncCopyInput,
 									SyncBuildInput: grown.rows.SyncBuildInput,
-									SyncStep: steps,
 									SyncAdmitted: admitted,
 									SyncFinish: finishes
 								}
@@ -712,12 +704,15 @@ export const syncLedger = (h: SyncHandles) => {
 		retry: (row) =>
 			settled(
 				h.den.syncRetry.once({
-					params: {},
+					params: {
+						step: row.step,
+						attempt: row.attempt,
+						delay: row.delay,
+						spent: row.spent,
+						root: row.root
+					},
 					facts: {
-						insert: {
-							SyncEnded: [{ step: row.step, root: row.root, attempt: row.attempt }],
-							SyncRetry: [row]
-						}
+						insert: { SyncEnded: [{ step: row.step, root: row.root, attempt: row.attempt }] }
 					}
 				})
 			),

@@ -1,6 +1,6 @@
 import { lower } from "@bjornpagen/den/lower/fragment"
 import { printFragment } from "@bjornpagen/den/lower/print"
-import { instantOf } from "@bjornpagen/den/runtime/identity"
+import { atOnce, instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 import { assert } from "@bjornpagen/testing/assert"
@@ -156,7 +156,7 @@ export const admitsLoweringASeatCountExactlyWhenNoLiveHoldSitsAtOrAboveTheNewCou
 										step: second.step,
 										root: requested.scope,
 										attempt: second.attempt,
-										at,
+										delay: atOnce,
 										spent: false
 									})
 								}

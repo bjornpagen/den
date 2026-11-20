@@ -1,6 +1,15 @@
-import { DenInstant } from "@bjornpagen/den/lower/keys"
+import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Sync to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
-import { ChangeSet, clocked, deferrable, query, role, v, workload } from "@bjornpagen/grizzle"
+import {
+	ChangeSet,
+	Compute,
+	clocked,
+	deferrable,
+	query,
+	role,
+	v,
+	workload
+} from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
 	SyncKind,
@@ -143,7 +152,29 @@ export const syncDenPrograms = Object.freeze({
 					.find({ step, root, attempt })
 			})
 		),
-	syncRetry: ChangeSet.empty(syncGraph).insert(SyncEnded, []).insert(SyncRetry, []),
+	syncRetry: clocked(
+		ChangeSet.empty(syncGraph)
+			.insert(SyncEnded, [])
+			.insert(
+				SyncRetry,
+				query(syncGraph).rule((r) =>
+					r.find({
+						step: r.param("step", SyncRetry.fields.step),
+						attempt: r.param("attempt", SyncRetry.fields.attempt),
+						at: Compute.cast(
+							Compute.add(
+								Compute.base(r.param("now", DenInstant)),
+								Compute.base(r.param("delay", DenDelay))
+							),
+							DenInstant
+						),
+						spent: r.param("spent", SyncRetry.fields.spent),
+						root: r.param("root", SyncRetry.fields.root)
+					})
+				)
+			),
+		{ now: "millis" }
+	),
 	syncFence: ChangeSet.empty(syncGraph).insert(SyncEnded, []).insert(SyncFenced, []),
 	syncRefuse: ChangeSet.empty(syncGraph)
 		.insert(SyncResult, [])
@@ -155,14 +186,38 @@ export const syncDenPrograms = Object.freeze({
 		.insert(SyncFailed, [])
 		.insert(SyncHeld, [])
 		.insert(SyncExhausted, []),
-	syncAdmit: ChangeSet.empty(syncGraph)
-		.insert(SyncAdmitted, [])
-		.insert(SyncFinish, [])
-		.insert(SyncStartStep, [])
-		.insert(SyncStep, [])
-		.insert(SyncScope, [])
-		.insert(SyncCopyInput, [])
-		.insert(SyncBuildInput, []),
+	syncAdmit: clocked(
+		ChangeSet.empty(syncGraph)
+			.insert(SyncAdmitted, [])
+			.insert(SyncFinish, [])
+			.insert(SyncStartStep, [])
+			.insert(SyncScope, [])
+			.insert(SyncCopyInput, [])
+			.insert(SyncBuildInput, [])
+			.insert(
+				SyncStep,
+				query(syncGraph).rule((r) => {
+					const steps = r.relation("steps", {
+						step: SyncStep.fields.step,
+						kind: SyncStep.fields.kind,
+						scope: SyncStep.fields.scope,
+						delay: DenDelay
+					})
+					const { step, kind, scope, delay } = v(steps, "spawned")
+					return r.match(steps, { step, kind, scope, delay }).find({
+						step,
+						kind,
+						scope,
+						due: Compute.cast(
+							Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(delay)),
+							DenInstant
+						),
+						root: r.param("root", SyncStep.fields.root)
+					})
+				})
+			),
+		{ now: "millis" }
+	),
 	syncSkip: ChangeSet.empty(syncGraph).insert(SyncSkipped, []),
 	syncSkippedOf: query(syncGraph).rule((r) => {
 		const { scope, by, root } = v(SyncSkipped, "syncSkipped")

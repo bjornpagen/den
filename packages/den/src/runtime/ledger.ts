@@ -2,7 +2,7 @@ import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runti
 import { Array as Arr, type Cron, Data, type Effect, Option, type Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Ladder, Precondition, Resource, Window } from "#algebra/kinds.ts"
-import type { ExclusiveId, Instant, ScopeKey, StepKey } from "#runtime/identity.ts"
+import type { Delay, ExclusiveId, Instant, ScopeKey, StepKey } from "#runtime/identity.ts"
 import type { FlowName } from "#transport.ts"
 
 /**
@@ -57,11 +57,11 @@ export interface FinishedRoot {
 	readonly at: Instant
 }
 
-/** A step a commit or an admission spawned, with the instant it is first due. */
+/** A step a commit or an admission spawned, with how long after the call it is first due. */
 export interface SpawnedStep {
 	readonly step: StepKey
 	readonly kind: string
-	readonly due: Instant
+	readonly delay: Delay
 }
 
 /**
@@ -119,6 +119,14 @@ export interface RetryRow {
 	readonly spent: boolean
 }
 
+/** A retry as a turn records it: when the next attempt is due, its delay after the database's reading in the write. */
+export interface RetryOf {
+	readonly step: StepKey
+	readonly attempt: bigint
+	readonly delay: Delay
+	readonly spent: boolean
+}
+
 /**
  * An attempt fenced on a refused credential: its commit's login was not let in, so it spent nothing and waits on the
  * deployment, with no due instant of its own; the census rings its step again once the commits' login is let in.
@@ -172,10 +180,12 @@ export interface StepRunner<R> {
 export interface RootRunner {
 	readonly window: Window
 	readonly precondition: Precondition
-	/** Writes the root's admission: its start's children at every depth and every finish, at the caller's instant. */
+	/**
+	 * Writes the root's admission: its start's children at every depth and every finish, each step due its delay after
+	 * the admission's own reading of the database's clock.
+	 */
 	readonly admit: (
-		scope: ScopeKey,
-		now: Instant
+		scope: ScopeKey
 	) => Effect.Effect<Option.Option<Committed>, Settled, Digest.Digest>
 }
 
@@ -345,7 +355,7 @@ export interface Ledger<R> {
 	readonly claim: (claim: Rooted<ClaimOf>) => Effect.Effect<bigint, Settled>
 	/** The live holds of the flow's seats, each with its claim and its claim's lease. */
 	readonly holds: Effect.Effect<ReadonlyArray<HoldRow>, Settled>
-	readonly retry: (retry: Rooted<RetryRow>) => Effect.Effect<WriteOutcome<unknown>, Settled>
+	readonly retry: (retry: Rooted<RetryOf>) => Effect.Effect<WriteOutcome<unknown>, Settled>
 	readonly fence: (fenced: Rooted<FencedRow>) => Effect.Effect<WriteOutcome<unknown>, Settled>
 	readonly refuse: (at: StepAt, law: string) => Effect.Effect<WriteOutcome<unknown>, Settled>
 	readonly exhaust: (at: StepAt) => Effect.Effect<WriteOutcome<unknown>, Settled>

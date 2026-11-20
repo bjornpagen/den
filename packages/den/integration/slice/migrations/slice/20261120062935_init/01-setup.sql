@@ -261,6 +261,8 @@ CREATE DOMAIN "slice"."__domain_jevqauzmw6" AS "pg_catalog"."text" COLLATE "pg_c
 
 CREATE DOMAIN "slice"."__domain_mxhao3k6ss" AS bigint;
 
+CREATE DOMAIN "slice"."__domain_p7dj7oebtz" AS bigint CONSTRAINT "check" CHECK (VALUE IS NULL OR (VALUE >= 0::bigint AND VALUE <= 9214147718838775808::bigint) IS TRUE);
+
 CREATE DOMAIN "slice"."__text_t4rwovzmqj" AS "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" CONSTRAINT "check" CHECK (VALUE IS NULL OR (VALUE ~ '\A[\-0-9a-z]{1,64}\Z'::"pg_catalog"."text") IS TRUE);
 
 CREATE DOMAIN "slice"."__param_nearest_anchor_question_elxa5ygyai" AS "slice"."__text_t4rwovzmqj";

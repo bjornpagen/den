@@ -548,16 +548,42 @@ const commitOf = (
 	graph: string,
 	writer: string,
 	inserts: ReadonlyArray<string>,
+	spawns: Option.Option<string>,
 	app: WritesIR,
 	appRef: string
 ): string => {
-	const den = `ChangeSet.empty(${graph})${members(inserts, none, appRef)}`
-	return Arr.isReadonlyArrayEmpty(app.insert) &&
+	const den = `ChangeSet.empty(${graph})${members(inserts, none, appRef)}${Option.getOrElse(spawns, () => "")}`
+	const commit =
+		Arr.isReadonlyArrayEmpty(app.insert) &&
 		Arr.isReadonlyArrayEmpty(app.put) &&
 		Arr.isReadonlyArrayEmpty(app.delete)
-		? den
-		: `ChangeSet.union(${den}, ChangeSet.empty(${writer})${members([], app, appRef)})`
+			? den
+			: `ChangeSet.union(${den}, ChangeSet.empty(${writer})${members([], app, appRef)})`
+	return Option.isSome(spawns) ? `clocked(${commit}, { now: "millis" })` : commit
 }
+
+/**
+ * The insert of the steps a call spawns, each due its delay after the call's own reading of the database's clock: the
+ * rows of the relation parameter `steps`, each a step, its kind, its owning scope and its delay, under the call's one
+ * graph, the scalar parameter `root`, so the database computes every due instant and no host names one. A delay is a
+ * DenDelay, bounded so the sum fits an instant.
+ */
+const spawnedStepsOf = (graph: string, step: string): string => `.insert(
+	${step},
+	query(${graph}).rule((r) => {
+		const steps = r.relation("steps", { step: ${step}.fields.step, kind: ${step}.fields.kind, scope: ${step}.fields.scope, delay: DenDelay })
+		const { step, kind, scope, delay } = v(steps, "spawned")
+		return r
+			.match(steps, { step, kind, scope, delay })
+			.find({
+				step,
+				kind,
+				scope,
+				due: Compute.cast(Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(delay)), DenInstant),
+				root: r.param("root", ${step}.fields.root)
+			})
+	})
+)`
 
 /** The parameters a step's read takes from its input, each by the name it has inside the read's own query. */
 const paramsOf = (rd: ReadIR): ReadonlyArray<string> =>
@@ -728,7 +754,23 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		[n.program("Claim"), claimOf(n.graph, r)],
 		[
 			n.program("Retry"),
-			`ChangeSet.empty(${n.graph}).insert(${r("Ended")}, []).insert(${r("Retry")}, [])`
+			`clocked(
+	ChangeSet.empty(${n.graph})
+		.insert(${r("Ended")}, [])
+		.insert(
+			${r("Retry")},
+			query(${n.graph}).rule((r) =>
+				r.find({
+					step: r.param("step", ${r("Retry")}.fields.step),
+					attempt: r.param("attempt", ${r("Retry")}.fields.attempt),
+					at: Compute.cast(Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(r.param("delay", DenDelay))), DenInstant),
+					spent: r.param("spent", ${r("Retry")}.fields.spent),
+					root: r.param("root", ${r("Retry")}.fields.root)
+				})
+			)
+		),
+	{ now: "millis" }
+)`
 		],
 		[
 			n.program("Fence"),
@@ -746,7 +788,14 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			n.program("Exhaust"),
 			`ChangeSet.empty(${n.graph})${members([r("Result"), r("Failed"), r("Held"), r("Exhausted")], none, app)}`
 		],
-		[n.program("Admit"), `ChangeSet.empty(${n.graph})${members(admittingOf(l), none, app)}`],
+		[
+			n.program("Admit"),
+			`clocked(ChangeSet.empty(${n.graph})${members(
+				Arr.filter(admittingOf(l), (rel) => rel !== r("Step")),
+				none,
+				app
+			)}${spawnedStepsOf(n.graph, r("Step"))}, { now: "millis" })`
+		],
 		[n.program("Skip"), `ChangeSet.empty(${n.graph}).insert(${r("Skipped")}, [])`],
 		[n.program("SkippedOf"), ownedBy(l, n.graph, r("Skipped"), "scope")],
 		[n.program("StepOf"), ownedBy(l, n.graph, r("Step"), "step")],
@@ -1031,7 +1080,9 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		]
 	]
 	Arr.forEach(l.steps, (s) => {
-		const spawns = Arr.isReadonlyArrayNonEmpty(s.edges) ? l.spawning : []
+		const spawns = Arr.isReadonlyArrayNonEmpty(s.edges)
+			? Arr.filter(l.spawning, (rel) => rel !== r("Step"))
+			: []
 		commitPrograms.push([
 			n.program(`Commit${s.name}`),
 			commitOf(
@@ -1045,6 +1096,9 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 					...Arr.map(s.reads, (rd) => rd.record),
 					...spawns
 				],
+				Arr.isReadonlyArrayNonEmpty(s.edges)
+					? Option.some(spawnedStepsOf(n.graph, r("Step")))
+					: Option.none(),
 				s.writes,
 				app
 			)
@@ -1056,7 +1110,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	Arr.forEach(l.joins, (j) =>
 		commitPrograms.push([
 			n.program(`Commit${j.finish.name}`),
-			commitOf(n.graph, W, [r("Result"), r("Done"), r("Held")], j.finish.writes, app)
+			commitOf(n.graph, W, [r("Result"), r("Done"), r("Held")], Option.none(), j.finish.writes, app)
 		])
 	)
 	const appRoots = Arr.filter(l.joins, isApp)
@@ -1117,7 +1171,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	return `${lines([
 		`/** The programs den lowered the flow ${P} to, over its fragments, and its roles over the schema ${app}; \`den generate\` writes them, and nothing edits them. */`,
 		`import { ${commas(Arr.filter(["ChangeSet", "Compute", "clocked", "deferrable", "query", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
-		`import { DenInstant } from "@bjornpagen/den/lower/keys"`,
+		`import { ${commas(Arr.filter(["DenDelay", "DenInstant"], (name) => tokens.has(name)))} } from "@bjornpagen/den/lower/keys"`,
 		`import { ${app} } from ${q(place.schema.from)}`,
 		`import { ${W} } from ${q(place.writer.from)}`,
 		`import { ${commas(imported)} } from ${q(place.fragment)}`,
@@ -1253,7 +1307,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const r = (s: string) => `${P}${s}`
 	const kindAt = (index: number) => `${F}.kinds[${index}]`
 	const edgeAt = (index: number) => `${F}.edges[${index}]`
-	const spawning = l.spawning
+	const spawning = Arr.filter(l.spawning, (rel) => rel !== r("Step"))
 	const allRelations = Arr.map(l.relations, (rel) => rel.name)
 	const has = (relation: string) => Arr.contains(allRelations, relation)
 	const exclusiveKeys = has(r("ExclusiveKey"))
@@ -1267,6 +1321,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const joined = lines([
 		"const joined = (a: Grown, b: Grown): Grown => ({",
 		`\trows: { ${commas(Arr.map(spawning, (rel) => `${rel}: [...a.rows.${rel}, ...b.rows.${rel}]`))} },`,
+		"\tsteps: [...a.steps, ...b.steps],",
 		"\tspawned: { steps: [...a.spawned.steps, ...b.spawned.steps], finishes: [...a.spawned.finishes, ...b.spawned.finishes] }",
 		"})"
 	])
@@ -1317,17 +1372,16 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		extra: string,
 		root: string
 	): string =>
-		`Effect.flatMap(finishStep(${key}), (finish) => Effect.map(start${j.name}(${root}, ${key}, ${input}, at), (inner): Grown => joined(inner, { rows: { ...noRows, ${commas(
+		`Effect.flatMap(finishStep(${key}), (finish) => Effect.map(start${j.name}(${root}, ${key}, ${input}), (inner): Grown => joined(inner, { rows: { ...noRows, ${commas(
 			[
 				`${r("Scope")}: [{ scope: ${key}, root: ${root} }]`,
 				`${r("Within")}: [{ scope: ${key}, parent: ${owner}, kind: ${q(j.name)}, root: ${root} }]`,
 				`${r("Admitted")}: [{ scope: ${key}, root: ${root} }]`,
 				`${r("Finish")}: [{ scope: ${key}, step: finish, root: ${root} }]`,
-				`${r("Step")}: [{ step: finish, kind: ${q(j.finish)}, scope: ${key}, due: at, root: ${root} }]`,
 				extra,
 				...factsOf(j.input, key, input, root)
 			]
-		)} }, spawned: { steps: [], finishes: hasChildren(inner, ${key}) ? [] : [finish] } })))`
+		)} }, steps: [{ step: finish, kind: ${q(j.finish)}, scope: ${key}, delay: atOnce }], spawned: { steps: [], finishes: hasChildren(inner, ${key}) ? [] : [finish] } })))`
 
 	/** A step spawned under `owner` with key `key` and input `input`: its Step, first due by its kind, its input, and `extra`. */
 	const spawnedStep = (
@@ -1338,11 +1392,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		extra: string,
 		root: string
 	): string =>
-		`({ rows: { ...noRows, ${commas([
-			`${r("Step")}: [{ step: ${key}, kind: ${q(s.name)}, scope: ${owner}, due: dueAt(${kindAt(s.index)}.due, at), root: ${root} }]`,
-			extra,
-			...factsOf(s.input, key, input, root)
-		])} }, spawned: { steps: [{ step: ${key}, kind: ${q(s.name)}, due: dueAt(${kindAt(s.index)}.due, at) }], finishes: [] } })`
+		`({ rows: { ...noRows, ${commas([extra, ...factsOf(s.input, key, input, root)])} }, steps: [{ step: ${key}, kind: ${q(s.name)}, scope: ${owner}, delay: delayAfter(${kindAt(s.index)}.due) }], spawned: { steps: [{ step: ${key}, kind: ${q(s.name)}, delay: delayAfter(${kindAt(s.index)}.due) }], finishes: [] } })`
 
 	const startOf = (j: JoinIR): string => {
 		const cases = Arr.map(j.children, (child) =>
@@ -1362,9 +1412,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 					...Arr.map(labelled, ([name, c]) => `\t\t\tcase ${q(name)}: ${c}`),
 					"\t\t}"
 				]
-		const usesAt = Arr.isReadonlyArrayNonEmpty(j.children)
 		return lines([
-			`const start${j.name} = (root: ScopeKey, scope: ScopeKey, input: Parameters<(typeof ${kindAt(j.index)})["start"]>[0], ${usesAt ? "at" : "_at"}: Instant): Effect.Effect<Grown, never, Digest.Digest> =>`,
+			`const start${j.name} = (root: ScopeKey, scope: ScopeKey, input: Parameters<(typeof ${kindAt(j.index)})["start"]>[0]): Effect.Effect<Grown, never, Digest.Digest> =>`,
 			`\tEffect.map(Effect.forEach(${kindAt(j.index)}.start(input), (spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> => ${single ? "" : "{"}`,
 			...body,
 			`\t${single ? "" : "}"}), (parts) => Arr.reduce(parts, nothingGrown, joined))`
@@ -1441,9 +1490,9 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			`runnerOf(${kindAt(s.index)}, {`,
 			`\tinput: (step) => ${readerOf(s.input)}(step),`,
 			`\t${read},`,
-			`\tcommit: (done, ${Arr.some(s.edges, (e) => e.to.kind === "step") ? "at" : "_at"}) => Effect.gen(function* () {`,
+			"\tcommit: (done) => Effect.gen(function* () {",
 			`\t\tconst grown = yield* ${grow}`,
-			`\t\tconst outcome = yield* settled(h.commits.${n.program(`Commit${s.name}`)}.once({ params: {}, facts: { ${opsOf(
+			`\t\tconst outcome = yield* settled(h.commits.${n.program(`Commit${s.name}`)}.once({ params: ${Arr.isReadonlyArrayNonEmpty(s.edges) ? "{ steps: grown.steps, root: done.turn.root }" : "{}"}, facts: { ${opsOf(
 				[
 					...spawnRows,
 					`${r("Result")}: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }]`,
@@ -1544,28 +1593,27 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 
 	const admitOf = (j: JoinIR): string =>
 		lines([
-			"(scope: ScopeKey, at: Instant) => Effect.gen(function* () {",
+			"(scope: ScopeKey) => Effect.gen(function* () {",
 			`\tconst input = yield* ${readerOf(j.input)}(scope)`,
 			"\tif (Option.isNone(input)) {",
 			"\t\treturn Option.none()",
 			"\t}",
-			`\tconst grown = yield* start${j.name}(scope, scope, input.value, at)`,
+			`\tconst grown = yield* start${j.name}(scope, scope, input.value)`,
 			"\tconst finish = yield* finishStep(scope)",
-			`\tconst steps: ReadonlyArray<Addition<typeof ${r("Step")}>> = [...grown.rows.${r("Step")}, { step: finish, kind: ${q(j.finish.name)}, scope, due: at, root: scope }]`,
+			`\tconst steps: ReadonlyArray<SpawnRow> = [...grown.steps, { step: finish, kind: ${q(j.finish.name)}, scope, delay: atOnce }]`,
 			`\tconst admitted: ReadonlyArray<Addition<typeof ${r("Admitted")}>> = [...grown.rows.${r("Admitted")}, { scope, root: scope }]`,
 			`\tconst finishes: ReadonlyArray<Addition<typeof ${r("Finish")}>> = [...grown.rows.${r("Finish")}, { scope, step: finish, root: scope }]`,
-			`\tconst outcome = yield* settled(h.den.${n.program("Admit")}.once({ params: {}, facts: { insert: { ${commas(
+			`\tconst outcome = yield* settled(h.den.${n.program("Admit")}.once({ params: { steps, root: scope }, facts: { insert: { ${commas(
 				[
 					...Arr.map(
 						Arr.filter(
 							spawning,
 							(rel) =>
 								!Arr.some(l.edges, (e) => e.relation === rel) &&
-								!Arr.contains([r("Step"), r("Admitted"), r("Finish")], rel)
+								!Arr.contains([r("Admitted"), r("Finish")], rel)
 						),
 						(rel) => `${rel}: grown.rows.${rel}`
 					),
-					`${r("Step")}: steps`,
 					`${r("Admitted")}: admitted`,
 					`${r("Finish")}: finishes`
 				]
@@ -1684,7 +1732,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		: "Effect.succeed([])"
 	const busyOf = `const busyOf = (read: { ${commas(Arr.map(l.idle, (f) => `readonly ${busyName(f)}: ReadonlyArray<unknown>`))} }): ReadonlyArray<string> => Arr.filter([${commas(Arr.map(l.idle, q))}] as const, (flow) => Arr.isReadonlyArrayNonEmpty(read[\`${BUSY}\${flow}\`]))`
 	const fragmentValues = boundRostersOf(l)
-	const fragmentImports = Arr.dedupe([...spawning, r("RootKind"), ...fragmentValues])
+	const fragmentImports = Arr.dedupe([...spawning, r("Kind"), r("RootKind"), ...fragmentValues])
 	const fragmentTypes = Arr.filter(fragmentImports, (name) => !Arr.contains(fragmentValues, name))
 	const valueReaders = [...Arr.map(l.steps, (s) => s.input), ...Arr.map(l.joins, (j) => j.input)]
 	const finishOutputs = Arr.flatMap(l.joins, (j) =>
@@ -1697,8 +1745,10 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const identity = Arr.dedupe([
 		...(Arr.some(l.edges, (e) => e.to.kind === "scope") ? ["edgeScope"] : []),
 		...(Arr.some(l.edges, (e) => e.to.kind === "step") ? ["edgeStep"] : []),
+		"atOnce",
+		"type Delay",
 		"finishStep",
-		"type Instant",
+		...(Arr.some(roots, (j) => !requestedNow(j)) ? ["type Instant"] : []),
 		"rootScope",
 		"type ScopeKey",
 		...(Arr.some(l.joins, (j) => Arr.some(j.children, (c) => c.kind === "scope"))
@@ -1713,7 +1763,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`/** The ledger port of the flow ${P} over its served programs; \`den generate\` writes it, and nothing edits it. */`,
 		`import type { Addition } from "@bjornpagen/grizzle"`,
 		`import { type MemberHandle, settled } from "@bjornpagen/grizzle/runtime"`,
-		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishUnions ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", "rowsOf", ...(Arr.some(denRoots, (j) => !requestedNow(j)) ? ["scheduleOf"] : []), "signals"])} } from "@bjornpagen/den/runtime/bind"`,
+		`import { ${commas(["any", "delayAfter", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishUnions ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", "rowsOf", ...(Arr.some(denRoots, (j) => !requestedNow(j)) ? ["scheduleOf"] : []), "signals"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
 		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), "Admission", "Ledger", "RootRunner", "ScopeView", ...(resources ? ["SeatAt"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
 		`import { UnknownPauseTarget } from "@bjornpagen/den/runtime/ledger"`,
@@ -1737,8 +1787,17 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"",
 		rowsType,
 		"",
+		`/** A step a call spawns, as the call names it: the database writes its due instant, its delay after the call's reading. */`,
+		"interface SpawnRow {",
+		"\treadonly step: StepKey",
+		`\treadonly kind: ${scoped(r("Kind"))}`,
+		"\treadonly scope: ScopeKey",
+		"\treadonly delay: Delay",
+		"}",
+		"",
 		"interface Grown {",
 		"\treadonly rows: Rows",
+		"\treadonly steps: ReadonlyArray<SpawnRow>",
 		"\treadonly spawned: Spawned",
 		"}",
 		"",
@@ -1759,7 +1818,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`/** The ledger of the flow ${P} over its handles, with the requests of its roots. */`,
 		`export const ${n.ledger} = (h: ${n.handles}) => {`,
 		`\t${noRows}`,
-		"\tconst nothingGrown: Grown = { rows: noRows, spawned: { steps: [], finishes: [] } }",
+		"\tconst nothingGrown: Grown = { rows: noRows, steps: [], spawned: { steps: [], finishes: [] } }",
 		`\tconst hasChildren = (grown: Grown, scope: ScopeKey): boolean => ${Arr.join(
 			Arr.map(
 				[r("StartStep"), ...(children ? [r("StartScope")] : [])],
@@ -1824,7 +1883,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		resources
 			? `\t\tclaim: (row) => Effect.flatMap(settled(h.den.${n.program("Claim")}.once({ params: {}, facts: { insert: { ${r("Claim")}: [{ step: row.step, root: row.root, until: row.until, holds: holdsOf(row.seats) }], ${r("Ended")}: row.lapsed } } })), (outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)),`
 			: `\t\tclaim: (row) => Effect.flatMap(settled(h.den.${n.program("Claim")}.once({ params: {}, facts: { insert: { ${r("Claim")}: [{ step: row.step, root: row.root, until: row.until }], ${r("Ended")}: row.lapsed } } })), (outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)),`,
-		`\t\tretry: (row) => settled(h.den.${n.program("Retry")}.once({ params: {}, facts: { insert: { ${r("Ended")}: [{ step: row.step, root: row.root, attempt: row.attempt }], ${r("Retry")}: [row] } } })),`,
+		`\t\tretry: (row) => settled(h.den.${n.program("Retry")}.once({ params: { step: row.step, attempt: row.attempt, delay: row.delay, spent: row.spent, root: row.root }, facts: { insert: { ${r("Ended")}: [{ step: row.step, root: row.root, attempt: row.attempt }] } } })),`,
 		`\t\tfence: (row) => settled(h.den.${n.program("Fence")}.once({ params: {}, facts: { insert: { ${r("Ended")}: [{ step: row.step, root: row.root, attempt: row.attempt }], ${r("Fenced")}: [row] } } })),`,
 		`\t\trefuse: ({ step, root, attempt }, law) => settled(h.den.${n.program("Refuse")}.once({ params: {}, facts: { insert: { ${r("Result")}: [{ step, root, outcome: "failed" }], ${r("Failed")}: [{ step, root }], ${r("Held")}: [{ step, root, attempt }], ${r("Refusal")}: [{ step, root, law }] } } })),`,
 		`\t\tskip: (scope, by) => settled(h.den.${n.program("Skip")}.once({ params: {}, facts: { insert: { ${r("Skipped")}: [{ scope, by, root: scope }] } } })),`,

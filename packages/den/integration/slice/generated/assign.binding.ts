@@ -1,6 +1,6 @@
 import {
 	any,
-	dueAt,
+	delayAfter,
 	fresh,
 	held,
 	one,
@@ -11,8 +11,9 @@ import {
 	signals
 } from "@bjornpagen/den/runtime/bind"
 import {
+	atOnce,
+	type Delay,
 	finishStep,
-	type Instant,
 	rootScope,
 	type ScopeKey,
 	startedStep,
@@ -39,7 +40,6 @@ import type { Digest } from "effect/crypto"
 import { assign } from "#integration/slice/flows.ts"
 import { AssignPausable } from "#integration/slice/generated/assign.fragment.ts"
 import type {
-	AssignStep,
 	AssignScope,
 	AssignAdmitted,
 	AssignFinish,
@@ -48,6 +48,7 @@ import type {
 	AssignDecideInputExclude,
 	AssignDecideInputModeNearest,
 	AssignDecideInputModeWithin,
+	AssignKind,
 	AssignRootKind
 } from "#integration/slice/generated/assign.fragment.ts"
 import type {
@@ -80,7 +81,6 @@ export interface AssignHandles {
 }
 
 interface Rows {
-	readonly AssignStep: ReadonlyArray<Addition<typeof AssignStep>>
 	readonly AssignScope: ReadonlyArray<Addition<typeof AssignScope>>
 	readonly AssignAdmitted: ReadonlyArray<Addition<typeof AssignAdmitted>>
 	readonly AssignFinish: ReadonlyArray<Addition<typeof AssignFinish>>
@@ -93,8 +93,17 @@ interface Rows {
 	readonly AssignDecideInputModeWithin: ReadonlyArray<Addition<typeof AssignDecideInputModeWithin>>
 }
 
+/** A step a call spawns, as the call names it: the database writes its due instant, its delay after the call's reading. */
+interface SpawnRow {
+	readonly step: StepKey
+	readonly kind: (typeof AssignKind)["handles"][number]
+	readonly scope: ScopeKey
+	readonly delay: Delay
+}
+
 interface Grown {
 	readonly rows: Rows
+	readonly steps: ReadonlyArray<SpawnRow>
 	readonly spawned: Spawned
 }
 
@@ -109,7 +118,6 @@ const pausableOf = (
 /** The ledger of the flow Assign over its handles, with the requests of its roots. */
 export const assignLedger = (h: AssignHandles) => {
 	const noRows: Rows = {
-		AssignStep: [],
 		AssignScope: [],
 		AssignAdmitted: [],
 		AssignFinish: [],
@@ -119,12 +127,11 @@ export const assignLedger = (h: AssignHandles) => {
 		AssignDecideInputModeNearest: [],
 		AssignDecideInputModeWithin: []
 	}
-	const nothingGrown: Grown = { rows: noRows, spawned: { steps: [], finishes: [] } }
+	const nothingGrown: Grown = { rows: noRows, steps: [], spawned: { steps: [], finishes: [] } }
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
 		Arr.some(grown.rows.AssignStartStep, (s) => s.scope === scope)
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
-			AssignStep: [...a.rows.AssignStep, ...b.rows.AssignStep],
 			AssignScope: [...a.rows.AssignScope, ...b.rows.AssignScope],
 			AssignAdmitted: [...a.rows.AssignAdmitted, ...b.rows.AssignAdmitted],
 			AssignFinish: [...a.rows.AssignFinish, ...b.rows.AssignFinish],
@@ -143,6 +150,7 @@ export const assignLedger = (h: AssignHandles) => {
 				...b.rows.AssignDecideInputModeWithin
 			]
 		},
+		steps: [...a.steps, ...b.steps],
 		spawned: {
 			steps: [...a.spawned.steps, ...b.spawned.steps],
 			finishes: [...a.spawned.finishes, ...b.spawned.finishes]
@@ -151,8 +159,7 @@ export const assignLedger = (h: AssignHandles) => {
 	const startAssignment = (
 		root: ScopeKey,
 		scope: ScopeKey,
-		input: Parameters<(typeof assign.kinds)[1]["start"]>[0],
-		at: Instant
+		input: Parameters<(typeof assign.kinds)[1]["start"]>[0]
 	): Effect.Effect<Grown, never, Digest.Digest> =>
 		Effect.map(
 			Effect.forEach(
@@ -161,15 +168,6 @@ export const assignLedger = (h: AssignHandles) => {
 					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 						rows: {
 							...noRows,
-							AssignStep: [
-								{
-									step: key,
-									kind: "Decide",
-									scope: scope,
-									due: dueAt(assign.kinds[0].due, at),
-									root: root
-								}
-							],
 							AssignStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
 							AssignDecideInput: [
 								{
@@ -194,8 +192,11 @@ export const assignLedger = (h: AssignHandles) => {
 								variant._tag === "Within" ? [{ step: key, root: root, radius: variant.radius }] : []
 							)
 						},
+						steps: [
+							{ step: key, kind: "Decide", scope: scope, delay: delayAfter(assign.kinds[0].due) }
+						],
 						spawned: {
-							steps: [{ step: key, kind: "Decide", due: dueAt(assign.kinds[0].due, at) }],
+							steps: [{ step: key, kind: "Decide", delay: delayAfter(assign.kinds[0].due) }],
 							finishes: []
 						}
 					}))
@@ -400,7 +401,7 @@ export const assignLedger = (h: AssignHandles) => {
 						(rows) => Effect.map(only(rows), (row) => ({ nearest: row.nearest, seen: row.seen }))
 					)
 				},
-				commit: (done, _at) =>
+				commit: (done) =>
 					Effect.gen(function* () {
 						const grown = yield* Effect.succeed(nothingGrown)
 						const outcome = yield* settled(
@@ -591,17 +592,17 @@ export const assignLedger = (h: AssignHandles) => {
 		Assignment: {
 			window: assign.kinds[1].window,
 			precondition: assign.kinds[1].precondition,
-			admit: (scope: ScopeKey, at: Instant) =>
+			admit: (scope: ScopeKey) =>
 				Effect.gen(function* () {
 					const input = yield* readAssignAssignmentInput(scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
-					const grown = yield* startAssignment(scope, scope, input.value, at)
+					const grown = yield* startAssignment(scope, scope, input.value)
 					const finish = yield* finishStep(scope)
-					const steps: ReadonlyArray<Addition<typeof AssignStep>> = [
-						...grown.rows.AssignStep,
-						{ step: finish, kind: "AssignmentFinish", scope, due: at, root: scope }
+					const steps: ReadonlyArray<SpawnRow> = [
+						...grown.steps,
+						{ step: finish, kind: "AssignmentFinish", scope, delay: atOnce }
 					]
 					const admitted: ReadonlyArray<Addition<typeof AssignAdmitted>> = [
 						...grown.rows.AssignAdmitted,
@@ -613,7 +614,7 @@ export const assignLedger = (h: AssignHandles) => {
 					]
 					const outcome = yield* settled(
 						h.den.assignAdmit.once({
-							params: {},
+							params: { steps, root: scope },
 							facts: {
 								insert: {
 									AssignScope: grown.rows.AssignScope,
@@ -622,7 +623,6 @@ export const assignLedger = (h: AssignHandles) => {
 									AssignDecideInputExclude: grown.rows.AssignDecideInputExclude,
 									AssignDecideInputModeNearest: grown.rows.AssignDecideInputModeNearest,
 									AssignDecideInputModeWithin: grown.rows.AssignDecideInputModeWithin,
-									AssignStep: steps,
 									AssignAdmitted: admitted,
 									AssignFinish: finishes
 								}
@@ -725,12 +725,15 @@ export const assignLedger = (h: AssignHandles) => {
 		retry: (row) =>
 			settled(
 				h.den.assignRetry.once({
-					params: {},
+					params: {
+						step: row.step,
+						attempt: row.attempt,
+						delay: row.delay,
+						spent: row.spent,
+						root: row.root
+					},
 					facts: {
-						insert: {
-							AssignEnded: [{ step: row.step, root: row.root, attempt: row.attempt }],
-							AssignRetry: [row]
-						}
+						insert: { AssignEnded: [{ step: row.step, root: row.root, attempt: row.attempt }] }
 					}
 				})
 			),

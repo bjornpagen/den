@@ -54,10 +54,14 @@ for the coordination group, and DBCLOCK:
   `transaction_timestamp()`, one reading per call. Each flow's den role serves a clocked read of the database's instant
   alone, `<p>Now: clocked(query(<p>Graph).rule((r) => r.find({ now: r.param("now", DenInstant) })), { now: "millis" })`,
   and the ledger port answers it as `now`. The census's tick and the relay's pass read it once each and judge leases,
-  due instants and windows at that reading; a turn judges its claim and its gates at a reading, its retry's due instant
-  is stamped from a reading, its commit's spawns are due from one, and the timers it rings are the durations between
-  two readings. An invocation's end is its first reading plus its budget, and a claim's lease is that end, so no host's
-  clock judges anything. `runtime/clock.ts` keeps only the in-process transport's clock, at which the in-process driver
+  due instants and windows at that reading; a turn judges its claim and its gates at a reading, and the timers it rings
+  are its delays and the durations between two readings. A retry's due instant and every spawned step's are computed in
+  the statement that writes them, the call's own reading plus a `DenDelay` (a step's delay after its spawn, a retry's
+  rung), `Compute.cast(Compute.add(Compute.base(now), Compute.base(delay)), DenInstant)` in a clocked ChangeSet, which
+  grizzle types with no guard since a reading lies in the clock's range and a delay in its contract's (79874ab5f), so no
+  host names an instant a write stores (DECISIONS 43(a)). An invocation's end is its first reading plus its budget, and
+  a claim's lease is still that end, until grizzle writes a family owner's field from the call's reading (PLACE2), so
+  no host's clock judges anything. `runtime/clock.ts` keeps only the in-process transport's clock, at which the in-process driver
   delivers a held wake once its delay has passed. Clocked reads serve `once` and no `watch`, which matches den's split:
   the relay's watch reads what commits made eligible, without time, and the census reads what time made eligible. The
   suites cannot move the database's clock: their ledgers read it moved on by the time their TestClock travelled since

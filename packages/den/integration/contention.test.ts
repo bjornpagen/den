@@ -1,4 +1,4 @@
-import { instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
+import { atOnce, instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
 import type { SeatAt } from "@bjornpagen/den/runtime/ledger"
 import { seatsFor, seatTaken } from "@bjornpagen/den/runtime/seats"
 import { serve } from "@bjornpagen/den/runtime/turn"
@@ -110,9 +110,7 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 						})
 						/** Ends a session's attempt, which gives its seats back. */
 						const end = (step: StepKey, mine: Holding) =>
-							Effect.flatMap(ledger.now, (instant) =>
-								ledger.retry({ step, root, attempt: mine.attempt, at: instant, spent: false })
-							)
+							ledger.retry({ step, root, attempt: mine.attempt, delay: atOnce, spent: false })
 						/** Claims a session's square with a seat of the Pool, picked again from a fresh read when another takes it. */
 						const claimSeat = (
 							step: StepKey,
