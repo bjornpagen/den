@@ -70,8 +70,9 @@ export type Phase =
 export type Role = "Child" | "Finish"
 
 /**
- * A step's row: its identity, kind, input, owning scope (fixed at spawn), root and role; its work; where it stands; its
- * claims so far, the attempts and waits it spent; and the retry its latest claim committed, if one did.
+ * A step's row: its identity, kind, input, owning scope (fixed at spawn), its root's row (fixed at its admission) and
+ * role; its work; where it stands; its claims so far, the attempts and waits it spent; and the retry its latest claim
+ * committed, if one did.
  */
 export type StepRow = Readonly<{
 	id: StepId
@@ -79,7 +80,7 @@ export type StepRow = Readonly<{
 	kind: string
 	input: Datum
 	scope: string
-	root: string
+	rooted: RootRow
 	role: Role
 	runs: Runs
 	reads: ReadonlyArray<Read>
@@ -94,12 +95,15 @@ export type StepRow = Readonly<{
 /** A scope's child, by the kind of row it is and its key. */
 export type ChildRef = Readonly<{ _tag: "Step" | "Scope"; text: string }>
 
-/** A scope's row: its identity, kind, root and owner, its work, its children so far, its finishes and its ending. */
+/**
+ * A scope's row: its identity, kind, its root's row (fixed at its admission) and owner, its work, its children so far,
+ * its finishes and its ending.
+ */
 export type ScopeRow = Readonly<{
 	id: ScopeId
 	text: string
 	kind: string
-	root: string
+	rooted: RootRow
 	owner: Option.Option<string>
 	work: ScopeWork
 	children: ReadonlyArray<ChildRef>
@@ -160,18 +164,13 @@ type FactOf<T extends Fact["_tag"]> = Extract<Fact, Readonly<{ _tag: T }>>
 type PlainFact = Exclude<Fact, Readonly<{ _tag: "Admitted" | "Opened" | "Spawned" }>>
 
 /**
- * A fact as the ledger applies it: the facts that start something carry the work their typed code erased, which the
- * trace leaves out.
+ * A fact as the ledger applies it: the facts that start something carry the rows they start, built where the call is
+ * made with the work their typed code erased, which the trace leaves out.
  */
 type Event =
-	| Readonly<{
-			_tag: "Admit"
-			fact: FactOf<"Admitted">
-			work: ScopeWork
-			window: Option.Option<Window>
-	  }>
-	| Readonly<{ _tag: "Open"; fact: FactOf<"Opened">; work: ScopeWork }>
-	| Readonly<{ _tag: "Spawn"; fact: FactOf<"Spawned">; child: StepChild; role: Role }>
+	| Readonly<{ _tag: "Admit"; fact: FactOf<"Admitted">; root: RootRow; scope: ScopeRow }>
+	| Readonly<{ _tag: "Open"; fact: FactOf<"Opened">; scope: ScopeRow }>
+	| Readonly<{ _tag: "Spawn"; fact: FactOf<"Spawned">; row: StepRow }>
 	| Readonly<{ _tag: "Plain"; fact: PlainFact }>
 
 /** A step's ending, if it ended. */
@@ -198,13 +197,14 @@ const ended = (row: StepRow, ending: Ending): StepRow => ({
 const scopeRowOf = (
 	id: ScopeId,
 	kind: string,
+	rooted: RootRow,
 	owner: Option.Option<string>,
 	work: ScopeWork
 ): ScopeRow => ({
 	id,
 	text: scopeText(id),
 	kind,
-	root: rootText(rootOfScope(id)),
+	rooted,
 	owner,
 	work,
 	children: [],
@@ -222,13 +222,18 @@ const rootOfHolder = (holder: Holder): string => {
 	}
 }
 
-const spawnedRow = (fact: FactOf<"Spawned">, child: StepChild, role: Role): StepRow => ({
+const spawnedRow = (
+	fact: FactOf<"Spawned">,
+	child: StepChild,
+	role: Role,
+	rooted: RootRow
+): StepRow => ({
 	id: fact.step,
 	text: stepText(fact.step),
 	kind: fact.kind,
 	input: fact.input,
 	scope: scopeText(fact.scope),
-	root: rootText(rootOfStep(fact.step)),
+	rooted,
 	role,
 	runs: child.work.runs,
 	reads: child.work.reads,
@@ -243,51 +248,28 @@ const spawnedRow = (fact: FactOf<"Spawned">, child: StepChild, role: Role): Step
 /** The ledger's state after one more fact: the one place a fact's meaning is written. */
 const apply = (state: State, event: Event): State => {
 	switch (event._tag) {
-		case "Admit": {
-			const id: ScopeId = { _tag: "RootScope", root: event.fact.root }
-			const text = rootText(event.fact.root)
+		case "Admit":
 			return {
 				...state,
-				roots: HashMap.set(state.roots, text, {
-					key: event.fact.root,
-					text,
-					kind: event.fact.root.kind,
-					scope: scopeText(id),
-					age: state.admitted,
-					exclusive: event.fact.exclusive,
-					window: event.window
-				}),
+				roots: HashMap.set(state.roots, event.root.text, event.root),
 				admitted: state.admitted + 1,
-				scopes: HashMap.set(
-					state.scopes,
-					scopeText(id),
-					scopeRowOf(id, event.fact.root.kind, Option.none(), event.work)
-				)
+				scopes: HashMap.set(state.scopes, event.scope.text, event.scope)
 			}
-		}
 		case "Open": {
-			const owner = scopeText(event.fact.owner)
-			const text = scopeText(event.fact.scope)
-			const opened: State = {
-				...state,
-				scopes: HashMap.set(
-					state.scopes,
-					text,
-					scopeRowOf(event.fact.scope, event.fact.kind, Option.some(owner), event.work)
-				)
-			}
-			return withScope(opened, owner, (row) => ({
+			const text = event.scope.text
+			const opened: State = { ...state, scopes: HashMap.set(state.scopes, text, event.scope) }
+			return withScope(opened, scopeText(event.fact.owner), (row) => ({
 				...row,
 				children: Arr.append(row.children, { _tag: "Scope", text })
 			}))
 		}
 		case "Spawn": {
-			const row = spawnedRow(event.fact, event.child, event.role)
+			const row = event.row
 			return withScope(
 				{ ...state, steps: HashMap.set(state.steps, row.text, row) },
 				row.scope,
 				(owner) =>
-					event.role === "Child"
+					row.role === "Child"
 						? { ...owner, children: Arr.append(owner.children, { _tag: "Step", text: row.text }) }
 						: { ...owner, finishes: Arr.append(owner.finishes, row.text) }
 			)
@@ -387,8 +369,8 @@ const applyPlain = (state: State, fact: PlainFact): State => {
 			return { ...state, deployment: fact.deployment }
 		case "Retired": {
 			const root = rootText(fact.root)
-			const kept = <R extends Readonly<{ root: string }>>(rows: HashMap.HashMap<string, R>) =>
-				HashMap.filter(rows, (row) => row.root !== root)
+			const kept = <R extends Readonly<{ rooted: RootRow }>>(rows: HashMap.HashMap<string, R>) =>
+				HashMap.filter(rows, (row) => row.rooted.text !== root)
 			return {
 				...state,
 				roots: HashMap.remove(state.roots, root),
@@ -619,10 +601,7 @@ export const rowsOf = (state: State, query: Query): ReadonlyArray<Row> => {
 		case "Pending":
 			return Arr.sort(
 				Arr.flatMap(HashMap.toValues(state.steps), (row): ReadonlyArray<Row> =>
-					Option.isNone(endingOf(row)) &&
-					Option.exists(HashMap.get(state.roots, row.root), (root) =>
-						Arr.contains(query.roots, root.kind)
-					)
+					Option.isNone(endingOf(row)) && Arr.contains(query.roots, row.rooted.kind)
 						? [{ key: row.text, value: row.kind }]
 						: []
 				),
@@ -687,16 +666,11 @@ const freeOf = (state: State, resource: Resource, at: number): ReadonlyArray<Sea
 	Arr.filter(seatsOf(resource), (seat) => !busy(state, seat, at))
 
 /** Whether the window of a step's root, if its kind carries one, is open at an instant. */
-const windowOpen = (state: State, row: StepRow, at: number): boolean =>
-	Option.match(
-		Option.flatMap(HashMap.get(state.roots, row.root), (root) => root.window),
-		{ onNone: () => true, onSome: (window) => isOpenAt(window, at) }
-	)
+const windowOpen = (row: StepRow, at: number): boolean =>
+	Option.match(row.rooted.window, { onNone: () => true, onSome: (window) => isOpenAt(window, at) })
 
 const touchesPaused = (state: State, row: StepRow): boolean =>
-	Option.exists(HashMap.get(state.roots, row.root), (root) =>
-		HashSet.has(state.paused, targetText({ _tag: "Root", kind: root.kind }))
-	) ||
+	HashSet.has(state.paused, targetText({ _tag: "Root", kind: row.rooted.kind })) ||
 	Arr.some(row.runs.holds, (resource) =>
 		HashSet.has(state.paused, targetText({ _tag: "Resource", name: resource.name }))
 	)
@@ -716,7 +690,7 @@ const before = (state: State, row: StepRow, at: number): Option.Option<Answer> =
 				return Option.some("early")
 			}
 	}
-	if (!windowOpen(state, row, at)) {
+	if (!windowOpen(row, at)) {
 		return Option.some("closed")
 	}
 	return touchesPaused(state, row) ? Option.some("paused") : Option.none()
@@ -731,10 +705,7 @@ const candidatesOf = (state: State, at: number): ReadonlyArray<Candidate> =>
 				: [
 						{
 							row,
-							age: Option.match(HashMap.get(state.roots, row.root), {
-								onNone: () => state.admitted,
-								onSome: (root) => root.age
-							}),
+							age: row.rooted.age,
 							due: Option.getOrElse(dueAtOf(row), () => at)
 						}
 					]
@@ -878,21 +849,17 @@ const spawnStep = (
 	if (HashMap.has(tx.state().steps, stepText(id))) {
 		return
 	}
-	tx.emit({
-		_tag: "Spawn",
-		fact: {
-			_tag: "Spawned",
-			step: id,
-			kind: child.kind,
-			input: child.input,
-			scope: scope.id,
-			due: child.due._tag === "At" ? child.due.at : at,
-			holds: Arr.map(child.work.runs.holds, (resource) => resource.name),
-			at
-		},
-		child,
-		role
-	})
+	const fact: FactOf<"Spawned"> = {
+		_tag: "Spawned",
+		step: id,
+		kind: child.kind,
+		input: child.input,
+		scope: scope.id,
+		due: child.due._tag === "At" ? child.due.at : at,
+		holds: Arr.map(child.work.runs.holds, (resource) => resource.name),
+		at
+	}
+	tx.emit({ _tag: "Spawn", fact, row: spawnedRow(fact, child, role, scope.rooted) })
 }
 
 const startChildren = (tx: Tx, scope: ScopeRow, at: number): void => {
@@ -914,6 +881,7 @@ const openScope = (tx: Tx, id: ScopeId, owner: ScopeRow, child: ScopeChild, at: 
 	if (HashMap.has(tx.state().scopes, text)) {
 		return
 	}
+	const opened = scopeRowOf(id, child.kind, owner.rooted, Option.some(owner.text), child.scope)
 	tx.emit({
 		_tag: "Open",
 		fact: {
@@ -924,22 +892,16 @@ const openScope = (tx: Tx, id: ScopeId, owner: ScopeRow, child: ScopeChild, at: 
 			owner: owner.id,
 			at
 		},
-		work: child.scope
+		scope: opened
 	})
-	Option.match(HashMap.get(tx.state().scopes, text), {
-		onNone: () => undefined,
-		onSome: (opened) => startChildren(tx, opened, at)
-	})
+	startChildren(tx, opened, at)
 }
 
 /** Gives back a root scope's exclusivity seat, if it still holds it. */
 const unseatScope = (tx: Tx, scope: ScopeRow, at: number): void => {
-	const root = Option.filter(
-		HashMap.get(tx.state().roots, scope.root),
-		(row) => row.scope === scope.text
-	)
+	const root = scope.rooted
 	Option.match(
-		Option.flatMap(root, (row) => exclusiveSeat(row.kind, row.exclusive)),
+		root.scope === scope.text ? exclusiveSeat(root.kind, root.exclusive) : Option.none(),
 		{
 			onNone: () => undefined,
 			onSome: (seat) => {
@@ -1189,6 +1151,16 @@ const admitInto = (tx: Tx, admission: Admission, by: By, at: number): Answer => 
 	const seat = exclusiveSeat(admission.kind, admission.exclusive)
 	const held = Option.exists(seat, (key) => standings.busy(state, key, at))
 	const scope: ScopeId = { _tag: "RootScope", root }
+	const rooted: RootRow = {
+		key: root,
+		text,
+		kind: root.kind,
+		scope: scopeText(scope),
+		age: state.admitted,
+		exclusive: admission.exclusive,
+		window: admission.window
+	}
+	const scoped = scopeRowOf(scope, root.kind, rooted, Option.none(), admission.scope)
 	tx.emit({
 		_tag: "Admit",
 		fact: {
@@ -1199,8 +1171,8 @@ const admitInto = (tx: Tx, admission: Admission, by: By, at: number): Answer => 
 			by,
 			at
 		},
-		work: admission.scope,
-		window: admission.window
+		root: rooted,
+		scope: scoped
 	})
 	Option.match(precondition, {
 		onNone: () => undefined,
@@ -1225,10 +1197,7 @@ const admitInto = (tx: Tx, admission: Admission, by: By, at: number): Answer => 
 		onSome: (key) =>
 			tx.emit(plain({ _tag: "Seated", seat: key, holder: { _tag: "Scope", scope }, at }))
 	})
-	Option.match(HashMap.get(tx.state().scopes, scopeText(scope)), {
-		onNone: () => undefined,
-		onSome: (row) => startChildren(tx, row, at)
-	})
+	startChildren(tx, scoped, at)
 	return "accepted"
 }
 

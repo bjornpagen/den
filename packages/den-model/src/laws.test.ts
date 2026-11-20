@@ -119,8 +119,10 @@ export const densLawsHoldOverGeneratedPrograms = property.explore(
 			},
 			{
 				file: "packages/den-model/src/ledger.ts",
-				original: "\t\t\t\t\tOption.isNone(endingOf(row)) &&\n",
-				replacement: '\t\t\t\t\trow.phase._tag === "Due" &&\n',
+				original:
+					"\t\t\t\t\tOption.isNone(endingOf(row)) && Arr.contains(query.roots, row.rooted.kind)\n",
+				replacement:
+					'\t\t\t\t\trow.phase._tag === "Due" && Arr.contains(query.roots, row.rooted.kind)\n',
 				why: "A Pending read counts only the steps due and forgets those a claim holds: a precondition admits its root while a step it names runs (precondition)."
 			},
 			{
