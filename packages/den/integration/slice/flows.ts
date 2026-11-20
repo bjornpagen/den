@@ -1125,10 +1125,10 @@ export const writeback = flow("Writeback", {
 	edges: []
 })
 
-/** An hour of the clock: the instant its schedule named. */
-const Hour = Schema.Struct({ hour: Schema.BigInt })
+/** An hour of the clock, the instant its schedule named, and the bell that chimes it, a member of its roster. */
+const Hour = Schema.Struct({ hour: Schema.BigInt, bell: Schema.Literals(["east", "west"]) })
 
-/** Chimes one hour: the app's row of it. */
+/** Chimes one hour on one bell: the app's row of it. */
 const Chime = step(
 	"Chime",
 	{
@@ -1146,16 +1146,19 @@ const Chime = step(
 	(hour) =>
 		Effect.succeed({
 			output: hour,
-			writes: { insert: { Chimed: [{ hour: hour.hour }] }, put: {}, delete: {} }
+			writes: { insert: { Chimed: [{ hour: hour.hour, bell: hour.bell }] }, put: {}, delete: {} }
 		})
 )
 
 /**
- * A root its schedule starts at the top of every hour, keyed by the instant its cron named, which every census tick
- * requests until the next hour's: its one step chimes.
+ * A root per bell its schedule starts at the top of every hour, each keyed by the instant its cron named and its bell,
+ * which every census tick requests until the next hour's: its one step chimes that bell.
  */
 const Hourly = root("Hourly", {
-	trigger: schedule(Cron.parseUnsafe("0 * * * *"), (at) => ({ hour: at })),
+	trigger: schedule(Cron.parseUnsafe("0 * * * *"), ["east", "west"], (at, bell) => ({
+		hour: at,
+		bell
+	})),
 	input: Hour,
 	children: [Chime],
 	start: (hour) => [Chime.of(hour)],

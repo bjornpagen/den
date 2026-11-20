@@ -18,6 +18,9 @@ import {
 	ClockOutcome,
 	ClockRetryWhy,
 	ClockPausable,
+	ClockChimeInputBell,
+	ClockHourlyInputBell,
+	ClockChimeOutputBell,
 	ClockScope,
 	ClockRoot,
 	ClockAdmitted,
@@ -87,6 +90,9 @@ export const ClockCoordinator = role(
 		ClockOutcome,
 		ClockRetryWhy,
 		ClockPausable,
+		ClockChimeInputBell,
+		ClockHourlyInputBell,
+		ClockChimeOutputBell,
 		ClockPaused,
 		ClockResumed
 	},
@@ -349,18 +355,18 @@ export const clockDenPrograms = Object.freeze({
 		})
 	),
 	clockReadClockChimeInput: query(clockGraph).rule((r) => {
-		const { step, hour, root } = v(ClockChimeInput, "clockChimeInput")
+		const { step, hour, bell, root } = v(ClockChimeInput, "clockChimeInput")
 		return r
-			.match(ClockChimeInput, { step, hour, root })
+			.match(ClockChimeInput, { step, hour, bell, root })
 			.where(r.eq(step, r.param("step", ClockChimeInput.fields.step)))
-			.find({ step, hour, root })
+			.find({ step, hour, bell, root })
 	}),
 	clockReadClockHourlyInput: query(clockGraph).rule((r) => {
-		const { scope, hour, root } = v(ClockHourlyInput, "clockHourlyInput")
+		const { scope, hour, bell, root } = v(ClockHourlyInput, "clockHourlyInput")
 		return r
-			.match(ClockHourlyInput, { scope, hour, root })
+			.match(ClockHourlyInput, { scope, hour, bell, root })
 			.where(r.eq(scope, r.param("scope", ClockHourlyInput.fields.scope)))
-			.find({ scope, hour, root })
+			.find({ scope, hour, bell, root })
 	}),
 	clockRequestHourly: clocked(
 		ChangeSet.empty(clockGraph)

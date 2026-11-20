@@ -258,8 +258,8 @@ const fanFinishes = query(Auditor).rule((r) => {
 
 /** Every hour the clock chimed. */
 const chimes = query(Auditor).rule((r) => {
-	const { hour } = v(Chimed, "chimed")
-	return r.match(Chimed, { hour }).find({ hour })
+	const { hour, bell } = v(Chimed, "chimed")
+	return r.match(Chimed, { hour, bell }).find({ hour, bell })
 })
 
 /** Each review's saved groups. */

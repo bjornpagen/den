@@ -1,7 +1,7 @@
 import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, type Cron, Effect, Option, Order, Stream } from "effect"
 import type { Digest } from "effect/crypto"
-import type { Due, Exclusive, Trigger } from "#algebra/kinds.ts"
+import type { Due, Exclusive, Scheduled, Trigger } from "#algebra/kinds.ts"
 import { atOnce, type Delay, delayOf, exclusiveId, type ScopeKey } from "#runtime/identity.ts"
 import { refusedOnKey } from "#runtime/ledger.ts"
 
@@ -86,13 +86,22 @@ export const exclusiveRows = <I>(
 		onSome: (key) => Effect.map(exclusiveId(flow, kind, key), (id) => [{ scope, key, id }])
 	}) satisfies Effect.Effect<ReadonlyArray<unknown>, never, Digest.Digest>
 
+/**
+ * The idempotency key of a schedule's root for `member` at the instant `at`: the instant and the member, which holds no
+ * colon, so two of a schedule's roots never share a key.
+ */
+export const scheduledKey = (at: bigint, member: string): string => `${String(at)}:${member}`
+
 /** A root kind's schedule, none for a root an operator or the app starts. */
 export const scheduleOf = <I>(
 	trigger: Trigger<I>
-): Option.Option<{ readonly cron: Cron.Cron; readonly input: (at: bigint) => I }> => {
+): Option.Option<{
+	readonly cron: Cron.Cron
+	readonly roster: (at: bigint) => Arr.NonEmptyReadonlyArray<Scheduled<I>>
+}> => {
 	switch (trigger.kind) {
 		case "schedule":
-			return Option.some({ cron: trigger.cron, input: trigger.input })
+			return Option.some({ cron: trigger.cron, roster: trigger.roster })
 		case "operator":
 		case "app":
 			return Option.none()

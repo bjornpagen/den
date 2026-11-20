@@ -4,7 +4,7 @@ import { element } from "@bjornpagen/testing/gen"
 import { searched } from "@bjornpagen/testing/vitest"
 import { testWorkers } from "@bjornpagen/testing/workers"
 import { assert, it } from "@effect/vitest"
-import { Array as Arr, Effect, Exit, Formatter, Option, Schema } from "effect"
+import { Array as Arr, Cron, Effect, Exit, Formatter, Option, Schema } from "effect"
 import { flow } from "#algebra/flow.ts"
 import {
 	type AnyStepKind,
@@ -18,6 +18,7 @@ import {
 	type Resource,
 	resource,
 	root,
+	schedule,
 	scope,
 	shared,
 	step,
@@ -34,7 +35,7 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * flow or one of its kinds is declared, naming the declaration: a kind declared twice, an edge from a step the flow does
  * not declare, a kind no scope owns, a finish reading a kind its scope never holds, no root at all, a name den cannot
  * lower into a relation's, two resources of one name, a resource of no seats, a ladder of no attempts, a count of waits
- * below 0, and a window that is empty or reaches past a day.
+ * below 0, a schedule that lists a member twice, and a window that is empty or reaches past a day.
  *
  * Oracle (specification): the proposal's rules of section 4, one fault at a time.
  */
@@ -51,6 +52,7 @@ const Fault = Schema.Literals([
 	"no seats",
 	"no attempts",
 	"negative waits",
+	"a schedule's member twice",
 	"empty window",
 	"window past a day"
 ])
@@ -101,6 +103,7 @@ const windowOf = (fault: Fault): Window => {
 		case "no seats":
 		case "no attempts":
 		case "negative waits":
+		case "a schedule's member twice":
 			return always
 	}
 }
@@ -142,7 +145,10 @@ const declare = (fault: Fault) => {
 		finish: finish(fault === "foreign read" ? [A] : [B])
 	})
 	const Run = root(fault === "bad name" ? "run_lower" : "Run", {
-		trigger: operator,
+		trigger:
+			fault === "a schedule's member twice"
+				? schedule(Cron.parseUnsafe("0 * * * *"), ["east", "east"], () => ({}))
+				: operator,
 		input: Empty,
 		children: fault === "unowned kind" ? [Inner] : [A, Inner],
 		start: () => [Inner.of({})],

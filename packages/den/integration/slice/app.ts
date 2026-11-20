@@ -31,6 +31,7 @@ import {
 	Copied,
 	Cursor,
 	Delivered,
+	Bell,
 	Feed,
 	Heard,
 	Item,
@@ -49,6 +50,7 @@ const Listed = schema(
 	"Slice",
 	[
 		Feed,
+		Bell,
 		Item,
 		Weight,
 		Cursor,

@@ -6,6 +6,7 @@ import {
 	only,
 	readingOf,
 	rowsOf,
+	scheduledKey,
 	scheduleOf,
 	signals
 } from "@bjornpagen/den/runtime/bind"
@@ -144,7 +145,9 @@ export const clockLedger = (h: ClockHandles) => {
 						rows: {
 							...noRows,
 							ClockStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-							ClockChimeInput: [{ step: key, root: root, hour: spawn.input.hour }]
+							ClockChimeInput: [
+								{ step: key, root: root, hour: spawn.input.hour, bell: spawn.input.bell }
+							]
 						},
 						steps: [
 							{ step: key, kind: "Chime", scope: scope, delay: delayAfter(clock.kinds[0].due) }
@@ -163,7 +166,7 @@ export const clockLedger = (h: ClockHandles) => {
 				settled(h.den.clockReadClockChimeInput.once({ params: { step: step }, facts: {} })),
 				one
 			)
-			return Option.map(row, (found) => ({ hour: found.hour }))
+			return Option.map(row, (found) => ({ hour: found.hour, bell: found.bell }))
 		})
 	const readClockHourlyInput = (scope: ScopeKey) =>
 		Effect.gen(function* () {
@@ -171,7 +174,7 @@ export const clockLedger = (h: ClockHandles) => {
 				settled(h.den.clockReadClockHourlyInput.once({ params: { scope: scope }, facts: {} })),
 				one
 			)
-			return Option.map(row, (found) => ({ hour: found.hour }))
+			return Option.map(row, (found) => ({ hour: found.hour, bell: found.bell }))
 		})
 	const pauseChains: PauseChains<(typeof ClockPausable)["handles"][number]> = {
 		flow: FlowName.make("Clock"),
@@ -217,7 +220,9 @@ export const clockLedger = (h: ClockHandles) => {
 								facts: {
 									insert: {
 										ClockScope: [{ scope, root: scope }],
-										ClockHourlyInput: [{ scope: scope, root: scope, hour: input.hour }]
+										ClockHourlyInput: [
+											{ scope: scope, root: scope, hour: input.hour, bell: input.bell }
+										]
 									}
 								}
 							})
@@ -247,7 +252,12 @@ export const clockLedger = (h: ClockHandles) => {
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
 										ClockChimeOutput: [
-											{ step: done.turn.step, root: done.turn.root, hour: done.output.hour }
+											{
+												step: done.turn.step,
+												root: done.turn.root,
+												hour: done.output.hour,
+												bell: done.output.bell
+											}
 										],
 										Chimed: done.writes.insert.Chimed
 									}
@@ -578,7 +588,10 @@ export const clockLedger = (h: ClockHandles) => {
 				Option.map(scheduleOf(clock.kinds[1].trigger), (s) => ({
 					kind: "Hourly",
 					cron: s.cron,
-					request: (at: Instant) => request.Hourly(String(at), s.input(at))
+					request: (at: Instant) =>
+						Effect.forEach(s.roster(at), (root) =>
+							request.Hourly(scheduledKey(at, root.member), root.input)
+						)
 				}))
 			)
 		]

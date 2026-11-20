@@ -22,6 +22,9 @@ export const ClockRootKind = closed.unordered("ClockRootKind", ["Hourly"])
 export const ClockOutcome = closed.unordered("ClockOutcome", ["done", "failed"])
 export const ClockRetryWhy = closed.unordered("ClockRetryWhy", ["spent", "transient", "later"])
 export const ClockPausable = closed.unordered("ClockPausable", ["Hourly"])
+export const ClockChimeInputBell = closed.unordered("ClockChimeInputBell", ["east", "west"])
+export const ClockHourlyInputBell = closed.unordered("ClockHourlyInputBell", ["east", "west"])
+export const ClockChimeOutputBell = closed.unordered("ClockChimeOutputBell", ["east", "west"])
 
 export const ClockScope = relation("ClockScope", { scope: DenScope, root: DenScope }, [
 	"scope",
@@ -107,17 +110,17 @@ export const ClockExhausted = relation("ClockExhausted", { step: DenStep, root: 
 ])
 export const ClockChimeInput = relation(
 	"ClockChimeInput",
-	{ step: DenStep, hour: pg.bigint, root: DenScope },
+	{ step: DenStep, hour: pg.bigint, bell: closedId(ClockChimeInputBell), root: DenScope },
 	["step", "root"]
 )
 export const ClockHourlyInput = relation(
 	"ClockHourlyInput",
-	{ scope: DenScope, hour: pg.bigint, root: DenScope },
+	{ scope: DenScope, hour: pg.bigint, bell: closedId(ClockHourlyInputBell), root: DenScope },
 	["scope", "root"]
 )
 export const ClockChimeOutput = relation(
 	"ClockChimeOutput",
-	{ step: DenStep, hour: pg.bigint, root: DenScope },
+	{ step: DenStep, hour: pg.bigint, bell: closedId(ClockChimeOutputBell), root: DenScope },
 	["step", "root"]
 )
 export const ClockHourlyFinishOutput = relation(
@@ -144,6 +147,9 @@ export const clockGraph = fragment(
 		ClockOutcome,
 		ClockRetryWhy,
 		ClockPausable,
+		ClockChimeInputBell,
+		ClockHourlyInputBell,
+		ClockChimeOutputBell,
 		ClockScope,
 		ClockRoot,
 		ClockAdmitted,
@@ -259,7 +265,18 @@ export const clockGraph = fragment(
 
 /** The flow's coordination group: its rosters, its seat counts, and its chains of exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const clockCoordination = fragment(
-	[ClockKind, ClockRootKind, ClockOutcome, ClockRetryWhy, ClockPausable, ClockPaused, ClockResumed],
+	[
+		ClockKind,
+		ClockRootKind,
+		ClockOutcome,
+		ClockRetryWhy,
+		ClockPausable,
+		ClockChimeInputBell,
+		ClockHourlyInputBell,
+		ClockChimeOutputBell,
+		ClockPaused,
+		ClockResumed
+	],
 	[
 		contained(on(ClockResumed, "target", "turn"), on(ClockPaused, "target", "turn")),
 		contained(on(ClockPaused, "target", pred("turn")), on(ClockResumed, "target", "turn"))

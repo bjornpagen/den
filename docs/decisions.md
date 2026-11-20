@@ -167,6 +167,14 @@
   - Rejected: a deadline measured from the step's first due, which a delay the source names can overshoot in one wait
     and which no source publishes; an unbounded form beside the count, which would keep the case it exists to end; a
     sleep or a counter inside the body, which would give a body a memory of its earlier attempts.
+- **A schedule starts a root per member of its roster (settled by the plan's need, 2026-11-20).** `schedule(cron,
+  members, (at, member) => input)` starts one root per member at each instant its cron names, keyed by the instant
+  and the member, so a nightly copy of each of W1's relations or each of W3's collections is one schedule, not a root
+  kind per member; a schedule of one root is a roster of one, the one form. Its trigger holds the roots an instant
+  starts, `roster(at)`, each member with its root's input, so the census requests each by its key and nothing reads a
+  member back.
+  - Rejected: a single-root schedule beside a roster form, two forms for one thing; a key of the instant alone with
+    the member in the input, which would collapse every member's root of an instant into one.
 - **A step is joined on its input and the facts it awaits (settled by AlphaTest's need, 2026-11-20).** AlphaTest's gap
   analysis must not run before the gradebook holds its attempt's result, which another root's step delivers, and its
   dispatch reads what the front-run did (the cutover's review, findings 2 and 13); a declared read that retried while

@@ -52,6 +52,9 @@ export class Refused extends Data.TaggedError("Refused")<{
 /** A name den lowers into relation names: PascalCase, letters and digits. */
 const NAME = regex("^[A-Z][A-Za-z0-9]*$")
 
+/** A schedule's member: letters and digits, so its key never holds the separator between instant and member. */
+const MEMBER = regex("^[A-Za-z0-9]+$")
+
 /** Refuses a name den cannot lower into a relation name. */
 export const named = (declaration: string, name: string): void => {
 	const why = `${name} is no PascalCase name of letters and digits`
@@ -679,24 +682,53 @@ export const scope = <
 }
 
 /**
- * What starts a root: a schedule, whose every instant is one root keyed by it; an operator's command; or the app's own
- * write, which requests the root inside the app's own transaction.
+ * What starts a root: a schedule, whose every instant starts one root per member of its roster, keyed by the instant
+ * and the member; an operator's command; or the app's own write, which requests the root inside the app's own
+ * transaction.
  */
 export type Trigger<I> =
 	| {
 			readonly kind: "schedule"
 			readonly cron: Cron.Cron
-			readonly input: (at: bigint) => I
+			/** The roots an instant starts: each member of the roster, and its root's input at that instant. */
+			readonly roster: (at: bigint) => Arr.NonEmptyReadonlyArray<Scheduled<I>>
 	  }
 	| { readonly kind: "operator" }
 	| { readonly kind: "app" }
 
-/** A root started at each instant `cron` matches, its input what `input` makes of that instant. */
-export const schedule = <I>(cron: Cron.Cron, input: (at: bigint) => I): Trigger<I> => ({
-	kind: "schedule",
-	cron,
-	input
-})
+/** One member's root at a scheduled instant: the member, and its root's input. */
+export interface Scheduled<I> {
+	readonly member: string
+	readonly input: I
+}
+
+/**
+ * A root per member of `members` at each instant `cron` matches, keyed by the instant and the member, its input what
+ * `input` makes of both (W1's relations, each a night's copy; W3's collections; a schedule of one root is a roster of
+ * one member). Members are named as PascalCase or camelCase texts, each once.
+ */
+export const schedule = <const M extends Arr.NonEmptyReadonlyArray<string>, I>(
+	cron: Cron.Cron,
+	members: M,
+	input: (at: bigint, member: M[number]) => I
+): Trigger<I> => {
+	Arr.forEach(members, (member, index) => {
+		if (!MEMBER.test(member)) {
+			throw new Refused({
+				declaration: "schedule",
+				why: `its member ${member} is no name of letters and digits`
+			})
+		}
+		if (Arr.contains(Arr.take(members, index), member)) {
+			throw new Refused({ declaration: "schedule", why: `its member ${member} is listed twice` })
+		}
+	})
+	return {
+		kind: "schedule",
+		cron,
+		roster: (at) => Arr.map(members, (member) => ({ member, input: input(at, member) }))
+	}
+}
 
 /** A root an operator starts. */
 export const operator: { readonly kind: "operator" } = { kind: "operator" }

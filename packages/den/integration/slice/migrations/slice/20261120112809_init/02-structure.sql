@@ -597,7 +597,8 @@ CREATE TABLE "slice"."chain_step" (
 
 CREATE TABLE "slice"."chimed" (
   "hour" bigint NOT NULL,
-  CONSTRAINT "__chimed_pk_7p6ypuplhn" PRIMARY KEY ("hour")
+  "bell" "slice"."bell" NOT NULL,
+  CONSTRAINT "__chimed_pk_7p6ypuplhn" PRIMARY KEY ("hour", "bell")
 );
 
 CREATE TABLE "slice"."clock_admitted" (
@@ -609,6 +610,7 @@ CREATE TABLE "slice"."clock_admitted" (
 CREATE TABLE "slice"."clock_chime_input" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "hour" bigint NOT NULL,
+  "bell" "slice"."clock_chime_input_bell" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__clock_chime_input_pk_rx6722hrpy" PRIMARY KEY ("step", "root")
 );
@@ -616,6 +618,7 @@ CREATE TABLE "slice"."clock_chime_input" (
 CREATE TABLE "slice"."clock_chime_output" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "hour" bigint NOT NULL,
+  "bell" "slice"."clock_chime_output_bell" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__clock_chime_output_pk_aqm3k5vyxa" PRIMARY KEY ("step", "root")
 );
@@ -684,6 +687,7 @@ CREATE TABLE "slice"."clock_hourly_finish_output" (
 CREATE TABLE "slice"."clock_hourly_input" (
   "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
   "hour" bigint NOT NULL,
+  "bell" "slice"."clock_hourly_input_bell" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__clock_hourly_input_pk_s536mhvux3" PRIMARY KEY ("scope", "root")
 );

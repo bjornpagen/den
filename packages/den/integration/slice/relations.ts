@@ -65,8 +65,14 @@ export const Summary = relation("Summary", { review: Name, groups: natural, tota
 /** What a throttled call's run heard from its source, by its key: an answer, or a refusal past its step's waits. */
 export const Heard = relation("Heard", { key: Name, answered: pg.boolean }, ["key"])
 
-/** An hour the clock chimed, by the instant its schedule named. */
-export const Chimed = relation("Chimed", { hour: pg.bigint }, ["hour"])
+/** A clock's bells, the roster its schedule starts a root of each hour per member. */
+export const Bell = closed.unordered("Bell", ["east", "west"])
+
+/** An hour a bell of the clock chimed, by the instant its schedule named. */
+export const Chimed = relation("Chimed", { hour: pg.bigint, bell: closedId(Bell) }, [
+	"hour",
+	"bell"
+])
 
 /** A build the Gold step made, by its number. */
 export const Built = relation("Built", { build: natural }, ["build"])
