@@ -8,6 +8,7 @@ import {
 	type LawIR,
 	type Lowered,
 	type ReadIR,
+	type SeatsIR,
 	type SideIR,
 	type StepIR,
 	type ValueIR,
@@ -200,6 +201,12 @@ const naming = (l: Lowered) => {
 		program: n
 	}
 }
+
+/** The prefix of an idle flow's pending steps' name in the scheduler's snapshot and its busy read. */
+const BUSY = "busy"
+
+/** The name of an idle flow's pending steps in the scheduler's snapshot and its busy read. */
+const busyName = (flow: string): string => `${BUSY}${flow}`
 
 /** Whether a join is a root the app's own write requests. */
 const isApp = (j: JoinIR): boolean => Option.exists(j.root, (r) => r.trigger === "app")
@@ -396,6 +403,16 @@ const latestOf = (role: string, held: string, coordinates: ReadonlyArray<string>
 /** A hold's fields, as the live holds find them. */
 const seatFields = ["resource", "seat", "turn", "holder", "until"] as const
 
+/** A query over `role` of the seats' live holds, through the entry of its seat level's live holds that `role` holds. */
+const liveHoldsOf = (role: string, st: SeatsIR): string => {
+	const live = `${role}.relations.${st.live}`
+	const fields = commas(seatFields)
+	return `query(${role}).rule((r) => {
+	const { ${fields} } = v(${live}, "live")
+	return r.match(${live}, { ${fields} }).find({ ${fields} })
+})`
+}
+
 /** A query over `role` of each chain's live turn: every turn of `held` that no row of `ended` ends. */
 const liveOf = (
 	role: string,
@@ -542,6 +559,90 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const allRelations = Arr.map(l.relations, (rel) => rel.name)
 	const has = (relation: string) => Arr.contains(allRelations, relation)
 	const exclusiveKeys = has(r("ExclusiveKey"))
+	/**
+	 * The reads the relay watches and the scheduler's snapshot reads too, each one query over den's role, declared once
+	 * in the programs module and named there: the pending steps, the requested and the running scopes, and each idle
+	 * flow's pending steps.
+	 */
+	const sharedReads = {
+		pending: [
+			n.program("PendingRead"),
+			`query(${n.den}).rule((r) => {
+	const { step, kind, scope } = v(${r("Step")}, "step")
+	return r.match(${r("Step")}, { step, kind, scope }).where(r.not(${r("Result")}, { step })).find({ step, kind, scope })
+})`
+		],
+		requested: [
+			n.program("RequestedRead"),
+			`query(${n.den}).rule((r) => {
+	const { scope, kind } = v(${r("Scope")}, "scope")
+	return r.match(${r("Scope")}, { scope, kind }).where(r.not(${r("Admitted")}, { scope }), r.not(${r("Skipped")}, { scope })).find({ scope, kind })
+})`
+		],
+		running: [
+			n.program("RunningRead"),
+			`query(${n.den}).rule((r) => {
+	const { scope, kind } = v(${r("Scope")}, "scope")
+	const { step } = v(${r("Finish")}, "finish")
+	return r.match(${r("Scope")}, { scope, kind }).match(${r("Finish")}, { scope, step }).where(r.not(${r("Result")}, { step })).find({ scope, kind })
+})`
+		]
+	} as const
+	const busyRead = (f: string): readonly [string, string] => [
+		n.program(`Busy${f}Read`),
+		`query(${n.den}).rule((r) => {
+	const { step } = v(${app}.relations.${f}Step, "step")
+	return r.match(${app}.relations.${f}Step, { step }).where(r.not(${app}.relations.${f}Result, { step })).find({ step })
+})`
+	]
+	const sharedDeclarations: ReadonlyArray<readonly [string, string]> = [
+		sharedReads.pending,
+		sharedReads.requested,
+		sharedReads.running,
+		...Arr.map(l.idle, busyRead)
+	]
+	const shared = {
+		pending: sharedReads.pending[0],
+		requested: sharedReads.requested[0],
+		running: sharedReads.running[0],
+		busy: (f: string) => busyRead(f)[0]
+	}
+	/**
+	 * The scheduler's snapshot: every read eligibility depends on, as one record of named reads over den's role, so one
+	 * statement and one snapshot (ReadsQuery): the pending steps and their claims, retries and fenced attempts, the
+	 * requested and running scopes, every child scope's parent and every root's key and instant, each exclusive root's
+	 * key, the live holds, exclusivity seats and pauses, and each idle flow's pending steps.
+	 */
+	const snapshotOf = `query(${n.den}).reads({ ${commas([
+		`steps: ${shared.pending}`,
+		`claims: query(${n.den}).rule((r) => {
+	const { step, attempt, until } = v(${r("Claim")}, "claim")
+	return r.match(${r("Claim")}, { step, attempt, until }).where(r.not(${r("Result")}, { step })).find({ step, attempt, until })
+})`,
+		`retries: query(${n.den}).rule((r) => {
+	const { step, attempt, at, spent } = v(${r("Retry")}, "retry")
+	return r.match(${r("Retry")}, { step, attempt, at, spent }).where(r.not(${r("Result")}, { step })).find({ step, attempt, at, spent })
+})`,
+		`fenced: query(${n.den}).rule((r) => {
+	const { step, attempt } = v(${r("Fenced")}, "fenced")
+	return r.match(${r("Fenced")}, { step, attempt }).where(r.not(${r("Result")}, { step })).find({ step, attempt })
+})`,
+		`dues: query(${n.den}).rule((r) => {
+	const { step, at } = v(${r("Due")}, "due")
+	return r.match(${r("Due")}, { step, at }).where(r.not(${r("Result")}, { step })).find({ step, at })
+})`,
+		`requested: ${shared.requested}`,
+		`running: ${shared.running}`,
+		`withins: ${allOf(n.den, r("Within"), ["scope", "parent"])}`,
+		`roots: ${allOf(n.den, r("Root"), ["scope", "key", "at"])}`,
+		...(exclusiveKeys ? [`keys: ${allOf(n.den, r("ExclusiveKey"), ["scope", "key", "id"])}`] : []),
+		...Arr.map(Option.toArray(l.seats), (st) => `holds: ${liveHoldsOf(n.den, st)}`),
+		...(has(r("Exclusive"))
+			? [`exclusives: ${liveOf(n.den, r("Exclusive"), r("Released"), ["kind", "key"], ["scope"])}`]
+			: []),
+		`paused: ${liveOf(n.den, r("Paused"), r("Resumed"), ["target"], [])}`,
+		...Arr.map(l.idle, (f) => `${busyName(f)}: ${shared.busy(f)}`)
+	])} })`
 	const denPrograms: Array<readonly [string, string]> = [
 		[
 			n.program("Now"),
@@ -662,77 +763,21 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	return r.match(${r("Finish")}, { scope, step }).match(${r("Result")}, { step }).where(r.eq(scope, ${scopeParam})).find({ step })
 })`
 		],
-		[
-			n.program("Pending"),
-			deferred(`query(${n.graph}).rule((r) => {
-	const { step, kind, scope } = v(${r("Step")}, "step")
-	return r.match(${r("Step")}, { step, kind, scope }).where(r.not(${r("Result")}, { step })).find({ step, kind, scope })
-})`)
-		],
-		[
-			n.program("PendingClaims"),
-			deferred(`query(${n.graph}).rule((r) => {
-	const { step, attempt, until } = v(${r("Claim")}, "claim")
-	return r.match(${r("Claim")}, { step, attempt, until }).where(r.not(${r("Result")}, { step })).find({ step, attempt, until })
-})`)
-		],
-		[
-			n.program("PendingRetries"),
-			deferred(`query(${n.graph}).rule((r) => {
-	const { step, attempt, at, spent } = v(${r("Retry")}, "retry")
-	return r.match(${r("Retry")}, { step, attempt, at, spent }).where(r.not(${r("Result")}, { step })).find({ step, attempt, at, spent })
-})`)
-		],
-		[
-			n.program("PendingFenced"),
-			deferred(`query(${n.graph}).rule((r) => {
-	const { step, attempt } = v(${r("Fenced")}, "fenced")
-	return r.match(${r("Fenced")}, { step, attempt }).where(r.not(${r("Result")}, { step })).find({ step, attempt })
-})`)
-		],
-		[
-			n.program("PendingDues"),
-			deferred(`query(${n.graph}).rule((r) => {
-	const { step, at } = v(${r("Due")}, "due")
-	return r.match(${r("Due")}, { step, at }).where(r.not(${r("Result")}, { step })).find({ step, at })
-})`)
-		],
-		[
-			n.program("Requested"),
-			deferred(`query(${n.graph}).rule((r) => {
-	const { scope, kind } = v(${r("Scope")}, "scope")
-	return r.match(${r("Scope")}, { scope, kind }).where(r.not(${r("Admitted")}, { scope }), r.not(${r("Skipped")}, { scope })).find({ scope, kind })
-})`)
-		],
-		[
-			n.program("Running"),
-			deferred(`query(${n.graph}).rule((r) => {
-	const { scope, kind } = v(${r("Scope")}, "scope")
-	const { step } = v(${r("Finish")}, "finish")
-	return r.match(${r("Scope")}, { scope, kind }).match(${r("Finish")}, { scope, step }).where(r.not(${r("Result")}, { step })).find({ scope, kind })
-})`)
-		],
-		[n.program("Withins"), deferred(allOf(n.graph, r("Within"), ["scope", "parent"]))],
-		[n.program("Roots"), deferred(allOf(n.graph, r("Root"), ["scope", "key", "at"]))],
-		...(exclusiveKeys
+		[n.program("Pending"), deferred(shared.pending)],
+		[n.program("Requested"), deferred(shared.requested)],
+		[n.program("Running"), deferred(shared.running)],
+		...Arr.map(l.idle, (f) => [n.program(`Busy${f}`), deferred(shared.busy(f))] as const),
+		...(Arr.isReadonlyArrayNonEmpty(l.idle)
 			? [
 					[
-						n.program("ExclusiveKeys"),
-						deferred(allOf(n.graph, r("ExclusiveKey"), ["scope", "key", "id"]))
+						n.program("Busy"),
+						deferred(
+							`query(${n.den}).reads({ ${commas(Arr.map(l.idle, (f) => `${busyName(f)}: ${shared.busy(f)}`))} })`
+						)
 					] as const
 				]
 			: []),
-		...Arr.map(
-			l.idle,
-			(f) =>
-				[
-					n.program(`Busy${f}`),
-					deferred(`query(${n.den}).rule((r) => {
-	const { step } = v(${app}.relations.${f}Step, "step")
-	return r.match(${app}.relations.${f}Step, { step }).where(r.not(${app}.relations.${f}Result, { step })).find({ step })
-})`)
-				] as const
-		)
+		[n.program("Snapshot"), deferred(snapshotOf)]
 	]
 	const denValueReads = (v: ValueIR) => {
 		Arr.forEach(
@@ -893,8 +938,6 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		`ChangeSet.empty(${n.coordination}).insert(${relation}, [])`
 	if (Option.isSome(l.seats)) {
 		const st = l.seats.value
-		const live = `${n.coordinator}.relations.${st.live}`
-		const fields = commas(seatFields)
 		coordinatorPrograms.push(
 			[
 				n.program("Take"),
@@ -902,13 +945,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			],
 			[n.program("GiveBack"), insertInto(st.freed)],
 			[n.program("SeatTurns"), deferred(latestOf(n.coordination, st.hold, ["resource", "seat"]))],
-			[
-				n.program("Holds"),
-				deferred(`query(${n.coordinator}).rule((r) => {
-	const { ${fields} } = v(${live}, "live")
-	return r.match(${live}, { ${fields} }).find({ ${fields} })
-})`)
-			]
+			[n.program("Holds"), deferred(liveHoldsOf(n.coordinator, st))]
 		)
 	}
 	if (has(r("Exclusive"))) {
@@ -992,12 +1029,13 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		"})"
 	]
 	const body = lines([
-		`/** den's role for the flow ${P}: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. */`,
-		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([`...${n.graph}.relations`, ...idleEntries])} }, { insert: [${commas(Arr.map(den, q))}] })`,
+		`/** den's role for the flow ${P}: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains${Option.isSome(l.seats) ? " and live holds" : ""} and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */`,
+		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([`...${n.graph}.relations`, ...l.coordination, ...liveEntry, ...idleEntries])} }, { insert: [${commas(Arr.map(den, q))}] })`,
 		"",
 		`/** den's coordinator role for the flow ${P}: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation${Option.isSome(l.seats) ? ", and reads its seats' live holds through the seat level the app's schema states, so a schema without it fails to typecheck" : ""}. */`,
 		`export const ${n.coordinator} = role(${app}, ${q(n.coordinatorName)}, { ${commas([...rosterNames, ...l.coordination, ...liveEntry])} }, { insert: [${commas(Arr.map(l.coordination, q))}] })`,
 		"",
+		...Arr.flatMap(sharedDeclarations, ([name, program]) => [`const ${name} = ${program}`, ""]),
 		...block(n.denPrograms, denPrograms),
 		"",
 		`export const ${n.denWorkload} = workload(${n.den}, ${n.denPrograms})`,
@@ -1579,44 +1617,26 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\tresume: (row) => ${write("Resume", `${r("Resumed")}: pausesOf([row])`)}`,
 		"}"
 	])
-	const all = (handle: string) =>
-		`Effect.map(settled(h.den.${handle}.once({ params: {}, facts: {} })), rowsOf)`
 	const snapshot = lines([
-		"Effect.gen(function* () {",
-		`\tconst steps = yield* ${all(n.program("Pending"))}`,
-		`\tconst claims = yield* ${all(n.program("PendingClaims"))}`,
-		`\tconst retries = yield* ${all(n.program("PendingRetries"))}`,
-		`\tconst fenced = yield* ${all(n.program("PendingFenced"))}`,
-		`\tconst dues = yield* ${all(n.program("PendingDues"))}`,
-		`\tconst requested = yield* ${all(n.program("Requested"))}`,
-		`\tconst running = yield* ${all(n.program("Running"))}`,
-		`\tconst withins = yield* ${all(n.program("Withins"))}`,
-		`\tconst roots = yield* ${all(n.program("Roots"))}`,
-		exclusiveKeys
-			? `\tconst keys = yield* ${all(n.program("ExclusiveKeys"))}`
-			: "\tconst keys: ReadonlyArray<{ readonly scope: ScopeKey; readonly id: ExclusiveId }> = []",
-		"\tconst holds = yield* coordination.holds",
-		"\tconst exclusives = yield* coordination.exclusives",
-		"\tconst paused = yield* Effect.map(coordination.paused, Arr.map((row) => row.target))",
-		"\tconst busy = yield* busyFlows",
+		`Effect.flatMap(settled(h.den.${n.program("Snapshot")}.once({ params: {}, facts: {} })), (rows) => Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof ${F}>> => {`,
 		"\tconst view = (scope: ScopeKey, kind: string, admission: Admission): ReadonlyArray<ScopeView> =>",
-		"\t\tOption.match(Arr.findFirst(roots, (o) => o.scope === scope), {",
-		'\t\t\tonSome: (o): ReadonlyArray<ScopeView> => [{ place: "root", scope, kind, key: o.key, at: o.at, admission, exclusive: Option.map(Arr.findFirst(keys, (k) => k.scope === scope), (k) => k.id) }],',
-		'\t\t\tonNone: () => Arr.map(Option.toArray(Arr.findFirst(withins, (w) => w.scope === scope)), (w): ScopeView => ({ place: "child", scope, kind, parent: w.parent }))',
+		"\t\tOption.match(Arr.findFirst(read.roots, (o) => o.scope === scope), {",
+		`\t\t\tonSome: (o): ReadonlyArray<ScopeView> => [{ place: "root", scope, kind, key: o.key, at: o.at, admission, exclusive: ${exclusiveKeys ? "Option.map(Arr.findFirst(read.keys, (k) => k.scope === scope), (k) => k.id)" : "Option.none()"} }],`,
+		'\t\t\tonNone: () => Arr.map(Option.toArray(Arr.findFirst(read.withins, (w) => w.scope === scope)), (w): ScopeView => ({ place: "child", scope, kind, parent: w.parent }))',
 		"\t\t})",
 		"\treturn {",
-		"\t\tsteps: Arr.map(steps, (s) => ({ step: s.step, runner: runners[s.kind], scope: s.scope })),",
-		"\t\tclaims,",
-		"\t\tretries,",
-		"\t\tfenced,",
-		"\t\tdues,",
-		'\t\tscopes: [...Arr.flatMap(requested, (s) => view(s.scope, s.kind, "requested")), ...Arr.flatMap(running, (s) => view(s.scope, s.kind, "admitted"))],',
-		"\t\tholds,",
-		"\t\texclusives,",
-		"\t\tpaused,",
-		"\t\tbusy",
-		`\t} satisfies Snapshot<FlowNeeds<typeof ${F}>>`,
-		"})"
+		"\t\tsteps: Arr.map(read.steps, (s) => ({ step: s.step, runner: runners[s.kind], scope: s.scope })),",
+		"\t\tclaims: read.claims,",
+		"\t\tretries: read.retries,",
+		"\t\tfenced: read.fenced,",
+		"\t\tdues: read.dues,",
+		'\t\tscopes: [...Arr.flatMap(read.requested, (s) => view(s.scope, s.kind, "requested")), ...Arr.flatMap(read.running, (s) => view(s.scope, s.kind, "admitted"))],',
+		`\t\tholds: ${resources ? "read.holds" : "[]"},`,
+		`\t\texclusives: ${exclusives ? "read.exclusives" : "[]"},`,
+		"\t\tpaused: Arr.map(read.paused, (row) => row.target),",
+		`\t\tbusy: ${Arr.isReadonlyArrayNonEmpty(l.idle) ? "busyOf(read)" : "[]"}`,
+		"\t}",
+		"}))"
 	])
 	const watched = [
 		`signals(h.den.${n.program("Pending")}.watch({ params: {}, facts: {} }))`,
@@ -1635,19 +1655,9 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		)
 	]
 	const busyFlows = Arr.isReadonlyArrayNonEmpty(l.idle)
-		? lines([
-				"Effect.map(",
-				"\tEffect.all([",
-				...Arr.map(
-					l.idle,
-					(f) =>
-						`\t\tEffect.map(h.den.${n.program(`Busy${f}`)}.once({ params: {}, facts: {} }).pipe(settled, any), (busy): ReadonlyArray<string> => (busy ? [${q(f)}] : [])),`
-				),
-				"\t]),",
-				"\tArr.flatten",
-				")"
-			])
+		? `Effect.flatMap(settled(h.den.${n.program("Busy")}.once({ params: {}, facts: {} })), (rows) => Effect.map(only(rows), busyOf))`
 		: "Effect.succeed([])"
+	const busyOf = `const busyOf = (read: { ${commas(Arr.map(l.idle, (f) => `readonly ${busyName(f)}: ReadonlyArray<unknown>`))} }): ReadonlyArray<string> => Arr.filter([${commas(Arr.map(l.idle, q))}] as const, (flow) => Arr.isReadonlyArrayNonEmpty(read[\`${BUSY}\${flow}\`]))`
 	const fragmentValues = boundRostersOf(l)
 	const fragmentImports = Arr.dedupe([...spawning, ...fragmentValues])
 	const fragmentTypes = Arr.filter(fragmentImports, (name) => !Arr.contains(fragmentValues, name))
@@ -1663,7 +1673,6 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		...(Arr.some(l.edges, (e) => e.toKind === "scope") ? ["edgeScope"] : []),
 		...(Arr.some(l.edges, (e) => e.toKind === "step") ? ["edgeStep"] : []),
 		"finishStep",
-		...(exclusiveKeys ? [] : ["type ExclusiveId"]),
 		"type Instant",
 		"rootScope",
 		"type ScopeKey",
@@ -1678,8 +1687,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	return `${lines([
 		`/** The ledger port of the flow ${P} over its served programs; \`den generate\` writes it, and nothing edits it. */`,
 		`import type { Addition } from "@bjornpagen/grizzle"`,
-		`import { type MemberHandle, type Settled, settled } from "@bjornpagen/grizzle/runtime"`,
-		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishUnions ? ["held"] : []), "one", ...(Arr.some(l.steps, (st) => Arr.isReadonlyArrayNonEmpty(st.reads)) ? ["only"] : []), ...(families ? ["ordered"] : []), "readingOf", "rowsOf", "scheduleOf", "signals"])} } from "@bjornpagen/den/runtime/bind"`,
+		`import { type MemberHandle, settled } from "@bjornpagen/grizzle/runtime"`,
+		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishUnions ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", "rowsOf", "scheduleOf", "signals"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
 		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), ...(resources ? ["HoldRow"] : []), "Admission", "Ledger", "PauseRow", "ScopeView", ...(resources ? ["SeatTurn"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
 		`import { runnerOf } from "@bjornpagen/den/runtime/turn"`,
@@ -1731,7 +1740,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		...Arr.map(l.joins, (j) => `\t${indented("\t")(startOf(j))}`),
 		...Arr.map(valueReaders, (v) => `\t${indented("\t")(readerDef(v))}`),
 		`\tconst coordination: Ledger<never>["coordination"] = ${indented("\t")(coordination)}`,
-		`\tconst busyFlows: Effect.Effect<ReadonlyArray<string>, Settled> = ${indented("\t")(busyFlows)}`,
+		...(Arr.isReadonlyArrayNonEmpty(l.idle) ? [`\t${busyOf}`] : []),
 		`\tconst request = { ${commas(Arr.map(denRoots, requestOf))} }`,
 		"\tconst runners = {",
 		...Arr.map(l.steps, (s) => `\t\t${s.name}: ${indented("\t\t")(stepRunner(s))},`),
@@ -1767,15 +1776,15 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"\t\t\t}",
 		`\t\t\tconst admitted = yield* ${keyRead(n.program("AdmittedOf"), "scope", "scope")}`,
 		`\t\t\tconst skipped = yield* ${keyRead(n.program("SkippedOf"), "scope", "scope")}`,
-		exclusiveKeys
-			? `\t\t\tconst key = yield* ${keyRead(n.program("ExclusiveKeyOf"), "scope", "scope")}`
-			: "\t\t\tconst key = Option.none<{ readonly id: ExclusiveId }>()",
+		...(exclusiveKeys
+			? [`\t\t\tconst key = yield* ${keyRead(n.program("ExclusiveKeyOf"), "scope", "scope")}`]
+			: []),
 		'\t\t\tconst admission: Admission = Option.isSome(admitted) ? "admitted" : Option.isSome(skipped) ? "skipped" : "requested"',
-		'\t\t\treturn Option.some<ScopeView>({ place: "root", scope, kind: row.value.kind, key: root.value.key, at: root.value.at, admission, exclusive: Option.map(key, (k) => k.id) })',
+		`\t\t\treturn Option.some<ScopeView>({ place: "root", scope, kind: row.value.kind, key: root.value.key, at: root.value.at, admission, exclusive: ${exclusiveKeys ? "Option.map(key, (k) => k.id)" : "Option.none()"} })`,
 		"\t\t}),",
 		`\t\tunended: (scope) => Effect.flatMap(h.den.${n.program("UnendedSteps")}.once({ params: { scope }, facts: {} }).pipe(settled, any), (steps) => steps ? Effect.succeed(true) : h.den.${n.program("OpenChildren")}.once({ params: { scope }, facts: {} }).pipe(settled, any)),`,
 		`\t\tfinished: (scope) => h.den.${n.program("Finished")}.once({ params: { scope }, facts: {} }).pipe(settled, any),`,
-		"\t\tbusy: busyFlows,",
+		`\t\tbusy: ${indented("\t\t")(busyFlows)},`,
 		`\t\tclaim: (row) => Effect.map(settled(h.den.${n.program("Claim")}.once({ params: {}, facts: { insert: { ${r("Claim")}: [row] } } })), (outcome) => Arr.some(rowsOf(outcome.reads.held), (c) => c.holder === row.holder)),`,
 		`\t\tretry: (row) => settled(h.den.${n.program("Retry")}.once({ params: {}, facts: { insert: { ${r("Retry")}: [row] } } })),`,
 		`\t\tfence: (row) => settled(h.den.${n.program("Fence")}.once({ params: {}, facts: { insert: { ${r("Fenced")}: [row] } } })),`,

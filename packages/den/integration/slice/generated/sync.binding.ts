@@ -4,6 +4,7 @@ import {
 	exclusiveRows,
 	fresh,
 	one,
+	only,
 	readingOf,
 	rowsOf,
 	scheduleOf,
@@ -31,7 +32,7 @@ import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Sync over its served programs; `den generate` writes it, and nothing edits it. */
 import type { Addition } from "@bjornpagen/grizzle"
-import { type MemberHandle, type Settled, settled } from "@bjornpagen/grizzle/runtime"
+import { type MemberHandle, settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import { sync } from "#integration/slice/flows.ts"
@@ -298,15 +299,8 @@ export const syncLedger = (h: SyncHandles) => {
 				)
 			)
 	}
-	const busyFlows: Effect.Effect<ReadonlyArray<string>, Settled> = Effect.map(
-		Effect.all([
-			Effect.map(
-				h.den.syncBusyChain.once({ params: {}, facts: {} }).pipe(settled, any),
-				(busy): ReadonlyArray<string> => (busy ? ["Chain"] : [])
-			)
-		]),
-		Arr.flatten
-	)
+	const busyOf = (read: { readonly busyChain: ReadonlyArray<unknown> }): ReadonlyArray<string> =>
+		Arr.filter(["Chain"] as const, (flow) => Arr.isReadonlyArrayNonEmpty(read[`busy${flow}`]))
 	const request = {
 		SyncRun: (key: string, at: Instant, input: Parameters<(typeof sync.kinds)[1]["start"]>[0]) =>
 			Effect.flatMap(rootScope("Sync", "SyncRun", key), (scope) =>
@@ -756,7 +750,9 @@ export const syncLedger = (h: SyncHandles) => {
 			),
 		finished: (scope) =>
 			h.den.syncFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
-		busy: busyFlows,
+		busy: Effect.flatMap(settled(h.den.syncBusy.once({ params: {}, facts: {} })), (rows) =>
+			Effect.map(only(rows), busyOf)
+		),
 		claim: (row) =>
 			Effect.map(
 				settled(h.den.syncClaim.once({ params: {}, facts: { insert: { SyncClaim: [row] } } })),
@@ -812,99 +808,58 @@ export const syncLedger = (h: SyncHandles) => {
 					facts: { retire: { SyncRoot: [{ scope: root }] } }
 				})
 			),
-		snapshot: Effect.gen(function* () {
-			const steps = yield* Effect.map(
-				settled(h.den.syncPending.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const claims = yield* Effect.map(
-				settled(h.den.syncPendingClaims.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const retries = yield* Effect.map(
-				settled(h.den.syncPendingRetries.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const fenced = yield* Effect.map(
-				settled(h.den.syncPendingFenced.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const dues = yield* Effect.map(
-				settled(h.den.syncPendingDues.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const requested = yield* Effect.map(
-				settled(h.den.syncRequested.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const running = yield* Effect.map(
-				settled(h.den.syncRunning.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const withins = yield* Effect.map(
-				settled(h.den.syncWithins.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const roots = yield* Effect.map(
-				settled(h.den.syncRoots.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const keys = yield* Effect.map(
-				settled(h.den.syncExclusiveKeys.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const holds = yield* coordination.holds
-			const exclusives = yield* coordination.exclusives
-			const paused = yield* Effect.map(
-				coordination.paused,
-				Arr.map((row) => row.target)
-			)
-			const busy = yield* busyFlows
-			const view = (
-				scope: ScopeKey,
-				kind: string,
-				admission: Admission
-			): ReadonlyArray<ScopeView> =>
-				Option.match(
-					Arr.findFirst(roots, (o) => o.scope === scope),
-					{
-						onSome: (o): ReadonlyArray<ScopeView> => [
-							{
-								place: "root",
-								scope,
-								kind,
-								key: o.key,
-								at: o.at,
-								admission,
-								exclusive: Option.map(
-									Arr.findFirst(keys, (k) => k.scope === scope),
-									(k) => k.id
+		snapshot: Effect.flatMap(settled(h.den.syncSnapshot.once({ params: {}, facts: {} })), (rows) =>
+			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof sync>> => {
+				const view = (
+					scope: ScopeKey,
+					kind: string,
+					admission: Admission
+				): ReadonlyArray<ScopeView> =>
+					Option.match(
+						Arr.findFirst(read.roots, (o) => o.scope === scope),
+						{
+							onSome: (o): ReadonlyArray<ScopeView> => [
+								{
+									place: "root",
+									scope,
+									kind,
+									key: o.key,
+									at: o.at,
+									admission,
+									exclusive: Option.map(
+										Arr.findFirst(read.keys, (k) => k.scope === scope),
+										(k) => k.id
+									)
+								}
+							],
+							onNone: () =>
+								Arr.map(
+									Option.toArray(Arr.findFirst(read.withins, (w) => w.scope === scope)),
+									(w): ScopeView => ({ place: "child", scope, kind, parent: w.parent })
 								)
-							}
-						],
-						onNone: () =>
-							Arr.map(
-								Option.toArray(Arr.findFirst(withins, (w) => w.scope === scope)),
-								(w): ScopeView => ({ place: "child", scope, kind, parent: w.parent })
-							)
-					}
-				)
-			return {
-				steps: Arr.map(steps, (s) => ({ step: s.step, runner: runners[s.kind], scope: s.scope })),
-				claims,
-				retries,
-				fenced,
-				dues,
-				scopes: [
-					...Arr.flatMap(requested, (s) => view(s.scope, s.kind, "requested")),
-					...Arr.flatMap(running, (s) => view(s.scope, s.kind, "admitted"))
-				],
-				holds,
-				exclusives,
-				paused,
-				busy
-			} satisfies Snapshot<FlowNeeds<typeof sync>>
-		}),
+						}
+					)
+				return {
+					steps: Arr.map(read.steps, (s) => ({
+						step: s.step,
+						runner: runners[s.kind],
+						scope: s.scope
+					})),
+					claims: read.claims,
+					retries: read.retries,
+					fenced: read.fenced,
+					dues: read.dues,
+					scopes: [
+						...Arr.flatMap(read.requested, (s) => view(s.scope, s.kind, "requested")),
+						...Arr.flatMap(read.running, (s) => view(s.scope, s.kind, "admitted"))
+					],
+					holds: [],
+					exclusives: read.exclusives,
+					paused: Arr.map(read.paused, (row) => row.target),
+					busy: busyOf(read)
+				}
+			})
+		),
 		changes: Stream.mergeAll(
 			[
 				signals(h.den.syncPending.watch({ params: {}, facts: {} })),

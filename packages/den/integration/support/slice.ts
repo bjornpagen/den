@@ -13,6 +13,7 @@ import {
 	Context,
 	Data,
 	Effect,
+	Fiber,
 	FileSystem,
 	HashMap,
 	type PlatformError,
@@ -37,7 +38,7 @@ import { fanLedger } from "#integration/slice/generated/fan.binding.ts"
 import { retryLedger } from "#integration/slice/generated/retry.binding.ts"
 import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
 import type { AppLogin, Worker } from "#integration/slice/logins.ts"
-import initMigration from "#integration/slice/migrations/slice/20261119164935_init/meta.json" with { type: "json" }
+import initMigration from "#integration/slice/migrations/slice/20261120013101_init/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -67,7 +68,7 @@ const grizzleBin = `${import.meta.dirname}/../../node_modules/.bin/grizzle`
  * record lacks, or lacks one it holds (committedFolders).
  */
 const committed = Object.freeze({
-	"20261119164935_init": initMigration
+	"20261120013101_init": initMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
@@ -104,9 +105,9 @@ const committedFolders = Effect.gen(function* () {
 /** A failure of the suite's setup: a command or statement that did not do what the suite needs. */
 class SetupFailed extends Data.TaggedError("SetupFailed")<{ readonly message: string }> {}
 
-/** Runs one statement as the cluster's owner, in `database`, and returns its rows' first column. */
-const asOwner = (member: PgMember, database: string, statement: string) =>
-	Effect.acquireUseRelease(
+/** A session of the cluster's owner in `database`, connected, and ended once its scope closes. */
+const ownerSession = (member: PgMember, database: string) =>
+	Effect.acquireRelease(
 		Effect.tap(
 			Effect.sync(
 				() =>
@@ -126,15 +127,23 @@ const asOwner = (member: PgMember, database: string, statement: string) =>
 						new SetupFailed({ message: `connecting as ${member.owner}: ${String(cause)}` })
 				})
 		),
-		(client) =>
-			Effect.map(
-				Effect.tryPromise({
-					try: () => client.query<{ readonly name: string }>(statement),
-					catch: (cause) => new SetupFailed({ message: `${statement}: ${String(cause)}` })
-				}),
-				(result) => Arr.map(result.rows, (row) => row.name)
-			),
 		(client) => Effect.promise(() => client.end())
+	)
+
+/** Runs one statement on an owner's session, and returns its rows' first column. */
+const runOn = (client: pg.Client, statement: string) =>
+	Effect.map(
+		Effect.tryPromise({
+			try: () => client.query<{ readonly name: string }>(statement),
+			catch: (cause) => new SetupFailed({ message: `${statement}: ${String(cause)}` })
+		}),
+		(result) => Arr.map(result.rows, (row) => row.name)
+	)
+
+/** Runs one statement as the cluster's owner, in `database`, and returns its rows' first column. */
+const asOwner = (member: PgMember, database: string, statement: string) =>
+	Effect.scoped(
+		Effect.flatMap(ownerSession(member, database), (client) => runOn(client, statement))
 	)
 
 /**
@@ -529,6 +538,40 @@ export const installedSliceCase: DatabaseNeed<Context.Context<SliceCase>> = {
  */
 export const migrateIn = (directory: string) =>
 	Effect.flatMap(Installation, (installed) => grizzle("migrate", installed.env, directory))
+
+/**
+ * Runs `reader` while an owner's transaction holds `table` of the case's database locked against every read, and
+ * `writer` once a session waits on that lock, then frees it and waits for the reader; its answer is both outcomes. A
+ * statement that waited on the lock reads the database as it stood before the writer, since PostgreSQL takes a
+ * statement's snapshot before its locks, and a statement the reader starts after the lock is freed reads the writer's
+ * commits: so a reader whose reads span two transactions reads two states, and one whose reads are one statement reads
+ * one.
+ */
+export const readAcrossWrite = <A, B, E, F, R, Q>(
+	table: string,
+	reader: Effect.Effect<A, E, R>,
+	writer: Effect.Effect<B, F, Q>
+) =>
+	Effect.scoped(
+		Effect.gen(function* () {
+			const installed = yield* Installation
+			const owner = yield* ownerSession(installed.member, installed.database)
+			yield* runOn(owner, "BEGIN ISOLATION LEVEL READ COMMITTED")
+			yield* runOn(owner, `LOCK TABLE ${table} IN ACCESS EXCLUSIVE MODE`)
+			const reading = yield* Effect.forkScoped(reader)
+			yield* Effect.repeat(
+				runOn(
+					owner,
+					`SELECT count(*)::text AS name FROM pg_catalog.pg_locks WHERE NOT granted AND relation = '${table}'::regclass`
+				),
+				{ until: (waiting) => !Arr.contains(waiting, "0") }
+			)
+			const wrote = yield* writer
+			yield* runOn(owner, "ROLLBACK")
+			const read = yield* Fiber.join(reading)
+			return [read, wrote] as const
+		})
+	)
 
 /** A read's rows, as an array. */
 export const rows = <A, E>(

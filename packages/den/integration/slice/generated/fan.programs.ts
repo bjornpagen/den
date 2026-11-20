@@ -40,11 +40,23 @@ import {
 } from "#integration/slice/generated/fan.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's role for the flow Fan: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. */
+/** den's role for the flow Fan: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains and live holds and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */
 export const FanDen = role(
 	App,
 	"fan_den",
-	{ ...fanGraph.relations },
+	{
+		...fanGraph.relations,
+		FanHold,
+		FanFreed,
+		FanPaused,
+		FanResumed,
+		FanLive: query(App).rule((r) => {
+			const { resource, seat, turn, holder, until } = v(App.relations.FanLive, "live")
+			return r
+				.match(App.relations.FanLive, { resource, seat, turn, holder, until })
+				.find({ resource, seat, turn, holder, until })
+		})
+	},
 	{
 		insert: [
 			"FanScope",
@@ -96,6 +108,32 @@ export const FanCoordinator = role(
 	},
 	{ insert: ["FanHold", "FanFreed", "FanPaused", "FanResumed"] }
 )
+
+const fanPendingRead = query(FanDen).rule((r) => {
+	const { step, kind, scope } = v(FanStep, "step")
+	return r
+		.match(FanStep, { step, kind, scope })
+		.where(r.not(FanResult, { step }))
+		.find({ step, kind, scope })
+})
+
+const fanRequestedRead = query(FanDen).rule((r) => {
+	const { scope, kind } = v(FanScope, "scope")
+	return r
+		.match(FanScope, { scope, kind })
+		.where(r.not(FanAdmitted, { scope }), r.not(FanSkipped, { scope }))
+		.find({ scope, kind })
+})
+
+const fanRunningRead = query(FanDen).rule((r) => {
+	const { scope, kind } = v(FanScope, "scope")
+	const { step } = v(FanFinish, "finish")
+	return r
+		.match(FanScope, { scope, kind })
+		.match(FanFinish, { scope, step })
+		.where(r.not(FanResult, { step }))
+		.find({ scope, kind })
+})
 
 export const fanDenPrograms = Object.freeze({
 	fanNow: clocked(
@@ -286,78 +324,60 @@ export const fanDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", FanScope.fields.scope)))
 			.find({ step })
 	}),
-	fanPending: deferrable(
-		query(fanGraph).rule((r) => {
-			const { step, kind, scope } = v(FanStep, "step")
-			return r
-				.match(FanStep, { step, kind, scope })
-				.where(r.not(FanResult, { step }))
-				.find({ step, kind, scope })
-		})
-	),
-	fanPendingClaims: deferrable(
-		query(fanGraph).rule((r) => {
-			const { step, attempt, until } = v(FanClaim, "claim")
-			return r
-				.match(FanClaim, { step, attempt, until })
-				.where(r.not(FanResult, { step }))
-				.find({ step, attempt, until })
-		})
-	),
-	fanPendingRetries: deferrable(
-		query(fanGraph).rule((r) => {
-			const { step, attempt, at, spent } = v(FanRetry, "retry")
-			return r
-				.match(FanRetry, { step, attempt, at, spent })
-				.where(r.not(FanResult, { step }))
-				.find({ step, attempt, at, spent })
-		})
-	),
-	fanPendingFenced: deferrable(
-		query(fanGraph).rule((r) => {
-			const { step, attempt } = v(FanFenced, "fenced")
-			return r
-				.match(FanFenced, { step, attempt })
-				.where(r.not(FanResult, { step }))
-				.find({ step, attempt })
-		})
-	),
-	fanPendingDues: deferrable(
-		query(fanGraph).rule((r) => {
-			const { step, at } = v(FanDue, "due")
-			return r.match(FanDue, { step, at }).where(r.not(FanResult, { step })).find({ step, at })
-		})
-	),
-	fanRequested: deferrable(
-		query(fanGraph).rule((r) => {
-			const { scope, kind } = v(FanScope, "scope")
-			return r
-				.match(FanScope, { scope, kind })
-				.where(r.not(FanAdmitted, { scope }), r.not(FanSkipped, { scope }))
-				.find({ scope, kind })
-		})
-	),
-	fanRunning: deferrable(
-		query(fanGraph).rule((r) => {
-			const { scope, kind } = v(FanScope, "scope")
-			const { step } = v(FanFinish, "finish")
-			return r
-				.match(FanScope, { scope, kind })
-				.match(FanFinish, { scope, step })
-				.where(r.not(FanResult, { step }))
-				.find({ scope, kind })
-		})
-	),
-	fanWithins: deferrable(
-		query(fanGraph).rule((r) => {
-			const { scope, parent } = v(FanWithin, "fanWithin")
-			return r.match(FanWithin, { scope, parent }).find({ scope, parent })
-		})
-	),
-	fanRoots: deferrable(
-		query(fanGraph).rule((r) => {
-			const { scope, key, at } = v(FanRoot, "fanRoot")
-			return r.match(FanRoot, { scope, key, at }).find({ scope, key, at })
+	fanPending: deferrable(fanPendingRead),
+	fanRequested: deferrable(fanRequestedRead),
+	fanRunning: deferrable(fanRunningRead),
+	fanSnapshot: deferrable(
+		query(FanDen).reads({
+			steps: fanPendingRead,
+			claims: query(FanDen).rule((r) => {
+				const { step, attempt, until } = v(FanClaim, "claim")
+				return r
+					.match(FanClaim, { step, attempt, until })
+					.where(r.not(FanResult, { step }))
+					.find({ step, attempt, until })
+			}),
+			retries: query(FanDen).rule((r) => {
+				const { step, attempt, at, spent } = v(FanRetry, "retry")
+				return r
+					.match(FanRetry, { step, attempt, at, spent })
+					.where(r.not(FanResult, { step }))
+					.find({ step, attempt, at, spent })
+			}),
+			fenced: query(FanDen).rule((r) => {
+				const { step, attempt } = v(FanFenced, "fenced")
+				return r
+					.match(FanFenced, { step, attempt })
+					.where(r.not(FanResult, { step }))
+					.find({ step, attempt })
+			}),
+			dues: query(FanDen).rule((r) => {
+				const { step, at } = v(FanDue, "due")
+				return r.match(FanDue, { step, at }).where(r.not(FanResult, { step })).find({ step, at })
+			}),
+			requested: fanRequestedRead,
+			running: fanRunningRead,
+			withins: query(FanDen).rule((r) => {
+				const { scope, parent } = v(FanWithin, "fanWithin")
+				return r.match(FanWithin, { scope, parent }).find({ scope, parent })
+			}),
+			roots: query(FanDen).rule((r) => {
+				const { scope, key, at } = v(FanRoot, "fanRoot")
+				return r.match(FanRoot, { scope, key, at }).find({ scope, key, at })
+			}),
+			holds: query(FanDen).rule((r) => {
+				const { resource, seat, turn, holder, until } = v(FanDen.relations.FanLive, "live")
+				return r
+					.match(FanDen.relations.FanLive, { resource, seat, turn, holder, until })
+					.find({ resource, seat, turn, holder, until })
+			}),
+			paused: query(FanDen).rule((r) => {
+				const { target, turn } = v(FanPaused, "fanPaused")
+				return r
+					.match(FanPaused, { target, turn })
+					.where(r.not(FanResumed, { target, turn }))
+					.find({ target, turn })
+			})
 		})
 	),
 	fanReadFanSquareInput: query(fanGraph).rule((r) => {

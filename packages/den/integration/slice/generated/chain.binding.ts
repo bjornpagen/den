@@ -12,7 +12,6 @@ import {
 import {
 	edgeStep,
 	finishStep,
-	type ExclusiveId,
 	type Instant,
 	rootScope,
 	type ScopeKey,
@@ -32,7 +31,7 @@ import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Chain over its served programs; `den generate` writes it, and nothing edits it. */
 import type { Addition } from "@bjornpagen/grizzle"
-import { type MemberHandle, type Settled, settled } from "@bjornpagen/grizzle/runtime"
+import { type MemberHandle, settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import { chain } from "#integration/slice/flows.ts"
@@ -284,7 +283,6 @@ export const chainLedger = (h: ChainHandles) => {
 				)
 			)
 	}
-	const busyFlows: Effect.Effect<ReadonlyArray<string>, Settled> = Effect.succeed([])
 	const request = {
 		ChainRun: (key: string, at: Instant, input: Parameters<(typeof chain.kinds)[1]["start"]>[0]) =>
 			Effect.flatMap(rootScope("Chain", "ChainRun", key), (scope) =>
@@ -783,7 +781,6 @@ export const chainLedger = (h: ChainHandles) => {
 					settled(h.den.chainSkippedOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
-				const key = Option.none<{ readonly id: ExclusiveId }>()
 				const admission: Admission = Option.isSome(admitted)
 					? "admitted"
 					: Option.isSome(skipped)
@@ -796,7 +793,7 @@ export const chainLedger = (h: ChainHandles) => {
 					key: root.value.key,
 					at: root.value.at,
 					admission,
-					exclusive: Option.map(key, (k) => k.id)
+					exclusive: Option.none()
 				})
 			}),
 		unended: (scope) =>
@@ -809,7 +806,7 @@ export const chainLedger = (h: ChainHandles) => {
 			),
 		finished: (scope) =>
 			h.den.chainFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
-		busy: busyFlows,
+		busy: Effect.succeed([]),
 		claim: (row) =>
 			Effect.map(
 				settled(h.den.chainClaim.once({ params: {}, facts: { insert: { ChainClaim: [row] } } })),
@@ -865,96 +862,55 @@ export const chainLedger = (h: ChainHandles) => {
 					facts: { retire: { ChainRoot: [{ scope: root }] } }
 				})
 			),
-		snapshot: Effect.gen(function* () {
-			const steps = yield* Effect.map(
-				settled(h.den.chainPending.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const claims = yield* Effect.map(
-				settled(h.den.chainPendingClaims.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const retries = yield* Effect.map(
-				settled(h.den.chainPendingRetries.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const fenced = yield* Effect.map(
-				settled(h.den.chainPendingFenced.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const dues = yield* Effect.map(
-				settled(h.den.chainPendingDues.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const requested = yield* Effect.map(
-				settled(h.den.chainRequested.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const running = yield* Effect.map(
-				settled(h.den.chainRunning.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const withins = yield* Effect.map(
-				settled(h.den.chainWithins.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const roots = yield* Effect.map(
-				settled(h.den.chainRoots.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const keys: ReadonlyArray<{ readonly scope: ScopeKey; readonly id: ExclusiveId }> = []
-			const holds = yield* coordination.holds
-			const exclusives = yield* coordination.exclusives
-			const paused = yield* Effect.map(
-				coordination.paused,
-				Arr.map((row) => row.target)
-			)
-			const busy = yield* busyFlows
-			const view = (
-				scope: ScopeKey,
-				kind: string,
-				admission: Admission
-			): ReadonlyArray<ScopeView> =>
-				Option.match(
-					Arr.findFirst(roots, (o) => o.scope === scope),
-					{
-						onSome: (o): ReadonlyArray<ScopeView> => [
-							{
-								place: "root",
-								scope,
-								kind,
-								key: o.key,
-								at: o.at,
-								admission,
-								exclusive: Option.map(
-									Arr.findFirst(keys, (k) => k.scope === scope),
-									(k) => k.id
+		snapshot: Effect.flatMap(settled(h.den.chainSnapshot.once({ params: {}, facts: {} })), (rows) =>
+			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof chain>> => {
+				const view = (
+					scope: ScopeKey,
+					kind: string,
+					admission: Admission
+				): ReadonlyArray<ScopeView> =>
+					Option.match(
+						Arr.findFirst(read.roots, (o) => o.scope === scope),
+						{
+							onSome: (o): ReadonlyArray<ScopeView> => [
+								{
+									place: "root",
+									scope,
+									kind,
+									key: o.key,
+									at: o.at,
+									admission,
+									exclusive: Option.none()
+								}
+							],
+							onNone: () =>
+								Arr.map(
+									Option.toArray(Arr.findFirst(read.withins, (w) => w.scope === scope)),
+									(w): ScopeView => ({ place: "child", scope, kind, parent: w.parent })
 								)
-							}
-						],
-						onNone: () =>
-							Arr.map(
-								Option.toArray(Arr.findFirst(withins, (w) => w.scope === scope)),
-								(w): ScopeView => ({ place: "child", scope, kind, parent: w.parent })
-							)
-					}
-				)
-			return {
-				steps: Arr.map(steps, (s) => ({ step: s.step, runner: runners[s.kind], scope: s.scope })),
-				claims,
-				retries,
-				fenced,
-				dues,
-				scopes: [
-					...Arr.flatMap(requested, (s) => view(s.scope, s.kind, "requested")),
-					...Arr.flatMap(running, (s) => view(s.scope, s.kind, "admitted"))
-				],
-				holds,
-				exclusives,
-				paused,
-				busy
-			} satisfies Snapshot<FlowNeeds<typeof chain>>
-		}),
+						}
+					)
+				return {
+					steps: Arr.map(read.steps, (s) => ({
+						step: s.step,
+						runner: runners[s.kind],
+						scope: s.scope
+					})),
+					claims: read.claims,
+					retries: read.retries,
+					fenced: read.fenced,
+					dues: read.dues,
+					scopes: [
+						...Arr.flatMap(read.requested, (s) => view(s.scope, s.kind, "requested")),
+						...Arr.flatMap(read.running, (s) => view(s.scope, s.kind, "admitted"))
+					],
+					holds: [],
+					exclusives: [],
+					paused: Arr.map(read.paused, (row) => row.target),
+					busy: []
+				}
+			})
+		),
 		changes: Stream.mergeAll(
 			[
 				signals(h.den.chainPending.watch({ params: {}, facts: {} })),

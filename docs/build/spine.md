@@ -172,7 +172,7 @@ output into `select(PResult, outcome = done)`) certifies.
 | DBCLOCK | `Clock.currentTimeMillis` in `runtime/turn.ts` (`serve`, `claimed`, the runner's deadline) and `runtime/census.ts` (`tick`) | the database's instant, as a query term |
 | CLASH | `src/lower/merge.ts` | grizzle refusing a fragment's clashes itself |
 | DELTAMET | `concluded`'s read-back of `PHeld` after `commitUnknown` | the winner's row in the same call |
-| DEFERRABLE | the census's reads (`PPending`, `PPendingClaims`, `POpenScopes`, `PStepsIn`, `PScopesIn`) | deferrable read-only reads |
+| DEFERRABLE | the scheduler's snapshot (`PSnapshot`, one statement of den's role) and the relay's watches (`PPending`, `PRequested`, `PRunning`) | deferrable read-only reads |
 | SCHEMAMAP | `src/lower/schema.ts` | grizzle's own Effect Schema mapping |
 
 ## The suites

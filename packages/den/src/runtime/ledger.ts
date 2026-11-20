@@ -230,10 +230,12 @@ export interface PauseRow {
 }
 
 /**
- * Everything the scheduler reads at one instant, for the relay's and the census's eligibility: the pending steps with
- * their claims, retries, fenced attempts and first due instants; the live scopes (requested, or admitted with an unfinished finish);
- * the coordination group's live holds, exclusivity seats and paused targets; and, for each flow a precondition names,
- * whether it holds a pending step.
+ * Everything the scheduler reads, for the relay's and the census's eligibility, in one statement of den's role and so
+ * one snapshot of the database: the pending steps with their claims, retries, fenced attempts and first due instants;
+ * the live scopes (requested, or admitted with an unfinished finish); the coordination group's live holds, exclusivity
+ * seats and paused targets; and the flows a precondition names that hold a pending step. Read apart, a seat taken by a
+ * root requested after the scopes were read would show held by a scope no longer live, and the census would give it
+ * back while its root runs.
  */
 export interface Snapshot<R> {
 	readonly steps: ReadonlyArray<{
@@ -311,7 +313,7 @@ export interface Ledger<R> {
 	readonly unended: (scope: ScopeKey) => Effect.Effect<boolean, Settled>
 	/** Whether a scope's finish has its result. */
 	readonly finished: (scope: ScopeKey) => Effect.Effect<boolean, Settled>
-	/** The flows this flow's preconditions name that hold a pending step. */
+	/** The flows this flow's preconditions name that hold a pending step, in one statement. */
 	readonly busy: Effect.Effect<ReadonlyArray<string>, Settled>
 	/**
 	 * Claims a step's attempt, a race at its key: whether the claim holding `(step, attempt)` is `claim`'s holder's, this

@@ -13,7 +13,6 @@ import {
 } from "@bjornpagen/den/runtime/bind"
 import {
 	finishStep,
-	type ExclusiveId,
 	type Instant,
 	rootScope,
 	type ScopeKey,
@@ -33,7 +32,7 @@ import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Assign over its served programs; `den generate` writes it, and nothing edits it. */
 import type { Addition } from "@bjornpagen/grizzle"
-import { type MemberHandle, type Settled, settled } from "@bjornpagen/grizzle/runtime"
+import { type MemberHandle, settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import { assign } from "#integration/slice/flows.ts"
@@ -338,7 +337,6 @@ export const assignLedger = (h: AssignHandles) => {
 				)
 			)
 	}
-	const busyFlows: Effect.Effect<ReadonlyArray<string>, Settled> = Effect.succeed([])
 	const request = {
 		Assignment: (
 			key: string,
@@ -731,7 +729,6 @@ export const assignLedger = (h: AssignHandles) => {
 					settled(h.den.assignSkippedOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
-				const key = Option.none<{ readonly id: ExclusiveId }>()
 				const admission: Admission = Option.isSome(admitted)
 					? "admitted"
 					: Option.isSome(skipped)
@@ -744,7 +741,7 @@ export const assignLedger = (h: AssignHandles) => {
 					key: root.value.key,
 					at: root.value.at,
 					admission,
-					exclusive: Option.map(key, (k) => k.id)
+					exclusive: Option.none()
 				})
 			}),
 		unended: (scope) =>
@@ -757,7 +754,7 @@ export const assignLedger = (h: AssignHandles) => {
 			),
 		finished: (scope) =>
 			h.den.assignFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
-		busy: busyFlows,
+		busy: Effect.succeed([]),
 		claim: (row) =>
 			Effect.map(
 				settled(h.den.assignClaim.once({ params: {}, facts: { insert: { AssignClaim: [row] } } })),
@@ -813,96 +810,57 @@ export const assignLedger = (h: AssignHandles) => {
 					facts: { retire: { AssignRoot: [{ scope: root }] } }
 				})
 			),
-		snapshot: Effect.gen(function* () {
-			const steps = yield* Effect.map(
-				settled(h.den.assignPending.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const claims = yield* Effect.map(
-				settled(h.den.assignPendingClaims.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const retries = yield* Effect.map(
-				settled(h.den.assignPendingRetries.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const fenced = yield* Effect.map(
-				settled(h.den.assignPendingFenced.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const dues = yield* Effect.map(
-				settled(h.den.assignPendingDues.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const requested = yield* Effect.map(
-				settled(h.den.assignRequested.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const running = yield* Effect.map(
-				settled(h.den.assignRunning.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const withins = yield* Effect.map(
-				settled(h.den.assignWithins.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const roots = yield* Effect.map(
-				settled(h.den.assignRoots.once({ params: {}, facts: {} })),
-				rowsOf
-			)
-			const keys: ReadonlyArray<{ readonly scope: ScopeKey; readonly id: ExclusiveId }> = []
-			const holds = yield* coordination.holds
-			const exclusives = yield* coordination.exclusives
-			const paused = yield* Effect.map(
-				coordination.paused,
-				Arr.map((row) => row.target)
-			)
-			const busy = yield* busyFlows
-			const view = (
-				scope: ScopeKey,
-				kind: string,
-				admission: Admission
-			): ReadonlyArray<ScopeView> =>
-				Option.match(
-					Arr.findFirst(roots, (o) => o.scope === scope),
-					{
-						onSome: (o): ReadonlyArray<ScopeView> => [
+		snapshot: Effect.flatMap(
+			settled(h.den.assignSnapshot.once({ params: {}, facts: {} })),
+			(rows) =>
+				Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof assign>> => {
+					const view = (
+						scope: ScopeKey,
+						kind: string,
+						admission: Admission
+					): ReadonlyArray<ScopeView> =>
+						Option.match(
+							Arr.findFirst(read.roots, (o) => o.scope === scope),
 							{
-								place: "root",
-								scope,
-								kind,
-								key: o.key,
-								at: o.at,
-								admission,
-								exclusive: Option.map(
-									Arr.findFirst(keys, (k) => k.scope === scope),
-									(k) => k.id
-								)
+								onSome: (o): ReadonlyArray<ScopeView> => [
+									{
+										place: "root",
+										scope,
+										kind,
+										key: o.key,
+										at: o.at,
+										admission,
+										exclusive: Option.none()
+									}
+								],
+								onNone: () =>
+									Arr.map(
+										Option.toArray(Arr.findFirst(read.withins, (w) => w.scope === scope)),
+										(w): ScopeView => ({ place: "child", scope, kind, parent: w.parent })
+									)
 							}
+						)
+					return {
+						steps: Arr.map(read.steps, (s) => ({
+							step: s.step,
+							runner: runners[s.kind],
+							scope: s.scope
+						})),
+						claims: read.claims,
+						retries: read.retries,
+						fenced: read.fenced,
+						dues: read.dues,
+						scopes: [
+							...Arr.flatMap(read.requested, (s) => view(s.scope, s.kind, "requested")),
+							...Arr.flatMap(read.running, (s) => view(s.scope, s.kind, "admitted"))
 						],
-						onNone: () =>
-							Arr.map(
-								Option.toArray(Arr.findFirst(withins, (w) => w.scope === scope)),
-								(w): ScopeView => ({ place: "child", scope, kind, parent: w.parent })
-							)
+						holds: [],
+						exclusives: [],
+						paused: Arr.map(read.paused, (row) => row.target),
+						busy: []
 					}
-				)
-			return {
-				steps: Arr.map(steps, (s) => ({ step: s.step, runner: runners[s.kind], scope: s.scope })),
-				claims,
-				retries,
-				fenced,
-				dues,
-				scopes: [
-					...Arr.flatMap(requested, (s) => view(s.scope, s.kind, "requested")),
-					...Arr.flatMap(running, (s) => view(s.scope, s.kind, "admitted"))
-				],
-				holds,
-				exclusives,
-				paused,
-				busy
-			} satisfies Snapshot<FlowNeeds<typeof assign>>
-		}),
+				})
+		),
 		changes: Stream.mergeAll(
 			[
 				signals(h.den.assignPending.watch({ params: {}, facts: {} })),

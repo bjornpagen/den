@@ -38,11 +38,11 @@ import {
 } from "#integration/slice/generated/retry.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's role for the flow Retry: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. */
+/** den's role for the flow Retry: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */
 export const RetryDen = role(
 	App,
 	"retry_den",
-	{ ...retryGraph.relations },
+	{ ...retryGraph.relations, RetryPaused, RetryResumed },
 	{
 		insert: [
 			"RetryScope",
@@ -78,6 +78,32 @@ export const RetryCoordinator = role(
 	{ RetryKind, RetryJoin, RetryOutcome, RetryPausable, RetryPaused, RetryResumed },
 	{ insert: ["RetryPaused", "RetryResumed"] }
 )
+
+const retryPendingRead = query(RetryDen).rule((r) => {
+	const { step, kind, scope } = v(RetryStep, "step")
+	return r
+		.match(RetryStep, { step, kind, scope })
+		.where(r.not(RetryResult, { step }))
+		.find({ step, kind, scope })
+})
+
+const retryRequestedRead = query(RetryDen).rule((r) => {
+	const { scope, kind } = v(RetryScope, "scope")
+	return r
+		.match(RetryScope, { scope, kind })
+		.where(r.not(RetryAdmitted, { scope }), r.not(RetrySkipped, { scope }))
+		.find({ scope, kind })
+})
+
+const retryRunningRead = query(RetryDen).rule((r) => {
+	const { scope, kind } = v(RetryScope, "scope")
+	const { step } = v(RetryFinish, "finish")
+	return r
+		.match(RetryScope, { scope, kind })
+		.match(RetryFinish, { scope, step })
+		.where(r.not(RetryResult, { step }))
+		.find({ scope, kind })
+})
 
 export const retryDenPrograms = Object.freeze({
 	retryNow: clocked(
@@ -274,78 +300,57 @@ export const retryDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
 			.find({ step })
 	}),
-	retryPending: deferrable(
-		query(retryGraph).rule((r) => {
-			const { step, kind, scope } = v(RetryStep, "step")
-			return r
-				.match(RetryStep, { step, kind, scope })
-				.where(r.not(RetryResult, { step }))
-				.find({ step, kind, scope })
-		})
-	),
-	retryPendingClaims: deferrable(
-		query(retryGraph).rule((r) => {
-			const { step, attempt, until } = v(RetryClaim, "claim")
-			return r
-				.match(RetryClaim, { step, attempt, until })
-				.where(r.not(RetryResult, { step }))
-				.find({ step, attempt, until })
-		})
-	),
-	retryPendingRetries: deferrable(
-		query(retryGraph).rule((r) => {
-			const { step, attempt, at, spent } = v(RetryRetry, "retry")
-			return r
-				.match(RetryRetry, { step, attempt, at, spent })
-				.where(r.not(RetryResult, { step }))
-				.find({ step, attempt, at, spent })
-		})
-	),
-	retryPendingFenced: deferrable(
-		query(retryGraph).rule((r) => {
-			const { step, attempt } = v(RetryFenced, "fenced")
-			return r
-				.match(RetryFenced, { step, attempt })
-				.where(r.not(RetryResult, { step }))
-				.find({ step, attempt })
-		})
-	),
-	retryPendingDues: deferrable(
-		query(retryGraph).rule((r) => {
-			const { step, at } = v(RetryDue, "due")
-			return r.match(RetryDue, { step, at }).where(r.not(RetryResult, { step })).find({ step, at })
-		})
-	),
-	retryRequested: deferrable(
-		query(retryGraph).rule((r) => {
-			const { scope, kind } = v(RetryScope, "scope")
-			return r
-				.match(RetryScope, { scope, kind })
-				.where(r.not(RetryAdmitted, { scope }), r.not(RetrySkipped, { scope }))
-				.find({ scope, kind })
-		})
-	),
-	retryRunning: deferrable(
-		query(retryGraph).rule((r) => {
-			const { scope, kind } = v(RetryScope, "scope")
-			const { step } = v(RetryFinish, "finish")
-			return r
-				.match(RetryScope, { scope, kind })
-				.match(RetryFinish, { scope, step })
-				.where(r.not(RetryResult, { step }))
-				.find({ scope, kind })
-		})
-	),
-	retryWithins: deferrable(
-		query(retryGraph).rule((r) => {
-			const { scope, parent } = v(RetryWithin, "retryWithin")
-			return r.match(RetryWithin, { scope, parent }).find({ scope, parent })
-		})
-	),
-	retryRoots: deferrable(
-		query(retryGraph).rule((r) => {
-			const { scope, key, at } = v(RetryRoot, "retryRoot")
-			return r.match(RetryRoot, { scope, key, at }).find({ scope, key, at })
+	retryPending: deferrable(retryPendingRead),
+	retryRequested: deferrable(retryRequestedRead),
+	retryRunning: deferrable(retryRunningRead),
+	retrySnapshot: deferrable(
+		query(RetryDen).reads({
+			steps: retryPendingRead,
+			claims: query(RetryDen).rule((r) => {
+				const { step, attempt, until } = v(RetryClaim, "claim")
+				return r
+					.match(RetryClaim, { step, attempt, until })
+					.where(r.not(RetryResult, { step }))
+					.find({ step, attempt, until })
+			}),
+			retries: query(RetryDen).rule((r) => {
+				const { step, attempt, at, spent } = v(RetryRetry, "retry")
+				return r
+					.match(RetryRetry, { step, attempt, at, spent })
+					.where(r.not(RetryResult, { step }))
+					.find({ step, attempt, at, spent })
+			}),
+			fenced: query(RetryDen).rule((r) => {
+				const { step, attempt } = v(RetryFenced, "fenced")
+				return r
+					.match(RetryFenced, { step, attempt })
+					.where(r.not(RetryResult, { step }))
+					.find({ step, attempt })
+			}),
+			dues: query(RetryDen).rule((r) => {
+				const { step, at } = v(RetryDue, "due")
+				return r
+					.match(RetryDue, { step, at })
+					.where(r.not(RetryResult, { step }))
+					.find({ step, at })
+			}),
+			requested: retryRequestedRead,
+			running: retryRunningRead,
+			withins: query(RetryDen).rule((r) => {
+				const { scope, parent } = v(RetryWithin, "retryWithin")
+				return r.match(RetryWithin, { scope, parent }).find({ scope, parent })
+			}),
+			roots: query(RetryDen).rule((r) => {
+				const { scope, key, at } = v(RetryRoot, "retryRoot")
+				return r.match(RetryRoot, { scope, key, at }).find({ scope, key, at })
+			}),
+			paused: query(RetryDen).rule((r) => {
+				const { target, turn } = v(RetryPaused, "retryPaused")
+				return r
+					.match(RetryPaused, { target, turn })
+					.where(r.not(RetryResumed, { target, turn }))
+					.find({ target, turn })
+			})
 		})
 	),
 	retryReadRetrySteadfastInput: query(retryGraph).rule((r) => {

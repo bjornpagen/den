@@ -42,12 +42,16 @@ import {
 } from "#integration/slice/generated/sync.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's role for the flow Sync: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. */
+/** den's role for the flow Sync: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */
 export const SyncDen = role(
 	App,
 	"sync_den",
 	{
 		...syncGraph.relations,
+		SyncExclusive,
+		SyncReleased,
+		SyncPaused,
+		SyncResumed,
 		ChainStep: App.relations.ChainStep,
 		ChainResult: App.relations.ChainResult
 	},
@@ -97,6 +101,40 @@ export const SyncCoordinator = role(
 	},
 	{ insert: ["SyncExclusive", "SyncReleased", "SyncPaused", "SyncResumed"] }
 )
+
+const syncPendingRead = query(SyncDen).rule((r) => {
+	const { step, kind, scope } = v(SyncStep, "step")
+	return r
+		.match(SyncStep, { step, kind, scope })
+		.where(r.not(SyncResult, { step }))
+		.find({ step, kind, scope })
+})
+
+const syncRequestedRead = query(SyncDen).rule((r) => {
+	const { scope, kind } = v(SyncScope, "scope")
+	return r
+		.match(SyncScope, { scope, kind })
+		.where(r.not(SyncAdmitted, { scope }), r.not(SyncSkipped, { scope }))
+		.find({ scope, kind })
+})
+
+const syncRunningRead = query(SyncDen).rule((r) => {
+	const { scope, kind } = v(SyncScope, "scope")
+	const { step } = v(SyncFinish, "finish")
+	return r
+		.match(SyncScope, { scope, kind })
+		.match(SyncFinish, { scope, step })
+		.where(r.not(SyncResult, { step }))
+		.find({ scope, kind })
+})
+
+const syncBusyChainRead = query(SyncDen).rule((r) => {
+	const { step } = v(App.relations.ChainStep, "step")
+	return r
+		.match(App.relations.ChainStep, { step })
+		.where(r.not(App.relations.ChainResult, { step }))
+		.find({ step })
+})
 
 export const syncDenPrograms = Object.freeze({
 	syncNow: clocked(
@@ -297,93 +335,68 @@ export const syncDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", SyncScope.fields.scope)))
 			.find({ step })
 	}),
-	syncPending: deferrable(
-		query(syncGraph).rule((r) => {
-			const { step, kind, scope } = v(SyncStep, "step")
-			return r
-				.match(SyncStep, { step, kind, scope })
-				.where(r.not(SyncResult, { step }))
-				.find({ step, kind, scope })
-		})
-	),
-	syncPendingClaims: deferrable(
-		query(syncGraph).rule((r) => {
-			const { step, attempt, until } = v(SyncClaim, "claim")
-			return r
-				.match(SyncClaim, { step, attempt, until })
-				.where(r.not(SyncResult, { step }))
-				.find({ step, attempt, until })
-		})
-	),
-	syncPendingRetries: deferrable(
-		query(syncGraph).rule((r) => {
-			const { step, attempt, at, spent } = v(SyncRetry, "retry")
-			return r
-				.match(SyncRetry, { step, attempt, at, spent })
-				.where(r.not(SyncResult, { step }))
-				.find({ step, attempt, at, spent })
-		})
-	),
-	syncPendingFenced: deferrable(
-		query(syncGraph).rule((r) => {
-			const { step, attempt } = v(SyncFenced, "fenced")
-			return r
-				.match(SyncFenced, { step, attempt })
-				.where(r.not(SyncResult, { step }))
-				.find({ step, attempt })
-		})
-	),
-	syncPendingDues: deferrable(
-		query(syncGraph).rule((r) => {
-			const { step, at } = v(SyncDue, "due")
-			return r.match(SyncDue, { step, at }).where(r.not(SyncResult, { step })).find({ step, at })
-		})
-	),
-	syncRequested: deferrable(
-		query(syncGraph).rule((r) => {
-			const { scope, kind } = v(SyncScope, "scope")
-			return r
-				.match(SyncScope, { scope, kind })
-				.where(r.not(SyncAdmitted, { scope }), r.not(SyncSkipped, { scope }))
-				.find({ scope, kind })
-		})
-	),
-	syncRunning: deferrable(
-		query(syncGraph).rule((r) => {
-			const { scope, kind } = v(SyncScope, "scope")
-			const { step } = v(SyncFinish, "finish")
-			return r
-				.match(SyncScope, { scope, kind })
-				.match(SyncFinish, { scope, step })
-				.where(r.not(SyncResult, { step }))
-				.find({ scope, kind })
-		})
-	),
-	syncWithins: deferrable(
-		query(syncGraph).rule((r) => {
-			const { scope, parent } = v(SyncWithin, "syncWithin")
-			return r.match(SyncWithin, { scope, parent }).find({ scope, parent })
-		})
-	),
-	syncRoots: deferrable(
-		query(syncGraph).rule((r) => {
-			const { scope, key, at } = v(SyncRoot, "syncRoot")
-			return r.match(SyncRoot, { scope, key, at }).find({ scope, key, at })
-		})
-	),
-	syncExclusiveKeys: deferrable(
-		query(syncGraph).rule((r) => {
-			const { scope, key, id } = v(SyncExclusiveKey, "syncExclusiveKey")
-			return r.match(SyncExclusiveKey, { scope, key, id }).find({ scope, key, id })
-		})
-	),
-	syncBusyChain: deferrable(
-		query(SyncDen).rule((r) => {
-			const { step } = v(App.relations.ChainStep, "step")
-			return r
-				.match(App.relations.ChainStep, { step })
-				.where(r.not(App.relations.ChainResult, { step }))
-				.find({ step })
+	syncPending: deferrable(syncPendingRead),
+	syncRequested: deferrable(syncRequestedRead),
+	syncRunning: deferrable(syncRunningRead),
+	syncBusyChain: deferrable(syncBusyChainRead),
+	syncBusy: deferrable(query(SyncDen).reads({ busyChain: syncBusyChainRead })),
+	syncSnapshot: deferrable(
+		query(SyncDen).reads({
+			steps: syncPendingRead,
+			claims: query(SyncDen).rule((r) => {
+				const { step, attempt, until } = v(SyncClaim, "claim")
+				return r
+					.match(SyncClaim, { step, attempt, until })
+					.where(r.not(SyncResult, { step }))
+					.find({ step, attempt, until })
+			}),
+			retries: query(SyncDen).rule((r) => {
+				const { step, attempt, at, spent } = v(SyncRetry, "retry")
+				return r
+					.match(SyncRetry, { step, attempt, at, spent })
+					.where(r.not(SyncResult, { step }))
+					.find({ step, attempt, at, spent })
+			}),
+			fenced: query(SyncDen).rule((r) => {
+				const { step, attempt } = v(SyncFenced, "fenced")
+				return r
+					.match(SyncFenced, { step, attempt })
+					.where(r.not(SyncResult, { step }))
+					.find({ step, attempt })
+			}),
+			dues: query(SyncDen).rule((r) => {
+				const { step, at } = v(SyncDue, "due")
+				return r.match(SyncDue, { step, at }).where(r.not(SyncResult, { step })).find({ step, at })
+			}),
+			requested: syncRequestedRead,
+			running: syncRunningRead,
+			withins: query(SyncDen).rule((r) => {
+				const { scope, parent } = v(SyncWithin, "syncWithin")
+				return r.match(SyncWithin, { scope, parent }).find({ scope, parent })
+			}),
+			roots: query(SyncDen).rule((r) => {
+				const { scope, key, at } = v(SyncRoot, "syncRoot")
+				return r.match(SyncRoot, { scope, key, at }).find({ scope, key, at })
+			}),
+			keys: query(SyncDen).rule((r) => {
+				const { scope, key, id } = v(SyncExclusiveKey, "syncExclusiveKey")
+				return r.match(SyncExclusiveKey, { scope, key, id }).find({ scope, key, id })
+			}),
+			exclusives: query(SyncDen).rule((r) => {
+				const { kind, key, turn, scope } = v(SyncExclusive, "syncExclusive")
+				return r
+					.match(SyncExclusive, { kind, key, turn, scope })
+					.where(r.not(SyncReleased, { kind, key, turn }))
+					.find({ kind, key, turn, scope })
+			}),
+			paused: query(SyncDen).rule((r) => {
+				const { target, turn } = v(SyncPaused, "syncPaused")
+				return r
+					.match(SyncPaused, { target, turn })
+					.where(r.not(SyncResumed, { target, turn }))
+					.find({ target, turn })
+			}),
+			busyChain: syncBusyChainRead
 		})
 	),
 	syncReadSyncCopyInput: query(syncGraph).rule((r) => {
