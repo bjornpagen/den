@@ -74,14 +74,14 @@ Inside a package, import through its own `#` map with the real extension; across
   strict catalog (`pnpm-workspace.yaml`). A release is admitted once it is a day old, except Effect's own packages:
   den builds on Effect's newest release.
 - TypeScript 7.1 beta with Effect's language service, from `@effect/tsgo`; `pnpm install` patches it in.
-- After every edit, run `pnpm types`: every project's typecheck, incremental, so a rerun checks again only what
-  changed. The root's `pnpm typecheck` checks the root's config files alone.
+- After every edit, run `pnpm types`: every project's typecheck, from scratch (toolchain-typecheck reads no build info:
+  TypeScript 7.1.0-beta's incremental check passed an unused import over an earlier version's build info), and turbo
+  replays every project whose inputs did not change. The root's `pnpm typecheck` checks the root's config files alone.
 - The hooks run the toolchain's gate (lefthook, which `pnpm install` installs), each on a snapshot of exactly what it
   lets through, never the working tree: a commit runs `pnpm types`, oxfmt's check of the files it stages and the
-  AST-only oxlint (`oxlint.ast.config.ts`) on them; a push runs `pnpm check`, the whole gate: every project's typecheck
-  (incremental), type-aware oxlint, the workspace gate, oxfmt, fallow (`dead-code`, `architecture`) and
-  `pnpm dedupe --check`, and once a day `pnpm check:full`, the same gate from scratch: every typecheck without build
-  info, every task forced past its cache. A package's checks wait on its dependencies' `surface` (their source but
+  AST-only oxlint (`oxlint.ast.config.ts`) on them; a push runs `pnpm check`, the whole gate: every project's typecheck,
+  type-aware oxlint, the workspace gate, oxfmt, fallow (`dead-code`, `architecture`) and
+  `pnpm dedupe --check`, and once a day `pnpm check:full`, the same gate with every task forced past its cache. A package's checks wait on its dependencies' `surface` (their source but
   tests, SQL, docs and scratch), so a change to only those re-checks nothing downstream. Never commit or push with `--no-verify`. `pnpm test` runs the suites that need no database;
   every test case must run a search (`explore`, `exhaust` or `interleave`), and the reporter fails a run where one
   passed without.

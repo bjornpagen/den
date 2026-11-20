@@ -17,7 +17,7 @@
 	"scripts": {
 		"prepare": "effect-tsgo patch && lefthook install",
 		"check": "toolchain-turbo run typecheck workspace-gate oxlint format dead-code architecture dedupe load --filter=./packages/* --filter=// --continue=dependencies-successful",
-		"check:full": "toolchain-turbo run typecheck --filter=./packages/* --filter=// --continue=dependencies-successful --force -- --incremental false; typecheck=$?; toolchain-turbo run workspace-gate oxlint format dead-code architecture dedupe load --filter=./packages/* --filter=// --continue=dependencies-successful --force && exit $typecheck",
+		"check:full": "toolchain-turbo run typecheck workspace-gate oxlint format dead-code architecture dedupe load --filter=./packages/* --filter=// --continue=dependencies-successful --force",
 		"types": "toolchain-turbo run typecheck --filter=./packages/* --filter=//",
 		"typecheck": "toolchain-typecheck",
 		"workspace-gate": "workspace-gate",
