@@ -10,6 +10,8 @@ import {
 	type ReadIR,
 	type SeatsIR,
 	type SideIR,
+	type SpawnedScopeIR,
+	type SpawnedStepIR,
 	type StepIR,
 	type ValueIR,
 	valueRelations,
@@ -1243,16 +1245,13 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		])
 		return `const ${readerOf(v)} = (${v.owner}: ${keyType}) => ${indented("\t")(body)}`
 	}
-	const joinOf = (name: string) => Arr.findFirst(l.joins, (j) => j.name === name)
-	const stepOfKind = (name: string) => Arr.findFirst(l.steps, (s) => s.name === name)
-
 	/**
 	 * A child scope opened under `owner` with key `key` and input `input`, admitted in the same call: its Scope, Within,
 	 * Admitted and Finish rows, its finish step, its input, its own start's children at every depth (`inner`), and its
 	 * finish ready at once when it started nothing. `extra` adds the row that names how it was opened.
 	 */
 	const openedScope = (
-		j: JoinIR,
+		j: SpawnedScopeIR,
 		key: string,
 		input: string,
 		owner: string,
@@ -1265,7 +1264,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				`${r("Within")}: [{ scope: ${key}, parent: ${owner}, kind: ${q(j.name)}, root: ${root} }]`,
 				`${r("Admitted")}: [{ scope: ${key}, root: ${root} }]`,
 				`${r("Finish")}: [{ scope: ${key}, step: finish, root: ${root} }]`,
-				`${r("Step")}: [{ step: finish, kind: ${q(j.finish.name)}, scope: ${key}, due: at, root: ${root} }]`,
+				`${r("Step")}: [{ step: finish, kind: ${q(j.finish)}, scope: ${key}, due: at, root: ${root} }]`,
 				extra,
 				...factsOf(j.input, key, input, root)
 			]
@@ -1273,7 +1272,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 
 	/** A step spawned under `owner` with key `key` and input `input`: its Step, first due by its kind, its input, and `extra`. */
 	const spawnedStep = (
-		s: StepIR,
+		s: SpawnedStepIR,
 		key: string,
 		input: string,
 		owner: string,
@@ -1289,16 +1288,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const startOf = (j: JoinIR): string => {
 		const cases = Arr.map(j.children, (child) =>
 			child.kind === "step"
-				? Option.match(stepOfKind(child.name), {
-						onNone: () => "",
-						onSome: (s) =>
-							`return Effect.map(startedStep(scope, ordinal), (key): Grown => ${spawnedStep(s, "key", "spawn.input", "scope", `${r("StartStep")}: [{ scope, ordinal: BigInt(ordinal), step: key, root }]`, "root")})`
-					})
-				: Option.match(joinOf(child.name), {
-						onNone: () => "",
-						onSome: (inner) =>
-							`return Effect.flatMap(startedScope(scope, ordinal), (key) => ${openedScope(inner, "key", "spawn.input", "scope", `${r("StartScope")}: [{ scope, ordinal: BigInt(ordinal), child: key, root }]`, "root")})`
-					})
+				? `return Effect.map(startedStep(scope, ordinal), (key): Grown => ${spawnedStep(child, "key", "spawn.input", "scope", `${r("StartStep")}: [{ scope, ordinal: BigInt(ordinal), step: key, root }]`, "root")})`
+				: `return Effect.flatMap(startedScope(scope, ordinal), (key) => ${openedScope(child, "key", "spawn.input", "scope", `${r("StartScope")}: [{ scope, ordinal: BigInt(ordinal), child: key, root }]`, "root")})`
 		)
 		const labelled = Arr.zip(
 			Arr.map(j.children, (child) => child.name),
@@ -1323,17 +1314,9 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 
 	const edgeGrowth = (e: EdgeIR, from: string): string => {
 		const each =
-			e.toKind === "step"
-				? Option.match(stepOfKind(e.to), {
-						onNone: () => "Effect.succeed(nothingGrown)",
-						onSome: (s) =>
-							`Effect.map(edgeStep(${from}.turn.step, ${q(e.name)}, ordinal), (key): Grown => ${spawnedStep(s, "key", "input", `${from}.turn.scope`, `${e.relation}: [{ from: ${from}.turn.step, ordinal: BigInt(ordinal), to: key, root: ${from}.turn.root }]`, `${from}.turn.root`)})`
-					})
-				: Option.match(joinOf(e.to), {
-						onNone: () => "Effect.succeed(nothingGrown)",
-						onSome: (j) =>
-							`Effect.flatMap(edgeScope(${from}.turn.step, ${q(e.name)}, ordinal), (key) => ${openedScope(j, "key", "input", `${from}.turn.scope`, `${e.relation}: [{ from: ${from}.turn.step, ordinal: BigInt(ordinal), to: key, root: ${from}.turn.root }]`, `${from}.turn.root`)})`
-					})
+			e.to.kind === "step"
+				? `Effect.map(edgeStep(${from}.turn.step, ${q(e.name)}, ordinal), (key): Grown => ${spawnedStep(e.to, "key", "input", `${from}.turn.scope`, `${e.relation}: [{ from: ${from}.turn.step, ordinal: BigInt(ordinal), to: key, root: ${from}.turn.root }]`, `${from}.turn.root`)})`
+				: `Effect.flatMap(edgeScope(${from}.turn.step, ${q(e.name)}, ordinal), (key) => ${openedScope(e.to, "key", "input", `${from}.turn.scope`, `${e.relation}: [{ from: ${from}.turn.step, ordinal: BigInt(ordinal), to: key, root: ${from}.turn.root }]`, `${from}.turn.root`)})`
 		return `Effect.map(Effect.forEach(${edgeAt(e.index)}.next(${from}.input, ${from}.output), (input, ordinal): Effect.Effect<Grown, never, Digest.Digest> => ${each}), (parts) => Arr.reduce(parts, nothingGrown, joined))`
 	}
 
@@ -1399,7 +1382,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			`runnerOf(${kindAt(s.index)}, {`,
 			`\tinput: (step) => ${readerOf(s.input)}(step),`,
 			`\t${read},`,
-			`\tcommit: (done, ${Arr.some(s.edges, (e) => e.toKind === "step") ? "at" : "_at"}) => Effect.gen(function* () {`,
+			`\tcommit: (done, ${Arr.some(s.edges, (e) => e.to.kind === "step") ? "at" : "_at"}) => Effect.gen(function* () {`,
 			`\t\tconst grown = yield* ${grow}`,
 			`\t\tconst outcome = yield* settled(h.commits.${n.program(`Commit${s.name}`)}.once({ params: {}, facts: { ${opsOf(
 				[
@@ -1654,8 +1637,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		Arr.isReadonlyArrayNonEmpty(v.families)
 	)
 	const identity = Arr.dedupe([
-		...(Arr.some(l.edges, (e) => e.toKind === "scope") ? ["edgeScope"] : []),
-		...(Arr.some(l.edges, (e) => e.toKind === "step") ? ["edgeStep"] : []),
+		...(Arr.some(l.edges, (e) => e.to.kind === "scope") ? ["edgeScope"] : []),
+		...(Arr.some(l.edges, (e) => e.to.kind === "step") ? ["edgeStep"] : []),
 		"finishStep",
 		"type Instant",
 		"rootScope",

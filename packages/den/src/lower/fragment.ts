@@ -167,13 +167,12 @@ export interface WritesIR {
 	readonly delete: ReadonlyArray<string>
 }
 
-/** An edge, lowered: the relation of its facts, and what it spawns. */
+/** An edge, lowered: the relation of its facts, and the kind it spawns. */
 export interface EdgeIR {
 	readonly name: string
 	readonly index: number
 	readonly from: string
-	readonly to: string
-	readonly toKind: "step" | "scope"
+	readonly to: SpawnedIR
 	readonly relation: string
 }
 
@@ -218,11 +217,27 @@ export interface StepIR {
 	readonly due: Due
 }
 
-/** A child a join may start. */
-export interface ChildIR {
+/** A step kind as a spawn writes it: its Step row's kind, its kind's index (its due and its input's admission) and its input. */
+export interface SpawnedStepIR {
+	readonly kind: "step"
 	readonly name: string
-	readonly kind: "step" | "scope"
+	readonly index: number
+	readonly input: ValueIR
 }
+
+/** A scope kind as a spawn opens it: its Within row's kind, its input and its finish step's kind. */
+export interface SpawnedScopeIR {
+	readonly kind: "scope"
+	readonly name: string
+	readonly input: ValueIR
+	readonly finish: string
+}
+
+/**
+ * A kind a join's start or an edge spawns, resolved from the declared kind once, by the lowering, which refuses a kind
+ * the flow does not declare: so the printer reads what a spawn writes off the reference and looks no kind up by name.
+ */
+export type SpawnedIR = SpawnedStepIR | SpawnedScopeIR
 
 /** What a finish reads of a child kind: a step kind's endings with its outputs, or a scope kind's endings. */
 export type FinishReadIR =
@@ -242,7 +257,7 @@ export interface JoinIR {
 	readonly index: number
 	readonly root: Option.Option<RootIR>
 	readonly input: ValueIR
-	readonly children: ReadonlyArray<ChildIR>
+	readonly children: ReadonlyArray<SpawnedIR>
 	readonly finish: {
 		readonly name: string
 		readonly error: Option.Option<ValueIR>
@@ -798,23 +813,28 @@ export const lower = (flow: AnyFlow): Lowered => {
 			throw new Refused({ declaration: `flow ${p}`, why: `no kind ${kindName} takes an input` })
 		})
 
+	const spawnedOf = (kind: { readonly _tag: string; readonly name: string }): SpawnedIR =>
+		kind._tag === "Step"
+			? { kind: "step", name: kind.name, index: at(kind.name), input: inputOf(kind.name) }
+			: { kind: "scope", name: kind.name, input: inputOf(kind.name), finish: finishName(kind) }
+
 	const edgesIR: ReadonlyArray<EdgeIR> = Arr.map(flow.edges, (e, index) => {
-		const toKind = e.to._tag === "Step" ? "step" : "scope"
+		const to = spawnedOf(e.to)
 		const edgeRelation = relation({
 			name: name(e.name),
 			fields: [
 				{ name: "from", type: stepKey },
 				{ name: "ordinal", type: natural },
-				{ name: "to", type: ownerKey(toKind) }
+				{ name: "to", type: ownerKey(to.kind) }
 			],
 			key: ["from", "ordinal"]
 		})
 		laws.push(
 			into(side(edgeRelation, ["from"]), side(inputOf(e.from.name).relation, ["step"])),
-			into(side(edgeRelation, ["to"]), side(inputOf(e.to.name).relation, [toKind])),
+			into(side(edgeRelation, ["to"]), side(to.input.relation, [to.kind])),
 			keyOf(edgeRelation, ["to"])
 		)
-		return { name: e.name, index, from: e.from.name, to: e.to.name, toKind, relation: edgeRelation }
+		return { name: e.name, index, from: e.from.name, to, relation: edgeRelation }
 	})
 
 	const readsOf = (s: AnyStepKind): ReadonlyArray<ReadIR> =>
@@ -915,11 +935,6 @@ export const lower = (flow: AnyFlow): Lowered => {
 		}
 	})
 
-	const childOf = (child: { readonly _tag: string; readonly name: string }): ChildIR => ({
-		name: child.name,
-		kind: child._tag === "Step" ? "step" : "scope"
-	})
-
 	const joinsIR: ReadonlyArray<JoinIR> = Arr.map(joins, (j: AnyJoin): JoinIR => {
 		const declaration = `${j._tag === "Root" ? "root" : "scope"} ${j.name}`
 		const finish = finishName(j)
@@ -938,7 +953,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 						})
 					: Option.none(),
 			input: inputOf(j.name),
-			children: Arr.map(j.children, childOf),
+			children: Arr.map(j.children, spawnedOf),
 			finish: {
 				name: finish,
 				error,
