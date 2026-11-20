@@ -54,7 +54,7 @@ const causeOf = (encoded: EncodedCause): Effect.Effect<Cause> => {
 			return Effect.map(wakeOf(encoded.by), (by): Cause => ({ _tag: "Turn", by, at: encoded.at }))
 		case "Relay":
 		case "Census":
-		case "Start":
+		case "Request":
 			return Effect.succeed(encoded)
 	}
 }

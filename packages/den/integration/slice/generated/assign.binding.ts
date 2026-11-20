@@ -375,7 +375,7 @@ export const assignLedger = (h: AssignHandles) => {
 							})
 						)
 					),
-					(accepted) => ({ scope, fresh: accepted })
+					(accepted) => ({ flow: FlowName.make("Assign"), scope, fresh: accepted })
 				)
 			)
 	}

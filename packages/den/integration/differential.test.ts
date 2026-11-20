@@ -1,4 +1,3 @@
-import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
@@ -23,7 +22,7 @@ import {
 } from "@den/model/program"
 import { Array as Arr, Effect, HashMap, Option, String as Str } from "effect"
 import { chain, poolSeats } from "#integration/slice/flows.ts"
-import { admitAndDrain } from "#integration/support/run.ts"
+import { ringAndDrain } from "#integration/support/run.ts"
 import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 import { agreed, factsOf, type Graph } from "#integration/support/trace.ts"
 import { backoffFirstMillis, backoffLastMillis, longestLeaseMillis } from "#runtime/turn.ts"
@@ -331,7 +330,7 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 											)
 											return {
 												scope: requested.scope,
-												flow: FlowName.make("Chain"),
+												flow: requested.flow,
 												model,
 												root: "ChainRun"
 											}
@@ -351,7 +350,7 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 											)
 											return {
 												scope: requested.scope,
-												flow: FlowName.make("Fan"),
+												flow: requested.flow,
 												model,
 												root: "FanRun"
 											}
@@ -359,7 +358,7 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 									}
 								})
 							const started = yield* begin(program)
-							yield* admitAndDrain(ledgers, started.flow, [started.scope])
+							yield* ringAndDrain(ledgers, [started])
 							const w = app.workload
 							const none = { params: {}, facts: {} } as const
 							const roots = [

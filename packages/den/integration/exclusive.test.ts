@@ -7,7 +7,7 @@ import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect } from "effect"
-import { admitAndDrain, ringOnAndDrain } from "#integration/support/run.ts"
+import { ringAndDrain, ringOnAndDrain } from "#integration/support/run.ts"
 import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
 
@@ -95,7 +95,7 @@ export const exclusivityAdmitsOneLiveSyncPerRelation = property.explore(runs, {
 							relation,
 							run: 0n
 						})
-						yield* admitAndDrain(ledgers, FlowName.make("Sync"), [later.scope])
+						yield* ringAndDrain(ledgers, [later])
 						const admitted = yield* rows(app.workload.syncAdmitted.once({ params: {}, facts: {} }))
 						assert.ok(Arr.some(admitted, (a) => a.scope === later.scope))
 						c.note("admitted after the seat was given back")

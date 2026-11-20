@@ -7,7 +7,7 @@ import type { Reached } from "@bjornpagen/testing/features"
 import { array, boolean, type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Order } from "effect"
-import { admitAndDrain } from "#integration/support/run.ts"
+import { ringAndDrain } from "#integration/support/run.ts"
 import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
@@ -74,15 +74,11 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 									feed: "news",
 									pages: BigInt(plan.pages)
 								}),
-								(r) => ({ plan, index, scope: r.scope })
+								(r) => ({ plan, index, flow: r.flow, scope: r.scope })
 							)
 						)
 						const running = Arr.filter(requested, (r) => r.plan.run)
-						yield* admitAndDrain(
-							ledgers,
-							FlowName.make("Chain"),
-							Arr.map(running, (r) => r.scope)
-						)
+						yield* ringAndDrain(ledgers, running)
 						const audited = Arr.filter(running, (r) => r.plan.audit)
 						const results = yield* rows(app.workload.chainGraphRows.once({ params: {}, facts: {} }))
 						const pages = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
@@ -161,7 +157,7 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 									feed: "news",
 									pages: BigInt(r.plan.pages)
 								}),
-								(again) => assert.deepEqual(again, { scope: r.scope, fresh: false })
+								(again) => assert.deepEqual(again, { flow: r.flow, scope: r.scope, fresh: false })
 							)
 						)
 						const after = yield* rows(app.workload.chainGraphRows.once({ params: {}, facts: {} }))

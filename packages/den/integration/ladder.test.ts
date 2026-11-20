@@ -1,5 +1,4 @@
 import { drain } from "@bjornpagen/den/runtime/drive"
-import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
@@ -7,7 +6,7 @@ import { type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Duration, Effect, HashMap, Ref } from "effect"
 import { TestClock } from "effect/testing"
-import { admitAndDrain } from "#integration/support/run.ts"
+import { ringAndDrain } from "#integration/support/run.ts"
 import { AppServed, openLedgers, Planted, rows, sliceCase } from "#integration/support/slice.ts"
 import { backoffLastMillis } from "#runtime/turn.ts"
 
@@ -72,7 +71,7 @@ export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.
 							brittle
 						})
 						assert.ok(requested.fresh)
-						yield* admitAndDrain(ledgers, FlowName.make("Retry"), [requested.scope])
+						yield* ringAndDrain(ledgers, [requested])
 						yield* Effect.forEach(Array.from({ length: run.steadfast + run.brittle + 2 }), () =>
 							Effect.andThen(TestClock.adjust(Duration.millis(backoffLastMillis)), drain(ledgers))
 						)

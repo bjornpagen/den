@@ -1,11 +1,10 @@
-import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect } from "effect"
-import { admitAndDrain } from "#integration/support/run.ts"
+import { ringAndDrain } from "#integration/support/run.ts"
 import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
@@ -61,7 +60,7 @@ export const theFanOutFlowTalliesEverySquare = property.explore(runs, {
 							size: BigInt(run.size)
 						})
 						assert.ok(requested.fresh)
-						yield* admitAndDrain(ledgers, FlowName.make("Fan"), [requested.scope])
+						yield* ringAndDrain(ledgers, [requested])
 						const tallies = yield* rows(app.workload.tallies.once({ params: {}, facts: {} }))
 						const n = BigInt(run.size)
 						assert.deepEqual(

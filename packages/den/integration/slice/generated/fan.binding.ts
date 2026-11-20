@@ -286,7 +286,7 @@ export const fanLedger = (h: FanHandles) => {
 							})
 						)
 					),
-					(accepted) => ({ scope, fresh: accepted })
+					(accepted) => ({ flow: FlowName.make("Fan"), scope, fresh: accepted })
 				)
 			)
 	}

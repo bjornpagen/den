@@ -269,7 +269,7 @@ export const retryLedger = (h: RetryHandles) => {
 							})
 						)
 					),
-					(accepted) => ({ scope, fresh: accepted })
+					(accepted) => ({ flow: FlowName.make("Retry"), scope, fresh: accepted })
 				)
 			)
 	}

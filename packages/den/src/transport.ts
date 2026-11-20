@@ -58,13 +58,14 @@ export const wakeText = (wake: Wake): string => {
  * Why a wake was rung, which its idempotency key names (edullm's wake causes): a turn's end, the turn by the wake it
  * served and the instant it ended at, so a commit's onward wakes ring once however often its answer is read back; the
  * relay at the committed state it rang for, so a leader hand-over's replay of the same commits is the duplicate it is;
- * a census tick at its instant; or an operator's start at its instant.
+ * a census tick at its instant; or a root's request, its admission rung by the write that requested it once that write has
+ * committed (runtime/request.ts), the wake naming the root, so a root requested again is one message.
  */
 export type Cause =
 	| { readonly _tag: "Turn"; readonly by: Wake; readonly at: number }
 	| { readonly _tag: "Relay"; readonly position: string }
 	| { readonly _tag: "Census"; readonly at: number }
-	| { readonly _tag: "Start"; readonly at: number }
+	| { readonly _tag: "Request" }
 
 const causeText = (cause: Cause): string => {
 	switch (cause._tag) {
@@ -74,8 +75,8 @@ const causeText = (cause: Cause): string => {
 			return `relay:${cause.position}`
 		case "Census":
 			return `census:${cause.at}`
-		case "Start":
-			return `start:${cause.at}`
+		case "Request":
+			return "request"
 	}
 }
 

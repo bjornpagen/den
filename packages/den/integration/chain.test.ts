@@ -6,7 +6,7 @@ import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Order } from "effect"
-import { admitAndDrain } from "#integration/support/run.ts"
+import { ringAndDrain } from "#integration/support/run.ts"
 import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
@@ -81,7 +81,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 						})
 						assert.ok(requested.fresh)
 						c.note("first request")
-						yield* admitAndDrain(ledgers, FlowName.make("Chain"), [requested.scope])
+						yield* ringAndDrain(ledgers, [requested])
 						const scope = requested.scope
 						const read = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
 						const pages = Arr.filter(read, (page) => page.scope === scope)

@@ -27,6 +27,7 @@
 		"./runtime/identity": "./src/runtime/identity.ts",
 		"./runtime/ledger": "./src/runtime/ledger.ts",
 		"./runtime/relay": "./src/runtime/relay.ts",
+		"./runtime/request": "./src/runtime/request.ts",
 		"./runtime/retire": "./src/runtime/retire.ts",
 		"./runtime/seats": "./src/runtime/seats.ts",
 		"./runtime/turn": "./src/runtime/turn.ts",

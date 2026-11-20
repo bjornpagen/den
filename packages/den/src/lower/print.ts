@@ -1649,12 +1649,12 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			: `(key: string, at: Instant, ${input})`
 		const names = requestParams(P, j)
 		const params = requestedNow(j) ? `{ ${names.scope}: scope, ${names.key}: key }` : "{}"
-		const facts = `({ scope, params: ${params}, facts: { ${commas(requestFacts(j))} } })`
+		const facts = `({ flow: FlowName.make(${q(P)}), scope, params: ${params}, facts: { ${commas(requestFacts(j))} } })`
 		return isApp(j)
 			? isExclusive(j)
 				? `${j.name}: ${signature} => Effect.flatMap(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => Effect.map(exclusiveRows(${q(P)}, ${q(j.name)}, ${kindAt(j.index)}.exclusive, input, scope), (keys) => ${facts}))`
 				: `${j.name}: ${signature} => Effect.map(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${facts})`
-			: `${j.name}: ${signature} => Effect.flatMap(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${keys(`Effect.map(fresh(${q(P)}, settled(h.den.${n.program(`Request${j.name}`)}.once({ params: ${params}, facts: { insert: { ${commas(requestFacts(j))} } } }))), (accepted) => ({ scope, fresh: accepted }))`)})`
+			: `${j.name}: ${signature} => Effect.flatMap(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${keys(`Effect.map(fresh(${q(P)}, settled(h.den.${n.program(`Request${j.name}`)}.once({ params: ${params}, facts: { insert: { ${commas(requestFacts(j))} } } }))), (accepted) => ({ flow: FlowName.make(${q(P)}), scope, fresh: accepted }))`)})`
 	}
 	const denRoots = Arr.filter(roots, (j) => !isApp(j))
 	const appRoots = Arr.filter(roots, isApp)

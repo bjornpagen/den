@@ -1,4 +1,3 @@
-import { FlowName } from "@bjornpagen/den/transport"
 import { Vector } from "@bjornpagen/grizzle"
 import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
@@ -8,7 +7,7 @@ import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Option, Order } from "effect"
 import { assignedAmong } from "#integration/slice/flows.ts"
 import { embeddingDimensions } from "#integration/slice/relations.ts"
-import { admitAndDrain } from "#integration/support/run.ts"
+import { ringAndDrain } from "#integration/support/run.ts"
 import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
@@ -175,7 +174,7 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 							mode: run.mode
 						})
 						assert.ok(requested.fresh)
-						yield* admitAndDrain(ledgers, FlowName.make("Assign"), [requested.scope])
+						yield* ringAndDrain(ledgers, [requested])
 
 						const results = yield* rows(app.workload.assignResults.once({ params: {}, facts: {} }))
 						const mine = Arr.filter(results, (r) => r.scope === requested.scope)

@@ -49,7 +49,7 @@ export type EncodedCause =
 	| Readonly<{ _tag: "Turn"; by: Encoded; at: number }>
 	| Readonly<{ _tag: "Relay"; position: string }>
 	| Readonly<{ _tag: "Census"; at: number }>
-	| Readonly<{ _tag: "Start"; at: number }>
+	| Readonly<{ _tag: "Request" }>
 
 /** A ring as the suites draw it: its wake and its cause, both encoded; every ring of the suites is due at once. */
 export interface EncodedRing {
@@ -60,12 +60,12 @@ export interface EncodedRing {
 /** An instant a cause names, few of them, so two causes of one kind often name the same one. */
 const instant: Gen<number> = int(0, 2)
 
-/** A cause of each kind: a turn's end, the relay at a position, a census tick or an operator's start. */
+/** A cause of each kind: a turn's end, the relay at a position, a census tick or a root's request. */
 const cause: Gen<EncodedCause> = oneOf<EncodedCause>([
 	(source) => ({ _tag: "Turn", by: source.draw(encodedWake), at: source.draw(instant) }),
 	(source) => ({ _tag: "Relay", position: source.draw(string(hex, { min: 1, max: 2 })) }),
 	(source) => ({ _tag: "Census", at: source.draw(instant) }),
-	(source) => ({ _tag: "Start", at: source.draw(instant) })
+	() => ({ _tag: "Request" })
 ])
 
 /**

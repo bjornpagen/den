@@ -297,7 +297,7 @@ export const chainLedger = (h: ChainHandles) => {
 							})
 						)
 					),
-					(accepted) => ({ scope, fresh: accepted })
+					(accepted) => ({ flow: FlowName.make("Chain"), scope, fresh: accepted })
 				)
 			)
 	}
@@ -887,6 +887,7 @@ export const chainLedger = (h: ChainHandles) => {
 		requestFacts: {
 			Ordered: (key: string, input: Parameters<(typeof chain.kinds)[2]["start"]>[0]) =>
 				Effect.map(rootScope("Chain", "Ordered", key), (scope) => ({
+					flow: FlowName.make("Chain"),
 					scope,
 					params: { chainOrderedScope: scope, chainOrderedKey: key },
 					facts: {

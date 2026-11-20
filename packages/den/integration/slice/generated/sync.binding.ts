@@ -317,7 +317,7 @@ export const syncLedger = (h: SyncHandles) => {
 									})
 								)
 							),
-							(accepted) => ({ scope, fresh: accepted })
+							(accepted) => ({ flow: FlowName.make("Sync"), scope, fresh: accepted })
 						)
 				)
 			),
@@ -338,7 +338,7 @@ export const syncLedger = (h: SyncHandles) => {
 							})
 						)
 					),
-					(accepted) => ({ scope, fresh: accepted })
+					(accepted) => ({ flow: FlowName.make("Sync"), scope, fresh: accepted })
 				)
 			)
 	}

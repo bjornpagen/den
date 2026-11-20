@@ -3,7 +3,6 @@ import { drain } from "@bjornpagen/den/runtime/drive"
 import type { StepKey } from "@bjornpagen/den/runtime/identity"
 import type { Ledger } from "@bjornpagen/den/runtime/ledger"
 import type { Ending, Ledgers } from "@bjornpagen/den/runtime/turn"
-import { FlowName } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
@@ -12,7 +11,7 @@ import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Duration, Effect, HashMap, Option, Order, Ref } from "effect"
 import { TestClock } from "effect/testing"
 import type { Faults } from "#integration/slice/flows.ts"
-import { admitAndDrain } from "#integration/support/run.ts"
+import { ringAndDrain } from "#integration/support/run.ts"
 import { AppServed, openLedgers, Planted, rows, sliceCase } from "#integration/support/slice.ts"
 import { backoffLastMillis } from "#runtime/turn.ts"
 
@@ -119,9 +118,7 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 								brittle: "brittle"
 							})
 							assert.ok(requested.fresh)
-							const first = yield* admitAndDrain(misconfigured.ledgers, FlowName.make("Retry"), [
-								requested.scope
-							])
+							const first = yield* ringAndDrain(misconfigured.ledgers, [requested])
 							const dying = yield* Effect.forEach(Array.from({ length: run.deaths }), () =>
 								round(misconfigured.all, misconfigured.ledgers)
 							)
