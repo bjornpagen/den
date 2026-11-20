@@ -49,6 +49,7 @@ import {
 	AssignDecideOutputWeighed,
 	AssignDecideOutputStageServe,
 	AssignDecideOutputStageRest,
+	AssignAssignmentFinishOutput,
 	AssignDecideNearestRead,
 	AssignDecideSeenRead,
 	AssignPaused,
@@ -90,6 +91,7 @@ export const AssignDen = role(
 			"AssignAssignmentInputExclude",
 			"AssignAssignmentInputModeNearest",
 			"AssignAssignmentInputModeWithin",
+			"AssignAssignmentFinishOutput",
 			"AssignDecideNearestRead",
 			"AssignDecideSeenRead"
 		]
@@ -590,7 +592,8 @@ export const assignCommitPrograms = Object.freeze({
 		ChangeSet.empty(assignGraph)
 			.insert(AssignResult, [])
 			.insert(AssignDone, [])
-			.insert(AssignHeld, []),
+			.insert(AssignHeld, [])
+			.insert(AssignAssignmentFinishOutput, []),
 		ChangeSet.empty(Loader).insert(App.relations.Concluded, [])
 	)
 })

@@ -42,6 +42,8 @@ import {
 	FanBatchInput,
 	FanFanRunInput,
 	FanSquareOutput,
+	FanBatchFinishOutput,
+	FanFanRunFinishOutput,
 	FanPaused,
 	FanResumed,
 	fanGraph,
@@ -88,6 +90,8 @@ export const FanDen = role(
 			"FanSquareInput",
 			"FanBatchInput",
 			"FanFanRunInput",
+			"FanBatchFinishOutput",
+			"FanFanRunFinishOutput",
 			"FanHold"
 		]
 	}
@@ -465,16 +469,25 @@ export const fanDenPrograms = Object.freeze({
 			),
 		{ now: "millis" }
 	),
-	fanEndingsFanRunBatch: query(fanGraph).rule((r) => {
+	fanOutputsFanRunBatch: query(fanGraph).rule((r) => {
 		const { scope, parent } = v(FanWithin, "within")
 		const { step } = v(FanFinish, "finish")
-		const { outcome } = v(FanResult, "result")
 		return r
 			.match(FanWithin, { scope, parent, kind: "Batch" })
 			.match(FanFinish, { scope, step })
-			.match(FanResult, { step, outcome })
+			.match(FanBatchFinishOutput, { step })
 			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))
-			.find({ child: scope, outcome })
+			.find({ step })
+	}),
+	fanFailuresFanRunBatch: query(fanGraph).rule((r) => {
+		const { scope, parent } = v(FanWithin, "within")
+		const { step } = v(FanFinish, "finish")
+		return r
+			.match(FanWithin, { scope, parent, kind: "Batch" })
+			.match(FanFinish, { scope, step })
+			.match(FanResult, { step, outcome: "failed" })
+			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))
+			.find({ step })
 	})
 })
 
@@ -528,11 +541,19 @@ export const fanCommitPrograms = Object.freeze({
 		.insert(FanHeld, [])
 		.insert(FanSquareOutput, []),
 	fanCommitBatchFinish: ChangeSet.union(
-		ChangeSet.empty(fanGraph).insert(FanResult, []).insert(FanDone, []).insert(FanHeld, []),
+		ChangeSet.empty(fanGraph)
+			.insert(FanResult, [])
+			.insert(FanDone, [])
+			.insert(FanHeld, [])
+			.insert(FanBatchFinishOutput, []),
 		ChangeSet.empty(Loader).insert(App.relations.Tally, [])
 	),
 	fanCommitFanRunFinish: ChangeSet.union(
-		ChangeSet.empty(fanGraph).insert(FanResult, []).insert(FanDone, []).insert(FanHeld, []),
+		ChangeSet.empty(fanGraph)
+			.insert(FanResult, [])
+			.insert(FanDone, [])
+			.insert(FanHeld, [])
+			.insert(FanFanRunFinishOutput, []),
 		ChangeSet.empty(Loader).insert(App.relations.Settled, [])
 	)
 })

@@ -39,6 +39,10 @@ and `grizzle check` passes.
   feed's cursor position.
 - **Fan-out** (`Fan`): root `FanRun` starts one `Batch` scope, which starts one `Square` per number up to its size; the
   batch's finish tallies them once all have results; the root's finish runs after the batch's and inserts `Settled`.
+- **Review** (`Review`, AlphaTest's gap analysis's shape): root `ReviewRun` starts `Gather`, whose edge `Split` opens
+  one `Questions` scope per group, each starting one `Analyze` per question; a group's finish, the cluster, answers
+  its count and total, and the edge `Saved` from `Questions` spawns the group's `Save` in the review from that output;
+  the root's finish reads every group's ending with its output and every save, and inserts `Summary`.
 
 The cluster: `packages/den/pg.config.ts`, the testing library's `localCluster` (`toolchain-pg init`, `start`, `stop`,
 `status`, `psql`, `admin`, `reset`, `env`, run as `pnpm pg …`), made and started by the runner's first need; the build
@@ -161,8 +165,11 @@ output into `select(PResult, outcome = done)`) certifies.
 8. **A step's writes** are the array facts of its commit program, by operation and relation, which the step declares
    (`writes({ insert: [Item], put: [], delete: [] })`): a served Db runs only workload members, so no ChangeSet is built
    at run time.
-9. **A finish step** lives in the scope it finishes, is no child of it for completeness, and spawns nothing yet; a
-   scope is done once its finish step has a result (done or failed).
+9. **A finish step** lives in the scope it finishes and is no child of it for completeness; a scope is done once its
+   finish step has a result (done or failed). It answers an output as a step does, `<P><J>FinishOutput`, which is the
+   scope's: its parent's finish reads a child scope's ending with it, and an edge from the scope kind spawns the next
+   stage in the scope's parent from the scope's input and that output, in the finish's own commit, so the parent never
+   sees the scope ended without its successors (`review.test.ts`).
 10. **Retirement.** Built on grizzle's RETIRE (`docs/build/repin.md`): `runtime/retire.ts` retires each ended root's
     graph whole once its exclusivity seat is given back and the census no longer requests its key; an app row that
     references it keeps it. The app's census runs it beside its tick.
@@ -214,9 +221,8 @@ PostgreSQL (`pnpm test:network`, six files, each its own database):
 - **lowering-complete** (`src/lower/schema.ts`, `fragment.ts`, `print.ts`): tagged unions, arrays and finite numbers are
   built (the assignment engine's structured answer); records, recursion as trees, unions and arrays nested deeper than
   one struct, and Effect's built-in checks as CHECKs and patterns are not;
-  feed edges (several parents, run once all have results); edges and spawns from a finish (Timeback's prune after its
-  pages); edges that spawn a child scope and awaits exercised end to end (both are lowered and printed; neither is
-  under a suite yet); a `den check` that holds the committed
+  feed edges (several parents, run once all have results); awaits exercised end to end (lowered and printed, under no
+  suite yet); a `den check` that holds the committed
   modules to a fresh print, as `grizzle check` holds served files.
 - **coordination** (`src/runtime/turn.ts`, `census.ts`, the fragment): width as a law (slots taken by key race), pause
   and resume as facts, a lane's window in the census, stopping a scope, the ceilings on reclaims and waits, `Retry`

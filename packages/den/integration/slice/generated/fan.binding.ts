@@ -330,11 +330,7 @@ export const fanLedger = (h: FanHandles) => {
 				body: (read: {
 					readonly input: Parameters<(typeof fan.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof fan.kinds)[1]["finish"]["body"]>[1]
-				}) =>
-					Effect.map(fan.kinds[1].finish.body(read.input, read.endings), (writes) => ({
-						output: {},
-						writes
-					}))
+				}) => fan.kinds[1].finish.body(read.input, read.endings)
 			},
 			{
 				input: (step) =>
@@ -370,8 +366,9 @@ export const fanLedger = (h: FanHandles) => {
 					}),
 				read: () => Effect.succeed([]),
 				commit: (done) =>
-					Effect.map(
-						settled(
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
 							h.commits.fanCommitBatchFinish.once({
 								params: {},
 								facts: {
@@ -381,13 +378,14 @@ export const fanLedger = (h: FanHandles) => {
 										FanHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
+										FanBatchFinishOutput: [{ step: done.turn.step, root: done.turn.root }],
 										Tally: done.writes.insert.Tally
 									}
 								}
 							})
-						),
-						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-					),
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
 				fail: (failed) => Effect.die(failed.error)
 			},
 			Option.some("Batch")
@@ -400,11 +398,7 @@ export const fanLedger = (h: FanHandles) => {
 				body: (read: {
 					readonly input: Parameters<(typeof fan.kinds)[2]["start"]>[0]
 					readonly endings: Parameters<(typeof fan.kinds)[2]["finish"]["body"]>[1]
-				}) =>
-					Effect.map(fan.kinds[2].finish.body(read.input, read.endings), (writes) => ({
-						output: {},
-						writes
-					}))
+				}) => fan.kinds[2].finish.body(read.input, read.endings)
 			},
 			{
 				input: (step) =>
@@ -421,19 +415,25 @@ export const fanLedger = (h: FanHandles) => {
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
-						const endingsBatch = yield* Effect.map(
-							settled(h.den.fanEndingsFanRunBatch.once({ params: { scope }, facts: {} })),
+						const rowsBatch = yield* Effect.map(
+							settled(h.den.fanOutputsFanRunBatch.once({ params: { scope }, facts: {} })),
 							rowsOf
 						)
-						const Batch = Arr.map(endingsBatch, (row) =>
-							row.outcome === "done" ? { _tag: "Done" as const } : { _tag: "Failed" as const }
+						const failuresBatch = yield* Effect.map(
+							settled(h.den.fanFailuresFanRunBatch.once({ params: { scope }, facts: {} })),
+							rowsOf
 						)
+						const Batch = [
+							...Arr.map(rowsBatch, () => ({ _tag: "Done" as const, output: {} })),
+							...Arr.map(failuresBatch, () => ({ _tag: "Failed" as const }))
+						]
 						return Option.some({ input: input.value, endings: { Batch } })
 					}),
 				read: () => Effect.succeed([]),
 				commit: (done) =>
-					Effect.map(
-						settled(
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
 							h.commits.fanCommitFanRunFinish.once({
 								params: {},
 								facts: {
@@ -443,13 +443,14 @@ export const fanLedger = (h: FanHandles) => {
 										FanHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
+										FanFanRunFinishOutput: [{ step: done.turn.step, root: done.turn.root }],
 										Settled: done.writes.insert.Settled
 									}
 								}
 							})
-						),
-						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-					),
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
 				fail: (failed) => Effect.die(failed.error)
 			},
 			Option.some("FanRun")

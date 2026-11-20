@@ -415,11 +415,7 @@ export const syncLedger = (h: SyncHandles) => {
 				body: (read: {
 					readonly input: Parameters<(typeof sync.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof sync.kinds)[1]["finish"]["body"]>[1]
-				}) =>
-					Effect.map(sync.kinds[1].finish.body(read.input, read.endings), (writes) => ({
-						output: {},
-						writes
-					}))
+				}) => sync.kinds[1].finish.body(read.input, read.endings)
 			},
 			{
 				input: (step) =>
@@ -440,8 +436,9 @@ export const syncLedger = (h: SyncHandles) => {
 					}),
 				read: () => Effect.succeed([]),
 				commit: (done) =>
-					Effect.map(
-						settled(
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
 							h.commits.syncCommitSyncRunFinish.once({
 								params: {},
 								facts: {
@@ -450,13 +447,14 @@ export const syncLedger = (h: SyncHandles) => {
 										SyncDone: [{ step: done.turn.step, root: done.turn.root }],
 										SyncHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-										]
+										],
+										SyncSyncRunFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
 									}
 								}
 							})
-						),
-						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-					),
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
 				fail: (failed) => Effect.die(failed.error)
 			},
 			Option.some("SyncRun")
@@ -469,11 +467,7 @@ export const syncLedger = (h: SyncHandles) => {
 				body: (read: {
 					readonly input: Parameters<(typeof sync.kinds)[3]["start"]>[0]
 					readonly endings: Parameters<(typeof sync.kinds)[3]["finish"]["body"]>[1]
-				}) =>
-					Effect.map(sync.kinds[3].finish.body(read.input, read.endings), (writes) => ({
-						output: {},
-						writes
-					}))
+				}) => sync.kinds[3].finish.body(read.input, read.endings)
 			},
 			{
 				input: (step) =>
@@ -494,8 +488,9 @@ export const syncLedger = (h: SyncHandles) => {
 					}),
 				read: () => Effect.succeed([]),
 				commit: (done) =>
-					Effect.map(
-						settled(
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
 							h.commits.syncCommitGoldFinish.once({
 								params: {},
 								facts: {
@@ -504,13 +499,14 @@ export const syncLedger = (h: SyncHandles) => {
 										SyncDone: [{ step: done.turn.step, root: done.turn.root }],
 										SyncHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-										]
+										],
+										SyncGoldFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
 									}
 								}
 							})
-						),
-						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-					),
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
 				fail: (failed) => Effect.die(failed.error)
 			},
 			Option.some("Gold")

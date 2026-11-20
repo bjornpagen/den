@@ -1,5 +1,5 @@
 CREATE PUBLICATION "__live_wzkq6p2yii"
-  FOR TABLE "slice"."assign_admitted" ("scope", "root"), "slice"."assign_assignment_input" ("scope", "root"), "slice"."assign_assignment_input_exclude" ("scope", "ordinal", "root"), "slice"."assign_assignment_input_mode_nearest" ("scope", "root"), "slice"."assign_assignment_input_mode_within" ("scope", "root"), "slice"."assign_claim" ("step", "root", "attempt"), "slice"."assign_decide_input" ("step", "root"), "slice"."assign_decide_input_exclude" ("step", "ordinal", "root"), "slice"."assign_decide_input_mode_nearest" ("step", "root"), "slice"."assign_decide_input_mode_within" ("step", "root"), "slice"."assign_decide_nearest_read" ("step", "ordinal", "root"), "slice"."assign_decide_output" ("step", "root"), "slice"."assign_decide_output_stage_rest" ("step", "root"), "slice"."assign_decide_output_stage_serve" ("step", "root"), "slice"."assign_decide_output_weighed" ("step", "ordinal", "root"), "slice"."assign_decide_seen_read" ("step", "ordinal", "root"), "slice"."assign_fenced" ("step", "attempt", "root"), "slice"."assign_finish" ("scope", "root"), "slice"."assign_held" ("step", "root"), "slice"."assign_paused" ("target", "turn"), "slice"."assign_result" ("step", "root"), "slice"."assign_resumed" ("target", "turn"), "slice"."assign_retry" ("step", "attempt", "root"), "slice"."assign_root" ("scope"), "slice"."assign_skipped" ("scope", "root"), "slice"."assign_step", "slice"."assigned" ("learner"), "slice"."audit" ("step"), "slice"."built" ("build"), "slice"."chain_admitted" ("scope", "root"), "slice"."chain_chain_run_input" ("scope", "root"), "slice"."chain_claim" ("step", "root", "attempt"), "slice"."chain_fenced" ("step", "attempt", "root"), "slice"."chain_finish" ("scope", "root"), "slice"."chain_held" ("step", "root"), "slice"."chain_next" ("from", "ordinal", "root"), "slice"."chain_ordered_input" ("scope", "root"), "slice"."chain_page_input" ("step", "root"), "slice"."chain_page_input_after" ("step", "root"), "slice"."chain_page_output" ("step", "root"), "slice"."chain_page_output_next" ("step", "root"), "slice"."chain_page_weights_read" ("step", "ordinal", "root"), "slice"."chain_paused" ("target", "turn"), "slice"."chain_result" ("step", "root"), "slice"."chain_resumed" ("target", "turn"), "slice"."chain_retry" ("step", "attempt", "root"), "slice"."chain_root" ("scope"), "slice"."chain_skipped" ("scope", "root"), "slice"."chain_start_step" ("scope", "ordinal", "root"), "slice"."chain_step", "slice"."concluded" ("learner"), "slice"."copied" ("relation", "run"), "slice"."cursor" ("feed", "position"), "slice"."fan_admitted" ("scope", "root"), "slice"."fan_batch_input" ("scope", "root"), "slice"."fan_claim" ("step", "root", "attempt"), "slice"."fan_ended" ("step", "attempt", "root"), "slice"."fan_fan_run_input" ("scope", "root"), "slice"."fan_fenced" ("step", "attempt", "root"), "slice"."fan_finish" ("scope", "root"), "slice"."fan_held" ("step", "root"), "slice"."fan_hold" ("step", "root", "attempt", "at"), "slice"."fan_paused" ("target", "turn"), "slice"."fan_result" ("step", "root"), "slice"."fan_resumed" ("target", "turn"), "slice"."fan_retry" ("step", "attempt", "root"), "slice"."fan_root" ("scope"), "slice"."fan_skipped" ("scope", "root"), "slice"."fan_square_input" ("step", "root"), "slice"."fan_square_output" ("step", "root"), "slice"."fan_start_scope" ("scope", "ordinal", "root"), "slice"."fan_start_step" ("scope", "ordinal", "root"), "slice"."fan_step", "slice"."fan_within", "slice"."item" ("feed", "seq", "n"), "slice"."missed" ("question"), "slice"."passage", "slice"."retry_admitted" ("scope", "root"), "slice"."retry_brittle_input" ("step", "root"), "slice"."retry_brittle_output" ("step", "root"), "slice"."retry_claim" ("step", "root", "attempt"), "slice"."retry_exhausted" ("step", "root"), "slice"."retry_fenced" ("step", "attempt", "root"), "slice"."retry_finish" ("scope", "root"), "slice"."retry_held" ("step", "root"), "slice"."retry_ladders_input" ("scope", "root"), "slice"."retry_paused" ("target", "turn"), "slice"."retry_result" ("step", "root"), "slice"."retry_resumed" ("target", "turn"), "slice"."retry_retry" ("step", "attempt", "root"), "slice"."retry_root" ("scope"), "slice"."retry_skipped" ("scope", "root"), "slice"."retry_steadfast_input" ("step", "root"), "slice"."retry_steadfast_output" ("step", "root"), "slice"."retry_step", "slice"."seen" ("learner", "passage"), "slice"."settled" ("batch"), "slice"."sync_admitted" ("scope", "root"), "slice"."sync_build_input" ("step", "root"), "slice"."sync_claim" ("step", "root", "attempt"), "slice"."sync_copy_input" ("step", "root"), "slice"."sync_exclusive" ("kind", "key", "turn"), "slice"."sync_exclusive_key" ("scope", "root"), "slice"."sync_fenced" ("step", "attempt", "root"), "slice"."sync_finish" ("scope", "root"), "slice"."sync_gold_input" ("scope", "root"), "slice"."sync_held" ("step", "root"), "slice"."sync_paused" ("target", "turn"), "slice"."sync_released" ("kind", "key", "turn"), "slice"."sync_result" ("step", "root"), "slice"."sync_resumed" ("target", "turn"), "slice"."sync_retry" ("step", "attempt", "root"), "slice"."sync_root" ("scope"), "slice"."sync_skipped" ("scope", "root"), "slice"."sync_step", "slice"."sync_sync_run_input" ("scope", "root"), "slice"."tally" ("batch"), "slice"."weight" ("feed", "factor"), "slice"."__ledger"
+  FOR TABLE "slice"."assign_admitted" ("scope", "root"), "slice"."assign_assignment_input" ("scope", "root"), "slice"."assign_assignment_input_exclude" ("scope", "ordinal", "root"), "slice"."assign_assignment_input_mode_nearest" ("scope", "root"), "slice"."assign_assignment_input_mode_within" ("scope", "root"), "slice"."assign_claim" ("step", "root", "attempt"), "slice"."assign_decide_input" ("step", "root"), "slice"."assign_decide_input_exclude" ("step", "ordinal", "root"), "slice"."assign_decide_input_mode_nearest" ("step", "root"), "slice"."assign_decide_input_mode_within" ("step", "root"), "slice"."assign_decide_nearest_read" ("step", "ordinal", "root"), "slice"."assign_decide_output" ("step", "root"), "slice"."assign_decide_output_stage_rest" ("step", "root"), "slice"."assign_decide_output_stage_serve" ("step", "root"), "slice"."assign_decide_output_weighed" ("step", "ordinal", "root"), "slice"."assign_decide_seen_read" ("step", "ordinal", "root"), "slice"."assign_fenced" ("step", "attempt", "root"), "slice"."assign_finish" ("scope", "root"), "slice"."assign_held" ("step", "root"), "slice"."assign_paused" ("target", "turn"), "slice"."assign_result" ("step", "root"), "slice"."assign_resumed" ("target", "turn"), "slice"."assign_retry" ("step", "attempt", "root"), "slice"."assign_root" ("scope"), "slice"."assign_skipped" ("scope", "root"), "slice"."assign_step", "slice"."assigned" ("learner"), "slice"."audit" ("step"), "slice"."built" ("build"), "slice"."chain_admitted" ("scope", "root"), "slice"."chain_chain_run_input" ("scope", "root"), "slice"."chain_claim" ("step", "root", "attempt"), "slice"."chain_fenced" ("step", "attempt", "root"), "slice"."chain_finish" ("scope", "root"), "slice"."chain_held" ("step", "root"), "slice"."chain_next" ("from", "ordinal", "root"), "slice"."chain_ordered_input" ("scope", "root"), "slice"."chain_page_input" ("step", "root"), "slice"."chain_page_input_after" ("step", "root"), "slice"."chain_page_output" ("step", "root"), "slice"."chain_page_output_next" ("step", "root"), "slice"."chain_page_weights_read" ("step", "ordinal", "root"), "slice"."chain_paused" ("target", "turn"), "slice"."chain_result" ("step", "root"), "slice"."chain_resumed" ("target", "turn"), "slice"."chain_retry" ("step", "attempt", "root"), "slice"."chain_root" ("scope"), "slice"."chain_skipped" ("scope", "root"), "slice"."chain_start_step" ("scope", "ordinal", "root"), "slice"."chain_step", "slice"."concluded" ("learner"), "slice"."copied" ("relation", "run"), "slice"."cursor" ("feed", "position"), "slice"."fan_admitted" ("scope", "root"), "slice"."fan_batch_finish_output" ("step", "root"), "slice"."fan_batch_input" ("scope", "root"), "slice"."fan_claim" ("step", "root", "attempt"), "slice"."fan_ended" ("step", "attempt", "root"), "slice"."fan_fan_run_input" ("scope", "root"), "slice"."fan_fenced" ("step", "attempt", "root"), "slice"."fan_finish" ("scope", "root"), "slice"."fan_held" ("step", "root"), "slice"."fan_hold" ("step", "root", "attempt", "at"), "slice"."fan_paused" ("target", "turn"), "slice"."fan_result" ("step", "root"), "slice"."fan_resumed" ("target", "turn"), "slice"."fan_retry" ("step", "attempt", "root"), "slice"."fan_root" ("scope"), "slice"."fan_skipped" ("scope", "root"), "slice"."fan_square_input" ("step", "root"), "slice"."fan_square_output" ("step", "root"), "slice"."fan_start_scope" ("scope", "ordinal", "root"), "slice"."fan_start_step" ("scope", "ordinal", "root"), "slice"."fan_step", "slice"."fan_within", "slice"."item" ("feed", "seq", "n"), "slice"."missed" ("question"), "slice"."passage", "slice"."retry_admitted" ("scope", "root"), "slice"."retry_brittle_input" ("step", "root"), "slice"."retry_brittle_output" ("step", "root"), "slice"."retry_claim" ("step", "root", "attempt"), "slice"."retry_exhausted" ("step", "root"), "slice"."retry_fenced" ("step", "attempt", "root"), "slice"."retry_finish" ("scope", "root"), "slice"."retry_held" ("step", "root"), "slice"."retry_ladders_input" ("scope", "root"), "slice"."retry_paused" ("target", "turn"), "slice"."retry_result" ("step", "root"), "slice"."retry_resumed" ("target", "turn"), "slice"."retry_retry" ("step", "attempt", "root"), "slice"."retry_root" ("scope"), "slice"."retry_skipped" ("scope", "root"), "slice"."retry_steadfast_input" ("step", "root"), "slice"."retry_steadfast_output" ("step", "root"), "slice"."retry_step", "slice"."review_admitted" ("scope", "root"), "slice"."review_analyze_input" ("step", "root"), "slice"."review_analyze_output" ("step", "root"), "slice"."review_claim" ("step", "root", "attempt"), "slice"."review_fenced" ("step", "attempt", "root"), "slice"."review_finish" ("scope", "root"), "slice"."review_gather_input" ("step", "root"), "slice"."review_gather_input_sizes" ("step", "ordinal", "root"), "slice"."review_held" ("step", "root"), "slice"."review_paused" ("target", "turn"), "slice"."review_questions_finish_output" ("step", "root"), "slice"."review_questions_input" ("scope", "root"), "slice"."review_result" ("step", "root"), "slice"."review_resumed" ("target", "turn"), "slice"."review_retry" ("step", "attempt", "root"), "slice"."review_review_run_input" ("scope", "root"), "slice"."review_review_run_input_sizes" ("scope", "ordinal", "root"), "slice"."review_root" ("scope"), "slice"."review_save_input" ("step", "root"), "slice"."review_save_output" ("step", "root"), "slice"."review_skipped" ("scope", "root"), "slice"."review_step", "slice"."review_within", "slice"."reviewed" ("review", "group"), "slice"."seen" ("learner", "passage"), "slice"."settled" ("batch"), "slice"."summary" ("review"), "slice"."sync_admitted" ("scope", "root"), "slice"."sync_build_input" ("step", "root"), "slice"."sync_claim" ("step", "root", "attempt"), "slice"."sync_copy_input" ("step", "root"), "slice"."sync_exclusive" ("kind", "key", "turn"), "slice"."sync_exclusive_key" ("scope", "root"), "slice"."sync_fenced" ("step", "attempt", "root"), "slice"."sync_finish" ("scope", "root"), "slice"."sync_gold_input" ("scope", "root"), "slice"."sync_held" ("step", "root"), "slice"."sync_paused" ("target", "turn"), "slice"."sync_released" ("kind", "key", "turn"), "slice"."sync_result" ("step", "root"), "slice"."sync_resumed" ("target", "turn"), "slice"."sync_retry" ("step", "attempt", "root"), "slice"."sync_root" ("scope"), "slice"."sync_skipped" ("scope", "root"), "slice"."sync_step", "slice"."sync_sync_run_input" ("scope", "root"), "slice"."tally" ("batch"), "slice"."weight" ("feed", "factor"), "slice"."__ledger"
   WITH (publish_generated_columns = stored);
 
 SELECT "r1"."c1"::"slice"."__domain_gfw43vigph" AS "value"
@@ -34,6 +34,12 @@ CREATE ROLE :"slice_seats__retry_coordinator" NOLOGIN;
 CREATE ROLE :"slice_seats__retry_den" NOLOGIN;
 
 CREATE ROLE :"slice_seats__retry_retirer" NOLOGIN;
+
+CREATE ROLE :"slice_seats__review_coordinator" NOLOGIN;
+
+CREATE ROLE :"slice_seats__review_den" NOLOGIN;
+
+CREATE ROLE :"slice_seats__review_retirer" NOLOGIN;
 
 CREATE ROLE :"slice_seats__sync_coordinator" NOLOGIN;
 
@@ -73,6 +79,12 @@ CREATE SCHEMA "slice_seats__retry_den";
 
 CREATE SCHEMA "slice_seats__retry_retirer";
 
+CREATE SCHEMA "slice_seats__review_coordinator";
+
+CREATE SCHEMA "slice_seats__review_den";
+
+CREATE SCHEMA "slice_seats__review_retirer";
+
 CREATE SCHEMA "slice_seats__sync_coordinator";
 
 CREATE SCHEMA "slice_seats__sync_den";
@@ -90,6 +102,10 @@ FROM "slice"."assign_resumed" AS "r1";
 CREATE VIEW "slice_seats__assign_den"."assign_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
 FROM "slice"."assign_admitted" AS "r1";
+
+CREATE VIEW "slice_seats__assign_den"."assign_assignment_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."assign_assignment_finish_output" AS "r1";
 
 CREATE VIEW "slice_seats__assign_den"."assign_assignment_input" ("scope", "learner", "topic", "missed", "mode", "mode_name", "root") AS
 SELECT "r1"."scope", "r1"."learner", "r1"."topic", "r1"."missed", "r1"."mode", ("slice"."__assign_assignment_input_mode_names_w3ldolcqbb"())["r1"."mode" + 1]::"pg_catalog"."text", "r1"."root"
@@ -222,6 +238,10 @@ FROM "slice"."assign_step" AS "r1";
 CREATE VIEW "slice_seats__assign_retirer"."assign_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
 FROM "slice"."assign_admitted" AS "r1";
+
+CREATE VIEW "slice_seats__assign_retirer"."assign_assignment_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."assign_assignment_finish_output" AS "r1";
 
 CREATE VIEW "slice_seats__assign_retirer"."assign_assignment_input" ("scope", "learner", "topic", "missed", "mode", "mode_name", "root") AS
 SELECT "r1"."scope", "r1"."learner", "r1"."topic", "r1"."missed", "r1"."mode", ("slice"."__assign_assignment_input_mode_names_w3ldolcqbb"())["r1"."mode" + 1]::"pg_catalog"."text", "r1"."root"
@@ -535,9 +555,33 @@ CREATE VIEW "slice_seats__auditor"."retry_step" ("step", "kind", "kind_name", "s
 SELECT "r1"."step", "r1"."kind", ("slice"."__retry_kind_names_637ikgyibq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."retry_step" AS "r1";
 
+CREATE VIEW "slice_seats__auditor"."review_finish" ("scope", "step", "root") AS
+SELECT "r1"."scope", "r1"."step", "r1"."root"
+FROM "slice"."review_finish" AS "r1";
+
+CREATE VIEW "slice_seats__auditor"."review_result" ("step", "outcome", "outcome_name", "root") AS
+SELECT "r1"."step", "r1"."outcome", ("slice"."__review_outcome_names_nlfaf7zb7f"())["r1"."outcome" + 1]::"pg_catalog"."text", "r1"."root"
+FROM "slice"."review_result" AS "r1";
+
+CREATE VIEW "slice_seats__auditor"."review_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
+SELECT "r1"."step", "r1"."kind", ("slice"."__review_kind_names_j4pukr2klj"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
+FROM "slice"."review_step" AS "r1";
+
+CREATE VIEW "slice_seats__auditor"."review_within" ("scope", "parent", "kind", "kind_name", "root") AS
+SELECT "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__review_child_kind_names_jn3iwx7yal"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+FROM "slice"."review_within" AS "r1";
+
+CREATE VIEW "slice_seats__auditor"."reviewed" ("review", "group", "count", "total") AS
+SELECT "r1"."review", "r1"."group", "r1"."count", "r1"."total"
+FROM "slice"."reviewed" AS "r1";
+
 CREATE VIEW "slice_seats__auditor"."settled" ("batch") AS
 SELECT "r1"."batch"
 FROM "slice"."settled" AS "r1";
+
+CREATE VIEW "slice_seats__auditor"."summary" ("review", "groups", "total") AS
+SELECT "r1"."review", "r1"."groups", "r1"."total"
+FROM "slice"."summary" AS "r1";
 
 CREATE VIEW "slice_seats__auditor"."sync_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
@@ -579,6 +623,10 @@ CREATE VIEW "slice_seats__chain_den"."chain_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
 FROM "slice"."chain_admitted" AS "r1";
 
+CREATE VIEW "slice_seats__chain_den"."chain_chain_run_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."chain_chain_run_finish_output" AS "r1";
+
 CREATE VIEW "slice_seats__chain_den"."chain_chain_run_input" ("scope", "feed", "feed_name", "pages", "root") AS
 SELECT "r1"."scope", "r1"."feed", ("slice"."__chain_chain_run_input_feed_names_byxgsvzik7"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages", "r1"."root"
 FROM "slice"."chain_chain_run_input" AS "r1";
@@ -618,6 +666,10 @@ FROM "slice"."chain_held" AS "r1";
 CREATE VIEW "slice_seats__chain_den"."chain_next" ("from", "ordinal", "to", "root") AS
 SELECT "r1"."from", "r1"."ordinal", "r1"."to", "r1"."root"
 FROM "slice"."chain_next" AS "r1";
+
+CREATE VIEW "slice_seats__chain_den"."chain_ordered_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."chain_ordered_finish_output" AS "r1";
 
 CREATE VIEW "slice_seats__chain_den"."chain_ordered_input" ("scope", "feed", "feed_name", "pages", "root") AS
 SELECT "r1"."scope", "r1"."feed", ("slice"."__chain_ordered_input_feed_names_dwtixlgyrd"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages", "r1"."root"
@@ -687,6 +739,10 @@ CREATE VIEW "slice_seats__chain_retirer"."chain_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
 FROM "slice"."chain_admitted" AS "r1";
 
+CREATE VIEW "slice_seats__chain_retirer"."chain_chain_run_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."chain_chain_run_finish_output" AS "r1";
+
 CREATE VIEW "slice_seats__chain_retirer"."chain_chain_run_input" ("scope", "feed", "feed_name", "pages", "root") AS
 SELECT "r1"."scope", "r1"."feed", ("slice"."__chain_chain_run_input_feed_names_byxgsvzik7"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages", "r1"."root"
 FROM "slice"."chain_chain_run_input" AS "r1";
@@ -726,6 +782,10 @@ FROM "slice"."chain_held" AS "r1";
 CREATE VIEW "slice_seats__chain_retirer"."chain_next" ("from", "ordinal", "to", "root") AS
 SELECT "r1"."from", "r1"."ordinal", "r1"."to", "r1"."root"
 FROM "slice"."chain_next" AS "r1";
+
+CREATE VIEW "slice_seats__chain_retirer"."chain_ordered_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."chain_ordered_finish_output" AS "r1";
 
 CREATE VIEW "slice_seats__chain_retirer"."chain_ordered_input" ("scope", "feed", "feed_name", "pages", "root") AS
 SELECT "r1"."scope", "r1"."feed", ("slice"."__chain_ordered_input_feed_names_dwtixlgyrd"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages", "r1"."root"
@@ -799,6 +859,10 @@ CREATE VIEW "slice_seats__fan_den"."fan_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
 FROM "slice"."fan_admitted" AS "r1";
 
+CREATE VIEW "slice_seats__fan_den"."fan_batch_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."fan_batch_finish_output" AS "r1";
+
 CREATE VIEW "slice_seats__fan_den"."fan_batch_input" ("scope", "batch", "size", "root") AS
 SELECT "r1"."scope", "r1"."batch", "r1"."size", "r1"."root"
 FROM "slice"."fan_batch_input" AS "r1";
@@ -822,6 +886,10 @@ FROM "slice"."fan_exhausted" AS "r1";
 CREATE VIEW "slice_seats__fan_den"."fan_failed" ("step", "root") AS
 SELECT "r1"."step", "r1"."root"
 FROM "slice"."fan_failed" AS "r1";
+
+CREATE VIEW "slice_seats__fan_den"."fan_fan_run_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."fan_fan_run_finish_output" AS "r1";
 
 CREATE VIEW "slice_seats__fan_den"."fan_fan_run_input" ("scope", "batch", "size", "root") AS
 SELECT "r1"."scope", "r1"."batch", "r1"."size", "r1"."root"
@@ -907,6 +975,10 @@ CREATE VIEW "slice_seats__fan_retirer"."fan_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
 FROM "slice"."fan_admitted" AS "r1";
 
+CREATE VIEW "slice_seats__fan_retirer"."fan_batch_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."fan_batch_finish_output" AS "r1";
+
 CREATE VIEW "slice_seats__fan_retirer"."fan_batch_input" ("scope", "batch", "size", "root") AS
 SELECT "r1"."scope", "r1"."batch", "r1"."size", "r1"."root"
 FROM "slice"."fan_batch_input" AS "r1";
@@ -930,6 +1002,10 @@ FROM "slice"."fan_exhausted" AS "r1";
 CREATE VIEW "slice_seats__fan_retirer"."fan_failed" ("step", "root") AS
 SELECT "r1"."step", "r1"."root"
 FROM "slice"."fan_failed" AS "r1";
+
+CREATE VIEW "slice_seats__fan_retirer"."fan_fan_run_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."fan_fan_run_finish_output" AS "r1";
 
 CREATE VIEW "slice_seats__fan_retirer"."fan_fan_run_input" ("scope", "batch", "size", "root") AS
 SELECT "r1"."scope", "r1"."batch", "r1"."size", "r1"."root"
@@ -1002,6 +1078,10 @@ FROM "slice"."fan_within" AS "r1";
 CREATE VIEW "slice_seats__loader"."assign_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
 FROM "slice"."assign_admitted" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."assign_assignment_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."assign_assignment_finish_output" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."assign_assignment_input" ("scope", "learner", "topic", "missed", "mode", "mode_name", "root") AS
 SELECT "r1"."scope", "r1"."learner", "r1"."topic", "r1"."missed", "r1"."mode", ("slice"."__assign_assignment_input_mode_names_w3ldolcqbb"())["r1"."mode" + 1]::"pg_catalog"."text", "r1"."root"
@@ -1135,6 +1215,10 @@ CREATE VIEW "slice_seats__loader"."chain_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
 FROM "slice"."chain_admitted" AS "r1";
 
+CREATE VIEW "slice_seats__loader"."chain_chain_run_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."chain_chain_run_finish_output" AS "r1";
+
 CREATE VIEW "slice_seats__loader"."chain_chain_run_input" ("scope", "feed", "feed_name", "pages", "root") AS
 SELECT "r1"."scope", "r1"."feed", ("slice"."__chain_chain_run_input_feed_names_byxgsvzik7"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages", "r1"."root"
 FROM "slice"."chain_chain_run_input" AS "r1";
@@ -1174,6 +1258,10 @@ FROM "slice"."chain_held" AS "r1";
 CREATE VIEW "slice_seats__loader"."chain_next" ("from", "ordinal", "to", "root") AS
 SELECT "r1"."from", "r1"."ordinal", "r1"."to", "r1"."root"
 FROM "slice"."chain_next" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."chain_ordered_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."chain_ordered_finish_output" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."chain_ordered_input" ("scope", "feed", "feed_name", "pages", "root") AS
 SELECT "r1"."scope", "r1"."feed", ("slice"."__chain_ordered_input_feed_names_dwtixlgyrd"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages", "r1"."root"
@@ -1247,6 +1335,10 @@ CREATE VIEW "slice_seats__loader"."fan_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
 FROM "slice"."fan_admitted" AS "r1";
 
+CREATE VIEW "slice_seats__loader"."fan_batch_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."fan_batch_finish_output" AS "r1";
+
 CREATE VIEW "slice_seats__loader"."fan_batch_input" ("scope", "batch", "size", "root") AS
 SELECT "r1"."scope", "r1"."batch", "r1"."size", "r1"."root"
 FROM "slice"."fan_batch_input" AS "r1";
@@ -1270,6 +1362,10 @@ FROM "slice"."fan_exhausted" AS "r1";
 CREATE VIEW "slice_seats__loader"."fan_failed" ("step", "root") AS
 SELECT "r1"."step", "r1"."root"
 FROM "slice"."fan_failed" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."fan_fan_run_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."fan_fan_run_finish_output" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."fan_fan_run_input" ("scope", "batch", "size", "root") AS
 SELECT "r1"."scope", "r1"."batch", "r1"."size", "r1"."root"
@@ -1399,6 +1495,10 @@ CREATE VIEW "slice_seats__loader"."retry_held" ("step", "attempt", "root") AS
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."retry_held" AS "r1";
 
+CREATE VIEW "slice_seats__loader"."retry_ladders_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."retry_ladders_finish_output" AS "r1";
+
 CREATE VIEW "slice_seats__loader"."retry_ladders_input" ("scope", "steadfast", "brittle", "root") AS
 SELECT "r1"."scope", "r1"."steadfast", "r1"."brittle", "r1"."root"
 FROM "slice"."retry_ladders_input" AS "r1";
@@ -1443,6 +1543,142 @@ CREATE VIEW "slice_seats__loader"."retry_step" ("step", "kind", "kind_name", "sc
 SELECT "r1"."step", "r1"."kind", ("slice"."__retry_kind_names_637ikgyibq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."retry_step" AS "r1";
 
+CREATE VIEW "slice_seats__loader"."review_admitted" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
+FROM "slice"."review_admitted" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_analyze_input" ("step", "review", "group", "question", "root") AS
+SELECT "r1"."step", "r1"."review", "r1"."group", "r1"."question", "r1"."root"
+FROM "slice"."review_analyze_input" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_analyze_output" ("step", "score", "root") AS
+SELECT "r1"."step", "r1"."score", "r1"."root"
+FROM "slice"."review_analyze_output" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_claim" ("step", "attempt", "until", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."until", "r1"."root"
+FROM "slice"."review_claim" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_done" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."review_done" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_ended" ("step", "attempt", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."root"
+FROM "slice"."review_ended" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."review_exhausted" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_failed" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."review_failed" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_fenced" ("step", "attempt", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."root"
+FROM "slice"."review_fenced" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_finish" ("scope", "step", "root") AS
+SELECT "r1"."scope", "r1"."step", "r1"."root"
+FROM "slice"."review_finish" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_gather_input" ("step", "review", "root") AS
+SELECT "r1"."step", "r1"."review", "r1"."root"
+FROM "slice"."review_gather_input" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_gather_input_sizes" ("step", "ordinal", "value", "root") AS
+SELECT "r1"."step", "r1"."ordinal", "r1"."value", "r1"."root"
+FROM "slice"."review_gather_input_sizes" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_gather_output" ("step", "groups", "root") AS
+SELECT "r1"."step", "r1"."groups", "r1"."root"
+FROM "slice"."review_gather_output" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_held" ("step", "attempt", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."root"
+FROM "slice"."review_held" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_questions_finish_output" ("step", "count", "total", "root") AS
+SELECT "r1"."step", "r1"."count", "r1"."total", "r1"."root"
+FROM "slice"."review_questions_finish_output" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_questions_input" ("scope", "review", "group", "size", "root") AS
+SELECT "r1"."scope", "r1"."review", "r1"."group", "r1"."size", "r1"."root"
+FROM "slice"."review_questions_input" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_refusal" ("step", "law", "root") AS
+SELECT "r1"."step", "r1"."law", "r1"."root"
+FROM "slice"."review_refusal" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_result" ("step", "outcome", "outcome_name", "root") AS
+SELECT "r1"."step", "r1"."outcome", ("slice"."__review_outcome_names_nlfaf7zb7f"())["r1"."outcome" + 1]::"pg_catalog"."text", "r1"."root"
+FROM "slice"."review_result" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_retry" ("step", "attempt", "at", "spent", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."at", "r1"."spent", "r1"."root"
+FROM "slice"."review_retry" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_review_run_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."review_review_run_finish_output" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_review_run_input" ("scope", "review", "root") AS
+SELECT "r1"."scope", "r1"."review", "r1"."root"
+FROM "slice"."review_review_run_input" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_review_run_input_sizes" ("scope", "ordinal", "value", "root") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."value", "r1"."root"
+FROM "slice"."review_review_run_input_sizes" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_root" ("scope", "kind", "kind_name", "key", "at", "retired") AS
+SELECT "r1"."scope", "r1"."kind", ("slice"."__review_root_kind_names_uvxmjcavxb"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
+FROM "slice"."review_root" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_save_input" ("step", "review", "group", "count", "total", "root") AS
+SELECT "r1"."step", "r1"."review", "r1"."group", "r1"."count", "r1"."total", "r1"."root"
+FROM "slice"."review_save_input" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_save_output" ("step", "total", "root") AS
+SELECT "r1"."step", "r1"."total", "r1"."root"
+FROM "slice"."review_save_output" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_saved" ("from", "ordinal", "to", "root") AS
+SELECT "r1"."from", "r1"."ordinal", "r1"."to", "r1"."root"
+FROM "slice"."review_saved" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
+FROM "slice"."review_scope" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_skipped" ("scope", "by", "root") AS
+SELECT "r1"."scope", "r1"."by", "r1"."root"
+FROM "slice"."review_skipped" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_split" ("from", "ordinal", "to", "root") AS
+SELECT "r1"."from", "r1"."ordinal", "r1"."to", "r1"."root"
+FROM "slice"."review_split" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_start_scope" ("scope", "ordinal", "child", "root") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
+FROM "slice"."review_start_scope" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_start_step" ("scope", "ordinal", "step", "root") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
+FROM "slice"."review_start_step" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
+SELECT "r1"."step", "r1"."kind", ("slice"."__review_kind_names_j4pukr2klj"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
+FROM "slice"."review_step" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."review_within" ("scope", "parent", "kind", "kind_name", "root") AS
+SELECT "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__review_child_kind_names_jn3iwx7yal"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+FROM "slice"."review_within" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."reviewed" ("review", "group", "count", "total") AS
+SELECT "r1"."review", "r1"."group", "r1"."count", "r1"."total"
+FROM "slice"."reviewed" AS "r1";
+
 CREATE VIEW "slice_seats__loader"."seen" ("learner", "passage") AS
 SELECT "r1"."learner", "r1"."passage"
 FROM "slice"."seen" AS "r1";
@@ -1450,6 +1686,10 @@ FROM "slice"."seen" AS "r1";
 CREATE VIEW "slice_seats__loader"."settled" ("batch") AS
 SELECT "r1"."batch"
 FROM "slice"."settled" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."summary" ("review", "groups", "total") AS
+SELECT "r1"."review", "r1"."groups", "r1"."total"
+FROM "slice"."summary" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."sync_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
@@ -1503,6 +1743,10 @@ CREATE VIEW "slice_seats__loader"."sync_finish" ("scope", "step", "root") AS
 SELECT "r1"."scope", "r1"."step", "r1"."root"
 FROM "slice"."sync_finish" AS "r1";
 
+CREATE VIEW "slice_seats__loader"."sync_gold_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."sync_gold_finish_output" AS "r1";
+
 CREATE VIEW "slice_seats__loader"."sync_gold_input" ("scope", "build", "root") AS
 SELECT "r1"."scope", "r1"."build", "r1"."root"
 FROM "slice"."sync_gold_input" AS "r1";
@@ -1542,6 +1786,10 @@ FROM "slice"."sync_start_step" AS "r1";
 CREATE VIEW "slice_seats__loader"."sync_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
 SELECT "r1"."step", "r1"."kind", ("slice"."__sync_kind_names_oq6b66cstu"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."sync_step" AS "r1";
+
+CREATE VIEW "slice_seats__loader"."sync_sync_run_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."sync_sync_run_finish_output" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."sync_sync_run_input" ("scope", "relation", "run", "root") AS
 SELECT "r1"."scope", "r1"."relation", "r1"."run", "r1"."root"
@@ -1606,6 +1854,10 @@ FROM "slice"."retry_finish" AS "r1";
 CREATE VIEW "slice_seats__retry_den"."retry_held" ("step", "attempt", "root") AS
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."retry_held" AS "r1";
+
+CREATE VIEW "slice_seats__retry_den"."retry_ladders_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."retry_ladders_finish_output" AS "r1";
 
 CREATE VIEW "slice_seats__retry_den"."retry_ladders_input" ("scope", "steadfast", "brittle", "root") AS
 SELECT "r1"."scope", "r1"."steadfast", "r1"."brittle", "r1"."root"
@@ -1703,6 +1955,10 @@ CREATE VIEW "slice_seats__retry_retirer"."retry_held" ("step", "attempt", "root"
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."retry_held" AS "r1";
 
+CREATE VIEW "slice_seats__retry_retirer"."retry_ladders_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."retry_ladders_finish_output" AS "r1";
+
 CREATE VIEW "slice_seats__retry_retirer"."retry_ladders_input" ("scope", "steadfast", "brittle", "root") AS
 SELECT "r1"."scope", "r1"."steadfast", "r1"."brittle", "r1"."root"
 FROM "slice"."retry_ladders_input" AS "r1";
@@ -1746,6 +2002,286 @@ FROM "slice"."retry_steadfast_output" AS "r1";
 CREATE VIEW "slice_seats__retry_retirer"."retry_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
 SELECT "r1"."step", "r1"."kind", ("slice"."__retry_kind_names_637ikgyibq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."retry_step" AS "r1";
+
+CREATE VIEW "slice_seats__review_coordinator"."review_paused" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__review_pausable_names_jy4y3o5cqn"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice"."review_paused" AS "r1";
+
+CREATE VIEW "slice_seats__review_coordinator"."review_resumed" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__review_pausable_names_jy4y3o5cqn"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice"."review_resumed" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_admitted" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
+FROM "slice"."review_admitted" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_analyze_input" ("step", "review", "group", "question", "root") AS
+SELECT "r1"."step", "r1"."review", "r1"."group", "r1"."question", "r1"."root"
+FROM "slice"."review_analyze_input" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_analyze_output" ("step", "score", "root") AS
+SELECT "r1"."step", "r1"."score", "r1"."root"
+FROM "slice"."review_analyze_output" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_claim" ("step", "attempt", "until", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."until", "r1"."root"
+FROM "slice"."review_claim" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_done" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."review_done" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_ended" ("step", "attempt", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."root"
+FROM "slice"."review_ended" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."review_exhausted" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_failed" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."review_failed" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_fenced" ("step", "attempt", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."root"
+FROM "slice"."review_fenced" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_finish" ("scope", "step", "root") AS
+SELECT "r1"."scope", "r1"."step", "r1"."root"
+FROM "slice"."review_finish" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_gather_input" ("step", "review", "root") AS
+SELECT "r1"."step", "r1"."review", "r1"."root"
+FROM "slice"."review_gather_input" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_gather_input_sizes" ("step", "ordinal", "value", "root") AS
+SELECT "r1"."step", "r1"."ordinal", "r1"."value", "r1"."root"
+FROM "slice"."review_gather_input_sizes" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_gather_output" ("step", "groups", "root") AS
+SELECT "r1"."step", "r1"."groups", "r1"."root"
+FROM "slice"."review_gather_output" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_held" ("step", "attempt", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."root"
+FROM "slice"."review_held" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_paused" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__review_pausable_names_jy4y3o5cqn"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice"."review_paused" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_questions_finish_output" ("step", "count", "total", "root") AS
+SELECT "r1"."step", "r1"."count", "r1"."total", "r1"."root"
+FROM "slice"."review_questions_finish_output" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_questions_input" ("scope", "review", "group", "size", "root") AS
+SELECT "r1"."scope", "r1"."review", "r1"."group", "r1"."size", "r1"."root"
+FROM "slice"."review_questions_input" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_refusal" ("step", "law", "root") AS
+SELECT "r1"."step", "r1"."law", "r1"."root"
+FROM "slice"."review_refusal" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_result" ("step", "outcome", "outcome_name", "root") AS
+SELECT "r1"."step", "r1"."outcome", ("slice"."__review_outcome_names_nlfaf7zb7f"())["r1"."outcome" + 1]::"pg_catalog"."text", "r1"."root"
+FROM "slice"."review_result" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_resumed" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__review_pausable_names_jy4y3o5cqn"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice"."review_resumed" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_retry" ("step", "attempt", "at", "spent", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."at", "r1"."spent", "r1"."root"
+FROM "slice"."review_retry" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_review_run_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."review_review_run_finish_output" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_review_run_input" ("scope", "review", "root") AS
+SELECT "r1"."scope", "r1"."review", "r1"."root"
+FROM "slice"."review_review_run_input" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_review_run_input_sizes" ("scope", "ordinal", "value", "root") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."value", "r1"."root"
+FROM "slice"."review_review_run_input_sizes" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_root" ("scope", "kind", "kind_name", "key", "at", "retired") AS
+SELECT "r1"."scope", "r1"."kind", ("slice"."__review_root_kind_names_uvxmjcavxb"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
+FROM "slice"."review_root" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_save_input" ("step", "review", "group", "count", "total", "root") AS
+SELECT "r1"."step", "r1"."review", "r1"."group", "r1"."count", "r1"."total", "r1"."root"
+FROM "slice"."review_save_input" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_save_output" ("step", "total", "root") AS
+SELECT "r1"."step", "r1"."total", "r1"."root"
+FROM "slice"."review_save_output" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_saved" ("from", "ordinal", "to", "root") AS
+SELECT "r1"."from", "r1"."ordinal", "r1"."to", "r1"."root"
+FROM "slice"."review_saved" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
+FROM "slice"."review_scope" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_skipped" ("scope", "by", "root") AS
+SELECT "r1"."scope", "r1"."by", "r1"."root"
+FROM "slice"."review_skipped" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_split" ("from", "ordinal", "to", "root") AS
+SELECT "r1"."from", "r1"."ordinal", "r1"."to", "r1"."root"
+FROM "slice"."review_split" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_start_scope" ("scope", "ordinal", "child", "root") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
+FROM "slice"."review_start_scope" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_start_step" ("scope", "ordinal", "step", "root") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
+FROM "slice"."review_start_step" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
+SELECT "r1"."step", "r1"."kind", ("slice"."__review_kind_names_j4pukr2klj"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
+FROM "slice"."review_step" AS "r1";
+
+CREATE VIEW "slice_seats__review_den"."review_within" ("scope", "parent", "kind", "kind_name", "root") AS
+SELECT "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__review_child_kind_names_jn3iwx7yal"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+FROM "slice"."review_within" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_admitted" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
+FROM "slice"."review_admitted" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_analyze_input" ("step", "review", "group", "question", "root") AS
+SELECT "r1"."step", "r1"."review", "r1"."group", "r1"."question", "r1"."root"
+FROM "slice"."review_analyze_input" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_analyze_output" ("step", "score", "root") AS
+SELECT "r1"."step", "r1"."score", "r1"."root"
+FROM "slice"."review_analyze_output" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_claim" ("step", "attempt", "until", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."until", "r1"."root"
+FROM "slice"."review_claim" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_done" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."review_done" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_ended" ("step", "attempt", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."root"
+FROM "slice"."review_ended" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."review_exhausted" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_failed" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."review_failed" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_fenced" ("step", "attempt", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."root"
+FROM "slice"."review_fenced" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_finish" ("scope", "step", "root") AS
+SELECT "r1"."scope", "r1"."step", "r1"."root"
+FROM "slice"."review_finish" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_gather_input" ("step", "review", "root") AS
+SELECT "r1"."step", "r1"."review", "r1"."root"
+FROM "slice"."review_gather_input" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_gather_input_sizes" ("step", "ordinal", "value", "root") AS
+SELECT "r1"."step", "r1"."ordinal", "r1"."value", "r1"."root"
+FROM "slice"."review_gather_input_sizes" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_gather_output" ("step", "groups", "root") AS
+SELECT "r1"."step", "r1"."groups", "r1"."root"
+FROM "slice"."review_gather_output" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_held" ("step", "attempt", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."root"
+FROM "slice"."review_held" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_questions_finish_output" ("step", "count", "total", "root") AS
+SELECT "r1"."step", "r1"."count", "r1"."total", "r1"."root"
+FROM "slice"."review_questions_finish_output" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_questions_input" ("scope", "review", "group", "size", "root") AS
+SELECT "r1"."scope", "r1"."review", "r1"."group", "r1"."size", "r1"."root"
+FROM "slice"."review_questions_input" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_refusal" ("step", "law", "root") AS
+SELECT "r1"."step", "r1"."law", "r1"."root"
+FROM "slice"."review_refusal" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_result" ("step", "outcome", "outcome_name", "root") AS
+SELECT "r1"."step", "r1"."outcome", ("slice"."__review_outcome_names_nlfaf7zb7f"())["r1"."outcome" + 1]::"pg_catalog"."text", "r1"."root"
+FROM "slice"."review_result" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_retry" ("step", "attempt", "at", "spent", "root") AS
+SELECT "r1"."step", "r1"."attempt", "r1"."at", "r1"."spent", "r1"."root"
+FROM "slice"."review_retry" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_review_run_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."review_review_run_finish_output" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_review_run_input" ("scope", "review", "root") AS
+SELECT "r1"."scope", "r1"."review", "r1"."root"
+FROM "slice"."review_review_run_input" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_review_run_input_sizes" ("scope", "ordinal", "value", "root") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."value", "r1"."root"
+FROM "slice"."review_review_run_input_sizes" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_root" ("scope", "kind", "kind_name", "key", "at", "retired") AS
+SELECT "r1"."scope", "r1"."kind", ("slice"."__review_root_kind_names_uvxmjcavxb"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
+FROM "slice"."review_root" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_save_input" ("step", "review", "group", "count", "total", "root") AS
+SELECT "r1"."step", "r1"."review", "r1"."group", "r1"."count", "r1"."total", "r1"."root"
+FROM "slice"."review_save_input" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_save_output" ("step", "total", "root") AS
+SELECT "r1"."step", "r1"."total", "r1"."root"
+FROM "slice"."review_save_output" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_saved" ("from", "ordinal", "to", "root") AS
+SELECT "r1"."from", "r1"."ordinal", "r1"."to", "r1"."root"
+FROM "slice"."review_saved" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
+FROM "slice"."review_scope" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_skipped" ("scope", "by", "root") AS
+SELECT "r1"."scope", "r1"."by", "r1"."root"
+FROM "slice"."review_skipped" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_split" ("from", "ordinal", "to", "root") AS
+SELECT "r1"."from", "r1"."ordinal", "r1"."to", "r1"."root"
+FROM "slice"."review_split" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_start_scope" ("scope", "ordinal", "child", "root") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
+FROM "slice"."review_start_scope" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_start_step" ("scope", "ordinal", "step", "root") AS
+SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
+FROM "slice"."review_start_step" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
+SELECT "r1"."step", "r1"."kind", ("slice"."__review_kind_names_j4pukr2klj"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
+FROM "slice"."review_step" AS "r1";
+
+CREATE VIEW "slice_seats__review_retirer"."review_within" ("scope", "parent", "kind", "kind_name", "root") AS
+SELECT "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__review_child_kind_names_jn3iwx7yal"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+FROM "slice"."review_within" AS "r1";
 
 CREATE VIEW "slice_seats__sync_coordinator"."sync_exclusive" ("kind", "kind_name", "key", "turn", "scope") AS
 SELECT "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."turn", "r1"."scope"
@@ -1827,6 +2363,10 @@ CREATE VIEW "slice_seats__sync_den"."sync_finish" ("scope", "step", "root") AS
 SELECT "r1"."scope", "r1"."step", "r1"."root"
 FROM "slice"."sync_finish" AS "r1";
 
+CREATE VIEW "slice_seats__sync_den"."sync_gold_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."sync_gold_finish_output" AS "r1";
+
 CREATE VIEW "slice_seats__sync_den"."sync_gold_input" ("scope", "build", "root") AS
 SELECT "r1"."scope", "r1"."build", "r1"."root"
 FROM "slice"."sync_gold_input" AS "r1";
@@ -1878,6 +2418,10 @@ FROM "slice"."sync_start_step" AS "r1";
 CREATE VIEW "slice_seats__sync_den"."sync_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
 SELECT "r1"."step", "r1"."kind", ("slice"."__sync_kind_names_oq6b66cstu"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."sync_step" AS "r1";
+
+CREATE VIEW "slice_seats__sync_den"."sync_sync_run_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."sync_sync_run_finish_output" AS "r1";
 
 CREATE VIEW "slice_seats__sync_den"."sync_sync_run_input" ("scope", "relation", "run", "root") AS
 SELECT "r1"."scope", "r1"."relation", "r1"."run", "r1"."root"
@@ -1935,6 +2479,10 @@ CREATE VIEW "slice_seats__sync_retirer"."sync_finish" ("scope", "step", "root") 
 SELECT "r1"."scope", "r1"."step", "r1"."root"
 FROM "slice"."sync_finish" AS "r1";
 
+CREATE VIEW "slice_seats__sync_retirer"."sync_gold_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."sync_gold_finish_output" AS "r1";
+
 CREATE VIEW "slice_seats__sync_retirer"."sync_gold_input" ("scope", "build", "root") AS
 SELECT "r1"."scope", "r1"."build", "r1"."root"
 FROM "slice"."sync_gold_input" AS "r1";
@@ -1975,6 +2523,10 @@ CREATE VIEW "slice_seats__sync_retirer"."sync_step" ("step", "kind", "kind_name"
 SELECT "r1"."step", "r1"."kind", ("slice"."__sync_kind_names_oq6b66cstu"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."sync_step" AS "r1";
 
+CREATE VIEW "slice_seats__sync_retirer"."sync_sync_run_finish_output" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
+FROM "slice"."sync_sync_run_finish_output" AS "r1";
+
 CREATE VIEW "slice_seats__sync_retirer"."sync_sync_run_input" ("scope", "relation", "run", "root") AS
 SELECT "r1"."scope", "r1"."relation", "r1"."run", "r1"."root"
 FROM "slice"."sync_sync_run_input" AS "r1";
@@ -2006,6 +2558,12 @@ GRANT :"slice_seats__retry_coordinator" TO :"slice_seats__worker" WITH INHERIT F
 GRANT :"slice_seats__retry_den" TO :"slice_seats__worker" WITH INHERIT FALSE, SET TRUE;
 
 GRANT :"slice_seats__retry_retirer" TO :"slice_seats__worker" WITH INHERIT FALSE, SET TRUE;
+
+GRANT :"slice_seats__review_coordinator" TO :"slice_seats__worker" WITH INHERIT FALSE, SET TRUE;
+
+GRANT :"slice_seats__review_den" TO :"slice_seats__worker" WITH INHERIT FALSE, SET TRUE;
+
+GRANT :"slice_seats__review_retirer" TO :"slice_seats__worker" WITH INHERIT FALSE, SET TRUE;
 
 GRANT :"slice_seats__sync_coordinator" TO :"slice_seats__worker" WITH INHERIT FALSE, SET TRUE;
 
@@ -2040,9 +2598,11 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__assign_den" TO :"sli
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__assign_den";
 
-GRANT SELECT ON TABLE "slice_seats__assign_den"."assign_admitted", "slice_seats__assign_den"."assign_assignment_input", "slice_seats__assign_den"."assign_assignment_input_exclude", "slice_seats__assign_den"."assign_assignment_input_mode_nearest", "slice_seats__assign_den"."assign_assignment_input_mode_within", "slice_seats__assign_den"."assign_claim", "slice_seats__assign_den"."assign_decide_input", "slice_seats__assign_den"."assign_decide_input_exclude", "slice_seats__assign_den"."assign_decide_input_mode_nearest", "slice_seats__assign_den"."assign_decide_input_mode_within", "slice_seats__assign_den"."assign_decide_nearest_read", "slice_seats__assign_den"."assign_decide_output", "slice_seats__assign_den"."assign_decide_output_stage_rest", "slice_seats__assign_den"."assign_decide_output_stage_serve", "slice_seats__assign_den"."assign_decide_output_weighed", "slice_seats__assign_den"."assign_decide_seen_read", "slice_seats__assign_den"."assign_done", "slice_seats__assign_den"."assign_ended", "slice_seats__assign_den"."assign_exhausted", "slice_seats__assign_den"."assign_failed", "slice_seats__assign_den"."assign_fenced", "slice_seats__assign_den"."assign_finish", "slice_seats__assign_den"."assign_held", "slice_seats__assign_den"."assign_paused", "slice_seats__assign_den"."assign_refusal", "slice_seats__assign_den"."assign_result", "slice_seats__assign_den"."assign_resumed", "slice_seats__assign_den"."assign_retry", "slice_seats__assign_den"."assign_root", "slice_seats__assign_den"."assign_scope", "slice_seats__assign_den"."assign_skipped", "slice_seats__assign_den"."assign_start_step", "slice_seats__assign_den"."assign_step" TO :"slice_seats__assign_den";
+GRANT SELECT ON TABLE "slice_seats__assign_den"."assign_admitted", "slice_seats__assign_den"."assign_assignment_finish_output", "slice_seats__assign_den"."assign_assignment_input", "slice_seats__assign_den"."assign_assignment_input_exclude", "slice_seats__assign_den"."assign_assignment_input_mode_nearest", "slice_seats__assign_den"."assign_assignment_input_mode_within", "slice_seats__assign_den"."assign_claim", "slice_seats__assign_den"."assign_decide_input", "slice_seats__assign_den"."assign_decide_input_exclude", "slice_seats__assign_den"."assign_decide_input_mode_nearest", "slice_seats__assign_den"."assign_decide_input_mode_within", "slice_seats__assign_den"."assign_decide_nearest_read", "slice_seats__assign_den"."assign_decide_output", "slice_seats__assign_den"."assign_decide_output_stage_rest", "slice_seats__assign_den"."assign_decide_output_stage_serve", "slice_seats__assign_den"."assign_decide_output_weighed", "slice_seats__assign_den"."assign_decide_seen_read", "slice_seats__assign_den"."assign_done", "slice_seats__assign_den"."assign_ended", "slice_seats__assign_den"."assign_exhausted", "slice_seats__assign_den"."assign_failed", "slice_seats__assign_den"."assign_fenced", "slice_seats__assign_den"."assign_finish", "slice_seats__assign_den"."assign_held", "slice_seats__assign_den"."assign_paused", "slice_seats__assign_den"."assign_refusal", "slice_seats__assign_den"."assign_result", "slice_seats__assign_den"."assign_resumed", "slice_seats__assign_den"."assign_retry", "slice_seats__assign_den"."assign_root", "slice_seats__assign_den"."assign_scope", "slice_seats__assign_den"."assign_skipped", "slice_seats__assign_den"."assign_start_step", "slice_seats__assign_den"."assign_step" TO :"slice_seats__assign_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."assign_admitted" TO :"slice_seats__assign_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."assign_assignment_finish_output" TO :"slice_seats__assign_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."assign_assignment_input" TO :"slice_seats__assign_den";
 
@@ -2110,7 +2670,7 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__assign_retirer" TO :
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__assign_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__assign_retirer"."assign_admitted", "slice_seats__assign_retirer"."assign_assignment_input", "slice_seats__assign_retirer"."assign_assignment_input_exclude", "slice_seats__assign_retirer"."assign_assignment_input_mode_nearest", "slice_seats__assign_retirer"."assign_assignment_input_mode_within", "slice_seats__assign_retirer"."assign_claim", "slice_seats__assign_retirer"."assign_decide_input", "slice_seats__assign_retirer"."assign_decide_input_exclude", "slice_seats__assign_retirer"."assign_decide_input_mode_nearest", "slice_seats__assign_retirer"."assign_decide_input_mode_within", "slice_seats__assign_retirer"."assign_decide_nearest_read", "slice_seats__assign_retirer"."assign_decide_output", "slice_seats__assign_retirer"."assign_decide_output_stage_rest", "slice_seats__assign_retirer"."assign_decide_output_stage_serve", "slice_seats__assign_retirer"."assign_decide_output_weighed", "slice_seats__assign_retirer"."assign_decide_seen_read", "slice_seats__assign_retirer"."assign_done", "slice_seats__assign_retirer"."assign_ended", "slice_seats__assign_retirer"."assign_exhausted", "slice_seats__assign_retirer"."assign_failed", "slice_seats__assign_retirer"."assign_fenced", "slice_seats__assign_retirer"."assign_finish", "slice_seats__assign_retirer"."assign_held", "slice_seats__assign_retirer"."assign_refusal", "slice_seats__assign_retirer"."assign_result", "slice_seats__assign_retirer"."assign_retry", "slice_seats__assign_retirer"."assign_root", "slice_seats__assign_retirer"."assign_scope", "slice_seats__assign_retirer"."assign_skipped", "slice_seats__assign_retirer"."assign_start_step", "slice_seats__assign_retirer"."assign_step" TO :"slice_seats__assign_retirer";
+GRANT SELECT ON TABLE "slice_seats__assign_retirer"."assign_admitted", "slice_seats__assign_retirer"."assign_assignment_finish_output", "slice_seats__assign_retirer"."assign_assignment_input", "slice_seats__assign_retirer"."assign_assignment_input_exclude", "slice_seats__assign_retirer"."assign_assignment_input_mode_nearest", "slice_seats__assign_retirer"."assign_assignment_input_mode_within", "slice_seats__assign_retirer"."assign_claim", "slice_seats__assign_retirer"."assign_decide_input", "slice_seats__assign_retirer"."assign_decide_input_exclude", "slice_seats__assign_retirer"."assign_decide_input_mode_nearest", "slice_seats__assign_retirer"."assign_decide_input_mode_within", "slice_seats__assign_retirer"."assign_decide_nearest_read", "slice_seats__assign_retirer"."assign_decide_output", "slice_seats__assign_retirer"."assign_decide_output_stage_rest", "slice_seats__assign_retirer"."assign_decide_output_stage_serve", "slice_seats__assign_retirer"."assign_decide_output_weighed", "slice_seats__assign_retirer"."assign_decide_seen_read", "slice_seats__assign_retirer"."assign_done", "slice_seats__assign_retirer"."assign_ended", "slice_seats__assign_retirer"."assign_exhausted", "slice_seats__assign_retirer"."assign_failed", "slice_seats__assign_retirer"."assign_fenced", "slice_seats__assign_retirer"."assign_finish", "slice_seats__assign_retirer"."assign_held", "slice_seats__assign_retirer"."assign_refusal", "slice_seats__assign_retirer"."assign_result", "slice_seats__assign_retirer"."assign_retry", "slice_seats__assign_retirer"."assign_root", "slice_seats__assign_retirer"."assign_scope", "slice_seats__assign_retirer"."assign_skipped", "slice_seats__assign_retirer"."assign_start_step", "slice_seats__assign_retirer"."assign_step" TO :"slice_seats__assign_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__assign_retirer";
 
@@ -2121,15 +2681,15 @@ GRANT EXECUTE ON FUNCTION "slice"."__retire_assign_root_hwbj4sewrx"("slice"."__d
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__auditor" TO :"slice_seats__auditor";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."sync_outcome", "slice"."__text_t4rwovzmqj" TO :"slice_seats__auditor";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."sync_outcome", "slice"."__text_t4rwovzmqj" TO :"slice_seats__auditor";
 
-GRANT SELECT ON TABLE "slice_seats__auditor"."assign_decide_nearest_read", "slice_seats__auditor"."assign_decide_output", "slice_seats__auditor"."assign_decide_output_stage_serve", "slice_seats__auditor"."assign_decide_output_weighed", "slice_seats__auditor"."assign_decide_seen_read", "slice_seats__auditor"."assign_result", "slice_seats__auditor"."assign_step", "slice_seats__auditor"."assigned", "slice_seats__auditor"."audit", "slice_seats__auditor"."built", "slice_seats__auditor"."chain_admitted", "slice_seats__auditor"."chain_chain_run_input", "slice_seats__auditor"."chain_claim", "slice_seats__auditor"."chain_finish", "slice_seats__auditor"."chain_next", "slice_seats__auditor"."chain_ordered_input", "slice_seats__auditor"."chain_page_input", "slice_seats__auditor"."chain_page_input_after", "slice_seats__auditor"."chain_page_output", "slice_seats__auditor"."chain_page_output_next", "slice_seats__auditor"."chain_page_weights_read", "slice_seats__auditor"."chain_result", "slice_seats__auditor"."chain_root", "slice_seats__auditor"."chain_scope", "slice_seats__auditor"."chain_start_step", "slice_seats__auditor"."chain_step", "slice_seats__auditor"."concluded", "slice_seats__auditor"."copied", "slice_seats__auditor"."cursor", "slice_seats__auditor"."fan_admitted", "slice_seats__auditor"."fan_batch_input", "slice_seats__auditor"."fan_fan_run_input", "slice_seats__auditor"."fan_finish", "slice_seats__auditor"."fan_result", "slice_seats__auditor"."fan_root", "slice_seats__auditor"."fan_scope", "slice_seats__auditor"."fan_square_input", "slice_seats__auditor"."fan_square_output", "slice_seats__auditor"."fan_start_scope", "slice_seats__auditor"."fan_start_step", "slice_seats__auditor"."fan_step", "slice_seats__auditor"."fan_within", "slice_seats__auditor"."item", "slice_seats__auditor"."order", "slice_seats__auditor"."retry_claim", "slice_seats__auditor"."retry_exhausted", "slice_seats__auditor"."retry_result", "slice_seats__auditor"."retry_step", "slice_seats__auditor"."settled", "slice_seats__auditor"."sync_admitted", "slice_seats__auditor"."sync_finish", "slice_seats__auditor"."sync_result", "slice_seats__auditor"."sync_scope", "slice_seats__auditor"."sync_skipped", "slice_seats__auditor"."tally", "slice_seats__auditor"."weight" TO :"slice_seats__auditor";
+GRANT SELECT ON TABLE "slice_seats__auditor"."assign_decide_nearest_read", "slice_seats__auditor"."assign_decide_output", "slice_seats__auditor"."assign_decide_output_stage_serve", "slice_seats__auditor"."assign_decide_output_weighed", "slice_seats__auditor"."assign_decide_seen_read", "slice_seats__auditor"."assign_result", "slice_seats__auditor"."assign_step", "slice_seats__auditor"."assigned", "slice_seats__auditor"."audit", "slice_seats__auditor"."built", "slice_seats__auditor"."chain_admitted", "slice_seats__auditor"."chain_chain_run_input", "slice_seats__auditor"."chain_claim", "slice_seats__auditor"."chain_finish", "slice_seats__auditor"."chain_next", "slice_seats__auditor"."chain_ordered_input", "slice_seats__auditor"."chain_page_input", "slice_seats__auditor"."chain_page_input_after", "slice_seats__auditor"."chain_page_output", "slice_seats__auditor"."chain_page_output_next", "slice_seats__auditor"."chain_page_weights_read", "slice_seats__auditor"."chain_result", "slice_seats__auditor"."chain_root", "slice_seats__auditor"."chain_scope", "slice_seats__auditor"."chain_start_step", "slice_seats__auditor"."chain_step", "slice_seats__auditor"."concluded", "slice_seats__auditor"."copied", "slice_seats__auditor"."cursor", "slice_seats__auditor"."fan_admitted", "slice_seats__auditor"."fan_batch_input", "slice_seats__auditor"."fan_fan_run_input", "slice_seats__auditor"."fan_finish", "slice_seats__auditor"."fan_result", "slice_seats__auditor"."fan_root", "slice_seats__auditor"."fan_scope", "slice_seats__auditor"."fan_square_input", "slice_seats__auditor"."fan_square_output", "slice_seats__auditor"."fan_start_scope", "slice_seats__auditor"."fan_start_step", "slice_seats__auditor"."fan_step", "slice_seats__auditor"."fan_within", "slice_seats__auditor"."item", "slice_seats__auditor"."order", "slice_seats__auditor"."retry_claim", "slice_seats__auditor"."retry_exhausted", "slice_seats__auditor"."retry_result", "slice_seats__auditor"."retry_step", "slice_seats__auditor"."review_finish", "slice_seats__auditor"."review_result", "slice_seats__auditor"."review_step", "slice_seats__auditor"."review_within", "slice_seats__auditor"."reviewed", "slice_seats__auditor"."settled", "slice_seats__auditor"."summary", "slice_seats__auditor"."sync_admitted", "slice_seats__auditor"."sync_finish", "slice_seats__auditor"."sync_result", "slice_seats__auditor"."sync_scope", "slice_seats__auditor"."sync_skipped", "slice_seats__auditor"."tally", "slice_seats__auditor"."weight" TO :"slice_seats__auditor";
 
 GRANT SELECT, INSERT ON TABLE "slice"."audit" TO :"slice_seats__auditor";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__auditor";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_kind_names_s7csvtng2b"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_6uewr4lsds"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_root_kind_names_ylamx7vjxv"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__sync_outcome_names_xzb4y4xgki"() TO :"slice_seats__auditor";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_kind_names_s7csvtng2b"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_6uewr4lsds"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_root_kind_names_ylamx7vjxv"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__sync_outcome_names_xzb4y4xgki"() TO :"slice_seats__auditor";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__chain_coordinator" TO :"slice_seats__chain_coordinator";
@@ -2151,9 +2711,11 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__chain_den" TO :"slic
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind", "slice"."feed" TO :"slice_seats__chain_den";
 
-GRANT SELECT ON TABLE "slice_seats__chain_den"."chain_admitted", "slice_seats__chain_den"."chain_chain_run_input", "slice_seats__chain_den"."chain_claim", "slice_seats__chain_den"."chain_done", "slice_seats__chain_den"."chain_ended", "slice_seats__chain_den"."chain_exhausted", "slice_seats__chain_den"."chain_failed", "slice_seats__chain_den"."chain_fenced", "slice_seats__chain_den"."chain_finish", "slice_seats__chain_den"."chain_held", "slice_seats__chain_den"."chain_next", "slice_seats__chain_den"."chain_ordered_input", "slice_seats__chain_den"."chain_page_input", "slice_seats__chain_den"."chain_page_input_after", "slice_seats__chain_den"."chain_page_output", "slice_seats__chain_den"."chain_page_output_next", "slice_seats__chain_den"."chain_page_weights_read", "slice_seats__chain_den"."chain_paused", "slice_seats__chain_den"."chain_refusal", "slice_seats__chain_den"."chain_result", "slice_seats__chain_den"."chain_resumed", "slice_seats__chain_den"."chain_retry", "slice_seats__chain_den"."chain_root", "slice_seats__chain_den"."chain_scope", "slice_seats__chain_den"."chain_skipped", "slice_seats__chain_den"."chain_start_step", "slice_seats__chain_den"."chain_step" TO :"slice_seats__chain_den";
+GRANT SELECT ON TABLE "slice_seats__chain_den"."chain_admitted", "slice_seats__chain_den"."chain_chain_run_finish_output", "slice_seats__chain_den"."chain_chain_run_input", "slice_seats__chain_den"."chain_claim", "slice_seats__chain_den"."chain_done", "slice_seats__chain_den"."chain_ended", "slice_seats__chain_den"."chain_exhausted", "slice_seats__chain_den"."chain_failed", "slice_seats__chain_den"."chain_fenced", "slice_seats__chain_den"."chain_finish", "slice_seats__chain_den"."chain_held", "slice_seats__chain_den"."chain_next", "slice_seats__chain_den"."chain_ordered_finish_output", "slice_seats__chain_den"."chain_ordered_input", "slice_seats__chain_den"."chain_page_input", "slice_seats__chain_den"."chain_page_input_after", "slice_seats__chain_den"."chain_page_output", "slice_seats__chain_den"."chain_page_output_next", "slice_seats__chain_den"."chain_page_weights_read", "slice_seats__chain_den"."chain_paused", "slice_seats__chain_den"."chain_refusal", "slice_seats__chain_den"."chain_result", "slice_seats__chain_den"."chain_resumed", "slice_seats__chain_den"."chain_retry", "slice_seats__chain_den"."chain_root", "slice_seats__chain_den"."chain_scope", "slice_seats__chain_den"."chain_skipped", "slice_seats__chain_den"."chain_start_step", "slice_seats__chain_den"."chain_step" TO :"slice_seats__chain_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."chain_admitted" TO :"slice_seats__chain_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."chain_chain_run_finish_output" TO :"slice_seats__chain_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."chain_chain_run_input" TO :"slice_seats__chain_den";
 
@@ -2172,6 +2734,8 @@ GRANT SELECT, INSERT ON TABLE "slice"."chain_fenced" TO :"slice_seats__chain_den
 GRANT SELECT, INSERT ON TABLE "slice"."chain_finish" TO :"slice_seats__chain_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."chain_held" TO :"slice_seats__chain_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."chain_ordered_finish_output" TO :"slice_seats__chain_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."chain_ordered_input" TO :"slice_seats__chain_den";
 
@@ -2211,7 +2775,7 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__chain_retirer" TO :"
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind", "slice"."feed" TO :"slice_seats__chain_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__chain_retirer"."chain_admitted", "slice_seats__chain_retirer"."chain_chain_run_input", "slice_seats__chain_retirer"."chain_claim", "slice_seats__chain_retirer"."chain_done", "slice_seats__chain_retirer"."chain_ended", "slice_seats__chain_retirer"."chain_exhausted", "slice_seats__chain_retirer"."chain_failed", "slice_seats__chain_retirer"."chain_fenced", "slice_seats__chain_retirer"."chain_finish", "slice_seats__chain_retirer"."chain_held", "slice_seats__chain_retirer"."chain_next", "slice_seats__chain_retirer"."chain_ordered_input", "slice_seats__chain_retirer"."chain_page_input", "slice_seats__chain_retirer"."chain_page_input_after", "slice_seats__chain_retirer"."chain_page_output", "slice_seats__chain_retirer"."chain_page_output_next", "slice_seats__chain_retirer"."chain_page_weights_read", "slice_seats__chain_retirer"."chain_refusal", "slice_seats__chain_retirer"."chain_result", "slice_seats__chain_retirer"."chain_retry", "slice_seats__chain_retirer"."chain_root", "slice_seats__chain_retirer"."chain_scope", "slice_seats__chain_retirer"."chain_skipped", "slice_seats__chain_retirer"."chain_start_step", "slice_seats__chain_retirer"."chain_step" TO :"slice_seats__chain_retirer";
+GRANT SELECT ON TABLE "slice_seats__chain_retirer"."chain_admitted", "slice_seats__chain_retirer"."chain_chain_run_finish_output", "slice_seats__chain_retirer"."chain_chain_run_input", "slice_seats__chain_retirer"."chain_claim", "slice_seats__chain_retirer"."chain_done", "slice_seats__chain_retirer"."chain_ended", "slice_seats__chain_retirer"."chain_exhausted", "slice_seats__chain_retirer"."chain_failed", "slice_seats__chain_retirer"."chain_fenced", "slice_seats__chain_retirer"."chain_finish", "slice_seats__chain_retirer"."chain_held", "slice_seats__chain_retirer"."chain_next", "slice_seats__chain_retirer"."chain_ordered_finish_output", "slice_seats__chain_retirer"."chain_ordered_input", "slice_seats__chain_retirer"."chain_page_input", "slice_seats__chain_retirer"."chain_page_input_after", "slice_seats__chain_retirer"."chain_page_output", "slice_seats__chain_retirer"."chain_page_output_next", "slice_seats__chain_retirer"."chain_page_weights_read", "slice_seats__chain_retirer"."chain_refusal", "slice_seats__chain_retirer"."chain_result", "slice_seats__chain_retirer"."chain_retry", "slice_seats__chain_retirer"."chain_root", "slice_seats__chain_retirer"."chain_scope", "slice_seats__chain_retirer"."chain_skipped", "slice_seats__chain_retirer"."chain_start_step", "slice_seats__chain_retirer"."chain_step" TO :"slice_seats__chain_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__chain_retirer";
 
@@ -2239,9 +2803,11 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__fan_den" TO :"slice_
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind" TO :"slice_seats__fan_den";
 
-GRANT SELECT ON TABLE "slice_seats__fan_den"."fan_admitted", "slice_seats__fan_den"."fan_batch_input", "slice_seats__fan_den"."fan_claim", "slice_seats__fan_den"."fan_done", "slice_seats__fan_den"."fan_ended", "slice_seats__fan_den"."fan_exhausted", "slice_seats__fan_den"."fan_failed", "slice_seats__fan_den"."fan_fan_run_input", "slice_seats__fan_den"."fan_fenced", "slice_seats__fan_den"."fan_finish", "slice_seats__fan_den"."fan_held", "slice_seats__fan_den"."fan_hold", "slice_seats__fan_den"."fan_live", "slice_seats__fan_den"."fan_paused", "slice_seats__fan_den"."fan_refusal", "slice_seats__fan_den"."fan_result", "slice_seats__fan_den"."fan_resumed", "slice_seats__fan_den"."fan_retry", "slice_seats__fan_den"."fan_root", "slice_seats__fan_den"."fan_scope", "slice_seats__fan_den"."fan_skipped", "slice_seats__fan_den"."fan_square_input", "slice_seats__fan_den"."fan_square_output", "slice_seats__fan_den"."fan_start_scope", "slice_seats__fan_den"."fan_start_step", "slice_seats__fan_den"."fan_step", "slice_seats__fan_den"."fan_within" TO :"slice_seats__fan_den";
+GRANT SELECT ON TABLE "slice_seats__fan_den"."fan_admitted", "slice_seats__fan_den"."fan_batch_finish_output", "slice_seats__fan_den"."fan_batch_input", "slice_seats__fan_den"."fan_claim", "slice_seats__fan_den"."fan_done", "slice_seats__fan_den"."fan_ended", "slice_seats__fan_den"."fan_exhausted", "slice_seats__fan_den"."fan_failed", "slice_seats__fan_den"."fan_fan_run_finish_output", "slice_seats__fan_den"."fan_fan_run_input", "slice_seats__fan_den"."fan_fenced", "slice_seats__fan_den"."fan_finish", "slice_seats__fan_den"."fan_held", "slice_seats__fan_den"."fan_hold", "slice_seats__fan_den"."fan_live", "slice_seats__fan_den"."fan_paused", "slice_seats__fan_den"."fan_refusal", "slice_seats__fan_den"."fan_result", "slice_seats__fan_den"."fan_resumed", "slice_seats__fan_den"."fan_retry", "slice_seats__fan_den"."fan_root", "slice_seats__fan_den"."fan_scope", "slice_seats__fan_den"."fan_skipped", "slice_seats__fan_den"."fan_square_input", "slice_seats__fan_den"."fan_square_output", "slice_seats__fan_den"."fan_start_scope", "slice_seats__fan_den"."fan_start_step", "slice_seats__fan_den"."fan_step", "slice_seats__fan_den"."fan_within" TO :"slice_seats__fan_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."fan_admitted" TO :"slice_seats__fan_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."fan_batch_finish_output" TO :"slice_seats__fan_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."fan_batch_input" TO :"slice_seats__fan_den";
 
@@ -2254,6 +2820,8 @@ GRANT SELECT, INSERT ON TABLE "slice"."fan_ended" TO :"slice_seats__fan_den";
 GRANT SELECT, INSERT ON TABLE "slice"."fan_exhausted" TO :"slice_seats__fan_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."fan_failed" TO :"slice_seats__fan_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."fan_fan_run_finish_output" TO :"slice_seats__fan_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."fan_fan_run_input" TO :"slice_seats__fan_den";
 
@@ -2301,7 +2869,7 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__fan_retirer" TO :"sl
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind" TO :"slice_seats__fan_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__fan_retirer"."fan_admitted", "slice_seats__fan_retirer"."fan_batch_input", "slice_seats__fan_retirer"."fan_claim", "slice_seats__fan_retirer"."fan_done", "slice_seats__fan_retirer"."fan_ended", "slice_seats__fan_retirer"."fan_exhausted", "slice_seats__fan_retirer"."fan_failed", "slice_seats__fan_retirer"."fan_fan_run_input", "slice_seats__fan_retirer"."fan_fenced", "slice_seats__fan_retirer"."fan_finish", "slice_seats__fan_retirer"."fan_held", "slice_seats__fan_retirer"."fan_hold", "slice_seats__fan_retirer"."fan_refusal", "slice_seats__fan_retirer"."fan_result", "slice_seats__fan_retirer"."fan_retry", "slice_seats__fan_retirer"."fan_root", "slice_seats__fan_retirer"."fan_scope", "slice_seats__fan_retirer"."fan_skipped", "slice_seats__fan_retirer"."fan_square_input", "slice_seats__fan_retirer"."fan_square_output", "slice_seats__fan_retirer"."fan_start_scope", "slice_seats__fan_retirer"."fan_start_step", "slice_seats__fan_retirer"."fan_step", "slice_seats__fan_retirer"."fan_within" TO :"slice_seats__fan_retirer";
+GRANT SELECT ON TABLE "slice_seats__fan_retirer"."fan_admitted", "slice_seats__fan_retirer"."fan_batch_finish_output", "slice_seats__fan_retirer"."fan_batch_input", "slice_seats__fan_retirer"."fan_claim", "slice_seats__fan_retirer"."fan_done", "slice_seats__fan_retirer"."fan_ended", "slice_seats__fan_retirer"."fan_exhausted", "slice_seats__fan_retirer"."fan_failed", "slice_seats__fan_retirer"."fan_fan_run_finish_output", "slice_seats__fan_retirer"."fan_fan_run_input", "slice_seats__fan_retirer"."fan_fenced", "slice_seats__fan_retirer"."fan_finish", "slice_seats__fan_retirer"."fan_held", "slice_seats__fan_retirer"."fan_hold", "slice_seats__fan_retirer"."fan_refusal", "slice_seats__fan_retirer"."fan_result", "slice_seats__fan_retirer"."fan_retry", "slice_seats__fan_retirer"."fan_root", "slice_seats__fan_retirer"."fan_scope", "slice_seats__fan_retirer"."fan_skipped", "slice_seats__fan_retirer"."fan_square_input", "slice_seats__fan_retirer"."fan_square_output", "slice_seats__fan_retirer"."fan_start_scope", "slice_seats__fan_retirer"."fan_start_step", "slice_seats__fan_retirer"."fan_step", "slice_seats__fan_retirer"."fan_within" TO :"slice_seats__fan_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__fan_retirer";
 
@@ -2315,9 +2883,11 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__loader" TO :"slice_s
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "vector_ext" TO :"slice_seats__loader";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__loader";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_root_kind", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__loader";
 
-GRANT SELECT ON TABLE "slice_seats__loader"."assign_admitted", "slice_seats__loader"."assign_assignment_input", "slice_seats__loader"."assign_assignment_input_exclude", "slice_seats__loader"."assign_assignment_input_mode_nearest", "slice_seats__loader"."assign_assignment_input_mode_within", "slice_seats__loader"."assign_claim", "slice_seats__loader"."assign_decide_input", "slice_seats__loader"."assign_decide_input_exclude", "slice_seats__loader"."assign_decide_input_mode_nearest", "slice_seats__loader"."assign_decide_input_mode_within", "slice_seats__loader"."assign_decide_nearest_read", "slice_seats__loader"."assign_decide_output", "slice_seats__loader"."assign_decide_output_stage_rest", "slice_seats__loader"."assign_decide_output_stage_serve", "slice_seats__loader"."assign_decide_output_weighed", "slice_seats__loader"."assign_decide_seen_read", "slice_seats__loader"."assign_done", "slice_seats__loader"."assign_ended", "slice_seats__loader"."assign_exhausted", "slice_seats__loader"."assign_failed", "slice_seats__loader"."assign_fenced", "slice_seats__loader"."assign_finish", "slice_seats__loader"."assign_held", "slice_seats__loader"."assign_refusal", "slice_seats__loader"."assign_result", "slice_seats__loader"."assign_retry", "slice_seats__loader"."assign_root", "slice_seats__loader"."assign_scope", "slice_seats__loader"."assign_skipped", "slice_seats__loader"."assign_start_step", "slice_seats__loader"."assign_step", "slice_seats__loader"."assigned", "slice_seats__loader"."built", "slice_seats__loader"."chain_admitted", "slice_seats__loader"."chain_chain_run_input", "slice_seats__loader"."chain_claim", "slice_seats__loader"."chain_done", "slice_seats__loader"."chain_ended", "slice_seats__loader"."chain_exhausted", "slice_seats__loader"."chain_failed", "slice_seats__loader"."chain_fenced", "slice_seats__loader"."chain_finish", "slice_seats__loader"."chain_held", "slice_seats__loader"."chain_next", "slice_seats__loader"."chain_ordered_input", "slice_seats__loader"."chain_page_input", "slice_seats__loader"."chain_page_input_after", "slice_seats__loader"."chain_page_output", "slice_seats__loader"."chain_page_output_next", "slice_seats__loader"."chain_page_weights_read", "slice_seats__loader"."chain_refusal", "slice_seats__loader"."chain_result", "slice_seats__loader"."chain_retry", "slice_seats__loader"."chain_root", "slice_seats__loader"."chain_scope", "slice_seats__loader"."chain_skipped", "slice_seats__loader"."chain_start_step", "slice_seats__loader"."chain_step", "slice_seats__loader"."concluded", "slice_seats__loader"."copied", "slice_seats__loader"."cursor", "slice_seats__loader"."fan_admitted", "slice_seats__loader"."fan_batch_input", "slice_seats__loader"."fan_claim", "slice_seats__loader"."fan_done", "slice_seats__loader"."fan_ended", "slice_seats__loader"."fan_exhausted", "slice_seats__loader"."fan_failed", "slice_seats__loader"."fan_fan_run_input", "slice_seats__loader"."fan_fenced", "slice_seats__loader"."fan_finish", "slice_seats__loader"."fan_held", "slice_seats__loader"."fan_hold", "slice_seats__loader"."fan_refusal", "slice_seats__loader"."fan_result", "slice_seats__loader"."fan_retry", "slice_seats__loader"."fan_root", "slice_seats__loader"."fan_scope", "slice_seats__loader"."fan_skipped", "slice_seats__loader"."fan_square_input", "slice_seats__loader"."fan_square_output", "slice_seats__loader"."fan_start_scope", "slice_seats__loader"."fan_start_step", "slice_seats__loader"."fan_step", "slice_seats__loader"."fan_within", "slice_seats__loader"."item", "slice_seats__loader"."missed", "slice_seats__loader"."order", "slice_seats__loader"."passage", "slice_seats__loader"."retry_admitted", "slice_seats__loader"."retry_brittle_input", "slice_seats__loader"."retry_brittle_output", "slice_seats__loader"."retry_claim", "slice_seats__loader"."retry_done", "slice_seats__loader"."retry_ended", "slice_seats__loader"."retry_exhausted", "slice_seats__loader"."retry_failed", "slice_seats__loader"."retry_fenced", "slice_seats__loader"."retry_finish", "slice_seats__loader"."retry_held", "slice_seats__loader"."retry_ladders_input", "slice_seats__loader"."retry_refusal", "slice_seats__loader"."retry_result", "slice_seats__loader"."retry_retry", "slice_seats__loader"."retry_root", "slice_seats__loader"."retry_scope", "slice_seats__loader"."retry_skipped", "slice_seats__loader"."retry_start_step", "slice_seats__loader"."retry_steadfast_input", "slice_seats__loader"."retry_steadfast_output", "slice_seats__loader"."retry_step", "slice_seats__loader"."seen", "slice_seats__loader"."settled", "slice_seats__loader"."sync_admitted", "slice_seats__loader"."sync_build_input", "slice_seats__loader"."sync_build_output", "slice_seats__loader"."sync_claim", "slice_seats__loader"."sync_copy_input", "slice_seats__loader"."sync_copy_output", "slice_seats__loader"."sync_done", "slice_seats__loader"."sync_ended", "slice_seats__loader"."sync_exclusive_key", "slice_seats__loader"."sync_exhausted", "slice_seats__loader"."sync_failed", "slice_seats__loader"."sync_fenced", "slice_seats__loader"."sync_finish", "slice_seats__loader"."sync_gold_input", "slice_seats__loader"."sync_held", "slice_seats__loader"."sync_refusal", "slice_seats__loader"."sync_result", "slice_seats__loader"."sync_retry", "slice_seats__loader"."sync_root", "slice_seats__loader"."sync_scope", "slice_seats__loader"."sync_skipped", "slice_seats__loader"."sync_start_step", "slice_seats__loader"."sync_step", "slice_seats__loader"."sync_sync_run_input", "slice_seats__loader"."tally", "slice_seats__loader"."weight" TO :"slice_seats__loader";
+GRANT SELECT ON TABLE "slice_seats__loader"."assign_admitted", "slice_seats__loader"."assign_assignment_finish_output", "slice_seats__loader"."assign_assignment_input", "slice_seats__loader"."assign_assignment_input_exclude", "slice_seats__loader"."assign_assignment_input_mode_nearest", "slice_seats__loader"."assign_assignment_input_mode_within", "slice_seats__loader"."assign_claim", "slice_seats__loader"."assign_decide_input", "slice_seats__loader"."assign_decide_input_exclude", "slice_seats__loader"."assign_decide_input_mode_nearest", "slice_seats__loader"."assign_decide_input_mode_within", "slice_seats__loader"."assign_decide_nearest_read", "slice_seats__loader"."assign_decide_output", "slice_seats__loader"."assign_decide_output_stage_rest", "slice_seats__loader"."assign_decide_output_stage_serve", "slice_seats__loader"."assign_decide_output_weighed", "slice_seats__loader"."assign_decide_seen_read", "slice_seats__loader"."assign_done", "slice_seats__loader"."assign_ended", "slice_seats__loader"."assign_exhausted", "slice_seats__loader"."assign_failed", "slice_seats__loader"."assign_fenced", "slice_seats__loader"."assign_finish", "slice_seats__loader"."assign_held", "slice_seats__loader"."assign_refusal", "slice_seats__loader"."assign_result", "slice_seats__loader"."assign_retry", "slice_seats__loader"."assign_root", "slice_seats__loader"."assign_scope", "slice_seats__loader"."assign_skipped", "slice_seats__loader"."assign_start_step", "slice_seats__loader"."assign_step", "slice_seats__loader"."assigned", "slice_seats__loader"."built", "slice_seats__loader"."chain_admitted", "slice_seats__loader"."chain_chain_run_finish_output", "slice_seats__loader"."chain_chain_run_input", "slice_seats__loader"."chain_claim", "slice_seats__loader"."chain_done", "slice_seats__loader"."chain_ended", "slice_seats__loader"."chain_exhausted", "slice_seats__loader"."chain_failed", "slice_seats__loader"."chain_fenced", "slice_seats__loader"."chain_finish", "slice_seats__loader"."chain_held", "slice_seats__loader"."chain_next", "slice_seats__loader"."chain_ordered_finish_output", "slice_seats__loader"."chain_ordered_input", "slice_seats__loader"."chain_page_input", "slice_seats__loader"."chain_page_input_after", "slice_seats__loader"."chain_page_output", "slice_seats__loader"."chain_page_output_next", "slice_seats__loader"."chain_page_weights_read", "slice_seats__loader"."chain_refusal", "slice_seats__loader"."chain_result", "slice_seats__loader"."chain_retry", "slice_seats__loader"."chain_root", "slice_seats__loader"."chain_scope", "slice_seats__loader"."chain_skipped", "slice_seats__loader"."chain_start_step", "slice_seats__loader"."chain_step", "slice_seats__loader"."concluded", "slice_seats__loader"."copied", "slice_seats__loader"."cursor", "slice_seats__loader"."fan_admitted", "slice_seats__loader"."fan_batch_finish_output", "slice_seats__loader"."fan_batch_input", "slice_seats__loader"."fan_claim", "slice_seats__loader"."fan_done", "slice_seats__loader"."fan_ended", "slice_seats__loader"."fan_exhausted", "slice_seats__loader"."fan_failed", "slice_seats__loader"."fan_fan_run_finish_output", "slice_seats__loader"."fan_fan_run_input", "slice_seats__loader"."fan_fenced", "slice_seats__loader"."fan_finish", "slice_seats__loader"."fan_held", "slice_seats__loader"."fan_hold", "slice_seats__loader"."fan_refusal", "slice_seats__loader"."fan_result", "slice_seats__loader"."fan_retry", "slice_seats__loader"."fan_root", "slice_seats__loader"."fan_scope", "slice_seats__loader"."fan_skipped", "slice_seats__loader"."fan_square_input", "slice_seats__loader"."fan_square_output", "slice_seats__loader"."fan_start_scope", "slice_seats__loader"."fan_start_step", "slice_seats__loader"."fan_step", "slice_seats__loader"."fan_within", "slice_seats__loader"."item", "slice_seats__loader"."missed", "slice_seats__loader"."order", "slice_seats__loader"."passage", "slice_seats__loader"."retry_admitted", "slice_seats__loader"."retry_brittle_input", "slice_seats__loader"."retry_brittle_output", "slice_seats__loader"."retry_claim", "slice_seats__loader"."retry_done", "slice_seats__loader"."retry_ended", "slice_seats__loader"."retry_exhausted", "slice_seats__loader"."retry_failed", "slice_seats__loader"."retry_fenced", "slice_seats__loader"."retry_finish", "slice_seats__loader"."retry_held", "slice_seats__loader"."retry_ladders_finish_output", "slice_seats__loader"."retry_ladders_input", "slice_seats__loader"."retry_refusal", "slice_seats__loader"."retry_result", "slice_seats__loader"."retry_retry", "slice_seats__loader"."retry_root", "slice_seats__loader"."retry_scope", "slice_seats__loader"."retry_skipped", "slice_seats__loader"."retry_start_step", "slice_seats__loader"."retry_steadfast_input", "slice_seats__loader"."retry_steadfast_output", "slice_seats__loader"."retry_step", "slice_seats__loader"."review_admitted", "slice_seats__loader"."review_analyze_input", "slice_seats__loader"."review_analyze_output", "slice_seats__loader"."review_claim", "slice_seats__loader"."review_done", "slice_seats__loader"."review_ended", "slice_seats__loader"."review_exhausted", "slice_seats__loader"."review_failed", "slice_seats__loader"."review_fenced", "slice_seats__loader"."review_finish", "slice_seats__loader"."review_gather_input", "slice_seats__loader"."review_gather_input_sizes", "slice_seats__loader"."review_gather_output", "slice_seats__loader"."review_held", "slice_seats__loader"."review_questions_finish_output", "slice_seats__loader"."review_questions_input", "slice_seats__loader"."review_refusal", "slice_seats__loader"."review_result", "slice_seats__loader"."review_retry", "slice_seats__loader"."review_review_run_finish_output", "slice_seats__loader"."review_review_run_input", "slice_seats__loader"."review_review_run_input_sizes", "slice_seats__loader"."review_root", "slice_seats__loader"."review_save_input", "slice_seats__loader"."review_save_output", "slice_seats__loader"."review_saved", "slice_seats__loader"."review_scope", "slice_seats__loader"."review_skipped", "slice_seats__loader"."review_split", "slice_seats__loader"."review_start_scope", "slice_seats__loader"."review_start_step", "slice_seats__loader"."review_step", "slice_seats__loader"."review_within", "slice_seats__loader"."reviewed", "slice_seats__loader"."seen", "slice_seats__loader"."settled", "slice_seats__loader"."summary", "slice_seats__loader"."sync_admitted", "slice_seats__loader"."sync_build_input", "slice_seats__loader"."sync_build_output", "slice_seats__loader"."sync_claim", "slice_seats__loader"."sync_copy_input", "slice_seats__loader"."sync_copy_output", "slice_seats__loader"."sync_done", "slice_seats__loader"."sync_ended", "slice_seats__loader"."sync_exclusive_key", "slice_seats__loader"."sync_exhausted", "slice_seats__loader"."sync_failed", "slice_seats__loader"."sync_fenced", "slice_seats__loader"."sync_finish", "slice_seats__loader"."sync_gold_finish_output", "slice_seats__loader"."sync_gold_input", "slice_seats__loader"."sync_held", "slice_seats__loader"."sync_refusal", "slice_seats__loader"."sync_result", "slice_seats__loader"."sync_retry", "slice_seats__loader"."sync_root", "slice_seats__loader"."sync_scope", "slice_seats__loader"."sync_skipped", "slice_seats__loader"."sync_start_step", "slice_seats__loader"."sync_step", "slice_seats__loader"."sync_sync_run_finish_output", "slice_seats__loader"."sync_sync_run_input", "slice_seats__loader"."tally", "slice_seats__loader"."weight" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."assign_assignment_finish_output" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."assign_decide_nearest_read" TO :"slice_seats__loader";
 
@@ -2343,6 +2913,8 @@ GRANT SELECT, INSERT ON TABLE "slice"."built" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."chain_admitted" TO :"slice_seats__loader";
 
+GRANT SELECT, INSERT ON TABLE "slice"."chain_chain_run_finish_output" TO :"slice_seats__loader";
+
 GRANT SELECT, INSERT ON TABLE "slice"."chain_done" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."chain_finish" TO :"slice_seats__loader";
@@ -2350,6 +2922,8 @@ GRANT SELECT, INSERT ON TABLE "slice"."chain_finish" TO :"slice_seats__loader";
 GRANT SELECT, INSERT ON TABLE "slice"."chain_held" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."chain_next" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."chain_ordered_finish_output" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."chain_ordered_input" TO :"slice_seats__loader";
 
@@ -2379,7 +2953,11 @@ GRANT SELECT, INSERT ON TABLE "slice"."copied" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."cursor" TO :"slice_seats__loader";
 
+GRANT SELECT, INSERT ON TABLE "slice"."fan_batch_finish_output" TO :"slice_seats__loader";
+
 GRANT SELECT, INSERT ON TABLE "slice"."fan_done" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."fan_fan_run_finish_output" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."fan_held" TO :"slice_seats__loader";
 
@@ -2401,13 +2979,63 @@ GRANT SELECT, INSERT ON TABLE "slice"."retry_done" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."retry_held" TO :"slice_seats__loader";
 
+GRANT SELECT, INSERT ON TABLE "slice"."retry_ladders_finish_output" TO :"slice_seats__loader";
+
 GRANT SELECT, INSERT ON TABLE "slice"."retry_result" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."retry_steadfast_output" TO :"slice_seats__loader";
 
+GRANT SELECT, INSERT ON TABLE "slice"."review_admitted" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_analyze_input" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_analyze_output" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_done" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_finish" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_gather_input" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_gather_input_sizes" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_gather_output" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_held" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_questions_finish_output" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_questions_input" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_result" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_review_run_finish_output" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_save_input" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_save_output" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_saved" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_scope" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_split" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_start_scope" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_start_step" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_step" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_within" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."reviewed" TO :"slice_seats__loader";
+
 GRANT SELECT, INSERT ON TABLE "slice"."seen" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."settled" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."summary" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."sync_build_output" TO :"slice_seats__loader";
 
@@ -2415,9 +3043,13 @@ GRANT SELECT, INSERT ON TABLE "slice"."sync_copy_output" TO :"slice_seats__loade
 
 GRANT SELECT, INSERT ON TABLE "slice"."sync_done" TO :"slice_seats__loader";
 
+GRANT SELECT, INSERT ON TABLE "slice"."sync_gold_finish_output" TO :"slice_seats__loader";
+
 GRANT SELECT, INSERT ON TABLE "slice"."sync_held" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."sync_result" TO :"slice_seats__loader";
+
+GRANT SELECT, INSERT ON TABLE "slice"."sync_sync_run_finish_output" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."tally" TO :"slice_seats__loader";
 
@@ -2425,12 +3057,12 @@ GRANT SELECT, INSERT ON TABLE "slice"."weight" TO :"slice_seats__loader";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__loader";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_kind_names_s7csvtng2b"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_6uewr4lsds"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_vkzkvll2se"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_root_kind_names_ylamx7vjxv"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_damz4vyplb"(), "slice"."__retry_root_kind_names_rs6aiofc5w"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_root_kind_names_drp422srbk"() TO :"slice_seats__loader";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_kind_names_s7csvtng2b"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_6uewr4lsds"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_vkzkvll2se"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_root_kind_names_ylamx7vjxv"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_damz4vyplb"(), "slice"."__retry_root_kind_names_rs6aiofc5w"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_pausable_names_jy4y3o5cqn"(), "slice"."__review_root_kind_names_uvxmjcavxb"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_root_kind_names_drp422srbk"() TO :"slice_seats__loader";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__loader";
 
-GRANT EXECUTE ON FUNCTION "slice"."__hold_assign_root_rwboli77cc"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_chain_root_wgndggnfwf"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_fan_root_4vwfxofrxw"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_retry_root_54bybhkxg6"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_sync_root_6ita6q5wxi"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__loader";
+GRANT EXECUTE ON FUNCTION "slice"."__hold_assign_root_rwboli77cc"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_chain_root_wgndggnfwf"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_fan_root_4vwfxofrxw"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_retry_root_54bybhkxg6"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_review_root_j3blgclwnl"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_sync_root_6ita6q5wxi"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__loader";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__retry_coordinator" TO :"slice_seats__retry_coordinator";
@@ -2452,7 +3084,7 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__retry_den" TO :"slic
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind" TO :"slice_seats__retry_den";
 
-GRANT SELECT ON TABLE "slice_seats__retry_den"."retry_admitted", "slice_seats__retry_den"."retry_brittle_input", "slice_seats__retry_den"."retry_brittle_output", "slice_seats__retry_den"."retry_claim", "slice_seats__retry_den"."retry_done", "slice_seats__retry_den"."retry_ended", "slice_seats__retry_den"."retry_exhausted", "slice_seats__retry_den"."retry_failed", "slice_seats__retry_den"."retry_fenced", "slice_seats__retry_den"."retry_finish", "slice_seats__retry_den"."retry_held", "slice_seats__retry_den"."retry_ladders_input", "slice_seats__retry_den"."retry_paused", "slice_seats__retry_den"."retry_refusal", "slice_seats__retry_den"."retry_result", "slice_seats__retry_den"."retry_resumed", "slice_seats__retry_den"."retry_retry", "slice_seats__retry_den"."retry_root", "slice_seats__retry_den"."retry_scope", "slice_seats__retry_den"."retry_skipped", "slice_seats__retry_den"."retry_start_step", "slice_seats__retry_den"."retry_steadfast_input", "slice_seats__retry_den"."retry_steadfast_output", "slice_seats__retry_den"."retry_step" TO :"slice_seats__retry_den";
+GRANT SELECT ON TABLE "slice_seats__retry_den"."retry_admitted", "slice_seats__retry_den"."retry_brittle_input", "slice_seats__retry_den"."retry_brittle_output", "slice_seats__retry_den"."retry_claim", "slice_seats__retry_den"."retry_done", "slice_seats__retry_den"."retry_ended", "slice_seats__retry_den"."retry_exhausted", "slice_seats__retry_den"."retry_failed", "slice_seats__retry_den"."retry_fenced", "slice_seats__retry_den"."retry_finish", "slice_seats__retry_den"."retry_held", "slice_seats__retry_den"."retry_ladders_finish_output", "slice_seats__retry_den"."retry_ladders_input", "slice_seats__retry_den"."retry_paused", "slice_seats__retry_den"."retry_refusal", "slice_seats__retry_den"."retry_result", "slice_seats__retry_den"."retry_resumed", "slice_seats__retry_den"."retry_retry", "slice_seats__retry_den"."retry_root", "slice_seats__retry_den"."retry_scope", "slice_seats__retry_den"."retry_skipped", "slice_seats__retry_den"."retry_start_step", "slice_seats__retry_den"."retry_steadfast_input", "slice_seats__retry_den"."retry_steadfast_output", "slice_seats__retry_den"."retry_step" TO :"slice_seats__retry_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."retry_admitted" TO :"slice_seats__retry_den";
 
@@ -2473,6 +3105,8 @@ GRANT SELECT, INSERT ON TABLE "slice"."retry_fenced" TO :"slice_seats__retry_den
 GRANT SELECT, INSERT ON TABLE "slice"."retry_finish" TO :"slice_seats__retry_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."retry_held" TO :"slice_seats__retry_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."retry_ladders_finish_output" TO :"slice_seats__retry_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."retry_ladders_input" TO :"slice_seats__retry_den";
 
@@ -2508,13 +3142,113 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__retry_retirer" TO :"
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind" TO :"slice_seats__retry_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__retry_retirer"."retry_admitted", "slice_seats__retry_retirer"."retry_brittle_input", "slice_seats__retry_retirer"."retry_brittle_output", "slice_seats__retry_retirer"."retry_claim", "slice_seats__retry_retirer"."retry_done", "slice_seats__retry_retirer"."retry_ended", "slice_seats__retry_retirer"."retry_exhausted", "slice_seats__retry_retirer"."retry_failed", "slice_seats__retry_retirer"."retry_fenced", "slice_seats__retry_retirer"."retry_finish", "slice_seats__retry_retirer"."retry_held", "slice_seats__retry_retirer"."retry_ladders_input", "slice_seats__retry_retirer"."retry_refusal", "slice_seats__retry_retirer"."retry_result", "slice_seats__retry_retirer"."retry_retry", "slice_seats__retry_retirer"."retry_root", "slice_seats__retry_retirer"."retry_scope", "slice_seats__retry_retirer"."retry_skipped", "slice_seats__retry_retirer"."retry_start_step", "slice_seats__retry_retirer"."retry_steadfast_input", "slice_seats__retry_retirer"."retry_steadfast_output", "slice_seats__retry_retirer"."retry_step" TO :"slice_seats__retry_retirer";
+GRANT SELECT ON TABLE "slice_seats__retry_retirer"."retry_admitted", "slice_seats__retry_retirer"."retry_brittle_input", "slice_seats__retry_retirer"."retry_brittle_output", "slice_seats__retry_retirer"."retry_claim", "slice_seats__retry_retirer"."retry_done", "slice_seats__retry_retirer"."retry_ended", "slice_seats__retry_retirer"."retry_exhausted", "slice_seats__retry_retirer"."retry_failed", "slice_seats__retry_retirer"."retry_fenced", "slice_seats__retry_retirer"."retry_finish", "slice_seats__retry_retirer"."retry_held", "slice_seats__retry_retirer"."retry_ladders_finish_output", "slice_seats__retry_retirer"."retry_ladders_input", "slice_seats__retry_retirer"."retry_refusal", "slice_seats__retry_retirer"."retry_result", "slice_seats__retry_retirer"."retry_retry", "slice_seats__retry_retirer"."retry_root", "slice_seats__retry_retirer"."retry_scope", "slice_seats__retry_retirer"."retry_skipped", "slice_seats__retry_retirer"."retry_start_step", "slice_seats__retry_retirer"."retry_steadfast_input", "slice_seats__retry_retirer"."retry_steadfast_output", "slice_seats__retry_retirer"."retry_step" TO :"slice_seats__retry_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__retry_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_damz4vyplb"(), "slice"."__retry_root_kind_names_rs6aiofc5w"() TO :"slice_seats__retry_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__retire_retry_root_kays5vv5ic"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__retry_retirer";
+
+SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
+GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__review_coordinator" TO :"slice_seats__review_coordinator";
+
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_root_kind" TO :"slice_seats__review_coordinator";
+
+GRANT SELECT ON TABLE "slice_seats__review_coordinator"."review_paused", "slice_seats__review_coordinator"."review_resumed" TO :"slice_seats__review_coordinator";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_paused" TO :"slice_seats__review_coordinator";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_resumed" TO :"slice_seats__review_coordinator";
+
+GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__review_coordinator";
+
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_pausable_names_jy4y3o5cqn"(), "slice"."__review_root_kind_names_uvxmjcavxb"() TO :"slice_seats__review_coordinator";
+
+SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
+GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__review_den" TO :"slice_seats__review_den";
+
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_root_kind" TO :"slice_seats__review_den";
+
+GRANT SELECT ON TABLE "slice_seats__review_den"."review_admitted", "slice_seats__review_den"."review_analyze_input", "slice_seats__review_den"."review_analyze_output", "slice_seats__review_den"."review_claim", "slice_seats__review_den"."review_done", "slice_seats__review_den"."review_ended", "slice_seats__review_den"."review_exhausted", "slice_seats__review_den"."review_failed", "slice_seats__review_den"."review_fenced", "slice_seats__review_den"."review_finish", "slice_seats__review_den"."review_gather_input", "slice_seats__review_den"."review_gather_input_sizes", "slice_seats__review_den"."review_gather_output", "slice_seats__review_den"."review_held", "slice_seats__review_den"."review_paused", "slice_seats__review_den"."review_questions_finish_output", "slice_seats__review_den"."review_questions_input", "slice_seats__review_den"."review_refusal", "slice_seats__review_den"."review_result", "slice_seats__review_den"."review_resumed", "slice_seats__review_den"."review_retry", "slice_seats__review_den"."review_review_run_finish_output", "slice_seats__review_den"."review_review_run_input", "slice_seats__review_den"."review_review_run_input_sizes", "slice_seats__review_den"."review_root", "slice_seats__review_den"."review_save_input", "slice_seats__review_den"."review_save_output", "slice_seats__review_den"."review_saved", "slice_seats__review_den"."review_scope", "slice_seats__review_den"."review_skipped", "slice_seats__review_den"."review_split", "slice_seats__review_den"."review_start_scope", "slice_seats__review_den"."review_start_step", "slice_seats__review_den"."review_step", "slice_seats__review_den"."review_within" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_admitted" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_analyze_input" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_claim" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_done" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_ended" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_exhausted" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_failed" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_fenced" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_finish" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_gather_input" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_gather_input_sizes" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_held" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_questions_finish_output" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_questions_input" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_refusal" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_result" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_retry" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_review_run_finish_output" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_review_run_input" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_review_run_input_sizes" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_root" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_save_input" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_scope" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_skipped" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_start_scope" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_start_step" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_step" TO :"slice_seats__review_den";
+
+GRANT SELECT, INSERT ON TABLE "slice"."review_within" TO :"slice_seats__review_den";
+
+GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__review_den";
+
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_pausable_names_jy4y3o5cqn"(), "slice"."__review_root_kind_names_uvxmjcavxb"() TO :"slice_seats__review_den";
+
+SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
+GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__review_den";
+
+GRANT EXECUTE ON FUNCTION "slice"."__hold_review_root_j3blgclwnl"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__review_den";
+
+SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
+GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__review_retirer" TO :"slice_seats__review_retirer";
+
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_root_kind" TO :"slice_seats__review_retirer";
+
+GRANT SELECT ON TABLE "slice_seats__review_retirer"."review_admitted", "slice_seats__review_retirer"."review_analyze_input", "slice_seats__review_retirer"."review_analyze_output", "slice_seats__review_retirer"."review_claim", "slice_seats__review_retirer"."review_done", "slice_seats__review_retirer"."review_ended", "slice_seats__review_retirer"."review_exhausted", "slice_seats__review_retirer"."review_failed", "slice_seats__review_retirer"."review_fenced", "slice_seats__review_retirer"."review_finish", "slice_seats__review_retirer"."review_gather_input", "slice_seats__review_retirer"."review_gather_input_sizes", "slice_seats__review_retirer"."review_gather_output", "slice_seats__review_retirer"."review_held", "slice_seats__review_retirer"."review_questions_finish_output", "slice_seats__review_retirer"."review_questions_input", "slice_seats__review_retirer"."review_refusal", "slice_seats__review_retirer"."review_result", "slice_seats__review_retirer"."review_retry", "slice_seats__review_retirer"."review_review_run_finish_output", "slice_seats__review_retirer"."review_review_run_input", "slice_seats__review_retirer"."review_review_run_input_sizes", "slice_seats__review_retirer"."review_root", "slice_seats__review_retirer"."review_save_input", "slice_seats__review_retirer"."review_save_output", "slice_seats__review_retirer"."review_saved", "slice_seats__review_retirer"."review_scope", "slice_seats__review_retirer"."review_skipped", "slice_seats__review_retirer"."review_split", "slice_seats__review_retirer"."review_start_scope", "slice_seats__review_retirer"."review_start_step", "slice_seats__review_retirer"."review_step", "slice_seats__review_retirer"."review_within" TO :"slice_seats__review_retirer";
+
+GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__review_retirer";
+
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_pausable_names_jy4y3o5cqn"(), "slice"."__review_root_kind_names_uvxmjcavxb"() TO :"slice_seats__review_retirer";
+
+GRANT EXECUTE ON FUNCTION "slice"."__retire_review_root_itykotyltd"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__review_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__sync_coordinator" TO :"slice_seats__sync_coordinator";
@@ -2540,7 +3274,7 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__sync_den" TO :"slice
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."chain_kind", "slice"."chain_outcome", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind" TO :"slice_seats__sync_den";
 
-GRANT SELECT ON TABLE "slice_seats__sync_den"."chain_result", "slice_seats__sync_den"."chain_step", "slice_seats__sync_den"."sync_admitted", "slice_seats__sync_den"."sync_build_input", "slice_seats__sync_den"."sync_build_output", "slice_seats__sync_den"."sync_claim", "slice_seats__sync_den"."sync_copy_input", "slice_seats__sync_den"."sync_copy_output", "slice_seats__sync_den"."sync_done", "slice_seats__sync_den"."sync_ended", "slice_seats__sync_den"."sync_exclusive", "slice_seats__sync_den"."sync_exclusive_key", "slice_seats__sync_den"."sync_exhausted", "slice_seats__sync_den"."sync_failed", "slice_seats__sync_den"."sync_fenced", "slice_seats__sync_den"."sync_finish", "slice_seats__sync_den"."sync_gold_input", "slice_seats__sync_den"."sync_held", "slice_seats__sync_den"."sync_paused", "slice_seats__sync_den"."sync_refusal", "slice_seats__sync_den"."sync_released", "slice_seats__sync_den"."sync_result", "slice_seats__sync_den"."sync_resumed", "slice_seats__sync_den"."sync_retry", "slice_seats__sync_den"."sync_root", "slice_seats__sync_den"."sync_scope", "slice_seats__sync_den"."sync_skipped", "slice_seats__sync_den"."sync_start_step", "slice_seats__sync_den"."sync_step", "slice_seats__sync_den"."sync_sync_run_input" TO :"slice_seats__sync_den";
+GRANT SELECT ON TABLE "slice_seats__sync_den"."chain_result", "slice_seats__sync_den"."chain_step", "slice_seats__sync_den"."sync_admitted", "slice_seats__sync_den"."sync_build_input", "slice_seats__sync_den"."sync_build_output", "slice_seats__sync_den"."sync_claim", "slice_seats__sync_den"."sync_copy_input", "slice_seats__sync_den"."sync_copy_output", "slice_seats__sync_den"."sync_done", "slice_seats__sync_den"."sync_ended", "slice_seats__sync_den"."sync_exclusive", "slice_seats__sync_den"."sync_exclusive_key", "slice_seats__sync_den"."sync_exhausted", "slice_seats__sync_den"."sync_failed", "slice_seats__sync_den"."sync_fenced", "slice_seats__sync_den"."sync_finish", "slice_seats__sync_den"."sync_gold_finish_output", "slice_seats__sync_den"."sync_gold_input", "slice_seats__sync_den"."sync_held", "slice_seats__sync_den"."sync_paused", "slice_seats__sync_den"."sync_refusal", "slice_seats__sync_den"."sync_released", "slice_seats__sync_den"."sync_result", "slice_seats__sync_den"."sync_resumed", "slice_seats__sync_den"."sync_retry", "slice_seats__sync_den"."sync_root", "slice_seats__sync_den"."sync_scope", "slice_seats__sync_den"."sync_skipped", "slice_seats__sync_den"."sync_start_step", "slice_seats__sync_den"."sync_step", "slice_seats__sync_den"."sync_sync_run_finish_output", "slice_seats__sync_den"."sync_sync_run_input" TO :"slice_seats__sync_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."sync_admitted" TO :"slice_seats__sync_den";
 
@@ -2564,6 +3298,8 @@ GRANT SELECT, INSERT ON TABLE "slice"."sync_fenced" TO :"slice_seats__sync_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."sync_finish" TO :"slice_seats__sync_den";
 
+GRANT SELECT, INSERT ON TABLE "slice"."sync_gold_finish_output" TO :"slice_seats__sync_den";
+
 GRANT SELECT, INSERT ON TABLE "slice"."sync_gold_input" TO :"slice_seats__sync_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."sync_held" TO :"slice_seats__sync_den";
@@ -2584,6 +3320,8 @@ GRANT SELECT, INSERT ON TABLE "slice"."sync_start_step" TO :"slice_seats__sync_d
 
 GRANT SELECT, INSERT ON TABLE "slice"."sync_step" TO :"slice_seats__sync_den";
 
+GRANT SELECT, INSERT ON TABLE "slice"."sync_sync_run_finish_output" TO :"slice_seats__sync_den";
+
 GRANT SELECT, INSERT ON TABLE "slice"."sync_sync_run_input" TO :"slice_seats__sync_den";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__sync_den";
@@ -2600,7 +3338,7 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__sync_retirer" TO :"s
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind" TO :"slice_seats__sync_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__sync_retirer"."sync_admitted", "slice_seats__sync_retirer"."sync_build_input", "slice_seats__sync_retirer"."sync_build_output", "slice_seats__sync_retirer"."sync_claim", "slice_seats__sync_retirer"."sync_copy_input", "slice_seats__sync_retirer"."sync_copy_output", "slice_seats__sync_retirer"."sync_done", "slice_seats__sync_retirer"."sync_ended", "slice_seats__sync_retirer"."sync_exclusive_key", "slice_seats__sync_retirer"."sync_exhausted", "slice_seats__sync_retirer"."sync_failed", "slice_seats__sync_retirer"."sync_fenced", "slice_seats__sync_retirer"."sync_finish", "slice_seats__sync_retirer"."sync_gold_input", "slice_seats__sync_retirer"."sync_held", "slice_seats__sync_retirer"."sync_refusal", "slice_seats__sync_retirer"."sync_result", "slice_seats__sync_retirer"."sync_retry", "slice_seats__sync_retirer"."sync_root", "slice_seats__sync_retirer"."sync_scope", "slice_seats__sync_retirer"."sync_skipped", "slice_seats__sync_retirer"."sync_start_step", "slice_seats__sync_retirer"."sync_step", "slice_seats__sync_retirer"."sync_sync_run_input" TO :"slice_seats__sync_retirer";
+GRANT SELECT ON TABLE "slice_seats__sync_retirer"."sync_admitted", "slice_seats__sync_retirer"."sync_build_input", "slice_seats__sync_retirer"."sync_build_output", "slice_seats__sync_retirer"."sync_claim", "slice_seats__sync_retirer"."sync_copy_input", "slice_seats__sync_retirer"."sync_copy_output", "slice_seats__sync_retirer"."sync_done", "slice_seats__sync_retirer"."sync_ended", "slice_seats__sync_retirer"."sync_exclusive_key", "slice_seats__sync_retirer"."sync_exhausted", "slice_seats__sync_retirer"."sync_failed", "slice_seats__sync_retirer"."sync_fenced", "slice_seats__sync_retirer"."sync_finish", "slice_seats__sync_retirer"."sync_gold_finish_output", "slice_seats__sync_retirer"."sync_gold_input", "slice_seats__sync_retirer"."sync_held", "slice_seats__sync_retirer"."sync_refusal", "slice_seats__sync_retirer"."sync_result", "slice_seats__sync_retirer"."sync_retry", "slice_seats__sync_retirer"."sync_root", "slice_seats__sync_retirer"."sync_scope", "slice_seats__sync_retirer"."sync_skipped", "slice_seats__sync_retirer"."sync_start_step", "slice_seats__sync_retirer"."sync_step", "slice_seats__sync_retirer"."sync_sync_run_finish_output", "slice_seats__sync_retirer"."sync_sync_run_input" TO :"slice_seats__sync_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__sync_retirer";
 
@@ -2655,11 +3393,11 @@ SELECT "vector_ext"."vector_dims"('[1]'::"vector_ext"."vector");
 ALTER ROLE :"slice_seats__app" SET hnsw.iterative_scan = 'strict_order';
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-REVOKE ALL ON SCHEMA "slice", "slice_seats", "slice_seats__auditor", "slice_seats__loader", "slice_seats__assign_coordinator", "slice_seats__assign_den", "slice_seats__assign_retirer", "slice_seats__chain_coordinator", "slice_seats__chain_den", "slice_seats__chain_retirer", "slice_seats__fan_coordinator", "slice_seats__fan_den", "slice_seats__fan_retirer", "slice_seats__retry_coordinator", "slice_seats__retry_den", "slice_seats__retry_retirer", "slice_seats__sync_coordinator", "slice_seats__sync_den", "slice_seats__sync_retirer" FROM PUBLIC;
+REVOKE ALL ON SCHEMA "slice", "slice_seats", "slice_seats__auditor", "slice_seats__loader", "slice_seats__assign_coordinator", "slice_seats__assign_den", "slice_seats__assign_retirer", "slice_seats__chain_coordinator", "slice_seats__chain_den", "slice_seats__chain_retirer", "slice_seats__fan_coordinator", "slice_seats__fan_den", "slice_seats__fan_retirer", "slice_seats__retry_coordinator", "slice_seats__retry_den", "slice_seats__retry_retirer", "slice_seats__review_coordinator", "slice_seats__review_den", "slice_seats__review_retirer", "slice_seats__sync_coordinator", "slice_seats__sync_den", "slice_seats__sync_retirer" FROM PUBLIC;
 
-REVOKE ALL ON TABLE "slice"."assign_admitted", "slice"."assign_assignment_input", "slice"."assign_assignment_input_exclude", "slice"."assign_assignment_input_mode_nearest", "slice"."assign_assignment_input_mode_within", "slice"."assign_claim", "slice"."assign_decide_input", "slice"."assign_decide_input_exclude", "slice"."assign_decide_input_mode_nearest", "slice"."assign_decide_input_mode_within", "slice"."assign_decide_nearest_read", "slice"."assign_decide_output", "slice"."assign_decide_output_stage_rest", "slice"."assign_decide_output_stage_serve", "slice"."assign_decide_output_weighed", "slice"."assign_decide_seen_read", "slice"."assign_done", "slice"."assign_ended", "slice"."assign_exhausted", "slice"."assign_failed", "slice"."assign_fenced", "slice"."assign_finish", "slice"."assign_held", "slice"."assign_paused", "slice"."assign_refusal", "slice"."assign_result", "slice"."assign_resumed", "slice"."assign_retry", "slice"."assign_root", "slice"."assign_scope", "slice"."assign_skipped", "slice"."assign_start_step", "slice"."assign_step", "slice"."assigned", "slice"."audit", "slice"."built", "slice"."chain_admitted", "slice"."chain_chain_run_input", "slice"."chain_claim", "slice"."chain_done", "slice"."chain_ended", "slice"."chain_exhausted", "slice"."chain_failed", "slice"."chain_fenced", "slice"."chain_finish", "slice"."chain_held", "slice"."chain_next", "slice"."chain_ordered_input", "slice"."chain_page_input", "slice"."chain_page_input_after", "slice"."chain_page_output", "slice"."chain_page_output_next", "slice"."chain_page_weights_read", "slice"."chain_paused", "slice"."chain_refusal", "slice"."chain_result", "slice"."chain_resumed", "slice"."chain_retry", "slice"."chain_root", "slice"."chain_scope", "slice"."chain_skipped", "slice"."chain_start_step", "slice"."chain_step", "slice"."concluded", "slice"."copied", "slice"."cursor", "slice"."fan_admitted", "slice"."fan_batch_input", "slice"."fan_claim", "slice"."fan_done", "slice"."fan_ended", "slice"."fan_exhausted", "slice"."fan_failed", "slice"."fan_fan_run_input", "slice"."fan_fenced", "slice"."fan_finish", "slice"."fan_held", "slice"."fan_hold", "slice"."fan_paused", "slice"."fan_refusal", "slice"."fan_result", "slice"."fan_resumed", "slice"."fan_retry", "slice"."fan_root", "slice"."fan_scope", "slice"."fan_skipped", "slice"."fan_square_input", "slice"."fan_square_output", "slice"."fan_start_scope", "slice"."fan_start_step", "slice"."fan_step", "slice"."fan_within", "slice"."item", "slice"."missed", "slice"."order", "slice"."passage", "slice"."retry_admitted", "slice"."retry_brittle_input", "slice"."retry_brittle_output", "slice"."retry_claim", "slice"."retry_done", "slice"."retry_ended", "slice"."retry_exhausted", "slice"."retry_failed", "slice"."retry_fenced", "slice"."retry_finish", "slice"."retry_held", "slice"."retry_ladders_input", "slice"."retry_paused", "slice"."retry_refusal", "slice"."retry_result", "slice"."retry_resumed", "slice"."retry_retry", "slice"."retry_root", "slice"."retry_scope", "slice"."retry_skipped", "slice"."retry_start_step", "slice"."retry_steadfast_input", "slice"."retry_steadfast_output", "slice"."retry_step", "slice"."seen", "slice"."settled", "slice"."sync_admitted", "slice"."sync_build_input", "slice"."sync_build_output", "slice"."sync_claim", "slice"."sync_copy_input", "slice"."sync_copy_output", "slice"."sync_done", "slice"."sync_ended", "slice"."sync_exclusive", "slice"."sync_exclusive_key", "slice"."sync_exhausted", "slice"."sync_failed", "slice"."sync_fenced", "slice"."sync_finish", "slice"."sync_gold_input", "slice"."sync_held", "slice"."sync_paused", "slice"."sync_refusal", "slice"."sync_released", "slice"."sync_result", "slice"."sync_resumed", "slice"."sync_retry", "slice"."sync_root", "slice"."sync_scope", "slice"."sync_skipped", "slice"."sync_start_step", "slice"."sync_step", "slice"."sync_sync_run_input", "slice"."tally", "slice"."weight", "slice_seats__auditor"."assign_decide_nearest_read", "slice_seats__auditor"."assign_decide_output", "slice_seats__auditor"."assign_decide_output_stage_serve", "slice_seats__auditor"."assign_decide_output_weighed", "slice_seats__auditor"."assign_decide_seen_read", "slice_seats__auditor"."assign_result", "slice_seats__auditor"."assign_step", "slice_seats__auditor"."assigned", "slice_seats__auditor"."audit", "slice_seats__auditor"."built", "slice_seats__auditor"."chain_admitted", "slice_seats__auditor"."chain_chain_run_input", "slice_seats__auditor"."chain_claim", "slice_seats__auditor"."chain_finish", "slice_seats__auditor"."chain_next", "slice_seats__auditor"."chain_ordered_input", "slice_seats__auditor"."chain_page_input", "slice_seats__auditor"."chain_page_input_after", "slice_seats__auditor"."chain_page_output", "slice_seats__auditor"."chain_page_output_next", "slice_seats__auditor"."chain_page_weights_read", "slice_seats__auditor"."chain_result", "slice_seats__auditor"."chain_root", "slice_seats__auditor"."chain_scope", "slice_seats__auditor"."chain_start_step", "slice_seats__auditor"."chain_step", "slice_seats__auditor"."concluded", "slice_seats__auditor"."copied", "slice_seats__auditor"."cursor", "slice_seats__auditor"."fan_admitted", "slice_seats__auditor"."fan_batch_input", "slice_seats__auditor"."fan_fan_run_input", "slice_seats__auditor"."fan_finish", "slice_seats__auditor"."fan_result", "slice_seats__auditor"."fan_root", "slice_seats__auditor"."fan_scope", "slice_seats__auditor"."fan_square_input", "slice_seats__auditor"."fan_square_output", "slice_seats__auditor"."fan_start_scope", "slice_seats__auditor"."fan_start_step", "slice_seats__auditor"."fan_step", "slice_seats__auditor"."fan_within", "slice_seats__auditor"."item", "slice_seats__auditor"."order", "slice_seats__auditor"."retry_claim", "slice_seats__auditor"."retry_exhausted", "slice_seats__auditor"."retry_result", "slice_seats__auditor"."retry_step", "slice_seats__auditor"."settled", "slice_seats__auditor"."sync_admitted", "slice_seats__auditor"."sync_finish", "slice_seats__auditor"."sync_result", "slice_seats__auditor"."sync_scope", "slice_seats__auditor"."sync_skipped", "slice_seats__auditor"."tally", "slice_seats__auditor"."weight", "slice_seats__loader"."assign_admitted", "slice_seats__loader"."assign_assignment_input", "slice_seats__loader"."assign_assignment_input_exclude", "slice_seats__loader"."assign_assignment_input_mode_nearest", "slice_seats__loader"."assign_assignment_input_mode_within", "slice_seats__loader"."assign_claim", "slice_seats__loader"."assign_decide_input", "slice_seats__loader"."assign_decide_input_exclude", "slice_seats__loader"."assign_decide_input_mode_nearest", "slice_seats__loader"."assign_decide_input_mode_within", "slice_seats__loader"."assign_decide_nearest_read", "slice_seats__loader"."assign_decide_output", "slice_seats__loader"."assign_decide_output_stage_rest", "slice_seats__loader"."assign_decide_output_stage_serve", "slice_seats__loader"."assign_decide_output_weighed", "slice_seats__loader"."assign_decide_seen_read", "slice_seats__loader"."assign_done", "slice_seats__loader"."assign_ended", "slice_seats__loader"."assign_exhausted", "slice_seats__loader"."assign_failed", "slice_seats__loader"."assign_fenced", "slice_seats__loader"."assign_finish", "slice_seats__loader"."assign_held", "slice_seats__loader"."assign_refusal", "slice_seats__loader"."assign_result", "slice_seats__loader"."assign_retry", "slice_seats__loader"."assign_root", "slice_seats__loader"."assign_scope", "slice_seats__loader"."assign_skipped", "slice_seats__loader"."assign_start_step", "slice_seats__loader"."assign_step", "slice_seats__loader"."assigned", "slice_seats__loader"."built", "slice_seats__loader"."chain_admitted", "slice_seats__loader"."chain_chain_run_input", "slice_seats__loader"."chain_claim", "slice_seats__loader"."chain_done", "slice_seats__loader"."chain_ended", "slice_seats__loader"."chain_exhausted", "slice_seats__loader"."chain_failed", "slice_seats__loader"."chain_fenced", "slice_seats__loader"."chain_finish", "slice_seats__loader"."chain_held", "slice_seats__loader"."chain_next", "slice_seats__loader"."chain_ordered_input", "slice_seats__loader"."chain_page_input", "slice_seats__loader"."chain_page_input_after", "slice_seats__loader"."chain_page_output", "slice_seats__loader"."chain_page_output_next", "slice_seats__loader"."chain_page_weights_read", "slice_seats__loader"."chain_refusal", "slice_seats__loader"."chain_result", "slice_seats__loader"."chain_retry", "slice_seats__loader"."chain_root", "slice_seats__loader"."chain_scope", "slice_seats__loader"."chain_skipped", "slice_seats__loader"."chain_start_step", "slice_seats__loader"."chain_step", "slice_seats__loader"."concluded", "slice_seats__loader"."copied", "slice_seats__loader"."cursor", "slice_seats__loader"."fan_admitted", "slice_seats__loader"."fan_batch_input", "slice_seats__loader"."fan_claim", "slice_seats__loader"."fan_done", "slice_seats__loader"."fan_ended", "slice_seats__loader"."fan_exhausted", "slice_seats__loader"."fan_failed", "slice_seats__loader"."fan_fan_run_input", "slice_seats__loader"."fan_fenced", "slice_seats__loader"."fan_finish", "slice_seats__loader"."fan_held", "slice_seats__loader"."fan_hold", "slice_seats__loader"."fan_refusal", "slice_seats__loader"."fan_result", "slice_seats__loader"."fan_retry", "slice_seats__loader"."fan_root", "slice_seats__loader"."fan_scope", "slice_seats__loader"."fan_skipped", "slice_seats__loader"."fan_square_input", "slice_seats__loader"."fan_square_output", "slice_seats__loader"."fan_start_scope", "slice_seats__loader"."fan_start_step", "slice_seats__loader"."fan_step", "slice_seats__loader"."fan_within", "slice_seats__loader"."item", "slice_seats__loader"."missed", "slice_seats__loader"."order", "slice_seats__loader"."passage", "slice_seats__loader"."retry_admitted", "slice_seats__loader"."retry_brittle_input", "slice_seats__loader"."retry_brittle_output", "slice_seats__loader"."retry_claim", "slice_seats__loader"."retry_done", "slice_seats__loader"."retry_ended", "slice_seats__loader"."retry_exhausted", "slice_seats__loader"."retry_failed", "slice_seats__loader"."retry_fenced", "slice_seats__loader"."retry_finish", "slice_seats__loader"."retry_held", "slice_seats__loader"."retry_ladders_input", "slice_seats__loader"."retry_refusal", "slice_seats__loader"."retry_result", "slice_seats__loader"."retry_retry", "slice_seats__loader"."retry_root", "slice_seats__loader"."retry_scope", "slice_seats__loader"."retry_skipped", "slice_seats__loader"."retry_start_step", "slice_seats__loader"."retry_steadfast_input", "slice_seats__loader"."retry_steadfast_output", "slice_seats__loader"."retry_step", "slice_seats__loader"."seen", "slice_seats__loader"."settled", "slice_seats__loader"."sync_admitted", "slice_seats__loader"."sync_build_input", "slice_seats__loader"."sync_build_output", "slice_seats__loader"."sync_claim", "slice_seats__loader"."sync_copy_input", "slice_seats__loader"."sync_copy_output", "slice_seats__loader"."sync_done", "slice_seats__loader"."sync_ended", "slice_seats__loader"."sync_exclusive_key", "slice_seats__loader"."sync_exhausted", "slice_seats__loader"."sync_failed", "slice_seats__loader"."sync_fenced", "slice_seats__loader"."sync_finish", "slice_seats__loader"."sync_gold_input", "slice_seats__loader"."sync_held", "slice_seats__loader"."sync_refusal", "slice_seats__loader"."sync_result", "slice_seats__loader"."sync_retry", "slice_seats__loader"."sync_root", "slice_seats__loader"."sync_scope", "slice_seats__loader"."sync_skipped", "slice_seats__loader"."sync_start_step", "slice_seats__loader"."sync_step", "slice_seats__loader"."sync_sync_run_input", "slice_seats__loader"."tally", "slice_seats__loader"."weight", "slice_seats__assign_coordinator"."assign_paused", "slice_seats__assign_coordinator"."assign_resumed", "slice_seats__assign_den"."assign_admitted", "slice_seats__assign_den"."assign_assignment_input", "slice_seats__assign_den"."assign_assignment_input_exclude", "slice_seats__assign_den"."assign_assignment_input_mode_nearest", "slice_seats__assign_den"."assign_assignment_input_mode_within", "slice_seats__assign_den"."assign_claim", "slice_seats__assign_den"."assign_decide_input", "slice_seats__assign_den"."assign_decide_input_exclude", "slice_seats__assign_den"."assign_decide_input_mode_nearest", "slice_seats__assign_den"."assign_decide_input_mode_within", "slice_seats__assign_den"."assign_decide_nearest_read", "slice_seats__assign_den"."assign_decide_output", "slice_seats__assign_den"."assign_decide_output_stage_rest", "slice_seats__assign_den"."assign_decide_output_stage_serve", "slice_seats__assign_den"."assign_decide_output_weighed", "slice_seats__assign_den"."assign_decide_seen_read", "slice_seats__assign_den"."assign_done", "slice_seats__assign_den"."assign_ended", "slice_seats__assign_den"."assign_exhausted", "slice_seats__assign_den"."assign_failed", "slice_seats__assign_den"."assign_fenced", "slice_seats__assign_den"."assign_finish", "slice_seats__assign_den"."assign_held", "slice_seats__assign_den"."assign_paused", "slice_seats__assign_den"."assign_refusal", "slice_seats__assign_den"."assign_result", "slice_seats__assign_den"."assign_resumed", "slice_seats__assign_den"."assign_retry", "slice_seats__assign_den"."assign_root", "slice_seats__assign_den"."assign_scope", "slice_seats__assign_den"."assign_skipped", "slice_seats__assign_den"."assign_start_step", "slice_seats__assign_den"."assign_step", "slice_seats__assign_retirer"."assign_admitted", "slice_seats__assign_retirer"."assign_assignment_input", "slice_seats__assign_retirer"."assign_assignment_input_exclude", "slice_seats__assign_retirer"."assign_assignment_input_mode_nearest", "slice_seats__assign_retirer"."assign_assignment_input_mode_within", "slice_seats__assign_retirer"."assign_claim", "slice_seats__assign_retirer"."assign_decide_input", "slice_seats__assign_retirer"."assign_decide_input_exclude", "slice_seats__assign_retirer"."assign_decide_input_mode_nearest", "slice_seats__assign_retirer"."assign_decide_input_mode_within", "slice_seats__assign_retirer"."assign_decide_nearest_read", "slice_seats__assign_retirer"."assign_decide_output", "slice_seats__assign_retirer"."assign_decide_output_stage_rest", "slice_seats__assign_retirer"."assign_decide_output_stage_serve", "slice_seats__assign_retirer"."assign_decide_output_weighed", "slice_seats__assign_retirer"."assign_decide_seen_read", "slice_seats__assign_retirer"."assign_done", "slice_seats__assign_retirer"."assign_ended", "slice_seats__assign_retirer"."assign_exhausted", "slice_seats__assign_retirer"."assign_failed", "slice_seats__assign_retirer"."assign_fenced", "slice_seats__assign_retirer"."assign_finish", "slice_seats__assign_retirer"."assign_held", "slice_seats__assign_retirer"."assign_refusal", "slice_seats__assign_retirer"."assign_result", "slice_seats__assign_retirer"."assign_retry", "slice_seats__assign_retirer"."assign_root", "slice_seats__assign_retirer"."assign_scope", "slice_seats__assign_retirer"."assign_skipped", "slice_seats__assign_retirer"."assign_start_step", "slice_seats__assign_retirer"."assign_step", "slice_seats__chain_coordinator"."chain_paused", "slice_seats__chain_coordinator"."chain_resumed", "slice_seats__chain_den"."chain_admitted", "slice_seats__chain_den"."chain_chain_run_input", "slice_seats__chain_den"."chain_claim", "slice_seats__chain_den"."chain_done", "slice_seats__chain_den"."chain_ended", "slice_seats__chain_den"."chain_exhausted", "slice_seats__chain_den"."chain_failed", "slice_seats__chain_den"."chain_fenced", "slice_seats__chain_den"."chain_finish", "slice_seats__chain_den"."chain_held", "slice_seats__chain_den"."chain_next", "slice_seats__chain_den"."chain_ordered_input", "slice_seats__chain_den"."chain_page_input", "slice_seats__chain_den"."chain_page_input_after", "slice_seats__chain_den"."chain_page_output", "slice_seats__chain_den"."chain_page_output_next", "slice_seats__chain_den"."chain_page_weights_read", "slice_seats__chain_den"."chain_paused", "slice_seats__chain_den"."chain_refusal", "slice_seats__chain_den"."chain_result", "slice_seats__chain_den"."chain_resumed", "slice_seats__chain_den"."chain_retry", "slice_seats__chain_den"."chain_root", "slice_seats__chain_den"."chain_scope", "slice_seats__chain_den"."chain_skipped", "slice_seats__chain_den"."chain_start_step", "slice_seats__chain_den"."chain_step", "slice_seats__chain_retirer"."chain_admitted", "slice_seats__chain_retirer"."chain_chain_run_input", "slice_seats__chain_retirer"."chain_claim", "slice_seats__chain_retirer"."chain_done", "slice_seats__chain_retirer"."chain_ended", "slice_seats__chain_retirer"."chain_exhausted", "slice_seats__chain_retirer"."chain_failed", "slice_seats__chain_retirer"."chain_fenced", "slice_seats__chain_retirer"."chain_finish", "slice_seats__chain_retirer"."chain_held", "slice_seats__chain_retirer"."chain_next", "slice_seats__chain_retirer"."chain_ordered_input", "slice_seats__chain_retirer"."chain_page_input", "slice_seats__chain_retirer"."chain_page_input_after", "slice_seats__chain_retirer"."chain_page_output", "slice_seats__chain_retirer"."chain_page_output_next", "slice_seats__chain_retirer"."chain_page_weights_read", "slice_seats__chain_retirer"."chain_refusal", "slice_seats__chain_retirer"."chain_result", "slice_seats__chain_retirer"."chain_retry", "slice_seats__chain_retirer"."chain_root", "slice_seats__chain_retirer"."chain_scope", "slice_seats__chain_retirer"."chain_skipped", "slice_seats__chain_retirer"."chain_start_step", "slice_seats__chain_retirer"."chain_step", "slice_seats__fan_coordinator"."fan_live", "slice_seats__fan_coordinator"."fan_paused", "slice_seats__fan_coordinator"."fan_resumed", "slice_seats__fan_den"."fan_admitted", "slice_seats__fan_den"."fan_batch_input", "slice_seats__fan_den"."fan_claim", "slice_seats__fan_den"."fan_done", "slice_seats__fan_den"."fan_ended", "slice_seats__fan_den"."fan_exhausted", "slice_seats__fan_den"."fan_failed", "slice_seats__fan_den"."fan_fan_run_input", "slice_seats__fan_den"."fan_fenced", "slice_seats__fan_den"."fan_finish", "slice_seats__fan_den"."fan_held", "slice_seats__fan_den"."fan_hold", "slice_seats__fan_den"."fan_live", "slice_seats__fan_den"."fan_paused", "slice_seats__fan_den"."fan_refusal", "slice_seats__fan_den"."fan_result", "slice_seats__fan_den"."fan_resumed", "slice_seats__fan_den"."fan_retry", "slice_seats__fan_den"."fan_root", "slice_seats__fan_den"."fan_scope", "slice_seats__fan_den"."fan_skipped", "slice_seats__fan_den"."fan_square_input", "slice_seats__fan_den"."fan_square_output", "slice_seats__fan_den"."fan_start_scope", "slice_seats__fan_den"."fan_start_step", "slice_seats__fan_den"."fan_step", "slice_seats__fan_den"."fan_within", "slice_seats__fan_retirer"."fan_admitted", "slice_seats__fan_retirer"."fan_batch_input", "slice_seats__fan_retirer"."fan_claim", "slice_seats__fan_retirer"."fan_done", "slice_seats__fan_retirer"."fan_ended", "slice_seats__fan_retirer"."fan_exhausted", "slice_seats__fan_retirer"."fan_failed", "slice_seats__fan_retirer"."fan_fan_run_input", "slice_seats__fan_retirer"."fan_fenced", "slice_seats__fan_retirer"."fan_finish", "slice_seats__fan_retirer"."fan_held", "slice_seats__fan_retirer"."fan_hold", "slice_seats__fan_retirer"."fan_refusal", "slice_seats__fan_retirer"."fan_result", "slice_seats__fan_retirer"."fan_retry", "slice_seats__fan_retirer"."fan_root", "slice_seats__fan_retirer"."fan_scope", "slice_seats__fan_retirer"."fan_skipped", "slice_seats__fan_retirer"."fan_square_input", "slice_seats__fan_retirer"."fan_square_output", "slice_seats__fan_retirer"."fan_start_scope", "slice_seats__fan_retirer"."fan_start_step", "slice_seats__fan_retirer"."fan_step", "slice_seats__fan_retirer"."fan_within", "slice_seats__retry_coordinator"."retry_paused", "slice_seats__retry_coordinator"."retry_resumed", "slice_seats__retry_den"."retry_admitted", "slice_seats__retry_den"."retry_brittle_input", "slice_seats__retry_den"."retry_brittle_output", "slice_seats__retry_den"."retry_claim", "slice_seats__retry_den"."retry_done", "slice_seats__retry_den"."retry_ended", "slice_seats__retry_den"."retry_exhausted", "slice_seats__retry_den"."retry_failed", "slice_seats__retry_den"."retry_fenced", "slice_seats__retry_den"."retry_finish", "slice_seats__retry_den"."retry_held", "slice_seats__retry_den"."retry_ladders_input", "slice_seats__retry_den"."retry_paused", "slice_seats__retry_den"."retry_refusal", "slice_seats__retry_den"."retry_result", "slice_seats__retry_den"."retry_resumed", "slice_seats__retry_den"."retry_retry", "slice_seats__retry_den"."retry_root", "slice_seats__retry_den"."retry_scope", "slice_seats__retry_den"."retry_skipped", "slice_seats__retry_den"."retry_start_step", "slice_seats__retry_den"."retry_steadfast_input", "slice_seats__retry_den"."retry_steadfast_output", "slice_seats__retry_den"."retry_step", "slice_seats__retry_retirer"."retry_admitted", "slice_seats__retry_retirer"."retry_brittle_input", "slice_seats__retry_retirer"."retry_brittle_output", "slice_seats__retry_retirer"."retry_claim", "slice_seats__retry_retirer"."retry_done", "slice_seats__retry_retirer"."retry_ended", "slice_seats__retry_retirer"."retry_exhausted", "slice_seats__retry_retirer"."retry_failed", "slice_seats__retry_retirer"."retry_fenced", "slice_seats__retry_retirer"."retry_finish", "slice_seats__retry_retirer"."retry_held", "slice_seats__retry_retirer"."retry_ladders_input", "slice_seats__retry_retirer"."retry_refusal", "slice_seats__retry_retirer"."retry_result", "slice_seats__retry_retirer"."retry_retry", "slice_seats__retry_retirer"."retry_root", "slice_seats__retry_retirer"."retry_scope", "slice_seats__retry_retirer"."retry_skipped", "slice_seats__retry_retirer"."retry_start_step", "slice_seats__retry_retirer"."retry_steadfast_input", "slice_seats__retry_retirer"."retry_steadfast_output", "slice_seats__retry_retirer"."retry_step", "slice_seats__sync_coordinator"."sync_exclusive", "slice_seats__sync_coordinator"."sync_paused", "slice_seats__sync_coordinator"."sync_released", "slice_seats__sync_coordinator"."sync_resumed", "slice_seats__sync_den"."chain_result", "slice_seats__sync_den"."chain_step", "slice_seats__sync_den"."sync_admitted", "slice_seats__sync_den"."sync_build_input", "slice_seats__sync_den"."sync_build_output", "slice_seats__sync_den"."sync_claim", "slice_seats__sync_den"."sync_copy_input", "slice_seats__sync_den"."sync_copy_output", "slice_seats__sync_den"."sync_done", "slice_seats__sync_den"."sync_ended", "slice_seats__sync_den"."sync_exclusive", "slice_seats__sync_den"."sync_exclusive_key", "slice_seats__sync_den"."sync_exhausted", "slice_seats__sync_den"."sync_failed", "slice_seats__sync_den"."sync_fenced", "slice_seats__sync_den"."sync_finish", "slice_seats__sync_den"."sync_gold_input", "slice_seats__sync_den"."sync_held", "slice_seats__sync_den"."sync_paused", "slice_seats__sync_den"."sync_refusal", "slice_seats__sync_den"."sync_released", "slice_seats__sync_den"."sync_result", "slice_seats__sync_den"."sync_resumed", "slice_seats__sync_den"."sync_retry", "slice_seats__sync_den"."sync_root", "slice_seats__sync_den"."sync_scope", "slice_seats__sync_den"."sync_skipped", "slice_seats__sync_den"."sync_start_step", "slice_seats__sync_den"."sync_step", "slice_seats__sync_den"."sync_sync_run_input", "slice_seats__sync_retirer"."sync_admitted", "slice_seats__sync_retirer"."sync_build_input", "slice_seats__sync_retirer"."sync_build_output", "slice_seats__sync_retirer"."sync_claim", "slice_seats__sync_retirer"."sync_copy_input", "slice_seats__sync_retirer"."sync_copy_output", "slice_seats__sync_retirer"."sync_done", "slice_seats__sync_retirer"."sync_ended", "slice_seats__sync_retirer"."sync_exclusive_key", "slice_seats__sync_retirer"."sync_exhausted", "slice_seats__sync_retirer"."sync_failed", "slice_seats__sync_retirer"."sync_fenced", "slice_seats__sync_retirer"."sync_finish", "slice_seats__sync_retirer"."sync_gold_input", "slice_seats__sync_retirer"."sync_held", "slice_seats__sync_retirer"."sync_refusal", "slice_seats__sync_retirer"."sync_result", "slice_seats__sync_retirer"."sync_retry", "slice_seats__sync_retirer"."sync_root", "slice_seats__sync_retirer"."sync_scope", "slice_seats__sync_retirer"."sync_skipped", "slice_seats__sync_retirer"."sync_start_step", "slice_seats__sync_retirer"."sync_step", "slice_seats__sync_retirer"."sync_sync_run_input" FROM PUBLIC;
+REVOKE ALL ON TABLE "slice"."assign_admitted", "slice"."assign_assignment_finish_output", "slice"."assign_assignment_input", "slice"."assign_assignment_input_exclude", "slice"."assign_assignment_input_mode_nearest", "slice"."assign_assignment_input_mode_within", "slice"."assign_claim", "slice"."assign_decide_input", "slice"."assign_decide_input_exclude", "slice"."assign_decide_input_mode_nearest", "slice"."assign_decide_input_mode_within", "slice"."assign_decide_nearest_read", "slice"."assign_decide_output", "slice"."assign_decide_output_stage_rest", "slice"."assign_decide_output_stage_serve", "slice"."assign_decide_output_weighed", "slice"."assign_decide_seen_read", "slice"."assign_done", "slice"."assign_ended", "slice"."assign_exhausted", "slice"."assign_failed", "slice"."assign_fenced", "slice"."assign_finish", "slice"."assign_held", "slice"."assign_paused", "slice"."assign_refusal", "slice"."assign_result", "slice"."assign_resumed", "slice"."assign_retry", "slice"."assign_root", "slice"."assign_scope", "slice"."assign_skipped", "slice"."assign_start_step", "slice"."assign_step", "slice"."assigned", "slice"."audit", "slice"."built", "slice"."chain_admitted", "slice"."chain_chain_run_finish_output", "slice"."chain_chain_run_input", "slice"."chain_claim", "slice"."chain_done", "slice"."chain_ended", "slice"."chain_exhausted", "slice"."chain_failed", "slice"."chain_fenced", "slice"."chain_finish", "slice"."chain_held", "slice"."chain_next", "slice"."chain_ordered_finish_output", "slice"."chain_ordered_input", "slice"."chain_page_input", "slice"."chain_page_input_after", "slice"."chain_page_output", "slice"."chain_page_output_next", "slice"."chain_page_weights_read", "slice"."chain_paused", "slice"."chain_refusal", "slice"."chain_result", "slice"."chain_resumed", "slice"."chain_retry", "slice"."chain_root", "slice"."chain_scope", "slice"."chain_skipped", "slice"."chain_start_step", "slice"."chain_step", "slice"."concluded", "slice"."copied", "slice"."cursor", "slice"."fan_admitted", "slice"."fan_batch_finish_output", "slice"."fan_batch_input", "slice"."fan_claim", "slice"."fan_done", "slice"."fan_ended", "slice"."fan_exhausted", "slice"."fan_failed", "slice"."fan_fan_run_finish_output", "slice"."fan_fan_run_input", "slice"."fan_fenced", "slice"."fan_finish", "slice"."fan_held", "slice"."fan_hold", "slice"."fan_paused", "slice"."fan_refusal", "slice"."fan_result", "slice"."fan_resumed", "slice"."fan_retry", "slice"."fan_root", "slice"."fan_scope", "slice"."fan_skipped", "slice"."fan_square_input", "slice"."fan_square_output", "slice"."fan_start_scope", "slice"."fan_start_step", "slice"."fan_step", "slice"."fan_within", "slice"."item", "slice"."missed", "slice"."order", "slice"."passage", "slice"."retry_admitted", "slice"."retry_brittle_input", "slice"."retry_brittle_output", "slice"."retry_claim", "slice"."retry_done", "slice"."retry_ended", "slice"."retry_exhausted", "slice"."retry_failed", "slice"."retry_fenced", "slice"."retry_finish", "slice"."retry_held", "slice"."retry_ladders_finish_output", "slice"."retry_ladders_input", "slice"."retry_paused", "slice"."retry_refusal", "slice"."retry_result", "slice"."retry_resumed", "slice"."retry_retry", "slice"."retry_root", "slice"."retry_scope", "slice"."retry_skipped", "slice"."retry_start_step", "slice"."retry_steadfast_input", "slice"."retry_steadfast_output", "slice"."retry_step", "slice"."review_admitted", "slice"."review_analyze_input", "slice"."review_analyze_output", "slice"."review_claim", "slice"."review_done", "slice"."review_ended", "slice"."review_exhausted", "slice"."review_failed", "slice"."review_fenced", "slice"."review_finish", "slice"."review_gather_input", "slice"."review_gather_input_sizes", "slice"."review_gather_output", "slice"."review_held", "slice"."review_paused", "slice"."review_questions_finish_output", "slice"."review_questions_input", "slice"."review_refusal", "slice"."review_result", "slice"."review_resumed", "slice"."review_retry", "slice"."review_review_run_finish_output", "slice"."review_review_run_input", "slice"."review_review_run_input_sizes", "slice"."review_root", "slice"."review_save_input", "slice"."review_save_output", "slice"."review_saved", "slice"."review_scope", "slice"."review_skipped", "slice"."review_split", "slice"."review_start_scope", "slice"."review_start_step", "slice"."review_step", "slice"."review_within", "slice"."reviewed", "slice"."seen", "slice"."settled", "slice"."summary", "slice"."sync_admitted", "slice"."sync_build_input", "slice"."sync_build_output", "slice"."sync_claim", "slice"."sync_copy_input", "slice"."sync_copy_output", "slice"."sync_done", "slice"."sync_ended", "slice"."sync_exclusive", "slice"."sync_exclusive_key", "slice"."sync_exhausted", "slice"."sync_failed", "slice"."sync_fenced", "slice"."sync_finish", "slice"."sync_gold_finish_output", "slice"."sync_gold_input", "slice"."sync_held", "slice"."sync_paused", "slice"."sync_refusal", "slice"."sync_released", "slice"."sync_result", "slice"."sync_resumed", "slice"."sync_retry", "slice"."sync_root", "slice"."sync_scope", "slice"."sync_skipped", "slice"."sync_start_step", "slice"."sync_step", "slice"."sync_sync_run_finish_output", "slice"."sync_sync_run_input", "slice"."tally", "slice"."weight", "slice_seats__auditor"."assign_decide_nearest_read", "slice_seats__auditor"."assign_decide_output", "slice_seats__auditor"."assign_decide_output_stage_serve", "slice_seats__auditor"."assign_decide_output_weighed", "slice_seats__auditor"."assign_decide_seen_read", "slice_seats__auditor"."assign_result", "slice_seats__auditor"."assign_step", "slice_seats__auditor"."assigned", "slice_seats__auditor"."audit", "slice_seats__auditor"."built", "slice_seats__auditor"."chain_admitted", "slice_seats__auditor"."chain_chain_run_input", "slice_seats__auditor"."chain_claim", "slice_seats__auditor"."chain_finish", "slice_seats__auditor"."chain_next", "slice_seats__auditor"."chain_ordered_input", "slice_seats__auditor"."chain_page_input", "slice_seats__auditor"."chain_page_input_after", "slice_seats__auditor"."chain_page_output", "slice_seats__auditor"."chain_page_output_next", "slice_seats__auditor"."chain_page_weights_read", "slice_seats__auditor"."chain_result", "slice_seats__auditor"."chain_root", "slice_seats__auditor"."chain_scope", "slice_seats__auditor"."chain_start_step", "slice_seats__auditor"."chain_step", "slice_seats__auditor"."concluded", "slice_seats__auditor"."copied", "slice_seats__auditor"."cursor", "slice_seats__auditor"."fan_admitted", "slice_seats__auditor"."fan_batch_input", "slice_seats__auditor"."fan_fan_run_input", "slice_seats__auditor"."fan_finish", "slice_seats__auditor"."fan_result", "slice_seats__auditor"."fan_root", "slice_seats__auditor"."fan_scope", "slice_seats__auditor"."fan_square_input", "slice_seats__auditor"."fan_square_output", "slice_seats__auditor"."fan_start_scope", "slice_seats__auditor"."fan_start_step", "slice_seats__auditor"."fan_step", "slice_seats__auditor"."fan_within", "slice_seats__auditor"."item", "slice_seats__auditor"."order", "slice_seats__auditor"."retry_claim", "slice_seats__auditor"."retry_exhausted", "slice_seats__auditor"."retry_result", "slice_seats__auditor"."retry_step", "slice_seats__auditor"."review_finish", "slice_seats__auditor"."review_result", "slice_seats__auditor"."review_step", "slice_seats__auditor"."review_within", "slice_seats__auditor"."reviewed", "slice_seats__auditor"."settled", "slice_seats__auditor"."summary", "slice_seats__auditor"."sync_admitted", "slice_seats__auditor"."sync_finish", "slice_seats__auditor"."sync_result", "slice_seats__auditor"."sync_scope", "slice_seats__auditor"."sync_skipped", "slice_seats__auditor"."tally", "slice_seats__auditor"."weight", "slice_seats__loader"."assign_admitted", "slice_seats__loader"."assign_assignment_finish_output", "slice_seats__loader"."assign_assignment_input", "slice_seats__loader"."assign_assignment_input_exclude", "slice_seats__loader"."assign_assignment_input_mode_nearest", "slice_seats__loader"."assign_assignment_input_mode_within", "slice_seats__loader"."assign_claim", "slice_seats__loader"."assign_decide_input", "slice_seats__loader"."assign_decide_input_exclude", "slice_seats__loader"."assign_decide_input_mode_nearest", "slice_seats__loader"."assign_decide_input_mode_within", "slice_seats__loader"."assign_decide_nearest_read", "slice_seats__loader"."assign_decide_output", "slice_seats__loader"."assign_decide_output_stage_rest", "slice_seats__loader"."assign_decide_output_stage_serve", "slice_seats__loader"."assign_decide_output_weighed", "slice_seats__loader"."assign_decide_seen_read", "slice_seats__loader"."assign_done", "slice_seats__loader"."assign_ended", "slice_seats__loader"."assign_exhausted", "slice_seats__loader"."assign_failed", "slice_seats__loader"."assign_fenced", "slice_seats__loader"."assign_finish", "slice_seats__loader"."assign_held", "slice_seats__loader"."assign_refusal", "slice_seats__loader"."assign_result", "slice_seats__loader"."assign_retry", "slice_seats__loader"."assign_root", "slice_seats__loader"."assign_scope", "slice_seats__loader"."assign_skipped", "slice_seats__loader"."assign_start_step", "slice_seats__loader"."assign_step", "slice_seats__loader"."assigned", "slice_seats__loader"."built", "slice_seats__loader"."chain_admitted", "slice_seats__loader"."chain_chain_run_finish_output", "slice_seats__loader"."chain_chain_run_input", "slice_seats__loader"."chain_claim", "slice_seats__loader"."chain_done", "slice_seats__loader"."chain_ended", "slice_seats__loader"."chain_exhausted", "slice_seats__loader"."chain_failed", "slice_seats__loader"."chain_fenced", "slice_seats__loader"."chain_finish", "slice_seats__loader"."chain_held", "slice_seats__loader"."chain_next", "slice_seats__loader"."chain_ordered_finish_output", "slice_seats__loader"."chain_ordered_input", "slice_seats__loader"."chain_page_input", "slice_seats__loader"."chain_page_input_after", "slice_seats__loader"."chain_page_output", "slice_seats__loader"."chain_page_output_next", "slice_seats__loader"."chain_page_weights_read", "slice_seats__loader"."chain_refusal", "slice_seats__loader"."chain_result", "slice_seats__loader"."chain_retry", "slice_seats__loader"."chain_root", "slice_seats__loader"."chain_scope", "slice_seats__loader"."chain_skipped", "slice_seats__loader"."chain_start_step", "slice_seats__loader"."chain_step", "slice_seats__loader"."concluded", "slice_seats__loader"."copied", "slice_seats__loader"."cursor", "slice_seats__loader"."fan_admitted", "slice_seats__loader"."fan_batch_finish_output", "slice_seats__loader"."fan_batch_input", "slice_seats__loader"."fan_claim", "slice_seats__loader"."fan_done", "slice_seats__loader"."fan_ended", "slice_seats__loader"."fan_exhausted", "slice_seats__loader"."fan_failed", "slice_seats__loader"."fan_fan_run_finish_output", "slice_seats__loader"."fan_fan_run_input", "slice_seats__loader"."fan_fenced", "slice_seats__loader"."fan_finish", "slice_seats__loader"."fan_held", "slice_seats__loader"."fan_hold", "slice_seats__loader"."fan_refusal", "slice_seats__loader"."fan_result", "slice_seats__loader"."fan_retry", "slice_seats__loader"."fan_root", "slice_seats__loader"."fan_scope", "slice_seats__loader"."fan_skipped", "slice_seats__loader"."fan_square_input", "slice_seats__loader"."fan_square_output", "slice_seats__loader"."fan_start_scope", "slice_seats__loader"."fan_start_step", "slice_seats__loader"."fan_step", "slice_seats__loader"."fan_within", "slice_seats__loader"."item", "slice_seats__loader"."missed", "slice_seats__loader"."order", "slice_seats__loader"."passage", "slice_seats__loader"."retry_admitted", "slice_seats__loader"."retry_brittle_input", "slice_seats__loader"."retry_brittle_output", "slice_seats__loader"."retry_claim", "slice_seats__loader"."retry_done", "slice_seats__loader"."retry_ended", "slice_seats__loader"."retry_exhausted", "slice_seats__loader"."retry_failed", "slice_seats__loader"."retry_fenced", "slice_seats__loader"."retry_finish", "slice_seats__loader"."retry_held", "slice_seats__loader"."retry_ladders_finish_output", "slice_seats__loader"."retry_ladders_input", "slice_seats__loader"."retry_refusal", "slice_seats__loader"."retry_result", "slice_seats__loader"."retry_retry", "slice_seats__loader"."retry_root", "slice_seats__loader"."retry_scope", "slice_seats__loader"."retry_skipped", "slice_seats__loader"."retry_start_step", "slice_seats__loader"."retry_steadfast_input", "slice_seats__loader"."retry_steadfast_output", "slice_seats__loader"."retry_step", "slice_seats__loader"."review_admitted", "slice_seats__loader"."review_analyze_input", "slice_seats__loader"."review_analyze_output", "slice_seats__loader"."review_claim", "slice_seats__loader"."review_done", "slice_seats__loader"."review_ended", "slice_seats__loader"."review_exhausted", "slice_seats__loader"."review_failed", "slice_seats__loader"."review_fenced", "slice_seats__loader"."review_finish", "slice_seats__loader"."review_gather_input", "slice_seats__loader"."review_gather_input_sizes", "slice_seats__loader"."review_gather_output", "slice_seats__loader"."review_held", "slice_seats__loader"."review_questions_finish_output", "slice_seats__loader"."review_questions_input", "slice_seats__loader"."review_refusal", "slice_seats__loader"."review_result", "slice_seats__loader"."review_retry", "slice_seats__loader"."review_review_run_finish_output", "slice_seats__loader"."review_review_run_input", "slice_seats__loader"."review_review_run_input_sizes", "slice_seats__loader"."review_root", "slice_seats__loader"."review_save_input", "slice_seats__loader"."review_save_output", "slice_seats__loader"."review_saved", "slice_seats__loader"."review_scope", "slice_seats__loader"."review_skipped", "slice_seats__loader"."review_split", "slice_seats__loader"."review_start_scope", "slice_seats__loader"."review_start_step", "slice_seats__loader"."review_step", "slice_seats__loader"."review_within", "slice_seats__loader"."reviewed", "slice_seats__loader"."seen", "slice_seats__loader"."settled", "slice_seats__loader"."summary", "slice_seats__loader"."sync_admitted", "slice_seats__loader"."sync_build_input", "slice_seats__loader"."sync_build_output", "slice_seats__loader"."sync_claim", "slice_seats__loader"."sync_copy_input", "slice_seats__loader"."sync_copy_output", "slice_seats__loader"."sync_done", "slice_seats__loader"."sync_ended", "slice_seats__loader"."sync_exclusive_key", "slice_seats__loader"."sync_exhausted", "slice_seats__loader"."sync_failed", "slice_seats__loader"."sync_fenced", "slice_seats__loader"."sync_finish", "slice_seats__loader"."sync_gold_finish_output", "slice_seats__loader"."sync_gold_input", "slice_seats__loader"."sync_held", "slice_seats__loader"."sync_refusal", "slice_seats__loader"."sync_result", "slice_seats__loader"."sync_retry", "slice_seats__loader"."sync_root", "slice_seats__loader"."sync_scope", "slice_seats__loader"."sync_skipped", "slice_seats__loader"."sync_start_step", "slice_seats__loader"."sync_step", "slice_seats__loader"."sync_sync_run_finish_output", "slice_seats__loader"."sync_sync_run_input", "slice_seats__loader"."tally", "slice_seats__loader"."weight", "slice_seats__assign_coordinator"."assign_paused", "slice_seats__assign_coordinator"."assign_resumed", "slice_seats__assign_den"."assign_admitted", "slice_seats__assign_den"."assign_assignment_finish_output", "slice_seats__assign_den"."assign_assignment_input", "slice_seats__assign_den"."assign_assignment_input_exclude", "slice_seats__assign_den"."assign_assignment_input_mode_nearest", "slice_seats__assign_den"."assign_assignment_input_mode_within", "slice_seats__assign_den"."assign_claim", "slice_seats__assign_den"."assign_decide_input", "slice_seats__assign_den"."assign_decide_input_exclude", "slice_seats__assign_den"."assign_decide_input_mode_nearest", "slice_seats__assign_den"."assign_decide_input_mode_within", "slice_seats__assign_den"."assign_decide_nearest_read", "slice_seats__assign_den"."assign_decide_output", "slice_seats__assign_den"."assign_decide_output_stage_rest", "slice_seats__assign_den"."assign_decide_output_stage_serve", "slice_seats__assign_den"."assign_decide_output_weighed", "slice_seats__assign_den"."assign_decide_seen_read", "slice_seats__assign_den"."assign_done", "slice_seats__assign_den"."assign_ended", "slice_seats__assign_den"."assign_exhausted", "slice_seats__assign_den"."assign_failed", "slice_seats__assign_den"."assign_fenced", "slice_seats__assign_den"."assign_finish", "slice_seats__assign_den"."assign_held", "slice_seats__assign_den"."assign_paused", "slice_seats__assign_den"."assign_refusal", "slice_seats__assign_den"."assign_result", "slice_seats__assign_den"."assign_resumed", "slice_seats__assign_den"."assign_retry", "slice_seats__assign_den"."assign_root", "slice_seats__assign_den"."assign_scope", "slice_seats__assign_den"."assign_skipped", "slice_seats__assign_den"."assign_start_step", "slice_seats__assign_den"."assign_step", "slice_seats__assign_retirer"."assign_admitted", "slice_seats__assign_retirer"."assign_assignment_finish_output", "slice_seats__assign_retirer"."assign_assignment_input", "slice_seats__assign_retirer"."assign_assignment_input_exclude", "slice_seats__assign_retirer"."assign_assignment_input_mode_nearest", "slice_seats__assign_retirer"."assign_assignment_input_mode_within", "slice_seats__assign_retirer"."assign_claim", "slice_seats__assign_retirer"."assign_decide_input", "slice_seats__assign_retirer"."assign_decide_input_exclude", "slice_seats__assign_retirer"."assign_decide_input_mode_nearest", "slice_seats__assign_retirer"."assign_decide_input_mode_within", "slice_seats__assign_retirer"."assign_decide_nearest_read", "slice_seats__assign_retirer"."assign_decide_output", "slice_seats__assign_retirer"."assign_decide_output_stage_rest", "slice_seats__assign_retirer"."assign_decide_output_stage_serve", "slice_seats__assign_retirer"."assign_decide_output_weighed", "slice_seats__assign_retirer"."assign_decide_seen_read", "slice_seats__assign_retirer"."assign_done", "slice_seats__assign_retirer"."assign_ended", "slice_seats__assign_retirer"."assign_exhausted", "slice_seats__assign_retirer"."assign_failed", "slice_seats__assign_retirer"."assign_fenced", "slice_seats__assign_retirer"."assign_finish", "slice_seats__assign_retirer"."assign_held", "slice_seats__assign_retirer"."assign_refusal", "slice_seats__assign_retirer"."assign_result", "slice_seats__assign_retirer"."assign_retry", "slice_seats__assign_retirer"."assign_root", "slice_seats__assign_retirer"."assign_scope", "slice_seats__assign_retirer"."assign_skipped", "slice_seats__assign_retirer"."assign_start_step", "slice_seats__assign_retirer"."assign_step", "slice_seats__chain_coordinator"."chain_paused", "slice_seats__chain_coordinator"."chain_resumed", "slice_seats__chain_den"."chain_admitted", "slice_seats__chain_den"."chain_chain_run_finish_output", "slice_seats__chain_den"."chain_chain_run_input", "slice_seats__chain_den"."chain_claim", "slice_seats__chain_den"."chain_done", "slice_seats__chain_den"."chain_ended", "slice_seats__chain_den"."chain_exhausted", "slice_seats__chain_den"."chain_failed", "slice_seats__chain_den"."chain_fenced", "slice_seats__chain_den"."chain_finish", "slice_seats__chain_den"."chain_held", "slice_seats__chain_den"."chain_next", "slice_seats__chain_den"."chain_ordered_finish_output", "slice_seats__chain_den"."chain_ordered_input", "slice_seats__chain_den"."chain_page_input", "slice_seats__chain_den"."chain_page_input_after", "slice_seats__chain_den"."chain_page_output", "slice_seats__chain_den"."chain_page_output_next", "slice_seats__chain_den"."chain_page_weights_read", "slice_seats__chain_den"."chain_paused", "slice_seats__chain_den"."chain_refusal", "slice_seats__chain_den"."chain_result", "slice_seats__chain_den"."chain_resumed", "slice_seats__chain_den"."chain_retry", "slice_seats__chain_den"."chain_root", "slice_seats__chain_den"."chain_scope", "slice_seats__chain_den"."chain_skipped", "slice_seats__chain_den"."chain_start_step", "slice_seats__chain_den"."chain_step", "slice_seats__chain_retirer"."chain_admitted", "slice_seats__chain_retirer"."chain_chain_run_finish_output", "slice_seats__chain_retirer"."chain_chain_run_input", "slice_seats__chain_retirer"."chain_claim", "slice_seats__chain_retirer"."chain_done", "slice_seats__chain_retirer"."chain_ended", "slice_seats__chain_retirer"."chain_exhausted", "slice_seats__chain_retirer"."chain_failed", "slice_seats__chain_retirer"."chain_fenced", "slice_seats__chain_retirer"."chain_finish", "slice_seats__chain_retirer"."chain_held", "slice_seats__chain_retirer"."chain_next", "slice_seats__chain_retirer"."chain_ordered_finish_output", "slice_seats__chain_retirer"."chain_ordered_input", "slice_seats__chain_retirer"."chain_page_input", "slice_seats__chain_retirer"."chain_page_input_after", "slice_seats__chain_retirer"."chain_page_output", "slice_seats__chain_retirer"."chain_page_output_next", "slice_seats__chain_retirer"."chain_page_weights_read", "slice_seats__chain_retirer"."chain_refusal", "slice_seats__chain_retirer"."chain_result", "slice_seats__chain_retirer"."chain_retry", "slice_seats__chain_retirer"."chain_root", "slice_seats__chain_retirer"."chain_scope", "slice_seats__chain_retirer"."chain_skipped", "slice_seats__chain_retirer"."chain_start_step", "slice_seats__chain_retirer"."chain_step", "slice_seats__fan_coordinator"."fan_live", "slice_seats__fan_coordinator"."fan_paused", "slice_seats__fan_coordinator"."fan_resumed", "slice_seats__fan_den"."fan_admitted", "slice_seats__fan_den"."fan_batch_finish_output", "slice_seats__fan_den"."fan_batch_input", "slice_seats__fan_den"."fan_claim", "slice_seats__fan_den"."fan_done", "slice_seats__fan_den"."fan_ended", "slice_seats__fan_den"."fan_exhausted", "slice_seats__fan_den"."fan_failed", "slice_seats__fan_den"."fan_fan_run_finish_output", "slice_seats__fan_den"."fan_fan_run_input", "slice_seats__fan_den"."fan_fenced", "slice_seats__fan_den"."fan_finish", "slice_seats__fan_den"."fan_held", "slice_seats__fan_den"."fan_hold", "slice_seats__fan_den"."fan_live", "slice_seats__fan_den"."fan_paused", "slice_seats__fan_den"."fan_refusal", "slice_seats__fan_den"."fan_result", "slice_seats__fan_den"."fan_resumed", "slice_seats__fan_den"."fan_retry", "slice_seats__fan_den"."fan_root", "slice_seats__fan_den"."fan_scope", "slice_seats__fan_den"."fan_skipped", "slice_seats__fan_den"."fan_square_input", "slice_seats__fan_den"."fan_square_output", "slice_seats__fan_den"."fan_start_scope", "slice_seats__fan_den"."fan_start_step", "slice_seats__fan_den"."fan_step", "slice_seats__fan_den"."fan_within", "slice_seats__fan_retirer"."fan_admitted", "slice_seats__fan_retirer"."fan_batch_finish_output", "slice_seats__fan_retirer"."fan_batch_input", "slice_seats__fan_retirer"."fan_claim", "slice_seats__fan_retirer"."fan_done", "slice_seats__fan_retirer"."fan_ended", "slice_seats__fan_retirer"."fan_exhausted", "slice_seats__fan_retirer"."fan_failed", "slice_seats__fan_retirer"."fan_fan_run_finish_output", "slice_seats__fan_retirer"."fan_fan_run_input", "slice_seats__fan_retirer"."fan_fenced", "slice_seats__fan_retirer"."fan_finish", "slice_seats__fan_retirer"."fan_held", "slice_seats__fan_retirer"."fan_hold", "slice_seats__fan_retirer"."fan_refusal", "slice_seats__fan_retirer"."fan_result", "slice_seats__fan_retirer"."fan_retry", "slice_seats__fan_retirer"."fan_root", "slice_seats__fan_retirer"."fan_scope", "slice_seats__fan_retirer"."fan_skipped", "slice_seats__fan_retirer"."fan_square_input", "slice_seats__fan_retirer"."fan_square_output", "slice_seats__fan_retirer"."fan_start_scope", "slice_seats__fan_retirer"."fan_start_step", "slice_seats__fan_retirer"."fan_step", "slice_seats__fan_retirer"."fan_within", "slice_seats__retry_coordinator"."retry_paused", "slice_seats__retry_coordinator"."retry_resumed", "slice_seats__retry_den"."retry_admitted", "slice_seats__retry_den"."retry_brittle_input", "slice_seats__retry_den"."retry_brittle_output", "slice_seats__retry_den"."retry_claim", "slice_seats__retry_den"."retry_done", "slice_seats__retry_den"."retry_ended", "slice_seats__retry_den"."retry_exhausted", "slice_seats__retry_den"."retry_failed", "slice_seats__retry_den"."retry_fenced", "slice_seats__retry_den"."retry_finish", "slice_seats__retry_den"."retry_held", "slice_seats__retry_den"."retry_ladders_finish_output", "slice_seats__retry_den"."retry_ladders_input", "slice_seats__retry_den"."retry_paused", "slice_seats__retry_den"."retry_refusal", "slice_seats__retry_den"."retry_result", "slice_seats__retry_den"."retry_resumed", "slice_seats__retry_den"."retry_retry", "slice_seats__retry_den"."retry_root", "slice_seats__retry_den"."retry_scope", "slice_seats__retry_den"."retry_skipped", "slice_seats__retry_den"."retry_start_step", "slice_seats__retry_den"."retry_steadfast_input", "slice_seats__retry_den"."retry_steadfast_output", "slice_seats__retry_den"."retry_step", "slice_seats__retry_retirer"."retry_admitted", "slice_seats__retry_retirer"."retry_brittle_input", "slice_seats__retry_retirer"."retry_brittle_output", "slice_seats__retry_retirer"."retry_claim", "slice_seats__retry_retirer"."retry_done", "slice_seats__retry_retirer"."retry_ended", "slice_seats__retry_retirer"."retry_exhausted", "slice_seats__retry_retirer"."retry_failed", "slice_seats__retry_retirer"."retry_fenced", "slice_seats__retry_retirer"."retry_finish", "slice_seats__retry_retirer"."retry_held", "slice_seats__retry_retirer"."retry_ladders_finish_output", "slice_seats__retry_retirer"."retry_ladders_input", "slice_seats__retry_retirer"."retry_refusal", "slice_seats__retry_retirer"."retry_result", "slice_seats__retry_retirer"."retry_retry", "slice_seats__retry_retirer"."retry_root", "slice_seats__retry_retirer"."retry_scope", "slice_seats__retry_retirer"."retry_skipped", "slice_seats__retry_retirer"."retry_start_step", "slice_seats__retry_retirer"."retry_steadfast_input", "slice_seats__retry_retirer"."retry_steadfast_output", "slice_seats__retry_retirer"."retry_step", "slice_seats__review_coordinator"."review_paused", "slice_seats__review_coordinator"."review_resumed", "slice_seats__review_den"."review_admitted", "slice_seats__review_den"."review_analyze_input", "slice_seats__review_den"."review_analyze_output", "slice_seats__review_den"."review_claim", "slice_seats__review_den"."review_done", "slice_seats__review_den"."review_ended", "slice_seats__review_den"."review_exhausted", "slice_seats__review_den"."review_failed", "slice_seats__review_den"."review_fenced", "slice_seats__review_den"."review_finish", "slice_seats__review_den"."review_gather_input", "slice_seats__review_den"."review_gather_input_sizes", "slice_seats__review_den"."review_gather_output", "slice_seats__review_den"."review_held", "slice_seats__review_den"."review_paused", "slice_seats__review_den"."review_questions_finish_output", "slice_seats__review_den"."review_questions_input", "slice_seats__review_den"."review_refusal", "slice_seats__review_den"."review_result", "slice_seats__review_den"."review_resumed", "slice_seats__review_den"."review_retry", "slice_seats__review_den"."review_review_run_finish_output", "slice_seats__review_den"."review_review_run_input", "slice_seats__review_den"."review_review_run_input_sizes", "slice_seats__review_den"."review_root", "slice_seats__review_den"."review_save_input", "slice_seats__review_den"."review_save_output", "slice_seats__review_den"."review_saved", "slice_seats__review_den"."review_scope", "slice_seats__review_den"."review_skipped", "slice_seats__review_den"."review_split", "slice_seats__review_den"."review_start_scope", "slice_seats__review_den"."review_start_step", "slice_seats__review_den"."review_step", "slice_seats__review_den"."review_within", "slice_seats__review_retirer"."review_admitted", "slice_seats__review_retirer"."review_analyze_input", "slice_seats__review_retirer"."review_analyze_output", "slice_seats__review_retirer"."review_claim", "slice_seats__review_retirer"."review_done", "slice_seats__review_retirer"."review_ended", "slice_seats__review_retirer"."review_exhausted", "slice_seats__review_retirer"."review_failed", "slice_seats__review_retirer"."review_fenced", "slice_seats__review_retirer"."review_finish", "slice_seats__review_retirer"."review_gather_input", "slice_seats__review_retirer"."review_gather_input_sizes", "slice_seats__review_retirer"."review_gather_output", "slice_seats__review_retirer"."review_held", "slice_seats__review_retirer"."review_questions_finish_output", "slice_seats__review_retirer"."review_questions_input", "slice_seats__review_retirer"."review_refusal", "slice_seats__review_retirer"."review_result", "slice_seats__review_retirer"."review_retry", "slice_seats__review_retirer"."review_review_run_finish_output", "slice_seats__review_retirer"."review_review_run_input", "slice_seats__review_retirer"."review_review_run_input_sizes", "slice_seats__review_retirer"."review_root", "slice_seats__review_retirer"."review_save_input", "slice_seats__review_retirer"."review_save_output", "slice_seats__review_retirer"."review_saved", "slice_seats__review_retirer"."review_scope", "slice_seats__review_retirer"."review_skipped", "slice_seats__review_retirer"."review_split", "slice_seats__review_retirer"."review_start_scope", "slice_seats__review_retirer"."review_start_step", "slice_seats__review_retirer"."review_step", "slice_seats__review_retirer"."review_within", "slice_seats__sync_coordinator"."sync_exclusive", "slice_seats__sync_coordinator"."sync_paused", "slice_seats__sync_coordinator"."sync_released", "slice_seats__sync_coordinator"."sync_resumed", "slice_seats__sync_den"."chain_result", "slice_seats__sync_den"."chain_step", "slice_seats__sync_den"."sync_admitted", "slice_seats__sync_den"."sync_build_input", "slice_seats__sync_den"."sync_build_output", "slice_seats__sync_den"."sync_claim", "slice_seats__sync_den"."sync_copy_input", "slice_seats__sync_den"."sync_copy_output", "slice_seats__sync_den"."sync_done", "slice_seats__sync_den"."sync_ended", "slice_seats__sync_den"."sync_exclusive", "slice_seats__sync_den"."sync_exclusive_key", "slice_seats__sync_den"."sync_exhausted", "slice_seats__sync_den"."sync_failed", "slice_seats__sync_den"."sync_fenced", "slice_seats__sync_den"."sync_finish", "slice_seats__sync_den"."sync_gold_finish_output", "slice_seats__sync_den"."sync_gold_input", "slice_seats__sync_den"."sync_held", "slice_seats__sync_den"."sync_paused", "slice_seats__sync_den"."sync_refusal", "slice_seats__sync_den"."sync_released", "slice_seats__sync_den"."sync_result", "slice_seats__sync_den"."sync_resumed", "slice_seats__sync_den"."sync_retry", "slice_seats__sync_den"."sync_root", "slice_seats__sync_den"."sync_scope", "slice_seats__sync_den"."sync_skipped", "slice_seats__sync_den"."sync_start_step", "slice_seats__sync_den"."sync_step", "slice_seats__sync_den"."sync_sync_run_finish_output", "slice_seats__sync_den"."sync_sync_run_input", "slice_seats__sync_retirer"."sync_admitted", "slice_seats__sync_retirer"."sync_build_input", "slice_seats__sync_retirer"."sync_build_output", "slice_seats__sync_retirer"."sync_claim", "slice_seats__sync_retirer"."sync_copy_input", "slice_seats__sync_retirer"."sync_copy_output", "slice_seats__sync_retirer"."sync_done", "slice_seats__sync_retirer"."sync_ended", "slice_seats__sync_retirer"."sync_exclusive_key", "slice_seats__sync_retirer"."sync_exhausted", "slice_seats__sync_retirer"."sync_failed", "slice_seats__sync_retirer"."sync_fenced", "slice_seats__sync_retirer"."sync_finish", "slice_seats__sync_retirer"."sync_gold_finish_output", "slice_seats__sync_retirer"."sync_gold_input", "slice_seats__sync_retirer"."sync_held", "slice_seats__sync_retirer"."sync_refusal", "slice_seats__sync_retirer"."sync_result", "slice_seats__sync_retirer"."sync_retry", "slice_seats__sync_retirer"."sync_root", "slice_seats__sync_retirer"."sync_scope", "slice_seats__sync_retirer"."sync_skipped", "slice_seats__sync_retirer"."sync_start_step", "slice_seats__sync_retirer"."sync_step", "slice_seats__sync_retirer"."sync_sync_run_finish_output", "slice_seats__sync_retirer"."sync_sync_run_input" FROM PUBLIC;
 
-REVOKE ALL ON DOMAIN "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind", "slice"."__text_t4rwovzmqj", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."__domain_jevqauzmw6", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."__domain_gfw43vigph", "slice"."__domain_p7dj7oebtz", "slice"."__param_nearest_anchor_question_elxa5ygyai", "slice"."__param_nearest_topic_4eruqlfauv", "slice"."__param_seen_learner_exdgowkpja" FROM PUBLIC;
+REVOKE ALL ON DOMAIN "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_root_kind", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind", "slice"."__text_t4rwovzmqj", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."__domain_jevqauzmw6", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."__domain_gfw43vigph", "slice"."__domain_p7dj7oebtz", "slice"."__param_nearest_anchor_question_elxa5ygyai", "slice"."__param_nearest_topic_4eruqlfauv", "slice"."__param_seen_learner_exdgowkpja" FROM PUBLIC;
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 ALTER DEFAULT PRIVILEGES IN SCHEMA "slice" REVOKE ALL ON TABLES FROM PUBLIC;
@@ -2733,6 +3471,16 @@ COMMENT ON FUNCTION "slice"."__retry_pausable_names_damz4vyplb"() IS 'names of r
 
 COMMENT ON FUNCTION "slice"."__retry_root_kind_names_rs6aiofc5w"() IS 'names of roster RetryRootKind (38b360cad31dcf5dfc30ec703da8ce5ff3ddf536a6f81ae889f8b55c07dfdf81)';
 
+COMMENT ON FUNCTION "slice"."__review_child_kind_names_jn3iwx7yal"() IS 'names of roster ReviewChildKind (e585af7cda5f761a356c3a25337e96da40d454ae758150759a49577600d2f0b2)';
+
+COMMENT ON FUNCTION "slice"."__review_kind_names_j4pukr2klj"() IS 'names of roster ReviewKind (0c55b46af9d21a92397a045d5a98b91cd92ae1cee79a210d6d92ca722f50c804)';
+
+COMMENT ON FUNCTION "slice"."__review_outcome_names_nlfaf7zb7f"() IS 'names of roster ReviewOutcome (82a110e4a67b9eb26002a0d95cd17a2a11bb93419b6bbcf77b61d96796e4106a)';
+
+COMMENT ON FUNCTION "slice"."__review_pausable_names_jy4y3o5cqn"() IS 'names of roster ReviewPausable (56ff295fd83dd6bed36ee892223241caf26f3ada4b800c3c1ae54b28b7ad608e)';
+
+COMMENT ON FUNCTION "slice"."__review_root_kind_names_uvxmjcavxb"() IS 'names of roster ReviewRootKind (56ff295fd83dd6bed36ee892223241caf26f3ada4b800c3c1ae54b28b7ad608e)';
+
 COMMENT ON FUNCTION "slice"."__sync_kind_names_oq6b66cstu"() IS 'names of roster SyncKind (1db7074a36145942b21817905eb40c653b0824cd2fa05fe9b9549907562b977c)';
 
 COMMENT ON FUNCTION "slice"."__sync_outcome_names_xzb4y4xgki"() IS 'names of roster SyncOutcome (82a110e4a67b9eb26002a0d95cd17a2a11bb93419b6bbcf77b61d96796e4106a)';
@@ -2758,6 +3506,8 @@ COMMENT ON DOMAIN "slice"."__param_nearest_topic_4eruqlfauv" IS 'pattern domain 
 COMMENT ON DOMAIN "slice"."__param_seen_learner_exdgowkpja" IS 'pattern domain of parameter seen.learner of definition c83059a9a99ede4f852cdadf3bb2a8e07b8271fc5f9a41b0fb682d35dc8f9547';
 
 COMMENT ON CONSTRAINT "__assign_admitted_pk_gj2obtfaxk" ON "slice"."assign_admitted" IS 'primary key of AssignAdmitted';
+
+COMMENT ON CONSTRAINT "__assign_assignment_finish_output_pk_djholiuras" ON "slice"."assign_assignment_finish_output" IS 'primary key of AssignAssignmentFinishOutput';
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_pk_rhoa22jovt" ON "slice"."assign_assignment_input" IS 'primary key of AssignAssignmentInput';
 
@@ -2835,6 +3585,8 @@ COMMENT ON CONSTRAINT "__built_pk_5tj25hcq6k" ON "slice"."built" IS 'primary key
 
 COMMENT ON CONSTRAINT "__chain_admitted_pk_iexc6ruxuv" ON "slice"."chain_admitted" IS 'primary key of ChainAdmitted';
 
+COMMENT ON CONSTRAINT "__chain_chain_run_finish_output_pk_hj22ebjnf7" ON "slice"."chain_chain_run_finish_output" IS 'primary key of ChainChainRunFinishOutput';
+
 COMMENT ON CONSTRAINT "__chain_chain_run_input_pk_ezbgzw4jha" ON "slice"."chain_chain_run_input" IS 'primary key of ChainChainRunInput';
 
 COMMENT ON CONSTRAINT "__chain_claim_pk_nrr2rn3gui" ON "slice"."chain_claim" IS 'primary key of ChainClaim';
@@ -2858,6 +3610,8 @@ COMMENT ON CONSTRAINT "__chain_held_pk_73idl7oo5c" ON "slice"."chain_held" IS 'p
 COMMENT ON CONSTRAINT "__chain_next_pk_qeumlilvtk" ON "slice"."chain_next" IS 'primary key of ChainNext';
 
 COMMENT ON CONSTRAINT "__chain_next_key_to_root_qxqaughmvp" ON "slice"."chain_next" IS 'key ChainNext(to, root)';
+
+COMMENT ON CONSTRAINT "__chain_ordered_finish_output_pk_t5k5pqxfdo" ON "slice"."chain_ordered_finish_output" IS 'primary key of ChainOrderedFinishOutput';
 
 COMMENT ON CONSTRAINT "__chain_ordered_input_pk_iv2357obqh" ON "slice"."chain_ordered_input" IS 'primary key of ChainOrderedInput';
 
@@ -2901,6 +3655,8 @@ COMMENT ON CONSTRAINT "__cursor_pk_wl2ngqny4j" ON "slice"."cursor" IS 'primary k
 
 COMMENT ON CONSTRAINT "__fan_admitted_pk_jzt7rtrzny" ON "slice"."fan_admitted" IS 'primary key of FanAdmitted';
 
+COMMENT ON CONSTRAINT "__fan_batch_finish_output_pk_mq5omzswqd" ON "slice"."fan_batch_finish_output" IS 'primary key of FanBatchFinishOutput';
+
 COMMENT ON CONSTRAINT "__fan_batch_input_pk_bmhyfuy2bw" ON "slice"."fan_batch_input" IS 'primary key of FanBatchInput';
 
 COMMENT ON CONSTRAINT "__fan_claim_pk_e7zimqppco" ON "slice"."fan_claim" IS 'primary key of FanClaim';
@@ -2914,6 +3670,8 @@ COMMENT ON CONSTRAINT "__fan_ended_pk_23aeteyyv7" ON "slice"."fan_ended" IS 'pri
 COMMENT ON CONSTRAINT "__fan_exhausted_pk_4t3sxjskvd" ON "slice"."fan_exhausted" IS 'primary key of FanExhausted';
 
 COMMENT ON CONSTRAINT "__fan_failed_pk_z4etp5dmax" ON "slice"."fan_failed" IS 'primary key of FanFailed';
+
+COMMENT ON CONSTRAINT "__fan_fan_run_finish_output_pk_rhhjregxru" ON "slice"."fan_fan_run_finish_output" IS 'primary key of FanFanRunFinishOutput';
 
 COMMENT ON CONSTRAINT "__fan_fan_run_input_pk_tbzpgbwe7g" ON "slice"."fan_fan_run_input" IS 'primary key of FanFanRunInput';
 
@@ -2995,6 +3753,8 @@ COMMENT ON CONSTRAINT "__retry_finish_key_step_root_a7vhiwagne" ON "slice"."retr
 
 COMMENT ON CONSTRAINT "__retry_held_pk_nvgeylmjp2" ON "slice"."retry_held" IS 'primary key of RetryHeld';
 
+COMMENT ON CONSTRAINT "__retry_ladders_finish_output_pk_5352zkn7xu" ON "slice"."retry_ladders_finish_output" IS 'primary key of RetryLaddersFinishOutput';
+
 COMMENT ON CONSTRAINT "__retry_ladders_input_pk_5cdnkfgg3x" ON "slice"."retry_ladders_input" IS 'primary key of RetryLaddersInput';
 
 COMMENT ON CONSTRAINT "__retry_paused_pk_umm2nscqny" ON "slice"."retry_paused" IS 'primary key of RetryPaused';
@@ -3023,9 +3783,93 @@ COMMENT ON CONSTRAINT "__retry_steadfast_output_pk_xyvfgnpd5w" ON "slice"."retry
 
 COMMENT ON CONSTRAINT "__retry_step_pk_opjqidwhzg" ON "slice"."retry_step" IS 'primary key of RetryStep';
 
+COMMENT ON CONSTRAINT "__review_admitted_pk_woy7ee4y4p" ON "slice"."review_admitted" IS 'primary key of ReviewAdmitted';
+
+COMMENT ON CONSTRAINT "__review_analyze_input_pk_jr7qmhqwgi" ON "slice"."review_analyze_input" IS 'primary key of ReviewAnalyzeInput';
+
+COMMENT ON CONSTRAINT "__review_analyze_output_pk_35aclxnkmb" ON "slice"."review_analyze_output" IS 'primary key of ReviewAnalyzeOutput';
+
+COMMENT ON CONSTRAINT "__review_claim_pk_twa72qaol7" ON "slice"."review_claim" IS 'primary key of ReviewClaim';
+
+COMMENT ON CONSTRAINT "__review_done_pk_ve6inioidy" ON "slice"."review_done" IS 'primary key of ReviewDone';
+
+COMMENT ON CONSTRAINT "__review_ended_pk_2hihcuxln2" ON "slice"."review_ended" IS 'primary key of ReviewEnded';
+
+COMMENT ON CONSTRAINT "__review_exhausted_pk_5bmktauwd3" ON "slice"."review_exhausted" IS 'primary key of ReviewExhausted';
+
+COMMENT ON CONSTRAINT "__review_failed_pk_7iszsjaybr" ON "slice"."review_failed" IS 'primary key of ReviewFailed';
+
+COMMENT ON CONSTRAINT "__review_fenced_pk_chaexdbnzu" ON "slice"."review_fenced" IS 'primary key of ReviewFenced';
+
+COMMENT ON CONSTRAINT "__review_finish_pk_ovczbakxjz" ON "slice"."review_finish" IS 'primary key of ReviewFinish';
+
+COMMENT ON CONSTRAINT "__review_finish_key_step_root_tcsouam46b" ON "slice"."review_finish" IS 'key ReviewFinish(step, root)';
+
+COMMENT ON CONSTRAINT "__review_gather_input_pk_rllaxtocmq" ON "slice"."review_gather_input" IS 'primary key of ReviewGatherInput';
+
+COMMENT ON CONSTRAINT "__review_gather_input_sizes_pk_w5cgw65wpx" ON "slice"."review_gather_input_sizes" IS 'primary key of ReviewGatherInputSizes';
+
+COMMENT ON CONSTRAINT "__review_gather_output_pk_fecesmjazj" ON "slice"."review_gather_output" IS 'primary key of ReviewGatherOutput';
+
+COMMENT ON CONSTRAINT "__review_held_pk_cwyo7jovuu" ON "slice"."review_held" IS 'primary key of ReviewHeld';
+
+COMMENT ON CONSTRAINT "__review_paused_pk_eamccblv6g" ON "slice"."review_paused" IS 'primary key of ReviewPaused';
+
+COMMENT ON CONSTRAINT "__review_questions_finish_output_pk_36plo53gmb" ON "slice"."review_questions_finish_output" IS 'primary key of ReviewQuestionsFinishOutput';
+
+COMMENT ON CONSTRAINT "__review_questions_input_pk_4d27veaz4g" ON "slice"."review_questions_input" IS 'primary key of ReviewQuestionsInput';
+
+COMMENT ON CONSTRAINT "__review_refusal_pk_ajyglinn6r" ON "slice"."review_refusal" IS 'primary key of ReviewRefusal';
+
+COMMENT ON CONSTRAINT "__review_result_pk_o5x5griurk" ON "slice"."review_result" IS 'primary key of ReviewResult';
+
+COMMENT ON CONSTRAINT "__review_resumed_pk_jqgqbkvl65" ON "slice"."review_resumed" IS 'primary key of ReviewResumed';
+
+COMMENT ON CONSTRAINT "__review_retry_pk_is3m5sa5tx" ON "slice"."review_retry" IS 'primary key of ReviewRetry';
+
+COMMENT ON CONSTRAINT "__review_review_run_finish_output_pk_qwfb4ycp7r" ON "slice"."review_review_run_finish_output" IS 'primary key of ReviewReviewRunFinishOutput';
+
+COMMENT ON CONSTRAINT "__review_review_run_input_pk_7ommryhd6b" ON "slice"."review_review_run_input" IS 'primary key of ReviewReviewRunInput';
+
+COMMENT ON CONSTRAINT "__review_review_run_input_sizes_pk_bguaae726h" ON "slice"."review_review_run_input_sizes" IS 'primary key of ReviewReviewRunInputSizes';
+
+COMMENT ON CONSTRAINT "__review_root_pk_btvrw2kxvs" ON "slice"."review_root" IS 'primary key of ReviewRoot';
+
+COMMENT ON CONSTRAINT "__review_save_input_pk_iaqr5cg2c2" ON "slice"."review_save_input" IS 'primary key of ReviewSaveInput';
+
+COMMENT ON CONSTRAINT "__review_save_output_pk_usbddkytv7" ON "slice"."review_save_output" IS 'primary key of ReviewSaveOutput';
+
+COMMENT ON CONSTRAINT "__review_saved_pk_mrkz2ovxcx" ON "slice"."review_saved" IS 'primary key of ReviewSaved';
+
+COMMENT ON CONSTRAINT "__review_saved_key_to_root_ah3zbczbbn" ON "slice"."review_saved" IS 'key ReviewSaved(to, root)';
+
+COMMENT ON CONSTRAINT "__review_scope_pk_grsivyyp7b" ON "slice"."review_scope" IS 'primary key of ReviewScope';
+
+COMMENT ON CONSTRAINT "__review_skipped_pk_ymsn25w74u" ON "slice"."review_skipped" IS 'primary key of ReviewSkipped';
+
+COMMENT ON CONSTRAINT "__review_split_pk_im65kbvnho" ON "slice"."review_split" IS 'primary key of ReviewSplit';
+
+COMMENT ON CONSTRAINT "__review_split_key_to_root_d3l6kwiq3j" ON "slice"."review_split" IS 'key ReviewSplit(to, root)';
+
+COMMENT ON CONSTRAINT "__review_start_scope_pk_qlm2r5uhqp" ON "slice"."review_start_scope" IS 'primary key of ReviewStartScope';
+
+COMMENT ON CONSTRAINT "__review_start_scope_key_child_root_vwlxhagth3" ON "slice"."review_start_scope" IS 'key ReviewStartScope(child, root)';
+
+COMMENT ON CONSTRAINT "__review_start_step_pk_w5suwqqg4p" ON "slice"."review_start_step" IS 'primary key of ReviewStartStep';
+
+COMMENT ON CONSTRAINT "__review_start_step_key_step_root_lnw5ylpuoc" ON "slice"."review_start_step" IS 'key ReviewStartStep(step, root)';
+
+COMMENT ON CONSTRAINT "__review_step_pk_gfbmnzqbc3" ON "slice"."review_step" IS 'primary key of ReviewStep';
+
+COMMENT ON CONSTRAINT "__review_within_pk_ohgogpkz4s" ON "slice"."review_within" IS 'primary key of ReviewWithin';
+
+COMMENT ON CONSTRAINT "__reviewed_pk_z3sm6wzse2" ON "slice"."reviewed" IS 'primary key of Reviewed';
+
 COMMENT ON CONSTRAINT "__seen_pk_g4ptcxwowb" ON "slice"."seen" IS 'primary key of Seen';
 
 COMMENT ON CONSTRAINT "__settled_pk_yitdz6z3ts" ON "slice"."settled" IS 'primary key of Settled';
+
+COMMENT ON CONSTRAINT "__summary_pk_rpajkerfah" ON "slice"."summary" IS 'primary key of Summary';
 
 COMMENT ON CONSTRAINT "__sync_admitted_pk_ral53o3fpi" ON "slice"."sync_admitted" IS 'primary key of SyncAdmitted';
 
@@ -3057,6 +3901,8 @@ COMMENT ON CONSTRAINT "__sync_finish_pk_hn7tmx25xc" ON "slice"."sync_finish" IS 
 
 COMMENT ON CONSTRAINT "__sync_finish_key_step_root_kpt2idultt" ON "slice"."sync_finish" IS 'key SyncFinish(step, root)';
 
+COMMENT ON CONSTRAINT "__sync_gold_finish_output_pk_3z5gemduto" ON "slice"."sync_gold_finish_output" IS 'primary key of SyncGoldFinishOutput';
+
 COMMENT ON CONSTRAINT "__sync_gold_input_pk_wp7hfx6n2e" ON "slice"."sync_gold_input" IS 'primary key of SyncGoldInput';
 
 COMMENT ON CONSTRAINT "__sync_held_pk_wsme4moka4" ON "slice"."sync_held" IS 'primary key of SyncHeld';
@@ -3084,6 +3930,8 @@ COMMENT ON CONSTRAINT "__sync_start_step_pk_4dv7h6kuu3" ON "slice"."sync_start_s
 COMMENT ON CONSTRAINT "__sync_start_step_key_step_root_rkceslwobo" ON "slice"."sync_start_step" IS 'key SyncStartStep(step, root)';
 
 COMMENT ON CONSTRAINT "__sync_step_pk_wfgcxdvbwo" ON "slice"."sync_step" IS 'primary key of SyncStep';
+
+COMMENT ON CONSTRAINT "__sync_sync_run_finish_output_pk_n74f63qvg6" ON "slice"."sync_sync_run_finish_output" IS 'primary key of SyncSyncRunFinishOutput';
 
 COMMENT ON CONSTRAINT "__sync_sync_run_input_pk_cpbaujyjwv" ON "slice"."sync_sync_run_input" IS 'primary key of SyncSyncRunInput';
 
@@ -3155,6 +4003,28 @@ COMMENT ON COLUMN "slice"."retry_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)
 
 COMMENT ON COLUMN "slice"."retry_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
 
+COMMENT ON COLUMN "slice"."review_claim"."__root_yewsvvtcyz" IS 'root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+
+COMMENT ON COLUMN "slice"."review_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+
+COMMENT ON COLUMN "slice"."review_claim"."__pred_attempt_dqbvoe7dfs" IS 'pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+
+COMMENT ON COLUMN "slice"."review_gather_input_sizes"."__root_yjobx7uyrd" IS 'root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+
+COMMENT ON COLUMN "slice"."review_gather_input_sizes"."__step_mjpuijzth4" IS 'step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+
+COMMENT ON COLUMN "slice"."review_gather_input_sizes"."__pred_ordinal_rdz3ttleig" IS 'pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+
+COMMENT ON COLUMN "slice"."review_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
+
+COMMENT ON COLUMN "slice"."review_review_run_input_sizes"."__root_yjobx7uyrd" IS 'root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+
+COMMENT ON COLUMN "slice"."review_review_run_input_sizes"."__scope_u6ypqf2r2z" IS 'scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+
+COMMENT ON COLUMN "slice"."review_review_run_input_sizes"."__pred_ordinal_rdz3ttleig" IS 'pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+
+COMMENT ON COLUMN "slice"."review_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
+
 COMMENT ON COLUMN "slice"."sync_claim"."__root_yewsvvtcyz" IS 'root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
 COMMENT ON COLUMN "slice"."sync_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
@@ -3177,6 +4047,8 @@ COMMENT ON CONSTRAINT "__fan_root_key_scope_i3qel4nyj5" ON "slice"."fan_root" IS
 
 COMMENT ON CONSTRAINT "__retry_root_key_scope_yc7em5k35u" ON "slice"."retry_root" IS 'key RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
+COMMENT ON CONSTRAINT "__review_root_key_scope_db6eo7ifjm" ON "slice"."review_root" IS 'key ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
 COMMENT ON CONSTRAINT "__sync_root_key_scope_lxj4sb3mcx" ON "slice"."sync_root" IS 'key SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__fan_hold_check_fan_hold_ordered_fan_claim_holds_bb3ww7vxet" ON "slice"."fan_hold" IS 'check of FanHold for law ordered FanHold(step, root, attempt, at) in fin(FanClaim, holds)';
@@ -3184,6 +4056,10 @@ COMMENT ON CONSTRAINT "__fan_hold_check_fan_hold_ordered_fan_claim_holds_bb3ww7v
 COMMENT ON CONSTRAINT "__assign_admitted_fk_root_a4ab52rbpf" ON "slice"."assign_admitted" IS 'foreign key AssignAdmitted(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__assign_admitted_fk_scope_root_axpol5zgcd" ON "slice"."assign_admitted" IS 'foreign key AssignAdmitted(scope, root) to AssignScope(scope, root)';
+
+COMMENT ON CONSTRAINT "__assign_assignment_finish_output_fk_root_cxywb372kl" ON "slice"."assign_assignment_finish_output" IS 'foreign key AssignAssignmentFinishOutput(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__assign_assignment_finish_output_fk_step_root_btb6cwfo73" ON "slice"."assign_assignment_finish_output" IS 'foreign key AssignAssignmentFinishOutput(step, root) to AssignDone(step, root)';
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_fk_root_7vcxtkof42" ON "slice"."assign_assignment_input" IS 'foreign key AssignAssignmentInput(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3307,6 +4183,10 @@ COMMENT ON CONSTRAINT "__chain_admitted_fk_root_abvywhprzd" ON "slice"."chain_ad
 
 COMMENT ON CONSTRAINT "__chain_admitted_fk_scope_root_ee5yuzxero" ON "slice"."chain_admitted" IS 'foreign key ChainAdmitted(scope, root) to ChainScope(scope, root)';
 
+COMMENT ON CONSTRAINT "__chain_chain_run_finish_output_fk_root_4rmekbji4d" ON "slice"."chain_chain_run_finish_output" IS 'foreign key ChainChainRunFinishOutput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__chain_chain_run_finish_output_fk_step_root_xr4ypwejog" ON "slice"."chain_chain_run_finish_output" IS 'foreign key ChainChainRunFinishOutput(step, root) to ChainDone(step, root)';
+
 COMMENT ON CONSTRAINT "__chain_chain_run_input_fk_root_eyhkir2ten" ON "slice"."chain_chain_run_input" IS 'foreign key ChainChainRunInput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__chain_claim_fk_root_e4z56epu62" ON "slice"."chain_claim" IS 'foreign key ChainClaim(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
@@ -3343,11 +4223,15 @@ COMMENT ON CONSTRAINT "__chain_held_fk_step_attempt_root_aqmobtk3xc" ON "slice".
 
 COMMENT ON CONSTRAINT "__chain_held_fk_step_root_mrcpyhmlko" ON "slice"."chain_held" IS 'foreign key ChainHeld(step, root) to ChainResult(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_next_fk_from_root_ohfyewhufb" ON "slice"."chain_next" IS 'foreign key ChainNext(from, root) to ChainPageInput(step, root)';
+COMMENT ON CONSTRAINT "__chain_next_fk_from_root_fp74n4ao6b" ON "slice"."chain_next" IS 'foreign key ChainNext(from, root) to ChainPageOutput(step, root)';
 
 COMMENT ON CONSTRAINT "__chain_next_fk_root_ymhq5qkp7g" ON "slice"."chain_next" IS 'foreign key ChainNext(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__chain_next_fk_to_root_juwf5tsgbs" ON "slice"."chain_next" IS 'foreign key ChainNext(to, root) to ChainPageInput(step, root)';
+
+COMMENT ON CONSTRAINT "__chain_ordered_finish_output_fk_root_dbbcetmlpl" ON "slice"."chain_ordered_finish_output" IS 'foreign key ChainOrderedFinishOutput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__chain_ordered_finish_output_fk_step_root_jvdqnoziiv" ON "slice"."chain_ordered_finish_output" IS 'foreign key ChainOrderedFinishOutput(step, root) to ChainDone(step, root)';
 
 COMMENT ON CONSTRAINT "__chain_ordered_input_fk_root_yo2fvi6v6v" ON "slice"."chain_ordered_input" IS 'foreign key ChainOrderedInput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3409,6 +4293,10 @@ COMMENT ON CONSTRAINT "__fan_admitted_fk_root_ui6p5vdrhk" ON "slice"."fan_admitt
 
 COMMENT ON CONSTRAINT "__fan_admitted_fk_scope_root_zj52ntgcx6" ON "slice"."fan_admitted" IS 'foreign key FanAdmitted(scope, root) to FanScope(scope, root)';
 
+COMMENT ON CONSTRAINT "__fan_batch_finish_output_fk_root_dpzlswayvb" ON "slice"."fan_batch_finish_output" IS 'foreign key FanBatchFinishOutput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__fan_batch_finish_output_fk_step_root_hhniyvx63e" ON "slice"."fan_batch_finish_output" IS 'foreign key FanBatchFinishOutput(step, root) to FanDone(step, root)';
+
 COMMENT ON CONSTRAINT "__fan_batch_input_fk_root_d4g2u2spvl" ON "slice"."fan_batch_input" IS 'foreign key FanBatchInput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__fan_claim_fk_root_t3hwth6mh7" ON "slice"."fan_claim" IS 'foreign key FanClaim(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
@@ -3430,6 +4318,10 @@ COMMENT ON CONSTRAINT "__fan_exhausted_fk_root_mlbxyrjdjk" ON "slice"."fan_exhau
 COMMENT ON CONSTRAINT "__fan_exhausted_fk_step_root_jyggt4fgpd" ON "slice"."fan_exhausted" IS 'foreign key FanExhausted(step, root) to FanFailed(step, root)';
 
 COMMENT ON CONSTRAINT "__fan_failed_fk_root_3gq7ifprza" ON "slice"."fan_failed" IS 'foreign key FanFailed(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__fan_fan_run_finish_output_fk_root_ttt7pw4dnn" ON "slice"."fan_fan_run_finish_output" IS 'foreign key FanFanRunFinishOutput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__fan_fan_run_finish_output_fk_step_root_yjy4xmcplw" ON "slice"."fan_fan_run_finish_output" IS 'foreign key FanFanRunFinishOutput(step, root) to FanDone(step, root)';
 
 COMMENT ON CONSTRAINT "__fan_fan_run_input_fk_root_oztqak3s27" ON "slice"."fan_fan_run_input" IS 'foreign key FanFanRunInput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3555,6 +4447,10 @@ COMMENT ON CONSTRAINT "__retry_held_fk_step_attempt_root_cnveo6n2ex" ON "slice".
 
 COMMENT ON CONSTRAINT "__retry_held_fk_step_root_m5b3t566ya" ON "slice"."retry_held" IS 'foreign key RetryHeld(step, root) to RetryResult(step, root)';
 
+COMMENT ON CONSTRAINT "__retry_ladders_finish_output_fk_root_gmq3iutwdv" ON "slice"."retry_ladders_finish_output" IS 'foreign key RetryLaddersFinishOutput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__retry_ladders_finish_output_fk_step_root_l5sosf3h23" ON "slice"."retry_ladders_finish_output" IS 'foreign key RetryLaddersFinishOutput(step, root) to RetryDone(step, root)';
+
 COMMENT ON CONSTRAINT "__retry_ladders_input_fk_root_cnlwmpha3w" ON "slice"."retry_ladders_input" IS 'foreign key RetryLaddersInput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__retry_paused_fk_target_pred_turn_i33p2skdd4" ON "slice"."retry_paused" IS 'foreign key RetryPaused(target, pred(turn)) to RetryResumed(target, turn)';
@@ -3598,6 +4494,150 @@ COMMENT ON CONSTRAINT "__retry_steadfast_output_fk_step_root_y3we3qusrs" ON "sli
 COMMENT ON CONSTRAINT "__retry_step_fk_root_zww4hkltkz" ON "slice"."retry_step" IS 'foreign key RetryStep(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__retry_step_fk_scope_root_xl7rht6tyq" ON "slice"."retry_step" IS 'foreign key RetryStep(scope, root) to RetryAdmitted(scope, root)';
+
+COMMENT ON CONSTRAINT "__review_admitted_fk_root_5a2j3m7nju" ON "slice"."review_admitted" IS 'foreign key ReviewAdmitted(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_admitted_fk_scope_root_bzpl734wrx" ON "slice"."review_admitted" IS 'foreign key ReviewAdmitted(scope, root) to ReviewScope(scope, root)';
+
+COMMENT ON CONSTRAINT "__review_analyze_input_fk_root_73upzaj4eg" ON "slice"."review_analyze_input" IS 'foreign key ReviewAnalyzeInput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_analyze_output_fk_root_qlfzwtt6d2" ON "slice"."review_analyze_output" IS 'foreign key ReviewAnalyzeOutput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_analyze_output_fk_step_root_axdif7cyxp" ON "slice"."review_analyze_output" IS 'foreign key ReviewAnalyzeOutput(step, root) to ReviewAnalyzeInput(step, root)';
+
+COMMENT ON CONSTRAINT "__review_analyze_output_fk_step_root_arcu4coozk" ON "slice"."review_analyze_output" IS 'foreign key ReviewAnalyzeOutput(step, root) to ReviewDone(step, root)';
+
+COMMENT ON CONSTRAINT "__review_claim_fk_root_z2utn3xauo" ON "slice"."review_claim" IS 'foreign key ReviewClaim(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_claim_fk_step_root_yqgzabonm6" ON "slice"."review_claim" IS 'foreign key ReviewClaim(step, root) to ReviewStep(step, root)';
+
+COMMENT ON CONSTRAINT "__review_claim_fk_step_pred_attempt_root_4ezcasjskf" ON "slice"."review_claim" IS 'foreign key ReviewClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to ReviewEnded(step, attempt, root)';
+
+COMMENT ON CONSTRAINT "__review_done_fk_root_f374tjslpg" ON "slice"."review_done" IS 'foreign key ReviewDone(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_ended_fk_root_o6manlpvtk" ON "slice"."review_ended" IS 'foreign key ReviewEnded(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_ended_fk_step_attempt_root_a7ck6js3qb" ON "slice"."review_ended" IS 'foreign key ReviewEnded(step, attempt, root) to ReviewClaim(step, attempt, root)';
+
+COMMENT ON CONSTRAINT "__review_exhausted_fk_root_odke37pg7n" ON "slice"."review_exhausted" IS 'foreign key ReviewExhausted(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_exhausted_fk_step_root_74mlwghlwh" ON "slice"."review_exhausted" IS 'foreign key ReviewExhausted(step, root) to ReviewFailed(step, root)';
+
+COMMENT ON CONSTRAINT "__review_failed_fk_root_vohwwobyj7" ON "slice"."review_failed" IS 'foreign key ReviewFailed(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_fenced_fk_root_clolofwycr" ON "slice"."review_fenced" IS 'foreign key ReviewFenced(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_fenced_fk_step_attempt_root_zpc4oiatc2" ON "slice"."review_fenced" IS 'foreign key ReviewFenced(step, attempt, root) to ReviewEnded(step, attempt, root)';
+
+COMMENT ON CONSTRAINT "__review_finish_fk_root_yivqae7o2r" ON "slice"."review_finish" IS 'foreign key ReviewFinish(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_finish_fk_scope_root_wjpg56iirx" ON "slice"."review_finish" IS 'foreign key ReviewFinish(scope, root) to ReviewAdmitted(scope, root)';
+
+COMMENT ON CONSTRAINT "__review_finish_fk_step_root_assajgbrsg" ON "slice"."review_finish" IS 'foreign key ReviewFinish(step, root) to ReviewStep(step, root)';
+
+COMMENT ON CONSTRAINT "__review_gather_input_fk_root_m5n5ulcugs" ON "slice"."review_gather_input" IS 'foreign key ReviewGatherInput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_root_4jycj2gg73" ON "slice"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_step_root_xkxj3c72dv" ON "slice"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(step, root) to ReviewGatherInput(step, root)';
+
+COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_step_pred_ordinal_ytiuhepjbu" ON "slice"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to ReviewGatherInputSizes(step, ordinal, root)';
+
+COMMENT ON CONSTRAINT "__review_gather_output_fk_root_pfl7uynvxk" ON "slice"."review_gather_output" IS 'foreign key ReviewGatherOutput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_gather_output_fk_step_root_kfxlxydhp2" ON "slice"."review_gather_output" IS 'foreign key ReviewGatherOutput(step, root) to ReviewDone(step, root)';
+
+COMMENT ON CONSTRAINT "__review_gather_output_fk_step_root_sijekb5wr7" ON "slice"."review_gather_output" IS 'foreign key ReviewGatherOutput(step, root) to ReviewGatherInput(step, root)';
+
+COMMENT ON CONSTRAINT "__review_held_fk_root_cq4jfaijwu" ON "slice"."review_held" IS 'foreign key ReviewHeld(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_held_fk_step_attempt_root_63jdmcjpmk" ON "slice"."review_held" IS 'foreign key ReviewHeld(step, attempt, root) to ReviewClaim(step, attempt, root)';
+
+COMMENT ON CONSTRAINT "__review_held_fk_step_root_463posmneo" ON "slice"."review_held" IS 'foreign key ReviewHeld(step, root) to ReviewResult(step, root)';
+
+COMMENT ON CONSTRAINT "__review_paused_fk_target_pred_turn_rig5fmgcvc" ON "slice"."review_paused" IS 'foreign key ReviewPaused(target, pred(turn)) to ReviewResumed(target, turn)';
+
+COMMENT ON CONSTRAINT "__review_questions_finish_output_fk_root_lhkngtysmk" ON "slice"."review_questions_finish_output" IS 'foreign key ReviewQuestionsFinishOutput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_questions_finish_output_fk_step_root_hw7trgc4tp" ON "slice"."review_questions_finish_output" IS 'foreign key ReviewQuestionsFinishOutput(step, root) to ReviewDone(step, root)';
+
+COMMENT ON CONSTRAINT "__review_questions_input_fk_root_smgug66jwc" ON "slice"."review_questions_input" IS 'foreign key ReviewQuestionsInput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_refusal_fk_root_qvufijkx4k" ON "slice"."review_refusal" IS 'foreign key ReviewRefusal(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_refusal_fk_step_root_dhnaknctqw" ON "slice"."review_refusal" IS 'foreign key ReviewRefusal(step, root) to ReviewFailed(step, root)';
+
+COMMENT ON CONSTRAINT "__review_result_fk_root_go4w3a44a2" ON "slice"."review_result" IS 'foreign key ReviewResult(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_result_fk_step_root_nfnufhm5fh" ON "slice"."review_result" IS 'foreign key ReviewResult(step, root) to ReviewStep(step, root)';
+
+COMMENT ON CONSTRAINT "__review_resumed_fk_target_turn_nvm252hscc" ON "slice"."review_resumed" IS 'foreign key ReviewResumed(target, turn) to ReviewPaused(target, turn)';
+
+COMMENT ON CONSTRAINT "__review_retry_fk_root_szjiq4sdny" ON "slice"."review_retry" IS 'foreign key ReviewRetry(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_retry_fk_step_attempt_root_fuuiurkjt7" ON "slice"."review_retry" IS 'foreign key ReviewRetry(step, attempt, root) to ReviewEnded(step, attempt, root)';
+
+COMMENT ON CONSTRAINT "__review_review_run_finish_output_fk_root_ttnfn2lndg" ON "slice"."review_review_run_finish_output" IS 'foreign key ReviewReviewRunFinishOutput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_review_run_finish_output_fk_step_root_2c63nc4bm4" ON "slice"."review_review_run_finish_output" IS 'foreign key ReviewReviewRunFinishOutput(step, root) to ReviewDone(step, root)';
+
+COMMENT ON CONSTRAINT "__review_review_run_input_fk_root_nkwzzml3bh" ON "slice"."review_review_run_input" IS 'foreign key ReviewReviewRunInput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_root_otll5lik2n" ON "slice"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_scope_root_qld3u5js7a" ON "slice"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(scope, root) to ReviewReviewRunInput(scope, root)';
+
+COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_scope_pred_lijpwha6ch" ON "slice"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to ReviewReviewRunInputSizes(scope, ordinal, root)';
+
+COMMENT ON CONSTRAINT "__review_save_input_fk_root_75g3g3e6l3" ON "slice"."review_save_input" IS 'foreign key ReviewSaveInput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_save_output_fk_root_v6vey436ah" ON "slice"."review_save_output" IS 'foreign key ReviewSaveOutput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_save_output_fk_step_root_5hdksxptvu" ON "slice"."review_save_output" IS 'foreign key ReviewSaveOutput(step, root) to ReviewDone(step, root)';
+
+COMMENT ON CONSTRAINT "__review_save_output_fk_step_root_jzs34zo56u" ON "slice"."review_save_output" IS 'foreign key ReviewSaveOutput(step, root) to ReviewSaveInput(step, root)';
+
+COMMENT ON CONSTRAINT "__review_saved_fk_from_root_sm7hkqib23" ON "slice"."review_saved" IS 'foreign key ReviewSaved(from, root) to ReviewQuestionsFinishOutput(step, root)';
+
+COMMENT ON CONSTRAINT "__review_saved_fk_root_4xrfr45gdd" ON "slice"."review_saved" IS 'foreign key ReviewSaved(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_saved_fk_to_root_owp4kjzfm6" ON "slice"."review_saved" IS 'foreign key ReviewSaved(to, root) to ReviewSaveInput(step, root)';
+
+COMMENT ON CONSTRAINT "__review_scope_fk_root_xio6pw6voh" ON "slice"."review_scope" IS 'foreign key ReviewScope(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_skipped_fk_by_ry2tc7ng2c" ON "slice"."review_skipped" IS 'foreign key ReviewSkipped(by) to ReviewRoot(scope)';
+
+COMMENT ON CONSTRAINT "__review_skipped_fk_root_pp4l3yk33h" ON "slice"."review_skipped" IS 'foreign key ReviewSkipped(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_skipped_fk_scope_fduacpn4ws" ON "slice"."review_skipped" IS 'foreign key ReviewSkipped(scope) to ReviewRoot(scope)';
+
+COMMENT ON CONSTRAINT "__review_split_fk_from_root_ep5f5t573x" ON "slice"."review_split" IS 'foreign key ReviewSplit(from, root) to ReviewGatherOutput(step, root)';
+
+COMMENT ON CONSTRAINT "__review_split_fk_root_7vz6jy3jnt" ON "slice"."review_split" IS 'foreign key ReviewSplit(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_split_fk_to_root_ilwolhg4sy" ON "slice"."review_split" IS 'foreign key ReviewSplit(to, root) to ReviewQuestionsInput(scope, root)';
+
+COMMENT ON CONSTRAINT "__review_start_scope_fk_child_root_ntci6w5prg" ON "slice"."review_start_scope" IS 'foreign key ReviewStartScope(child, root) to ReviewScope(scope, root)';
+
+COMMENT ON CONSTRAINT "__review_start_scope_fk_root_ijnygpifkq" ON "slice"."review_start_scope" IS 'foreign key ReviewStartScope(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_start_scope_fk_scope_root_4dnwn3qe7t" ON "slice"."review_start_scope" IS 'foreign key ReviewStartScope(scope, root) to ReviewAdmitted(scope, root)';
+
+COMMENT ON CONSTRAINT "__review_start_step_fk_root_qixpuodpgi" ON "slice"."review_start_step" IS 'foreign key ReviewStartStep(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_start_step_fk_scope_root_ex5wrmacrb" ON "slice"."review_start_step" IS 'foreign key ReviewStartStep(scope, root) to ReviewAdmitted(scope, root)';
+
+COMMENT ON CONSTRAINT "__review_start_step_fk_step_root_e5z3u72syf" ON "slice"."review_start_step" IS 'foreign key ReviewStartStep(step, root) to ReviewStep(step, root)';
+
+COMMENT ON CONSTRAINT "__review_step_fk_root_s325zhfm22" ON "slice"."review_step" IS 'foreign key ReviewStep(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_step_fk_scope_root_eb2a3dvk6c" ON "slice"."review_step" IS 'foreign key ReviewStep(scope, root) to ReviewAdmitted(scope, root)';
+
+COMMENT ON CONSTRAINT "__review_within_fk_parent_root_4wk35gfdq4" ON "slice"."review_within" IS 'foreign key ReviewWithin(parent, root) to ReviewScope(scope, root)';
+
+COMMENT ON CONSTRAINT "__review_within_fk_root_ksa5lhbp2j" ON "slice"."review_within" IS 'foreign key ReviewWithin(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__review_within_fk_scope_root_e63iwx6wm2" ON "slice"."review_within" IS 'foreign key ReviewWithin(scope, root) to ReviewScope(scope, root)';
 
 COMMENT ON CONSTRAINT "__sync_admitted_fk_root_pazobscutb" ON "slice"."sync_admitted" IS 'foreign key SyncAdmitted(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3653,6 +4693,10 @@ COMMENT ON CONSTRAINT "__sync_finish_fk_scope_root_bjgk4nxo7e" ON "slice"."sync_
 
 COMMENT ON CONSTRAINT "__sync_finish_fk_step_root_mmscezhzyq" ON "slice"."sync_finish" IS 'foreign key SyncFinish(step, root) to SyncStep(step, root)';
 
+COMMENT ON CONSTRAINT "__sync_gold_finish_output_fk_root_w6bne6fmx4" ON "slice"."sync_gold_finish_output" IS 'foreign key SyncGoldFinishOutput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__sync_gold_finish_output_fk_step_root_2qkffyqtvq" ON "slice"."sync_gold_finish_output" IS 'foreign key SyncGoldFinishOutput(step, root) to SyncDone(step, root)';
+
 COMMENT ON CONSTRAINT "__sync_gold_input_fk_root_dearji3wtq" ON "slice"."sync_gold_input" IS 'foreign key SyncGoldInput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__sync_held_fk_root_62s5pmsoqa" ON "slice"."sync_held" IS 'foreign key SyncHeld(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
@@ -3697,6 +4741,10 @@ COMMENT ON CONSTRAINT "__sync_step_fk_root_rmc4nivt3i" ON "slice"."sync_step" IS
 
 COMMENT ON CONSTRAINT "__sync_step_fk_scope_root_sfdyvsar2y" ON "slice"."sync_step" IS 'foreign key SyncStep(scope, root) to SyncAdmitted(scope, root)';
 
+COMMENT ON CONSTRAINT "__sync_sync_run_finish_output_fk_root_khqmodw54k" ON "slice"."sync_sync_run_finish_output" IS 'foreign key SyncSyncRunFinishOutput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+
+COMMENT ON CONSTRAINT "__sync_sync_run_finish_output_fk_step_root_n3vgglnveu" ON "slice"."sync_sync_run_finish_output" IS 'foreign key SyncSyncRunFinishOutput(step, root) to SyncDone(step, root)';
+
 COMMENT ON CONSTRAINT "__sync_sync_run_input_fk_root_ifd4bfberz" ON "slice"."sync_sync_run_input" IS 'foreign key SyncSyncRunInput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON FUNCTION "slice"."__hold_assign_root_rwboli77cc"("slice"."__domain_jevqauzmw6"[]) IS 'hold function of the groups of AssignRoot';
@@ -3706,6 +4754,8 @@ COMMENT ON FUNCTION "slice"."__hold_chain_root_wgndggnfwf"("slice"."__domain_jev
 COMMENT ON FUNCTION "slice"."__hold_fan_root_4vwfxofrxw"("slice"."__domain_jevqauzmw6"[]) IS 'hold function of the groups of FanRoot';
 
 COMMENT ON FUNCTION "slice"."__hold_retry_root_54bybhkxg6"("slice"."__domain_jevqauzmw6"[]) IS 'hold function of the groups of RetryRoot';
+
+COMMENT ON FUNCTION "slice"."__hold_review_root_j3blgclwnl"("slice"."__domain_jevqauzmw6"[]) IS 'hold function of the groups of ReviewRoot';
 
 COMMENT ON FUNCTION "slice"."__hold_sync_root_6ita6q5wxi"("slice"."__domain_jevqauzmw6"[]) IS 'hold function of the groups of SyncRoot';
 
@@ -3717,9 +4767,13 @@ COMMENT ON FUNCTION "slice"."__retire_fan_root_niesya7vcd"("slice"."__domain_jev
 
 COMMENT ON FUNCTION "slice"."__retire_retry_root_kays5vv5ic"("slice"."__domain_jevqauzmw6"[]) IS 'retire function of the groups of RetryRoot';
 
+COMMENT ON FUNCTION "slice"."__retire_review_root_itykotyltd"("slice"."__domain_jevqauzmw6"[]) IS 'retire function of the groups of ReviewRoot';
+
 COMMENT ON FUNCTION "slice"."__retire_sync_root_ygktrpeohu"("slice"."__domain_jevqauzmw6"[]) IS 'retire function of the groups of SyncRoot';
 
 COMMENT ON INDEX "slice"."__assign_admitted_ix_root_pot3vpqjrt" IS 'btree index AssignAdmitted(root)';
+
+COMMENT ON INDEX "slice"."__assign_assignment_finish_output_ix_root_t2nmfubzxm" IS 'btree index AssignAssignmentFinishOutput(root)';
 
 COMMENT ON INDEX "slice"."__assign_assignment_input_ix_root_scope_ndn57wfv5p" IS 'btree index AssignAssignmentInput(root, scope)';
 
@@ -3799,6 +4853,8 @@ COMMENT ON INDEX "slice"."__assign_step_ix_scope_kind_step_xn2zxx73po" IS 'btree
 
 COMMENT ON INDEX "slice"."__chain_admitted_ix_root_3xhdqkpeqw" IS 'btree index ChainAdmitted(root)';
 
+COMMENT ON INDEX "slice"."__chain_chain_run_finish_output_ix_root_wb6phhwc2j" IS 'btree index ChainChainRunFinishOutput(root)';
+
 COMMENT ON INDEX "slice"."__chain_chain_run_input_ix_root_7abe6kcg67" IS 'btree index ChainChainRunInput(root)';
 
 COMMENT ON INDEX "slice"."__chain_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_gdjkwebwlh" IS 'btree index ChainClaim(__step_ouvkclqzzd, __pred_attempt_dqbvoe7dfs, __root_yewsvvtcyz)';
@@ -3822,6 +4878,8 @@ COMMENT ON INDEX "slice"."__chain_finish_ix_scope_step_om6bljb56e" IS 'btree ind
 COMMENT ON INDEX "slice"."__chain_held_ix_root_havzgkxex3" IS 'btree index ChainHeld(root)';
 
 COMMENT ON INDEX "slice"."__chain_next_ix_root_from_5hhx2qutdl" IS 'btree index ChainNext(root, from)';
+
+COMMENT ON INDEX "slice"."__chain_ordered_finish_output_ix_root_hrdok3djgq" IS 'btree index ChainOrderedFinishOutput(root)';
 
 COMMENT ON INDEX "slice"."__chain_ordered_input_ix_root_wmmk2yqn4t" IS 'btree index ChainOrderedInput(root)';
 
@@ -3861,6 +4919,8 @@ COMMENT ON INDEX "slice"."__chain_step_ix_step_kind_root_2pdoze4bhr" IS 'btree i
 
 COMMENT ON INDEX "slice"."__fan_admitted_ix_root_cjavzjrmil" IS 'btree index FanAdmitted(root)';
 
+COMMENT ON INDEX "slice"."__fan_batch_finish_output_ix_root_xzmsfqk7gw" IS 'btree index FanBatchFinishOutput(root)';
+
 COMMENT ON INDEX "slice"."__fan_batch_input_ix_root_scope_24ynzsffio" IS 'btree index FanBatchInput(root, scope)';
 
 COMMENT ON INDEX "slice"."__fan_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_7_scbit3alr4" IS 'btree index FanClaim(__step_ouvkclqzzd, __pred_attempt_dqbvoe7dfs, __root_yewsvvtcyz)';
@@ -3874,6 +4934,8 @@ COMMENT ON INDEX "slice"."__fan_ended_ix_root_step_unjzbpnw46" IS 'btree index F
 COMMENT ON INDEX "slice"."__fan_exhausted_ix_root_2diuxfgt5s" IS 'btree index FanExhausted(root)';
 
 COMMENT ON INDEX "slice"."__fan_failed_ix_root_step_ciyeplozai" IS 'btree index FanFailed(root, step)';
+
+COMMENT ON INDEX "slice"."__fan_fan_run_finish_output_ix_root_gol6fu3ini" IS 'btree index FanFanRunFinishOutput(root)';
 
 COMMENT ON INDEX "slice"."__fan_fan_run_input_ix_root_25alzzoykh" IS 'btree index FanFanRunInput(root)';
 
@@ -3949,6 +5011,8 @@ COMMENT ON INDEX "slice"."__retry_finish_ix_scope_step_6tswescc6v" IS 'btree ind
 
 COMMENT ON INDEX "slice"."__retry_held_ix_root_ytwhkhubpt" IS 'btree index RetryHeld(root)';
 
+COMMENT ON INDEX "slice"."__retry_ladders_finish_output_ix_root_trnh6kkzim" IS 'btree index RetryLaddersFinishOutput(root)';
+
 COMMENT ON INDEX "slice"."__retry_ladders_input_ix_root_co4bnpgzm5" IS 'btree index RetryLaddersInput(root)';
 
 COMMENT ON INDEX "slice"."__retry_paused_ix_target_pred_turn_qryngij_6_c_4_5kkljt6kwu" IS 'btree index RetryPaused(target, __pred_turn_qryngij6c4)';
@@ -3976,6 +5040,88 @@ COMMENT ON INDEX "slice"."__retry_steadfast_output_ix_root_sp7in5arxz" IS 'btree
 COMMENT ON INDEX "slice"."__retry_step_ix_root_scope_ogbhay3han" IS 'btree index RetryStep(root, scope)';
 
 COMMENT ON INDEX "slice"."__retry_step_ix_scope_kind_step_m6ufaqcqmk" IS 'btree index RetryStep(scope, kind, step)';
+
+COMMENT ON INDEX "slice"."__review_admitted_ix_root_yaphj2wqrq" IS 'btree index ReviewAdmitted(root)';
+
+COMMENT ON INDEX "slice"."__review_analyze_input_ix_root_step_bdsim6bffp" IS 'btree index ReviewAnalyzeInput(root, step)';
+
+COMMENT ON INDEX "slice"."__review_analyze_output_ix_root_txmlnhynqs" IS 'btree index ReviewAnalyzeOutput(root)';
+
+COMMENT ON INDEX "slice"."__review_claim_ix_step_ouvkclqzzd_pred_attempt_5jggipiwlr" IS 'btree index ReviewClaim(__step_ouvkclqzzd, __pred_attempt_dqbvoe7dfs, __root_yewsvvtcyz)';
+
+COMMENT ON INDEX "slice"."__review_claim_ix_root_m3m66zu4qb" IS 'btree index ReviewClaim(root)';
+
+COMMENT ON INDEX "slice"."__review_done_ix_root_step_wex3643ujb" IS 'btree index ReviewDone(root, step)';
+
+COMMENT ON INDEX "slice"."__review_ended_ix_root_2lfye35dgu" IS 'btree index ReviewEnded(root)';
+
+COMMENT ON INDEX "slice"."__review_exhausted_ix_root_a6onvxywcp" IS 'btree index ReviewExhausted(root)';
+
+COMMENT ON INDEX "slice"."__review_failed_ix_root_step_cegc4opyjz" IS 'btree index ReviewFailed(root, step)';
+
+COMMENT ON INDEX "slice"."__review_fenced_ix_root_hfika5dgn2" IS 'btree index ReviewFenced(root)';
+
+COMMENT ON INDEX "slice"."__review_finish_ix_root_vnnzpwlvrw" IS 'btree index ReviewFinish(root)';
+
+COMMENT ON INDEX "slice"."__review_finish_ix_scope_step_4k6s2nqgyy" IS 'btree index ReviewFinish(scope, step)';
+
+COMMENT ON INDEX "slice"."__review_gather_input_ix_root_step_wsoyzlnuyr" IS 'btree index ReviewGatherInput(root, step)';
+
+COMMENT ON INDEX "slice"."__review_gather_input_sizes_ix_step_mjpuijzth_4_pred_be4mal6542" IS 'btree index ReviewGatherInputSizes(__step_mjpuijzth4, __pred_ordinal_rdz3ttleig, __root_yjobx7uyrd)';
+
+COMMENT ON INDEX "slice"."__review_gather_input_sizes_ix_root_step_dargnvbdje" IS 'btree index ReviewGatherInputSizes(root, step)';
+
+COMMENT ON INDEX "slice"."__review_gather_output_ix_root_5h75f2sreb" IS 'btree index ReviewGatherOutput(root)';
+
+COMMENT ON INDEX "slice"."__review_held_ix_root_6mb66m6iql" IS 'btree index ReviewHeld(root)';
+
+COMMENT ON INDEX "slice"."__review_paused_ix_target_pred_turn_qryngij_6_c_4_sdt7yco6va" IS 'btree index ReviewPaused(target, __pred_turn_qryngij6c4)';
+
+COMMENT ON INDEX "slice"."__review_questions_finish_output_ix_root_4nx3bn5p6q" IS 'btree index ReviewQuestionsFinishOutput(root)';
+
+COMMENT ON INDEX "slice"."__review_questions_input_ix_root_scope_sy2ibbggdo" IS 'btree index ReviewQuestionsInput(root, scope)';
+
+COMMENT ON INDEX "slice"."__review_refusal_ix_root_mlhjigotld" IS 'btree index ReviewRefusal(root)';
+
+COMMENT ON INDEX "slice"."__review_result_ix_root_step_h2vlej63gu" IS 'btree index ReviewResult(root, step)';
+
+COMMENT ON INDEX "slice"."__review_result_ix_step_outcome_root_lbrp6nyb6i" IS 'btree index ReviewResult(step, outcome, root)';
+
+COMMENT ON INDEX "slice"."__review_retry_ix_root_jzaljr6st4" IS 'btree index ReviewRetry(root)';
+
+COMMENT ON INDEX "slice"."__review_review_run_finish_output_ix_root_qafu34k5sc" IS 'btree index ReviewReviewRunFinishOutput(root)';
+
+COMMENT ON INDEX "slice"."__review_review_run_input_ix_root_abc3mheba4" IS 'btree index ReviewReviewRunInput(root)';
+
+COMMENT ON INDEX "slice"."__review_review_run_input_sizes_ix_scope_u_6_ypqf_2_ufblvqrxeq" IS 'btree index ReviewReviewRunInputSizes(__scope_u6ypqf2r2z, __pred_ordinal_rdz3ttleig, __root_yjobx7uyrd)';
+
+COMMENT ON INDEX "slice"."__review_review_run_input_sizes_ix_root_scope_2dnx7skohl" IS 'btree index ReviewReviewRunInputSizes(root, scope)';
+
+COMMENT ON INDEX "slice"."__review_save_input_ix_root_step_xd5keujf45" IS 'btree index ReviewSaveInput(root, step)';
+
+COMMENT ON INDEX "slice"."__review_save_output_ix_root_kjgtclpf33" IS 'btree index ReviewSaveOutput(root)';
+
+COMMENT ON INDEX "slice"."__review_saved_ix_root_from_v3hbuyomqf" IS 'btree index ReviewSaved(root, from)';
+
+COMMENT ON INDEX "slice"."__review_scope_ix_root_riuyuqzrup" IS 'btree index ReviewScope(root)';
+
+COMMENT ON INDEX "slice"."__review_skipped_ix_by_6z5g634njq" IS 'btree index ReviewSkipped(by)';
+
+COMMENT ON INDEX "slice"."__review_skipped_ix_root_qms5trih4o" IS 'btree index ReviewSkipped(root)';
+
+COMMENT ON INDEX "slice"."__review_split_ix_root_from_p42z7fr7z4" IS 'btree index ReviewSplit(root, from)';
+
+COMMENT ON INDEX "slice"."__review_start_scope_ix_root_scope_nki37x7g5o" IS 'btree index ReviewStartScope(root, scope)';
+
+COMMENT ON INDEX "slice"."__review_start_step_ix_root_scope_hmuyhclidm" IS 'btree index ReviewStartStep(root, scope)';
+
+COMMENT ON INDEX "slice"."__review_step_ix_root_scope_jvmzqg2kjy" IS 'btree index ReviewStep(root, scope)';
+
+COMMENT ON INDEX "slice"."__review_step_ix_scope_kind_step_udhxex4i5c" IS 'btree index ReviewStep(scope, kind, step)';
+
+COMMENT ON INDEX "slice"."__review_within_ix_parent_kind_scope_dtilr5xomp" IS 'btree index ReviewWithin(parent, kind, scope)';
+
+COMMENT ON INDEX "slice"."__review_within_ix_root_parent_ah77vqo2bx" IS 'btree index ReviewWithin(root, parent)';
 
 COMMENT ON INDEX "slice"."__sync_admitted_ix_root_vormyuqk5x" IS 'btree index SyncAdmitted(root)';
 
@@ -4009,6 +5155,8 @@ COMMENT ON INDEX "slice"."__sync_finish_ix_root_zrpyhvrere" IS 'btree index Sync
 
 COMMENT ON INDEX "slice"."__sync_finish_ix_scope_step_owsw7m5w74" IS 'btree index SyncFinish(scope, step)';
 
+COMMENT ON INDEX "slice"."__sync_gold_finish_output_ix_root_gqwdl72ukv" IS 'btree index SyncGoldFinishOutput(root)';
+
 COMMENT ON INDEX "slice"."__sync_gold_input_ix_root_fmnsnept43" IS 'btree index SyncGoldInput(root)';
 
 COMMENT ON INDEX "slice"."__sync_held_ix_root_yxqvodlkmy" IS 'btree index SyncHeld(root)';
@@ -4033,6 +5181,8 @@ COMMENT ON INDEX "slice"."__sync_step_ix_root_scope_l4sfn7gzd3" IS 'btree index 
 
 COMMENT ON INDEX "slice"."__sync_step_ix_scope_qlsdbwk3lt" IS 'btree index SyncStep(scope)';
 
+COMMENT ON INDEX "slice"."__sync_sync_run_finish_output_ix_root_7lxs3t6qrm" IS 'btree index SyncSyncRunFinishOutput(root)';
+
 COMMENT ON INDEX "slice"."__sync_sync_run_input_ix_root_bp43cbf2uj" IS 'btree index SyncSyncRunInput(root)';
 
 COMMENT ON STATISTICS "slice"."__assign_finish_stats_scope_step_ld6jyxztu6" IS 'statistics AssignFinish(scope, step)';
@@ -4052,6 +5202,12 @@ COMMENT ON STATISTICS "slice"."__fan_within_stats_kind_parent_3vvpgco4da" IS 'st
 COMMENT ON STATISTICS "slice"."__retry_finish_stats_scope_step_2nxi4d7tdj" IS 'statistics RetryFinish(scope, step)';
 
 COMMENT ON STATISTICS "slice"."__retry_step_stats_kind_scope_osnqmvpfhd" IS 'statistics RetryStep(kind, scope)';
+
+COMMENT ON STATISTICS "slice"."__review_finish_stats_scope_step_ac6ft3yr6e" IS 'statistics ReviewFinish(scope, step)';
+
+COMMENT ON STATISTICS "slice"."__review_step_stats_kind_scope_kgaij4jpus" IS 'statistics ReviewStep(kind, scope)';
+
+COMMENT ON STATISTICS "slice"."__review_within_stats_kind_parent_w3ajh3gekc" IS 'statistics ReviewWithin(kind, parent)';
 
 COMMENT ON STATISTICS "slice"."__sync_exclusive_stats_key_kind_smed76p3zh" IS 'statistics SyncExclusive(key, kind)';
 
@@ -4092,6 +5248,14 @@ COMMENT ON FUNCTION "slice"."__judge_retry_brittle_input_e4oxym4quk"("pg_catalog
 COMMENT ON FUNCTION "slice"."__judge_retry_done_exdy4mgpv7"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryDone and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__judge_retry_ladders_input_rvyvp655kl"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryLaddersInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_review_analyze_input_ggjatlxopu"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewAnalyzeInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_review_done_ip44ulamia"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_review_questions_input_gxroktbpm3"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewQuestionsInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_review_review_run_input_25ydhlu2pi"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewReviewRunInput and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__judge_sync_build_input_f7w2cjex5n"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncBuildInput and the relations its rules join it to';
 
@@ -4184,6 +5348,28 @@ COMMENT ON FUNCTION "slice"."__capture_retry_root_nujht4q2jp"() IS 'rule capture
 COMMENT ON FUNCTION "slice"."__capture_retry_steadfast_input_iqvn32jr3j"() IS 'rule capture of RetrySteadfastInput';
 
 COMMENT ON FUNCTION "slice"."__capture_retry_step_gox3p6ldla"() IS 'rule capture of RetryStep';
+
+COMMENT ON FUNCTION "slice"."__capture_review_analyze_input_fkzkzvqpo6"() IS 'rule capture of ReviewAnalyzeInput';
+
+COMMENT ON FUNCTION "slice"."__capture_review_done_gxpax2oqid"() IS 'rule capture of ReviewDone';
+
+COMMENT ON FUNCTION "slice"."__capture_review_failed_3nd4cow637"() IS 'rule capture of ReviewFailed';
+
+COMMENT ON FUNCTION "slice"."__capture_review_gather_input_kgvjnvjsxw"() IS 'rule capture of ReviewGatherInput';
+
+COMMENT ON FUNCTION "slice"."__capture_review_questions_input_yqxbkx73iq"() IS 'rule capture of ReviewQuestionsInput';
+
+COMMENT ON FUNCTION "slice"."__capture_review_result_m25jokn327"() IS 'rule capture of ReviewResult';
+
+COMMENT ON FUNCTION "slice"."__capture_review_review_run_input_gxlpdnn5rf"() IS 'rule capture of ReviewReviewRunInput';
+
+COMMENT ON FUNCTION "slice"."__capture_review_root_qgu5iwjyle"() IS 'rule capture of ReviewRoot';
+
+COMMENT ON FUNCTION "slice"."__capture_review_save_input_pdrqqmy66f"() IS 'rule capture of ReviewSaveInput';
+
+COMMENT ON FUNCTION "slice"."__capture_review_step_3y2i7xqqpk"() IS 'rule capture of ReviewStep';
+
+COMMENT ON FUNCTION "slice"."__capture_review_within_aqblir65lf"() IS 'rule capture of ReviewWithin';
 
 COMMENT ON FUNCTION "slice"."__capture_sync_build_input_uauzzgsmyw"() IS 'rule capture of SyncBuildInput';
 

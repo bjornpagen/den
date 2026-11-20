@@ -131,11 +131,6 @@ export const ChainOrderedInput = relation(
 	{ scope: DenScope, feed: closedId(ChainOrderedInputFeed), pages: pg.bigint, root: DenScope },
 	["scope", "root"]
 )
-export const ChainNext = relation(
-	"ChainNext",
-	{ from: DenStep, ordinal: natural, to: DenStep, root: DenScope },
-	["from", "ordinal", "root"]
-)
 export const ChainPageOutput = relation(
 	"ChainPageOutput",
 	{ step: DenStep, seq: Seq, items: pg.bigint, root: DenScope },
@@ -145,6 +140,21 @@ export const ChainPageOutputNext = relation(
 	"ChainPageOutputNext",
 	{ step: DenStep, value: Text, root: DenScope },
 	["step", "root"]
+)
+export const ChainChainRunFinishOutput = relation(
+	"ChainChainRunFinishOutput",
+	{ step: DenStep, root: DenScope },
+	["step", "root"]
+)
+export const ChainOrderedFinishOutput = relation(
+	"ChainOrderedFinishOutput",
+	{ step: DenStep, root: DenScope },
+	["step", "root"]
+)
+export const ChainNext = relation(
+	"ChainNext",
+	{ from: DenStep, ordinal: natural, to: DenStep, root: DenScope },
+	["from", "ordinal", "root"]
 )
 export const ChainPageWeightsRead = relation(
 	"ChainPageWeightsRead",
@@ -199,9 +209,11 @@ export const chainGraph = fragment(
 		ChainPageInputAfter,
 		ChainChainRunInput,
 		ChainOrderedInput,
-		ChainNext,
 		ChainPageOutput,
 		ChainPageOutputNext,
+		ChainChainRunFinishOutput,
+		ChainOrderedFinishOutput,
+		ChainNext,
 		ChainPageWeightsRead
 	],
 	[
@@ -275,12 +287,14 @@ export const chainGraph = fragment(
 				"scope"
 			)
 		),
-		contained(on(ChainNext, "from", "root"), on(ChainPageInput, "step", "root")),
-		contained(on(ChainNext, "to", "root"), on(ChainPageInput, "step", "root")),
-		key(on(ChainNext, "to", "root")),
 		contained(on(ChainPageOutput, "step", "root"), on(ChainPageInput, "step", "root")),
 		contained(on(ChainPageOutput, "step", "root"), on(ChainDone, "step", "root")),
 		contained(on(ChainPageOutputNext, "step", "root"), on(ChainPageOutput, "step", "root")),
+		contained(on(ChainChainRunFinishOutput, "step", "root"), on(ChainDone, "step", "root")),
+		contained(on(ChainOrderedFinishOutput, "step", "root"), on(ChainDone, "step", "root")),
+		contained(on(ChainNext, "from", "root"), on(ChainPageOutput, "step", "root")),
+		contained(on(ChainNext, "to", "root"), on(ChainPageInput, "step", "root")),
+		key(on(ChainNext, "to", "root")),
 		contained(on(ChainPageWeightsRead, "step", "root"), on(ChainResult, "step", "root")),
 		retirable(ChainRoot, [
 			on(ChainScope, "root"),
@@ -303,9 +317,11 @@ export const chainGraph = fragment(
 			on(ChainPageInputAfter, "root"),
 			on(ChainChainRunInput, "root"),
 			on(ChainOrderedInput, "root"),
-			on(ChainNext, "root"),
 			on(ChainPageOutput, "root"),
 			on(ChainPageOutputNext, "root"),
+			on(ChainChainRunFinishOutput, "root"),
+			on(ChainOrderedFinishOutput, "root"),
+			on(ChainNext, "root"),
 			on(ChainPageWeightsRead, "root")
 		])
 	]
@@ -337,6 +353,8 @@ export const chainWriter = [
 	"ChainHeld",
 	"ChainPageOutput",
 	"ChainPageOutputNext",
+	"ChainChainRunFinishOutput",
+	"ChainOrderedFinishOutput",
 	"ChainPageWeightsRead",
 	"ChainStep",
 	"ChainScope",

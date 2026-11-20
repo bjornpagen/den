@@ -485,15 +485,21 @@ export type SpawnOf<Children extends ReadonlyArray<ChildKind>> = {
 /** How a child step ended, as its scope's finish reads it: done with its output, or failed. */
 export type Ending<O> = { readonly _tag: "Done"; readonly output: O } | { readonly _tag: "Failed" }
 
-/** How a child scope ended, as its parent's finish reads it: its own finish done, or failed. A scope has no output. */
-export type ScopeEnding = { readonly _tag: "Done" } | { readonly _tag: "Failed" }
-
-/** What a finish reads of a child kind: a step kind's ending with its output, a scope kind's ending. */
-type EndingOf<K> = K extends { readonly _tag: "Step"; readonly output: infer OS }
-	? OS extends Stored
-		? Ending<OS["Type"]>
+/**
+ * What a node of a scope's graph gives the edges that leave it and the finish that reads it: a step kind's output, or
+ * a child scope kind's, its finish's, since a child scope ends as its finish does.
+ */
+export type OutputOf<K> = K extends {
+	readonly _tag: "Step"
+	readonly output: infer OS extends Stored
+}
+	? OS["Type"]
+	: K extends { readonly finish: { readonly output: infer OS extends Stored } }
+		? OS["Type"]
 		: never
-	: ScopeEnding
+
+/** What a finish reads of a child kind: its ending, done with its output (a child scope's, its finish's), or failed. */
+type EndingOf<K> = Ending<OutputOf<K>>
 
 /** The endings a finish reads, by the kind of each child it reads. */
 export type EndingsOf<Ended extends ReadonlyArray<ChildKind>> = {
@@ -501,26 +507,34 @@ export type EndingsOf<Ended extends ReadonlyArray<ChildKind>> = {
 }
 
 /**
- * A scope's finish: a step that runs once every child has ended, reads the endings of the kinds it names (done or
- * failed), and returns writes (a cursor moved, or held where a child failed).
+ * A scope's finish: a step that runs once every child has ended, reads the endings of the kinds it names (done with
+ * their outputs, or failed), and returns its output and writes (a cursor moved, or held where a child failed), as a
+ * step does. A child scope ends as its finish does: its parent's finish reads the finish's output as the scope's, and
+ * the edges that leave the scope kind spawn the next stage in its parent from the scope's input and that output.
  */
 export interface Finish<
 	I,
 	Ended extends ReadonlyArray<ChildKind>,
+	OS extends Stored,
 	ES extends ErrorSchema,
 	W extends WritesDeclaration,
 	R
 > {
 	readonly reads: Ended
+	readonly output: OS
 	readonly error: ES
 	readonly retry: Ladder
 	readonly writes: W
-	readonly body: (input: I, endings: EndingsOf<Ended>) => Effect.Effect<Writes<W>, ES["Type"], R>
+	readonly body: (
+		input: I,
+		endings: EndingsOf<Ended>
+	) => Effect.Effect<Done<OS["Type"], W>, ES["Type"], R>
 }
 
 /** Any finish, as a flow reads it. */
 export interface AnyFinish {
 	readonly reads: ReadonlyArray<{ readonly _tag: string; readonly name: string }>
+	readonly output: Stored
 	readonly error: ErrorSchema
 	readonly retry: Ladder
 	readonly writes: WritesDeclaration
@@ -613,13 +627,14 @@ export const scope = <
 	IS extends Stored,
 	const Children extends ReadonlyArray<ChildKind>,
 	const Ended extends ReadonlyArray<ChildKind>,
+	OS extends Stored,
 	ES extends ErrorSchema,
 	W extends WritesDeclaration,
 	R
 >(
 	name: Name,
-	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, ES, W, R>>
-): ScopeKind<Name, IS, Children, Finish<IS["Type"], Ended, ES, W, R>> => {
+	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, W, R>>
+): ScopeKind<Name, IS, Children, Finish<IS["Type"], Ended, OS, ES, W, R>> => {
 	named("scope", name)
 	return { _tag: "Scope", name, ...shape, of: spawnOf(name) }
 }
@@ -671,13 +686,14 @@ export const root = <
 	IS extends Stored,
 	const Children extends ReadonlyArray<ChildKind>,
 	const Ended extends ReadonlyArray<ChildKind>,
+	OS extends Stored,
 	ES extends ErrorSchema,
 	W extends WritesDeclaration,
 	R
 >(
 	name: Name,
-	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, ES, W, R>> & RootGates<IS["Type"]>
-): RootKind<Name, IS, Children, Finish<IS["Type"], Ended, ES, W, R>> => {
+	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, W, R>> & RootGates<IS["Type"]>
+): RootKind<Name, IS, Children, Finish<IS["Type"], Ended, OS, ES, W, R>> => {
 	named("root", name)
 	return { _tag: "Root", name, ...shape }
 }
@@ -691,23 +707,24 @@ export interface AnyScopeKindOf {
 	readonly finish: AnyFinish
 }
 
+/** What an edge leaves and spawns: a step kind, or a child scope kind, never a root, which only a trigger starts. */
+export type NodeKind = AnyStepKind | AnyScopeKindOf
+
 /**
- * A spawn edge: a pure function from a step's input and output to the inputs of the children it starts, of kind `to`,
- * in the step's own scope (a step) or as new child scopes (a scope kind). A result decides only which declared edges it
- * takes, and how often; a step that fails spawns nothing.
+ * A spawn edge: a pure function from a node's input and output to the inputs of the children it starts, of kind `to`,
+ * a step or a new child scope, in the scope its node lives in. A node is a step, its output its own, or a child scope
+ * kind, its output its finish's: an edge from a child scope is the next stage after it ends, spawned in its parent by
+ * its finish's commit (Timeback's prune after its pages; AlphaTest's save after its questions' cluster). A result
+ * decides only which declared edges it takes, and how often; a node that fails spawns nothing.
  */
-export interface Edge<
-	Name extends string,
-	From extends AnyStepKind,
-	To extends AnyStepKind | AnyScopeKindOf
-> {
+export interface Edge<Name extends string, From extends NodeKind, To extends NodeKind> {
 	readonly _tag: "Edge"
 	readonly name: Name
 	readonly from: From
 	readonly to: To
 	readonly next: (
 		input: From["input"]["Type"],
-		output: From["output"]["Type"]
+		output: OutputOf<From>
 	) => ReadonlyArray<To["input"]["Type"]>
 }
 
@@ -715,22 +732,15 @@ export interface Edge<
 export interface AnyEdge {
 	readonly _tag: "Edge"
 	readonly name: string
-	readonly from: AnyStepKind
-	readonly to: AnyStepKind | AnyScopeKindOf
+	readonly from: NodeKind
+	readonly to: NodeKind
 }
 
-export const edge = <
-	const Name extends string,
-	From extends AnyStepKind,
-	To extends AnyStepKind | AnyScopeKindOf
->(
+export const edge = <const Name extends string, From extends NodeKind, To extends NodeKind>(
 	name: Name,
 	from: From,
 	to: To,
-	next: (
-		input: From["input"]["Type"],
-		output: From["output"]["Type"]
-	) => ReadonlyArray<To["input"]["Type"]>
+	next: (input: From["input"]["Type"], output: OutputOf<From>) => ReadonlyArray<To["input"]["Type"]>
 ): Edge<Name, From, To> => {
 	named("edge", name)
 	return { _tag: "Edge", name, from, to, next }

@@ -209,6 +209,11 @@ export const AssignDecideOutputStageRest = relation(
 	{ step: DenStep, root: DenScope },
 	["step", "root"]
 )
+export const AssignAssignmentFinishOutput = relation(
+	"AssignAssignmentFinishOutput",
+	{ step: DenStep, root: DenScope },
+	["step", "root"]
+)
 export const AssignDecideNearestRead = relation(
 	"AssignDecideNearestRead",
 	{
@@ -282,6 +287,7 @@ export const assignGraph = fragment(
 		AssignDecideOutputWeighed,
 		AssignDecideOutputStageServe,
 		AssignDecideOutputStageRest,
+		AssignAssignmentFinishOutput,
 		AssignDecideNearestRead,
 		AssignDecideSeenRead
 	],
@@ -506,6 +512,7 @@ export const assignGraph = fragment(
 			),
 			on(AssignDecideOutputStageRest, "step", "root")
 		),
+		contained(on(AssignAssignmentFinishOutput, "step", "root"), on(AssignDone, "step", "root")),
 		contained(on(AssignDecideNearestRead, "step", "root"), on(AssignResult, "step", "root")),
 		contained(on(AssignDecideSeenRead, "step", "root"), on(AssignResult, "step", "root")),
 		retirable(AssignRoot, [
@@ -537,6 +544,7 @@ export const assignGraph = fragment(
 			on(AssignDecideOutputWeighed, "root"),
 			on(AssignDecideOutputStageServe, "root"),
 			on(AssignDecideOutputStageRest, "root"),
+			on(AssignAssignmentFinishOutput, "root"),
 			on(AssignDecideNearestRead, "root"),
 			on(AssignDecideSeenRead, "root")
 		])
@@ -571,6 +579,7 @@ export const assignWriter = [
 	"AssignDecideOutputWeighed",
 	"AssignDecideOutputStageServe",
 	"AssignDecideOutputStageRest",
+	"AssignAssignmentFinishOutput",
 	"AssignDecideNearestRead",
 	"AssignDecideSeenRead"
 ] as const

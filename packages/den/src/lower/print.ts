@@ -261,13 +261,14 @@ const isExclusive = (j: JoinIR): boolean => Option.exists(j.root, (r) => r.exclu
 /** The relations a flow's app role writes: each result, output, read and spawn a commit writes, and its roots' requests. */
 const writerRelationsOf = (l: Lowered): ReadonlyArray<string> => {
 	const P = l.prefix
-	const anySpawn = Arr.some(l.steps, (s) => Arr.isReadonlyArrayNonEmpty(s.edges))
+	const anySpawn = Arr.isReadonlyArrayNonEmpty(l.edges)
 	const appRoots = Arr.some(l.joins, (j) => isApp(j))
 	return Arr.dedupe([
 		`${P}Result`,
 		`${P}Done`,
 		`${P}Held`,
 		...Arr.flatMap(l.steps, (s) => valueRelations(s.output)),
+		...Arr.flatMap(l.joins, (j) => valueRelations(j.finish.output)),
 		...Arr.flatMap(l.steps, (s) => Arr.map(s.reads, (r) => r.record)),
 		...(anySpawn ? l.spawning : []),
 		...(appRoots ? l.requesting : [])
@@ -959,39 +960,40 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			])
 		}
 		Arr.forEach(j.finish.reads, (read) => {
-			if (read.kind === "scope") {
-				denPrograms.push([
-					n.program(`Endings${j.name}${read.name}`),
-					`query(${n.graph}).rule((r) => {
-	const { scope, parent } = v(${r("Within")}, "within")
-	const { step } = v(${r("Finish")}, "finish")
-	const { outcome } = v(${r("Result")}, "result")
-	return r
-		.match(${r("Within")}, { scope, parent, kind: ${q(read.name)} })
-		.match(${r("Finish")}, { scope, step })
-		.match(${r("Result")}, { step, outcome })
-		.where(r.eq(parent, ${scopeParam}))
-		.find({ child: scope, outcome })
-})`
-				])
-				return
-			}
 			const output = read.output
+			/**
+			 * The members a finish reads of a kind: the steps of a step kind in its scope, or the finishes of the child scopes
+			 * of a scope kind under it, each by its step, bound by the finish's scope.
+			 */
+			const ofKind =
+				read.kind === "step"
+					? {
+							bind: `const { step, scope } = v(${r("Step")}, "step")`,
+							match: `.match(${r("Step")}, { step, kind: ${q(read.name)}, scope })`,
+							owner: "scope"
+						}
+					: {
+							bind: `const { scope, parent } = v(${r("Within")}, "within")
+	const { step } = v(${r("Finish")}, "finish")`,
+							match: `.match(${r("Within")}, { scope, parent, kind: ${q(read.name)} })
+		.match(${r("Finish")}, { scope, step })`,
+							owner: "parent"
+						}
 			const outputsOf = (
 				relation: string,
 				fields: ReadonlyArray<string>,
 				label: string
 			): string => `query(${n.graph}).rule((r) => {
-	const { step, scope } = v(${r("Step")}, "step")${
+	${ofKind.bind}${
 		Arr.isReadonlyArrayNonEmpty(fields)
 			? `
 	const { ${commas(fields)} } = v(${relation}, ${q(label)})`
 			: ""
 	}
 	return r
-		.match(${r("Step")}, { step, kind: ${q(read.name)}, scope })
+		${ofKind.match}
 		.match(${relation}, { ${commas(["step", ...fields])} })
-		.where(r.eq(scope, ${scopeParam}))
+		.where(r.eq(${ofKind.owner}, ${scopeParam}))
 		.find({ ${commas(["step", ...fields])} })
 })`
 			const outputs = `Outputs${j.name}${read.name}`
@@ -1042,11 +1044,11 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			denPrograms.push([
 				n.program(`Failures${j.name}${read.name}`),
 				`query(${n.graph}).rule((r) => {
-	const { step, scope } = v(${r("Step")}, "step")
+	${ofKind.bind}
 	return r
-		.match(${r("Step")}, { step, kind: ${q(read.name)}, scope })
+		${ofKind.match}
 		.match(${r("Result")}, { step, outcome: "failed" })
-		.where(r.eq(scope, ${scopeParam}))
+		.where(r.eq(${ofKind.owner}, ${scopeParam}))
 		.find({ step })
 })`
 			])
@@ -1086,12 +1088,19 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			`clocked(query(${n.graph}).rule((r) => r.find({ now: r.param("now", DenInstant) })), { now: "millis" })`
 		]
 	]
-	Arr.forEach(l.steps, (s) => {
-		const spawns = Arr.isReadonlyArrayNonEmpty(s.edges)
-			? Arr.filter(l.spawning, (rel) => rel !== r("Step"))
-			: []
+	/**
+	 * A step's or a finish's commit: its result, its output, its reads' records, what its edges spawn (a step's in its
+	 * own scope, a finish's in its scope's parent) and the app's writes, in one call.
+	 */
+	const committing = (
+		name: string,
+		output: ValueIR,
+		records: ReadonlyArray<string>,
+		edges: ReadonlyArray<EdgeIR>,
+		w: WritesIR
+	) =>
 		commitPrograms.push([
-			n.program(`Commit${s.name}`),
+			n.program(`Commit${name}`),
 			commitOf(
 				n.graph,
 				W,
@@ -1099,26 +1108,33 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 					r("Result"),
 					r("Done"),
 					r("Held"),
-					...valueRelations(s.output),
-					...Arr.map(s.reads, (rd) => rd.record),
-					...spawns
+					...valueRelations(output),
+					...records,
+					...(Arr.isReadonlyArrayNonEmpty(edges)
+						? Arr.filter(l.spawning, (rel) => rel !== r("Step"))
+						: [])
 				],
-				Arr.isReadonlyArrayNonEmpty(s.edges)
+				Arr.isReadonlyArrayNonEmpty(edges)
 					? Option.some(spawnedStepsOf(n.graph, r("Step")))
 					: Option.none(),
-				s.writes,
+				w,
 				app
 			)
 		])
+	Arr.forEach(l.steps, (s) => {
+		committing(
+			s.name,
+			s.output,
+			Arr.map(s.reads, (rd) => rd.record),
+			s.edges,
+			s.writes
+		)
 		if (Arr.isReadonlyArrayNonEmpty(s.reads)) {
 			commitPrograms.push([n.program(`Read${s.name}`), deferred(readsOf(s.reads, app, W))])
 		}
 	})
 	Arr.forEach(l.joins, (j) =>
-		commitPrograms.push([
-			n.program(`Commit${j.finish.name}`),
-			commitOf(n.graph, W, [r("Result"), r("Done"), r("Held")], Option.none(), j.finish.writes, app)
-		])
+		committing(j.finish.name, j.finish.output, [], j.finish.edges, j.finish.writes)
 	)
 	const appRoots = Arr.filter(l.joins, isApp)
 	const requests = Arr.map(
@@ -1427,12 +1443,61 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		])
 	}
 
-	const edgeGrowth = (e: EdgeIR, from: string): string => {
+	/**
+	 * A committed node as an edge reads it, each an expression of the commit: the step it leaves from (a step, or a
+	 * finish), the input and output its edges' `next` takes, the scope what it spawns lives in (a step's own, a finish's
+	 * parent) and its root.
+	 */
+	interface Node {
+		readonly step: string
+		readonly input: string
+		readonly output: string
+		readonly owner: string
+		readonly root: string
+	}
+
+	const edgeGrowth = (e: EdgeIR, from: Node): string => {
+		const fact = `${e.relation}: [{ from: ${from.step}, ordinal: BigInt(ordinal), to: key, root: ${from.root} }]`
 		const each =
 			e.to.kind === "step"
-				? `Effect.map(edgeStep(${from}.turn.step, ${q(e.name)}, ordinal), (key): Grown => ${spawnedStep(e.to, "key", "input", `${from}.turn.scope`, `${e.relation}: [{ from: ${from}.turn.step, ordinal: BigInt(ordinal), to: key, root: ${from}.turn.root }]`, `${from}.turn.root`)})`
-				: `Effect.flatMap(edgeScope(${from}.turn.step, ${q(e.name)}, ordinal), (key) => ${openedScope(e.to, "key", "input", `${from}.turn.scope`, `${e.relation}: [{ from: ${from}.turn.step, ordinal: BigInt(ordinal), to: key, root: ${from}.turn.root }]`, `${from}.turn.root`)})`
-		return `Effect.map(Effect.forEach(${edgeAt(e.index)}.next(${from}.input, ${from}.output), (input, ordinal): Effect.Effect<Grown, never, Digest.Digest> => ${each}), (parts) => Arr.reduce(parts, nothingGrown, joined))`
+				? `Effect.map(edgeStep(${from.step}, ${q(e.name)}, ordinal), (key): Grown => ${spawnedStep(e.to, "key", "input", from.owner, fact, from.root)})`
+				: `Effect.flatMap(edgeScope(${from.step}, ${q(e.name)}, ordinal), (key) => ${openedScope(e.to, "key", "input", from.owner, fact, from.root)})`
+		return `Effect.map(Effect.forEach(${edgeAt(e.index)}.next(${from.input}, ${from.output}), (input, ordinal): Effect.Effect<Grown, never, Digest.Digest> => ${each}), (parts) => Arr.reduce(parts, nothingGrown, joined))`
+	}
+
+	/**
+	 * A commit port: what its edges spawn from `from`, then its result, its output, `records` and the app's writes in
+	 * one call, answering what it spawned.
+	 */
+	const commitPort = (
+		name: string,
+		output: ValueIR,
+		edges: ReadonlyArray<EdgeIR>,
+		w: WritesIR,
+		records: ReadonlyArray<string>,
+		from: Node
+	): string => {
+		const grow = Arr.isReadonlyArrayNonEmpty(edges)
+			? `Effect.map(Effect.all([${commas(Arr.map(edges, (e) => edgeGrowth(e, from)))}]), (parts) => Arr.reduce(parts, nothingGrown, joined))`
+			: "Effect.succeed(nothingGrown)"
+		return lines([
+			"commit: (done) => Effect.gen(function* () {",
+			`\tconst grown = yield* ${grow}`,
+			`\tconst outcome = yield* settled(h.commits.${n.program(`Commit${name}`)}.once({ params: ${Arr.isReadonlyArrayNonEmpty(edges) ? "{ steps: grown.steps, root: done.turn.root }" : "{}"}, facts: { ${opsOf(
+				[
+					...(Arr.isReadonlyArrayNonEmpty(edges) ? ["...grown.rows"] : []),
+					`${r("Result")}: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }]`,
+					`${r("Done")}: [{ step: done.turn.step, root: done.turn.root }]`,
+					`${r("Held")}: [{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }]`,
+					...factsOf(output, "done.turn.step", "done.output", "done.turn.root"),
+					...records
+				],
+				w,
+				"done"
+			)} } }))`,
+			"\treturn { outcome, spawned: grown.spawned }",
+			"})"
+		])
 	}
 
 	const opsOf = (inserts: ReadonlyArray<string>, w: WritesIR, done: string): string =>
@@ -1475,10 +1540,6 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		})
 
 	const stepRunner = (s: StepIR): string => {
-		const grow = Arr.isReadonlyArrayNonEmpty(s.edges)
-			? `Effect.map(Effect.all([${commas(Arr.map(s.edges, (e) => edgeGrowth(e, "done")))}]), (parts) => Arr.reduce(parts, nothingGrown, joined))`
-			: "Effect.succeed(nothingGrown)"
-		const spawnRows = Arr.isReadonlyArrayNonEmpty(s.edges) ? ["...grown.rows"] : []
 		const params = Arr.flatMap(s.reads, (rd) =>
 			Arr.map(paramsOf(rd), (param) => `${q(`${rd.name}.${param}`)}: ${rd.name}.${param}`)
 		)
@@ -1497,22 +1558,15 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			`runnerOf(${kindAt(s.index)}, {`,
 			`\tinput: (step) => ${readerOf(s.input)}(step),`,
 			`\t${read},`,
-			"\tcommit: (done) => Effect.gen(function* () {",
-			`\t\tconst grown = yield* ${grow}`,
-			`\t\tconst outcome = yield* settled(h.commits.${n.program(`Commit${s.name}`)}.once({ params: ${Arr.isReadonlyArrayNonEmpty(s.edges) ? "{ steps: grown.steps, root: done.turn.root }" : "{}"}, facts: { ${opsOf(
-				[
-					...spawnRows,
-					`${r("Result")}: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }]`,
-					`${r("Done")}: [{ step: done.turn.step, root: done.turn.root }]`,
-					`${r("Held")}: [{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }]`,
-					...factsOf(s.output, "done.turn.step", "done.output", "done.turn.root"),
-					...recordFacts(s, "done.rows", "done.turn")
-				],
-				s.writes,
-				"done"
-			)} } }))`,
-			"\t\treturn { outcome, spawned: grown.spawned }",
-			"\t}),",
+			`\t${indented("\t")(
+				commitPort(s.name, s.output, s.edges, s.writes, recordFacts(s, "done.rows", "done.turn"), {
+					step: "done.turn.step",
+					input: "done.input",
+					output: "done.output",
+					owner: "done.turn.scope",
+					root: "done.turn.root"
+				})
+			)},`,
 			`\t${failPort(s.name, s.error, (rows, turn) => recordFacts(s, rows, turn))}`,
 			"}, Option.none())"
 		])
@@ -1520,12 +1574,6 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 
 	const finishRunner = (j: JoinIR): string => {
 		const reads = Arr.map(j.finish.reads, (read) => {
-			if (read.kind === "scope") {
-				return lines([
-					`\t\tconst endings${read.name} = yield* Effect.map(settled(h.den.${n.program(`Endings${j.name}${read.name}`)}.once({ params: { scope }, facts: {} })), rowsOf)`,
-					`\t\tconst ${read.name} = Arr.map(endings${read.name}, (row) => (row.outcome === "done" ? { _tag: "Done" as const } : { _tag: "Failed" as const }))`
-				])
-			}
 			const output = read.output
 			const outputs = `Outputs${j.name}${read.name}`
 			const all = (name: string, program: string) =>
@@ -1535,9 +1583,17 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				family: (i) => `Arr.filter(family${read.name}${i}, (o) => o.step === row.step)`,
 				variant: (i, k) => `Arr.findFirst(variant${read.name}${i}_${k}, (o) => o.step === row.step)`
 			})
+			/** A row of the read's outputs, named only where its value reads it: an output of no field reads none. */
+			const row =
+				Arr.isReadonlyArrayEmpty(output.shape.columns) &&
+				Arr.isReadonlyArrayEmpty(output.sidecars) &&
+				Arr.isReadonlyArrayEmpty(output.families) &&
+				!unioned(output)
+					? ""
+					: "row"
 			const done = unioned(output)
 				? `...(yield* Effect.forEach(rows${read.name}, (row) => Effect.map(held(${value}), (output) => ({ _tag: "Done" as const, output }))))`
-				: `...Arr.map(rows${read.name}, (row) => ({ _tag: "Done" as const, output: ${value} }))`
+				: `...Arr.map(rows${read.name}, (${row}) => ({ _tag: "Done" as const, output: ${value} }))`
 			return lines([
 				all(`rows${read.name}`, outputs),
 				...Arr.map(output.sidecars, (s, i) =>
@@ -1559,13 +1615,15 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			])
 		})
 		const kind = kindAt(j.index)
+		/** A finish whose scope kind edges leave spawns them in its scope's parent, which it reads with its input. */
+		const spawns = Arr.isReadonlyArrayNonEmpty(j.finish.edges)
 		return lines([
 			"runnerOf(",
 			"\t{",
 			`\t\tname: ${q(j.finish.name)},`,
 			"\t\tuses: [],",
 			`\t\tretry: ${kind}.finish.retry,`,
-			`\t\tbody: (read: { readonly input: Parameters<(typeof ${kind})["start"]>[0]; readonly endings: Parameters<(typeof ${kind})["finish"]["body"]>[1] }) => Effect.map(${kind}.finish.body(read.input, read.endings), (writes) => ({ output: {}, writes }))`,
+			`\t\tbody: (read: { readonly input: Parameters<(typeof ${kind})["start"]>[0]; readonly endings: Parameters<(typeof ${kind})["finish"]["body"]>[1]${spawns ? "; readonly parent: ScopeKey" : ""} }) => ${kind}.finish.body(read.input, read.endings)`,
 			"\t},",
 			"\t{",
 			"\t\tinput: (step) => Effect.gen(function* () {",
@@ -1578,19 +1636,27 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			"\t\tif (Option.isNone(input)) {",
 			"\t\t\treturn Option.none()",
 			"\t\t}",
+			...(spawns
+				? [
+						`\t\tconst within = yield* ${keyRead(n.program("WithinOf"), "scope", "scope")}`,
+						"\t\tif (Option.isNone(within)) {",
+						"\t\t\treturn Option.none()",
+						"\t\t}"
+					]
+				: []),
 			...reads,
-			`\t\treturn Option.some({ input: input.value, endings: { ${commas(Arr.map(j.finish.reads, (read) => read.name))} } })`,
+			`\t\treturn Option.some({ input: input.value, endings: { ${commas(Arr.map(j.finish.reads, (read) => read.name))} }${spawns ? ", parent: within.value.parent" : ""} })`,
 			"\t}),",
 			"\t\tread: () => Effect.succeed([]),",
-			`\t\tcommit: (done) => Effect.map(settled(h.commits.${n.program(`Commit${j.finish.name}`)}.once({ params: {}, facts: { ${opsOf(
-				[
-					`${r("Result")}: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }]`,
-					`${r("Done")}: [{ step: done.turn.step, root: done.turn.root }]`,
-					`${r("Held")}: [{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }]`
-				],
-				j.finish.writes,
-				"done"
-			)} } })), (outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })),`,
+			`\t\t${indented("\t\t")(
+				commitPort(j.finish.name, j.finish.output, j.finish.edges, j.finish.writes, [], {
+					step: "done.turn.step",
+					input: "done.input.input",
+					output: "done.output",
+					owner: "done.input.parent",
+					root: "done.turn.root"
+				})
+			)},`,
 			`\t\t${failPort(j.finish.name, j.finish.error, () => [])}`,
 			"\t},",
 			`\tOption.some(${q(j.name)})`,
@@ -1743,7 +1809,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const fragmentTypes = Arr.filter(fragmentImports, (name) => !Arr.contains(fragmentValues, name))
 	const valueReaders = [...Arr.map(l.steps, (s) => s.input), ...Arr.map(l.joins, (j) => j.input)]
 	const finishOutputs = Arr.flatMap(l.joins, (j) =>
-		Arr.flatMap(j.finish.reads, (ended) => (ended.kind === "step" ? [ended.output] : []))
+		Arr.map(j.finish.reads, (ended) => ended.output)
 	)
 	const finishUnions = Arr.some(finishOutputs, unioned)
 	const families = Arr.some([...valueReaders, ...finishOutputs], (v) =>

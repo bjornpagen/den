@@ -137,6 +137,16 @@ export const SyncBuildOutput = relation(
 	{ step: DenStep, build: pg.bigint, root: DenScope },
 	["step", "root"]
 )
+export const SyncSyncRunFinishOutput = relation(
+	"SyncSyncRunFinishOutput",
+	{ step: DenStep, root: DenScope },
+	["step", "root"]
+)
+export const SyncGoldFinishOutput = relation(
+	"SyncGoldFinishOutput",
+	{ step: DenStep, root: DenScope },
+	["step", "root"]
+)
 export const SyncExclusive = relation(
 	"SyncExclusive",
 	{ kind: closedId(SyncRootKind), key: DenExclusive, turn: natural, scope: DenScope },
@@ -188,7 +198,9 @@ export const syncGraph = fragment(
 		SyncSyncRunInput,
 		SyncGoldInput,
 		SyncCopyOutput,
-		SyncBuildOutput
+		SyncBuildOutput,
+		SyncSyncRunFinishOutput,
+		SyncGoldFinishOutput
 	],
 	[
 		contained(on(SyncExclusiveKey, "scope", "root"), on(SyncScope, "scope", "root")),
@@ -270,6 +282,8 @@ export const syncGraph = fragment(
 		contained(on(SyncCopyOutput, "step", "root"), on(SyncDone, "step", "root")),
 		contained(on(SyncBuildOutput, "step", "root"), on(SyncBuildInput, "step", "root")),
 		contained(on(SyncBuildOutput, "step", "root"), on(SyncDone, "step", "root")),
+		contained(on(SyncSyncRunFinishOutput, "step", "root"), on(SyncDone, "step", "root")),
+		contained(on(SyncGoldFinishOutput, "step", "root"), on(SyncDone, "step", "root")),
 		retirable(SyncRoot, [
 			on(SyncScope, "root"),
 			on(SyncExclusiveKey, "root"),
@@ -293,7 +307,9 @@ export const syncGraph = fragment(
 			on(SyncSyncRunInput, "root"),
 			on(SyncGoldInput, "root"),
 			on(SyncCopyOutput, "root"),
-			on(SyncBuildOutput, "root")
+			on(SyncBuildOutput, "root"),
+			on(SyncSyncRunFinishOutput, "root"),
+			on(SyncGoldFinishOutput, "root")
 		])
 	]
 )
@@ -327,5 +343,7 @@ export const syncWriter = [
 	"SyncDone",
 	"SyncHeld",
 	"SyncCopyOutput",
-	"SyncBuildOutput"
+	"SyncBuildOutput",
+	"SyncSyncRunFinishOutput",
+	"SyncGoldFinishOutput"
 ] as const

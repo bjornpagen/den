@@ -41,9 +41,11 @@ import {
 	ChainPageInputAfter,
 	ChainChainRunInput,
 	ChainOrderedInput,
-	ChainNext,
 	ChainPageOutput,
 	ChainPageOutputNext,
+	ChainChainRunFinishOutput,
+	ChainOrderedFinishOutput,
+	ChainNext,
 	ChainPageWeightsRead,
 	ChainPaused,
 	ChainResumed,
@@ -80,6 +82,8 @@ export const ChainDen = role(
 			"ChainPageInputAfter",
 			"ChainChainRunInput",
 			"ChainOrderedInput",
+			"ChainChainRunFinishOutput",
+			"ChainOrderedFinishOutput",
 			"ChainPageWeightsRead"
 		]
 	}
@@ -558,11 +562,19 @@ export const chainCommitPrograms = Object.freeze({
 		})
 	),
 	chainCommitChainRunFinish: ChangeSet.union(
-		ChangeSet.empty(chainGraph).insert(ChainResult, []).insert(ChainDone, []).insert(ChainHeld, []),
+		ChangeSet.empty(chainGraph)
+			.insert(ChainResult, [])
+			.insert(ChainDone, [])
+			.insert(ChainHeld, [])
+			.insert(ChainChainRunFinishOutput, []),
 		ChangeSet.empty(Loader).insert(App.relations.Cursor, [])
 	),
 	chainCommitOrderedFinish: ChangeSet.union(
-		ChangeSet.empty(chainGraph).insert(ChainResult, []).insert(ChainDone, []).insert(ChainHeld, []),
+		ChangeSet.empty(chainGraph)
+			.insert(ChainResult, [])
+			.insert(ChainDone, [])
+			.insert(ChainHeld, [])
+			.insert(ChainOrderedFinishOutput, []),
 		ChangeSet.empty(Loader).insert(App.relations.Cursor, [])
 	)
 })

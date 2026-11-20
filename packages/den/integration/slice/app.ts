@@ -11,6 +11,7 @@ import {
 	fanSeatLevel
 } from "#integration/slice/generated/fan.fragment.ts"
 import { retryCoordination, retryGraph } from "#integration/slice/generated/retry.fragment.ts"
+import { reviewCoordination, reviewGraph } from "#integration/slice/generated/review.fragment.ts"
 import { syncCoordination, syncGraph } from "#integration/slice/generated/sync.fragment.ts"
 import {
 	Assigned,
@@ -24,13 +25,15 @@ import {
 	Missed,
 	Order,
 	Passage,
+	Reviewed,
 	Seen,
 	Settled,
+	Summary,
 	Tally,
 	Weight
 } from "#integration/slice/relations.ts"
 
-/** The toy app's own level, each of den's five flows listed as its graph and its coordination fragments. */
+/** The toy app's own level, each of den's six flows listed as its graph and its coordination fragments. */
 const Listed = schema(
 	"Slice",
 	[
@@ -49,6 +52,8 @@ const Listed = schema(
 		Seen,
 		Assigned,
 		Concluded,
+		Reviewed,
+		Summary,
 		chainGraph,
 		chainCoordination,
 		fanGraph,
@@ -58,7 +63,9 @@ const Listed = schema(
 		retryGraph,
 		retryCoordination,
 		assignGraph,
-		assignCoordination
+		assignCoordination,
+		reviewGraph,
+		reviewCoordination
 	],
 	[contained(on(Audit, "step", "root"), on(ChainResult, "step", "root"))]
 )

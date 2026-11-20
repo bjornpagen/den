@@ -122,10 +122,11 @@ const declare = (fault: Fault) => {
 	const Stray = step(fault === "twice" ? "A" : "Stray", shape([]), done)
 	const finish = <const Reads extends ReadonlyArray<AnyStepKind>>(reads: Reads) => ({
 		reads,
+		output: Empty,
 		error: Schema.Never,
 		retry: attempts(1),
 		writes: writesNothing,
-		body: () => Effect.succeed({ insert: {}, put: {}, delete: {} })
+		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
 	})
 	const Inner = scope("Inner", {
 		input: Empty,

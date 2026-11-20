@@ -135,6 +135,16 @@ export const FanSquareOutput = relation(
 	{ step: DenStep, square: pg.bigint, root: DenScope },
 	["step", "root"]
 )
+export const FanBatchFinishOutput = relation(
+	"FanBatchFinishOutput",
+	{ step: DenStep, root: DenScope },
+	["step", "root"]
+)
+export const FanFanRunFinishOutput = relation(
+	"FanFanRunFinishOutput",
+	{ step: DenStep, root: DenScope },
+	["step", "root"]
+)
 const FanHold = relation(
 	"FanHold",
 	{
@@ -188,6 +198,8 @@ export const fanGraph = fragment(
 		FanBatchInput,
 		FanFanRunInput,
 		FanSquareOutput,
+		FanBatchFinishOutput,
+		FanFanRunFinishOutput,
 		FanHold
 	],
 	[
@@ -265,6 +277,8 @@ export const fanGraph = fragment(
 		),
 		contained(on(FanSquareOutput, "step", "root"), on(FanSquareInput, "step", "root")),
 		contained(on(FanSquareOutput, "step", "root"), on(FanDone, "step", "root")),
+		contained(on(FanBatchFinishOutput, "step", "root"), on(FanDone, "step", "root")),
+		contained(on(FanFanRunFinishOutput, "step", "root"), on(FanDone, "step", "root")),
 		ordered(on(FanHold, "step", "root", "attempt", "at"), fin(FanClaim, "holds")),
 		retirable(FanRoot, [
 			on(FanScope, "root"),
@@ -289,6 +303,8 @@ export const fanGraph = fragment(
 			on(FanBatchInput, "root"),
 			on(FanFanRunInput, "root"),
 			on(FanSquareOutput, "root"),
+			on(FanBatchFinishOutput, "root"),
+			on(FanFanRunFinishOutput, "root"),
 			on(FanHold, "root")
 		])
 	]
@@ -339,4 +355,11 @@ export const fanSeatLevel = {
 } as const
 
 /** The den relations the flow's app role `loader` inserts into: each step's commit's, and each app root's request's. */
-export const fanWriter = ["FanResult", "FanDone", "FanHeld", "FanSquareOutput"] as const
+export const fanWriter = [
+	"FanResult",
+	"FanDone",
+	"FanHeld",
+	"FanSquareOutput",
+	"FanBatchFinishOutput",
+	"FanFanRunFinishOutput"
+] as const

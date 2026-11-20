@@ -50,15 +50,17 @@ parents, awaits completed from outside, stopping, fairness and priority are not 
   `input → Effect<{ output, writes }, Error, R>`, where `writes` is a ChangeSet over the app's relations and `R` holds
   no grizzle handle.
 - **Scope kind.** A join: it owns the steps started in it and finishes exactly once, after every child has ended
-  (done or failed); its finish is a step that reads the children's endings and returns writes (a cursor moved, or held
-  where a child failed). A scope kind may hold a seat for its whole life: that is exclusivity (one live run per
+  (done or failed); its finish is a step that reads the children's endings and returns its output and writes (a cursor
+  moved, or held where a child failed), and a child scope ends as its finish does, its output the finish's. A scope kind may hold a seat for its whole life: that is exclusivity (one live run per
   relation, W1; per collection, W3; per request kind, W2; one Gold build, W4). It may carry a window (W1 to W4) and a
   precondition, a read that must be empty for it to be admitted (W4: no Timeback or QTI step pending).
 - **Root kind.** A scope started by a trigger: a schedule (W1 to W4, W7), an operator (W4's button, W8) or the app's
   own write inside its own transaction. The only way a graph begins; its key is its trigger and idempotency key.
-- **Edge kind.** A pure function from a step's input and output to the inputs of the steps it spawns, in the same
-  scope or in a new child scope: chains whose result names the next step (W2, W3, W4), a timer that re-arms (W5),
-  fan-out over a computed partition with split (W1), the next stage (W1, W2, W4). A step that fails spawns nothing.
+- **Edge kind.** A pure function from a node's input and output to the inputs of the steps or child scopes it spawns,
+  in the scope the node lives in; a node is a step, or a child scope, its output its finish's, whose finish's commit
+  spawns the next stage in its parent: chains whose result names the next step (W2, W3, W4), a timer that re-arms (W5),
+  fan-out over a computed partition with split (W1), the next stage after a scope (W1, W2, W4; AlphaTest's save after
+  its questions' cluster). A node that fails spawns nothing: an edge's facts are contained in its node's output.
 - **Resources.** A named bottleneck whose capacity is its seats, as rows, each count a limit with evidence: W1's
   replica holds 8, the operator's hold on a bastion shared with other principals. A fixed host (a server of one's own,
   celld) is a resource whose seats are its workers; on an elastic host compute is no resource. A step holds a seat

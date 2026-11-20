@@ -177,7 +177,10 @@ export interface WritesIR {
 	readonly delete: ReadonlyArray<string>
 }
 
-/** An edge, lowered: the relation of its facts, and the kind it spawns. */
+/**
+ * An edge, lowered: the relation of its facts, the node it leaves (a step kind, or a child scope kind whose finish's
+ * commit spawns it in the scope's parent), and the kind it spawns.
+ */
 export interface EdgeIR {
 	readonly name: string
 	readonly index: number
@@ -249,10 +252,16 @@ export interface SpawnedScopeIR {
  */
 export type SpawnedIR = SpawnedStepIR | SpawnedScopeIR
 
-/** What a finish reads of a child kind: a step kind's endings with its outputs, or a scope kind's endings. */
-export type FinishReadIR =
-	| { readonly kind: "step"; readonly name: string; readonly output: ValueIR }
-	| { readonly kind: "scope"; readonly name: string }
+/**
+ * What a finish reads of a child kind: its endings with their outputs, a step kind's own or a child scope kind's, its
+ * finish's, which the finish reads from the steps of the kind in its scope or from the finishes of the child scopes of
+ * the kind under it.
+ */
+export interface FinishReadIR {
+	readonly kind: "step" | "scope"
+	readonly name: string
+	readonly output: ValueIR
+}
 
 /** What only a root has: its trigger, whether it holds an exclusivity seat, and the flows its precondition names. */
 export interface RootIR {
@@ -270,10 +279,13 @@ export interface JoinIR {
 	readonly children: ReadonlyArray<SpawnedIR>
 	readonly finish: {
 		readonly name: string
+		readonly output: ValueIR
 		readonly error: Option.Option<ValueIR>
 		readonly writes: WritesIR
 		readonly retry: Ladder
 		readonly reads: ReadonlyArray<FinishReadIR>
+		/** The edges that leave the scope kind, which its finish's commit spawns in the scope's parent. */
+		readonly edges: ReadonlyArray<EdgeIR>
 	}
 }
 
@@ -834,6 +846,38 @@ export const lower = (flow: AnyFlow): Lowered => {
 			throw new Refused({ declaration: `flow ${p}`, why: `no kind ${kindName} takes an input` })
 		})
 
+	/**
+	 * Each node's output, by its kind's name: a step kind's, held only where its step is done and its input holds it, and
+	 * a scope kind's, its finish's, held only where its finish is done; an edge leaves a node only from its output, so a
+	 * node that failed spawns nothing.
+	 */
+	const outputs = new Map<string, ValueIR>()
+	Arr.forEach(steps, (s) =>
+		outputs.set(
+			s.name,
+			valued(name(`${s.name}Output`), "step", s.output, `step ${s.name}`, [
+				side(inputOf(s.name).relation, ["step"]),
+				doneSide
+			])
+		)
+	)
+	Arr.forEach(joins, (j) =>
+		outputs.set(
+			j.name,
+			valued(
+				name(`${finishName(j)}Output`),
+				"step",
+				j.finish.output,
+				`${j._tag === "Root" ? "root" : "scope"} ${j.name}`,
+				[doneSide]
+			)
+		)
+	)
+	const outputOf = (kindName: string): ValueIR =>
+		Option.getOrElse(Option.fromNullishOr(outputs.get(kindName)), () => {
+			throw new Refused({ declaration: `flow ${p}`, why: `no kind ${kindName} gives an output` })
+		})
+
 	const spawnedOf = (kind: { readonly _tag: string; readonly name: string }): SpawnedIR =>
 		kind._tag === "Step"
 			? { kind: "step", name: kind.name, index: at(kind.name), input: inputOf(kind.name) }
@@ -851,7 +895,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 			key: ["from", "ordinal"]
 		})
 		laws.push(
-			into(side(edgeRelation, ["from"]), side(inputOf(e.from.name).relation, ["step"])),
+			into(side(edgeRelation, ["from"]), side(outputOf(e.from.name).relation, ["step"])),
 			into(side(edgeRelation, ["to"]), side(to.input.relation, [to.kind])),
 			keyOf(edgeRelation, ["to"])
 		)
@@ -931,10 +975,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const stepsIR: ReadonlyArray<StepIR> = Arr.map(steps, (s) => {
 		const declaration = `step ${s.name}`
 		const input = inputOf(s.name)
-		const output = valued(name(`${s.name}Output`), "step", s.output, declaration, [
-			side(input.relation, ["step"]),
-			doneSide
-		])
+		const output = outputOf(s.name)
 		const error = Option.map(errorShapeOf(declaration, s.error), (shape) =>
 			valued(name(`${s.name}Error`), "step", shape, declaration, [
 				side(input.relation, ["step"]),
@@ -977,26 +1018,16 @@ export const lower = (flow: AnyFlow): Lowered => {
 			children: Arr.map(j.children, spawnedOf),
 			finish: {
 				name: finish,
+				output: outputOf(j.name),
 				error,
 				writes: writesOf(j.finish.writes),
 				retry: j.finish.retry,
-				reads: Arr.map(j.finish.reads, (read): FinishReadIR =>
-					read._tag === "Step"
-						? {
-								kind: "step",
-								name: read.name,
-								output: Option.getOrElse(
-									Option.map(
-										Arr.findFirst(stepsIR, (s) => s.name === read.name),
-										(s) => s.output
-									),
-									() => {
-										throw new Refused({ declaration, why: `no step ${read.name} gives an output` })
-									}
-								)
-							}
-						: { kind: "scope", name: read.name }
-				)
+				reads: Arr.map(j.finish.reads, (read): FinishReadIR => ({
+					kind: read._tag === "Step" ? "step" : "scope",
+					name: read.name,
+					output: outputOf(read.name)
+				})),
+				edges: Arr.filter(edgesIR, (e) => e.from === j.name)
 			}
 		}
 	})

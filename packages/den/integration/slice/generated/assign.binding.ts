@@ -478,11 +478,7 @@ export const assignLedger = (h: AssignHandles) => {
 				body: (read: {
 					readonly input: Parameters<(typeof assign.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof assign.kinds)[1]["finish"]["body"]>[1]
-				}) =>
-					Effect.map(assign.kinds[1].finish.body(read.input, read.endings), (writes) => ({
-						output: {},
-						writes
-					}))
+				}) => assign.kinds[1].finish.body(read.input, read.endings)
 			},
 			{
 				input: (step) =>
@@ -565,8 +561,9 @@ export const assignLedger = (h: AssignHandles) => {
 					}),
 				read: () => Effect.succeed([]),
 				commit: (done) =>
-					Effect.map(
-						settled(
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
 							h.commits.assignCommitAssignmentFinish.once({
 								params: {},
 								facts: {
@@ -576,13 +573,14 @@ export const assignLedger = (h: AssignHandles) => {
 										AssignHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
+										AssignAssignmentFinishOutput: [{ step: done.turn.step, root: done.turn.root }],
 										Concluded: done.writes.insert.Concluded
 									}
 								}
 							})
-						),
-						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-					),
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
 				fail: (failed) => Effect.die(failed.error)
 			},
 			Option.some("Assignment")

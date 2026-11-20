@@ -344,11 +344,7 @@ export const retryLedger = (h: RetryHandles) => {
 				body: (read: {
 					readonly input: Parameters<(typeof retry.kinds)[2]["start"]>[0]
 					readonly endings: Parameters<(typeof retry.kinds)[2]["finish"]["body"]>[1]
-				}) =>
-					Effect.map(retry.kinds[2].finish.body(read.input, read.endings), (writes) => ({
-						output: {},
-						writes
-					}))
+				}) => retry.kinds[2].finish.body(read.input, read.endings)
 			},
 			{
 				input: (step) =>
@@ -399,8 +395,9 @@ export const retryLedger = (h: RetryHandles) => {
 					}),
 				read: () => Effect.succeed([]),
 				commit: (done) =>
-					Effect.map(
-						settled(
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
 							h.commits.retryCommitLaddersFinish.once({
 								params: {},
 								facts: {
@@ -409,13 +406,14 @@ export const retryLedger = (h: RetryHandles) => {
 										RetryDone: [{ step: done.turn.step, root: done.turn.root }],
 										RetryHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-										]
+										],
+										RetryLaddersFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
 									}
 								}
 							})
-						),
-						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-					),
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
 				fail: (failed) => Effect.die(failed.error)
 			},
 			Option.some("Ladders")

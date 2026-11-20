@@ -33,23 +33,30 @@ import {
 	Item,
 	Missed,
 	Passage,
+	Reviewed,
 	Seen,
 	Settled,
+	Summary,
 	Tally,
 	Weight
 } from "#integration/slice/relations.ts"
 import type { Loader } from "#integration/slice/roles.ts"
 
 /**
- * The slice's five flows: a chain whose pages read a weight before their bodies run, started by an operator or by the
+ * The slice's six flows: a chain whose pages read a weight before their bodies run, started by an operator or by the
  * app's own write; a fan-out whose squares share a resource of two seats; a sync whose roots hold an exclusivity seat
  * per relation, beside a Gold build admitted only while the chain has nothing pending; two retry ladders, one that ends
  * and one that never does; and an assignment, the assignment engine's shape, whose one step reads the passages nearest
- * a missed question's stored embedding and the passages its learner has seen, in one snapshot. Every flow writes the app's relations under its app role
- * `loader`.
+ * a missed question's stored embedding and the passages its learner has seen, in one snapshot; and a review, AlphaTest's
+ * gap analysis's shape, whose first step's edge opens a child scope per group of questions, each group's finish a
+ * cluster over its questions whose commit spawns the group's save in the review. Every flow writes the app's relations
+ * under its app role `loader`.
  */
 
 const loader = writer<typeof Loader>("loader")
+
+/** The output of a finish whose scope's parent reads nothing of it beyond its ending, and from which no edge leaves. */
+const Finished = Schema.Struct({})
 
 /** The ordinals `0 … count − 1`, none for a count of 0. */
 const ordinals = (count: number): ReadonlyArray<number> =>
@@ -138,6 +145,7 @@ const ChainInput = Schema.Struct({ feed: Feed, pages: Schema.BigInt })
 /** A chain's finish: the feed's cursor moved to the furthest page read. */
 const moveCursor = Object.freeze({
 	reads: [Page],
+	output: Finished,
 	error: Schema.Never,
 	retry: attempts(3),
 	writes: writes({ insert: [Cursor], put: [], delete: [] }),
@@ -146,18 +154,21 @@ const moveCursor = Object.freeze({
 		endings: { readonly Page: ReadonlyArray<Ending<typeof PageRead.Type>> }
 	) =>
 		Effect.succeed({
-			insert: {
-				Cursor: [
-					{
-						feed: run.feed,
-						position: Arr.reduce(endings.Page, -1n, (last, ending) =>
-							ending._tag === "Done" && ending.output.seq > last ? ending.output.seq : last
-						)
-					}
-				]
-			},
-			put: {},
-			delete: {}
+			output: {},
+			writes: {
+				insert: {
+					Cursor: [
+						{
+							feed: run.feed,
+							position: Arr.reduce(endings.Page, -1n, (last, ending) =>
+								ending._tag === "Done" && ending.output.seq > last ? ending.output.seq : last
+							)
+						}
+					]
+				},
+				put: {},
+				delete: {}
+			}
 		})
 })
 
@@ -241,24 +252,28 @@ const Batch = scope("Batch", {
 		Arr.map(ordinals(Number(b.size)), (n) => Square.of({ batch: b.batch, n: BigInt(n + 1) })),
 	finish: {
 		reads: [Square],
+		output: Finished,
 		error: Schema.Never,
 		retry: attempts(3),
 		writes: writes({ insert: [Tally], put: [], delete: [] }),
 		body: (b, endings) =>
 			Effect.succeed({
-				insert: {
-					Tally: [
-						{
-							batch: b.batch,
-							count: BigInt(endings.Square.length),
-							total: Arr.reduce(endings.Square, 0n, (sum, e) =>
-								e._tag === "Done" ? sum + e.output.square : sum
-							)
-						}
-					]
-				},
-				put: {},
-				delete: {}
+				output: {},
+				writes: {
+					insert: {
+						Tally: [
+							{
+								batch: b.batch,
+								count: BigInt(endings.Square.length),
+								total: Arr.reduce(endings.Square, 0n, (sum, e) =>
+									e._tag === "Done" ? sum + e.output.square : sum
+								)
+							}
+						]
+					},
+					put: {},
+					delete: {}
+				}
 			})
 	}
 })
@@ -274,11 +289,15 @@ const FanRun = root("FanRun", {
 	precondition: unconditional,
 	finish: {
 		reads: [Batch],
+		output: Finished,
 		error: Schema.Never,
 		retry: attempts(3),
 		writes: writes({ insert: [Settled], put: [], delete: [] }),
 		body: (run) =>
-			Effect.succeed({ insert: { Settled: [{ batch: run.batch }] }, put: {}, delete: {} })
+			Effect.succeed({
+				output: {},
+				writes: { insert: { Settled: [{ batch: run.batch }] }, put: {}, delete: {} }
+			})
 	}
 })
 
@@ -322,10 +341,11 @@ const SyncRun = root("SyncRun", {
 	precondition: unconditional,
 	finish: {
 		reads: [],
+		output: Finished,
 		error: Schema.Never,
 		retry: attempts(3),
 		writes: writesNothing,
-		body: () => Effect.succeed({ insert: {}, put: {}, delete: {} })
+		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
 	}
 })
 
@@ -360,10 +380,11 @@ const Gold = root("Gold", {
 	precondition: idle("Chain"),
 	finish: {
 		reads: [],
+		output: Finished,
 		error: Schema.Never,
 		retry: attempts(3),
 		writes: writesNothing,
-		body: () => Effect.succeed({ insert: {}, put: {}, delete: {} })
+		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
 	}
 })
 
@@ -433,10 +454,11 @@ const Ladders = root("Ladders", {
 	precondition: unconditional,
 	finish: {
 		reads: [Steadfast, Brittle],
+		output: Finished,
 		error: Schema.Never,
 		retry: attempts(3),
 		writes: writesNothing,
-		body: () => Effect.succeed({ insert: {}, put: {}, delete: {} })
+		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
 	}
 })
 
@@ -574,6 +596,7 @@ const Assignment = root("Assignment", {
 	precondition: unconditional,
 	finish: {
 		reads: [Decide],
+		output: Finished,
 		error: Schema.Never,
 		retry: attempts(3),
 		writes: writes({ insert: [Concluded], put: [], delete: [] }),
@@ -582,22 +605,25 @@ const Assignment = root("Assignment", {
 			endings: { readonly Decide: ReadonlyArray<Ending<typeof Decision.Type>> }
 		) =>
 			Effect.succeed({
-				insert: {
-					Concluded: Arr.flatMap(endings.Decide, (ending) =>
-						ending._tag === "Done"
-							? [
-									{
-										learner: probe.learner,
-										served:
-											ending.output.stage._tag === "Serve" ? ending.output.stage.passage : "rest",
-										weighed: BigInt(ending.output.weighed.length)
-									}
-								]
-							: []
-					)
-				},
-				put: {},
-				delete: {}
+				output: {},
+				writes: {
+					insert: {
+						Concluded: Arr.flatMap(endings.Decide, (ending) =>
+							ending._tag === "Done"
+								? [
+										{
+											learner: probe.learner,
+											served:
+												ending.output.stage._tag === "Serve" ? ending.output.stage.passage : "rest",
+											weighed: BigInt(ending.output.weighed.length)
+										}
+									]
+								: []
+						)
+					},
+					put: {},
+					delete: {}
+				}
 			})
 	}
 })
@@ -606,4 +632,183 @@ export const assign = flow("Assign", {
 	writes: loader,
 	kinds: [Decide, Assignment],
 	edges: []
+})
+
+/** A review: its key, and how many questions each of its groups holds, in order. */
+const ReviewInput = Schema.Struct({ review: Schema.String, sizes: Schema.Array(Schema.BigInt) })
+
+/** One group of a review: the review, the group's place, and how many questions it holds. */
+const GroupInput = Schema.Struct({
+	review: Schema.String,
+	group: Schema.BigInt,
+	size: Schema.BigInt
+})
+
+/** One question of a group, by its place from 1. */
+const QuestionInput = Schema.Struct({
+	review: Schema.String,
+	group: Schema.BigInt,
+	question: Schema.BigInt
+})
+
+/** A group's cluster: how many of its questions were analysed, and their scores' total. */
+const Clustered = Schema.Struct({ count: Schema.BigInt, total: Schema.BigInt })
+
+/** Analyses one question of a group: its score, the square of its place. */
+const Analyze = step(
+	"Analyze",
+	{
+		input: QuestionInput,
+		output: Schema.Struct({ score: Schema.BigInt }),
+		error: Schema.Never,
+		reads: {},
+		uses: [],
+		retry: attempts(3),
+		due: atSpawn,
+		writes: writesNothing
+	},
+	(question) =>
+		Effect.succeed({
+			output: { score: question.question * question.question },
+			writes: { insert: {}, put: {}, delete: {} }
+		})
+)
+
+/**
+ * A group's questions, one Analyze each, and its finish, the cluster over every question's analysis, whose output is
+ * the group's: AlphaTest's gap analysis's map and its reduce.
+ */
+const Questions = scope("Questions", {
+	input: GroupInput,
+	children: [Analyze],
+	start: (group) =>
+		Arr.map(ordinals(Number(group.size)), (n) =>
+			Analyze.of({ review: group.review, group: group.group, question: BigInt(n + 1) })
+		),
+	finish: {
+		reads: [Analyze],
+		output: Clustered,
+		error: Schema.Never,
+		retry: attempts(3),
+		writes: writesNothing,
+		body: (_group, endings) =>
+			Effect.succeed({
+				output: {
+					count: BigInt(endings.Analyze.length),
+					total: Arr.reduce(endings.Analyze, 0n, (sum, e) =>
+						e._tag === "Done" ? sum + e.output.score : sum
+					)
+				},
+				writes: { insert: {}, put: {}, delete: {} }
+			})
+	}
+})
+
+/** Gathers a review: it names its groups, which its edge opens as child scopes. */
+const Gather = step(
+	"Gather",
+	{
+		input: ReviewInput,
+		output: Schema.Struct({ groups: Schema.BigInt }),
+		error: Schema.Never,
+		reads: {},
+		uses: [],
+		retry: attempts(3),
+		due: atSpawn,
+		writes: writesNothing
+	},
+	(review) =>
+		Effect.succeed({
+			output: { groups: BigInt(review.sizes.length) },
+			writes: { insert: {}, put: {}, delete: {} }
+		})
+)
+
+/** A review's groups, each a child scope of its questions, opened by the edge from Gather. */
+const Split = edge("Split", Gather, Questions, (review) =>
+	Arr.map(review.sizes, (size, group) => ({ review: review.review, group: BigInt(group), size }))
+)
+
+/** Saves one group once its questions' cluster has run: the group's row, from its input and its cluster. */
+const Save = step(
+	"Save",
+	{
+		input: Schema.Struct({
+			review: Schema.String,
+			group: Schema.BigInt,
+			count: Schema.BigInt,
+			total: Schema.BigInt
+		}),
+		output: Schema.Struct({ total: Schema.BigInt }),
+		error: Schema.Never,
+		reads: {},
+		uses: [],
+		retry: attempts(3),
+		due: atSpawn,
+		writes: writes({ insert: [Reviewed], put: [], delete: [] })
+	},
+	(group) =>
+		Effect.succeed({
+			output: { total: group.total },
+			writes: {
+				insert: {
+					Reviewed: [
+						{ review: group.review, group: group.group, count: group.count, total: group.total }
+					]
+				},
+				put: {},
+				delete: {}
+			}
+		})
+)
+
+/** The next stage after a group's questions end: its save, spawned in the review by the cluster's commit. */
+const Saved = edge("Saved", Questions, Save, (group, cluster) => [
+	{ review: group.review, group: group.group, count: cluster.count, total: cluster.total }
+])
+
+/**
+ * A review an operator starts: Gather, whose edge opens one Questions scope per group, each followed by its Save once
+ * its cluster has run; its finish sums what every group's cluster gave and how many groups saved.
+ */
+const ReviewRun = root("ReviewRun", {
+	trigger: operator,
+	input: ReviewInput,
+	children: [Gather],
+	start: (review) => [Gather.of(review)],
+	exclusive: shared,
+	window: always,
+	precondition: unconditional,
+	finish: {
+		reads: [Questions, Save],
+		output: Finished,
+		error: Schema.Never,
+		retry: attempts(3),
+		writes: writes({ insert: [Summary], put: [], delete: [] }),
+		body: (review, endings) =>
+			Effect.succeed({
+				output: {},
+				writes: {
+					insert: {
+						Summary: [
+							{
+								review: review.review,
+								groups: BigInt(Arr.filter(endings.Save, (e) => e._tag === "Done").length),
+								total: Arr.reduce(endings.Questions, 0n, (sum, e) =>
+									e._tag === "Done" ? sum + e.output.total : sum
+								)
+							}
+						]
+					},
+					put: {},
+					delete: {}
+				}
+			})
+	}
+})
+
+export const review = flow("Review", {
+	writes: loader,
+	kinds: [Analyze, Questions, Gather, Save, ReviewRun],
+	edges: [Split, Saved]
 })

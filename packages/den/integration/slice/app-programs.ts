@@ -50,6 +50,12 @@ import {
 	RetryStep
 } from "#integration/slice/generated/retry.fragment.ts"
 import {
+	ReviewFinish,
+	ReviewResult,
+	ReviewStep,
+	ReviewWithin
+} from "#integration/slice/generated/review.fragment.ts"
+import {
 	SyncAdmitted,
 	SyncFinish,
 	SyncResult,
@@ -67,8 +73,10 @@ import {
 	Missed,
 	Order,
 	Passage,
+	Reviewed,
 	Seen,
 	Settled,
+	Summary,
 	Tally,
 	Weight
 } from "#integration/slice/relations.ts"
@@ -137,12 +145,18 @@ export const Auditor = role(
 		RetryExhausted,
 		RetryResult,
 		RetryStep,
+		ReviewFinish,
+		ReviewResult,
+		ReviewStep,
+		ReviewWithin,
+		Reviewed,
 		Settled,
 		SyncAdmitted,
 		SyncFinish,
 		SyncResult,
 		SyncScope,
 		SyncSkipped,
+		Summary,
 		Tally,
 		Weight
 	},
@@ -213,6 +227,44 @@ const fanFinishes = query(Auditor).rule((r) => {
 	return r
 		.match(FanFinish, { scope, step })
 		.match(FanResult, { step, outcome })
+		.find({ scope, step, outcome })
+})
+
+/** Each review's saved groups. */
+const reviewed = query(Auditor).rule((r) => {
+	const { review, group, count, total } = v(Reviewed, "reviewed")
+	return r.match(Reviewed, { review, group, count, total }).find({ review, group, count, total })
+})
+
+/** Each review's summary. */
+const summaries = query(Auditor).rule((r) => {
+	const { review, groups, total } = v(Summary, "summary")
+	return r.match(Summary, { review, groups, total }).find({ review, groups, total })
+})
+
+/** Every review step, its kind and the scope it lives in, with its outcome. */
+const reviewSteps = query(Auditor).rule((r) => {
+	const { step, kind, scope } = v(ReviewStep, "step")
+	const { outcome } = v(ReviewResult, "result")
+	return r
+		.match(ReviewStep, { step, kind, scope })
+		.match(ReviewResult, { step, outcome })
+		.find({ step, kind, scope, outcome })
+})
+
+/** Every child scope of a review, its parent and its kind. */
+const reviewWithins = query(Auditor).rule((r) => {
+	const { scope, parent, kind } = v(ReviewWithin, "within")
+	return r.match(ReviewWithin, { scope, parent, kind }).find({ scope, parent, kind })
+})
+
+/** Every review scope's finish and its outcome. */
+const reviewFinishes = query(Auditor).rule((r) => {
+	const { scope, step } = v(ReviewFinish, "finish")
+	const { outcome } = v(ReviewResult, "result")
+	return r
+		.match(ReviewFinish, { scope, step })
+		.match(ReviewResult, { step, outcome })
 		.find({ scope, step, outcome })
 })
 
@@ -470,6 +522,11 @@ export const auditWorkload = workload(Auditor, {
 	tallies,
 	settled,
 	fanFinishes,
+	reviewed,
+	summaries,
+	reviewSteps,
+	reviewWithins,
+	reviewFinishes,
 	copied,
 	built,
 	syncAdmitted,

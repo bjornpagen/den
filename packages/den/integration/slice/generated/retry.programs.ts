@@ -39,6 +39,7 @@ import {
 	RetryLaddersInput,
 	RetrySteadfastOutput,
 	RetryBrittleOutput,
+	RetryLaddersFinishOutput,
 	RetryPaused,
 	RetryResumed,
 	retryGraph,
@@ -72,7 +73,8 @@ export const RetryDen = role(
 			"RetryExhausted",
 			"RetrySteadfastInput",
 			"RetryBrittleInput",
-			"RetryLaddersInput"
+			"RetryLaddersInput",
+			"RetryLaddersFinishOutput"
 		]
 	}
 )
@@ -475,6 +477,7 @@ export const retryCommitPrograms = Object.freeze({
 		.insert(RetryResult, [])
 		.insert(RetryDone, [])
 		.insert(RetryHeld, [])
+		.insert(RetryLaddersFinishOutput, [])
 })
 
 export const retryCommits = workload(Loader, retryCommitPrograms)

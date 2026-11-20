@@ -129,6 +129,11 @@ export const RetryBrittleOutput = relation(
 	{ step: DenStep, key: Text, root: DenScope },
 	["step", "root"]
 )
+export const RetryLaddersFinishOutput = relation(
+	"RetryLaddersFinishOutput",
+	{ step: DenStep, root: DenScope },
+	["step", "root"]
+)
 export const RetryPaused = relation(
 	"RetryPaused",
 	{ target: closedId(RetryPausable), turn: natural },
@@ -168,7 +173,8 @@ export const retryGraph = fragment(
 		RetryBrittleInput,
 		RetryLaddersInput,
 		RetrySteadfastOutput,
-		RetryBrittleOutput
+		RetryBrittleOutput,
+		RetryLaddersFinishOutput
 	],
 	[
 		contained(on(RetryAdmitted, "scope", "root"), on(RetryScope, "scope", "root")),
@@ -245,6 +251,7 @@ export const retryGraph = fragment(
 		contained(on(RetrySteadfastOutput, "step", "root"), on(RetryDone, "step", "root")),
 		contained(on(RetryBrittleOutput, "step", "root"), on(RetryBrittleInput, "step", "root")),
 		contained(on(RetryBrittleOutput, "step", "root"), on(RetryDone, "step", "root")),
+		contained(on(RetryLaddersFinishOutput, "step", "root"), on(RetryDone, "step", "root")),
 		retirable(RetryRoot, [
 			on(RetryScope, "root"),
 			on(RetryAdmitted, "root"),
@@ -266,7 +273,8 @@ export const retryGraph = fragment(
 			on(RetryBrittleInput, "root"),
 			on(RetryLaddersInput, "root"),
 			on(RetrySteadfastOutput, "root"),
-			on(RetryBrittleOutput, "root")
+			on(RetryBrittleOutput, "root"),
+			on(RetryLaddersFinishOutput, "root")
 		])
 	]
 )
@@ -286,5 +294,6 @@ export const retryWriter = [
 	"RetryDone",
 	"RetryHeld",
 	"RetrySteadfastOutput",
-	"RetryBrittleOutput"
+	"RetryBrittleOutput",
+	"RetryLaddersFinishOutput"
 ] as const

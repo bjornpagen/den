@@ -41,6 +41,8 @@ import {
 	SyncGoldInput,
 	SyncCopyOutput,
 	SyncBuildOutput,
+	SyncSyncRunFinishOutput,
+	SyncGoldFinishOutput,
 	SyncExclusive,
 	SyncReleased,
 	SyncPaused,
@@ -86,7 +88,9 @@ export const SyncDen = role(
 			"SyncCopyInput",
 			"SyncBuildInput",
 			"SyncSyncRunInput",
-			"SyncGoldInput"
+			"SyncGoldInput",
+			"SyncSyncRunFinishOutput",
+			"SyncGoldFinishOutput"
 		]
 	}
 )
@@ -540,11 +544,13 @@ export const syncCommitPrograms = Object.freeze({
 	syncCommitSyncRunFinish: ChangeSet.empty(syncGraph)
 		.insert(SyncResult, [])
 		.insert(SyncDone, [])
-		.insert(SyncHeld, []),
+		.insert(SyncHeld, [])
+		.insert(SyncSyncRunFinishOutput, []),
 	syncCommitGoldFinish: ChangeSet.empty(syncGraph)
 		.insert(SyncResult, [])
 		.insert(SyncDone, [])
 		.insert(SyncHeld, [])
+		.insert(SyncGoldFinishOutput, [])
 })
 
 export const syncCommits = workload(Loader, syncCommitPrograms)

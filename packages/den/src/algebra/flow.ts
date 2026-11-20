@@ -87,8 +87,9 @@ export const stepsOf = (kinds: ReadonlyArray<AnyKind>): ReadonlyArray<AnyStepKin
 	Arr.filter(kinds, (kind): kind is AnyStepKind => kind._tag === "Step")
 
 /**
- * The kinds a join holds: its children, and what edges from its steps spawn in the same scope or as child scopes,
- * transitively through steps, never into a child scope's own members.
+ * The kinds a join holds: its children, and what the edges from them spawn, from a step in the same scope and from a
+ * child scope in the scope that holds it, as steps or child scopes, transitively, never into a child scope's own
+ * members.
  */
 export const membersOf = (
 	join: AnyJoin,
@@ -101,9 +102,7 @@ export const membersOf = (
 		const reached: ReadonlyArray<AnyKind> = [
 			...found,
 			...Arr.flatMap(edges, (e) =>
-				Arr.some(found, (k) => k._tag === "Step" && k.name === e.from.name)
-					? Option.toArray(declared(e.to.name))
-					: []
+				Arr.some(found, (k) => k.name === e.from.name) ? Option.toArray(declared(e.to.name)) : []
 			)
 		]
 		const next = Arr.dedupeWith(reached, (a, b) => a.name === b.name)
@@ -127,7 +126,8 @@ const resourcesOf = (
 }
 
 /**
- * A flow, checked: its names unique and PascalCase, every edge between declared kinds and from a step, every kind but a
+ * A flow, checked: its names unique and PascalCase, every edge between declared kinds and from a step or a child scope (a
+ * root has no parent to spawn its next stage in), every kind but a
  * root owned by some scope (named by a join's children or an edge's target), at least one root, every finish reading
  * only kinds its scope holds, and its resources distinct by name. A refusal is thrown as `Refused`, when the module
  * declaring the flow loads.
@@ -159,7 +159,7 @@ export const flow = <
 		if (!Arr.some(kinds, (k) => k === e.from)) {
 			refuse(
 				declaration,
-				`edge ${e.name} starts at ${e.from.name}, a step the flow does not declare`
+				`edge ${e.name} starts at ${e.from.name}, a kind the flow does not declare`
 			)
 		}
 		if (!declaredKind(e.to)) {

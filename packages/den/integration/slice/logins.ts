@@ -38,6 +38,15 @@ import {
 	retryRetirerWorkload
 } from "#integration/slice/generated/retry.programs.ts"
 import {
+	ReviewCoordinator,
+	ReviewDen,
+	ReviewRetirer,
+	reviewCommits,
+	reviewCoordinatorWorkload,
+	reviewDenWorkload,
+	reviewRetirerWorkload
+} from "#integration/slice/generated/review.programs.ts"
+import {
 	SyncDen,
 	SyncCoordinator,
 	SyncRetirer,
@@ -67,7 +76,10 @@ export const Worker = login(
 		RetryRetirer,
 		AssignDen,
 		AssignCoordinator,
-		AssignRetirer
+		AssignRetirer,
+		ReviewDen,
+		ReviewCoordinator,
+		ReviewRetirer
 	],
 	{
 		workload: [
@@ -85,7 +97,10 @@ export const Worker = login(
 			retryRetirerWorkload,
 			assignDenWorkload,
 			assignCoordinatorWorkload,
-			assignRetirerWorkload
+			assignRetirerWorkload,
+			reviewDenWorkload,
+			reviewCoordinatorWorkload,
+			reviewRetirerWorkload
 		]
 	}
 )
@@ -98,6 +113,7 @@ export const AppLogin = login(App, "app", [Loader, Auditor], {
 		syncCommits,
 		retryCommits,
 		assignCommits,
+		reviewCommits,
 		appWorkload,
 		auditWorkload
 	]

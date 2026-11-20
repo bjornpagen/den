@@ -1,5 +1,7 @@
 CREATE INDEX "__assign_admitted_ix_root_pot3vpqjrt" ON "slice"."assign_admitted" USING btree ("root");
 
+CREATE INDEX "__assign_assignment_finish_output_ix_root_t2nmfubzxm" ON "slice"."assign_assignment_finish_output" USING btree ("root");
+
 CREATE INDEX "__assign_assignment_input_ix_root_scope_ndn57wfv5p" ON "slice"."assign_assignment_input" USING btree ("root", "scope");
 
 CREATE INDEX "__assign_assignment_input_exclude_ix_scope_u_6_ypqf_45dew4mkec" ON "slice"."assign_assignment_input_exclude" USING btree ("__scope_u6ypqf2r2z", "__pred_ordinal_rdz3ttleig", "__root_yjobx7uyrd");
@@ -78,6 +80,8 @@ CREATE INDEX "__assign_step_ix_scope_kind_step_xn2zxx73po" ON "slice"."assign_st
 
 CREATE INDEX "__chain_admitted_ix_root_3xhdqkpeqw" ON "slice"."chain_admitted" USING btree ("root");
 
+CREATE INDEX "__chain_chain_run_finish_output_ix_root_wb6phhwc2j" ON "slice"."chain_chain_run_finish_output" USING btree ("root");
+
 CREATE INDEX "__chain_chain_run_input_ix_root_7abe6kcg67" ON "slice"."chain_chain_run_input" USING btree ("root");
 
 CREATE INDEX "__chain_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_gdjkwebwlh" ON "slice"."chain_claim" USING btree ("__step_ouvkclqzzd", "__pred_attempt_dqbvoe7dfs", "__root_yewsvvtcyz");
@@ -101,6 +105,8 @@ CREATE INDEX "__chain_finish_ix_scope_step_om6bljb56e" ON "slice"."chain_finish"
 CREATE INDEX "__chain_held_ix_root_havzgkxex3" ON "slice"."chain_held" USING btree ("root");
 
 CREATE INDEX "__chain_next_ix_root_from_5hhx2qutdl" ON "slice"."chain_next" USING btree ("root", "from");
+
+CREATE INDEX "__chain_ordered_finish_output_ix_root_hrdok3djgq" ON "slice"."chain_ordered_finish_output" USING btree ("root");
 
 CREATE INDEX "__chain_ordered_input_ix_root_wmmk2yqn4t" ON "slice"."chain_ordered_input" USING btree ("root");
 
@@ -140,6 +146,8 @@ CREATE INDEX "__chain_step_ix_step_kind_root_2pdoze4bhr" ON "slice"."chain_step"
 
 CREATE INDEX "__fan_admitted_ix_root_cjavzjrmil" ON "slice"."fan_admitted" USING btree ("root");
 
+CREATE INDEX "__fan_batch_finish_output_ix_root_xzmsfqk7gw" ON "slice"."fan_batch_finish_output" USING btree ("root");
+
 CREATE INDEX "__fan_batch_input_ix_root_scope_24ynzsffio" ON "slice"."fan_batch_input" USING btree ("root", "scope");
 
 CREATE INDEX "__fan_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_7_scbit3alr4" ON "slice"."fan_claim" USING btree ("__step_ouvkclqzzd", "__pred_attempt_dqbvoe7dfs", "__root_yewsvvtcyz");
@@ -153,6 +161,8 @@ CREATE INDEX "__fan_ended_ix_root_step_unjzbpnw46" ON "slice"."fan_ended" USING 
 CREATE INDEX "__fan_exhausted_ix_root_2diuxfgt5s" ON "slice"."fan_exhausted" USING btree ("root");
 
 CREATE INDEX "__fan_failed_ix_root_step_ciyeplozai" ON "slice"."fan_failed" USING btree ("root", "step");
+
+CREATE INDEX "__fan_fan_run_finish_output_ix_root_gol6fu3ini" ON "slice"."fan_fan_run_finish_output" USING btree ("root");
 
 CREATE INDEX "__fan_fan_run_input_ix_root_25alzzoykh" ON "slice"."fan_fan_run_input" USING btree ("root");
 
@@ -228,6 +238,8 @@ CREATE INDEX "__retry_finish_ix_scope_step_6tswescc6v" ON "slice"."retry_finish"
 
 CREATE INDEX "__retry_held_ix_root_ytwhkhubpt" ON "slice"."retry_held" USING btree ("root");
 
+CREATE INDEX "__retry_ladders_finish_output_ix_root_trnh6kkzim" ON "slice"."retry_ladders_finish_output" USING btree ("root");
+
 CREATE INDEX "__retry_ladders_input_ix_root_co4bnpgzm5" ON "slice"."retry_ladders_input" USING btree ("root");
 
 CREATE INDEX "__retry_paused_ix_target_pred_turn_qryngij_6_c_4_5kkljt6kwu" ON "slice"."retry_paused" USING btree ("target", "__pred_turn_qryngij6c4");
@@ -255,6 +267,88 @@ CREATE INDEX "__retry_steadfast_output_ix_root_sp7in5arxz" ON "slice"."retry_ste
 CREATE INDEX "__retry_step_ix_root_scope_ogbhay3han" ON "slice"."retry_step" USING btree ("root", "scope");
 
 CREATE INDEX "__retry_step_ix_scope_kind_step_m6ufaqcqmk" ON "slice"."retry_step" USING btree ("scope", "kind", "step");
+
+CREATE INDEX "__review_admitted_ix_root_yaphj2wqrq" ON "slice"."review_admitted" USING btree ("root");
+
+CREATE INDEX "__review_analyze_input_ix_root_step_bdsim6bffp" ON "slice"."review_analyze_input" USING btree ("root", "step");
+
+CREATE INDEX "__review_analyze_output_ix_root_txmlnhynqs" ON "slice"."review_analyze_output" USING btree ("root");
+
+CREATE INDEX "__review_claim_ix_step_ouvkclqzzd_pred_attempt_5jggipiwlr" ON "slice"."review_claim" USING btree ("__step_ouvkclqzzd", "__pred_attempt_dqbvoe7dfs", "__root_yewsvvtcyz");
+
+CREATE INDEX "__review_claim_ix_root_m3m66zu4qb" ON "slice"."review_claim" USING btree ("root");
+
+CREATE INDEX "__review_done_ix_root_step_wex3643ujb" ON "slice"."review_done" USING btree ("root", "step");
+
+CREATE INDEX "__review_ended_ix_root_2lfye35dgu" ON "slice"."review_ended" USING btree ("root");
+
+CREATE INDEX "__review_exhausted_ix_root_a6onvxywcp" ON "slice"."review_exhausted" USING btree ("root");
+
+CREATE INDEX "__review_failed_ix_root_step_cegc4opyjz" ON "slice"."review_failed" USING btree ("root", "step");
+
+CREATE INDEX "__review_fenced_ix_root_hfika5dgn2" ON "slice"."review_fenced" USING btree ("root");
+
+CREATE INDEX "__review_finish_ix_root_vnnzpwlvrw" ON "slice"."review_finish" USING btree ("root");
+
+CREATE INDEX "__review_finish_ix_scope_step_4k6s2nqgyy" ON "slice"."review_finish" USING btree ("scope", "step");
+
+CREATE INDEX "__review_gather_input_ix_root_step_wsoyzlnuyr" ON "slice"."review_gather_input" USING btree ("root", "step");
+
+CREATE INDEX "__review_gather_input_sizes_ix_step_mjpuijzth_4_pred_be4mal6542" ON "slice"."review_gather_input_sizes" USING btree ("__step_mjpuijzth4", "__pred_ordinal_rdz3ttleig", "__root_yjobx7uyrd");
+
+CREATE INDEX "__review_gather_input_sizes_ix_root_step_dargnvbdje" ON "slice"."review_gather_input_sizes" USING btree ("root", "step");
+
+CREATE INDEX "__review_gather_output_ix_root_5h75f2sreb" ON "slice"."review_gather_output" USING btree ("root");
+
+CREATE INDEX "__review_held_ix_root_6mb66m6iql" ON "slice"."review_held" USING btree ("root");
+
+CREATE INDEX "__review_paused_ix_target_pred_turn_qryngij_6_c_4_sdt7yco6va" ON "slice"."review_paused" USING btree ("target", "__pred_turn_qryngij6c4");
+
+CREATE INDEX "__review_questions_finish_output_ix_root_4nx3bn5p6q" ON "slice"."review_questions_finish_output" USING btree ("root");
+
+CREATE INDEX "__review_questions_input_ix_root_scope_sy2ibbggdo" ON "slice"."review_questions_input" USING btree ("root", "scope");
+
+CREATE INDEX "__review_refusal_ix_root_mlhjigotld" ON "slice"."review_refusal" USING btree ("root");
+
+CREATE INDEX "__review_result_ix_root_step_h2vlej63gu" ON "slice"."review_result" USING btree ("root", "step");
+
+CREATE INDEX "__review_result_ix_step_outcome_root_lbrp6nyb6i" ON "slice"."review_result" USING btree ("step", "outcome", "root");
+
+CREATE INDEX "__review_retry_ix_root_jzaljr6st4" ON "slice"."review_retry" USING btree ("root");
+
+CREATE INDEX "__review_review_run_finish_output_ix_root_qafu34k5sc" ON "slice"."review_review_run_finish_output" USING btree ("root");
+
+CREATE INDEX "__review_review_run_input_ix_root_abc3mheba4" ON "slice"."review_review_run_input" USING btree ("root");
+
+CREATE INDEX "__review_review_run_input_sizes_ix_scope_u_6_ypqf_2_ufblvqrxeq" ON "slice"."review_review_run_input_sizes" USING btree ("__scope_u6ypqf2r2z", "__pred_ordinal_rdz3ttleig", "__root_yjobx7uyrd");
+
+CREATE INDEX "__review_review_run_input_sizes_ix_root_scope_2dnx7skohl" ON "slice"."review_review_run_input_sizes" USING btree ("root", "scope");
+
+CREATE INDEX "__review_save_input_ix_root_step_xd5keujf45" ON "slice"."review_save_input" USING btree ("root", "step");
+
+CREATE INDEX "__review_save_output_ix_root_kjgtclpf33" ON "slice"."review_save_output" USING btree ("root");
+
+CREATE INDEX "__review_saved_ix_root_from_v3hbuyomqf" ON "slice"."review_saved" USING btree ("root", "from");
+
+CREATE INDEX "__review_scope_ix_root_riuyuqzrup" ON "slice"."review_scope" USING btree ("root");
+
+CREATE INDEX "__review_skipped_ix_by_6z5g634njq" ON "slice"."review_skipped" USING btree ("by");
+
+CREATE INDEX "__review_skipped_ix_root_qms5trih4o" ON "slice"."review_skipped" USING btree ("root");
+
+CREATE INDEX "__review_split_ix_root_from_p42z7fr7z4" ON "slice"."review_split" USING btree ("root", "from");
+
+CREATE INDEX "__review_start_scope_ix_root_scope_nki37x7g5o" ON "slice"."review_start_scope" USING btree ("root", "scope");
+
+CREATE INDEX "__review_start_step_ix_root_scope_hmuyhclidm" ON "slice"."review_start_step" USING btree ("root", "scope");
+
+CREATE INDEX "__review_step_ix_root_scope_jvmzqg2kjy" ON "slice"."review_step" USING btree ("root", "scope");
+
+CREATE INDEX "__review_step_ix_scope_kind_step_udhxex4i5c" ON "slice"."review_step" USING btree ("scope", "kind", "step");
+
+CREATE INDEX "__review_within_ix_parent_kind_scope_dtilr5xomp" ON "slice"."review_within" USING btree ("parent", "kind", "scope");
+
+CREATE INDEX "__review_within_ix_root_parent_ah77vqo2bx" ON "slice"."review_within" USING btree ("root", "parent");
 
 CREATE INDEX "__sync_admitted_ix_root_vormyuqk5x" ON "slice"."sync_admitted" USING btree ("root");
 
@@ -288,6 +382,8 @@ CREATE INDEX "__sync_finish_ix_root_zrpyhvrere" ON "slice"."sync_finish" USING b
 
 CREATE INDEX "__sync_finish_ix_scope_step_owsw7m5w74" ON "slice"."sync_finish" USING btree ("scope", "step");
 
+CREATE INDEX "__sync_gold_finish_output_ix_root_gqwdl72ukv" ON "slice"."sync_gold_finish_output" USING btree ("root");
+
 CREATE INDEX "__sync_gold_input_ix_root_fmnsnept43" ON "slice"."sync_gold_input" USING btree ("root");
 
 CREATE INDEX "__sync_held_ix_root_yxqvodlkmy" ON "slice"."sync_held" USING btree ("root");
@@ -312,6 +408,8 @@ CREATE INDEX "__sync_step_ix_root_scope_l4sfn7gzd3" ON "slice"."sync_step" USING
 
 CREATE INDEX "__sync_step_ix_scope_qlsdbwk3lt" ON "slice"."sync_step" USING btree ("scope");
 
+CREATE INDEX "__sync_sync_run_finish_output_ix_root_7lxs3t6qrm" ON "slice"."sync_sync_run_finish_output" USING btree ("root");
+
 CREATE INDEX "__sync_sync_run_input_ix_root_bp43cbf2uj" ON "slice"."sync_sync_run_input" USING btree ("root");
 
 CREATE STATISTICS "slice"."__assign_finish_stats_scope_step_ld6jyxztu6" (ndistinct, dependencies, mcv) ON "scope", "step" FROM "slice"."assign_finish";
@@ -331,6 +429,12 @@ CREATE STATISTICS "slice"."__fan_within_stats_kind_parent_3vvpgco4da" (ndistinct
 CREATE STATISTICS "slice"."__retry_finish_stats_scope_step_2nxi4d7tdj" (ndistinct, dependencies, mcv) ON "scope", "step" FROM "slice"."retry_finish";
 
 CREATE STATISTICS "slice"."__retry_step_stats_kind_scope_osnqmvpfhd" (ndistinct, dependencies, mcv) ON "kind", "scope" FROM "slice"."retry_step";
+
+CREATE STATISTICS "slice"."__review_finish_stats_scope_step_ac6ft3yr6e" (ndistinct, dependencies, mcv) ON "scope", "step" FROM "slice"."review_finish";
+
+CREATE STATISTICS "slice"."__review_step_stats_kind_scope_kgaij4jpus" (ndistinct, dependencies, mcv) ON "kind", "scope" FROM "slice"."review_step";
+
+CREATE STATISTICS "slice"."__review_within_stats_kind_parent_w3ajh3gekc" (ndistinct, dependencies, mcv) ON "kind", "parent" FROM "slice"."review_within";
 
 CREATE STATISTICS "slice"."__sync_exclusive_stats_key_kind_smed76p3zh" (ndistinct, dependencies, mcv) ON "key", "kind" FROM "slice"."sync_exclusive";
 

@@ -423,11 +423,7 @@ export const chainLedger = (h: ChainHandles) => {
 				body: (read: {
 					readonly input: Parameters<(typeof chain.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof chain.kinds)[1]["finish"]["body"]>[1]
-				}) =>
-					Effect.map(chain.kinds[1].finish.body(read.input, read.endings), (writes) => ({
-						output: {},
-						writes
-					}))
+				}) => chain.kinds[1].finish.body(read.input, read.endings)
 			},
 			{
 				input: (step) =>
@@ -474,8 +470,9 @@ export const chainLedger = (h: ChainHandles) => {
 					}),
 				read: () => Effect.succeed([]),
 				commit: (done) =>
-					Effect.map(
-						settled(
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
 							h.commits.chainCommitChainRunFinish.once({
 								params: {},
 								facts: {
@@ -485,13 +482,14 @@ export const chainLedger = (h: ChainHandles) => {
 										ChainHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
+										ChainChainRunFinishOutput: [{ step: done.turn.step, root: done.turn.root }],
 										Cursor: done.writes.insert.Cursor
 									}
 								}
 							})
-						),
-						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-					),
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
 				fail: (failed) => Effect.die(failed.error)
 			},
 			Option.some("ChainRun")
@@ -504,11 +502,7 @@ export const chainLedger = (h: ChainHandles) => {
 				body: (read: {
 					readonly input: Parameters<(typeof chain.kinds)[2]["start"]>[0]
 					readonly endings: Parameters<(typeof chain.kinds)[2]["finish"]["body"]>[1]
-				}) =>
-					Effect.map(chain.kinds[2].finish.body(read.input, read.endings), (writes) => ({
-						output: {},
-						writes
-					}))
+				}) => chain.kinds[2].finish.body(read.input, read.endings)
 			},
 			{
 				input: (step) =>
@@ -555,8 +549,9 @@ export const chainLedger = (h: ChainHandles) => {
 					}),
 				read: () => Effect.succeed([]),
 				commit: (done) =>
-					Effect.map(
-						settled(
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
 							h.commits.chainCommitOrderedFinish.once({
 								params: {},
 								facts: {
@@ -566,13 +561,14 @@ export const chainLedger = (h: ChainHandles) => {
 										ChainHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
+										ChainOrderedFinishOutput: [{ step: done.turn.step, root: done.turn.root }],
 										Cursor: done.writes.insert.Cursor
 									}
 								}
 							})
-						),
-						(outcome) => ({ outcome, spawned: { steps: [], finishes: [] } })
-					),
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
 				fail: (failed) => Effect.die(failed.error)
 			},
 			Option.some("Ordered")

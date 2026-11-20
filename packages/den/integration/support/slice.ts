@@ -36,9 +36,10 @@ import { assignLedger } from "#integration/slice/generated/assign.binding.ts"
 import { chainLedger } from "#integration/slice/generated/chain.binding.ts"
 import { fanLedger } from "#integration/slice/generated/fan.binding.ts"
 import { retryLedger } from "#integration/slice/generated/retry.binding.ts"
+import { reviewLedger } from "#integration/slice/generated/review.binding.ts"
 import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
 import type { AppLogin, Worker } from "#integration/slice/logins.ts"
-import initMigration from "#integration/slice/migrations/slice/20261120062935_init/meta.json" with { type: "json" }
+import initMigration from "#integration/slice/migrations/slice/20261120072610_init/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -68,7 +69,7 @@ const grizzleBin = `${import.meta.dirname}/../../node_modules/.bin/grizzle`
  * record lacks, or lacks one it holds (committedFolders).
  */
 const committed = Object.freeze({
-	"20261120062935_init": initMigration
+	"20261120072610_init": initMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
@@ -607,9 +608,9 @@ const byFlow = (all: ReadonlyArray<Ledger<Faults>>): Ledgers<Faults> =>
 	new Map(Arr.map(all, (l) => [l.flow, l] as const))
 
 /**
- * The slice's five flows' ledgers over Dbs opened on the worker's den and coordinator roles and the app's loader, each
+ * The slice's six flows' ledgers over Dbs opened on the worker's den and coordinator roles and the app's loader, each
  * reading the database's instant moved on by the time the suite's clock travels from here; and `misconfigured`, the
- * same five committing through the misconfigured loader, whose every commit meets `credentialRefused` while their own
+ * same six committing through the misconfigured loader, whose every commit meets `credentialRefused` while their own
  * roles' calls are let in.
  */
 export const openLedgers = Effect.gen(function* () {
@@ -642,6 +643,11 @@ export const openLedgers = Effect.gen(function* () {
 			den: (yield* Db.open(WorkerServed.roles.assign_den, {})).workload,
 			coordinator: (yield* Db.open(WorkerServed.roles.assign_coordinator, {})).workload,
 			retirer: (yield* Db.open(WorkerServed.roles.assign_retirer, {})).workload
+		},
+		review: {
+			den: (yield* Db.open(WorkerServed.roles.review_den, {})).workload,
+			coordinator: (yield* Db.open(WorkerServed.roles.review_coordinator, {})).workload,
+			retirer: (yield* Db.open(WorkerServed.roles.review_retirer, {})).workload
 		}
 	}
 	const chainBound = chainLedger({ ...roles.chain, commits })
@@ -649,17 +655,20 @@ export const openLedgers = Effect.gen(function* () {
 	const syncBound = syncLedger({ ...roles.sync, commits })
 	const retryBound = retryLedger({ ...roles.retry, commits })
 	const assignBound = assignLedger({ ...roles.assign, commits })
+	const reviewBound = reviewLedger({ ...roles.review, commits })
 	const chain = { ...chainBound, ledger: travelling(chainBound.ledger, opened) }
 	const fan = { ...fanBound, ledger: travelling(fanBound.ledger, opened) }
 	const sync = { ...syncBound, ledger: travelling(syncBound.ledger, opened) }
 	const retry = { ...retryBound, ledger: travelling(retryBound.ledger, opened) }
 	const assign = { ...assignBound, ledger: travelling(assignBound.ledger, opened) }
+	const review = { ...reviewBound, ledger: travelling(reviewBound.ledger, opened) }
 	const all: ReadonlyArray<Ledger<Faults>> = [
 		chain.ledger,
 		fan.ledger,
 		sync.ledger,
 		retry.ledger,
-		assign.ledger
+		assign.ledger,
+		review.ledger
 	]
 	const refused: ReadonlyArray<Ledger<Faults>> = Arr.map(
 		[
@@ -667,7 +676,8 @@ export const openLedgers = Effect.gen(function* () {
 			fanLedger({ ...roles.fan, commits: refusing }).ledger,
 			syncLedger({ ...roles.sync, commits: refusing }).ledger,
 			retryLedger({ ...roles.retry, commits: refusing }).ledger,
-			assignLedger({ ...roles.assign, commits: refusing }).ledger
+			assignLedger({ ...roles.assign, commits: refusing }).ledger,
+			reviewLedger({ ...roles.review, commits: refusing }).ledger
 		],
 		(ledger) => travelling(ledger, opened)
 	)
@@ -677,6 +687,7 @@ export const openLedgers = Effect.gen(function* () {
 		sync,
 		retry,
 		assign,
+		review,
 		all,
 		ledgers: byFlow(all),
 		misconfigured: { all: refused, ledgers: byFlow(refused) },

@@ -192,10 +192,11 @@ const boxSeats = 2
 
 const finishing = {
 	reads: [],
+	output: Schema.Struct({}),
 	error: Schema.Never,
 	retry: attempts(1),
 	writes: writesNothing,
-	body: () => Effect.succeed({ insert: {}, put: {}, delete: {} })
+	body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
 } as const
 
 const built = (sketch: Sketch): AnyFlow => {
@@ -278,7 +279,7 @@ const built = (sketch: Sketch): AnyFlow => {
 	return flow(sketch.prefix, {
 		writes: writer<{ readonly name: "loader" }>("loader"),
 		kinds: sketch.scoped ? [...steps, Leaf, Inner, Run] : [...steps, Run],
-		edges
+		edges: sketch.scoped ? [...edges, edge("After", Inner, first, () => [])] : edges
 	})
 }
 
@@ -442,6 +443,25 @@ it.effect(
 						assert.deepStrictEqual(
 							Arr.map(into("failed"), (law) => law.from.relation),
 							[`${P}Failed`]
+						)
+						assert.isTrue(has("RunFinishOutput"))
+						assert.strictEqual(has("InnerFinishOutput"), sketch.scoped)
+						const leaves = (edgeName: string, output: string) =>
+							Arr.some(
+								containments,
+								(law) =>
+									law.from.relation === `${P}${edgeName}` &&
+									Arr.some(law.from.terms, (t) => t.field === "from") &&
+									law.to.relation === `${P}${output}`
+							)
+						Arr.forEach(lowered.edges, (e) =>
+							assert.isTrue(
+								leaves(e.name, e.name === "After" ? "InnerFinishOutput" : `${e.from}Output`)
+							)
+						)
+						assert.strictEqual(
+							Arr.some(lowered.joins, (j) => Arr.some(j.finish.edges, (e) => e.name === "After")),
+							sketch.scoped
 						)
 						assert.strictEqual(has("S0Error"), sketch.typed)
 						if (sketch.typed) {
