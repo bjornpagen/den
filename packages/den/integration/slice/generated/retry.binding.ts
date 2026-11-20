@@ -22,6 +22,7 @@ import type {
 	Admission,
 	Ledger,
 	PauseRow,
+	RootRunner,
 	ScopeView,
 	Snapshot,
 	Spawned
@@ -44,7 +45,8 @@ import type {
 	RetryStartStep,
 	RetryStartScope,
 	RetrySteadfastInput,
-	RetryBrittleInput
+	RetryBrittleInput,
+	RetryRootKind
 } from "#integration/slice/generated/retry.fragment.ts"
 import type {
 	retryDenPrograms,
@@ -261,7 +263,7 @@ export const retryLedger = (h: RetryHandles) => {
 								facts: {
 									insert: {
 										RetryScope: [{ scope, kind: "Ladders" as const, root: scope }],
-										RetryRoot: [{ scope, key, at }],
+										RetryRoot: [{ scope, kind: "Ladders" as const, key, at }],
 										RetryLaddersInput: [
 											{
 												scope: scope,
@@ -427,73 +429,64 @@ export const retryLedger = (h: RetryHandles) => {
 			Option.some("Ladders")
 		)
 	}
+	const roots: { readonly [K in (typeof RetryRootKind)["handles"][number]]: RootRunner } = {
+		Ladders: {
+			window: retry.kinds[2].window,
+			precondition: retry.kinds[2].precondition,
+			admit: (scope: ScopeKey, at: Instant) =>
+				Effect.gen(function* () {
+					const input = yield* readRetryLaddersInput(scope)
+					if (Option.isNone(input)) {
+						return Option.none()
+					}
+					const grown = yield* startLadders(scope, scope, input.value, at)
+					const finish = yield* finishStep(scope)
+					const steps: ReadonlyArray<Addition<typeof RetryStep>> = [
+						...grown.rows.RetryStep,
+						{ step: finish, kind: "LaddersFinish", scope, due: at, root: scope }
+					]
+					const admitted: ReadonlyArray<Addition<typeof RetryAdmitted>> = [
+						...grown.rows.RetryAdmitted,
+						{ scope, root: scope }
+					]
+					const finishes: ReadonlyArray<Addition<typeof RetryFinish>> = [
+						...grown.rows.RetryFinish,
+						{ scope, step: finish, root: scope }
+					]
+					const outcome = yield* settled(
+						h.den.retryAdmit.once({
+							params: {},
+							facts: {
+								insert: {
+									RetryScope: grown.rows.RetryScope,
+									RetryWithin: grown.rows.RetryWithin,
+									RetryStartStep: grown.rows.RetryStartStep,
+									RetryStartScope: grown.rows.RetryStartScope,
+									RetrySteadfastInput: grown.rows.RetrySteadfastInput,
+									RetryBrittleInput: grown.rows.RetryBrittleInput,
+									RetryStep: steps,
+									RetryAdmitted: admitted,
+									RetryFinish: finishes
+								}
+							}
+						})
+					)
+					return Option.some({
+						outcome,
+						spawned: {
+							steps: grown.spawned.steps,
+							finishes: [...grown.spawned.finishes, ...(hasChildren(grown, scope) ? [] : [finish])]
+						}
+					})
+				})
+		}
+	}
 	const ledger: Ledger<FlowNeeds<typeof retry>> = {
 		flow: FlowName.make("Retry"),
 		now: Effect.flatMap(settled(h.den.retryNow.once({ params: {}, facts: {} })), readingOf),
 		authenticated: Effect.asVoid(
 			settled(h.commits.retryAuthenticated.once({ params: {}, facts: {} }))
 		),
-		roots: new Map([
-			[
-				"Ladders",
-				{
-					kind: "Ladders",
-					exclusive: false,
-					window: retry.kinds[2].window,
-					precondition: retry.kinds[2].precondition,
-					finish: "LaddersFinish",
-					admit: (scope: ScopeKey, at: Instant) =>
-						Effect.gen(function* () {
-							const input = yield* readRetryLaddersInput(scope)
-							if (Option.isNone(input)) {
-								return Option.none()
-							}
-							const grown = yield* startLadders(scope, scope, input.value, at)
-							const finish = yield* finishStep(scope)
-							const steps: ReadonlyArray<Addition<typeof RetryStep>> = [
-								...grown.rows.RetryStep,
-								{ step: finish, kind: "LaddersFinish", scope, due: at, root: scope }
-							]
-							const admitted: ReadonlyArray<Addition<typeof RetryAdmitted>> = [
-								...grown.rows.RetryAdmitted,
-								{ scope, root: scope }
-							]
-							const finishes: ReadonlyArray<Addition<typeof RetryFinish>> = [
-								...grown.rows.RetryFinish,
-								{ scope, step: finish, root: scope }
-							]
-							const outcome = yield* settled(
-								h.den.retryAdmit.once({
-									params: {},
-									facts: {
-										insert: {
-											RetryScope: grown.rows.RetryScope,
-											RetryWithin: grown.rows.RetryWithin,
-											RetryStartStep: grown.rows.RetryStartStep,
-											RetryStartScope: grown.rows.RetryStartScope,
-											RetrySteadfastInput: grown.rows.RetrySteadfastInput,
-											RetryBrittleInput: grown.rows.RetryBrittleInput,
-											RetryStep: steps,
-											RetryAdmitted: admitted,
-											RetryFinish: finishes
-										}
-									}
-								})
-							)
-							return Option.some({
-								outcome,
-								spawned: {
-									steps: grown.spawned.steps,
-									finishes: [
-										...grown.spawned.finishes,
-										...(hasChildren(grown, scope) ? [] : [finish])
-									]
-								}
-							})
-						})
-				}
-			]
-		]),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.retryStepOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => ({
@@ -558,11 +551,12 @@ export const retryLedger = (h: RetryHandles) => {
 				return Option.some<ScopeView>({
 					place: "root",
 					scope,
-					kind: row.value.kind,
+					kind: root.value.kind,
 					key: root.value.key,
 					at: root.value.at,
 					admission,
-					exclusive: Option.none()
+					exclusive: Option.none(),
+					runner: roots[root.value.kind]
 				})
 			}),
 		unended: (scope) =>
@@ -645,11 +639,12 @@ export const retryLedger = (h: RetryHandles) => {
 								{
 									place: "root",
 									scope,
-									kind,
+									kind: o.kind,
 									key: o.key,
 									at: o.at,
 									admission,
-									exclusive: Option.none()
+									exclusive: Option.none(),
+									runner: roots[o.kind]
 								}
 							],
 							onNone: () =>

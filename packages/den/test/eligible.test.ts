@@ -93,17 +93,9 @@ const runnerOf = (
 	run: unread
 })
 
-const rootOf = (
-	kind: string,
-	window: Window,
-	exclusive: boolean,
-	precondition: Precondition
-): RootRunner => ({
-	kind,
-	exclusive,
+const rootOf = (window: Window, precondition: Precondition): RootRunner => ({
 	window,
 	precondition,
-	finish: `${kind}Finish`,
 	admit: unread
 })
 
@@ -116,14 +108,10 @@ const runnersOf = (seats: number) => ({
 	SyncFinish: runnerOf("SyncFinish", [], Option.some("Sync"))
 })
 
-const ledgerOf = (window: Window): Ledger<never> => ({
+const ledger: Ledger<never> = {
 	flow: flowName,
 	now: Effect.die("eligibility judges the instant it is given"),
 	authenticated: Effect.die("the census asks after the deployment, never eligibility"),
-	roots: new Map([
-		["Run", rootOf("Run", window, false, unconditional)],
-		["Sync", rootOf("Sync", always, true, idle("Other"))]
-	]),
 	stepOf: unread,
 	resultOf: unread,
 	heldOf: unread,
@@ -159,7 +147,7 @@ const ledgerOf = (window: Window): Ledger<never> => ({
 		resume: unread
 	},
 	scheduled: []
-})
+}
 
 /** How a claimed attempt ended without a result: a retry, due at an offset, or a fence on a refused credential. */
 type EndSketch =
@@ -289,7 +277,8 @@ const built = (w: World) =>
 			onNone: () => always,
 			onSome: (s) => utcHours(s.opens, Math.min(24, s.opens + s.length))
 		})
-		const ledger = ledgerOf(window)
+		const runRoot = rootOf(window, unconditional)
+		const syncRoot = rootOf(always, idle("Other"))
 		const runners = runnersOf(w.seats)
 		const scopes: Array<ScopeView> = []
 		const steps: Array<Snapshot<never>["steps"][number]> = []
@@ -310,7 +299,8 @@ const built = (w: World) =>
 				key: `r${i}`,
 				at: at(r.age - 10),
 				admission: r.admitted ? "admitted" : "requested",
-				exclusive: Option.none()
+				exclusive: Option.none(),
+				runner: runRoot
 			})
 			if (!r.admitted) {
 				continue
@@ -359,7 +349,8 @@ const built = (w: World) =>
 				key: `s${i}`,
 				at: at(y.age - 10),
 				admission: y.skipped ? "skipped" : "requested",
-				exclusive: Option.some(keyOf(y.key))
+				exclusive: Option.some(keyOf(y.key)),
+				runner: syncRoot
 			})
 		}
 		const dead = yield* rootScope(flowName, "Sync", "finished")

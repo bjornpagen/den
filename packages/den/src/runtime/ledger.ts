@@ -148,13 +148,10 @@ export interface StepRunner<R> {
 	) => Effect.Effect<Ran, never, R | Digest.Digest>
 }
 
-/** A root kind's admission and gates. */
+/** A root kind's gates and admission. */
 export interface RootRunner {
-	readonly kind: string
-	readonly exclusive: boolean
 	readonly window: Window
 	readonly precondition: Precondition
-	readonly finish: string
 	/** Writes the root's admission: its start's children at every depth and every finish, at the caller's instant. */
 	readonly admit: (
 		scope: ScopeKey,
@@ -166,9 +163,9 @@ export interface RootRunner {
 export type Admission = "requested" | "admitted" | "skipped"
 
 /**
- * A scope as the scheduler sees it, by its place in its graph: a root, requested under its trigger's key at its
- * instant, standing toward its admission, with the exclusivity key its scopes share when its kind is exclusive; or a
- * child, admitted in the call that opened it under its parent.
+ * A scope as the scheduler sees it, by its place in its graph: a root of a root kind, requested under its trigger's key
+ * at its instant, standing toward its admission, with the exclusivity key its scopes share when its kind is exclusive,
+ * and its kind's runner; or a child, admitted in the call that opened it under its parent.
  */
 export type ScopeView =
 	| {
@@ -179,6 +176,7 @@ export type ScopeView =
 			readonly at: Instant
 			readonly admission: Admission
 			readonly exclusive: Option.Option<ExclusiveId>
+			readonly runner: RootRunner
 	  }
 	| {
 			readonly place: "child"
@@ -305,7 +303,6 @@ export interface Ledger<R> {
 	 * runs no body, so the census rings a fenced attempt's step again only once it succeeds.
 	 */
 	readonly authenticated: Effect.Effect<void, Settled>
-	readonly roots: ReadonlyMap<string, RootRunner>
 	readonly stepOf: (step: StepKey) => Effect.Effect<Option.Option<Located<R>>, Settled>
 	readonly resultOf: (step: StepKey) => Effect.Effect<Option.Option<Outcome>, Settled>
 	readonly heldOf: (step: StepKey) => Effect.Effect<Option.Option<bigint>, Settled>

@@ -24,6 +24,7 @@ const Seq = contract("Seq", pg.bigint)
 
 export const ChainKind = closed.unordered("ChainKind", ["Page", "ChainRunFinish", "OrderedFinish"])
 export const ChainJoin = closed.unordered("ChainJoin", ["ChainRun", "Ordered"])
+export const ChainRootKind = closed.unordered("ChainRootKind", ["ChainRun", "Ordered"])
 export const ChainOutcome = closed.unordered("ChainOutcome", ["done", "failed"])
 export const ChainPausable = closed.unordered("ChainPausable", ["ChainRun", "Ordered"])
 export const ChainPageInputFeed = closed.unordered("ChainPageInputFeed", ["news", "sport"])
@@ -37,7 +38,13 @@ export const ChainScope = relation(
 )
 export const ChainRoot = relation(
 	"ChainRoot",
-	{ scope: DenScope, key: Text, at: DenInstant, retired: retirement },
+	{
+		scope: DenScope,
+		kind: closedId(ChainRootKind),
+		key: Text,
+		at: DenInstant,
+		retired: retirement
+	},
 	["scope"]
 )
 export const ChainWithin = relation(
@@ -175,6 +182,7 @@ export const chainGraph = fragment(
 	[
 		ChainKind,
 		ChainJoin,
+		ChainRootKind,
 		ChainOutcome,
 		ChainPausable,
 		ChainPageInputFeed,
@@ -328,6 +336,7 @@ export const chainCoordination = fragment(
 	[
 		ChainKind,
 		ChainJoin,
+		ChainRootKind,
 		ChainOutcome,
 		ChainPausable,
 		ChainPageInputFeed,

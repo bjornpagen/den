@@ -462,9 +462,7 @@ const gate = <R>(
 	Settled
 > =>
 	Effect.gen(function* () {
-		const window = Option.flatMap(root, (r) =>
-			Option.map(Option.fromNullishOr(ledger.roots.get(r.kind)), (j) => j.window)
-		)
+		const window = Option.map(root, (r) => r.runner.window)
 		if (Option.exists(window, (w) => !isOpen(w, at))) {
 			return Option.some({
 				why: "window",
@@ -860,10 +858,7 @@ const serveAdmit = <R>(
 			return served({ kind: "lost", wake })
 		}
 		const view = viewed.value
-		const root = ledger.roots.get(view.kind)
-		if (root === undefined) {
-			return served({ kind: "lost", wake })
-		}
+		const root = view.runner
 		const shut = yield* readOr(gate(ledger, Option.some(view), [], at), wake)
 		if (Option.isSome(shut)) {
 			return {

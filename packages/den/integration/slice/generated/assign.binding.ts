@@ -24,6 +24,7 @@ import type {
 	Admission,
 	Ledger,
 	PauseRow,
+	RootRunner,
 	ScopeView,
 	Snapshot,
 	Spawned
@@ -48,7 +49,8 @@ import type {
 	AssignDecideInput,
 	AssignDecideInputExclude,
 	AssignDecideInputModeNearest,
-	AssignDecideInputModeWithin
+	AssignDecideInputModeWithin,
+	AssignRootKind
 } from "#integration/slice/generated/assign.fragment.ts"
 import type {
 	assignDenPrograms,
@@ -356,7 +358,7 @@ export const assignLedger = (h: AssignHandles) => {
 								facts: {
 									insert: {
 										AssignScope: [{ scope, kind: "Assignment" as const, root: scope }],
-										AssignRoot: [{ scope, key, at }],
+										AssignRoot: [{ scope, kind: "Assignment" as const, key, at }],
 										AssignAssignmentInput: [
 											{
 												scope: scope,
@@ -599,75 +601,66 @@ export const assignLedger = (h: AssignHandles) => {
 			Option.some("Assignment")
 		)
 	}
+	const roots: { readonly [K in (typeof AssignRootKind)["handles"][number]]: RootRunner } = {
+		Assignment: {
+			window: assign.kinds[1].window,
+			precondition: assign.kinds[1].precondition,
+			admit: (scope: ScopeKey, at: Instant) =>
+				Effect.gen(function* () {
+					const input = yield* readAssignAssignmentInput(scope)
+					if (Option.isNone(input)) {
+						return Option.none()
+					}
+					const grown = yield* startAssignment(scope, scope, input.value, at)
+					const finish = yield* finishStep(scope)
+					const steps: ReadonlyArray<Addition<typeof AssignStep>> = [
+						...grown.rows.AssignStep,
+						{ step: finish, kind: "AssignmentFinish", scope, due: at, root: scope }
+					]
+					const admitted: ReadonlyArray<Addition<typeof AssignAdmitted>> = [
+						...grown.rows.AssignAdmitted,
+						{ scope, root: scope }
+					]
+					const finishes: ReadonlyArray<Addition<typeof AssignFinish>> = [
+						...grown.rows.AssignFinish,
+						{ scope, step: finish, root: scope }
+					]
+					const outcome = yield* settled(
+						h.den.assignAdmit.once({
+							params: {},
+							facts: {
+								insert: {
+									AssignScope: grown.rows.AssignScope,
+									AssignWithin: grown.rows.AssignWithin,
+									AssignStartStep: grown.rows.AssignStartStep,
+									AssignStartScope: grown.rows.AssignStartScope,
+									AssignDecideInput: grown.rows.AssignDecideInput,
+									AssignDecideInputExclude: grown.rows.AssignDecideInputExclude,
+									AssignDecideInputModeNearest: grown.rows.AssignDecideInputModeNearest,
+									AssignDecideInputModeWithin: grown.rows.AssignDecideInputModeWithin,
+									AssignStep: steps,
+									AssignAdmitted: admitted,
+									AssignFinish: finishes
+								}
+							}
+						})
+					)
+					return Option.some({
+						outcome,
+						spawned: {
+							steps: grown.spawned.steps,
+							finishes: [...grown.spawned.finishes, ...(hasChildren(grown, scope) ? [] : [finish])]
+						}
+					})
+				})
+		}
+	}
 	const ledger: Ledger<FlowNeeds<typeof assign>> = {
 		flow: FlowName.make("Assign"),
 		now: Effect.flatMap(settled(h.den.assignNow.once({ params: {}, facts: {} })), readingOf),
 		authenticated: Effect.asVoid(
 			settled(h.commits.assignAuthenticated.once({ params: {}, facts: {} }))
 		),
-		roots: new Map([
-			[
-				"Assignment",
-				{
-					kind: "Assignment",
-					exclusive: false,
-					window: assign.kinds[1].window,
-					precondition: assign.kinds[1].precondition,
-					finish: "AssignmentFinish",
-					admit: (scope: ScopeKey, at: Instant) =>
-						Effect.gen(function* () {
-							const input = yield* readAssignAssignmentInput(scope)
-							if (Option.isNone(input)) {
-								return Option.none()
-							}
-							const grown = yield* startAssignment(scope, scope, input.value, at)
-							const finish = yield* finishStep(scope)
-							const steps: ReadonlyArray<Addition<typeof AssignStep>> = [
-								...grown.rows.AssignStep,
-								{ step: finish, kind: "AssignmentFinish", scope, due: at, root: scope }
-							]
-							const admitted: ReadonlyArray<Addition<typeof AssignAdmitted>> = [
-								...grown.rows.AssignAdmitted,
-								{ scope, root: scope }
-							]
-							const finishes: ReadonlyArray<Addition<typeof AssignFinish>> = [
-								...grown.rows.AssignFinish,
-								{ scope, step: finish, root: scope }
-							]
-							const outcome = yield* settled(
-								h.den.assignAdmit.once({
-									params: {},
-									facts: {
-										insert: {
-											AssignScope: grown.rows.AssignScope,
-											AssignWithin: grown.rows.AssignWithin,
-											AssignStartStep: grown.rows.AssignStartStep,
-											AssignStartScope: grown.rows.AssignStartScope,
-											AssignDecideInput: grown.rows.AssignDecideInput,
-											AssignDecideInputExclude: grown.rows.AssignDecideInputExclude,
-											AssignDecideInputModeNearest: grown.rows.AssignDecideInputModeNearest,
-											AssignDecideInputModeWithin: grown.rows.AssignDecideInputModeWithin,
-											AssignStep: steps,
-											AssignAdmitted: admitted,
-											AssignFinish: finishes
-										}
-									}
-								})
-							)
-							return Option.some({
-								outcome,
-								spawned: {
-									steps: grown.spawned.steps,
-									finishes: [
-										...grown.spawned.finishes,
-										...(hasChildren(grown, scope) ? [] : [finish])
-									]
-								}
-							})
-						})
-				}
-			]
-		]),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.assignStepOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => ({
@@ -732,11 +725,12 @@ export const assignLedger = (h: AssignHandles) => {
 				return Option.some<ScopeView>({
 					place: "root",
 					scope,
-					kind: row.value.kind,
+					kind: root.value.kind,
 					key: root.value.key,
 					at: root.value.at,
 					admission,
-					exclusive: Option.none()
+					exclusive: Option.none(),
+					runner: roots[root.value.kind]
 				})
 			}),
 		unended: (scope) =>
@@ -821,11 +815,12 @@ export const assignLedger = (h: AssignHandles) => {
 									{
 										place: "root",
 										scope,
-										kind,
+										kind: o.kind,
 										key: o.key,
 										at: o.at,
 										admission,
-										exclusive: Option.none()
+										exclusive: Option.none(),
+										runner: roots[o.kind]
 									}
 								],
 								onNone: () =>

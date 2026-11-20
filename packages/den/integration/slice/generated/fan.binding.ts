@@ -24,6 +24,7 @@ import type {
 	Admission,
 	Ledger,
 	PauseRow,
+	RootRunner,
 	ScopeView,
 	SeatTurn,
 	Snapshot,
@@ -47,7 +48,8 @@ import type {
 	FanStartStep,
 	FanStartScope,
 	FanSquareInput,
-	FanBatchInput
+	FanBatchInput,
+	FanRootKind
 } from "#integration/slice/generated/fan.fragment.ts"
 import type {
 	fanDenPrograms,
@@ -327,7 +329,7 @@ export const fanLedger = (h: FanHandles) => {
 								facts: {
 									insert: {
 										FanScope: [{ scope, kind: "FanRun" as const, root: scope }],
-										FanRoot: [{ scope, key, at }],
+										FanRoot: [{ scope, kind: "FanRun" as const, key, at }],
 										FanFanRunInput: [
 											{ scope: scope, root: scope, batch: input.batch, size: input.size }
 										]
@@ -505,73 +507,64 @@ export const fanLedger = (h: FanHandles) => {
 			Option.some("FanRun")
 		)
 	}
+	const roots: { readonly [K in (typeof FanRootKind)["handles"][number]]: RootRunner } = {
+		FanRun: {
+			window: fan.kinds[2].window,
+			precondition: fan.kinds[2].precondition,
+			admit: (scope: ScopeKey, at: Instant) =>
+				Effect.gen(function* () {
+					const input = yield* readFanFanRunInput(scope)
+					if (Option.isNone(input)) {
+						return Option.none()
+					}
+					const grown = yield* startFanRun(scope, scope, input.value, at)
+					const finish = yield* finishStep(scope)
+					const steps: ReadonlyArray<Addition<typeof FanStep>> = [
+						...grown.rows.FanStep,
+						{ step: finish, kind: "FanRunFinish", scope, due: at, root: scope }
+					]
+					const admitted: ReadonlyArray<Addition<typeof FanAdmitted>> = [
+						...grown.rows.FanAdmitted,
+						{ scope, root: scope }
+					]
+					const finishes: ReadonlyArray<Addition<typeof FanFinish>> = [
+						...grown.rows.FanFinish,
+						{ scope, step: finish, root: scope }
+					]
+					const outcome = yield* settled(
+						h.den.fanAdmit.once({
+							params: {},
+							facts: {
+								insert: {
+									FanScope: grown.rows.FanScope,
+									FanWithin: grown.rows.FanWithin,
+									FanStartStep: grown.rows.FanStartStep,
+									FanStartScope: grown.rows.FanStartScope,
+									FanSquareInput: grown.rows.FanSquareInput,
+									FanBatchInput: grown.rows.FanBatchInput,
+									FanStep: steps,
+									FanAdmitted: admitted,
+									FanFinish: finishes
+								}
+							}
+						})
+					)
+					return Option.some({
+						outcome,
+						spawned: {
+							steps: grown.spawned.steps,
+							finishes: [...grown.spawned.finishes, ...(hasChildren(grown, scope) ? [] : [finish])]
+						}
+					})
+				})
+		}
+	}
 	const ledger: Ledger<FlowNeeds<typeof fan>> = {
 		flow: FlowName.make("Fan"),
 		now: Effect.flatMap(settled(h.den.fanNow.once({ params: {}, facts: {} })), readingOf),
 		authenticated: Effect.asVoid(
 			settled(h.commits.fanAuthenticated.once({ params: {}, facts: {} }))
 		),
-		roots: new Map([
-			[
-				"FanRun",
-				{
-					kind: "FanRun",
-					exclusive: false,
-					window: fan.kinds[2].window,
-					precondition: fan.kinds[2].precondition,
-					finish: "FanRunFinish",
-					admit: (scope: ScopeKey, at: Instant) =>
-						Effect.gen(function* () {
-							const input = yield* readFanFanRunInput(scope)
-							if (Option.isNone(input)) {
-								return Option.none()
-							}
-							const grown = yield* startFanRun(scope, scope, input.value, at)
-							const finish = yield* finishStep(scope)
-							const steps: ReadonlyArray<Addition<typeof FanStep>> = [
-								...grown.rows.FanStep,
-								{ step: finish, kind: "FanRunFinish", scope, due: at, root: scope }
-							]
-							const admitted: ReadonlyArray<Addition<typeof FanAdmitted>> = [
-								...grown.rows.FanAdmitted,
-								{ scope, root: scope }
-							]
-							const finishes: ReadonlyArray<Addition<typeof FanFinish>> = [
-								...grown.rows.FanFinish,
-								{ scope, step: finish, root: scope }
-							]
-							const outcome = yield* settled(
-								h.den.fanAdmit.once({
-									params: {},
-									facts: {
-										insert: {
-											FanScope: grown.rows.FanScope,
-											FanWithin: grown.rows.FanWithin,
-											FanStartStep: grown.rows.FanStartStep,
-											FanStartScope: grown.rows.FanStartScope,
-											FanSquareInput: grown.rows.FanSquareInput,
-											FanBatchInput: grown.rows.FanBatchInput,
-											FanStep: steps,
-											FanAdmitted: admitted,
-											FanFinish: finishes
-										}
-									}
-								})
-							)
-							return Option.some({
-								outcome,
-								spawned: {
-									steps: grown.spawned.steps,
-									finishes: [
-										...grown.spawned.finishes,
-										...(hasChildren(grown, scope) ? [] : [finish])
-									]
-								}
-							})
-						})
-				}
-			]
-		]),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.fanStepOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => ({
@@ -636,11 +629,12 @@ export const fanLedger = (h: FanHandles) => {
 				return Option.some<ScopeView>({
 					place: "root",
 					scope,
-					kind: row.value.kind,
+					kind: root.value.kind,
 					key: root.value.key,
 					at: root.value.at,
 					admission,
-					exclusive: Option.none()
+					exclusive: Option.none(),
+					runner: roots[root.value.kind]
 				})
 			}),
 		unended: (scope) =>
@@ -720,11 +714,12 @@ export const fanLedger = (h: FanHandles) => {
 								{
 									place: "root",
 									scope,
-									kind,
+									kind: o.kind,
 									key: o.key,
 									at: o.at,
 									admission,
-									exclusive: Option.none()
+									exclusive: Option.none(),
+									runner: roots[o.kind]
 								}
 							],
 							onNone: () =>

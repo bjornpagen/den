@@ -22,6 +22,7 @@ import { Passage, Seen } from "#integration/slice/relations.ts"
 
 export const AssignKind = closed.unordered("AssignKind", ["Decide", "AssignmentFinish"])
 export const AssignJoin = closed.unordered("AssignJoin", ["Assignment"])
+export const AssignRootKind = closed.unordered("AssignRootKind", ["Assignment"])
 export const AssignOutcome = closed.unordered("AssignOutcome", ["done", "failed"])
 export const AssignPausable = closed.unordered("AssignPausable", ["Assignment"])
 export const AssignDecideInputMode = closed.unordered("AssignDecideInputMode", [
@@ -44,7 +45,13 @@ export const AssignScope = relation(
 )
 export const AssignRoot = relation(
 	"AssignRoot",
-	{ scope: DenScope, key: Text, at: DenInstant, retired: retirement },
+	{
+		scope: DenScope,
+		kind: closedId(AssignRootKind),
+		key: Text,
+		at: DenInstant,
+		retired: retirement
+	},
 	["scope"]
 )
 export const AssignWithin = relation(
@@ -249,6 +256,7 @@ export const assignGraph = fragment(
 	[
 		AssignKind,
 		AssignJoin,
+		AssignRootKind,
 		AssignOutcome,
 		AssignPausable,
 		AssignDecideInputMode,
@@ -555,6 +563,7 @@ export const assignCoordination = fragment(
 	[
 		AssignKind,
 		AssignJoin,
+		AssignRootKind,
 		AssignOutcome,
 		AssignPausable,
 		AssignDecideInputMode,

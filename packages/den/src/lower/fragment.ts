@@ -395,10 +395,12 @@ export const lower = (flow: AnyFlow): Lowered => {
 
 	const kindNames = [...Arr.map(steps, (s) => s.name), ...Arr.map(joins, finishName)]
 	const joinNames = Arr.map(joins, (j) => j.name)
+	const rootNames = Arr.map(roots, (r) => r.name)
 	const pausable = [...Arr.map(flow.resources, (r) => r.name), ...Arr.map(roots, (r) => r.name)]
 	if (
 		!Arr.isReadonlyArrayNonEmpty(kindNames) ||
 		!Arr.isReadonlyArrayNonEmpty(joinNames) ||
+		!Arr.isReadonlyArrayNonEmpty(rootNames) ||
 		!Arr.isReadonlyArrayNonEmpty(pausable)
 	) {
 		throw new Refused({
@@ -408,6 +410,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 	}
 	rosters.push({ name: name("Kind"), handles: kindNames })
 	rosters.push({ name: name("Join"), handles: joinNames })
+	rosters.push({ name: name("RootKind"), handles: rootNames })
 	rosters.push({ name: name("Outcome"), handles: ["done", "failed"] })
 	rosters.push({ name: name("Pausable"), handles: pausable })
 	const resourceNames = Arr.map(flow.resources, (r) => r.name)
@@ -427,6 +430,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		name: name("Root"),
 		fields: [
 			{ name: "scope", type: scopeKey },
+			{ name: "kind", type: { kind: "closed", roster: name("RootKind") } },
 			{ name: "key", type: text },
 			{ name: "at", type: instant }
 		],
@@ -1018,7 +1022,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 				name("Exclusive"),
 				name("Released"),
 				[
-					{ name: "kind", type: { kind: "closed", roster: name("Join") } },
+					{ name: "kind", type: { kind: "closed", roster: name("RootKind") } },
 					{ name: "key", type: { kind: "key", contract: "DenExclusive" } }
 				],
 				[{ name: "scope", type: scopeKey }]

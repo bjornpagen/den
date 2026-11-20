@@ -55,7 +55,21 @@ const textOf = <R>(snapshot: Snapshot<R>): string => {
 			rows(snapshot.claims),
 			rows(snapshot.retries),
 			rows(snapshot.fenced),
-			rows(snapshot.scopes),
+			rows(
+				Arr.map(snapshot.scopes, (s) =>
+					s.place === "root"
+						? {
+								place: s.place,
+								scope: s.scope,
+								kind: s.kind,
+								key: s.key,
+								at: s.at,
+								admission: s.admission,
+								exclusive: s.exclusive
+							}
+						: s
+				)
+			),
 			rows(snapshot.holds),
 			rows(snapshot.exclusives),
 			rows(snapshot.paused),

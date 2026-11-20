@@ -23,6 +23,7 @@ import type {
 	Admission,
 	Ledger,
 	PauseRow,
+	RootRunner,
 	ScopeView,
 	Snapshot,
 	Spawned
@@ -46,7 +47,8 @@ import type {
 	ChainStartScope,
 	ChainPageInput,
 	ChainPageInputAfter,
-	ChainNext
+	ChainNext,
+	ChainRootKind
 } from "#integration/slice/generated/chain.fragment.ts"
 import type {
 	chainDenPrograms,
@@ -305,7 +307,7 @@ export const chainLedger = (h: ChainHandles) => {
 								facts: {
 									insert: {
 										ChainScope: [{ scope, kind: "ChainRun" as const, root: scope }],
-										ChainRoot: [{ scope, key, at }],
+										ChainRoot: [{ scope, kind: "ChainRun" as const, key, at }],
 										ChainChainRunInput: [
 											{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
 										]
@@ -594,132 +596,114 @@ export const chainLedger = (h: ChainHandles) => {
 			Option.some("Ordered")
 		)
 	}
+	const roots: { readonly [K in (typeof ChainRootKind)["handles"][number]]: RootRunner } = {
+		ChainRun: {
+			window: chain.kinds[1].window,
+			precondition: chain.kinds[1].precondition,
+			admit: (scope: ScopeKey, at: Instant) =>
+				Effect.gen(function* () {
+					const input = yield* readChainChainRunInput(scope)
+					if (Option.isNone(input)) {
+						return Option.none()
+					}
+					const grown = yield* startChainRun(scope, scope, input.value, at)
+					const finish = yield* finishStep(scope)
+					const steps: ReadonlyArray<Addition<typeof ChainStep>> = [
+						...grown.rows.ChainStep,
+						{ step: finish, kind: "ChainRunFinish", scope, due: at, root: scope }
+					]
+					const admitted: ReadonlyArray<Addition<typeof ChainAdmitted>> = [
+						...grown.rows.ChainAdmitted,
+						{ scope, root: scope }
+					]
+					const finishes: ReadonlyArray<Addition<typeof ChainFinish>> = [
+						...grown.rows.ChainFinish,
+						{ scope, step: finish, root: scope }
+					]
+					const outcome = yield* settled(
+						h.den.chainAdmit.once({
+							params: {},
+							facts: {
+								insert: {
+									ChainScope: grown.rows.ChainScope,
+									ChainWithin: grown.rows.ChainWithin,
+									ChainStartStep: grown.rows.ChainStartStep,
+									ChainStartScope: grown.rows.ChainStartScope,
+									ChainPageInput: grown.rows.ChainPageInput,
+									ChainPageInputAfter: grown.rows.ChainPageInputAfter,
+									ChainStep: steps,
+									ChainAdmitted: admitted,
+									ChainFinish: finishes
+								}
+							}
+						})
+					)
+					return Option.some({
+						outcome,
+						spawned: {
+							steps: grown.spawned.steps,
+							finishes: [...grown.spawned.finishes, ...(hasChildren(grown, scope) ? [] : [finish])]
+						}
+					})
+				})
+		},
+		Ordered: {
+			window: chain.kinds[2].window,
+			precondition: chain.kinds[2].precondition,
+			admit: (scope: ScopeKey, at: Instant) =>
+				Effect.gen(function* () {
+					const input = yield* readChainOrderedInput(scope)
+					if (Option.isNone(input)) {
+						return Option.none()
+					}
+					const grown = yield* startOrdered(scope, scope, input.value, at)
+					const finish = yield* finishStep(scope)
+					const steps: ReadonlyArray<Addition<typeof ChainStep>> = [
+						...grown.rows.ChainStep,
+						{ step: finish, kind: "OrderedFinish", scope, due: at, root: scope }
+					]
+					const admitted: ReadonlyArray<Addition<typeof ChainAdmitted>> = [
+						...grown.rows.ChainAdmitted,
+						{ scope, root: scope }
+					]
+					const finishes: ReadonlyArray<Addition<typeof ChainFinish>> = [
+						...grown.rows.ChainFinish,
+						{ scope, step: finish, root: scope }
+					]
+					const outcome = yield* settled(
+						h.den.chainAdmit.once({
+							params: {},
+							facts: {
+								insert: {
+									ChainScope: grown.rows.ChainScope,
+									ChainWithin: grown.rows.ChainWithin,
+									ChainStartStep: grown.rows.ChainStartStep,
+									ChainStartScope: grown.rows.ChainStartScope,
+									ChainPageInput: grown.rows.ChainPageInput,
+									ChainPageInputAfter: grown.rows.ChainPageInputAfter,
+									ChainStep: steps,
+									ChainAdmitted: admitted,
+									ChainFinish: finishes
+								}
+							}
+						})
+					)
+					return Option.some({
+						outcome,
+						spawned: {
+							steps: grown.spawned.steps,
+							finishes: [...grown.spawned.finishes, ...(hasChildren(grown, scope) ? [] : [finish])]
+						}
+					})
+				})
+		}
+	}
 	const ledger: Ledger<FlowNeeds<typeof chain>> = {
 		flow: FlowName.make("Chain"),
 		now: Effect.flatMap(settled(h.den.chainNow.once({ params: {}, facts: {} })), readingOf),
 		authenticated: Effect.asVoid(
 			settled(h.commits.chainAuthenticated.once({ params: {}, facts: {} }))
 		),
-		roots: new Map([
-			[
-				"ChainRun",
-				{
-					kind: "ChainRun",
-					exclusive: false,
-					window: chain.kinds[1].window,
-					precondition: chain.kinds[1].precondition,
-					finish: "ChainRunFinish",
-					admit: (scope: ScopeKey, at: Instant) =>
-						Effect.gen(function* () {
-							const input = yield* readChainChainRunInput(scope)
-							if (Option.isNone(input)) {
-								return Option.none()
-							}
-							const grown = yield* startChainRun(scope, scope, input.value, at)
-							const finish = yield* finishStep(scope)
-							const steps: ReadonlyArray<Addition<typeof ChainStep>> = [
-								...grown.rows.ChainStep,
-								{ step: finish, kind: "ChainRunFinish", scope, due: at, root: scope }
-							]
-							const admitted: ReadonlyArray<Addition<typeof ChainAdmitted>> = [
-								...grown.rows.ChainAdmitted,
-								{ scope, root: scope }
-							]
-							const finishes: ReadonlyArray<Addition<typeof ChainFinish>> = [
-								...grown.rows.ChainFinish,
-								{ scope, step: finish, root: scope }
-							]
-							const outcome = yield* settled(
-								h.den.chainAdmit.once({
-									params: {},
-									facts: {
-										insert: {
-											ChainScope: grown.rows.ChainScope,
-											ChainWithin: grown.rows.ChainWithin,
-											ChainStartStep: grown.rows.ChainStartStep,
-											ChainStartScope: grown.rows.ChainStartScope,
-											ChainPageInput: grown.rows.ChainPageInput,
-											ChainPageInputAfter: grown.rows.ChainPageInputAfter,
-											ChainStep: steps,
-											ChainAdmitted: admitted,
-											ChainFinish: finishes
-										}
-									}
-								})
-							)
-							return Option.some({
-								outcome,
-								spawned: {
-									steps: grown.spawned.steps,
-									finishes: [
-										...grown.spawned.finishes,
-										...(hasChildren(grown, scope) ? [] : [finish])
-									]
-								}
-							})
-						})
-				}
-			],
-			[
-				"Ordered",
-				{
-					kind: "Ordered",
-					exclusive: false,
-					window: chain.kinds[2].window,
-					precondition: chain.kinds[2].precondition,
-					finish: "OrderedFinish",
-					admit: (scope: ScopeKey, at: Instant) =>
-						Effect.gen(function* () {
-							const input = yield* readChainOrderedInput(scope)
-							if (Option.isNone(input)) {
-								return Option.none()
-							}
-							const grown = yield* startOrdered(scope, scope, input.value, at)
-							const finish = yield* finishStep(scope)
-							const steps: ReadonlyArray<Addition<typeof ChainStep>> = [
-								...grown.rows.ChainStep,
-								{ step: finish, kind: "OrderedFinish", scope, due: at, root: scope }
-							]
-							const admitted: ReadonlyArray<Addition<typeof ChainAdmitted>> = [
-								...grown.rows.ChainAdmitted,
-								{ scope, root: scope }
-							]
-							const finishes: ReadonlyArray<Addition<typeof ChainFinish>> = [
-								...grown.rows.ChainFinish,
-								{ scope, step: finish, root: scope }
-							]
-							const outcome = yield* settled(
-								h.den.chainAdmit.once({
-									params: {},
-									facts: {
-										insert: {
-											ChainScope: grown.rows.ChainScope,
-											ChainWithin: grown.rows.ChainWithin,
-											ChainStartStep: grown.rows.ChainStartStep,
-											ChainStartScope: grown.rows.ChainStartScope,
-											ChainPageInput: grown.rows.ChainPageInput,
-											ChainPageInputAfter: grown.rows.ChainPageInputAfter,
-											ChainStep: steps,
-											ChainAdmitted: admitted,
-											ChainFinish: finishes
-										}
-									}
-								})
-							)
-							return Option.some({
-								outcome,
-								spawned: {
-									steps: grown.spawned.steps,
-									finishes: [
-										...grown.spawned.finishes,
-										...(hasChildren(grown, scope) ? [] : [finish])
-									]
-								}
-							})
-						})
-				}
-			]
-		]),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.chainStepOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => ({
@@ -784,11 +768,12 @@ export const chainLedger = (h: ChainHandles) => {
 				return Option.some<ScopeView>({
 					place: "root",
 					scope,
-					kind: row.value.kind,
+					kind: root.value.kind,
 					key: root.value.key,
 					at: root.value.at,
 					admission,
-					exclusive: Option.none()
+					exclusive: Option.none(),
+					runner: roots[root.value.kind]
 				})
 			}),
 		unended: (scope) =>
@@ -871,11 +856,12 @@ export const chainLedger = (h: ChainHandles) => {
 								{
 									place: "root",
 									scope,
-									kind,
+									kind: o.kind,
 									key: o.key,
 									at: o.at,
 									admission,
-									exclusive: Option.none()
+									exclusive: Option.none(),
+									runner: roots[o.kind]
 								}
 							],
 							onNone: () =>
@@ -935,7 +921,7 @@ export const chainLedger = (h: ChainHandles) => {
 					scope,
 					facts: {
 						ChainScope: [{ scope, kind: "Ordered" as const, root: scope }],
-						ChainRoot: [{ scope, key, at }],
+						ChainRoot: [{ scope, kind: "Ordered" as const, key, at }],
 						ChainOrderedInput: [{ scope: scope, root: scope, feed: input.feed, pages: input.pages }]
 					}
 				}))

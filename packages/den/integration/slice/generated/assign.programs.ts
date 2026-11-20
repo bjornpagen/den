@@ -14,6 +14,7 @@ import { App } from "#integration/slice/app.ts"
 import {
 	AssignKind,
 	AssignJoin,
+	AssignRootKind,
 	AssignOutcome,
 	AssignPausable,
 	AssignDecideInputMode,
@@ -104,6 +105,7 @@ export const AssignCoordinator = role(
 	{
 		AssignKind,
 		AssignJoin,
+		AssignRootKind,
 		AssignOutcome,
 		AssignPausable,
 		AssignDecideInputMode,
@@ -238,31 +240,27 @@ export const assignDenPrograms = Object.freeze({
 			.find({ scope, root })
 	}),
 	assignRootOf: query(assignGraph).rule((r) => {
-		const { scope, key, at } = v(AssignRoot, "assignRoot")
+		const { scope, kind, key, at } = v(AssignRoot, "assignRoot")
 		return r
-			.match(AssignRoot, { scope, key, at })
+			.match(AssignRoot, { scope, kind, key, at })
 			.where(r.eq(scope, r.param("scope", AssignRoot.fields.scope)))
-			.find({ scope, key, at })
+			.find({ scope, kind, key, at })
 	}),
 	assignFinishedRoots: deferrable(
 		query(assignGraph)
 			.rule((r) => {
-				const { scope, key, at } = v(AssignRoot, "root")
-				const { kind } = v(AssignScope, "scope")
+				const { scope, kind, at } = v(AssignRoot, "root")
 				const { step } = v(AssignFinish, "finish")
 				return r
-					.match(AssignRoot, { scope, key, at })
-					.match(AssignScope, { scope, kind })
+					.match(AssignRoot, { scope, kind, at })
 					.match(AssignFinish, { scope, step })
 					.match(AssignResult, { step })
 					.find({ scope, kind, at })
 			})
 			.rule((r) => {
-				const { scope, key, at } = v(AssignRoot, "root")
-				const { kind } = v(AssignScope, "scope")
+				const { scope, kind, at } = v(AssignRoot, "root")
 				return r
-					.match(AssignRoot, { scope, key, at })
-					.match(AssignScope, { scope, kind })
+					.match(AssignRoot, { scope, kind, at })
 					.match(AssignSkipped, { scope })
 					.find({ scope, kind, at })
 			})
@@ -364,8 +362,8 @@ export const assignDenPrograms = Object.freeze({
 				return r.match(AssignWithin, { scope, parent }).find({ scope, parent })
 			}),
 			roots: query(AssignDen).rule((r) => {
-				const { scope, key, at } = v(AssignRoot, "assignRoot")
-				return r.match(AssignRoot, { scope, key, at }).find({ scope, key, at })
+				const { scope, kind, key, at } = v(AssignRoot, "assignRoot")
+				return r.match(AssignRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
 			}),
 			paused: query(AssignDen).rule((r) => {
 				const { target, turn } = v(AssignPaused, "assignPaused")

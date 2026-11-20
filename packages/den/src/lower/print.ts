@@ -245,7 +245,7 @@ const boundRostersOf = (l: Lowered): ReadonlyArray<string> => {
 	const relations = Arr.map(l.relations, (rel) => rel.name)
 	const r = (s: string) => `${l.prefix}${s}`
 	return [
-		...(Arr.contains(relations, r("Exclusive")) ? [r("Join")] : []),
+		...(Arr.contains(relations, r("Exclusive")) ? [r("RootKind")] : []),
 		r("Pausable"),
 		...(Arr.contains(relations, r("Hold")) ? [r("Resource")] : [])
 	]
@@ -630,7 +630,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		`requested: ${shared.requested}`,
 		`running: ${shared.running}`,
 		`withins: ${allOf(n.den, r("Within"), ["scope", "parent"])}`,
-		`roots: ${allOf(n.den, r("Root"), ["scope", "key", "at"])}`,
+		`roots: ${allOf(n.den, r("Root"), ["scope", "kind", "key", "at"])}`,
 		...(exclusiveKeys ? [`keys: ${allOf(n.den, r("ExclusiveKey"), ["scope", "key", "id"])}`] : []),
 		...Arr.map(Option.toArray(l.seats), (st) => `holds: ${liveHoldsOf(n.den, st)}`),
 		...(has(r("Exclusive"))
@@ -687,20 +687,13 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			n.program("FinishedRoots"),
 			deferred(`query(${n.graph})
 	.rule((r) => {
-		const { scope, key, at } = v(${r("Root")}, "root")
-		const { kind } = v(${r("Scope")}, "scope")
+		const { scope, kind, at } = v(${r("Root")}, "root")
 		const { step } = v(${r("Finish")}, "finish")
-		return r
-			.match(${r("Root")}, { scope, key, at })
-			.match(${r("Scope")}, { scope, kind })
-			.match(${r("Finish")}, { scope, step })
-			.match(${r("Result")}, { step })
-			.find({ scope, kind, at })
+		return r.match(${r("Root")}, { scope, kind, at }).match(${r("Finish")}, { scope, step }).match(${r("Result")}, { step }).find({ scope, kind, at })
 	})
 	.rule((r) => {
-		const { scope, key, at } = v(${r("Root")}, "root")
-		const { kind } = v(${r("Scope")}, "scope")
-		return r.match(${r("Root")}, { scope, key, at }).match(${r("Scope")}, { scope, kind }).match(${r("Skipped")}, { scope }).find({ scope, kind, at })
+		const { scope, kind, at } = v(${r("Root")}, "root")
+		return r.match(${r("Root")}, { scope, kind, at }).match(${r("Skipped")}, { scope }).find({ scope, kind, at })
 	})`)
 		],
 		[
@@ -1543,7 +1536,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const roots = Arr.filter(l.joins, (j) => Option.isSome(j.root))
 	const requestFacts = (j: JoinIR): ReadonlyArray<string> => [
 		`${r("Scope")}: [{ scope, kind: ${q(j.name)} as const, root: scope }]`,
-		`${r("Root")}: [{ scope, key, at }]`,
+		`${r("Root")}: [{ scope, kind: ${q(j.name)} as const, key, at }]`,
 		...(isExclusive(j)
 			? [`${r("ExclusiveKey")}: Arr.map(keys, (k) => ({ ...k, root: scope }))`]
 			: []),
@@ -1612,7 +1605,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`Effect.flatMap(settled(h.den.${n.program("Snapshot")}.once({ params: {}, facts: {} })), (rows) => Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof ${F}>> => {`,
 		"\tconst view = (scope: ScopeKey, kind: string, admission: Admission): ReadonlyArray<ScopeView> =>",
 		"\t\tOption.match(Arr.findFirst(read.roots, (o) => o.scope === scope), {",
-		`\t\t\tonSome: (o): ReadonlyArray<ScopeView> => [{ place: "root", scope, kind, key: o.key, at: o.at, admission, exclusive: ${exclusiveKeys ? "Option.map(Arr.findFirst(read.keys, (k) => k.scope === scope), (k) => k.id)" : "Option.none()"} }],`,
+		`\t\t\tonSome: (o): ReadonlyArray<ScopeView> => [{ place: "root", scope, kind: o.kind, key: o.key, at: o.at, admission, exclusive: ${exclusiveKeys ? "Option.map(Arr.findFirst(read.keys, (k) => k.scope === scope), (k) => k.id)" : "Option.none()"}, runner: roots[o.kind] }],`,
 		'\t\t\tonNone: () => Arr.map(Option.toArray(Arr.findFirst(read.withins, (w) => w.scope === scope)), (w): ScopeView => ({ place: "child", scope, kind, parent: w.parent }))',
 		"\t\t})",
 		"\treturn {",
@@ -1649,7 +1642,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		: "Effect.succeed([])"
 	const busyOf = `const busyOf = (read: { ${commas(Arr.map(l.idle, (f) => `readonly ${busyName(f)}: ReadonlyArray<unknown>`))} }): ReadonlyArray<string> => Arr.filter([${commas(Arr.map(l.idle, q))}] as const, (flow) => Arr.isReadonlyArrayNonEmpty(read[\`${BUSY}\${flow}\`]))`
 	const fragmentValues = boundRostersOf(l)
-	const fragmentImports = Arr.dedupe([...spawning, ...fragmentValues])
+	const fragmentImports = Arr.dedupe([...spawning, r("RootKind"), ...fragmentValues])
 	const fragmentTypes = Arr.filter(fragmentImports, (name) => !Arr.contains(fragmentValues, name))
 	const valueReaders = [...Arr.map(l.steps, (s) => s.input), ...Arr.map(l.joins, (j) => j.input)]
 	const finishOutputs = Arr.flatMap(l.joins, (j) =>
@@ -1680,7 +1673,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`import { type MemberHandle, settled } from "@bjornpagen/grizzle/runtime"`,
 		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishUnions ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", "rowsOf", "scheduleOf", "signals"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
-		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), ...(resources ? ["HoldRow"] : []), "Admission", "Ledger", "PauseRow", "ScopeView", ...(resources ? ["SeatTurn"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
+		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), ...(resources ? ["HoldRow"] : []), "Admission", "Ledger", "PauseRow", "RootRunner", "ScopeView", ...(resources ? ["SeatTurn"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
 		`import { runnerOf } from "@bjornpagen/den/runtime/turn"`,
 		`import { FlowName } from "@bjornpagen/den/transport"`,
 		`import { Array as Arr, Effect, Option, Stream } from "effect"`,
@@ -1705,7 +1698,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"\treadonly spawned: Spawned",
 		"}",
 		"",
-		...(exclusives ? [`const joinOf = ${handleOf(r("Join"))}`] : []),
+		...(exclusives ? [`const rootKindOf = ${handleOf(r("RootKind"))}`] : []),
 		`const pausableOf = ${handleOf(r("Pausable"))}`,
 		...(resources ? [`const resourceOf = ${handleOf(r("Resource"))}`] : []),
 		...(resources
@@ -1716,7 +1709,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			: []),
 		...(exclusives
 			? [
-					`const exclusiveTurnsOf = (turns: ReadonlyArray<ExclusiveTurn>) => Arr.flatMap(turns, (turn) => Option.toArray(Option.map(joinOf(turn.kind), (kind) => ({ kind, key: turn.key, turn: turn.turn }))))`
+					`const exclusiveTurnsOf = (turns: ReadonlyArray<ExclusiveTurn>) => Arr.flatMap(turns, (turn) => Option.toArray(Option.map(rootKindOf(turn.kind), (kind) => ({ kind, key: turn.key, turn: turn.turn }))))`
 				]
 			: []),
 		`const pausesOf = (rows: ReadonlyArray<PauseRow>) => Arr.flatMap(rows, (row) => Option.toArray(Option.map(pausableOf(row.target), (target) => ({ target, turn: row.turn }))))`,
@@ -1736,17 +1729,17 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		...Arr.map(l.steps, (s) => `\t\t${s.name}: ${indented("\t\t")(stepRunner(s))},`),
 		...Arr.map(l.joins, (j) => `\t\t${j.finish.name}: ${indented("\t\t")(finishRunner(j))},`),
 		"\t}",
+		`\tconst roots: { readonly [K in ${scoped(r("RootKind"))}]: RootRunner } = {`,
+		...Arr.map(
+			roots,
+			(j) =>
+				`\t\t${j.name}: { window: ${kindAt(j.index)}.window, precondition: ${kindAt(j.index)}.precondition, admit: ${indented("\t\t")(admitOf(j))} },`
+		),
+		"\t}",
 		`\tconst ledger: Ledger<FlowNeeds<typeof ${F}>> = {`,
 		`\t\tflow: FlowName.make(${q(P)}),`,
 		`\t\tnow: Effect.flatMap(settled(h.den.${n.program("Now")}.once({ params: {}, facts: {} })), readingOf),`,
 		`\t\tauthenticated: Effect.asVoid(settled(h.commits.${n.program("Authenticated")}.once({ params: {}, facts: {} }))),`,
-		"\t\troots: new Map([",
-		...Arr.map(
-			roots,
-			(j) =>
-				`\t\t\t[${q(j.name)}, { kind: ${q(j.name)}, exclusive: ${isExclusive(j)}, window: ${kindAt(j.index)}.window, precondition: ${kindAt(j.index)}.precondition, finish: ${q(j.finish.name)}, admit: ${indented("\t\t\t")(admitOf(j))} }],`
-		),
-		"\t\t]),",
 		`\t\tstepOf: (step) => Effect.map(settled(h.den.${n.program("StepOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => ({ runner: runners[row.kind], scope: row.scope, root: row.root, due: row.due }))),`,
 		`\t\tresultOf: (step) => Effect.map(settled(h.den.${n.program("ResultOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.outcome)),`,
 		`\t\theldOf: (step) => Effect.map(settled(h.den.${n.program("HeldOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.attempt)),`,
@@ -1769,7 +1762,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			? [`\t\t\tconst key = yield* ${keyRead(n.program("ExclusiveKeyOf"), "scope", "scope")}`]
 			: []),
 		'\t\t\tconst admission: Admission = Option.isSome(admitted) ? "admitted" : Option.isSome(skipped) ? "skipped" : "requested"',
-		`\t\t\treturn Option.some<ScopeView>({ place: "root", scope, kind: row.value.kind, key: root.value.key, at: root.value.at, admission, exclusive: ${exclusiveKeys ? "Option.map(key, (k) => k.id)" : "Option.none()"} })`,
+		`\t\t\treturn Option.some<ScopeView>({ place: "root", scope, kind: root.value.kind, key: root.value.key, at: root.value.at, admission, exclusive: ${exclusiveKeys ? "Option.map(key, (k) => k.id)" : "Option.none()"}, runner: roots[root.value.kind] })`,
 		"\t\t}),",
 		`\t\tunended: (scope) => Effect.flatMap(h.den.${n.program("UnendedSteps")}.once({ params: { scope }, facts: {} }).pipe(settled, any), (steps) => steps ? Effect.succeed(true) : h.den.${n.program("OpenChildren")}.once({ params: { scope }, facts: {} }).pipe(settled, any)),`,
 		`\t\tfinished: (scope) => h.den.${n.program("Finished")}.once({ params: { scope }, facts: {} }).pipe(settled, any),`,

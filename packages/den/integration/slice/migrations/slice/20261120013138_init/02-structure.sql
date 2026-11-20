@@ -210,6 +210,7 @@ CREATE TABLE "slice"."assign_retry" (
 
 CREATE TABLE "slice"."assign_root" (
   "scope" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "kind" "slice"."assign_root_kind" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "retired" boolean DEFAULT false NOT NULL,
@@ -441,6 +442,7 @@ CREATE TABLE "slice"."chain_retry" (
 
 CREATE TABLE "slice"."chain_root" (
   "scope" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "kind" "slice"."chain_root_kind" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "retired" boolean DEFAULT false NOT NULL,
@@ -640,6 +642,7 @@ CREATE TABLE "slice"."fan_retry" (
 
 CREATE TABLE "slice"."fan_root" (
   "scope" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "kind" "slice"."fan_root_kind" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "retired" boolean DEFAULT false NOT NULL,
@@ -853,6 +856,7 @@ CREATE TABLE "slice"."retry_retry" (
 
 CREATE TABLE "slice"."retry_root" (
   "scope" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "kind" "slice"."retry_root_kind" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "retired" boolean DEFAULT false NOT NULL,
@@ -984,7 +988,7 @@ CREATE TABLE "slice"."sync_done" (
 );
 
 CREATE TABLE "slice"."sync_exclusive" (
-  "kind" "slice"."sync_join" NOT NULL,
+  "kind" "slice"."sync_root_kind" NOT NULL,
   "key" "slice"."__domain_jotafzuj2i" NOT NULL,
   "turn" "slice"."__domain_gfw43vigph" NOT NULL,
   "scope" "slice"."__domain_jotafzuj2i" NOT NULL,
@@ -1055,7 +1059,7 @@ CREATE TABLE "slice"."sync_refusal" (
 );
 
 CREATE TABLE "slice"."sync_released" (
-  "kind" "slice"."sync_join" NOT NULL,
+  "kind" "slice"."sync_root_kind" NOT NULL,
   "key" "slice"."__domain_jotafzuj2i" NOT NULL,
   "turn" "slice"."__domain_gfw43vigph" NOT NULL,
   CONSTRAINT "__sync_released_pk_k7qaw2iram" PRIMARY KEY ("kind", "key", "turn")
@@ -1085,6 +1089,7 @@ CREATE TABLE "slice"."sync_retry" (
 
 CREATE TABLE "slice"."sync_root" (
   "scope" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "kind" "slice"."sync_root_kind" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "retired" boolean DEFAULT false NOT NULL,

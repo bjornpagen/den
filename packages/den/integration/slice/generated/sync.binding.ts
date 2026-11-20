@@ -24,6 +24,7 @@ import type {
 	Admission,
 	Ledger,
 	PauseRow,
+	RootRunner,
 	ScopeView,
 	Snapshot,
 	Spawned
@@ -36,7 +37,7 @@ import { type MemberHandle, settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import { sync } from "#integration/slice/flows.ts"
-import { SyncJoin, SyncPausable } from "#integration/slice/generated/sync.fragment.ts"
+import { SyncRootKind, SyncPausable } from "#integration/slice/generated/sync.fragment.ts"
 import type {
 	SyncStep,
 	SyncScope,
@@ -90,14 +91,14 @@ interface Grown {
 	readonly spawned: Spawned
 }
 
-const joinOf = (name: string): Option.Option<(typeof SyncJoin)["handles"][number]> =>
-	Arr.findFirst(SyncJoin.handles, (handle) => handle === name)
+const rootKindOf = (name: string): Option.Option<(typeof SyncRootKind)["handles"][number]> =>
+	Arr.findFirst(SyncRootKind.handles, (handle) => handle === name)
 const pausableOf = (name: string): Option.Option<(typeof SyncPausable)["handles"][number]> =>
 	Arr.findFirst(SyncPausable.handles, (handle) => handle === name)
 const exclusiveTurnsOf = (turns: ReadonlyArray<ExclusiveTurn>) =>
 	Arr.flatMap(turns, (turn) =>
 		Option.toArray(
-			Option.map(joinOf(turn.kind), (kind) => ({ kind, key: turn.key, turn: turn.turn }))
+			Option.map(rootKindOf(turn.kind), (kind) => ({ kind, key: turn.key, turn: turn.turn }))
 		)
 	)
 const pausesOf = (rows: ReadonlyArray<PauseRow>) =>
@@ -326,7 +327,7 @@ export const syncLedger = (h: SyncHandles) => {
 										facts: {
 											insert: {
 												SyncScope: [{ scope, kind: "SyncRun" as const, root: scope }],
-												SyncRoot: [{ scope, key, at }],
+												SyncRoot: [{ scope, kind: "SyncRun" as const, key, at }],
 												SyncExclusiveKey: Arr.map(keys, (k) => ({ ...k, root: scope })),
 												SyncSyncRunInput: [
 													{ scope: scope, root: scope, relation: input.relation, run: input.run }
@@ -351,7 +352,7 @@ export const syncLedger = (h: SyncHandles) => {
 								facts: {
 									insert: {
 										SyncScope: [{ scope, kind: "Gold" as const, root: scope }],
-										SyncRoot: [{ scope, key, at }],
+										SyncRoot: [{ scope, kind: "Gold" as const, key, at }],
 										SyncGoldInput: [{ scope: scope, root: scope, build: input.build }]
 									}
 								}
@@ -536,132 +537,114 @@ export const syncLedger = (h: SyncHandles) => {
 			Option.some("Gold")
 		)
 	}
+	const roots: { readonly [K in (typeof SyncRootKind)["handles"][number]]: RootRunner } = {
+		SyncRun: {
+			window: sync.kinds[1].window,
+			precondition: sync.kinds[1].precondition,
+			admit: (scope: ScopeKey, at: Instant) =>
+				Effect.gen(function* () {
+					const input = yield* readSyncSyncRunInput(scope)
+					if (Option.isNone(input)) {
+						return Option.none()
+					}
+					const grown = yield* startSyncRun(scope, scope, input.value, at)
+					const finish = yield* finishStep(scope)
+					const steps: ReadonlyArray<Addition<typeof SyncStep>> = [
+						...grown.rows.SyncStep,
+						{ step: finish, kind: "SyncRunFinish", scope, due: at, root: scope }
+					]
+					const admitted: ReadonlyArray<Addition<typeof SyncAdmitted>> = [
+						...grown.rows.SyncAdmitted,
+						{ scope, root: scope }
+					]
+					const finishes: ReadonlyArray<Addition<typeof SyncFinish>> = [
+						...grown.rows.SyncFinish,
+						{ scope, step: finish, root: scope }
+					]
+					const outcome = yield* settled(
+						h.den.syncAdmit.once({
+							params: {},
+							facts: {
+								insert: {
+									SyncScope: grown.rows.SyncScope,
+									SyncWithin: grown.rows.SyncWithin,
+									SyncStartStep: grown.rows.SyncStartStep,
+									SyncStartScope: grown.rows.SyncStartScope,
+									SyncCopyInput: grown.rows.SyncCopyInput,
+									SyncBuildInput: grown.rows.SyncBuildInput,
+									SyncStep: steps,
+									SyncAdmitted: admitted,
+									SyncFinish: finishes
+								}
+							}
+						})
+					)
+					return Option.some({
+						outcome,
+						spawned: {
+							steps: grown.spawned.steps,
+							finishes: [...grown.spawned.finishes, ...(hasChildren(grown, scope) ? [] : [finish])]
+						}
+					})
+				})
+		},
+		Gold: {
+			window: sync.kinds[3].window,
+			precondition: sync.kinds[3].precondition,
+			admit: (scope: ScopeKey, at: Instant) =>
+				Effect.gen(function* () {
+					const input = yield* readSyncGoldInput(scope)
+					if (Option.isNone(input)) {
+						return Option.none()
+					}
+					const grown = yield* startGold(scope, scope, input.value, at)
+					const finish = yield* finishStep(scope)
+					const steps: ReadonlyArray<Addition<typeof SyncStep>> = [
+						...grown.rows.SyncStep,
+						{ step: finish, kind: "GoldFinish", scope, due: at, root: scope }
+					]
+					const admitted: ReadonlyArray<Addition<typeof SyncAdmitted>> = [
+						...grown.rows.SyncAdmitted,
+						{ scope, root: scope }
+					]
+					const finishes: ReadonlyArray<Addition<typeof SyncFinish>> = [
+						...grown.rows.SyncFinish,
+						{ scope, step: finish, root: scope }
+					]
+					const outcome = yield* settled(
+						h.den.syncAdmit.once({
+							params: {},
+							facts: {
+								insert: {
+									SyncScope: grown.rows.SyncScope,
+									SyncWithin: grown.rows.SyncWithin,
+									SyncStartStep: grown.rows.SyncStartStep,
+									SyncStartScope: grown.rows.SyncStartScope,
+									SyncCopyInput: grown.rows.SyncCopyInput,
+									SyncBuildInput: grown.rows.SyncBuildInput,
+									SyncStep: steps,
+									SyncAdmitted: admitted,
+									SyncFinish: finishes
+								}
+							}
+						})
+					)
+					return Option.some({
+						outcome,
+						spawned: {
+							steps: grown.spawned.steps,
+							finishes: [...grown.spawned.finishes, ...(hasChildren(grown, scope) ? [] : [finish])]
+						}
+					})
+				})
+		}
+	}
 	const ledger: Ledger<FlowNeeds<typeof sync>> = {
 		flow: FlowName.make("Sync"),
 		now: Effect.flatMap(settled(h.den.syncNow.once({ params: {}, facts: {} })), readingOf),
 		authenticated: Effect.asVoid(
 			settled(h.commits.syncAuthenticated.once({ params: {}, facts: {} }))
 		),
-		roots: new Map([
-			[
-				"SyncRun",
-				{
-					kind: "SyncRun",
-					exclusive: true,
-					window: sync.kinds[1].window,
-					precondition: sync.kinds[1].precondition,
-					finish: "SyncRunFinish",
-					admit: (scope: ScopeKey, at: Instant) =>
-						Effect.gen(function* () {
-							const input = yield* readSyncSyncRunInput(scope)
-							if (Option.isNone(input)) {
-								return Option.none()
-							}
-							const grown = yield* startSyncRun(scope, scope, input.value, at)
-							const finish = yield* finishStep(scope)
-							const steps: ReadonlyArray<Addition<typeof SyncStep>> = [
-								...grown.rows.SyncStep,
-								{ step: finish, kind: "SyncRunFinish", scope, due: at, root: scope }
-							]
-							const admitted: ReadonlyArray<Addition<typeof SyncAdmitted>> = [
-								...grown.rows.SyncAdmitted,
-								{ scope, root: scope }
-							]
-							const finishes: ReadonlyArray<Addition<typeof SyncFinish>> = [
-								...grown.rows.SyncFinish,
-								{ scope, step: finish, root: scope }
-							]
-							const outcome = yield* settled(
-								h.den.syncAdmit.once({
-									params: {},
-									facts: {
-										insert: {
-											SyncScope: grown.rows.SyncScope,
-											SyncWithin: grown.rows.SyncWithin,
-											SyncStartStep: grown.rows.SyncStartStep,
-											SyncStartScope: grown.rows.SyncStartScope,
-											SyncCopyInput: grown.rows.SyncCopyInput,
-											SyncBuildInput: grown.rows.SyncBuildInput,
-											SyncStep: steps,
-											SyncAdmitted: admitted,
-											SyncFinish: finishes
-										}
-									}
-								})
-							)
-							return Option.some({
-								outcome,
-								spawned: {
-									steps: grown.spawned.steps,
-									finishes: [
-										...grown.spawned.finishes,
-										...(hasChildren(grown, scope) ? [] : [finish])
-									]
-								}
-							})
-						})
-				}
-			],
-			[
-				"Gold",
-				{
-					kind: "Gold",
-					exclusive: false,
-					window: sync.kinds[3].window,
-					precondition: sync.kinds[3].precondition,
-					finish: "GoldFinish",
-					admit: (scope: ScopeKey, at: Instant) =>
-						Effect.gen(function* () {
-							const input = yield* readSyncGoldInput(scope)
-							if (Option.isNone(input)) {
-								return Option.none()
-							}
-							const grown = yield* startGold(scope, scope, input.value, at)
-							const finish = yield* finishStep(scope)
-							const steps: ReadonlyArray<Addition<typeof SyncStep>> = [
-								...grown.rows.SyncStep,
-								{ step: finish, kind: "GoldFinish", scope, due: at, root: scope }
-							]
-							const admitted: ReadonlyArray<Addition<typeof SyncAdmitted>> = [
-								...grown.rows.SyncAdmitted,
-								{ scope, root: scope }
-							]
-							const finishes: ReadonlyArray<Addition<typeof SyncFinish>> = [
-								...grown.rows.SyncFinish,
-								{ scope, step: finish, root: scope }
-							]
-							const outcome = yield* settled(
-								h.den.syncAdmit.once({
-									params: {},
-									facts: {
-										insert: {
-											SyncScope: grown.rows.SyncScope,
-											SyncWithin: grown.rows.SyncWithin,
-											SyncStartStep: grown.rows.SyncStartStep,
-											SyncStartScope: grown.rows.SyncStartScope,
-											SyncCopyInput: grown.rows.SyncCopyInput,
-											SyncBuildInput: grown.rows.SyncBuildInput,
-											SyncStep: steps,
-											SyncAdmitted: admitted,
-											SyncFinish: finishes
-										}
-									}
-								})
-							)
-							return Option.some({
-								outcome,
-								spawned: {
-									steps: grown.spawned.steps,
-									finishes: [
-										...grown.spawned.finishes,
-										...(hasChildren(grown, scope) ? [] : [finish])
-									]
-								}
-							})
-						})
-				}
-			]
-		]),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.syncStepOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => ({
@@ -730,11 +713,12 @@ export const syncLedger = (h: SyncHandles) => {
 				return Option.some<ScopeView>({
 					place: "root",
 					scope,
-					kind: row.value.kind,
+					kind: root.value.kind,
 					key: root.value.key,
 					at: root.value.at,
 					admission,
-					exclusive: Option.map(key, (k) => k.id)
+					exclusive: Option.map(key, (k) => k.id),
+					runner: roots[root.value.kind]
 				})
 			}),
 		unended: (scope) =>
@@ -819,14 +803,15 @@ export const syncLedger = (h: SyncHandles) => {
 								{
 									place: "root",
 									scope,
-									kind,
+									kind: o.kind,
 									key: o.key,
 									at: o.at,
 									admission,
 									exclusive: Option.map(
 										Arr.findFirst(read.keys, (k) => k.scope === scope),
 										(k) => k.id
-									)
+									),
+									runner: roots[o.kind]
 								}
 							],
 							onNone: () =>

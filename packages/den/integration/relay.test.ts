@@ -105,11 +105,9 @@ export const theRelayRingsARootTheAppRequestedInItsOwnTransaction = property.exp
 	kills: [
 		{
 			file: "packages/den/src/runtime/eligible.ts",
-			original:
-				'(p) => !(p.kind === "idle" && Arr.some(p.flows, (f) => Arr.contains(snapshot.busy, f)))',
-			replacement:
-				'(p) => (p.kind === "idle" && Arr.some(p.flows, (f) => Arr.contains(snapshot.busy, f)))',
-			why: "A root is admitted only while a flow its precondition names is busy, where it waits for them all idle (lane CATCH's negation of den 9cffaba, where eligible.ts reads a root's precondition)."
+			original: '\t\treturn !(\n\t\t\tprecondition.kind === "idle" &&\n',
+			replacement: '\t\treturn (\n\t\t\tprecondition.kind === "idle" &&\n',
+			why: "A root is admitted only while a flow its precondition names is busy, where it waits for them all idle (lane CATCH's negation of den 9cffaba, where eligible.ts reads a root's precondition off its runner)."
 		}
 	]
 })

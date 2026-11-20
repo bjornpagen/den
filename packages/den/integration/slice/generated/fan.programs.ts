@@ -5,6 +5,7 @@ import { App } from "#integration/slice/app.ts"
 import {
 	FanKind,
 	FanJoin,
+	FanRootKind,
 	FanOutcome,
 	FanPausable,
 	FanResource,
@@ -90,6 +91,7 @@ export const FanCoordinator = role(
 	{
 		FanKind,
 		FanJoin,
+		FanRootKind,
 		FanOutcome,
 		FanPausable,
 		FanResource,
@@ -228,31 +230,27 @@ export const fanDenPrograms = Object.freeze({
 			.find({ scope, root })
 	}),
 	fanRootOf: query(fanGraph).rule((r) => {
-		const { scope, key, at } = v(FanRoot, "fanRoot")
+		const { scope, kind, key, at } = v(FanRoot, "fanRoot")
 		return r
-			.match(FanRoot, { scope, key, at })
+			.match(FanRoot, { scope, kind, key, at })
 			.where(r.eq(scope, r.param("scope", FanRoot.fields.scope)))
-			.find({ scope, key, at })
+			.find({ scope, kind, key, at })
 	}),
 	fanFinishedRoots: deferrable(
 		query(fanGraph)
 			.rule((r) => {
-				const { scope, key, at } = v(FanRoot, "root")
-				const { kind } = v(FanScope, "scope")
+				const { scope, kind, at } = v(FanRoot, "root")
 				const { step } = v(FanFinish, "finish")
 				return r
-					.match(FanRoot, { scope, key, at })
-					.match(FanScope, { scope, kind })
+					.match(FanRoot, { scope, kind, at })
 					.match(FanFinish, { scope, step })
 					.match(FanResult, { step })
 					.find({ scope, kind, at })
 			})
 			.rule((r) => {
-				const { scope, key, at } = v(FanRoot, "root")
-				const { kind } = v(FanScope, "scope")
+				const { scope, kind, at } = v(FanRoot, "root")
 				return r
-					.match(FanRoot, { scope, key, at })
-					.match(FanScope, { scope, kind })
+					.match(FanRoot, { scope, kind, at })
 					.match(FanSkipped, { scope })
 					.find({ scope, kind, at })
 			})
@@ -348,8 +346,8 @@ export const fanDenPrograms = Object.freeze({
 				return r.match(FanWithin, { scope, parent }).find({ scope, parent })
 			}),
 			roots: query(FanDen).rule((r) => {
-				const { scope, key, at } = v(FanRoot, "fanRoot")
-				return r.match(FanRoot, { scope, key, at }).find({ scope, key, at })
+				const { scope, kind, key, at } = v(FanRoot, "fanRoot")
+				return r.match(FanRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
 			}),
 			holds: query(FanDen).rule((r) => {
 				const { resource, seat, turn, holder, until } = v(FanDen.relations.FanLive, "live")

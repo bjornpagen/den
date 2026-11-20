@@ -23,6 +23,7 @@ import {
 
 export const FanKind = closed.unordered("FanKind", ["Square", "BatchFinish", "FanRunFinish"])
 export const FanJoin = closed.unordered("FanJoin", ["Batch", "FanRun"])
+export const FanRootKind = closed.unordered("FanRootKind", ["FanRun"])
 export const FanOutcome = closed.unordered("FanOutcome", ["done", "failed"])
 export const FanPausable = closed.unordered("FanPausable", ["Pool", "FanRun"])
 export const FanResource = closed.unordered("FanResource", ["Pool"])
@@ -40,7 +41,7 @@ export const FanScope = relation(
 )
 export const FanRoot = relation(
 	"FanRoot",
-	{ scope: DenScope, key: Text, at: DenInstant, retired: retirement },
+	{ scope: DenScope, kind: closedId(FanRootKind), key: Text, at: DenInstant, retired: retirement },
 	["scope"]
 )
 export const FanWithin = relation(
@@ -161,6 +162,7 @@ export const fanGraph = fragment(
 	[
 		FanKind,
 		FanJoin,
+		FanRootKind,
 		FanOutcome,
 		FanPausable,
 		FanResource,
@@ -295,6 +297,7 @@ export const fanCoordination = fragment(
 	[
 		FanKind,
 		FanJoin,
+		FanRootKind,
 		FanOutcome,
 		FanPausable,
 		FanResource,

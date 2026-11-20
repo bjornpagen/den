@@ -5,6 +5,7 @@ import { App } from "#integration/slice/app.ts"
 import {
 	ChainKind,
 	ChainJoin,
+	ChainRootKind,
 	ChainOutcome,
 	ChainPausable,
 	ChainPageInputFeed,
@@ -84,6 +85,7 @@ export const ChainCoordinator = role(
 	{
 		ChainKind,
 		ChainJoin,
+		ChainRootKind,
 		ChainOutcome,
 		ChainPausable,
 		ChainPageInputFeed,
@@ -216,31 +218,27 @@ export const chainDenPrograms = Object.freeze({
 			.find({ scope, root })
 	}),
 	chainRootOf: query(chainGraph).rule((r) => {
-		const { scope, key, at } = v(ChainRoot, "chainRoot")
+		const { scope, kind, key, at } = v(ChainRoot, "chainRoot")
 		return r
-			.match(ChainRoot, { scope, key, at })
+			.match(ChainRoot, { scope, kind, key, at })
 			.where(r.eq(scope, r.param("scope", ChainRoot.fields.scope)))
-			.find({ scope, key, at })
+			.find({ scope, kind, key, at })
 	}),
 	chainFinishedRoots: deferrable(
 		query(chainGraph)
 			.rule((r) => {
-				const { scope, key, at } = v(ChainRoot, "root")
-				const { kind } = v(ChainScope, "scope")
+				const { scope, kind, at } = v(ChainRoot, "root")
 				const { step } = v(ChainFinish, "finish")
 				return r
-					.match(ChainRoot, { scope, key, at })
-					.match(ChainScope, { scope, kind })
+					.match(ChainRoot, { scope, kind, at })
 					.match(ChainFinish, { scope, step })
 					.match(ChainResult, { step })
 					.find({ scope, kind, at })
 			})
 			.rule((r) => {
-				const { scope, key, at } = v(ChainRoot, "root")
-				const { kind } = v(ChainScope, "scope")
+				const { scope, kind, at } = v(ChainRoot, "root")
 				return r
-					.match(ChainRoot, { scope, key, at })
-					.match(ChainScope, { scope, kind })
+					.match(ChainRoot, { scope, kind, at })
 					.match(ChainSkipped, { scope })
 					.find({ scope, kind, at })
 			})
@@ -342,8 +340,8 @@ export const chainDenPrograms = Object.freeze({
 				return r.match(ChainWithin, { scope, parent }).find({ scope, parent })
 			}),
 			roots: query(ChainDen).rule((r) => {
-				const { scope, key, at } = v(ChainRoot, "chainRoot")
-				return r.match(ChainRoot, { scope, key, at }).find({ scope, key, at })
+				const { scope, kind, key, at } = v(ChainRoot, "chainRoot")
+				return r.match(ChainRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
 			}),
 			paused: query(ChainDen).rule((r) => {
 				const { target, turn } = v(ChainPaused, "chainPaused")

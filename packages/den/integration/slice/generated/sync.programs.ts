@@ -5,6 +5,7 @@ import { App } from "#integration/slice/app.ts"
 import {
 	SyncKind,
 	SyncJoin,
+	SyncRootKind,
 	SyncOutcome,
 	SyncPausable,
 	SyncScope,
@@ -90,6 +91,7 @@ export const SyncCoordinator = role(
 	{
 		SyncKind,
 		SyncJoin,
+		SyncRootKind,
 		SyncOutcome,
 		SyncPausable,
 		SyncExclusive,
@@ -229,11 +231,11 @@ export const syncDenPrograms = Object.freeze({
 			.find({ scope, root })
 	}),
 	syncRootOf: query(syncGraph).rule((r) => {
-		const { scope, key, at } = v(SyncRoot, "syncRoot")
+		const { scope, kind, key, at } = v(SyncRoot, "syncRoot")
 		return r
-			.match(SyncRoot, { scope, key, at })
+			.match(SyncRoot, { scope, kind, key, at })
 			.where(r.eq(scope, r.param("scope", SyncRoot.fields.scope)))
-			.find({ scope, key, at })
+			.find({ scope, kind, key, at })
 	}),
 	syncExclusiveKeyOf: query(syncGraph).rule((r) => {
 		const { scope, key, id, root } = v(SyncExclusiveKey, "syncExclusiveKey")
@@ -245,22 +247,18 @@ export const syncDenPrograms = Object.freeze({
 	syncFinishedRoots: deferrable(
 		query(syncGraph)
 			.rule((r) => {
-				const { scope, key, at } = v(SyncRoot, "root")
-				const { kind } = v(SyncScope, "scope")
+				const { scope, kind, at } = v(SyncRoot, "root")
 				const { step } = v(SyncFinish, "finish")
 				return r
-					.match(SyncRoot, { scope, key, at })
-					.match(SyncScope, { scope, kind })
+					.match(SyncRoot, { scope, kind, at })
 					.match(SyncFinish, { scope, step })
 					.match(SyncResult, { step })
 					.find({ scope, kind, at })
 			})
 			.rule((r) => {
-				const { scope, key, at } = v(SyncRoot, "root")
-				const { kind } = v(SyncScope, "scope")
+				const { scope, kind, at } = v(SyncRoot, "root")
 				return r
-					.match(SyncRoot, { scope, key, at })
-					.match(SyncScope, { scope, kind })
+					.match(SyncRoot, { scope, kind, at })
 					.match(SyncSkipped, { scope })
 					.find({ scope, kind, at })
 			})
@@ -361,8 +359,8 @@ export const syncDenPrograms = Object.freeze({
 				return r.match(SyncWithin, { scope, parent }).find({ scope, parent })
 			}),
 			roots: query(SyncDen).rule((r) => {
-				const { scope, key, at } = v(SyncRoot, "syncRoot")
-				return r.match(SyncRoot, { scope, key, at }).find({ scope, key, at })
+				const { scope, kind, key, at } = v(SyncRoot, "syncRoot")
+				return r.match(SyncRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
 			}),
 			keys: query(SyncDen).rule((r) => {
 				const { scope, key, id } = v(SyncExclusiveKey, "syncExclusiveKey")

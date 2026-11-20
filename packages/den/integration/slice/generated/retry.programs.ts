@@ -5,6 +5,7 @@ import { App } from "#integration/slice/app.ts"
 import {
 	RetryKind,
 	RetryJoin,
+	RetryRootKind,
 	RetryOutcome,
 	RetryPausable,
 	RetryScope,
@@ -73,7 +74,7 @@ export const RetryDen = role(
 export const RetryCoordinator = role(
 	App,
 	"retry_coordinator",
-	{ RetryKind, RetryJoin, RetryOutcome, RetryPausable, RetryPaused, RetryResumed },
+	{ RetryKind, RetryJoin, RetryRootKind, RetryOutcome, RetryPausable, RetryPaused, RetryResumed },
 	{ insert: ["RetryPaused", "RetryResumed"] }
 )
 
@@ -198,31 +199,27 @@ export const retryDenPrograms = Object.freeze({
 			.find({ scope, root })
 	}),
 	retryRootOf: query(retryGraph).rule((r) => {
-		const { scope, key, at } = v(RetryRoot, "retryRoot")
+		const { scope, kind, key, at } = v(RetryRoot, "retryRoot")
 		return r
-			.match(RetryRoot, { scope, key, at })
+			.match(RetryRoot, { scope, kind, key, at })
 			.where(r.eq(scope, r.param("scope", RetryRoot.fields.scope)))
-			.find({ scope, key, at })
+			.find({ scope, kind, key, at })
 	}),
 	retryFinishedRoots: deferrable(
 		query(retryGraph)
 			.rule((r) => {
-				const { scope, key, at } = v(RetryRoot, "root")
-				const { kind } = v(RetryScope, "scope")
+				const { scope, kind, at } = v(RetryRoot, "root")
 				const { step } = v(RetryFinish, "finish")
 				return r
-					.match(RetryRoot, { scope, key, at })
-					.match(RetryScope, { scope, kind })
+					.match(RetryRoot, { scope, kind, at })
 					.match(RetryFinish, { scope, step })
 					.match(RetryResult, { step })
 					.find({ scope, kind, at })
 			})
 			.rule((r) => {
-				const { scope, key, at } = v(RetryRoot, "root")
-				const { kind } = v(RetryScope, "scope")
+				const { scope, kind, at } = v(RetryRoot, "root")
 				return r
-					.match(RetryRoot, { scope, key, at })
-					.match(RetryScope, { scope, kind })
+					.match(RetryRoot, { scope, kind, at })
 					.match(RetrySkipped, { scope })
 					.find({ scope, kind, at })
 			})
@@ -324,8 +321,8 @@ export const retryDenPrograms = Object.freeze({
 				return r.match(RetryWithin, { scope, parent }).find({ scope, parent })
 			}),
 			roots: query(RetryDen).rule((r) => {
-				const { scope, key, at } = v(RetryRoot, "retryRoot")
-				return r.match(RetryRoot, { scope, key, at }).find({ scope, key, at })
+				const { scope, kind, key, at } = v(RetryRoot, "retryRoot")
+				return r.match(RetryRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
 			}),
 			paused: query(RetryDen).rule((r) => {
 				const { target, turn } = v(RetryPaused, "retryPaused")

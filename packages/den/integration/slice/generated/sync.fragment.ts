@@ -32,6 +32,7 @@ export const SyncKind = closed.unordered("SyncKind", [
 	"GoldFinish"
 ])
 export const SyncJoin = closed.unordered("SyncJoin", ["SyncRun", "Gold"])
+export const SyncRootKind = closed.unordered("SyncRootKind", ["SyncRun", "Gold"])
 export const SyncOutcome = closed.unordered("SyncOutcome", ["done", "failed"])
 export const SyncPausable = closed.unordered("SyncPausable", ["SyncRun", "Gold"])
 
@@ -42,7 +43,7 @@ export const SyncScope = relation(
 )
 export const SyncRoot = relation(
 	"SyncRoot",
-	{ scope: DenScope, key: Text, at: DenInstant, retired: retirement },
+	{ scope: DenScope, kind: closedId(SyncRootKind), key: Text, at: DenInstant, retired: retirement },
 	["scope"]
 )
 export const SyncWithin = relation(
@@ -154,12 +155,12 @@ export const SyncBuildOutput = relation(
 )
 export const SyncExclusive = relation(
 	"SyncExclusive",
-	{ kind: closedId(SyncJoin), key: DenExclusive, turn: natural, scope: DenScope },
+	{ kind: closedId(SyncRootKind), key: DenExclusive, turn: natural, scope: DenScope },
 	["kind", "key", "turn"]
 )
 export const SyncReleased = relation(
 	"SyncReleased",
-	{ kind: closedId(SyncJoin), key: DenExclusive, turn: natural },
+	{ kind: closedId(SyncRootKind), key: DenExclusive, turn: natural },
 	["kind", "key", "turn"]
 )
 export const SyncPaused = relation(
@@ -178,6 +179,7 @@ export const syncGraph = fragment(
 	[
 		SyncKind,
 		SyncJoin,
+		SyncRootKind,
 		SyncOutcome,
 		SyncPausable,
 		SyncScope,
@@ -328,6 +330,7 @@ export const syncCoordination = fragment(
 	[
 		SyncKind,
 		SyncJoin,
+		SyncRootKind,
 		SyncOutcome,
 		SyncPausable,
 		SyncExclusive,

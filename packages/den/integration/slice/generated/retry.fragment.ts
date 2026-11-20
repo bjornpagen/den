@@ -20,6 +20,7 @@ import {
 
 export const RetryKind = closed.unordered("RetryKind", ["Steadfast", "Brittle", "LaddersFinish"])
 export const RetryJoin = closed.unordered("RetryJoin", ["Ladders"])
+export const RetryRootKind = closed.unordered("RetryRootKind", ["Ladders"])
 export const RetryOutcome = closed.unordered("RetryOutcome", ["done", "failed"])
 export const RetryPausable = closed.unordered("RetryPausable", ["Ladders"])
 
@@ -30,7 +31,13 @@ export const RetryScope = relation(
 )
 export const RetryRoot = relation(
 	"RetryRoot",
-	{ scope: DenScope, key: Text, at: DenInstant, retired: retirement },
+	{
+		scope: DenScope,
+		kind: closedId(RetryRootKind),
+		key: Text,
+		at: DenInstant,
+		retired: retirement
+	},
 	["scope"]
 )
 export const RetryWithin = relation(
@@ -147,6 +154,7 @@ export const retryGraph = fragment(
 	[
 		RetryKind,
 		RetryJoin,
+		RetryRootKind,
 		RetryOutcome,
 		RetryPausable,
 		RetryScope,
@@ -284,7 +292,7 @@ export const retryGraph = fragment(
 
 /** The flow's coordination group: its rosters, its seat counts, and its chains of holds, exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const retryCoordination = fragment(
-	[RetryKind, RetryJoin, RetryOutcome, RetryPausable, RetryPaused, RetryResumed],
+	[RetryKind, RetryJoin, RetryRootKind, RetryOutcome, RetryPausable, RetryPaused, RetryResumed],
 	[
 		contained(on(RetryResumed, "target", "turn"), on(RetryPaused, "target", "turn")),
 		contained(on(RetryPaused, "target", pred("turn")), on(RetryResumed, "target", "turn"))

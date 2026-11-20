@@ -147,20 +147,16 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 	const view = (scope: ScopeKey): Option.Option<ScopeView> => HashMap.get(scopes, scope)
 	const rootOf = (scope: ScopeKey): Option.Option<RootView> =>
 		Option.flatMap(view(scope), (s) => (s.place === "root" ? Option.some(s) : rootOf(s.parent)))
-	const open = (root: RootView): boolean =>
-		Option.exists(Option.fromNullishOr(ledger.roots.get(root.kind)), (r) => isOpen(r.window, now))
+	const open = (root: RootView): boolean => isOpen(root.runner.window, now)
 	const paused = (target: string): boolean => Arr.contains(snapshot.paused, target)
 	const admissions = Arr.filter(snapshot.scopes, (s) => {
 		if (s.place === "child" || s.admission !== "requested" || !open(s) || paused(s.kind)) {
 			return false
 		}
-		const precondition = Option.map(
-			Option.fromNullishOr(ledger.roots.get(s.kind)),
-			(r) => r.precondition
-		)
-		return Option.exists(
-			precondition,
-			(p) => !(p.kind === "idle" && Arr.some(p.flows, (f) => Arr.contains(snapshot.busy, f)))
+		const precondition = s.runner.precondition
+		return !(
+			precondition.kind === "idle" &&
+			Arr.some(precondition.flows, (f) => Arr.contains(snapshot.busy, f))
 		)
 	})
 
