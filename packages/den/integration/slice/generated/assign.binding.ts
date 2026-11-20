@@ -326,7 +326,7 @@ export const assignLedger = (h: AssignHandles) => {
 					(unions) => ({
 						learner: found.learner,
 						topic: found.topic,
-						query: found.query,
+						vector: found.vector,
 						exclude: Arr.map(ordered(family0), (e) => e.value),
 						mode: unions.mode
 					})
@@ -506,7 +506,7 @@ export const assignLedger = (h: AssignHandles) => {
 															root: done.turn.root,
 															learner: input.learner,
 															topic: input.topic,
-															query: input.query,
+															vector: input.vector,
 															mode: input.mode._tag
 														}
 													],
@@ -558,7 +558,7 @@ export const assignLedger = (h: AssignHandles) => {
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
 										AssignEmbedOutput: [
-											{ step: done.turn.step, root: done.turn.root, query: done.output.query }
+											{ step: done.turn.step, root: done.turn.root, vector: done.output.vector }
 										]
 									}
 								}

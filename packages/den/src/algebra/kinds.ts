@@ -712,12 +712,10 @@ export const schedule = <const M extends Arr.NonEmptyReadonlyArray<string>, I>(
 	members: M,
 	input: (at: bigint, member: M[number]) => I
 ): Trigger<I> => {
-	Arr.forEach(members, (member, index) => {
+	Arr.forEach(members, (member: string, index) => {
+		const why = `its member ${member} is no name of letters and digits`
 		if (!MEMBER.test(member)) {
-			throw new Refused({
-				declaration: "schedule",
-				why: `its member ${member} is no name of letters and digits`
-			})
+			throw new Refused({ declaration: "schedule", why })
 		}
 		if (Arr.contains(Arr.take(members, index), member)) {
 			throw new Refused({ declaration: "schedule", why: `its member ${member} is listed twice` })

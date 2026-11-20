@@ -71,11 +71,11 @@ CREATE TABLE "slice"."assign_decide_input" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "learner" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "topic" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "query" "vector_ext"."vector"(4) NOT NULL,
+  "vector" "vector_ext"."vector"(4) NOT NULL,
   "mode" "slice"."assign_decide_input_mode" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__assign_decide_input_pk_phi7dovwvq" PRIMARY KEY ("step", "root"),
-  CONSTRAINT "__assign_decide_input_norm_query_l3gj7nad75" CHECK (("vector_ext"."vector_norm"("query") BETWEEN '3.3881317890172014e-21'::double precision AND '9223372036854776000'::double precision) IS TRUE)
+  CONSTRAINT "__assign_decide_input_norm_vector_it3heqzuab" CHECK (("vector_ext"."vector_norm"("vector") BETWEEN '3.3881317890172014e-21'::double precision AND '9223372036854776000'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_decide_input_exclude" (
@@ -217,10 +217,10 @@ CREATE TABLE "slice"."assign_embed_input_near" (
 
 CREATE TABLE "slice"."assign_embed_output" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "query" "vector_ext"."vector"(4) NOT NULL,
+  "vector" "vector_ext"."vector"(4) NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__assign_embed_output_pk_noiv3qgtry" PRIMARY KEY ("step", "root"),
-  CONSTRAINT "__assign_embed_output_norm_query_c5dnqwghei" CHECK (("vector_ext"."vector_norm"("query") BETWEEN '3.3881317890172014e-21'::double precision AND '9223372036854776000'::double precision) IS TRUE)
+  CONSTRAINT "__assign_embed_output_norm_vector_yuy6gaplly" CHECK (("vector_ext"."vector_norm"("vector") BETWEEN '3.3881317890172014e-21'::double precision AND '9223372036854776000'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_ended" (

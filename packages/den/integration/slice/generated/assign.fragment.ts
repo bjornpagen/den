@@ -167,7 +167,7 @@ export const AssignDecideInput = relation(
 		step: DenStep,
 		learner: Text,
 		topic: Text,
-		query: pg.vector(4),
+		vector: pg.vector(4),
 		mode: closedId(AssignDecideInputMode),
 		root: DenScope
 	},
@@ -221,7 +221,7 @@ export const AssignAssignmentInputModeWithin = relation(
 )
 export const AssignEmbedOutput = relation(
 	"AssignEmbedOutput",
-	{ step: DenStep, query: pg.vector(4), root: DenScope },
+	{ step: DenStep, vector: pg.vector(4), root: DenScope },
 	["step", "root"]
 )
 export const AssignDecideOutput = relation(

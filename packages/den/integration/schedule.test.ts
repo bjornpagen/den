@@ -106,10 +106,8 @@ export const aRetiredScheduledRootsKeyRequestedAgainStartsNothing = property.exp
 		},
 		{
 			file: "packages/den/src/runtime/bind.ts",
-			original:
-				"export const scheduledKey = (at: bigint, member: string): string => `${String(at)}:${member}`",
-			replacement:
-				"export const scheduledKey = (at: bigint, _member: string): string => String(at)",
+			original: '\tArr.join([String(at), member], ":")',
+			replacement: "\tString(at)",
 			why: "A schedule's roots are keyed by their instant alone: the second bell's root meets the first's key, answers it was already requested, and never chimes."
 		}
 	]

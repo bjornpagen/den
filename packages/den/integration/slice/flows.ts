@@ -107,16 +107,16 @@ const Page = step(
 		output: PageRead,
 		error: Schema.Never,
 		reads: reads(
-			(loader: typeof Loader) =>
-				query(loader).reads({
-					weights: query(loader).rule((r) => {
+			(role: typeof Loader) =>
+				query(role).reads({
+					weights: query(role).rule((r) => {
 						const { feed, factor } = v(Weight, "weight")
 						return r
 							.match(Weight, { feed, factor })
 							.where(r.eq(feed, r.param("feed", Weight.fields.feed)))
 							.find({ feed, factor })
 					}),
-					earlier: query(loader).rule((r) => {
+					earlier: query(role).rule((r) => {
 						const { feed, seq, n } = v(Item, "item")
 						return r
 							.match(Item, { feed, seq, n })
@@ -630,13 +630,13 @@ const Probe = Schema.Struct({
 })
 
 /** A question embedded: the vector its passages are ranked by, which its embedding's step computed. */
-const Embedded = Schema.Struct({ query: vectorOf(embeddingDimensions) })
+const Embedded = Schema.Struct({ vector: vectorOf(embeddingDimensions) })
 
 /** What a decision takes: the probe's learner, topic, passes and mode, and the query vector the step before it made. */
 const Question = Schema.Struct({
 	learner: Schema.String,
 	topic: Schema.String,
-	query: vectorOf(embeddingDimensions),
+	vector: vectorOf(embeddingDimensions),
 	exclude: Schema.Array(Schema.String),
 	mode: Mode
 })
@@ -661,7 +661,7 @@ const Embed = step(
 	},
 	(probe) =>
 		Effect.succeed({
-			output: { query: Vector.make(Float32Array.from(probe.near), embeddingDimensions) },
+			output: { vector: Vector.make(Float32Array.from(probe.near), embeddingDimensions) },
 			writes: { insert: {}, put: {}, delete: {} }
 		})
 )
@@ -727,9 +727,9 @@ const Decide = step(
 		output: Decision,
 		error: Schema.Never,
 		reads: reads(
-			(loader: typeof Loader) =>
-				query(loader).reads({
-					nearest: query(loader)
+			(role: typeof Loader) =>
+				query(role).reads({
+					nearest: query(role)
 						.rule((r) => {
 							const { passage, topic, embedding } = v(Passage, "passage")
 							return r
@@ -745,7 +745,7 @@ const Decide = step(
 								})
 						})
 						.approximateNearest({ by: "distance", take: assignedAmong }),
-					seen: query(loader).rule((r) => {
+					seen: query(role).rule((r) => {
 						const { learner, passage } = v(Seen, "seen")
 						return r
 							.match(Seen, { learner, passage })
@@ -762,7 +762,7 @@ const Decide = step(
 				seen: Schema.Struct({ learner: Schema.String, passage: Schema.String })
 			},
 			(question: typeof Question.Type) => ({
-				"nearest.query": question.query,
+				"nearest.query": question.vector,
 				"nearest.topic": question.topic,
 				"seen.learner": question.learner
 			})
@@ -801,7 +801,7 @@ const Asked = edge("Asked", Embed, Decide, (probe, embedded) => [
 	{
 		learner: probe.learner,
 		topic: probe.topic,
-		query: embedded.query,
+		vector: embedded.vector,
 		exclude: probe.exclude,
 		mode: probe.mode
 	}

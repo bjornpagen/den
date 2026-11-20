@@ -438,11 +438,11 @@ export const assignDenPrograms = Object.freeze({
 			.find({ step, ordinal, value })
 	}),
 	assignReadAssignDecideInput: query(assignGraph).rule((r) => {
-		const { step, learner, topic, query, mode, root } = v(AssignDecideInput, "assignDecideInput")
+		const { step, learner, topic, vector, mode, root } = v(AssignDecideInput, "assignDecideInput")
 		return r
-			.match(AssignDecideInput, { step, learner, topic, query, mode, root })
+			.match(AssignDecideInput, { step, learner, topic, vector, mode, root })
 			.where(r.eq(step, r.param("step", AssignDecideInput.fields.step)))
-			.find({ step, learner, topic, query, mode, root })
+			.find({ step, learner, topic, vector, mode, root })
 	}),
 	assignReadAssignDecideInputModeNearest: query(assignGraph).rule((r) => {
 		const { step, root } = v(AssignDecideInputModeNearest, "assignDecideInputModeNearest")

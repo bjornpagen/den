@@ -159,8 +159,8 @@ CREATE VIEW "slice_seats__assign_den"."assign_claim" ("step", "attempt", "until"
 SELECT "r1"."step", "r1"."attempt", "r1"."until", "r1"."root"
 FROM "slice"."assign_claim" AS "r1";
 
-CREATE VIEW "slice_seats__assign_den"."assign_decide_input" ("step", "learner", "topic", "query", "mode", "mode_name", "root") AS
-SELECT "r1"."step", "r1"."learner", "r1"."topic", "r1"."query", "r1"."mode", ("slice"."__assign_decide_input_mode_names_zoydpw665o"())["r1"."mode" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__assign_den"."assign_decide_input" ("step", "learner", "topic", "vector", "mode", "mode_name", "root") AS
+SELECT "r1"."step", "r1"."learner", "r1"."topic", "r1"."vector", "r1"."mode", ("slice"."__assign_decide_input_mode_names_zoydpw665o"())["r1"."mode" + 1]::"pg_catalog"."text", "r1"."root"
 FROM "slice"."assign_decide_input" AS "r1";
 
 CREATE VIEW "slice_seats__assign_den"."assign_decide_input_exclude" ("step", "ordinal", "value", "root") AS
@@ -231,8 +231,8 @@ CREATE VIEW "slice_seats__assign_den"."assign_embed_input_near" ("step", "ordina
 SELECT "r1"."step", "r1"."ordinal", "r1"."value", "r1"."root"
 FROM "slice"."assign_embed_input_near" AS "r1";
 
-CREATE VIEW "slice_seats__assign_den"."assign_embed_output" ("step", "query", "root") AS
-SELECT "r1"."step", "r1"."query", "r1"."root"
+CREATE VIEW "slice_seats__assign_den"."assign_embed_output" ("step", "vector", "root") AS
+SELECT "r1"."step", "r1"."vector", "r1"."root"
 FROM "slice"."assign_embed_output" AS "r1";
 
 CREATE VIEW "slice_seats__assign_den"."assign_ended" ("step", "attempt", "root") AS
@@ -335,8 +335,8 @@ CREATE VIEW "slice_seats__assign_retirer"."assign_claim" ("step", "attempt", "un
 SELECT "r1"."step", "r1"."attempt", "r1"."until", "r1"."root"
 FROM "slice"."assign_claim" AS "r1";
 
-CREATE VIEW "slice_seats__assign_retirer"."assign_decide_input" ("step", "learner", "topic", "query", "mode", "mode_name", "root") AS
-SELECT "r1"."step", "r1"."learner", "r1"."topic", "r1"."query", "r1"."mode", ("slice"."__assign_decide_input_mode_names_zoydpw665o"())["r1"."mode" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__assign_retirer"."assign_decide_input" ("step", "learner", "topic", "vector", "mode", "mode_name", "root") AS
+SELECT "r1"."step", "r1"."learner", "r1"."topic", "r1"."vector", "r1"."mode", ("slice"."__assign_decide_input_mode_names_zoydpw665o"())["r1"."mode" + 1]::"pg_catalog"."text", "r1"."root"
 FROM "slice"."assign_decide_input" AS "r1";
 
 CREATE VIEW "slice_seats__assign_retirer"."assign_decide_input_exclude" ("step", "ordinal", "value", "root") AS
@@ -407,8 +407,8 @@ CREATE VIEW "slice_seats__assign_retirer"."assign_embed_input_near" ("step", "or
 SELECT "r1"."step", "r1"."ordinal", "r1"."value", "r1"."root"
 FROM "slice"."assign_embed_input_near" AS "r1";
 
-CREATE VIEW "slice_seats__assign_retirer"."assign_embed_output" ("step", "query", "root") AS
-SELECT "r1"."step", "r1"."query", "r1"."root"
+CREATE VIEW "slice_seats__assign_retirer"."assign_embed_output" ("step", "vector", "root") AS
+SELECT "r1"."step", "r1"."vector", "r1"."root"
 FROM "slice"."assign_embed_output" AS "r1";
 
 CREATE VIEW "slice_seats__assign_retirer"."assign_ended" ("step", "attempt", "root") AS
@@ -1451,8 +1451,8 @@ CREATE VIEW "slice_seats__loader"."assign_claim" ("step", "attempt", "until", "r
 SELECT "r1"."step", "r1"."attempt", "r1"."until", "r1"."root"
 FROM "slice"."assign_claim" AS "r1";
 
-CREATE VIEW "slice_seats__loader"."assign_decide_input" ("step", "learner", "topic", "query", "mode", "mode_name", "root") AS
-SELECT "r1"."step", "r1"."learner", "r1"."topic", "r1"."query", "r1"."mode", ("slice"."__assign_decide_input_mode_names_zoydpw665o"())["r1"."mode" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__loader"."assign_decide_input" ("step", "learner", "topic", "vector", "mode", "mode_name", "root") AS
+SELECT "r1"."step", "r1"."learner", "r1"."topic", "r1"."vector", "r1"."mode", ("slice"."__assign_decide_input_mode_names_zoydpw665o"())["r1"."mode" + 1]::"pg_catalog"."text", "r1"."root"
 FROM "slice"."assign_decide_input" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."assign_decide_input_exclude" ("step", "ordinal", "value", "root") AS
@@ -1523,8 +1523,8 @@ CREATE VIEW "slice_seats__loader"."assign_embed_input_near" ("step", "ordinal", 
 SELECT "r1"."step", "r1"."ordinal", "r1"."value", "r1"."root"
 FROM "slice"."assign_embed_input_near" AS "r1";
 
-CREATE VIEW "slice_seats__loader"."assign_embed_output" ("step", "query", "root") AS
-SELECT "r1"."step", "r1"."query", "r1"."root"
+CREATE VIEW "slice_seats__loader"."assign_embed_output" ("step", "vector", "root") AS
+SELECT "r1"."step", "r1"."vector", "r1"."root"
 FROM "slice"."assign_embed_output" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."assign_ended" ("step", "attempt", "root") AS
@@ -4685,7 +4685,7 @@ COMMENT ON CONSTRAINT "__assign_claim_pk_gy4yhzk2me" ON "slice"."assign_claim" I
 
 COMMENT ON CONSTRAINT "__assign_decide_input_pk_phi7dovwvq" ON "slice"."assign_decide_input" IS 'primary key of AssignDecideInput';
 
-COMMENT ON CONSTRAINT "__assign_decide_input_norm_query_l3gj7nad75" ON "slice"."assign_decide_input" IS 'cosine norm check of AssignDecideInput.query';
+COMMENT ON CONSTRAINT "__assign_decide_input_norm_vector_it3heqzuab" ON "slice"."assign_decide_input" IS 'cosine norm check of AssignDecideInput.vector';
 
 COMMENT ON CONSTRAINT "__assign_decide_input_exclude_pk_emksiazulk" ON "slice"."assign_decide_input_exclude" IS 'primary key of AssignDecideInputExclude';
 
@@ -4723,7 +4723,7 @@ COMMENT ON CONSTRAINT "__assign_embed_input_near_pk_bkusmda72a" ON "slice"."assi
 
 COMMENT ON CONSTRAINT "__assign_embed_output_pk_noiv3qgtry" ON "slice"."assign_embed_output" IS 'primary key of AssignEmbedOutput';
 
-COMMENT ON CONSTRAINT "__assign_embed_output_norm_query_c5dnqwghei" ON "slice"."assign_embed_output" IS 'cosine norm check of AssignEmbedOutput.query';
+COMMENT ON CONSTRAINT "__assign_embed_output_norm_vector_yuy6gaplly" ON "slice"."assign_embed_output" IS 'cosine norm check of AssignEmbedOutput.vector';
 
 COMMENT ON CONSTRAINT "__assign_ended_pk_nriwwbcneu" ON "slice"."assign_ended" IS 'primary key of AssignEnded';
 
@@ -6991,9 +6991,9 @@ COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_ll6b7ywsze"("pg_cat
 
 COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_nearest_wpkroo4gqt"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInputModeNearest and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_6ildai4pal"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_i7zu2o4rtk"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_nearest_kh4yoogs6r"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInputModeNearest and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_nearest_gtyvqnsvt6"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInputModeNearest and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_iez77fjrkx"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideOutput and the relations its rules join it to';
 

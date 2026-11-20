@@ -1,4 +1,4 @@
-import { Array as Arr, Effect } from "effect"
+import { Array as Arr, Effect, Match } from "effect"
 import type { Brand } from "effect"
 import { Digest } from "effect/crypto"
 
@@ -110,18 +110,14 @@ export type Recorded = string | bigint | number | boolean
  * A recorded value's text, told apart by its type: a text as itself, a bigint and a finite number by their decimal
  * spellings, -0 apart from 0, and a boolean by its name.
  */
-const recordedText = (value: Recorded): string => {
-	switch (typeof value) {
-		case "string":
-			return `s${value}`
-		case "bigint":
-			return `b${String(value)}`
-		case "number":
-			return Object.is(value, -0) ? "n-0" : `n${String(value)}`
-		case "boolean":
-			return value ? "t" : "f"
-	}
-}
+const recordedText = (value: Recorded): string =>
+	Match.value(value).pipe(
+		Match.when(Match.string, (text) => `s${text}`),
+		Match.when(Match.bigint, (n) => `b${String(n)}`),
+		Match.when(Match.number, (x) => (Object.is(x, -0) ? "n-0" : `n${String(x)}`)),
+		Match.when(Match.boolean, (b) => (b ? "t" : "f")),
+		Match.exhaustive
+	)
 
 /**
  * The key of a row a step's read `read` found, the digest of its record's columns in their order, each its name and its

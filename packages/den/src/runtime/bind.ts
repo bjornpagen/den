@@ -90,7 +90,8 @@ export const exclusiveRows = <I>(
  * The idempotency key of a schedule's root for `member` at the instant `at`: the instant and the member, which holds no
  * colon, so two of a schedule's roots never share a key.
  */
-export const scheduledKey = (at: bigint, member: string): string => `${String(at)}:${member}`
+export const scheduledKey = (at: bigint, member: string): string =>
+	Arr.join([String(at), member], ":")
 
 /** A root kind's schedule, none for a root an operator or the app starts. */
 export const scheduleOf = <I>(

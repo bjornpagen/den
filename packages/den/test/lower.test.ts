@@ -146,7 +146,7 @@ const readsOf = <I>(reading: typeof Reading.Type): ReadsOver<I> =>
 		? noReads
 		: {
 				kind: "query",
-				query: (writer: never) => writer,
+				query: (role: never) => role,
 				records:
 					reading === "one"
 						? { weights: WeightRecord }
