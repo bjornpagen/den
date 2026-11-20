@@ -94,6 +94,12 @@ export type Nature = Readonly<{
 	upTo: (most: number) => number
 }>
 
+/** The faults a move may draw: whether one strikes where it may, and a magnitude of `0..n`. */
+type Faults = Pick<Nature, "bool" | "upTo">
+
+/** The fair phase's faults: none strikes, and every magnitude is 0. */
+const noFaults: Faults = { bool: () => false, upTo: () => 0 }
+
 /**
  * A message in the transport: a doorbell for one step, its key, the deployment it is pinned to, the instant it may be
  * delivered (later than its send for a delayed delivery, an exact timer), and its deliveries so far.
@@ -419,7 +425,7 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 	 * Sends a message, as Vercel Queues takes it: a fault may drop it, and a key the transport accepted within its
 	 * deduplication window drops it out of band, however the first was processed.
 	 */
-	const send = (message: Send, faulty: boolean): void => {
+	const send = (message: Send, faults: Faults): void => {
 		const key = keyOf(message)
 		const sent = (fate: Sent["fate"]) =>
 			world.sends.push({
@@ -429,7 +435,7 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 				cause: causeText(message.cause),
 				fate
 			})
-		if (faulty && nature.bool("drop")) {
+		if (faults.bool("drop")) {
 			sent("dropped")
 			return
 		}
@@ -449,7 +455,7 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 			deployment: message.deployment,
 			deliverAt:
 				Math.max(world.now, message.deliverAt) +
-				(faulty && nature.bool("delay") ? 1 + nature.upTo(platform.stall) : 0),
+				(faults.bool("delay") ? 1 + faults.upTo(platform.stall) : 0),
 			deliveries: 0
 		})
 	}
@@ -484,11 +490,11 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 		target: Readonly<{ step: StepId; attempt: number; at: number }>,
 		cause: Cause,
 		deployment: number,
-		faulty: boolean
+		faults: Faults
 	) =>
 		send(
 			{ step: target.step, attempt: target.attempt, cause, deployment, deliverAt: target.at },
-			faulty
+			faults
 		)
 
 	/**
@@ -496,10 +502,10 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 	 * while its invocation has turns and time, sends the continuation as a message when it has neither, and exits when
 	 * it has none.
 	 */
-	const turned = (worker: Worker, committed: Committed, faulty: boolean) => {
+	const turned = (worker: Worker, committed: Committed, faults: Faults) => {
 		Arr.forEach(committed.rings, (target) => {
 			note("rang")
-			ring(target, { _tag: "Commit", position: committed.position }, worker.deployment, faulty)
+			ring(target, { _tag: "Commit", position: committed.position }, worker.deployment, faults)
 		})
 		Option.match(committed.next, {
 			onNone: () => exit(worker),
@@ -518,7 +524,7 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 						deployment: worker.deployment,
 						deliverAt: world.now
 					},
-					faulty
+					faults
 				)
 			}
 		})
@@ -530,21 +536,21 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 	}
 
 	/** What a worker's run of its lease reports: its body's outcome, or a failed call's retry on the ladder. */
-	const settledOf = (lease: Lease, done: number, faulty: boolean): Settled => {
+	const settledOf = (lease: Lease, done: number, faults: Faults): Settled => {
 		const ladder = lease.runs.ladder
 		if (done >= lease.until - 1) {
 			return { _tag: "Retry", at: done + rungOf(ladder, lease.claimed.attempts), counts: "attempt" }
 		}
-		if (faulty && nature.bool("transient")) {
+		if (faults.bool("transient")) {
 			return { _tag: "Retry", at: done + rungOf(ladder, lease.claimed.waits), counts: "wait" }
 		}
-		if (faulty && nature.bool("unavailable")) {
+		if (faults.bool("unavailable")) {
 			return { _tag: "Retry", at: done + rungOf(ladder, lease.claimed.attempts), counts: "attempt" }
 		}
 		return lease.run(lease.claimed)
 	}
 
-	const claimed = (worker: Worker, step: StepId, faulty: boolean): void => {
+	const claimed = (worker: Worker, step: StepId, faults: Faults): void => {
 		const turn = `w${worker.id}.${worker.turns}`
 		const lapsed = Option.exists(
 			HashMap.get(world.state.steps, stepText(step)),
@@ -558,7 +564,7 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 				return
 			case "exhausted":
 				note("exhausted")
-				turned({ ...worker, turns: worker.turns + 1 }, committed, faulty)
+				turned({ ...worker, turns: worker.turns + 1 }, committed, faults)
 				return
 			case "accepted":
 				Option.match(answered.lease, {
@@ -568,7 +574,7 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 						if (lapsed) {
 							note("reclaimed")
 						}
-						const took = faulty ? nature.upTo(lease.runs.lease) : 0
+						const took = faults.upTo(lease.runs.lease)
 						replace({ ...worker, phase: { _tag: "Running", lease, done: world.now + took } })
 					}
 				})
@@ -593,27 +599,26 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 	}
 
 	/** One move of a worker, faults striking where its phase allows them. */
-	const step = (worker: Worker, faulty: boolean): void => {
+	const step = (worker: Worker, faults: Faults): void => {
 		switch (worker.phase._tag) {
 			case "Ready":
-				if (faulty && nature.bool("death-before-claim")) {
+				if (faults.bool("death-before-claim")) {
 					die(worker)
 					return
 				}
-				claimed(worker, worker.phase.step, faulty)
+				claimed(worker, worker.phase.step, faults)
 				return
 			case "Running": {
 				const { lease, done } = worker.phase
 				if (world.now < Math.min(done, lease.until - 1)) {
 					return
 				}
-				if (faulty && nature.bool("death-after-claim")) {
+				if (faults.bool("death-after-claim")) {
 					die(worker)
 					return
 				}
-				const settled = settledOf(lease, Math.min(done, lease.until - 1), faulty)
-				const arrives =
-					world.now + (faulty && nature.bool("pause") ? 1 + nature.upTo(platform.stall) : 0)
+				const settled = settledOf(lease, Math.min(done, lease.until - 1), faults)
+				const arrives = world.now + (faults.bool("pause") ? 1 + faults.upTo(platform.stall) : 0)
 				replace({ ...worker, phase: { _tag: "Reporting", lease, settled, arrives } })
 				return
 			}
@@ -622,7 +627,7 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 				if (world.now < arrives) {
 					return
 				}
-				if (faulty && nature.bool("death-after-claim")) {
+				if (faults.bool("death-after-claim")) {
 					die(worker)
 					return
 				}
@@ -661,7 +666,7 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 					stale(worker)
 					return
 				}
-				if (faulty && nature.bool("lost-answer")) {
+				if (faults.bool("lost-answer")) {
 					note("rerun-commit")
 					return
 				}
@@ -678,11 +683,11 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 				return
 			}
 			case "Turned":
-				if (faulty && nature.bool("death-after-commit")) {
+				if (faults.bool("death-after-commit")) {
 					exit(worker)
 					return
 				}
-				turned(worker, worker.phase, faulty)
+				turned(worker, worker.phase, faults)
 		}
 	}
 
@@ -708,15 +713,15 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 	 * eligible, pinned to its own deployment, keyed by step and attempt, a timer delayed to its instant; then it saves
 	 * its position, unless it lags, so a hand-over replays from the last position saved: at least once.
 	 */
-	const relay = (faulty: boolean) => {
+	const relay = (faults: Faults) => {
 		for (let at = world.relay.position; at < world.log.length; at += 1) {
 			Arr.forEach(Arr.getUnsafe(world.log, at), (target) => {
 				note(target.at > world.now ? "timer" : "relayed")
-				ring(target, { _tag: "Relay", position: at }, world.relay.deployment, faulty)
+				ring(target, { _tag: "Relay", position: at }, world.relay.deployment, faults)
 			})
 		}
 		world.relay.position = world.log.length
-		if (!(faulty && nature.bool("relay-lag"))) {
+		if (!faults.bool("relay-lag")) {
 			world.relay.durable = world.relay.position
 		}
 	}
@@ -739,7 +744,7 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 	 * eligible at the tick rung, in order, keyed by the tick, pinned to the current deployment. Eligibility bounds the
 	 * rings by free seats.
 	 */
-	const census = (faulty: boolean) => {
+	const census = (faults: Faults) => {
 		record(ledger.census(world.state, world.now), "other")
 		Arr.forEach(ledger.retirable(world.state), (root) => {
 			const retired = keyed((state) => ledger.retire(state, root, world.now))
@@ -756,15 +761,15 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 					deployment: world.state.deployment,
 					deliverAt: world.now
 				},
-				faulty
+				faults
 			)
 		)
 	}
 
 	const deliverable = () => Arr.filter(world.messages, (message) => message.deliverAt <= world.now)
 
-	const deliver = (message: Message, faulty: boolean) => {
-		const duplicate = faulty && nature.bool("duplicate")
+	const deliver = (message: Message, faults: Faults) => {
+		const duplicate = faults.bool("duplicate")
 		world.messages = Arr.filter(world.messages, (other) => other.id !== message.id || duplicate)
 		if (duplicate) {
 			note("redelivered")
@@ -826,10 +831,10 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 				act()
 				return
 			case "census":
-				census(true)
+				census(nature)
 				return
 			case "relay":
-				relay(true)
+				relay(nature)
 				return
 			case "deliver": {
 				const ready = deliverable()
@@ -838,14 +843,14 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 						nature.bool("reorder")
 							? Arr.getUnsafe(ready, nature.pick(ready.length))
 							: Arr.headNonEmpty(ready),
-						true
+						nature
 					)
 				}
 				return
 			}
 			case "work":
 				if (Arr.isReadonlyArrayNonEmpty(world.workers)) {
-					step(Arr.getUnsafe(world.workers, nature.pick(world.workers.length)), true)
+					step(Arr.getUnsafe(world.workers, nature.pick(world.workers.length)), nature)
 				}
 				return
 			case "readmit": {
@@ -896,11 +901,11 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 /** The calls the fair phase makes of the world the chaotic phase left. */
 type Hands = Readonly<{
 	keyed: (call: (state: State) => Answered) => Answered
-	relay: (faulty: boolean) => void
-	census: (faulty: boolean) => void
-	deliver: (message: Message, faulty: boolean) => void
+	relay: (faults: Faults) => void
+	census: (faults: Faults) => void
+	deliver: (message: Message, faults: Faults) => void
 	deliverable: () => ReadonlyArray<Message>
-	step: (worker: Worker, faulty: boolean) => void
+	step: (worker: Worker, faults: Faults) => void
 	handover: () => void
 	act: () => void
 	targets: ReadonlyArray<Target>
@@ -981,18 +986,18 @@ const fair = (setup: Setup, world: World, hands: Hands): Run => {
 	const drainBound = (patience: number) => platform.lifetime + platform.stall + patience
 	const tick = () => {
 		hands.act()
-		hands.relay(false)
+		hands.relay(noFaults)
 		if (world.now % platform.census === 0) {
-			hands.census(false)
+			hands.census(noFaults)
 		}
-		Arr.forEach(hands.deliverable(), (message) => hands.deliver(message, false))
+		Arr.forEach(hands.deliverable(), (message) => hands.deliver(message, noFaults))
 		let busy = true
 		while (busy) {
 			const before = signatureOf(world)
 			Arr.forEach(Arr.copy(world.workers), (worker) =>
 				Option.match(
 					Arr.findFirst(world.workers, (current) => current.id === worker.id),
-					{ onNone: () => undefined, onSome: (current) => hands.step(current, false) }
+					{ onNone: () => undefined, onSome: (current) => hands.step(current, noFaults) }
 				)
 			)
 			busy = signatureOf(world) !== before
