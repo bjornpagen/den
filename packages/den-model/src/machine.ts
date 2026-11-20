@@ -3,7 +3,7 @@ import { boolean, type Gen, int } from "@bjornpagen/testing/gen"
 import { Array as Arr, Option } from "effect"
 import type { Answer } from "#facts.ts"
 import type { StepId } from "#identity.ts"
-import { type Answered, emptyState, type Lease, ledgerOf, type Rules, type State } from "#ledger.ts"
+import { type Answered, emptyState, type Lease, ledger, type State } from "#ledger.ts"
 import {
 	type Admission,
 	admissionOf,
@@ -134,14 +134,12 @@ export const settledOf = (lease: Lease, report: Report, now: number): Settled =>
 const none: Gen<undefined> = () => undefined
 
 /**
- * The ledger as a command machine over a flat program, its model the ledger under `rules` (`SOUND` for den's laws, a
- * planted bug's to prove a test catches it): the oracle a differential test of the real engine runs its own ledger
+ * The ledger as a command machine over a flat program, its model the ledger: the oracle a differential test of the real engine runs its own ledger
  * against, command by command, through `runProgram` from `@bjornpagen/testing/commands`. The commands an operator, a worker
  * and the clock make (admit, claim a step, commit a lease won earlier, let time pass, retire the root) are drawn as
  * readily where the model refuses them as where it accepts them.
  */
-export const flatMachine = (flat: Flat, rules: Rules): Machine<Model, Parameters, Refusal> => {
-	const ledger = ledgerOf(rules)
+export const flatMachine = (flat: Flat): Machine<Model, Parameters, Refusal> => {
 	const { admission, kind, key, steps } = flatOf(flat)
 	return {
 		initial: { state: emptyState, now: 0, leases: [] },

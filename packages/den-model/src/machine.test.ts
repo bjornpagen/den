@@ -8,17 +8,12 @@ import {
 	type StepFeature,
 	took
 } from "@bjornpagen/testing/commands"
-import { type Case, drawn, explore, Run } from "@bjornpagen/testing/explore"
-import { required } from "@bjornpagen/testing/features"
+import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
-import { notesOnly } from "@bjornpagen/testing/sense"
+import { type Case, property } from "@bjornpagen/testing/property"
 import type { Source } from "@bjornpagen/testing/source"
 import { swarm } from "@bjornpagen/testing/swarm"
-import { searched } from "@bjornpagen/testing/vitest"
-import { runOfTest } from "@bjornpagen/testing/vitest/run"
-import { describe, it } from "@effect/vitest"
 import { Array as Arr, Effect, Option, Order } from "effect"
-import { type Rules, SOUND } from "#ledger.ts"
 import {
 	type Flat,
 	flatMachine,
@@ -27,12 +22,7 @@ import {
 	type Refusal,
 	type Report
 } from "#machine.ts"
-import { retiredKeysRecur } from "#planted.ts"
 import { ordinals } from "#program.ts"
-import { caught, exploration } from "#search.ts"
-
-/** What the specification notices on the way to a re-admission: a retirement, and an admission after one. */
-type Toward = "retired" | "readmitted"
 
 /** One step of the specification: whether it is the finish, and what the laws say it holds. */
 type Spec = {
@@ -62,10 +52,7 @@ const BY_DUE = Order.combine(
  * latest claim while it holds no result, and the same report again changes nothing; the finish, which holds no seat,
  * starts once every child has a result; a root retires only once it finished, and its key never recurs.
  */
-const specOf = (
-	flat: Flat,
-	notice: (seen: Toward) => void
-): Real<Model, Parameters, Refusal, never, never> => {
+const specOf = (flat: Flat): Real<Model, Parameters, Refusal, never, never> => {
 	let now = 0
 	let admitted = false
 	let retired = false
@@ -118,7 +105,6 @@ const specOf = (
 				return answer(refused("unchanged"))
 			}
 			if (retired) {
-				notice("readmitted")
 				return answer(refused("retired"))
 			}
 			admitted = true
@@ -228,7 +214,6 @@ const specOf = (
 			admitted = false
 			retired = true
 			steps = []
-			notice("retired")
 			return answer(took)
 		}
 	}
@@ -249,85 +234,55 @@ const flatGen: Gen<Flat> = (source) => ({
 	attempts: source.draw(int(1, 3))
 })
 
-/** A flat program and a command program over the ledger under `rules`, a swarm of the commands on. */
-const programsOf = (rules: Rules) => (source: Source) => {
+/** A flat program and a command program over the ledger, a swarm of the commands on. */
+const programs = (source: Source) => {
 	const flat = source.draw(flatGen)
 	const mix = source.draw(swarm(COMMANDS))
-	return { flat, steps: source.draw(program(flatMachine(flat, rules), { min: 1, max: 40 }, mix)) }
+	return { flat, steps: source.draw(program(flatMachine(flat), { min: 1, max: 40 }, mix)) }
 }
 
-describe("the ledger against the laws' own statement", () => {
-	it.effect(
-		"every claim, seat, commit, retirement and admission a worker, the clock and an operator make is answered as the specification of a flat program says",
-		(ctx) =>
-			searched(
-				ctx,
-				explore(
-					exploration({
-						suite: "machine: flat program",
-						draw: drawn(programsOf(SOUND)),
-						coverage: required<StepFeature<Parameters, Refusal>>(
-							[
-								"admit accepted",
-								"admit refused unchanged",
-								"admit refused retired",
-								"claim accepted",
-								"claim refused full",
-								"claim refused behind",
-								"claim refused lost",
-								"claim refused gone",
-								"commit accepted",
-								"commit refused lost",
-								"commit refused unchanged",
-								"commit refused gone",
-								"retire accepted",
-								"retire refused live"
-							],
-							{ cases: 400, sense: notesOnly }
-						),
-						runs: 600,
-						shrink: 400,
-						oracle: {
-							kind: "second-implementation",
-							name: "a flat program's ledger as the laws state it, written apart from ledger.ts"
-						}
-					}),
-					(sketch, c: Case<StepFeature<Parameters, Refusal>>) =>
-						Effect.map(
-							runProgram(
-								flatMachine(sketch.flat, SOUND),
-								specOf(sketch.flat, () => undefined),
-								sketch.steps
-							),
-							(ran) => c.noteAll(ran.verdicts)
-						)
-				)
-			)
-	)
-
-	it.effect("the specification catches a ledger whose retired keys recur", (ctx) =>
-		caught(
-			explore(
-				exploration({
-					suite: "planted: retired keys recur, against the specification",
-					draw: drawn(programsOf(retiredKeysRecur.rules)),
-					coverage: required<Toward>(["readmitted"], { cases: 800, sense: notesOnly }),
-					runs: 400,
-					shrink: 40,
-					oracle: {
-						kind: "second-implementation",
-						name: "a flat program's ledger as the laws state it, against a ledger that forgets retired keys"
-					}
-				}),
-				(sketch, c: Case<Toward>) =>
-					Effect.asVoid(
-						runProgram(
-							flatMachine(sketch.flat, retiredKeysRecur.rules),
-							specOf(sketch.flat, (seen) => c.note(seen)),
-							sketch.steps
-						)
-					)
-			)
-		).pipe(Effect.provideServiceEffect(Run, runOfTest(ctx)))
-	)
+/**
+ * The ledger against the laws' own statement: every claim, seat, commit, retirement and admission a worker, the clock
+ * and an operator make is answered as the specification of a flat program says. Its kill forgets the keys the ledger
+ * retired, which the specification catches admitting a retired key again.
+ *
+ * Budget: its suite's count before the conversion (machine: 600 independent cases and 400 steered, Vitest at den
+ * aa4e12b).
+ */
+export const theLedgerAnswersAsTheSpecificationOfAFlatProgram = property.explore(programs, {
+	needs: {},
+	situations: [
+		"admit accepted",
+		"admit refused unchanged",
+		"admit refused retired",
+		"claim accepted",
+		"claim refused full",
+		"claim refused behind",
+		"claim refused lost",
+		"claim refused gone",
+		"commit accepted",
+		"commit refused lost",
+		"commit refused unchanged",
+		"commit refused gone",
+		"retire accepted",
+		"retire refused live"
+	] satisfies ReadonlyArray<Reached<StepFeature<Parameters, Refusal>>>,
+	check: (_, c: Case<StepFeature<Parameters, Refusal>>) => (sketch) =>
+		Effect.map(runProgram(flatMachine(sketch.flat), specOf(sketch.flat), sketch.steps), (ran) =>
+			c.noteAll(ran.verdicts)
+		),
+	oracle: {
+		kind: "second-implementation",
+		name: "a flat program's ledger as the laws state it, written apart from ledger.ts"
+	},
+	budget: { runs: 600, steered: 400 },
+	kept: [],
+	kills: [
+		{
+			file: "packages/den-model/src/ledger.ts",
+			original: "\tif (HashSet.has(state.retired, text)) {\n",
+			replacement: "\tif (false) {\n",
+			why: "Retired keys recur: the ledger admits a root again under a key it retired, where the specification refuses it (one-result's premise, grizzle's RETIRE)."
+		}
+	]
 })

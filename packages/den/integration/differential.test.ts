@@ -7,7 +7,7 @@ import { type Case, property } from "@bjornpagen/testing/property"
 import type { Datum } from "@den/model/datum"
 import type { Fact } from "@den/model/facts"
 import { rootText } from "@den/model/identity"
-import { emptyState, endingOf, ledgerOf, SOUND, type State } from "@den/model/ledger"
+import { emptyState, endingOf, ledger, type State } from "@den/model/ledger"
 import {
 	admissionOf,
 	type Ladder,
@@ -217,10 +217,9 @@ const FanRun: RootKind<BatchIn, Datum, never> = {
  * programs wait on nothing but their parents and the Pool's seats.
  */
 const modelRun = (
-	admission: Parameters<ReturnType<typeof ledgerOf>["admit"]>[1],
+	admission: Parameters<(typeof ledger)["admit"]>[1],
 	weight: Option.Option<{ readonly feed: string; readonly factor: number }>
 ): ReadonlyArray<Fact> => {
-	const ledger = ledgerOf(SOUND)
 	const log: Array<ReadonlyArray<Fact>> = []
 	const record = (state: State, entry: { readonly facts: ReadonlyArray<Fact> }): State => {
 		log.push(entry.facts)

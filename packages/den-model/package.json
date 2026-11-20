@@ -13,7 +13,6 @@
 		"./identity": "./src/identity.ts",
 		"./ledger": "./src/ledger.ts",
 		"./machine": "./src/machine.ts",
-		"./planted": "./src/planted.ts",
 		"./program": "./src/program.ts",
 		"./properties": "./src/properties.ts",
 		"./scenarios": "./src/scenarios.ts",
@@ -33,14 +32,10 @@
 	"scripts": {
 		"typecheck": "toolchain-typecheck",
 		"oxlint": "toolchain-oxlint",
-		"test": "vitest run"
+		"test": "toolchain-test run"
 	},
 	"dependencies": {
 		"@bjornpagen/testing": "workspace:*",
 		"effect": "catalog:"
-	},
-	"devDependencies": {
-		"@effect/vitest": "catalog:",
-		"vitest": "catalog:"
 	}
 }

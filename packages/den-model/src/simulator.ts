@@ -15,7 +15,7 @@ import {
 	emptyState,
 	endingOf,
 	type Lease,
-	type Ledger,
+	ledger,
 	pendingOf,
 	type State,
 	type StepRow
@@ -126,15 +126,14 @@ type Worker = Readonly<{
 
 /**
  * What made a ring: the worker's commit that rang it, by its place in the trace (the fast path); the relay, at the
- * position of the commit it streamed; the census's tick, at its instant; a worker out of turns sending its
- * continuation; or a stale worker ringing on (a planted bug's).
+ * position of the commit it streamed; the census's tick, at its instant; or a worker out of turns sending its
+ * continuation.
  */
 export type Cause =
 	| Readonly<{ _tag: "Commit"; position: number }>
 	| Readonly<{ _tag: "Relay"; position: number }>
 	| Readonly<{ _tag: "Census"; tick: number }>
 	| Readonly<{ _tag: "Continuation"; worker: number }>
-	| Readonly<{ _tag: "Stale"; worker: number }>
 
 /** A cause's canonical text. */
 export const causeText = (cause: Cause): string => {
@@ -147,8 +146,6 @@ export const causeText = (cause: Cause): string => {
 			return `census@${cause.tick}`
 		case "Continuation":
 			return `continue@${cause.worker}`
-		case "Stale":
-			return `stale@${cause.worker}`
 	}
 }
 
@@ -165,25 +162,11 @@ export type Send = Readonly<{
 }>
 
 /**
- * How the platform around the ledger behaves, each a function so a planted bug replaces one (planted.ts):
- * - `rings`: whether the census rings a step eligible at its tick;
- * - `afterStale`: what a worker answered `stale` sends before it exits (sound: nothing);
- * - `keyOf`: the idempotency key a send carries, which the transport deduplicates for its whole window (Vercel
- *   Queues: up to 24 h, processed or not). Sound: the ring's cause and its step, so a retry of one cause, a relay's
- *   replay of one position, is a true duplicate and a later cause is never absorbed by an earlier one's key.
+ * The idempotency key a send carries, which the transport deduplicates for its whole window (Vercel Queues: up to 24 h,
+ * processed or not): the ring's cause and its step, so a retry of one cause, a relay's replay of one position, is a true
+ * duplicate and a later cause is never absorbed by an earlier one's key.
  */
-export type Policy = Readonly<{
-	rings: (row: StepRow, at: number) => boolean
-	afterStale: (step: StepId, deployment: number, worker: number) => ReadonlyArray<Send>
-	keyOf: (send: Send) => string
-}>
-
-/** The platform as den's proposal describes it, its rings keyed by their causes. */
-export const SOUND_POLICY: Policy = {
-	rings: () => true,
-	afterStale: () => [],
-	keyOf: (send) => `${causeText(send.cause)}:${stepText(send.step)}`
-}
+const keyOf = (send: Send): string => Arr.join([causeText(send.cause), stepText(send.step)], ":")
 
 /**
  * One send the transport was asked for: when, its key, its step, its cause's text, and its fate: queued, dropped by a
@@ -278,12 +261,10 @@ export type Seen =
 	| "deduplicated"
 	| "deployed"
 
-/** What a run is: the program, what the world does when, the ledger's transitions, the platform, and the horizon. */
+/** What a run is: the program, what the world does when, the platform, and the horizon. */
 export type Setup = Readonly<{
 	program: Program
 	acts: ReadonlyArray<Act>
-	ledger: Ledger
-	policy: Policy
 	platform: Platform
 	horizon: number
 }>
@@ -346,7 +327,7 @@ const attemptKey = (step: StepId, attempt: number): string => `${stepText(step)}
  * lands in the trace, and every accepted call that names its keys is made again at once into `reruns`.
  */
 export const simulate = (setup: Setup, nature: Nature): Run => {
-	const { ledger, platform, program, policy } = setup
+	const { platform, program } = setup
 	const world: World = {
 		state: emptyState,
 		now: 0,
@@ -439,7 +420,7 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 	 * deduplication window drops it out of band, however the first was processed.
 	 */
 	const send = (message: Send, faulty: boolean): void => {
-		const key = policy.keyOf(message)
+		const key = keyOf(message)
 		const sent = (fate: Sent["fate"]) =>
 			world.sends.push({
 				at: world.now,
@@ -543,12 +524,9 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 		})
 	}
 
-	const stale = (worker: Worker, step: StepId) => {
+	const stale = (worker: Worker) => {
 		note("stale")
 		exit(worker)
-		Arr.forEach(policy.afterStale(step, worker.deployment, worker.id), (message) =>
-			send(message, false)
-		)
 	}
 
 	/** What a worker's run of its lease reports: its body's outcome, or a failed call's retry on the ladder. */
@@ -576,7 +554,7 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 		const committed = record(answered, "worker")
 		switch (answered.answer) {
 			case "stale":
-				stale(worker, step)
+				stale(worker)
 				return
 			case "exhausted":
 				note("exhausted")
@@ -680,7 +658,7 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 				}
 				noteCommit(answered, settled, late)
 				if (answered.answer === "stale") {
-					stale(worker, lease.step)
+					stale(worker)
 					return
 				}
 				if (faulty && nature.bool("lost-answer")) {
@@ -769,21 +747,17 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 				note("retired")
 			}
 		})
-		Arr.forEach(
-			Arr.filter(ledger.standings.eligibleAt(world.state, world.now), (row) =>
-				policy.rings(row, world.now)
-			),
-			(row) =>
-				send(
-					{
-						step: row.id,
-						attempt: row.claims,
-						cause: { _tag: "Census", tick: world.now },
-						deployment: world.state.deployment,
-						deliverAt: world.now
-					},
-					faulty
-				)
+		Arr.forEach(ledger.standings.eligibleAt(world.state, world.now), (row) =>
+			send(
+				{
+					step: row.id,
+					attempt: row.claims,
+					cause: { _tag: "Census", tick: world.now },
+					deployment: world.state.deployment,
+					deliverAt: world.now
+				},
+				faulty
+			)
 		)
 	}
 
@@ -982,7 +956,7 @@ const restless = (row: StepRow): boolean =>
  * steps may make, each step's moves bounded by its ladder, past the horizon of what the world does.
  */
 const fair = (setup: Setup, world: World, hands: Hands): Run => {
-	const { ledger, platform, program } = setup
+	const { platform, program } = setup
 	const fairFrom = world.now
 	Arr.forEach(hands.targets, (target) =>
 		hands.keyed((state) => ledger.resume(state, target, world.now))

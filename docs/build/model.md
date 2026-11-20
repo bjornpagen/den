@@ -16,12 +16,11 @@ evidence (`decisions.md`, "Settled by the evidence"), and the model follows thos
 | `identity.ts` | derived identities of roots, scopes and steps, and their canonical texts |
 | `program.ts` | the primitives: resources, windows, ladders, runs, declared reads, step, scope, root and edge kinds, their erasure, `Program` |
 | `facts.ts` | the trace format, version 2: facts, commands, answers, entries, `Trace`, and the canonical texts of seats, holders and pause targets |
-| `ledger.ts` | the state as a projection of facts, the rules (`Rules`, `SOUND`), eligibility and order (`standingsOf`), every transition |
+| `ledger.ts` | the state as a projection of facts, eligibility and order (`standings`), every transition (`ledger`) |
 | `simulator.ts` | workers, transport, deaths, clock, census, relay, deployments, the world's acts; the chaotic and the fair phase |
 | `properties.ts` | the twelve laws, each a pure check over a trace and the run's sends |
-| `planted.ts` | the planted bugs, each one rule broken |
 | `machine.ts` | the ledger as a `@bjornpagen/testing/commands` machine over a flat program |
-| `scenarios.ts`, `search.ts` | generators, the simulator's nature drawn from a case's tape, the declaration check, search helpers |
+| `scenarios.ts`, `search.ts` | generators, the simulator's nature drawn from a case's tape, the declaration check, a run's evidence and its laws' verdict |
 | `workloads/` | `synthetic.ts` (generated programs), W1 `timeback.ts`, W2 `alphatest.ts`, W3 `qti.ts`, W4 `gold.ts`, W5 `takedown.ts`, W6 `reports.ts`, W7 `enrollment.ts`, W8 `seed.ts`, and `edullm.ts`, all eight on one ledger |
 
 ## The program model
@@ -137,42 +136,43 @@ the reads its claim took, `Paused`, `Resumed` (a resource or root kind),
 `Deployed`, `Retired`. Two traces compare fact by fact, turns as a one-to-one renaming. The JSDoc of `Fact`, `Command`,
 `Answer` and `Trace` is the format's definition.
 
-## The laws, and the bugs planted to break them
+## The laws, and the kills that break them
 
 Each law is a pure check over `Evidence` (a trace, the program, and for the platform's laws the re-runs and the fair
-phase); each planted bug replaces one rule (`Rules`) or platform decision (`Policy`), and its search must fail in a
-witness phase, the floor or steered stream its label fixes, so the law catches it on every run seed.
+phase). Each decision of the ledger and the platform is stated once, where it is made, and every way a real slip would
+break one is a kill on the property that must catch it (`kills: [{ file, original, replacement, why }]`), which
+`toolchain-test` applies to the source and gates: with it applied, the property's witness cases fail.
 
-| law | what it checks | planted bug it catches |
+| law | what it checks | kills it catches |
 |---|---|---|
-| `no-stall` | the fair phase ends quiescent: no step pending past its patience, none past its ladder | `censusBlindToExpiry` (the census never rings a lapsed lease); `ladderIgnored` |
-| `one-result` | one result per step key ever; a write only in its step's `Done` entry; a commit lands only for the turn holding the step's latest claim | `fenceBlindToResult`; `lostWritesLand`; `retiredKeysRecur` |
-| `scope-once` | one `Finished` per scope, after every child ended | `finishBlindToScopes`; `finishWithoutKey` |
-| `seats` | a seat is taken only when free, taken from a claim only once its lease ran out, within its resource's seats, and a claim takes a seat of every resource its step holds | `lapseEarly` (a lease counted as run out a tick early), in simulation and in some interleaving |
-| `exclusive` | never two live runs of one exclusive root kind and key; a contested admission ends `Held` in its entry | `exclusiveReleasedEarly` (the seat given back when the finish is spawned) |
-| `precondition` | a root was admitted only while its precondition, evaluated from the trace, read empty | `preconditionBlindToHeld` (a `Pending` read forgets held steps) |
-| `reads` | every recorded read is the rows its query held where it was taken (the claim, or the admission), evaluated from the trace | `readIgnoresKey` (a keyed read returns its whole relation) |
-| `rerun` | an accepted call made again at once adds nothing | `ordinalNotDerived` |
-| `stale-drains` | old deployments' claims and commits are answered `stale`, and their messages and workers drain | `servesOldDeployments`; `staleRingsOn` |
-| `owned` | no fire-and-forget: everything opens inside a scope not yet ended, and no root retires with work pending | `retireBeforeFinish` |
-| `window-tick` | every open span of a declared window inside the fair phase holds a census tick | `windowCheckOffByOne` (the declaration check admits a span a tick short) |
-| `rewake` | a wake re-rung by a later cause is always delivered: the transport drops a send as a duplicate only of an earlier send of the same cause | `keyPerAttempt` (every ring keyed by step and attempt); its stall is also caught by `no-stall`, under a seat held and under a window closed |
+| `no-stall` | the fair phase ends quiescent: no step pending past its patience, none past its ladder | the census ringing only steps due by their own instant, blind to a lapsed lease; a ladder that never ends; a key per attempt, under a seat held and under a window closed |
+| `one-result` | one result per step key ever; a write only in its step's `Done` entry; a commit lands only for the turn holding the step's latest claim | a fence blind to a result already there; a lost commit whose writes still land; retired keys recurring |
+| `scope-once` | one `Finished` per scope, after every child ended | a scope blind to its child scopes; a finish that is no key race |
+| `seats` | a seat is taken only when free, taken from a claim only once its lease ran out, within its resource's seats, and a claim takes a seat of every resource its step holds | a lease counted as run out a tick early, in simulation and in some interleaving |
+| `exclusive` | never two live runs of one exclusive root kind and key; a contested admission ends `Held` in its entry | the seat given back when the finish is spawned |
+| `precondition` | a root was admitted only while its precondition, evaluated from the trace, read empty | a `Pending` read that forgets held steps |
+| `reads` | every recorded read is the rows its query held where it was taken (the claim, or the admission), evaluated from the trace | a keyed read that returns its whole relation |
+| `rerun` | an accepted call made again at once adds nothing | a child's ordinal counted from the ledger, not derived |
+| `stale-drains` | old deployments' claims and commits are answered `stale`, and their messages and workers drain | a ledger that serves every deployment; a stale worker that rings itself on |
+| `owned` | no fire-and-forget: everything opens inside a scope not yet ended, and no root retires with work pending | a root retired once its children ended, before its finish ran |
+| `window-tick` | every open span of a declared window inside the fair phase holds a census tick | a declaration check that admits a span a tick short |
+| `rewake` | a wake re-rung by a later cause is always delivered: the transport drops a send as a duplicate only of an earlier send of the same cause | every ring keyed by step and attempt |
 
-## The searches
+## The properties
+
+Each is a `toolchain-test` property (`pnpm test` in the package):
 
 - `laws.test.ts`: generated programs (chains, fan-out, a child scope with a follow-up, exclusive roots under one key,
   a seat-holding resource, a root window, timers re-armed by a declared read, a gate root with a quiescence
   precondition, attempts and never-ending ladders, outages, every trigger) under every fault and every law; 2,000
   independent cases and 30 required situations, from reclaims and late commits to held roots, blocked gates, workers'
-  rings, replayed relays and refused declarations.
-- `planted.test.ts`: the seventeen simulator-caught planted bugs above, `keyPerAttempt` three times: by `rewake`, and
-  by `no-stall` where a ring finds its seat held, and where a timer finds its window closed, no seat held.
+  rings, replayed relays and refused declarations; the table's seventeen kills.
 - `race.test.ts`: `interleave` with `every`: two workers and a third session (a clock, an operator pausing the
   resource, or a third worker) claiming steps that share a resource of one or two seats, every interleaving judged by
-  `one-result`, `scope-once`, `seats`, `exclusive` and `owned`; and `lapseEarly` caught in some interleaving.
+  `one-result`, `scope-once`, `seats`, `exclusive` and `owned`; its kill a lease run out a tick early.
 - `machine.test.ts`: `commands`: the ledger as a command machine over a flat program (steps holding one resource),
   answered by a specification written apart from `ledger.ts`, 600 programs of up to 40 commands, `full`, `behind`,
-  `retired` included; and `retiredKeysRecur`, which the specification refuses.
+  `retired` included; its kill retired keys recurring, which the specification refuses.
 - `workloads.test.ts`: all eight workloads on one ledger, each present or not by case, edullm's limits in force
   (`production`) or small ones, under every law and each workload's own (below); 500 independent cases and 25
   required situations.
@@ -211,8 +211,8 @@ The claim's key `(step, attempt)` fences its commit, with no token beside it, be
 RETIRE remembers retired keys; in the model, tombstones of the retired root keys stand for it, and an admission under
 one is answered `retired`. If retired keys recurred, a re-admission
 would rederive the same step keys with claims counting from 0 again, and a holder of the retired graph would pass for
-the new graph's claim of the same number. `retiredKeysRecur` plants exactly that: its search fails `one-result`, the
-specification refuses its re-admission, and a direct probe over 3,000 simulated runs of it found the landing itself 44
+the new graph's claim of the same number. The kill that forgets retired keys is exactly that: the laws fail
+`one-result` under it, the specification refuses its re-admission, and a direct probe over 3,000 simulated runs of it found the landing itself 44
 times (`Synthetic("r0")/start#0 took the report of w12.0 for claim 0, which w22.0 took`), beside 2,152 runs whose new
 graph took a second result under a recurring key.
 
@@ -221,15 +221,15 @@ graph took a second result under a recurring key.
 - **A key per attempt stalls a step for a day.** Vercel Queues keeps a key for up to 24 h whether or not its first
   delivery was processed, so a ring that ended without a claim (a seat held, a window closed, `stale`) spends its
   attempt's key and every later ring of that attempt, the census's included, is dropped. Keys name the ring's cause
-  instead; `keyPerAttempt` reproduces the stall (found first by the den-vercel lane).
+  instead; the kill that keys a ring by its attempt reproduces the stall (found first by the den-vercel lane).
 - **Nested windows can make a step unable to run.** Two windows each holding a census tick, whose open spans never
   overlap, left the steps under both pending for ever (found by the laws search: a root open over `[1, 2)` and a child
   scope over `[0, 1)` of period 2). Windows on root kinds only make it unrepresentable.
 - **A window must hold a census tick**, and the flow's declaration is where to check it: a wake that finds the window
   closed is consumed, and only the census rings what a window's opening made eligible. `declares` refuses a window
-  whose open span is shorter than the census's period; `windowCheckOffByOne` shows the law catching an off-by-one there.
+  whose open span is shorter than the census's period; its kill shows the law catching an off-by-one there.
 - **The relay cannot heal a lapsed lease**: expiry is time passing, not a commit, so only the census rings a dead
-  holder's step, which `censusBlindToExpiry` shows is load-bearing.
+  holder's step, which the kill of the census's rings shows is load-bearing.
 - **A ladder ending at a claim is not a report landing.** A reclaim that ends a ladder records `LadderEnded{lapsed}`;
   the lapsed holder's late commit of that attempt is `lost`, not a re-run, which the specification caught when the
   ending did not say how the last attempt ended.
@@ -256,11 +256,11 @@ grizzle's RETIRE remembers retired keys, for which the model's tombstones stand;
 
 ## What the engine's differential harness should check
 
-1. **The same commands, the same answers and facts**: drive the engine's ledger with `flatMachine(flat, SOUND)` through
+1. **The same commands, the same answers and facts**: drive the engine's ledger with `flatMachine(flat)` through
    `runProgram`; and replay a simulated run's `Trace` command by command against the engine on the same program,
    comparing answers and facts, turns renamed one to one.
 2. **The laws over the engine's own traces**: `CHECKS` over traces the engine commits under the simulator's schedules.
-3. **The planted bugs, planted in the engine**: each names a decision the engine makes too (the fence, the seat's lapse,
+3. **The model's kills, applied to the engine**: each names a decision the engine makes too (the fence, the seat's lapse,
    the finish's key race, the exclusivity release, the precondition's read, the census's rings, the deploy fence, the
    retired keys); breaking the engine the same way should fail the same law.
 4. **The provisional decisions as differences**: where the engine decided otherwise, the differing answers and facts

@@ -1,16 +1,11 @@
-import { type Case, drawn, explore, Run } from "@bjornpagen/testing/explore"
-import { required } from "@bjornpagen/testing/features"
-import { boolean, int, weighted } from "@bjornpagen/testing/gen"
+import type { Reached } from "@bjornpagen/testing/features"
+import { boolean, type Gen, int, weighted } from "@bjornpagen/testing/gen"
 import { type Driver, interleave } from "@bjornpagen/testing/interleave"
-import { notesOnly } from "@bjornpagen/testing/sense"
-import { searched } from "@bjornpagen/testing/vitest"
-import { runOfTest } from "@bjornpagen/testing/vitest/run"
-import { describe, it } from "@effect/vitest"
+import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Option } from "effect"
 import { type Answer, type Entry, TRACE_VERSION } from "#facts.ts"
 import type { StepId } from "#identity.ts"
-import { emptyState, type Lease, ledgerOf, type Rules, SOUND, type State } from "#ledger.ts"
-import { lapseEarly } from "#planted.ts"
+import { emptyState, type Lease, ledger, type State } from "#ledger.ts"
 import {
 	admissionOf,
 	ordinals,
@@ -22,7 +17,7 @@ import {
 	stepOf
 } from "#program.ts"
 import type { Law } from "#properties.ts"
-import { caught, exploration, holds } from "#search.ts"
+import { holds } from "#search.ts"
 
 /**
  * A session's moves: a worker claims its step and commits; a clock lets one tick pass; an operator pauses and resumes
@@ -97,9 +92,8 @@ const raceOf = (race: Race) => {
 }
 
 /** A driver over one ledger shared by the sessions, every move one atomic call, none of them ever waiting. */
-const driverOf = (race: Race, rules: Rules) => {
+const driverOf = (race: Race) => {
 	const { resource, program, admission } = raceOf(race)
-	const ledger = ledgerOf(rules)
 	const scope = { _tag: "RootScope", root: { kind: "Race", key: "race" } } as const
 	const target = (session: Session): StepId => ({
 		_tag: "StartStep",
@@ -244,7 +238,7 @@ const judged = (
 	})
 
 /** A race drawn small: one or two seats, up to three steps, short leases, the workers' targets and the third. */
-const raceGen = drawn((source): Race => ({
+const raceGen: Gen<Race> = (source) => ({
 	seats: source.draw(int(1, 2)),
 	steps: source.draw(int(1, 3)),
 	lease: source.draw(int(1, 3)),
@@ -261,11 +255,11 @@ const raceGen = drawn((source): Race => ({
 			[1, () => "worker"]
 		])
 	)
-}))
+})
 
-/** Every interleaving of the sessions' moves on one ledger under `rules`, judged by `laws`. */
-const raceSearch = (race: Race, rules: Rules, laws: ReadonlyArray<Law>, c: Case<Seen>) => {
-	const { driver, program } = driverOf(race, rules)
+/** Every interleaving of the sessions' moves on one ledger, judged by the race's laws. */
+const raceSearch = (race: Race, c: Case<Seen>) => {
+	const { driver, program } = driverOf(race)
 	return interleave(
 		driver,
 		{
@@ -281,55 +275,43 @@ const raceSearch = (race: Race, rules: Rules, laws: ReadonlyArray<Law>, c: Case<
 		(ran) =>
 			Option.match(ran.state, {
 				onNone: () => Effect.void,
-				onSome: (trace) => judged(laws, trace, program, c)
+				onSome: (trace) => judged(RACE_LAWS, trace, program, c)
 			})
 	)
 }
 
-describe("the claim, seat and commit race, every interleaving", () => {
-	it.effect(
-		"workers racing for steps and seats, a lease running out and a pause never give a step two results or a seat two holders",
-		(ctx) =>
-			searched(
-				ctx,
-				explore(
-					exploration({
-						suite: "race: every interleaving",
-						draw: raceGen,
-						coverage: required<Seen>(
-							["won", "lost", "late", "full", "behind", "paused", "reclaimed", "taken-over"],
-							{ cases: 120, sense: notesOnly }
-						),
-						runs: 60,
-						shrink: 100,
-						oracle: {
-							kind: "specification",
-							name: "den's laws (properties.ts) over the trace of every interleaving the sessions can run"
-						}
-					}),
-					(race: Race, c: Case<Seen>) => raceSearch(race, SOUND, RACE_LAWS, c)
-				)
-			)
-	)
-
-	it.effect(
-		"the seat law catches, in some interleaving, a lease counted as run out a tick early",
-		(ctx) =>
-			caught(
-				explore(
-					exploration({
-						suite: "planted: lease lapses early, every interleaving",
-						draw: raceGen,
-						coverage: required<Seen>(["taken-over"], { cases: 120, sense: notesOnly }),
-						runs: 60,
-						shrink: 40,
-						oracle: {
-							kind: "specification",
-							name: "the seats law over every interleaving, against a ledger whose leases lapse a tick early"
-						}
-					}),
-					(race: Race, c: Case<Seen>) => raceSearch(race, lapseEarly.rules, ["seats"], c)
-				)
-			).pipe(Effect.provideServiceEffect(Run, runOfTest(ctx)))
-	)
+/**
+ * The claim, seat and commit race, every interleaving: workers racing for steps and seats, a lease running out and a
+ * pause never give a step two results or a seat two holders. Its kill counts a lease run out a tick early, which some
+ * interleaving of a reclaim catches taking a seat from a live holder.
+ *
+ * Budget: its suite's count before the conversion (race: 60 independent cases and 120 steered, Vitest at den aa4e12b).
+ */
+export const racingClaimsSeatsAndCommitsKeepTheLaws = property.explore(raceGen, {
+	needs: {},
+	situations: [
+		"won",
+		"lost",
+		"late",
+		"full",
+		"behind",
+		"paused",
+		"reclaimed",
+		"taken-over"
+	] satisfies ReadonlyArray<Reached<Seen>>,
+	check: (_, c: Case<Seen>) => (race) => raceSearch(race, c),
+	oracle: {
+		kind: "specification",
+		name: "den's laws (properties.ts) over the trace of every interleaving the sessions can run"
+	},
+	budget: { runs: 60, steered: 120 },
+	kept: [],
+	kills: [
+		{
+			file: "packages/den-model/src/ledger.ts",
+			original: "const leaseLapsed = (until: number, at: number): boolean => until <= at\n",
+			replacement: "const leaseLapsed = (until: number, at: number): boolean => until <= at + 1\n",
+			why: "A claim's lease counts as run out one tick before its end, so a reclaim takes a seat from a holder that may still run up to its deadline (seats)."
+		}
+	]
 })

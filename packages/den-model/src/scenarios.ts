@@ -1,4 +1,3 @@
-import type { Case } from "@bjornpagen/testing/explore"
 import {
 	boolean,
 	type Gen,
@@ -7,6 +6,7 @@ import {
 	type Weighted,
 	weighted
 } from "@bjornpagen/testing/gen"
+import type { Case } from "@bjornpagen/testing/property"
 import { type Swarm, swarm, weightOf } from "@bjornpagen/testing/swarm"
 import { Array as Arr, Duration, Option, Record } from "effect"
 import type { By } from "#facts.ts"
