@@ -9,7 +9,8 @@ import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/sl
 
 /**
  * The next stage after a scope ends, and edges that open child scopes, end to end on PostgreSQL 19, in the review flow,
- * AlphaTest's gap analysis's shape: an operator requests a review of groups of questions; its Gather step's edge opens
+ * AlphaTest's gap analysis's shape: an operator requests a review of groups of questions, beside its attempt's
+ * writeback, whose delivery its Gather step awaits; Gather's edge opens
  * one Questions scope per group, each admitted in Gather's commit with one Analyze per question; each group's finish,
  * the cluster over its questions, answers the group's count and total, and its commit spawns the group's Save in the
  * review, from the group's input and the cluster's output; the review's finish reads every group's ending with its
@@ -66,14 +67,15 @@ export const aScopesFinishSpawnsTheNextStageInItsParent = property.explore(runs,
 						if (Arr.some(run.sizes, (size) => size > 1)) {
 							c.note("a group of several questions")
 						}
-						const { review, ledgers } = yield* openLedgers
+						const { review, writeback, ledgers } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
 						const key = `r-${Arr.join(Arr.map(run.sizes, String), "-")}`
+						const delivered = yield* writeback.request.Writeback(key, { attempt: key })
 						const requested = yield* review.request.ReviewRun(key, {
 							review: key,
 							sizes: Arr.map(run.sizes, BigInt)
 						})
-						yield* ringAndDrain(ledgers, [requested])
+						yield* ringAndDrain(ledgers, [delivered, requested])
 						const root = requested.scope
 						const reviewed = yield* rows(app.workload.reviewed.once({ params: {}, facts: {} }))
 						assert.deepEqual(

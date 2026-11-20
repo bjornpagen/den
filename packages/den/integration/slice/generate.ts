@@ -2,7 +2,16 @@ import { generate } from "@bjornpagen/den/lower/generate"
 import * as NodeRuntime from "@effect/platform-node/NodeRuntime"
 import * as NodeServices from "@effect/platform-node/NodeServices"
 import { Effect } from "effect"
-import { assign, chain, clock, fan, retry, review, sync } from "#integration/slice/flows.ts"
+import {
+	assign,
+	chain,
+	clock,
+	fan,
+	retry,
+	review,
+	sync,
+	writeback
+} from "#integration/slice/flows.ts"
 
 /** `den generate` for the slice: each flow's fragment, programs and binding, into generated/. */
 const placement = (name: string) => ({
@@ -31,6 +40,7 @@ if (import.meta.main) {
 			generate(retry, directory, placement("retry"), files("retry")),
 			generate(assign, directory, placement("assign"), files("assign")),
 			generate(review, directory, placement("review"), files("review")),
+			generate(writeback, directory, placement("writeback"), files("writeback")),
 			generate(clock, directory, placement("clock"), files("clock"))
 		]).pipe(Effect.provide(NodeServices.layer))
 	)

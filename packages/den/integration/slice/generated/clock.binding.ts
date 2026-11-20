@@ -266,6 +266,8 @@ export const clockLedger = (h: ClockHandles) => {
 				uses: clock.kinds[1].finish.uses,
 				retry: clock.kinds[1].finish.retry,
 				waits: clock.kinds[1].finish.waits,
+				awaits: [],
+				writes: clock.kinds[1].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof clock.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof clock.kinds)[1]["finish"]["body"]>[1]
@@ -430,6 +432,9 @@ export const clockLedger = (h: ClockHandles) => {
 		finished: (scope) =>
 			h.den.clockFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
+		awaits: [],
+		awaiting: () => Effect.succeed(false),
+		ready: Effect.succeed([]),
 		claim: (row) =>
 			Effect.flatMap(
 				settled(
@@ -553,7 +558,8 @@ export const clockLedger = (h: ClockHandles) => {
 					holds: [],
 					exclusives: [],
 					paused: Arr.map(read.paused, (row) => row.target),
-					busy: []
+					busy: [],
+					awaiting: []
 				}
 			})
 		),

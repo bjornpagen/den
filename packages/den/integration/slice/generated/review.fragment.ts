@@ -23,6 +23,7 @@ import {
 	select,
 	v
 } from "@bjornpagen/grizzle"
+import { Delivered } from "#integration/slice/relations.ts"
 
 export const ReviewKind = closed.unordered("ReviewKind", [
 	"Analyze",
@@ -153,7 +154,7 @@ export const ReviewAnalyzeInput = relation(
 )
 export const ReviewGatherInput = relation(
 	"ReviewGatherInput",
-	{ step: DenStep, review: Text, root: DenScope },
+	{ step: DenStep, review: Delivered.fields.attempt, root: DenScope },
 	["step", "root"]
 )
 export const ReviewGatherInputSizes = relation(

@@ -413,6 +413,8 @@ export const syncLedger = (h: SyncHandles) => {
 				uses: sync.kinds[1].finish.uses,
 				retry: sync.kinds[1].finish.retry,
 				waits: sync.kinds[1].finish.waits,
+				awaits: [],
+				writes: sync.kinds[1].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof sync.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof sync.kinds)[1]["finish"]["body"]>[1]
@@ -466,6 +468,8 @@ export const syncLedger = (h: SyncHandles) => {
 				uses: sync.kinds[3].finish.uses,
 				retry: sync.kinds[3].finish.retry,
 				waits: sync.kinds[3].finish.waits,
+				awaits: [],
+				writes: sync.kinds[3].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof sync.kinds)[3]["start"]>[0]
 					readonly endings: Parameters<(typeof sync.kinds)[3]["finish"]["body"]>[1]
@@ -684,6 +688,9 @@ export const syncLedger = (h: SyncHandles) => {
 		busy: Effect.flatMap(settled(h.den.syncBusy.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), busyOf)
 		),
+		awaits: [],
+		awaiting: () => Effect.succeed(false),
+		ready: Effect.succeed([]),
 		claim: (row) =>
 			Effect.flatMap(
 				settled(
@@ -810,7 +817,8 @@ export const syncLedger = (h: SyncHandles) => {
 					holds: [],
 					exclusives: read.exclusives,
 					paused: Arr.map(read.paused, (row) => row.target),
-					busy: busyOf(read)
+					busy: busyOf(read),
+					awaiting: []
 				}
 			})
 		),

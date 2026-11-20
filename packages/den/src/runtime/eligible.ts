@@ -14,8 +14,8 @@ import { AttemptNumber, type Wake } from "#transport.ts"
 /**
  * Eligibility (§7, the issue's law, durable), as a pure function of a snapshot and an instant, which the relay and the
  * census share. A step may run once its parent ended (an edge's child is spawned by its parent's commit, so its parent
- * has; a finish waits for every child of its scope), its due instant passed (or, its latest attempt fenced on a refused
- * credential, the deployment let in again, which the census asks), its root's window is open, nothing it
+ * has; a finish waits for every child of its scope), every fact it awaits exists, its due instant passed (or, its latest
+ * attempt fenced on a refused credential, the deployment let in again, which the census asks), its root's window is open, nothing it
  * touches is paused (its root kind, its resources), and a seat of every resource it uses is
  * free. A root is rung for its admission once its window is open, its kind is not paused and its precondition holds;
  * its admission takes its exclusivity seat or records it skipped. When seats are contended, the oldest root goes first,
@@ -209,6 +209,9 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 			return []
 		}
 		if (Option.isSome(runner.finishes) && unended(p.scope, p.step)) {
+			return []
+		}
+		if (Arr.contains(snapshot.awaiting, p.step)) {
 			return []
 		}
 		if (

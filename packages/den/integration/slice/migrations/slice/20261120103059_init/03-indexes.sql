@@ -350,6 +350,8 @@ CREATE INDEX "__review_finish_ix_root_vnnzpwlvrw" ON "slice"."review_finish" USI
 
 CREATE INDEX "__review_finish_ix_scope_step_4k6s2nqgyy" ON "slice"."review_finish" USING btree ("scope", "step");
 
+CREATE INDEX "__review_gather_input_ix_review_f2zafhsmtj" ON "slice"."review_gather_input" USING btree ("review");
+
 CREATE INDEX "__review_gather_input_ix_root_step_wsoyzlnuyr" ON "slice"."review_gather_input" USING btree ("root", "step");
 
 CREATE INDEX "__review_gather_input_sizes_ix_step_mjpuijzth_4_pred_be4mal6542" ON "slice"."review_gather_input_sizes" USING btree ("__step_mjpuijzth4", "__pred_ordinal_rdz3ttleig", "__root_yjobx7uyrd");
@@ -474,6 +476,56 @@ CREATE INDEX "__sync_sync_run_finish_output_ix_root_7lxs3t6qrm" ON "slice"."sync
 
 CREATE INDEX "__sync_sync_run_input_ix_root_bp43cbf2uj" ON "slice"."sync_sync_run_input" USING btree ("root");
 
+CREATE INDEX "__writeback_admitted_ix_root_h3gyzivmzl" ON "slice"."writeback_admitted" USING btree ("root");
+
+CREATE INDEX "__writeback_claim_ix_step_ouvkclqzzd_pred_attempt_5kw4ikrxtr" ON "slice"."writeback_claim" USING btree ("__step_ouvkclqzzd", "__pred_attempt_dqbvoe7dfs", "__root_yewsvvtcyz");
+
+CREATE INDEX "__writeback_claim_ix_root_bq6zyukkmq" ON "slice"."writeback_claim" USING btree ("root");
+
+CREATE INDEX "__writeback_deliver_input_ix_root_step_42hexztzwm" ON "slice"."writeback_deliver_input" USING btree ("root", "step");
+
+CREATE INDEX "__writeback_deliver_output_ix_root_65uep5rbzs" ON "slice"."writeback_deliver_output" USING btree ("root");
+
+CREATE INDEX "__writeback_done_ix_root_step_dxzcxsyzki" ON "slice"."writeback_done" USING btree ("root", "step");
+
+CREATE INDEX "__writeback_ended_ix_root_22eyuup6mt" ON "slice"."writeback_ended" USING btree ("root");
+
+CREATE INDEX "__writeback_exhausted_ix_root_cvj7pxcezh" ON "slice"."writeback_exhausted" USING btree ("root");
+
+CREATE INDEX "__writeback_failed_ix_root_step_r27jysgea6" ON "slice"."writeback_failed" USING btree ("root", "step");
+
+CREATE INDEX "__writeback_fenced_ix_root_jynr6i3m3n" ON "slice"."writeback_fenced" USING btree ("root");
+
+CREATE INDEX "__writeback_finish_ix_root_7jp3nmlcxk" ON "slice"."writeback_finish" USING btree ("root");
+
+CREATE INDEX "__writeback_finish_ix_scope_step_6ooh2ahmws" ON "slice"."writeback_finish" USING btree ("scope", "step");
+
+CREATE INDEX "__writeback_held_ix_root_htj435svmc" ON "slice"."writeback_held" USING btree ("root");
+
+CREATE INDEX "__writeback_paused_ix_target_pred_turn_qryngij_6_c_4_j2yz63n2im" ON "slice"."writeback_paused" USING btree ("target", "__pred_turn_qryngij6c4");
+
+CREATE INDEX "__writeback_refusal_ix_root_rpqfuncax3" ON "slice"."writeback_refusal" USING btree ("root");
+
+CREATE INDEX "__writeback_result_ix_root_step_m7c5flfb7z" ON "slice"."writeback_result" USING btree ("root", "step");
+
+CREATE INDEX "__writeback_retry_ix_root_jksgr5toee" ON "slice"."writeback_retry" USING btree ("root");
+
+CREATE INDEX "__writeback_scope_ix_root_kaxydmiokb" ON "slice"."writeback_scope" USING btree ("root");
+
+CREATE INDEX "__writeback_skipped_ix_by_3ei4k4fj53" ON "slice"."writeback_skipped" USING btree ("by");
+
+CREATE INDEX "__writeback_skipped_ix_root_ss2ptzee7p" ON "slice"."writeback_skipped" USING btree ("root");
+
+CREATE INDEX "__writeback_start_step_ix_root_scope_azon5ljjqq" ON "slice"."writeback_start_step" USING btree ("root", "scope");
+
+CREATE INDEX "__writeback_step_ix_root_scope_oebhktgfcr" ON "slice"."writeback_step" USING btree ("root", "scope");
+
+CREATE INDEX "__writeback_step_ix_scope_smnbmwitav" ON "slice"."writeback_step" USING btree ("scope");
+
+CREATE INDEX "__writeback_writeback_finish_output_ix_root_4g3n3nyiax" ON "slice"."writeback_writeback_finish_output" USING btree ("root");
+
+CREATE INDEX "__writeback_writeback_input_ix_root_fhpchifc4b" ON "slice"."writeback_writeback_input" USING btree ("root");
+
 CREATE STATISTICS "slice"."__assign_finish_stats_scope_step_ld6jyxztu6" (ndistinct, dependencies, mcv) ON "scope", "step" FROM "slice"."assign_finish";
 
 CREATE STATISTICS "slice"."__assign_step_stats_kind_scope_wiztsdmmtf" (ndistinct, dependencies, mcv) ON "kind", "scope" FROM "slice"."assign_step";
@@ -503,3 +555,5 @@ CREATE STATISTICS "slice"."__review_within_stats_kind_parent_w3ajh3gekc" (ndisti
 CREATE STATISTICS "slice"."__sync_exclusive_stats_key_kind_smed76p3zh" (ndistinct, dependencies, mcv) ON "key", "kind" FROM "slice"."sync_exclusive";
 
 CREATE STATISTICS "slice"."__sync_finish_stats_scope_step_xiaq6np7mf" (ndistinct, dependencies, mcv) ON "scope", "step" FROM "slice"."sync_finish";
+
+CREATE STATISTICS "slice"."__writeback_finish_stats_scope_step_3knpjnabow" (ndistinct, dependencies, mcv) ON "scope", "step" FROM "slice"."writeback_finish";

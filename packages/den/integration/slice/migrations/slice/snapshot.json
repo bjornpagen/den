@@ -520,6 +520,9 @@
 			"cursor": {
 				"__cursor_pk_wl2ngqny4j": "__cursor_pk_feed_position_hylioo6cog"
 			},
+			"delivered": {
+				"__delivered_pk_xzukubt47t": "__delivered_pk_attempt_eyv55f77gq"
+			},
 			"fan_admitted": {
 				"__fan_admitted_fk_root_ui6p5vdrhk": "__fan_admitted_in_fan_root_27wekwjj25",
 				"__fan_admitted_fk_scope_root_zj52ntgcx6": "__fan_admitted_in_fan_scope_5qkq46iyrk",
@@ -1249,6 +1252,129 @@
 			},
 			"weight": {
 				"__weight_pk_p77rl634io": "__weight_pk_feed_factor_ecfc3qemnh"
+			},
+			"writeback_admitted": {
+				"__writeback_admitted_fk_root_zzhx3ymsmx": "__writeback_admitted_in_writeback_root_5iucxnbatt",
+				"__writeback_admitted_fk_scope_root_bgkzavlmet": "__writeback_admitted_in_writeback_scope_thlhjfyqbv",
+				"__writeback_admitted_pk_eplj3gsbzy": "__writeback_admitted_pk_scope_root_ygnhf3rmqx"
+			},
+			"writeback_claim": {
+				"__writeback_claim_fk_root_7agc267qm7": "__writeback_claim_in_writeback_root_3i4hfdbkvb",
+				"__writeback_claim_fk_step_pred_attempt_root_n7sim6icgo": "__writeback_claim_attempt_in_writeback_ended_bnuinmx5wb",
+				"__writeback_claim_fk_step_root_vh7k4u5nuz": "__writeback_claim_in_writeback_step_xkt6yd3otk",
+				"__writeback_claim_pk_j7bglnjq7b": "__writeback_claim_pk_step_root_attempt_dbbcu6px25"
+			},
+			"writeback_deliver_input": {
+				"__rule_writeback_deliver_input_in_writeback_step_a7uldprbfb": "__writeback_deliver_input_in_writeback_step_xs45sndxz5",
+				"__writeback_deliver_input_fk_root_khq2esrmmb": "__writeback_deliver_input_in_writeback_root_wfm5w6uqez",
+				"__writeback_deliver_input_pk_i7vk7dq3eb": "__writeback_deliver_input_pk_step_root_zsscbfy2su"
+			},
+			"writeback_deliver_output": {
+				"__writeback_deliver_output_fk_root_e4xa5oep52": "__writeback_deliver_output_in_writeback_root_cjvz6zkl32",
+				"__writeback_deliver_output_fk_step_root_3p47hjlrfd": "__writeback_deliver_output_in_writeback_deliver_jkzzbjudx3",
+				"__writeback_deliver_output_fk_step_root_trjdigghf7": "__writeback_deliver_output_in_writeback_done_azzmj76z5y",
+				"__writeback_deliver_output_pk_jkhggp3cer": "__writeback_deliver_output_pk_step_root_2bvrz6a46x"
+			},
+			"writeback_done": {
+				"__rule_writeback_done_in_writeback_result_pbcczdjthl": "__writeback_done_in_writeback_result_no6famlmjr",
+				"__writeback_done_fk_root_3lnpe5h2ex": "__writeback_done_in_writeback_root_gvf65i5skx",
+				"__writeback_done_pk_x32l3wxb3c": "__writeback_done_pk_step_root_n6edoshtow"
+			},
+			"writeback_ended": {
+				"__writeback_ended_fk_root_h7zxc3wrem": "__writeback_ended_in_writeback_root_pa5f5qc73g",
+				"__writeback_ended_fk_step_attempt_root_laqrk2e3dt": "__writeback_ended_in_writeback_claim_rzjszkgzy2",
+				"__writeback_ended_pk_atnezxtfz6": "__writeback_ended_pk_step_attempt_root_tual3akcqy"
+			},
+			"writeback_exhausted": {
+				"__writeback_exhausted_fk_root_m3qvioeeek": "__writeback_exhausted_in_writeback_root_k3nw5z7bka",
+				"__writeback_exhausted_fk_step_root_cwhwzf2upp": "__writeback_exhausted_in_writeback_failed_6awbjjd5iv",
+				"__writeback_exhausted_pk_sqddw6eedo": "__writeback_exhausted_pk_step_root_lrup6vnrxs"
+			},
+			"writeback_failed": {
+				"__rule_writeback_failed_in_writeback_result_tyqqhwpdaa": "__writeback_failed_in_writeback_result_6yvww5dmla",
+				"__writeback_failed_fk_root_ddkqjmy3le": "__writeback_failed_in_writeback_root_5jtwep7br2",
+				"__writeback_failed_pk_g4uud6r5kb": "__writeback_failed_pk_step_root_5zjot2ifqc"
+			},
+			"writeback_fenced": {
+				"__writeback_fenced_fk_root_cishzkxig6": "__writeback_fenced_in_writeback_root_2qyji6ukpr",
+				"__writeback_fenced_fk_step_attempt_root_7uikhcfpkf": "__writeback_fenced_in_writeback_ended_5azdupvjb4",
+				"__writeback_fenced_pk_exblcoemag": "__writeback_fenced_pk_step_attempt_root_dms3zdzdfe"
+			},
+			"writeback_finish": {
+				"__writeback_finish_fk_root_4suiathayz": "__writeback_finish_in_writeback_root_vlf5dvpcja",
+				"__writeback_finish_fk_scope_root_rp7v2vj6l6": "__writeback_finish_in_writeback_admitted_ctyuopniji",
+				"__writeback_finish_fk_step_root_7ny2yumuvy": "__writeback_finish_in_writeback_step_ndyhhqqdut",
+				"__writeback_finish_key_step_root_cz7xuvvbbm": "__writeback_finish_key_step_root_ft22i37dsa",
+				"__writeback_finish_pk_htcvidwpy6": "__writeback_finish_pk_scope_root_be4hhtwm6k"
+			},
+			"writeback_held": {
+				"__writeback_held_fk_root_dady3frmfj": "__writeback_held_in_writeback_root_nwewjficp5",
+				"__writeback_held_fk_step_attempt_root_2i7p4i2alp": "__writeback_held_in_writeback_claim_h2xuf23j73",
+				"__writeback_held_fk_step_root_7yahu5vvit": "__writeback_held_in_writeback_result_czwyq64gtz",
+				"__writeback_held_pk_5tktjcet5w": "__writeback_held_pk_step_root_afdyh73ocf"
+			},
+			"writeback_paused": {
+				"__writeback_paused_fk_target_pred_turn_rvsgo6wgpe": "__writeback_paused_in_writeback_resumed_5jhfufbrlw",
+				"__writeback_paused_pk_ncs2aff76t": "__writeback_paused_pk_target_turn_a45syyuiwl"
+			},
+			"writeback_refusal": {
+				"__writeback_refusal_fk_root_hbzez4kebv": "__writeback_refusal_in_writeback_root_chdtgqzxc3",
+				"__writeback_refusal_fk_step_root_xf2b5o76fl": "__writeback_refusal_in_writeback_failed_kti2bkyv5a",
+				"__writeback_refusal_pk_lqictdn67w": "__writeback_refusal_pk_step_root_cs2wpwpjni"
+			},
+			"writeback_result": {
+				"__rule_writeback_done_in_writeback_result_pbcczdjthl": "__writeback_done_in_writeback_result_no6famlmjr",
+				"__rule_writeback_failed_in_writeback_result_tyqqhwpdaa": "__writeback_failed_in_writeback_result_6yvww5dmla",
+				"__writeback_result_fk_root_2ds3etg4pt": "__writeback_result_in_writeback_root_xrngdv3wzj",
+				"__writeback_result_fk_step_root_52vlcqzy4o": "__writeback_result_in_writeback_step_bqzwtw7m6l",
+				"__writeback_result_pk_lygppaax77": "__writeback_result_pk_step_root_vaosh47ias"
+			},
+			"writeback_resumed": {
+				"__writeback_resumed_fk_target_turn_vfx6l6vk75": "__writeback_resumed_in_writeback_paused_fsee2bh4x4",
+				"__writeback_resumed_pk_qrrua45xou": "__writeback_resumed_pk_target_turn_nupukta633"
+			},
+			"writeback_retry": {
+				"__writeback_retry_fk_root_7expqnzkek": "__writeback_retry_in_writeback_root_bq2nwhdzxk",
+				"__writeback_retry_fk_step_attempt_root_5cwcgqo5s7": "__writeback_retry_in_writeback_ended_6ubqljtja2",
+				"__writeback_retry_pk_j2ien3obty": "__writeback_retry_pk_step_attempt_root_bewfnrxait"
+			},
+			"writeback_root": {
+				"__rule_writeback_writeback_input_in_writeback_root_lh6axoazaf": "__writeback_writeback_input_in_writeback_root_osi337bpj4",
+				"__writeback_root_key_scope_epb6awnxkj": "__writeback_root_pk_scope_rbtbk3ayql",
+				"__writeback_root_pk_a5puwyrem6": "__writeback_root_pk_scope_rbtbk3ayql"
+			},
+			"writeback_scope": {
+				"__writeback_scope_fk_root_7hgmsmhohr": "__writeback_scope_in_writeback_root_3octzumems",
+				"__writeback_scope_pk_aywjorzcsy": "__writeback_scope_pk_scope_root_dwfpvdxt6u"
+			},
+			"writeback_skipped": {
+				"__writeback_skipped_fk_by_dm2bpfflyw": "__writeback_skipped_in_writeback_root_2yqmnfd3v3",
+				"__writeback_skipped_fk_root_a3d7uviq7u": "__writeback_skipped_in_writeback_root_qqqrlxd5hz",
+				"__writeback_skipped_fk_scope_veikkumie6": "__writeback_skipped_in_writeback_root_oupvmpw3xi",
+				"__writeback_skipped_pk_3pijvusl26": "__writeback_skipped_pk_scope_root_iptw7uzdb4"
+			},
+			"writeback_start_step": {
+				"__writeback_start_step_fk_root_r7w5ogs6pb": "__writeback_start_step_in_writeback_root_s2hn2v32gc",
+				"__writeback_start_step_fk_scope_root_dnvan4vxav": "__writeback_start_step_in_writeback_admitted_nwne265vch",
+				"__writeback_start_step_fk_step_root_zuw7g6khi3": "__writeback_start_step_in_writeback_step_gbq2nmtiqs",
+				"__writeback_start_step_key_step_root_dqjb67a3dj": "__writeback_start_step_key_step_root_xe4n2gsmzj",
+				"__writeback_start_step_pk_sp7hkcjz7m": "__writeback_start_step_pk_scope_ordinal_root_rak3tjyypm"
+			},
+			"writeback_step": {
+				"__rule_writeback_deliver_input_in_writeback_step_a7uldprbfb": "__writeback_deliver_input_in_writeback_step_xs45sndxz5",
+				"__writeback_step_fk_root_ikezfkedwk": "__writeback_step_in_writeback_root_dy4mgdlbtw",
+				"__writeback_step_fk_scope_root_htnuvc75ao": "__writeback_step_in_writeback_admitted_ozgfqbmyx2",
+				"__writeback_step_pk_xsrl5j4mlf": "__writeback_step_pk_step_root_bgqnymtsy5"
+			},
+			"writeback_writeback_finish_output": {
+				"__writeback_writeback_finish_output_fk_root_jvtr4eenzd": "__writeback_writeback_finish_output_in_writeback_7mc3rmhr37",
+				"__writeback_writeback_finish_output_fk_step_root_fygai72drs": "__writeback_writeback_finish_output_in_writeback_zwgdc7ecdq",
+				"__writeback_writeback_finish_output_pk_payvcqalt7": "__writeback_writeback_finish_output_pk_step_root_pvsr4drdqj"
+			},
+			"writeback_writeback_input": {
+				"__rule_writeback_writeback_input_in_writeback_root_lh6axoazaf": "__writeback_writeback_input_in_writeback_root_osi337bpj4",
+				"__writeback_writeback_input_fk_root_mwnbphwqvk": "__writeback_writeback_input_in_writeback_root_ml3hzywvxv",
+				"__writeback_writeback_input_pk_ejs235aju2": "__writeback_writeback_input_pk_scope_root_g645w2vxia"
 			}
 		}
 	},
@@ -1365,6 +1491,14 @@
 			[
 				"SyncPaused",
 				"SyncResumed"
+			],
+			[
+				"WritebackClaim",
+				"WritebackEnded"
+			],
+			[
+				"WritebackPaused",
+				"WritebackResumed"
 			]
 		],
 		"live": {
@@ -1532,6 +1666,7 @@
 				"concluded": [],
 				"copied": [],
 				"cursor": [],
+				"delivered": [],
 				"fan_admitted": [
 					"scope"
 				],
@@ -1770,6 +1905,46 @@
 				"tally": [],
 				"weight": [
 					"feed"
+				],
+				"writeback_admitted": [
+					"scope"
+				],
+				"writeback_claim": [
+					"step"
+				],
+				"writeback_deliver_input": [
+					"step"
+				],
+				"writeback_fenced": [
+					"step"
+				],
+				"writeback_finish": [
+					"scope"
+				],
+				"writeback_held": [
+					"step"
+				],
+				"writeback_paused": [],
+				"writeback_result": [
+					"step"
+				],
+				"writeback_resumed": [],
+				"writeback_retry": [
+					"step"
+				],
+				"writeback_root": [
+					"scope"
+				],
+				"writeback_scope": [],
+				"writeback_skipped": [
+					"scope"
+				],
+				"writeback_step": [
+					"scope",
+					"step"
+				],
+				"writeback_writeback_input": [
+					"scope"
 				]
 			},
 			"views": []
@@ -7439,6 +7614,29 @@
 					},
 					"relation": "Cursor"
 				},
+				"delivered": {
+					"indexes": {
+						"__delivered_pk_xzukubt47t": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__delivered_pk_attempt_eyv55f77gq"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "Delivered"
+				},
 				"fan_admitted": {
 					"indexes": {
 						"__fan_admitted_ix_root_cjavzjrmil": {
@@ -11910,6 +12108,20 @@
 				},
 				"review_gather_input": {
 					"indexes": {
+						"__review_gather_input_ix_review_f2zafhsmtj": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "review",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								}
+							]
+						},
 						"__review_gather_input_ix_root_step_wsoyzlnuyr": {
 							"columns": [
 								{
@@ -15694,6 +15906,1392 @@
 						}
 					},
 					"relation": "Weight"
+				},
+				"writeback_admitted": {
+					"indexes": {
+						"__writeback_admitted_ix_root_h3gyzivmzl": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_admitted_in_writeback_root_5iucxnbatt"
+								}
+							]
+						},
+						"__writeback_admitted_pk_eplj3gsbzy": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_admitted_pk_scope_root_ygnhf3rmqx"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_admitted_in_writeback_scope_thlhjfyqbv"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackAdmitted"
+				},
+				"writeback_claim": {
+					"indexes": {
+						"__writeback_claim_ix_root_bq6zyukkmq": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_claim_in_writeback_root_3i4hfdbkvb"
+								}
+							]
+						},
+						"__writeback_claim_ix_step_ouvkclqzzd_pred_attempt_5kw4ikrxtr": {
+							"columns": [
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "step",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__writeback_claim_attempt_in_writeback_ended_bnuinmx5wb"
+									]
+								},
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "attempt",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__writeback_claim_attempt_in_writeback_ended_bnuinmx5wb"
+									]
+								},
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "root",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__writeback_claim_attempt_in_writeback_ended_bnuinmx5wb"
+									]
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_claim_attempt_in_writeback_ended_bnuinmx5wb"
+								}
+							]
+						},
+						"__writeback_claim_pk_j7bglnjq7b": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_claim_pk_step_root_attempt_dbbcu6px25"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_claim_in_writeback_step_xkt6yd3otk"
+								}
+							]
+						}
+					},
+					"relation": "WritebackClaim"
+				},
+				"writeback_deliver_input": {
+					"indexes": {
+						"__writeback_deliver_input_ix_root_step_42hexztzwm": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_deliver_input_in_writeback_root_wfm5w6uqez"
+								}
+							]
+						},
+						"__writeback_deliver_input_pk_i7vk7dq3eb": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_deliver_input_pk_step_root_zsscbfy2su"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_deliver_input_in_writeback_step_xs45sndxz5"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackDeliverInput"
+				},
+				"writeback_deliver_output": {
+					"indexes": {
+						"__writeback_deliver_output_ix_root_65uep5rbzs": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_deliver_output_in_writeback_root_cjvz6zkl32"
+								}
+							]
+						},
+						"__writeback_deliver_output_pk_jkhggp3cer": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_deliver_output_pk_step_root_2bvrz6a46x"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_deliver_output_in_writeback_deliver_jkzzbjudx3"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_deliver_output_in_writeback_done_azzmj76z5y"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackDeliverOutput"
+				},
+				"writeback_done": {
+					"indexes": {
+						"__writeback_done_ix_root_step_dxzcxsyzki": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_done_in_writeback_root_gvf65i5skx"
+								}
+							]
+						},
+						"__writeback_done_pk_x32l3wxb3c": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_done_pk_step_root_n6edoshtow"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_done_in_writeback_result_no6famlmjr"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackDone"
+				},
+				"writeback_ended": {
+					"indexes": {
+						"__writeback_ended_ix_root_22eyuup6mt": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_ended_in_writeback_root_pa5f5qc73g"
+								}
+							]
+						},
+						"__writeback_ended_pk_atnezxtfz6": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_ended_pk_step_attempt_root_tual3akcqy"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_ended_in_writeback_claim_rzjszkgzy2"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackEnded"
+				},
+				"writeback_exhausted": {
+					"indexes": {
+						"__writeback_exhausted_ix_root_cvj7pxcezh": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_exhausted_in_writeback_root_k3nw5z7bka"
+								}
+							]
+						},
+						"__writeback_exhausted_pk_sqddw6eedo": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_exhausted_pk_step_root_lrup6vnrxs"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_exhausted_in_writeback_failed_6awbjjd5iv"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackExhausted"
+				},
+				"writeback_failed": {
+					"indexes": {
+						"__writeback_failed_ix_root_step_r27jysgea6": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_failed_in_writeback_root_5jtwep7br2"
+								}
+							]
+						},
+						"__writeback_failed_pk_g4uud6r5kb": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_failed_pk_step_root_5zjot2ifqc"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_failed_in_writeback_result_6yvww5dmla"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackFailed"
+				},
+				"writeback_fenced": {
+					"indexes": {
+						"__writeback_fenced_ix_root_jynr6i3m3n": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_fenced_in_writeback_root_2qyji6ukpr"
+								}
+							]
+						},
+						"__writeback_fenced_pk_exblcoemag": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_fenced_pk_step_attempt_root_dms3zdzdfe"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_fenced_in_writeback_ended_5azdupvjb4"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackFenced"
+				},
+				"writeback_finish": {
+					"indexes": {
+						"__writeback_finish_ix_root_7jp3nmlcxk": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_finish_in_writeback_root_vlf5dvpcja"
+								}
+							]
+						},
+						"__writeback_finish_ix_scope_step_6ooh2ahmws": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__writeback_finish_key_step_root_cz7xuvvbbm": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_finish_key_step_root_ft22i37dsa"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_finish_in_writeback_step_ndyhhqqdut"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__writeback_finish_pk_htcvidwpy6": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_finish_pk_scope_root_be4hhtwm6k"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_finish_in_writeback_admitted_ctyuopniji"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackFinish"
+				},
+				"writeback_held": {
+					"indexes": {
+						"__writeback_held_ix_root_htj435svmc": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_held_in_writeback_root_nwewjficp5"
+								}
+							]
+						},
+						"__writeback_held_pk_5tktjcet5w": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_held_pk_step_root_afdyh73ocf"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_held_in_writeback_claim_h2xuf23j73"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_held_in_writeback_result_czwyq64gtz"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackHeld"
+				},
+				"writeback_paused": {
+					"indexes": {
+						"__writeback_paused_ix_target_pred_turn_qryngij_6_c_4_j2yz63n2im": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "target",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "turn",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__writeback_paused_in_writeback_resumed_5jhfufbrlw"
+									]
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_paused_in_writeback_resumed_5jhfufbrlw"
+								}
+							]
+						},
+						"__writeback_paused_pk_ncs2aff76t": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "target",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "turn",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_paused_pk_target_turn_a45syyuiwl"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackPaused"
+				},
+				"writeback_refusal": {
+					"indexes": {
+						"__writeback_refusal_ix_root_rpqfuncax3": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_refusal_in_writeback_root_chdtgqzxc3"
+								}
+							]
+						},
+						"__writeback_refusal_pk_lqictdn67w": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_refusal_pk_step_root_cs2wpwpjni"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_refusal_in_writeback_failed_kti2bkyv5a"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackRefusal"
+				},
+				"writeback_result": {
+					"indexes": {
+						"__writeback_result_ix_root_step_m7c5flfb7z": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_result_in_writeback_root_xrngdv3wzj"
+								}
+							]
+						},
+						"__writeback_result_pk_lygppaax77": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_result_pk_step_root_vaosh47ias"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_done_in_writeback_result_no6famlmjr"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_failed_in_writeback_result_6yvww5dmla"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_result_in_writeback_step_bqzwtw7m6l"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackResult"
+				},
+				"writeback_resumed": {
+					"indexes": {
+						"__writeback_resumed_pk_qrrua45xou": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "target",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "turn",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_resumed_pk_target_turn_nupukta633"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_resumed_in_writeback_paused_fsee2bh4x4"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackResumed"
+				},
+				"writeback_retry": {
+					"indexes": {
+						"__writeback_retry_ix_root_jksgr5toee": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_retry_in_writeback_root_bq2nwhdzxk"
+								}
+							]
+						},
+						"__writeback_retry_pk_j2ien3obty": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_retry_pk_step_attempt_root_bewfnrxait"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_retry_in_writeback_ended_6ubqljtja2"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackRetry"
+				},
+				"writeback_root": {
+					"indexes": {
+						"__writeback_root_key_scope_epb6awnxkj": {
+							"columns": [
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "scope",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__writeback_admitted_in_writeback_root_5iucxnbatt",
+										"__writeback_claim_in_writeback_root_3i4hfdbkvb",
+										"__writeback_deliver_input_in_writeback_root_wfm5w6uqez",
+										"__writeback_deliver_output_in_writeback_root_cjvz6zkl32",
+										"__writeback_done_in_writeback_root_gvf65i5skx",
+										"__writeback_ended_in_writeback_root_pa5f5qc73g",
+										"__writeback_exhausted_in_writeback_root_k3nw5z7bka",
+										"__writeback_failed_in_writeback_root_5jtwep7br2",
+										"__writeback_fenced_in_writeback_root_2qyji6ukpr",
+										"__writeback_finish_in_writeback_root_vlf5dvpcja",
+										"__writeback_held_in_writeback_root_nwewjficp5",
+										"__writeback_refusal_in_writeback_root_chdtgqzxc3",
+										"__writeback_result_in_writeback_root_xrngdv3wzj",
+										"__writeback_retry_in_writeback_root_bq2nwhdzxk",
+										"__writeback_scope_in_writeback_root_3octzumems",
+										"__writeback_skipped_in_writeback_root_qqqrlxd5hz",
+										"__writeback_start_step_in_writeback_root_s2hn2v32gc",
+										"__writeback_step_in_writeback_root_dy4mgdlbtw",
+										"__writeback_writeback_finish_output_in_writeback_7mc3rmhr37",
+										"__writeback_writeback_input_in_writeback_root_ml3hzywvxv"
+									]
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_root_pk_scope_rbtbk3ayql"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_admitted_in_writeback_root_5iucxnbatt"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_claim_in_writeback_root_3i4hfdbkvb"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_deliver_input_in_writeback_root_wfm5w6uqez"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_deliver_output_in_writeback_root_cjvz6zkl32"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_done_in_writeback_root_gvf65i5skx"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_ended_in_writeback_root_pa5f5qc73g"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_exhausted_in_writeback_root_k3nw5z7bka"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_failed_in_writeback_root_5jtwep7br2"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_fenced_in_writeback_root_2qyji6ukpr"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_finish_in_writeback_root_vlf5dvpcja"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_held_in_writeback_root_nwewjficp5"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_refusal_in_writeback_root_chdtgqzxc3"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_result_in_writeback_root_xrngdv3wzj"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_retry_in_writeback_root_bq2nwhdzxk"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_scope_in_writeback_root_3octzumems"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_skipped_in_writeback_root_qqqrlxd5hz"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_start_step_in_writeback_root_s2hn2v32gc"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_step_in_writeback_root_dy4mgdlbtw"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_writeback_finish_output_in_writeback_7mc3rmhr37"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_writeback_input_in_writeback_root_ml3hzywvxv"
+								}
+							]
+						},
+						"__writeback_root_pk_a5puwyrem6": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_root_pk_scope_rbtbk3ayql"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_writeback_input_in_writeback_root_osi337bpj4"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackRoot"
+				},
+				"writeback_scope": {
+					"indexes": {
+						"__writeback_scope_ix_root_kaxydmiokb": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_scope_in_writeback_root_3octzumems"
+								}
+							]
+						},
+						"__writeback_scope_pk_aywjorzcsy": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_scope_pk_scope_root_dwfpvdxt6u"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackScope"
+				},
+				"writeback_skipped": {
+					"indexes": {
+						"__writeback_skipped_ix_by_3ei4k4fj53": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "by",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_skipped_in_writeback_root_2yqmnfd3v3"
+								}
+							]
+						},
+						"__writeback_skipped_ix_root_ss2ptzee7p": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_skipped_in_writeback_root_qqqrlxd5hz"
+								}
+							]
+						},
+						"__writeback_skipped_pk_3pijvusl26": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_skipped_pk_scope_root_iptw7uzdb4"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_skipped_in_writeback_root_oupvmpw3xi"
+								}
+							]
+						}
+					},
+					"relation": "WritebackSkipped"
+				},
+				"writeback_start_step": {
+					"indexes": {
+						"__writeback_start_step_ix_root_scope_azon5ljjqq": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_start_step_in_writeback_admitted_nwne265vch"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_start_step_in_writeback_root_s2hn2v32gc"
+								}
+							]
+						},
+						"__writeback_start_step_key_step_root_dqjb67a3dj": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_start_step_key_step_root_xe4n2gsmzj"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_start_step_in_writeback_step_gbq2nmtiqs"
+								}
+							]
+						},
+						"__writeback_start_step_pk_sp7hkcjz7m": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "ordinal",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_start_step_pk_scope_ordinal_root_rak3tjyypm"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackStartStep"
+				},
+				"writeback_step": {
+					"indexes": {
+						"__writeback_step_ix_root_scope_oebhktgfcr": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_step_in_writeback_admitted_ozgfqbmyx2"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_step_in_writeback_root_dy4mgdlbtw"
+								}
+							]
+						},
+						"__writeback_step_ix_scope_smnbmwitav": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__writeback_step_pk_xsrl5j4mlf": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_step_pk_step_root_bgqnymtsy5"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_deliver_input_in_writeback_step_xs45sndxz5"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackStep"
+				},
+				"writeback_writeback_finish_output": {
+					"indexes": {
+						"__writeback_writeback_finish_output_ix_root_4g3n3nyiax": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_writeback_finish_output_in_writeback_7mc3rmhr37"
+								}
+							]
+						},
+						"__writeback_writeback_finish_output_pk_payvcqalt7": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_writeback_finish_output_pk_step_root_pvsr4drdqj"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_writeback_finish_output_in_writeback_zwgdc7ecdq"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "WritebackWritebackFinishOutput"
+				},
+				"writeback_writeback_input": {
+					"indexes": {
+						"__writeback_writeback_input_ix_root_fhpchifc4b": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_writeback_input_in_writeback_root_ml3hzywvxv"
+								}
+							]
+						},
+						"__writeback_writeback_input_pk_ejs235aju2": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__writeback_writeback_input_pk_scope_root_g645w2vxia"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__writeback_writeback_input_in_writeback_root_osi337bpj4"
+								}
+							]
+						}
+					},
+					"relation": "WritebackWritebackInput"
 				}
 			}
 		},
@@ -15701,11 +17299,11 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "52bb00cb7da201bd09a030f13a47a60536836c8fe76d82f743dd5a9042907cd4",
+	"fingerprint": "06ec1f7e4c284fc3e7d49dfe8c4fc5c8ed51913363909fe6b7cf34266010f04a",
 	"format": 3,
 	"levels": [
 		{
-			"fingerprint": "9ddc345cfc5f2207fa27d7dcee3c78b08dd7c48c4dfb9c29005d140cb2d3600e",
+			"fingerprint": "38e6e228f5b950283d0e0d73405bb7f96375127b9e6e1b34fb9f8f84e8d51d81",
 			"laws": [
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_root_56frawwv2n"},
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_s3xk3phh7y"},
@@ -15998,6 +17596,7 @@
 				{"described":{"fields":["learner"],"kind":"primaryKey","relation":"Concluded"},"law":"__concluded_pk_learner_2t5fhoqsf2"},
 				{"described":{"fields":["relation","run"],"kind":"primaryKey","relation":"Copied"},"law":"__copied_pk_relation_run_r2fqzejpu3"},
 				{"described":{"fields":["feed","position"],"kind":"primaryKey","relation":"Cursor"},"law":"__cursor_pk_feed_position_hylioo6cog"},
+				{"described":{"fields":["attempt"],"kind":"primaryKey","relation":"Delivered"},"law":"__delivered_pk_attempt_eyv55f77gq"},
 				{"described":{"contract":"DenExclusive","kind":"contract"},"law":"__den_exclusive_ygfujahibf"},
 				{"described":{"contract":"DenInstant","kind":"contract"},"law":"__den_instant_st6jpyax5b"},
 				{"described":{"contract":"DenScope","kind":"contract"},"law":"__den_scope_g3mjgc2ytk"},
@@ -16410,13 +18009,85 @@
 				{"described":{"from":{"relation":"SyncSyncRunInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_sync_run_input_in_sync_root_tscj2524o4"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"SyncSyncRunInput"},"law":"__sync_sync_run_input_pk_scope_root_akh2vi52lk"},
 				{"described":{"fields":["batch"],"kind":"primaryKey","relation":"Tally"},"law":"__tally_pk_batch_ae65tx2wol"},
-				{"described":{"fields":["feed","factor"],"kind":"primaryKey","relation":"Weight"},"law":"__weight_pk_feed_factor_ecfc3qemnh"}
+				{"described":{"fields":["feed","factor"],"kind":"primaryKey","relation":"Weight"},"law":"__weight_pk_feed_factor_ecfc3qemnh"},
+				{"described":{"from":{"relation":"WritebackAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_admitted_in_writeback_root_5iucxnbatt"},
+				{"described":{"from":{"relation":"WritebackAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_admitted_in_writeback_scope_thlhjfyqbv"},
+				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"WritebackAdmitted"},"law":"__writeback_admitted_pk_scope_root_ygnhf3rmqx"},
+				{"described":{"from":{"relation":"WritebackClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_claim_attempt_in_writeback_ended_bnuinmx5wb"},
+				{"described":{"from":{"relation":"WritebackClaim","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_claim_in_writeback_root_3i4hfdbkvb"},
+				{"described":{"from":{"relation":"WritebackClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_claim_in_writeback_step_xkt6yd3otk"},
+				{"described":{"fields":["step","root","attempt"],"kind":"primaryKey","relation":"WritebackClaim"},"law":"__writeback_claim_pk_step_root_attempt_dbbcu6px25"},
+				{"described":{"from":{"relation":"WritebackDeliverInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_deliver_input_in_writeback_root_wfm5w6uqez"},
+				{"described":{"from":{"relation":"WritebackDeliverInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackStep","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Deliver"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_deliver_input_in_writeback_step_xs45sndxz5"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"WritebackDeliverInput"},"law":"__writeback_deliver_input_pk_step_root_zsscbfy2su"},
+				{"described":{"from":{"relation":"WritebackDeliverOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackDeliverInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_deliver_output_in_writeback_deliver_jkzzbjudx3"},
+				{"described":{"from":{"relation":"WritebackDeliverOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_deliver_output_in_writeback_done_azzmj76z5y"},
+				{"described":{"from":{"relation":"WritebackDeliverOutput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_deliver_output_in_writeback_root_cjvz6zkl32"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"WritebackDeliverOutput"},"law":"__writeback_deliver_output_pk_step_root_2bvrz6a46x"},
+				{"described":{"from":{"relation":"WritebackDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"done"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_done_in_writeback_result_no6famlmjr"},
+				{"described":{"from":{"relation":"WritebackDone","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_done_in_writeback_root_gvf65i5skx"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"WritebackDone"},"law":"__writeback_done_pk_step_root_n6edoshtow"},
+				{"described":{"from":{"relation":"WritebackEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_ended_in_writeback_claim_rzjszkgzy2"},
+				{"described":{"from":{"relation":"WritebackEnded","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_ended_in_writeback_root_pa5f5qc73g"},
+				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"WritebackEnded"},"law":"__writeback_ended_pk_step_attempt_root_tual3akcqy"},
+				{"described":{"from":{"relation":"WritebackExhausted","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_exhausted_in_writeback_failed_6awbjjd5iv"},
+				{"described":{"from":{"relation":"WritebackExhausted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_exhausted_in_writeback_root_k3nw5z7bka"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"WritebackExhausted"},"law":"__writeback_exhausted_pk_step_root_lrup6vnrxs"},
+				{"described":{"from":{"relation":"WritebackFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"failed"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_failed_in_writeback_result_6yvww5dmla"},
+				{"described":{"from":{"relation":"WritebackFailed","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_failed_in_writeback_root_5jtwep7br2"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"WritebackFailed"},"law":"__writeback_failed_pk_step_root_5zjot2ifqc"},
+				{"described":{"from":{"relation":"WritebackFenced","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_fenced_in_writeback_ended_5azdupvjb4"},
+				{"described":{"from":{"relation":"WritebackFenced","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_fenced_in_writeback_root_2qyji6ukpr"},
+				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"WritebackFenced"},"law":"__writeback_fenced_pk_step_attempt_root_dms3zdzdfe"},
+				{"described":{"from":{"relation":"WritebackFinish","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_finish_in_writeback_admitted_ctyuopniji"},
+				{"described":{"from":{"relation":"WritebackFinish","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_finish_in_writeback_root_vlf5dvpcja"},
+				{"described":{"from":{"relation":"WritebackFinish","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_finish_in_writeback_step_ndyhhqqdut"},
+				{"described":{"kind":"key","side":{"relation":"WritebackFinish","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_finish_key_step_root_ft22i37dsa"},
+				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"WritebackFinish"},"law":"__writeback_finish_pk_scope_root_be4hhtwm6k"},
+				{"described":{"from":{"relation":"WritebackHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_held_in_writeback_claim_h2xuf23j73"},
+				{"described":{"from":{"relation":"WritebackHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_held_in_writeback_result_czwyq64gtz"},
+				{"described":{"from":{"relation":"WritebackHeld","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_held_in_writeback_root_nwewjficp5"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"WritebackHeld"},"law":"__writeback_held_pk_step_root_afdyh73ocf"},
+				{"described":{"from":{"relation":"WritebackPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"WritebackResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__writeback_paused_in_writeback_resumed_5jhfufbrlw"},
+				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"WritebackPaused"},"law":"__writeback_paused_pk_target_turn_a45syyuiwl"},
+				{"described":{"from":{"relation":"WritebackRefusal","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_refusal_in_writeback_failed_kti2bkyv5a"},
+				{"described":{"from":{"relation":"WritebackRefusal","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_refusal_in_writeback_root_chdtgqzxc3"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"WritebackRefusal"},"law":"__writeback_refusal_pk_step_root_cs2wpwpjni"},
+				{"described":{"from":{"relation":"WritebackResult","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_result_in_writeback_root_xrngdv3wzj"},
+				{"described":{"from":{"relation":"WritebackResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_result_in_writeback_step_bqzwtw7m6l"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"WritebackResult"},"law":"__writeback_result_pk_step_root_vaosh47ias"},
+				{"described":{"from":{"relation":"WritebackResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__writeback_resumed_in_writeback_paused_fsee2bh4x4"},
+				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"WritebackResumed"},"law":"__writeback_resumed_pk_target_turn_nupukta633"},
+				{"described":{"from":{"relation":"WritebackRetry","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_retry_in_writeback_ended_6ubqljtja2"},
+				{"described":{"from":{"relation":"WritebackRetry","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_retry_in_writeback_root_bq2nwhdzxk"},
+				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"WritebackRetry"},"law":"__writeback_retry_pk_step_attempt_root_bewfnrxait"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"WritebackRoot"},"law":"__writeback_root_pk_scope_rbtbk3ayql"},
+				{"described":{"from":{"relation":"WritebackScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_scope_in_writeback_root_3octzumems"},
+				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"WritebackScope"},"law":"__writeback_scope_pk_scope_root_dwfpvdxt6u"},
+				{"described":{"from":{"relation":"WritebackSkipped","selection":{"conjuncts":[]},"terms":[{"field":"by","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_skipped_in_writeback_root_2yqmnfd3v3"},
+				{"described":{"from":{"relation":"WritebackSkipped","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_skipped_in_writeback_root_oupvmpw3xi"},
+				{"described":{"from":{"relation":"WritebackSkipped","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_skipped_in_writeback_root_qqqrlxd5hz"},
+				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"WritebackSkipped"},"law":"__writeback_skipped_pk_scope_root_iptw7uzdb4"},
+				{"described":{"from":{"relation":"WritebackStartStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_start_step_in_writeback_admitted_nwne265vch"},
+				{"described":{"from":{"relation":"WritebackStartStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_start_step_in_writeback_root_s2hn2v32gc"},
+				{"described":{"from":{"relation":"WritebackStartStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_start_step_in_writeback_step_gbq2nmtiqs"},
+				{"described":{"kind":"key","side":{"relation":"WritebackStartStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_start_step_key_step_root_xe4n2gsmzj"},
+				{"described":{"fields":["scope","ordinal","root"],"kind":"primaryKey","relation":"WritebackStartStep"},"law":"__writeback_start_step_pk_scope_ordinal_root_rak3tjyypm"},
+				{"described":{"from":{"relation":"WritebackStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_step_in_writeback_admitted_ozgfqbmyx2"},
+				{"described":{"from":{"relation":"WritebackStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_step_in_writeback_root_dy4mgdlbtw"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"WritebackStep"},"law":"__writeback_step_pk_step_root_bgqnymtsy5"},
+				{"described":{"from":{"relation":"WritebackWritebackFinishOutput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_writeback_finish_output_in_writeback_7mc3rmhr37"},
+				{"described":{"from":{"relation":"WritebackWritebackFinishOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__writeback_writeback_finish_output_in_writeback_zwgdc7ecdq"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"WritebackWritebackFinishOutput"},"law":"__writeback_writeback_finish_output_pk_step_root_pvsr4drdqj"},
+				{"described":{"from":{"relation":"WritebackWritebackInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_writeback_input_in_writeback_root_ml3hzywvxv"},
+				{"described":{"from":{"relation":"WritebackWritebackInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"WritebackRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Writeback"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__writeback_writeback_input_in_writeback_root_osi337bpj4"},
+				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"WritebackWritebackInput"},"law":"__writeback_writeback_input_pk_scope_root_g645w2vxia"}
 			],
 			"name": "Slice",
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "a3a38ab19655c9a5a6b2d37004009459d70d0514dba41187406cee005dfb8e7f",
+			"fingerprint": "9f12f67516deb3571d59cf23801a770085a7b37fa5d0fc536f786b90386974bd",
 			"laws": [
 				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"},
 				{"described":{"kind":"key","side":{"relation":"FanLive","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"}]}},"law":"__fan_live_key_resource_seat_wqkc2jfkpw"},
@@ -16803,6 +18474,10 @@
 			},
 			{
 				"relation": "Cursor",
+				"routes": []
+			},
+			{
+				"relation": "Delivered",
 				"routes": []
 			},
 			{
@@ -17346,6 +19021,91 @@
 				"routes": [
 					"feed"
 				]
+			},
+			{
+				"relation": "WritebackAdmitted",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "WritebackClaim",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "WritebackDeliverInput",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "WritebackFenced",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "WritebackFinish",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "WritebackHeld",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "WritebackPaused",
+				"routes": []
+			},
+			{
+				"relation": "WritebackResult",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "WritebackResumed",
+				"routes": []
+			},
+			{
+				"relation": "WritebackRetry",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "WritebackRoot",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "WritebackScope",
+				"routes": []
+			},
+			{
+				"relation": "WritebackSkipped",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "WritebackStep",
+				"routes": [
+					"scope",
+					"step"
+				]
+			},
+			{
+				"relation": "WritebackWritebackInput",
+				"routes": [
+					"scope"
+				]
 			}
 		],
 		"views": []
@@ -17836,6 +19596,52 @@
 			},
 			{
 				"handle": "SyncRun",
+				"kind": "live"
+			}
+		],
+		"WritebackKind": [
+			{
+				"handle": "Deliver",
+				"kind": "live"
+			},
+			{
+				"handle": "WritebackFinish",
+				"kind": "live"
+			}
+		],
+		"WritebackOutcome": [
+			{
+				"handle": "done",
+				"kind": "live"
+			},
+			{
+				"handle": "failed",
+				"kind": "live"
+			}
+		],
+		"WritebackPausable": [
+			{
+				"handle": "Writeback",
+				"kind": "live"
+			}
+		],
+		"WritebackRetryWhy": [
+			{
+				"handle": "later",
+				"kind": "live"
+			},
+			{
+				"handle": "spent",
+				"kind": "live"
+			},
+			{
+				"handle": "transient",
+				"kind": "live"
+			}
+		],
+		"WritebackRootKind": [
+			{
+				"handle": "Writeback",
 				"kind": "live"
 			}
 		]

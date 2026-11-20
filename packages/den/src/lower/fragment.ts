@@ -215,6 +215,15 @@ export type ReadIR = {
 	  }
 )
 
+/**
+ * A fact a step awaits, lowered: the app relation, and each field of its whole key with the step's input field that
+ * holds its value.
+ */
+export interface AwaitIR {
+	readonly relation: string
+	readonly key: ReadonlyArray<{ readonly field: string; readonly input: string }>
+}
+
 /** A step kind, lowered. */
 export interface StepIR {
 	readonly name: string
@@ -223,6 +232,7 @@ export interface StepIR {
 	readonly output: ValueIR
 	readonly error: Option.Option<ValueIR>
 	readonly reads: ReadonlyArray<ReadIR>
+	readonly awaits: ReadonlyArray<AwaitIR>
 	readonly writes: WritesIR
 	readonly edges: ReadonlyArray<EdgeIR>
 	readonly uses: ReadonlyArray<string>
@@ -327,6 +337,8 @@ export interface Lowered {
 	readonly read: ReadonlyArray<string>
 	/** The flows its scopes' preconditions read, each once. */
 	readonly idle: ReadonlyArray<string>
+	/** The app's relations its steps await a fact of, each once. */
+	readonly awaited: ReadonlyArray<string>
 }
 
 const all: Selection = { kind: "all" }
@@ -700,13 +712,17 @@ export const lower = (flow: AnyFlow): Lowered => {
 		into(side(Exhausted, ["step"]), failedSide)
 	)
 
-	/** A value's relations: its owner's row and a relation per optional field, each held to `owned`. */
+	/**
+	 * A value's relations: its owner's row and a relation per optional field, each held to `owned`; a column `keyed`
+	 * names is typed as the app's key field it holds (an awaited fact's), so the printed programs join it to that field.
+	 */
 	const valued = (
 		relationName: string,
 		owner: "step" | "scope",
 		schema: Stored | Shape,
 		declaration: string,
-		owned: ReadonlyArray<SideIR>
+		owned: ReadonlyArray<SideIR>,
+		keyed: ReadonlyMap<string, FieldType>
 	): ValueIR => {
 		const shape = "columns" in schema ? schema : shapeOf(declaration, schema)
 		const key = owner === "step" ? "step" : "scope"
@@ -727,7 +743,12 @@ export const lower = (flow: AnyFlow): Lowered => {
 			name: relationName,
 			fields: [
 				{ name: key, type: ownerKey(owner) },
-				...Arr.map(shape.columns, (c) => ({ name: c.name, type: fieldOf(relationName, c) })),
+				...Arr.map(shape.columns, (c) => ({
+					name: c.name,
+					type: Option.getOrElse(Option.fromNullishOr(keyed.get(c.name)), () =>
+						fieldOf(relationName, c)
+					)
+				})),
 				...Arr.map(shape.unions, (u) => ({
 					name: u.name,
 					type: fieldOf(relationName, {
@@ -821,13 +842,43 @@ export const lower = (flow: AnyFlow): Lowered => {
 			}
 		)
 
+	/**
+	 * The input columns a step's awaited facts are keyed by, each typed as the key field it holds, refused where one
+	 * column would hold the keys of two fields.
+	 */
+	const keyedBy = (s: AnyStepKind): ReadonlyMap<string, FieldType> => {
+		const keyed = new Map<string, FieldType>()
+		Arr.forEach(s.awaits, (awaited) =>
+			Arr.forEach(Record.toEntries(awaited.key), ([field, input]) => {
+				const type: FieldType = { kind: "app", relation: awaited.relation.name, field }
+				const held = keyed.get(input)
+				if (
+					held !== undefined &&
+					!(held.kind === "app" && held.relation === type.relation && held.field === field)
+				) {
+					throw new Refused({
+						declaration: `step ${s.name}`,
+						why: `its input field ${input} would hold the keys of two awaited fields`
+					})
+				}
+				keyed.set(input, type)
+			})
+		)
+		return keyed
+	}
+	const unkeyed: ReadonlyMap<string, FieldType> = new Map()
 	const inputs = new Map<string, ValueIR>()
 	Arr.forEach(steps, (s) =>
 		inputs.set(
 			s.name,
-			valued(name(`${s.name}Input`), "step", s.input, `step ${s.name}`, [
-				sideOf(Step, ["step"], ofKind(s.name))
-			])
+			valued(
+				name(`${s.name}Input`),
+				"step",
+				s.input,
+				`step ${s.name}`,
+				[sideOf(Step, ["step"], ofKind(s.name))],
+				keyedBy(s)
+			)
 		)
 	)
 	Arr.forEach(joins, (j) =>
@@ -838,7 +889,8 @@ export const lower = (flow: AnyFlow): Lowered => {
 				"scope",
 				j.input,
 				`${j._tag === "Root" ? "root" : "scope"} ${j.name}`,
-				[sideOf(j._tag === "Root" ? Root : name("Within"), ["scope"], ofKind(j.name))]
+				[sideOf(j._tag === "Root" ? Root : name("Within"), ["scope"], ofKind(j.name))],
+				unkeyed
 			)
 		)
 	)
@@ -856,10 +908,14 @@ export const lower = (flow: AnyFlow): Lowered => {
 	Arr.forEach(steps, (s) =>
 		outputs.set(
 			s.name,
-			valued(name(`${s.name}Output`), "step", s.output, `step ${s.name}`, [
-				side(inputOf(s.name).relation, ["step"]),
-				doneSide
-			])
+			valued(
+				name(`${s.name}Output`),
+				"step",
+				s.output,
+				`step ${s.name}`,
+				[side(inputOf(s.name).relation, ["step"]), doneSide],
+				unkeyed
+			)
 		)
 	)
 	Arr.forEach(joins, (j) =>
@@ -870,7 +926,8 @@ export const lower = (flow: AnyFlow): Lowered => {
 				"step",
 				j.finish.output,
 				`${j._tag === "Root" ? "root" : "scope"} ${j.name}`,
-				[doneSide]
+				[doneSide],
+				unkeyed
 			)
 		)
 	)
@@ -973,15 +1030,54 @@ export const lower = (flow: AnyFlow): Lowered => {
 			}
 		})
 
+	/**
+	 * The facts a step awaits: each refused unless its key fields are its relation's whole key and each names a column
+	 * of the step's input.
+	 */
+	const awaitsOf = (s: AnyStepKind, input: ValueIR): ReadonlyArray<AwaitIR> =>
+		Arr.map(s.awaits, (awaited): AwaitIR => {
+			const declaration = `step ${s.name}, its awaited ${awaited.relation.name}`
+			const key = awaited.relation.primaryKey
+			const named = Record.keys(awaited.key)
+			if (
+				!Arr.isReadonlyArrayNonEmpty(key) ||
+				named.length !== key.length ||
+				!Arr.every(key, (field) => Arr.contains(named, field))
+			) {
+				throw new Refused({
+					declaration,
+					why: `it names ${Arr.join(named, ", ")}, where a fact is named by its whole key`
+				})
+			}
+			const columns = Arr.map(input.shape.columns, (c) => c.name)
+			return {
+				relation: awaited.relation.name,
+				key: Arr.map(key, (field) => {
+					const from = awaited.key[field]
+					if (from === undefined || !Arr.contains(columns, from)) {
+						throw new Refused({
+							declaration,
+							why: `its key field ${field} is held by ${String(from)}, no column of the step's input`
+						})
+					}
+					return { field, input: from }
+				})
+			}
+		})
+
 	const stepsIR: ReadonlyArray<StepIR> = Arr.map(steps, (s) => {
 		const declaration = `step ${s.name}`
 		const input = inputOf(s.name)
 		const output = outputOf(s.name)
 		const error = Option.map(errorShapeOf(declaration, s.error), (shape) =>
-			valued(name(`${s.name}Error`), "step", shape, declaration, [
-				side(input.relation, ["step"]),
-				failedSide
-			])
+			valued(
+				name(`${s.name}Error`),
+				"step",
+				shape,
+				declaration,
+				[side(input.relation, ["step"]), failedSide],
+				unkeyed
+			)
 		)
 		return {
 			name: s.name,
@@ -990,6 +1086,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 			output,
 			error,
 			reads: readsOf(s),
+			awaits: awaitsOf(s, input),
 			writes: writesOf(s.writes),
 			edges: Arr.filter(edgesIR, (e) => e.from === s.name),
 			uses: Arr.map(s.uses, (r) => r.name),
@@ -1002,7 +1099,14 @@ export const lower = (flow: AnyFlow): Lowered => {
 		const declaration = `${j._tag === "Root" ? "root" : "scope"} ${j.name}`
 		const finish = finishName(j)
 		const error = Option.map(errorShapeOf(declaration, j.finish.error), (shape) =>
-			valued(name(`${finish}Error`), "step", shape, declaration, [side(Step, ["step"]), failedSide])
+			valued(
+				name(`${finish}Error`),
+				"step",
+				shape,
+				declaration,
+				[side(Step, ["step"]), failedSide],
+				unkeyed
+			)
 		)
 		return {
 			name: j.name,
@@ -1242,6 +1346,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		read: Arr.dedupe(Arr.flatMap(stepsIR, (s) => Arr.map(s.reads, (r) => r.relation))),
 		idle: Arr.dedupe(
 			Arr.flatMap(joinsIR, (j) => Option.match(j.root, { onNone: () => [], onSome: (r) => r.idle }))
-		)
+		),
+		awaited: Arr.dedupe(Arr.flatMap(stepsIR, (s) => Arr.map(s.awaits, (a) => a.relation)))
 	}
 }

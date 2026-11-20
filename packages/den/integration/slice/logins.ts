@@ -64,6 +64,15 @@ import {
 	syncCoordinatorWorkload,
 	syncRetirerWorkload
 } from "#integration/slice/generated/sync.programs.ts"
+import {
+	WritebackCoordinator,
+	WritebackDen,
+	WritebackRetirer,
+	writebackCommits,
+	writebackCoordinatorWorkload,
+	writebackDenWorkload,
+	writebackRetirerWorkload
+} from "#integration/slice/generated/writeback.programs.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
 /** den's runtime login: each flow's den role, coordinator role and retiring role. */
@@ -89,6 +98,9 @@ export const Worker = login(
 		ReviewDen,
 		ReviewCoordinator,
 		ReviewRetirer,
+		WritebackDen,
+		WritebackCoordinator,
+		WritebackRetirer,
 		ClockDen,
 		ClockCoordinator,
 		ClockRetirer
@@ -113,6 +125,9 @@ export const Worker = login(
 			reviewDenWorkload,
 			reviewCoordinatorWorkload,
 			reviewRetirerWorkload,
+			writebackDenWorkload,
+			writebackCoordinatorWorkload,
+			writebackRetirerWorkload,
 			clockDenWorkload,
 			clockCoordinatorWorkload,
 			clockRetirerWorkload
@@ -129,6 +144,7 @@ export const AppLogin = login(App, "app", [Loader, Auditor], {
 		retryCommits,
 		assignCommits,
 		reviewCommits,
+		writebackCommits,
 		clockCommits,
 		appWorkload,
 		auditWorkload

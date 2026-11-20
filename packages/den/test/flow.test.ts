@@ -113,6 +113,7 @@ const declare = (fault: Fault) => {
 		output: Empty,
 		error: Schema.Never,
 		reads: {},
+		awaits: [],
 		uses,
 		retry: ladder,
 		waits: fault === "negative waits" ? -1 : 0,

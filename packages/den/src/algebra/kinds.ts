@@ -378,6 +378,33 @@ export const readNamed = (declaration: string, name: string): void => {
 	}
 }
 
+/**
+ * A fact a step awaits: the row of one of the app's relations whose whole key the step's input names, each key field
+ * by the input field that holds its value. A step is joined on its own input and every fact it awaits: it is eligible
+ * only once each awaited row exists, so a step spawned before its fact waits, spending nothing, and is rung by
+ * whichever commit completes the pair, its spawn's where the fact came first and the fact's where the step did (a
+ * step's commit in any flow the app runs that writes the awaited relation), the census healing a ring that is lost
+ * (AlphaTest's gap analysis after the gradebook's delivery). A fact is awaited, not read: a step that needs its fields
+ * declares a read of it too.
+ */
+export interface AwaitedFact {
+	readonly relation: AnyRelation
+	readonly key: { readonly [field: string]: string }
+}
+
+/** The fields of `R`'s whole key. */
+export type KeyFieldOf<R extends AnyRelation> = R["primaryKey"][number] & keyof Fact<R> & string
+
+/**
+ * The fact a step awaits: the row of `relation` whose every key field holds what the input field `key` names for it
+ * holds. Lowering refuses an input field that is no column of the step's input, and types each such column as the key
+ * field it holds, so the printed programs join the step's input to the relation.
+ */
+export const awaitFact = <R extends AnyRelation>(
+	relation: R,
+	key: { readonly [K in KeyFieldOf<R>]: string }
+): AwaitedFact => ({ relation, key })
+
 /** When a step is first due: as soon as it is spawned, or a delay after (W5's timer, W6's delay). */
 export type Due = { readonly kind: "spawned" } | { readonly kind: "after"; readonly millis: number }
 
@@ -429,6 +456,8 @@ export interface StepShape<
 	readonly output: OS
 	readonly error: ES
 	readonly reads: D
+	/** The facts it awaits beside its input: it is eligible once each exists. */
+	readonly awaits: ReadonlyArray<AwaitedFact>
 	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
 	/**
@@ -469,6 +498,7 @@ export interface AnyStepKind {
 	readonly output: Stored
 	readonly error: ErrorSchema
 	readonly reads: Reads
+	readonly awaits: ReadonlyArray<AwaitedFact>
 	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
 	readonly waits: number

@@ -165,4 +165,19 @@
   - Rejected: a deadline measured from the step's first due, which a delay the source names can overshoot in one wait
     and which no source publishes; an unbounded form beside the count, which would keep the case it exists to end; a
     sleep or a counter inside the body, which would give a body a memory of its earlier attempts.
+- **A step is joined on its input and the facts it awaits (settled by AlphaTest's need, 2026-11-20).** AlphaTest's gap
+  analysis must not run before the gradebook holds its attempt's result, which another root's step delivers, and its
+  dispatch reads what the front-run did (the cutover's review, findings 2 and 13); a declared read that retried while
+  the fact was missing spent attempts and polled. So a step kind declares `awaits`, facts of the app's relations each
+  named by its whole key, every key field held by an input field (`awaitFact(Delivered, { attempt: "review" })`), and is
+  eligible only once every awaited row exists: the scheduler's snapshot lists the steps waiting on a fact, a turn of one
+  waits (`awaiting`) with no claim and nothing spent, and the commit that writes an awaited relation, in any flow the
+  app runs, rings the steps its rows made ready, as a spawn rings a step whose fact came first, so whichever commit
+  completes the pair rings it; the census heals a ring that is lost, and no ring can be lost to both commits, since
+  each reads after its own commit. An input field that holds an awaited key is typed as that key field, so the printed
+  programs join the input to the fact.
+  - Rejected: a feed edge with several parents among den's own nodes, which needs a correlation of parents den has no
+    key for, where a node's write of an app fact is that key; a read that must find its row, which would join the
+    step's eligibility to whatever a read can state; a cross-flow request from a commit, which would make the
+    writeback own the gap analysis's start.
 

@@ -163,6 +163,10 @@ export interface StepRunner<R> {
 	readonly retry: Ladder
 	/** How many times it may wait on its source before its next `Later` ends it failed. */
 	readonly waits: number
+	/** The app's relations it awaits a fact of: none for a kind that awaits nothing, and for a finish. */
+	readonly awaits: ReadonlyArray<string>
+	/** The app's relations its commit inserts into or puts into, whose rows may complete a step's awaited facts. */
+	readonly writes: ReadonlyArray<string>
 	/** The scope it finishes, for a finish; none for a step kind. */
 	readonly finishes: Option.Option<string>
 	/**
@@ -293,6 +297,8 @@ export interface Snapshot<R> {
 	readonly exclusives: ReadonlyArray<ExclusiveRow>
 	readonly paused: ReadonlyArray<string>
 	readonly busy: ReadonlyArray<string>
+	/** The pending steps that wait on a fact they await, some awaited row missing. */
+	readonly awaiting: ReadonlyArray<StepKey>
 }
 
 /**
@@ -346,6 +352,15 @@ export interface Ledger<R> {
 	readonly finished: (scope: ScopeKey) => Effect.Effect<boolean, Settled>
 	/** The flows this flow's preconditions name that hold a pending step, in one statement. */
 	readonly busy: Effect.Effect<ReadonlyArray<string>, Settled>
+	/** The app's relations the flow's step kinds await a fact of: a commit that writes one asks `ready`. */
+	readonly awaits: ReadonlyArray<string>
+	/** Whether a step waits on a fact it awaits: some awaited row does not exist. */
+	readonly awaiting: (step: StepKey) => Effect.Effect<boolean, Settled>
+	/**
+	 * The steps a fact's arrival made ready, in one statement: the steps of kinds that await, with no result and no claim,
+	 * whose every awaited row exists.
+	 */
+	readonly ready: Effect.Effect<ReadonlyArray<StepKey>, Settled>
 	/**
 	 * Claims a step's next attempt with the seats it takes, one write: the attempt the database stamped, read back from
 	 * the write. The ends of the lapsed attempts of its step and of its seats' holders are recorded in it, so a seat a

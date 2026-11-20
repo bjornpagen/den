@@ -1,7 +1,7 @@
 import type { Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Cause, Duration, Effect, Exit, Option } from "effect"
 import type { Digest } from "effect/crypto"
-import type { Ladder, Resource } from "#algebra/kinds.ts"
+import type { Ladder, Resource, WritesDeclaration } from "#algebra/kinds.ts"
 import { censusPeriodSeconds } from "#algebra/kinds.ts"
 import { Later } from "#algebra/later.ts"
 import { census } from "#runtime/census.ts"
@@ -192,6 +192,7 @@ export type Wait =
 	| "unready"
 	| "transient"
 	| "later"
+	| "awaiting"
 	| "unread"
 
 /**
@@ -368,6 +369,10 @@ export interface Runnable<I, Rows, O, E, W, R> {
 	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
 	readonly waits: number
+	/** The facts it awaits beside its input, none for a finish. */
+	readonly awaits: ReadonlyArray<{ readonly relation: { readonly name: string } }>
+	/** The app's relations its commit writes. */
+	readonly writes: WritesDeclaration
 	readonly body: (
 		input: I,
 		rows: Rows
@@ -391,6 +396,8 @@ export const runnerOf = <I, Rows, O, E, W, R>(
 	uses: runnable.uses,
 	retry: runnable.retry,
 	waits: runnable.waits,
+	awaits: Arr.map(runnable.awaits, (awaited) => awaited.relation.name),
+	writes: Arr.map([...runnable.writes.insert, ...runnable.writes.put], (relation) => relation.name),
 	finishes,
 	run: Effect.fn(`den.turn.${runnable.name}`)(function* (
 		turn: Turn,
@@ -799,6 +806,7 @@ const claimSeated = <R>(
  * seats back, and rings on what its end made eligible.
  */
 const serveStep = <R>(
+	ledgers: Ledgers<R>,
 	ledger: Ledger<R>,
 	wake: Extract<Wake, { readonly _tag: "Step" }>,
 	ends: Instant
@@ -850,6 +858,12 @@ const serveStep = <R>(
 				return served({ kind: "waiting", wake, why: "unready", until: Option.none() })
 			}
 		}
+		if (Arr.isReadonlyArrayNonEmpty(runner.awaits)) {
+			const unmet = yield* readOr(ledger.awaiting(step), wake)
+			if (unmet) {
+				return served({ kind: "waiting", wake, why: "awaiting", until: Option.none() })
+			}
+		}
 		const used: Used = {
 			attempts: spentBefore(claims, retries, fenced, next),
 			waits: waitedOn(retries)
@@ -889,8 +903,33 @@ const serveStep = <R>(
 		}
 		const ran = yield* runner.run(turn, at, ledger.now)
 		const ending = yield* endingOf(ledger, runner, turn, ran, used, wake)
-		return { ending, onward: yield* settledOn(ledger, runner, scope, ending, claimed.seats) }
+		const onward = yield* settledOn(ledger, runner, scope, ending, claimed.seats)
+		const readied = ending.kind === "done" ? yield* readiedBy(ledgers, runner.writes) : []
+		return { ending, onward: [...onward, ...readied] }
 	})
+
+/**
+ * The steps a commit that wrote `wrote` made ready, in every flow the app runs whose step kinds await a fact of one of
+ * those relations: the commit completed the pair of a step spawned before its fact, so it rings that step, as a spawn
+ * rings a step whose fact came first. A read that fails rings nothing: the census heals it.
+ */
+const readiedBy = <R>(
+	ledgers: Ledgers<R>,
+	wrote: ReadonlyArray<string>
+): Effect.Effect<ReadonlyArray<Onward>> =>
+	Effect.map(
+		Effect.forEach(
+			Arr.filter(ledgers, (l) => Arr.some(l.awaits, (relation) => Arr.contains(wrote, relation))),
+			(l) =>
+				Effect.map(l.ready, (steps) =>
+					Arr.map(steps, (step): Onward => ({
+						wake: stepWake(l.flow, step, 0n),
+						delay: Duration.zero
+					}))
+				).pipe(Effect.orElseSucceed((): ReadonlyArray<Onward> => []))
+		),
+		Arr.flatten
+	)
 
 /**
  * The waiters a claimed attempt's end rings, once it gave back `freed`: the steps eligibility finds due at a fresh
@@ -1080,9 +1119,10 @@ export const serve = <R>(
 			return Option.match(ledgerOf(ledgers, wake.flow), {
 				onNone: () => Effect.succeed(served({ kind: "lost", wake })),
 				onSome: (ledger) =>
-					(wake._tag === "Step" ? serveStep(ledger, wake, ends) : serveAdmit(ledger, wake)).pipe(
-						Effect.catch((ending: Ending) => Effect.succeed(served(ending)))
-					)
+					(wake._tag === "Step"
+						? serveStep(ledgers, ledger, wake, ends)
+						: serveAdmit(ledger, wake)
+					).pipe(Effect.catch((ending: Ending) => Effect.succeed(served(ending))))
 			})
 	}
 }

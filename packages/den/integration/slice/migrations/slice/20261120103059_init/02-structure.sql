@@ -676,6 +676,11 @@ CREATE TABLE "slice"."cursor" (
   CONSTRAINT "__cursor_pk_wl2ngqny4j" PRIMARY KEY ("feed", "position")
 );
 
+CREATE TABLE "slice"."delivered" (
+  "attempt" "slice"."__text_t4rwovzmqj" NOT NULL,
+  CONSTRAINT "__delivered_pk_xzukubt47t" PRIMARY KEY ("attempt")
+);
+
 CREATE TABLE "slice"."fan_admitted" (
   "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
@@ -1197,7 +1202,7 @@ CREATE TABLE "slice"."review_finish" (
 
 CREATE TABLE "slice"."review_gather_input" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "review" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "review" "slice"."__text_t4rwovzmqj" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__review_gather_input_pk_rllaxtocmq" PRIMARY KEY ("step", "root")
 );
@@ -1653,6 +1658,169 @@ CREATE TABLE "slice"."weight" (
   CONSTRAINT "__weight_pk_p77rl634io" PRIMARY KEY ("feed", "factor")
 );
 
+CREATE TABLE "slice"."writeback_admitted" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_admitted_pk_eplj3gsbzy" PRIMARY KEY ("scope", "root")
+);
+
+CREATE TABLE "slice"."writeback_claim" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
+  "until" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_claim_pk_j7bglnjq7b" PRIMARY KEY ("step", "root", "attempt")
+);
+
+CREATE TABLE "slice"."writeback_deliver_input" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "attempt" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_deliver_input_pk_i7vk7dq3eb" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."writeback_deliver_output" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "attempt" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_deliver_output_pk_jkhggp3cer" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."writeback_done" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_done_pk_x32l3wxb3c" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."writeback_ended" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_ended_pk_atnezxtfz6" PRIMARY KEY ("step", "attempt", "root")
+);
+
+CREATE TABLE "slice"."writeback_exhausted" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_exhausted_pk_sqddw6eedo" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."writeback_failed" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_failed_pk_g4uud6r5kb" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."writeback_fenced" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_fenced_pk_exblcoemag" PRIMARY KEY ("step", "attempt", "root")
+);
+
+CREATE TABLE "slice"."writeback_finish" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_finish_pk_htcvidwpy6" PRIMARY KEY ("scope", "root"),
+  CONSTRAINT "__writeback_finish_key_step_root_cz7xuvvbbm" UNIQUE NULLS DISTINCT ("step", "root")
+);
+
+CREATE TABLE "slice"."writeback_held" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_held_pk_5tktjcet5w" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."writeback_paused" (
+  "target" "slice"."writeback_pausable" NOT NULL,
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__writeback_paused_pk_ncs2aff76t" PRIMARY KEY ("target", "turn")
+);
+
+CREATE TABLE "slice"."writeback_refusal" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_refusal_pk_lqictdn67w" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."writeback_result" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "outcome" "slice"."writeback_outcome" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_result_pk_lygppaax77" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."writeback_resumed" (
+  "target" "slice"."writeback_pausable" NOT NULL,
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__writeback_resumed_pk_qrrua45xou" PRIMARY KEY ("target", "turn")
+);
+
+CREATE TABLE "slice"."writeback_retry" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
+  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "why" "slice"."writeback_retry_why" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_retry_pk_j2ien3obty" PRIMARY KEY ("step", "attempt", "root")
+);
+
+CREATE TABLE "slice"."writeback_root" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "kind" "slice"."writeback_root_kind" NOT NULL,
+  "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "retired" boolean DEFAULT false NOT NULL,
+  CONSTRAINT "__writeback_root_pk_a5puwyrem6" PRIMARY KEY ("scope")
+);
+
+CREATE TABLE "slice"."writeback_scope" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_scope_pk_aywjorzcsy" PRIMARY KEY ("scope", "root")
+);
+
+CREATE TABLE "slice"."writeback_skipped" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "by" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_skipped_pk_3pijvusl26" PRIMARY KEY ("scope", "root")
+);
+
+CREATE TABLE "slice"."writeback_start_step" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_start_step_pk_sp7hkcjz7m" PRIMARY KEY ("scope", "ordinal", "root"),
+  CONSTRAINT "__writeback_start_step_key_step_root_dqjb67a3dj" UNIQUE NULLS DISTINCT ("step", "root")
+);
+
+CREATE TABLE "slice"."writeback_step" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "kind" "slice"."writeback_kind" NOT NULL,
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_step_pk_xsrl5j4mlf" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."writeback_writeback_finish_output" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_writeback_finish_output_pk_payvcqalt7" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."writeback_writeback_input" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "attempt" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__writeback_writeback_input_pk_ejs235aju2" PRIMARY KEY ("scope", "root")
+);
+
 CREATE TABLE "slice"."__live_secret" ("secret") AS SELECT "pg_catalog"."sha256"("pg_catalog"."uuid_send"("pg_catalog"."gen_random_uuid"()) || "pg_catalog"."uuid_send"("pg_catalog"."gen_random_uuid"()));
 
 REVOKE ALL ON TABLE "slice"."__live_secret" FROM PUBLIC;
@@ -1676,6 +1844,8 @@ ALTER TABLE "slice"."review_step" REPLICA IDENTITY FULL;
 ALTER TABLE "slice"."review_within" REPLICA IDENTITY FULL;
 
 ALTER TABLE "slice"."sync_step" REPLICA IDENTITY FULL;
+
+ALTER TABLE "slice"."writeback_step" REPLICA IDENTITY FULL;
 
 ALTER TABLE "slice"."assign_assignment_input_exclude"
   ADD COLUMN "__root_yjobx7uyrd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "root" END) STORED,
@@ -1795,6 +1965,17 @@ ALTER TABLE "slice"."sync_root"
   ADD COLUMN "__scope_jdl7uajdrr" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
   ADD CONSTRAINT "__sync_root_key_scope_lxj4sb3mcx" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr");
 
+ALTER TABLE "slice"."writeback_claim"
+  ADD COLUMN "__root_yewsvvtcyz" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "root" END) STORED,
+  ADD COLUMN "__step_ouvkclqzzd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
+  ADD COLUMN "__pred_attempt_dqbvoe7dfs" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint AND "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED;
+
+ALTER TABLE "slice"."writeback_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
+
+ALTER TABLE "slice"."writeback_root"
+  ADD COLUMN "__scope_jdl7uajdrr" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
+  ADD CONSTRAINT "__writeback_root_key_scope_epb6awnxkj" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr");
+
 CREATE OR REPLACE FUNCTION "slice"."__hold_assign_root_rwboli77cc"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -1871,6 +2052,17 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__hold_sync_root_6ita6q5wxi"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__hold_writeback_root_msmvpm3j7g"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM "slice"."writeback_root" AS "r1" JOIN (SELECT DISTINCT "r3"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r3"("c1")) AS "r2"("c1") ON "r1"."scope" = "r2"."c1" WHERE NOT "r1"."retired" ORDER BY "r1"."scope" FOR KEY SHARE OF "r1";
+  PERFORM "slice"."__refuse"('23000'::"pg_catalog"."text", '__writeback_admitted_in_writeback_root_5iucxnbatt'::"pg_catalog"."text", 'k["WritebackAdmitted",["root"],['::"pg_catalog"."text" || "pg_catalog"."to_jsonb"("r1"."c1"::"pg_catalog"."text")::"pg_catalog"."text" || ']]'::"pg_catalog"."text") FROM (SELECT DISTINCT "r2"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r2"("c1")) AS "r1"("c1") WHERE NOT EXISTS (SELECT 1 FROM "slice"."writeback_root" AS "r3" WHERE "r3"."scope" = "r1"."c1" AND NOT "r3"."retired") ORDER BY "r1"."c1" LIMIT 1::bigint;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__hold_writeback_root_msmvpm3j7g"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__retire_assign_root_hwbj4sewrx"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS SETOF bigint[]
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -3163,6 +3355,151 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__retire_sync_root_ygktrpeohu"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__retire_writeback_root_oprw3k6une"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS SETOF bigint[]
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM "slice"."writeback_root" AS "r1" JOIN (SELECT DISTINCT "r3"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r3"("c1")) AS "r2"("c1") ON "r1"."scope" = "r2"."c1" WHERE NOT "r1"."retired" ORDER BY "r1"."scope" FOR UPDATE OF "r1";
+  RETURN QUERY
+  WITH "r1"("c1") AS MATERIALIZED (
+    SELECT "r2"."scope" AS "c1" FROM "slice"."writeback_root" AS "r2" JOIN (SELECT DISTINCT "r4"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r4"("c1")) AS "r3"("c1") ON "r2"."scope" = "r3"."c1" WHERE NOT "r2"."retired"
+  ),
+  "r5" AS (
+    DELETE FROM "slice"."writeback_admitted" AS "r6"
+    USING "r1" AS "r7"
+    WHERE "r6"."root" = "r7"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r8" AS (
+    DELETE FROM "slice"."writeback_claim" AS "r9"
+    USING "r1" AS "r10"
+    WHERE "r9"."root" = "r10"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r11" AS (
+    DELETE FROM "slice"."writeback_deliver_input" AS "r12"
+    USING "r1" AS "r13"
+    WHERE "r12"."root" = "r13"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r14" AS (
+    DELETE FROM "slice"."writeback_deliver_output" AS "r15"
+    USING "r1" AS "r16"
+    WHERE "r15"."root" = "r16"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r17" AS (
+    DELETE FROM "slice"."writeback_done" AS "r18"
+    USING "r1" AS "r19"
+    WHERE "r18"."root" = "r19"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r20" AS (
+    DELETE FROM "slice"."writeback_ended" AS "r21"
+    USING "r1" AS "r22"
+    WHERE "r21"."root" = "r22"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r23" AS (
+    DELETE FROM "slice"."writeback_exhausted" AS "r24"
+    USING "r1" AS "r25"
+    WHERE "r24"."root" = "r25"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r26" AS (
+    DELETE FROM "slice"."writeback_failed" AS "r27"
+    USING "r1" AS "r28"
+    WHERE "r27"."root" = "r28"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r29" AS (
+    DELETE FROM "slice"."writeback_fenced" AS "r30"
+    USING "r1" AS "r31"
+    WHERE "r30"."root" = "r31"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r32" AS (
+    DELETE FROM "slice"."writeback_finish" AS "r33"
+    USING "r1" AS "r34"
+    WHERE "r33"."root" = "r34"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r35" AS (
+    DELETE FROM "slice"."writeback_held" AS "r36"
+    USING "r1" AS "r37"
+    WHERE "r36"."root" = "r37"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r38" AS (
+    DELETE FROM "slice"."writeback_refusal" AS "r39"
+    USING "r1" AS "r40"
+    WHERE "r39"."root" = "r40"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r41" AS (
+    DELETE FROM "slice"."writeback_result" AS "r42"
+    USING "r1" AS "r43"
+    WHERE "r42"."root" = "r43"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r44" AS (
+    DELETE FROM "slice"."writeback_retry" AS "r45"
+    USING "r1" AS "r46"
+    WHERE "r45"."root" = "r46"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r47" AS (
+    DELETE FROM "slice"."writeback_scope" AS "r48"
+    USING "r1" AS "r49"
+    WHERE "r48"."root" = "r49"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r50" AS (
+    DELETE FROM "slice"."writeback_skipped" AS "r51"
+    USING "r1" AS "r52"
+    WHERE "r51"."root" = "r52"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r53" AS (
+    DELETE FROM "slice"."writeback_start_step" AS "r54"
+    USING "r1" AS "r55"
+    WHERE "r54"."root" = "r55"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r56" AS (
+    DELETE FROM "slice"."writeback_step" AS "r57"
+    USING "r1" AS "r58"
+    WHERE "r57"."root" = "r58"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r59" AS (
+    DELETE FROM "slice"."writeback_writeback_finish_output" AS "r60"
+    USING "r1" AS "r61"
+    WHERE "r60"."root" = "r61"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r62" AS (
+    DELETE FROM "slice"."writeback_writeback_input" AS "r63"
+    USING "r1" AS "r64"
+    WHERE "r63"."root" = "r64"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r65" AS (
+    UPDATE "slice"."writeback_root" AS "r66"
+    SET "retired" = true
+    FROM "r1" AS "r67"
+    WHERE "r66"."scope" = "r67"."c1"
+    RETURNING 1 AS "c1"
+  )
+  SELECT "r69"."c1" AS "c1"
+  FROM (SELECT "pg_catalog"."array_agg"("r68"."c2" ORDER BY "r68"."c1") AS "c1", "r68"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r70" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r71" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r72" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r73" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r74" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r75" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r76" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r77" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r78" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r79" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r80" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r81" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r82" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r83" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r84" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r85" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r86" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r87" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r88" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r89" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r90") AS "r68"("c1", "c2", "c3") GROUP BY "r68"."c3") AS "r69"("c1", "c2")
+  LIMIT 1::bigint
+  ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__retire_writeback_root_oprw3k6une"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_admitted"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
@@ -3505,6 +3842,10 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."cursor"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."delivered"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -4001,6 +4342,90 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."weight"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_admitted"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_claim"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_deliver_input"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_deliver_output"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_done"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_ended"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_exhausted"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_failed"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_fenced"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_finish"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_held"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_refusal"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_result"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_retry"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_root"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_scope"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_skipped"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_start_step"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_step"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_writeback_finish_output"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."writeback_writeback_input"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 ALTER TABLE "slice"."assign_admitted"
@@ -4741,3 +5166,83 @@ ALTER TABLE "slice"."sync_sync_run_finish_output"
   ADD CONSTRAINT "__sync_sync_run_finish_output_fk_step_root_n3vgglnveu" FOREIGN KEY ("step", "root") REFERENCES "slice"."sync_done" ("step", "root") MATCH SIMPLE;
 
 ALTER TABLE "slice"."sync_sync_run_input" ADD CONSTRAINT "__sync_sync_run_input_fk_root_ifd4bfberz" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."writeback_admitted"
+  ADD CONSTRAINT "__writeback_admitted_fk_root_zzhx3ymsmx" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_admitted_fk_scope_root_bgkzavlmet" FOREIGN KEY ("scope", "root") REFERENCES "slice"."writeback_scope" ("scope", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."writeback_claim"
+  ADD CONSTRAINT "__writeback_claim_fk_root_7agc267qm7" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_claim_fk_step_root_vh7k4u5nuz" FOREIGN KEY ("step", "root") REFERENCES "slice"."writeback_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_claim_fk_step_pred_attempt_root_n7sim6icgo" FOREIGN KEY ("__step_ouvkclqzzd", "__pred_attempt_dqbvoe7dfs", "__root_yewsvvtcyz") REFERENCES "slice"."writeback_ended" ("step", "attempt", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."writeback_deliver_input" ADD CONSTRAINT "__writeback_deliver_input_fk_root_khq2esrmmb" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."writeback_deliver_output"
+  ADD CONSTRAINT "__writeback_deliver_output_fk_root_e4xa5oep52" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_deliver_output_fk_step_root_3p47hjlrfd" FOREIGN KEY ("step", "root") REFERENCES "slice"."writeback_deliver_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_deliver_output_fk_step_root_trjdigghf7" FOREIGN KEY ("step", "root") REFERENCES "slice"."writeback_done" ("step", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."writeback_done" ADD CONSTRAINT "__writeback_done_fk_root_3lnpe5h2ex" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."writeback_ended"
+  ADD CONSTRAINT "__writeback_ended_fk_root_h7zxc3wrem" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_ended_fk_step_attempt_root_laqrk2e3dt" FOREIGN KEY ("step", "attempt", "root") REFERENCES "slice"."writeback_claim" ("step", "attempt", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."writeback_exhausted"
+  ADD CONSTRAINT "__writeback_exhausted_fk_root_m3qvioeeek" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_exhausted_fk_step_root_cwhwzf2upp" FOREIGN KEY ("step", "root") REFERENCES "slice"."writeback_failed" ("step", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."writeback_failed" ADD CONSTRAINT "__writeback_failed_fk_root_ddkqjmy3le" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."writeback_fenced"
+  ADD CONSTRAINT "__writeback_fenced_fk_root_cishzkxig6" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_fenced_fk_step_attempt_root_7uikhcfpkf" FOREIGN KEY ("step", "attempt", "root") REFERENCES "slice"."writeback_ended" ("step", "attempt", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."writeback_finish"
+  ADD CONSTRAINT "__writeback_finish_fk_root_4suiathayz" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_finish_fk_scope_root_rp7v2vj6l6" FOREIGN KEY ("scope", "root") REFERENCES "slice"."writeback_admitted" ("scope", "root") MATCH SIMPLE,
+  ADD CONSTRAINT "__writeback_finish_fk_step_root_7ny2yumuvy" FOREIGN KEY ("step", "root") REFERENCES "slice"."writeback_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."writeback_held"
+  ADD CONSTRAINT "__writeback_held_fk_root_dady3frmfj" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_held_fk_step_attempt_root_2i7p4i2alp" FOREIGN KEY ("step", "attempt", "root") REFERENCES "slice"."writeback_claim" ("step", "attempt", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_held_fk_step_root_7yahu5vvit" FOREIGN KEY ("step", "root") REFERENCES "slice"."writeback_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."writeback_paused" ADD CONSTRAINT "__writeback_paused_fk_target_pred_turn_rvsgo6wgpe" FOREIGN KEY ("target", "__pred_turn_qryngij6c4") REFERENCES "slice"."writeback_resumed" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."writeback_refusal"
+  ADD CONSTRAINT "__writeback_refusal_fk_root_hbzez4kebv" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_refusal_fk_step_root_xf2b5o76fl" FOREIGN KEY ("step", "root") REFERENCES "slice"."writeback_failed" ("step", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."writeback_result"
+  ADD CONSTRAINT "__writeback_result_fk_root_2ds3etg4pt" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_result_fk_step_root_52vlcqzy4o" FOREIGN KEY ("step", "root") REFERENCES "slice"."writeback_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."writeback_resumed" ADD CONSTRAINT "__writeback_resumed_fk_target_turn_vfx6l6vk75" FOREIGN KEY ("target", "turn") REFERENCES "slice"."writeback_paused" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."writeback_retry"
+  ADD CONSTRAINT "__writeback_retry_fk_root_7expqnzkek" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_retry_fk_step_attempt_root_5cwcgqo5s7" FOREIGN KEY ("step", "attempt", "root") REFERENCES "slice"."writeback_ended" ("step", "attempt", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."writeback_scope" ADD CONSTRAINT "__writeback_scope_fk_root_7hgmsmhohr" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."writeback_skipped"
+  ADD CONSTRAINT "__writeback_skipped_fk_by_dm2bpfflyw" FOREIGN KEY ("by") REFERENCES "slice"."writeback_root" ("scope") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_skipped_fk_root_a3d7uviq7u" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_skipped_fk_scope_veikkumie6" FOREIGN KEY ("scope") REFERENCES "slice"."writeback_root" ("scope") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."writeback_start_step"
+  ADD CONSTRAINT "__writeback_start_step_fk_root_r7w5ogs6pb" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_start_step_fk_scope_root_dnvan4vxav" FOREIGN KEY ("scope", "root") REFERENCES "slice"."writeback_admitted" ("scope", "root") MATCH SIMPLE,
+  ADD CONSTRAINT "__writeback_start_step_fk_step_root_zuw7g6khi3" FOREIGN KEY ("step", "root") REFERENCES "slice"."writeback_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."writeback_step"
+  ADD CONSTRAINT "__writeback_step_fk_root_ikezfkedwk" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_step_fk_scope_root_htnuvc75ao" FOREIGN KEY ("scope", "root") REFERENCES "slice"."writeback_admitted" ("scope", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."writeback_writeback_finish_output"
+  ADD CONSTRAINT "__writeback_writeback_finish_output_fk_root_jvtr4eenzd" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__writeback_writeback_finish_output_fk_step_root_fygai72drs" FOREIGN KEY ("step", "root") REFERENCES "slice"."writeback_done" ("step", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."writeback_writeback_input" ADD CONSTRAINT "__writeback_writeback_input_fk_root_mwnbphwqvk" FOREIGN KEY ("root") REFERENCES "slice"."writeback_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;

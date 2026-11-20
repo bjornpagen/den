@@ -188,7 +188,11 @@ output into `select(PResult, outcome = done)`) certifies.
 12. **Ringing.** A turn rings what its end made eligible: what its commit spawned, its scope's finish once its last
     child ended, and, for an attempt that held seats, the steps eligibility finds waiting on a resource it held, at a
     fresh read of the scheduler's snapshot (`turn.ts` waitersOf), so a fan-out on a resource drains as its seats free;
-    the write that requests a root rings its admission once it has committed (`runtime/request.ts` `afterCommit`: the
+    a commit that writes an app relation some step kind awaits a fact of rings the steps of every flow that its rows
+    made ready (`turn.ts` readiedBy, each flow's `ready`: a step with no result and no claim whose every awaited row
+    exists), so a step joined on its input and an app fact (`awaitFact`) is rung by whichever commit completes the
+    pair, its spawn's or the fact's, and waits on the fact, spending nothing and claiming nothing, until then
+    (`join.test.ts`); the write that requests a root rings its admission once it has committed (`runtime/request.ts` `afterCommit`: the
     app's own transaction, or an operator's request); the relay (`runtime/relay.ts`), where a host keeps a process
     alive, rings what anyone else's commit made eligible; the census heals whatever any of them loses. The census is a
     wake, `Census`, named by the period it ticks (`runtime/census.ts`): served like any other, it ticks every flow,
@@ -235,8 +239,9 @@ PostgreSQL (`pnpm test:network`, six files, each its own database):
 - **lowering-complete** (`src/lower/schema.ts`, `fragment.ts`, `print.ts`): tagged unions, arrays and finite numbers are
   built (the assignment engine's structured answer); records, recursion as trees, unions and arrays nested deeper than
   one struct, and Effect's built-in checks as CHECKs and patterns are not;
-  feed edges (several parents, run once all have results); awaits exercised end to end (lowered and printed, under no
-  suite yet); a `den check` that holds the committed
+  feed edges from several of den's own nodes (a step joined on app facts, each a node's write, is built:
+  `awaitFact`); awaits completed from outside exercised end to end (lowered and printed, under no suite yet); a
+  `den check` that holds the committed
   modules to a fresh print, as `grizzle check` holds served files.
 - **coordination** (`src/runtime/turn.ts`, `census.ts`, the fragment): width as a law (slots taken by key race), pause
   and resume as facts, a lane's window in the census, stopping a scope, the ceiling on reclaims, `Retry`

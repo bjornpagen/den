@@ -6,7 +6,7 @@ import { closed, closedId, natural, pg, relation, str } from "@bjornpagen/grizzl
  * pages hold, each feed's weight (which a page reads before its body runs), each feed's cursor as insert-only
  * position facts (the latest is the cursor), the orders the app writes beside a root it requests in its own
  * transaction, each batch's tally, the batches whose whole run finished, the relations a sync copied, the builds the
- * Gold step made, each review's saved groups and its summary, what each throttled call heard, the hours the clock chimed, an auditor's notes on den's results, and the assignment
+ * Gold step made, the attempts the gradebook delivered, each review's saved groups and its summary, what each throttled call heard, the hours the clock chimed, an auditor's notes on den's results, and the assignment
  * engine's shape in miniature: passages and their
  * embeddings, the questions a learner missed and theirs, the passages a learner has seen, the passage each assignment gave a learner, and each assignment's
  * conclusion.
@@ -46,6 +46,9 @@ export const Settled = relation("Settled", { batch: Name }, ["batch"])
 
 /** A relation one sync run copied, by the run. */
 export const Copied = relation("Copied", { relation: Name, run: natural }, ["relation", "run"])
+
+/** An attempt whose result the gradebook delivered, the fact a review of it awaits. */
+export const Delivered = relation("Delivered", { attempt: Name }, ["attempt"])
 
 /** A group of a review its stage after the group's questions saved: how many questions it holds, and their scores' total. */
 export const Reviewed = relation(

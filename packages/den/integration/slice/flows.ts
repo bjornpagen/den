@@ -6,6 +6,7 @@ import {
 	atSpawn,
 	attempts,
 	anchor,
+	awaitFact,
 	edge,
 	exclusiveBy,
 	idle,
@@ -33,6 +34,7 @@ import {
 	Concluded,
 	Copied,
 	Cursor,
+	Delivered,
 	Heard,
 	Item,
 	Missed,
@@ -47,13 +49,14 @@ import {
 import type { Loader } from "#integration/slice/roles.ts"
 
 /**
- * The slice's seven flows: a chain whose pages read a weight before their bodies run, started by an operator or by the
+ * The slice's eight flows: a chain whose pages read a weight before their bodies run, started by an operator or by the
  * app's own write; a fan-out whose squares share a resource of two seats; a sync whose roots hold an exclusivity seat
  * per relation, beside a Gold build admitted only while the chain has nothing pending; two retry ladders, one that ends
  * and one that never does; and an assignment, the assignment engine's shape, whose one step reads the passages nearest
  * a missed question's stored embedding and the passages its learner has seen, in one snapshot; and a review, AlphaTest's
  * gap analysis's shape, whose first step's edge opens a child scope per group of questions, each group's finish a
- * cluster over its questions whose commit spawns the group's save in the review; and a clock, a root its schedule starts
+ * cluster over its questions whose commit spawns the group's save in the review, its first step joined on the
+ * gradebook's delivery of the attempt it reviews; a writeback, whose one step delivers it; and a clock, a root its schedule starts
  * each hour, which the census requests. Every flow writes the app's relations under its app role `loader`.
  */
 
@@ -99,6 +102,7 @@ const Page = step(
 		reads: {
 			weights: rows(Weight, ["feed"], (page: typeof PageInput.Type) => ({ feed: page.feed }))
 		},
+		awaits: [],
 		uses: [],
 		retry: attempts(3),
 		waits: 0,
@@ -239,6 +243,7 @@ const Square = step(
 		output: Schema.Struct({ square: Schema.BigInt }),
 		error: Schema.Never,
 		reads: {},
+		awaits: [],
 		uses: [pool],
 		retry: attempts(3),
 		waits: 0,
@@ -326,6 +331,7 @@ const Copy = step(
 		output: Schema.Struct({ run: Schema.BigInt }),
 		error: Schema.Never,
 		reads: {},
+		awaits: [],
 		uses: [],
 		retry: attempts(3),
 		waits: 0,
@@ -372,6 +378,7 @@ const Build = step(
 		output: Schema.Struct({ build: Schema.BigInt }),
 		error: Schema.Never,
 		reads: {},
+		awaits: [],
 		uses: [],
 		retry: attempts(3),
 		waits: 0,
@@ -444,6 +451,7 @@ const Steadfast = step(
 		output: Attempted,
 		error: Schema.Never,
 		reads: {},
+		awaits: [],
 		uses: [],
 		retry: never,
 		waits: 0,
@@ -461,6 +469,7 @@ const Brittle = step(
 		output: Attempted,
 		error: Schema.Never,
 		reads: {},
+		awaits: [],
 		uses: [],
 		retry: attempts(2),
 		waits: 0,
@@ -510,6 +519,7 @@ const Polite = step(
 		output: Attempted,
 		error: Schema.Never,
 		reads: {},
+		awaits: [],
 		uses: [],
 		retry: attempts(1),
 		waits: politeWaits,
@@ -662,6 +672,7 @@ const Decide = step(
 			),
 			seen: rows(Seen, ["learner"], (probe: typeof Probe.Type) => ({ learner: probe.learner }))
 		},
+		awaits: [],
 		uses: [],
 		retry: attempts(3),
 		waits: 0,
@@ -790,6 +801,7 @@ const Analyze = step(
 		output: Schema.Struct({ score: Schema.BigInt }),
 		error: Schema.Never,
 		reads: {},
+		awaits: [],
 		uses: [anthropic],
 		retry: attempts(3),
 		waits: 0,
@@ -836,7 +848,11 @@ const Questions = scope("Questions", {
 	}
 })
 
-/** Gathers a review: it names its groups, which its edge opens as child scopes. */
+/**
+ * Gathers a review, once the gradebook delivered the attempt it reviews: it names its groups, which its edge opens as
+ * child scopes. It is joined on its input and the attempt's Delivered, whichever comes first, so it never runs before
+ * the delivery and is rung by the commit that completes the pair.
+ */
 const Gather = step(
 	"Gather",
 	{
@@ -844,6 +860,7 @@ const Gather = step(
 		output: Schema.Struct({ groups: Schema.BigInt }),
 		error: Schema.Never,
 		reads: {},
+		awaits: [awaitFact(Delivered, { attempt: "review" })],
 		uses: [],
 		retry: attempts(3),
 		waits: 0,
@@ -875,6 +892,7 @@ const Save = step(
 		output: Schema.Struct({ total: Schema.BigInt }),
 		error: Schema.Never,
 		reads: {},
+		awaits: [],
 		uses: [],
 		retry: attempts(3),
 		waits: 0,
@@ -949,6 +967,58 @@ export const review = flow("Review", {
 	edges: [Split, Saved]
 })
 
+/** A graded attempt whose result the gradebook takes. */
+const Graded = Schema.Struct({ attempt: Schema.String })
+
+/** Delivers an attempt's result to the gradebook: the app's Delivered, a fact other flows' steps await. */
+const Deliver = step(
+	"Deliver",
+	{
+		input: Graded,
+		output: Graded,
+		error: Schema.Never,
+		reads: {},
+		awaits: [],
+		uses: [],
+		retry: attempts(3),
+		waits: 0,
+		due: atSpawn,
+		writes: writes({ insert: [Delivered], put: [], delete: [] })
+	},
+	(graded) =>
+		Effect.succeed({
+			output: graded,
+			writes: { insert: { Delivered: [{ attempt: graded.attempt }] }, put: {}, delete: {} }
+		})
+)
+
+/** An attempt's writeback, AlphaTest's at grading: its one step delivers the result to the gradebook. */
+const Writeback = root("Writeback", {
+	trigger: operator,
+	input: Graded,
+	children: [Deliver],
+	start: (graded) => [Deliver.of(graded)],
+	exclusive: shared,
+	window: always,
+	precondition: unconditional,
+	finish: {
+		reads: [],
+		output: Finished,
+		error: Schema.Never,
+		uses: [],
+		retry: attempts(3),
+		waits: 0,
+		writes: writesNothing,
+		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
+	}
+})
+
+export const writeback = flow("Writeback", {
+	writes: loader,
+	kinds: [Deliver, Writeback],
+	edges: []
+})
+
 /** An hour of the clock: the instant its schedule named. */
 const Hour = Schema.Struct({ hour: Schema.BigInt })
 
@@ -960,6 +1030,7 @@ const Chime = step(
 		output: Hour,
 		error: Schema.Never,
 		reads: {},
+		awaits: [],
 		uses: [],
 		retry: attempts(3),
 		waits: 0,

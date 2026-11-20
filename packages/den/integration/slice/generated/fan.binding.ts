@@ -328,6 +328,8 @@ export const fanLedger = (h: FanHandles) => {
 				uses: fan.kinds[1].finish.uses,
 				retry: fan.kinds[1].finish.retry,
 				waits: fan.kinds[1].finish.waits,
+				awaits: [],
+				writes: fan.kinds[1].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof fan.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof fan.kinds)[1]["finish"]["body"]>[1]
@@ -397,6 +399,8 @@ export const fanLedger = (h: FanHandles) => {
 				uses: fan.kinds[2].finish.uses,
 				retry: fan.kinds[2].finish.retry,
 				waits: fan.kinds[2].finish.waits,
+				awaits: [],
+				writes: fan.kinds[2].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof fan.kinds)[2]["start"]>[0]
 					readonly endings: Parameters<(typeof fan.kinds)[2]["finish"]["body"]>[1]
@@ -592,6 +596,9 @@ export const fanLedger = (h: FanHandles) => {
 		finished: (scope) =>
 			h.den.fanFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
+		awaits: [],
+		awaiting: () => Effect.succeed(false),
+		ready: Effect.succeed([]),
 		claim: (row) =>
 			Effect.flatMap(
 				settled(
@@ -719,7 +726,8 @@ export const fanLedger = (h: FanHandles) => {
 					holds: read.holds,
 					exclusives: [],
 					paused: Arr.map(read.paused, (row) => row.target),
-					busy: []
+					busy: [],
+					awaiting: []
 				}
 			})
 		),

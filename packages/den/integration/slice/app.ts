@@ -19,6 +19,10 @@ import {
 } from "#integration/slice/generated/review.fragment.ts"
 import { syncCoordination, syncGraph } from "#integration/slice/generated/sync.fragment.ts"
 import {
+	writebackCoordination,
+	writebackGraph
+} from "#integration/slice/generated/writeback.fragment.ts"
+import {
 	Assigned,
 	Audit,
 	Built,
@@ -26,6 +30,7 @@ import {
 	Concluded,
 	Copied,
 	Cursor,
+	Delivered,
 	Feed,
 	Heard,
 	Item,
@@ -40,7 +45,7 @@ import {
 	Weight
 } from "#integration/slice/relations.ts"
 
-/** The toy app's own level, each of den's seven flows listed as its graph and its coordination fragments. */
+/** The toy app's own level, each of den's eight flows listed as its graph and its coordination fragments. */
 const Listed = schema(
 	"Slice",
 	[
@@ -61,6 +66,7 @@ const Listed = schema(
 		Concluded,
 		Reviewed,
 		Summary,
+		Delivered,
 		Heard,
 		Chimed,
 		chainGraph,
@@ -75,6 +81,8 @@ const Listed = schema(
 		assignCoordination,
 		reviewGraph,
 		reviewCoordination,
+		writebackGraph,
+		writebackCoordination,
 		clockGraph,
 		clockCoordination
 	],

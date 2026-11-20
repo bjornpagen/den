@@ -421,6 +421,8 @@ export const chainLedger = (h: ChainHandles) => {
 				uses: chain.kinds[1].finish.uses,
 				retry: chain.kinds[1].finish.retry,
 				waits: chain.kinds[1].finish.waits,
+				awaits: [],
+				writes: chain.kinds[1].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof chain.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof chain.kinds)[1]["finish"]["body"]>[1]
@@ -501,6 +503,8 @@ export const chainLedger = (h: ChainHandles) => {
 				uses: chain.kinds[2].finish.uses,
 				retry: chain.kinds[2].finish.retry,
 				waits: chain.kinds[2].finish.waits,
+				awaits: [],
+				writes: chain.kinds[2].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof chain.kinds)[2]["start"]>[0]
 					readonly endings: Parameters<(typeof chain.kinds)[2]["finish"]["body"]>[1]
@@ -740,6 +744,9 @@ export const chainLedger = (h: ChainHandles) => {
 		finished: (scope) =>
 			h.den.chainFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
+		awaits: [],
+		awaiting: () => Effect.succeed(false),
+		ready: Effect.succeed([]),
 		claim: (row) =>
 			Effect.flatMap(
 				settled(
@@ -863,7 +870,8 @@ export const chainLedger = (h: ChainHandles) => {
 					holds: [],
 					exclusives: [],
 					paused: Arr.map(read.paused, (row) => row.target),
-					busy: []
+					busy: [],
+					awaiting: []
 				}
 			})
 		),

@@ -476,6 +476,8 @@ export const assignLedger = (h: AssignHandles) => {
 				uses: assign.kinds[1].finish.uses,
 				retry: assign.kinds[1].finish.retry,
 				waits: assign.kinds[1].finish.waits,
+				awaits: [],
+				writes: assign.kinds[1].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof assign.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof assign.kinds)[1]["finish"]["body"]>[1]
@@ -706,6 +708,9 @@ export const assignLedger = (h: AssignHandles) => {
 		finished: (scope) =>
 			h.den.assignFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
+		awaits: [],
+		awaiting: () => Effect.succeed(false),
+		ready: Effect.succeed([]),
 		claim: (row) =>
 			Effect.flatMap(
 				settled(
@@ -831,7 +836,8 @@ export const assignLedger = (h: AssignHandles) => {
 						holds: [],
 						exclusives: [],
 						paused: Arr.map(read.paused, (row) => row.target),
-						busy: []
+						busy: [],
+						awaiting: []
 					}
 				})
 		),

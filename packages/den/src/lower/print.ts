@@ -1,6 +1,7 @@
 import { regex } from "arkregex"
 import { Array as Arr, Option, Order, String as Str } from "effect"
 import {
+	type AwaitIR,
 	type CountsIR,
 	type EdgeIR,
 	type FieldType,
@@ -337,7 +338,7 @@ const countsExpr = (counts: CountsIR): string =>
  */
 export const printFragment = (l: Lowered, place: Placement): string => {
 	const n = naming(l)
-	const reads = l.read
+	const reads = Arr.dedupe([...l.read, ...l.awaited])
 	const writer = writerRelationsOf(l)
 	const rosterNames = Arr.map(l.rosters, (r) => r.name)
 	const seats = Option.toArray(l.seats)
@@ -659,6 +660,60 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		`${f}Step: ${app}.relations.${f}Step`,
 		`${f}Result: ${app}.relations.${f}Result`
 	])
+	const awaitedEntries = Arr.map(l.awaited, (rel) => `${rel}: ${app}.relations.${rel}`)
+	/** The step kinds that await a fact, each with what it awaits. */
+	const awaiting = Arr.filter(l.steps, (s) => Arr.isReadonlyArrayNonEmpty(s.awaits))
+	/** The input fields an awaited fact's key reads, each once, in its kind's input. */
+	const keyColumns = (awaits: ReadonlyArray<AwaitIR>): ReadonlyArray<string> =>
+		Arr.dedupe(Arr.flatMap(awaits, (a) => Arr.map(a.key, (k) => k.input)))
+	const keyOf = (a: AwaitIR): string =>
+		`{ ${commas(Arr.map(a.key, (k) => `${k.field}: ${k.input}`))} }`
+	/**
+	 * The steps that wait on a fact, one arm per fact a kind awaits: a step of the kind with no result whose awaited row
+	 * does not exist, each `where` term beside it.
+	 */
+	const awaitingOf = (also: ReadonlyArray<string>): string =>
+		`query(${n.den})${Arr.join(
+			Arr.flatMap(awaiting, (s) =>
+				Arr.map(
+					s.awaits,
+					(a) => `
+	.rule((r) => {
+		const { ${commas(["step", ...keyColumns([a])])} } = v(${s.input.relation}, "input")
+		return r
+			.match(${s.input.relation}, { ${commas(["step", ...keyColumns([a])])} })
+			.where(${commas([`r.not(${r("Result")}, { step })`, `r.not(${app}.relations.${a.relation}, ${keyOf(a)})`, ...also])})
+			.find({ step })
+	})`
+				)
+			),
+			""
+		)}`
+	/**
+	 * The steps a fact's arrival made ready: a step of a kind that awaits, with no result and no claim, whose every
+	 * awaited row exists, one arm per kind.
+	 */
+	const readyOf = `query(${n.den})${Arr.join(
+		Arr.map(
+			awaiting,
+			(s) => `
+	.rule((r) => {
+		const { ${commas(["step", ...keyColumns(s.awaits)])} } = v(${s.input.relation}, "input")
+		return r
+			.match(${s.input.relation}, { ${commas(["step", ...keyColumns(s.awaits)])} })${Arr.join(
+				Arr.map(
+					s.awaits,
+					(a) => `
+			.match(${app}.relations.${a.relation}, ${keyOf(a)})`
+				),
+				""
+			)}
+			.where(r.not(${r("Result")}, { step }), r.not(${r("Claim")}, { step }))
+			.find({ step })
+	})`
+		),
+		""
+	)}`
 	const rosterNames = Arr.map(l.rosters, (ro) => ro.name)
 	const liveEntry = Arr.map(Option.toArray(l.seats), (st) => {
 		const fields = commas(seatFields)
@@ -750,7 +805,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			? [`exclusives: ${liveOf(n.den, r("Exclusive"), r("Released"), ["kind", "key"], ["scope"])}`]
 			: []),
 		`paused: ${liveOf(n.den, r("Paused"), r("Resumed"), ["target"], [])}`,
-		...Arr.map(l.idle, (f) => `${busyName(f)}: ${shared.busy(f)}`)
+		...Arr.map(l.idle, (f) => `${busyName(f)}: ${shared.busy(f)}`),
+		...(Arr.isReadonlyArrayNonEmpty(awaiting) ? [`awaiting: ${awaitingOf([])}`] : [])
 	])} })`
 	const denPrograms: Array<readonly [string, string]> = [
 		[
@@ -896,7 +952,16 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 					] as const
 				]
 			: []),
-		[n.program("Snapshot"), deferred(snapshotOf)]
+		[n.program("Snapshot"), deferred(snapshotOf)],
+		...(Arr.isReadonlyArrayNonEmpty(awaiting)
+			? [
+					[
+						n.program("AwaitingOf"),
+						awaitingOf([`r.eq(step, r.param("step", ${r("Step")}.fields.step))`])
+					] as const,
+					[n.program("Ready"), deferred(readyOf)] as const
+				]
+			: [])
 	]
 	const denValueReads = (v: ValueIR) => {
 		Arr.forEach(
@@ -1149,7 +1214,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	]
 	const body = lines([
 		`/** den's role for the flow ${P}: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains${Option.isSome(l.seats) ? " and live holds" : ""} and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */`,
-		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([`...${n.graph}.relations`, ...l.coordination, ...liveEntry, ...idleEntries])} }, { insert: [${commas(Arr.map(den, q))}] })`,
+		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([`...${n.graph}.relations`, ...l.coordination, ...liveEntry, ...idleEntries, ...awaitedEntries])} }, { insert: [${commas(Arr.map(den, q))}] })`,
 		"",
 		`/** den's coordinator role for the flow ${P}: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation${Option.isSome(l.seats) ? ", and reads its seats' live holds through the seat level the app's schema states, so a schema without it fails to typecheck" : ""}. */`,
 		`export const ${n.coordinator} = role(${app}, ${q(n.coordinatorName)}, { ${commas([...rosterNames, ...l.coordination, ...liveEntry])} }, { insert: [${commas(Arr.map(l.coordination, q))}] })`,
@@ -1619,6 +1684,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			`\t\tuses: ${kind}.finish.uses,`,
 			`\t\tretry: ${kind}.finish.retry,`,
 			`\t\twaits: ${kind}.finish.waits,`,
+			"\t\tawaits: [],",
+			`\t\twrites: ${kind}.finish.writes,`,
 			`\t\tbody: (read: { readonly input: Parameters<(typeof ${kind})["start"]>[0]; readonly endings: Parameters<(typeof ${kind})["finish"]["body"]>[1]${spawns ? "; readonly parent: ScopeKey" : ""} }) => ${kind}.finish.body(read.input, read.endings)`,
 			"\t},",
 			"\t{",
@@ -1723,6 +1790,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`(name: string): Option.Option<${scoped(roster)}> => Arr.findFirst(${roster}.handles, (handle) => handle === name)`
 	const resources = has(r("Hold"))
 	const exclusives = has(r("Exclusive"))
+	/** The step kinds that await a fact. */
+	const awaitingKinds = Arr.filter(l.steps, (s) => Arr.isReadonlyArrayNonEmpty(s.awaits))
 	const call = (program: string, input: string) =>
 		`settled(h.coordinator.${n.program(program)}.once(${input}))`
 	const read = (program: string, row: string) =>
@@ -1775,7 +1844,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\t\tholds: ${resources ? "read.holds" : "[]"},`,
 		`\t\texclusives: ${exclusives ? "read.exclusives" : "[]"},`,
 		"\t\tpaused: Arr.map(read.paused, (row) => row.target),",
-		`\t\tbusy: ${Arr.isReadonlyArrayNonEmpty(l.idle) ? "busyOf(read)" : "[]"}`,
+		`\t\tbusy: ${Arr.isReadonlyArrayNonEmpty(l.idle) ? "busyOf(read)" : "[]"},`,
+		`\t\tawaiting: ${Arr.isReadonlyArrayNonEmpty(awaitingKinds) ? "Arr.map(read.awaiting, (row) => row.step)" : "[]"}`,
 		"\t}",
 		"}))"
 	])
@@ -1791,7 +1861,10 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		...Arr.map(
 			l.idle,
 			(f) => `signals(h.den.${n.program(`Busy${f}`)}.watch({ params: {}, facts: {} }))`
-		)
+		),
+		...(Arr.isReadonlyArrayNonEmpty(awaitingKinds)
+			? [`signals(h.den.${n.program("Ready")}.watch({ params: {}, facts: {} }))`]
+			: [])
 	]
 	const busyFlows = Arr.isReadonlyArrayNonEmpty(l.idle)
 		? `Effect.flatMap(settled(h.den.${n.program("Busy")}.once({ params: {}, facts: {} })), (rows) => Effect.map(only(rows), busyOf))`
@@ -1946,6 +2019,13 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			: `\t\tunended: (scope) => h.den.${n.program("UnendedSteps")}.once({ params: { scope }, facts: {} }).pipe(settled, any),`,
 		`\t\tfinished: (scope) => h.den.${n.program("Finished")}.once({ params: { scope }, facts: {} }).pipe(settled, any),`,
 		`\t\tbusy: ${indented("\t\t")(busyFlows)},`,
+		`\t\tawaits: [${commas(Arr.map(l.awaited, q))}],`,
+		Arr.isReadonlyArrayNonEmpty(awaitingKinds)
+			? `\t\tawaiting: (step) => h.den.${n.program("AwaitingOf")}.once({ params: { step }, facts: {} }).pipe(settled, any),`
+			: "\t\tawaiting: () => Effect.succeed(false),",
+		Arr.isReadonlyArrayNonEmpty(awaitingKinds)
+			? `\t\tready: Effect.map(settled(h.den.${n.program("Ready")}.once({ params: {}, facts: {} })), (rows) => Arr.map(rowsOf(rows), (row) => row.step)),`
+			: "\t\tready: Effect.succeed([]),",
 		resources
 			? `\t\tclaim: (row) => Effect.flatMap(settled(h.den.${n.program("Claim")}.once({ params: { budget: row.budget }, facts: { insert: { ${r("Claim")}: [{ step: row.step, root: row.root, holds: holdsOf(row.seats) }], ${r("Ended")}: row.lapsed } } })), (outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)),`
 			: `\t\tclaim: (row) => Effect.flatMap(settled(h.den.${n.program("Claim")}.once({ params: { budget: row.budget }, facts: { insert: { ${r("Claim")}: [{ step: row.step, root: row.root }], ${r("Ended")}: row.lapsed } } })), (outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)),`,

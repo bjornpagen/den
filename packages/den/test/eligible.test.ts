@@ -60,11 +60,12 @@ import { FlowName, type Wake, wakeText } from "#transport.ts"
 
 /**
  * Eligibility, the relay's and the census's one rule, over generated snapshots of a small world: admitted roots of one
- * kind under a drawn window, each with pending steps that use the Pool or nothing, its finish, and child scopes whose
+ * kind under a drawn window, each with pending steps that use the Pool or nothing, some waiting on a fact they await, its finish, and child scopes whose
  * finish is pending; roots of a gated kind waiting for their admission, some recorded skipped, behind a precondition
  * on another flow; the Pool's live and lapsed holds; exclusivity seats held by live roots or by finished ones; and
  * pauses of the Pool and of each root kind. The wakes it rings are exactly those a specification written apart from it
- * gives: a step whose latest claim stands (its lease not run out and its attempt recording no retry) is never rung, a
+ * gives: a step whose latest claim stands (its lease not run out and its attempt recording no retry) or that waits on a
+ * fact it awaits is never rung, a
  * retried or lapsed attempt's step is rung once its retry's instant or its lease's end has passed, a finish only once
  * its scope has no other pending step and no live child scope, nothing while its root's window is shut or its root kind
  * or a resource it uses is paused, and of the steps contending for the Pool's free seats the oldest roots' first, then
@@ -90,6 +91,8 @@ const runnerOf = (
 	uses,
 	retry: attempts(1),
 	waits: 0,
+	awaits: [],
+	writes: [],
 	finishes,
 	run: unread
 })
@@ -123,6 +126,9 @@ const ledger: Ledger<never> = {
 	unended: unread,
 	finished: unread,
 	busy: Effect.die("eligibility reads the snapshot's busy flows"),
+	awaits: [],
+	awaiting: unread,
+	ready: Effect.die("eligibility reads the snapshot's awaiting steps"),
 	claim: unread,
 	holds: Effect.die("eligibility reads the snapshot's live holds"),
 	retry: unread,
@@ -151,9 +157,13 @@ type EndSketch =
 	| { readonly kind: "retry"; readonly at: number; readonly why: RetryWhy }
 	| { readonly kind: "fenced" }
 
-/** A pending step of a root: its kind, its latest claim, if any, with how it ended, and its first due instant. */
+/**
+ * A pending step of a root: its kind, its latest claim, if any, with how it ended, its first due instant, and whether
+ * it waits on a fact it awaits.
+ */
 interface StepSketch {
 	readonly kind: "Work" | "Free"
+	readonly awaiting: boolean
 	readonly claim: Option.Option<{
 		readonly attempt: number
 		readonly until: number
@@ -200,6 +210,7 @@ const offset = int(-3, 3)
 
 const stepSketch: Gen<StepSketch> = (source) => ({
 	kind: source.draw(boolean) ? "Work" : "Free",
+	awaiting: source.draw(boolean),
 	claim: source.draw(
 		option((s) => ({
 			attempt: s.draw(int(0, 2)),
@@ -286,6 +297,7 @@ const built = (w: World) =>
 		const claims: Array<Snapshot<never>["claims"][number]> = []
 		const retries: Array<RetryRow> = []
 		const fenced: Array<FencedRow> = []
+		const awaiting: Array<StepKey> = []
 		const kinds = new Map<StepKey, string>()
 		const syncs: Array<ScopeKey> = []
 		const firstKey = yield* exclusiveId(flowName, "Sync", "k0")
@@ -310,6 +322,9 @@ const built = (w: World) =>
 				const step = yield* startedStep(root, j)
 				kinds.set(step, s.kind)
 				steps.push({ step, runner: runners[s.kind], scope: root, due: at(s.due) })
+				if (s.awaiting) {
+					awaiting.push(step)
+				}
 				if (Option.isNone(s.claim)) {
 					continue
 				}
@@ -389,7 +404,8 @@ const built = (w: World) =>
 				...(w.paused.run ? ["Run"] : []),
 				...(w.paused.sync ? ["Sync"] : [])
 			],
-			busy: w.otherBusy ? ["Other"] : []
+			busy: w.otherBusy ? ["Other"] : [],
+			awaiting
 		}
 		const done: Built = { snapshot, now, window, ledger, kinds, seats: w.seats }
 		return done
@@ -439,6 +455,9 @@ const specified = (
 		readonly fenced: boolean
 	}
 	const ready = Arr.flatMap(snapshot.steps, (p): ReadonlyArray<Ready> => {
+		if (Arr.contains(snapshot.awaiting, p.step)) {
+			return []
+		}
 		const mine = Arr.filter(snapshot.claims, (c) => c.step === p.step)
 		const latest = Arr.reduce(mine, Option.none<(typeof mine)[number]>(), (best, c) =>
 			Option.match(best, {
@@ -540,6 +559,7 @@ type Feature =
 	| "a seat given back"
 	| "a shut window"
 	| "a pause"
+	| "a step waiting on a fact"
 
 const ringsStep = (wakes: ReadonlyArray<Wake>, step: StepKey) =>
 	Arr.some(wakes, (wake) => wake._tag === "Step" && wake.step === step)
@@ -576,7 +596,8 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 								"a skipped root",
 								"a seat given back",
 								"a shut window",
-								"a pause"
+								"a pause",
+								"a step waiting on a fact"
 							],
 							{ cases: 120, sense: notesOnly }
 						),
@@ -709,6 +730,9 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 							}
 							if (Arr.isReadonlyArrayNonEmpty(snapshot.paused)) {
 								c.note("a pause")
+							}
+							if (Arr.some(snapshot.awaiting, (step) => !ringsStep(found.wakes, step))) {
+								c.note("a step waiting on a fact")
 							}
 						})
 				)

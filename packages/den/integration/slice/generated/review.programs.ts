@@ -73,7 +73,8 @@ export const ReviewDen = role(
 			return r
 				.match(App.relations.ReviewLive, { resource, seat, step, root, attempt, until })
 				.find({ resource, seat, step, root, attempt, until })
-		})
+		}),
+		Delivered: App.relations.Delivered
 	},
 	{
 		insert: [
@@ -435,7 +436,35 @@ export const reviewDenPrograms = Object.freeze({
 					.match(ReviewPaused, { target, turn })
 					.where(r.not(ReviewResumed, { target, turn }))
 					.find({ target, turn })
+			}),
+			awaiting: query(ReviewDen).rule((r) => {
+				const { step, review } = v(ReviewGatherInput, "input")
+				return r
+					.match(ReviewGatherInput, { step, review })
+					.where(r.not(ReviewResult, { step }), r.not(App.relations.Delivered, { attempt: review }))
+					.find({ step })
 			})
+		})
+	),
+	reviewAwaitingOf: query(ReviewDen).rule((r) => {
+		const { step, review } = v(ReviewGatherInput, "input")
+		return r
+			.match(ReviewGatherInput, { step, review })
+			.where(
+				r.not(ReviewResult, { step }),
+				r.not(App.relations.Delivered, { attempt: review }),
+				r.eq(step, r.param("step", ReviewStep.fields.step))
+			)
+			.find({ step })
+	}),
+	reviewReady: deferrable(
+		query(ReviewDen).rule((r) => {
+			const { step, review } = v(ReviewGatherInput, "input")
+			return r
+				.match(ReviewGatherInput, { step, review })
+				.match(App.relations.Delivered, { attempt: review })
+				.where(r.not(ReviewResult, { step }), r.not(ReviewClaim, { step }))
+				.find({ step })
 		})
 	),
 	reviewReadReviewAnalyzeInput: query(reviewGraph).rule((r) => {

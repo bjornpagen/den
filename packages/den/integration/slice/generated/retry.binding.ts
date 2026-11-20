@@ -439,6 +439,8 @@ export const retryLedger = (h: RetryHandles) => {
 				uses: retry.kinds[2].finish.uses,
 				retry: retry.kinds[2].finish.retry,
 				waits: retry.kinds[2].finish.waits,
+				awaits: [],
+				writes: retry.kinds[2].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof retry.kinds)[2]["start"]>[0]
 					readonly endings: Parameters<(typeof retry.kinds)[2]["finish"]["body"]>[1]
@@ -522,6 +524,8 @@ export const retryLedger = (h: RetryHandles) => {
 				uses: retry.kinds[4].finish.uses,
 				retry: retry.kinds[4].finish.retry,
 				waits: retry.kinds[4].finish.waits,
+				awaits: [],
+				writes: retry.kinds[4].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof retry.kinds)[4]["start"]>[0]
 					readonly endings: Parameters<(typeof retry.kinds)[4]["finish"]["body"]>[1]
@@ -752,6 +756,9 @@ export const retryLedger = (h: RetryHandles) => {
 		finished: (scope) =>
 			h.den.retryFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
+		awaits: [],
+		awaiting: () => Effect.succeed(false),
+		ready: Effect.succeed([]),
 		claim: (row) =>
 			Effect.flatMap(
 				settled(
@@ -875,7 +882,8 @@ export const retryLedger = (h: RetryHandles) => {
 					holds: [],
 					exclusives: [],
 					paused: Arr.map(read.paused, (row) => row.target),
-					busy: []
+					busy: [],
+					awaiting: []
 				}
 			})
 		),

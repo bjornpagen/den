@@ -39,8 +39,9 @@ import { fanLedger } from "#integration/slice/generated/fan.binding.ts"
 import { retryLedger } from "#integration/slice/generated/retry.binding.ts"
 import { reviewLedger } from "#integration/slice/generated/review.binding.ts"
 import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
+import { writebackLedger } from "#integration/slice/generated/writeback.binding.ts"
 import type { AppLogin, Worker } from "#integration/slice/logins.ts"
-import initMigration from "#integration/slice/migrations/slice/20261120100113_init/meta.json" with { type: "json" }
+import initMigration from "#integration/slice/migrations/slice/20261120103059_init/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -70,7 +71,7 @@ const grizzleBin = `${import.meta.dirname}/../../node_modules/.bin/grizzle`
  * record lacks, or lacks one it holds (committedFolders).
  */
 const committed = Object.freeze({
-	"20261120100113_init": initMigration
+	"20261120103059_init": initMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
@@ -615,7 +616,7 @@ const travelling = <R>(ledger: Ledger<R>, opened: number): Ledger<R> => ({
 /**
  * The slice's flows' ledgers over Dbs opened on the worker's den and coordinator roles and the app's loader, each
  * reading the database's instant moved on by the time the suite's clock travels from here; and `misconfigured`, the
- * same six committing through the misconfigured loader, whose every commit meets `credentialRefused` while their own
+ * same seven committing through the misconfigured loader, whose every commit meets `credentialRefused` while their own
  * roles' calls are let in. The clock's ledger serves its wakes beside them but stands apart from `all`, the flows a
  * tick of every flow ticks, since each of its ticks requests a root of its own; its suite ticks it alone.
  */
@@ -655,6 +656,11 @@ export const openLedgers = Effect.gen(function* () {
 			coordinator: (yield* Db.open(WorkerServed.roles.review_coordinator, {})).workload,
 			retirer: (yield* Db.open(WorkerServed.roles.review_retirer, {})).workload
 		},
+		writeback: {
+			den: (yield* Db.open(WorkerServed.roles.writeback_den, {})).workload,
+			coordinator: (yield* Db.open(WorkerServed.roles.writeback_coordinator, {})).workload,
+			retirer: (yield* Db.open(WorkerServed.roles.writeback_retirer, {})).workload
+		},
 		clock: {
 			den: (yield* Db.open(WorkerServed.roles.clock_den, {})).workload,
 			coordinator: (yield* Db.open(WorkerServed.roles.clock_coordinator, {})).workload,
@@ -667,6 +673,7 @@ export const openLedgers = Effect.gen(function* () {
 	const retryBound = retryLedger({ ...roles.retry, commits })
 	const assignBound = assignLedger({ ...roles.assign, commits })
 	const reviewBound = reviewLedger({ ...roles.review, commits })
+	const writebackBound = writebackLedger({ ...roles.writeback, commits })
 	const clockBound = clockLedger({ ...roles.clock, commits })
 	const chain = { ...chainBound, ledger: travelling(chainBound.ledger, opened) }
 	const fan = { ...fanBound, ledger: travelling(fanBound.ledger, opened) }
@@ -674,6 +681,7 @@ export const openLedgers = Effect.gen(function* () {
 	const retry = { ...retryBound, ledger: travelling(retryBound.ledger, opened) }
 	const assign = { ...assignBound, ledger: travelling(assignBound.ledger, opened) }
 	const review = { ...reviewBound, ledger: travelling(reviewBound.ledger, opened) }
+	const writeback = { ...writebackBound, ledger: travelling(writebackBound.ledger, opened) }
 	const clock = { ...clockBound, ledger: travelling(clockBound.ledger, opened) }
 	const all: Ledgers<Faults> = [
 		chain.ledger,
@@ -681,7 +689,8 @@ export const openLedgers = Effect.gen(function* () {
 		sync.ledger,
 		retry.ledger,
 		assign.ledger,
-		review.ledger
+		review.ledger,
+		writeback.ledger
 	]
 	const misconfiguredLedgers: Ledgers<Faults> = [
 		chainLedger({ ...roles.chain, commits: refusing }).ledger,
@@ -689,7 +698,8 @@ export const openLedgers = Effect.gen(function* () {
 		syncLedger({ ...roles.sync, commits: refusing }).ledger,
 		retryLedger({ ...roles.retry, commits: refusing }).ledger,
 		assignLedger({ ...roles.assign, commits: refusing }).ledger,
-		reviewLedger({ ...roles.review, commits: refusing }).ledger
+		reviewLedger({ ...roles.review, commits: refusing }).ledger,
+		writebackLedger({ ...roles.writeback, commits: refusing }).ledger
 	]
 	const refused = Arr.map(misconfiguredLedgers, (ledger) => travelling(ledger, opened))
 	return {
@@ -699,6 +709,7 @@ export const openLedgers = Effect.gen(function* () {
 		retry,
 		assign,
 		review,
+		writeback,
 		clock,
 		all,
 		ledgers: Arr.append(all, clock.ledger),

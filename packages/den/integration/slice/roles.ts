@@ -7,6 +7,7 @@ import { fanGraph, fanWriter } from "#integration/slice/generated/fan.fragment.t
 import { retryGraph, retryWriter } from "#integration/slice/generated/retry.fragment.ts"
 import { reviewGraph, reviewWriter } from "#integration/slice/generated/review.fragment.ts"
 import { syncGraph, syncWriter } from "#integration/slice/generated/sync.fragment.ts"
+import { writebackGraph, writebackWriter } from "#integration/slice/generated/writeback.fragment.ts"
 import {
 	Assigned,
 	Built,
@@ -14,6 +15,7 @@ import {
 	Concluded,
 	Copied,
 	Cursor,
+	Delivered,
 	Heard,
 	Item,
 	Missed,
@@ -29,7 +31,7 @@ import {
 
 /**
  * The app's writer role: it inserts the app's items, cursors, orders, tallies, settled batches, copies, builds,
- * passages, missed questions, seen passages, assignments and their conclusions, reviews' saved groups and summaries, what throttled calls heard, the clock's chimes, and reads the weights its pages read and the passages and seen passages its
+ * passages, missed questions, seen passages, assignments and their conclusions, reviews' saved groups and summaries, the attempts the gradebook delivered, what throttled calls heard, the clock's chimes, and reads the weights its pages read and the passages and seen passages its
  * decisions read. Every flow names it as the role its steps write under, so den adds its commits to
  * it: it holds each flow's graph whole, which serves den's commits, and inserts into what each flow's `Writer` lists.
  */
@@ -52,6 +54,7 @@ export const Loader = role(
 		Concluded,
 		Reviewed,
 		Summary,
+		Delivered,
 		Heard,
 		Chimed,
 		...chainGraph.relations,
@@ -60,6 +63,7 @@ export const Loader = role(
 		...retryGraph.relations,
 		...assignGraph.relations,
 		...reviewGraph.relations,
+		...writebackGraph.relations,
 		...clockGraph.relations
 	},
 	{
@@ -79,6 +83,7 @@ export const Loader = role(
 			"Concluded",
 			"Reviewed",
 			"Summary",
+			"Delivered",
 			"Heard",
 			"Chimed",
 			...chainWriter,
@@ -87,6 +92,7 @@ export const Loader = role(
 			...retryWriter,
 			...assignWriter,
 			...reviewWriter,
+			...writebackWriter,
 			...clockWriter
 		]
 	}

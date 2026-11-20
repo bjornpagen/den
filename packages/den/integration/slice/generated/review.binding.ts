@@ -531,6 +531,8 @@ export const reviewLedger = (h: ReviewHandles) => {
 				uses: review.kinds[1].finish.uses,
 				retry: review.kinds[1].finish.retry,
 				waits: review.kinds[1].finish.waits,
+				awaits: [],
+				writes: review.kinds[1].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof review.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof review.kinds)[1]["finish"]["body"]>[1]
@@ -667,6 +669,8 @@ export const reviewLedger = (h: ReviewHandles) => {
 				uses: review.kinds[4].finish.uses,
 				retry: review.kinds[4].finish.retry,
 				waits: review.kinds[4].finish.waits,
+				awaits: [],
+				writes: review.kinds[4].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof review.kinds)[4]["start"]>[0]
 					readonly endings: Parameters<(typeof review.kinds)[4]["finish"]["body"]>[1]
@@ -885,6 +889,12 @@ export const reviewLedger = (h: ReviewHandles) => {
 		finished: (scope) =>
 			h.den.reviewFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
+		awaits: ["Delivered"],
+		awaiting: (step) =>
+			h.den.reviewAwaitingOf.once({ params: { step }, facts: {} }).pipe(settled, any),
+		ready: Effect.map(settled(h.den.reviewReady.once({ params: {}, facts: {} })), (rows) =>
+			Arr.map(rowsOf(rows), (row) => row.step)
+		),
 		claim: (row) =>
 			Effect.flatMap(
 				settled(
@@ -1017,7 +1027,8 @@ export const reviewLedger = (h: ReviewHandles) => {
 						holds: read.holds,
 						exclusives: [],
 						paused: Arr.map(read.paused, (row) => row.target),
-						busy: []
+						busy: [],
+						awaiting: Arr.map(read.awaiting, (row) => row.step)
 					}
 				})
 		),
@@ -1027,7 +1038,8 @@ export const reviewLedger = (h: ReviewHandles) => {
 				signals(h.den.reviewRequested.watch({ params: {}, facts: {} })),
 				signals(h.den.reviewRunning.watch({ params: {}, facts: {} })),
 				signals(h.den.reviewHolds.watch({ params: {}, facts: {} })),
-				signals(h.coordinator.reviewPausedAll.watch({ params: {}, facts: {} }))
+				signals(h.coordinator.reviewPausedAll.watch({ params: {}, facts: {} })),
+				signals(h.den.reviewReady.watch({ params: {}, facts: {} }))
 			],
 			{ concurrency: "unbounded" }
 		),
