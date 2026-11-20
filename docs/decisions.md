@@ -98,7 +98,7 @@
   record of it is a reference, `<P><Step><Name>Read(step, ordinal, digest, root)`, contained in its row and in the
   step's result: a row two steps of one root found is stored once (an insert of a row already present is no change),
   so a chain of turns that reads a conversation as it grows stores each of its rows once, linear in the thread, where
-  a copy per step was quadratic (DCAN's turns read their whole thread; alphatest-novus's ask).
+  a copy per step was quadratic (DCAN's turns read their whole thread; metis's ask).
   - Named, because a decision reads several relations: the child's ledger and the nearest content.
   - One statement, because a step's record is its input: reads taken on several snapshots would record a moment that
     never was.
@@ -151,7 +151,7 @@
   Anthropic's seats and the cluster as its questions scope's finish, then the save, the stamp and the dispatch, and its
   plan (DCAN) as a chain of orchestrator turns with a fan-out scope of subagents; one time-spent delivery per segment;
   and the history load as parallel chains over an outside source. den-model holds each as a program under den's laws
-  and its own (`novus.test.ts`).
+  and its own (`metis.test.ts`).
 - **What they needed is built, each a change of representation, never a branch.** The write that requests a root
   rings its admission once it has committed (`runtime/request.ts`); a turn rings what its end made eligible, the steps
   waiting on a seat it gave back among them; a finish answers an output, a child scope ends as its finish does, and an

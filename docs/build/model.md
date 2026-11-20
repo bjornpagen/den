@@ -21,7 +21,7 @@ evidence (`decisions.md`, "Settled by the evidence"), and the model follows thos
 | `properties.ts` | the twelve laws, each a pure check over a trace and the run's sends |
 | `machine.ts` | the ledger as a `@bjornpagen/testing/commands` machine over a flat program |
 | `scenarios.ts`, `search.ts` | generators, the simulator's nature drawn from a case's tape, the declaration check, a run's evidence and its laws' verdict |
-| `workloads/` | `synthetic.ts` (generated programs), W1 `timeback.ts`, W2 `alphatest.ts`, W3 `qti-sync.ts`, W4 `gold.ts`, W5 `takedown.ts`, W6 `reports.ts` (one delivery program, which AlphaTest's time-spent events share), W7 `enrollment.ts`, W8 `seed.ts`, and `edullm.ts`, all eight on one ledger; AlphaTest's work, `writeback.ts`, `gap.ts` (its plan, DCAN, inside), `history.ts`, on one ledger in `novus.ts` |
+| `workloads/` | `synthetic.ts` (generated programs), W1 `timeback.ts`, W2 `alphatest.ts`, W3 `qti-sync.ts`, W4 `gold.ts`, W5 `takedown.ts`, W6 `reports.ts` (one delivery program, which AlphaTest's time-spent events share), W7 `enrollment.ts`, W8 `seed.ts`, and `edullm.ts`, all eight on one ledger; AlphaTest's work, `writeback.ts`, `gap.ts` (its plan, DCAN, inside), `history.ts`, on one ledger in `metis.ts` |
 
 ## The program model
 

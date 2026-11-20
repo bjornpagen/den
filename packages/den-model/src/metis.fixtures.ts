@@ -1,4 +1,4 @@
-/** What the property of novus.test.ts reads: AlphaTest's limits and world, and each workload's own law. */
+/** What the property of metis.test.ts reads: AlphaTest's limits and world, and each workload's own law. */
 
 import { type Gen, int, production } from "@bjornpagen/testing/gen"
 import { Array as Arr, Option } from "effect"
@@ -15,11 +15,11 @@ import {
 	someOf,
 	writesByRoot
 } from "#workloads.fixtures.ts"
-import type { NovusLimits, NovusWorld } from "#workloads/novus.ts"
+import type { MetisLimits, MetisWorld } from "#workloads/metis.ts"
 import { TIME_SPENT } from "#workloads/reports.ts"
 
 /** What a run of AlphaTest's work notices beyond the simulator's situations. */
-export type NovusNoticed =
+export type MetisNoticed =
 	| Seen
 	| "writeback-throttled"
 	| "written-back"
@@ -35,7 +35,7 @@ export type NovusNoticed =
 /** A few seats, one often, so a fan-out on a resource is contended as often as not. */
 const seatsGen: Gen<number> = production(3, [1, 2])
 
-export const novusLimitsGen: Gen<NovusLimits> = (source) => ({
+export const metisLimitsGen: Gen<MetisLimits> = (source) => ({
 	anthropic: source.draw(seatsGen),
 	timeback: source.draw(seatsGen),
 	writeback: {
@@ -58,7 +58,7 @@ export const novusLimitsGen: Gen<NovusLimits> = (source) => ({
 	history: { lease: source.draw(leaseGen), ladder: source.draw(ladderGen) }
 })
 
-export const novusWorldGen: Gen<NovusWorld> = (source) => ({
+export const metisWorldGen: Gen<MetisWorld> = (source) => ({
 	gradings: source.draw(
 		someOf(3, (index) => (inner) => {
 			const attempt = `attempt${index}`
@@ -112,11 +112,11 @@ const failedUnder = (fact: Fact, kind: string, key: string): boolean =>
  * reported. Every time segment is delivered and none fails. A history load counts exactly the source's rows once every
  * chain ran. What must happen is checked only when the run ended quiescent and the root's steps did not fail.
  */
-export const novusLaws = (
+export const metisLaws = (
 	trace: Trace,
-	world: NovusWorld,
+	world: MetisWorld,
 	end: FairEnd,
-	note: (noticed: NovusNoticed) => void
+	note: (noticed: MetisNoticed) => void
 ) => {
 	const writes = writesByRoot(trace)
 	const of = (kind: string, key: string): ReadonlyMap<string, Datum> =>

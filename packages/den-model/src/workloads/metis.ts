@@ -10,7 +10,7 @@ import { type Graded, type WritebackLimits, writebackOf } from "#workloads/write
  * The limits of AlphaTest's background work, each its own, and the seats of its two shared bottlenecks: Anthropic's,
  * which every model call of every analysis and plan holds, and Timeback's, which every writeback call and stamp holds.
  */
-export type NovusLimits = Readonly<{
+export type MetisLimits = Readonly<{
 	anthropic: number
 	timeback: number
 	writeback: Omit<WritebackLimits, "seats">
@@ -33,7 +33,7 @@ export type Grading = Readonly<{ graded: Graded; analysis: Analysis }>
  * its gap analysis in the same transaction; its time segments, each written with the request of its Caliper delivery;
  * and the operator's history loads.
  */
-export type NovusWorld = Readonly<{
+export type MetisWorld = Readonly<{
 	gradings: ReadonlyArray<At<Grading>>
 	segments: ReadonlyArray<Report>
 	loads: ReadonlyArray<At<Load>>
@@ -46,9 +46,9 @@ const ACT_ORDER = Order.mapInput(Order.Number, (act: Act) => act.at)
  * gap analysis with its plan, the time-spent deliveries and the history load; with every act its world makes, in
  * order, and the horizon, the latest instant the world names.
  */
-export const novusOf = (
-	limits: NovusLimits,
-	world: NovusWorld
+export const metisOf = (
+	limits: MetisLimits,
+	world: MetisWorld
 ): Readonly<{ program: Program; acts: ReadonlyArray<Act>; horizon: number }> => {
 	const writeback = writebackOf({ ...limits.writeback, seats: limits.timeback })
 	const gap = gapOf({ ...limits.gap, anthropic: limits.anthropic, timeback: limits.timeback })
@@ -88,7 +88,7 @@ export const novusOf = (
 		Math.max
 	)
 	return {
-		program: together("novus", [
+		program: together("metis", [
 			writeback.program,
 			gap.program,
 			timeSpent.program,

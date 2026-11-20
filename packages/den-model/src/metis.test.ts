@@ -1,12 +1,12 @@
 import type { Reached } from "@bjornpagen/testing/features"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Effect, Option } from "effect"
-import { type NovusNoticed, novusLaws, novusLimitsGen, novusWorldGen } from "#novus.fixtures.ts"
+import { type MetisNoticed, metisLaws, metisLimitsGen, metisWorldGen } from "#metis.fixtures.ts"
 import { LAWS } from "#properties.ts"
 import { faultsGen, natureOf, platformGen } from "#scenarios.ts"
 import { evidenceOf, holds } from "#search.ts"
 import { simulate } from "#simulator.ts"
-import { novusOf } from "#workloads/novus.ts"
+import { metisOf } from "#workloads/metis.ts"
 
 /**
  * AlphaTest's background work as den programs, side by side on one ledger, under den's laws: the Timeback writeback
@@ -21,8 +21,8 @@ import { novusOf } from "#workloads/novus.ts"
  */
 export const alphatestsWorkKeepsEveryLawAndItsOwn = property.explore(
 	(source) => ({
-		limits: source.draw(novusLimitsGen),
-		world: source.draw(novusWorldGen),
+		limits: source.draw(metisLimitsGen),
+		world: source.draw(metisWorldGen),
 		platform: source.draw(platformGen),
 		faults: source.draw(faultsGen([]))
 	}),
@@ -44,17 +44,17 @@ export const alphatestsWorkKeepsEveryLawAndItsOwn = property.explore(
 			"time-spent-delivered",
 			"history-chains",
 			"history-loaded"
-		] satisfies ReadonlyArray<Reached<NovusNoticed>>,
-		check: (_, c: Case<NovusNoticed>) => (scenario) =>
+		] satisfies ReadonlyArray<Reached<MetisNoticed>>,
+		check: (_, c: Case<MetisNoticed>) => (scenario) =>
 			Effect.gen(function* () {
-				const { program, acts, horizon } = novusOf(scenario.limits, scenario.world)
+				const { program, acts, horizon } = metisOf(scenario.limits, scenario.world)
 				const run = simulate(
 					{ program, acts, platform: scenario.platform, horizon },
 					natureOf(c, scenario.faults)
 				)
 				c.noteAll(run.seen)
 				yield* holds(LAWS, evidenceOf(run, program))
-				const own = novusLaws(run.trace, scenario.world, run.end, (noticed) => c.note(noticed))
+				const own = metisLaws(run.trace, scenario.world, run.end, (noticed) => c.note(noticed))
 				if (Option.isSome(own)) {
 					return yield* own.value
 				}
