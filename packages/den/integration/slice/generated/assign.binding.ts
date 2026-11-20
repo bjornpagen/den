@@ -39,7 +39,6 @@ import { assign } from "#integration/slice/flows.ts"
 import { AssignPausable } from "#integration/slice/generated/assign.fragment.ts"
 import type {
 	AssignStep,
-	AssignDue,
 	AssignScope,
 	AssignWithin,
 	AssignAdmitted,
@@ -82,7 +81,6 @@ export interface AssignHandles {
 
 interface Rows {
 	readonly AssignStep: ReadonlyArray<Addition<typeof AssignStep>>
-	readonly AssignDue: ReadonlyArray<Addition<typeof AssignDue>>
 	readonly AssignScope: ReadonlyArray<Addition<typeof AssignScope>>
 	readonly AssignWithin: ReadonlyArray<Addition<typeof AssignWithin>>
 	readonly AssignAdmitted: ReadonlyArray<Addition<typeof AssignAdmitted>>
@@ -113,7 +111,6 @@ const pausesOf = (rows: ReadonlyArray<PauseRow>) =>
 export const assignLedger = (h: AssignHandles) => {
 	const noRows: Rows = {
 		AssignStep: [],
-		AssignDue: [],
 		AssignScope: [],
 		AssignWithin: [],
 		AssignAdmitted: [],
@@ -132,7 +129,6 @@ export const assignLedger = (h: AssignHandles) => {
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			AssignStep: [...a.rows.AssignStep, ...b.rows.AssignStep],
-			AssignDue: [...a.rows.AssignDue, ...b.rows.AssignDue],
 			AssignScope: [...a.rows.AssignScope, ...b.rows.AssignScope],
 			AssignWithin: [...a.rows.AssignWithin, ...b.rows.AssignWithin],
 			AssignAdmitted: [...a.rows.AssignAdmitted, ...b.rows.AssignAdmitted],
@@ -171,8 +167,15 @@ export const assignLedger = (h: AssignHandles) => {
 					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 						rows: {
 							...noRows,
-							AssignStep: [{ step: key, kind: "Decide", scope: scope, root: root }],
-							AssignDue: [{ step: key, at: dueAt(assign.kinds[0].due, at), root: root }],
+							AssignStep: [
+								{
+									step: key,
+									kind: "Decide",
+									scope: scope,
+									due: dueAt(assign.kinds[0].due, at),
+									root: root
+								}
+							],
 							AssignStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
 							AssignDecideInput: [
 								{
@@ -621,11 +624,7 @@ export const assignLedger = (h: AssignHandles) => {
 							const finish = yield* finishStep(scope)
 							const steps: ReadonlyArray<Addition<typeof AssignStep>> = [
 								...grown.rows.AssignStep,
-								{ step: finish, kind: "AssignmentFinish", scope, root: scope }
-							]
-							const dues: ReadonlyArray<Addition<typeof AssignDue>> = [
-								...grown.rows.AssignDue,
-								{ step: finish, at, root: scope }
+								{ step: finish, kind: "AssignmentFinish", scope, due: at, root: scope }
 							]
 							const admitted: ReadonlyArray<Addition<typeof AssignAdmitted>> = [
 								...grown.rows.AssignAdmitted,
@@ -649,7 +648,6 @@ export const assignLedger = (h: AssignHandles) => {
 											AssignDecideInputModeNearest: grown.rows.AssignDecideInputModeNearest,
 											AssignDecideInputModeWithin: grown.rows.AssignDecideInputModeWithin,
 											AssignStep: steps,
-											AssignDue: dues,
 											AssignAdmitted: admitted,
 											AssignFinish: finishes
 										}
@@ -675,7 +673,8 @@ export const assignLedger = (h: AssignHandles) => {
 				Option.map(one(rows), (row) => ({
 					runner: runners[row.kind],
 					scope: row.scope,
-					root: row.root
+					root: row.root,
+					due: row.due
 				}))
 			),
 		resultOf: (step) =>
@@ -685,10 +684,6 @@ export const assignLedger = (h: AssignHandles) => {
 		heldOf: (step) =>
 			Effect.map(settled(h.den.assignHeldOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => row.attempt)
-			),
-		dueOf: (step) =>
-			Effect.map(settled(h.den.assignDueOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.at)
 			),
 		claimsOf: (step) =>
 			Effect.map(settled(h.den.assignClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
@@ -844,12 +839,12 @@ export const assignLedger = (h: AssignHandles) => {
 						steps: Arr.map(read.steps, (s) => ({
 							step: s.step,
 							runner: runners[s.kind],
-							scope: s.scope
+							scope: s.scope,
+							due: s.due
 						})),
 						claims: read.claims,
 						retries: read.retries,
 						fenced: read.fenced,
-						dues: read.dues,
 						scopes: [
 							...Arr.flatMap(read.requested, (s) => view(s.scope, s.kind, "requested")),
 							...Arr.flatMap(read.running, (s) => view(s.scope, s.kind, "admitted"))

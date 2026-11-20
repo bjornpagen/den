@@ -44,11 +44,17 @@ const textOf = <R>(snapshot: Snapshot<R>): string => {
 		)
 	return Arr.join(
 		[
-			rows(Arr.map(snapshot.steps, (s) => ({ step: s.step, kind: s.runner.kind, scope: s.scope }))),
+			rows(
+				Arr.map(snapshot.steps, (s) => ({
+					step: s.step,
+					kind: s.runner.kind,
+					scope: s.scope,
+					due: s.due
+				}))
+			),
 			rows(snapshot.claims),
 			rows(snapshot.retries),
 			rows(snapshot.fenced),
-			rows(snapshot.dues),
 			rows(snapshot.scopes),
 			rows(snapshot.holds),
 			rows(snapshot.exclusives),

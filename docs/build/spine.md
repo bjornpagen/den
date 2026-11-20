@@ -57,7 +57,7 @@ generate, then oxfmt), and in `integration/slice`, `pnpm exec grizzle generate|c
 
 Per flow, under its prefix `P` (the flow's name): rosters `PKind` (step kinds, awaits, finishes), `PJoin` (scope
 kinds and roots), `POutcome` (`done`, `failed`); relations `PScope`, `PRoot`, `PWithin` (a child scope's parent),
-`PStep` (kind, owning scope), `PStartStep`, `PStartScope` (a join's start edges, keyed by scope and ordinal), `PFinish`
+`PStep` (kind, owning scope, the instant its first attempt is due), `PStartStep`, `PStartScope` (a join's start edges, keyed by scope and ordinal), `PFinish`
 (scope → its finish step, the finish's key race), `PClaim` (step, attempt, holder, until), `PResult` (one per step,
 done or failed), `PHeld` (the attempt whose commit holds the result), `PRefusal` (the law's id), `PExhausted`; per
 step kind `PKInput` and `PKOutput` (and `PKError` for a typed error), per join `PJInput`, per finish `PJFinishError`,

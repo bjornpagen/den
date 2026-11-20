@@ -130,7 +130,6 @@ const ledgerOf = (window: Window): Ledger<never> => ({
 	claimsOf: unread,
 	retriesOf: unread,
 	fencedOf: unread,
-	dueOf: unread,
 	scopeOf: unread,
 	unended: unread,
 	finished: unread,
@@ -175,7 +174,7 @@ interface StepSketch {
 		readonly until: number
 		readonly end: Option.Option<EndSketch>
 	}>
-	readonly due: Option.Option<number>
+	readonly due: number
 }
 
 /** A root of the windowed kind: waiting for its admission, or admitted with its steps and child scopes. */
@@ -230,7 +229,7 @@ const stepSketch: Gen<StepSketch> = (source) => ({
 			)
 		}))
 	),
-	due: source.draw(option(offset))
+	due: source.draw(offset)
 })
 
 const world: Gen<World> = (source) => ({
@@ -297,7 +296,6 @@ const built = (w: World) =>
 		const claims: Array<Snapshot<never>["claims"][number]> = []
 		const retries: Array<RetryRow> = []
 		const fenced: Array<FencedRow> = []
-		const dues: Array<Snapshot<never>["dues"][number]> = []
 		const kinds = new Map<StepKey, string>()
 		const syncs: Array<ScopeKey> = []
 		const firstKey = yield* exclusiveId(flowName, "Sync", "k0")
@@ -320,32 +318,35 @@ const built = (w: World) =>
 			for (const { value: s, index: j } of indexed(r.steps)) {
 				const step = yield* startedStep(root, j)
 				kinds.set(step, s.kind)
-				steps.push({ step, runner: runners[s.kind], scope: root })
-				if (Option.isSome(s.due)) {
-					dues.push({ step, at: at(s.due.value) })
+				steps.push({ step, runner: runners[s.kind], scope: root, due: at(s.due) })
+				if (Option.isNone(s.claim)) {
+					continue
 				}
-				if (Option.isSome(s.claim)) {
-					const c = s.claim.value
-					claims.push({ step, attempt: BigInt(c.attempt), until: at(c.until) })
-					if (Option.isSome(c.end)) {
-						const end = c.end.value
-						if (end.kind === "retry") {
-							retries.push({ step, attempt: BigInt(c.attempt), at: at(end.at), spent: end.spent })
-						} else {
-							fenced.push({ step, attempt: BigInt(c.attempt) })
-						}
+				const c = s.claim.value
+				claims.push({ step, attempt: BigInt(c.attempt), until: at(c.until) })
+				if (Option.isSome(c.end)) {
+					const end = c.end.value
+					if (end.kind === "retry") {
+						retries.push({ step, attempt: BigInt(c.attempt), at: at(end.at), spent: end.spent })
+					} else {
+						fenced.push({ step, attempt: BigInt(c.attempt) })
 					}
 				}
 			}
 			const finish = yield* finishStep(root)
 			kinds.set(finish, "RunFinish")
-			steps.push({ step: finish, runner: runners.RunFinish, scope: root })
+			steps.push({ step: finish, runner: runners.RunFinish, scope: root, due: at(r.age - 10) })
 			for (const j of ordinals(r.batches)) {
 				const batch = yield* startedScope(root, 100 + j)
 				scopes.push({ place: "child", scope: batch, kind: "Batch", parent: root })
 				const batchFinish = yield* finishStep(batch)
 				kinds.set(batchFinish, "BatchFinish")
-				steps.push({ step: batchFinish, runner: runners.BatchFinish, scope: batch })
+				steps.push({
+					step: batchFinish,
+					runner: runners.BatchFinish,
+					scope: batch,
+					due: at(r.age - 10)
+				})
 			}
 		}
 		for (const { value: y, index: i } of indexed(w.syncs)) {
@@ -389,7 +390,6 @@ const built = (w: World) =>
 			claims,
 			retries,
 			fenced,
-			dues,
 			scopes,
 			holds,
 			exclusives,
@@ -468,14 +468,7 @@ const specified = (
 		}
 		const fenced = Option.exists(latest, (c) => fencedAt(c.attempt))
 		const due = Option.match(latest, {
-			onNone: () =>
-				Option.getOrElse(
-					Option.map(
-						Arr.findFirst(snapshot.dues, (d) => d.step === p.step),
-						(d) => d.at
-					),
-					() => now
-				),
+			onNone: () => p.due,
 			onSome: (c) =>
 				fenced
 					? now

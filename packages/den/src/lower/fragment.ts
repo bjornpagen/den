@@ -474,7 +474,8 @@ export const lower = (flow: AnyFlow): Lowered => {
 		fields: [
 			{ name: "step", type: stepKey },
 			{ name: "kind", type: { kind: "closed", roster: name("Kind") } },
-			{ name: "scope", type: scopeKey }
+			{ name: "scope", type: scopeKey },
+			{ name: "due", type: instant }
 		],
 		key: ["step"]
 	})
@@ -503,14 +504,6 @@ export const lower = (flow: AnyFlow): Lowered => {
 			{ name: "step", type: stepKey }
 		],
 		key: ["scope"]
-	})
-	const Due = relation({
-		name: name("Due"),
-		fields: [
-			{ name: "step", type: stepKey },
-			{ name: "at", type: instant }
-		],
-		key: ["step"]
 	})
 	const Claim = relation({
 		name: name("Claim"),
@@ -605,7 +598,6 @@ export const lower = (flow: AnyFlow): Lowered => {
 		into(side(Finish, ["scope"]), side(Admitted, ["scope"])),
 		into(side(Finish, ["step"]), side(Step, ["step"])),
 		keyOf(Finish, ["step"]),
-		into(side(Due, ["step"]), side(Step, ["step"])),
 		into(side(Claim, ["step"]), side(Step, ["step"])),
 		{ kind: "race", relation: Claim },
 		{
@@ -1044,7 +1036,6 @@ export const lower = (flow: AnyFlow): Lowered => {
 
 	const spawning = [
 		Step,
-		Due,
 		Scope,
 		Within,
 		Admitted,

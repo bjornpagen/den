@@ -568,8 +568,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		pending: [
 			n.program("PendingRead"),
 			`query(${n.den}).rule((r) => {
-	const { step, kind, scope } = v(${r("Step")}, "step")
-	return r.match(${r("Step")}, { step, kind, scope }).where(r.not(${r("Result")}, { step })).find({ step, kind, scope })
+	const { step, kind, scope, due } = v(${r("Step")}, "step")
+	return r.match(${r("Step")}, { step, kind, scope, due }).where(r.not(${r("Result")}, { step })).find({ step, kind, scope, due })
 })`
 		],
 		requested: [
@@ -627,10 +627,6 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const { step, attempt } = v(${r("Fenced")}, "fenced")
 	return r.match(${r("Fenced")}, { step, attempt }).where(r.not(${r("Result")}, { step })).find({ step, attempt })
 })`,
-		`dues: query(${n.den}).rule((r) => {
-	const { step, at } = v(${r("Due")}, "due")
-	return r.match(${r("Due")}, { step, at }).where(r.not(${r("Result")}, { step })).find({ step, at })
-})`,
 		`requested: ${shared.requested}`,
 		`running: ${shared.running}`,
 		`withins: ${allOf(n.den, r("Within"), ["scope", "parent"])}`,
@@ -680,7 +676,6 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		[n.program("StepOf"), ownedBy(l, n.graph, r("Step"), "step")],
 		[n.program("ResultOf"), ownedBy(l, n.graph, r("Result"), "step")],
 		[n.program("HeldOf"), ownedBy(l, n.graph, r("Held"), "step")],
-		[n.program("DueOf"), ownedBy(l, n.graph, r("Due"), "step")],
 		[n.program("ScopeOf"), ownedBy(l, n.graph, r("Scope"), "scope")],
 		[n.program("WithinOf"), ownedBy(l, n.graph, r("Within"), "scope")],
 		[n.program("AdmittedOf"), ownedBy(l, n.graph, r("Admitted"), "scope")],
@@ -1278,14 +1273,13 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				`${r("Within")}: [{ scope: ${key}, parent: ${owner}, root: ${root} }]`,
 				`${r("Admitted")}: [{ scope: ${key}, root: ${root} }]`,
 				`${r("Finish")}: [{ scope: ${key}, step: finish, root: ${root} }]`,
-				`${r("Step")}: [{ step: finish, kind: ${q(j.finish.name)}, scope: ${key}, root: ${root} }]`,
-				`${r("Due")}: [{ step: finish, at, root: ${root} }]`,
+				`${r("Step")}: [{ step: finish, kind: ${q(j.finish.name)}, scope: ${key}, due: at, root: ${root} }]`,
 				extra,
 				...factsOf(j.input, key, input, root)
 			]
 		)} }, spawned: { steps: [], finishes: hasChildren(inner, ${key}) ? [] : [finish] } })))`
 
-	/** A step spawned under `owner` with key `key` and input `input`: its Step, Due and input, and `extra`. */
+	/** A step spawned under `owner` with key `key` and input `input`: its Step, first due by its kind, its input, and `extra`. */
 	const spawnedStep = (
 		s: StepIR,
 		key: string,
@@ -1295,8 +1289,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		root: string
 	): string =>
 		`({ rows: { ...noRows, ${commas([
-			`${r("Step")}: [{ step: ${key}, kind: ${q(s.name)}, scope: ${owner}, root: ${root} }]`,
-			`${r("Due")}: [{ step: ${key}, at: dueAt(${kindAt(s.index)}.due, at), root: ${root} }]`,
+			`${r("Step")}: [{ step: ${key}, kind: ${q(s.name)}, scope: ${owner}, due: dueAt(${kindAt(s.index)}.due, at), root: ${root} }]`,
 			extra,
 			...factsOf(s.input, key, input, root)
 		])} }, spawned: { steps: [{ step: ${key}, kind: ${q(s.name)}, due: dueAt(${kindAt(s.index)}.due, at) }], finishes: [] } })`
@@ -1524,8 +1517,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			"\t}",
 			`\tconst grown = yield* start${j.name}(scope, scope, input.value, at)`,
 			"\tconst finish = yield* finishStep(scope)",
-			`\tconst steps: ReadonlyArray<Addition<typeof ${r("Step")}>> = [...grown.rows.${r("Step")}, { step: finish, kind: ${q(j.finish.name)}, scope, root: scope }]`,
-			`\tconst dues: ReadonlyArray<Addition<typeof ${r("Due")}>> = [...grown.rows.${r("Due")}, { step: finish, at, root: scope }]`,
+			`\tconst steps: ReadonlyArray<Addition<typeof ${r("Step")}>> = [...grown.rows.${r("Step")}, { step: finish, kind: ${q(j.finish.name)}, scope, due: at, root: scope }]`,
 			`\tconst admitted: ReadonlyArray<Addition<typeof ${r("Admitted")}>> = [...grown.rows.${r("Admitted")}, { scope, root: scope }]`,
 			`\tconst finishes: ReadonlyArray<Addition<typeof ${r("Finish")}>> = [...grown.rows.${r("Finish")}, { scope, step: finish, root: scope }]`,
 			`\tconst outcome = yield* settled(h.den.${n.program("Admit")}.once({ params: {}, facts: { insert: { ${commas(
@@ -1535,12 +1527,11 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 							spawning,
 							(rel) =>
 								!Arr.some(l.edges, (e) => e.relation === rel) &&
-								!Arr.contains([r("Step"), r("Due"), r("Admitted"), r("Finish")], rel)
+								!Arr.contains([r("Step"), r("Admitted"), r("Finish")], rel)
 						),
 						(rel) => `${rel}: grown.rows.${rel}`
 					),
 					`${r("Step")}: steps`,
-					`${r("Due")}: dues`,
 					`${r("Admitted")}: admitted`,
 					`${r("Finish")}: finishes`
 				]
@@ -1625,11 +1616,10 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		'\t\t\tonNone: () => Arr.map(Option.toArray(Arr.findFirst(read.withins, (w) => w.scope === scope)), (w): ScopeView => ({ place: "child", scope, kind, parent: w.parent }))',
 		"\t\t})",
 		"\treturn {",
-		"\t\tsteps: Arr.map(read.steps, (s) => ({ step: s.step, runner: runners[s.kind], scope: s.scope })),",
+		"\t\tsteps: Arr.map(read.steps, (s) => ({ step: s.step, runner: runners[s.kind], scope: s.scope, due: s.due })),",
 		"\t\tclaims: read.claims,",
 		"\t\tretries: read.retries,",
 		"\t\tfenced: read.fenced,",
-		"\t\tdues: read.dues,",
 		'\t\tscopes: [...Arr.flatMap(read.requested, (s) => view(s.scope, s.kind, "requested")), ...Arr.flatMap(read.running, (s) => view(s.scope, s.kind, "admitted"))],',
 		`\t\tholds: ${resources ? "read.holds" : "[]"},`,
 		`\t\texclusives: ${exclusives ? "read.exclusives" : "[]"},`,
@@ -1757,10 +1747,9 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				`\t\t\t[${q(j.name)}, { kind: ${q(j.name)}, exclusive: ${isExclusive(j)}, window: ${kindAt(j.index)}.window, precondition: ${kindAt(j.index)}.precondition, finish: ${q(j.finish.name)}, admit: ${indented("\t\t\t")(admitOf(j))} }],`
 		),
 		"\t\t]),",
-		`\t\tstepOf: (step) => Effect.map(settled(h.den.${n.program("StepOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => ({ runner: runners[row.kind], scope: row.scope, root: row.root }))),`,
+		`\t\tstepOf: (step) => Effect.map(settled(h.den.${n.program("StepOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => ({ runner: runners[row.kind], scope: row.scope, root: row.root, due: row.due }))),`,
 		`\t\tresultOf: (step) => Effect.map(settled(h.den.${n.program("ResultOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.outcome)),`,
 		`\t\theldOf: (step) => Effect.map(settled(h.den.${n.program("HeldOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.attempt)),`,
-		`\t\tdueOf: (step) => Effect.map(settled(h.den.${n.program("DueOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.at)),`,
 		`\t\tclaimsOf: (step) => Effect.map(settled(h.den.${n.program("ClaimsOf")}.once({ params: { step }, facts: {} })), rowsOf),`,
 		`\t\tretriesOf: (step) => Effect.map(settled(h.den.${n.program("RetriesOf")}.once({ params: { step }, facts: {} })), rowsOf),`,
 		`\t\tfencedOf: (step) => Effect.map(settled(h.den.${n.program("FencedOf")}.once({ params: { step }, facts: {} })), rowsOf),`,

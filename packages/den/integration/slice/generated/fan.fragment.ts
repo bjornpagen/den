@@ -59,7 +59,7 @@ export const FanSkipped = relation(
 )
 export const FanStep = relation(
 	"FanStep",
-	{ step: DenStep, kind: closedId(FanKind), scope: DenScope, root: DenScope },
+	{ step: DenStep, kind: closedId(FanKind), scope: DenScope, due: DenInstant, root: DenScope },
 	["step", "root"]
 )
 export const FanStartStep = relation(
@@ -74,10 +74,6 @@ export const FanStartScope = relation(
 )
 export const FanFinish = relation("FanFinish", { scope: DenScope, step: DenStep, root: DenScope }, [
 	"scope",
-	"root"
-])
-export const FanDue = relation("FanDue", { step: DenStep, at: DenInstant, root: DenScope }, [
-	"step",
 	"root"
 ])
 export const FanClaim = relation(
@@ -177,7 +173,6 @@ export const fanGraph = fragment(
 		FanStartStep,
 		FanStartScope,
 		FanFinish,
-		FanDue,
 		FanClaim,
 		FanRetry,
 		FanFenced,
@@ -208,7 +203,6 @@ export const fanGraph = fragment(
 		contained(on(FanFinish, "scope", "root"), on(FanAdmitted, "scope", "root")),
 		contained(on(FanFinish, "step", "root"), on(FanStep, "step", "root")),
 		key(on(FanFinish, "step", "root")),
-		contained(on(FanDue, "step", "root"), on(FanStep, "step", "root")),
 		contained(on(FanClaim, "step", "root"), on(FanStep, "step", "root")),
 		race(FanClaim),
 		check("AttemptFromOne", FanClaim, (row) => row.ge(row.attempt, 1n)),
@@ -279,7 +273,6 @@ export const fanGraph = fragment(
 			on(FanStartStep, "root"),
 			on(FanStartScope, "root"),
 			on(FanFinish, "root"),
-			on(FanDue, "root"),
 			on(FanClaim, "root"),
 			on(FanRetry, "root"),
 			on(FanFenced, "root"),

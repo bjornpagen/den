@@ -28,7 +28,6 @@ import {
 	AssignStartStep,
 	AssignStartScope,
 	AssignFinish,
-	AssignDue,
 	AssignClaim,
 	AssignRetry,
 	AssignFenced,
@@ -75,7 +74,6 @@ export const AssignDen = role(
 			"AssignStartStep",
 			"AssignStartScope",
 			"AssignFinish",
-			"AssignDue",
 			"AssignClaim",
 			"AssignRetry",
 			"AssignFenced",
@@ -118,11 +116,11 @@ export const AssignCoordinator = role(
 )
 
 const assignPendingRead = query(AssignDen).rule((r) => {
-	const { step, kind, scope } = v(AssignStep, "step")
+	const { step, kind, scope, due } = v(AssignStep, "step")
 	return r
-		.match(AssignStep, { step, kind, scope })
+		.match(AssignStep, { step, kind, scope, due })
 		.where(r.not(AssignResult, { step }))
-		.find({ step, kind, scope })
+		.find({ step, kind, scope, due })
 })
 
 const assignRequestedRead = query(AssignDen).rule((r) => {
@@ -183,7 +181,6 @@ export const assignDenPrograms = Object.freeze({
 		.insert(AssignStartStep, [])
 		.insert(AssignStartScope, [])
 		.insert(AssignStep, [])
-		.insert(AssignDue, [])
 		.insert(AssignScope, [])
 		.insert(AssignWithin, [])
 		.insert(AssignDecideInput, [])
@@ -199,11 +196,11 @@ export const assignDenPrograms = Object.freeze({
 			.find({ scope, by, root })
 	}),
 	assignStepOf: query(assignGraph).rule((r) => {
-		const { step, kind, scope, root } = v(AssignStep, "assignStep")
+		const { step, kind, scope, due, root } = v(AssignStep, "assignStep")
 		return r
-			.match(AssignStep, { step, kind, scope, root })
+			.match(AssignStep, { step, kind, scope, due, root })
 			.where(r.eq(step, r.param("step", AssignStep.fields.step)))
-			.find({ step, kind, scope, root })
+			.find({ step, kind, scope, due, root })
 	}),
 	assignResultOf: query(assignGraph).rule((r) => {
 		const { step, outcome, root } = v(AssignResult, "assignResult")
@@ -218,13 +215,6 @@ export const assignDenPrograms = Object.freeze({
 			.match(AssignHeld, { step, attempt, root })
 			.where(r.eq(step, r.param("step", AssignHeld.fields.step)))
 			.find({ step, attempt, root })
-	}),
-	assignDueOf: query(assignGraph).rule((r) => {
-		const { step, at, root } = v(AssignDue, "assignDue")
-		return r
-			.match(AssignDue, { step, at, root })
-			.where(r.eq(step, r.param("step", AssignDue.fields.step)))
-			.find({ step, at, root })
 	}),
 	assignScopeOf: query(assignGraph).rule((r) => {
 		const { scope, kind, root } = v(AssignScope, "assignScope")
@@ -366,13 +356,6 @@ export const assignDenPrograms = Object.freeze({
 					.match(AssignFenced, { step, attempt })
 					.where(r.not(AssignResult, { step }))
 					.find({ step, attempt })
-			}),
-			dues: query(AssignDen).rule((r) => {
-				const { step, at } = v(AssignDue, "due")
-				return r
-					.match(AssignDue, { step, at })
-					.where(r.not(AssignResult, { step }))
-					.find({ step, at })
 			}),
 			requested: assignRequestedRead,
 			running: assignRunningRead,

@@ -40,7 +40,6 @@ import { fan } from "#integration/slice/flows.ts"
 import { FanPausable, FanResource } from "#integration/slice/generated/fan.fragment.ts"
 import type {
 	FanStep,
-	FanDue,
 	FanScope,
 	FanWithin,
 	FanAdmitted,
@@ -77,7 +76,6 @@ export interface FanHandles {
 
 interface Rows {
 	readonly FanStep: ReadonlyArray<Addition<typeof FanStep>>
-	readonly FanDue: ReadonlyArray<Addition<typeof FanDue>>
 	readonly FanScope: ReadonlyArray<Addition<typeof FanScope>>
 	readonly FanWithin: ReadonlyArray<Addition<typeof FanWithin>>
 	readonly FanAdmitted: ReadonlyArray<Addition<typeof FanAdmitted>>
@@ -128,7 +126,6 @@ const pausesOf = (rows: ReadonlyArray<PauseRow>) =>
 export const fanLedger = (h: FanHandles) => {
 	const noRows: Rows = {
 		FanStep: [],
-		FanDue: [],
 		FanScope: [],
 		FanWithin: [],
 		FanAdmitted: [],
@@ -145,7 +142,6 @@ export const fanLedger = (h: FanHandles) => {
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			FanStep: [...a.rows.FanStep, ...b.rows.FanStep],
-			FanDue: [...a.rows.FanDue, ...b.rows.FanDue],
 			FanScope: [...a.rows.FanScope, ...b.rows.FanScope],
 			FanWithin: [...a.rows.FanWithin, ...b.rows.FanWithin],
 			FanAdmitted: [...a.rows.FanAdmitted, ...b.rows.FanAdmitted],
@@ -173,8 +169,15 @@ export const fanLedger = (h: FanHandles) => {
 					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 						rows: {
 							...noRows,
-							FanStep: [{ step: key, kind: "Square", scope: scope, root: root }],
-							FanDue: [{ step: key, at: dueAt(fan.kinds[0].due, at), root: root }],
+							FanStep: [
+								{
+									step: key,
+									kind: "Square",
+									scope: scope,
+									due: dueAt(fan.kinds[0].due, at),
+									root: root
+								}
+							],
 							FanStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
 							FanSquareInput: [
 								{ step: key, root: root, batch: spawn.input.batch, n: spawn.input.n }
@@ -208,8 +211,9 @@ export const fanLedger = (h: FanHandles) => {
 										FanWithin: [{ scope: key, parent: scope, root: root }],
 										FanAdmitted: [{ scope: key, root: root }],
 										FanFinish: [{ scope: key, step: finish, root: root }],
-										FanStep: [{ step: finish, kind: "BatchFinish", scope: key, root: root }],
-										FanDue: [{ step: finish, at, root: root }],
+										FanStep: [
+											{ step: finish, kind: "BatchFinish", scope: key, due: at, root: root }
+										],
 										FanStartScope: [{ scope, ordinal: BigInt(ordinal), child: key, root }],
 										FanBatchInput: [
 											{ scope: key, root: root, batch: spawn.input.batch, size: spawn.input.size }
@@ -526,11 +530,7 @@ export const fanLedger = (h: FanHandles) => {
 							const finish = yield* finishStep(scope)
 							const steps: ReadonlyArray<Addition<typeof FanStep>> = [
 								...grown.rows.FanStep,
-								{ step: finish, kind: "FanRunFinish", scope, root: scope }
-							]
-							const dues: ReadonlyArray<Addition<typeof FanDue>> = [
-								...grown.rows.FanDue,
-								{ step: finish, at, root: scope }
+								{ step: finish, kind: "FanRunFinish", scope, due: at, root: scope }
 							]
 							const admitted: ReadonlyArray<Addition<typeof FanAdmitted>> = [
 								...grown.rows.FanAdmitted,
@@ -552,7 +552,6 @@ export const fanLedger = (h: FanHandles) => {
 											FanSquareInput: grown.rows.FanSquareInput,
 											FanBatchInput: grown.rows.FanBatchInput,
 											FanStep: steps,
-											FanDue: dues,
 											FanAdmitted: admitted,
 											FanFinish: finishes
 										}
@@ -578,7 +577,8 @@ export const fanLedger = (h: FanHandles) => {
 				Option.map(one(rows), (row) => ({
 					runner: runners[row.kind],
 					scope: row.scope,
-					root: row.root
+					root: row.root,
+					due: row.due
 				}))
 			),
 		resultOf: (step) =>
@@ -588,10 +588,6 @@ export const fanLedger = (h: FanHandles) => {
 		heldOf: (step) =>
 			Effect.map(settled(h.den.fanHeldOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => row.attempt)
-			),
-		dueOf: (step) =>
-			Effect.map(settled(h.den.fanDueOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.at)
 			),
 		claimsOf: (step) =>
 			Effect.map(settled(h.den.fanClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
@@ -742,12 +738,12 @@ export const fanLedger = (h: FanHandles) => {
 					steps: Arr.map(read.steps, (s) => ({
 						step: s.step,
 						runner: runners[s.kind],
-						scope: s.scope
+						scope: s.scope,
+						due: s.due
 					})),
 					claims: read.claims,
 					retries: read.retries,
 					fenced: read.fenced,
-					dues: read.dues,
 					scopes: [
 						...Arr.flatMap(read.requested, (s) => view(s.scope, s.kind, "requested")),
 						...Arr.flatMap(read.running, (s) => view(s.scope, s.kind, "admitted"))

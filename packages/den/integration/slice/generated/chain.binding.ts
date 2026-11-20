@@ -38,7 +38,6 @@ import { chain } from "#integration/slice/flows.ts"
 import { ChainPausable } from "#integration/slice/generated/chain.fragment.ts"
 import type {
 	ChainStep,
-	ChainDue,
 	ChainScope,
 	ChainWithin,
 	ChainAdmitted,
@@ -78,7 +77,6 @@ export interface ChainHandles {
 
 interface Rows {
 	readonly ChainStep: ReadonlyArray<Addition<typeof ChainStep>>
-	readonly ChainDue: ReadonlyArray<Addition<typeof ChainDue>>
 	readonly ChainScope: ReadonlyArray<Addition<typeof ChainScope>>
 	readonly ChainWithin: ReadonlyArray<Addition<typeof ChainWithin>>
 	readonly ChainAdmitted: ReadonlyArray<Addition<typeof ChainAdmitted>>
@@ -106,7 +104,6 @@ const pausesOf = (rows: ReadonlyArray<PauseRow>) =>
 export const chainLedger = (h: ChainHandles) => {
 	const noRows: Rows = {
 		ChainStep: [],
-		ChainDue: [],
 		ChainScope: [],
 		ChainWithin: [],
 		ChainAdmitted: [],
@@ -124,7 +121,6 @@ export const chainLedger = (h: ChainHandles) => {
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			ChainStep: [...a.rows.ChainStep, ...b.rows.ChainStep],
-			ChainDue: [...a.rows.ChainDue, ...b.rows.ChainDue],
 			ChainScope: [...a.rows.ChainScope, ...b.rows.ChainScope],
 			ChainWithin: [...a.rows.ChainWithin, ...b.rows.ChainWithin],
 			ChainAdmitted: [...a.rows.ChainAdmitted, ...b.rows.ChainAdmitted],
@@ -153,8 +149,15 @@ export const chainLedger = (h: ChainHandles) => {
 					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 						rows: {
 							...noRows,
-							ChainStep: [{ step: key, kind: "Page", scope: scope, root: root }],
-							ChainDue: [{ step: key, at: dueAt(chain.kinds[0].due, at), root: root }],
+							ChainStep: [
+								{
+									step: key,
+									kind: "Page",
+									scope: scope,
+									due: dueAt(chain.kinds[0].due, at),
+									root: root
+								}
+							],
 							ChainStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
 							ChainPageInput: [
 								{
@@ -190,8 +193,15 @@ export const chainLedger = (h: ChainHandles) => {
 					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 						rows: {
 							...noRows,
-							ChainStep: [{ step: key, kind: "Page", scope: scope, root: root }],
-							ChainDue: [{ step: key, at: dueAt(chain.kinds[0].due, at), root: root }],
+							ChainStep: [
+								{
+									step: key,
+									kind: "Page",
+									scope: scope,
+									due: dueAt(chain.kinds[0].due, at),
+									root: root
+								}
+							],
 							ChainStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
 							ChainPageInput: [
 								{
@@ -338,11 +348,9 @@ export const chainLedger = (h: ChainHandles) => {
 															step: key,
 															kind: "Page",
 															scope: done.turn.scope,
+															due: dueAt(chain.kinds[0].due, at),
 															root: done.turn.root
 														}
-													],
-													ChainDue: [
-														{ step: key, at: dueAt(chain.kinds[0].due, at), root: done.turn.root }
 													],
 													ChainNext: [
 														{
@@ -611,11 +619,7 @@ export const chainLedger = (h: ChainHandles) => {
 							const finish = yield* finishStep(scope)
 							const steps: ReadonlyArray<Addition<typeof ChainStep>> = [
 								...grown.rows.ChainStep,
-								{ step: finish, kind: "ChainRunFinish", scope, root: scope }
-							]
-							const dues: ReadonlyArray<Addition<typeof ChainDue>> = [
-								...grown.rows.ChainDue,
-								{ step: finish, at, root: scope }
+								{ step: finish, kind: "ChainRunFinish", scope, due: at, root: scope }
 							]
 							const admitted: ReadonlyArray<Addition<typeof ChainAdmitted>> = [
 								...grown.rows.ChainAdmitted,
@@ -637,7 +641,6 @@ export const chainLedger = (h: ChainHandles) => {
 											ChainPageInput: grown.rows.ChainPageInput,
 											ChainPageInputAfter: grown.rows.ChainPageInputAfter,
 											ChainStep: steps,
-											ChainDue: dues,
 											ChainAdmitted: admitted,
 											ChainFinish: finishes
 										}
@@ -675,11 +678,7 @@ export const chainLedger = (h: ChainHandles) => {
 							const finish = yield* finishStep(scope)
 							const steps: ReadonlyArray<Addition<typeof ChainStep>> = [
 								...grown.rows.ChainStep,
-								{ step: finish, kind: "OrderedFinish", scope, root: scope }
-							]
-							const dues: ReadonlyArray<Addition<typeof ChainDue>> = [
-								...grown.rows.ChainDue,
-								{ step: finish, at, root: scope }
+								{ step: finish, kind: "OrderedFinish", scope, due: at, root: scope }
 							]
 							const admitted: ReadonlyArray<Addition<typeof ChainAdmitted>> = [
 								...grown.rows.ChainAdmitted,
@@ -701,7 +700,6 @@ export const chainLedger = (h: ChainHandles) => {
 											ChainPageInput: grown.rows.ChainPageInput,
 											ChainPageInputAfter: grown.rows.ChainPageInputAfter,
 											ChainStep: steps,
-											ChainDue: dues,
 											ChainAdmitted: admitted,
 											ChainFinish: finishes
 										}
@@ -727,7 +725,8 @@ export const chainLedger = (h: ChainHandles) => {
 				Option.map(one(rows), (row) => ({
 					runner: runners[row.kind],
 					scope: row.scope,
-					root: row.root
+					root: row.root,
+					due: row.due
 				}))
 			),
 		resultOf: (step) =>
@@ -737,10 +736,6 @@ export const chainLedger = (h: ChainHandles) => {
 		heldOf: (step) =>
 			Effect.map(settled(h.den.chainHeldOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => row.attempt)
-			),
-		dueOf: (step) =>
-			Effect.map(settled(h.den.chainDueOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.at)
 			),
 		claimsOf: (step) =>
 			Effect.map(settled(h.den.chainClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
@@ -894,12 +889,12 @@ export const chainLedger = (h: ChainHandles) => {
 					steps: Arr.map(read.steps, (s) => ({
 						step: s.step,
 						runner: runners[s.kind],
-						scope: s.scope
+						scope: s.scope,
+						due: s.due
 					})),
 					claims: read.claims,
 					retries: read.retries,
 					fenced: read.fenced,
-					dues: read.dues,
 					scopes: [
 						...Arr.flatMap(read.requested, (s) => view(s.scope, s.kind, "requested")),
 						...Arr.flatMap(read.running, (s) => view(s.scope, s.kind, "admitted"))

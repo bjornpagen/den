@@ -138,13 +138,6 @@ CREATE TABLE "slice"."assign_done" (
   CONSTRAINT "__assign_done_pk_gzil7jvxpz" PRIMARY KEY ("step", "root")
 );
 
-CREATE TABLE "slice"."assign_due" (
-  "step" "slice"."__domain_jotafzuj2i" NOT NULL,
-  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jotafzuj2i" NOT NULL,
-  CONSTRAINT "__assign_due_pk_mgahvzt6eh" PRIMARY KEY ("step", "root")
-);
-
 CREATE TABLE "slice"."assign_exhausted" (
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
   "attempts" "slice"."__domain_gfw43vigph" NOT NULL,
@@ -259,6 +252,7 @@ CREATE TABLE "slice"."assign_step" (
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
   "kind" "slice"."assign_kind" NOT NULL,
   "scope" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "root" "slice"."__domain_jotafzuj2i" NOT NULL,
   CONSTRAINT "__assign_step_pk_2oc4ehvfzd" PRIMARY KEY ("step", "root")
 );
@@ -316,13 +310,6 @@ CREATE TABLE "slice"."chain_done" (
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
   "root" "slice"."__domain_jotafzuj2i" NOT NULL,
   CONSTRAINT "__chain_done_pk_tyyx2hmu3r" PRIMARY KEY ("step", "root")
-);
-
-CREATE TABLE "slice"."chain_due" (
-  "step" "slice"."__domain_jotafzuj2i" NOT NULL,
-  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jotafzuj2i" NOT NULL,
-  CONSTRAINT "__chain_due_pk_d5xdvmzepr" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."chain_exhausted" (
@@ -496,6 +483,7 @@ CREATE TABLE "slice"."chain_step" (
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
   "kind" "slice"."chain_kind" NOT NULL,
   "scope" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "root" "slice"."__domain_jotafzuj2i" NOT NULL,
   CONSTRAINT "__chain_step_pk_u6x5wnvfbv" PRIMARY KEY ("step", "root")
 );
@@ -554,13 +542,6 @@ CREATE TABLE "slice"."fan_done" (
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
   "root" "slice"."__domain_jotafzuj2i" NOT NULL,
   CONSTRAINT "__fan_done_pk_5u65252q52" PRIMARY KEY ("step", "root")
-);
-
-CREATE TABLE "slice"."fan_due" (
-  "step" "slice"."__domain_jotafzuj2i" NOT NULL,
-  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jotafzuj2i" NOT NULL,
-  CONSTRAINT "__fan_due_pk_yc6ppd3zm6" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_exhausted" (
@@ -716,6 +697,7 @@ CREATE TABLE "slice"."fan_step" (
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
   "kind" "slice"."fan_kind" NOT NULL,
   "scope" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "root" "slice"."__domain_jotafzuj2i" NOT NULL,
   CONSTRAINT "__fan_step_pk_2f4tcxnofk" PRIMARY KEY ("step", "root")
 );
@@ -789,13 +771,6 @@ CREATE TABLE "slice"."retry_done" (
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
   "root" "slice"."__domain_jotafzuj2i" NOT NULL,
   CONSTRAINT "__retry_done_pk_vtkpce7rkq" PRIMARY KEY ("step", "root")
-);
-
-CREATE TABLE "slice"."retry_due" (
-  "step" "slice"."__domain_jotafzuj2i" NOT NULL,
-  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jotafzuj2i" NOT NULL,
-  CONSTRAINT "__retry_due_pk_lerzzlnz7o" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_exhausted" (
@@ -934,6 +909,7 @@ CREATE TABLE "slice"."retry_step" (
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
   "kind" "slice"."retry_kind" NOT NULL,
   "scope" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "root" "slice"."__domain_jotafzuj2i" NOT NULL,
   CONSTRAINT "__retry_step_pk_opjqidwhzg" PRIMARY KEY ("step", "root")
 );
@@ -1005,13 +981,6 @@ CREATE TABLE "slice"."sync_done" (
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
   "root" "slice"."__domain_jotafzuj2i" NOT NULL,
   CONSTRAINT "__sync_done_pk_nllomjb7og" PRIMARY KEY ("step", "root")
-);
-
-CREATE TABLE "slice"."sync_due" (
-  "step" "slice"."__domain_jotafzuj2i" NOT NULL,
-  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jotafzuj2i" NOT NULL,
-  CONSTRAINT "__sync_due_pk_hkeoswqthe" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_exclusive" (
@@ -1158,6 +1127,7 @@ CREATE TABLE "slice"."sync_step" (
   "step" "slice"."__domain_jotafzuj2i" NOT NULL,
   "kind" "slice"."sync_kind" NOT NULL,
   "scope" "slice"."__domain_jotafzuj2i" NOT NULL,
+  "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "root" "slice"."__domain_jotafzuj2i" NOT NULL,
   CONSTRAINT "__sync_step_pk_wfgcxdvbwo" PRIMARY KEY ("step", "root")
 );
@@ -1457,104 +1427,98 @@ BEGIN
     RETURNING 1 AS "c1"
   ),
   "r56" AS (
-    DELETE FROM "slice"."assign_due" AS "r57"
+    DELETE FROM "slice"."assign_exhausted" AS "r57"
     USING "r1" AS "r58"
     WHERE "r57"."root" = "r58"."c1"
     RETURNING 1 AS "c1"
   ),
   "r59" AS (
-    DELETE FROM "slice"."assign_exhausted" AS "r60"
+    DELETE FROM "slice"."assign_failed" AS "r60"
     USING "r1" AS "r61"
     WHERE "r60"."root" = "r61"."c1"
     RETURNING 1 AS "c1"
   ),
   "r62" AS (
-    DELETE FROM "slice"."assign_failed" AS "r63"
+    DELETE FROM "slice"."assign_fenced" AS "r63"
     USING "r1" AS "r64"
     WHERE "r63"."root" = "r64"."c1"
     RETURNING 1 AS "c1"
   ),
   "r65" AS (
-    DELETE FROM "slice"."assign_fenced" AS "r66"
+    DELETE FROM "slice"."assign_finish" AS "r66"
     USING "r1" AS "r67"
     WHERE "r66"."root" = "r67"."c1"
     RETURNING 1 AS "c1"
   ),
   "r68" AS (
-    DELETE FROM "slice"."assign_finish" AS "r69"
+    DELETE FROM "slice"."assign_held" AS "r69"
     USING "r1" AS "r70"
     WHERE "r69"."root" = "r70"."c1"
     RETURNING 1 AS "c1"
   ),
   "r71" AS (
-    DELETE FROM "slice"."assign_held" AS "r72"
+    DELETE FROM "slice"."assign_refusal" AS "r72"
     USING "r1" AS "r73"
     WHERE "r72"."root" = "r73"."c1"
     RETURNING 1 AS "c1"
   ),
   "r74" AS (
-    DELETE FROM "slice"."assign_refusal" AS "r75"
+    DELETE FROM "slice"."assign_result" AS "r75"
     USING "r1" AS "r76"
     WHERE "r75"."root" = "r76"."c1"
     RETURNING 1 AS "c1"
   ),
   "r77" AS (
-    DELETE FROM "slice"."assign_result" AS "r78"
+    DELETE FROM "slice"."assign_retry" AS "r78"
     USING "r1" AS "r79"
     WHERE "r78"."root" = "r79"."c1"
     RETURNING 1 AS "c1"
   ),
   "r80" AS (
-    DELETE FROM "slice"."assign_retry" AS "r81"
+    DELETE FROM "slice"."assign_scope" AS "r81"
     USING "r1" AS "r82"
     WHERE "r81"."root" = "r82"."c1"
     RETURNING 1 AS "c1"
   ),
   "r83" AS (
-    DELETE FROM "slice"."assign_scope" AS "r84"
+    DELETE FROM "slice"."assign_skipped" AS "r84"
     USING "r1" AS "r85"
     WHERE "r84"."root" = "r85"."c1"
     RETURNING 1 AS "c1"
   ),
   "r86" AS (
-    DELETE FROM "slice"."assign_skipped" AS "r87"
+    DELETE FROM "slice"."assign_start_scope" AS "r87"
     USING "r1" AS "r88"
     WHERE "r87"."root" = "r88"."c1"
     RETURNING 1 AS "c1"
   ),
   "r89" AS (
-    DELETE FROM "slice"."assign_start_scope" AS "r90"
+    DELETE FROM "slice"."assign_start_step" AS "r90"
     USING "r1" AS "r91"
     WHERE "r90"."root" = "r91"."c1"
     RETURNING 1 AS "c1"
   ),
   "r92" AS (
-    DELETE FROM "slice"."assign_start_step" AS "r93"
+    DELETE FROM "slice"."assign_step" AS "r93"
     USING "r1" AS "r94"
     WHERE "r93"."root" = "r94"."c1"
     RETURNING 1 AS "c1"
   ),
   "r95" AS (
-    DELETE FROM "slice"."assign_step" AS "r96"
+    DELETE FROM "slice"."assign_within" AS "r96"
     USING "r1" AS "r97"
     WHERE "r96"."root" = "r97"."c1"
     RETURNING 1 AS "c1"
   ),
   "r98" AS (
-    DELETE FROM "slice"."assign_within" AS "r99"
-    USING "r1" AS "r100"
-    WHERE "r99"."root" = "r100"."c1"
-    RETURNING 1 AS "c1"
-  ),
-  "r101" AS (
-    UPDATE "slice"."assign_root" AS "r102"
+    UPDATE "slice"."assign_root" AS "r99"
     SET "retired" = true
-    FROM "r1" AS "r103"
-    WHERE "r102"."scope" = "r103"."c1"
+    FROM "r1" AS "r100"
+    WHERE "r99"."scope" = "r100"."c1"
     RETURNING 1 AS "c1"
   )
-  SELECT "r105"."c1" AS "c1"
-  FROM (SELECT "pg_catalog"."array_agg"("r104"."c2" ORDER BY "r104"."c1") AS "c1", "r104"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r101" AS "r106" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r107" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r108" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r109" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r110" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r111" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r112" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r113" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r114" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r115" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r116" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r117" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r118" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r119" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r120" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r121" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r122" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r123" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r124" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r125" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r126" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r127" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r128" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r129" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r130" UNION ALL SELECT 25 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r131" UNION ALL SELECT 26 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r80" AS "r132" UNION ALL SELECT 27 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r83" AS "r133" UNION ALL SELECT 28 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r86" AS "r134" UNION ALL SELECT 29 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r89" AS "r135" UNION ALL SELECT 30 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r92" AS "r136" UNION ALL SELECT 31 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r95" AS "r137" UNION ALL SELECT 32 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r98" AS "r138") AS "r104"("c1", "c2", "c3") GROUP BY "r104"."c3") AS "r105"("c1", "c2")
+  SELECT "r102"."c1" AS "c1"
+  FROM (SELECT "pg_catalog"."array_agg"("r101"."c2" ORDER BY "r101"."c1") AS "c1", "r101"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r98" AS "r103" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r104" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r105" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r106" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r107" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r108" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r109" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r110" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r111" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r112" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r113" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r114" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r115" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r116" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r117" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r118" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r119" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r120" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r121" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r122" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r123" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r124" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r125" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r126" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r127" UNION ALL SELECT 25 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r128" UNION ALL SELECT 26 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r80" AS "r129" UNION ALL SELECT 27 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r83" AS "r130" UNION ALL SELECT 28 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r86" AS "r131" UNION ALL SELECT 29 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r89" AS "r132" UNION ALL SELECT 30 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r92" AS "r133" UNION ALL SELECT 31 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r95" AS "r134") AS "r101"("c1", "c2", "c3") GROUP BY "r101"."c3") AS "r102"("c1", "c2")
   LIMIT 1::bigint
   ;
 END
@@ -1596,146 +1560,140 @@ BEGIN
     RETURNING 1 AS "c1"
   ),
   "r17" AS (
-    DELETE FROM "slice"."chain_due" AS "r18"
+    DELETE FROM "slice"."chain_exhausted" AS "r18"
     USING "r1" AS "r19"
     WHERE "r18"."root" = "r19"."c1"
     RETURNING 1 AS "c1"
   ),
   "r20" AS (
-    DELETE FROM "slice"."chain_exhausted" AS "r21"
+    DELETE FROM "slice"."chain_failed" AS "r21"
     USING "r1" AS "r22"
     WHERE "r21"."root" = "r22"."c1"
     RETURNING 1 AS "c1"
   ),
   "r23" AS (
-    DELETE FROM "slice"."chain_failed" AS "r24"
+    DELETE FROM "slice"."chain_fenced" AS "r24"
     USING "r1" AS "r25"
     WHERE "r24"."root" = "r25"."c1"
     RETURNING 1 AS "c1"
   ),
   "r26" AS (
-    DELETE FROM "slice"."chain_fenced" AS "r27"
+    DELETE FROM "slice"."chain_finish" AS "r27"
     USING "r1" AS "r28"
     WHERE "r27"."root" = "r28"."c1"
     RETURNING 1 AS "c1"
   ),
   "r29" AS (
-    DELETE FROM "slice"."chain_finish" AS "r30"
+    DELETE FROM "slice"."chain_held" AS "r30"
     USING "r1" AS "r31"
     WHERE "r30"."root" = "r31"."c1"
     RETURNING 1 AS "c1"
   ),
   "r32" AS (
-    DELETE FROM "slice"."chain_held" AS "r33"
+    DELETE FROM "slice"."chain_next" AS "r33"
     USING "r1" AS "r34"
     WHERE "r33"."root" = "r34"."c1"
     RETURNING 1 AS "c1"
   ),
   "r35" AS (
-    DELETE FROM "slice"."chain_next" AS "r36"
+    DELETE FROM "slice"."chain_ordered_input" AS "r36"
     USING "r1" AS "r37"
     WHERE "r36"."root" = "r37"."c1"
     RETURNING 1 AS "c1"
   ),
   "r38" AS (
-    DELETE FROM "slice"."chain_ordered_input" AS "r39"
+    DELETE FROM "slice"."chain_page_input" AS "r39"
     USING "r1" AS "r40"
     WHERE "r39"."root" = "r40"."c1"
     RETURNING 1 AS "c1"
   ),
   "r41" AS (
-    DELETE FROM "slice"."chain_page_input" AS "r42"
+    DELETE FROM "slice"."chain_page_input_after" AS "r42"
     USING "r1" AS "r43"
     WHERE "r42"."root" = "r43"."c1"
     RETURNING 1 AS "c1"
   ),
   "r44" AS (
-    DELETE FROM "slice"."chain_page_input_after" AS "r45"
+    DELETE FROM "slice"."chain_page_output" AS "r45"
     USING "r1" AS "r46"
     WHERE "r45"."root" = "r46"."c1"
     RETURNING 1 AS "c1"
   ),
   "r47" AS (
-    DELETE FROM "slice"."chain_page_output" AS "r48"
+    DELETE FROM "slice"."chain_page_output_next" AS "r48"
     USING "r1" AS "r49"
     WHERE "r48"."root" = "r49"."c1"
     RETURNING 1 AS "c1"
   ),
   "r50" AS (
-    DELETE FROM "slice"."chain_page_output_next" AS "r51"
+    DELETE FROM "slice"."chain_page_weights_read" AS "r51"
     USING "r1" AS "r52"
     WHERE "r51"."root" = "r52"."c1"
     RETURNING 1 AS "c1"
   ),
   "r53" AS (
-    DELETE FROM "slice"."chain_page_weights_read" AS "r54"
+    DELETE FROM "slice"."chain_refusal" AS "r54"
     USING "r1" AS "r55"
     WHERE "r54"."root" = "r55"."c1"
     RETURNING 1 AS "c1"
   ),
   "r56" AS (
-    DELETE FROM "slice"."chain_refusal" AS "r57"
+    DELETE FROM "slice"."chain_result" AS "r57"
     USING "r1" AS "r58"
     WHERE "r57"."root" = "r58"."c1"
     RETURNING 1 AS "c1"
   ),
   "r59" AS (
-    DELETE FROM "slice"."chain_result" AS "r60"
+    DELETE FROM "slice"."chain_retry" AS "r60"
     USING "r1" AS "r61"
     WHERE "r60"."root" = "r61"."c1"
     RETURNING 1 AS "c1"
   ),
   "r62" AS (
-    DELETE FROM "slice"."chain_retry" AS "r63"
+    DELETE FROM "slice"."chain_scope" AS "r63"
     USING "r1" AS "r64"
     WHERE "r63"."root" = "r64"."c1"
     RETURNING 1 AS "c1"
   ),
   "r65" AS (
-    DELETE FROM "slice"."chain_scope" AS "r66"
+    DELETE FROM "slice"."chain_skipped" AS "r66"
     USING "r1" AS "r67"
     WHERE "r66"."root" = "r67"."c1"
     RETURNING 1 AS "c1"
   ),
   "r68" AS (
-    DELETE FROM "slice"."chain_skipped" AS "r69"
+    DELETE FROM "slice"."chain_start_scope" AS "r69"
     USING "r1" AS "r70"
     WHERE "r69"."root" = "r70"."c1"
     RETURNING 1 AS "c1"
   ),
   "r71" AS (
-    DELETE FROM "slice"."chain_start_scope" AS "r72"
+    DELETE FROM "slice"."chain_start_step" AS "r72"
     USING "r1" AS "r73"
     WHERE "r72"."root" = "r73"."c1"
     RETURNING 1 AS "c1"
   ),
   "r74" AS (
-    DELETE FROM "slice"."chain_start_step" AS "r75"
+    DELETE FROM "slice"."chain_step" AS "r75"
     USING "r1" AS "r76"
     WHERE "r75"."root" = "r76"."c1"
     RETURNING 1 AS "c1"
   ),
   "r77" AS (
-    DELETE FROM "slice"."chain_step" AS "r78"
+    DELETE FROM "slice"."chain_within" AS "r78"
     USING "r1" AS "r79"
     WHERE "r78"."root" = "r79"."c1"
     RETURNING 1 AS "c1"
   ),
   "r80" AS (
-    DELETE FROM "slice"."chain_within" AS "r81"
-    USING "r1" AS "r82"
-    WHERE "r81"."root" = "r82"."c1"
-    RETURNING 1 AS "c1"
-  ),
-  "r83" AS (
-    UPDATE "slice"."chain_root" AS "r84"
+    UPDATE "slice"."chain_root" AS "r81"
     SET "retired" = true
-    FROM "r1" AS "r85"
-    WHERE "r84"."scope" = "r85"."c1"
+    FROM "r1" AS "r82"
+    WHERE "r81"."scope" = "r82"."c1"
     RETURNING 1 AS "c1"
   )
-  SELECT "r87"."c1" AS "c1"
-  FROM (SELECT "pg_catalog"."array_agg"("r86"."c2" ORDER BY "r86"."c1") AS "c1", "r86"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r83" AS "r88" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r89" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r90" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r91" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r92" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r93" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r94" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r95" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r96" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r97" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r98" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r99" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r100" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r101" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r102" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r103" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r104" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r105" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r106" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r107" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r108" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r109" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r110" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r111" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r112" UNION ALL SELECT 25 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r113" UNION ALL SELECT 26 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r80" AS "r114") AS "r86"("c1", "c2", "c3") GROUP BY "r86"."c3") AS "r87"("c1", "c2")
+  SELECT "r84"."c1" AS "c1"
+  FROM (SELECT "pg_catalog"."array_agg"("r83"."c2" ORDER BY "r83"."c1") AS "c1", "r83"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r80" AS "r85" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r86" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r87" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r88" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r89" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r90" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r91" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r92" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r93" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r94" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r95" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r96" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r97" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r98" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r99" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r100" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r101" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r102" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r103" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r104" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r105" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r106" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r107" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r108" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r109" UNION ALL SELECT 25 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r110") AS "r83"("c1", "c2", "c3") GROUP BY "r83"."c3") AS "r84"("c1", "c2")
   LIMIT 1::bigint
   ;
 END
@@ -1777,122 +1735,116 @@ BEGIN
     RETURNING 1 AS "c1"
   ),
   "r17" AS (
-    DELETE FROM "slice"."fan_due" AS "r18"
+    DELETE FROM "slice"."fan_exhausted" AS "r18"
     USING "r1" AS "r19"
     WHERE "r18"."root" = "r19"."c1"
     RETURNING 1 AS "c1"
   ),
   "r20" AS (
-    DELETE FROM "slice"."fan_exhausted" AS "r21"
+    DELETE FROM "slice"."fan_failed" AS "r21"
     USING "r1" AS "r22"
     WHERE "r21"."root" = "r22"."c1"
     RETURNING 1 AS "c1"
   ),
   "r23" AS (
-    DELETE FROM "slice"."fan_failed" AS "r24"
+    DELETE FROM "slice"."fan_fan_run_input" AS "r24"
     USING "r1" AS "r25"
     WHERE "r24"."root" = "r25"."c1"
     RETURNING 1 AS "c1"
   ),
   "r26" AS (
-    DELETE FROM "slice"."fan_fan_run_input" AS "r27"
+    DELETE FROM "slice"."fan_fenced" AS "r27"
     USING "r1" AS "r28"
     WHERE "r27"."root" = "r28"."c1"
     RETURNING 1 AS "c1"
   ),
   "r29" AS (
-    DELETE FROM "slice"."fan_fenced" AS "r30"
+    DELETE FROM "slice"."fan_finish" AS "r30"
     USING "r1" AS "r31"
     WHERE "r30"."root" = "r31"."c1"
     RETURNING 1 AS "c1"
   ),
   "r32" AS (
-    DELETE FROM "slice"."fan_finish" AS "r33"
+    DELETE FROM "slice"."fan_held" AS "r33"
     USING "r1" AS "r34"
     WHERE "r33"."root" = "r34"."c1"
     RETURNING 1 AS "c1"
   ),
   "r35" AS (
-    DELETE FROM "slice"."fan_held" AS "r36"
+    DELETE FROM "slice"."fan_refusal" AS "r36"
     USING "r1" AS "r37"
     WHERE "r36"."root" = "r37"."c1"
     RETURNING 1 AS "c1"
   ),
   "r38" AS (
-    DELETE FROM "slice"."fan_refusal" AS "r39"
+    DELETE FROM "slice"."fan_result" AS "r39"
     USING "r1" AS "r40"
     WHERE "r39"."root" = "r40"."c1"
     RETURNING 1 AS "c1"
   ),
   "r41" AS (
-    DELETE FROM "slice"."fan_result" AS "r42"
+    DELETE FROM "slice"."fan_retry" AS "r42"
     USING "r1" AS "r43"
     WHERE "r42"."root" = "r43"."c1"
     RETURNING 1 AS "c1"
   ),
   "r44" AS (
-    DELETE FROM "slice"."fan_retry" AS "r45"
+    DELETE FROM "slice"."fan_scope" AS "r45"
     USING "r1" AS "r46"
     WHERE "r45"."root" = "r46"."c1"
     RETURNING 1 AS "c1"
   ),
   "r47" AS (
-    DELETE FROM "slice"."fan_scope" AS "r48"
+    DELETE FROM "slice"."fan_skipped" AS "r48"
     USING "r1" AS "r49"
     WHERE "r48"."root" = "r49"."c1"
     RETURNING 1 AS "c1"
   ),
   "r50" AS (
-    DELETE FROM "slice"."fan_skipped" AS "r51"
+    DELETE FROM "slice"."fan_square_input" AS "r51"
     USING "r1" AS "r52"
     WHERE "r51"."root" = "r52"."c1"
     RETURNING 1 AS "c1"
   ),
   "r53" AS (
-    DELETE FROM "slice"."fan_square_input" AS "r54"
+    DELETE FROM "slice"."fan_square_output" AS "r54"
     USING "r1" AS "r55"
     WHERE "r54"."root" = "r55"."c1"
     RETURNING 1 AS "c1"
   ),
   "r56" AS (
-    DELETE FROM "slice"."fan_square_output" AS "r57"
+    DELETE FROM "slice"."fan_start_scope" AS "r57"
     USING "r1" AS "r58"
     WHERE "r57"."root" = "r58"."c1"
     RETURNING 1 AS "c1"
   ),
   "r59" AS (
-    DELETE FROM "slice"."fan_start_scope" AS "r60"
+    DELETE FROM "slice"."fan_start_step" AS "r60"
     USING "r1" AS "r61"
     WHERE "r60"."root" = "r61"."c1"
     RETURNING 1 AS "c1"
   ),
   "r62" AS (
-    DELETE FROM "slice"."fan_start_step" AS "r63"
+    DELETE FROM "slice"."fan_step" AS "r63"
     USING "r1" AS "r64"
     WHERE "r63"."root" = "r64"."c1"
     RETURNING 1 AS "c1"
   ),
   "r65" AS (
-    DELETE FROM "slice"."fan_step" AS "r66"
+    DELETE FROM "slice"."fan_within" AS "r66"
     USING "r1" AS "r67"
     WHERE "r66"."root" = "r67"."c1"
     RETURNING 1 AS "c1"
   ),
   "r68" AS (
-    DELETE FROM "slice"."fan_within" AS "r69"
-    USING "r1" AS "r70"
-    WHERE "r69"."root" = "r70"."c1"
-    RETURNING 1 AS "c1"
-  ),
-  "r71" AS (
-    UPDATE "slice"."fan_root" AS "r72"
+    UPDATE "slice"."fan_root" AS "r69"
     SET "retired" = true
-    FROM "r1" AS "r73"
-    WHERE "r72"."scope" = "r73"."c1"
+    FROM "r1" AS "r70"
+    WHERE "r69"."scope" = "r70"."c1"
     RETURNING 1 AS "c1"
   )
-  SELECT "r75"."c1" AS "c1"
-  FROM (SELECT "pg_catalog"."array_agg"("r74"."c2" ORDER BY "r74"."c1") AS "c1", "r74"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r76" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r77" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r78" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r79" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r80" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r81" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r82" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r83" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r84" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r85" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r86" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r87" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r88" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r89" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r90" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r91" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r92" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r93" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r94" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r95" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r96" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r97" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r98") AS "r74"("c1", "c2", "c3") GROUP BY "r74"."c3") AS "r75"("c1", "c2")
+  SELECT "r72"."c1" AS "c1"
+  FROM (SELECT "pg_catalog"."array_agg"("r71"."c2" ORDER BY "r71"."c1") AS "c1", "r71"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r73" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r74" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r75" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r76" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r77" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r78" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r79" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r80" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r81" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r82" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r83" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r84" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r85" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r86" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r87" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r88" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r89" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r90" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r91" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r92" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r93" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r94") AS "r71"("c1", "c2", "c3") GROUP BY "r71"."c3") AS "r72"("c1", "c2")
   LIMIT 1::bigint
   ;
 END
@@ -1940,122 +1892,116 @@ BEGIN
     RETURNING 1 AS "c1"
   ),
   "r20" AS (
-    DELETE FROM "slice"."retry_due" AS "r21"
+    DELETE FROM "slice"."retry_exhausted" AS "r21"
     USING "r1" AS "r22"
     WHERE "r21"."root" = "r22"."c1"
     RETURNING 1 AS "c1"
   ),
   "r23" AS (
-    DELETE FROM "slice"."retry_exhausted" AS "r24"
+    DELETE FROM "slice"."retry_failed" AS "r24"
     USING "r1" AS "r25"
     WHERE "r24"."root" = "r25"."c1"
     RETURNING 1 AS "c1"
   ),
   "r26" AS (
-    DELETE FROM "slice"."retry_failed" AS "r27"
+    DELETE FROM "slice"."retry_fenced" AS "r27"
     USING "r1" AS "r28"
     WHERE "r27"."root" = "r28"."c1"
     RETURNING 1 AS "c1"
   ),
   "r29" AS (
-    DELETE FROM "slice"."retry_fenced" AS "r30"
+    DELETE FROM "slice"."retry_finish" AS "r30"
     USING "r1" AS "r31"
     WHERE "r30"."root" = "r31"."c1"
     RETURNING 1 AS "c1"
   ),
   "r32" AS (
-    DELETE FROM "slice"."retry_finish" AS "r33"
+    DELETE FROM "slice"."retry_held" AS "r33"
     USING "r1" AS "r34"
     WHERE "r33"."root" = "r34"."c1"
     RETURNING 1 AS "c1"
   ),
   "r35" AS (
-    DELETE FROM "slice"."retry_held" AS "r36"
+    DELETE FROM "slice"."retry_ladders_input" AS "r36"
     USING "r1" AS "r37"
     WHERE "r36"."root" = "r37"."c1"
     RETURNING 1 AS "c1"
   ),
   "r38" AS (
-    DELETE FROM "slice"."retry_ladders_input" AS "r39"
+    DELETE FROM "slice"."retry_refusal" AS "r39"
     USING "r1" AS "r40"
     WHERE "r39"."root" = "r40"."c1"
     RETURNING 1 AS "c1"
   ),
   "r41" AS (
-    DELETE FROM "slice"."retry_refusal" AS "r42"
+    DELETE FROM "slice"."retry_result" AS "r42"
     USING "r1" AS "r43"
     WHERE "r42"."root" = "r43"."c1"
     RETURNING 1 AS "c1"
   ),
   "r44" AS (
-    DELETE FROM "slice"."retry_result" AS "r45"
+    DELETE FROM "slice"."retry_retry" AS "r45"
     USING "r1" AS "r46"
     WHERE "r45"."root" = "r46"."c1"
     RETURNING 1 AS "c1"
   ),
   "r47" AS (
-    DELETE FROM "slice"."retry_retry" AS "r48"
+    DELETE FROM "slice"."retry_scope" AS "r48"
     USING "r1" AS "r49"
     WHERE "r48"."root" = "r49"."c1"
     RETURNING 1 AS "c1"
   ),
   "r50" AS (
-    DELETE FROM "slice"."retry_scope" AS "r51"
+    DELETE FROM "slice"."retry_skipped" AS "r51"
     USING "r1" AS "r52"
     WHERE "r51"."root" = "r52"."c1"
     RETURNING 1 AS "c1"
   ),
   "r53" AS (
-    DELETE FROM "slice"."retry_skipped" AS "r54"
+    DELETE FROM "slice"."retry_start_scope" AS "r54"
     USING "r1" AS "r55"
     WHERE "r54"."root" = "r55"."c1"
     RETURNING 1 AS "c1"
   ),
   "r56" AS (
-    DELETE FROM "slice"."retry_start_scope" AS "r57"
+    DELETE FROM "slice"."retry_start_step" AS "r57"
     USING "r1" AS "r58"
     WHERE "r57"."root" = "r58"."c1"
     RETURNING 1 AS "c1"
   ),
   "r59" AS (
-    DELETE FROM "slice"."retry_start_step" AS "r60"
+    DELETE FROM "slice"."retry_steadfast_input" AS "r60"
     USING "r1" AS "r61"
     WHERE "r60"."root" = "r61"."c1"
     RETURNING 1 AS "c1"
   ),
   "r62" AS (
-    DELETE FROM "slice"."retry_steadfast_input" AS "r63"
+    DELETE FROM "slice"."retry_steadfast_output" AS "r63"
     USING "r1" AS "r64"
     WHERE "r63"."root" = "r64"."c1"
     RETURNING 1 AS "c1"
   ),
   "r65" AS (
-    DELETE FROM "slice"."retry_steadfast_output" AS "r66"
+    DELETE FROM "slice"."retry_step" AS "r66"
     USING "r1" AS "r67"
     WHERE "r66"."root" = "r67"."c1"
     RETURNING 1 AS "c1"
   ),
   "r68" AS (
-    DELETE FROM "slice"."retry_step" AS "r69"
+    DELETE FROM "slice"."retry_within" AS "r69"
     USING "r1" AS "r70"
     WHERE "r69"."root" = "r70"."c1"
     RETURNING 1 AS "c1"
   ),
   "r71" AS (
-    DELETE FROM "slice"."retry_within" AS "r72"
-    USING "r1" AS "r73"
-    WHERE "r72"."root" = "r73"."c1"
-    RETURNING 1 AS "c1"
-  ),
-  "r74" AS (
-    UPDATE "slice"."retry_root" AS "r75"
+    UPDATE "slice"."retry_root" AS "r72"
     SET "retired" = true
-    FROM "r1" AS "r76"
-    WHERE "r75"."scope" = "r76"."c1"
+    FROM "r1" AS "r73"
+    WHERE "r72"."scope" = "r73"."c1"
     RETURNING 1 AS "c1"
   )
-  SELECT "r78"."c1" AS "c1"
-  FROM (SELECT "pg_catalog"."array_agg"("r77"."c2" ORDER BY "r77"."c1") AS "c1", "r77"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r79" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r80" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r81" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r82" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r83" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r84" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r85" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r86" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r87" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r88" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r89" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r90" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r91" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r92" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r93" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r94" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r95" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r96" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r97" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r98" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r99" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r100" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r101" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r102") AS "r77"("c1", "c2", "c3") GROUP BY "r77"."c3") AS "r78"("c1", "c2")
+  SELECT "r75"."c1" AS "c1"
+  FROM (SELECT "pg_catalog"."array_agg"("r74"."c2" ORDER BY "r74"."c1") AS "c1", "r74"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r76" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r77" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r78" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r79" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r80" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r81" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r82" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r83" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r84" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r85" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r86" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r87" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r88" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r89" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r90" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r91" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r92" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r93" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r94" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r95" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r96" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r97" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r98") AS "r74"("c1", "c2", "c3") GROUP BY "r74"."c3") AS "r75"("c1", "c2")
   LIMIT 1::bigint
   ;
 END
@@ -2115,122 +2061,116 @@ BEGIN
     RETURNING 1 AS "c1"
   ),
   "r26" AS (
-    DELETE FROM "slice"."sync_due" AS "r27"
+    DELETE FROM "slice"."sync_exclusive_key" AS "r27"
     USING "r1" AS "r28"
     WHERE "r27"."root" = "r28"."c1"
     RETURNING 1 AS "c1"
   ),
   "r29" AS (
-    DELETE FROM "slice"."sync_exclusive_key" AS "r30"
+    DELETE FROM "slice"."sync_exhausted" AS "r30"
     USING "r1" AS "r31"
     WHERE "r30"."root" = "r31"."c1"
     RETURNING 1 AS "c1"
   ),
   "r32" AS (
-    DELETE FROM "slice"."sync_exhausted" AS "r33"
+    DELETE FROM "slice"."sync_failed" AS "r33"
     USING "r1" AS "r34"
     WHERE "r33"."root" = "r34"."c1"
     RETURNING 1 AS "c1"
   ),
   "r35" AS (
-    DELETE FROM "slice"."sync_failed" AS "r36"
+    DELETE FROM "slice"."sync_fenced" AS "r36"
     USING "r1" AS "r37"
     WHERE "r36"."root" = "r37"."c1"
     RETURNING 1 AS "c1"
   ),
   "r38" AS (
-    DELETE FROM "slice"."sync_fenced" AS "r39"
+    DELETE FROM "slice"."sync_finish" AS "r39"
     USING "r1" AS "r40"
     WHERE "r39"."root" = "r40"."c1"
     RETURNING 1 AS "c1"
   ),
   "r41" AS (
-    DELETE FROM "slice"."sync_finish" AS "r42"
+    DELETE FROM "slice"."sync_gold_input" AS "r42"
     USING "r1" AS "r43"
     WHERE "r42"."root" = "r43"."c1"
     RETURNING 1 AS "c1"
   ),
   "r44" AS (
-    DELETE FROM "slice"."sync_gold_input" AS "r45"
+    DELETE FROM "slice"."sync_held" AS "r45"
     USING "r1" AS "r46"
     WHERE "r45"."root" = "r46"."c1"
     RETURNING 1 AS "c1"
   ),
   "r47" AS (
-    DELETE FROM "slice"."sync_held" AS "r48"
+    DELETE FROM "slice"."sync_refusal" AS "r48"
     USING "r1" AS "r49"
     WHERE "r48"."root" = "r49"."c1"
     RETURNING 1 AS "c1"
   ),
   "r50" AS (
-    DELETE FROM "slice"."sync_refusal" AS "r51"
+    DELETE FROM "slice"."sync_result" AS "r51"
     USING "r1" AS "r52"
     WHERE "r51"."root" = "r52"."c1"
     RETURNING 1 AS "c1"
   ),
   "r53" AS (
-    DELETE FROM "slice"."sync_result" AS "r54"
+    DELETE FROM "slice"."sync_retry" AS "r54"
     USING "r1" AS "r55"
     WHERE "r54"."root" = "r55"."c1"
     RETURNING 1 AS "c1"
   ),
   "r56" AS (
-    DELETE FROM "slice"."sync_retry" AS "r57"
+    DELETE FROM "slice"."sync_scope" AS "r57"
     USING "r1" AS "r58"
     WHERE "r57"."root" = "r58"."c1"
     RETURNING 1 AS "c1"
   ),
   "r59" AS (
-    DELETE FROM "slice"."sync_scope" AS "r60"
+    DELETE FROM "slice"."sync_skipped" AS "r60"
     USING "r1" AS "r61"
     WHERE "r60"."root" = "r61"."c1"
     RETURNING 1 AS "c1"
   ),
   "r62" AS (
-    DELETE FROM "slice"."sync_skipped" AS "r63"
+    DELETE FROM "slice"."sync_start_scope" AS "r63"
     USING "r1" AS "r64"
     WHERE "r63"."root" = "r64"."c1"
     RETURNING 1 AS "c1"
   ),
   "r65" AS (
-    DELETE FROM "slice"."sync_start_scope" AS "r66"
+    DELETE FROM "slice"."sync_start_step" AS "r66"
     USING "r1" AS "r67"
     WHERE "r66"."root" = "r67"."c1"
     RETURNING 1 AS "c1"
   ),
   "r68" AS (
-    DELETE FROM "slice"."sync_start_step" AS "r69"
+    DELETE FROM "slice"."sync_step" AS "r69"
     USING "r1" AS "r70"
     WHERE "r69"."root" = "r70"."c1"
     RETURNING 1 AS "c1"
   ),
   "r71" AS (
-    DELETE FROM "slice"."sync_step" AS "r72"
+    DELETE FROM "slice"."sync_sync_run_input" AS "r72"
     USING "r1" AS "r73"
     WHERE "r72"."root" = "r73"."c1"
     RETURNING 1 AS "c1"
   ),
   "r74" AS (
-    DELETE FROM "slice"."sync_sync_run_input" AS "r75"
+    DELETE FROM "slice"."sync_within" AS "r75"
     USING "r1" AS "r76"
     WHERE "r75"."root" = "r76"."c1"
     RETURNING 1 AS "c1"
   ),
   "r77" AS (
-    DELETE FROM "slice"."sync_within" AS "r78"
-    USING "r1" AS "r79"
-    WHERE "r78"."root" = "r79"."c1"
-    RETURNING 1 AS "c1"
-  ),
-  "r80" AS (
-    UPDATE "slice"."sync_root" AS "r81"
+    UPDATE "slice"."sync_root" AS "r78"
     SET "retired" = true
-    FROM "r1" AS "r82"
-    WHERE "r81"."scope" = "r82"."c1"
+    FROM "r1" AS "r79"
+    WHERE "r78"."scope" = "r79"."c1"
     RETURNING 1 AS "c1"
   )
-  SELECT "r84"."c1" AS "c1"
-  FROM (SELECT "pg_catalog"."array_agg"("r83"."c2" ORDER BY "r83"."c1") AS "c1", "r83"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r80" AS "r85" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r86" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r87" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r88" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r89" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r90" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r91" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r92" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r93" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r94" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r95" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r96" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r97" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r98" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r99" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r100" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r101" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r102" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r103" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r104" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r105" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r106" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r107" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r108" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r109" UNION ALL SELECT 25 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r110") AS "r83"("c1", "c2", "c3") GROUP BY "r83"."c3") AS "r84"("c1", "c2")
+  SELECT "r81"."c1" AS "c1"
+  FROM (SELECT "pg_catalog"."array_agg"("r80"."c2" ORDER BY "r80"."c1") AS "c1", "r80"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r82" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r83" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r84" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r85" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r86" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r87" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r88" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r89" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r90" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r91" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r92" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r93" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r94" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r95" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r96" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r97" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r98" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r99" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r100" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r101" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r102" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r103" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r104" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r105" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r106") AS "r80"("c1", "c2", "c3") GROUP BY "r80"."c3") AS "r81"("c1", "c2")
   LIMIT 1::bigint
   ;
 END
@@ -2304,10 +2244,6 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_done"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_due"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -2392,10 +2328,6 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."chain_done"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."chain_due"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -2515,10 +2447,6 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_due"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_exhausted"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -2627,10 +2555,6 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."retry_due"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."retry_exhausted"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -2736,10 +2660,6 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."sync_done"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."sync_due"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -2895,10 +2815,6 @@ ALTER TABLE "slice"."assign_done"
   ADD CONSTRAINT "__assign_done_fk_root_bm6oxygwbu" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_done_fk_step_root_ngf72h7577" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."assign_due"
-  ADD CONSTRAINT "__assign_due_fk_root_wmzjy6jkdr" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_due_fk_step_root_xxrlwthpgp" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
-
 ALTER TABLE "slice"."assign_exhausted"
   ADD CONSTRAINT "__assign_exhausted_fk_root_vljhubi73b" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_exhausted_fk_step_root_juabgscovy" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_failed" ("step", "root") MATCH SIMPLE;
@@ -2981,10 +2897,6 @@ ALTER TABLE "slice"."chain_claim"
 ALTER TABLE "slice"."chain_done"
   ADD CONSTRAINT "__chain_done_fk_root_p5unbx53ay" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_done_fk_step_root_nhwqto76dv" FOREIGN KEY ("step", "root") REFERENCES "slice"."chain_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
-
-ALTER TABLE "slice"."chain_due"
-  ADD CONSTRAINT "__chain_due_fk_root_k5aesh6gjx" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__chain_due_fk_step_root_33wex3hch5" FOREIGN KEY ("step", "root") REFERENCES "slice"."chain_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."chain_exhausted"
   ADD CONSTRAINT "__chain_exhausted_fk_root_az7it7tady" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3097,10 +3009,6 @@ ALTER TABLE "slice"."fan_done"
   ADD CONSTRAINT "__fan_done_fk_root_cfizuozacw" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_done_fk_step_root_xbvvletha2" FOREIGN KEY ("step", "root") REFERENCES "slice"."fan_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."fan_due"
-  ADD CONSTRAINT "__fan_due_fk_root_6e42fnfds2" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__fan_due_fk_step_root_xposal5kpr" FOREIGN KEY ("step", "root") REFERENCES "slice"."fan_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
-
 ALTER TABLE "slice"."fan_exhausted"
   ADD CONSTRAINT "__fan_exhausted_fk_root_mlbxyrjdjk" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_exhausted_fk_step_root_jyggt4fgpd" FOREIGN KEY ("step", "root") REFERENCES "slice"."fan_failed" ("step", "root") MATCH SIMPLE;
@@ -3203,10 +3111,6 @@ ALTER TABLE "slice"."retry_claim"
 ALTER TABLE "slice"."retry_done"
   ADD CONSTRAINT "__retry_done_fk_root_eegigvha5p" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__retry_done_fk_step_root_lohfpft573" FOREIGN KEY ("step", "root") REFERENCES "slice"."retry_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
-
-ALTER TABLE "slice"."retry_due"
-  ADD CONSTRAINT "__retry_due_fk_root_mwvrowgwb3" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__retry_due_fk_step_root_q3iqhwjvtk" FOREIGN KEY ("step", "root") REFERENCES "slice"."retry_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."retry_exhausted"
   ADD CONSTRAINT "__retry_exhausted_fk_root_fetyfw4rhv" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3315,10 +3219,6 @@ ALTER TABLE "slice"."sync_copy_output"
 ALTER TABLE "slice"."sync_done"
   ADD CONSTRAINT "__sync_done_fk_root_kbt6t66k7r" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__sync_done_fk_step_root_3vsafhvwu2" FOREIGN KEY ("step", "root") REFERENCES "slice"."sync_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
-
-ALTER TABLE "slice"."sync_due"
-  ADD CONSTRAINT "__sync_due_fk_root_ascq4gdhcl" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__sync_due_fk_step_root_kgwge6lib7" FOREIGN KEY ("step", "root") REFERENCES "slice"."sync_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."sync_exclusive" ADD CONSTRAINT "__sync_exclusive_fk_kind_key_pred_turn_opo5gkimc4" FOREIGN KEY ("kind", "key", "__pred_turn_qryngij6c4") REFERENCES "slice"."sync_released" ("kind", "key", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 

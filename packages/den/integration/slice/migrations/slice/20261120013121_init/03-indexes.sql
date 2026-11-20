@@ -40,8 +40,6 @@ CREATE INDEX "__assign_decide_seen_read_ix_root_step_ybtvecx7oy" ON "slice"."ass
 
 CREATE INDEX "__assign_done_ix_root_step_edz2spjbbn" ON "slice"."assign_done" USING btree ("root", "step");
 
-CREATE INDEX "__assign_due_ix_root_sk35qnuc2b" ON "slice"."assign_due" USING btree ("root");
-
 CREATE INDEX "__assign_exhausted_ix_root_gsga5kdkq3" ON "slice"."assign_exhausted" USING btree ("root");
 
 CREATE INDEX "__assign_failed_ix_root_step_i7nxwkjb5e" ON "slice"."assign_failed" USING btree ("root", "step");
@@ -93,8 +91,6 @@ CREATE INDEX "__chain_claim_ix_step_fxyms_236_d_4_pred_attempt_dmkyo32uvz" ON "s
 CREATE INDEX "__chain_claim_ix_root_step_vf7fvyvhwc" ON "slice"."chain_claim" USING btree ("root", "step");
 
 CREATE INDEX "__chain_done_ix_root_step_nymmh7bgnk" ON "slice"."chain_done" USING btree ("root", "step");
-
-CREATE INDEX "__chain_due_ix_root_4j7ovoyxfr" ON "slice"."chain_due" USING btree ("root");
 
 CREATE INDEX "__chain_exhausted_ix_root_fjn7tzhjc7" ON "slice"."chain_exhausted" USING btree ("root");
 
@@ -164,8 +160,6 @@ CREATE INDEX "__fan_claim_ix_root_step_t6nf6jsksj" ON "slice"."fan_claim" USING 
 
 CREATE INDEX "__fan_done_ix_root_step_nrkfpkvyya" ON "slice"."fan_done" USING btree ("root", "step");
 
-CREATE INDEX "__fan_due_ix_root_x6ltys4whh" ON "slice"."fan_due" USING btree ("root");
-
 CREATE INDEX "__fan_exhausted_ix_root_2diuxfgt5s" ON "slice"."fan_exhausted" USING btree ("root");
 
 CREATE INDEX "__fan_failed_ix_root_step_ciyeplozai" ON "slice"."fan_failed" USING btree ("root", "step");
@@ -232,8 +226,6 @@ CREATE INDEX "__retry_claim_ix_root_step_kvsdksyi7f" ON "slice"."retry_claim" US
 
 CREATE INDEX "__retry_done_ix_root_step_2l3rh6d5g6" ON "slice"."retry_done" USING btree ("root", "step");
 
-CREATE INDEX "__retry_due_ix_root_fhrepcl5cl" ON "slice"."retry_due" USING btree ("root");
-
 CREATE INDEX "__retry_exhausted_ix_root_zequtvgrfg" ON "slice"."retry_exhausted" USING btree ("root");
 
 CREATE INDEX "__retry_failed_ix_root_step_7objnilm6u" ON "slice"."retry_failed" USING btree ("root", "step");
@@ -297,8 +289,6 @@ CREATE INDEX "__sync_copy_input_ix_root_step_42uulsghoj" ON "slice"."sync_copy_i
 CREATE INDEX "__sync_copy_output_ix_root_k6ia72urcq" ON "slice"."sync_copy_output" USING btree ("root");
 
 CREATE INDEX "__sync_done_ix_root_step_ionbtp5et7" ON "slice"."sync_done" USING btree ("root", "step");
-
-CREATE INDEX "__sync_due_ix_root_43jv75wrd2" ON "slice"."sync_due" USING btree ("root");
 
 CREATE INDEX "__sync_exclusive_ix_kind_key_pred_turn_qryngij_6_c_4_xscx3i4mti" ON "slice"."sync_exclusive" USING btree ("kind", "key", "__pred_turn_qryngij6c4");
 

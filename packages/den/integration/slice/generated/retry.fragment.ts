@@ -49,7 +49,7 @@ export const RetrySkipped = relation(
 )
 export const RetryStep = relation(
 	"RetryStep",
-	{ step: DenStep, kind: closedId(RetryKind), scope: DenScope, root: DenScope },
+	{ step: DenStep, kind: closedId(RetryKind), scope: DenScope, due: DenInstant, root: DenScope },
 	["step", "root"]
 )
 export const RetryStartStep = relation(
@@ -67,10 +67,6 @@ export const RetryFinish = relation(
 	{ scope: DenScope, step: DenStep, root: DenScope },
 	["scope", "root"]
 )
-export const RetryDue = relation("RetryDue", { step: DenStep, at: DenInstant, root: DenScope }, [
-	"step",
-	"root"
-])
 export const RetryClaim = relation(
 	"RetryClaim",
 	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant, root: DenScope },
@@ -162,7 +158,6 @@ export const retryGraph = fragment(
 		RetryStartStep,
 		RetryStartScope,
 		RetryFinish,
-		RetryDue,
 		RetryClaim,
 		RetryRetry,
 		RetryFenced,
@@ -194,7 +189,6 @@ export const retryGraph = fragment(
 		contained(on(RetryFinish, "scope", "root"), on(RetryAdmitted, "scope", "root")),
 		contained(on(RetryFinish, "step", "root"), on(RetryStep, "step", "root")),
 		key(on(RetryFinish, "step", "root")),
-		contained(on(RetryDue, "step", "root"), on(RetryStep, "step", "root")),
 		contained(on(RetryClaim, "step", "root"), on(RetryStep, "step", "root")),
 		race(RetryClaim),
 		check("AttemptFromOne", RetryClaim, (row) => row.ge(row.attempt, 1n)),
@@ -270,7 +264,6 @@ export const retryGraph = fragment(
 			on(RetryStartStep, "root"),
 			on(RetryStartScope, "root"),
 			on(RetryFinish, "root"),
-			on(RetryDue, "root"),
 			on(RetryClaim, "root"),
 			on(RetryRetry, "root"),
 			on(RetryFenced, "root"),

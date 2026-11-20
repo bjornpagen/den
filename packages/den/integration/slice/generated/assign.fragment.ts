@@ -63,7 +63,7 @@ export const AssignSkipped = relation(
 )
 export const AssignStep = relation(
 	"AssignStep",
-	{ step: DenStep, kind: closedId(AssignKind), scope: DenScope, root: DenScope },
+	{ step: DenStep, kind: closedId(AssignKind), scope: DenScope, due: DenInstant, root: DenScope },
 	["step", "root"]
 )
 export const AssignStartStep = relation(
@@ -81,10 +81,6 @@ export const AssignFinish = relation(
 	{ scope: DenScope, step: DenStep, root: DenScope },
 	["scope", "root"]
 )
-export const AssignDue = relation("AssignDue", { step: DenStep, at: DenInstant, root: DenScope }, [
-	"step",
-	"root"
-])
 export const AssignClaim = relation(
 	"AssignClaim",
 	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant, root: DenScope },
@@ -267,7 +263,6 @@ export const assignGraph = fragment(
 		AssignStartStep,
 		AssignStartScope,
 		AssignFinish,
-		AssignDue,
 		AssignClaim,
 		AssignRetry,
 		AssignFenced,
@@ -308,7 +303,6 @@ export const assignGraph = fragment(
 		contained(on(AssignFinish, "scope", "root"), on(AssignAdmitted, "scope", "root")),
 		contained(on(AssignFinish, "step", "root"), on(AssignStep, "step", "root")),
 		key(on(AssignFinish, "step", "root")),
-		contained(on(AssignDue, "step", "root"), on(AssignStep, "step", "root")),
 		contained(on(AssignClaim, "step", "root"), on(AssignStep, "step", "root")),
 		race(AssignClaim),
 		check("AttemptFromOne", AssignClaim, (row) => row.ge(row.attempt, 1n)),
@@ -529,7 +523,6 @@ export const assignGraph = fragment(
 			on(AssignStartStep, "root"),
 			on(AssignStartScope, "root"),
 			on(AssignFinish, "root"),
-			on(AssignDue, "root"),
 			on(AssignClaim, "root"),
 			on(AssignRetry, "root"),
 			on(AssignFenced, "root"),

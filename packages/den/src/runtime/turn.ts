@@ -288,7 +288,7 @@ export const lostRace = (flow: string, error: Settled): boolean =>
 		`${flow}Retry`,
 		`${flow}Fenced`,
 		`${flow}Admitted`,
-		`${flow}Due`,
+		`${flow}Step`,
 		`${flow}Root`
 	]) ||
 	(error.kind === "refused" &&
@@ -725,7 +725,7 @@ const serveStep = <R>(
 		if (Option.isNone(located)) {
 			return served({ kind: "lost", wake })
 		}
-		const { runner, scope, root } = located.value
+		const { runner, scope, root, due: first } = located.value
 		const result = yield* readOr(ledger.resultOf(step), wake)
 		if (Option.isSome(result)) {
 			return served({ kind: "lost", wake })
@@ -741,13 +741,7 @@ const serveStep = <R>(
 		if (BigInt(wake.attempt) !== next) {
 			return served({ kind: "lost", wake })
 		}
-		const due =
-			stands.kind === "next"
-				? stands.due
-				: yield* Effect.map(
-						readOr(ledger.dueOf(step), wake),
-						Option.getOrElse(() => at)
-					)
+		const due = stands.kind === "next" ? stands.due : first
 		if (due > at) {
 			return {
 				ending: { kind: "waiting", wake, why: "due", until: Option.some(due) },

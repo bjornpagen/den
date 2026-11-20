@@ -39,7 +39,6 @@ import { sync } from "#integration/slice/flows.ts"
 import { SyncJoin, SyncPausable } from "#integration/slice/generated/sync.fragment.ts"
 import type {
 	SyncStep,
-	SyncDue,
 	SyncScope,
 	SyncWithin,
 	SyncAdmitted,
@@ -76,7 +75,6 @@ export interface SyncHandles {
 
 interface Rows {
 	readonly SyncStep: ReadonlyArray<Addition<typeof SyncStep>>
-	readonly SyncDue: ReadonlyArray<Addition<typeof SyncDue>>
 	readonly SyncScope: ReadonlyArray<Addition<typeof SyncScope>>
 	readonly SyncWithin: ReadonlyArray<Addition<typeof SyncWithin>>
 	readonly SyncAdmitted: ReadonlyArray<Addition<typeof SyncAdmitted>>
@@ -111,7 +109,6 @@ const pausesOf = (rows: ReadonlyArray<PauseRow>) =>
 export const syncLedger = (h: SyncHandles) => {
 	const noRows: Rows = {
 		SyncStep: [],
-		SyncDue: [],
 		SyncScope: [],
 		SyncWithin: [],
 		SyncAdmitted: [],
@@ -128,7 +125,6 @@ export const syncLedger = (h: SyncHandles) => {
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			SyncStep: [...a.rows.SyncStep, ...b.rows.SyncStep],
-			SyncDue: [...a.rows.SyncDue, ...b.rows.SyncDue],
 			SyncScope: [...a.rows.SyncScope, ...b.rows.SyncScope],
 			SyncWithin: [...a.rows.SyncWithin, ...b.rows.SyncWithin],
 			SyncAdmitted: [...a.rows.SyncAdmitted, ...b.rows.SyncAdmitted],
@@ -156,8 +152,15 @@ export const syncLedger = (h: SyncHandles) => {
 					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 						rows: {
 							...noRows,
-							SyncStep: [{ step: key, kind: "Copy", scope: scope, root: root }],
-							SyncDue: [{ step: key, at: dueAt(sync.kinds[0].due, at), root: root }],
+							SyncStep: [
+								{
+									step: key,
+									kind: "Copy",
+									scope: scope,
+									due: dueAt(sync.kinds[0].due, at),
+									root: root
+								}
+							],
 							SyncStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
 							SyncCopyInput: [
 								{ step: key, root: root, relation: spawn.input.relation, run: spawn.input.run }
@@ -184,8 +187,15 @@ export const syncLedger = (h: SyncHandles) => {
 					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 						rows: {
 							...noRows,
-							SyncStep: [{ step: key, kind: "Build", scope: scope, root: root }],
-							SyncDue: [{ step: key, at: dueAt(sync.kinds[2].due, at), root: root }],
+							SyncStep: [
+								{
+									step: key,
+									kind: "Build",
+									scope: scope,
+									due: dueAt(sync.kinds[2].due, at),
+									root: root
+								}
+							],
 							SyncStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
 							SyncBuildInput: [{ step: key, root: root, build: spawn.input.build }]
 						},
@@ -551,11 +561,7 @@ export const syncLedger = (h: SyncHandles) => {
 							const finish = yield* finishStep(scope)
 							const steps: ReadonlyArray<Addition<typeof SyncStep>> = [
 								...grown.rows.SyncStep,
-								{ step: finish, kind: "SyncRunFinish", scope, root: scope }
-							]
-							const dues: ReadonlyArray<Addition<typeof SyncDue>> = [
-								...grown.rows.SyncDue,
-								{ step: finish, at, root: scope }
+								{ step: finish, kind: "SyncRunFinish", scope, due: at, root: scope }
 							]
 							const admitted: ReadonlyArray<Addition<typeof SyncAdmitted>> = [
 								...grown.rows.SyncAdmitted,
@@ -577,7 +583,6 @@ export const syncLedger = (h: SyncHandles) => {
 											SyncCopyInput: grown.rows.SyncCopyInput,
 											SyncBuildInput: grown.rows.SyncBuildInput,
 											SyncStep: steps,
-											SyncDue: dues,
 											SyncAdmitted: admitted,
 											SyncFinish: finishes
 										}
@@ -615,11 +620,7 @@ export const syncLedger = (h: SyncHandles) => {
 							const finish = yield* finishStep(scope)
 							const steps: ReadonlyArray<Addition<typeof SyncStep>> = [
 								...grown.rows.SyncStep,
-								{ step: finish, kind: "GoldFinish", scope, root: scope }
-							]
-							const dues: ReadonlyArray<Addition<typeof SyncDue>> = [
-								...grown.rows.SyncDue,
-								{ step: finish, at, root: scope }
+								{ step: finish, kind: "GoldFinish", scope, due: at, root: scope }
 							]
 							const admitted: ReadonlyArray<Addition<typeof SyncAdmitted>> = [
 								...grown.rows.SyncAdmitted,
@@ -641,7 +642,6 @@ export const syncLedger = (h: SyncHandles) => {
 											SyncCopyInput: grown.rows.SyncCopyInput,
 											SyncBuildInput: grown.rows.SyncBuildInput,
 											SyncStep: steps,
-											SyncDue: dues,
 											SyncAdmitted: admitted,
 											SyncFinish: finishes
 										}
@@ -667,7 +667,8 @@ export const syncLedger = (h: SyncHandles) => {
 				Option.map(one(rows), (row) => ({
 					runner: runners[row.kind],
 					scope: row.scope,
-					root: row.root
+					root: row.root,
+					due: row.due
 				}))
 			),
 		resultOf: (step) =>
@@ -677,10 +678,6 @@ export const syncLedger = (h: SyncHandles) => {
 		heldOf: (step) =>
 			Effect.map(settled(h.den.syncHeldOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => row.attempt)
-			),
-		dueOf: (step) =>
-			Effect.map(settled(h.den.syncDueOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.at)
 			),
 		claimsOf: (step) =>
 			Effect.map(settled(h.den.syncClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
@@ -843,12 +840,12 @@ export const syncLedger = (h: SyncHandles) => {
 					steps: Arr.map(read.steps, (s) => ({
 						step: s.step,
 						runner: runners[s.kind],
-						scope: s.scope
+						scope: s.scope,
+						due: s.due
 					})),
 					claims: read.claims,
 					retries: read.retries,
 					fenced: read.fenced,
-					dues: read.dues,
 					scopes: [
 						...Arr.flatMap(read.requested, (s) => view(s.scope, s.kind, "requested")),
 						...Arr.flatMap(read.running, (s) => view(s.scope, s.kind, "admitted"))

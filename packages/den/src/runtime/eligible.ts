@@ -99,7 +99,7 @@ const LATEST: Order.Order<Claimed> = Order.flip(
 
 /**
  * Where a step's attempts stand at `at`, the one reading of a step's claims, retries and fences that the relay's and
- * the census's eligibility and a turn share: `first`, never claimed, its first attempt due at its Due; `held`, its
+ * the census's eligibility and a turn share: `first`, never claimed, its first attempt due at its step's due; `held`, its
  * latest claim's lease stands and its attempt recorded neither a retry nor a fence, either of which ended it; or
  * `next`, its next attempt, due at once after a fence (waiting on the deployment), at its retry's instant, or once its
  * latest claim's lease lapsed.
@@ -188,13 +188,7 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 				? stands
 				: {
 						attempt: 1n,
-						due: Option.getOrElse(
-							Option.map(
-								Arr.findFirst(snapshot.dues, (d) => d.step === p.step),
-								(d) => d.at
-							),
-							() => now
-						),
+						due: p.due,
 						waited: "time" as const
 					}
 		if (due > now) {

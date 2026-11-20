@@ -66,7 +66,7 @@ export const SyncSkipped = relation(
 )
 export const SyncStep = relation(
 	"SyncStep",
-	{ step: DenStep, kind: closedId(SyncKind), scope: DenScope, root: DenScope },
+	{ step: DenStep, kind: closedId(SyncKind), scope: DenScope, due: DenInstant, root: DenScope },
 	["step", "root"]
 )
 export const SyncStartStep = relation(
@@ -84,10 +84,6 @@ export const SyncFinish = relation(
 	{ scope: DenScope, step: DenStep, root: DenScope },
 	["scope", "root"]
 )
-export const SyncDue = relation("SyncDue", { step: DenStep, at: DenInstant, root: DenScope }, [
-	"step",
-	"root"
-])
 export const SyncClaim = relation(
 	"SyncClaim",
 	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant, root: DenScope },
@@ -194,7 +190,6 @@ export const syncGraph = fragment(
 		SyncStartStep,
 		SyncStartScope,
 		SyncFinish,
-		SyncDue,
 		SyncClaim,
 		SyncRetry,
 		SyncFenced,
@@ -228,7 +223,6 @@ export const syncGraph = fragment(
 		contained(on(SyncFinish, "scope", "root"), on(SyncAdmitted, "scope", "root")),
 		contained(on(SyncFinish, "step", "root"), on(SyncStep, "step", "root")),
 		key(on(SyncFinish, "step", "root")),
-		contained(on(SyncDue, "step", "root"), on(SyncStep, "step", "root")),
 		contained(on(SyncClaim, "step", "root"), on(SyncStep, "step", "root")),
 		race(SyncClaim),
 		check("AttemptFromOne", SyncClaim, (row) => row.ge(row.attempt, 1n)),
@@ -310,7 +304,6 @@ export const syncGraph = fragment(
 			on(SyncStartStep, "root"),
 			on(SyncStartScope, "root"),
 			on(SyncFinish, "root"),
-			on(SyncDue, "root"),
 			on(SyncClaim, "root"),
 			on(SyncRetry, "root"),
 			on(SyncFenced, "root"),

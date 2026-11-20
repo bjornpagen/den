@@ -26,11 +26,15 @@ export const refusedOnKey = (error: Settled, relations: ReadonlyArray<string>): 
 /** A step's outcome, its Result: done with its output, or failed. */
 export type Outcome = "done" | "failed"
 
-/** Where a step is: its kind's runner, its owning scope, and its root, the retirable unit its graph is a group of. */
+/**
+ * Where a step is: its kind's runner, its owning scope, its root, the retirable unit its graph is a group of, and the
+ * instant its first attempt is due.
+ */
 export interface Located<R> {
 	readonly runner: StepRunner<R>
 	readonly scope: ScopeKey
 	readonly root: ScopeKey
+	readonly due: Instant
 }
 
 /**
@@ -231,7 +235,8 @@ export interface PauseRow {
 
 /**
  * Everything the scheduler reads, for the relay's and the census's eligibility, in one statement of den's role and so
- * one snapshot of the database: the pending steps with their claims, retries, fenced attempts and first due instants;
+ * one snapshot of the database: the pending steps, each with its first due instant, and their claims, retries and fenced
+ * attempts;
  * the live scopes (requested, or admitted with an unfinished finish); the coordination group's live holds, exclusivity
  * seats and paused targets; and the flows a precondition names that hold a pending step. Read apart, a seat taken by a
  * root requested after the scopes were read would show held by a scope no longer live, and the census would give it
@@ -242,6 +247,7 @@ export interface Snapshot<R> {
 		readonly step: StepKey
 		readonly runner: StepRunner<R>
 		readonly scope: ScopeKey
+		readonly due: Instant
 	}>
 	readonly claims: ReadonlyArray<{
 		readonly step: StepKey
@@ -250,7 +256,6 @@ export interface Snapshot<R> {
 	}>
 	readonly retries: ReadonlyArray<RetryRow>
 	readonly fenced: ReadonlyArray<FencedRow>
-	readonly dues: ReadonlyArray<{ readonly step: StepKey; readonly at: Instant }>
 	readonly scopes: ReadonlyArray<ScopeView>
 	readonly holds: ReadonlyArray<HoldRow>
 	readonly exclusives: ReadonlyArray<ExclusiveRow>
@@ -307,7 +312,6 @@ export interface Ledger<R> {
 	readonly claimsOf: (step: StepKey) => Effect.Effect<ReadonlyArray<ClaimRow>, Settled>
 	readonly retriesOf: (step: StepKey) => Effect.Effect<ReadonlyArray<RetryRow>, Settled>
 	readonly fencedOf: (step: StepKey) => Effect.Effect<ReadonlyArray<FencedRow>, Settled>
-	readonly dueOf: (step: StepKey) => Effect.Effect<Option.Option<Instant>, Settled>
 	readonly scopeOf: (scope: ScopeKey) => Effect.Effect<Option.Option<ScopeView>, Settled>
 	/** Whether some child of a scope, a step but its finish or a child scope, has not ended. */
 	readonly unended: (scope: ScopeKey) => Effect.Effect<boolean, Settled>

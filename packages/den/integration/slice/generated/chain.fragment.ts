@@ -56,7 +56,7 @@ export const ChainSkipped = relation(
 )
 export const ChainStep = relation(
 	"ChainStep",
-	{ step: DenStep, kind: closedId(ChainKind), scope: DenScope, root: DenScope },
+	{ step: DenStep, kind: closedId(ChainKind), scope: DenScope, due: DenInstant, root: DenScope },
 	["step", "root"]
 )
 export const ChainStartStep = relation(
@@ -74,10 +74,6 @@ export const ChainFinish = relation(
 	{ scope: DenScope, step: DenStep, root: DenScope },
 	["scope", "root"]
 )
-export const ChainDue = relation("ChainDue", { step: DenStep, at: DenInstant, root: DenScope }, [
-	"step",
-	"root"
-])
 export const ChainClaim = relation(
 	"ChainClaim",
 	{ step: DenStep, attempt: natural, holder: DenHolder, until: DenInstant, root: DenScope },
@@ -193,7 +189,6 @@ export const chainGraph = fragment(
 		ChainStartStep,
 		ChainStartScope,
 		ChainFinish,
-		ChainDue,
 		ChainClaim,
 		ChainRetry,
 		ChainFenced,
@@ -228,7 +223,6 @@ export const chainGraph = fragment(
 		contained(on(ChainFinish, "scope", "root"), on(ChainAdmitted, "scope", "root")),
 		contained(on(ChainFinish, "step", "root"), on(ChainStep, "step", "root")),
 		key(on(ChainFinish, "step", "root")),
-		contained(on(ChainDue, "step", "root"), on(ChainStep, "step", "root")),
 		contained(on(ChainClaim, "step", "root"), on(ChainStep, "step", "root")),
 		race(ChainClaim),
 		check("AttemptFromOne", ChainClaim, (row) => row.ge(row.attempt, 1n)),
@@ -308,7 +302,6 @@ export const chainGraph = fragment(
 			on(ChainStartStep, "root"),
 			on(ChainStartScope, "root"),
 			on(ChainFinish, "root"),
-			on(ChainDue, "root"),
 			on(ChainClaim, "root"),
 			on(ChainRetry, "root"),
 			on(ChainFenced, "root"),
@@ -358,7 +351,6 @@ export const chainWriter = [
 	"ChainPageOutputNext",
 	"ChainPageWeightsRead",
 	"ChainStep",
-	"ChainDue",
 	"ChainScope",
 	"ChainWithin",
 	"ChainAdmitted",

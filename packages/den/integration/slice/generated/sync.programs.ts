@@ -17,7 +17,6 @@ import {
 	SyncStartStep,
 	SyncStartScope,
 	SyncFinish,
-	SyncDue,
 	SyncClaim,
 	SyncRetry,
 	SyncFenced,
@@ -67,7 +66,6 @@ export const SyncDen = role(
 			"SyncStartStep",
 			"SyncStartScope",
 			"SyncFinish",
-			"SyncDue",
 			"SyncClaim",
 			"SyncRetry",
 			"SyncFenced",
@@ -103,11 +101,11 @@ export const SyncCoordinator = role(
 )
 
 const syncPendingRead = query(SyncDen).rule((r) => {
-	const { step, kind, scope } = v(SyncStep, "step")
+	const { step, kind, scope, due } = v(SyncStep, "step")
 	return r
-		.match(SyncStep, { step, kind, scope })
+		.match(SyncStep, { step, kind, scope, due })
 		.where(r.not(SyncResult, { step }))
-		.find({ step, kind, scope })
+		.find({ step, kind, scope, due })
 })
 
 const syncRequestedRead = query(SyncDen).rule((r) => {
@@ -176,7 +174,6 @@ export const syncDenPrograms = Object.freeze({
 		.insert(SyncStartStep, [])
 		.insert(SyncStartScope, [])
 		.insert(SyncStep, [])
-		.insert(SyncDue, [])
 		.insert(SyncScope, [])
 		.insert(SyncWithin, [])
 		.insert(SyncCopyInput, [])
@@ -190,11 +187,11 @@ export const syncDenPrograms = Object.freeze({
 			.find({ scope, by, root })
 	}),
 	syncStepOf: query(syncGraph).rule((r) => {
-		const { step, kind, scope, root } = v(SyncStep, "syncStep")
+		const { step, kind, scope, due, root } = v(SyncStep, "syncStep")
 		return r
-			.match(SyncStep, { step, kind, scope, root })
+			.match(SyncStep, { step, kind, scope, due, root })
 			.where(r.eq(step, r.param("step", SyncStep.fields.step)))
-			.find({ step, kind, scope, root })
+			.find({ step, kind, scope, due, root })
 	}),
 	syncResultOf: query(syncGraph).rule((r) => {
 		const { step, outcome, root } = v(SyncResult, "syncResult")
@@ -209,13 +206,6 @@ export const syncDenPrograms = Object.freeze({
 			.match(SyncHeld, { step, attempt, root })
 			.where(r.eq(step, r.param("step", SyncHeld.fields.step)))
 			.find({ step, attempt, root })
-	}),
-	syncDueOf: query(syncGraph).rule((r) => {
-		const { step, at, root } = v(SyncDue, "syncDue")
-		return r
-			.match(SyncDue, { step, at, root })
-			.where(r.eq(step, r.param("step", SyncDue.fields.step)))
-			.find({ step, at, root })
 	}),
 	syncScopeOf: query(syncGraph).rule((r) => {
 		const { scope, kind, root } = v(SyncScope, "syncScope")
@@ -363,10 +353,6 @@ export const syncDenPrograms = Object.freeze({
 					.match(SyncFenced, { step, attempt })
 					.where(r.not(SyncResult, { step }))
 					.find({ step, attempt })
-			}),
-			dues: query(SyncDen).rule((r) => {
-				const { step, at } = v(SyncDue, "due")
-				return r.match(SyncDue, { step, at }).where(r.not(SyncResult, { step })).find({ step, at })
 			}),
 			requested: syncRequestedRead,
 			running: syncRunningRead,
