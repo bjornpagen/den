@@ -53,7 +53,8 @@ import {
 	ReviewFinish,
 	ReviewResult,
 	ReviewStep,
-	ReviewWithin
+	ReviewWithin,
+	reviewGraph
 } from "#integration/slice/generated/review.fragment.ts"
 import {
 	SyncAdmitted,
@@ -88,6 +89,9 @@ import { Loader } from "#integration/slice/roles.ts"
  * requesting a chain in its own transaction, a feed's weight, a passage and its embedding, a passage a learner saw). The certification suite certifies them alone, as an
  * installation with no den program would.
  */
+
+/** A review claim's seats, the graph's own relation, which the fragment lists and does not name apart. */
+const ReviewHold = reviewGraph.relations.ReviewHold
 
 /**
  * The app's own reading role: it reads den's facts beside its own items, cursors and tallies, joins them, and inserts
@@ -148,6 +152,7 @@ export const Auditor = role(
 		RetryResult,
 		RetryStep,
 		ReviewFinish,
+		ReviewHold,
 		ReviewResult,
 		ReviewStep,
 		ReviewWithin,
@@ -258,6 +263,16 @@ const reviewSteps = query(Auditor).rule((r) => {
 		.match(ReviewStep, { step, kind, scope })
 		.match(ReviewResult, { step, outcome })
 		.find({ step, kind, scope, outcome })
+})
+
+/** Every seat a review step's claim held, by its step and attempt, with the step's kind. */
+const reviewHolds = query(Auditor).rule((r) => {
+	const { step, attempt, resource, seat } = v(ReviewHold, "hold")
+	const { kind } = v(ReviewStep, "step")
+	return r
+		.match(ReviewHold, { step, attempt, resource, seat })
+		.match(ReviewStep, { step, kind })
+		.find({ step, attempt, kind, resource, seat })
 })
 
 /** Every child scope of a review, its parent and its kind. */
@@ -534,6 +549,7 @@ export const auditWorkload = workload(Auditor, {
 	summaries,
 	reviewSteps,
 	reviewWithins,
+	reviewHolds,
 	reviewFinishes,
 	chimes,
 	copied,

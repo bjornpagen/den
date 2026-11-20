@@ -18,6 +18,7 @@ import {
 	ReviewChildKind,
 	ReviewOutcome,
 	ReviewPausable,
+	ReviewResource,
 	ReviewScope,
 	ReviewRoot,
 	ReviewWithin,
@@ -58,11 +59,21 @@ import {
 } from "#integration/slice/generated/review.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's role for the flow Review: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */
+/** den's role for the flow Review: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains and live holds and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */
 export const ReviewDen = role(
 	App,
 	"review_den",
-	{ ...reviewGraph.relations, ReviewPaused, ReviewResumed },
+	{
+		...reviewGraph.relations,
+		ReviewPaused,
+		ReviewResumed,
+		ReviewLive: query(App).rule((r) => {
+			const { resource, seat, step, root, attempt, until } = v(App.relations.ReviewLive, "live")
+			return r
+				.match(App.relations.ReviewLive, { resource, seat, step, root, attempt, until })
+				.find({ resource, seat, step, root, attempt, until })
+		})
+	},
 	{
 		insert: [
 			"ReviewScope",
@@ -92,12 +103,13 @@ export const ReviewDen = role(
 			"ReviewReviewRunInput",
 			"ReviewReviewRunInputSizes",
 			"ReviewQuestionsFinishOutput",
-			"ReviewReviewRunFinishOutput"
+			"ReviewReviewRunFinishOutput",
+			"ReviewHold"
 		]
 	}
 )
 
-/** den's coordinator role for the flow Review: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation. */
+/** den's coordinator role for the flow Review: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation, and reads its seats' live holds through the seat level the app's schema states, so a schema without it fails to typecheck. */
 export const ReviewCoordinator = role(
 	App,
 	"review_coordinator",
@@ -107,8 +119,15 @@ export const ReviewCoordinator = role(
 		ReviewChildKind,
 		ReviewOutcome,
 		ReviewPausable,
+		ReviewResource,
 		ReviewPaused,
-		ReviewResumed
+		ReviewResumed,
+		ReviewLive: query(App).rule((r) => {
+			const { resource, seat, step, root, attempt, until } = v(App.relations.ReviewLive, "live")
+			return r
+				.match(App.relations.ReviewLive, { resource, seat, step, root, attempt, until })
+				.find({ resource, seat, step, root, attempt, until })
+		})
 	},
 	{ insert: ["ReviewPaused", "ReviewResumed"] }
 )
@@ -186,6 +205,17 @@ export const reviewDenPrograms = Object.freeze({
 		{ now: "millis" }
 	),
 	reviewFence: ChangeSet.empty(reviewGraph).insert(ReviewEnded, []).insert(ReviewFenced, []),
+	reviewHolds: deferrable(
+		query(ReviewDen).rule((r) => {
+			const { resource, seat, step, root, attempt, until } = v(
+				ReviewDen.relations.ReviewLive,
+				"live"
+			)
+			return r
+				.match(ReviewDen.relations.ReviewLive, { resource, seat, step, root, attempt, until })
+				.find({ resource, seat, step, root, attempt, until })
+		})
+	),
 	reviewRefuse: ChangeSet.empty(reviewGraph)
 		.insert(ReviewResult, [])
 		.insert(ReviewFailed, [])
@@ -387,6 +417,15 @@ export const reviewDenPrograms = Object.freeze({
 			roots: query(ReviewDen).rule((r) => {
 				const { scope, kind, key, at } = v(ReviewRoot, "reviewRoot")
 				return r.match(ReviewRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
+			}),
+			holds: query(ReviewDen).rule((r) => {
+				const { resource, seat, step, root, attempt, until } = v(
+					ReviewDen.relations.ReviewLive,
+					"live"
+				)
+				return r
+					.match(ReviewDen.relations.ReviewLive, { resource, seat, step, root, attempt, until })
+					.find({ resource, seat, step, root, attempt, until })
 			}),
 			paused: query(ReviewDen).rule((r) => {
 				const { target, turn } = v(ReviewPaused, "reviewPaused")

@@ -26,6 +26,7 @@ import type {
 	Ledger,
 	RootRunner,
 	ScopeView,
+	SeatAt,
 	Snapshot,
 	Spawned
 } from "@bjornpagen/den/runtime/ledger"
@@ -39,7 +40,7 @@ import { type MemberHandle, settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import { review } from "#integration/slice/flows.ts"
-import { ReviewPausable } from "#integration/slice/generated/review.fragment.ts"
+import { ReviewPausable, ReviewResource } from "#integration/slice/generated/review.fragment.ts"
 import type {
 	ReviewScope,
 	ReviewWithin,
@@ -122,6 +123,14 @@ const pausableOf = (
 	Effect.mapError(
 		Effect.fromOption(Arr.findFirst(ReviewPausable.handles, (handle) => handle === target)),
 		() => new UnknownPauseTarget({ flow: FlowName.make("Review"), target })
+	)
+const resourceOf = (name: string): Option.Option<(typeof ReviewResource)["handles"][number]> =>
+	Arr.findFirst(ReviewResource.handles, (handle) => handle === name)
+const holdsOf = (seats: ReadonlyArray<SeatAt>) =>
+	Arr.flatMap(seats, (taken) =>
+		Option.toArray(
+			Option.map(resourceOf(taken.resource), (resource) => ({ resource, seat: taken.seat }))
+		)
 	)
 
 /** The ledger of the flow Review over its handles, with the requests of its roots. */
@@ -519,7 +528,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 		QuestionsFinish: runnerOf(
 			{
 				name: "QuestionsFinish",
-				uses: [],
+				uses: review.kinds[1].finish.uses,
 				retry: review.kinds[1].finish.retry,
 				body: (read: {
 					readonly input: Parameters<(typeof review.kinds)[1]["start"]>[0]
@@ -654,7 +663,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 		ReviewRunFinish: runnerOf(
 			{
 				name: "ReviewRunFinish",
-				uses: [],
+				uses: review.kinds[4].finish.uses,
 				retry: review.kinds[4].finish.retry,
 				body: (read: {
 					readonly input: Parameters<(typeof review.kinds)[4]["start"]>[0]
@@ -797,7 +806,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 		authenticated: Effect.asVoid(
 			settled(h.commits.reviewAuthenticated.once({ params: {}, facts: {} }))
 		),
-		holds: Effect.succeed([]),
+		holds: Effect.map(settled(h.den.reviewHolds.once({ params: {}, facts: {} })), rowsOf),
 		stepOf: (step) =>
 			Effect.map(settled(h.den.reviewStepOf.once({ params: { step }, facts: {} })), (rows) =>
 				Option.map(one(rows), (row) => ({
@@ -880,7 +889,10 @@ export const reviewLedger = (h: ReviewHandles) => {
 					h.den.reviewClaim.once({
 						params: { budget: row.budget },
 						facts: {
-							insert: { ReviewClaim: [{ step: row.step, root: row.root }], ReviewEnded: row.lapsed }
+							insert: {
+								ReviewClaim: [{ step: row.step, root: row.root, holds: holdsOf(row.seats) }],
+								ReviewEnded: row.lapsed
+							}
 						}
 					})
 				),
@@ -1000,7 +1012,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 							...Arr.flatMap(read.requested, (s) => view(s.scope, "requested")),
 							...Arr.flatMap(read.running, (s) => view(s.scope, "admitted"))
 						],
-						holds: [],
+						holds: read.holds,
 						exclusives: [],
 						paused: Arr.map(read.paused, (row) => row.target),
 						busy: []
@@ -1012,6 +1024,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				signals(h.den.reviewPending.watch({ params: {}, facts: {} })),
 				signals(h.den.reviewRequested.watch({ params: {}, facts: {} })),
 				signals(h.den.reviewRunning.watch({ params: {}, facts: {} })),
+				signals(h.den.reviewHolds.watch({ params: {}, facts: {} })),
 				signals(h.coordinator.reviewPausedAll.watch({ params: {}, facts: {} }))
 			],
 			{ concurrency: "unbounded" }

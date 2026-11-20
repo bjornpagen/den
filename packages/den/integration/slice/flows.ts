@@ -150,6 +150,7 @@ const moveCursor = Object.freeze({
 	reads: [Page],
 	output: Finished,
 	error: Schema.Never,
+	uses: [],
 	retry: attempts(3),
 	writes: writes({ insert: [Cursor], put: [], delete: [] }),
 	body: (
@@ -257,6 +258,7 @@ const Batch = scope("Batch", {
 		reads: [Square],
 		output: Finished,
 		error: Schema.Never,
+		uses: [],
 		retry: attempts(3),
 		writes: writes({ insert: [Tally], put: [], delete: [] }),
 		body: (b, endings) =>
@@ -294,6 +296,7 @@ const FanRun = root("FanRun", {
 		reads: [Batch],
 		output: Finished,
 		error: Schema.Never,
+		uses: [],
 		retry: attempts(3),
 		writes: writes({ insert: [Settled], put: [], delete: [] }),
 		body: (run) =>
@@ -346,6 +349,7 @@ const SyncRun = root("SyncRun", {
 		reads: [],
 		output: Finished,
 		error: Schema.Never,
+		uses: [],
 		retry: attempts(3),
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
@@ -385,6 +389,7 @@ const Gold = root("Gold", {
 		reads: [],
 		output: Finished,
 		error: Schema.Never,
+		uses: [],
 		retry: attempts(3),
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
@@ -466,6 +471,7 @@ const Ladders = root("Ladders", {
 		reads: [Steadfast, Brittle],
 		output: Finished,
 		error: Schema.Never,
+		uses: [],
 		retry: attempts(3),
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
@@ -521,6 +527,7 @@ const Throttled = root("Throttled", {
 		reads: [Polite],
 		output: Finished,
 		error: Schema.Never,
+		uses: [],
 		retry: attempts(3),
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
@@ -663,6 +670,7 @@ const Assignment = root("Assignment", {
 		reads: [Decide],
 		output: Finished,
 		error: Schema.Never,
+		uses: [],
 		retry: attempts(3),
 		writes: writes({ insert: [Concluded], put: [], delete: [] }),
 		body: (
@@ -699,6 +707,24 @@ export const assign = flow("Assign", {
 	edges: []
 })
 
+/**
+ * The review flow's model calls' shared bottleneck, Anthropic's, at the slice's scale: two seats, the box of grizzle's
+ * own work-queue law suite, in which two leases meet at a seat as often as they miss it.
+ *
+ * @limitKind published
+ * @owner the slice's contention box, after grizzle's work-queue law suite
+ * @unit seats
+ * @scope every question's analysis and every group's cluster, across every review, holding a seat while it runs
+ * @constraint compile-time constant
+ * @source https://github.com/bjornpagen/grizzle/blob/a226cbac/test/support/laws/boxes.ts
+ * @quote Two resources of two seats each: two leases meet at a seat as often as they miss it.
+ * @verified 2026-11-11
+ */
+const anthropicSeats = 2
+
+/** The review flow's one resource, Anthropic's model calls: every analysis and every cluster holds a seat. */
+const anthropic = resource("Anthropic", anthropicSeats)
+
 /** A review: its key, and how many questions each of its groups holds, in order. */
 const ReviewInput = Schema.Struct({ review: Schema.String, sizes: Schema.Array(Schema.BigInt) })
 
@@ -727,7 +753,7 @@ const Analyze = step(
 		output: Schema.Struct({ score: Schema.BigInt }),
 		error: Schema.Never,
 		reads: {},
-		uses: [],
+		uses: [anthropic],
 		retry: attempts(3),
 		due: atSpawn,
 		writes: writesNothing
@@ -741,7 +767,8 @@ const Analyze = step(
 
 /**
  * A group's questions, one Analyze each, and its finish, the cluster over every question's analysis, whose output is
- * the group's: AlphaTest's gap analysis's map and its reduce.
+ * the group's: AlphaTest's gap analysis's map and its reduce. The analyses and the cluster each make a model call, so
+ * each holds a seat of Anthropic's while it runs, the finish as a step does.
  */
 const Questions = scope("Questions", {
 	input: GroupInput,
@@ -754,6 +781,7 @@ const Questions = scope("Questions", {
 		reads: [Analyze],
 		output: Clustered,
 		error: Schema.Never,
+		uses: [anthropic],
 		retry: attempts(3),
 		writes: writesNothing,
 		body: (_group, endings) =>
@@ -848,6 +876,7 @@ const ReviewRun = root("ReviewRun", {
 		reads: [Questions, Save],
 		output: Finished,
 		error: Schema.Never,
+		uses: [],
 		retry: attempts(3),
 		writes: writes({ insert: [Summary], put: [], delete: [] }),
 		body: (review, endings) =>
@@ -917,6 +946,7 @@ const Hourly = root("Hourly", {
 		reads: [],
 		output: Finished,
 		error: Schema.Never,
+		uses: [],
 		retry: attempts(3),
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })

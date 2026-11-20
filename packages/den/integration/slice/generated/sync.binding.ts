@@ -410,7 +410,7 @@ export const syncLedger = (h: SyncHandles) => {
 		SyncRunFinish: runnerOf(
 			{
 				name: "SyncRunFinish",
-				uses: [],
+				uses: sync.kinds[1].finish.uses,
 				retry: sync.kinds[1].finish.retry,
 				body: (read: {
 					readonly input: Parameters<(typeof sync.kinds)[1]["start"]>[0]
@@ -462,7 +462,7 @@ export const syncLedger = (h: SyncHandles) => {
 		GoldFinish: runnerOf(
 			{
 				name: "GoldFinish",
-				uses: [],
+				uses: sync.kinds[3].finish.uses,
 				retry: sync.kinds[3].finish.retry,
 				body: (read: {
 					readonly input: Parameters<(typeof sync.kinds)[3]["start"]>[0]

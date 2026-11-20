@@ -334,11 +334,11 @@ CREATE INDEX "__review_analyze_output_ix_root_txmlnhynqs" ON "slice"."review_ana
 
 CREATE INDEX "__review_claim_ix_step_ouvkclqzzd_pred_attempt_5jggipiwlr" ON "slice"."review_claim" USING btree ("__step_ouvkclqzzd", "__pred_attempt_dqbvoe7dfs", "__root_yewsvvtcyz");
 
-CREATE INDEX "__review_claim_ix_root_m3m66zu4qb" ON "slice"."review_claim" USING btree ("root");
+CREATE INDEX "__review_claim_ix_root_step_ffgfd5rmvs" ON "slice"."review_claim" USING btree ("root", "step");
 
 CREATE INDEX "__review_done_ix_root_step_wex3643ujb" ON "slice"."review_done" USING btree ("root", "step");
 
-CREATE INDEX "__review_ended_ix_root_2lfye35dgu" ON "slice"."review_ended" USING btree ("root");
+CREATE INDEX "__review_ended_ix_root_step_7lrp7igbee" ON "slice"."review_ended" USING btree ("root", "step");
 
 CREATE INDEX "__review_exhausted_ix_root_a6onvxywcp" ON "slice"."review_exhausted" USING btree ("root");
 
@@ -358,7 +358,11 @@ CREATE INDEX "__review_gather_input_sizes_ix_root_step_dargnvbdje" ON "slice"."r
 
 CREATE INDEX "__review_gather_output_ix_root_5h75f2sreb" ON "slice"."review_gather_output" USING btree ("root");
 
-CREATE INDEX "__review_held_ix_root_6mb66m6iql" ON "slice"."review_held" USING btree ("root");
+CREATE INDEX "__review_held_ix_root_step_2vt6xmsrfi" ON "slice"."review_held" USING btree ("root", "step");
+
+CREATE INDEX "__review_hold_ix_resource_seat_3p66dnxzad" ON "slice"."review_hold" USING btree ("resource", "seat");
+
+CREATE INDEX "__review_hold_ix_root_escg5zeez6" ON "slice"."review_hold" USING btree ("root");
 
 CREATE INDEX "__review_paused_ix_target_pred_turn_qryngij_6_c_4_sdt7yco6va" ON "slice"."review_paused" USING btree ("target", "__pred_turn_qryngij6c4");
 

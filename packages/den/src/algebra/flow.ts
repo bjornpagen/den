@@ -53,7 +53,7 @@ export interface Flow<
 	readonly writes: Writer
 	readonly kinds: Kinds
 	readonly edges: Edges
-	/** The resources its steps use, each once, in the order the steps name them. */
+	/** The resources its steps and finishes use, each once, in the order they name them. */
 	readonly resources: ReadonlyArray<Resource>
 }
 
@@ -111,12 +111,13 @@ export const membersOf = (
 	return grow(Arr.flatMap(join.children, (child) => Option.toArray(declared(child.name))))
 }
 
-/** The resources a flow's steps use, each once, refusing two of one name. */
+/** The resources a flow's steps and finishes use, each once, refusing two of one name. */
 const resourcesOf = (
 	declaration: string,
-	steps: ReadonlyArray<AnyStepKind>
+	steps: ReadonlyArray<AnyStepKind>,
+	joins: ReadonlyArray<AnyJoin>
 ): ReadonlyArray<Resource> => {
-	const used = Arr.flatMap(steps, (s) => s.uses)
+	const used = [...Arr.flatMap(steps, (s) => s.uses), ...Arr.flatMap(joins, (j) => j.finish.uses)]
 	const distinct = Arr.dedupeWith(used, (a, b) => a === b)
 	unique(
 		`${declaration} resources`,
@@ -198,6 +199,6 @@ export const flow = <
 			}
 		})
 	})
-	const resources = resourcesOf(declaration, steps)
+	const resources = resourcesOf(declaration, steps, joins)
 	return { _tag: "Flow", name, writes, kinds, edges, resources }
 }

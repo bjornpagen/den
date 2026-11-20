@@ -12,7 +12,11 @@ import {
 	fanSeatLevel
 } from "#integration/slice/generated/fan.fragment.ts"
 import { retryCoordination, retryGraph } from "#integration/slice/generated/retry.fragment.ts"
-import { reviewCoordination, reviewGraph } from "#integration/slice/generated/review.fragment.ts"
+import {
+	reviewCoordination,
+	reviewGraph,
+	reviewSeatLevel
+} from "#integration/slice/generated/review.fragment.ts"
 import { syncCoordination, syncGraph } from "#integration/slice/generated/sync.fragment.ts"
 import {
 	Assigned,
@@ -76,12 +80,12 @@ const Listed = schema(
 )
 
 /**
- * The toy app's schema: its own level, and over it the fan-out's seat level, its live holds checked below its seat
- * counts, which no fragment can state: one installation, one migrations chain.
+ * The toy app's schema: its own level, and over it the fan-out's and the review's seat levels, their live holds checked below
+ * their seat counts, which no fragment can state: one installation, one migrations chain.
  */
 export const App = schema.extend(
 	Listed,
 	"SliceSeats",
-	[...fanSeatLevel.relations],
-	[...fanSeatLevel.laws]
+	[...fanSeatLevel.relations, ...reviewSeatLevel.relations],
+	[...fanSeatLevel.laws, ...reviewSeatLevel.laws]
 )

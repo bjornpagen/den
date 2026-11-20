@@ -17,7 +17,8 @@ import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/sl
  *
  * Oracle (specification): for sizes s, one Reviewed row per group g, (g, s_g, the sum of q² over q from 1 to s_g); the
  * review's Summary, every group saved and the sum of every group's total; every Questions scope a child of the review,
- * every Save living in the review's own scope, beside Gather, and every scope finished once, done.
+ * every Save living in the review's own scope, beside Gather; each group's cluster, the finish, holding a seat of
+ * Anthropic's as each analysis does, and every seat free at the end; and every scope finished once, done.
  */
 
 type Feature = "no group" | "an empty group" | "several groups" | "a group of several questions"
@@ -116,6 +117,20 @@ export const aScopesFinishSpawnsTheNextStageInItsParent = property.explore(runs,
 							),
 							["Gather done", ...Arr.map(run.sizes, () => "Save done")]
 						)
+						const holds = yield* rows(app.workload.reviewHolds.once({ params: {}, facts: {} }))
+						const clusterSteps = Arr.filter(steps, (s) => s.kind === "QuestionsFinish")
+						assert.deepEqual(
+							Arr.map(clusterSteps, (s) =>
+								Arr.map(
+									Arr.filter(holds, (h) => h.step === s.step),
+									(h) => h.resource
+								)
+							),
+							Arr.map(clusterSteps, () => ["Anthropic" as const]),
+							"each group's cluster held a seat of Anthropic's while it ran"
+						)
+						const left = yield* review.ledger.holds
+						assert.deepEqual(left, [])
 						const finishes = yield* rows(
 							app.workload.reviewFinishes.once({ params: {}, facts: {} })
 						)
@@ -145,6 +160,12 @@ export const aScopesFinishSpawnsTheNextStageInItsParent = property.explore(runs,
 			original: "return [...children, ...Option.toArray(upward)]",
 			replacement: "return [...Option.toArray(upward)]",
 			why: "A finish rings nothing of what its commit spawned in its scope's parent: every group's save waits for the census, and with no tick the review never finishes."
+		},
+		{
+			file: "packages/den/integration/slice/generated/review.binding.ts",
+			original: "uses: review.kinds[1].finish.uses,",
+			replacement: "uses: [],",
+			why: "A finish holds no seat of the resources it uses: each group's cluster runs its model call on no seat of Anthropic's."
 		},
 		{
 			file: "packages/den/integration/slice/generated/review.binding.ts",

@@ -874,8 +874,12 @@
 			"review_claim": {
 				"__review_claim_fk_root_z2utn3xauo": "__review_claim_in_review_root_s2ziyerowj",
 				"__review_claim_fk_step_pred_attempt_root_4ezcasjskf": "__review_claim_attempt_in_review_ended_ksylnheuno",
+				"__review_claim_fk_step_root_attempt_pred_holds_arudmqwanl": "__review_hold_ordered_review_claim_holds_scnmcjnhjt",
 				"__review_claim_fk_step_root_yqgzabonm6": "__review_claim_in_review_step_c34xije7qa",
-				"__review_claim_pk_twa72qaol7": "__review_claim_pk_step_root_attempt_pc3xfs74ce"
+				"__review_claim_key_step_root_attempt_holds_25ppgtp6nm": "__review_claim_pk_step_root_attempt_pc3xfs74ce",
+				"__review_claim_pk_twa72qaol7": "__review_claim_pk_step_root_attempt_pc3xfs74ce",
+				"__rule_review_live_check_review_seat_below_count_mrkkk5dgat": "__review_live_check_review_seat_below_count_deel7oi7be",
+				"__rule_review_live_key_resource_seat_2khojrf5tp": "__review_live_key_resource_seat_u3kqty7cdc"
 			},
 			"review_done": {
 				"__review_done_fk_root_f374tjslpg": "__review_done_in_review_root_uvvynmxxzm",
@@ -885,7 +889,9 @@
 			"review_ended": {
 				"__review_ended_fk_root_o6manlpvtk": "__review_ended_in_review_root_yybdtqvvei",
 				"__review_ended_fk_step_attempt_root_a7ck6js3qb": "__review_ended_in_review_claim_wntt6wngy4",
-				"__review_ended_pk_2hihcuxln2": "__review_ended_pk_step_attempt_root_p4fat4wspa"
+				"__review_ended_pk_2hihcuxln2": "__review_ended_pk_step_attempt_root_p4fat4wspa",
+				"__rule_review_live_check_review_seat_below_count_mrkkk5dgat": "__review_live_check_review_seat_below_count_deel7oi7be",
+				"__rule_review_live_key_resource_seat_2khojrf5tp": "__review_live_key_resource_seat_u3kqty7cdc"
 			},
 			"review_exhausted": {
 				"__review_exhausted_fk_root_odke37pg7n": "__review_exhausted_in_review_root_ojrhi5huow",
@@ -930,7 +936,19 @@
 				"__review_held_fk_root_cq4jfaijwu": "__review_held_in_review_root_ujjanfczkz",
 				"__review_held_fk_step_attempt_root_63jdmcjpmk": "__review_held_in_review_claim_rzts5cd7hh",
 				"__review_held_fk_step_root_463posmneo": "__review_held_in_review_result_6x6fbaji3w",
-				"__review_held_pk_cwyo7jovuu": "__review_held_pk_step_root_pvay6ykjs3"
+				"__review_held_pk_cwyo7jovuu": "__review_held_pk_step_root_pvay6ykjs3",
+				"__rule_review_live_check_review_seat_below_count_mrkkk5dgat": "__review_live_check_review_seat_below_count_deel7oi7be",
+				"__rule_review_live_key_resource_seat_2khojrf5tp": "__review_live_key_resource_seat_u3kqty7cdc"
+			},
+			"review_hold": {
+				"__review_hold_check_review_hold_ordered_review_claim_2wbcergshn": "__review_hold_ordered_review_claim_holds_scnmcjnhjt",
+				"__review_hold_fk_root_smobn52snr": "__review_hold_in_review_root_kcgffhdptr",
+				"__review_hold_fk_step_root_attempt_copy_holds_syccyd3g3d": "__review_hold_ordered_review_claim_holds_scnmcjnhjt",
+				"__review_hold_fk_step_root_attempt_pred_at_6m6hmj5lir": "__review_hold_ordered_review_claim_holds_scnmcjnhjt",
+				"__review_hold_key_step_root_attempt_pred_at_kuzm5unl2b": "__review_hold_pk_step_root_attempt_at_uxtn5d6kel",
+				"__review_hold_pk_uhb6w3fp5v": "__review_hold_pk_step_root_attempt_at_uxtn5d6kel",
+				"__rule_review_live_check_review_seat_below_count_mrkkk5dgat": "__review_live_check_review_seat_below_count_deel7oi7be",
+				"__rule_review_live_key_resource_seat_2khojrf5tp": "__review_live_key_resource_seat_u3kqty7cdc"
 			},
 			"review_paused": {
 				"__review_paused_fk_target_pred_turn_rig5fmgcvc": "__review_paused_in_review_resumed_y57utrknw5",
@@ -1234,6 +1252,31 @@
 	"derived": {
 		"closed": {
 			"FanSeats": {
+				"function": "__constant_ib5zplua3f",
+				"functions": [
+					"__constant_ib5zplua3f",
+					"__constant_ejkw66w2je"
+				],
+				"key": {
+					"coordinates": [
+						{
+							"field": "resource",
+							"radix": 1
+						}
+					],
+					"kind": "product"
+				},
+				"keys": "__constant_ib5zplua3f",
+				"payload": [
+					{
+						"dictionary": "__constant_ejkw66w2je",
+						"field": "seats",
+						"radix": 1
+					}
+				],
+				"width": 1
+			},
+			"ReviewSeats": {
 				"function": "__constant_ib5zplua3f",
 				"functions": [
 					"__constant_ib5zplua3f",
@@ -1609,6 +1652,7 @@
 				"review_claim": [
 					"step"
 				],
+				"review_ended": [],
 				"review_fenced": [
 					"step"
 				],
@@ -1624,6 +1668,7 @@
 				"review_held": [
 					"step"
 				],
+				"review_hold": [],
 				"review_paused": [],
 				"review_questions_finish_output": [],
 				"review_questions_input": [
@@ -11331,11 +11376,16 @@
 				},
 				"review_claim": {
 					"indexes": {
-						"__review_claim_ix_root_m3m66zu4qb": {
+						"__review_claim_ix_root_step_ffgfd5rmvs": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
 									"kind": "field"
 								}
 							],
@@ -11389,6 +11439,40 @@
 								}
 							]
 						},
+						"__review_claim_key_step_root_attempt_holds_25ppgtp6nm": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "holds",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__review_claim_pk_step_root_attempt_pc3xfs74ce"
+								},
+								{
+									"kind": "law",
+									"law": "__review_hold_ordered_review_claim_holds_scnmcjnhjt"
+								}
+							]
+						},
 						"__review_claim_pk_twa72qaol7": {
 							"columns": [
 								{
@@ -11411,6 +11495,18 @@
 								{
 									"kind": "law",
 									"law": "__review_claim_pk_step_root_attempt_pc3xfs74ce"
+								},
+								{
+									"kind": "law",
+									"law": "__review_hold_ordered_review_claim_holds_scnmcjnhjt"
+								},
+								{
+									"kind": "law",
+									"law": "__review_live_check_review_seat_below_count_deel7oi7be"
+								},
+								{
+									"kind": "law",
+									"law": "__review_live_key_resource_seat_u3kqty7cdc"
 								},
 								{
 									"kind": "access"
@@ -11478,11 +11574,16 @@
 				},
 				"review_ended": {
 					"indexes": {
-						"__review_ended_ix_root_2lfye35dgu": {
+						"__review_ended_ix_root_step_7lrp7igbee": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
 									"kind": "field"
 								}
 							],
@@ -11519,6 +11620,14 @@
 								{
 									"kind": "law",
 									"law": "__review_ended_in_review_claim_wntt6wngy4"
+								},
+								{
+									"kind": "law",
+									"law": "__review_live_check_review_seat_below_count_deel7oi7be"
+								},
+								{
+									"kind": "law",
+									"law": "__review_live_key_resource_seat_u3kqty7cdc"
 								},
 								{
 									"kind": "access"
@@ -11977,11 +12086,16 @@
 				},
 				"review_held": {
 					"indexes": {
-						"__review_held_ix_root_6mb66m6iql": {
+						"__review_held_ix_root_step_2vt6xmsrfi": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
 									"kind": "field"
 								}
 							],
@@ -12019,12 +12133,145 @@
 									"law": "__review_held_in_review_result_6x6fbaji3w"
 								},
 								{
+									"kind": "law",
+									"law": "__review_live_check_review_seat_below_count_deel7oi7be"
+								},
+								{
+									"kind": "law",
+									"law": "__review_live_key_resource_seat_u3kqty7cdc"
+								},
+								{
 									"kind": "access"
 								}
 							]
 						}
 					},
 					"relation": "ReviewHeld"
+				},
+				"review_hold": {
+					"indexes": {
+						"__review_hold_ix_resource_seat_3p66dnxzad": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "resource",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "seat",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__review_live_key_resource_seat_u3kqty7cdc"
+								}
+							]
+						},
+						"__review_hold_ix_root_escg5zeez6": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__review_hold_in_review_root_kcgffhdptr"
+								}
+							]
+						},
+						"__review_hold_key_step_root_attempt_pred_at_kuzm5unl2b": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "at",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__review_hold_ordered_review_claim_holds_scnmcjnhjt"
+									]
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__review_hold_pk_step_root_attempt_at_uxtn5d6kel"
+								},
+								{
+									"kind": "law",
+									"law": "__review_hold_ordered_review_claim_holds_scnmcjnhjt"
+								}
+							]
+						},
+						"__review_hold_pk_uhb6w3fp5v": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "at",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__review_hold_pk_step_root_attempt_at_uxtn5d6kel"
+								},
+								{
+									"kind": "law",
+									"law": "__review_hold_ordered_review_claim_holds_scnmcjnhjt"
+								},
+								{
+									"kind": "law",
+									"law": "__review_live_key_resource_seat_u3kqty7cdc"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__review_live_check_review_seat_below_count_deel7oi7be"
+								}
+							]
+						}
+					},
+					"relation": "ReviewHold"
 				},
 				"review_paused": {
 					"indexes": {
@@ -12614,6 +12861,7 @@
 										"__review_gather_input_sizes_in_review_root_2wkgnfggbs",
 										"__review_gather_output_in_review_root_jwoe6r3hb2",
 										"__review_held_in_review_root_ujjanfczkz",
+										"__review_hold_in_review_root_kcgffhdptr",
 										"__review_questions_finish_output_in_review_root_comnp77lfd",
 										"__review_questions_input_in_review_root_tukact57vd",
 										"__review_refusal_in_review_root_kwvp4rhwaq",
@@ -12695,6 +12943,10 @@
 								{
 									"kind": "law",
 									"law": "__review_held_in_review_root_ujjanfczkz"
+								},
+								{
+									"kind": "law",
+									"law": "__review_hold_in_review_root_kcgffhdptr"
 								},
 								{
 									"kind": "law",
@@ -15422,11 +15674,11 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "426d61359e52d34d9e50f0528774091f6cda1672f9ebfabae700aa9749c54208",
+	"fingerprint": "280c069cf4d1c218321152ed2617cb428383f4c472566b224477df0c24d380a5",
 	"format": 3,
 	"levels": [
 		{
-			"fingerprint": "96c8bd067877928d6f6bcbf2afd0ad13bfd47d17be763bec121b728f412f240a",
+			"fingerprint": "38e694d58ceee86672eb474a6682abb6c6dae92c779b81f710a65d19dfc934a6",
 			"laws": [
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_root_56frawwv2n"},
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_s3xk3phh7y"},
@@ -15959,6 +16211,9 @@
 				{"described":{"from":{"relation":"ReviewHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ReviewResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__review_held_in_review_result_6x6fbaji3w"},
 				{"described":{"from":{"relation":"ReviewHeld","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ReviewRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__review_held_in_review_root_ujjanfczkz"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ReviewHeld"},"law":"__review_held_pk_step_root_pvay6ykjs3"},
+				{"described":{"from":{"relation":"ReviewHold","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ReviewRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__review_hold_in_review_root_kcgffhdptr"},
+				{"described":{"kind":"family","member":{"relation":"ReviewHold","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"},{"field":"attempt","kind":"field"},{"field":"at","kind":"field"}]},"order":"ordered","slots":{"count":"holds","owner":"ReviewClaim"}},"law":"__review_hold_ordered_review_claim_holds_scnmcjnhjt"},
+				{"described":{"fields":["step","root","attempt","at"],"kind":"primaryKey","relation":"ReviewHold"},"law":"__review_hold_pk_step_root_attempt_at_uxtn5d6kel"},
 				{"described":{"from":{"relation":"ReviewPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"ReviewResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__review_paused_in_review_resumed_y57utrknw5"},
 				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"ReviewPaused"},"law":"__review_paused_pk_target_turn_sm3asu2l3q"},
 				{"described":{"from":{"relation":"ReviewQuestionsFinishOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ReviewDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__review_questions_finish_output_in_review_done_fn543ez6lk"},
@@ -16133,10 +16388,12 @@
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "869ae6ea48c5bce912c86f5bfdcbfaff2719da7a2196acb351c9b9791be7eb6b",
+			"fingerprint": "5b03ba8a8e19038fe037a9969393bfa937dd4aee4bb2a888603431b903632b7b",
 			"laws": [
 				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"},
-				{"described":{"kind":"key","side":{"relation":"FanLive","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"}]}},"law":"__fan_live_key_resource_seat_wqkc2jfkpw"}
+				{"described":{"kind":"key","side":{"relation":"FanLive","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"}]}},"law":"__fan_live_key_resource_seat_wqkc2jfkpw"},
+				{"described":{"kind":"check","name":"ReviewSeatBelowCount","relation":"ReviewLive"},"law":"__review_live_check_review_seat_below_count_deel7oi7be"},
+				{"described":{"kind":"key","side":{"relation":"ReviewLive","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"}]}},"law":"__review_live_key_resource_seat_u3kqty7cdc"}
 			],
 			"name": "SliceSeats",
 			"schema": "slice_seats"
@@ -16800,6 +17057,10 @@
 				]
 			},
 			{
+				"relation": "ReviewEnded",
+				"routes": []
+			},
+			{
 				"relation": "ReviewFenced",
 				"routes": [
 					"step"
@@ -16828,6 +17089,10 @@
 				"routes": [
 					"step"
 				]
+			},
+			{
+				"relation": "ReviewHold",
+				"routes": []
 			},
 			{
 				"relation": "ReviewPaused",
@@ -17376,7 +17641,17 @@
 		],
 		"ReviewPausable": [
 			{
+				"handle": "Anthropic",
+				"kind": "live"
+			},
+			{
 				"handle": "ReviewRun",
+				"kind": "live"
+			}
+		],
+		"ReviewResource": [
+			{
+				"handle": "Anthropic",
 				"kind": "live"
 			}
 		],

@@ -473,7 +473,7 @@ export const assignLedger = (h: AssignHandles) => {
 		AssignmentFinish: runnerOf(
 			{
 				name: "AssignmentFinish",
-				uses: [],
+				uses: assign.kinds[1].finish.uses,
 				retry: assign.kinds[1].finish.retry,
 				body: (read: {
 					readonly input: Parameters<(typeof assign.kinds)[1]["start"]>[0]

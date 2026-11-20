@@ -194,6 +194,7 @@ const finishing = {
 	reads: [],
 	output: Schema.Struct({}),
 	error: Schema.Never,
+	uses: [],
 	retry: attempts(1),
 	writes: writesNothing,
 	body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })

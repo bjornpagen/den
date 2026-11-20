@@ -263,7 +263,7 @@ export const clockLedger = (h: ClockHandles) => {
 		HourlyFinish: runnerOf(
 			{
 				name: "HourlyFinish",
-				uses: [],
+				uses: clock.kinds[1].finish.uses,
 				retry: clock.kinds[1].finish.retry,
 				body: (read: {
 					readonly input: Parameters<(typeof clock.kinds)[1]["start"]>[0]

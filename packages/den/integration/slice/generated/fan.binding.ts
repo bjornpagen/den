@@ -325,7 +325,7 @@ export const fanLedger = (h: FanHandles) => {
 		BatchFinish: runnerOf(
 			{
 				name: "BatchFinish",
-				uses: [],
+				uses: fan.kinds[1].finish.uses,
 				retry: fan.kinds[1].finish.retry,
 				body: (read: {
 					readonly input: Parameters<(typeof fan.kinds)[1]["start"]>[0]
@@ -393,7 +393,7 @@ export const fanLedger = (h: FanHandles) => {
 		FanRunFinish: runnerOf(
 			{
 				name: "FanRunFinish",
-				uses: [],
+				uses: fan.kinds[2].finish.uses,
 				retry: fan.kinds[2].finish.retry,
 				body: (read: {
 					readonly input: Parameters<(typeof fan.kinds)[2]["start"]>[0]

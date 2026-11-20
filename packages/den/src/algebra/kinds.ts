@@ -511,7 +511,8 @@ export type EndingsOf<Ended extends ReadonlyArray<ChildKind>> = {
 /**
  * A scope's finish: a step that runs once every child has ended, reads the endings of the kinds it names (done with
  * their outputs, or failed), and returns its output and writes (a cursor moved, or held where a child failed), as a
- * step does. A child scope ends as its finish does: its parent's finish reads the finish's output as the scope's, and
+ * step does, holding a seat of every resource it uses while it runs, as a step does (AlphaTest's cluster, a model call
+ * on Anthropic's seats). A child scope ends as its finish does: its parent's finish reads the finish's output as the scope's, and
  * the edges that leave the scope kind spawn the next stage in its parent from the scope's input and that output.
  */
 export interface Finish<
@@ -525,6 +526,7 @@ export interface Finish<
 	readonly reads: Ended
 	readonly output: OS
 	readonly error: ES
+	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
 	readonly writes: W
 	readonly body: (
@@ -538,6 +540,7 @@ export interface AnyFinish {
 	readonly reads: ReadonlyArray<{ readonly _tag: string; readonly name: string }>
 	readonly output: Stored
 	readonly error: ErrorSchema
+	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
 	readonly writes: WritesDeclaration
 }

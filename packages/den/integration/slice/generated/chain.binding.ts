@@ -418,7 +418,7 @@ export const chainLedger = (h: ChainHandles) => {
 		ChainRunFinish: runnerOf(
 			{
 				name: "ChainRunFinish",
-				uses: [],
+				uses: chain.kinds[1].finish.uses,
 				retry: chain.kinds[1].finish.retry,
 				body: (read: {
 					readonly input: Parameters<(typeof chain.kinds)[1]["start"]>[0]
@@ -497,7 +497,7 @@ export const chainLedger = (h: ChainHandles) => {
 		OrderedFinish: runnerOf(
 			{
 				name: "OrderedFinish",
-				uses: [],
+				uses: chain.kinds[2].finish.uses,
 				retry: chain.kinds[2].finish.retry,
 				body: (read: {
 					readonly input: Parameters<(typeof chain.kinds)[2]["start"]>[0]

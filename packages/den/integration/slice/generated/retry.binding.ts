@@ -436,7 +436,7 @@ export const retryLedger = (h: RetryHandles) => {
 		LaddersFinish: runnerOf(
 			{
 				name: "LaddersFinish",
-				uses: [],
+				uses: retry.kinds[2].finish.uses,
 				retry: retry.kinds[2].finish.retry,
 				body: (read: {
 					readonly input: Parameters<(typeof retry.kinds)[2]["start"]>[0]
@@ -518,7 +518,7 @@ export const retryLedger = (h: RetryHandles) => {
 		ThrottledFinish: runnerOf(
 			{
 				name: "ThrottledFinish",
-				uses: [],
+				uses: retry.kinds[4].finish.uses,
 				retry: retry.kinds[4].finish.retry,
 				body: (read: {
 					readonly input: Parameters<(typeof retry.kinds)[4]["start"]>[0]

@@ -1,20 +1,27 @@
 import { DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Review to; `den generate` writes it, and nothing edits it. */
 import {
+	check,
 	closed,
 	closedId,
 	contained,
+	derived,
+	drawn,
+	fin,
 	fragment,
 	key,
 	natural,
 	on,
+	ordered,
 	place,
 	pg,
 	pred,
+	query,
 	relation,
 	retirable,
 	retirement,
-	select
+	select,
+	v
 } from "@bjornpagen/grizzle"
 
 export const ReviewKind = closed.unordered("ReviewKind", [
@@ -27,7 +34,14 @@ export const ReviewKind = closed.unordered("ReviewKind", [
 export const ReviewRootKind = closed.unordered("ReviewRootKind", ["ReviewRun"])
 export const ReviewChildKind = closed.unordered("ReviewChildKind", ["Questions"])
 export const ReviewOutcome = closed.unordered("ReviewOutcome", ["done", "failed"])
-export const ReviewPausable = closed.unordered("ReviewPausable", ["ReviewRun"])
+export const ReviewPausable = closed.unordered("ReviewPausable", ["Anthropic", "ReviewRun"])
+export const ReviewResource = closed.unordered("ReviewResource", ["Anthropic"])
+const ReviewSeats = closed.relation(
+	"ReviewSeats",
+	{ resource: closedId(ReviewResource), seats: natural },
+	["resource"],
+	[{ resource: "Anthropic", seats: 2n }]
+)
 
 export const ReviewScope = relation("ReviewScope", { scope: DenScope, root: DenScope }, [
 	"scope",
@@ -80,7 +94,7 @@ export const ReviewFinish = relation(
 )
 export const ReviewClaim = relation(
 	"ReviewClaim",
-	{ step: DenStep, attempt: place, until: DenInstant, root: DenScope },
+	{ step: DenStep, attempt: place, until: DenInstant, holds: drawn(natural), root: DenScope },
 	["step", "root", "attempt"]
 )
 export const ReviewEnded = relation(
@@ -202,6 +216,18 @@ export const ReviewSaved = relation(
 	{ from: DenStep, ordinal: natural, to: DenStep, root: DenScope },
 	["from", "ordinal", "root"]
 )
+const ReviewHold = relation(
+	"ReviewHold",
+	{
+		step: DenStep,
+		attempt: natural,
+		at: drawn(natural),
+		resource: closedId(ReviewResource),
+		seat: natural,
+		root: DenScope
+	},
+	["step", "root", "attempt", "at"]
+)
 export const ReviewPaused = relation(
 	"ReviewPaused",
 	{ target: closedId(ReviewPausable), turn: natural },
@@ -221,6 +247,7 @@ export const reviewGraph = fragment(
 		ReviewChildKind,
 		ReviewOutcome,
 		ReviewPausable,
+		ReviewResource,
 		ReviewScope,
 		ReviewRoot,
 		ReviewWithin,
@@ -253,7 +280,8 @@ export const reviewGraph = fragment(
 		ReviewQuestionsFinishOutput,
 		ReviewReviewRunFinishOutput,
 		ReviewSplit,
-		ReviewSaved
+		ReviewSaved,
+		ReviewHold
 	],
 	[
 		contained(on(ReviewWithin, "scope", "root"), on(ReviewScope, "scope", "root")),
@@ -393,6 +421,7 @@ export const reviewGraph = fragment(
 		contained(on(ReviewSaved, "from", "root"), on(ReviewQuestionsFinishOutput, "step", "root")),
 		contained(on(ReviewSaved, "to", "root"), on(ReviewSaveInput, "step", "root")),
 		key(on(ReviewSaved, "to", "root")),
+		ordered(on(ReviewHold, "step", "root", "attempt", "at"), fin(ReviewClaim, "holds")),
 		retirable(ReviewRoot, [
 			on(ReviewScope, "root"),
 			on(ReviewWithin, "root"),
@@ -425,7 +454,8 @@ export const reviewGraph = fragment(
 			on(ReviewQuestionsFinishOutput, "root"),
 			on(ReviewReviewRunFinishOutput, "root"),
 			on(ReviewSplit, "root"),
-			on(ReviewSaved, "root")
+			on(ReviewSaved, "root"),
+			on(ReviewHold, "root")
 		])
 	]
 )
@@ -438,6 +468,8 @@ export const reviewCoordination = fragment(
 		ReviewChildKind,
 		ReviewOutcome,
 		ReviewPausable,
+		ReviewResource,
+		ReviewSeats,
 		ReviewPaused,
 		ReviewResumed
 	],
@@ -446,6 +478,34 @@ export const reviewCoordination = fragment(
 		contained(on(ReviewPaused, "target", pred("turn")), on(ReviewResumed, "target", "turn"))
 	]
 )
+
+/** The flow's live holds: each hold whose claim's attempt has neither ended nor held its step's result, with its claim's lease, which den's role reads as the seats' holders. */
+const ReviewLive = derived(
+	"ReviewLive",
+	query(reviewGraph).rule((r) => {
+		const { step, root, attempt, resource, seat } = v(ReviewHold, "reviewHold")
+		const { until } = v(ReviewClaim, "reviewClaim")
+		return r
+			.match(ReviewHold, { step, root, attempt, resource, seat })
+			.match(ReviewClaim, { step, root, attempt, until })
+			.where(
+				r.not(ReviewEnded, { step, root, attempt }),
+				r.not(ReviewHeld, { step, root, attempt })
+			)
+			.find({ resource, seat, step, root, attempt, until })
+	})
+)
+
+/** The flow's seat level: its live holds, at most one a seat, each held below its resource's count. A fragment declares no derived relation, so the schema that lists `reviewGraph` states these on a level over itself, `schema.extend(listing, name, [...reviewSeatLevel.relations], [...reviewSeatLevel.laws])`. */
+export const reviewSeatLevel = {
+	relations: [ReviewLive],
+	laws: [
+		key(on(ReviewLive, "resource", "seat")),
+		check("ReviewSeatBelowCount", ReviewLive, (row) =>
+			row.lt(row.seat, ReviewSeats.at("seats", row.resource))
+		)
+	]
+} as const
 
 /** The den relations the flow's app role `loader` inserts into: each step's commit's, and each app root's request's. */
 export const reviewWriter = [

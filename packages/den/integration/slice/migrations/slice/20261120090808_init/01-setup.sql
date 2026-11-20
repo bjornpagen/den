@@ -215,11 +215,17 @@ RETURN '{"done","failed"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__review_outcome_names_nlfaf7zb7f"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__review_pausable_names_jy4y3o5cqn"() RETURNS "pg_catalog"."name"[]
+CREATE FUNCTION "slice"."__review_pausable_names_uhujnxcsz6"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"ReviewRun"}'::"pg_catalog"."name"[];
+RETURN '{"Anthropic","ReviewRun"}'::"pg_catalog"."name"[];
 
-REVOKE ALL ON FUNCTION "slice"."__review_pausable_names_jy4y3o5cqn"() FROM PUBLIC;
+REVOKE ALL ON FUNCTION "slice"."__review_pausable_names_uhujnxcsz6"() FROM PUBLIC;
+
+CREATE FUNCTION "slice"."__review_resource_names_ixi3gnpcnp"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"Anthropic"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__review_resource_names_ixi3gnpcnp"() FROM PUBLIC;
 
 CREATE FUNCTION "slice"."__review_root_kind_names_uvxmjcavxb"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -315,7 +321,9 @@ CREATE DOMAIN "slice"."review_kind" AS smallint CONSTRAINT "check" CHECK (VALUE 
 
 CREATE DOMAIN "slice"."review_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__review_outcome_names_nlfaf7zb7f"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
-CREATE DOMAIN "slice"."review_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__review_pausable_names_jy4y3o5cqn"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+CREATE DOMAIN "slice"."review_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__review_pausable_names_uhujnxcsz6"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."review_resource" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__review_resource_names_ixi3gnpcnp"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."review_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__review_root_kind_names_uvxmjcavxb"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 

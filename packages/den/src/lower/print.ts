@@ -1616,7 +1616,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			"runnerOf(",
 			"\t{",
 			`\t\tname: ${q(j.finish.name)},`,
-			"\t\tuses: [],",
+			`\t\tuses: ${kind}.finish.uses,`,
 			`\t\tretry: ${kind}.finish.retry,`,
 			`\t\tbody: (read: { readonly input: Parameters<(typeof ${kind})["start"]>[0]; readonly endings: Parameters<(typeof ${kind})["finish"]["body"]>[1]${spawns ? "; readonly parent: ScopeKey" : ""} }) => ${kind}.finish.body(read.input, read.endings)`,
 			"\t},",
