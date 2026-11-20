@@ -98,7 +98,7 @@ const congestionDivisor = 2
  * caller passes, so a run is a function of its inputs.
  */
 
-/** BBR's and TCP's constants, as `Rules` read them; each is a limit with its source. */
+/** BBR's and TCP's constants, as the controller reads them; each is a limit with its source. */
 export type Constants = Readonly<{
 	/** BBR's ProbeBW pacing gains: a probe moves the window up to `ceil(up × window)`, down to `max(1, floor(down ×
 	 * window))`. */
@@ -188,16 +188,13 @@ export type Controller = Readonly<{
 }>
 
 /**
- * The controller's decisions, each a rule of a published algorithm: whether a congestion signal halves the window (a
- * request sent before the last halving belongs to its event), what a halving leaves, and whether a probe's rate beats
- * its reference. A planted bug breaks one.
+ * Whether a congestion signal halves the window: a request sent before the last halving belongs to its event (RFC 6582
+ * §3.2's recovery point).
  */
-export type Rules = Readonly<{
-	constants: Constants
-	halves: (sent: Sent, recoverFrom: number) => boolean
-	decreased: (window: number, constants: Constants) => number
-	kept: (direction: Direction, probed: Rate, reference: Rate) => boolean
-}>
+const halvedBy = (sent: Sent, recoverFrom: number): boolean => sent.seq >= recoverFrom
+
+/** What a halving leaves of a window: TCP's decrease, never below one request (RFC 5681 §3.1). */
+const halvedOf = (window: number): number => Math.max(1, Math.floor(window * CONSTANTS.decrease))
 
 /**
  * The combined standard error of the two rounds decides: an up probe is kept only if its rate exceeds the reference by
@@ -209,14 +206,6 @@ const keptBySpread = (direction: Direction, probed: Rate, reference: Rate): bool
 	return direction === "up"
 		? probed.perSecond - reference.perSecond > uncertainty
 		: reference.perSecond - probed.perSecond <= uncertainty
-}
-
-/** edullm's controller: BBR's probes, TCP's halving once per event. */
-export const BBR: Rules = {
-	constants: CONSTANTS,
-	halves: (sent, recoverFrom) => sent.seq >= recoverFrom,
-	decreased: (window, constants) => Math.max(1, Math.floor(window * constants.decrease)),
-	kept: keptBySpread
 }
 
 /** The window requests are sent up to: the probe window while probing, the window otherwise. */
@@ -280,184 +269,176 @@ type Delivery = Readonly<{
 	inFlight: number
 }>
 
-/** The controller of a rule set: its every transition, pure. */
-export const controllerOf = (rules: Rules) => {
-	const { constants } = rules
-	const probeWindowOf = (window: number, direction: Direction) =>
-		direction === "up"
-			? Math.ceil(constants.gain.up * window)
-			: Math.max(1, Math.floor(constants.gain.down * window))
-	const cruiseOf = (round: number, nextProbe: Direction, now: number, uniform: number): Phase => ({
-		_tag: "Cruise",
-		round,
-		nextProbe,
-		cycleAt: now,
-		probeWait: constants.probeWait.least + uniform * constants.probeWait.spread
-	})
+const probeWindowOf = (window: number, direction: Direction) =>
+	direction === "up"
+		? Math.ceil(CONSTANTS.gain.up * window)
+		: Math.max(1, Math.floor(CONSTANTS.gain.down * window))
+const cruiseOf = (round: number, nextProbe: Direction, now: number, uniform: number): Phase => ({
+	_tag: "Cruise",
+	round,
+	nextProbe,
+	cycleAt: now,
+	probeWait: CONSTANTS.probeWait.least + uniform * CONSTANTS.probeWait.spread
+})
 
-	/** A batch's controller at `now`, from the flow the kind carried. */
-	const start = (flow: Flow, now: number, uniform: number): Controller => ({
-		window: flow.window,
-		phase: cruiseOf(0, "up", now, uniform),
-		delivered: 0,
-		deliveredAt: now,
-		firstSentAt: now,
-		rate: { current: flow.maxRate, previous: 0 },
-		minLatency: flow.minLatency,
-		minLatencyAt: now,
-		sent: 0,
-		recoverFrom: 0
-	})
+/** A batch's controller at `now`, from the flow the kind carried. */
+const start = (flow: Flow, now: number, uniform: number): Controller => ({
+	window: flow.window,
+	phase: cruiseOf(0, "up", now, uniform),
+	delivered: 0,
+	deliveredAt: now,
+	firstSentAt: now,
+	rate: { current: flow.maxRate, previous: 0 },
+	minLatency: flow.minLatency,
+	minLatencyAt: now,
+	sent: 0,
+	recoverFrom: 0
+})
 
-	/** A request sent at `now`, `inFlight` counting it. */
-	const send = (
-		controller: Controller,
-		now: number,
-		inFlight: number
-	): readonly [Controller, Sent] => [
-		{ ...controller, sent: controller.sent + 1 },
-		{
-			seq: controller.sent,
-			round: controller.phase.round,
-			inFlight,
-			sentAt: now,
-			delivered: controller.delivered,
-			deliveredAt: controller.deliveredAt,
-			firstSentAt: controller.firstSentAt
-		}
-	]
-
-	/** A request that ended with no delivery and no congestion: a measuring round's warm-up waits for one fewer. */
-	const settled = (controller: Controller, sent: Sent): Controller => {
-		const { phase } = controller
-		return phase._tag !== "Cruise" && sent.round < phase.round && phase.earlier > 0
-			? { ...controller, phase: { ...phase, earlier: phase.earlier - 1 } }
-			: controller
+/** A request sent at `now`, `inFlight` counting it. */
+const send = (
+	controller: Controller,
+	now: number,
+	inFlight: number
+): readonly [Controller, Sent] => [
+	{ ...controller, sent: controller.sent + 1 },
+	{
+		seq: controller.sent,
+		round: controller.phase.round,
+		inFlight,
+		sentAt: now,
+		delivered: controller.delivered,
+		deliveredAt: controller.deliveredAt,
+		firstSentAt: controller.firstSentAt
 	}
+]
 
-	/** A congestion signal: the window halves at once, once per event, and the cycle restarts in cruise. */
-	const congested = (
-		controller: Controller,
-		sent: Sent,
-		now: number,
-		uniform: number
-	): Controller => {
-		const halves = rules.halves(sent, controller.recoverFrom)
-		return {
-			...controller,
-			phase: cruiseOf(controller.phase.round + 1, nextProbeOf(controller.phase), now, uniform),
-			window: halves ? rules.decreased(windowOf(controller), constants) : controller.window,
-			recoverFrom: halves ? controller.sent : controller.recoverFrom
-		}
+/** A request that ended with no delivery and no congestion: a measuring round's warm-up waits for one fewer. */
+const settled = (controller: Controller, sent: Sent): Controller => {
+	const { phase } = controller
+	return phase._tag !== "Cruise" && sent.round < phase.round && phase.earlier > 0
+		? { ...controller, phase: { ...phase, earlier: phase.earlier - 1 } }
+		: controller
+}
+
+/** A congestion signal: the window halves at once, once per event, and the cycle restarts in cruise. */
+const congested = (
+	controller: Controller,
+	sent: Sent,
+	now: number,
+	uniform: number
+): Controller => {
+	const halves = halvedBy(sent, controller.recoverFrom)
+	return {
+		...controller,
+		phase: cruiseOf(controller.phase.round + 1, nextProbeOf(controller.phase), now, uniform),
+		window: halves ? halvedOf(windowOf(controller)) : controller.window,
+		recoverFrom: halves ? controller.sent : controller.recoverFrom
 	}
+}
 
-	const phaseAfter = (controller: Controller, delivery: Delivery): Controller => {
-		const { phase } = controller
-		switch (phase._tag) {
-			case "Cruise": {
-				if (delivery.now - phase.cycleAt < phase.probeWait) {
-					return controller
+const phaseAfter = (controller: Controller, delivery: Delivery): Controller => {
+	const { phase } = controller
+	switch (phase._tag) {
+		case "Cruise": {
+			if (delivery.now - phase.cycleAt < phase.probeWait) {
+				return controller
+			}
+			const direction =
+				probeWindowOf(controller.window, phase.nextProbe) === controller.window
+					? "up"
+					: phase.nextProbe
+			return {
+				...controller,
+				phase: {
+					_tag: "Reference",
+					direction,
+					probe: probeWindowOf(controller.window, direction),
+					...measuredOf(phase.round + 1, delivery.inFlight)
 				}
-				const direction =
-					probeWindowOf(controller.window, phase.nextProbe) === controller.window
-						? "up"
-						: phase.nextProbe
-				return {
+			}
+		}
+		case "Reference": {
+			if (!countsIn(phase, controller.window, delivery.sent)) {
+				return controller
+			}
+			const measured = measuredAfter(phase, controller.window, delivery.gap)
+			const reference = Option.filter(
+				measured.intervals.length >= Math.max(controller.window, phase.probe)
+					? rateOf(measured.intervals)
+					: Option.none(),
+				(rate) => resolves(rate, controller.window, phase.probe)
+			)
+			return Option.match(reference, {
+				onNone: (): Controller => ({ ...controller, phase: measured }),
+				onSome: (rate): Controller => ({
 					...controller,
 					phase: {
-						_tag: "Reference",
-						direction,
-						probe: probeWindowOf(controller.window, direction),
+						_tag: "Probe",
+						direction: phase.direction,
+						window: phase.probe,
+						reference: rate,
+						count: measured.intervals.length,
 						...measuredOf(phase.round + 1, delivery.inFlight)
 					}
-				}
-			}
-			case "Reference": {
-				if (!countsIn(phase, controller.window, delivery.sent)) {
-					return controller
-				}
-				const measured = measuredAfter(phase, controller.window, delivery.gap)
-				const reference = Option.filter(
-					measured.intervals.length >= Math.max(controller.window, phase.probe)
-						? rateOf(measured.intervals)
-						: Option.none(),
-					(rate) => resolves(rate, controller.window, phase.probe)
-				)
-				return Option.match(reference, {
-					onNone: (): Controller => ({ ...controller, phase: measured }),
-					onSome: (rate): Controller => ({
-						...controller,
-						phase: {
-							_tag: "Probe",
-							direction: phase.direction,
-							window: phase.probe,
-							reference: rate,
-							count: measured.intervals.length,
-							...measuredOf(phase.round + 1, delivery.inFlight)
-						}
-					})
 				})
+			})
+		}
+		case "Probe": {
+			if (!countsIn(phase, phase.window, delivery.sent)) {
+				return controller
 			}
-			case "Probe": {
-				if (!countsIn(phase, phase.window, delivery.sent)) {
-					return controller
-				}
-				const measured = measuredAfter(phase, phase.window, delivery.gap)
-				if (measured.intervals.length < phase.count) {
-					return { ...controller, phase: measured }
-				}
-				return {
-					...controller,
-					phase: cruiseOf(
-						phase.round + 1,
-						opposite(phase.direction),
-						delivery.now,
-						delivery.uniform
-					),
-					window: Option.exists(rateOf(measured.intervals), (probed) =>
-						rules.kept(phase.direction, probed, phase.reference)
-					)
-						? phase.window
-						: controller.window,
-					rate: { current: 0, previous: controller.rate.current }
-				}
+			const measured = measuredAfter(phase, phase.window, delivery.gap)
+			if (measured.intervals.length < phase.count) {
+				return { ...controller, phase: measured }
+			}
+			return {
+				...controller,
+				phase: cruiseOf(phase.round + 1, opposite(phase.direction), delivery.now, delivery.uniform),
+				window: Option.exists(rateOf(measured.intervals), (probed) =>
+					keptBySpread(phase.direction, probed, phase.reference)
+				)
+					? phase.window
+					: controller.window,
+				rate: { current: 0, previous: controller.rate.current }
 			}
 		}
 	}
-
-	/**
-	 * A final answer at `now`: its latency and rate samples (BBR §2.16.1, §4.1.2.3), then the cycle. The rate sample's
-	 * interval is the longer of the request's send and delivery intervals, never shorter than its own latency.
-	 */
-	const delivered = (
-		controller: Controller,
-		sent: Sent,
-		now: number,
-		uniform: number,
-		inFlight: number
-	): Controller => {
-		const count = controller.delivered + 1
-		const latency = now - sent.sentAt
-		const interval = Math.max(sent.sentAt - sent.firstSentAt, now - sent.deliveredAt)
-		const sample = interval > 0 ? ((count - sent.delivered) * MILLIS_PER_SECOND) / interval : 0
-		const latest =
-			latency < controller.minLatency || now > controller.minLatencyAt + constants.minLatencyFilter
-		return phaseAfter(
-			settled(
-				{
-					...controller,
-					delivered: count,
-					deliveredAt: now,
-					firstSentAt: sent.sentAt,
-					rate: { ...controller.rate, current: Math.max(controller.rate.current, sample) },
-					minLatency: latest ? latency : controller.minLatency,
-					minLatencyAt: latest ? now : controller.minLatencyAt
-				},
-				sent
-			),
-			{ sent, now, gap: now - controller.deliveredAt, uniform, inFlight }
-		)
-	}
-
-	return { start, send, settled, congested, delivered, probeWindowOf }
 }
+
+/**
+ * A final answer at `now`: its latency and rate samples (BBR §2.16.1, §4.1.2.3), then the cycle. The rate sample's
+ * interval is the longer of the request's send and delivery intervals, never shorter than its own latency.
+ */
+const delivered = (
+	controller: Controller,
+	sent: Sent,
+	now: number,
+	uniform: number,
+	inFlight: number
+): Controller => {
+	const count = controller.delivered + 1
+	const latency = now - sent.sentAt
+	const interval = Math.max(sent.sentAt - sent.firstSentAt, now - sent.deliveredAt)
+	const sample = interval > 0 ? ((count - sent.delivered) * MILLIS_PER_SECOND) / interval : 0
+	const latest =
+		latency < controller.minLatency || now > controller.minLatencyAt + CONSTANTS.minLatencyFilter
+	return phaseAfter(
+		settled(
+			{
+				...controller,
+				delivered: count,
+				deliveredAt: now,
+				firstSentAt: sent.sentAt,
+				rate: { ...controller.rate, current: Math.max(controller.rate.current, sample) },
+				minLatency: latest ? latency : controller.minLatency,
+				minLatencyAt: latest ? now : controller.minLatencyAt
+			},
+			sent
+		),
+		{ sent, now, gap: now - controller.deliveredAt, uniform, inFlight }
+	)
+}
+
+/** edullm's controller, BBR's probes and TCP's halving once per event: its every transition, pure. */
+export const bbr = { start, send, settled, congested, delivered, probeWindowOf } as const

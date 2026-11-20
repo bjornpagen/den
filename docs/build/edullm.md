@@ -27,7 +27,7 @@ records it (its `packages/platform/pipeline/src/limits.ts` and `packages/data/al
 | `copy-binary.ts` | PostgreSQL's binary COPY format as data, the frame scanner (`scannerOf`, `tuplesOf`), the body encoder | W1, W8 |
 | `ranges.ts` | half-open ranges never empty, root pages cut by the page budget, the midpoint split | W1 |
 | `fingerprint.ts` | MD5 key digests, marks (bucket, fingerprint), prints, the differing buckets, the prune's settle and its absent keys | W1 |
-| `flow-control.ts` | the AlphaTest controller of `fetch.ts` as a pure state machine over `Rules` (BBR's probes, TCP's halving) | W2 |
+| `flow-control.ts` | the AlphaTest controller of `fetch.ts` as a pure state machine (`bbr`: BBR's probes, TCP's halving) | W2 |
 | `replica.ts` | Timeback's replica behind the bastion: catalog, pages, the daily print, bucket keys, edits, seatings | W1, W8 |
 | `alphatest.ts` | AlphaTest's five kinds at their knees, the gateway throttle, final answers, the 200-row listing | W2 |
 | `qti.ts` | QTI's three collections, `after` chains over a frozen window, a source that changes mid-chain | W3 |
@@ -50,21 +50,21 @@ suites draw edullm's values in force with `production`, small ones a sixth of th
 
 ## The searches
 
-Every case is a search; the pure pieces each carry planted bugs their searches must catch in a witness phase.
+Every case is a search; the bugs a pure piece's search must catch are its property's kills.
 
-| suite | laws | planted bugs caught |
-|---|---|---|
-| `copy-binary` | a body's tuple count under any chunking; its first malformed byte (truncated, trailing, widened tuple, critical flag, signature) | critical flags ignored; NULL read as a length; signature short by its terminator |
-| `ranges` | root pages tile the window, as wide as the budget allows; halves tile, down to single blocks within ⌈log₂ w⌉ splits | width rounded up; last block dropped; a gap between halves |
-| `fingerprint` | exactly the absent keys of differing buckets deleted; fetches within budget unless one bucket | counts without sums; the source's buckets driving; deletes beyond the fetched buckets |
-| `flow-control` | the window ≥ 1; it moves only by a kept probe or a once-per-event halving; no ratchet past the knee | no recovery point; an up probe kept on a tie; halving to zero |
-| `alphatest` | 429 exactly past the threshold, Retry-After only where the world sends one; each target's one final status; listing pages; rate grows to the knee and is flat above it | |
-| `replica` | a page answers within its timeout and holds its blocks' rows; a timeout splits, a one-block page is refused; a changes read; the print and bucket keys prune what the source deleted | |
-| `qti` | each document of the window once, in identifier order; every document stable for the whole read is read; a chain ends with no `next` | |
-| `bronze` (`interleave`) | racing writers: one object a body under its SHA-256, never changed, created at most once | |
-| `reports` (`interleave`) | racing deliveries: one record a report, at its first acceptance, none during the outage, never a malformed report | |
-| `presence` | the takedown timer, re-armed for the whole-second remainder, takes an attempt down within a second of its going away, never while present | |
-| `enrollment` | an intent applied only where Timeback agrees; a mark lands only on its own version; an admin's decision outranks the automatic one | |
+| suite | laws |
+|---|---|
+| `copy-binary` | a body's tuple count under any chunking; its first malformed byte (truncated, trailing, widened tuple, critical flag, signature) |
+| `ranges` | root pages tile the window, as wide as the budget allows; halves tile, down to single blocks within ⌈log₂ w⌉ splits |
+| `fingerprint` | exactly the absent keys of differing buckets deleted; fetches within budget unless one bucket |
+| `flow-control` | the window ≥ 1; it moves only by a kept probe or a once-per-event halving; no ratchet past the knee |
+| `alphatest` | 429 exactly past the threshold, Retry-After only where the world sends one; each target's one final status; listing pages; rate grows to the knee and is flat above it |
+| `replica` | a page answers within its timeout and holds its blocks' rows; a timeout splits, a one-block page is refused; a changes read; the print and bucket keys prune what the source deleted |
+| `qti` | each document of the window once, in identifier order; every document stable for the whole read is read; a chain ends with no `next` |
+| `bronze` (`interleave`) | racing writers: one object a body under its SHA-256, never changed, created at most once |
+| `reports` (`interleave`) | racing deliveries: one record a report, at its first acceptance, none during the outage, never a malformed report |
+| `presence` | the takedown timer, re-armed for the whole-second remainder, takes an attempt down within a second of its going away, never while present |
+| `enrollment` | an intent applied only where Timeback agrees; a mark lands only on its own version; an admin's decision outranks the automatic one |
 
 ## Where the fakes depart from edullm, and why
 

@@ -1,15 +1,7 @@
 import { int } from "@bjornpagen/testing/gen"
 import { Array as Arr, Effect } from "effect"
 import { AlphaTestApi, type Answered, classify, type Request } from "#alphatest.ts"
-import {
-	BBR,
-	type Controller,
-	controllerOf,
-	type Flow,
-	flowOf,
-	type Sent,
-	windowOf
-} from "#flow-control.ts"
+import { bbr, type Controller, type Flow, flowOf, type Sent, windowOf } from "#flow-control.ts"
 import type { Nature } from "#nature.ts"
 
 /** One of the controller's transitions on a read's end, with the controller before and after it. */
@@ -56,9 +48,8 @@ export const batchOf = (
 ) =>
 	Effect.gen(function* () {
 		const api = yield* AlphaTestApi
-		const control = controllerOf(BBR)
 		const uniform = () => nature.draw(int(0, 999)) / 1000
-		let controller = control.start(flow, startAt, uniform())
+		let controller = bbr.start(flow, startAt, uniform())
 		let now = startAt
 		let next = 0
 		const pending: Array<InFlight> = []
@@ -70,7 +61,7 @@ export const batchOf = (
 				Arr.drop(items, next),
 				Math.max(0, windowOf(controller) - pending.length)
 			)) {
-				const [sending, sent] = control.send(controller, now, pending.length + 1)
+				const [sending, sent] = bbr.send(controller, now, pending.length + 1)
 				controller = sending
 				const answered = yield* api.read(item, now)
 				pending.push({ answered, sent })
@@ -92,15 +83,15 @@ export const batchOf = (
 			switch (event) {
 				case "delivered":
 					finals += 1
-					controller = control.delivered(controller, first.sent, now, uniform(), pending.length)
+					controller = bbr.delivered(controller, first.sent, now, uniform(), pending.length)
 					break
 				case "settled":
 					unfinished += 1
-					controller = control.settled(controller, first.sent)
+					controller = bbr.settled(controller, first.sent)
 					break
 				case "congested":
 					unfinished += 1
-					controller = control.congested(controller, first.sent, now, uniform())
+					controller = bbr.congested(controller, first.sent, now, uniform())
 					break
 			}
 			transitions.push({ event, sent: first.sent, before, after: controller })
