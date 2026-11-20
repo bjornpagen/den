@@ -7,7 +7,13 @@ import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Fiber, Formatter, Option, Queue, Stream } from "effect"
-import { AppServed, openLedgers, rows, installedSliceCase } from "#integration/support/slice.ts"
+import {
+	AppServed,
+	installedSliceCase,
+	openLedgers,
+	rows,
+	walLevel
+} from "#integration/support/slice.ts"
 
 /**
  * The relay, the transactional outbox by log tailing: it watches the chain flow's served reads through grizzle's live
@@ -15,8 +21,9 @@ import { AppServed, openLedgers, rows, installedSliceCase } from "#integration/s
  * transaction; no one rings it, and the relay, seeing the commit, rings the root's admission, keyed by the committed
  * state it rang for. Delivering that ring runs the chain to its end.
  *
- * Oracle (postgresql): the live source's decoding of the app's commit, which the relay turns into the admission's ring;
- * the chain's finish done and the order's row beside it, both from that one transaction.
+ * Oracle (postgresql): the live source's decoding of the app's commit, which the relay turns into the admission's ring,
+ * on a member at PostgreSQL's default wal_level, replica, which PostgreSQL 19 decodes logically on its own; the chain's
+ * finish done and the order's row beside it, both from that one transaction.
  */
 
 type Feature = "news" | "sport" | "a relay ring"
@@ -79,6 +86,8 @@ export const theRelayRingsARootTheAppRequestedInItsOwnTransaction = property.exp
 							)
 						)
 						yield* Fiber.interrupt(relayed)
+						const level = yield* walLevel
+						assert.deepEqual(level, ["replica"])
 						assert.equal(admission._tag, "Some")
 						if (Option.isSome(admission)) {
 							assert.equal(admission.value.cause._tag, "Relay")
@@ -95,7 +104,7 @@ export const theRelayRingsARootTheAppRequestedInItsOwnTransaction = property.exp
 			),
 	oracle: {
 		kind: "postgresql",
-		name: "the live source's decoding of the app's commit, rung as the root's admission"
+		name: "the live source's decoding of the app's commit at wal_level replica, rung as the root's admission"
 	},
 	budget: { runs: 4, steered: 4 },
 	kept: [],

@@ -43,7 +43,8 @@ and `grizzle check` passes.
 The cluster: `packages/den/pg.config.ts`, the testing library's `localCluster` (`toolchain-pg init`, `start`, `stop`,
 `status`, `psql`, `admin`, `reset`, `env`, run as `pnpm pg …`), made and started by the runner's first need; the build
 `vendor/grizzle`'s `scripts/pg/pin.env` pins, its state under `~/.local/var/toolchain-pg/5443`, port 5443, verify-full
-TLS with its own CA (grizzle speaks nothing else), logical WAL, a replication slot and walsender per worker,
+TLS with its own CA (grizzle speaks nothing else), PostgreSQL's default wal_level, replica, which PostgreSQL 19 decodes
+logically on its own once a replication slot asks, a replication slot and walsender per worker,
 `max_pred_locks_per_transaction = 2048`, owner role `den_dev` and the template `den_template` with pgvector in
 `vector_ext`. Each test file creates a database of its own from the template, runs
 `grizzle migrate` from the committed migrations under a role prefix of its own (roles are cluster-wide), gives its

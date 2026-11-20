@@ -539,6 +539,15 @@ export const installedSliceCase: DatabaseNeed<Context.Context<SliceCase>> = {
 export const migrateIn = (directory: string) =>
 	Effect.flatMap(Installation, (installed) => grizzle("migrate", installed.env, directory))
 
+/** The case's member's wal_level, as the owner's session in the case's database reads it. */
+export const walLevel = Effect.flatMap(Installation, (installed) =>
+	asOwner(
+		installed.member,
+		installed.database,
+		"SELECT pg_catalog.current_setting('wal_level') AS name"
+	)
+)
+
 /**
  * Runs `reader` while an owner's transaction holds `table` of the case's database locked against every read, and
  * `writer` once a session waits on that lock, then frees it and waits for the reader; its answer is both outcomes. A
