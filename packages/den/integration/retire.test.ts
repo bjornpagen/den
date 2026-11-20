@@ -16,10 +16,12 @@ import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/sl
  * every finished root no audit pins, under grizzle's retirable unit whose header is the chain's Root.
  *
  * Oracle (specification): docs/decisions.md and grizzle's README, "Retirable units". A finished root with no audit is
- * retired: no step, result or input row of its graph is left, its header stays, a request of its key again is refused,
- * and a stale wake of one of its steps is lost. A finished root an audit references is kept, its retirement refused, its
- * graph whole. A root never admitted has not ended and is neither retired nor kept. A second retirement retires
- * nothing more, and the app's own rows (each feed's items) stay.
+ * retired: no step, result or input row of its graph is left, its header stays, and a stale wake of one of its steps is
+ * lost. A finished root an audit references is kept, its retirement refused, its graph whole. A root never admitted has
+ * not ended and is neither retired nor kept. A request of any root's key again, retired, kept or never admitted, starts
+ * nothing and answers that the root was already requested, under the same scope, since its header keeps the key
+ * whatever became of its graph; no graph row comes back. A second retirement retires nothing more, and the app's own
+ * rows (each feed's items) stay.
  */
 
 type Feature = "a root retired" | "a root kept by an audit" | "a root not finished"
@@ -40,6 +42,13 @@ const runs: Gen<ReadonlyArray<Planned>> = array(
 )
 
 const byScope = Order.String
+
+/** A graph's rows as texts, in one order, so two reads of them compare as sets. */
+const graphTexts = (graph: ReadonlyArray<{ readonly step: string; readonly root: string }>) =>
+	Arr.sort(
+		Arr.map(graph, (row) => `${row.root} ${row.step}`),
+		Order.String
+	)
 
 /**
  * Retires every finished chain no app row pins, whole, and keeps the rest.
@@ -146,17 +155,22 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 							)
 						)
 
+						yield* Effect.forEach(requested, (r) =>
+							Effect.map(
+								chain.request.ChainRun(`root-${r.index}`, {
+									feed: "news",
+									pages: BigInt(r.plan.pages)
+								}),
+								(again) => assert.deepEqual(again, { scope: r.scope, fresh: false })
+							)
+						)
+						const after = yield* rows(app.workload.chainGraphRows.once({ params: {}, facts: {} }))
+						assert.deepEqual(graphTexts(after), graphTexts(left))
+
 						yield* Effect.forEach(
 							Arr.filter(requested, (r) => Arr.contains(retiredScopes, r.scope)),
 							(r) =>
 								Effect.gen(function* () {
-									const again = yield* Effect.result(
-										chain.request.ChainRun(`root-${r.index}`, {
-											feed: "news",
-											pages: BigInt(r.plan.pages)
-										})
-									)
-									assert.ok(again._tag === "Failure" && again.failure.kind === "refused")
 									const stale = Arr.filter(pages, (page) => page.scope === r.scope)
 									const ends = yield* chain.ledger.now
 									yield* Effect.forEach(stale, (page) =>
@@ -191,7 +205,7 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 			),
 	oracle: {
 		kind: "specification",
-		name: "grizzle's retirable units: finished unpinned graphs gone whole, headers kept, keys refused, pinned graphs kept"
+		name: "grizzle's retirable units: finished unpinned graphs gone whole, headers kept, every key requested again not fresh, pinned graphs kept"
 	},
 	budget: { runs: 8, steered: 8 },
 	kept: [],
@@ -201,6 +215,12 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 			original: "retire: { ChainRoot: [{ scope: root }] }",
 			replacement: "retire: { ChainRoot: [] }",
 			why: "the binding retires no group, so a finished graph's rows stay"
+		},
+		{
+			file: "packages/den/src/runtime/bind.ts",
+			original: "\t\t\t() => Effect.succeed(false)",
+			replacement: "\t\t\t() => Effect.succeed(true)",
+			why: "A request of a key already requested, which its root's header refuses on its key, answers that it started the root, a retired one's included."
 		}
 	]
 })

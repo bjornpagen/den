@@ -63,7 +63,10 @@ for the coordination group, and DBCLOCK:
   session's rulings on den's use (2026-11-18): every graph relation carries its root's key as a column, `root: DenScope`, contained in `<P>Root`, so a
   retired unit's fence refuses an insert by that key row by row (a unit reached through `Within`'s tree would make
   every insert's check recursive); a stale holder's insert and a root requested again under a retired key are both
-  refused; the retire call is a role of its own; an app row that references a
+  refused (since an operator's or the app's root is written at its request's own instant, its request again under any
+  key already requested, a retired one's included, is refused on the header's key, which the request answers as
+  already requested: it starts nothing, and the retired key never starts a graph again); the retire call is a role of
+  its own; an app row that references a
   body row refuses the retirement (NO ACTION) unless the app declares its relation among the unit's bodies; and
   grizzle retires whole units only, never a chain's prefix, so the coordination group's chains of turns, each turn
   proved from its predecessor's `Freed`, must be restated before they can be retired: one current row per seat, or
