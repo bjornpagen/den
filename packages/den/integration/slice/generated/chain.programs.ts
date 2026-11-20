@@ -4,7 +4,6 @@ import { ChangeSet, clocked, deferrable, query, role, v, workload } from "@bjorn
 import { App } from "#integration/slice/app.ts"
 import {
 	ChainKind,
-	ChainJoin,
 	ChainRootKind,
 	ChainOutcome,
 	ChainPausable,
@@ -13,12 +12,10 @@ import {
 	ChainOrderedInputFeed,
 	ChainScope,
 	ChainRoot,
-	ChainWithin,
 	ChainAdmitted,
 	ChainSkipped,
 	ChainStep,
 	ChainStartStep,
-	ChainStartScope,
 	ChainFinish,
 	ChainClaim,
 	ChainRetry,
@@ -53,12 +50,10 @@ export const ChainDen = role(
 		insert: [
 			"ChainScope",
 			"ChainRoot",
-			"ChainWithin",
 			"ChainAdmitted",
 			"ChainSkipped",
 			"ChainStep",
 			"ChainStartStep",
-			"ChainStartScope",
 			"ChainFinish",
 			"ChainClaim",
 			"ChainRetry",
@@ -84,7 +79,6 @@ export const ChainCoordinator = role(
 	"chain_coordinator",
 	{
 		ChainKind,
-		ChainJoin,
 		ChainRootKind,
 		ChainOutcome,
 		ChainPausable,
@@ -106,21 +100,16 @@ const chainPendingRead = query(ChainDen).rule((r) => {
 })
 
 const chainRequestedRead = query(ChainDen).rule((r) => {
-	const { scope, kind } = v(ChainScope, "scope")
+	const { scope } = v(ChainRoot, "root")
 	return r
-		.match(ChainScope, { scope, kind })
+		.match(ChainRoot, { scope })
 		.where(r.not(ChainAdmitted, { scope }), r.not(ChainSkipped, { scope }))
-		.find({ scope, kind })
+		.find({ scope })
 })
 
 const chainRunningRead = query(ChainDen).rule((r) => {
-	const { scope, kind } = v(ChainScope, "scope")
-	const { step } = v(ChainFinish, "finish")
-	return r
-		.match(ChainScope, { scope, kind })
-		.match(ChainFinish, { scope, step })
-		.where(r.not(ChainResult, { step }))
-		.find({ scope, kind })
+	const { scope, step } = v(ChainFinish, "finish")
+	return r.match(ChainFinish, { scope, step }).where(r.not(ChainResult, { step })).find({ scope })
 })
 
 export const chainDenPrograms = Object.freeze({
@@ -161,10 +150,8 @@ export const chainDenPrograms = Object.freeze({
 		.insert(ChainAdmitted, [])
 		.insert(ChainFinish, [])
 		.insert(ChainStartStep, [])
-		.insert(ChainStartScope, [])
 		.insert(ChainStep, [])
 		.insert(ChainScope, [])
-		.insert(ChainWithin, [])
 		.insert(ChainPageInput, [])
 		.insert(ChainPageInputAfter, []),
 	chainSkip: ChangeSet.empty(chainGraph).insert(ChainSkipped, []),
@@ -195,20 +182,6 @@ export const chainDenPrograms = Object.freeze({
 			.match(ChainHeld, { step, attempt, root })
 			.where(r.eq(step, r.param("step", ChainHeld.fields.step)))
 			.find({ step, attempt, root })
-	}),
-	chainScopeOf: query(chainGraph).rule((r) => {
-		const { scope, kind, root } = v(ChainScope, "chainScope")
-		return r
-			.match(ChainScope, { scope, kind, root })
-			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
-			.find({ scope, kind, root })
-	}),
-	chainWithinOf: query(chainGraph).rule((r) => {
-		const { scope, parent, root } = v(ChainWithin, "chainWithin")
-		return r
-			.match(ChainWithin, { scope, parent, root })
-			.where(r.eq(scope, r.param("scope", ChainWithin.fields.scope)))
-			.find({ scope, parent, root })
 	}),
 	chainAdmittedOf: query(chainGraph).rule((r) => {
 		const { scope, root } = v(ChainAdmitted, "chainAdmitted")
@@ -275,29 +248,6 @@ export const chainDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	chainOpenChildren: query(chainGraph)
-		.rule((r) => {
-			const { scope, parent } = v(ChainWithin, "within")
-			return r
-				.match(ChainWithin, { scope, parent })
-				.where(
-					r.eq(parent, r.param("scope", ChainScope.fields.scope)),
-					r.not(ChainAdmitted, { scope })
-				)
-				.find({ child: scope })
-		})
-		.rule((r) => {
-			const { scope, parent } = v(ChainWithin, "within")
-			const { step } = v(ChainFinish, "finish")
-			return r
-				.match(ChainWithin, { scope, parent })
-				.match(ChainFinish, { scope, step })
-				.where(
-					r.eq(parent, r.param("scope", ChainScope.fields.scope)),
-					r.not(ChainResult, { step })
-				)
-				.find({ child: scope })
-		}),
 	chainFinished: query(chainGraph).rule((r) => {
 		const { scope, step } = v(ChainFinish, "finish")
 		return r
@@ -335,10 +285,6 @@ export const chainDenPrograms = Object.freeze({
 			}),
 			requested: chainRequestedRead,
 			running: chainRunningRead,
-			withins: query(ChainDen).rule((r) => {
-				const { scope, parent } = v(ChainWithin, "chainWithin")
-				return r.match(ChainWithin, { scope, parent }).find({ scope, parent })
-			}),
 			roots: query(ChainDen).rule((r) => {
 				const { scope, kind, key, at } = v(ChainRoot, "chainRoot")
 				return r.match(ChainRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
@@ -492,11 +438,9 @@ export const chainCommitPrograms = Object.freeze({
 			.insert(ChainPageWeightsRead, [])
 			.insert(ChainStep, [])
 			.insert(ChainScope, [])
-			.insert(ChainWithin, [])
 			.insert(ChainAdmitted, [])
 			.insert(ChainFinish, [])
 			.insert(ChainStartStep, [])
-			.insert(ChainStartScope, [])
 			.insert(ChainPageInput, [])
 			.insert(ChainPageInputAfter, [])
 			.insert(ChainNext, []),

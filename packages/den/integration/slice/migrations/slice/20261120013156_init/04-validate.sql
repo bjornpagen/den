@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION "slice"."__judge_assign_assignment_input_mfctsotkjq"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__judge_assign_assignment_input_numdwqphuf"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 DECLARE
@@ -25,12 +25,12 @@ BEGIN
       "__written" := "__written" || '__delta_olds_assign_assignment_input_mode_within_zkpkil5tyr'::"pg_catalog"."text";
     END IF;
   END IF;
-  IF "__held" @> '{"__delta_olds_assign_scope_zqoacqpyux"}'::"pg_catalog"."text"[] THEN
-    IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_assign_scope_zqoacqpyux" AS "r1") THEN
-      "__written" := "__written" || '__delta_olds_assign_scope_zqoacqpyux'::"pg_catalog"."text";
+  IF "__held" @> '{"__delta_olds_assign_root_m5b4zjf4ha"}'::"pg_catalog"."text"[] THEN
+    IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_assign_root_m5b4zjf4ha" AS "r1") THEN
+      "__written" := "__written" || '__delta_olds_assign_root_m5b4zjf4ha'::"pg_catalog"."text";
     END IF;
   END IF;
-  IF "__written" && '{"__delta_olds_assign_assignment_input_mode_nearest_vk7fu2lqsh","__delta_olds_assign_assignment_input_mode_within_zkpkil5tyr","__delta_olds_assign_scope_zqoacqpyux"}'::"pg_catalog"."text"[] THEN
+  IF "__written" && '{"__delta_olds_assign_assignment_input_mode_nearest_vk7fu2lqsh","__delta_olds_assign_assignment_input_mode_within_zkpkil5tyr","__delta_olds_assign_root_m5b4zjf4ha"}'::"pg_catalog"."text"[] THEN
     IF NOT "__held" @> '{"__delta_news_assign_assignment_input_lw7cfgfvnr"}'::"pg_catalog"."text"[] THEN
       CREATE TEMPORARY TABLE "pg_temp"."__delta_news_assign_assignment_input_lw7cfgfvnr" ("learner" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "missed" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "mode" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid", "topic" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "__count" smallint) ON COMMIT DELETE ROWS;
     END IF;
@@ -46,16 +46,16 @@ BEGIN
     END IF;
   END IF;
   IF "__written" && '{"__delta_news_assign_assignment_input_lw7cfgfvnr"}'::"pg_catalog"."text"[] THEN
-    IF NOT "__held" @> '{"__delta_olds_assign_scope_zqoacqpyux"}'::"pg_catalog"."text"[] THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_assign_scope_zqoacqpyux" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    IF NOT "__held" @> '{"__delta_olds_assign_root_m5b4zjf4ha"}'::"pg_catalog"."text"[] THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_assign_root_m5b4zjf4ha" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
     END IF;
   END IF;
-  IF "__written" && '{"__delta_news_assign_assignment_input_lw7cfgfvnr","__delta_olds_assign_scope_zqoacqpyux"}'::"pg_catalog"."text"[] THEN
-    PERFORM 1 FROM (SELECT "r24"."c47", "r24"."c48" FROM (SELECT "r23"."c45", "r23"."c46" FROM (SELECT "r11"."c20", "r11"."c21", "r22"."c41", "r22"."c42" FROM (SELECT "r10"."c18", "r10"."c19" FROM ((SELECT "r4"."c5"::"pg_catalog"."uuid", "r4"."c6"::"pg_catalog"."uuid" FROM (SELECT "r3"."c3", "r3"."c4" FROM (SELECT "r2"."c2", "r2"."c1" FROM (SELECT "r1"."root", "r1"."scope" FROM "pg_temp"."__delta_news_assign_assignment_input_lw7cfgfvnr" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") UNION SELECT "r9"."c16"::"pg_catalog"."uuid", "r9"."c17"::"pg_catalog"."uuid" FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."scope" FROM "pg_temp"."__delta_olds_assign_scope_zqoacqpyux" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 0::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17"))) AS "r10"("c18", "c19") OFFSET 0) AS "r11"("c20", "c21"), LATERAL (SELECT "r21"."c39", "r21"."c40" FROM (SELECT "r15"."c26", "r15"."c27" FROM (SELECT "r14"."c24", "r14"."c25" FROM (SELECT "r11"."c20", "r11"."c21" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."assign_assignment_input" AS "r12") AS "r13"("c22", "c23") WHERE "r13"."c22" = "r11"."c21" AND "r13"."c23" = "r11"."c20") AS "r14"("c24", "c25")) AS "r15"("c26", "c27") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c34", "r19"."c35" FROM (SELECT "r18"."c31", "r18"."c32", "r18"."c33" FROM (SELECT "r17"."c30", "r17"."c29", "r17"."c28" FROM (SELECT "r16"."kind", "r16"."root", "r16"."scope" FROM "slice"."assign_scope" AS "r16") AS "r17"("c28", "c29", "c30")) AS "r18"("c31", "c32", "c33") WHERE "r18"."c33" = 0::smallint) AS "r19"("c34", "c35", "c36")) AS "r20"("c37", "c38") WHERE "r20"."c37" = "r15"."c26" AND "r20"."c38" = "r15"."c27")) AS "r21"("c39", "c40") OFFSET 0) AS "r22"("c41", "c42")) AS "r23"("c43", "c44", "c45", "c46")) AS "r24"("c47", "c48")) AS "found";
+  IF "__written" && '{"__delta_news_assign_assignment_input_lw7cfgfvnr","__delta_olds_assign_root_m5b4zjf4ha"}'::"pg_catalog"."text"[] THEN
+    PERFORM 1 FROM (SELECT "r24"."c28" FROM (SELECT DISTINCT "r23"."c27" FROM (SELECT "r11"."c12", "r22"."c25" FROM (SELECT "r10"."c11" FROM ((SELECT "r4"."c3"::"pg_catalog"."uuid" FROM (SELECT "r3"."c2" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope" FROM "pg_temp"."__delta_news_assign_assignment_input_lw7cfgfvnr" AS "r1") AS "r2"("c1")) AS "r3"("c2")) AS "r4"("c3") UNION SELECT "r9"."c10"::"pg_catalog"."uuid" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c6", "r7"."c7" FROM (SELECT "r6"."c5", "r6"."c4" FROM (SELECT "r5"."kind", "r5"."scope" FROM "pg_temp"."__delta_olds_assign_root_m5b4zjf4ha" AS "r5") AS "r6"("c4", "c5")) AS "r7"("c6", "c7") WHERE "r7"."c7" = 0::smallint) AS "r8"("c8", "c9")) AS "r9"("c10"))) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r21"."c24" FROM (SELECT "r15"."c16" FROM (SELECT "r14"."c15" FROM (SELECT "r11"."c12" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."assign_assignment_input" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15")) AS "r15"("c16") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c21" FROM (SELECT "r18"."c19", "r18"."c20" FROM (SELECT "r17"."c18", "r17"."c17" FROM (SELECT "r16"."kind", "r16"."scope" FROM "slice"."assign_root" AS "r16") AS "r17"("c17", "c18")) AS "r18"("c19", "c20") WHERE "r18"."c20" = 0::smallint) AS "r19"("c21", "c22")) AS "r20"("c23") WHERE "r20"."c23" = "r15"."c16")) AS "r21"("c24") OFFSET 0) AS "r22"("c25")) AS "r23"("c26", "c27")) AS "r24"("c28")) AS "found";
     IF FOUND THEN
       RAISE EXCEPTION 'a write breaks a rule over a query'
         USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text",
-              CONSTRAINT = '__rule_assign_assignment_input_in_assign_scope_rgmqtdjqzy'::"pg_catalog"."text",
+              CONSTRAINT = '__rule_assign_assignment_input_in_assign_root_iwogkwrka6'::"pg_catalog"."text",
               SCHEMA = 'slice'::"pg_catalog"."text",
               TABLE = 'assign_assignment_input'::"pg_catalog"."text";
     END IF;
@@ -83,7 +83,7 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__judge_assign_assignment_input_mfctsotkjq"("pg_catalog"."text"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_assign_assignment_input_numdwqphuf"("pg_catalog"."text"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge_assign_assignment_input_mode_nearest_gp4j43rmv4"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -527,7 +527,7 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_assign_done_uvgox4xms6"("pg_catalog"."text"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__judge_chain_chain_run_input_6af3rz27sb"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__judge_chain_chain_run_input_2i76tea7vf"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 DECLARE
@@ -554,42 +554,42 @@ BEGIN
       END IF;
     END IF;
   END IF;
-  IF "__held" @> '{"__delta_olds_chain_scope_27r3qyqi3x"}'::"pg_catalog"."text"[] THEN
-    IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_chain_scope_27r3qyqi3x" AS "r1") THEN
-      "__written" := "__written" || '__delta_olds_chain_scope_27r3qyqi3x'::"pg_catalog"."text";
+  IF "__held" @> '{"__delta_olds_chain_root_rvwhkmeihw"}'::"pg_catalog"."text"[] THEN
+    IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_chain_root_rvwhkmeihw" AS "r1") THEN
+      "__written" := "__written" || '__delta_olds_chain_root_rvwhkmeihw'::"pg_catalog"."text";
     END IF;
   END IF;
-  IF "__written" && '{"__delta_olds_chain_scope_27r3qyqi3x"}'::"pg_catalog"."text"[] THEN
+  IF "__written" && '{"__delta_olds_chain_root_rvwhkmeihw"}'::"pg_catalog"."text"[] THEN
     IF NOT "__held" @> '{"__delta_news_chain_chain_run_input_kn6uczzewn"}'::"pg_catalog"."text"[] THEN
       CREATE TEMPORARY TABLE "pg_temp"."__delta_news_chain_chain_run_input_kn6uczzewn" ("feed" smallint, "pages" bigint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid", "__count" smallint) ON COMMIT DELETE ROWS;
     END IF;
   END IF;
-  IF "__written" && '{"__delta_olds_chain_scope_27r3qyqi3x"}'::"pg_catalog"."text"[] THEN
+  IF "__written" && '{"__delta_olds_chain_root_rvwhkmeihw"}'::"pg_catalog"."text"[] THEN
     IF NOT "__held" @> '{"__delta_news_chain_ordered_input_jcbr362nhm"}'::"pg_catalog"."text"[] THEN
       CREATE TEMPORARY TABLE "pg_temp"."__delta_news_chain_ordered_input_jcbr362nhm" ("feed" smallint, "pages" bigint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid", "__count" smallint) ON COMMIT DELETE ROWS;
     END IF;
   END IF;
   IF "__written" && '{"__delta_news_chain_chain_run_input_kn6uczzewn","__delta_news_chain_ordered_input_jcbr362nhm"}'::"pg_catalog"."text"[] THEN
-    IF NOT "__held" @> '{"__delta_olds_chain_scope_27r3qyqi3x"}'::"pg_catalog"."text"[] THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_chain_scope_27r3qyqi3x" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    IF NOT "__held" @> '{"__delta_olds_chain_root_rvwhkmeihw"}'::"pg_catalog"."text"[] THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_chain_root_rvwhkmeihw" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
     END IF;
   END IF;
-  IF "__written" && '{"__delta_news_chain_chain_run_input_kn6uczzewn","__delta_olds_chain_scope_27r3qyqi3x"}'::"pg_catalog"."text"[] THEN
-    PERFORM 1 FROM (SELECT "r24"."c47", "r24"."c48" FROM (SELECT "r23"."c45", "r23"."c46" FROM (SELECT "r11"."c20", "r11"."c21", "r22"."c41", "r22"."c42" FROM (SELECT "r10"."c18", "r10"."c19" FROM ((SELECT "r4"."c5"::"pg_catalog"."uuid", "r4"."c6"::"pg_catalog"."uuid" FROM (SELECT "r3"."c3", "r3"."c4" FROM (SELECT "r2"."c2", "r2"."c1" FROM (SELECT "r1"."root", "r1"."scope" FROM "pg_temp"."__delta_news_chain_chain_run_input_kn6uczzewn" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") UNION SELECT "r9"."c16"::"pg_catalog"."uuid", "r9"."c17"::"pg_catalog"."uuid" FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."scope" FROM "pg_temp"."__delta_olds_chain_scope_27r3qyqi3x" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 0::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17"))) AS "r10"("c18", "c19") OFFSET 0) AS "r11"("c20", "c21"), LATERAL (SELECT "r21"."c39", "r21"."c40" FROM (SELECT "r15"."c26", "r15"."c27" FROM (SELECT "r14"."c24", "r14"."c25" FROM (SELECT "r11"."c20", "r11"."c21" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."chain_chain_run_input" AS "r12") AS "r13"("c22", "c23") WHERE "r13"."c22" = "r11"."c21" AND "r13"."c23" = "r11"."c20") AS "r14"("c24", "c25")) AS "r15"("c26", "c27") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c34", "r19"."c35" FROM (SELECT "r18"."c31", "r18"."c32", "r18"."c33" FROM (SELECT "r17"."c30", "r17"."c29", "r17"."c28" FROM (SELECT "r16"."kind", "r16"."root", "r16"."scope" FROM "slice"."chain_scope" AS "r16") AS "r17"("c28", "c29", "c30")) AS "r18"("c31", "c32", "c33") WHERE "r18"."c33" = 0::smallint) AS "r19"("c34", "c35", "c36")) AS "r20"("c37", "c38") WHERE "r20"."c37" = "r15"."c26" AND "r20"."c38" = "r15"."c27")) AS "r21"("c39", "c40") OFFSET 0) AS "r22"("c41", "c42")) AS "r23"("c43", "c44", "c45", "c46")) AS "r24"("c47", "c48")) AS "found";
+  IF "__written" && '{"__delta_news_chain_chain_run_input_kn6uczzewn","__delta_olds_chain_root_rvwhkmeihw"}'::"pg_catalog"."text"[] THEN
+    PERFORM 1 FROM (SELECT "r24"."c28" FROM (SELECT DISTINCT "r23"."c27" FROM (SELECT "r11"."c12", "r22"."c25" FROM (SELECT "r10"."c11" FROM ((SELECT "r4"."c3"::"pg_catalog"."uuid" FROM (SELECT "r3"."c2" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope" FROM "pg_temp"."__delta_news_chain_chain_run_input_kn6uczzewn" AS "r1") AS "r2"("c1")) AS "r3"("c2")) AS "r4"("c3") UNION SELECT "r9"."c10"::"pg_catalog"."uuid" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c6", "r7"."c7" FROM (SELECT "r6"."c5", "r6"."c4" FROM (SELECT "r5"."kind", "r5"."scope" FROM "pg_temp"."__delta_olds_chain_root_rvwhkmeihw" AS "r5") AS "r6"("c4", "c5")) AS "r7"("c6", "c7") WHERE "r7"."c7" = 0::smallint) AS "r8"("c8", "c9")) AS "r9"("c10"))) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r21"."c24" FROM (SELECT "r15"."c16" FROM (SELECT "r14"."c15" FROM (SELECT "r11"."c12" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."chain_chain_run_input" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15")) AS "r15"("c16") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c21" FROM (SELECT "r18"."c19", "r18"."c20" FROM (SELECT "r17"."c18", "r17"."c17" FROM (SELECT "r16"."kind", "r16"."scope" FROM "slice"."chain_root" AS "r16") AS "r17"("c17", "c18")) AS "r18"("c19", "c20") WHERE "r18"."c20" = 0::smallint) AS "r19"("c21", "c22")) AS "r20"("c23") WHERE "r20"."c23" = "r15"."c16")) AS "r21"("c24") OFFSET 0) AS "r22"("c25")) AS "r23"("c26", "c27")) AS "r24"("c28")) AS "found";
     IF FOUND THEN
       RAISE EXCEPTION 'a write breaks a rule over a query'
         USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text",
-              CONSTRAINT = '__rule_chain_chain_run_input_in_chain_scope_h2pixcl54v'::"pg_catalog"."text",
+              CONSTRAINT = '__rule_chain_chain_run_input_in_chain_root_amnxsjpwug'::"pg_catalog"."text",
               SCHEMA = 'slice'::"pg_catalog"."text",
               TABLE = 'chain_chain_run_input'::"pg_catalog"."text";
     END IF;
   END IF;
-  IF "__written" && '{"__delta_news_chain_ordered_input_jcbr362nhm","__delta_olds_chain_scope_27r3qyqi3x"}'::"pg_catalog"."text"[] THEN
-    PERFORM 1 FROM (SELECT "r24"."c47", "r24"."c48" FROM (SELECT "r23"."c45", "r23"."c46" FROM (SELECT "r11"."c20", "r11"."c21", "r22"."c41", "r22"."c42" FROM (SELECT "r10"."c18", "r10"."c19" FROM ((SELECT "r4"."c5"::"pg_catalog"."uuid", "r4"."c6"::"pg_catalog"."uuid" FROM (SELECT "r3"."c3", "r3"."c4" FROM (SELECT "r2"."c2", "r2"."c1" FROM (SELECT "r1"."root", "r1"."scope" FROM "pg_temp"."__delta_news_chain_ordered_input_jcbr362nhm" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") UNION SELECT "r9"."c16"::"pg_catalog"."uuid", "r9"."c17"::"pg_catalog"."uuid" FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."scope" FROM "pg_temp"."__delta_olds_chain_scope_27r3qyqi3x" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 1::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17"))) AS "r10"("c18", "c19") OFFSET 0) AS "r11"("c20", "c21"), LATERAL (SELECT "r21"."c39", "r21"."c40" FROM (SELECT "r15"."c26", "r15"."c27" FROM (SELECT "r14"."c24", "r14"."c25" FROM (SELECT "r11"."c20", "r11"."c21" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."chain_ordered_input" AS "r12") AS "r13"("c22", "c23") WHERE "r13"."c22" = "r11"."c21" AND "r13"."c23" = "r11"."c20") AS "r14"("c24", "c25")) AS "r15"("c26", "c27") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c34", "r19"."c35" FROM (SELECT "r18"."c31", "r18"."c32", "r18"."c33" FROM (SELECT "r17"."c30", "r17"."c29", "r17"."c28" FROM (SELECT "r16"."kind", "r16"."root", "r16"."scope" FROM "slice"."chain_scope" AS "r16") AS "r17"("c28", "c29", "c30")) AS "r18"("c31", "c32", "c33") WHERE "r18"."c33" = 1::smallint) AS "r19"("c34", "c35", "c36")) AS "r20"("c37", "c38") WHERE "r20"."c37" = "r15"."c26" AND "r20"."c38" = "r15"."c27")) AS "r21"("c39", "c40") OFFSET 0) AS "r22"("c41", "c42")) AS "r23"("c43", "c44", "c45", "c46")) AS "r24"("c47", "c48")) AS "found";
+  IF "__written" && '{"__delta_news_chain_ordered_input_jcbr362nhm","__delta_olds_chain_root_rvwhkmeihw"}'::"pg_catalog"."text"[] THEN
+    PERFORM 1 FROM (SELECT "r24"."c28" FROM (SELECT DISTINCT "r23"."c27" FROM (SELECT "r11"."c12", "r22"."c25" FROM (SELECT "r10"."c11" FROM ((SELECT "r4"."c3"::"pg_catalog"."uuid" FROM (SELECT "r3"."c2" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope" FROM "pg_temp"."__delta_news_chain_ordered_input_jcbr362nhm" AS "r1") AS "r2"("c1")) AS "r3"("c2")) AS "r4"("c3") UNION SELECT "r9"."c10"::"pg_catalog"."uuid" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c6", "r7"."c7" FROM (SELECT "r6"."c5", "r6"."c4" FROM (SELECT "r5"."kind", "r5"."scope" FROM "pg_temp"."__delta_olds_chain_root_rvwhkmeihw" AS "r5") AS "r6"("c4", "c5")) AS "r7"("c6", "c7") WHERE "r7"."c7" = 1::smallint) AS "r8"("c8", "c9")) AS "r9"("c10"))) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r21"."c24" FROM (SELECT "r15"."c16" FROM (SELECT "r14"."c15" FROM (SELECT "r11"."c12" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."chain_ordered_input" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15")) AS "r15"("c16") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c21" FROM (SELECT "r18"."c19", "r18"."c20" FROM (SELECT "r17"."c18", "r17"."c17" FROM (SELECT "r16"."kind", "r16"."scope" FROM "slice"."chain_root" AS "r16") AS "r17"("c17", "c18")) AS "r18"("c19", "c20") WHERE "r18"."c20" = 1::smallint) AS "r19"("c21", "c22")) AS "r20"("c23") WHERE "r20"."c23" = "r15"."c16")) AS "r21"("c24") OFFSET 0) AS "r22"("c25")) AS "r23"("c26", "c27")) AS "r24"("c28")) AS "found";
     IF FOUND THEN
       RAISE EXCEPTION 'a write breaks a rule over a query'
         USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text",
-              CONSTRAINT = '__rule_chain_ordered_input_in_chain_scope_bqv2e66aiu'::"pg_catalog"."text",
+              CONSTRAINT = '__rule_chain_ordered_input_in_chain_root_wbdtjnxkf2'::"pg_catalog"."text",
               SCHEMA = 'slice'::"pg_catalog"."text",
               TABLE = 'chain_ordered_input'::"pg_catalog"."text";
     END IF;
@@ -597,7 +597,7 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__judge_chain_chain_run_input_6af3rz27sb"("pg_catalog"."text"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_chain_chain_run_input_2i76tea7vf"("pg_catalog"."text"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge_chain_done_dlqjjysn3f"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -718,7 +718,7 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_chain_page_input_lzwnhifptj"("pg_catalog"."text"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__judge_fan_batch_input_mrbtecwoza"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__judge_fan_batch_input_5ggxse4kkl"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 DECLARE
@@ -735,60 +735,35 @@ BEGIN
       END IF;
     END IF;
   END IF;
-  IF "__held" @> '{"__delta_news_fan_fan_run_input_vbsdow3wli"}'::"pg_catalog"."text"[] THEN
-    IF EXISTS (SELECT FROM "pg_temp"."__delta_news_fan_fan_run_input_vbsdow3wli" AS "r1") THEN
-      DELETE FROM "pg_temp"."__delta_news_fan_fan_run_input_vbsdow3wli" AS "r1"
-      WHERE "r1"."ctid" IN (SELECT "r3"."c1" FROM (SELECT "r2"."ctid" AS "c1", "pg_catalog"."sum"("r2"."__count") OVER (PARTITION BY "r2"."scope", "r2"."root") AS "c2", "pg_catalog"."row_number"() OVER (PARTITION BY "r2"."scope", "r2"."root" ORDER BY "r2"."__count" DESC) AS "c3" FROM "pg_temp"."__delta_news_fan_fan_run_input_vbsdow3wli" AS "r2") AS "r3"("c1", "c2", "c3") WHERE "r3"."c2" <= 0::bigint OR "r3"."c3" > 1::bigint)
-      ;
-      IF EXISTS (SELECT FROM "pg_temp"."__delta_news_fan_fan_run_input_vbsdow3wli" AS "r1") THEN
-        "__written" := "__written" || '__delta_news_fan_fan_run_input_vbsdow3wli'::"pg_catalog"."text";
-      END IF;
+  IF "__held" @> '{"__delta_olds_fan_within_k5qhuvyfou"}'::"pg_catalog"."text"[] THEN
+    IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_fan_within_k5qhuvyfou" AS "r1") THEN
+      "__written" := "__written" || '__delta_olds_fan_within_k5qhuvyfou'::"pg_catalog"."text";
     END IF;
   END IF;
-  IF "__held" @> '{"__delta_olds_fan_scope_2tqhhriuii"}'::"pg_catalog"."text"[] THEN
-    IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_fan_scope_2tqhhriuii" AS "r1") THEN
-      "__written" := "__written" || '__delta_olds_fan_scope_2tqhhriuii'::"pg_catalog"."text";
-    END IF;
-  END IF;
-  IF "__written" && '{"__delta_olds_fan_scope_2tqhhriuii"}'::"pg_catalog"."text"[] THEN
+  IF "__written" && '{"__delta_olds_fan_within_k5qhuvyfou"}'::"pg_catalog"."text"[] THEN
     IF NOT "__held" @> '{"__delta_news_fan_batch_input_ankhpanyaq"}'::"pg_catalog"."text"[] THEN
       CREATE TEMPORARY TABLE "pg_temp"."__delta_news_fan_batch_input_ankhpanyaq" ("batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid", "size" bigint, "__count" smallint) ON COMMIT DELETE ROWS;
     END IF;
   END IF;
-  IF "__written" && '{"__delta_olds_fan_scope_2tqhhriuii"}'::"pg_catalog"."text"[] THEN
-    IF NOT "__held" @> '{"__delta_news_fan_fan_run_input_vbsdow3wli"}'::"pg_catalog"."text"[] THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_news_fan_fan_run_input_vbsdow3wli" ("batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid", "size" bigint, "__count" smallint) ON COMMIT DELETE ROWS;
+  IF "__written" && '{"__delta_news_fan_batch_input_ankhpanyaq"}'::"pg_catalog"."text"[] THEN
+    IF NOT "__held" @> '{"__delta_olds_fan_within_k5qhuvyfou"}'::"pg_catalog"."text"[] THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_fan_within_k5qhuvyfou" ("kind" smallint, "parent" "pg_catalog"."uuid", "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
     END IF;
   END IF;
-  IF "__written" && '{"__delta_news_fan_batch_input_ankhpanyaq","__delta_news_fan_fan_run_input_vbsdow3wli"}'::"pg_catalog"."text"[] THEN
-    IF NOT "__held" @> '{"__delta_olds_fan_scope_2tqhhriuii"}'::"pg_catalog"."text"[] THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_fan_scope_2tqhhriuii" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
-    END IF;
-  END IF;
-  IF "__written" && '{"__delta_news_fan_batch_input_ankhpanyaq","__delta_olds_fan_scope_2tqhhriuii"}'::"pg_catalog"."text"[] THEN
-    PERFORM 1 FROM (SELECT "r24"."c47", "r24"."c48" FROM (SELECT "r23"."c45", "r23"."c46" FROM (SELECT "r11"."c20", "r11"."c21", "r22"."c41", "r22"."c42" FROM (SELECT "r10"."c18", "r10"."c19" FROM ((SELECT "r4"."c5"::"pg_catalog"."uuid", "r4"."c6"::"pg_catalog"."uuid" FROM (SELECT "r3"."c3", "r3"."c4" FROM (SELECT "r2"."c2", "r2"."c1" FROM (SELECT "r1"."root", "r1"."scope" FROM "pg_temp"."__delta_news_fan_batch_input_ankhpanyaq" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") UNION SELECT "r9"."c16"::"pg_catalog"."uuid", "r9"."c17"::"pg_catalog"."uuid" FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."scope" FROM "pg_temp"."__delta_olds_fan_scope_2tqhhriuii" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 0::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17"))) AS "r10"("c18", "c19") OFFSET 0) AS "r11"("c20", "c21"), LATERAL (SELECT "r21"."c39", "r21"."c40" FROM (SELECT "r15"."c26", "r15"."c27" FROM (SELECT "r14"."c24", "r14"."c25" FROM (SELECT "r11"."c20", "r11"."c21" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."fan_batch_input" AS "r12") AS "r13"("c22", "c23") WHERE "r13"."c22" = "r11"."c21" AND "r13"."c23" = "r11"."c20") AS "r14"("c24", "c25")) AS "r15"("c26", "c27") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c34", "r19"."c35" FROM (SELECT "r18"."c31", "r18"."c32", "r18"."c33" FROM (SELECT "r17"."c30", "r17"."c29", "r17"."c28" FROM (SELECT "r16"."kind", "r16"."root", "r16"."scope" FROM "slice"."fan_scope" AS "r16") AS "r17"("c28", "c29", "c30")) AS "r18"("c31", "c32", "c33") WHERE "r18"."c33" = 0::smallint) AS "r19"("c34", "c35", "c36")) AS "r20"("c37", "c38") WHERE "r20"."c37" = "r15"."c26" AND "r20"."c38" = "r15"."c27")) AS "r21"("c39", "c40") OFFSET 0) AS "r22"("c41", "c42")) AS "r23"("c43", "c44", "c45", "c46")) AS "r24"("c47", "c48")) AS "found";
+  IF "__written" && '{"__delta_news_fan_batch_input_ankhpanyaq","__delta_olds_fan_within_k5qhuvyfou"}'::"pg_catalog"."text"[] THEN
+    PERFORM 1 FROM (SELECT "r24"."c47", "r24"."c48" FROM (SELECT "r23"."c45", "r23"."c46" FROM (SELECT "r11"."c20", "r11"."c21", "r22"."c41", "r22"."c42" FROM (SELECT "r10"."c18", "r10"."c19" FROM ((SELECT "r4"."c5"::"pg_catalog"."uuid", "r4"."c6"::"pg_catalog"."uuid" FROM (SELECT "r3"."c3", "r3"."c4" FROM (SELECT "r2"."c2", "r2"."c1" FROM (SELECT "r1"."root", "r1"."scope" FROM "pg_temp"."__delta_news_fan_batch_input_ankhpanyaq" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") UNION SELECT "r9"."c16"::"pg_catalog"."uuid", "r9"."c17"::"pg_catalog"."uuid" FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."scope" FROM "pg_temp"."__delta_olds_fan_within_k5qhuvyfou" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 0::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17"))) AS "r10"("c18", "c19") OFFSET 0) AS "r11"("c20", "c21"), LATERAL (SELECT "r21"."c39", "r21"."c40" FROM (SELECT "r15"."c26", "r15"."c27" FROM (SELECT "r14"."c24", "r14"."c25" FROM (SELECT "r11"."c20", "r11"."c21" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."fan_batch_input" AS "r12") AS "r13"("c22", "c23") WHERE "r13"."c22" = "r11"."c21" AND "r13"."c23" = "r11"."c20") AS "r14"("c24", "c25")) AS "r15"("c26", "c27") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c34", "r19"."c35" FROM (SELECT "r18"."c31", "r18"."c32", "r18"."c33" FROM (SELECT "r17"."c30", "r17"."c29", "r17"."c28" FROM (SELECT "r16"."kind", "r16"."root", "r16"."scope" FROM "slice"."fan_within" AS "r16") AS "r17"("c28", "c29", "c30")) AS "r18"("c31", "c32", "c33") WHERE "r18"."c33" = 0::smallint) AS "r19"("c34", "c35", "c36")) AS "r20"("c37", "c38") WHERE "r20"."c37" = "r15"."c26" AND "r20"."c38" = "r15"."c27")) AS "r21"("c39", "c40") OFFSET 0) AS "r22"("c41", "c42")) AS "r23"("c43", "c44", "c45", "c46")) AS "r24"("c47", "c48")) AS "found";
     IF FOUND THEN
       RAISE EXCEPTION 'a write breaks a rule over a query'
         USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text",
-              CONSTRAINT = '__rule_fan_batch_input_in_fan_scope_oqskhg76dt'::"pg_catalog"."text",
+              CONSTRAINT = '__rule_fan_batch_input_in_fan_within_a66oofagwd'::"pg_catalog"."text",
               SCHEMA = 'slice'::"pg_catalog"."text",
               TABLE = 'fan_batch_input'::"pg_catalog"."text";
-    END IF;
-  END IF;
-  IF "__written" && '{"__delta_news_fan_fan_run_input_vbsdow3wli","__delta_olds_fan_scope_2tqhhriuii"}'::"pg_catalog"."text"[] THEN
-    PERFORM 1 FROM (SELECT "r24"."c47", "r24"."c48" FROM (SELECT "r23"."c45", "r23"."c46" FROM (SELECT "r11"."c20", "r11"."c21", "r22"."c41", "r22"."c42" FROM (SELECT "r10"."c18", "r10"."c19" FROM ((SELECT "r4"."c5"::"pg_catalog"."uuid", "r4"."c6"::"pg_catalog"."uuid" FROM (SELECT "r3"."c3", "r3"."c4" FROM (SELECT "r2"."c2", "r2"."c1" FROM (SELECT "r1"."root", "r1"."scope" FROM "pg_temp"."__delta_news_fan_fan_run_input_vbsdow3wli" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") UNION SELECT "r9"."c16"::"pg_catalog"."uuid", "r9"."c17"::"pg_catalog"."uuid" FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."scope" FROM "pg_temp"."__delta_olds_fan_scope_2tqhhriuii" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 1::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17"))) AS "r10"("c18", "c19") OFFSET 0) AS "r11"("c20", "c21"), LATERAL (SELECT "r21"."c39", "r21"."c40" FROM (SELECT "r15"."c26", "r15"."c27" FROM (SELECT "r14"."c24", "r14"."c25" FROM (SELECT "r11"."c20", "r11"."c21" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."fan_fan_run_input" AS "r12") AS "r13"("c22", "c23") WHERE "r13"."c22" = "r11"."c21" AND "r13"."c23" = "r11"."c20") AS "r14"("c24", "c25")) AS "r15"("c26", "c27") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c34", "r19"."c35" FROM (SELECT "r18"."c31", "r18"."c32", "r18"."c33" FROM (SELECT "r17"."c30", "r17"."c29", "r17"."c28" FROM (SELECT "r16"."kind", "r16"."root", "r16"."scope" FROM "slice"."fan_scope" AS "r16") AS "r17"("c28", "c29", "c30")) AS "r18"("c31", "c32", "c33") WHERE "r18"."c33" = 1::smallint) AS "r19"("c34", "c35", "c36")) AS "r20"("c37", "c38") WHERE "r20"."c37" = "r15"."c26" AND "r20"."c38" = "r15"."c27")) AS "r21"("c39", "c40") OFFSET 0) AS "r22"("c41", "c42")) AS "r23"("c43", "c44", "c45", "c46")) AS "r24"("c47", "c48")) AS "found";
-    IF FOUND THEN
-      RAISE EXCEPTION 'a write breaks a rule over a query'
-        USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text",
-              CONSTRAINT = '__rule_fan_fan_run_input_in_fan_scope_teyj3a5mwv'::"pg_catalog"."text",
-              SCHEMA = 'slice'::"pg_catalog"."text",
-              TABLE = 'fan_fan_run_input'::"pg_catalog"."text";
     END IF;
   END IF;
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__judge_fan_batch_input_mrbtecwoza"("pg_catalog"."text"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_fan_batch_input_5ggxse4kkl"("pg_catalog"."text"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge_fan_done_mflioj3j23"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -861,6 +836,53 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_fan_done_mflioj3j23"("pg_catalog"."text"[]) FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__judge_fan_fan_run_input_wx6e3wxagr"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__written" "pg_catalog"."text"[];
+BEGIN
+  "__written" := '{}'::"pg_catalog"."text"[];
+  IF "__held" @> '{"__delta_news_fan_fan_run_input_vbsdow3wli"}'::"pg_catalog"."text"[] THEN
+    IF EXISTS (SELECT FROM "pg_temp"."__delta_news_fan_fan_run_input_vbsdow3wli" AS "r1") THEN
+      DELETE FROM "pg_temp"."__delta_news_fan_fan_run_input_vbsdow3wli" AS "r1"
+      WHERE "r1"."ctid" IN (SELECT "r3"."c1" FROM (SELECT "r2"."ctid" AS "c1", "pg_catalog"."sum"("r2"."__count") OVER (PARTITION BY "r2"."scope", "r2"."root") AS "c2", "pg_catalog"."row_number"() OVER (PARTITION BY "r2"."scope", "r2"."root" ORDER BY "r2"."__count" DESC) AS "c3" FROM "pg_temp"."__delta_news_fan_fan_run_input_vbsdow3wli" AS "r2") AS "r3"("c1", "c2", "c3") WHERE "r3"."c2" <= 0::bigint OR "r3"."c3" > 1::bigint)
+      ;
+      IF EXISTS (SELECT FROM "pg_temp"."__delta_news_fan_fan_run_input_vbsdow3wli" AS "r1") THEN
+        "__written" := "__written" || '__delta_news_fan_fan_run_input_vbsdow3wli'::"pg_catalog"."text";
+      END IF;
+    END IF;
+  END IF;
+  IF "__held" @> '{"__delta_olds_fan_root_mgm6lwvumy"}'::"pg_catalog"."text"[] THEN
+    IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_fan_root_mgm6lwvumy" AS "r1") THEN
+      "__written" := "__written" || '__delta_olds_fan_root_mgm6lwvumy'::"pg_catalog"."text";
+    END IF;
+  END IF;
+  IF "__written" && '{"__delta_olds_fan_root_mgm6lwvumy"}'::"pg_catalog"."text"[] THEN
+    IF NOT "__held" @> '{"__delta_news_fan_fan_run_input_vbsdow3wli"}'::"pg_catalog"."text"[] THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_news_fan_fan_run_input_vbsdow3wli" ("batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid", "size" bigint, "__count" smallint) ON COMMIT DELETE ROWS;
+    END IF;
+  END IF;
+  IF "__written" && '{"__delta_news_fan_fan_run_input_vbsdow3wli"}'::"pg_catalog"."text"[] THEN
+    IF NOT "__held" @> '{"__delta_olds_fan_root_mgm6lwvumy"}'::"pg_catalog"."text"[] THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_fan_root_mgm6lwvumy" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    END IF;
+  END IF;
+  IF "__written" && '{"__delta_news_fan_fan_run_input_vbsdow3wli","__delta_olds_fan_root_mgm6lwvumy"}'::"pg_catalog"."text"[] THEN
+    PERFORM 1 FROM (SELECT "r24"."c28" FROM (SELECT DISTINCT "r23"."c27" FROM (SELECT "r11"."c12", "r22"."c25" FROM (SELECT "r10"."c11" FROM ((SELECT "r4"."c3"::"pg_catalog"."uuid" FROM (SELECT "r3"."c2" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope" FROM "pg_temp"."__delta_news_fan_fan_run_input_vbsdow3wli" AS "r1") AS "r2"("c1")) AS "r3"("c2")) AS "r4"("c3") UNION SELECT "r9"."c10"::"pg_catalog"."uuid" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c6", "r7"."c7" FROM (SELECT "r6"."c5", "r6"."c4" FROM (SELECT "r5"."kind", "r5"."scope" FROM "pg_temp"."__delta_olds_fan_root_mgm6lwvumy" AS "r5") AS "r6"("c4", "c5")) AS "r7"("c6", "c7") WHERE "r7"."c7" = 0::smallint) AS "r8"("c8", "c9")) AS "r9"("c10"))) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r21"."c24" FROM (SELECT "r15"."c16" FROM (SELECT "r14"."c15" FROM (SELECT "r11"."c12" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."fan_fan_run_input" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15")) AS "r15"("c16") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c21" FROM (SELECT "r18"."c19", "r18"."c20" FROM (SELECT "r17"."c18", "r17"."c17" FROM (SELECT "r16"."kind", "r16"."scope" FROM "slice"."fan_root" AS "r16") AS "r17"("c17", "c18")) AS "r18"("c19", "c20") WHERE "r18"."c20" = 0::smallint) AS "r19"("c21", "c22")) AS "r20"("c23") WHERE "r20"."c23" = "r15"."c16")) AS "r21"("c24") OFFSET 0) AS "r22"("c25")) AS "r23"("c26", "c27")) AS "r24"("c28")) AS "found";
+    IF FOUND THEN
+      RAISE EXCEPTION 'a write breaks a rule over a query'
+        USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text",
+              CONSTRAINT = '__rule_fan_fan_run_input_in_fan_root_2jzdzob6au'::"pg_catalog"."text",
+              SCHEMA = 'slice'::"pg_catalog"."text",
+              TABLE = 'fan_fan_run_input'::"pg_catalog"."text";
+    END IF;
+  END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_fan_fan_run_input_wx6e3wxagr"("pg_catalog"."text"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge_fan_hold_hkncojanio"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -1100,7 +1122,7 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_retry_done_qvurptzp5o"("pg_catalog"."text"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__judge_retry_ladders_input_3c7y32vdti"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__judge_retry_ladders_input_j4z3sn7yyj"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 DECLARE
@@ -1117,27 +1139,27 @@ BEGIN
       END IF;
     END IF;
   END IF;
-  IF "__held" @> '{"__delta_olds_retry_scope_ee3njtef5r"}'::"pg_catalog"."text"[] THEN
-    IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_retry_scope_ee3njtef5r" AS "r1") THEN
-      "__written" := "__written" || '__delta_olds_retry_scope_ee3njtef5r'::"pg_catalog"."text";
+  IF "__held" @> '{"__delta_olds_retry_root_zzy2fyq27d"}'::"pg_catalog"."text"[] THEN
+    IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_retry_root_zzy2fyq27d" AS "r1") THEN
+      "__written" := "__written" || '__delta_olds_retry_root_zzy2fyq27d'::"pg_catalog"."text";
     END IF;
   END IF;
-  IF "__written" && '{"__delta_olds_retry_scope_ee3njtef5r"}'::"pg_catalog"."text"[] THEN
+  IF "__written" && '{"__delta_olds_retry_root_zzy2fyq27d"}'::"pg_catalog"."text"[] THEN
     IF NOT "__held" @> '{"__delta_news_retry_ladders_input_r267sjjms6"}'::"pg_catalog"."text"[] THEN
       CREATE TEMPORARY TABLE "pg_temp"."__delta_news_retry_ladders_input_r267sjjms6" ("brittle" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid", "steadfast" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "__count" smallint) ON COMMIT DELETE ROWS;
     END IF;
   END IF;
   IF "__written" && '{"__delta_news_retry_ladders_input_r267sjjms6"}'::"pg_catalog"."text"[] THEN
-    IF NOT "__held" @> '{"__delta_olds_retry_scope_ee3njtef5r"}'::"pg_catalog"."text"[] THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_retry_scope_ee3njtef5r" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    IF NOT "__held" @> '{"__delta_olds_retry_root_zzy2fyq27d"}'::"pg_catalog"."text"[] THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_retry_root_zzy2fyq27d" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
     END IF;
   END IF;
-  IF "__written" && '{"__delta_news_retry_ladders_input_r267sjjms6","__delta_olds_retry_scope_ee3njtef5r"}'::"pg_catalog"."text"[] THEN
-    PERFORM 1 FROM (SELECT "r24"."c47", "r24"."c48" FROM (SELECT "r23"."c45", "r23"."c46" FROM (SELECT "r11"."c20", "r11"."c21", "r22"."c41", "r22"."c42" FROM (SELECT "r10"."c18", "r10"."c19" FROM ((SELECT "r4"."c5"::"pg_catalog"."uuid", "r4"."c6"::"pg_catalog"."uuid" FROM (SELECT "r3"."c3", "r3"."c4" FROM (SELECT "r2"."c2", "r2"."c1" FROM (SELECT "r1"."root", "r1"."scope" FROM "pg_temp"."__delta_news_retry_ladders_input_r267sjjms6" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") UNION SELECT "r9"."c16"::"pg_catalog"."uuid", "r9"."c17"::"pg_catalog"."uuid" FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."scope" FROM "pg_temp"."__delta_olds_retry_scope_ee3njtef5r" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 0::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17"))) AS "r10"("c18", "c19") OFFSET 0) AS "r11"("c20", "c21"), LATERAL (SELECT "r21"."c39", "r21"."c40" FROM (SELECT "r15"."c26", "r15"."c27" FROM (SELECT "r14"."c24", "r14"."c25" FROM (SELECT "r11"."c20", "r11"."c21" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."retry_ladders_input" AS "r12") AS "r13"("c22", "c23") WHERE "r13"."c22" = "r11"."c21" AND "r13"."c23" = "r11"."c20") AS "r14"("c24", "c25")) AS "r15"("c26", "c27") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c34", "r19"."c35" FROM (SELECT "r18"."c31", "r18"."c32", "r18"."c33" FROM (SELECT "r17"."c30", "r17"."c29", "r17"."c28" FROM (SELECT "r16"."kind", "r16"."root", "r16"."scope" FROM "slice"."retry_scope" AS "r16") AS "r17"("c28", "c29", "c30")) AS "r18"("c31", "c32", "c33") WHERE "r18"."c33" = 0::smallint) AS "r19"("c34", "c35", "c36")) AS "r20"("c37", "c38") WHERE "r20"."c37" = "r15"."c26" AND "r20"."c38" = "r15"."c27")) AS "r21"("c39", "c40") OFFSET 0) AS "r22"("c41", "c42")) AS "r23"("c43", "c44", "c45", "c46")) AS "r24"("c47", "c48")) AS "found";
+  IF "__written" && '{"__delta_news_retry_ladders_input_r267sjjms6","__delta_olds_retry_root_zzy2fyq27d"}'::"pg_catalog"."text"[] THEN
+    PERFORM 1 FROM (SELECT "r24"."c28" FROM (SELECT DISTINCT "r23"."c27" FROM (SELECT "r11"."c12", "r22"."c25" FROM (SELECT "r10"."c11" FROM ((SELECT "r4"."c3"::"pg_catalog"."uuid" FROM (SELECT "r3"."c2" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope" FROM "pg_temp"."__delta_news_retry_ladders_input_r267sjjms6" AS "r1") AS "r2"("c1")) AS "r3"("c2")) AS "r4"("c3") UNION SELECT "r9"."c10"::"pg_catalog"."uuid" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c6", "r7"."c7" FROM (SELECT "r6"."c5", "r6"."c4" FROM (SELECT "r5"."kind", "r5"."scope" FROM "pg_temp"."__delta_olds_retry_root_zzy2fyq27d" AS "r5") AS "r6"("c4", "c5")) AS "r7"("c6", "c7") WHERE "r7"."c7" = 0::smallint) AS "r8"("c8", "c9")) AS "r9"("c10"))) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r21"."c24" FROM (SELECT "r15"."c16" FROM (SELECT "r14"."c15" FROM (SELECT "r11"."c12" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."retry_ladders_input" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15")) AS "r15"("c16") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c21" FROM (SELECT "r18"."c19", "r18"."c20" FROM (SELECT "r17"."c18", "r17"."c17" FROM (SELECT "r16"."kind", "r16"."scope" FROM "slice"."retry_root" AS "r16") AS "r17"("c17", "c18")) AS "r18"("c19", "c20") WHERE "r18"."c20" = 0::smallint) AS "r19"("c21", "c22")) AS "r20"("c23") WHERE "r20"."c23" = "r15"."c16")) AS "r21"("c24") OFFSET 0) AS "r22"("c25")) AS "r23"("c26", "c27")) AS "r24"("c28")) AS "found";
     IF FOUND THEN
       RAISE EXCEPTION 'a write breaks a rule over a query'
         USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text",
-              CONSTRAINT = '__rule_retry_ladders_input_in_retry_scope_4iwv2r2ity'::"pg_catalog"."text",
+              CONSTRAINT = '__rule_retry_ladders_input_in_retry_root_5nchmv4mqh'::"pg_catalog"."text",
               SCHEMA = 'slice'::"pg_catalog"."text",
               TABLE = 'retry_ladders_input'::"pg_catalog"."text";
     END IF;
@@ -1145,7 +1167,7 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__judge_retry_ladders_input_3c7y32vdti"("pg_catalog"."text"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_retry_ladders_input_j4z3sn7yyj"("pg_catalog"."text"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge_sync_build_input_5c2c4lbjyg"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -1291,7 +1313,7 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_sync_done_aojyv7p4ap"("pg_catalog"."text"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__judge_sync_gold_input_qcj64en4sx"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__judge_sync_gold_input_hrbc6rs75n"("__held" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 DECLARE
@@ -1318,50 +1340,50 @@ BEGIN
       END IF;
     END IF;
   END IF;
-  IF "__held" @> '{"__delta_olds_sync_scope_vzbfllajyc"}'::"pg_catalog"."text"[] THEN
-    IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_sync_scope_vzbfllajyc" AS "r1") THEN
-      "__written" := "__written" || '__delta_olds_sync_scope_vzbfllajyc'::"pg_catalog"."text";
+  IF "__held" @> '{"__delta_olds_sync_root_uo7uulbhck"}'::"pg_catalog"."text"[] THEN
+    IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_sync_root_uo7uulbhck" AS "r1") THEN
+      "__written" := "__written" || '__delta_olds_sync_root_uo7uulbhck'::"pg_catalog"."text";
     END IF;
   END IF;
-  IF "__written" && '{"__delta_olds_sync_scope_vzbfllajyc"}'::"pg_catalog"."text"[] THEN
+  IF "__written" && '{"__delta_olds_sync_root_uo7uulbhck"}'::"pg_catalog"."text"[] THEN
     IF NOT "__held" @> '{"__delta_news_sync_gold_input_4tvuzpo7yp"}'::"pg_catalog"."text"[] THEN
       CREATE TEMPORARY TABLE "pg_temp"."__delta_news_sync_gold_input_4tvuzpo7yp" ("build" bigint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid", "__count" smallint) ON COMMIT DELETE ROWS;
     END IF;
   END IF;
-  IF "__written" && '{"__delta_olds_sync_scope_vzbfllajyc"}'::"pg_catalog"."text"[] THEN
+  IF "__written" && '{"__delta_olds_sync_root_uo7uulbhck"}'::"pg_catalog"."text"[] THEN
     IF NOT "__held" @> '{"__delta_news_sync_sync_run_input_dafcymdmlh"}'::"pg_catalog"."text"[] THEN
       CREATE TEMPORARY TABLE "pg_temp"."__delta_news_sync_sync_run_input_dafcymdmlh" ("relation" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."uuid", "run" bigint, "scope" "pg_catalog"."uuid", "__count" smallint) ON COMMIT DELETE ROWS;
     END IF;
   END IF;
   IF "__written" && '{"__delta_news_sync_gold_input_4tvuzpo7yp","__delta_news_sync_sync_run_input_dafcymdmlh"}'::"pg_catalog"."text"[] THEN
-    IF NOT "__held" @> '{"__delta_olds_sync_scope_vzbfllajyc"}'::"pg_catalog"."text"[] THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_sync_scope_vzbfllajyc" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    IF NOT "__held" @> '{"__delta_olds_sync_root_uo7uulbhck"}'::"pg_catalog"."text"[] THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_sync_root_uo7uulbhck" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
     END IF;
   END IF;
-  IF "__written" && '{"__delta_news_sync_gold_input_4tvuzpo7yp","__delta_olds_sync_scope_vzbfllajyc"}'::"pg_catalog"."text"[] THEN
-    PERFORM 1 FROM (SELECT "r24"."c47", "r24"."c48" FROM (SELECT "r23"."c45", "r23"."c46" FROM (SELECT "r11"."c20", "r11"."c21", "r22"."c41", "r22"."c42" FROM (SELECT "r10"."c18", "r10"."c19" FROM ((SELECT "r4"."c5"::"pg_catalog"."uuid", "r4"."c6"::"pg_catalog"."uuid" FROM (SELECT "r3"."c3", "r3"."c4" FROM (SELECT "r2"."c2", "r2"."c1" FROM (SELECT "r1"."root", "r1"."scope" FROM "pg_temp"."__delta_news_sync_gold_input_4tvuzpo7yp" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") UNION SELECT "r9"."c16"::"pg_catalog"."uuid", "r9"."c17"::"pg_catalog"."uuid" FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."scope" FROM "pg_temp"."__delta_olds_sync_scope_vzbfllajyc" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 0::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17"))) AS "r10"("c18", "c19") OFFSET 0) AS "r11"("c20", "c21"), LATERAL (SELECT "r21"."c39", "r21"."c40" FROM (SELECT "r15"."c26", "r15"."c27" FROM (SELECT "r14"."c24", "r14"."c25" FROM (SELECT "r11"."c20", "r11"."c21" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."sync_gold_input" AS "r12") AS "r13"("c22", "c23") WHERE "r13"."c22" = "r11"."c21" AND "r13"."c23" = "r11"."c20") AS "r14"("c24", "c25")) AS "r15"("c26", "c27") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c34", "r19"."c35" FROM (SELECT "r18"."c31", "r18"."c32", "r18"."c33" FROM (SELECT "r17"."c30", "r17"."c29", "r17"."c28" FROM (SELECT "r16"."kind", "r16"."root", "r16"."scope" FROM "slice"."sync_scope" AS "r16") AS "r17"("c28", "c29", "c30")) AS "r18"("c31", "c32", "c33") WHERE "r18"."c33" = 0::smallint) AS "r19"("c34", "c35", "c36")) AS "r20"("c37", "c38") WHERE "r20"."c37" = "r15"."c26" AND "r20"."c38" = "r15"."c27")) AS "r21"("c39", "c40") OFFSET 0) AS "r22"("c41", "c42")) AS "r23"("c43", "c44", "c45", "c46")) AS "r24"("c47", "c48")) AS "found";
+  IF "__written" && '{"__delta_news_sync_gold_input_4tvuzpo7yp","__delta_olds_sync_root_uo7uulbhck"}'::"pg_catalog"."text"[] THEN
+    PERFORM 1 FROM (SELECT "r24"."c28" FROM (SELECT DISTINCT "r23"."c27" FROM (SELECT "r11"."c12", "r22"."c25" FROM (SELECT "r10"."c11" FROM ((SELECT "r4"."c3"::"pg_catalog"."uuid" FROM (SELECT "r3"."c2" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope" FROM "pg_temp"."__delta_news_sync_gold_input_4tvuzpo7yp" AS "r1") AS "r2"("c1")) AS "r3"("c2")) AS "r4"("c3") UNION SELECT "r9"."c10"::"pg_catalog"."uuid" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c6", "r7"."c7" FROM (SELECT "r6"."c5", "r6"."c4" FROM (SELECT "r5"."kind", "r5"."scope" FROM "pg_temp"."__delta_olds_sync_root_uo7uulbhck" AS "r5") AS "r6"("c4", "c5")) AS "r7"("c6", "c7") WHERE "r7"."c7" = 0::smallint) AS "r8"("c8", "c9")) AS "r9"("c10"))) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r21"."c24" FROM (SELECT "r15"."c16" FROM (SELECT "r14"."c15" FROM (SELECT "r11"."c12" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."sync_gold_input" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15")) AS "r15"("c16") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c21" FROM (SELECT "r18"."c19", "r18"."c20" FROM (SELECT "r17"."c18", "r17"."c17" FROM (SELECT "r16"."kind", "r16"."scope" FROM "slice"."sync_root" AS "r16") AS "r17"("c17", "c18")) AS "r18"("c19", "c20") WHERE "r18"."c20" = 0::smallint) AS "r19"("c21", "c22")) AS "r20"("c23") WHERE "r20"."c23" = "r15"."c16")) AS "r21"("c24") OFFSET 0) AS "r22"("c25")) AS "r23"("c26", "c27")) AS "r24"("c28")) AS "found";
     IF FOUND THEN
       RAISE EXCEPTION 'a write breaks a rule over a query'
         USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text",
-              CONSTRAINT = '__rule_sync_gold_input_in_sync_scope_3rmhvd7ytq'::"pg_catalog"."text",
+              CONSTRAINT = '__rule_sync_gold_input_in_sync_root_cddey6bzlv'::"pg_catalog"."text",
               SCHEMA = 'slice'::"pg_catalog"."text",
               TABLE = 'sync_gold_input'::"pg_catalog"."text";
     END IF;
   END IF;
-  IF "__written" && '{"__delta_news_sync_sync_run_input_dafcymdmlh","__delta_olds_sync_scope_vzbfllajyc"}'::"pg_catalog"."text"[] THEN
-    PERFORM 1 FROM (SELECT "r24"."c47", "r24"."c48" FROM (SELECT "r23"."c45", "r23"."c46" FROM (SELECT "r11"."c20", "r11"."c21", "r22"."c41", "r22"."c42" FROM (SELECT "r10"."c18", "r10"."c19" FROM ((SELECT "r4"."c5"::"pg_catalog"."uuid", "r4"."c6"::"pg_catalog"."uuid" FROM (SELECT "r3"."c3", "r3"."c4" FROM (SELECT "r2"."c2", "r2"."c1" FROM (SELECT "r1"."root", "r1"."scope" FROM "pg_temp"."__delta_news_sync_sync_run_input_dafcymdmlh" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") UNION SELECT "r9"."c16"::"pg_catalog"."uuid", "r9"."c17"::"pg_catalog"."uuid" FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."scope" FROM "pg_temp"."__delta_olds_sync_scope_vzbfllajyc" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 1::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17"))) AS "r10"("c18", "c19") OFFSET 0) AS "r11"("c20", "c21"), LATERAL (SELECT "r21"."c39", "r21"."c40" FROM (SELECT "r15"."c26", "r15"."c27" FROM (SELECT "r14"."c24", "r14"."c25" FROM (SELECT "r11"."c20", "r11"."c21" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."sync_sync_run_input" AS "r12") AS "r13"("c22", "c23") WHERE "r13"."c22" = "r11"."c21" AND "r13"."c23" = "r11"."c20") AS "r14"("c24", "c25")) AS "r15"("c26", "c27") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c34", "r19"."c35" FROM (SELECT "r18"."c31", "r18"."c32", "r18"."c33" FROM (SELECT "r17"."c30", "r17"."c29", "r17"."c28" FROM (SELECT "r16"."kind", "r16"."root", "r16"."scope" FROM "slice"."sync_scope" AS "r16") AS "r17"("c28", "c29", "c30")) AS "r18"("c31", "c32", "c33") WHERE "r18"."c33" = 1::smallint) AS "r19"("c34", "c35", "c36")) AS "r20"("c37", "c38") WHERE "r20"."c37" = "r15"."c26" AND "r20"."c38" = "r15"."c27")) AS "r21"("c39", "c40") OFFSET 0) AS "r22"("c41", "c42")) AS "r23"("c43", "c44", "c45", "c46")) AS "r24"("c47", "c48")) AS "found";
+  IF "__written" && '{"__delta_news_sync_sync_run_input_dafcymdmlh","__delta_olds_sync_root_uo7uulbhck"}'::"pg_catalog"."text"[] THEN
+    PERFORM 1 FROM (SELECT "r24"."c28" FROM (SELECT DISTINCT "r23"."c27" FROM (SELECT "r11"."c12", "r22"."c25" FROM (SELECT "r10"."c11" FROM ((SELECT "r4"."c3"::"pg_catalog"."uuid" FROM (SELECT "r3"."c2" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope" FROM "pg_temp"."__delta_news_sync_sync_run_input_dafcymdmlh" AS "r1") AS "r2"("c1")) AS "r3"("c2")) AS "r4"("c3") UNION SELECT "r9"."c10"::"pg_catalog"."uuid" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c6", "r7"."c7" FROM (SELECT "r6"."c5", "r6"."c4" FROM (SELECT "r5"."kind", "r5"."scope" FROM "pg_temp"."__delta_olds_sync_root_uo7uulbhck" AS "r5") AS "r6"("c4", "c5")) AS "r7"("c6", "c7") WHERE "r7"."c7" = 1::smallint) AS "r8"("c8", "c9")) AS "r9"("c10"))) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r21"."c24" FROM (SELECT "r15"."c16" FROM (SELECT "r14"."c15" FROM (SELECT "r11"."c12" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."sync_sync_run_input" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15")) AS "r15"("c16") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c21" FROM (SELECT "r18"."c19", "r18"."c20" FROM (SELECT "r17"."c18", "r17"."c17" FROM (SELECT "r16"."kind", "r16"."scope" FROM "slice"."sync_root" AS "r16") AS "r17"("c17", "c18")) AS "r18"("c19", "c20") WHERE "r18"."c20" = 1::smallint) AS "r19"("c21", "c22")) AS "r20"("c23") WHERE "r20"."c23" = "r15"."c16")) AS "r21"("c24") OFFSET 0) AS "r22"("c25")) AS "r23"("c26", "c27")) AS "r24"("c28")) AS "found";
     IF FOUND THEN
       RAISE EXCEPTION 'a write breaks a rule over a query'
         USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text",
-              CONSTRAINT = '__rule_sync_sync_run_input_in_sync_scope_4z7ete6flg'::"pg_catalog"."text",
+              CONSTRAINT = '__rule_sync_sync_run_input_in_sync_root_burfhxpjwz'::"pg_catalog"."text",
               SCHEMA = 'slice'::"pg_catalog"."text",
-              TABLE = 'sync_scope'::"pg_catalog"."text";
+              TABLE = 'sync_root'::"pg_catalog"."text";
     END IF;
   END IF;
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__judge_sync_gold_input_qcj64en4sx"("pg_catalog"."text"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_sync_gold_input_hrbc6rs75n"("pg_catalog"."text"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -1372,15 +1394,15 @@ DECLARE
 BEGIN
   DELETE FROM "pg_temp"."__sentinel_g7mqw4mu4u" AS "r1"
   ;
-  FOR "__foreign" IN SELECT "r1"."relname"::"pg_catalog"."text" AS "c1" FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."relnamespace" = "pg_catalog"."pg_my_temp_schema"() AND "r1"."relname"::"pg_catalog"."text" IN ('__delta_news_assign_assignment_input_lw7cfgfvnr'::"pg_catalog"."text", '__delta_news_assign_assignment_input_mode_nearest_p4q24ddx4p'::"pg_catalog"."text", '__delta_news_assign_assignment_input_mode_within_rb6bd7gwhr'::"pg_catalog"."text", '__delta_news_assign_decide_input_mode_nearest_iyocyinsng'::"pg_catalog"."text", '__delta_news_assign_decide_input_mode_within_nflxraui6u'::"pg_catalog"."text", '__delta_news_assign_decide_input_qayviv5irl'::"pg_catalog"."text", '__delta_news_assign_decide_output_stage_rest_6oiwwudavz'::"pg_catalog"."text", '__delta_news_assign_decide_output_stage_serve_spw2gnwa7l'::"pg_catalog"."text", '__delta_news_assign_decide_output_xcqzeb6a2h'::"pg_catalog"."text", '__delta_news_assign_done_zrcj6hmzzp'::"pg_catalog"."text", '__delta_news_assign_failed_zmmymz64np'::"pg_catalog"."text", '__delta_news_chain_chain_run_input_kn6uczzewn'::"pg_catalog"."text", '__delta_news_chain_done_xz7j62xv2p'::"pg_catalog"."text", '__delta_news_chain_failed_rw3b32rl3b'::"pg_catalog"."text", '__delta_news_chain_ordered_input_jcbr362nhm'::"pg_catalog"."text", '__delta_news_chain_page_input_sek6i5g4fk'::"pg_catalog"."text", '__delta_news_fan_batch_input_ankhpanyaq'::"pg_catalog"."text", '__delta_news_fan_done_zdcqqeht75'::"pg_catalog"."text", '__delta_news_fan_failed_2zywggd5jt'::"pg_catalog"."text", '__delta_news_fan_fan_run_input_vbsdow3wli'::"pg_catalog"."text", '__delta_news_fan_hold_p5mgeiywqn'::"pg_catalog"."text", '__delta_news_fan_square_input_hannxhtrcg'::"pg_catalog"."text", '__delta_news_retry_brittle_input_zyzzsijlvi'::"pg_catalog"."text", '__delta_news_retry_done_bvmq7mg4tw'::"pg_catalog"."text", '__delta_news_retry_failed_ouf7jeazd5'::"pg_catalog"."text", '__delta_news_retry_ladders_input_r267sjjms6'::"pg_catalog"."text", '__delta_news_retry_steadfast_input_24jog73c7m'::"pg_catalog"."text", '__delta_news_sync_build_input_y2kmchrx43'::"pg_catalog"."text", '__delta_news_sync_copy_input_fsjrueonz3'::"pg_catalog"."text", '__delta_news_sync_done_zk36v55j5b'::"pg_catalog"."text", '__delta_news_sync_failed_cx6wsiesyx'::"pg_catalog"."text", '__delta_news_sync_gold_input_4tvuzpo7yp'::"pg_catalog"."text", '__delta_news_sync_sync_run_input_dafcymdmlh'::"pg_catalog"."text", '__delta_olds_assign_assignment_input_khx4kjmyw6'::"pg_catalog"."text", '__delta_olds_assign_assignment_input_mode_nearest_vk7fu2lqsh'::"pg_catalog"."text", '__delta_olds_assign_assignment_input_mode_within_zkpkil5tyr'::"pg_catalog"."text", '__delta_olds_assign_decide_input_mmhrf72g5k'::"pg_catalog"."text", '__delta_olds_assign_decide_input_mode_nearest_ltccebku3q'::"pg_catalog"."text", '__delta_olds_assign_decide_input_mode_within_4lmirwj4hj'::"pg_catalog"."text", '__delta_olds_assign_decide_output_kpd5rn2m2r'::"pg_catalog"."text", '__delta_olds_assign_decide_output_stage_rest_lohip5o2bv'::"pg_catalog"."text", '__delta_olds_assign_decide_output_stage_serve_a6x4rdivod'::"pg_catalog"."text", '__delta_olds_assign_result_ltrbxqrcde'::"pg_catalog"."text", '__delta_olds_assign_scope_zqoacqpyux'::"pg_catalog"."text", '__delta_olds_assign_step_7s7fd7nzls'::"pg_catalog"."text", '__delta_olds_chain_result_c2y4qs76iu'::"pg_catalog"."text", '__delta_olds_chain_scope_27r3qyqi3x'::"pg_catalog"."text", '__delta_olds_chain_step_4qdewh5u5u'::"pg_catalog"."text", '__delta_olds_fan_freed_mwml6ea3za'::"pg_catalog"."text", '__delta_olds_fan_result_fuazpryl5h'::"pg_catalog"."text", '__delta_olds_fan_scope_2tqhhriuii'::"pg_catalog"."text", '__delta_olds_fan_step_sw47w2lcdl'::"pg_catalog"."text", '__delta_olds_retry_result_vgpzb7irxx'::"pg_catalog"."text", '__delta_olds_retry_scope_ee3njtef5r'::"pg_catalog"."text", '__delta_olds_retry_step_ctpkuto5wl'::"pg_catalog"."text", '__delta_olds_sync_result_s33bt3lj5g'::"pg_catalog"."text", '__delta_olds_sync_scope_vzbfllajyc'::"pg_catalog"."text", '__delta_olds_sync_step_ci5grgmzhg'::"pg_catalog"."text") AND NOT ("pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text") ORDER BY "r1"."relname"::"pg_catalog"."text" LOOP
+  FOR "__foreign" IN SELECT "r1"."relname"::"pg_catalog"."text" AS "c1" FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."relnamespace" = "pg_catalog"."pg_my_temp_schema"() AND "r1"."relname"::"pg_catalog"."text" IN ('__delta_news_assign_assignment_input_lw7cfgfvnr'::"pg_catalog"."text", '__delta_news_assign_assignment_input_mode_nearest_p4q24ddx4p'::"pg_catalog"."text", '__delta_news_assign_assignment_input_mode_within_rb6bd7gwhr'::"pg_catalog"."text", '__delta_news_assign_decide_input_mode_nearest_iyocyinsng'::"pg_catalog"."text", '__delta_news_assign_decide_input_mode_within_nflxraui6u'::"pg_catalog"."text", '__delta_news_assign_decide_input_qayviv5irl'::"pg_catalog"."text", '__delta_news_assign_decide_output_stage_rest_6oiwwudavz'::"pg_catalog"."text", '__delta_news_assign_decide_output_stage_serve_spw2gnwa7l'::"pg_catalog"."text", '__delta_news_assign_decide_output_xcqzeb6a2h'::"pg_catalog"."text", '__delta_news_assign_done_zrcj6hmzzp'::"pg_catalog"."text", '__delta_news_assign_failed_zmmymz64np'::"pg_catalog"."text", '__delta_news_chain_chain_run_input_kn6uczzewn'::"pg_catalog"."text", '__delta_news_chain_done_xz7j62xv2p'::"pg_catalog"."text", '__delta_news_chain_failed_rw3b32rl3b'::"pg_catalog"."text", '__delta_news_chain_ordered_input_jcbr362nhm'::"pg_catalog"."text", '__delta_news_chain_page_input_sek6i5g4fk'::"pg_catalog"."text", '__delta_news_fan_batch_input_ankhpanyaq'::"pg_catalog"."text", '__delta_news_fan_done_zdcqqeht75'::"pg_catalog"."text", '__delta_news_fan_failed_2zywggd5jt'::"pg_catalog"."text", '__delta_news_fan_fan_run_input_vbsdow3wli'::"pg_catalog"."text", '__delta_news_fan_hold_p5mgeiywqn'::"pg_catalog"."text", '__delta_news_fan_square_input_hannxhtrcg'::"pg_catalog"."text", '__delta_news_retry_brittle_input_zyzzsijlvi'::"pg_catalog"."text", '__delta_news_retry_done_bvmq7mg4tw'::"pg_catalog"."text", '__delta_news_retry_failed_ouf7jeazd5'::"pg_catalog"."text", '__delta_news_retry_ladders_input_r267sjjms6'::"pg_catalog"."text", '__delta_news_retry_steadfast_input_24jog73c7m'::"pg_catalog"."text", '__delta_news_sync_build_input_y2kmchrx43'::"pg_catalog"."text", '__delta_news_sync_copy_input_fsjrueonz3'::"pg_catalog"."text", '__delta_news_sync_done_zk36v55j5b'::"pg_catalog"."text", '__delta_news_sync_failed_cx6wsiesyx'::"pg_catalog"."text", '__delta_news_sync_gold_input_4tvuzpo7yp'::"pg_catalog"."text", '__delta_news_sync_sync_run_input_dafcymdmlh'::"pg_catalog"."text", '__delta_olds_assign_assignment_input_khx4kjmyw6'::"pg_catalog"."text", '__delta_olds_assign_assignment_input_mode_nearest_vk7fu2lqsh'::"pg_catalog"."text", '__delta_olds_assign_assignment_input_mode_within_zkpkil5tyr'::"pg_catalog"."text", '__delta_olds_assign_decide_input_mmhrf72g5k'::"pg_catalog"."text", '__delta_olds_assign_decide_input_mode_nearest_ltccebku3q'::"pg_catalog"."text", '__delta_olds_assign_decide_input_mode_within_4lmirwj4hj'::"pg_catalog"."text", '__delta_olds_assign_decide_output_kpd5rn2m2r'::"pg_catalog"."text", '__delta_olds_assign_decide_output_stage_rest_lohip5o2bv'::"pg_catalog"."text", '__delta_olds_assign_decide_output_stage_serve_a6x4rdivod'::"pg_catalog"."text", '__delta_olds_assign_result_ltrbxqrcde'::"pg_catalog"."text", '__delta_olds_assign_root_m5b4zjf4ha'::"pg_catalog"."text", '__delta_olds_assign_step_7s7fd7nzls'::"pg_catalog"."text", '__delta_olds_chain_result_c2y4qs76iu'::"pg_catalog"."text", '__delta_olds_chain_root_rvwhkmeihw'::"pg_catalog"."text", '__delta_olds_chain_step_4qdewh5u5u'::"pg_catalog"."text", '__delta_olds_fan_freed_mwml6ea3za'::"pg_catalog"."text", '__delta_olds_fan_result_fuazpryl5h'::"pg_catalog"."text", '__delta_olds_fan_root_mgm6lwvumy'::"pg_catalog"."text", '__delta_olds_fan_step_sw47w2lcdl'::"pg_catalog"."text", '__delta_olds_fan_within_k5qhuvyfou'::"pg_catalog"."text", '__delta_olds_retry_result_vgpzb7irxx'::"pg_catalog"."text", '__delta_olds_retry_root_zzy2fyq27d'::"pg_catalog"."text", '__delta_olds_retry_step_ctpkuto5wl'::"pg_catalog"."text", '__delta_olds_sync_result_s33bt3lj5g'::"pg_catalog"."text", '__delta_olds_sync_root_uo7uulbhck'::"pg_catalog"."text", '__delta_olds_sync_step_ci5grgmzhg'::"pg_catalog"."text") AND NOT ("pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text") ORDER BY "r1"."relname"::"pg_catalog"."text" LOOP
     RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
       USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
             SCHEMA = 'pg_temp'::"pg_catalog"."text",
             TABLE = "__foreign";
   END LOOP;
-  "__held" := ARRAY(SELECT "r1"."relname"::"pg_catalog"."text" AS "c1" FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."relnamespace" = "pg_catalog"."pg_my_temp_schema"() AND "r1"."relname"::"pg_catalog"."text" IN ('__delta_news_assign_assignment_input_lw7cfgfvnr'::"pg_catalog"."text", '__delta_news_assign_assignment_input_mode_nearest_p4q24ddx4p'::"pg_catalog"."text", '__delta_news_assign_assignment_input_mode_within_rb6bd7gwhr'::"pg_catalog"."text", '__delta_news_assign_decide_input_mode_nearest_iyocyinsng'::"pg_catalog"."text", '__delta_news_assign_decide_input_mode_within_nflxraui6u'::"pg_catalog"."text", '__delta_news_assign_decide_input_qayviv5irl'::"pg_catalog"."text", '__delta_news_assign_decide_output_stage_rest_6oiwwudavz'::"pg_catalog"."text", '__delta_news_assign_decide_output_stage_serve_spw2gnwa7l'::"pg_catalog"."text", '__delta_news_assign_decide_output_xcqzeb6a2h'::"pg_catalog"."text", '__delta_news_assign_done_zrcj6hmzzp'::"pg_catalog"."text", '__delta_news_assign_failed_zmmymz64np'::"pg_catalog"."text", '__delta_news_chain_chain_run_input_kn6uczzewn'::"pg_catalog"."text", '__delta_news_chain_done_xz7j62xv2p'::"pg_catalog"."text", '__delta_news_chain_failed_rw3b32rl3b'::"pg_catalog"."text", '__delta_news_chain_ordered_input_jcbr362nhm'::"pg_catalog"."text", '__delta_news_chain_page_input_sek6i5g4fk'::"pg_catalog"."text", '__delta_news_fan_batch_input_ankhpanyaq'::"pg_catalog"."text", '__delta_news_fan_done_zdcqqeht75'::"pg_catalog"."text", '__delta_news_fan_failed_2zywggd5jt'::"pg_catalog"."text", '__delta_news_fan_fan_run_input_vbsdow3wli'::"pg_catalog"."text", '__delta_news_fan_hold_p5mgeiywqn'::"pg_catalog"."text", '__delta_news_fan_square_input_hannxhtrcg'::"pg_catalog"."text", '__delta_news_retry_brittle_input_zyzzsijlvi'::"pg_catalog"."text", '__delta_news_retry_done_bvmq7mg4tw'::"pg_catalog"."text", '__delta_news_retry_failed_ouf7jeazd5'::"pg_catalog"."text", '__delta_news_retry_ladders_input_r267sjjms6'::"pg_catalog"."text", '__delta_news_retry_steadfast_input_24jog73c7m'::"pg_catalog"."text", '__delta_news_sync_build_input_y2kmchrx43'::"pg_catalog"."text", '__delta_news_sync_copy_input_fsjrueonz3'::"pg_catalog"."text", '__delta_news_sync_done_zk36v55j5b'::"pg_catalog"."text", '__delta_news_sync_failed_cx6wsiesyx'::"pg_catalog"."text", '__delta_news_sync_gold_input_4tvuzpo7yp'::"pg_catalog"."text", '__delta_news_sync_sync_run_input_dafcymdmlh'::"pg_catalog"."text", '__delta_olds_assign_assignment_input_khx4kjmyw6'::"pg_catalog"."text", '__delta_olds_assign_assignment_input_mode_nearest_vk7fu2lqsh'::"pg_catalog"."text", '__delta_olds_assign_assignment_input_mode_within_zkpkil5tyr'::"pg_catalog"."text", '__delta_olds_assign_decide_input_mmhrf72g5k'::"pg_catalog"."text", '__delta_olds_assign_decide_input_mode_nearest_ltccebku3q'::"pg_catalog"."text", '__delta_olds_assign_decide_input_mode_within_4lmirwj4hj'::"pg_catalog"."text", '__delta_olds_assign_decide_output_kpd5rn2m2r'::"pg_catalog"."text", '__delta_olds_assign_decide_output_stage_rest_lohip5o2bv'::"pg_catalog"."text", '__delta_olds_assign_decide_output_stage_serve_a6x4rdivod'::"pg_catalog"."text", '__delta_olds_assign_result_ltrbxqrcde'::"pg_catalog"."text", '__delta_olds_assign_scope_zqoacqpyux'::"pg_catalog"."text", '__delta_olds_assign_step_7s7fd7nzls'::"pg_catalog"."text", '__delta_olds_chain_result_c2y4qs76iu'::"pg_catalog"."text", '__delta_olds_chain_scope_27r3qyqi3x'::"pg_catalog"."text", '__delta_olds_chain_step_4qdewh5u5u'::"pg_catalog"."text", '__delta_olds_fan_freed_mwml6ea3za'::"pg_catalog"."text", '__delta_olds_fan_result_fuazpryl5h'::"pg_catalog"."text", '__delta_olds_fan_scope_2tqhhriuii'::"pg_catalog"."text", '__delta_olds_fan_step_sw47w2lcdl'::"pg_catalog"."text", '__delta_olds_retry_result_vgpzb7irxx'::"pg_catalog"."text", '__delta_olds_retry_scope_ee3njtef5r'::"pg_catalog"."text", '__delta_olds_retry_step_ctpkuto5wl'::"pg_catalog"."text", '__delta_olds_sync_result_s33bt3lj5g'::"pg_catalog"."text", '__delta_olds_sync_scope_vzbfllajyc'::"pg_catalog"."text", '__delta_olds_sync_step_ci5grgmzhg'::"pg_catalog"."text") AND ("pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text"));
-  IF "__held" && '{"__delta_news_assign_assignment_input_lw7cfgfvnr","__delta_olds_assign_assignment_input_mode_nearest_vk7fu2lqsh","__delta_olds_assign_assignment_input_mode_within_zkpkil5tyr","__delta_olds_assign_scope_zqoacqpyux"}'::"pg_catalog"."text"[] THEN
-    PERFORM "slice"."__judge_assign_assignment_input_mfctsotkjq"("__held");
+  "__held" := ARRAY(SELECT "r1"."relname"::"pg_catalog"."text" AS "c1" FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."relnamespace" = "pg_catalog"."pg_my_temp_schema"() AND "r1"."relname"::"pg_catalog"."text" IN ('__delta_news_assign_assignment_input_lw7cfgfvnr'::"pg_catalog"."text", '__delta_news_assign_assignment_input_mode_nearest_p4q24ddx4p'::"pg_catalog"."text", '__delta_news_assign_assignment_input_mode_within_rb6bd7gwhr'::"pg_catalog"."text", '__delta_news_assign_decide_input_mode_nearest_iyocyinsng'::"pg_catalog"."text", '__delta_news_assign_decide_input_mode_within_nflxraui6u'::"pg_catalog"."text", '__delta_news_assign_decide_input_qayviv5irl'::"pg_catalog"."text", '__delta_news_assign_decide_output_stage_rest_6oiwwudavz'::"pg_catalog"."text", '__delta_news_assign_decide_output_stage_serve_spw2gnwa7l'::"pg_catalog"."text", '__delta_news_assign_decide_output_xcqzeb6a2h'::"pg_catalog"."text", '__delta_news_assign_done_zrcj6hmzzp'::"pg_catalog"."text", '__delta_news_assign_failed_zmmymz64np'::"pg_catalog"."text", '__delta_news_chain_chain_run_input_kn6uczzewn'::"pg_catalog"."text", '__delta_news_chain_done_xz7j62xv2p'::"pg_catalog"."text", '__delta_news_chain_failed_rw3b32rl3b'::"pg_catalog"."text", '__delta_news_chain_ordered_input_jcbr362nhm'::"pg_catalog"."text", '__delta_news_chain_page_input_sek6i5g4fk'::"pg_catalog"."text", '__delta_news_fan_batch_input_ankhpanyaq'::"pg_catalog"."text", '__delta_news_fan_done_zdcqqeht75'::"pg_catalog"."text", '__delta_news_fan_failed_2zywggd5jt'::"pg_catalog"."text", '__delta_news_fan_fan_run_input_vbsdow3wli'::"pg_catalog"."text", '__delta_news_fan_hold_p5mgeiywqn'::"pg_catalog"."text", '__delta_news_fan_square_input_hannxhtrcg'::"pg_catalog"."text", '__delta_news_retry_brittle_input_zyzzsijlvi'::"pg_catalog"."text", '__delta_news_retry_done_bvmq7mg4tw'::"pg_catalog"."text", '__delta_news_retry_failed_ouf7jeazd5'::"pg_catalog"."text", '__delta_news_retry_ladders_input_r267sjjms6'::"pg_catalog"."text", '__delta_news_retry_steadfast_input_24jog73c7m'::"pg_catalog"."text", '__delta_news_sync_build_input_y2kmchrx43'::"pg_catalog"."text", '__delta_news_sync_copy_input_fsjrueonz3'::"pg_catalog"."text", '__delta_news_sync_done_zk36v55j5b'::"pg_catalog"."text", '__delta_news_sync_failed_cx6wsiesyx'::"pg_catalog"."text", '__delta_news_sync_gold_input_4tvuzpo7yp'::"pg_catalog"."text", '__delta_news_sync_sync_run_input_dafcymdmlh'::"pg_catalog"."text", '__delta_olds_assign_assignment_input_khx4kjmyw6'::"pg_catalog"."text", '__delta_olds_assign_assignment_input_mode_nearest_vk7fu2lqsh'::"pg_catalog"."text", '__delta_olds_assign_assignment_input_mode_within_zkpkil5tyr'::"pg_catalog"."text", '__delta_olds_assign_decide_input_mmhrf72g5k'::"pg_catalog"."text", '__delta_olds_assign_decide_input_mode_nearest_ltccebku3q'::"pg_catalog"."text", '__delta_olds_assign_decide_input_mode_within_4lmirwj4hj'::"pg_catalog"."text", '__delta_olds_assign_decide_output_kpd5rn2m2r'::"pg_catalog"."text", '__delta_olds_assign_decide_output_stage_rest_lohip5o2bv'::"pg_catalog"."text", '__delta_olds_assign_decide_output_stage_serve_a6x4rdivod'::"pg_catalog"."text", '__delta_olds_assign_result_ltrbxqrcde'::"pg_catalog"."text", '__delta_olds_assign_root_m5b4zjf4ha'::"pg_catalog"."text", '__delta_olds_assign_step_7s7fd7nzls'::"pg_catalog"."text", '__delta_olds_chain_result_c2y4qs76iu'::"pg_catalog"."text", '__delta_olds_chain_root_rvwhkmeihw'::"pg_catalog"."text", '__delta_olds_chain_step_4qdewh5u5u'::"pg_catalog"."text", '__delta_olds_fan_freed_mwml6ea3za'::"pg_catalog"."text", '__delta_olds_fan_result_fuazpryl5h'::"pg_catalog"."text", '__delta_olds_fan_root_mgm6lwvumy'::"pg_catalog"."text", '__delta_olds_fan_step_sw47w2lcdl'::"pg_catalog"."text", '__delta_olds_fan_within_k5qhuvyfou'::"pg_catalog"."text", '__delta_olds_retry_result_vgpzb7irxx'::"pg_catalog"."text", '__delta_olds_retry_root_zzy2fyq27d'::"pg_catalog"."text", '__delta_olds_retry_step_ctpkuto5wl'::"pg_catalog"."text", '__delta_olds_sync_result_s33bt3lj5g'::"pg_catalog"."text", '__delta_olds_sync_root_uo7uulbhck'::"pg_catalog"."text", '__delta_olds_sync_step_ci5grgmzhg'::"pg_catalog"."text") AND ("pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text"));
+  IF "__held" && '{"__delta_news_assign_assignment_input_lw7cfgfvnr","__delta_olds_assign_assignment_input_mode_nearest_vk7fu2lqsh","__delta_olds_assign_assignment_input_mode_within_zkpkil5tyr","__delta_olds_assign_root_m5b4zjf4ha"}'::"pg_catalog"."text"[] THEN
+    PERFORM "slice"."__judge_assign_assignment_input_numdwqphuf"("__held");
   END IF;
   IF "__held" && '{"__delta_news_assign_assignment_input_mode_nearest_p4q24ddx4p","__delta_news_assign_assignment_input_mode_within_rb6bd7gwhr","__delta_olds_assign_assignment_input_khx4kjmyw6"}'::"pg_catalog"."text"[] THEN
     PERFORM "slice"."__judge_assign_assignment_input_mode_nearest_gp4j43rmv4"("__held");
@@ -1400,8 +1422,8 @@ BEGIN
   IF "__held" && '{"__delta_news_assign_done_zrcj6hmzzp","__delta_news_assign_failed_zmmymz64np","__delta_olds_assign_result_ltrbxqrcde"}'::"pg_catalog"."text"[] THEN
     PERFORM "slice"."__judge_assign_done_uvgox4xms6"("__held");
   END IF;
-  IF "__held" && '{"__delta_news_chain_chain_run_input_kn6uczzewn","__delta_news_chain_ordered_input_jcbr362nhm","__delta_olds_chain_scope_27r3qyqi3x"}'::"pg_catalog"."text"[] THEN
-    PERFORM "slice"."__judge_chain_chain_run_input_6af3rz27sb"("__held");
+  IF "__held" && '{"__delta_news_chain_chain_run_input_kn6uczzewn","__delta_news_chain_ordered_input_jcbr362nhm","__delta_olds_chain_root_rvwhkmeihw"}'::"pg_catalog"."text"[] THEN
+    PERFORM "slice"."__judge_chain_chain_run_input_2i76tea7vf"("__held");
   END IF;
   IF "__held" && '{"__delta_news_chain_done_xz7j62xv2p","__delta_news_chain_failed_rw3b32rl3b","__delta_olds_chain_result_c2y4qs76iu"}'::"pg_catalog"."text"[] THEN
     PERFORM "slice"."__judge_chain_done_dlqjjysn3f"("__held");
@@ -1409,11 +1431,14 @@ BEGIN
   IF "__held" && '{"__delta_news_chain_page_input_sek6i5g4fk","__delta_olds_chain_step_4qdewh5u5u"}'::"pg_catalog"."text"[] THEN
     PERFORM "slice"."__judge_chain_page_input_lzwnhifptj"("__held");
   END IF;
-  IF "__held" && '{"__delta_news_fan_batch_input_ankhpanyaq","__delta_news_fan_fan_run_input_vbsdow3wli","__delta_olds_fan_scope_2tqhhriuii"}'::"pg_catalog"."text"[] THEN
-    PERFORM "slice"."__judge_fan_batch_input_mrbtecwoza"("__held");
+  IF "__held" && '{"__delta_news_fan_batch_input_ankhpanyaq","__delta_olds_fan_within_k5qhuvyfou"}'::"pg_catalog"."text"[] THEN
+    PERFORM "slice"."__judge_fan_batch_input_5ggxse4kkl"("__held");
   END IF;
   IF "__held" && '{"__delta_news_fan_done_zdcqqeht75","__delta_news_fan_failed_2zywggd5jt","__delta_olds_fan_result_fuazpryl5h"}'::"pg_catalog"."text"[] THEN
     PERFORM "slice"."__judge_fan_done_mflioj3j23"("__held");
+  END IF;
+  IF "__held" && '{"__delta_news_fan_fan_run_input_vbsdow3wli","__delta_olds_fan_root_mgm6lwvumy"}'::"pg_catalog"."text"[] THEN
+    PERFORM "slice"."__judge_fan_fan_run_input_wx6e3wxagr"("__held");
   END IF;
   IF "__held" && '{"__delta_news_fan_hold_p5mgeiywqn","__delta_olds_fan_freed_mwml6ea3za"}'::"pg_catalog"."text"[] THEN
     PERFORM "slice"."__judge_fan_hold_hkncojanio"("__held");
@@ -1427,8 +1452,8 @@ BEGIN
   IF "__held" && '{"__delta_news_retry_done_bvmq7mg4tw","__delta_news_retry_failed_ouf7jeazd5","__delta_olds_retry_result_vgpzb7irxx"}'::"pg_catalog"."text"[] THEN
     PERFORM "slice"."__judge_retry_done_qvurptzp5o"("__held");
   END IF;
-  IF "__held" && '{"__delta_news_retry_ladders_input_r267sjjms6","__delta_olds_retry_scope_ee3njtef5r"}'::"pg_catalog"."text"[] THEN
-    PERFORM "slice"."__judge_retry_ladders_input_3c7y32vdti"("__held");
+  IF "__held" && '{"__delta_news_retry_ladders_input_r267sjjms6","__delta_olds_retry_root_zzy2fyq27d"}'::"pg_catalog"."text"[] THEN
+    PERFORM "slice"."__judge_retry_ladders_input_j4z3sn7yyj"("__held");
   END IF;
   IF "__held" && '{"__delta_news_sync_build_input_y2kmchrx43","__delta_news_sync_copy_input_fsjrueonz3","__delta_olds_sync_step_ci5grgmzhg"}'::"pg_catalog"."text"[] THEN
     PERFORM "slice"."__judge_sync_build_input_5c2c4lbjyg"("__held");
@@ -1436,8 +1461,8 @@ BEGIN
   IF "__held" && '{"__delta_news_sync_done_zk36v55j5b","__delta_news_sync_failed_cx6wsiesyx","__delta_olds_sync_result_s33bt3lj5g"}'::"pg_catalog"."text"[] THEN
     PERFORM "slice"."__judge_sync_done_aojyv7p4ap"("__held");
   END IF;
-  IF "__held" && '{"__delta_news_sync_gold_input_4tvuzpo7yp","__delta_news_sync_sync_run_input_dafcymdmlh","__delta_olds_sync_scope_vzbfllajyc"}'::"pg_catalog"."text"[] THEN
-    PERFORM "slice"."__judge_sync_gold_input_qcj64en4sx"("__held");
+  IF "__held" && '{"__delta_news_sync_gold_input_4tvuzpo7yp","__delta_news_sync_sync_run_input_dafcymdmlh","__delta_olds_sync_root_uo7uulbhck"}'::"pg_catalog"."text"[] THEN
+    PERFORM "slice"."__judge_sync_gold_input_hrbc6rs75n"("__held");
   END IF;
   RETURN NEW;
 END
@@ -2624,7 +2649,7 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_assign_result_3zix6jjqic"() FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__capture_assign_scope_dsaojegcma"() RETURNS "pg_catalog"."trigger"
+CREATE OR REPLACE FUNCTION "slice"."__capture_assign_root_lbkcscnsqf"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2638,16 +2663,16 @@ BEGIN
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
               TABLE = '__sentinel_g7mqw4mu4u'::"pg_catalog"."text";
     END IF;
-    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_scope_zqoacqpyux"'::"pg_catalog"."text")) THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_assign_scope_zqoacqpyux" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
-    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_scope_zqoacqpyux"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_root_m5b4zjf4ha"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_assign_root_m5b4zjf4ha" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_root_m5b4zjf4ha"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
       RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
         USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
-              TABLE = '__delta_olds_assign_scope_zqoacqpyux'::"pg_catalog"."text";
+              TABLE = '__delta_olds_assign_root_m5b4zjf4ha'::"pg_catalog"."text";
     END IF;
-    INSERT INTO "pg_temp"."__delta_olds_assign_scope_zqoacqpyux" ("kind", "root", "scope")
-    SELECT "r1"."kind", "r1"."root", "r1"."scope" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."scope" = "r1"."scope" AND "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind")
+    INSERT INTO "pg_temp"."__delta_olds_assign_root_m5b4zjf4ha" ("at", "key", "kind", "retired", "scope")
+    SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."retired", "r1"."scope" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."scope" = "r1"."scope" AND "r2"."kind" = "r1"."kind")
     ;
     INSERT INTO "pg_temp"."__sentinel_g7mqw4mu4u"
     SELECT WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_g7mqw4mu4u" AS "r1")
@@ -2662,16 +2687,16 @@ BEGIN
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
               TABLE = '__sentinel_g7mqw4mu4u'::"pg_catalog"."text";
     END IF;
-    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_scope_zqoacqpyux"'::"pg_catalog"."text")) THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_assign_scope_zqoacqpyux" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
-    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_scope_zqoacqpyux"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_root_m5b4zjf4ha"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_assign_root_m5b4zjf4ha" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_root_m5b4zjf4ha"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
       RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
         USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
-              TABLE = '__delta_olds_assign_scope_zqoacqpyux'::"pg_catalog"."text";
+              TABLE = '__delta_olds_assign_root_m5b4zjf4ha'::"pg_catalog"."text";
     END IF;
-    INSERT INTO "pg_temp"."__delta_olds_assign_scope_zqoacqpyux" ("kind", "root", "scope")
-    SELECT "r1"."kind", "r1"."root", "r1"."scope" FROM "olds" AS "r1"
+    INSERT INTO "pg_temp"."__delta_olds_assign_root_m5b4zjf4ha" ("at", "key", "kind", "retired", "scope")
+    SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."retired", "r1"."scope" FROM "olds" AS "r1"
     ;
     INSERT INTO "pg_temp"."__sentinel_g7mqw4mu4u"
     SELECT WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_g7mqw4mu4u" AS "r1")
@@ -2681,7 +2706,7 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__capture_assign_scope_dsaojegcma"() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_assign_root_lbkcscnsqf"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_assign_step_bxkkty5l67"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -3171,7 +3196,7 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_chain_result_y3xtf6otn5"() FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__capture_chain_scope_c23ru2pmuw"() RETURNS "pg_catalog"."trigger"
+CREATE OR REPLACE FUNCTION "slice"."__capture_chain_root_3cootamwgf"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -3185,16 +3210,16 @@ BEGIN
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
               TABLE = '__sentinel_g7mqw4mu4u'::"pg_catalog"."text";
     END IF;
-    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_scope_27r3qyqi3x"'::"pg_catalog"."text")) THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_chain_scope_27r3qyqi3x" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
-    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_scope_27r3qyqi3x"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_root_rvwhkmeihw"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_chain_root_rvwhkmeihw" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_root_rvwhkmeihw"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
       RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
         USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
-              TABLE = '__delta_olds_chain_scope_27r3qyqi3x'::"pg_catalog"."text";
+              TABLE = '__delta_olds_chain_root_rvwhkmeihw'::"pg_catalog"."text";
     END IF;
-    INSERT INTO "pg_temp"."__delta_olds_chain_scope_27r3qyqi3x" ("kind", "root", "scope")
-    SELECT "r1"."kind", "r1"."root", "r1"."scope" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."scope" = "r1"."scope" AND "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind")
+    INSERT INTO "pg_temp"."__delta_olds_chain_root_rvwhkmeihw" ("at", "key", "kind", "retired", "scope")
+    SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."retired", "r1"."scope" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."scope" = "r1"."scope" AND "r2"."kind" = "r1"."kind")
     ;
     INSERT INTO "pg_temp"."__sentinel_g7mqw4mu4u"
     SELECT WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_g7mqw4mu4u" AS "r1")
@@ -3209,16 +3234,16 @@ BEGIN
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
               TABLE = '__sentinel_g7mqw4mu4u'::"pg_catalog"."text";
     END IF;
-    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_scope_27r3qyqi3x"'::"pg_catalog"."text")) THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_chain_scope_27r3qyqi3x" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
-    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_scope_27r3qyqi3x"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_root_rvwhkmeihw"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_chain_root_rvwhkmeihw" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_root_rvwhkmeihw"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
       RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
         USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
-              TABLE = '__delta_olds_chain_scope_27r3qyqi3x'::"pg_catalog"."text";
+              TABLE = '__delta_olds_chain_root_rvwhkmeihw'::"pg_catalog"."text";
     END IF;
-    INSERT INTO "pg_temp"."__delta_olds_chain_scope_27r3qyqi3x" ("kind", "root", "scope")
-    SELECT "r1"."kind", "r1"."root", "r1"."scope" FROM "olds" AS "r1"
+    INSERT INTO "pg_temp"."__delta_olds_chain_root_rvwhkmeihw" ("at", "key", "kind", "retired", "scope")
+    SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."retired", "r1"."scope" FROM "olds" AS "r1"
     ;
     INSERT INTO "pg_temp"."__sentinel_g7mqw4mu4u"
     SELECT WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_g7mqw4mu4u" AS "r1")
@@ -3228,7 +3253,7 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__capture_chain_scope_c23ru2pmuw"() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_chain_root_3cootamwgf"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_chain_step_2uxbeo7tjg"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -3777,7 +3802,7 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_fan_result_tevufz2c53"() FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__capture_fan_scope_3akxafcmy4"() RETURNS "pg_catalog"."trigger"
+CREATE OR REPLACE FUNCTION "slice"."__capture_fan_root_cjk7n6ydwg"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -3791,16 +3816,16 @@ BEGIN
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
               TABLE = '__sentinel_g7mqw4mu4u'::"pg_catalog"."text";
     END IF;
-    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_scope_2tqhhriuii"'::"pg_catalog"."text")) THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_fan_scope_2tqhhriuii" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
-    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_scope_2tqhhriuii"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_root_mgm6lwvumy"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_fan_root_mgm6lwvumy" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_root_mgm6lwvumy"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
       RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
         USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
-              TABLE = '__delta_olds_fan_scope_2tqhhriuii'::"pg_catalog"."text";
+              TABLE = '__delta_olds_fan_root_mgm6lwvumy'::"pg_catalog"."text";
     END IF;
-    INSERT INTO "pg_temp"."__delta_olds_fan_scope_2tqhhriuii" ("kind", "root", "scope")
-    SELECT "r1"."kind", "r1"."root", "r1"."scope" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."scope" = "r1"."scope" AND "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind")
+    INSERT INTO "pg_temp"."__delta_olds_fan_root_mgm6lwvumy" ("at", "key", "kind", "retired", "scope")
+    SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."retired", "r1"."scope" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."scope" = "r1"."scope" AND "r2"."kind" = "r1"."kind")
     ;
     INSERT INTO "pg_temp"."__sentinel_g7mqw4mu4u"
     SELECT WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_g7mqw4mu4u" AS "r1")
@@ -3815,16 +3840,16 @@ BEGIN
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
               TABLE = '__sentinel_g7mqw4mu4u'::"pg_catalog"."text";
     END IF;
-    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_scope_2tqhhriuii"'::"pg_catalog"."text")) THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_fan_scope_2tqhhriuii" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
-    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_scope_2tqhhriuii"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_root_mgm6lwvumy"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_fan_root_mgm6lwvumy" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_root_mgm6lwvumy"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
       RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
         USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
-              TABLE = '__delta_olds_fan_scope_2tqhhriuii'::"pg_catalog"."text";
+              TABLE = '__delta_olds_fan_root_mgm6lwvumy'::"pg_catalog"."text";
     END IF;
-    INSERT INTO "pg_temp"."__delta_olds_fan_scope_2tqhhriuii" ("kind", "root", "scope")
-    SELECT "r1"."kind", "r1"."root", "r1"."scope" FROM "olds" AS "r1"
+    INSERT INTO "pg_temp"."__delta_olds_fan_root_mgm6lwvumy" ("at", "key", "kind", "retired", "scope")
+    SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."retired", "r1"."scope" FROM "olds" AS "r1"
     ;
     INSERT INTO "pg_temp"."__sentinel_g7mqw4mu4u"
     SELECT WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_g7mqw4mu4u" AS "r1")
@@ -3834,7 +3859,7 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__capture_fan_scope_3akxafcmy4"() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_fan_root_cjk7n6ydwg"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_fan_square_input_x66yegc6bz"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -3968,6 +3993,65 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_fan_step_hmyykvgk4j"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__capture_fan_within_pwsrdikydc"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__sentinel_g7mqw4mu4u"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__sentinel_g7mqw4mu4u" () ON COMMIT DELETE ROWS;
+      CREATE CONSTRAINT TRIGGER "__sentinel_g7mqw4mu4u" AFTER INSERT ON "pg_temp"."__sentinel_g7mqw4mu4u" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"();
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2", "pg_catalog"."pg_trigger" AS "r3" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__sentinel_g7mqw4mu4u"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text" AND "r3"."tgrelid" = "r2"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text")) THEN
+      RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+        USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+              SCHEMA = 'pg_temp'::"pg_catalog"."text",
+              TABLE = '__sentinel_g7mqw4mu4u'::"pg_catalog"."text";
+    END IF;
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_within_k5qhuvyfou"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_fan_within_k5qhuvyfou" ("kind" smallint, "parent" "pg_catalog"."uuid", "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_within_k5qhuvyfou"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+      RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+        USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+              SCHEMA = 'pg_temp'::"pg_catalog"."text",
+              TABLE = '__delta_olds_fan_within_k5qhuvyfou'::"pg_catalog"."text";
+    END IF;
+    INSERT INTO "pg_temp"."__delta_olds_fan_within_k5qhuvyfou" ("kind", "parent", "root", "scope")
+    SELECT "r1"."kind", "r1"."parent", "r1"."root", "r1"."scope" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."scope" = "r1"."scope" AND "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind")
+    ;
+    INSERT INTO "pg_temp"."__sentinel_g7mqw4mu4u"
+    SELECT WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_g7mqw4mu4u" AS "r1")
+    ;
+  ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__sentinel_g7mqw4mu4u"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__sentinel_g7mqw4mu4u" () ON COMMIT DELETE ROWS;
+      CREATE CONSTRAINT TRIGGER "__sentinel_g7mqw4mu4u" AFTER INSERT ON "pg_temp"."__sentinel_g7mqw4mu4u" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"();
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2", "pg_catalog"."pg_trigger" AS "r3" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__sentinel_g7mqw4mu4u"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text" AND "r3"."tgrelid" = "r2"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text")) THEN
+      RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+        USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+              SCHEMA = 'pg_temp'::"pg_catalog"."text",
+              TABLE = '__sentinel_g7mqw4mu4u'::"pg_catalog"."text";
+    END IF;
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_within_k5qhuvyfou"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_fan_within_k5qhuvyfou" ("kind" smallint, "parent" "pg_catalog"."uuid", "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_within_k5qhuvyfou"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+      RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+        USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+              SCHEMA = 'pg_temp'::"pg_catalog"."text",
+              TABLE = '__delta_olds_fan_within_k5qhuvyfou'::"pg_catalog"."text";
+    END IF;
+    INSERT INTO "pg_temp"."__delta_olds_fan_within_k5qhuvyfou" ("kind", "parent", "root", "scope")
+    SELECT "r1"."kind", "r1"."parent", "r1"."root", "r1"."scope" FROM "olds" AS "r1"
+    ;
+    INSERT INTO "pg_temp"."__sentinel_g7mqw4mu4u"
+    SELECT WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_g7mqw4mu4u" AS "r1")
+    ;
+  END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_fan_within_pwsrdikydc"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_retry_brittle_input_ngy5ff2dfr"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -4324,7 +4408,7 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_retry_result_oof7kiqgid"() FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__capture_retry_scope_m6j2niepek"() RETURNS "pg_catalog"."trigger"
+CREATE OR REPLACE FUNCTION "slice"."__capture_retry_root_nujht4q2jp"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -4338,16 +4422,16 @@ BEGIN
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
               TABLE = '__sentinel_g7mqw4mu4u'::"pg_catalog"."text";
     END IF;
-    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_scope_ee3njtef5r"'::"pg_catalog"."text")) THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_retry_scope_ee3njtef5r" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
-    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_scope_ee3njtef5r"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_root_zzy2fyq27d"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_retry_root_zzy2fyq27d" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_root_zzy2fyq27d"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
       RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
         USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
-              TABLE = '__delta_olds_retry_scope_ee3njtef5r'::"pg_catalog"."text";
+              TABLE = '__delta_olds_retry_root_zzy2fyq27d'::"pg_catalog"."text";
     END IF;
-    INSERT INTO "pg_temp"."__delta_olds_retry_scope_ee3njtef5r" ("kind", "root", "scope")
-    SELECT "r1"."kind", "r1"."root", "r1"."scope" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."scope" = "r1"."scope" AND "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind")
+    INSERT INTO "pg_temp"."__delta_olds_retry_root_zzy2fyq27d" ("at", "key", "kind", "retired", "scope")
+    SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."retired", "r1"."scope" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."scope" = "r1"."scope" AND "r2"."kind" = "r1"."kind")
     ;
     INSERT INTO "pg_temp"."__sentinel_g7mqw4mu4u"
     SELECT WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_g7mqw4mu4u" AS "r1")
@@ -4362,16 +4446,16 @@ BEGIN
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
               TABLE = '__sentinel_g7mqw4mu4u'::"pg_catalog"."text";
     END IF;
-    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_scope_ee3njtef5r"'::"pg_catalog"."text")) THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_retry_scope_ee3njtef5r" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
-    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_scope_ee3njtef5r"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_root_zzy2fyq27d"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_retry_root_zzy2fyq27d" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_root_zzy2fyq27d"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
       RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
         USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
-              TABLE = '__delta_olds_retry_scope_ee3njtef5r'::"pg_catalog"."text";
+              TABLE = '__delta_olds_retry_root_zzy2fyq27d'::"pg_catalog"."text";
     END IF;
-    INSERT INTO "pg_temp"."__delta_olds_retry_scope_ee3njtef5r" ("kind", "root", "scope")
-    SELECT "r1"."kind", "r1"."root", "r1"."scope" FROM "olds" AS "r1"
+    INSERT INTO "pg_temp"."__delta_olds_retry_root_zzy2fyq27d" ("at", "key", "kind", "retired", "scope")
+    SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."retired", "r1"."scope" FROM "olds" AS "r1"
     ;
     INSERT INTO "pg_temp"."__sentinel_g7mqw4mu4u"
     SELECT WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_g7mqw4mu4u" AS "r1")
@@ -4381,7 +4465,7 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__capture_retry_scope_m6j2niepek"() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_retry_root_nujht4q2jp"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_retry_steadfast_input_iqvn32jr3j"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -4945,7 +5029,7 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_sync_result_led6m2o22r"() FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__capture_sync_scope_wpivtwoeh6"() RETURNS "pg_catalog"."trigger"
+CREATE OR REPLACE FUNCTION "slice"."__capture_sync_root_s5cwtqjc6s"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -4959,16 +5043,16 @@ BEGIN
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
               TABLE = '__sentinel_g7mqw4mu4u'::"pg_catalog"."text";
     END IF;
-    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_scope_vzbfllajyc"'::"pg_catalog"."text")) THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_sync_scope_vzbfllajyc" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
-    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_scope_vzbfllajyc"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_root_uo7uulbhck"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_sync_root_uo7uulbhck" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_root_uo7uulbhck"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
       RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
         USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
-              TABLE = '__delta_olds_sync_scope_vzbfllajyc'::"pg_catalog"."text";
+              TABLE = '__delta_olds_sync_root_uo7uulbhck'::"pg_catalog"."text";
     END IF;
-    INSERT INTO "pg_temp"."__delta_olds_sync_scope_vzbfllajyc" ("kind", "root", "scope")
-    SELECT "r1"."kind", "r1"."root", "r1"."scope" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."scope" = "r1"."scope" AND "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind")
+    INSERT INTO "pg_temp"."__delta_olds_sync_root_uo7uulbhck" ("at", "key", "kind", "retired", "scope")
+    SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."retired", "r1"."scope" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."scope" = "r1"."scope" AND "r2"."kind" = "r1"."kind")
     ;
     INSERT INTO "pg_temp"."__sentinel_g7mqw4mu4u"
     SELECT WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_g7mqw4mu4u" AS "r1")
@@ -4983,16 +5067,16 @@ BEGIN
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
               TABLE = '__sentinel_g7mqw4mu4u'::"pg_catalog"."text";
     END IF;
-    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_scope_vzbfllajyc"'::"pg_catalog"."text")) THEN
-      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_sync_scope_vzbfllajyc" ("kind" smallint, "root" "pg_catalog"."uuid", "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
-    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_scope_vzbfllajyc"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_root_uo7uulbhck"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_sync_root_uo7uulbhck" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."uuid") ON COMMIT DELETE ROWS;
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_root_uo7uulbhck"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
       RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
         USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
               SCHEMA = 'pg_temp'::"pg_catalog"."text",
-              TABLE = '__delta_olds_sync_scope_vzbfllajyc'::"pg_catalog"."text";
+              TABLE = '__delta_olds_sync_root_uo7uulbhck'::"pg_catalog"."text";
     END IF;
-    INSERT INTO "pg_temp"."__delta_olds_sync_scope_vzbfllajyc" ("kind", "root", "scope")
-    SELECT "r1"."kind", "r1"."root", "r1"."scope" FROM "olds" AS "r1"
+    INSERT INTO "pg_temp"."__delta_olds_sync_root_uo7uulbhck" ("at", "key", "kind", "retired", "scope")
+    SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."retired", "r1"."scope" FROM "olds" AS "r1"
     ;
     INSERT INTO "pg_temp"."__sentinel_g7mqw4mu4u"
     SELECT WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_g7mqw4mu4u" AS "r1")
@@ -5002,7 +5086,7 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__capture_sync_scope_wpivtwoeh6"() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_sync_root_s5cwtqjc6s"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_sync_step_35gtwztkwz"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -5313,14 +5397,14 @@ CREATE TRIGGER "__capture_update"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_assign_result_3zix6jjqic"();
 
 CREATE TRIGGER "__capture_delete"
-  AFTER DELETE ON "slice"."assign_scope"
+  AFTER DELETE ON "slice"."assign_root"
   REFERENCING OLD TABLE AS "olds"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_assign_scope_dsaojegcma"();
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_assign_root_lbkcscnsqf"();
 
 CREATE TRIGGER "__capture_update"
-  AFTER UPDATE ON "slice"."assign_scope"
+  AFTER UPDATE ON "slice"."assign_root"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_assign_scope_dsaojegcma"();
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_assign_root_lbkcscnsqf"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice"."assign_step"
@@ -5418,14 +5502,14 @@ CREATE TRIGGER "__capture_update"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_chain_result_y3xtf6otn5"();
 
 CREATE TRIGGER "__capture_delete"
-  AFTER DELETE ON "slice"."chain_scope"
+  AFTER DELETE ON "slice"."chain_root"
   REFERENCING OLD TABLE AS "olds"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_chain_scope_c23ru2pmuw"();
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_chain_root_3cootamwgf"();
 
 CREATE TRIGGER "__capture_update"
-  AFTER UPDATE ON "slice"."chain_scope"
+  AFTER UPDATE ON "slice"."chain_root"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_chain_scope_c23ru2pmuw"();
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_chain_root_3cootamwgf"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice"."chain_step"
@@ -5533,14 +5617,14 @@ CREATE TRIGGER "__capture_update"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_result_tevufz2c53"();
 
 CREATE TRIGGER "__capture_delete"
-  AFTER DELETE ON "slice"."fan_scope"
+  AFTER DELETE ON "slice"."fan_root"
   REFERENCING OLD TABLE AS "olds"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_scope_3akxafcmy4"();
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_root_cjk7n6ydwg"();
 
 CREATE TRIGGER "__capture_update"
-  AFTER UPDATE ON "slice"."fan_scope"
+  AFTER UPDATE ON "slice"."fan_root"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_scope_3akxafcmy4"();
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_root_cjk7n6ydwg"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice"."fan_square_input"
@@ -5566,6 +5650,16 @@ CREATE TRIGGER "__capture_update"
   AFTER UPDATE ON "slice"."fan_step"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_step_hmyykvgk4j"();
+
+CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice"."fan_within"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_within_pwsrdikydc"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice"."fan_within"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_within_pwsrdikydc"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice"."retry_brittle_input"
@@ -5638,14 +5732,14 @@ CREATE TRIGGER "__capture_update"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_result_oof7kiqgid"();
 
 CREATE TRIGGER "__capture_delete"
-  AFTER DELETE ON "slice"."retry_scope"
+  AFTER DELETE ON "slice"."retry_root"
   REFERENCING OLD TABLE AS "olds"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_scope_m6j2niepek"();
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_root_nujht4q2jp"();
 
 CREATE TRIGGER "__capture_update"
-  AFTER UPDATE ON "slice"."retry_scope"
+  AFTER UPDATE ON "slice"."retry_root"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_scope_m6j2niepek"();
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_root_nujht4q2jp"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice"."retry_steadfast_input"
@@ -5758,14 +5852,14 @@ CREATE TRIGGER "__capture_update"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_sync_result_led6m2o22r"();
 
 CREATE TRIGGER "__capture_delete"
-  AFTER DELETE ON "slice"."sync_scope"
+  AFTER DELETE ON "slice"."sync_root"
   REFERENCING OLD TABLE AS "olds"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_sync_scope_wpivtwoeh6"();
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_sync_root_s5cwtqjc6s"();
 
 CREATE TRIGGER "__capture_update"
-  AFTER UPDATE ON "slice"."sync_scope"
+  AFTER UPDATE ON "slice"."sync_root"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_sync_scope_wpivtwoeh6"();
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_sync_root_s5cwtqjc6s"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice"."sync_step"
@@ -5804,14 +5898,14 @@ BEGIN
 END
 $$;
 
--- The full violation query of law __assign_assignment_input_in_assign_scope_voihzx3sj5.
+-- The full violation query of law __assign_assignment_input_in_assign_root_mklvt3wjts.
 DO $$
 BEGIN
-  PERFORM 1 FROM (SELECT "r9"."c14" AS "scope", "r9"."c15" AS "root" FROM (SELECT "r8"."c12", "r8"."c13" FROM (SELECT "r7"."c10"::"pg_catalog"."uuid", "r7"."c11"::"pg_catalog"."uuid" FROM (SELECT "r6"."c8", "r6"."c9" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."assign_assignment_input" AS "r5") AS "r6"("c8", "c9")) AS "r7"("c10", "c11")) AS "r8"("c12", "c13") EXCEPT SELECT "r4"."c6", "r4"."c7" FROM (SELECT "r3"."c4"::"pg_catalog"."uuid", "r3"."c5"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1", "r2"."c3" FROM (SELECT "r1"."scope", "r1"."kind", "r1"."root" FROM "slice"."assign_scope" AS "r1") AS "r2"("c1", "c2", "c3") WHERE "r2"."c2" = 0::smallint) AS "r3"("c4", "c5")) AS "r4"("c6", "c7")) AS "r9"("c14", "c15")) AS "found";
+  PERFORM 1 FROM (SELECT "r9"."c9" AS "scope" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c7"::"pg_catalog"."uuid" FROM (SELECT DISTINCT "r6"."c5" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."assign_assignment_input" AS "r5") AS "r6"("c5", "c6")) AS "r7"("c7")) AS "r8"("c8") EXCEPT SELECT "r4"."c4" FROM (SELECT "r3"."c3"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope", "r1"."kind" FROM "slice"."assign_root" AS "r1") AS "r2"("c1", "c2") WHERE "r2"."c2" = 0::smallint) AS "r3"("c3")) AS "r4"("c4")) AS "r9"("c9")) AS "found";
   IF FOUND THEN
-    RAISE EXCEPTION 'law __assign_assignment_input_in_assign_scope_voihzx3sj5 is violated by existing rows'
+    RAISE EXCEPTION 'law __assign_assignment_input_in_assign_root_mklvt3wjts is violated by existing rows'
       USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text",
-            CONSTRAINT = '__assign_assignment_input_in_assign_scope_voihzx3sj5'::"pg_catalog"."text";
+            CONSTRAINT = '__assign_assignment_input_in_assign_root_mklvt3wjts'::"pg_catalog"."text";
   END IF;
 END
 $$;
@@ -5996,14 +6090,14 @@ BEGIN
 END
 $$;
 
--- The full violation query of law __chain_chain_run_input_in_chain_scope_rwiwgl6wca.
+-- The full violation query of law __chain_chain_run_input_in_chain_root_6kgstyioeo.
 DO $$
 BEGIN
-  PERFORM 1 FROM (SELECT "r9"."c14" AS "scope", "r9"."c15" AS "root" FROM (SELECT "r8"."c12", "r8"."c13" FROM (SELECT "r7"."c10"::"pg_catalog"."uuid", "r7"."c11"::"pg_catalog"."uuid" FROM (SELECT "r6"."c8", "r6"."c9" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."chain_chain_run_input" AS "r5") AS "r6"("c8", "c9")) AS "r7"("c10", "c11")) AS "r8"("c12", "c13") EXCEPT SELECT "r4"."c6", "r4"."c7" FROM (SELECT "r3"."c4"::"pg_catalog"."uuid", "r3"."c5"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1", "r2"."c3" FROM (SELECT "r1"."scope", "r1"."kind", "r1"."root" FROM "slice"."chain_scope" AS "r1") AS "r2"("c1", "c2", "c3") WHERE "r2"."c2" = 0::smallint) AS "r3"("c4", "c5")) AS "r4"("c6", "c7")) AS "r9"("c14", "c15")) AS "found";
+  PERFORM 1 FROM (SELECT "r9"."c9" AS "scope" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c7"::"pg_catalog"."uuid" FROM (SELECT DISTINCT "r6"."c5" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."chain_chain_run_input" AS "r5") AS "r6"("c5", "c6")) AS "r7"("c7")) AS "r8"("c8") EXCEPT SELECT "r4"."c4" FROM (SELECT "r3"."c3"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope", "r1"."kind" FROM "slice"."chain_root" AS "r1") AS "r2"("c1", "c2") WHERE "r2"."c2" = 0::smallint) AS "r3"("c3")) AS "r4"("c4")) AS "r9"("c9")) AS "found";
   IF FOUND THEN
-    RAISE EXCEPTION 'law __chain_chain_run_input_in_chain_scope_rwiwgl6wca is violated by existing rows'
+    RAISE EXCEPTION 'law __chain_chain_run_input_in_chain_root_6kgstyioeo is violated by existing rows'
       USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text",
-            CONSTRAINT = '__chain_chain_run_input_in_chain_scope_rwiwgl6wca'::"pg_catalog"."text";
+            CONSTRAINT = '__chain_chain_run_input_in_chain_root_6kgstyioeo'::"pg_catalog"."text";
   END IF;
 END
 $$;
@@ -6032,14 +6126,14 @@ BEGIN
 END
 $$;
 
--- The full violation query of law __chain_ordered_input_in_chain_scope_clmpikijzh.
+-- The full violation query of law __chain_ordered_input_in_chain_root_5vqqezuzu4.
 DO $$
 BEGIN
-  PERFORM 1 FROM (SELECT "r9"."c14" AS "scope", "r9"."c15" AS "root" FROM (SELECT "r8"."c12", "r8"."c13" FROM (SELECT "r7"."c10"::"pg_catalog"."uuid", "r7"."c11"::"pg_catalog"."uuid" FROM (SELECT "r6"."c8", "r6"."c9" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."chain_ordered_input" AS "r5") AS "r6"("c8", "c9")) AS "r7"("c10", "c11")) AS "r8"("c12", "c13") EXCEPT SELECT "r4"."c6", "r4"."c7" FROM (SELECT "r3"."c4"::"pg_catalog"."uuid", "r3"."c5"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1", "r2"."c3" FROM (SELECT "r1"."scope", "r1"."kind", "r1"."root" FROM "slice"."chain_scope" AS "r1") AS "r2"("c1", "c2", "c3") WHERE "r2"."c2" = 1::smallint) AS "r3"("c4", "c5")) AS "r4"("c6", "c7")) AS "r9"("c14", "c15")) AS "found";
+  PERFORM 1 FROM (SELECT "r9"."c9" AS "scope" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c7"::"pg_catalog"."uuid" FROM (SELECT DISTINCT "r6"."c5" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."chain_ordered_input" AS "r5") AS "r6"("c5", "c6")) AS "r7"("c7")) AS "r8"("c8") EXCEPT SELECT "r4"."c4" FROM (SELECT "r3"."c3"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope", "r1"."kind" FROM "slice"."chain_root" AS "r1") AS "r2"("c1", "c2") WHERE "r2"."c2" = 1::smallint) AS "r3"("c3")) AS "r4"("c4")) AS "r9"("c9")) AS "found";
   IF FOUND THEN
-    RAISE EXCEPTION 'law __chain_ordered_input_in_chain_scope_clmpikijzh is violated by existing rows'
+    RAISE EXCEPTION 'law __chain_ordered_input_in_chain_root_5vqqezuzu4 is violated by existing rows'
       USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text",
-            CONSTRAINT = '__chain_ordered_input_in_chain_scope_clmpikijzh'::"pg_catalog"."text";
+            CONSTRAINT = '__chain_ordered_input_in_chain_root_5vqqezuzu4'::"pg_catalog"."text";
   END IF;
 END
 $$;
@@ -6056,14 +6150,14 @@ BEGIN
 END
 $$;
 
--- The full violation query of law __fan_batch_input_in_fan_scope_pnkgban2ix.
+-- The full violation query of law __fan_batch_input_in_fan_within_sx7cuovskn.
 DO $$
 BEGIN
-  PERFORM 1 FROM (SELECT "r9"."c14" AS "scope", "r9"."c15" AS "root" FROM (SELECT "r8"."c12", "r8"."c13" FROM (SELECT "r7"."c10"::"pg_catalog"."uuid", "r7"."c11"::"pg_catalog"."uuid" FROM (SELECT "r6"."c8", "r6"."c9" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."fan_batch_input" AS "r5") AS "r6"("c8", "c9")) AS "r7"("c10", "c11")) AS "r8"("c12", "c13") EXCEPT SELECT "r4"."c6", "r4"."c7" FROM (SELECT "r3"."c4"::"pg_catalog"."uuid", "r3"."c5"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1", "r2"."c3" FROM (SELECT "r1"."scope", "r1"."kind", "r1"."root" FROM "slice"."fan_scope" AS "r1") AS "r2"("c1", "c2", "c3") WHERE "r2"."c2" = 0::smallint) AS "r3"("c4", "c5")) AS "r4"("c6", "c7")) AS "r9"("c14", "c15")) AS "found";
+  PERFORM 1 FROM (SELECT "r9"."c14" AS "scope", "r9"."c15" AS "root" FROM (SELECT "r8"."c12", "r8"."c13" FROM (SELECT "r7"."c10"::"pg_catalog"."uuid", "r7"."c11"::"pg_catalog"."uuid" FROM (SELECT "r6"."c8", "r6"."c9" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."fan_batch_input" AS "r5") AS "r6"("c8", "c9")) AS "r7"("c10", "c11")) AS "r8"("c12", "c13") EXCEPT SELECT "r4"."c6", "r4"."c7" FROM (SELECT "r3"."c4"::"pg_catalog"."uuid", "r3"."c5"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1", "r2"."c3" FROM (SELECT "r1"."scope", "r1"."kind", "r1"."root" FROM "slice"."fan_within" AS "r1") AS "r2"("c1", "c2", "c3") WHERE "r2"."c2" = 0::smallint) AS "r3"("c4", "c5")) AS "r4"("c6", "c7")) AS "r9"("c14", "c15")) AS "found";
   IF FOUND THEN
-    RAISE EXCEPTION 'law __fan_batch_input_in_fan_scope_pnkgban2ix is violated by existing rows'
+    RAISE EXCEPTION 'law __fan_batch_input_in_fan_within_sx7cuovskn is violated by existing rows'
       USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text",
-            CONSTRAINT = '__fan_batch_input_in_fan_scope_pnkgban2ix'::"pg_catalog"."text";
+            CONSTRAINT = '__fan_batch_input_in_fan_within_sx7cuovskn'::"pg_catalog"."text";
   END IF;
 END
 $$;
@@ -6092,14 +6186,14 @@ BEGIN
 END
 $$;
 
--- The full violation query of law __fan_fan_run_input_in_fan_scope_tqfwf3l6wh.
+-- The full violation query of law __fan_fan_run_input_in_fan_root_z6cpi2vcoy.
 DO $$
 BEGIN
-  PERFORM 1 FROM (SELECT "r9"."c14" AS "scope", "r9"."c15" AS "root" FROM (SELECT "r8"."c12", "r8"."c13" FROM (SELECT "r7"."c10"::"pg_catalog"."uuid", "r7"."c11"::"pg_catalog"."uuid" FROM (SELECT "r6"."c8", "r6"."c9" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."fan_fan_run_input" AS "r5") AS "r6"("c8", "c9")) AS "r7"("c10", "c11")) AS "r8"("c12", "c13") EXCEPT SELECT "r4"."c6", "r4"."c7" FROM (SELECT "r3"."c4"::"pg_catalog"."uuid", "r3"."c5"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1", "r2"."c3" FROM (SELECT "r1"."scope", "r1"."kind", "r1"."root" FROM "slice"."fan_scope" AS "r1") AS "r2"("c1", "c2", "c3") WHERE "r2"."c2" = 1::smallint) AS "r3"("c4", "c5")) AS "r4"("c6", "c7")) AS "r9"("c14", "c15")) AS "found";
+  PERFORM 1 FROM (SELECT "r9"."c9" AS "scope" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c7"::"pg_catalog"."uuid" FROM (SELECT DISTINCT "r6"."c5" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."fan_fan_run_input" AS "r5") AS "r6"("c5", "c6")) AS "r7"("c7")) AS "r8"("c8") EXCEPT SELECT "r4"."c4" FROM (SELECT "r3"."c3"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope", "r1"."kind" FROM "slice"."fan_root" AS "r1") AS "r2"("c1", "c2") WHERE "r2"."c2" = 0::smallint) AS "r3"("c3")) AS "r4"("c4")) AS "r9"("c9")) AS "found";
   IF FOUND THEN
-    RAISE EXCEPTION 'law __fan_fan_run_input_in_fan_scope_tqfwf3l6wh is violated by existing rows'
+    RAISE EXCEPTION 'law __fan_fan_run_input_in_fan_root_z6cpi2vcoy is violated by existing rows'
       USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text",
-            CONSTRAINT = '__fan_fan_run_input_in_fan_scope_tqfwf3l6wh'::"pg_catalog"."text";
+            CONSTRAINT = '__fan_fan_run_input_in_fan_root_z6cpi2vcoy'::"pg_catalog"."text";
   END IF;
 END
 $$;
@@ -6152,14 +6246,14 @@ BEGIN
 END
 $$;
 
--- The full violation query of law __retry_ladders_input_in_retry_scope_xauizqr2su.
+-- The full violation query of law __retry_ladders_input_in_retry_root_jbqul573mm.
 DO $$
 BEGIN
-  PERFORM 1 FROM (SELECT "r9"."c14" AS "scope", "r9"."c15" AS "root" FROM (SELECT "r8"."c12", "r8"."c13" FROM (SELECT "r7"."c10"::"pg_catalog"."uuid", "r7"."c11"::"pg_catalog"."uuid" FROM (SELECT "r6"."c8", "r6"."c9" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."retry_ladders_input" AS "r5") AS "r6"("c8", "c9")) AS "r7"("c10", "c11")) AS "r8"("c12", "c13") EXCEPT SELECT "r4"."c6", "r4"."c7" FROM (SELECT "r3"."c4"::"pg_catalog"."uuid", "r3"."c5"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1", "r2"."c3" FROM (SELECT "r1"."scope", "r1"."kind", "r1"."root" FROM "slice"."retry_scope" AS "r1") AS "r2"("c1", "c2", "c3") WHERE "r2"."c2" = 0::smallint) AS "r3"("c4", "c5")) AS "r4"("c6", "c7")) AS "r9"("c14", "c15")) AS "found";
+  PERFORM 1 FROM (SELECT "r9"."c9" AS "scope" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c7"::"pg_catalog"."uuid" FROM (SELECT DISTINCT "r6"."c5" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."retry_ladders_input" AS "r5") AS "r6"("c5", "c6")) AS "r7"("c7")) AS "r8"("c8") EXCEPT SELECT "r4"."c4" FROM (SELECT "r3"."c3"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope", "r1"."kind" FROM "slice"."retry_root" AS "r1") AS "r2"("c1", "c2") WHERE "r2"."c2" = 0::smallint) AS "r3"("c3")) AS "r4"("c4")) AS "r9"("c9")) AS "found";
   IF FOUND THEN
-    RAISE EXCEPTION 'law __retry_ladders_input_in_retry_scope_xauizqr2su is violated by existing rows'
+    RAISE EXCEPTION 'law __retry_ladders_input_in_retry_root_jbqul573mm is violated by existing rows'
       USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text",
-            CONSTRAINT = '__retry_ladders_input_in_retry_scope_xauizqr2su'::"pg_catalog"."text";
+            CONSTRAINT = '__retry_ladders_input_in_retry_root_jbqul573mm'::"pg_catalog"."text";
   END IF;
 END
 $$;
@@ -6224,26 +6318,26 @@ BEGIN
 END
 $$;
 
--- The full violation query of law __sync_gold_input_in_sync_scope_4sfm4viab3.
+-- The full violation query of law __sync_gold_input_in_sync_root_wntzudbkdm.
 DO $$
 BEGIN
-  PERFORM 1 FROM (SELECT "r9"."c14" AS "scope", "r9"."c15" AS "root" FROM (SELECT "r8"."c12", "r8"."c13" FROM (SELECT "r7"."c10"::"pg_catalog"."uuid", "r7"."c11"::"pg_catalog"."uuid" FROM (SELECT "r6"."c8", "r6"."c9" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."sync_gold_input" AS "r5") AS "r6"("c8", "c9")) AS "r7"("c10", "c11")) AS "r8"("c12", "c13") EXCEPT SELECT "r4"."c6", "r4"."c7" FROM (SELECT "r3"."c4"::"pg_catalog"."uuid", "r3"."c5"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1", "r2"."c3" FROM (SELECT "r1"."scope", "r1"."kind", "r1"."root" FROM "slice"."sync_scope" AS "r1") AS "r2"("c1", "c2", "c3") WHERE "r2"."c2" = 0::smallint) AS "r3"("c4", "c5")) AS "r4"("c6", "c7")) AS "r9"("c14", "c15")) AS "found";
+  PERFORM 1 FROM (SELECT "r9"."c9" AS "scope" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c7"::"pg_catalog"."uuid" FROM (SELECT DISTINCT "r6"."c5" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."sync_gold_input" AS "r5") AS "r6"("c5", "c6")) AS "r7"("c7")) AS "r8"("c8") EXCEPT SELECT "r4"."c4" FROM (SELECT "r3"."c3"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope", "r1"."kind" FROM "slice"."sync_root" AS "r1") AS "r2"("c1", "c2") WHERE "r2"."c2" = 0::smallint) AS "r3"("c3")) AS "r4"("c4")) AS "r9"("c9")) AS "found";
   IF FOUND THEN
-    RAISE EXCEPTION 'law __sync_gold_input_in_sync_scope_4sfm4viab3 is violated by existing rows'
+    RAISE EXCEPTION 'law __sync_gold_input_in_sync_root_wntzudbkdm is violated by existing rows'
       USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text",
-            CONSTRAINT = '__sync_gold_input_in_sync_scope_4sfm4viab3'::"pg_catalog"."text";
+            CONSTRAINT = '__sync_gold_input_in_sync_root_wntzudbkdm'::"pg_catalog"."text";
   END IF;
 END
 $$;
 
--- The full violation query of law __sync_sync_run_input_in_sync_scope_pmhdowao4r.
+-- The full violation query of law __sync_sync_run_input_in_sync_root_qadsh2ioyk.
 DO $$
 BEGIN
-  PERFORM 1 FROM (SELECT "r9"."c14" AS "scope", "r9"."c15" AS "root" FROM (SELECT "r8"."c12", "r8"."c13" FROM (SELECT "r7"."c10"::"pg_catalog"."uuid", "r7"."c11"::"pg_catalog"."uuid" FROM (SELECT "r6"."c8", "r6"."c9" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."sync_sync_run_input" AS "r5") AS "r6"("c8", "c9")) AS "r7"("c10", "c11")) AS "r8"("c12", "c13") EXCEPT SELECT "r4"."c6", "r4"."c7" FROM (SELECT "r3"."c4"::"pg_catalog"."uuid", "r3"."c5"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1", "r2"."c3" FROM (SELECT "r1"."scope", "r1"."kind", "r1"."root" FROM "slice"."sync_scope" AS "r1") AS "r2"("c1", "c2", "c3") WHERE "r2"."c2" = 1::smallint) AS "r3"("c4", "c5")) AS "r4"("c6", "c7")) AS "r9"("c14", "c15")) AS "found";
+  PERFORM 1 FROM (SELECT "r9"."c9" AS "scope" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c7"::"pg_catalog"."uuid" FROM (SELECT DISTINCT "r6"."c5" FROM (SELECT "r5"."scope", "r5"."root" FROM "slice"."sync_sync_run_input" AS "r5") AS "r6"("c5", "c6")) AS "r7"("c7")) AS "r8"("c8") EXCEPT SELECT "r4"."c4" FROM (SELECT "r3"."c3"::"pg_catalog"."uuid" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope", "r1"."kind" FROM "slice"."sync_root" AS "r1") AS "r2"("c1", "c2") WHERE "r2"."c2" = 1::smallint) AS "r3"("c3")) AS "r4"("c4")) AS "r9"("c9")) AS "found";
   IF FOUND THEN
-    RAISE EXCEPTION 'law __sync_sync_run_input_in_sync_scope_pmhdowao4r is violated by existing rows'
+    RAISE EXCEPTION 'law __sync_sync_run_input_in_sync_root_qadsh2ioyk is violated by existing rows'
       USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text",
-            CONSTRAINT = '__sync_sync_run_input_in_sync_scope_pmhdowao4r'::"pg_catalog"."text";
+            CONSTRAINT = '__sync_sync_run_input_in_sync_root_qadsh2ioyk'::"pg_catalog"."text";
   END IF;
 END
 $$;

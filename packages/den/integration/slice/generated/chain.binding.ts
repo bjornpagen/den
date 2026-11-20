@@ -40,11 +40,9 @@ import { ChainPausable } from "#integration/slice/generated/chain.fragment.ts"
 import type {
 	ChainStep,
 	ChainScope,
-	ChainWithin,
 	ChainAdmitted,
 	ChainFinish,
 	ChainStartStep,
-	ChainStartScope,
 	ChainPageInput,
 	ChainPageInputAfter,
 	ChainNext,
@@ -80,11 +78,9 @@ export interface ChainHandles {
 interface Rows {
 	readonly ChainStep: ReadonlyArray<Addition<typeof ChainStep>>
 	readonly ChainScope: ReadonlyArray<Addition<typeof ChainScope>>
-	readonly ChainWithin: ReadonlyArray<Addition<typeof ChainWithin>>
 	readonly ChainAdmitted: ReadonlyArray<Addition<typeof ChainAdmitted>>
 	readonly ChainFinish: ReadonlyArray<Addition<typeof ChainFinish>>
 	readonly ChainStartStep: ReadonlyArray<Addition<typeof ChainStartStep>>
-	readonly ChainStartScope: ReadonlyArray<Addition<typeof ChainStartScope>>
 	readonly ChainPageInput: ReadonlyArray<Addition<typeof ChainPageInput>>
 	readonly ChainPageInputAfter: ReadonlyArray<Addition<typeof ChainPageInputAfter>>
 	readonly ChainNext: ReadonlyArray<Addition<typeof ChainNext>>
@@ -107,28 +103,23 @@ export const chainLedger = (h: ChainHandles) => {
 	const noRows: Rows = {
 		ChainStep: [],
 		ChainScope: [],
-		ChainWithin: [],
 		ChainAdmitted: [],
 		ChainFinish: [],
 		ChainStartStep: [],
-		ChainStartScope: [],
 		ChainPageInput: [],
 		ChainPageInputAfter: [],
 		ChainNext: []
 	}
 	const nothingGrown: Grown = { rows: noRows, spawned: { steps: [], finishes: [] } }
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
-		Arr.some(grown.rows.ChainStartStep, (s) => s.scope === scope) ||
-		Arr.some(grown.rows.ChainStartScope, (s) => s.scope === scope)
+		Arr.some(grown.rows.ChainStartStep, (s) => s.scope === scope)
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			ChainStep: [...a.rows.ChainStep, ...b.rows.ChainStep],
 			ChainScope: [...a.rows.ChainScope, ...b.rows.ChainScope],
-			ChainWithin: [...a.rows.ChainWithin, ...b.rows.ChainWithin],
 			ChainAdmitted: [...a.rows.ChainAdmitted, ...b.rows.ChainAdmitted],
 			ChainFinish: [...a.rows.ChainFinish, ...b.rows.ChainFinish],
 			ChainStartStep: [...a.rows.ChainStartStep, ...b.rows.ChainStartStep],
-			ChainStartScope: [...a.rows.ChainStartScope, ...b.rows.ChainStartScope],
 			ChainPageInput: [...a.rows.ChainPageInput, ...b.rows.ChainPageInput],
 			ChainPageInputAfter: [...a.rows.ChainPageInputAfter, ...b.rows.ChainPageInputAfter],
 			ChainNext: [...a.rows.ChainNext, ...b.rows.ChainNext]
@@ -306,7 +297,7 @@ export const chainLedger = (h: ChainHandles) => {
 								params: {},
 								facts: {
 									insert: {
-										ChainScope: [{ scope, kind: "ChainRun" as const, root: scope }],
+										ChainScope: [{ scope, root: scope }],
 										ChainRoot: [{ scope, kind: "ChainRun" as const, key, at }],
 										ChainChainRunInput: [
 											{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
@@ -626,9 +617,7 @@ export const chainLedger = (h: ChainHandles) => {
 							facts: {
 								insert: {
 									ChainScope: grown.rows.ChainScope,
-									ChainWithin: grown.rows.ChainWithin,
 									ChainStartStep: grown.rows.ChainStartStep,
-									ChainStartScope: grown.rows.ChainStartScope,
 									ChainPageInput: grown.rows.ChainPageInput,
 									ChainPageInputAfter: grown.rows.ChainPageInputAfter,
 									ChainStep: steps,
@@ -676,9 +665,7 @@ export const chainLedger = (h: ChainHandles) => {
 							facts: {
 								insert: {
 									ChainScope: grown.rows.ChainScope,
-									ChainWithin: grown.rows.ChainWithin,
 									ChainStartStep: grown.rows.ChainStartStep,
-									ChainStartScope: grown.rows.ChainStartScope,
 									ChainPageInput: grown.rows.ChainPageInput,
 									ChainPageInputAfter: grown.rows.ChainPageInputAfter,
 									ChainStep: steps,
@@ -729,28 +716,12 @@ export const chainLedger = (h: ChainHandles) => {
 			Effect.map(settled(h.den.chainFencedOf.once({ params: { step }, facts: {} })), rowsOf),
 		scopeOf: (scope) =>
 			Effect.gen(function* () {
-				const row = yield* Effect.map(
-					settled(h.den.chainScopeOf.once({ params: { scope: scope }, facts: {} })),
-					one
-				)
-				if (Option.isNone(row)) {
-					return Option.none()
-				}
 				const root = yield* Effect.map(
 					settled(h.den.chainRootOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				if (Option.isNone(root)) {
-					const within = yield* Effect.map(
-						settled(h.den.chainWithinOf.once({ params: { scope: scope }, facts: {} })),
-						one
-					)
-					return Option.map(within, (w): ScopeView => ({
-						place: "child",
-						scope,
-						kind: row.value.kind,
-						parent: w.parent
-					}))
+					return Option.none()
 				}
 				const admitted = yield* Effect.map(
 					settled(h.den.chainAdmittedOf.once({ params: { scope: scope }, facts: {} })),
@@ -777,13 +748,7 @@ export const chainLedger = (h: ChainHandles) => {
 				})
 			}),
 		unended: (scope) =>
-			Effect.flatMap(
-				h.den.chainUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
-				(steps) =>
-					steps
-						? Effect.succeed(true)
-						: h.den.chainOpenChildren.once({ params: { scope }, facts: {} }).pipe(settled, any)
-			),
+			h.den.chainUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		finished: (scope) =>
 			h.den.chainFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
@@ -844,11 +809,7 @@ export const chainLedger = (h: ChainHandles) => {
 			),
 		snapshot: Effect.flatMap(settled(h.den.chainSnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof chain>> => {
-				const view = (
-					scope: ScopeKey,
-					kind: string,
-					admission: Admission
-				): ReadonlyArray<ScopeView> =>
+				const view = (scope: ScopeKey, admission: Admission): ReadonlyArray<ScopeView> =>
 					Option.match(
 						Arr.findFirst(read.roots, (o) => o.scope === scope),
 						{
@@ -864,11 +825,7 @@ export const chainLedger = (h: ChainHandles) => {
 									runner: roots[o.kind]
 								}
 							],
-							onNone: () =>
-								Arr.map(
-									Option.toArray(Arr.findFirst(read.withins, (w) => w.scope === scope)),
-									(w): ScopeView => ({ place: "child", scope, kind, parent: w.parent })
-								)
+							onNone: (): ReadonlyArray<ScopeView> => []
 						}
 					)
 				return {
@@ -882,8 +839,8 @@ export const chainLedger = (h: ChainHandles) => {
 					retries: read.retries,
 					fenced: read.fenced,
 					scopes: [
-						...Arr.flatMap(read.requested, (s) => view(s.scope, s.kind, "requested")),
-						...Arr.flatMap(read.running, (s) => view(s.scope, s.kind, "admitted"))
+						...Arr.flatMap(read.requested, (s) => view(s.scope, "requested")),
+						...Arr.flatMap(read.running, (s) => view(s.scope, "admitted"))
 					],
 					holds: [],
 					exclusives: [],
@@ -920,7 +877,7 @@ export const chainLedger = (h: ChainHandles) => {
 				Effect.map(rootScope("Chain", "Ordered", key), (scope) => ({
 					scope,
 					facts: {
-						ChainScope: [{ scope, kind: "Ordered" as const, root: scope }],
+						ChainScope: [{ scope, root: scope }],
 						ChainRoot: [{ scope, kind: "Ordered" as const, key, at }],
 						ChainOrderedInput: [{ scope: scope, root: scope, feed: input.feed, pages: input.pages }]
 					}

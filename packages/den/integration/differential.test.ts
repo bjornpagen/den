@@ -364,18 +364,6 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 							yield* admitAndDrain(ledgers, started.flow, [started.scope])
 							const w = app.workload
 							const none = { params: {}, facts: {} } as const
-							const scopes = [
-								...(yield* rows(w.chainScopes.once(none))),
-								...(yield* rows(w.fanScopes.once(none)))
-							]
-							const kindOf = (scope: string) =>
-								Option.getOrElse(
-									Option.map(
-										Arr.findFirst(scopes, (s) => s.scope === scope),
-										(s): string => s.kind
-									),
-									() => ""
-								)
 							const roots = [
 								...(yield* rows(w.chainRoots.once(none))),
 								...(yield* rows(w.fanRoots.once(none)))
@@ -384,10 +372,7 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 								...(yield* rows(w.chainAdmittedAll.once(none))),
 								...(yield* rows(w.fanAdmittedAll.once(none)))
 							]
-							const withins = [
-								...(yield* rows(w.chainWithins.once(none))),
-								...(yield* rows(w.fanWithins.once(none)))
-							]
+							const withins = yield* rows(w.fanWithins.once(none))
 							const pageAfters = yield* rows(w.chainPageAfters.once(none))
 							const pageNexts = yield* rows(w.chainPageNexts.once(none))
 							const optional = (
@@ -404,25 +389,14 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 							const pageOutputs = yield* rows(w.chainPageOutputs.once(none))
 							const squareOutputs = yield* rows(w.fanSquareOutputs.once(none))
 							const graph: Graph = {
-								roots: Arr.map(roots, (r) => ({
-									scope: r.scope,
-									kind: kindOf(r.scope),
-									key: r.key
-								})),
+								roots,
 								admitted: Arr.map(admitted, (a): string => a.scope),
-								withins: Arr.map(withins, (x) => ({
-									scope: x.scope,
-									parent: x.parent,
-									kind: kindOf(x.scope)
-								})),
+								withins,
 								startSteps: [
 									...(yield* rows(w.chainStartSteps.once(none))),
 									...(yield* rows(w.fanStartSteps.once(none)))
 								],
-								startScopes: [
-									...(yield* rows(w.chainStartScopes.once(none))),
-									...(yield* rows(w.fanStartScopes.once(none)))
-								],
+								startScopes: yield* rows(w.fanStartScopes.once(none)),
 								edges: Arr.map(nexts, (e) => ({ edge: "Next", ...e, scope: false })),
 								finishes: [
 									...(yield* rows(w.chainFinishSteps.once(none))),

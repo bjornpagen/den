@@ -1,5 +1,5 @@
 CREATE PUBLICATION "__live_wzkq6p2yii"
-  FOR TABLE "slice"."assign_admitted" ("scope", "root"), "slice"."assign_assignment_input" ("scope", "root"), "slice"."assign_assignment_input_exclude" ("scope", "ordinal", "root"), "slice"."assign_assignment_input_mode_nearest" ("scope", "root"), "slice"."assign_assignment_input_mode_within" ("scope", "root"), "slice"."assign_claim" ("step", "attempt", "root"), "slice"."assign_decide_input" ("step", "root"), "slice"."assign_decide_input_exclude" ("step", "ordinal", "root"), "slice"."assign_decide_input_mode_nearest" ("step", "root"), "slice"."assign_decide_input_mode_within" ("step", "root"), "slice"."assign_decide_nearest_read" ("step", "ordinal", "root"), "slice"."assign_decide_output" ("step", "root"), "slice"."assign_decide_output_stage_rest" ("step", "root"), "slice"."assign_decide_output_stage_serve" ("step", "root"), "slice"."assign_decide_output_weighed" ("step", "ordinal", "root"), "slice"."assign_decide_seen_read" ("step", "ordinal", "root"), "slice"."assign_fenced" ("step", "attempt", "root"), "slice"."assign_finish" ("scope", "root"), "slice"."assign_held" ("step", "root"), "slice"."assign_paused" ("target", "turn"), "slice"."assign_result" ("step", "root"), "slice"."assign_resumed" ("target", "turn"), "slice"."assign_retry" ("step", "attempt", "root"), "slice"."assign_root" ("scope"), "slice"."assign_scope" ("scope", "root"), "slice"."assign_skipped" ("scope", "root"), "slice"."assign_step", "slice"."assign_within", "slice"."assigned" ("learner"), "slice"."audit" ("step"), "slice"."built" ("build"), "slice"."chain_admitted" ("scope", "root"), "slice"."chain_chain_run_input" ("scope", "root"), "slice"."chain_claim" ("step", "attempt", "root"), "slice"."chain_fenced" ("step", "attempt", "root"), "slice"."chain_finish" ("scope", "root"), "slice"."chain_held" ("step", "root"), "slice"."chain_next" ("from", "ordinal", "root"), "slice"."chain_ordered_input" ("scope", "root"), "slice"."chain_page_input" ("step", "root"), "slice"."chain_page_input_after" ("step", "root"), "slice"."chain_page_output" ("step", "root"), "slice"."chain_page_output_next" ("step", "root"), "slice"."chain_page_weights_read" ("step", "ordinal", "root"), "slice"."chain_paused" ("target", "turn"), "slice"."chain_result" ("step", "root"), "slice"."chain_resumed" ("target", "turn"), "slice"."chain_retry" ("step", "attempt", "root"), "slice"."chain_root" ("scope"), "slice"."chain_scope" ("scope", "root"), "slice"."chain_skipped" ("scope", "root"), "slice"."chain_start_scope" ("scope", "ordinal", "root"), "slice"."chain_start_step" ("scope", "ordinal", "root"), "slice"."chain_step", "slice"."chain_within", "slice"."concluded" ("learner"), "slice"."copied" ("relation", "run"), "slice"."cursor" ("feed", "position"), "slice"."fan_admitted" ("scope", "root"), "slice"."fan_batch_input" ("scope", "root"), "slice"."fan_claim" ("step", "attempt", "root"), "slice"."fan_fan_run_input" ("scope", "root"), "slice"."fan_fenced" ("step", "attempt", "root"), "slice"."fan_finish" ("scope", "root"), "slice"."fan_freed" ("resource", "seat", "turn"), "slice"."fan_held" ("step", "root"), "slice"."fan_hold" ("resource", "seat", "turn"), "slice"."fan_paused" ("target", "turn"), "slice"."fan_result" ("step", "root"), "slice"."fan_resumed" ("target", "turn"), "slice"."fan_retry" ("step", "attempt", "root"), "slice"."fan_root" ("scope"), "slice"."fan_scope" ("scope", "root"), "slice"."fan_skipped" ("scope", "root"), "slice"."fan_square_input" ("step", "root"), "slice"."fan_square_output" ("step", "root"), "slice"."fan_start_scope" ("scope", "ordinal", "root"), "slice"."fan_start_step" ("scope", "ordinal", "root"), "slice"."fan_step", "slice"."fan_within", "slice"."item" ("feed", "seq", "n"), "slice"."missed" ("question"), "slice"."passage", "slice"."retry_admitted" ("scope", "root"), "slice"."retry_brittle_input" ("step", "root"), "slice"."retry_brittle_output" ("step", "root"), "slice"."retry_claim" ("step", "attempt", "root"), "slice"."retry_exhausted" ("step", "root"), "slice"."retry_fenced" ("step", "attempt", "root"), "slice"."retry_finish" ("scope", "root"), "slice"."retry_held" ("step", "root"), "slice"."retry_ladders_input" ("scope", "root"), "slice"."retry_paused" ("target", "turn"), "slice"."retry_result" ("step", "root"), "slice"."retry_resumed" ("target", "turn"), "slice"."retry_retry" ("step", "attempt", "root"), "slice"."retry_root" ("scope"), "slice"."retry_scope" ("scope", "root"), "slice"."retry_skipped" ("scope", "root"), "slice"."retry_steadfast_input" ("step", "root"), "slice"."retry_steadfast_output" ("step", "root"), "slice"."retry_step", "slice"."retry_within", "slice"."seen" ("learner", "passage"), "slice"."settled" ("batch"), "slice"."sync_admitted" ("scope", "root"), "slice"."sync_build_input" ("step", "root"), "slice"."sync_claim" ("step", "attempt", "root"), "slice"."sync_copy_input" ("step", "root"), "slice"."sync_exclusive" ("kind", "key", "turn"), "slice"."sync_exclusive_key" ("scope", "root"), "slice"."sync_fenced" ("step", "attempt", "root"), "slice"."sync_finish" ("scope", "root"), "slice"."sync_gold_input" ("scope", "root"), "slice"."sync_held" ("step", "root"), "slice"."sync_paused" ("target", "turn"), "slice"."sync_released" ("kind", "key", "turn"), "slice"."sync_result" ("step", "root"), "slice"."sync_resumed" ("target", "turn"), "slice"."sync_retry" ("step", "attempt", "root"), "slice"."sync_root" ("scope"), "slice"."sync_scope" ("scope", "root"), "slice"."sync_skipped" ("scope", "root"), "slice"."sync_step", "slice"."sync_sync_run_input" ("scope", "root"), "slice"."sync_within", "slice"."tally" ("batch"), "slice"."weight" ("feed", "factor"), "slice"."__ledger"
+  FOR TABLE "slice"."assign_admitted" ("scope", "root"), "slice"."assign_assignment_input" ("scope", "root"), "slice"."assign_assignment_input_exclude" ("scope", "ordinal", "root"), "slice"."assign_assignment_input_mode_nearest" ("scope", "root"), "slice"."assign_assignment_input_mode_within" ("scope", "root"), "slice"."assign_claim" ("step", "attempt", "root"), "slice"."assign_decide_input" ("step", "root"), "slice"."assign_decide_input_exclude" ("step", "ordinal", "root"), "slice"."assign_decide_input_mode_nearest" ("step", "root"), "slice"."assign_decide_input_mode_within" ("step", "root"), "slice"."assign_decide_nearest_read" ("step", "ordinal", "root"), "slice"."assign_decide_output" ("step", "root"), "slice"."assign_decide_output_stage_rest" ("step", "root"), "slice"."assign_decide_output_stage_serve" ("step", "root"), "slice"."assign_decide_output_weighed" ("step", "ordinal", "root"), "slice"."assign_decide_seen_read" ("step", "ordinal", "root"), "slice"."assign_fenced" ("step", "attempt", "root"), "slice"."assign_finish" ("scope", "root"), "slice"."assign_held" ("step", "root"), "slice"."assign_paused" ("target", "turn"), "slice"."assign_result" ("step", "root"), "slice"."assign_resumed" ("target", "turn"), "slice"."assign_retry" ("step", "attempt", "root"), "slice"."assign_root" ("scope"), "slice"."assign_skipped" ("scope", "root"), "slice"."assign_step", "slice"."assigned" ("learner"), "slice"."audit" ("step"), "slice"."built" ("build"), "slice"."chain_admitted" ("scope", "root"), "slice"."chain_chain_run_input" ("scope", "root"), "slice"."chain_claim" ("step", "attempt", "root"), "slice"."chain_fenced" ("step", "attempt", "root"), "slice"."chain_finish" ("scope", "root"), "slice"."chain_held" ("step", "root"), "slice"."chain_next" ("from", "ordinal", "root"), "slice"."chain_ordered_input" ("scope", "root"), "slice"."chain_page_input" ("step", "root"), "slice"."chain_page_input_after" ("step", "root"), "slice"."chain_page_output" ("step", "root"), "slice"."chain_page_output_next" ("step", "root"), "slice"."chain_page_weights_read" ("step", "ordinal", "root"), "slice"."chain_paused" ("target", "turn"), "slice"."chain_result" ("step", "root"), "slice"."chain_resumed" ("target", "turn"), "slice"."chain_retry" ("step", "attempt", "root"), "slice"."chain_root" ("scope"), "slice"."chain_skipped" ("scope", "root"), "slice"."chain_start_step" ("scope", "ordinal", "root"), "slice"."chain_step", "slice"."concluded" ("learner"), "slice"."copied" ("relation", "run"), "slice"."cursor" ("feed", "position"), "slice"."fan_admitted" ("scope", "root"), "slice"."fan_batch_input" ("scope", "root"), "slice"."fan_claim" ("step", "attempt", "root"), "slice"."fan_fan_run_input" ("scope", "root"), "slice"."fan_fenced" ("step", "attempt", "root"), "slice"."fan_finish" ("scope", "root"), "slice"."fan_freed" ("resource", "seat", "turn"), "slice"."fan_held" ("step", "root"), "slice"."fan_hold" ("resource", "seat", "turn"), "slice"."fan_paused" ("target", "turn"), "slice"."fan_result" ("step", "root"), "slice"."fan_resumed" ("target", "turn"), "slice"."fan_retry" ("step", "attempt", "root"), "slice"."fan_root" ("scope"), "slice"."fan_skipped" ("scope", "root"), "slice"."fan_square_input" ("step", "root"), "slice"."fan_square_output" ("step", "root"), "slice"."fan_start_scope" ("scope", "ordinal", "root"), "slice"."fan_start_step" ("scope", "ordinal", "root"), "slice"."fan_step", "slice"."fan_within", "slice"."item" ("feed", "seq", "n"), "slice"."missed" ("question"), "slice"."passage", "slice"."retry_admitted" ("scope", "root"), "slice"."retry_brittle_input" ("step", "root"), "slice"."retry_brittle_output" ("step", "root"), "slice"."retry_claim" ("step", "attempt", "root"), "slice"."retry_exhausted" ("step", "root"), "slice"."retry_fenced" ("step", "attempt", "root"), "slice"."retry_finish" ("scope", "root"), "slice"."retry_held" ("step", "root"), "slice"."retry_ladders_input" ("scope", "root"), "slice"."retry_paused" ("target", "turn"), "slice"."retry_result" ("step", "root"), "slice"."retry_resumed" ("target", "turn"), "slice"."retry_retry" ("step", "attempt", "root"), "slice"."retry_root" ("scope"), "slice"."retry_skipped" ("scope", "root"), "slice"."retry_steadfast_input" ("step", "root"), "slice"."retry_steadfast_output" ("step", "root"), "slice"."retry_step", "slice"."seen" ("learner", "passage"), "slice"."settled" ("batch"), "slice"."sync_admitted" ("scope", "root"), "slice"."sync_build_input" ("step", "root"), "slice"."sync_claim" ("step", "attempt", "root"), "slice"."sync_copy_input" ("step", "root"), "slice"."sync_exclusive" ("kind", "key", "turn"), "slice"."sync_exclusive_key" ("scope", "root"), "slice"."sync_fenced" ("step", "attempt", "root"), "slice"."sync_finish" ("scope", "root"), "slice"."sync_gold_input" ("scope", "root"), "slice"."sync_held" ("step", "root"), "slice"."sync_paused" ("target", "turn"), "slice"."sync_released" ("kind", "key", "turn"), "slice"."sync_result" ("step", "root"), "slice"."sync_resumed" ("target", "turn"), "slice"."sync_retry" ("step", "attempt", "root"), "slice"."sync_root" ("scope"), "slice"."sync_skipped" ("scope", "root"), "slice"."sync_step", "slice"."sync_sync_run_input" ("scope", "root"), "slice"."tally" ("batch"), "slice"."weight" ("feed", "factor"), "slice"."__ledger"
   WITH (publish_generated_columns = stored);
 
 SELECT "r1"."c1"::"slice"."__domain_gfw43vigph" AS "value"
@@ -199,17 +199,13 @@ CREATE VIEW "slice_seats__assign_den"."assign_root" ("scope", "kind", "kind_name
 SELECT "r1"."scope", "r1"."kind", ("slice"."__assign_root_kind_names_opbaefdfbo"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."assign_root" AS "r1";
 
-CREATE VIEW "slice_seats__assign_den"."assign_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__assign_join_names_cks63qswdh"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__assign_den"."assign_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."assign_scope" AS "r1";
 
 CREATE VIEW "slice_seats__assign_den"."assign_skipped" ("scope", "by", "root") AS
 SELECT "r1"."scope", "r1"."by", "r1"."root"
 FROM "slice"."assign_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_start_scope" ("scope", "ordinal", "child", "root") AS
-SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
-FROM "slice"."assign_start_scope" AS "r1";
 
 CREATE VIEW "slice_seats__assign_den"."assign_start_step" ("scope", "ordinal", "step", "root") AS
 SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
@@ -218,10 +214,6 @@ FROM "slice"."assign_start_step" AS "r1";
 CREATE VIEW "slice_seats__assign_den"."assign_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
 SELECT "r1"."step", "r1"."kind", ("slice"."__assign_kind_names_s7csvtng2b"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."assign_step" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
-FROM "slice"."assign_within" AS "r1";
 
 CREATE VIEW "slice_seats__assign_retirer"."assign_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
@@ -327,17 +319,13 @@ CREATE VIEW "slice_seats__assign_retirer"."assign_root" ("scope", "kind", "kind_
 SELECT "r1"."scope", "r1"."kind", ("slice"."__assign_root_kind_names_opbaefdfbo"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."assign_root" AS "r1";
 
-CREATE VIEW "slice_seats__assign_retirer"."assign_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__assign_join_names_cks63qswdh"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__assign_retirer"."assign_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."assign_scope" AS "r1";
 
 CREATE VIEW "slice_seats__assign_retirer"."assign_skipped" ("scope", "by", "root") AS
 SELECT "r1"."scope", "r1"."by", "r1"."root"
 FROM "slice"."assign_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_start_scope" ("scope", "ordinal", "child", "root") AS
-SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
-FROM "slice"."assign_start_scope" AS "r1";
 
 CREATE VIEW "slice_seats__assign_retirer"."assign_start_step" ("scope", "ordinal", "step", "root") AS
 SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
@@ -346,10 +334,6 @@ FROM "slice"."assign_start_step" AS "r1";
 CREATE VIEW "slice_seats__assign_retirer"."assign_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
 SELECT "r1"."step", "r1"."kind", ("slice"."__assign_kind_names_s7csvtng2b"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."assign_step" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
-FROM "slice"."assign_within" AS "r1";
 
 CREATE VIEW "slice_seats__auditor"."assign_decide_nearest_read" ("step", "ordinal", "passage", "topic", "distance", "root") AS
 SELECT "r1"."step", "r1"."ordinal", "r1"."passage", "r1"."topic", "r1"."distance", "r1"."root"
@@ -443,13 +427,9 @@ CREATE VIEW "slice_seats__auditor"."chain_root" ("scope", "kind", "kind_name", "
 SELECT "r1"."scope", "r1"."kind", ("slice"."__chain_root_kind_names_ndmuh43zki"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."chain_root" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."chain_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__chain_join_names_hvq3dwjqow"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__auditor"."chain_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."chain_scope" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_start_scope" ("scope", "ordinal", "child", "root") AS
-SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
-FROM "slice"."chain_start_scope" AS "r1";
 
 CREATE VIEW "slice_seats__auditor"."chain_start_step" ("scope", "ordinal", "step", "root") AS
 SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
@@ -458,10 +438,6 @@ FROM "slice"."chain_start_step" AS "r1";
 CREATE VIEW "slice_seats__auditor"."chain_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
 SELECT "r1"."step", "r1"."kind", ("slice"."__chain_kind_names_oubqrwjyau"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."chain_step" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
-FROM "slice"."chain_within" AS "r1";
 
 CREATE VIEW "slice_seats__auditor"."concluded" ("learner", "served", "weighed") AS
 SELECT "r1"."learner", "r1"."served", "r1"."weighed"
@@ -499,8 +475,8 @@ CREATE VIEW "slice_seats__auditor"."fan_root" ("scope", "kind", "kind_name", "ke
 SELECT "r1"."scope", "r1"."kind", ("slice"."__fan_root_kind_names_ylamx7vjxv"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."fan_root" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."fan_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__fan_join_names_gct5lzhdqo"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__auditor"."fan_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."fan_scope" AS "r1";
 
 CREATE VIEW "slice_seats__auditor"."fan_square_input" ("step", "batch", "n", "root") AS
@@ -523,8 +499,8 @@ CREATE VIEW "slice_seats__auditor"."fan_step" ("step", "kind", "kind_name", "sco
 SELECT "r1"."step", "r1"."kind", ("slice"."__fan_kind_names_6uewr4lsds"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."fan_step" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."fan_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
+CREATE VIEW "slice_seats__auditor"."fan_within" ("scope", "parent", "kind", "kind_name", "root") AS
+SELECT "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__fan_child_kind_names_i6k53d3e2e"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
 FROM "slice"."fan_within" AS "r1";
 
 CREATE VIEW "slice_seats__auditor"."item" ("feed", "feed_name", "seq", "n") AS
@@ -567,8 +543,8 @@ CREATE VIEW "slice_seats__auditor"."sync_result" ("step", "outcome", "outcome_na
 SELECT "r1"."step", "r1"."outcome", ("slice"."__sync_outcome_names_xzb4y4xgki"())["r1"."outcome" + 1]::"pg_catalog"."text", "r1"."root"
 FROM "slice"."sync_result" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."sync_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__sync_join_names_2ssan2q3dj"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__auditor"."sync_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."sync_scope" AS "r1";
 
 CREATE VIEW "slice_seats__auditor"."sync_skipped" ("scope", "by", "root") AS
@@ -679,17 +655,13 @@ CREATE VIEW "slice_seats__chain_den"."chain_root" ("scope", "kind", "kind_name",
 SELECT "r1"."scope", "r1"."kind", ("slice"."__chain_root_kind_names_ndmuh43zki"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."chain_root" AS "r1";
 
-CREATE VIEW "slice_seats__chain_den"."chain_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__chain_join_names_hvq3dwjqow"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__chain_den"."chain_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."chain_scope" AS "r1";
 
 CREATE VIEW "slice_seats__chain_den"."chain_skipped" ("scope", "by", "root") AS
 SELECT "r1"."scope", "r1"."by", "r1"."root"
 FROM "slice"."chain_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_start_scope" ("scope", "ordinal", "child", "root") AS
-SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
-FROM "slice"."chain_start_scope" AS "r1";
 
 CREATE VIEW "slice_seats__chain_den"."chain_start_step" ("scope", "ordinal", "step", "root") AS
 SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
@@ -698,10 +670,6 @@ FROM "slice"."chain_start_step" AS "r1";
 CREATE VIEW "slice_seats__chain_den"."chain_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
 SELECT "r1"."step", "r1"."kind", ("slice"."__chain_kind_names_oubqrwjyau"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."chain_step" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
-FROM "slice"."chain_within" AS "r1";
 
 CREATE VIEW "slice_seats__chain_retirer"."chain_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
@@ -783,17 +751,13 @@ CREATE VIEW "slice_seats__chain_retirer"."chain_root" ("scope", "kind", "kind_na
 SELECT "r1"."scope", "r1"."kind", ("slice"."__chain_root_kind_names_ndmuh43zki"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."chain_root" AS "r1";
 
-CREATE VIEW "slice_seats__chain_retirer"."chain_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__chain_join_names_hvq3dwjqow"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__chain_retirer"."chain_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."chain_scope" AS "r1";
 
 CREATE VIEW "slice_seats__chain_retirer"."chain_skipped" ("scope", "by", "root") AS
 SELECT "r1"."scope", "r1"."by", "r1"."root"
 FROM "slice"."chain_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_start_scope" ("scope", "ordinal", "child", "root") AS
-SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
-FROM "slice"."chain_start_scope" AS "r1";
 
 CREATE VIEW "slice_seats__chain_retirer"."chain_start_step" ("scope", "ordinal", "step", "root") AS
 SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
@@ -802,10 +766,6 @@ FROM "slice"."chain_start_step" AS "r1";
 CREATE VIEW "slice_seats__chain_retirer"."chain_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
 SELECT "r1"."step", "r1"."kind", ("slice"."__chain_kind_names_oubqrwjyau"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."chain_step" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
-FROM "slice"."chain_within" AS "r1";
 
 CREATE VIEW "slice_seats__fan_coordinator"."fan_freed" ("resource", "resource_name", "seat", "turn") AS
 SELECT "r1"."resource", ("slice"."__fan_resource_names_tugc7yp6xo"())["r1"."resource" + 1]::"pg_catalog"."text", "r1"."seat", "r1"."turn"
@@ -903,8 +863,8 @@ CREATE VIEW "slice_seats__fan_den"."fan_root" ("scope", "kind", "kind_name", "ke
 SELECT "r1"."scope", "r1"."kind", ("slice"."__fan_root_kind_names_ylamx7vjxv"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."fan_root" AS "r1";
 
-CREATE VIEW "slice_seats__fan_den"."fan_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__fan_join_names_gct5lzhdqo"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__fan_den"."fan_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."fan_scope" AS "r1";
 
 CREATE VIEW "slice_seats__fan_den"."fan_skipped" ("scope", "by", "root") AS
@@ -931,8 +891,8 @@ CREATE VIEW "slice_seats__fan_den"."fan_step" ("step", "kind", "kind_name", "sco
 SELECT "r1"."step", "r1"."kind", ("slice"."__fan_kind_names_6uewr4lsds"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."fan_step" AS "r1";
 
-CREATE VIEW "slice_seats__fan_den"."fan_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
+CREATE VIEW "slice_seats__fan_den"."fan_within" ("scope", "parent", "kind", "kind_name", "root") AS
+SELECT "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__fan_child_kind_names_i6k53d3e2e"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
 FROM "slice"."fan_within" AS "r1";
 
 CREATE VIEW "slice_seats__fan_retirer"."fan_admitted" ("scope", "root") AS
@@ -991,8 +951,8 @@ CREATE VIEW "slice_seats__fan_retirer"."fan_root" ("scope", "kind", "kind_name",
 SELECT "r1"."scope", "r1"."kind", ("slice"."__fan_root_kind_names_ylamx7vjxv"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."fan_root" AS "r1";
 
-CREATE VIEW "slice_seats__fan_retirer"."fan_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__fan_join_names_gct5lzhdqo"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__fan_retirer"."fan_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."fan_scope" AS "r1";
 
 CREATE VIEW "slice_seats__fan_retirer"."fan_skipped" ("scope", "by", "root") AS
@@ -1019,8 +979,8 @@ CREATE VIEW "slice_seats__fan_retirer"."fan_step" ("step", "kind", "kind_name", 
 SELECT "r1"."step", "r1"."kind", ("slice"."__fan_kind_names_6uewr4lsds"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."fan_step" AS "r1";
 
-CREATE VIEW "slice_seats__fan_retirer"."fan_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
+CREATE VIEW "slice_seats__fan_retirer"."fan_within" ("scope", "parent", "kind", "kind_name", "root") AS
+SELECT "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__fan_child_kind_names_i6k53d3e2e"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
 FROM "slice"."fan_within" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."assign_admitted" ("scope", "root") AS
@@ -1127,17 +1087,13 @@ CREATE VIEW "slice_seats__loader"."assign_root" ("scope", "kind", "kind_name", "
 SELECT "r1"."scope", "r1"."kind", ("slice"."__assign_root_kind_names_opbaefdfbo"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."assign_root" AS "r1";
 
-CREATE VIEW "slice_seats__loader"."assign_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__assign_join_names_cks63qswdh"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__loader"."assign_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."assign_scope" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."assign_skipped" ("scope", "by", "root") AS
 SELECT "r1"."scope", "r1"."by", "r1"."root"
 FROM "slice"."assign_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_start_scope" ("scope", "ordinal", "child", "root") AS
-SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
-FROM "slice"."assign_start_scope" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."assign_start_step" ("scope", "ordinal", "step", "root") AS
 SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
@@ -1146,10 +1102,6 @@ FROM "slice"."assign_start_step" AS "r1";
 CREATE VIEW "slice_seats__loader"."assign_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
 SELECT "r1"."step", "r1"."kind", ("slice"."__assign_kind_names_s7csvtng2b"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."assign_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
-FROM "slice"."assign_within" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."assigned" ("learner", "passage") AS
 SELECT "r1"."learner", "r1"."passage"
@@ -1239,17 +1191,13 @@ CREATE VIEW "slice_seats__loader"."chain_root" ("scope", "kind", "kind_name", "k
 SELECT "r1"."scope", "r1"."kind", ("slice"."__chain_root_kind_names_ndmuh43zki"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."chain_root" AS "r1";
 
-CREATE VIEW "slice_seats__loader"."chain_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__chain_join_names_hvq3dwjqow"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__loader"."chain_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."chain_scope" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."chain_skipped" ("scope", "by", "root") AS
 SELECT "r1"."scope", "r1"."by", "r1"."root"
 FROM "slice"."chain_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_start_scope" ("scope", "ordinal", "child", "root") AS
-SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
-FROM "slice"."chain_start_scope" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."chain_start_step" ("scope", "ordinal", "step", "root") AS
 SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
@@ -1258,10 +1206,6 @@ FROM "slice"."chain_start_step" AS "r1";
 CREATE VIEW "slice_seats__loader"."chain_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
 SELECT "r1"."step", "r1"."kind", ("slice"."__chain_kind_names_oubqrwjyau"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."chain_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
-FROM "slice"."chain_within" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."concluded" ("learner", "served", "weighed") AS
 SELECT "r1"."learner", "r1"."served", "r1"."weighed"
@@ -1331,8 +1275,8 @@ CREATE VIEW "slice_seats__loader"."fan_root" ("scope", "kind", "kind_name", "key
 SELECT "r1"."scope", "r1"."kind", ("slice"."__fan_root_kind_names_ylamx7vjxv"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."fan_root" AS "r1";
 
-CREATE VIEW "slice_seats__loader"."fan_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__fan_join_names_gct5lzhdqo"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__loader"."fan_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."fan_scope" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."fan_skipped" ("scope", "by", "root") AS
@@ -1359,8 +1303,8 @@ CREATE VIEW "slice_seats__loader"."fan_step" ("step", "kind", "kind_name", "scop
 SELECT "r1"."step", "r1"."kind", ("slice"."__fan_kind_names_6uewr4lsds"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."fan_step" AS "r1";
 
-CREATE VIEW "slice_seats__loader"."fan_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
+CREATE VIEW "slice_seats__loader"."fan_within" ("scope", "parent", "kind", "kind_name", "root") AS
+SELECT "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__fan_child_kind_names_i6k53d3e2e"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
 FROM "slice"."fan_within" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."item" ("feed", "feed_name", "seq", "n") AS
@@ -1439,17 +1383,13 @@ CREATE VIEW "slice_seats__loader"."retry_root" ("scope", "kind", "kind_name", "k
 SELECT "r1"."scope", "r1"."kind", ("slice"."__retry_root_kind_names_rs6aiofc5w"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."retry_root" AS "r1";
 
-CREATE VIEW "slice_seats__loader"."retry_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__retry_join_names_st4whng7gb"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__loader"."retry_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."retry_scope" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."retry_skipped" ("scope", "by", "root") AS
 SELECT "r1"."scope", "r1"."by", "r1"."root"
 FROM "slice"."retry_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_start_scope" ("scope", "ordinal", "child", "root") AS
-SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
-FROM "slice"."retry_start_scope" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."retry_start_step" ("scope", "ordinal", "step", "root") AS
 SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
@@ -1466,10 +1406,6 @@ FROM "slice"."retry_steadfast_output" AS "r1";
 CREATE VIEW "slice_seats__loader"."retry_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
 SELECT "r1"."step", "r1"."kind", ("slice"."__retry_kind_names_637ikgyibq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."retry_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
-FROM "slice"."retry_within" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."seen" ("learner", "passage") AS
 SELECT "r1"."learner", "r1"."passage"
@@ -1551,17 +1487,13 @@ CREATE VIEW "slice_seats__loader"."sync_root" ("scope", "kind", "kind_name", "ke
 SELECT "r1"."scope", "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."sync_root" AS "r1";
 
-CREATE VIEW "slice_seats__loader"."sync_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__sync_join_names_2ssan2q3dj"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__loader"."sync_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."sync_scope" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."sync_skipped" ("scope", "by", "root") AS
 SELECT "r1"."scope", "r1"."by", "r1"."root"
 FROM "slice"."sync_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_start_scope" ("scope", "ordinal", "child", "root") AS
-SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
-FROM "slice"."sync_start_scope" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."sync_start_step" ("scope", "ordinal", "step", "root") AS
 SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
@@ -1574,10 +1506,6 @@ FROM "slice"."sync_step" AS "r1";
 CREATE VIEW "slice_seats__loader"."sync_sync_run_input" ("scope", "relation", "run", "root") AS
 SELECT "r1"."scope", "r1"."relation", "r1"."run", "r1"."root"
 FROM "slice"."sync_sync_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
-FROM "slice"."sync_within" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."tally" ("batch", "count", "total") AS
 SELECT "r1"."batch", "r1"."count", "r1"."total"
@@ -1663,17 +1591,13 @@ CREATE VIEW "slice_seats__retry_den"."retry_root" ("scope", "kind", "kind_name",
 SELECT "r1"."scope", "r1"."kind", ("slice"."__retry_root_kind_names_rs6aiofc5w"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."retry_root" AS "r1";
 
-CREATE VIEW "slice_seats__retry_den"."retry_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__retry_join_names_st4whng7gb"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__retry_den"."retry_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."retry_scope" AS "r1";
 
 CREATE VIEW "slice_seats__retry_den"."retry_skipped" ("scope", "by", "root") AS
 SELECT "r1"."scope", "r1"."by", "r1"."root"
 FROM "slice"."retry_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_start_scope" ("scope", "ordinal", "child", "root") AS
-SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
-FROM "slice"."retry_start_scope" AS "r1";
 
 CREATE VIEW "slice_seats__retry_den"."retry_start_step" ("scope", "ordinal", "step", "root") AS
 SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
@@ -1690,10 +1614,6 @@ FROM "slice"."retry_steadfast_output" AS "r1";
 CREATE VIEW "slice_seats__retry_den"."retry_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
 SELECT "r1"."step", "r1"."kind", ("slice"."__retry_kind_names_637ikgyibq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."retry_step" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
-FROM "slice"."retry_within" AS "r1";
 
 CREATE VIEW "slice_seats__retry_retirer"."retry_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
@@ -1755,17 +1675,13 @@ CREATE VIEW "slice_seats__retry_retirer"."retry_root" ("scope", "kind", "kind_na
 SELECT "r1"."scope", "r1"."kind", ("slice"."__retry_root_kind_names_rs6aiofc5w"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."retry_root" AS "r1";
 
-CREATE VIEW "slice_seats__retry_retirer"."retry_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__retry_join_names_st4whng7gb"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__retry_retirer"."retry_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."retry_scope" AS "r1";
 
 CREATE VIEW "slice_seats__retry_retirer"."retry_skipped" ("scope", "by", "root") AS
 SELECT "r1"."scope", "r1"."by", "r1"."root"
 FROM "slice"."retry_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_start_scope" ("scope", "ordinal", "child", "root") AS
-SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
-FROM "slice"."retry_start_scope" AS "r1";
 
 CREATE VIEW "slice_seats__retry_retirer"."retry_start_step" ("scope", "ordinal", "step", "root") AS
 SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
@@ -1782,10 +1698,6 @@ FROM "slice"."retry_steadfast_output" AS "r1";
 CREATE VIEW "slice_seats__retry_retirer"."retry_step" ("step", "kind", "kind_name", "scope", "due", "root") AS
 SELECT "r1"."step", "r1"."kind", ("slice"."__retry_kind_names_637ikgyibq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due", "r1"."root"
 FROM "slice"."retry_step" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
-FROM "slice"."retry_within" AS "r1";
 
 CREATE VIEW "slice_seats__sync_coordinator"."sync_exclusive" ("kind", "kind_name", "key", "turn", "scope") AS
 SELECT "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."turn", "r1"."scope"
@@ -1899,17 +1811,13 @@ CREATE VIEW "slice_seats__sync_den"."sync_root" ("scope", "kind", "kind_name", "
 SELECT "r1"."scope", "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."sync_root" AS "r1";
 
-CREATE VIEW "slice_seats__sync_den"."sync_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__sync_join_names_2ssan2q3dj"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__sync_den"."sync_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."sync_scope" AS "r1";
 
 CREATE VIEW "slice_seats__sync_den"."sync_skipped" ("scope", "by", "root") AS
 SELECT "r1"."scope", "r1"."by", "r1"."root"
 FROM "slice"."sync_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_start_scope" ("scope", "ordinal", "child", "root") AS
-SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
-FROM "slice"."sync_start_scope" AS "r1";
 
 CREATE VIEW "slice_seats__sync_den"."sync_start_step" ("scope", "ordinal", "step", "root") AS
 SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
@@ -1922,10 +1830,6 @@ FROM "slice"."sync_step" AS "r1";
 CREATE VIEW "slice_seats__sync_den"."sync_sync_run_input" ("scope", "relation", "run", "root") AS
 SELECT "r1"."scope", "r1"."relation", "r1"."run", "r1"."root"
 FROM "slice"."sync_sync_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
-FROM "slice"."sync_within" AS "r1";
 
 CREATE VIEW "slice_seats__sync_retirer"."sync_admitted" ("scope", "root") AS
 SELECT "r1"."scope", "r1"."root"
@@ -1999,17 +1903,13 @@ CREATE VIEW "slice_seats__sync_retirer"."sync_root" ("scope", "kind", "kind_name
 SELECT "r1"."scope", "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at", "r1"."retired"
 FROM "slice"."sync_root" AS "r1";
 
-CREATE VIEW "slice_seats__sync_retirer"."sync_scope" ("scope", "kind", "kind_name", "root") AS
-SELECT "r1"."scope", "r1"."kind", ("slice"."__sync_join_names_2ssan2q3dj"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."root"
+CREATE VIEW "slice_seats__sync_retirer"."sync_scope" ("scope", "root") AS
+SELECT "r1"."scope", "r1"."root"
 FROM "slice"."sync_scope" AS "r1";
 
 CREATE VIEW "slice_seats__sync_retirer"."sync_skipped" ("scope", "by", "root") AS
 SELECT "r1"."scope", "r1"."by", "r1"."root"
 FROM "slice"."sync_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_start_scope" ("scope", "ordinal", "child", "root") AS
-SELECT "r1"."scope", "r1"."ordinal", "r1"."child", "r1"."root"
-FROM "slice"."sync_start_scope" AS "r1";
 
 CREATE VIEW "slice_seats__sync_retirer"."sync_start_step" ("scope", "ordinal", "step", "root") AS
 SELECT "r1"."scope", "r1"."ordinal", "r1"."step", "r1"."root"
@@ -2022,10 +1922,6 @@ FROM "slice"."sync_step" AS "r1";
 CREATE VIEW "slice_seats__sync_retirer"."sync_sync_run_input" ("scope", "relation", "run", "root") AS
 SELECT "r1"."scope", "r1"."relation", "r1"."run", "r1"."root"
 FROM "slice"."sync_sync_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_within" ("scope", "parent", "root") AS
-SELECT "r1"."scope", "r1"."parent", "r1"."root"
-FROM "slice"."sync_within" AS "r1";
 
 GRANT :"slice_seats__assign_coordinator" TO :"slice_seats__worker" WITH INHERIT FALSE, SET TRUE;
 
@@ -2071,7 +1967,7 @@ GRANT MAINTAIN ON TABLE "slice"."chain_result" TO :"slice_seats__app";
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__assign_coordinator" TO :"slice_seats__assign_coordinator";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_join", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind" TO :"slice_seats__assign_coordinator";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind" TO :"slice_seats__assign_coordinator";
 
 GRANT SELECT ON TABLE "slice_seats__assign_coordinator"."assign_paused", "slice_seats__assign_coordinator"."assign_resumed" TO :"slice_seats__assign_coordinator";
 
@@ -2081,14 +1977,14 @@ GRANT SELECT, INSERT ON TABLE "slice"."assign_resumed" TO :"slice_seats__assign_
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__assign_coordinator";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_join_names_cks63qswdh"(), "slice"."__assign_kind_names_s7csvtng2b"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_root_kind_names_opbaefdfbo"() TO :"slice_seats__assign_coordinator";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_kind_names_s7csvtng2b"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_root_kind_names_opbaefdfbo"() TO :"slice_seats__assign_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__assign_den" TO :"slice_seats__assign_den";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_join", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__assign_den";
+GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__assign_den";
 
-GRANT SELECT ON TABLE "slice_seats__assign_den"."assign_admitted", "slice_seats__assign_den"."assign_assignment_input", "slice_seats__assign_den"."assign_assignment_input_exclude", "slice_seats__assign_den"."assign_assignment_input_mode_nearest", "slice_seats__assign_den"."assign_assignment_input_mode_within", "slice_seats__assign_den"."assign_claim", "slice_seats__assign_den"."assign_decide_input", "slice_seats__assign_den"."assign_decide_input_exclude", "slice_seats__assign_den"."assign_decide_input_mode_nearest", "slice_seats__assign_den"."assign_decide_input_mode_within", "slice_seats__assign_den"."assign_decide_nearest_read", "slice_seats__assign_den"."assign_decide_output", "slice_seats__assign_den"."assign_decide_output_stage_rest", "slice_seats__assign_den"."assign_decide_output_stage_serve", "slice_seats__assign_den"."assign_decide_output_weighed", "slice_seats__assign_den"."assign_decide_seen_read", "slice_seats__assign_den"."assign_done", "slice_seats__assign_den"."assign_exhausted", "slice_seats__assign_den"."assign_failed", "slice_seats__assign_den"."assign_fenced", "slice_seats__assign_den"."assign_finish", "slice_seats__assign_den"."assign_held", "slice_seats__assign_den"."assign_paused", "slice_seats__assign_den"."assign_refusal", "slice_seats__assign_den"."assign_result", "slice_seats__assign_den"."assign_resumed", "slice_seats__assign_den"."assign_retry", "slice_seats__assign_den"."assign_root", "slice_seats__assign_den"."assign_scope", "slice_seats__assign_den"."assign_skipped", "slice_seats__assign_den"."assign_start_scope", "slice_seats__assign_den"."assign_start_step", "slice_seats__assign_den"."assign_step", "slice_seats__assign_den"."assign_within" TO :"slice_seats__assign_den";
+GRANT SELECT ON TABLE "slice_seats__assign_den"."assign_admitted", "slice_seats__assign_den"."assign_assignment_input", "slice_seats__assign_den"."assign_assignment_input_exclude", "slice_seats__assign_den"."assign_assignment_input_mode_nearest", "slice_seats__assign_den"."assign_assignment_input_mode_within", "slice_seats__assign_den"."assign_claim", "slice_seats__assign_den"."assign_decide_input", "slice_seats__assign_den"."assign_decide_input_exclude", "slice_seats__assign_den"."assign_decide_input_mode_nearest", "slice_seats__assign_den"."assign_decide_input_mode_within", "slice_seats__assign_den"."assign_decide_nearest_read", "slice_seats__assign_den"."assign_decide_output", "slice_seats__assign_den"."assign_decide_output_stage_rest", "slice_seats__assign_den"."assign_decide_output_stage_serve", "slice_seats__assign_den"."assign_decide_output_weighed", "slice_seats__assign_den"."assign_decide_seen_read", "slice_seats__assign_den"."assign_done", "slice_seats__assign_den"."assign_exhausted", "slice_seats__assign_den"."assign_failed", "slice_seats__assign_den"."assign_fenced", "slice_seats__assign_den"."assign_finish", "slice_seats__assign_den"."assign_held", "slice_seats__assign_den"."assign_paused", "slice_seats__assign_den"."assign_refusal", "slice_seats__assign_den"."assign_result", "slice_seats__assign_den"."assign_resumed", "slice_seats__assign_den"."assign_retry", "slice_seats__assign_den"."assign_root", "slice_seats__assign_den"."assign_scope", "slice_seats__assign_den"."assign_skipped", "slice_seats__assign_den"."assign_start_step", "slice_seats__assign_den"."assign_step" TO :"slice_seats__assign_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."assign_admitted" TO :"slice_seats__assign_den";
 
@@ -2138,17 +2034,13 @@ GRANT SELECT, INSERT ON TABLE "slice"."assign_scope" TO :"slice_seats__assign_de
 
 GRANT SELECT, INSERT ON TABLE "slice"."assign_skipped" TO :"slice_seats__assign_den";
 
-GRANT SELECT, INSERT ON TABLE "slice"."assign_start_scope" TO :"slice_seats__assign_den";
-
 GRANT SELECT, INSERT ON TABLE "slice"."assign_start_step" TO :"slice_seats__assign_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."assign_step" TO :"slice_seats__assign_den";
 
-GRANT SELECT, INSERT ON TABLE "slice"."assign_within" TO :"slice_seats__assign_den";
-
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__assign_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_join_names_cks63qswdh"(), "slice"."__assign_kind_names_s7csvtng2b"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_root_kind_names_opbaefdfbo"() TO :"slice_seats__assign_den";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_kind_names_s7csvtng2b"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_root_kind_names_opbaefdfbo"() TO :"slice_seats__assign_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__assign_den";
@@ -2158,33 +2050,33 @@ GRANT EXECUTE ON FUNCTION "slice"."__hold_assign_root_rwboli77cc"("slice"."__dom
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__assign_retirer" TO :"slice_seats__assign_retirer";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_join", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__assign_retirer";
+GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__assign_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__assign_retirer"."assign_admitted", "slice_seats__assign_retirer"."assign_assignment_input", "slice_seats__assign_retirer"."assign_assignment_input_exclude", "slice_seats__assign_retirer"."assign_assignment_input_mode_nearest", "slice_seats__assign_retirer"."assign_assignment_input_mode_within", "slice_seats__assign_retirer"."assign_claim", "slice_seats__assign_retirer"."assign_decide_input", "slice_seats__assign_retirer"."assign_decide_input_exclude", "slice_seats__assign_retirer"."assign_decide_input_mode_nearest", "slice_seats__assign_retirer"."assign_decide_input_mode_within", "slice_seats__assign_retirer"."assign_decide_nearest_read", "slice_seats__assign_retirer"."assign_decide_output", "slice_seats__assign_retirer"."assign_decide_output_stage_rest", "slice_seats__assign_retirer"."assign_decide_output_stage_serve", "slice_seats__assign_retirer"."assign_decide_output_weighed", "slice_seats__assign_retirer"."assign_decide_seen_read", "slice_seats__assign_retirer"."assign_done", "slice_seats__assign_retirer"."assign_exhausted", "slice_seats__assign_retirer"."assign_failed", "slice_seats__assign_retirer"."assign_fenced", "slice_seats__assign_retirer"."assign_finish", "slice_seats__assign_retirer"."assign_held", "slice_seats__assign_retirer"."assign_refusal", "slice_seats__assign_retirer"."assign_result", "slice_seats__assign_retirer"."assign_retry", "slice_seats__assign_retirer"."assign_root", "slice_seats__assign_retirer"."assign_scope", "slice_seats__assign_retirer"."assign_skipped", "slice_seats__assign_retirer"."assign_start_scope", "slice_seats__assign_retirer"."assign_start_step", "slice_seats__assign_retirer"."assign_step", "slice_seats__assign_retirer"."assign_within" TO :"slice_seats__assign_retirer";
+GRANT SELECT ON TABLE "slice_seats__assign_retirer"."assign_admitted", "slice_seats__assign_retirer"."assign_assignment_input", "slice_seats__assign_retirer"."assign_assignment_input_exclude", "slice_seats__assign_retirer"."assign_assignment_input_mode_nearest", "slice_seats__assign_retirer"."assign_assignment_input_mode_within", "slice_seats__assign_retirer"."assign_claim", "slice_seats__assign_retirer"."assign_decide_input", "slice_seats__assign_retirer"."assign_decide_input_exclude", "slice_seats__assign_retirer"."assign_decide_input_mode_nearest", "slice_seats__assign_retirer"."assign_decide_input_mode_within", "slice_seats__assign_retirer"."assign_decide_nearest_read", "slice_seats__assign_retirer"."assign_decide_output", "slice_seats__assign_retirer"."assign_decide_output_stage_rest", "slice_seats__assign_retirer"."assign_decide_output_stage_serve", "slice_seats__assign_retirer"."assign_decide_output_weighed", "slice_seats__assign_retirer"."assign_decide_seen_read", "slice_seats__assign_retirer"."assign_done", "slice_seats__assign_retirer"."assign_exhausted", "slice_seats__assign_retirer"."assign_failed", "slice_seats__assign_retirer"."assign_fenced", "slice_seats__assign_retirer"."assign_finish", "slice_seats__assign_retirer"."assign_held", "slice_seats__assign_retirer"."assign_refusal", "slice_seats__assign_retirer"."assign_result", "slice_seats__assign_retirer"."assign_retry", "slice_seats__assign_retirer"."assign_root", "slice_seats__assign_retirer"."assign_scope", "slice_seats__assign_retirer"."assign_skipped", "slice_seats__assign_retirer"."assign_start_step", "slice_seats__assign_retirer"."assign_step" TO :"slice_seats__assign_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__assign_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_join_names_cks63qswdh"(), "slice"."__assign_kind_names_s7csvtng2b"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_root_kind_names_opbaefdfbo"() TO :"slice_seats__assign_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_kind_names_s7csvtng2b"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_root_kind_names_opbaefdfbo"() TO :"slice_seats__assign_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__retire_assign_root_hwbj4sewrx"("slice"."__domain_jotafzuj2i"[]) TO :"slice_seats__assign_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__auditor" TO :"slice_seats__auditor";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."chain_chain_run_input_feed", "slice"."chain_join", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_root_kind", "slice"."fan_join", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."sync_join", "slice"."sync_outcome", "slice"."__text_t4rwovzmqj" TO :"slice_seats__auditor";
+GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."sync_outcome", "slice"."__text_t4rwovzmqj" TO :"slice_seats__auditor";
 
-GRANT SELECT ON TABLE "slice_seats__auditor"."assign_decide_nearest_read", "slice_seats__auditor"."assign_decide_output", "slice_seats__auditor"."assign_decide_output_stage_serve", "slice_seats__auditor"."assign_decide_output_weighed", "slice_seats__auditor"."assign_decide_seen_read", "slice_seats__auditor"."assign_result", "slice_seats__auditor"."assign_step", "slice_seats__auditor"."assigned", "slice_seats__auditor"."audit", "slice_seats__auditor"."built", "slice_seats__auditor"."chain_admitted", "slice_seats__auditor"."chain_chain_run_input", "slice_seats__auditor"."chain_claim", "slice_seats__auditor"."chain_finish", "slice_seats__auditor"."chain_next", "slice_seats__auditor"."chain_ordered_input", "slice_seats__auditor"."chain_page_input", "slice_seats__auditor"."chain_page_input_after", "slice_seats__auditor"."chain_page_output", "slice_seats__auditor"."chain_page_output_next", "slice_seats__auditor"."chain_page_weights_read", "slice_seats__auditor"."chain_result", "slice_seats__auditor"."chain_root", "slice_seats__auditor"."chain_scope", "slice_seats__auditor"."chain_start_scope", "slice_seats__auditor"."chain_start_step", "slice_seats__auditor"."chain_step", "slice_seats__auditor"."chain_within", "slice_seats__auditor"."concluded", "slice_seats__auditor"."copied", "slice_seats__auditor"."cursor", "slice_seats__auditor"."fan_admitted", "slice_seats__auditor"."fan_batch_input", "slice_seats__auditor"."fan_fan_run_input", "slice_seats__auditor"."fan_finish", "slice_seats__auditor"."fan_result", "slice_seats__auditor"."fan_root", "slice_seats__auditor"."fan_scope", "slice_seats__auditor"."fan_square_input", "slice_seats__auditor"."fan_square_output", "slice_seats__auditor"."fan_start_scope", "slice_seats__auditor"."fan_start_step", "slice_seats__auditor"."fan_step", "slice_seats__auditor"."fan_within", "slice_seats__auditor"."item", "slice_seats__auditor"."order", "slice_seats__auditor"."retry_claim", "slice_seats__auditor"."retry_exhausted", "slice_seats__auditor"."retry_result", "slice_seats__auditor"."retry_step", "slice_seats__auditor"."settled", "slice_seats__auditor"."sync_admitted", "slice_seats__auditor"."sync_finish", "slice_seats__auditor"."sync_result", "slice_seats__auditor"."sync_scope", "slice_seats__auditor"."sync_skipped", "slice_seats__auditor"."tally", "slice_seats__auditor"."weight" TO :"slice_seats__auditor";
+GRANT SELECT ON TABLE "slice_seats__auditor"."assign_decide_nearest_read", "slice_seats__auditor"."assign_decide_output", "slice_seats__auditor"."assign_decide_output_stage_serve", "slice_seats__auditor"."assign_decide_output_weighed", "slice_seats__auditor"."assign_decide_seen_read", "slice_seats__auditor"."assign_result", "slice_seats__auditor"."assign_step", "slice_seats__auditor"."assigned", "slice_seats__auditor"."audit", "slice_seats__auditor"."built", "slice_seats__auditor"."chain_admitted", "slice_seats__auditor"."chain_chain_run_input", "slice_seats__auditor"."chain_claim", "slice_seats__auditor"."chain_finish", "slice_seats__auditor"."chain_next", "slice_seats__auditor"."chain_ordered_input", "slice_seats__auditor"."chain_page_input", "slice_seats__auditor"."chain_page_input_after", "slice_seats__auditor"."chain_page_output", "slice_seats__auditor"."chain_page_output_next", "slice_seats__auditor"."chain_page_weights_read", "slice_seats__auditor"."chain_result", "slice_seats__auditor"."chain_root", "slice_seats__auditor"."chain_scope", "slice_seats__auditor"."chain_start_step", "slice_seats__auditor"."chain_step", "slice_seats__auditor"."concluded", "slice_seats__auditor"."copied", "slice_seats__auditor"."cursor", "slice_seats__auditor"."fan_admitted", "slice_seats__auditor"."fan_batch_input", "slice_seats__auditor"."fan_fan_run_input", "slice_seats__auditor"."fan_finish", "slice_seats__auditor"."fan_result", "slice_seats__auditor"."fan_root", "slice_seats__auditor"."fan_scope", "slice_seats__auditor"."fan_square_input", "slice_seats__auditor"."fan_square_output", "slice_seats__auditor"."fan_start_scope", "slice_seats__auditor"."fan_start_step", "slice_seats__auditor"."fan_step", "slice_seats__auditor"."fan_within", "slice_seats__auditor"."item", "slice_seats__auditor"."order", "slice_seats__auditor"."retry_claim", "slice_seats__auditor"."retry_exhausted", "slice_seats__auditor"."retry_result", "slice_seats__auditor"."retry_step", "slice_seats__auditor"."settled", "slice_seats__auditor"."sync_admitted", "slice_seats__auditor"."sync_finish", "slice_seats__auditor"."sync_result", "slice_seats__auditor"."sync_scope", "slice_seats__auditor"."sync_skipped", "slice_seats__auditor"."tally", "slice_seats__auditor"."weight" TO :"slice_seats__auditor";
 
 GRANT SELECT, INSERT ON TABLE "slice"."audit" TO :"slice_seats__auditor";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__auditor";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_kind_names_s7csvtng2b"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_join_names_hvq3dwjqow"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__fan_join_names_gct5lzhdqo"(), "slice"."__fan_kind_names_6uewr4lsds"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_root_kind_names_ylamx7vjxv"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__sync_join_names_2ssan2q3dj"(), "slice"."__sync_outcome_names_xzb4y4xgki"() TO :"slice_seats__auditor";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_kind_names_s7csvtng2b"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_6uewr4lsds"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_root_kind_names_ylamx7vjxv"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__sync_outcome_names_xzb4y4xgki"() TO :"slice_seats__auditor";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__chain_coordinator" TO :"slice_seats__chain_coordinator";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."chain_chain_run_input_feed", "slice"."chain_join", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind" TO :"slice_seats__chain_coordinator";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind" TO :"slice_seats__chain_coordinator";
 
 GRANT SELECT ON TABLE "slice_seats__chain_coordinator"."chain_paused", "slice_seats__chain_coordinator"."chain_resumed" TO :"slice_seats__chain_coordinator";
 
@@ -2194,14 +2086,14 @@ GRANT SELECT, INSERT ON TABLE "slice"."chain_resumed" TO :"slice_seats__chain_co
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__chain_coordinator";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_join_names_hvq3dwjqow"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_root_kind_names_ndmuh43zki"() TO :"slice_seats__chain_coordinator";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_root_kind_names_ndmuh43zki"() TO :"slice_seats__chain_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__chain_den" TO :"slice_seats__chain_den";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."chain_chain_run_input_feed", "slice"."chain_join", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind", "slice"."feed" TO :"slice_seats__chain_den";
+GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind", "slice"."feed" TO :"slice_seats__chain_den";
 
-GRANT SELECT ON TABLE "slice_seats__chain_den"."chain_admitted", "slice_seats__chain_den"."chain_chain_run_input", "slice_seats__chain_den"."chain_claim", "slice_seats__chain_den"."chain_done", "slice_seats__chain_den"."chain_exhausted", "slice_seats__chain_den"."chain_failed", "slice_seats__chain_den"."chain_fenced", "slice_seats__chain_den"."chain_finish", "slice_seats__chain_den"."chain_held", "slice_seats__chain_den"."chain_next", "slice_seats__chain_den"."chain_ordered_input", "slice_seats__chain_den"."chain_page_input", "slice_seats__chain_den"."chain_page_input_after", "slice_seats__chain_den"."chain_page_output", "slice_seats__chain_den"."chain_page_output_next", "slice_seats__chain_den"."chain_page_weights_read", "slice_seats__chain_den"."chain_paused", "slice_seats__chain_den"."chain_refusal", "slice_seats__chain_den"."chain_result", "slice_seats__chain_den"."chain_resumed", "slice_seats__chain_den"."chain_retry", "slice_seats__chain_den"."chain_root", "slice_seats__chain_den"."chain_scope", "slice_seats__chain_den"."chain_skipped", "slice_seats__chain_den"."chain_start_scope", "slice_seats__chain_den"."chain_start_step", "slice_seats__chain_den"."chain_step", "slice_seats__chain_den"."chain_within" TO :"slice_seats__chain_den";
+GRANT SELECT ON TABLE "slice_seats__chain_den"."chain_admitted", "slice_seats__chain_den"."chain_chain_run_input", "slice_seats__chain_den"."chain_claim", "slice_seats__chain_den"."chain_done", "slice_seats__chain_den"."chain_exhausted", "slice_seats__chain_den"."chain_failed", "slice_seats__chain_den"."chain_fenced", "slice_seats__chain_den"."chain_finish", "slice_seats__chain_den"."chain_held", "slice_seats__chain_den"."chain_next", "slice_seats__chain_den"."chain_ordered_input", "slice_seats__chain_den"."chain_page_input", "slice_seats__chain_den"."chain_page_input_after", "slice_seats__chain_den"."chain_page_output", "slice_seats__chain_den"."chain_page_output_next", "slice_seats__chain_den"."chain_page_weights_read", "slice_seats__chain_den"."chain_paused", "slice_seats__chain_den"."chain_refusal", "slice_seats__chain_den"."chain_result", "slice_seats__chain_den"."chain_resumed", "slice_seats__chain_den"."chain_retry", "slice_seats__chain_den"."chain_root", "slice_seats__chain_den"."chain_scope", "slice_seats__chain_den"."chain_skipped", "slice_seats__chain_den"."chain_start_step", "slice_seats__chain_den"."chain_step" TO :"slice_seats__chain_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."chain_admitted" TO :"slice_seats__chain_den";
 
@@ -2241,17 +2133,13 @@ GRANT SELECT, INSERT ON TABLE "slice"."chain_scope" TO :"slice_seats__chain_den"
 
 GRANT SELECT, INSERT ON TABLE "slice"."chain_skipped" TO :"slice_seats__chain_den";
 
-GRANT SELECT, INSERT ON TABLE "slice"."chain_start_scope" TO :"slice_seats__chain_den";
-
 GRANT SELECT, INSERT ON TABLE "slice"."chain_start_step" TO :"slice_seats__chain_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."chain_step" TO :"slice_seats__chain_den";
 
-GRANT SELECT, INSERT ON TABLE "slice"."chain_within" TO :"slice_seats__chain_den";
-
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__chain_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_join_names_hvq3dwjqow"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__feed_names_azjbqebc6i"() TO :"slice_seats__chain_den";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__feed_names_azjbqebc6i"() TO :"slice_seats__chain_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__chain_den";
@@ -2261,20 +2149,20 @@ GRANT EXECUTE ON FUNCTION "slice"."__hold_chain_root_wgndggnfwf"("slice"."__doma
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__chain_retirer" TO :"slice_seats__chain_retirer";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."chain_chain_run_input_feed", "slice"."chain_join", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind", "slice"."feed" TO :"slice_seats__chain_retirer";
+GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind", "slice"."feed" TO :"slice_seats__chain_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__chain_retirer"."chain_admitted", "slice_seats__chain_retirer"."chain_chain_run_input", "slice_seats__chain_retirer"."chain_claim", "slice_seats__chain_retirer"."chain_done", "slice_seats__chain_retirer"."chain_exhausted", "slice_seats__chain_retirer"."chain_failed", "slice_seats__chain_retirer"."chain_fenced", "slice_seats__chain_retirer"."chain_finish", "slice_seats__chain_retirer"."chain_held", "slice_seats__chain_retirer"."chain_next", "slice_seats__chain_retirer"."chain_ordered_input", "slice_seats__chain_retirer"."chain_page_input", "slice_seats__chain_retirer"."chain_page_input_after", "slice_seats__chain_retirer"."chain_page_output", "slice_seats__chain_retirer"."chain_page_output_next", "slice_seats__chain_retirer"."chain_page_weights_read", "slice_seats__chain_retirer"."chain_refusal", "slice_seats__chain_retirer"."chain_result", "slice_seats__chain_retirer"."chain_retry", "slice_seats__chain_retirer"."chain_root", "slice_seats__chain_retirer"."chain_scope", "slice_seats__chain_retirer"."chain_skipped", "slice_seats__chain_retirer"."chain_start_scope", "slice_seats__chain_retirer"."chain_start_step", "slice_seats__chain_retirer"."chain_step", "slice_seats__chain_retirer"."chain_within" TO :"slice_seats__chain_retirer";
+GRANT SELECT ON TABLE "slice_seats__chain_retirer"."chain_admitted", "slice_seats__chain_retirer"."chain_chain_run_input", "slice_seats__chain_retirer"."chain_claim", "slice_seats__chain_retirer"."chain_done", "slice_seats__chain_retirer"."chain_exhausted", "slice_seats__chain_retirer"."chain_failed", "slice_seats__chain_retirer"."chain_fenced", "slice_seats__chain_retirer"."chain_finish", "slice_seats__chain_retirer"."chain_held", "slice_seats__chain_retirer"."chain_next", "slice_seats__chain_retirer"."chain_ordered_input", "slice_seats__chain_retirer"."chain_page_input", "slice_seats__chain_retirer"."chain_page_input_after", "slice_seats__chain_retirer"."chain_page_output", "slice_seats__chain_retirer"."chain_page_output_next", "slice_seats__chain_retirer"."chain_page_weights_read", "slice_seats__chain_retirer"."chain_refusal", "slice_seats__chain_retirer"."chain_result", "slice_seats__chain_retirer"."chain_retry", "slice_seats__chain_retirer"."chain_root", "slice_seats__chain_retirer"."chain_scope", "slice_seats__chain_retirer"."chain_skipped", "slice_seats__chain_retirer"."chain_start_step", "slice_seats__chain_retirer"."chain_step" TO :"slice_seats__chain_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__chain_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_join_names_hvq3dwjqow"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__feed_names_azjbqebc6i"() TO :"slice_seats__chain_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__feed_names_azjbqebc6i"() TO :"slice_seats__chain_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__retire_chain_root_ji6nmac7of"("slice"."__domain_jotafzuj2i"[]) TO :"slice_seats__chain_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__fan_coordinator" TO :"slice_seats__fan_coordinator";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."fan_join", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind" TO :"slice_seats__fan_coordinator";
+GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind" TO :"slice_seats__fan_coordinator";
 
 GRANT SELECT ON TABLE "slice_seats__fan_coordinator"."fan_freed", "slice_seats__fan_coordinator"."fan_hold", "slice_seats__fan_coordinator"."fan_live", "slice_seats__fan_coordinator"."fan_paused", "slice_seats__fan_coordinator"."fan_resumed" TO :"slice_seats__fan_coordinator";
 
@@ -2288,12 +2176,12 @@ GRANT SELECT, INSERT ON TABLE "slice"."fan_resumed" TO :"slice_seats__fan_coordi
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__fan_coordinator";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_join_names_gct5lzhdqo"(), "slice"."__fan_kind_names_6uewr4lsds"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_vkzkvll2se"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_root_kind_names_ylamx7vjxv"() TO :"slice_seats__fan_coordinator";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_6uewr4lsds"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_vkzkvll2se"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_root_kind_names_ylamx7vjxv"() TO :"slice_seats__fan_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__fan_den" TO :"slice_seats__fan_den";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."fan_join", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind" TO :"slice_seats__fan_den";
+GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind" TO :"slice_seats__fan_den";
 
 GRANT SELECT ON TABLE "slice_seats__fan_den"."fan_admitted", "slice_seats__fan_den"."fan_batch_input", "slice_seats__fan_den"."fan_claim", "slice_seats__fan_den"."fan_done", "slice_seats__fan_den"."fan_exhausted", "slice_seats__fan_den"."fan_failed", "slice_seats__fan_den"."fan_fan_run_input", "slice_seats__fan_den"."fan_fenced", "slice_seats__fan_den"."fan_finish", "slice_seats__fan_den"."fan_freed", "slice_seats__fan_den"."fan_held", "slice_seats__fan_den"."fan_hold", "slice_seats__fan_den"."fan_live", "slice_seats__fan_den"."fan_paused", "slice_seats__fan_den"."fan_refusal", "slice_seats__fan_den"."fan_result", "slice_seats__fan_den"."fan_resumed", "slice_seats__fan_den"."fan_retry", "slice_seats__fan_den"."fan_root", "slice_seats__fan_den"."fan_scope", "slice_seats__fan_den"."fan_skipped", "slice_seats__fan_den"."fan_square_input", "slice_seats__fan_den"."fan_square_output", "slice_seats__fan_den"."fan_start_scope", "slice_seats__fan_den"."fan_start_step", "slice_seats__fan_den"."fan_step", "slice_seats__fan_den"."fan_within" TO :"slice_seats__fan_den";
 
@@ -2341,7 +2229,7 @@ GRANT SELECT, INSERT ON TABLE "slice"."fan_within" TO :"slice_seats__fan_den";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__fan_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_join_names_gct5lzhdqo"(), "slice"."__fan_kind_names_6uewr4lsds"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_vkzkvll2se"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_root_kind_names_ylamx7vjxv"() TO :"slice_seats__fan_den";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_6uewr4lsds"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_vkzkvll2se"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_root_kind_names_ylamx7vjxv"() TO :"slice_seats__fan_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__fan_den";
@@ -2351,13 +2239,13 @@ GRANT EXECUTE ON FUNCTION "slice"."__hold_fan_root_4vwfxofrxw"("slice"."__domain
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__fan_retirer" TO :"slice_seats__fan_retirer";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."fan_join", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind" TO :"slice_seats__fan_retirer";
+GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind" TO :"slice_seats__fan_retirer";
 
 GRANT SELECT ON TABLE "slice_seats__fan_retirer"."fan_admitted", "slice_seats__fan_retirer"."fan_batch_input", "slice_seats__fan_retirer"."fan_claim", "slice_seats__fan_retirer"."fan_done", "slice_seats__fan_retirer"."fan_exhausted", "slice_seats__fan_retirer"."fan_failed", "slice_seats__fan_retirer"."fan_fan_run_input", "slice_seats__fan_retirer"."fan_fenced", "slice_seats__fan_retirer"."fan_finish", "slice_seats__fan_retirer"."fan_held", "slice_seats__fan_retirer"."fan_refusal", "slice_seats__fan_retirer"."fan_result", "slice_seats__fan_retirer"."fan_retry", "slice_seats__fan_retirer"."fan_root", "slice_seats__fan_retirer"."fan_scope", "slice_seats__fan_retirer"."fan_skipped", "slice_seats__fan_retirer"."fan_square_input", "slice_seats__fan_retirer"."fan_square_output", "slice_seats__fan_retirer"."fan_start_scope", "slice_seats__fan_retirer"."fan_start_step", "slice_seats__fan_retirer"."fan_step", "slice_seats__fan_retirer"."fan_within" TO :"slice_seats__fan_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__fan_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_join_names_gct5lzhdqo"(), "slice"."__fan_kind_names_6uewr4lsds"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_vkzkvll2se"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_root_kind_names_ylamx7vjxv"() TO :"slice_seats__fan_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_6uewr4lsds"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_vkzkvll2se"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_root_kind_names_ylamx7vjxv"() TO :"slice_seats__fan_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__retire_fan_root_niesya7vcd"("slice"."__domain_jotafzuj2i"[]) TO :"slice_seats__fan_retirer";
 
@@ -2367,9 +2255,9 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__loader" TO :"slice_s
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "vector_ext" TO :"slice_seats__loader";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_join", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind", "slice"."chain_chain_run_input_feed", "slice"."chain_join", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind", "slice"."fan_join", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_join", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind", "slice"."sync_join", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__loader";
+GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__loader";
 
-GRANT SELECT ON TABLE "slice_seats__loader"."assign_admitted", "slice_seats__loader"."assign_assignment_input", "slice_seats__loader"."assign_assignment_input_exclude", "slice_seats__loader"."assign_assignment_input_mode_nearest", "slice_seats__loader"."assign_assignment_input_mode_within", "slice_seats__loader"."assign_claim", "slice_seats__loader"."assign_decide_input", "slice_seats__loader"."assign_decide_input_exclude", "slice_seats__loader"."assign_decide_input_mode_nearest", "slice_seats__loader"."assign_decide_input_mode_within", "slice_seats__loader"."assign_decide_nearest_read", "slice_seats__loader"."assign_decide_output", "slice_seats__loader"."assign_decide_output_stage_rest", "slice_seats__loader"."assign_decide_output_stage_serve", "slice_seats__loader"."assign_decide_output_weighed", "slice_seats__loader"."assign_decide_seen_read", "slice_seats__loader"."assign_done", "slice_seats__loader"."assign_exhausted", "slice_seats__loader"."assign_failed", "slice_seats__loader"."assign_fenced", "slice_seats__loader"."assign_finish", "slice_seats__loader"."assign_held", "slice_seats__loader"."assign_refusal", "slice_seats__loader"."assign_result", "slice_seats__loader"."assign_retry", "slice_seats__loader"."assign_root", "slice_seats__loader"."assign_scope", "slice_seats__loader"."assign_skipped", "slice_seats__loader"."assign_start_scope", "slice_seats__loader"."assign_start_step", "slice_seats__loader"."assign_step", "slice_seats__loader"."assign_within", "slice_seats__loader"."assigned", "slice_seats__loader"."built", "slice_seats__loader"."chain_admitted", "slice_seats__loader"."chain_chain_run_input", "slice_seats__loader"."chain_claim", "slice_seats__loader"."chain_done", "slice_seats__loader"."chain_exhausted", "slice_seats__loader"."chain_failed", "slice_seats__loader"."chain_fenced", "slice_seats__loader"."chain_finish", "slice_seats__loader"."chain_held", "slice_seats__loader"."chain_next", "slice_seats__loader"."chain_ordered_input", "slice_seats__loader"."chain_page_input", "slice_seats__loader"."chain_page_input_after", "slice_seats__loader"."chain_page_output", "slice_seats__loader"."chain_page_output_next", "slice_seats__loader"."chain_page_weights_read", "slice_seats__loader"."chain_refusal", "slice_seats__loader"."chain_result", "slice_seats__loader"."chain_retry", "slice_seats__loader"."chain_root", "slice_seats__loader"."chain_scope", "slice_seats__loader"."chain_skipped", "slice_seats__loader"."chain_start_scope", "slice_seats__loader"."chain_start_step", "slice_seats__loader"."chain_step", "slice_seats__loader"."chain_within", "slice_seats__loader"."concluded", "slice_seats__loader"."copied", "slice_seats__loader"."cursor", "slice_seats__loader"."fan_admitted", "slice_seats__loader"."fan_batch_input", "slice_seats__loader"."fan_claim", "slice_seats__loader"."fan_done", "slice_seats__loader"."fan_exhausted", "slice_seats__loader"."fan_failed", "slice_seats__loader"."fan_fan_run_input", "slice_seats__loader"."fan_fenced", "slice_seats__loader"."fan_finish", "slice_seats__loader"."fan_held", "slice_seats__loader"."fan_refusal", "slice_seats__loader"."fan_result", "slice_seats__loader"."fan_retry", "slice_seats__loader"."fan_root", "slice_seats__loader"."fan_scope", "slice_seats__loader"."fan_skipped", "slice_seats__loader"."fan_square_input", "slice_seats__loader"."fan_square_output", "slice_seats__loader"."fan_start_scope", "slice_seats__loader"."fan_start_step", "slice_seats__loader"."fan_step", "slice_seats__loader"."fan_within", "slice_seats__loader"."item", "slice_seats__loader"."missed", "slice_seats__loader"."order", "slice_seats__loader"."passage", "slice_seats__loader"."retry_admitted", "slice_seats__loader"."retry_brittle_input", "slice_seats__loader"."retry_brittle_output", "slice_seats__loader"."retry_claim", "slice_seats__loader"."retry_done", "slice_seats__loader"."retry_exhausted", "slice_seats__loader"."retry_failed", "slice_seats__loader"."retry_fenced", "slice_seats__loader"."retry_finish", "slice_seats__loader"."retry_held", "slice_seats__loader"."retry_ladders_input", "slice_seats__loader"."retry_refusal", "slice_seats__loader"."retry_result", "slice_seats__loader"."retry_retry", "slice_seats__loader"."retry_root", "slice_seats__loader"."retry_scope", "slice_seats__loader"."retry_skipped", "slice_seats__loader"."retry_start_scope", "slice_seats__loader"."retry_start_step", "slice_seats__loader"."retry_steadfast_input", "slice_seats__loader"."retry_steadfast_output", "slice_seats__loader"."retry_step", "slice_seats__loader"."retry_within", "slice_seats__loader"."seen", "slice_seats__loader"."settled", "slice_seats__loader"."sync_admitted", "slice_seats__loader"."sync_build_input", "slice_seats__loader"."sync_build_output", "slice_seats__loader"."sync_claim", "slice_seats__loader"."sync_copy_input", "slice_seats__loader"."sync_copy_output", "slice_seats__loader"."sync_done", "slice_seats__loader"."sync_exclusive_key", "slice_seats__loader"."sync_exhausted", "slice_seats__loader"."sync_failed", "slice_seats__loader"."sync_fenced", "slice_seats__loader"."sync_finish", "slice_seats__loader"."sync_gold_input", "slice_seats__loader"."sync_held", "slice_seats__loader"."sync_refusal", "slice_seats__loader"."sync_result", "slice_seats__loader"."sync_retry", "slice_seats__loader"."sync_root", "slice_seats__loader"."sync_scope", "slice_seats__loader"."sync_skipped", "slice_seats__loader"."sync_start_scope", "slice_seats__loader"."sync_start_step", "slice_seats__loader"."sync_step", "slice_seats__loader"."sync_sync_run_input", "slice_seats__loader"."sync_within", "slice_seats__loader"."tally", "slice_seats__loader"."weight" TO :"slice_seats__loader";
+GRANT SELECT ON TABLE "slice_seats__loader"."assign_admitted", "slice_seats__loader"."assign_assignment_input", "slice_seats__loader"."assign_assignment_input_exclude", "slice_seats__loader"."assign_assignment_input_mode_nearest", "slice_seats__loader"."assign_assignment_input_mode_within", "slice_seats__loader"."assign_claim", "slice_seats__loader"."assign_decide_input", "slice_seats__loader"."assign_decide_input_exclude", "slice_seats__loader"."assign_decide_input_mode_nearest", "slice_seats__loader"."assign_decide_input_mode_within", "slice_seats__loader"."assign_decide_nearest_read", "slice_seats__loader"."assign_decide_output", "slice_seats__loader"."assign_decide_output_stage_rest", "slice_seats__loader"."assign_decide_output_stage_serve", "slice_seats__loader"."assign_decide_output_weighed", "slice_seats__loader"."assign_decide_seen_read", "slice_seats__loader"."assign_done", "slice_seats__loader"."assign_exhausted", "slice_seats__loader"."assign_failed", "slice_seats__loader"."assign_fenced", "slice_seats__loader"."assign_finish", "slice_seats__loader"."assign_held", "slice_seats__loader"."assign_refusal", "slice_seats__loader"."assign_result", "slice_seats__loader"."assign_retry", "slice_seats__loader"."assign_root", "slice_seats__loader"."assign_scope", "slice_seats__loader"."assign_skipped", "slice_seats__loader"."assign_start_step", "slice_seats__loader"."assign_step", "slice_seats__loader"."assigned", "slice_seats__loader"."built", "slice_seats__loader"."chain_admitted", "slice_seats__loader"."chain_chain_run_input", "slice_seats__loader"."chain_claim", "slice_seats__loader"."chain_done", "slice_seats__loader"."chain_exhausted", "slice_seats__loader"."chain_failed", "slice_seats__loader"."chain_fenced", "slice_seats__loader"."chain_finish", "slice_seats__loader"."chain_held", "slice_seats__loader"."chain_next", "slice_seats__loader"."chain_ordered_input", "slice_seats__loader"."chain_page_input", "slice_seats__loader"."chain_page_input_after", "slice_seats__loader"."chain_page_output", "slice_seats__loader"."chain_page_output_next", "slice_seats__loader"."chain_page_weights_read", "slice_seats__loader"."chain_refusal", "slice_seats__loader"."chain_result", "slice_seats__loader"."chain_retry", "slice_seats__loader"."chain_root", "slice_seats__loader"."chain_scope", "slice_seats__loader"."chain_skipped", "slice_seats__loader"."chain_start_step", "slice_seats__loader"."chain_step", "slice_seats__loader"."concluded", "slice_seats__loader"."copied", "slice_seats__loader"."cursor", "slice_seats__loader"."fan_admitted", "slice_seats__loader"."fan_batch_input", "slice_seats__loader"."fan_claim", "slice_seats__loader"."fan_done", "slice_seats__loader"."fan_exhausted", "slice_seats__loader"."fan_failed", "slice_seats__loader"."fan_fan_run_input", "slice_seats__loader"."fan_fenced", "slice_seats__loader"."fan_finish", "slice_seats__loader"."fan_held", "slice_seats__loader"."fan_refusal", "slice_seats__loader"."fan_result", "slice_seats__loader"."fan_retry", "slice_seats__loader"."fan_root", "slice_seats__loader"."fan_scope", "slice_seats__loader"."fan_skipped", "slice_seats__loader"."fan_square_input", "slice_seats__loader"."fan_square_output", "slice_seats__loader"."fan_start_scope", "slice_seats__loader"."fan_start_step", "slice_seats__loader"."fan_step", "slice_seats__loader"."fan_within", "slice_seats__loader"."item", "slice_seats__loader"."missed", "slice_seats__loader"."order", "slice_seats__loader"."passage", "slice_seats__loader"."retry_admitted", "slice_seats__loader"."retry_brittle_input", "slice_seats__loader"."retry_brittle_output", "slice_seats__loader"."retry_claim", "slice_seats__loader"."retry_done", "slice_seats__loader"."retry_exhausted", "slice_seats__loader"."retry_failed", "slice_seats__loader"."retry_fenced", "slice_seats__loader"."retry_finish", "slice_seats__loader"."retry_held", "slice_seats__loader"."retry_ladders_input", "slice_seats__loader"."retry_refusal", "slice_seats__loader"."retry_result", "slice_seats__loader"."retry_retry", "slice_seats__loader"."retry_root", "slice_seats__loader"."retry_scope", "slice_seats__loader"."retry_skipped", "slice_seats__loader"."retry_start_step", "slice_seats__loader"."retry_steadfast_input", "slice_seats__loader"."retry_steadfast_output", "slice_seats__loader"."retry_step", "slice_seats__loader"."seen", "slice_seats__loader"."settled", "slice_seats__loader"."sync_admitted", "slice_seats__loader"."sync_build_input", "slice_seats__loader"."sync_build_output", "slice_seats__loader"."sync_claim", "slice_seats__loader"."sync_copy_input", "slice_seats__loader"."sync_copy_output", "slice_seats__loader"."sync_done", "slice_seats__loader"."sync_exclusive_key", "slice_seats__loader"."sync_exhausted", "slice_seats__loader"."sync_failed", "slice_seats__loader"."sync_fenced", "slice_seats__loader"."sync_finish", "slice_seats__loader"."sync_gold_input", "slice_seats__loader"."sync_held", "slice_seats__loader"."sync_refusal", "slice_seats__loader"."sync_result", "slice_seats__loader"."sync_retry", "slice_seats__loader"."sync_root", "slice_seats__loader"."sync_scope", "slice_seats__loader"."sync_skipped", "slice_seats__loader"."sync_start_step", "slice_seats__loader"."sync_step", "slice_seats__loader"."sync_sync_run_input", "slice_seats__loader"."tally", "slice_seats__loader"."weight" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."assign_decide_nearest_read" TO :"slice_seats__loader";
 
@@ -2421,13 +2309,9 @@ GRANT SELECT, INSERT ON TABLE "slice"."chain_root" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."chain_scope" TO :"slice_seats__loader";
 
-GRANT SELECT, INSERT ON TABLE "slice"."chain_start_scope" TO :"slice_seats__loader";
-
 GRANT SELECT, INSERT ON TABLE "slice"."chain_start_step" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."chain_step" TO :"slice_seats__loader";
-
-GRANT SELECT, INSERT ON TABLE "slice"."chain_within" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice"."concluded" TO :"slice_seats__loader";
 
@@ -2481,7 +2365,7 @@ GRANT SELECT, INSERT ON TABLE "slice"."weight" TO :"slice_seats__loader";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__loader";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_join_names_cks63qswdh"(), "slice"."__assign_kind_names_s7csvtng2b"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_join_names_hvq3dwjqow"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__fan_join_names_gct5lzhdqo"(), "slice"."__fan_kind_names_6uewr4lsds"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_vkzkvll2se"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_root_kind_names_ylamx7vjxv"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_join_names_st4whng7gb"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_damz4vyplb"(), "slice"."__retry_root_kind_names_rs6aiofc5w"(), "slice"."__sync_join_names_2ssan2q3dj"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_root_kind_names_drp422srbk"() TO :"slice_seats__loader";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_kind_names_s7csvtng2b"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_6uewr4lsds"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_vkzkvll2se"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_root_kind_names_ylamx7vjxv"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_damz4vyplb"(), "slice"."__retry_root_kind_names_rs6aiofc5w"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_root_kind_names_drp422srbk"() TO :"slice_seats__loader";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__loader";
@@ -2491,7 +2375,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__hold_assign_root_rwboli77cc"("slice"."__dom
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__retry_coordinator" TO :"slice_seats__retry_coordinator";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."retry_join", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind" TO :"slice_seats__retry_coordinator";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind" TO :"slice_seats__retry_coordinator";
 
 GRANT SELECT ON TABLE "slice_seats__retry_coordinator"."retry_paused", "slice_seats__retry_coordinator"."retry_resumed" TO :"slice_seats__retry_coordinator";
 
@@ -2501,14 +2385,14 @@ GRANT SELECT, INSERT ON TABLE "slice"."retry_resumed" TO :"slice_seats__retry_co
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__retry_coordinator";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_join_names_st4whng7gb"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_damz4vyplb"(), "slice"."__retry_root_kind_names_rs6aiofc5w"() TO :"slice_seats__retry_coordinator";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_damz4vyplb"(), "slice"."__retry_root_kind_names_rs6aiofc5w"() TO :"slice_seats__retry_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__retry_den" TO :"slice_seats__retry_den";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."retry_join", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind" TO :"slice_seats__retry_den";
+GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind" TO :"slice_seats__retry_den";
 
-GRANT SELECT ON TABLE "slice_seats__retry_den"."retry_admitted", "slice_seats__retry_den"."retry_brittle_input", "slice_seats__retry_den"."retry_brittle_output", "slice_seats__retry_den"."retry_claim", "slice_seats__retry_den"."retry_done", "slice_seats__retry_den"."retry_exhausted", "slice_seats__retry_den"."retry_failed", "slice_seats__retry_den"."retry_fenced", "slice_seats__retry_den"."retry_finish", "slice_seats__retry_den"."retry_held", "slice_seats__retry_den"."retry_ladders_input", "slice_seats__retry_den"."retry_paused", "slice_seats__retry_den"."retry_refusal", "slice_seats__retry_den"."retry_result", "slice_seats__retry_den"."retry_resumed", "slice_seats__retry_den"."retry_retry", "slice_seats__retry_den"."retry_root", "slice_seats__retry_den"."retry_scope", "slice_seats__retry_den"."retry_skipped", "slice_seats__retry_den"."retry_start_scope", "slice_seats__retry_den"."retry_start_step", "slice_seats__retry_den"."retry_steadfast_input", "slice_seats__retry_den"."retry_steadfast_output", "slice_seats__retry_den"."retry_step", "slice_seats__retry_den"."retry_within" TO :"slice_seats__retry_den";
+GRANT SELECT ON TABLE "slice_seats__retry_den"."retry_admitted", "slice_seats__retry_den"."retry_brittle_input", "slice_seats__retry_den"."retry_brittle_output", "slice_seats__retry_den"."retry_claim", "slice_seats__retry_den"."retry_done", "slice_seats__retry_den"."retry_exhausted", "slice_seats__retry_den"."retry_failed", "slice_seats__retry_den"."retry_fenced", "slice_seats__retry_den"."retry_finish", "slice_seats__retry_den"."retry_held", "slice_seats__retry_den"."retry_ladders_input", "slice_seats__retry_den"."retry_paused", "slice_seats__retry_den"."retry_refusal", "slice_seats__retry_den"."retry_result", "slice_seats__retry_den"."retry_resumed", "slice_seats__retry_den"."retry_retry", "slice_seats__retry_den"."retry_root", "slice_seats__retry_den"."retry_scope", "slice_seats__retry_den"."retry_skipped", "slice_seats__retry_den"."retry_start_step", "slice_seats__retry_den"."retry_steadfast_input", "slice_seats__retry_den"."retry_steadfast_output", "slice_seats__retry_den"."retry_step" TO :"slice_seats__retry_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."retry_admitted" TO :"slice_seats__retry_den";
 
@@ -2542,19 +2426,15 @@ GRANT SELECT, INSERT ON TABLE "slice"."retry_scope" TO :"slice_seats__retry_den"
 
 GRANT SELECT, INSERT ON TABLE "slice"."retry_skipped" TO :"slice_seats__retry_den";
 
-GRANT SELECT, INSERT ON TABLE "slice"."retry_start_scope" TO :"slice_seats__retry_den";
-
 GRANT SELECT, INSERT ON TABLE "slice"."retry_start_step" TO :"slice_seats__retry_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."retry_steadfast_input" TO :"slice_seats__retry_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."retry_step" TO :"slice_seats__retry_den";
 
-GRANT SELECT, INSERT ON TABLE "slice"."retry_within" TO :"slice_seats__retry_den";
-
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__retry_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_join_names_st4whng7gb"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_damz4vyplb"(), "slice"."__retry_root_kind_names_rs6aiofc5w"() TO :"slice_seats__retry_den";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_damz4vyplb"(), "slice"."__retry_root_kind_names_rs6aiofc5w"() TO :"slice_seats__retry_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__retry_den";
@@ -2564,20 +2444,20 @@ GRANT EXECUTE ON FUNCTION "slice"."__hold_retry_root_54bybhkxg6"("slice"."__doma
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__retry_retirer" TO :"slice_seats__retry_retirer";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."retry_join", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind" TO :"slice_seats__retry_retirer";
+GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind" TO :"slice_seats__retry_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__retry_retirer"."retry_admitted", "slice_seats__retry_retirer"."retry_brittle_input", "slice_seats__retry_retirer"."retry_brittle_output", "slice_seats__retry_retirer"."retry_claim", "slice_seats__retry_retirer"."retry_done", "slice_seats__retry_retirer"."retry_exhausted", "slice_seats__retry_retirer"."retry_failed", "slice_seats__retry_retirer"."retry_fenced", "slice_seats__retry_retirer"."retry_finish", "slice_seats__retry_retirer"."retry_held", "slice_seats__retry_retirer"."retry_ladders_input", "slice_seats__retry_retirer"."retry_refusal", "slice_seats__retry_retirer"."retry_result", "slice_seats__retry_retirer"."retry_retry", "slice_seats__retry_retirer"."retry_root", "slice_seats__retry_retirer"."retry_scope", "slice_seats__retry_retirer"."retry_skipped", "slice_seats__retry_retirer"."retry_start_scope", "slice_seats__retry_retirer"."retry_start_step", "slice_seats__retry_retirer"."retry_steadfast_input", "slice_seats__retry_retirer"."retry_steadfast_output", "slice_seats__retry_retirer"."retry_step", "slice_seats__retry_retirer"."retry_within" TO :"slice_seats__retry_retirer";
+GRANT SELECT ON TABLE "slice_seats__retry_retirer"."retry_admitted", "slice_seats__retry_retirer"."retry_brittle_input", "slice_seats__retry_retirer"."retry_brittle_output", "slice_seats__retry_retirer"."retry_claim", "slice_seats__retry_retirer"."retry_done", "slice_seats__retry_retirer"."retry_exhausted", "slice_seats__retry_retirer"."retry_failed", "slice_seats__retry_retirer"."retry_fenced", "slice_seats__retry_retirer"."retry_finish", "slice_seats__retry_retirer"."retry_held", "slice_seats__retry_retirer"."retry_ladders_input", "slice_seats__retry_retirer"."retry_refusal", "slice_seats__retry_retirer"."retry_result", "slice_seats__retry_retirer"."retry_retry", "slice_seats__retry_retirer"."retry_root", "slice_seats__retry_retirer"."retry_scope", "slice_seats__retry_retirer"."retry_skipped", "slice_seats__retry_retirer"."retry_start_step", "slice_seats__retry_retirer"."retry_steadfast_input", "slice_seats__retry_retirer"."retry_steadfast_output", "slice_seats__retry_retirer"."retry_step" TO :"slice_seats__retry_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__retry_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_join_names_st4whng7gb"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_damz4vyplb"(), "slice"."__retry_root_kind_names_rs6aiofc5w"() TO :"slice_seats__retry_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_kind_names_637ikgyibq"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_damz4vyplb"(), "slice"."__retry_root_kind_names_rs6aiofc5w"() TO :"slice_seats__retry_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__retire_retry_root_kays5vv5ic"("slice"."__domain_jotafzuj2i"[]) TO :"slice_seats__retry_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__sync_coordinator" TO :"slice_seats__sync_coordinator";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."sync_join", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind" TO :"slice_seats__sync_coordinator";
+GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind" TO :"slice_seats__sync_coordinator";
 
 GRANT SELECT ON TABLE "slice_seats__sync_coordinator"."sync_exclusive", "slice_seats__sync_coordinator"."sync_paused", "slice_seats__sync_coordinator"."sync_released", "slice_seats__sync_coordinator"."sync_resumed" TO :"slice_seats__sync_coordinator";
 
@@ -2591,14 +2471,14 @@ GRANT SELECT, INSERT ON TABLE "slice"."sync_resumed" TO :"slice_seats__sync_coor
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__sync_coordinator";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__sync_join_names_2ssan2q3dj"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_root_kind_names_drp422srbk"() TO :"slice_seats__sync_coordinator";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_root_kind_names_drp422srbk"() TO :"slice_seats__sync_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__sync_den" TO :"slice_seats__sync_den";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."chain_kind", "slice"."chain_outcome", "slice"."sync_join", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind" TO :"slice_seats__sync_den";
+GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."chain_kind", "slice"."chain_outcome", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind" TO :"slice_seats__sync_den";
 
-GRANT SELECT ON TABLE "slice_seats__sync_den"."chain_result", "slice_seats__sync_den"."chain_step", "slice_seats__sync_den"."sync_admitted", "slice_seats__sync_den"."sync_build_input", "slice_seats__sync_den"."sync_build_output", "slice_seats__sync_den"."sync_claim", "slice_seats__sync_den"."sync_copy_input", "slice_seats__sync_den"."sync_copy_output", "slice_seats__sync_den"."sync_done", "slice_seats__sync_den"."sync_exclusive", "slice_seats__sync_den"."sync_exclusive_key", "slice_seats__sync_den"."sync_exhausted", "slice_seats__sync_den"."sync_failed", "slice_seats__sync_den"."sync_fenced", "slice_seats__sync_den"."sync_finish", "slice_seats__sync_den"."sync_gold_input", "slice_seats__sync_den"."sync_held", "slice_seats__sync_den"."sync_paused", "slice_seats__sync_den"."sync_refusal", "slice_seats__sync_den"."sync_released", "slice_seats__sync_den"."sync_result", "slice_seats__sync_den"."sync_resumed", "slice_seats__sync_den"."sync_retry", "slice_seats__sync_den"."sync_root", "slice_seats__sync_den"."sync_scope", "slice_seats__sync_den"."sync_skipped", "slice_seats__sync_den"."sync_start_scope", "slice_seats__sync_den"."sync_start_step", "slice_seats__sync_den"."sync_step", "slice_seats__sync_den"."sync_sync_run_input", "slice_seats__sync_den"."sync_within" TO :"slice_seats__sync_den";
+GRANT SELECT ON TABLE "slice_seats__sync_den"."chain_result", "slice_seats__sync_den"."chain_step", "slice_seats__sync_den"."sync_admitted", "slice_seats__sync_den"."sync_build_input", "slice_seats__sync_den"."sync_build_output", "slice_seats__sync_den"."sync_claim", "slice_seats__sync_den"."sync_copy_input", "slice_seats__sync_den"."sync_copy_output", "slice_seats__sync_den"."sync_done", "slice_seats__sync_den"."sync_exclusive", "slice_seats__sync_den"."sync_exclusive_key", "slice_seats__sync_den"."sync_exhausted", "slice_seats__sync_den"."sync_failed", "slice_seats__sync_den"."sync_fenced", "slice_seats__sync_den"."sync_finish", "slice_seats__sync_den"."sync_gold_input", "slice_seats__sync_den"."sync_held", "slice_seats__sync_den"."sync_paused", "slice_seats__sync_den"."sync_refusal", "slice_seats__sync_den"."sync_released", "slice_seats__sync_den"."sync_result", "slice_seats__sync_den"."sync_resumed", "slice_seats__sync_den"."sync_retry", "slice_seats__sync_den"."sync_root", "slice_seats__sync_den"."sync_scope", "slice_seats__sync_den"."sync_skipped", "slice_seats__sync_den"."sync_start_step", "slice_seats__sync_den"."sync_step", "slice_seats__sync_den"."sync_sync_run_input" TO :"slice_seats__sync_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."sync_admitted" TO :"slice_seats__sync_den";
 
@@ -2636,19 +2516,15 @@ GRANT SELECT, INSERT ON TABLE "slice"."sync_scope" TO :"slice_seats__sync_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."sync_skipped" TO :"slice_seats__sync_den";
 
-GRANT SELECT, INSERT ON TABLE "slice"."sync_start_scope" TO :"slice_seats__sync_den";
-
 GRANT SELECT, INSERT ON TABLE "slice"."sync_start_step" TO :"slice_seats__sync_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."sync_step" TO :"slice_seats__sync_den";
 
 GRANT SELECT, INSERT ON TABLE "slice"."sync_sync_run_input" TO :"slice_seats__sync_den";
 
-GRANT SELECT, INSERT ON TABLE "slice"."sync_within" TO :"slice_seats__sync_den";
-
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__sync_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__sync_join_names_2ssan2q3dj"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_root_kind_names_drp422srbk"() TO :"slice_seats__sync_den";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_root_kind_names_drp422srbk"() TO :"slice_seats__sync_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__sync_den";
@@ -2658,13 +2534,13 @@ GRANT EXECUTE ON FUNCTION "slice"."__hold_sync_root_6ita6q5wxi"("slice"."__domai
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__sync_retirer" TO :"slice_seats__sync_retirer";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."sync_join", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind" TO :"slice_seats__sync_retirer";
+GRANT USAGE ON DOMAIN "slice"."__domain_jotafzuj2i", "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind" TO :"slice_seats__sync_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__sync_retirer"."sync_admitted", "slice_seats__sync_retirer"."sync_build_input", "slice_seats__sync_retirer"."sync_build_output", "slice_seats__sync_retirer"."sync_claim", "slice_seats__sync_retirer"."sync_copy_input", "slice_seats__sync_retirer"."sync_copy_output", "slice_seats__sync_retirer"."sync_done", "slice_seats__sync_retirer"."sync_exclusive_key", "slice_seats__sync_retirer"."sync_exhausted", "slice_seats__sync_retirer"."sync_failed", "slice_seats__sync_retirer"."sync_fenced", "slice_seats__sync_retirer"."sync_finish", "slice_seats__sync_retirer"."sync_gold_input", "slice_seats__sync_retirer"."sync_held", "slice_seats__sync_retirer"."sync_refusal", "slice_seats__sync_retirer"."sync_result", "slice_seats__sync_retirer"."sync_retry", "slice_seats__sync_retirer"."sync_root", "slice_seats__sync_retirer"."sync_scope", "slice_seats__sync_retirer"."sync_skipped", "slice_seats__sync_retirer"."sync_start_scope", "slice_seats__sync_retirer"."sync_start_step", "slice_seats__sync_retirer"."sync_step", "slice_seats__sync_retirer"."sync_sync_run_input", "slice_seats__sync_retirer"."sync_within" TO :"slice_seats__sync_retirer";
+GRANT SELECT ON TABLE "slice_seats__sync_retirer"."sync_admitted", "slice_seats__sync_retirer"."sync_build_input", "slice_seats__sync_retirer"."sync_build_output", "slice_seats__sync_retirer"."sync_claim", "slice_seats__sync_retirer"."sync_copy_input", "slice_seats__sync_retirer"."sync_copy_output", "slice_seats__sync_retirer"."sync_done", "slice_seats__sync_retirer"."sync_exclusive_key", "slice_seats__sync_retirer"."sync_exhausted", "slice_seats__sync_retirer"."sync_failed", "slice_seats__sync_retirer"."sync_fenced", "slice_seats__sync_retirer"."sync_finish", "slice_seats__sync_retirer"."sync_gold_input", "slice_seats__sync_retirer"."sync_held", "slice_seats__sync_retirer"."sync_refusal", "slice_seats__sync_retirer"."sync_result", "slice_seats__sync_retirer"."sync_retry", "slice_seats__sync_retirer"."sync_root", "slice_seats__sync_retirer"."sync_scope", "slice_seats__sync_retirer"."sync_skipped", "slice_seats__sync_retirer"."sync_start_step", "slice_seats__sync_retirer"."sync_step", "slice_seats__sync_retirer"."sync_sync_run_input" TO :"slice_seats__sync_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__sync_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__sync_join_names_2ssan2q3dj"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_root_kind_names_drp422srbk"() TO :"slice_seats__sync_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_root_kind_names_drp422srbk"() TO :"slice_seats__sync_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__retire_sync_root_ygktrpeohu"("slice"."__domain_jotafzuj2i"[]) TO :"slice_seats__sync_retirer";
 
@@ -2717,9 +2593,9 @@ ALTER ROLE :"slice_seats__app" SET hnsw.iterative_scan = 'strict_order';
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 REVOKE ALL ON SCHEMA "slice", "slice_seats", "slice_seats__auditor", "slice_seats__loader", "slice_seats__assign_coordinator", "slice_seats__assign_den", "slice_seats__assign_retirer", "slice_seats__chain_coordinator", "slice_seats__chain_den", "slice_seats__chain_retirer", "slice_seats__fan_coordinator", "slice_seats__fan_den", "slice_seats__fan_retirer", "slice_seats__retry_coordinator", "slice_seats__retry_den", "slice_seats__retry_retirer", "slice_seats__sync_coordinator", "slice_seats__sync_den", "slice_seats__sync_retirer" FROM PUBLIC;
 
-REVOKE ALL ON TABLE "slice"."assign_admitted", "slice"."assign_assignment_input", "slice"."assign_assignment_input_exclude", "slice"."assign_assignment_input_mode_nearest", "slice"."assign_assignment_input_mode_within", "slice"."assign_claim", "slice"."assign_decide_input", "slice"."assign_decide_input_exclude", "slice"."assign_decide_input_mode_nearest", "slice"."assign_decide_input_mode_within", "slice"."assign_decide_nearest_read", "slice"."assign_decide_output", "slice"."assign_decide_output_stage_rest", "slice"."assign_decide_output_stage_serve", "slice"."assign_decide_output_weighed", "slice"."assign_decide_seen_read", "slice"."assign_done", "slice"."assign_exhausted", "slice"."assign_failed", "slice"."assign_fenced", "slice"."assign_finish", "slice"."assign_held", "slice"."assign_paused", "slice"."assign_refusal", "slice"."assign_result", "slice"."assign_resumed", "slice"."assign_retry", "slice"."assign_root", "slice"."assign_scope", "slice"."assign_skipped", "slice"."assign_start_scope", "slice"."assign_start_step", "slice"."assign_step", "slice"."assign_within", "slice"."assigned", "slice"."audit", "slice"."built", "slice"."chain_admitted", "slice"."chain_chain_run_input", "slice"."chain_claim", "slice"."chain_done", "slice"."chain_exhausted", "slice"."chain_failed", "slice"."chain_fenced", "slice"."chain_finish", "slice"."chain_held", "slice"."chain_next", "slice"."chain_ordered_input", "slice"."chain_page_input", "slice"."chain_page_input_after", "slice"."chain_page_output", "slice"."chain_page_output_next", "slice"."chain_page_weights_read", "slice"."chain_paused", "slice"."chain_refusal", "slice"."chain_result", "slice"."chain_resumed", "slice"."chain_retry", "slice"."chain_root", "slice"."chain_scope", "slice"."chain_skipped", "slice"."chain_start_scope", "slice"."chain_start_step", "slice"."chain_step", "slice"."chain_within", "slice"."concluded", "slice"."copied", "slice"."cursor", "slice"."fan_admitted", "slice"."fan_batch_input", "slice"."fan_claim", "slice"."fan_done", "slice"."fan_exhausted", "slice"."fan_failed", "slice"."fan_fan_run_input", "slice"."fan_fenced", "slice"."fan_finish", "slice"."fan_freed", "slice"."fan_held", "slice"."fan_hold", "slice"."fan_paused", "slice"."fan_refusal", "slice"."fan_result", "slice"."fan_resumed", "slice"."fan_retry", "slice"."fan_root", "slice"."fan_scope", "slice"."fan_skipped", "slice"."fan_square_input", "slice"."fan_square_output", "slice"."fan_start_scope", "slice"."fan_start_step", "slice"."fan_step", "slice"."fan_within", "slice"."item", "slice"."missed", "slice"."order", "slice"."passage", "slice"."retry_admitted", "slice"."retry_brittle_input", "slice"."retry_brittle_output", "slice"."retry_claim", "slice"."retry_done", "slice"."retry_exhausted", "slice"."retry_failed", "slice"."retry_fenced", "slice"."retry_finish", "slice"."retry_held", "slice"."retry_ladders_input", "slice"."retry_paused", "slice"."retry_refusal", "slice"."retry_result", "slice"."retry_resumed", "slice"."retry_retry", "slice"."retry_root", "slice"."retry_scope", "slice"."retry_skipped", "slice"."retry_start_scope", "slice"."retry_start_step", "slice"."retry_steadfast_input", "slice"."retry_steadfast_output", "slice"."retry_step", "slice"."retry_within", "slice"."seen", "slice"."settled", "slice"."sync_admitted", "slice"."sync_build_input", "slice"."sync_build_output", "slice"."sync_claim", "slice"."sync_copy_input", "slice"."sync_copy_output", "slice"."sync_done", "slice"."sync_exclusive", "slice"."sync_exclusive_key", "slice"."sync_exhausted", "slice"."sync_failed", "slice"."sync_fenced", "slice"."sync_finish", "slice"."sync_gold_input", "slice"."sync_held", "slice"."sync_paused", "slice"."sync_refusal", "slice"."sync_released", "slice"."sync_result", "slice"."sync_resumed", "slice"."sync_retry", "slice"."sync_root", "slice"."sync_scope", "slice"."sync_skipped", "slice"."sync_start_scope", "slice"."sync_start_step", "slice"."sync_step", "slice"."sync_sync_run_input", "slice"."sync_within", "slice"."tally", "slice"."weight", "slice_seats__auditor"."assign_decide_nearest_read", "slice_seats__auditor"."assign_decide_output", "slice_seats__auditor"."assign_decide_output_stage_serve", "slice_seats__auditor"."assign_decide_output_weighed", "slice_seats__auditor"."assign_decide_seen_read", "slice_seats__auditor"."assign_result", "slice_seats__auditor"."assign_step", "slice_seats__auditor"."assigned", "slice_seats__auditor"."audit", "slice_seats__auditor"."built", "slice_seats__auditor"."chain_admitted", "slice_seats__auditor"."chain_chain_run_input", "slice_seats__auditor"."chain_claim", "slice_seats__auditor"."chain_finish", "slice_seats__auditor"."chain_next", "slice_seats__auditor"."chain_ordered_input", "slice_seats__auditor"."chain_page_input", "slice_seats__auditor"."chain_page_input_after", "slice_seats__auditor"."chain_page_output", "slice_seats__auditor"."chain_page_output_next", "slice_seats__auditor"."chain_page_weights_read", "slice_seats__auditor"."chain_result", "slice_seats__auditor"."chain_root", "slice_seats__auditor"."chain_scope", "slice_seats__auditor"."chain_start_scope", "slice_seats__auditor"."chain_start_step", "slice_seats__auditor"."chain_step", "slice_seats__auditor"."chain_within", "slice_seats__auditor"."concluded", "slice_seats__auditor"."copied", "slice_seats__auditor"."cursor", "slice_seats__auditor"."fan_admitted", "slice_seats__auditor"."fan_batch_input", "slice_seats__auditor"."fan_fan_run_input", "slice_seats__auditor"."fan_finish", "slice_seats__auditor"."fan_result", "slice_seats__auditor"."fan_root", "slice_seats__auditor"."fan_scope", "slice_seats__auditor"."fan_square_input", "slice_seats__auditor"."fan_square_output", "slice_seats__auditor"."fan_start_scope", "slice_seats__auditor"."fan_start_step", "slice_seats__auditor"."fan_step", "slice_seats__auditor"."fan_within", "slice_seats__auditor"."item", "slice_seats__auditor"."order", "slice_seats__auditor"."retry_claim", "slice_seats__auditor"."retry_exhausted", "slice_seats__auditor"."retry_result", "slice_seats__auditor"."retry_step", "slice_seats__auditor"."settled", "slice_seats__auditor"."sync_admitted", "slice_seats__auditor"."sync_finish", "slice_seats__auditor"."sync_result", "slice_seats__auditor"."sync_scope", "slice_seats__auditor"."sync_skipped", "slice_seats__auditor"."tally", "slice_seats__auditor"."weight", "slice_seats__loader"."assign_admitted", "slice_seats__loader"."assign_assignment_input", "slice_seats__loader"."assign_assignment_input_exclude", "slice_seats__loader"."assign_assignment_input_mode_nearest", "slice_seats__loader"."assign_assignment_input_mode_within", "slice_seats__loader"."assign_claim", "slice_seats__loader"."assign_decide_input", "slice_seats__loader"."assign_decide_input_exclude", "slice_seats__loader"."assign_decide_input_mode_nearest", "slice_seats__loader"."assign_decide_input_mode_within", "slice_seats__loader"."assign_decide_nearest_read", "slice_seats__loader"."assign_decide_output", "slice_seats__loader"."assign_decide_output_stage_rest", "slice_seats__loader"."assign_decide_output_stage_serve", "slice_seats__loader"."assign_decide_output_weighed", "slice_seats__loader"."assign_decide_seen_read", "slice_seats__loader"."assign_done", "slice_seats__loader"."assign_exhausted", "slice_seats__loader"."assign_failed", "slice_seats__loader"."assign_fenced", "slice_seats__loader"."assign_finish", "slice_seats__loader"."assign_held", "slice_seats__loader"."assign_refusal", "slice_seats__loader"."assign_result", "slice_seats__loader"."assign_retry", "slice_seats__loader"."assign_root", "slice_seats__loader"."assign_scope", "slice_seats__loader"."assign_skipped", "slice_seats__loader"."assign_start_scope", "slice_seats__loader"."assign_start_step", "slice_seats__loader"."assign_step", "slice_seats__loader"."assign_within", "slice_seats__loader"."assigned", "slice_seats__loader"."built", "slice_seats__loader"."chain_admitted", "slice_seats__loader"."chain_chain_run_input", "slice_seats__loader"."chain_claim", "slice_seats__loader"."chain_done", "slice_seats__loader"."chain_exhausted", "slice_seats__loader"."chain_failed", "slice_seats__loader"."chain_fenced", "slice_seats__loader"."chain_finish", "slice_seats__loader"."chain_held", "slice_seats__loader"."chain_next", "slice_seats__loader"."chain_ordered_input", "slice_seats__loader"."chain_page_input", "slice_seats__loader"."chain_page_input_after", "slice_seats__loader"."chain_page_output", "slice_seats__loader"."chain_page_output_next", "slice_seats__loader"."chain_page_weights_read", "slice_seats__loader"."chain_refusal", "slice_seats__loader"."chain_result", "slice_seats__loader"."chain_retry", "slice_seats__loader"."chain_root", "slice_seats__loader"."chain_scope", "slice_seats__loader"."chain_skipped", "slice_seats__loader"."chain_start_scope", "slice_seats__loader"."chain_start_step", "slice_seats__loader"."chain_step", "slice_seats__loader"."chain_within", "slice_seats__loader"."concluded", "slice_seats__loader"."copied", "slice_seats__loader"."cursor", "slice_seats__loader"."fan_admitted", "slice_seats__loader"."fan_batch_input", "slice_seats__loader"."fan_claim", "slice_seats__loader"."fan_done", "slice_seats__loader"."fan_exhausted", "slice_seats__loader"."fan_failed", "slice_seats__loader"."fan_fan_run_input", "slice_seats__loader"."fan_fenced", "slice_seats__loader"."fan_finish", "slice_seats__loader"."fan_held", "slice_seats__loader"."fan_refusal", "slice_seats__loader"."fan_result", "slice_seats__loader"."fan_retry", "slice_seats__loader"."fan_root", "slice_seats__loader"."fan_scope", "slice_seats__loader"."fan_skipped", "slice_seats__loader"."fan_square_input", "slice_seats__loader"."fan_square_output", "slice_seats__loader"."fan_start_scope", "slice_seats__loader"."fan_start_step", "slice_seats__loader"."fan_step", "slice_seats__loader"."fan_within", "slice_seats__loader"."item", "slice_seats__loader"."missed", "slice_seats__loader"."order", "slice_seats__loader"."passage", "slice_seats__loader"."retry_admitted", "slice_seats__loader"."retry_brittle_input", "slice_seats__loader"."retry_brittle_output", "slice_seats__loader"."retry_claim", "slice_seats__loader"."retry_done", "slice_seats__loader"."retry_exhausted", "slice_seats__loader"."retry_failed", "slice_seats__loader"."retry_fenced", "slice_seats__loader"."retry_finish", "slice_seats__loader"."retry_held", "slice_seats__loader"."retry_ladders_input", "slice_seats__loader"."retry_refusal", "slice_seats__loader"."retry_result", "slice_seats__loader"."retry_retry", "slice_seats__loader"."retry_root", "slice_seats__loader"."retry_scope", "slice_seats__loader"."retry_skipped", "slice_seats__loader"."retry_start_scope", "slice_seats__loader"."retry_start_step", "slice_seats__loader"."retry_steadfast_input", "slice_seats__loader"."retry_steadfast_output", "slice_seats__loader"."retry_step", "slice_seats__loader"."retry_within", "slice_seats__loader"."seen", "slice_seats__loader"."settled", "slice_seats__loader"."sync_admitted", "slice_seats__loader"."sync_build_input", "slice_seats__loader"."sync_build_output", "slice_seats__loader"."sync_claim", "slice_seats__loader"."sync_copy_input", "slice_seats__loader"."sync_copy_output", "slice_seats__loader"."sync_done", "slice_seats__loader"."sync_exclusive_key", "slice_seats__loader"."sync_exhausted", "slice_seats__loader"."sync_failed", "slice_seats__loader"."sync_fenced", "slice_seats__loader"."sync_finish", "slice_seats__loader"."sync_gold_input", "slice_seats__loader"."sync_held", "slice_seats__loader"."sync_refusal", "slice_seats__loader"."sync_result", "slice_seats__loader"."sync_retry", "slice_seats__loader"."sync_root", "slice_seats__loader"."sync_scope", "slice_seats__loader"."sync_skipped", "slice_seats__loader"."sync_start_scope", "slice_seats__loader"."sync_start_step", "slice_seats__loader"."sync_step", "slice_seats__loader"."sync_sync_run_input", "slice_seats__loader"."sync_within", "slice_seats__loader"."tally", "slice_seats__loader"."weight", "slice_seats__assign_coordinator"."assign_paused", "slice_seats__assign_coordinator"."assign_resumed", "slice_seats__assign_den"."assign_admitted", "slice_seats__assign_den"."assign_assignment_input", "slice_seats__assign_den"."assign_assignment_input_exclude", "slice_seats__assign_den"."assign_assignment_input_mode_nearest", "slice_seats__assign_den"."assign_assignment_input_mode_within", "slice_seats__assign_den"."assign_claim", "slice_seats__assign_den"."assign_decide_input", "slice_seats__assign_den"."assign_decide_input_exclude", "slice_seats__assign_den"."assign_decide_input_mode_nearest", "slice_seats__assign_den"."assign_decide_input_mode_within", "slice_seats__assign_den"."assign_decide_nearest_read", "slice_seats__assign_den"."assign_decide_output", "slice_seats__assign_den"."assign_decide_output_stage_rest", "slice_seats__assign_den"."assign_decide_output_stage_serve", "slice_seats__assign_den"."assign_decide_output_weighed", "slice_seats__assign_den"."assign_decide_seen_read", "slice_seats__assign_den"."assign_done", "slice_seats__assign_den"."assign_exhausted", "slice_seats__assign_den"."assign_failed", "slice_seats__assign_den"."assign_fenced", "slice_seats__assign_den"."assign_finish", "slice_seats__assign_den"."assign_held", "slice_seats__assign_den"."assign_paused", "slice_seats__assign_den"."assign_refusal", "slice_seats__assign_den"."assign_result", "slice_seats__assign_den"."assign_resumed", "slice_seats__assign_den"."assign_retry", "slice_seats__assign_den"."assign_root", "slice_seats__assign_den"."assign_scope", "slice_seats__assign_den"."assign_skipped", "slice_seats__assign_den"."assign_start_scope", "slice_seats__assign_den"."assign_start_step", "slice_seats__assign_den"."assign_step", "slice_seats__assign_den"."assign_within", "slice_seats__assign_retirer"."assign_admitted", "slice_seats__assign_retirer"."assign_assignment_input", "slice_seats__assign_retirer"."assign_assignment_input_exclude", "slice_seats__assign_retirer"."assign_assignment_input_mode_nearest", "slice_seats__assign_retirer"."assign_assignment_input_mode_within", "slice_seats__assign_retirer"."assign_claim", "slice_seats__assign_retirer"."assign_decide_input", "slice_seats__assign_retirer"."assign_decide_input_exclude", "slice_seats__assign_retirer"."assign_decide_input_mode_nearest", "slice_seats__assign_retirer"."assign_decide_input_mode_within", "slice_seats__assign_retirer"."assign_decide_nearest_read", "slice_seats__assign_retirer"."assign_decide_output", "slice_seats__assign_retirer"."assign_decide_output_stage_rest", "slice_seats__assign_retirer"."assign_decide_output_stage_serve", "slice_seats__assign_retirer"."assign_decide_output_weighed", "slice_seats__assign_retirer"."assign_decide_seen_read", "slice_seats__assign_retirer"."assign_done", "slice_seats__assign_retirer"."assign_exhausted", "slice_seats__assign_retirer"."assign_failed", "slice_seats__assign_retirer"."assign_fenced", "slice_seats__assign_retirer"."assign_finish", "slice_seats__assign_retirer"."assign_held", "slice_seats__assign_retirer"."assign_refusal", "slice_seats__assign_retirer"."assign_result", "slice_seats__assign_retirer"."assign_retry", "slice_seats__assign_retirer"."assign_root", "slice_seats__assign_retirer"."assign_scope", "slice_seats__assign_retirer"."assign_skipped", "slice_seats__assign_retirer"."assign_start_scope", "slice_seats__assign_retirer"."assign_start_step", "slice_seats__assign_retirer"."assign_step", "slice_seats__assign_retirer"."assign_within", "slice_seats__chain_coordinator"."chain_paused", "slice_seats__chain_coordinator"."chain_resumed", "slice_seats__chain_den"."chain_admitted", "slice_seats__chain_den"."chain_chain_run_input", "slice_seats__chain_den"."chain_claim", "slice_seats__chain_den"."chain_done", "slice_seats__chain_den"."chain_exhausted", "slice_seats__chain_den"."chain_failed", "slice_seats__chain_den"."chain_fenced", "slice_seats__chain_den"."chain_finish", "slice_seats__chain_den"."chain_held", "slice_seats__chain_den"."chain_next", "slice_seats__chain_den"."chain_ordered_input", "slice_seats__chain_den"."chain_page_input", "slice_seats__chain_den"."chain_page_input_after", "slice_seats__chain_den"."chain_page_output", "slice_seats__chain_den"."chain_page_output_next", "slice_seats__chain_den"."chain_page_weights_read", "slice_seats__chain_den"."chain_paused", "slice_seats__chain_den"."chain_refusal", "slice_seats__chain_den"."chain_result", "slice_seats__chain_den"."chain_resumed", "slice_seats__chain_den"."chain_retry", "slice_seats__chain_den"."chain_root", "slice_seats__chain_den"."chain_scope", "slice_seats__chain_den"."chain_skipped", "slice_seats__chain_den"."chain_start_scope", "slice_seats__chain_den"."chain_start_step", "slice_seats__chain_den"."chain_step", "slice_seats__chain_den"."chain_within", "slice_seats__chain_retirer"."chain_admitted", "slice_seats__chain_retirer"."chain_chain_run_input", "slice_seats__chain_retirer"."chain_claim", "slice_seats__chain_retirer"."chain_done", "slice_seats__chain_retirer"."chain_exhausted", "slice_seats__chain_retirer"."chain_failed", "slice_seats__chain_retirer"."chain_fenced", "slice_seats__chain_retirer"."chain_finish", "slice_seats__chain_retirer"."chain_held", "slice_seats__chain_retirer"."chain_next", "slice_seats__chain_retirer"."chain_ordered_input", "slice_seats__chain_retirer"."chain_page_input", "slice_seats__chain_retirer"."chain_page_input_after", "slice_seats__chain_retirer"."chain_page_output", "slice_seats__chain_retirer"."chain_page_output_next", "slice_seats__chain_retirer"."chain_page_weights_read", "slice_seats__chain_retirer"."chain_refusal", "slice_seats__chain_retirer"."chain_result", "slice_seats__chain_retirer"."chain_retry", "slice_seats__chain_retirer"."chain_root", "slice_seats__chain_retirer"."chain_scope", "slice_seats__chain_retirer"."chain_skipped", "slice_seats__chain_retirer"."chain_start_scope", "slice_seats__chain_retirer"."chain_start_step", "slice_seats__chain_retirer"."chain_step", "slice_seats__chain_retirer"."chain_within", "slice_seats__fan_coordinator"."fan_freed", "slice_seats__fan_coordinator"."fan_hold", "slice_seats__fan_coordinator"."fan_live", "slice_seats__fan_coordinator"."fan_paused", "slice_seats__fan_coordinator"."fan_resumed", "slice_seats__fan_den"."fan_admitted", "slice_seats__fan_den"."fan_batch_input", "slice_seats__fan_den"."fan_claim", "slice_seats__fan_den"."fan_done", "slice_seats__fan_den"."fan_exhausted", "slice_seats__fan_den"."fan_failed", "slice_seats__fan_den"."fan_fan_run_input", "slice_seats__fan_den"."fan_fenced", "slice_seats__fan_den"."fan_finish", "slice_seats__fan_den"."fan_freed", "slice_seats__fan_den"."fan_held", "slice_seats__fan_den"."fan_hold", "slice_seats__fan_den"."fan_live", "slice_seats__fan_den"."fan_paused", "slice_seats__fan_den"."fan_refusal", "slice_seats__fan_den"."fan_result", "slice_seats__fan_den"."fan_resumed", "slice_seats__fan_den"."fan_retry", "slice_seats__fan_den"."fan_root", "slice_seats__fan_den"."fan_scope", "slice_seats__fan_den"."fan_skipped", "slice_seats__fan_den"."fan_square_input", "slice_seats__fan_den"."fan_square_output", "slice_seats__fan_den"."fan_start_scope", "slice_seats__fan_den"."fan_start_step", "slice_seats__fan_den"."fan_step", "slice_seats__fan_den"."fan_within", "slice_seats__fan_retirer"."fan_admitted", "slice_seats__fan_retirer"."fan_batch_input", "slice_seats__fan_retirer"."fan_claim", "slice_seats__fan_retirer"."fan_done", "slice_seats__fan_retirer"."fan_exhausted", "slice_seats__fan_retirer"."fan_failed", "slice_seats__fan_retirer"."fan_fan_run_input", "slice_seats__fan_retirer"."fan_fenced", "slice_seats__fan_retirer"."fan_finish", "slice_seats__fan_retirer"."fan_held", "slice_seats__fan_retirer"."fan_refusal", "slice_seats__fan_retirer"."fan_result", "slice_seats__fan_retirer"."fan_retry", "slice_seats__fan_retirer"."fan_root", "slice_seats__fan_retirer"."fan_scope", "slice_seats__fan_retirer"."fan_skipped", "slice_seats__fan_retirer"."fan_square_input", "slice_seats__fan_retirer"."fan_square_output", "slice_seats__fan_retirer"."fan_start_scope", "slice_seats__fan_retirer"."fan_start_step", "slice_seats__fan_retirer"."fan_step", "slice_seats__fan_retirer"."fan_within", "slice_seats__retry_coordinator"."retry_paused", "slice_seats__retry_coordinator"."retry_resumed", "slice_seats__retry_den"."retry_admitted", "slice_seats__retry_den"."retry_brittle_input", "slice_seats__retry_den"."retry_brittle_output", "slice_seats__retry_den"."retry_claim", "slice_seats__retry_den"."retry_done", "slice_seats__retry_den"."retry_exhausted", "slice_seats__retry_den"."retry_failed", "slice_seats__retry_den"."retry_fenced", "slice_seats__retry_den"."retry_finish", "slice_seats__retry_den"."retry_held", "slice_seats__retry_den"."retry_ladders_input", "slice_seats__retry_den"."retry_paused", "slice_seats__retry_den"."retry_refusal", "slice_seats__retry_den"."retry_result", "slice_seats__retry_den"."retry_resumed", "slice_seats__retry_den"."retry_retry", "slice_seats__retry_den"."retry_root", "slice_seats__retry_den"."retry_scope", "slice_seats__retry_den"."retry_skipped", "slice_seats__retry_den"."retry_start_scope", "slice_seats__retry_den"."retry_start_step", "slice_seats__retry_den"."retry_steadfast_input", "slice_seats__retry_den"."retry_steadfast_output", "slice_seats__retry_den"."retry_step", "slice_seats__retry_den"."retry_within", "slice_seats__retry_retirer"."retry_admitted", "slice_seats__retry_retirer"."retry_brittle_input", "slice_seats__retry_retirer"."retry_brittle_output", "slice_seats__retry_retirer"."retry_claim", "slice_seats__retry_retirer"."retry_done", "slice_seats__retry_retirer"."retry_exhausted", "slice_seats__retry_retirer"."retry_failed", "slice_seats__retry_retirer"."retry_fenced", "slice_seats__retry_retirer"."retry_finish", "slice_seats__retry_retirer"."retry_held", "slice_seats__retry_retirer"."retry_ladders_input", "slice_seats__retry_retirer"."retry_refusal", "slice_seats__retry_retirer"."retry_result", "slice_seats__retry_retirer"."retry_retry", "slice_seats__retry_retirer"."retry_root", "slice_seats__retry_retirer"."retry_scope", "slice_seats__retry_retirer"."retry_skipped", "slice_seats__retry_retirer"."retry_start_scope", "slice_seats__retry_retirer"."retry_start_step", "slice_seats__retry_retirer"."retry_steadfast_input", "slice_seats__retry_retirer"."retry_steadfast_output", "slice_seats__retry_retirer"."retry_step", "slice_seats__retry_retirer"."retry_within", "slice_seats__sync_coordinator"."sync_exclusive", "slice_seats__sync_coordinator"."sync_paused", "slice_seats__sync_coordinator"."sync_released", "slice_seats__sync_coordinator"."sync_resumed", "slice_seats__sync_den"."chain_result", "slice_seats__sync_den"."chain_step", "slice_seats__sync_den"."sync_admitted", "slice_seats__sync_den"."sync_build_input", "slice_seats__sync_den"."sync_build_output", "slice_seats__sync_den"."sync_claim", "slice_seats__sync_den"."sync_copy_input", "slice_seats__sync_den"."sync_copy_output", "slice_seats__sync_den"."sync_done", "slice_seats__sync_den"."sync_exclusive", "slice_seats__sync_den"."sync_exclusive_key", "slice_seats__sync_den"."sync_exhausted", "slice_seats__sync_den"."sync_failed", "slice_seats__sync_den"."sync_fenced", "slice_seats__sync_den"."sync_finish", "slice_seats__sync_den"."sync_gold_input", "slice_seats__sync_den"."sync_held", "slice_seats__sync_den"."sync_paused", "slice_seats__sync_den"."sync_refusal", "slice_seats__sync_den"."sync_released", "slice_seats__sync_den"."sync_result", "slice_seats__sync_den"."sync_resumed", "slice_seats__sync_den"."sync_retry", "slice_seats__sync_den"."sync_root", "slice_seats__sync_den"."sync_scope", "slice_seats__sync_den"."sync_skipped", "slice_seats__sync_den"."sync_start_scope", "slice_seats__sync_den"."sync_start_step", "slice_seats__sync_den"."sync_step", "slice_seats__sync_den"."sync_sync_run_input", "slice_seats__sync_den"."sync_within", "slice_seats__sync_retirer"."sync_admitted", "slice_seats__sync_retirer"."sync_build_input", "slice_seats__sync_retirer"."sync_build_output", "slice_seats__sync_retirer"."sync_claim", "slice_seats__sync_retirer"."sync_copy_input", "slice_seats__sync_retirer"."sync_copy_output", "slice_seats__sync_retirer"."sync_done", "slice_seats__sync_retirer"."sync_exclusive_key", "slice_seats__sync_retirer"."sync_exhausted", "slice_seats__sync_retirer"."sync_failed", "slice_seats__sync_retirer"."sync_fenced", "slice_seats__sync_retirer"."sync_finish", "slice_seats__sync_retirer"."sync_gold_input", "slice_seats__sync_retirer"."sync_held", "slice_seats__sync_retirer"."sync_refusal", "slice_seats__sync_retirer"."sync_result", "slice_seats__sync_retirer"."sync_retry", "slice_seats__sync_retirer"."sync_root", "slice_seats__sync_retirer"."sync_scope", "slice_seats__sync_retirer"."sync_skipped", "slice_seats__sync_retirer"."sync_start_scope", "slice_seats__sync_retirer"."sync_start_step", "slice_seats__sync_retirer"."sync_step", "slice_seats__sync_retirer"."sync_sync_run_input", "slice_seats__sync_retirer"."sync_within" FROM PUBLIC;
+REVOKE ALL ON TABLE "slice"."assign_admitted", "slice"."assign_assignment_input", "slice"."assign_assignment_input_exclude", "slice"."assign_assignment_input_mode_nearest", "slice"."assign_assignment_input_mode_within", "slice"."assign_claim", "slice"."assign_decide_input", "slice"."assign_decide_input_exclude", "slice"."assign_decide_input_mode_nearest", "slice"."assign_decide_input_mode_within", "slice"."assign_decide_nearest_read", "slice"."assign_decide_output", "slice"."assign_decide_output_stage_rest", "slice"."assign_decide_output_stage_serve", "slice"."assign_decide_output_weighed", "slice"."assign_decide_seen_read", "slice"."assign_done", "slice"."assign_exhausted", "slice"."assign_failed", "slice"."assign_fenced", "slice"."assign_finish", "slice"."assign_held", "slice"."assign_paused", "slice"."assign_refusal", "slice"."assign_result", "slice"."assign_resumed", "slice"."assign_retry", "slice"."assign_root", "slice"."assign_scope", "slice"."assign_skipped", "slice"."assign_start_step", "slice"."assign_step", "slice"."assigned", "slice"."audit", "slice"."built", "slice"."chain_admitted", "slice"."chain_chain_run_input", "slice"."chain_claim", "slice"."chain_done", "slice"."chain_exhausted", "slice"."chain_failed", "slice"."chain_fenced", "slice"."chain_finish", "slice"."chain_held", "slice"."chain_next", "slice"."chain_ordered_input", "slice"."chain_page_input", "slice"."chain_page_input_after", "slice"."chain_page_output", "slice"."chain_page_output_next", "slice"."chain_page_weights_read", "slice"."chain_paused", "slice"."chain_refusal", "slice"."chain_result", "slice"."chain_resumed", "slice"."chain_retry", "slice"."chain_root", "slice"."chain_scope", "slice"."chain_skipped", "slice"."chain_start_step", "slice"."chain_step", "slice"."concluded", "slice"."copied", "slice"."cursor", "slice"."fan_admitted", "slice"."fan_batch_input", "slice"."fan_claim", "slice"."fan_done", "slice"."fan_exhausted", "slice"."fan_failed", "slice"."fan_fan_run_input", "slice"."fan_fenced", "slice"."fan_finish", "slice"."fan_freed", "slice"."fan_held", "slice"."fan_hold", "slice"."fan_paused", "slice"."fan_refusal", "slice"."fan_result", "slice"."fan_resumed", "slice"."fan_retry", "slice"."fan_root", "slice"."fan_scope", "slice"."fan_skipped", "slice"."fan_square_input", "slice"."fan_square_output", "slice"."fan_start_scope", "slice"."fan_start_step", "slice"."fan_step", "slice"."fan_within", "slice"."item", "slice"."missed", "slice"."order", "slice"."passage", "slice"."retry_admitted", "slice"."retry_brittle_input", "slice"."retry_brittle_output", "slice"."retry_claim", "slice"."retry_done", "slice"."retry_exhausted", "slice"."retry_failed", "slice"."retry_fenced", "slice"."retry_finish", "slice"."retry_held", "slice"."retry_ladders_input", "slice"."retry_paused", "slice"."retry_refusal", "slice"."retry_result", "slice"."retry_resumed", "slice"."retry_retry", "slice"."retry_root", "slice"."retry_scope", "slice"."retry_skipped", "slice"."retry_start_step", "slice"."retry_steadfast_input", "slice"."retry_steadfast_output", "slice"."retry_step", "slice"."seen", "slice"."settled", "slice"."sync_admitted", "slice"."sync_build_input", "slice"."sync_build_output", "slice"."sync_claim", "slice"."sync_copy_input", "slice"."sync_copy_output", "slice"."sync_done", "slice"."sync_exclusive", "slice"."sync_exclusive_key", "slice"."sync_exhausted", "slice"."sync_failed", "slice"."sync_fenced", "slice"."sync_finish", "slice"."sync_gold_input", "slice"."sync_held", "slice"."sync_paused", "slice"."sync_refusal", "slice"."sync_released", "slice"."sync_result", "slice"."sync_resumed", "slice"."sync_retry", "slice"."sync_root", "slice"."sync_scope", "slice"."sync_skipped", "slice"."sync_start_step", "slice"."sync_step", "slice"."sync_sync_run_input", "slice"."tally", "slice"."weight", "slice_seats__auditor"."assign_decide_nearest_read", "slice_seats__auditor"."assign_decide_output", "slice_seats__auditor"."assign_decide_output_stage_serve", "slice_seats__auditor"."assign_decide_output_weighed", "slice_seats__auditor"."assign_decide_seen_read", "slice_seats__auditor"."assign_result", "slice_seats__auditor"."assign_step", "slice_seats__auditor"."assigned", "slice_seats__auditor"."audit", "slice_seats__auditor"."built", "slice_seats__auditor"."chain_admitted", "slice_seats__auditor"."chain_chain_run_input", "slice_seats__auditor"."chain_claim", "slice_seats__auditor"."chain_finish", "slice_seats__auditor"."chain_next", "slice_seats__auditor"."chain_ordered_input", "slice_seats__auditor"."chain_page_input", "slice_seats__auditor"."chain_page_input_after", "slice_seats__auditor"."chain_page_output", "slice_seats__auditor"."chain_page_output_next", "slice_seats__auditor"."chain_page_weights_read", "slice_seats__auditor"."chain_result", "slice_seats__auditor"."chain_root", "slice_seats__auditor"."chain_scope", "slice_seats__auditor"."chain_start_step", "slice_seats__auditor"."chain_step", "slice_seats__auditor"."concluded", "slice_seats__auditor"."copied", "slice_seats__auditor"."cursor", "slice_seats__auditor"."fan_admitted", "slice_seats__auditor"."fan_batch_input", "slice_seats__auditor"."fan_fan_run_input", "slice_seats__auditor"."fan_finish", "slice_seats__auditor"."fan_result", "slice_seats__auditor"."fan_root", "slice_seats__auditor"."fan_scope", "slice_seats__auditor"."fan_square_input", "slice_seats__auditor"."fan_square_output", "slice_seats__auditor"."fan_start_scope", "slice_seats__auditor"."fan_start_step", "slice_seats__auditor"."fan_step", "slice_seats__auditor"."fan_within", "slice_seats__auditor"."item", "slice_seats__auditor"."order", "slice_seats__auditor"."retry_claim", "slice_seats__auditor"."retry_exhausted", "slice_seats__auditor"."retry_result", "slice_seats__auditor"."retry_step", "slice_seats__auditor"."settled", "slice_seats__auditor"."sync_admitted", "slice_seats__auditor"."sync_finish", "slice_seats__auditor"."sync_result", "slice_seats__auditor"."sync_scope", "slice_seats__auditor"."sync_skipped", "slice_seats__auditor"."tally", "slice_seats__auditor"."weight", "slice_seats__loader"."assign_admitted", "slice_seats__loader"."assign_assignment_input", "slice_seats__loader"."assign_assignment_input_exclude", "slice_seats__loader"."assign_assignment_input_mode_nearest", "slice_seats__loader"."assign_assignment_input_mode_within", "slice_seats__loader"."assign_claim", "slice_seats__loader"."assign_decide_input", "slice_seats__loader"."assign_decide_input_exclude", "slice_seats__loader"."assign_decide_input_mode_nearest", "slice_seats__loader"."assign_decide_input_mode_within", "slice_seats__loader"."assign_decide_nearest_read", "slice_seats__loader"."assign_decide_output", "slice_seats__loader"."assign_decide_output_stage_rest", "slice_seats__loader"."assign_decide_output_stage_serve", "slice_seats__loader"."assign_decide_output_weighed", "slice_seats__loader"."assign_decide_seen_read", "slice_seats__loader"."assign_done", "slice_seats__loader"."assign_exhausted", "slice_seats__loader"."assign_failed", "slice_seats__loader"."assign_fenced", "slice_seats__loader"."assign_finish", "slice_seats__loader"."assign_held", "slice_seats__loader"."assign_refusal", "slice_seats__loader"."assign_result", "slice_seats__loader"."assign_retry", "slice_seats__loader"."assign_root", "slice_seats__loader"."assign_scope", "slice_seats__loader"."assign_skipped", "slice_seats__loader"."assign_start_step", "slice_seats__loader"."assign_step", "slice_seats__loader"."assigned", "slice_seats__loader"."built", "slice_seats__loader"."chain_admitted", "slice_seats__loader"."chain_chain_run_input", "slice_seats__loader"."chain_claim", "slice_seats__loader"."chain_done", "slice_seats__loader"."chain_exhausted", "slice_seats__loader"."chain_failed", "slice_seats__loader"."chain_fenced", "slice_seats__loader"."chain_finish", "slice_seats__loader"."chain_held", "slice_seats__loader"."chain_next", "slice_seats__loader"."chain_ordered_input", "slice_seats__loader"."chain_page_input", "slice_seats__loader"."chain_page_input_after", "slice_seats__loader"."chain_page_output", "slice_seats__loader"."chain_page_output_next", "slice_seats__loader"."chain_page_weights_read", "slice_seats__loader"."chain_refusal", "slice_seats__loader"."chain_result", "slice_seats__loader"."chain_retry", "slice_seats__loader"."chain_root", "slice_seats__loader"."chain_scope", "slice_seats__loader"."chain_skipped", "slice_seats__loader"."chain_start_step", "slice_seats__loader"."chain_step", "slice_seats__loader"."concluded", "slice_seats__loader"."copied", "slice_seats__loader"."cursor", "slice_seats__loader"."fan_admitted", "slice_seats__loader"."fan_batch_input", "slice_seats__loader"."fan_claim", "slice_seats__loader"."fan_done", "slice_seats__loader"."fan_exhausted", "slice_seats__loader"."fan_failed", "slice_seats__loader"."fan_fan_run_input", "slice_seats__loader"."fan_fenced", "slice_seats__loader"."fan_finish", "slice_seats__loader"."fan_held", "slice_seats__loader"."fan_refusal", "slice_seats__loader"."fan_result", "slice_seats__loader"."fan_retry", "slice_seats__loader"."fan_root", "slice_seats__loader"."fan_scope", "slice_seats__loader"."fan_skipped", "slice_seats__loader"."fan_square_input", "slice_seats__loader"."fan_square_output", "slice_seats__loader"."fan_start_scope", "slice_seats__loader"."fan_start_step", "slice_seats__loader"."fan_step", "slice_seats__loader"."fan_within", "slice_seats__loader"."item", "slice_seats__loader"."missed", "slice_seats__loader"."order", "slice_seats__loader"."passage", "slice_seats__loader"."retry_admitted", "slice_seats__loader"."retry_brittle_input", "slice_seats__loader"."retry_brittle_output", "slice_seats__loader"."retry_claim", "slice_seats__loader"."retry_done", "slice_seats__loader"."retry_exhausted", "slice_seats__loader"."retry_failed", "slice_seats__loader"."retry_fenced", "slice_seats__loader"."retry_finish", "slice_seats__loader"."retry_held", "slice_seats__loader"."retry_ladders_input", "slice_seats__loader"."retry_refusal", "slice_seats__loader"."retry_result", "slice_seats__loader"."retry_retry", "slice_seats__loader"."retry_root", "slice_seats__loader"."retry_scope", "slice_seats__loader"."retry_skipped", "slice_seats__loader"."retry_start_step", "slice_seats__loader"."retry_steadfast_input", "slice_seats__loader"."retry_steadfast_output", "slice_seats__loader"."retry_step", "slice_seats__loader"."seen", "slice_seats__loader"."settled", "slice_seats__loader"."sync_admitted", "slice_seats__loader"."sync_build_input", "slice_seats__loader"."sync_build_output", "slice_seats__loader"."sync_claim", "slice_seats__loader"."sync_copy_input", "slice_seats__loader"."sync_copy_output", "slice_seats__loader"."sync_done", "slice_seats__loader"."sync_exclusive_key", "slice_seats__loader"."sync_exhausted", "slice_seats__loader"."sync_failed", "slice_seats__loader"."sync_fenced", "slice_seats__loader"."sync_finish", "slice_seats__loader"."sync_gold_input", "slice_seats__loader"."sync_held", "slice_seats__loader"."sync_refusal", "slice_seats__loader"."sync_result", "slice_seats__loader"."sync_retry", "slice_seats__loader"."sync_root", "slice_seats__loader"."sync_scope", "slice_seats__loader"."sync_skipped", "slice_seats__loader"."sync_start_step", "slice_seats__loader"."sync_step", "slice_seats__loader"."sync_sync_run_input", "slice_seats__loader"."tally", "slice_seats__loader"."weight", "slice_seats__assign_coordinator"."assign_paused", "slice_seats__assign_coordinator"."assign_resumed", "slice_seats__assign_den"."assign_admitted", "slice_seats__assign_den"."assign_assignment_input", "slice_seats__assign_den"."assign_assignment_input_exclude", "slice_seats__assign_den"."assign_assignment_input_mode_nearest", "slice_seats__assign_den"."assign_assignment_input_mode_within", "slice_seats__assign_den"."assign_claim", "slice_seats__assign_den"."assign_decide_input", "slice_seats__assign_den"."assign_decide_input_exclude", "slice_seats__assign_den"."assign_decide_input_mode_nearest", "slice_seats__assign_den"."assign_decide_input_mode_within", "slice_seats__assign_den"."assign_decide_nearest_read", "slice_seats__assign_den"."assign_decide_output", "slice_seats__assign_den"."assign_decide_output_stage_rest", "slice_seats__assign_den"."assign_decide_output_stage_serve", "slice_seats__assign_den"."assign_decide_output_weighed", "slice_seats__assign_den"."assign_decide_seen_read", "slice_seats__assign_den"."assign_done", "slice_seats__assign_den"."assign_exhausted", "slice_seats__assign_den"."assign_failed", "slice_seats__assign_den"."assign_fenced", "slice_seats__assign_den"."assign_finish", "slice_seats__assign_den"."assign_held", "slice_seats__assign_den"."assign_paused", "slice_seats__assign_den"."assign_refusal", "slice_seats__assign_den"."assign_result", "slice_seats__assign_den"."assign_resumed", "slice_seats__assign_den"."assign_retry", "slice_seats__assign_den"."assign_root", "slice_seats__assign_den"."assign_scope", "slice_seats__assign_den"."assign_skipped", "slice_seats__assign_den"."assign_start_step", "slice_seats__assign_den"."assign_step", "slice_seats__assign_retirer"."assign_admitted", "slice_seats__assign_retirer"."assign_assignment_input", "slice_seats__assign_retirer"."assign_assignment_input_exclude", "slice_seats__assign_retirer"."assign_assignment_input_mode_nearest", "slice_seats__assign_retirer"."assign_assignment_input_mode_within", "slice_seats__assign_retirer"."assign_claim", "slice_seats__assign_retirer"."assign_decide_input", "slice_seats__assign_retirer"."assign_decide_input_exclude", "slice_seats__assign_retirer"."assign_decide_input_mode_nearest", "slice_seats__assign_retirer"."assign_decide_input_mode_within", "slice_seats__assign_retirer"."assign_decide_nearest_read", "slice_seats__assign_retirer"."assign_decide_output", "slice_seats__assign_retirer"."assign_decide_output_stage_rest", "slice_seats__assign_retirer"."assign_decide_output_stage_serve", "slice_seats__assign_retirer"."assign_decide_output_weighed", "slice_seats__assign_retirer"."assign_decide_seen_read", "slice_seats__assign_retirer"."assign_done", "slice_seats__assign_retirer"."assign_exhausted", "slice_seats__assign_retirer"."assign_failed", "slice_seats__assign_retirer"."assign_fenced", "slice_seats__assign_retirer"."assign_finish", "slice_seats__assign_retirer"."assign_held", "slice_seats__assign_retirer"."assign_refusal", "slice_seats__assign_retirer"."assign_result", "slice_seats__assign_retirer"."assign_retry", "slice_seats__assign_retirer"."assign_root", "slice_seats__assign_retirer"."assign_scope", "slice_seats__assign_retirer"."assign_skipped", "slice_seats__assign_retirer"."assign_start_step", "slice_seats__assign_retirer"."assign_step", "slice_seats__chain_coordinator"."chain_paused", "slice_seats__chain_coordinator"."chain_resumed", "slice_seats__chain_den"."chain_admitted", "slice_seats__chain_den"."chain_chain_run_input", "slice_seats__chain_den"."chain_claim", "slice_seats__chain_den"."chain_done", "slice_seats__chain_den"."chain_exhausted", "slice_seats__chain_den"."chain_failed", "slice_seats__chain_den"."chain_fenced", "slice_seats__chain_den"."chain_finish", "slice_seats__chain_den"."chain_held", "slice_seats__chain_den"."chain_next", "slice_seats__chain_den"."chain_ordered_input", "slice_seats__chain_den"."chain_page_input", "slice_seats__chain_den"."chain_page_input_after", "slice_seats__chain_den"."chain_page_output", "slice_seats__chain_den"."chain_page_output_next", "slice_seats__chain_den"."chain_page_weights_read", "slice_seats__chain_den"."chain_paused", "slice_seats__chain_den"."chain_refusal", "slice_seats__chain_den"."chain_result", "slice_seats__chain_den"."chain_resumed", "slice_seats__chain_den"."chain_retry", "slice_seats__chain_den"."chain_root", "slice_seats__chain_den"."chain_scope", "slice_seats__chain_den"."chain_skipped", "slice_seats__chain_den"."chain_start_step", "slice_seats__chain_den"."chain_step", "slice_seats__chain_retirer"."chain_admitted", "slice_seats__chain_retirer"."chain_chain_run_input", "slice_seats__chain_retirer"."chain_claim", "slice_seats__chain_retirer"."chain_done", "slice_seats__chain_retirer"."chain_exhausted", "slice_seats__chain_retirer"."chain_failed", "slice_seats__chain_retirer"."chain_fenced", "slice_seats__chain_retirer"."chain_finish", "slice_seats__chain_retirer"."chain_held", "slice_seats__chain_retirer"."chain_next", "slice_seats__chain_retirer"."chain_ordered_input", "slice_seats__chain_retirer"."chain_page_input", "slice_seats__chain_retirer"."chain_page_input_after", "slice_seats__chain_retirer"."chain_page_output", "slice_seats__chain_retirer"."chain_page_output_next", "slice_seats__chain_retirer"."chain_page_weights_read", "slice_seats__chain_retirer"."chain_refusal", "slice_seats__chain_retirer"."chain_result", "slice_seats__chain_retirer"."chain_retry", "slice_seats__chain_retirer"."chain_root", "slice_seats__chain_retirer"."chain_scope", "slice_seats__chain_retirer"."chain_skipped", "slice_seats__chain_retirer"."chain_start_step", "slice_seats__chain_retirer"."chain_step", "slice_seats__fan_coordinator"."fan_freed", "slice_seats__fan_coordinator"."fan_hold", "slice_seats__fan_coordinator"."fan_live", "slice_seats__fan_coordinator"."fan_paused", "slice_seats__fan_coordinator"."fan_resumed", "slice_seats__fan_den"."fan_admitted", "slice_seats__fan_den"."fan_batch_input", "slice_seats__fan_den"."fan_claim", "slice_seats__fan_den"."fan_done", "slice_seats__fan_den"."fan_exhausted", "slice_seats__fan_den"."fan_failed", "slice_seats__fan_den"."fan_fan_run_input", "slice_seats__fan_den"."fan_fenced", "slice_seats__fan_den"."fan_finish", "slice_seats__fan_den"."fan_freed", "slice_seats__fan_den"."fan_held", "slice_seats__fan_den"."fan_hold", "slice_seats__fan_den"."fan_live", "slice_seats__fan_den"."fan_paused", "slice_seats__fan_den"."fan_refusal", "slice_seats__fan_den"."fan_result", "slice_seats__fan_den"."fan_resumed", "slice_seats__fan_den"."fan_retry", "slice_seats__fan_den"."fan_root", "slice_seats__fan_den"."fan_scope", "slice_seats__fan_den"."fan_skipped", "slice_seats__fan_den"."fan_square_input", "slice_seats__fan_den"."fan_square_output", "slice_seats__fan_den"."fan_start_scope", "slice_seats__fan_den"."fan_start_step", "slice_seats__fan_den"."fan_step", "slice_seats__fan_den"."fan_within", "slice_seats__fan_retirer"."fan_admitted", "slice_seats__fan_retirer"."fan_batch_input", "slice_seats__fan_retirer"."fan_claim", "slice_seats__fan_retirer"."fan_done", "slice_seats__fan_retirer"."fan_exhausted", "slice_seats__fan_retirer"."fan_failed", "slice_seats__fan_retirer"."fan_fan_run_input", "slice_seats__fan_retirer"."fan_fenced", "slice_seats__fan_retirer"."fan_finish", "slice_seats__fan_retirer"."fan_held", "slice_seats__fan_retirer"."fan_refusal", "slice_seats__fan_retirer"."fan_result", "slice_seats__fan_retirer"."fan_retry", "slice_seats__fan_retirer"."fan_root", "slice_seats__fan_retirer"."fan_scope", "slice_seats__fan_retirer"."fan_skipped", "slice_seats__fan_retirer"."fan_square_input", "slice_seats__fan_retirer"."fan_square_output", "slice_seats__fan_retirer"."fan_start_scope", "slice_seats__fan_retirer"."fan_start_step", "slice_seats__fan_retirer"."fan_step", "slice_seats__fan_retirer"."fan_within", "slice_seats__retry_coordinator"."retry_paused", "slice_seats__retry_coordinator"."retry_resumed", "slice_seats__retry_den"."retry_admitted", "slice_seats__retry_den"."retry_brittle_input", "slice_seats__retry_den"."retry_brittle_output", "slice_seats__retry_den"."retry_claim", "slice_seats__retry_den"."retry_done", "slice_seats__retry_den"."retry_exhausted", "slice_seats__retry_den"."retry_failed", "slice_seats__retry_den"."retry_fenced", "slice_seats__retry_den"."retry_finish", "slice_seats__retry_den"."retry_held", "slice_seats__retry_den"."retry_ladders_input", "slice_seats__retry_den"."retry_paused", "slice_seats__retry_den"."retry_refusal", "slice_seats__retry_den"."retry_result", "slice_seats__retry_den"."retry_resumed", "slice_seats__retry_den"."retry_retry", "slice_seats__retry_den"."retry_root", "slice_seats__retry_den"."retry_scope", "slice_seats__retry_den"."retry_skipped", "slice_seats__retry_den"."retry_start_step", "slice_seats__retry_den"."retry_steadfast_input", "slice_seats__retry_den"."retry_steadfast_output", "slice_seats__retry_den"."retry_step", "slice_seats__retry_retirer"."retry_admitted", "slice_seats__retry_retirer"."retry_brittle_input", "slice_seats__retry_retirer"."retry_brittle_output", "slice_seats__retry_retirer"."retry_claim", "slice_seats__retry_retirer"."retry_done", "slice_seats__retry_retirer"."retry_exhausted", "slice_seats__retry_retirer"."retry_failed", "slice_seats__retry_retirer"."retry_fenced", "slice_seats__retry_retirer"."retry_finish", "slice_seats__retry_retirer"."retry_held", "slice_seats__retry_retirer"."retry_ladders_input", "slice_seats__retry_retirer"."retry_refusal", "slice_seats__retry_retirer"."retry_result", "slice_seats__retry_retirer"."retry_retry", "slice_seats__retry_retirer"."retry_root", "slice_seats__retry_retirer"."retry_scope", "slice_seats__retry_retirer"."retry_skipped", "slice_seats__retry_retirer"."retry_start_step", "slice_seats__retry_retirer"."retry_steadfast_input", "slice_seats__retry_retirer"."retry_steadfast_output", "slice_seats__retry_retirer"."retry_step", "slice_seats__sync_coordinator"."sync_exclusive", "slice_seats__sync_coordinator"."sync_paused", "slice_seats__sync_coordinator"."sync_released", "slice_seats__sync_coordinator"."sync_resumed", "slice_seats__sync_den"."chain_result", "slice_seats__sync_den"."chain_step", "slice_seats__sync_den"."sync_admitted", "slice_seats__sync_den"."sync_build_input", "slice_seats__sync_den"."sync_build_output", "slice_seats__sync_den"."sync_claim", "slice_seats__sync_den"."sync_copy_input", "slice_seats__sync_den"."sync_copy_output", "slice_seats__sync_den"."sync_done", "slice_seats__sync_den"."sync_exclusive", "slice_seats__sync_den"."sync_exclusive_key", "slice_seats__sync_den"."sync_exhausted", "slice_seats__sync_den"."sync_failed", "slice_seats__sync_den"."sync_fenced", "slice_seats__sync_den"."sync_finish", "slice_seats__sync_den"."sync_gold_input", "slice_seats__sync_den"."sync_held", "slice_seats__sync_den"."sync_paused", "slice_seats__sync_den"."sync_refusal", "slice_seats__sync_den"."sync_released", "slice_seats__sync_den"."sync_result", "slice_seats__sync_den"."sync_resumed", "slice_seats__sync_den"."sync_retry", "slice_seats__sync_den"."sync_root", "slice_seats__sync_den"."sync_scope", "slice_seats__sync_den"."sync_skipped", "slice_seats__sync_den"."sync_start_step", "slice_seats__sync_den"."sync_step", "slice_seats__sync_den"."sync_sync_run_input", "slice_seats__sync_retirer"."sync_admitted", "slice_seats__sync_retirer"."sync_build_input", "slice_seats__sync_retirer"."sync_build_output", "slice_seats__sync_retirer"."sync_claim", "slice_seats__sync_retirer"."sync_copy_input", "slice_seats__sync_retirer"."sync_copy_output", "slice_seats__sync_retirer"."sync_done", "slice_seats__sync_retirer"."sync_exclusive_key", "slice_seats__sync_retirer"."sync_exhausted", "slice_seats__sync_retirer"."sync_failed", "slice_seats__sync_retirer"."sync_fenced", "slice_seats__sync_retirer"."sync_finish", "slice_seats__sync_retirer"."sync_gold_input", "slice_seats__sync_retirer"."sync_held", "slice_seats__sync_retirer"."sync_refusal", "slice_seats__sync_retirer"."sync_result", "slice_seats__sync_retirer"."sync_retry", "slice_seats__sync_retirer"."sync_root", "slice_seats__sync_retirer"."sync_scope", "slice_seats__sync_retirer"."sync_skipped", "slice_seats__sync_retirer"."sync_start_step", "slice_seats__sync_retirer"."sync_step", "slice_seats__sync_retirer"."sync_sync_run_input" FROM PUBLIC;
 
-REVOKE ALL ON DOMAIN "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_join", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind", "slice"."chain_chain_run_input_feed", "slice"."chain_join", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind", "slice"."fan_join", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_join", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind", "slice"."sync_join", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind", "slice"."__text_t4rwovzmqj", "slice"."__domain_jotafzuj2i", "slice"."__domain_jotafzuj2i", "slice"."__domain_mxhao3k6ss", "slice"."__domain_jotafzuj2i", "slice"."__domain_jotafzuj2i", "slice"."__domain_mxhao3k6ss", "slice"."__domain_gfw43vigph", "slice"."__param_nearest_anchor_question_elxa5ygyai", "slice"."__param_nearest_topic_4eruqlfauv", "slice"."__param_seen_learner_exdgowkpja" FROM PUBLIC;
+REVOKE ALL ON DOMAIN "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_root_kind", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_input_feed", "slice"."chain_pausable", "slice"."chain_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_root_kind", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_root_kind", "slice"."__text_t4rwovzmqj", "slice"."__domain_jotafzuj2i", "slice"."__domain_jotafzuj2i", "slice"."__domain_mxhao3k6ss", "slice"."__domain_jotafzuj2i", "slice"."__domain_jotafzuj2i", "slice"."__domain_mxhao3k6ss", "slice"."__domain_gfw43vigph", "slice"."__param_nearest_anchor_question_elxa5ygyai", "slice"."__param_nearest_topic_4eruqlfauv", "slice"."__param_seen_learner_exdgowkpja" FROM PUBLIC;
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 ALTER DEFAULT PRIVILEGES IN SCHEMA "slice" REVOKE ALL ON TABLES FROM PUBLIC;
@@ -2749,8 +2625,6 @@ COMMENT ON FUNCTION "slice"."__assign_decide_input_mode_names_zoydpw665o"() IS '
 
 COMMENT ON FUNCTION "slice"."__assign_decide_output_stage_names_ehhgk5bunv"() IS 'names of roster AssignDecideOutputStage (339c465d1efa6f01b66b7f28251a710c6ef4b703c2ae24784db44b69786c3ad6)';
 
-COMMENT ON FUNCTION "slice"."__assign_join_names_cks63qswdh"() IS 'names of roster AssignJoin (1c3fe9c5114875213e61eef4023fbb27b30c5ca204b84f617d53b3a1262d2815)';
-
 COMMENT ON FUNCTION "slice"."__assign_kind_names_s7csvtng2b"() IS 'names of roster AssignKind (325b5bc6960cebe4881d883d13283f9850e5c2fd7ec28b8a00140b655d90d46f)';
 
 COMMENT ON FUNCTION "slice"."__assign_outcome_names_2mccfiah6k"() IS 'names of roster AssignOutcome (82a110e4a67b9eb26002a0d95cd17a2a11bb93419b6bbcf77b61d96796e4106a)';
@@ -2760,8 +2634,6 @@ COMMENT ON FUNCTION "slice"."__assign_pausable_names_r7pjdx7o42"() IS 'names of 
 COMMENT ON FUNCTION "slice"."__assign_root_kind_names_opbaefdfbo"() IS 'names of roster AssignRootKind (1c3fe9c5114875213e61eef4023fbb27b30c5ca204b84f617d53b3a1262d2815)';
 
 COMMENT ON FUNCTION "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"() IS 'names of roster ChainChainRunInputFeed (680decfc5f7c5dce0a8514706351fe286818e7840b3167b02f53f9918a3f7e66)';
-
-COMMENT ON FUNCTION "slice"."__chain_join_names_hvq3dwjqow"() IS 'names of roster ChainJoin (841dc700e92bf9c4635d6a6a2b0640acdab5fd7c3bcd500bbb711741ab48d7eb)';
 
 COMMENT ON FUNCTION "slice"."__chain_kind_names_oubqrwjyau"() IS 'names of roster ChainKind (e7bcf98ec63bf066e30e455f58e78f32232c8dc01b1a10cba9914a6fa99d1e74)';
 
@@ -2775,7 +2647,7 @@ COMMENT ON FUNCTION "slice"."__chain_pausable_names_vjdoymenyq"() IS 'names of r
 
 COMMENT ON FUNCTION "slice"."__chain_root_kind_names_ndmuh43zki"() IS 'names of roster ChainRootKind (841dc700e92bf9c4635d6a6a2b0640acdab5fd7c3bcd500bbb711741ab48d7eb)';
 
-COMMENT ON FUNCTION "slice"."__fan_join_names_gct5lzhdqo"() IS 'names of roster FanJoin (d77b79d385adc2a7e8acb4e4a4a35cf4e5217428ed007776aefa04ebd4a774fa)';
+COMMENT ON FUNCTION "slice"."__fan_child_kind_names_i6k53d3e2e"() IS 'names of roster FanChildKind (8ded20e9870697347aad8af4862ccc68f6964e6f66ab9fd021269b219a0d455a)';
 
 COMMENT ON FUNCTION "slice"."__fan_kind_names_6uewr4lsds"() IS 'names of roster FanKind (77e625c74268621aadaadef32a40d85052b1fbdf14d3c6ed16e700d74fb63396)';
 
@@ -2789,8 +2661,6 @@ COMMENT ON FUNCTION "slice"."__fan_root_kind_names_ylamx7vjxv"() IS 'names of ro
 
 COMMENT ON FUNCTION "slice"."__feed_names_azjbqebc6i"() IS 'names of roster Feed (680decfc5f7c5dce0a8514706351fe286818e7840b3167b02f53f9918a3f7e66)';
 
-COMMENT ON FUNCTION "slice"."__retry_join_names_st4whng7gb"() IS 'names of roster RetryJoin (38b360cad31dcf5dfc30ec703da8ce5ff3ddf536a6f81ae889f8b55c07dfdf81)';
-
 COMMENT ON FUNCTION "slice"."__retry_kind_names_637ikgyibq"() IS 'names of roster RetryKind (7aaf5ea48e0c3840b4724ab91bc2e94c1560c96d39d66f3892cea882c1b7943e)';
 
 COMMENT ON FUNCTION "slice"."__retry_outcome_names_zzz2kawwsa"() IS 'names of roster RetryOutcome (82a110e4a67b9eb26002a0d95cd17a2a11bb93419b6bbcf77b61d96796e4106a)';
@@ -2798,8 +2668,6 @@ COMMENT ON FUNCTION "slice"."__retry_outcome_names_zzz2kawwsa"() IS 'names of ro
 COMMENT ON FUNCTION "slice"."__retry_pausable_names_damz4vyplb"() IS 'names of roster RetryPausable (38b360cad31dcf5dfc30ec703da8ce5ff3ddf536a6f81ae889f8b55c07dfdf81)';
 
 COMMENT ON FUNCTION "slice"."__retry_root_kind_names_rs6aiofc5w"() IS 'names of roster RetryRootKind (38b360cad31dcf5dfc30ec703da8ce5ff3ddf536a6f81ae889f8b55c07dfdf81)';
-
-COMMENT ON FUNCTION "slice"."__sync_join_names_2ssan2q3dj"() IS 'names of roster SyncJoin (5599aacd43f74e79063c3306c8bd73db92d44f3dcabfcb5d022a7900cfa5c56a)';
 
 COMMENT ON FUNCTION "slice"."__sync_kind_names_oq6b66cstu"() IS 'names of roster SyncKind (1db7074a36145942b21817905eb40c653b0824cd2fa05fe9b9549907562b977c)';
 
@@ -2885,17 +2753,11 @@ COMMENT ON CONSTRAINT "__assign_scope_pk_xytntbncid" ON "slice"."assign_scope" I
 
 COMMENT ON CONSTRAINT "__assign_skipped_pk_5qhgbueof7" ON "slice"."assign_skipped" IS 'primary key of AssignSkipped';
 
-COMMENT ON CONSTRAINT "__assign_start_scope_pk_ldqdb5b25z" ON "slice"."assign_start_scope" IS 'primary key of AssignStartScope';
-
-COMMENT ON CONSTRAINT "__assign_start_scope_key_child_root_dlh7bpcpep" ON "slice"."assign_start_scope" IS 'key AssignStartScope(child, root)';
-
 COMMENT ON CONSTRAINT "__assign_start_step_pk_jjcfkvptmp" ON "slice"."assign_start_step" IS 'primary key of AssignStartStep';
 
 COMMENT ON CONSTRAINT "__assign_start_step_key_step_root_k27j2tutjj" ON "slice"."assign_start_step" IS 'key AssignStartStep(step, root)';
 
 COMMENT ON CONSTRAINT "__assign_step_pk_2oc4ehvfzd" ON "slice"."assign_step" IS 'primary key of AssignStep';
-
-COMMENT ON CONSTRAINT "__assign_within_pk_vvbm6qryed" ON "slice"."assign_within" IS 'primary key of AssignWithin';
 
 COMMENT ON CONSTRAINT "__assigned_pk_72xowecbf7" ON "slice"."assigned" IS 'primary key of Assigned';
 
@@ -2955,17 +2817,11 @@ COMMENT ON CONSTRAINT "__chain_scope_pk_fxzt444lf6" ON "slice"."chain_scope" IS 
 
 COMMENT ON CONSTRAINT "__chain_skipped_pk_cjdtdttlyx" ON "slice"."chain_skipped" IS 'primary key of ChainSkipped';
 
-COMMENT ON CONSTRAINT "__chain_start_scope_pk_t4giphzblt" ON "slice"."chain_start_scope" IS 'primary key of ChainStartScope';
-
-COMMENT ON CONSTRAINT "__chain_start_scope_key_child_root_qaucku2a5l" ON "slice"."chain_start_scope" IS 'key ChainStartScope(child, root)';
-
 COMMENT ON CONSTRAINT "__chain_start_step_pk_dgda7shxb4" ON "slice"."chain_start_step" IS 'primary key of ChainStartStep';
 
 COMMENT ON CONSTRAINT "__chain_start_step_key_step_root_sgonmabfyw" ON "slice"."chain_start_step" IS 'key ChainStartStep(step, root)';
 
 COMMENT ON CONSTRAINT "__chain_step_pk_u6x5wnvfbv" ON "slice"."chain_step" IS 'primary key of ChainStep';
-
-COMMENT ON CONSTRAINT "__chain_within_pk_ihqzjavdib" ON "slice"."chain_within" IS 'primary key of ChainWithin';
 
 COMMENT ON CONSTRAINT "__concluded_pk_b44jbktrki" ON "slice"."concluded" IS 'primary key of Concluded';
 
@@ -3083,10 +2939,6 @@ COMMENT ON CONSTRAINT "__retry_scope_pk_fgji2phvxy" ON "slice"."retry_scope" IS 
 
 COMMENT ON CONSTRAINT "__retry_skipped_pk_au5z33ql7a" ON "slice"."retry_skipped" IS 'primary key of RetrySkipped';
 
-COMMENT ON CONSTRAINT "__retry_start_scope_pk_wsif6notdn" ON "slice"."retry_start_scope" IS 'primary key of RetryStartScope';
-
-COMMENT ON CONSTRAINT "__retry_start_scope_key_child_root_yq5q4xexcm" ON "slice"."retry_start_scope" IS 'key RetryStartScope(child, root)';
-
 COMMENT ON CONSTRAINT "__retry_start_step_pk_mp77csmi26" ON "slice"."retry_start_step" IS 'primary key of RetryStartStep';
 
 COMMENT ON CONSTRAINT "__retry_start_step_key_step_root_fudt2vk7zs" ON "slice"."retry_start_step" IS 'key RetryStartStep(step, root)';
@@ -3096,8 +2948,6 @@ COMMENT ON CONSTRAINT "__retry_steadfast_input_pk_omubooh2k3" ON "slice"."retry_
 COMMENT ON CONSTRAINT "__retry_steadfast_output_pk_xyvfgnpd5w" ON "slice"."retry_steadfast_output" IS 'primary key of RetrySteadfastOutput';
 
 COMMENT ON CONSTRAINT "__retry_step_pk_opjqidwhzg" ON "slice"."retry_step" IS 'primary key of RetryStep';
-
-COMMENT ON CONSTRAINT "__retry_within_pk_t64odgwbuc" ON "slice"."retry_within" IS 'primary key of RetryWithin';
 
 COMMENT ON CONSTRAINT "__seen_pk_g4ptcxwowb" ON "slice"."seen" IS 'primary key of Seen';
 
@@ -3153,10 +3003,6 @@ COMMENT ON CONSTRAINT "__sync_scope_pk_bg72sm6p4z" ON "slice"."sync_scope" IS 'p
 
 COMMENT ON CONSTRAINT "__sync_skipped_pk_yutjqacvws" ON "slice"."sync_skipped" IS 'primary key of SyncSkipped';
 
-COMMENT ON CONSTRAINT "__sync_start_scope_pk_zsezuom4ll" ON "slice"."sync_start_scope" IS 'primary key of SyncStartScope';
-
-COMMENT ON CONSTRAINT "__sync_start_scope_key_child_root_bqxek2fkcn" ON "slice"."sync_start_scope" IS 'key SyncStartScope(child, root)';
-
 COMMENT ON CONSTRAINT "__sync_start_step_pk_4dv7h6kuu3" ON "slice"."sync_start_step" IS 'primary key of SyncStartStep';
 
 COMMENT ON CONSTRAINT "__sync_start_step_key_step_root_rkceslwobo" ON "slice"."sync_start_step" IS 'key SyncStartStep(step, root)';
@@ -3164,8 +3010,6 @@ COMMENT ON CONSTRAINT "__sync_start_step_key_step_root_rkceslwobo" ON "slice"."s
 COMMENT ON CONSTRAINT "__sync_step_pk_wfgcxdvbwo" ON "slice"."sync_step" IS 'primary key of SyncStep';
 
 COMMENT ON CONSTRAINT "__sync_sync_run_input_pk_cpbaujyjwv" ON "slice"."sync_sync_run_input" IS 'primary key of SyncSyncRunInput';
-
-COMMENT ON CONSTRAINT "__sync_within_pk_xcfutikja2" ON "slice"."sync_within" IS 'primary key of SyncWithin';
 
 COMMENT ON CONSTRAINT "__tally_pk_7jc66uxxx4" ON "slice"."tally" IS 'primary key of Tally';
 
@@ -3258,8 +3102,6 @@ COMMENT ON CONSTRAINT "__assign_admitted_fk_root_a4ab52rbpf" ON "slice"."assign_
 COMMENT ON CONSTRAINT "__assign_admitted_fk_scope_root_axpol5zgcd" ON "slice"."assign_admitted" IS 'foreign key AssignAdmitted(scope, root) to AssignScope(scope, root)';
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_fk_root_7vcxtkof42" ON "slice"."assign_assignment_input" IS 'foreign key AssignAssignmentInput(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__assign_assignment_input_fk_scope_root_d63etet4ww" ON "slice"."assign_assignment_input" IS 'foreign key AssignAssignmentInput(scope, root) to AssignScope(scope, root)';
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_root_kuvjl3s6t5" ON "slice"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3379,12 +3221,6 @@ COMMENT ON CONSTRAINT "__assign_skipped_fk_root_uyud3yb6zy" ON "slice"."assign_s
 
 COMMENT ON CONSTRAINT "__assign_skipped_fk_scope_6ks53lak4r" ON "slice"."assign_skipped" IS 'foreign key AssignSkipped(scope) to AssignRoot(scope)';
 
-COMMENT ON CONSTRAINT "__assign_start_scope_fk_child_root_unb2sahoa2" ON "slice"."assign_start_scope" IS 'foreign key AssignStartScope(child, root) to AssignScope(scope, root)';
-
-COMMENT ON CONSTRAINT "__assign_start_scope_fk_root_csyxhr5qfs" ON "slice"."assign_start_scope" IS 'foreign key AssignStartScope(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__assign_start_scope_fk_scope_root_cgft7ovcb4" ON "slice"."assign_start_scope" IS 'foreign key AssignStartScope(scope, root) to AssignAdmitted(scope, root)';
-
 COMMENT ON CONSTRAINT "__assign_start_step_fk_root_me4zj64243" ON "slice"."assign_start_step" IS 'foreign key AssignStartStep(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__assign_start_step_fk_scope_root_grairzt42v" ON "slice"."assign_start_step" IS 'foreign key AssignStartStep(scope, root) to AssignAdmitted(scope, root)';
@@ -3395,12 +3231,6 @@ COMMENT ON CONSTRAINT "__assign_step_fk_root_qky3m5h2ys" ON "slice"."assign_step
 
 COMMENT ON CONSTRAINT "__assign_step_fk_scope_root_rr5jplc2ua" ON "slice"."assign_step" IS 'foreign key AssignStep(scope, root) to AssignAdmitted(scope, root)';
 
-COMMENT ON CONSTRAINT "__assign_within_fk_parent_root_r7meyh6lci" ON "slice"."assign_within" IS 'foreign key AssignWithin(parent, root) to AssignScope(scope, root)';
-
-COMMENT ON CONSTRAINT "__assign_within_fk_root_6jsrxij73c" ON "slice"."assign_within" IS 'foreign key AssignWithin(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__assign_within_fk_scope_root_mjox635vdp" ON "slice"."assign_within" IS 'foreign key AssignWithin(scope, root) to AssignScope(scope, root)';
-
 COMMENT ON CONSTRAINT "__audit_fk_step_root_eb7inhsrbm" ON "slice"."audit" IS 'foreign key Audit(step, root) to ChainResult(step, root)';
 
 COMMENT ON CONSTRAINT "__chain_admitted_fk_root_abvywhprzd" ON "slice"."chain_admitted" IS 'foreign key ChainAdmitted(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
@@ -3408,8 +3238,6 @@ COMMENT ON CONSTRAINT "__chain_admitted_fk_root_abvywhprzd" ON "slice"."chain_ad
 COMMENT ON CONSTRAINT "__chain_admitted_fk_scope_root_ee5yuzxero" ON "slice"."chain_admitted" IS 'foreign key ChainAdmitted(scope, root) to ChainScope(scope, root)';
 
 COMMENT ON CONSTRAINT "__chain_chain_run_input_fk_root_eyhkir2ten" ON "slice"."chain_chain_run_input" IS 'foreign key ChainChainRunInput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__chain_chain_run_input_fk_scope_root_takzgv2kp6" ON "slice"."chain_chain_run_input" IS 'foreign key ChainChainRunInput(scope, root) to ChainScope(scope, root)';
 
 COMMENT ON CONSTRAINT "__chain_claim_fk_root_e4z56epu62" ON "slice"."chain_claim" IS 'foreign key ChainClaim(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3452,8 +3280,6 @@ COMMENT ON CONSTRAINT "__chain_next_fk_root_ymhq5qkp7g" ON "slice"."chain_next" 
 COMMENT ON CONSTRAINT "__chain_next_fk_to_root_juwf5tsgbs" ON "slice"."chain_next" IS 'foreign key ChainNext(to, root) to ChainPageInput(step, root)';
 
 COMMENT ON CONSTRAINT "__chain_ordered_input_fk_root_yo2fvi6v6v" ON "slice"."chain_ordered_input" IS 'foreign key ChainOrderedInput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__chain_ordered_input_fk_scope_root_jgl73h7an6" ON "slice"."chain_ordered_input" IS 'foreign key ChainOrderedInput(scope, root) to ChainScope(scope, root)';
 
 COMMENT ON CONSTRAINT "__chain_page_input_fk_root_s74r6jkeai" ON "slice"."chain_page_input" IS 'foreign key ChainPageInput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3501,12 +3327,6 @@ COMMENT ON CONSTRAINT "__chain_skipped_fk_root_yi73nwhhy4" ON "slice"."chain_ski
 
 COMMENT ON CONSTRAINT "__chain_skipped_fk_scope_ozicxyda6o" ON "slice"."chain_skipped" IS 'foreign key ChainSkipped(scope) to ChainRoot(scope)';
 
-COMMENT ON CONSTRAINT "__chain_start_scope_fk_child_root_3akc5v73xx" ON "slice"."chain_start_scope" IS 'foreign key ChainStartScope(child, root) to ChainScope(scope, root)';
-
-COMMENT ON CONSTRAINT "__chain_start_scope_fk_root_kp7nzhmkrn" ON "slice"."chain_start_scope" IS 'foreign key ChainStartScope(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__chain_start_scope_fk_scope_root_q6ze2pghlq" ON "slice"."chain_start_scope" IS 'foreign key ChainStartScope(scope, root) to ChainAdmitted(scope, root)';
-
 COMMENT ON CONSTRAINT "__chain_start_step_fk_root_gh44bcwmwg" ON "slice"."chain_start_step" IS 'foreign key ChainStartStep(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__chain_start_step_fk_scope_root_eab47owgce" ON "slice"."chain_start_step" IS 'foreign key ChainStartStep(scope, root) to ChainAdmitted(scope, root)';
@@ -3517,19 +3337,13 @@ COMMENT ON CONSTRAINT "__chain_step_fk_root_n4wedmpzhn" ON "slice"."chain_step" 
 
 COMMENT ON CONSTRAINT "__chain_step_fk_scope_root_jmx7nw7i4f" ON "slice"."chain_step" IS 'foreign key ChainStep(scope, root) to ChainAdmitted(scope, root)';
 
-COMMENT ON CONSTRAINT "__chain_within_fk_parent_root_qcmegji4lp" ON "slice"."chain_within" IS 'foreign key ChainWithin(parent, root) to ChainScope(scope, root)';
-
-COMMENT ON CONSTRAINT "__chain_within_fk_root_sh46agmkgi" ON "slice"."chain_within" IS 'foreign key ChainWithin(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__chain_within_fk_scope_root_ifxt6ilqws" ON "slice"."chain_within" IS 'foreign key ChainWithin(scope, root) to ChainScope(scope, root)';
-
 COMMENT ON CONSTRAINT "__fan_admitted_fk_root_ui6p5vdrhk" ON "slice"."fan_admitted" IS 'foreign key FanAdmitted(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__fan_admitted_fk_scope_root_zj52ntgcx6" ON "slice"."fan_admitted" IS 'foreign key FanAdmitted(scope, root) to FanScope(scope, root)';
 
 COMMENT ON CONSTRAINT "__fan_batch_input_fk_root_d4g2u2spvl" ON "slice"."fan_batch_input" IS 'foreign key FanBatchInput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__fan_batch_input_fk_scope_root_6gjhec5w33" ON "slice"."fan_batch_input" IS 'foreign key FanBatchInput(scope, root) to FanScope(scope, root)';
+COMMENT ON CONSTRAINT "__fan_batch_input_fk_scope_root_mo4mgqhyzc" ON "slice"."fan_batch_input" IS 'foreign key FanBatchInput(scope, root) to FanWithin(scope, root)';
 
 COMMENT ON CONSTRAINT "__fan_claim_fk_root_t3hwth6mh7" ON "slice"."fan_claim" IS 'foreign key FanClaim(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3550,8 +3364,6 @@ COMMENT ON CONSTRAINT "__fan_failed_fk_root_3gq7ifprza" ON "slice"."fan_failed" 
 COMMENT ON CONSTRAINT "__fan_failed_fk_step_root_6qgaqfb45o" ON "slice"."fan_failed" IS 'foreign key FanFailed(step, root) to FanResult(step, root)';
 
 COMMENT ON CONSTRAINT "__fan_fan_run_input_fk_root_oztqak3s27" ON "slice"."fan_fan_run_input" IS 'foreign key FanFanRunInput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__fan_fan_run_input_fk_scope_root_75ojulpc2t" ON "slice"."fan_fan_run_input" IS 'foreign key FanFanRunInput(scope, root) to FanScope(scope, root)';
 
 COMMENT ON CONSTRAINT "__fan_fenced_fk_root_2vu32qtss5" ON "slice"."fan_fenced" IS 'foreign key FanFenced(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3679,8 +3491,6 @@ COMMENT ON CONSTRAINT "__retry_held_fk_step_root_m5b3t566ya" ON "slice"."retry_h
 
 COMMENT ON CONSTRAINT "__retry_ladders_input_fk_root_cnlwmpha3w" ON "slice"."retry_ladders_input" IS 'foreign key RetryLaddersInput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__retry_ladders_input_fk_scope_root_h4hegrh5nl" ON "slice"."retry_ladders_input" IS 'foreign key RetryLaddersInput(scope, root) to RetryScope(scope, root)';
-
 COMMENT ON CONSTRAINT "__retry_paused_fk_target_pred_turn_i33p2skdd4" ON "slice"."retry_paused" IS 'foreign key RetryPaused(target, pred(turn)) to RetryResumed(target, turn)';
 
 COMMENT ON CONSTRAINT "__retry_refusal_fk_root_jr53wy3j5v" ON "slice"."retry_refusal" IS 'foreign key RetryRefusal(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
@@ -3705,12 +3515,6 @@ COMMENT ON CONSTRAINT "__retry_skipped_fk_root_rfxaxqegr7" ON "slice"."retry_ski
 
 COMMENT ON CONSTRAINT "__retry_skipped_fk_scope_q4224gzqrl" ON "slice"."retry_skipped" IS 'foreign key RetrySkipped(scope) to RetryRoot(scope)';
 
-COMMENT ON CONSTRAINT "__retry_start_scope_fk_child_root_qaa27gkwr7" ON "slice"."retry_start_scope" IS 'foreign key RetryStartScope(child, root) to RetryScope(scope, root)';
-
-COMMENT ON CONSTRAINT "__retry_start_scope_fk_root_wh7mjbpwzn" ON "slice"."retry_start_scope" IS 'foreign key RetryStartScope(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__retry_start_scope_fk_scope_root_vxvoiw5spy" ON "slice"."retry_start_scope" IS 'foreign key RetryStartScope(scope, root) to RetryAdmitted(scope, root)';
-
 COMMENT ON CONSTRAINT "__retry_start_step_fk_root_lgh6lskept" ON "slice"."retry_start_step" IS 'foreign key RetryStartStep(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__retry_start_step_fk_scope_root_va3ypig5rc" ON "slice"."retry_start_step" IS 'foreign key RetryStartStep(scope, root) to RetryAdmitted(scope, root)';
@@ -3730,12 +3534,6 @@ COMMENT ON CONSTRAINT "__retry_steadfast_output_fk_step_root_y3we3qusrs" ON "sli
 COMMENT ON CONSTRAINT "__retry_step_fk_root_zww4hkltkz" ON "slice"."retry_step" IS 'foreign key RetryStep(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__retry_step_fk_scope_root_xl7rht6tyq" ON "slice"."retry_step" IS 'foreign key RetryStep(scope, root) to RetryAdmitted(scope, root)';
-
-COMMENT ON CONSTRAINT "__retry_within_fk_parent_root_ih6e44xo3t" ON "slice"."retry_within" IS 'foreign key RetryWithin(parent, root) to RetryScope(scope, root)';
-
-COMMENT ON CONSTRAINT "__retry_within_fk_root_zznwq6jdjx" ON "slice"."retry_within" IS 'foreign key RetryWithin(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__retry_within_fk_scope_root_6md7lilvxc" ON "slice"."retry_within" IS 'foreign key RetryWithin(scope, root) to RetryScope(scope, root)';
 
 COMMENT ON CONSTRAINT "__sync_admitted_fk_root_pazobscutb" ON "slice"."sync_admitted" IS 'foreign key SyncAdmitted(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3797,8 +3595,6 @@ COMMENT ON CONSTRAINT "__sync_finish_fk_step_root_mmscezhzyq" ON "slice"."sync_f
 
 COMMENT ON CONSTRAINT "__sync_gold_input_fk_root_dearji3wtq" ON "slice"."sync_gold_input" IS 'foreign key SyncGoldInput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__sync_gold_input_fk_scope_root_anqztt3wt2" ON "slice"."sync_gold_input" IS 'foreign key SyncGoldInput(scope, root) to SyncScope(scope, root)';
-
 COMMENT ON CONSTRAINT "__sync_held_fk_root_62s5pmsoqa" ON "slice"."sync_held" IS 'foreign key SyncHeld(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__sync_held_fk_step_attempt_root_46zydmfnyy" ON "slice"."sync_held" IS 'foreign key SyncHeld(step, attempt, root) to SyncClaim(step, attempt, root)';
@@ -3831,12 +3627,6 @@ COMMENT ON CONSTRAINT "__sync_skipped_fk_root_33hfwafoud" ON "slice"."sync_skipp
 
 COMMENT ON CONSTRAINT "__sync_skipped_fk_scope_33qsksdlcc" ON "slice"."sync_skipped" IS 'foreign key SyncSkipped(scope) to SyncRoot(scope)';
 
-COMMENT ON CONSTRAINT "__sync_start_scope_fk_child_root_bfah526wa7" ON "slice"."sync_start_scope" IS 'foreign key SyncStartScope(child, root) to SyncScope(scope, root)';
-
-COMMENT ON CONSTRAINT "__sync_start_scope_fk_root_4ys6ftxnzl" ON "slice"."sync_start_scope" IS 'foreign key SyncStartScope(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__sync_start_scope_fk_scope_root_d2xbykpoy6" ON "slice"."sync_start_scope" IS 'foreign key SyncStartScope(scope, root) to SyncAdmitted(scope, root)';
-
 COMMENT ON CONSTRAINT "__sync_start_step_fk_root_2jg4xkdldt" ON "slice"."sync_start_step" IS 'foreign key SyncStartStep(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__sync_start_step_fk_scope_root_vedcbu54xe" ON "slice"."sync_start_step" IS 'foreign key SyncStartStep(scope, root) to SyncAdmitted(scope, root)';
@@ -3848,14 +3638,6 @@ COMMENT ON CONSTRAINT "__sync_step_fk_root_rmc4nivt3i" ON "slice"."sync_step" IS
 COMMENT ON CONSTRAINT "__sync_step_fk_scope_root_sfdyvsar2y" ON "slice"."sync_step" IS 'foreign key SyncStep(scope, root) to SyncAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__sync_sync_run_input_fk_root_ifd4bfberz" ON "slice"."sync_sync_run_input" IS 'foreign key SyncSyncRunInput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__sync_sync_run_input_fk_scope_root_gyi73756or" ON "slice"."sync_sync_run_input" IS 'foreign key SyncSyncRunInput(scope, root) to SyncScope(scope, root)';
-
-COMMENT ON CONSTRAINT "__sync_within_fk_parent_root_xuxk3jxvng" ON "slice"."sync_within" IS 'foreign key SyncWithin(parent, root) to SyncScope(scope, root)';
-
-COMMENT ON CONSTRAINT "__sync_within_fk_root_wq5xadgno2" ON "slice"."sync_within" IS 'foreign key SyncWithin(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__sync_within_fk_scope_root_zwg5s2mvrv" ON "slice"."sync_within" IS 'foreign key SyncWithin(scope, root) to SyncScope(scope, root)';
 
 COMMENT ON FUNCTION "slice"."__hold_assign_root_rwboli77cc"("slice"."__domain_jotafzuj2i"[]) IS 'hold function of the groups of AssignRoot';
 
@@ -3941,13 +3723,11 @@ COMMENT ON INDEX "slice"."__assign_result_ix_step_outcome_root_35vmqe5lxj" IS 'b
 
 COMMENT ON INDEX "slice"."__assign_retry_ix_root_oaojw2snch" IS 'btree index AssignRetry(root)';
 
-COMMENT ON INDEX "slice"."__assign_scope_ix_root_scope_rmt6chgtoy" IS 'btree index AssignScope(root, scope)';
+COMMENT ON INDEX "slice"."__assign_scope_ix_root_v6jmsbgzsq" IS 'btree index AssignScope(root)';
 
 COMMENT ON INDEX "slice"."__assign_skipped_ix_by_phe5rdziqg" IS 'btree index AssignSkipped(by)';
 
 COMMENT ON INDEX "slice"."__assign_skipped_ix_root_dzieud2d67" IS 'btree index AssignSkipped(root)';
-
-COMMENT ON INDEX "slice"."__assign_start_scope_ix_root_scope_dy4riv6ey6" IS 'btree index AssignStartScope(root, scope)';
 
 COMMENT ON INDEX "slice"."__assign_start_step_ix_root_scope_j5eqvalej3" IS 'btree index AssignStartStep(root, scope)';
 
@@ -3955,15 +3735,9 @@ COMMENT ON INDEX "slice"."__assign_step_ix_root_scope_64vujnvoiu" IS 'btree inde
 
 COMMENT ON INDEX "slice"."__assign_step_ix_scope_kind_step_xn2zxx73po" IS 'btree index AssignStep(scope, kind, step)';
 
-COMMENT ON INDEX "slice"."__assign_within_ix_parent_root_zoknt3xjag" IS 'btree index AssignWithin(parent, root)';
-
-COMMENT ON INDEX "slice"."__assign_within_ix_parent_scope_rjijde5lm7" IS 'btree index AssignWithin(parent, scope)';
-
-COMMENT ON INDEX "slice"."__assign_within_ix_root_lkh7fcbhwq" IS 'btree index AssignWithin(root)';
-
 COMMENT ON INDEX "slice"."__chain_admitted_ix_root_3xhdqkpeqw" IS 'btree index ChainAdmitted(root)';
 
-COMMENT ON INDEX "slice"."__chain_chain_run_input_ix_root_scope_znpuldy56o" IS 'btree index ChainChainRunInput(root, scope)';
+COMMENT ON INDEX "slice"."__chain_chain_run_input_ix_root_7abe6kcg67" IS 'btree index ChainChainRunInput(root)';
 
 COMMENT ON INDEX "slice"."__chain_claim_ix_step_fxyms_236_d_4_pred_attempt_dmkyo32uvz" IS 'btree index ChainClaim(__step_fxyms236d4, __pred_attempt_xnnzpydhox, __root_47s5vbj2pp)';
 
@@ -3985,7 +3759,7 @@ COMMENT ON INDEX "slice"."__chain_held_ix_root_havzgkxex3" IS 'btree index Chain
 
 COMMENT ON INDEX "slice"."__chain_next_ix_root_from_5hhx2qutdl" IS 'btree index ChainNext(root, from)';
 
-COMMENT ON INDEX "slice"."__chain_ordered_input_ix_root_scope_y7nddyuclm" IS 'btree index ChainOrderedInput(root, scope)';
+COMMENT ON INDEX "slice"."__chain_ordered_input_ix_root_wmmk2yqn4t" IS 'btree index ChainOrderedInput(root)';
 
 COMMENT ON INDEX "slice"."__chain_page_input_ix_root_step_25b4lmpnjr" IS 'btree index ChainPageInput(root, step)';
 
@@ -4007,13 +3781,11 @@ COMMENT ON INDEX "slice"."__chain_result_ix_step_outcome_root_ipaxj3wl7z" IS 'bt
 
 COMMENT ON INDEX "slice"."__chain_retry_ix_root_nhtemmz6f2" IS 'btree index ChainRetry(root)';
 
-COMMENT ON INDEX "slice"."__chain_scope_ix_root_scope_3l6z2foahk" IS 'btree index ChainScope(root, scope)';
+COMMENT ON INDEX "slice"."__chain_scope_ix_root_idrabjw6oz" IS 'btree index ChainScope(root)';
 
 COMMENT ON INDEX "slice"."__chain_skipped_ix_by_2c45vyfwzy" IS 'btree index ChainSkipped(by)';
 
 COMMENT ON INDEX "slice"."__chain_skipped_ix_root_4knz5mxvl4" IS 'btree index ChainSkipped(root)';
-
-COMMENT ON INDEX "slice"."__chain_start_scope_ix_root_scope_pmsejobbzx" IS 'btree index ChainStartScope(root, scope)';
 
 COMMENT ON INDEX "slice"."__chain_start_step_ix_root_scope_76rv5icpsa" IS 'btree index ChainStartStep(root, scope)';
 
@@ -4022,12 +3794,6 @@ COMMENT ON INDEX "slice"."__chain_step_ix_root_scope_srrhrbyetn" IS 'btree index
 COMMENT ON INDEX "slice"."__chain_step_ix_scope_kind_step_tsdjtgaey5" IS 'btree index ChainStep(scope, kind, step)';
 
 COMMENT ON INDEX "slice"."__chain_step_ix_step_kind_root_2pdoze4bhr" IS 'btree index ChainStep(step, kind, root)';
-
-COMMENT ON INDEX "slice"."__chain_within_ix_parent_root_ou2ppyokg3" IS 'btree index ChainWithin(parent, root)';
-
-COMMENT ON INDEX "slice"."__chain_within_ix_parent_scope_qsgaheyd4k" IS 'btree index ChainWithin(parent, scope)';
-
-COMMENT ON INDEX "slice"."__chain_within_ix_root_2yyvyz27do" IS 'btree index ChainWithin(root)';
 
 COMMENT ON INDEX "slice"."__fan_admitted_ix_root_cjavzjrmil" IS 'btree index FanAdmitted(root)';
 
@@ -4043,7 +3809,7 @@ COMMENT ON INDEX "slice"."__fan_exhausted_ix_root_2diuxfgt5s" IS 'btree index Fa
 
 COMMENT ON INDEX "slice"."__fan_failed_ix_root_step_ciyeplozai" IS 'btree index FanFailed(root, step)';
 
-COMMENT ON INDEX "slice"."__fan_fan_run_input_ix_root_scope_fmo475m6nv" IS 'btree index FanFanRunInput(root, scope)';
+COMMENT ON INDEX "slice"."__fan_fan_run_input_ix_root_25alzzoykh" IS 'btree index FanFanRunInput(root)';
 
 COMMENT ON INDEX "slice"."__fan_fenced_ix_root_3xl5uhzvmu" IS 'btree index FanFenced(root)';
 
@@ -4065,9 +3831,7 @@ COMMENT ON INDEX "slice"."__fan_result_ix_step_outcome_root_udaij7stvj" IS 'btre
 
 COMMENT ON INDEX "slice"."__fan_retry_ix_root_sirifasnll" IS 'btree index FanRetry(root)';
 
-COMMENT ON INDEX "slice"."__fan_scope_ix_root_scope_ccqtwappcv" IS 'btree index FanScope(root, scope)';
-
-COMMENT ON INDEX "slice"."__fan_scope_ix_scope_kind_root_eehfdwjtg7" IS 'btree index FanScope(scope, kind, root)';
+COMMENT ON INDEX "slice"."__fan_scope_ix_root_a5wtvynqul" IS 'btree index FanScope(root)';
 
 COMMENT ON INDEX "slice"."__fan_skipped_ix_by_3aejofkhor" IS 'btree index FanSkipped(by)';
 
@@ -4085,11 +3849,9 @@ COMMENT ON INDEX "slice"."__fan_step_ix_root_scope_aw525h7gua" IS 'btree index F
 
 COMMENT ON INDEX "slice"."__fan_step_ix_scope_kind_step_5arz2gb4sb" IS 'btree index FanStep(scope, kind, step)';
 
-COMMENT ON INDEX "slice"."__fan_within_ix_parent_root_eiovyuswcz" IS 'btree index FanWithin(parent, root)';
+COMMENT ON INDEX "slice"."__fan_within_ix_parent_kind_scope_5ywepfmzj2" IS 'btree index FanWithin(parent, kind, scope)';
 
-COMMENT ON INDEX "slice"."__fan_within_ix_parent_scope_ic53myxv2p" IS 'btree index FanWithin(parent, scope)';
-
-COMMENT ON INDEX "slice"."__fan_within_ix_root_clgremqn26" IS 'btree index FanWithin(root)';
+COMMENT ON INDEX "slice"."__fan_within_ix_root_parent_ivgq62e3yc" IS 'btree index FanWithin(root, parent)';
 
 COMMENT ON INDEX "slice"."__passage_ix_topic_lzh6djzwn4" IS 'btree index Passage(topic)';
 
@@ -4117,7 +3879,7 @@ COMMENT ON INDEX "slice"."__retry_finish_ix_scope_step_6tswescc6v" IS 'btree ind
 
 COMMENT ON INDEX "slice"."__retry_held_ix_root_ytwhkhubpt" IS 'btree index RetryHeld(root)';
 
-COMMENT ON INDEX "slice"."__retry_ladders_input_ix_root_scope_6425iwfqax" IS 'btree index RetryLaddersInput(root, scope)';
+COMMENT ON INDEX "slice"."__retry_ladders_input_ix_root_co4bnpgzm5" IS 'btree index RetryLaddersInput(root)';
 
 COMMENT ON INDEX "slice"."__retry_paused_ix_target_pred_turn_qryngij_6_c_4_5kkljt6kwu" IS 'btree index RetryPaused(target, __pred_turn_qryngij6c4)';
 
@@ -4129,13 +3891,11 @@ COMMENT ON INDEX "slice"."__retry_result_ix_step_outcome_root_5x6caywnin" IS 'bt
 
 COMMENT ON INDEX "slice"."__retry_retry_ix_root_pkjsumgznf" IS 'btree index RetryRetry(root)';
 
-COMMENT ON INDEX "slice"."__retry_scope_ix_root_scope_yupmp2ario" IS 'btree index RetryScope(root, scope)';
+COMMENT ON INDEX "slice"."__retry_scope_ix_root_7gpsngzwhs" IS 'btree index RetryScope(root)';
 
 COMMENT ON INDEX "slice"."__retry_skipped_ix_by_s7pekf7xtg" IS 'btree index RetrySkipped(by)';
 
 COMMENT ON INDEX "slice"."__retry_skipped_ix_root_uaslhltkgy" IS 'btree index RetrySkipped(root)';
-
-COMMENT ON INDEX "slice"."__retry_start_scope_ix_root_scope_c6swz2xyob" IS 'btree index RetryStartScope(root, scope)';
 
 COMMENT ON INDEX "slice"."__retry_start_step_ix_root_scope_f733eg3dwz" IS 'btree index RetryStartStep(root, scope)';
 
@@ -4146,12 +3906,6 @@ COMMENT ON INDEX "slice"."__retry_steadfast_output_ix_root_sp7in5arxz" IS 'btree
 COMMENT ON INDEX "slice"."__retry_step_ix_root_scope_ogbhay3han" IS 'btree index RetryStep(root, scope)';
 
 COMMENT ON INDEX "slice"."__retry_step_ix_scope_kind_step_m6ufaqcqmk" IS 'btree index RetryStep(scope, kind, step)';
-
-COMMENT ON INDEX "slice"."__retry_within_ix_parent_root_ygagejv6gt" IS 'btree index RetryWithin(parent, root)';
-
-COMMENT ON INDEX "slice"."__retry_within_ix_parent_scope_fssz5dsvdf" IS 'btree index RetryWithin(parent, scope)';
-
-COMMENT ON INDEX "slice"."__retry_within_ix_root_lho5kgjqvt" IS 'btree index RetryWithin(root)';
 
 COMMENT ON INDEX "slice"."__sync_admitted_ix_root_vormyuqk5x" IS 'btree index SyncAdmitted(root)';
 
@@ -4183,7 +3937,7 @@ COMMENT ON INDEX "slice"."__sync_finish_ix_root_zrpyhvrere" IS 'btree index Sync
 
 COMMENT ON INDEX "slice"."__sync_finish_ix_scope_step_owsw7m5w74" IS 'btree index SyncFinish(scope, step)';
 
-COMMENT ON INDEX "slice"."__sync_gold_input_ix_root_scope_mfng4pm6l5" IS 'btree index SyncGoldInput(root, scope)';
+COMMENT ON INDEX "slice"."__sync_gold_input_ix_root_fmnsnept43" IS 'btree index SyncGoldInput(root)';
 
 COMMENT ON INDEX "slice"."__sync_held_ix_root_yxqvodlkmy" IS 'btree index SyncHeld(root)';
 
@@ -4195,13 +3949,11 @@ COMMENT ON INDEX "slice"."__sync_result_ix_root_step_t2jh3c7vsq" IS 'btree index
 
 COMMENT ON INDEX "slice"."__sync_retry_ix_root_j5nndics7d" IS 'btree index SyncRetry(root)';
 
-COMMENT ON INDEX "slice"."__sync_scope_ix_root_scope_mxckyw3mzd" IS 'btree index SyncScope(root, scope)';
+COMMENT ON INDEX "slice"."__sync_scope_ix_root_7f6s5dqo5t" IS 'btree index SyncScope(root)';
 
 COMMENT ON INDEX "slice"."__sync_skipped_ix_by_ttq6dm55n2" IS 'btree index SyncSkipped(by)';
 
 COMMENT ON INDEX "slice"."__sync_skipped_ix_root_cjefss5pid" IS 'btree index SyncSkipped(root)';
-
-COMMENT ON INDEX "slice"."__sync_start_scope_ix_root_scope_amosehm6j2" IS 'btree index SyncStartScope(root, scope)';
 
 COMMENT ON INDEX "slice"."__sync_start_step_ix_root_scope_5d3x6uas5c" IS 'btree index SyncStartStep(root, scope)';
 
@@ -4209,13 +3961,7 @@ COMMENT ON INDEX "slice"."__sync_step_ix_root_scope_l4sfn7gzd3" IS 'btree index 
 
 COMMENT ON INDEX "slice"."__sync_step_ix_scope_qlsdbwk3lt" IS 'btree index SyncStep(scope)';
 
-COMMENT ON INDEX "slice"."__sync_sync_run_input_ix_root_scope_fb42vov5x5" IS 'btree index SyncSyncRunInput(root, scope)';
-
-COMMENT ON INDEX "slice"."__sync_within_ix_parent_root_ukspdoqdvf" IS 'btree index SyncWithin(parent, root)';
-
-COMMENT ON INDEX "slice"."__sync_within_ix_parent_scope_w4luz7lz7c" IS 'btree index SyncWithin(parent, scope)';
-
-COMMENT ON INDEX "slice"."__sync_within_ix_root_mivp3mp4oa" IS 'btree index SyncWithin(root)';
+COMMENT ON INDEX "slice"."__sync_sync_run_input_ix_root_bp43cbf2uj" IS 'btree index SyncSyncRunInput(root)';
 
 COMMENT ON STATISTICS "slice"."__assign_finish_stats_scope_step_ld6jyxztu6" IS 'statistics AssignFinish(scope, step)';
 
@@ -4231,6 +3977,8 @@ COMMENT ON STATISTICS "slice"."__fan_hold_stats_resource_seat_a5wbxdv46u" IS 'st
 
 COMMENT ON STATISTICS "slice"."__fan_step_stats_kind_scope_xmuvugpu6n" IS 'statistics FanStep(kind, scope)';
 
+COMMENT ON STATISTICS "slice"."__fan_within_stats_kind_parent_3vvpgco4da" IS 'statistics FanWithin(kind, parent)';
+
 COMMENT ON STATISTICS "slice"."__retry_finish_stats_scope_step_2nxi4d7tdj" IS 'statistics RetryFinish(scope, step)';
 
 COMMENT ON STATISTICS "slice"."__retry_step_stats_kind_scope_osnqmvpfhd" IS 'statistics RetryStep(kind, scope)';
@@ -4239,7 +3987,7 @@ COMMENT ON STATISTICS "slice"."__sync_exclusive_stats_key_kind_smed76p3zh" IS 's
 
 COMMENT ON STATISTICS "slice"."__sync_finish_stats_scope_step_xiaq6np7mf" IS 'statistics SyncFinish(scope, step)';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mfctsotkjq"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_numdwqphuf"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInput and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_nearest_gp4j43rmv4"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInputModeNearest and the relations its rules join it to';
 
@@ -4253,15 +4001,17 @@ COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_rest_qlbend26ms"
 
 COMMENT ON FUNCTION "slice"."__judge_assign_done_uvgox4xms6"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_chain_chain_run_input_6af3rz27sb"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainChainRunInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_chain_chain_run_input_2i76tea7vf"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainChainRunInput and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__judge_chain_done_dlqjjysn3f"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainDone and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__judge_chain_page_input_lzwnhifptj"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainPageInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_fan_batch_input_mrbtecwoza"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanBatchInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_fan_batch_input_5ggxse4kkl"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanBatchInput and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__judge_fan_done_mflioj3j23"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_fan_run_input_wx6e3wxagr"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanFanRunInput and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__judge_fan_hold_hkncojanio"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanHold and the relations its rules join it to';
 
@@ -4271,13 +4021,13 @@ COMMENT ON FUNCTION "slice"."__judge_retry_brittle_input_bitlzpxhll"("pg_catalog
 
 COMMENT ON FUNCTION "slice"."__judge_retry_done_qvurptzp5o"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_retry_ladders_input_3c7y32vdti"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryLaddersInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_retry_ladders_input_j4z3sn7yyj"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryLaddersInput and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__judge_sync_build_input_5c2c4lbjyg"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncBuildInput and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__judge_sync_done_aojyv7p4ap"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_sync_gold_input_qcj64en4sx"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncGoldInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_sync_gold_input_hrbc6rs75n"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncGoldInput and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__capture_assign_assignment_input_v4dsbpafdp"() IS 'rule capture of AssignAssignmentInput';
 
@@ -4303,7 +4053,7 @@ COMMENT ON FUNCTION "slice"."__capture_assign_failed_cqtrnqesux"() IS 'rule capt
 
 COMMENT ON FUNCTION "slice"."__capture_assign_result_3zix6jjqic"() IS 'rule capture of AssignResult';
 
-COMMENT ON FUNCTION "slice"."__capture_assign_scope_dsaojegcma"() IS 'rule capture of AssignScope';
+COMMENT ON FUNCTION "slice"."__capture_assign_root_lbkcscnsqf"() IS 'rule capture of AssignRoot';
 
 COMMENT ON FUNCTION "slice"."__capture_assign_step_bxkkty5l67"() IS 'rule capture of AssignStep';
 
@@ -4319,7 +4069,7 @@ COMMENT ON FUNCTION "slice"."__capture_chain_page_input_ct4d2gjnsb"() IS 'rule c
 
 COMMENT ON FUNCTION "slice"."__capture_chain_result_y3xtf6otn5"() IS 'rule capture of ChainResult';
 
-COMMENT ON FUNCTION "slice"."__capture_chain_scope_c23ru2pmuw"() IS 'rule capture of ChainScope';
+COMMENT ON FUNCTION "slice"."__capture_chain_root_3cootamwgf"() IS 'rule capture of ChainRoot';
 
 COMMENT ON FUNCTION "slice"."__capture_chain_step_2uxbeo7tjg"() IS 'rule capture of ChainStep';
 
@@ -4337,11 +4087,13 @@ COMMENT ON FUNCTION "slice"."__capture_fan_hold_ddvc7a2pzn"() IS 'rule capture o
 
 COMMENT ON FUNCTION "slice"."__capture_fan_result_tevufz2c53"() IS 'rule capture of FanResult';
 
-COMMENT ON FUNCTION "slice"."__capture_fan_scope_3akxafcmy4"() IS 'rule capture of FanScope';
+COMMENT ON FUNCTION "slice"."__capture_fan_root_cjk7n6ydwg"() IS 'rule capture of FanRoot';
 
 COMMENT ON FUNCTION "slice"."__capture_fan_square_input_x66yegc6bz"() IS 'rule capture of FanSquareInput';
 
 COMMENT ON FUNCTION "slice"."__capture_fan_step_hmyykvgk4j"() IS 'rule capture of FanStep';
+
+COMMENT ON FUNCTION "slice"."__capture_fan_within_pwsrdikydc"() IS 'rule capture of FanWithin';
 
 COMMENT ON FUNCTION "slice"."__capture_retry_brittle_input_ngy5ff2dfr"() IS 'rule capture of RetryBrittleInput';
 
@@ -4353,7 +4105,7 @@ COMMENT ON FUNCTION "slice"."__capture_retry_ladders_input_omks52b5nc"() IS 'rul
 
 COMMENT ON FUNCTION "slice"."__capture_retry_result_oof7kiqgid"() IS 'rule capture of RetryResult';
 
-COMMENT ON FUNCTION "slice"."__capture_retry_scope_m6j2niepek"() IS 'rule capture of RetryScope';
+COMMENT ON FUNCTION "slice"."__capture_retry_root_nujht4q2jp"() IS 'rule capture of RetryRoot';
 
 COMMENT ON FUNCTION "slice"."__capture_retry_steadfast_input_iqvn32jr3j"() IS 'rule capture of RetrySteadfastInput';
 
@@ -4371,7 +4123,7 @@ COMMENT ON FUNCTION "slice"."__capture_sync_gold_input_tmd3fs2hx5"() IS 'rule ca
 
 COMMENT ON FUNCTION "slice"."__capture_sync_result_led6m2o22r"() IS 'rule capture of SyncResult';
 
-COMMENT ON FUNCTION "slice"."__capture_sync_scope_wpivtwoeh6"() IS 'rule capture of SyncScope';
+COMMENT ON FUNCTION "slice"."__capture_sync_root_s5cwtqjc6s"() IS 'rule capture of SyncRoot';
 
 COMMENT ON FUNCTION "slice"."__capture_sync_step_35gtwztkwz"() IS 'rule capture of SyncStep';
 

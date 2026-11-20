@@ -394,12 +394,14 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const ownerKey = (owner: "step" | "scope"): FieldType => (owner === "step" ? stepKey : scopeKey)
 
 	const kindNames = [...Arr.map(steps, (s) => s.name), ...Arr.map(joins, finishName)]
-	const joinNames = Arr.map(joins, (j) => j.name)
 	const rootNames = Arr.map(roots, (r) => r.name)
+	const childNames = Arr.map(
+		Arr.filter(joins, (j) => j._tag === "Scope"),
+		(j) => j.name
+	)
 	const pausable = [...Arr.map(flow.resources, (r) => r.name), ...Arr.map(roots, (r) => r.name)]
 	if (
 		!Arr.isReadonlyArrayNonEmpty(kindNames) ||
-		!Arr.isReadonlyArrayNonEmpty(joinNames) ||
 		!Arr.isReadonlyArrayNonEmpty(rootNames) ||
 		!Arr.isReadonlyArrayNonEmpty(pausable)
 	) {
@@ -409,8 +411,10 @@ export const lower = (flow: AnyFlow): Lowered => {
 		})
 	}
 	rosters.push({ name: name("Kind"), handles: kindNames })
-	rosters.push({ name: name("Join"), handles: joinNames })
 	rosters.push({ name: name("RootKind"), handles: rootNames })
+	if (Arr.isReadonlyArrayNonEmpty(childNames)) {
+		rosters.push({ name: name("ChildKind"), handles: childNames })
+	}
 	rosters.push({ name: name("Outcome"), handles: ["done", "failed"] })
 	rosters.push({ name: name("Pausable"), handles: pausable })
 	const resourceNames = Arr.map(flow.resources, (r) => r.name)
@@ -420,10 +424,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 
 	const Scope = relation({
 		name: name("Scope"),
-		fields: [
-			{ name: "scope", type: scopeKey },
-			{ name: "kind", type: { kind: "closed", roster: name("Join") } }
-		],
+		fields: [{ name: "scope", type: scopeKey }],
 		key: ["scope"]
 	})
 	const Root = relation({
@@ -436,14 +437,19 @@ export const lower = (flow: AnyFlow): Lowered => {
 		],
 		key: ["scope"]
 	})
-	const Within = relation({
-		name: name("Within"),
-		fields: [
-			{ name: "scope", type: scopeKey },
-			{ name: "parent", type: scopeKey }
-		],
-		key: ["scope"]
-	})
+	const withins: ReadonlyArray<string> = Arr.isReadonlyArrayNonEmpty(childNames)
+		? [
+				relation({
+					name: name("Within"),
+					fields: [
+						{ name: "scope", type: scopeKey },
+						{ name: "parent", type: scopeKey },
+						{ name: "kind", type: { kind: "closed", roster: name("ChildKind") } }
+					],
+					key: ["scope"]
+				})
+			]
+		: []
 	const exclusiveKeys: ReadonlyArray<string> = Arr.some(
 		roots,
 		(j) => j.exclusive.kind === "exclusive"
@@ -492,15 +498,19 @@ export const lower = (flow: AnyFlow): Lowered => {
 		],
 		key: ["scope", "ordinal"]
 	})
-	const StartScope = relation({
-		name: name("StartScope"),
-		fields: [
-			{ name: "scope", type: scopeKey },
-			{ name: "ordinal", type: natural },
-			{ name: "child", type: scopeKey }
-		],
-		key: ["scope", "ordinal"]
-	})
+	const startScopes: ReadonlyArray<string> = Arr.isReadonlyArrayNonEmpty(childNames)
+		? [
+				relation({
+					name: name("StartScope"),
+					fields: [
+						{ name: "scope", type: scopeKey },
+						{ name: "ordinal", type: natural },
+						{ name: "child", type: scopeKey }
+					],
+					key: ["scope", "ordinal"]
+				})
+			]
+		: []
 	const Finish = relation({
 		name: name("Finish"),
 		fields: [
@@ -586,9 +596,20 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const ofKind = (kind: string): Selection => ({ kind: "handle", field: "kind", handle: kind })
 
 	Arr.forEach(exclusiveKeys, (k) => laws.push(into(side(k, ["scope"]), side(Scope, ["scope"]))))
+	Arr.forEach(withins, (w) =>
+		laws.push(
+			into(side(w, ["scope"]), side(Scope, ["scope"])),
+			into(side(w, ["parent"]), side(Scope, ["scope"]))
+		)
+	)
+	Arr.forEach(startScopes, (started) =>
+		laws.push(
+			into(side(started, ["scope"]), side(Admitted, ["scope"])),
+			into(side(started, ["child"]), side(Scope, ["scope"])),
+			keyOf(started, ["child"])
+		)
+	)
 	laws.push(
-		into(side(Within, ["scope"]), side(Scope, ["scope"])),
-		into(side(Within, ["parent"]), side(Scope, ["scope"])),
 		into(side(Admitted, ["scope"]), side(Scope, ["scope"])),
 		into(side(Skipped, ["scope"]), side(Root, ["scope"])),
 		into(side(Skipped, ["by"]), side(Root, ["scope"])),
@@ -596,9 +617,6 @@ export const lower = (flow: AnyFlow): Lowered => {
 		into(side(StartStep, ["scope"]), side(Admitted, ["scope"])),
 		into(side(StartStep, ["step"]), side(Step, ["step"])),
 		keyOf(StartStep, ["step"]),
-		into(side(StartScope, ["scope"]), side(Admitted, ["scope"])),
-		into(side(StartScope, ["child"]), side(Scope, ["scope"])),
-		keyOf(StartScope, ["child"]),
 		into(side(Finish, ["scope"]), side(Admitted, ["scope"])),
 		into(side(Finish, ["step"]), side(Step, ["step"])),
 		keyOf(Finish, ["step"]),
@@ -771,7 +789,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 				"scope",
 				j.input,
 				`${j._tag === "Root" ? "root" : "scope"} ${j.name}`,
-				[sideOf(Scope, ["scope"], ofKind(j.name))]
+				[sideOf(j._tag === "Root" ? Root : name("Within"), ["scope"], ofKind(j.name))]
 			)
 		)
 	)
@@ -1041,11 +1059,11 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const spawning = [
 		Step,
 		Scope,
-		Within,
+		...withins,
 		Admitted,
 		Finish,
 		StartStep,
-		StartScope,
+		...startScopes,
 		...Arr.flatMap(stepsIR, (s) => valueRelations(s.input)),
 		...Arr.flatMap(
 			Arr.filter(joinsIR, (j: JoinIR) => Option.isNone(j.root)),

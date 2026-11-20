@@ -4,18 +4,15 @@ import { ChangeSet, clocked, deferrable, query, role, v, workload } from "@bjorn
 import { App } from "#integration/slice/app.ts"
 import {
 	RetryKind,
-	RetryJoin,
 	RetryRootKind,
 	RetryOutcome,
 	RetryPausable,
 	RetryScope,
 	RetryRoot,
-	RetryWithin,
 	RetryAdmitted,
 	RetrySkipped,
 	RetryStep,
 	RetryStartStep,
-	RetryStartScope,
 	RetryFinish,
 	RetryClaim,
 	RetryRetry,
@@ -47,12 +44,10 @@ export const RetryDen = role(
 		insert: [
 			"RetryScope",
 			"RetryRoot",
-			"RetryWithin",
 			"RetryAdmitted",
 			"RetrySkipped",
 			"RetryStep",
 			"RetryStartStep",
-			"RetryStartScope",
 			"RetryFinish",
 			"RetryClaim",
 			"RetryRetry",
@@ -74,7 +69,7 @@ export const RetryDen = role(
 export const RetryCoordinator = role(
 	App,
 	"retry_coordinator",
-	{ RetryKind, RetryJoin, RetryRootKind, RetryOutcome, RetryPausable, RetryPaused, RetryResumed },
+	{ RetryKind, RetryRootKind, RetryOutcome, RetryPausable, RetryPaused, RetryResumed },
 	{ insert: ["RetryPaused", "RetryResumed"] }
 )
 
@@ -87,21 +82,16 @@ const retryPendingRead = query(RetryDen).rule((r) => {
 })
 
 const retryRequestedRead = query(RetryDen).rule((r) => {
-	const { scope, kind } = v(RetryScope, "scope")
+	const { scope } = v(RetryRoot, "root")
 	return r
-		.match(RetryScope, { scope, kind })
+		.match(RetryRoot, { scope })
 		.where(r.not(RetryAdmitted, { scope }), r.not(RetrySkipped, { scope }))
-		.find({ scope, kind })
+		.find({ scope })
 })
 
 const retryRunningRead = query(RetryDen).rule((r) => {
-	const { scope, kind } = v(RetryScope, "scope")
-	const { step } = v(RetryFinish, "finish")
-	return r
-		.match(RetryScope, { scope, kind })
-		.match(RetryFinish, { scope, step })
-		.where(r.not(RetryResult, { step }))
-		.find({ scope, kind })
+	const { scope, step } = v(RetryFinish, "finish")
+	return r.match(RetryFinish, { scope, step }).where(r.not(RetryResult, { step })).find({ scope })
 })
 
 export const retryDenPrograms = Object.freeze({
@@ -142,10 +132,8 @@ export const retryDenPrograms = Object.freeze({
 		.insert(RetryAdmitted, [])
 		.insert(RetryFinish, [])
 		.insert(RetryStartStep, [])
-		.insert(RetryStartScope, [])
 		.insert(RetryStep, [])
 		.insert(RetryScope, [])
-		.insert(RetryWithin, [])
 		.insert(RetrySteadfastInput, [])
 		.insert(RetryBrittleInput, []),
 	retrySkip: ChangeSet.empty(retryGraph).insert(RetrySkipped, []),
@@ -176,20 +164,6 @@ export const retryDenPrograms = Object.freeze({
 			.match(RetryHeld, { step, attempt, root })
 			.where(r.eq(step, r.param("step", RetryHeld.fields.step)))
 			.find({ step, attempt, root })
-	}),
-	retryScopeOf: query(retryGraph).rule((r) => {
-		const { scope, kind, root } = v(RetryScope, "retryScope")
-		return r
-			.match(RetryScope, { scope, kind, root })
-			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
-			.find({ scope, kind, root })
-	}),
-	retryWithinOf: query(retryGraph).rule((r) => {
-		const { scope, parent, root } = v(RetryWithin, "retryWithin")
-		return r
-			.match(RetryWithin, { scope, parent, root })
-			.where(r.eq(scope, r.param("scope", RetryWithin.fields.scope)))
-			.find({ scope, parent, root })
 	}),
 	retryAdmittedOf: query(retryGraph).rule((r) => {
 		const { scope, root } = v(RetryAdmitted, "retryAdmitted")
@@ -256,29 +230,6 @@ export const retryDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	retryOpenChildren: query(retryGraph)
-		.rule((r) => {
-			const { scope, parent } = v(RetryWithin, "within")
-			return r
-				.match(RetryWithin, { scope, parent })
-				.where(
-					r.eq(parent, r.param("scope", RetryScope.fields.scope)),
-					r.not(RetryAdmitted, { scope })
-				)
-				.find({ child: scope })
-		})
-		.rule((r) => {
-			const { scope, parent } = v(RetryWithin, "within")
-			const { step } = v(RetryFinish, "finish")
-			return r
-				.match(RetryWithin, { scope, parent })
-				.match(RetryFinish, { scope, step })
-				.where(
-					r.eq(parent, r.param("scope", RetryScope.fields.scope)),
-					r.not(RetryResult, { step })
-				)
-				.find({ child: scope })
-		}),
 	retryFinished: query(retryGraph).rule((r) => {
 		const { scope, step } = v(RetryFinish, "finish")
 		return r
@@ -316,10 +267,6 @@ export const retryDenPrograms = Object.freeze({
 			}),
 			requested: retryRequestedRead,
 			running: retryRunningRead,
-			withins: query(RetryDen).rule((r) => {
-				const { scope, parent } = v(RetryWithin, "retryWithin")
-				return r.match(RetryWithin, { scope, parent }).find({ scope, parent })
-			}),
 			roots: query(RetryDen).rule((r) => {
 				const { scope, kind, key, at } = v(RetryRoot, "retryRoot")
 				return r.match(RetryRoot, { scope, kind, key, at }).find({ scope, kind, key, at })

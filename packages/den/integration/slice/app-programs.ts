@@ -24,10 +24,8 @@ import {
 	ChainResult,
 	ChainRoot,
 	ChainScope,
-	ChainStartScope,
 	ChainStartStep,
-	ChainStep,
-	ChainWithin
+	ChainStep
 } from "#integration/slice/generated/chain.fragment.ts"
 import { chainRequests } from "#integration/slice/generated/chain.programs.ts"
 import {
@@ -116,10 +114,8 @@ export const Auditor = role(
 		ChainResult,
 		ChainRoot,
 		ChainScope,
-		ChainStartScope,
 		ChainStartStep,
 		ChainStep,
-		ChainWithin,
 		Copied,
 		Cursor,
 		FanAdmitted,
@@ -231,8 +227,8 @@ const built = query(Auditor).rule((r) => {
 })
 
 const syncAdmitted = query(Auditor).rule((r) => {
-	const { scope, kind } = v(SyncScope, "scope")
-	return r.match(SyncScope, { scope, kind }).match(SyncAdmitted, { scope }).find({ scope, kind })
+	const { scope } = v(SyncAdmitted, "admitted")
+	return r.match(SyncAdmitted, { scope }).find({ scope })
 })
 
 const syncSkipped = query(Auditor).rule((r) => {
@@ -367,25 +363,13 @@ const every = Object.freeze({
 		const { scope } = v(FanAdmitted, "s")
 		return r.match(FanAdmitted, { scope }).find({ scope })
 	}),
-	chainScopes: query(Auditor).rule((r) => {
-		const { scope, kind } = v(ChainScope, "s")
-		return r.match(ChainScope, { scope, kind }).find({ scope, kind })
-	}),
 	chainRoots: query(Auditor).rule((r) => {
-		const { scope, key, at } = v(ChainRoot, "s")
-		return r.match(ChainRoot, { scope, key, at }).find({ scope, key, at })
-	}),
-	chainWithins: query(Auditor).rule((r) => {
-		const { scope, parent } = v(ChainWithin, "s")
-		return r.match(ChainWithin, { scope, parent }).find({ scope, parent })
+		const { scope, kind, key } = v(ChainRoot, "s")
+		return r.match(ChainRoot, { scope, kind, key }).find({ scope, kind, key })
 	}),
 	chainStartSteps: query(Auditor).rule((r) => {
 		const { scope, ordinal, step } = v(ChainStartStep, "s")
 		return r.match(ChainStartStep, { scope, ordinal, step }).find({ scope, ordinal, step })
-	}),
-	chainStartScopes: query(Auditor).rule((r) => {
-		const { scope, ordinal, child } = v(ChainStartScope, "s")
-		return r.match(ChainStartScope, { scope, ordinal, child }).find({ scope, ordinal, child })
 	}),
 	chainSteps: query(Auditor).rule((r) => {
 		const { step, kind, scope } = v(ChainStep, "s")
@@ -427,17 +411,13 @@ const every = Object.freeze({
 			.match(ChainChainRunInput, { scope, feed, pages: count })
 			.find({ scope, feed, pages: count })
 	}),
-	fanScopes: query(Auditor).rule((r) => {
-		const { scope, kind } = v(FanScope, "s")
-		return r.match(FanScope, { scope, kind }).find({ scope, kind })
-	}),
 	fanRoots: query(Auditor).rule((r) => {
-		const { scope, key, at } = v(FanRoot, "s")
-		return r.match(FanRoot, { scope, key, at }).find({ scope, key, at })
+		const { scope, kind, key } = v(FanRoot, "s")
+		return r.match(FanRoot, { scope, kind, key }).find({ scope, kind, key })
 	}),
 	fanWithins: query(Auditor).rule((r) => {
-		const { scope, parent } = v(FanWithin, "s")
-		return r.match(FanWithin, { scope, parent }).find({ scope, parent })
+		const { scope, parent, kind } = v(FanWithin, "s")
+		return r.match(FanWithin, { scope, parent, kind }).find({ scope, parent, kind })
 	}),
 	fanStartSteps: query(Auditor).rule((r) => {
 		const { scope, ordinal, step } = v(FanStartStep, "s")

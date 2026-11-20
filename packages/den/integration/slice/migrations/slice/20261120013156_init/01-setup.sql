@@ -41,12 +41,6 @@ RETURN '{"Rest","Serve"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__assign_decide_output_stage_names_ehhgk5bunv"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__assign_join_names_cks63qswdh"() RETURNS "pg_catalog"."name"[]
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"Assignment"}'::"pg_catalog"."name"[];
-
-REVOKE ALL ON FUNCTION "slice"."__assign_join_names_cks63qswdh"() FROM PUBLIC;
-
 CREATE FUNCTION "slice"."__assign_kind_names_s7csvtng2b"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN '{"AssignmentFinish","Decide"}'::"pg_catalog"."name"[];
@@ -76,12 +70,6 @@ LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN '{"news","sport"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"() FROM PUBLIC;
-
-CREATE FUNCTION "slice"."__chain_join_names_hvq3dwjqow"() RETURNS "pg_catalog"."name"[]
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"ChainRun","Ordered"}'::"pg_catalog"."name"[];
-
-REVOKE ALL ON FUNCTION "slice"."__chain_join_names_hvq3dwjqow"() FROM PUBLIC;
 
 CREATE FUNCTION "slice"."__chain_kind_names_oubqrwjyau"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -119,11 +107,11 @@ RETURN '{"ChainRun","Ordered"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__chain_root_kind_names_ndmuh43zki"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__fan_join_names_gct5lzhdqo"() RETURNS "pg_catalog"."name"[]
+CREATE FUNCTION "slice"."__fan_child_kind_names_i6k53d3e2e"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"Batch","FanRun"}'::"pg_catalog"."name"[];
+RETURN '{"Batch"}'::"pg_catalog"."name"[];
 
-REVOKE ALL ON FUNCTION "slice"."__fan_join_names_gct5lzhdqo"() FROM PUBLIC;
+REVOKE ALL ON FUNCTION "slice"."__fan_child_kind_names_i6k53d3e2e"() FROM PUBLIC;
 
 CREATE FUNCTION "slice"."__fan_kind_names_6uewr4lsds"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -161,12 +149,6 @@ RETURN '{"news","sport"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__feed_names_azjbqebc6i"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__retry_join_names_st4whng7gb"() RETURNS "pg_catalog"."name"[]
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"Ladders"}'::"pg_catalog"."name"[];
-
-REVOKE ALL ON FUNCTION "slice"."__retry_join_names_st4whng7gb"() FROM PUBLIC;
-
 CREATE FUNCTION "slice"."__retry_kind_names_637ikgyibq"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN '{"Brittle","LaddersFinish","Steadfast"}'::"pg_catalog"."name"[];
@@ -190,12 +172,6 @@ LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN '{"Ladders"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__retry_root_kind_names_rs6aiofc5w"() FROM PUBLIC;
-
-CREATE FUNCTION "slice"."__sync_join_names_2ssan2q3dj"() RETURNS "pg_catalog"."name"[]
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"Gold","SyncRun"}'::"pg_catalog"."name"[];
-
-REVOKE ALL ON FUNCTION "slice"."__sync_join_names_2ssan2q3dj"() FROM PUBLIC;
 
 CREATE FUNCTION "slice"."__sync_kind_names_oq6b66cstu"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -227,8 +203,6 @@ CREATE DOMAIN "slice"."assign_decide_input_mode" AS smallint CONSTRAINT "check" 
 
 CREATE DOMAIN "slice"."assign_decide_output_stage" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__assign_decide_output_stage_names_ehhgk5bunv"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
-CREATE DOMAIN "slice"."assign_join" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__assign_join_names_cks63qswdh"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
-
 CREATE DOMAIN "slice"."assign_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__assign_kind_names_s7csvtng2b"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."assign_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__assign_outcome_names_2mccfiah6k"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
@@ -238,8 +212,6 @@ CREATE DOMAIN "slice"."assign_pausable" AS smallint CONSTRAINT "check" CHECK (VA
 CREATE DOMAIN "slice"."assign_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__assign_root_kind_names_opbaefdfbo"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."chain_chain_run_input_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_chain_run_input_feed_names_byxgsvzik7"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
-
-CREATE DOMAIN "slice"."chain_join" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_join_names_hvq3dwjqow"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."chain_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_kind_names_oubqrwjyau"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
@@ -253,7 +225,7 @@ CREATE DOMAIN "slice"."chain_pausable" AS smallint CONSTRAINT "check" CHECK (VAL
 
 CREATE DOMAIN "slice"."chain_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_root_kind_names_ndmuh43zki"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
-CREATE DOMAIN "slice"."fan_join" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__fan_join_names_gct5lzhdqo"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+CREATE DOMAIN "slice"."fan_child_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__fan_child_kind_names_i6k53d3e2e"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."fan_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__fan_kind_names_6uewr4lsds"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
@@ -267,8 +239,6 @@ CREATE DOMAIN "slice"."fan_root_kind" AS smallint CONSTRAINT "check" CHECK (VALU
 
 CREATE DOMAIN "slice"."feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__feed_names_azjbqebc6i"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
-CREATE DOMAIN "slice"."retry_join" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__retry_join_names_st4whng7gb"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
-
 CREATE DOMAIN "slice"."retry_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__retry_kind_names_637ikgyibq"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."retry_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__retry_outcome_names_zzz2kawwsa"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
@@ -276,8 +246,6 @@ CREATE DOMAIN "slice"."retry_outcome" AS smallint CONSTRAINT "check" CHECK (VALU
 CREATE DOMAIN "slice"."retry_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__retry_pausable_names_damz4vyplb"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."retry_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__retry_root_kind_names_rs6aiofc5w"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
-
-CREATE DOMAIN "slice"."sync_join" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__sync_join_names_2ssan2q3dj"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."sync_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__sync_kind_names_oq6b66cstu"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 

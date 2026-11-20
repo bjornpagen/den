@@ -16,9 +16,8 @@
 			},
 			"assign_assignment_input": {
 				"__assign_assignment_input_fk_root_7vcxtkof42": "__assign_assignment_input_in_assign_root_hqb27yindz",
-				"__assign_assignment_input_fk_scope_root_d63etet4ww": "__assign_assignment_input_in_assign_scope_voihzx3sj5",
 				"__assign_assignment_input_pk_rhoa22jovt": "__assign_assignment_input_pk_scope_root_woewgxiecx",
-				"__rule_assign_assignment_input_in_assign_scope_rgmqtdjqzy": "__assign_assignment_input_in_assign_scope_voihzx3sj5",
+				"__rule_assign_assignment_input_in_assign_root_iwogkwrka6": "__assign_assignment_input_in_assign_root_mklvt3wjts",
 				"__rule_assign_assignment_input_mode_in_assign_spa2ewu36p": "__assign_assignment_input_mode_in_assign_assignment_v5nciwm3f3",
 				"__rule_assign_assignment_input_mode_in_assign_uaihjcbwg4": "__assign_assignment_input_mode_in_assign_assignment_eawcu4wa34",
 				"__rule_assign_assignment_input_mode_nearest_in_d6kzlau6ya": "__assign_assignment_input_mode_nearest_in_assign_ttnyfcvx45",
@@ -188,25 +187,18 @@
 			},
 			"assign_root": {
 				"__assign_root_key_scope_77r36z7vhn": "__assign_root_pk_scope_n5uoolib3w",
-				"__assign_root_pk_b23qqyryx4": "__assign_root_pk_scope_n5uoolib3w"
+				"__assign_root_pk_b23qqyryx4": "__assign_root_pk_scope_n5uoolib3w",
+				"__rule_assign_assignment_input_in_assign_root_iwogkwrka6": "__assign_assignment_input_in_assign_root_mklvt3wjts"
 			},
 			"assign_scope": {
 				"__assign_scope_fk_root_aqbd5fs63t": "__assign_scope_in_assign_root_wws57jg2va",
-				"__assign_scope_pk_xytntbncid": "__assign_scope_pk_scope_root_2tkrmjny4h",
-				"__rule_assign_assignment_input_in_assign_scope_rgmqtdjqzy": "__assign_assignment_input_in_assign_scope_voihzx3sj5"
+				"__assign_scope_pk_xytntbncid": "__assign_scope_pk_scope_root_2tkrmjny4h"
 			},
 			"assign_skipped": {
 				"__assign_skipped_fk_by_yi4ixsfumz": "__assign_skipped_in_assign_root_nausdpr5kj",
 				"__assign_skipped_fk_root_uyud3yb6zy": "__assign_skipped_in_assign_root_6zbfgphsqm",
 				"__assign_skipped_fk_scope_6ks53lak4r": "__assign_skipped_in_assign_root_w27kcjx3p2",
 				"__assign_skipped_pk_5qhgbueof7": "__assign_skipped_pk_scope_root_j473dnp6c7"
-			},
-			"assign_start_scope": {
-				"__assign_start_scope_fk_child_root_unb2sahoa2": "__assign_start_scope_in_assign_scope_gwarrfxs7q",
-				"__assign_start_scope_fk_root_csyxhr5qfs": "__assign_start_scope_in_assign_root_6gf73d56un",
-				"__assign_start_scope_fk_scope_root_cgft7ovcb4": "__assign_start_scope_in_assign_admitted_n7fy2pszeu",
-				"__assign_start_scope_key_child_root_dlh7bpcpep": "__assign_start_scope_key_child_root_aegzq6jcmw",
-				"__assign_start_scope_pk_ldqdb5b25z": "__assign_start_scope_pk_scope_ordinal_root_dmjudmfmyz"
 			},
 			"assign_start_step": {
 				"__assign_start_step_fk_root_me4zj64243": "__assign_start_step_in_assign_root_oc3vxgsn3y",
@@ -220,12 +212,6 @@
 				"__assign_step_fk_scope_root_rr5jplc2ua": "__assign_step_in_assign_admitted_bz33qzkxkz",
 				"__assign_step_pk_2oc4ehvfzd": "__assign_step_pk_step_root_vjkvk32xq3",
 				"__rule_assign_decide_input_in_assign_step_alw775jwbe": "__assign_decide_input_in_assign_step_p6wiyiis6o"
-			},
-			"assign_within": {
-				"__assign_within_fk_parent_root_r7meyh6lci": "__assign_within_in_assign_scope_gx77nfvdpf",
-				"__assign_within_fk_root_6jsrxij73c": "__assign_within_in_assign_root_uwohfaqe2q",
-				"__assign_within_fk_scope_root_mjox635vdp": "__assign_within_in_assign_scope_3ckmt3b455",
-				"__assign_within_pk_vvbm6qryed": "__assign_within_pk_scope_root_jo3optko55"
 			},
 			"assigned": {
 				"__assigned_pk_72xowecbf7": "__assigned_pk_learner_ogs732lrn5"
@@ -244,9 +230,8 @@
 			},
 			"chain_chain_run_input": {
 				"__chain_chain_run_input_fk_root_eyhkir2ten": "__chain_chain_run_input_in_chain_root_a2bn7vy4pn",
-				"__chain_chain_run_input_fk_scope_root_takzgv2kp6": "__chain_chain_run_input_in_chain_scope_rwiwgl6wca",
 				"__chain_chain_run_input_pk_ezbgzw4jha": "__chain_chain_run_input_pk_scope_root_5ozdi4uoi6",
-				"__rule_chain_chain_run_input_in_chain_scope_h2pixcl54v": "__chain_chain_run_input_in_chain_scope_rwiwgl6wca"
+				"__rule_chain_chain_run_input_in_chain_root_amnxsjpwug": "__chain_chain_run_input_in_chain_root_6kgstyioeo"
 			},
 			"chain_claim": {
 				"__chain_claim_fk_root_e4z56epu62": "__chain_claim_in_chain_root_6wnf2d4tj4",
@@ -299,9 +284,8 @@
 			},
 			"chain_ordered_input": {
 				"__chain_ordered_input_fk_root_yo2fvi6v6v": "__chain_ordered_input_in_chain_root_n6wtcltfi7",
-				"__chain_ordered_input_fk_scope_root_jgl73h7an6": "__chain_ordered_input_in_chain_scope_clmpikijzh",
 				"__chain_ordered_input_pk_iv2357obqh": "__chain_ordered_input_pk_scope_root_rtfmhxyyig",
-				"__rule_chain_ordered_input_in_chain_scope_bqv2e66aiu": "__chain_ordered_input_in_chain_scope_clmpikijzh"
+				"__rule_chain_ordered_input_in_chain_root_wbdtjnxkf2": "__chain_ordered_input_in_chain_root_5vqqezuzu4"
 			},
 			"chain_page_input": {
 				"__chain_page_input_fk_root_s74r6jkeai": "__chain_page_input_in_chain_root_lutbgetupx",
@@ -357,26 +341,19 @@
 			},
 			"chain_root": {
 				"__chain_root_key_scope_prbadyie6j": "__chain_root_pk_scope_sdojfkmzws",
-				"__chain_root_pk_wqfycdg3x5": "__chain_root_pk_scope_sdojfkmzws"
+				"__chain_root_pk_wqfycdg3x5": "__chain_root_pk_scope_sdojfkmzws",
+				"__rule_chain_chain_run_input_in_chain_root_amnxsjpwug": "__chain_chain_run_input_in_chain_root_6kgstyioeo",
+				"__rule_chain_ordered_input_in_chain_root_wbdtjnxkf2": "__chain_ordered_input_in_chain_root_5vqqezuzu4"
 			},
 			"chain_scope": {
 				"__chain_scope_fk_root_5dnilqnmua": "__chain_scope_in_chain_root_ygjhk2fwql",
-				"__chain_scope_pk_fxzt444lf6": "__chain_scope_pk_scope_root_zofxojkvu4",
-				"__rule_chain_chain_run_input_in_chain_scope_h2pixcl54v": "__chain_chain_run_input_in_chain_scope_rwiwgl6wca",
-				"__rule_chain_ordered_input_in_chain_scope_bqv2e66aiu": "__chain_ordered_input_in_chain_scope_clmpikijzh"
+				"__chain_scope_pk_fxzt444lf6": "__chain_scope_pk_scope_root_zofxojkvu4"
 			},
 			"chain_skipped": {
 				"__chain_skipped_fk_by_zwz72yquyv": "__chain_skipped_in_chain_root_c46vphfypx",
 				"__chain_skipped_fk_root_yi73nwhhy4": "__chain_skipped_in_chain_root_urdbrlwqv7",
 				"__chain_skipped_fk_scope_ozicxyda6o": "__chain_skipped_in_chain_root_gxhh6nkc3u",
 				"__chain_skipped_pk_cjdtdttlyx": "__chain_skipped_pk_scope_root_7bwtv7nvfw"
-			},
-			"chain_start_scope": {
-				"__chain_start_scope_fk_child_root_3akc5v73xx": "__chain_start_scope_in_chain_scope_4hjcefgp7t",
-				"__chain_start_scope_fk_root_kp7nzhmkrn": "__chain_start_scope_in_chain_root_ygzdfbdju5",
-				"__chain_start_scope_fk_scope_root_q6ze2pghlq": "__chain_start_scope_in_chain_admitted_l6f56yi63u",
-				"__chain_start_scope_key_child_root_qaucku2a5l": "__chain_start_scope_key_child_root_osudmx4vdh",
-				"__chain_start_scope_pk_t4giphzblt": "__chain_start_scope_pk_scope_ordinal_root_6zvivbyrar"
 			},
 			"chain_start_step": {
 				"__chain_start_step_fk_root_gh44bcwmwg": "__chain_start_step_in_chain_root_zt5dovwqdg",
@@ -390,12 +367,6 @@
 				"__chain_step_fk_scope_root_jmx7nw7i4f": "__chain_step_in_chain_admitted_yogfp2eg6o",
 				"__chain_step_pk_u6x5wnvfbv": "__chain_step_pk_step_root_q3xf7mebbe",
 				"__rule_chain_page_input_in_chain_step_iui2bqi4eg": "__chain_page_input_in_chain_step_vnrubtwikd"
-			},
-			"chain_within": {
-				"__chain_within_fk_parent_root_qcmegji4lp": "__chain_within_in_chain_scope_ufb3pt7tmb",
-				"__chain_within_fk_root_sh46agmkgi": "__chain_within_in_chain_root_b6t3vm7o4m",
-				"__chain_within_fk_scope_root_ifxt6ilqws": "__chain_within_in_chain_scope_5v4rj76tef",
-				"__chain_within_pk_ihqzjavdib": "__chain_within_pk_scope_root_fvfv7436dm"
 			},
 			"concluded": {
 				"__concluded_pk_b44jbktrki": "__concluded_pk_learner_2t5fhoqsf2"
@@ -413,9 +384,9 @@
 			},
 			"fan_batch_input": {
 				"__fan_batch_input_fk_root_d4g2u2spvl": "__fan_batch_input_in_fan_root_wmhyrqhasn",
-				"__fan_batch_input_fk_scope_root_6gjhec5w33": "__fan_batch_input_in_fan_scope_pnkgban2ix",
+				"__fan_batch_input_fk_scope_root_mo4mgqhyzc": "__fan_batch_input_in_fan_within_sx7cuovskn",
 				"__fan_batch_input_pk_bmhyfuy2bw": "__fan_batch_input_pk_scope_root_hsgaaei53l",
-				"__rule_fan_batch_input_in_fan_scope_oqskhg76dt": "__fan_batch_input_in_fan_scope_pnkgban2ix"
+				"__rule_fan_batch_input_in_fan_within_a66oofagwd": "__fan_batch_input_in_fan_within_sx7cuovskn"
 			},
 			"fan_claim": {
 				"__fan_claim_fk_root_t3hwth6mh7": "__fan_claim_in_fan_root_6fnoywylvg",
@@ -443,9 +414,8 @@
 			},
 			"fan_fan_run_input": {
 				"__fan_fan_run_input_fk_root_oztqak3s27": "__fan_fan_run_input_in_fan_root_xx3vyjtcmh",
-				"__fan_fan_run_input_fk_scope_root_75ojulpc2t": "__fan_fan_run_input_in_fan_scope_tqfwf3l6wh",
 				"__fan_fan_run_input_pk_tbzpgbwe7g": "__fan_fan_run_input_pk_scope_root_d3caajpryt",
-				"__rule_fan_fan_run_input_in_fan_scope_teyj3a5mwv": "__fan_fan_run_input_in_fan_scope_tqfwf3l6wh"
+				"__rule_fan_fan_run_input_in_fan_root_2jzdzob6au": "__fan_fan_run_input_in_fan_root_z6cpi2vcoy"
 			},
 			"fan_fenced": {
 				"__fan_fenced_fk_root_2vu32qtss5": "__fan_fenced_in_fan_root_alkg2wodls",
@@ -502,13 +472,12 @@
 			},
 			"fan_root": {
 				"__fan_root_key_scope_i3qel4nyj5": "__fan_root_pk_scope_z55b3x6bzo",
-				"__fan_root_pk_jesu7xtefn": "__fan_root_pk_scope_z55b3x6bzo"
+				"__fan_root_pk_jesu7xtefn": "__fan_root_pk_scope_z55b3x6bzo",
+				"__rule_fan_fan_run_input_in_fan_root_2jzdzob6au": "__fan_fan_run_input_in_fan_root_z6cpi2vcoy"
 			},
 			"fan_scope": {
 				"__fan_scope_fk_root_3c5fvemkr6": "__fan_scope_in_fan_root_cxg5yfhbne",
-				"__fan_scope_pk_7bvjfihnef": "__fan_scope_pk_scope_root_o4zoupc3sc",
-				"__rule_fan_batch_input_in_fan_scope_oqskhg76dt": "__fan_batch_input_in_fan_scope_pnkgban2ix",
-				"__rule_fan_fan_run_input_in_fan_scope_teyj3a5mwv": "__fan_fan_run_input_in_fan_scope_tqfwf3l6wh"
+				"__fan_scope_pk_7bvjfihnef": "__fan_scope_pk_scope_root_o4zoupc3sc"
 			},
 			"fan_skipped": {
 				"__fan_skipped_fk_by_o76cwxye2w": "__fan_skipped_in_fan_root_tkjjriatzv",
@@ -552,7 +521,8 @@
 				"__fan_within_fk_parent_root_uep5w6udoh": "__fan_within_in_fan_scope_5q7ganvwrf",
 				"__fan_within_fk_root_k7476egnhf": "__fan_within_in_fan_root_zrmh3xukk6",
 				"__fan_within_fk_scope_root_ej3crstjip": "__fan_within_in_fan_scope_qohkwqidqi",
-				"__fan_within_pk_g5tswgjfa6": "__fan_within_pk_scope_root_cezmybwbla"
+				"__fan_within_pk_g5tswgjfa6": "__fan_within_pk_scope_root_cezmybwbla",
+				"__rule_fan_batch_input_in_fan_within_a66oofagwd": "__fan_batch_input_in_fan_within_sx7cuovskn"
 			},
 			"item": {
 				"__item_pk_ai4obgmq4k": "__item_pk_feed_seq_n_y4mrwtlrwm"
@@ -627,9 +597,8 @@
 			},
 			"retry_ladders_input": {
 				"__retry_ladders_input_fk_root_cnlwmpha3w": "__retry_ladders_input_in_retry_root_5ou6jrdt6j",
-				"__retry_ladders_input_fk_scope_root_h4hegrh5nl": "__retry_ladders_input_in_retry_scope_xauizqr2su",
 				"__retry_ladders_input_pk_5cdnkfgg3x": "__retry_ladders_input_pk_scope_root_q4msz5kkgi",
-				"__rule_retry_ladders_input_in_retry_scope_4iwv2r2ity": "__retry_ladders_input_in_retry_scope_xauizqr2su"
+				"__rule_retry_ladders_input_in_retry_root_5nchmv4mqh": "__retry_ladders_input_in_retry_root_jbqul573mm"
 			},
 			"retry_paused": {
 				"__retry_paused_fk_target_pred_turn_i33p2skdd4": "__retry_paused_in_retry_resumed_nio3dbvr5y",
@@ -658,25 +627,18 @@
 			},
 			"retry_root": {
 				"__retry_root_key_scope_yc7em5k35u": "__retry_root_pk_scope_rd4zfpjgy6",
-				"__retry_root_pk_qi2iw36jky": "__retry_root_pk_scope_rd4zfpjgy6"
+				"__retry_root_pk_qi2iw36jky": "__retry_root_pk_scope_rd4zfpjgy6",
+				"__rule_retry_ladders_input_in_retry_root_5nchmv4mqh": "__retry_ladders_input_in_retry_root_jbqul573mm"
 			},
 			"retry_scope": {
 				"__retry_scope_fk_root_veata66enh": "__retry_scope_in_retry_root_mw6onuf2p5",
-				"__retry_scope_pk_fgji2phvxy": "__retry_scope_pk_scope_root_7pvwucamfn",
-				"__rule_retry_ladders_input_in_retry_scope_4iwv2r2ity": "__retry_ladders_input_in_retry_scope_xauizqr2su"
+				"__retry_scope_pk_fgji2phvxy": "__retry_scope_pk_scope_root_7pvwucamfn"
 			},
 			"retry_skipped": {
 				"__retry_skipped_fk_by_iokgypc6cl": "__retry_skipped_in_retry_root_urvq5d5hmm",
 				"__retry_skipped_fk_root_rfxaxqegr7": "__retry_skipped_in_retry_root_fyyxotc5sk",
 				"__retry_skipped_fk_scope_q4224gzqrl": "__retry_skipped_in_retry_root_p3jcoah2db",
 				"__retry_skipped_pk_au5z33ql7a": "__retry_skipped_pk_scope_root_helbprph4k"
-			},
-			"retry_start_scope": {
-				"__retry_start_scope_fk_child_root_qaa27gkwr7": "__retry_start_scope_in_retry_scope_oxxvan5s35",
-				"__retry_start_scope_fk_root_wh7mjbpwzn": "__retry_start_scope_in_retry_root_kl5jk2kcoc",
-				"__retry_start_scope_fk_scope_root_vxvoiw5spy": "__retry_start_scope_in_retry_admitted_elqmsvp7x7",
-				"__retry_start_scope_key_child_root_yq5q4xexcm": "__retry_start_scope_key_child_root_ys6fq5srfr",
-				"__retry_start_scope_pk_wsif6notdn": "__retry_start_scope_pk_scope_ordinal_root_j7bgi6ew7s"
 			},
 			"retry_start_step": {
 				"__retry_start_step_fk_root_lgh6lskept": "__retry_start_step_in_retry_root_j6rshwwanm",
@@ -703,12 +665,6 @@
 				"__retry_step_pk_opjqidwhzg": "__retry_step_pk_step_root_cazqqyactz",
 				"__rule_retry_brittle_input_in_retry_step_ayhgze3rfy": "__retry_brittle_input_in_retry_step_ooialzszq4",
 				"__rule_retry_steadfast_input_in_retry_step_xlseavmggr": "__retry_steadfast_input_in_retry_step_hx2xvxlsob"
-			},
-			"retry_within": {
-				"__retry_within_fk_parent_root_ih6e44xo3t": "__retry_within_in_retry_scope_dfv2zpqvjj",
-				"__retry_within_fk_root_zznwq6jdjx": "__retry_within_in_retry_root_bk64gewx5a",
-				"__retry_within_fk_scope_root_6md7lilvxc": "__retry_within_in_retry_scope_7xtlujwzy6",
-				"__retry_within_pk_t64odgwbuc": "__retry_within_pk_scope_root_ahvf2lk3vs"
 			},
 			"seen": {
 				"__seen_pk_g4ptcxwowb": "__seen_pk_learner_passage_z5kbmlojhe"
@@ -791,9 +747,8 @@
 				"__sync_finish_pk_hn7tmx25xc": "__sync_finish_pk_scope_root_hboxg5f5eu"
 			},
 			"sync_gold_input": {
-				"__rule_sync_gold_input_in_sync_scope_3rmhvd7ytq": "__sync_gold_input_in_sync_scope_4sfm4viab3",
+				"__rule_sync_gold_input_in_sync_root_cddey6bzlv": "__sync_gold_input_in_sync_root_wntzudbkdm",
 				"__sync_gold_input_fk_root_dearji3wtq": "__sync_gold_input_in_sync_root_ikfuapdiki",
-				"__sync_gold_input_fk_scope_root_anqztt3wt2": "__sync_gold_input_in_sync_scope_4sfm4viab3",
 				"__sync_gold_input_pk_wp7hfx6n2e": "__sync_gold_input_pk_scope_root_5dhgrgeqtv"
 			},
 			"sync_held": {
@@ -832,12 +787,12 @@
 				"__sync_retry_pk_6q52red7iw": "__sync_retry_pk_step_attempt_root_7ner4qf2a4"
 			},
 			"sync_root": {
+				"__rule_sync_gold_input_in_sync_root_cddey6bzlv": "__sync_gold_input_in_sync_root_wntzudbkdm",
+				"__rule_sync_sync_run_input_in_sync_root_burfhxpjwz": "__sync_sync_run_input_in_sync_root_qadsh2ioyk",
 				"__sync_root_key_scope_lxj4sb3mcx": "__sync_root_pk_scope_uqnoijw2jr",
 				"__sync_root_pk_daktpubfe2": "__sync_root_pk_scope_uqnoijw2jr"
 			},
 			"sync_scope": {
-				"__rule_sync_gold_input_in_sync_scope_3rmhvd7ytq": "__sync_gold_input_in_sync_scope_4sfm4viab3",
-				"__rule_sync_sync_run_input_in_sync_scope_4z7ete6flg": "__sync_sync_run_input_in_sync_scope_pmhdowao4r",
 				"__sync_scope_fk_root_whqzszw2jj": "__sync_scope_in_sync_root_6tusfkht4n",
 				"__sync_scope_pk_bg72sm6p4z": "__sync_scope_pk_scope_root_ixz6sdwzl7"
 			},
@@ -846,13 +801,6 @@
 				"__sync_skipped_fk_root_33hfwafoud": "__sync_skipped_in_sync_root_6xnmpa6kac",
 				"__sync_skipped_fk_scope_33qsksdlcc": "__sync_skipped_in_sync_root_4hldqivs6u",
 				"__sync_skipped_pk_yutjqacvws": "__sync_skipped_pk_scope_root_zjlkghhvvq"
-			},
-			"sync_start_scope": {
-				"__sync_start_scope_fk_child_root_bfah526wa7": "__sync_start_scope_in_sync_scope_sg5r3fpypw",
-				"__sync_start_scope_fk_root_4ys6ftxnzl": "__sync_start_scope_in_sync_root_qlo3ym3dri",
-				"__sync_start_scope_fk_scope_root_d2xbykpoy6": "__sync_start_scope_in_sync_admitted_vuxhhrtsyn",
-				"__sync_start_scope_key_child_root_bqxek2fkcn": "__sync_start_scope_key_child_root_wdgdsw5yg5",
-				"__sync_start_scope_pk_zsezuom4ll": "__sync_start_scope_pk_scope_ordinal_root_k23pa5rhc4"
 			},
 			"sync_start_step": {
 				"__sync_start_step_fk_root_2jg4xkdldt": "__sync_start_step_in_sync_root_dpcom7bbpl",
@@ -869,16 +817,9 @@
 				"__sync_step_pk_wfgcxdvbwo": "__sync_step_pk_step_root_6cjtf7tld7"
 			},
 			"sync_sync_run_input": {
-				"__rule_sync_sync_run_input_in_sync_scope_4z7ete6flg": "__sync_sync_run_input_in_sync_scope_pmhdowao4r",
+				"__rule_sync_sync_run_input_in_sync_root_burfhxpjwz": "__sync_sync_run_input_in_sync_root_qadsh2ioyk",
 				"__sync_sync_run_input_fk_root_ifd4bfberz": "__sync_sync_run_input_in_sync_root_tscj2524o4",
-				"__sync_sync_run_input_fk_scope_root_gyi73756or": "__sync_sync_run_input_in_sync_scope_pmhdowao4r",
 				"__sync_sync_run_input_pk_cpbaujyjwv": "__sync_sync_run_input_pk_scope_root_akh2vi52lk"
-			},
-			"sync_within": {
-				"__sync_within_fk_parent_root_xuxk3jxvng": "__sync_within_in_sync_scope_xpf2vjk3y2",
-				"__sync_within_fk_root_wq5xadgno2": "__sync_within_in_sync_root_ymbaybj7jo",
-				"__sync_within_fk_scope_root_zwg5s2mvrv": "__sync_within_in_sync_scope_fgarm3tx4w",
-				"__sync_within_pk_xcfutikja2": "__sync_within_pk_scope_root_7mldutgqlo"
 			},
 			"tally": {
 				"__tally_pk_7jc66uxxx4": "__tally_pk_batch_ae65tx2wol"
@@ -1005,19 +946,12 @@
 				"assign_root": [
 					"scope"
 				],
-				"assign_scope": [
-					"scope"
-				],
 				"assign_skipped": [
 					"scope"
 				],
 				"assign_step": [
 					"scope",
 					"step"
-				],
-				"assign_within": [
-					"parent",
-					"scope"
 				],
 				"assigned": [],
 				"audit": [],
@@ -1064,21 +998,13 @@
 				"chain_root": [
 					"scope"
 				],
-				"chain_scope": [
-					"scope"
-				],
 				"chain_skipped": [
 					"scope"
 				],
-				"chain_start_scope": [],
 				"chain_start_step": [],
 				"chain_step": [
 					"scope",
 					"step"
-				],
-				"chain_within": [
-					"parent",
-					"scope"
 				],
 				"concluded": [],
 				"copied": [],
@@ -1115,9 +1041,6 @@
 					"step"
 				],
 				"fan_root": [
-					"scope"
-				],
-				"fan_scope": [
 					"scope"
 				],
 				"fan_skipped": [
@@ -1178,9 +1101,6 @@
 				"retry_root": [
 					"scope"
 				],
-				"retry_scope": [
-					"scope"
-				],
 				"retry_skipped": [
 					"scope"
 				],
@@ -1191,10 +1111,6 @@
 				"retry_step": [
 					"scope",
 					"step"
-				],
-				"retry_within": [
-					"parent",
-					"scope"
 				],
 				"seen": [
 					"learner"
@@ -1240,9 +1156,6 @@
 				"sync_root": [
 					"scope"
 				],
-				"sync_scope": [
-					"scope"
-				],
 				"sync_skipped": [
 					"scope"
 				],
@@ -1251,10 +1164,6 @@
 					"step"
 				],
 				"sync_sync_run_input": [
-					"scope"
-				],
-				"sync_within": [
-					"parent",
 					"scope"
 				],
 				"tally": [],
@@ -1364,10 +1273,6 @@
 								},
 								{
 									"kind": "law",
-									"law": "__assign_assignment_input_in_assign_scope_voihzx3sj5"
-								},
-								{
-									"kind": "law",
 									"law": "__assign_assignment_input_mode_in_assign_assignment_eawcu4wa34"
 								},
 								{
@@ -1384,6 +1289,10 @@
 								},
 								{
 									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_assignment_input_in_assign_root_mklvt3wjts"
 								}
 							]
 						}
@@ -3035,10 +2944,8 @@
 										"__assign_retry_in_assign_root_ebgrh5fdqa",
 										"__assign_scope_in_assign_root_wws57jg2va",
 										"__assign_skipped_in_assign_root_6zbfgphsqm",
-										"__assign_start_scope_in_assign_root_6gf73d56un",
 										"__assign_start_step_in_assign_root_oc3vxgsn3y",
-										"__assign_step_in_assign_root_xgf4bjrb4m",
-										"__assign_within_in_assign_root_uwohfaqe2q"
+										"__assign_step_in_assign_root_xgf4bjrb4m"
 									]
 								}
 							],
@@ -3157,19 +3064,11 @@
 								},
 								{
 									"kind": "law",
-									"law": "__assign_start_scope_in_assign_root_6gf73d56un"
-								},
-								{
-									"kind": "law",
 									"law": "__assign_start_step_in_assign_root_oc3vxgsn3y"
 								},
 								{
 									"kind": "law",
 									"law": "__assign_step_in_assign_root_xgf4bjrb4m"
-								},
-								{
-									"kind": "law",
-									"law": "__assign_within_in_assign_root_uwohfaqe2q"
 								}
 							]
 						},
@@ -3187,6 +3086,10 @@
 									"law": "__assign_root_pk_scope_n5uoolib3w"
 								},
 								{
+									"kind": "law",
+									"law": "__assign_assignment_input_in_assign_root_mklvt3wjts"
+								},
+								{
 									"kind": "access"
 								}
 							]
@@ -3196,16 +3099,11 @@
 				},
 				"assign_scope": {
 					"indexes": {
-						"__assign_scope_ix_root_scope_rmt6chgtoy": {
+						"__assign_scope_ix_root_v6jmsbgzsq": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
 									"kind": "field"
 								}
 							],
@@ -3233,10 +3131,6 @@
 								{
 									"kind": "law",
 									"law": "__assign_scope_pk_scope_root_2tkrmjny4h"
-								},
-								{
-									"kind": "law",
-									"law": "__assign_assignment_input_in_assign_scope_voihzx3sj5"
 								},
 								{
 									"kind": "access"
@@ -3307,87 +3201,6 @@
 						}
 					},
 					"relation": "AssignSkipped"
-				},
-				"assign_start_scope": {
-					"indexes": {
-						"__assign_start_scope_ix_root_scope_dy4riv6ey6": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__assign_start_scope_in_assign_admitted_n7fy2pszeu"
-								},
-								{
-									"kind": "law",
-									"law": "__assign_start_scope_in_assign_root_6gf73d56un"
-								}
-							]
-						},
-						"__assign_start_scope_key_child_root_dlh7bpcpep": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "child",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__assign_start_scope_key_child_root_aegzq6jcmw"
-								},
-								{
-									"kind": "law",
-									"law": "__assign_start_scope_in_assign_scope_gwarrfxs7q"
-								}
-							]
-						},
-						"__assign_start_scope_pk_ldqdb5b25z": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "ordinal",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__assign_start_scope_pk_scope_ordinal_root_dmjudmfmyz"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						}
-					},
-					"relation": "AssignStartScope"
 				},
 				"assign_start_step": {
 					"indexes": {
@@ -3550,95 +3363,6 @@
 					},
 					"relation": "AssignStep"
 				},
-				"assign_within": {
-					"indexes": {
-						"__assign_within_ix_parent_root_zoknt3xjag": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "parent",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__assign_within_in_assign_scope_gx77nfvdpf"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						},
-						"__assign_within_ix_parent_scope_rjijde5lm7": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "parent",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
-						"__assign_within_ix_root_lkh7fcbhwq": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__assign_within_in_assign_root_uwohfaqe2q"
-								}
-							]
-						},
-						"__assign_within_pk_vvbm6qryed": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__assign_within_pk_scope_root_jo3optko55"
-								},
-								{
-									"kind": "law",
-									"law": "__assign_within_in_assign_scope_3ckmt3b455"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						}
-					},
-					"relation": "AssignWithin"
-				},
 				"assigned": {
 					"indexes": {
 						"__assigned_pk_72xowecbf7": {
@@ -3761,16 +3485,11 @@
 				},
 				"chain_chain_run_input": {
 					"indexes": {
-						"__chain_chain_run_input_ix_root_scope_znpuldy56o": {
+						"__chain_chain_run_input_ix_root_7abe6kcg67": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
 									"kind": "field"
 								}
 							],
@@ -3800,11 +3519,11 @@
 									"law": "__chain_chain_run_input_pk_scope_root_5ozdi4uoi6"
 								},
 								{
-									"kind": "law",
-									"law": "__chain_chain_run_input_in_chain_scope_rwiwgl6wca"
+									"kind": "access"
 								},
 								{
-									"kind": "access"
+									"kind": "law",
+									"law": "__chain_chain_run_input_in_chain_root_6kgstyioeo"
 								}
 							]
 						}
@@ -4341,16 +4060,11 @@
 				},
 				"chain_ordered_input": {
 					"indexes": {
-						"__chain_ordered_input_ix_root_scope_y7nddyuclm": {
+						"__chain_ordered_input_ix_root_wmmk2yqn4t": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
 									"kind": "field"
 								}
 							],
@@ -4380,11 +4094,11 @@
 									"law": "__chain_ordered_input_pk_scope_root_rtfmhxyyig"
 								},
 								{
-									"kind": "law",
-									"law": "__chain_ordered_input_in_chain_scope_clmpikijzh"
+									"kind": "access"
 								},
 								{
-									"kind": "access"
+									"kind": "law",
+									"law": "__chain_ordered_input_in_chain_root_5vqqezuzu4"
 								}
 							]
 						}
@@ -4947,10 +4661,8 @@
 										"__chain_retry_in_chain_root_lq5eky5wnv",
 										"__chain_scope_in_chain_root_ygjhk2fwql",
 										"__chain_skipped_in_chain_root_urdbrlwqv7",
-										"__chain_start_scope_in_chain_root_ygzdfbdju5",
 										"__chain_start_step_in_chain_root_zt5dovwqdg",
-										"__chain_step_in_chain_root_uugqmiobjl",
-										"__chain_within_in_chain_root_b6t3vm7o4m"
+										"__chain_step_in_chain_root_uugqmiobjl"
 									]
 								}
 							],
@@ -5045,19 +4757,11 @@
 								},
 								{
 									"kind": "law",
-									"law": "__chain_start_scope_in_chain_root_ygzdfbdju5"
-								},
-								{
-									"kind": "law",
 									"law": "__chain_start_step_in_chain_root_zt5dovwqdg"
 								},
 								{
 									"kind": "law",
 									"law": "__chain_step_in_chain_root_uugqmiobjl"
-								},
-								{
-									"kind": "law",
-									"law": "__chain_within_in_chain_root_b6t3vm7o4m"
 								}
 							]
 						},
@@ -5075,6 +4779,14 @@
 									"law": "__chain_root_pk_scope_sdojfkmzws"
 								},
 								{
+									"kind": "law",
+									"law": "__chain_chain_run_input_in_chain_root_6kgstyioeo"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_ordered_input_in_chain_root_5vqqezuzu4"
+								},
+								{
 									"kind": "access"
 								}
 							]
@@ -5084,16 +4796,11 @@
 				},
 				"chain_scope": {
 					"indexes": {
-						"__chain_scope_ix_root_scope_3l6z2foahk": {
+						"__chain_scope_ix_root_idrabjw6oz": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
 									"kind": "field"
 								}
 							],
@@ -5121,14 +4828,6 @@
 								{
 									"kind": "law",
 									"law": "__chain_scope_pk_scope_root_zofxojkvu4"
-								},
-								{
-									"kind": "law",
-									"law": "__chain_chain_run_input_in_chain_scope_rwiwgl6wca"
-								},
-								{
-									"kind": "law",
-									"law": "__chain_ordered_input_in_chain_scope_clmpikijzh"
 								},
 								{
 									"kind": "access"
@@ -5199,87 +4898,6 @@
 						}
 					},
 					"relation": "ChainSkipped"
-				},
-				"chain_start_scope": {
-					"indexes": {
-						"__chain_start_scope_ix_root_scope_pmsejobbzx": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__chain_start_scope_in_chain_admitted_l6f56yi63u"
-								},
-								{
-									"kind": "law",
-									"law": "__chain_start_scope_in_chain_root_ygzdfbdju5"
-								}
-							]
-						},
-						"__chain_start_scope_key_child_root_qaucku2a5l": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "child",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__chain_start_scope_key_child_root_osudmx4vdh"
-								},
-								{
-									"kind": "law",
-									"law": "__chain_start_scope_in_chain_scope_4hjcefgp7t"
-								}
-							]
-						},
-						"__chain_start_scope_pk_t4giphzblt": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "ordinal",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__chain_start_scope_pk_scope_ordinal_root_6zvivbyrar"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						}
-					},
-					"relation": "ChainStartScope"
 				},
 				"chain_start_step": {
 					"indexes": {
@@ -5466,95 +5084,6 @@
 					},
 					"relation": "ChainStep"
 				},
-				"chain_within": {
-					"indexes": {
-						"__chain_within_ix_parent_root_ou2ppyokg3": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "parent",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__chain_within_in_chain_scope_ufb3pt7tmb"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						},
-						"__chain_within_ix_parent_scope_qsgaheyd4k": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "parent",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
-						"__chain_within_ix_root_2yyvyz27do": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__chain_within_in_chain_root_b6t3vm7o4m"
-								}
-							]
-						},
-						"__chain_within_pk_ihqzjavdib": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__chain_within_pk_scope_root_fvfv7436dm"
-								},
-								{
-									"kind": "law",
-									"law": "__chain_within_in_chain_scope_5v4rj76tef"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						}
-					},
-					"relation": "ChainWithin"
-				},
 				"concluded": {
 					"indexes": {
 						"__concluded_pk_b44jbktrki": {
@@ -5723,7 +5252,7 @@
 								},
 								{
 									"kind": "law",
-									"law": "__fan_batch_input_in_fan_scope_pnkgban2ix"
+									"law": "__fan_batch_input_in_fan_within_sx7cuovskn"
 								},
 								{
 									"kind": "access"
@@ -5986,16 +5515,11 @@
 				},
 				"fan_fan_run_input": {
 					"indexes": {
-						"__fan_fan_run_input_ix_root_scope_fmo475m6nv": {
+						"__fan_fan_run_input_ix_root_25alzzoykh": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
 									"kind": "field"
 								}
 							],
@@ -6025,11 +5549,11 @@
 									"law": "__fan_fan_run_input_pk_scope_root_d3caajpryt"
 								},
 								{
-									"kind": "law",
-									"law": "__fan_fan_run_input_in_fan_scope_tqfwf3l6wh"
+									"kind": "access"
 								},
 								{
-									"kind": "access"
+									"kind": "law",
+									"law": "__fan_fan_run_input_in_fan_root_z6cpi2vcoy"
 								}
 							]
 						}
@@ -6751,6 +6275,10 @@
 									"law": "__fan_root_pk_scope_z55b3x6bzo"
 								},
 								{
+									"kind": "law",
+									"law": "__fan_fan_run_input_in_fan_root_z6cpi2vcoy"
+								},
+								{
 									"kind": "access"
 								}
 							]
@@ -6760,38 +6288,8 @@
 				},
 				"fan_scope": {
 					"indexes": {
-						"__fan_scope_ix_root_scope_ccqtwappcv": {
+						"__fan_scope_ix_root_a5wtvynqul": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__fan_scope_in_fan_root_cxg5yfhbne"
-								}
-							]
-						},
-						"__fan_scope_ix_scope_kind_root_eehfdwjtg7": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "kind",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"field": "root",
@@ -6800,7 +6298,8 @@
 							],
 							"reasons": [
 								{
-									"kind": "access"
+									"kind": "law",
+									"law": "__fan_scope_in_fan_root_cxg5yfhbne"
 								}
 							]
 						},
@@ -6821,14 +6320,6 @@
 								{
 									"kind": "law",
 									"law": "__fan_scope_pk_scope_root_o4zoupc3sc"
-								},
-								{
-									"kind": "law",
-									"law": "__fan_batch_input_in_fan_scope_pnkgban2ix"
-								},
-								{
-									"kind": "law",
-									"law": "__fan_fan_run_input_in_fan_scope_tqfwf3l6wh"
 								},
 								{
 									"kind": "access"
@@ -7247,7 +6738,7 @@
 				},
 				"fan_within": {
 					"indexes": {
-						"__fan_within_ix_parent_root_eiovyuswcz": {
+						"__fan_within_ix_parent_kind_scope_5ywepfmzj2": {
 							"columns": [
 								{
 									"direction": "asc",
@@ -7256,25 +6747,7 @@
 								},
 								{
 									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__fan_within_in_fan_scope_5q7ganvwrf"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						},
-						"__fan_within_ix_parent_scope_ic53myxv2p": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "parent",
+									"field": "kind",
 									"kind": "field"
 								},
 								{
@@ -7289,15 +6762,24 @@
 								}
 							]
 						},
-						"__fan_within_ix_root_clgremqn26": {
+						"__fan_within_ix_root_parent_ivgq62e3yc": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
 									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "parent",
+									"kind": "field"
 								}
 							],
 							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_within_in_fan_scope_5q7ganvwrf"
+								},
 								{
 									"kind": "law",
 									"law": "__fan_within_in_fan_root_zrmh3xukk6"
@@ -7321,6 +6803,10 @@
 								{
 									"kind": "law",
 									"law": "__fan_within_pk_scope_root_cezmybwbla"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_batch_input_in_fan_within_sx7cuovskn"
 								},
 								{
 									"kind": "law",
@@ -8049,16 +7535,11 @@
 				},
 				"retry_ladders_input": {
 					"indexes": {
-						"__retry_ladders_input_ix_root_scope_6425iwfqax": {
+						"__retry_ladders_input_ix_root_co4bnpgzm5": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
 									"kind": "field"
 								}
 							],
@@ -8088,11 +7569,11 @@
 									"law": "__retry_ladders_input_pk_scope_root_q4msz5kkgi"
 								},
 								{
-									"kind": "law",
-									"law": "__retry_ladders_input_in_retry_scope_xauizqr2su"
+									"kind": "access"
 								},
 								{
-									"kind": "access"
+									"kind": "law",
+									"law": "__retry_ladders_input_in_retry_root_jbqul573mm"
 								}
 							]
 						}
@@ -8396,12 +7877,10 @@
 										"__retry_retry_in_retry_root_cfgqtgjhsz",
 										"__retry_scope_in_retry_root_mw6onuf2p5",
 										"__retry_skipped_in_retry_root_fyyxotc5sk",
-										"__retry_start_scope_in_retry_root_kl5jk2kcoc",
 										"__retry_start_step_in_retry_root_j6rshwwanm",
 										"__retry_steadfast_input_in_retry_root_fy2zpu5ehg",
 										"__retry_steadfast_output_in_retry_root_2ecchkinik",
-										"__retry_step_in_retry_root_ydnqenbqjn",
-										"__retry_within_in_retry_root_bk64gewx5a"
+										"__retry_step_in_retry_root_ydnqenbqjn"
 									]
 								}
 							],
@@ -8476,10 +7955,6 @@
 								},
 								{
 									"kind": "law",
-									"law": "__retry_start_scope_in_retry_root_kl5jk2kcoc"
-								},
-								{
-									"kind": "law",
 									"law": "__retry_start_step_in_retry_root_j6rshwwanm"
 								},
 								{
@@ -8493,10 +7968,6 @@
 								{
 									"kind": "law",
 									"law": "__retry_step_in_retry_root_ydnqenbqjn"
-								},
-								{
-									"kind": "law",
-									"law": "__retry_within_in_retry_root_bk64gewx5a"
 								}
 							]
 						},
@@ -8514,6 +7985,10 @@
 									"law": "__retry_root_pk_scope_rd4zfpjgy6"
 								},
 								{
+									"kind": "law",
+									"law": "__retry_ladders_input_in_retry_root_jbqul573mm"
+								},
+								{
 									"kind": "access"
 								}
 							]
@@ -8523,16 +7998,11 @@
 				},
 				"retry_scope": {
 					"indexes": {
-						"__retry_scope_ix_root_scope_yupmp2ario": {
+						"__retry_scope_ix_root_7gpsngzwhs": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
 									"kind": "field"
 								}
 							],
@@ -8560,10 +8030,6 @@
 								{
 									"kind": "law",
 									"law": "__retry_scope_pk_scope_root_7pvwucamfn"
-								},
-								{
-									"kind": "law",
-									"law": "__retry_ladders_input_in_retry_scope_xauizqr2su"
 								},
 								{
 									"kind": "access"
@@ -8634,87 +8100,6 @@
 						}
 					},
 					"relation": "RetrySkipped"
-				},
-				"retry_start_scope": {
-					"indexes": {
-						"__retry_start_scope_ix_root_scope_c6swz2xyob": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__retry_start_scope_in_retry_admitted_elqmsvp7x7"
-								},
-								{
-									"kind": "law",
-									"law": "__retry_start_scope_in_retry_root_kl5jk2kcoc"
-								}
-							]
-						},
-						"__retry_start_scope_key_child_root_yq5q4xexcm": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "child",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__retry_start_scope_key_child_root_ys6fq5srfr"
-								},
-								{
-									"kind": "law",
-									"law": "__retry_start_scope_in_retry_scope_oxxvan5s35"
-								}
-							]
-						},
-						"__retry_start_scope_pk_wsif6notdn": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "ordinal",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__retry_start_scope_pk_scope_ordinal_root_j7bgi6ew7s"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						}
-					},
-					"relation": "RetryStartScope"
 				},
 				"retry_start_step": {
 					"indexes": {
@@ -8983,95 +8368,6 @@
 						}
 					},
 					"relation": "RetryStep"
-				},
-				"retry_within": {
-					"indexes": {
-						"__retry_within_ix_parent_root_ygagejv6gt": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "parent",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__retry_within_in_retry_scope_dfv2zpqvjj"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						},
-						"__retry_within_ix_parent_scope_fssz5dsvdf": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "parent",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
-						"__retry_within_ix_root_lho5kgjqvt": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__retry_within_in_retry_root_bk64gewx5a"
-								}
-							]
-						},
-						"__retry_within_pk_t64odgwbuc": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__retry_within_pk_scope_root_ahvf2lk3vs"
-								},
-								{
-									"kind": "law",
-									"law": "__retry_within_in_retry_scope_7xtlujwzy6"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						}
-					},
-					"relation": "RetryWithin"
 				},
 				"seen": {
 					"indexes": {
@@ -9886,16 +9182,11 @@
 				},
 				"sync_gold_input": {
 					"indexes": {
-						"__sync_gold_input_ix_root_scope_mfng4pm6l5": {
+						"__sync_gold_input_ix_root_fmnsnept43": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
 									"kind": "field"
 								}
 							],
@@ -9925,11 +9216,11 @@
 									"law": "__sync_gold_input_pk_scope_root_5dhgrgeqtv"
 								},
 								{
-									"kind": "law",
-									"law": "__sync_gold_input_in_sync_scope_4sfm4viab3"
+									"kind": "access"
 								},
 								{
-									"kind": "access"
+									"kind": "law",
+									"law": "__sync_gold_input_in_sync_root_wntzudbkdm"
 								}
 							]
 						}
@@ -10300,11 +9591,9 @@
 										"__sync_retry_in_sync_root_vfwwlbgk6b",
 										"__sync_scope_in_sync_root_6tusfkht4n",
 										"__sync_skipped_in_sync_root_6xnmpa6kac",
-										"__sync_start_scope_in_sync_root_qlo3ym3dri",
 										"__sync_start_step_in_sync_root_dpcom7bbpl",
 										"__sync_step_in_sync_root_fvyfuw6ryw",
-										"__sync_sync_run_input_in_sync_root_tscj2524o4",
-										"__sync_within_in_sync_root_ymbaybj7jo"
+										"__sync_sync_run_input_in_sync_root_tscj2524o4"
 									]
 								}
 							],
@@ -10391,10 +9680,6 @@
 								},
 								{
 									"kind": "law",
-									"law": "__sync_start_scope_in_sync_root_qlo3ym3dri"
-								},
-								{
-									"kind": "law",
 									"law": "__sync_start_step_in_sync_root_dpcom7bbpl"
 								},
 								{
@@ -10404,10 +9689,6 @@
 								{
 									"kind": "law",
 									"law": "__sync_sync_run_input_in_sync_root_tscj2524o4"
-								},
-								{
-									"kind": "law",
-									"law": "__sync_within_in_sync_root_ymbaybj7jo"
 								}
 							]
 						},
@@ -10425,6 +9706,14 @@
 									"law": "__sync_root_pk_scope_uqnoijw2jr"
 								},
 								{
+									"kind": "law",
+									"law": "__sync_gold_input_in_sync_root_wntzudbkdm"
+								},
+								{
+									"kind": "law",
+									"law": "__sync_sync_run_input_in_sync_root_qadsh2ioyk"
+								},
+								{
 									"kind": "access"
 								}
 							]
@@ -10434,16 +9723,11 @@
 				},
 				"sync_scope": {
 					"indexes": {
-						"__sync_scope_ix_root_scope_mxckyw3mzd": {
+						"__sync_scope_ix_root_7f6s5dqo5t": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
 									"kind": "field"
 								}
 							],
@@ -10471,14 +9755,6 @@
 								{
 									"kind": "law",
 									"law": "__sync_scope_pk_scope_root_ixz6sdwzl7"
-								},
-								{
-									"kind": "law",
-									"law": "__sync_gold_input_in_sync_scope_4sfm4viab3"
-								},
-								{
-									"kind": "law",
-									"law": "__sync_sync_run_input_in_sync_scope_pmhdowao4r"
 								},
 								{
 									"kind": "access"
@@ -10549,87 +9825,6 @@
 						}
 					},
 					"relation": "SyncSkipped"
-				},
-				"sync_start_scope": {
-					"indexes": {
-						"__sync_start_scope_ix_root_scope_amosehm6j2": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__sync_start_scope_in_sync_admitted_vuxhhrtsyn"
-								},
-								{
-									"kind": "law",
-									"law": "__sync_start_scope_in_sync_root_qlo3ym3dri"
-								}
-							]
-						},
-						"__sync_start_scope_key_child_root_bqxek2fkcn": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "child",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__sync_start_scope_key_child_root_wdgdsw5yg5"
-								},
-								{
-									"kind": "law",
-									"law": "__sync_start_scope_in_sync_scope_sg5r3fpypw"
-								}
-							]
-						},
-						"__sync_start_scope_pk_zsezuom4ll": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "ordinal",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__sync_start_scope_pk_scope_ordinal_root_k23pa5rhc4"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						}
-					},
-					"relation": "SyncStartScope"
 				},
 				"sync_start_step": {
 					"indexes": {
@@ -10788,16 +9983,11 @@
 				},
 				"sync_sync_run_input": {
 					"indexes": {
-						"__sync_sync_run_input_ix_root_scope_fb42vov5x5": {
+						"__sync_sync_run_input_ix_root_bp43cbf2uj": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
 									"kind": "field"
 								}
 							],
@@ -10827,105 +10017,16 @@
 									"law": "__sync_sync_run_input_pk_scope_root_akh2vi52lk"
 								},
 								{
-									"kind": "law",
-									"law": "__sync_sync_run_input_in_sync_scope_pmhdowao4r"
+									"kind": "access"
 								},
 								{
-									"kind": "access"
+									"kind": "law",
+									"law": "__sync_sync_run_input_in_sync_root_qadsh2ioyk"
 								}
 							]
 						}
 					},
 					"relation": "SyncSyncRunInput"
-				},
-				"sync_within": {
-					"indexes": {
-						"__sync_within_ix_parent_root_ukspdoqdvf": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "parent",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__sync_within_in_sync_scope_xpf2vjk3y2"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						},
-						"__sync_within_ix_parent_scope_w4luz7lz7c": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "parent",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
-						"__sync_within_ix_root_mivp3mp4oa": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__sync_within_in_sync_root_ymbaybj7jo"
-								}
-							]
-						},
-						"__sync_within_pk_xcfutikja2": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__sync_within_pk_scope_root_7mldutgqlo"
-								},
-								{
-									"kind": "law",
-									"law": "__sync_within_in_sync_scope_fgarm3tx4w"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						}
-					},
-					"relation": "SyncWithin"
 				},
 				"tally": {
 					"indexes": {
@@ -10984,11 +10085,11 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "63e88439b31a34f4d411797fdc1bd764ad1926335deae7664daa2b9e4c87291c",
+	"fingerprint": "590de862992bdc2f2ae60caafbed409b3d9b2a9cf6933c93393f0f7cb6aa8db4",
 	"format": 1,
 	"levels": [
 		{
-			"fingerprint": "fad9faef40dcabb6582b5f64aec3241661ee938eee30c519b83e6004ae1b653e",
+			"fingerprint": "253d16aeb66cd6895eda032da26fd2162cd889f61272e56249dccecc4d930023",
 			"laws": [
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_root_56frawwv2n"},
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_s3xk3phh7y"},
@@ -10998,7 +10099,7 @@
 				{"described":{"from":{"relation":"AssignAssignmentInputExclude","selection":{"conjuncts":[{"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}]},"terms":[{"field":"scope","kind":"field"},{"field":"ordinal","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignAssignmentInputExclude","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"ordinal","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_assignment_input_exclude_ordinal_in_assign_3socp6tslh"},
 				{"described":{"fields":["scope","ordinal","root"],"kind":"primaryKey","relation":"AssignAssignmentInputExclude"},"law":"__assign_assignment_input_exclude_pk_scope_ordinal_4j43giekdp"},
 				{"described":{"from":{"relation":"AssignAssignmentInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_assignment_input_in_assign_root_hqb27yindz"},
-				{"described":{"from":{"relation":"AssignAssignmentInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Assignment"}}]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_assignment_input_in_assign_scope_voihzx3sj5"},
+				{"described":{"from":{"relation":"AssignAssignmentInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Assignment"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_assignment_input_in_assign_root_mklvt3wjts"},
 				{"described":{"from":{"relation":"AssignAssignmentInput","selection":{"conjuncts":[{"kind":"compare","left":{"field":"mode","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Nearest"}}]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignAssignmentInputModeNearest","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_assignment_input_mode_in_assign_assignment_eawcu4wa34"},
 				{"described":{"from":{"relation":"AssignAssignmentInput","selection":{"conjuncts":[{"kind":"compare","left":{"field":"mode","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Within"}}]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignAssignmentInputModeWithin","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_assignment_input_mode_in_assign_assignment_v5nciwm3f3"},
 				{"described":{"from":{"relation":"AssignAssignmentInputModeNearest","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_assignment_input_mode_nearest_in_assign_pjcohshadl"},
@@ -11096,11 +10197,6 @@
 				{"described":{"from":{"relation":"AssignSkipped","selection":{"conjuncts":[]},"terms":[{"field":"by","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_skipped_in_assign_root_nausdpr5kj"},
 				{"described":{"from":{"relation":"AssignSkipped","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_skipped_in_assign_root_w27kcjx3p2"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"AssignSkipped"},"law":"__assign_skipped_pk_scope_root_j473dnp6c7"},
-				{"described":{"from":{"relation":"AssignStartScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_start_scope_in_assign_admitted_n7fy2pszeu"},
-				{"described":{"from":{"relation":"AssignStartScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_start_scope_in_assign_root_6gf73d56un"},
-				{"described":{"from":{"relation":"AssignStartScope","selection":{"conjuncts":[]},"terms":[{"field":"child","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_start_scope_in_assign_scope_gwarrfxs7q"},
-				{"described":{"kind":"key","side":{"relation":"AssignStartScope","selection":{"conjuncts":[]},"terms":[{"field":"child","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_start_scope_key_child_root_aegzq6jcmw"},
-				{"described":{"fields":["scope","ordinal","root"],"kind":"primaryKey","relation":"AssignStartScope"},"law":"__assign_start_scope_pk_scope_ordinal_root_dmjudmfmyz"},
 				{"described":{"from":{"relation":"AssignStartStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_start_step_in_assign_admitted_tja4ezikh3"},
 				{"described":{"from":{"relation":"AssignStartStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_start_step_in_assign_root_oc3vxgsn3y"},
 				{"described":{"from":{"relation":"AssignStartStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_start_step_in_assign_step_yqkblgielw"},
@@ -11109,10 +10205,6 @@
 				{"described":{"from":{"relation":"AssignStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_step_in_assign_admitted_bz33qzkxkz"},
 				{"described":{"from":{"relation":"AssignStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_step_in_assign_root_xgf4bjrb4m"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"AssignStep"},"law":"__assign_step_pk_step_root_vjkvk32xq3"},
-				{"described":{"from":{"relation":"AssignWithin","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_within_in_assign_root_uwohfaqe2q"},
-				{"described":{"from":{"relation":"AssignWithin","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_within_in_assign_scope_3ckmt3b455"},
-				{"described":{"from":{"relation":"AssignWithin","selection":{"conjuncts":[]},"terms":[{"field":"parent","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_within_in_assign_scope_gx77nfvdpf"},
-				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"AssignWithin"},"law":"__assign_within_pk_scope_root_jo3optko55"},
 				{"described":{"fields":["learner"],"kind":"primaryKey","relation":"Assigned"},"law":"__assigned_pk_learner_ogs732lrn5"},
 				{"described":{"from":{"relation":"Audit","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__audit_in_chain_result_lpbsjjjpvl"},
 				{"described":{"fields":["step"],"kind":"primaryKey","relation":"Audit"},"law":"__audit_pk_step_lew2zfy6bw"},
@@ -11120,8 +10212,8 @@
 				{"described":{"from":{"relation":"ChainAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_admitted_in_chain_root_dumegkr74f"},
 				{"described":{"from":{"relation":"ChainAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_admitted_in_chain_scope_hudaxcvcmw"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"ChainAdmitted"},"law":"__chain_admitted_pk_scope_root_fnw3mzemuu"},
+				{"described":{"from":{"relation":"ChainChainRunInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"ChainRun"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_chain_run_input_in_chain_root_6kgstyioeo"},
 				{"described":{"from":{"relation":"ChainChainRunInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_chain_run_input_in_chain_root_a2bn7vy4pn"},
-				{"described":{"from":{"relation":"ChainChainRunInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"ChainRun"}}]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_chain_run_input_in_chain_scope_rwiwgl6wca"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"ChainChainRunInput"},"law":"__chain_chain_run_input_pk_scope_root_5ozdi4uoi6"},
 				{"described":{"from":{"relation":"ChainClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:2"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_claim_attempt_in_chain_claim_eckzxzhb3x"},
 				{"described":{"kind":"check","name":"AttemptFromOne","relation":"ChainClaim"},"law":"__chain_claim_check_attempt_from_one_gr4ciwsbbc"},
@@ -11154,8 +10246,8 @@
 				{"described":{"from":{"relation":"ChainNext","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_next_in_chain_root_joj6lhmbrz"},
 				{"described":{"kind":"key","side":{"relation":"ChainNext","selection":{"conjuncts":[]},"terms":[{"field":"to","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_next_key_to_root_dun7tgkrep"},
 				{"described":{"fields":["from","ordinal","root"],"kind":"primaryKey","relation":"ChainNext"},"law":"__chain_next_pk_from_ordinal_root_bi3m25ohq5"},
+				{"described":{"from":{"relation":"ChainOrderedInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Ordered"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_ordered_input_in_chain_root_5vqqezuzu4"},
 				{"described":{"from":{"relation":"ChainOrderedInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_ordered_input_in_chain_root_n6wtcltfi7"},
-				{"described":{"from":{"relation":"ChainOrderedInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Ordered"}}]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_ordered_input_in_chain_scope_clmpikijzh"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"ChainOrderedInput"},"law":"__chain_ordered_input_pk_scope_root_rtfmhxyyig"},
 				{"described":{"from":{"relation":"ChainPageInputAfter","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainPageInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_page_input_after_in_chain_page_input_iw7hk2ja2s"},
 				{"described":{"from":{"relation":"ChainPageInputAfter","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_page_input_after_in_chain_root_bdi7s3p2xx"},
@@ -11193,11 +10285,6 @@
 				{"described":{"from":{"relation":"ChainSkipped","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_skipped_in_chain_root_gxhh6nkc3u"},
 				{"described":{"from":{"relation":"ChainSkipped","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_skipped_in_chain_root_urdbrlwqv7"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"ChainSkipped"},"law":"__chain_skipped_pk_scope_root_7bwtv7nvfw"},
-				{"described":{"from":{"relation":"ChainStartScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_start_scope_in_chain_admitted_l6f56yi63u"},
-				{"described":{"from":{"relation":"ChainStartScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_start_scope_in_chain_root_ygzdfbdju5"},
-				{"described":{"from":{"relation":"ChainStartScope","selection":{"conjuncts":[]},"terms":[{"field":"child","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_start_scope_in_chain_scope_4hjcefgp7t"},
-				{"described":{"kind":"key","side":{"relation":"ChainStartScope","selection":{"conjuncts":[]},"terms":[{"field":"child","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_start_scope_key_child_root_osudmx4vdh"},
-				{"described":{"fields":["scope","ordinal","root"],"kind":"primaryKey","relation":"ChainStartScope"},"law":"__chain_start_scope_pk_scope_ordinal_root_6zvivbyrar"},
 				{"described":{"from":{"relation":"ChainStartStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_start_step_in_chain_admitted_ukpeaixwz7"},
 				{"described":{"from":{"relation":"ChainStartStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_start_step_in_chain_root_zt5dovwqdg"},
 				{"described":{"from":{"relation":"ChainStartStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_start_step_in_chain_step_vv7s5zzf5e"},
@@ -11206,10 +10293,6 @@
 				{"described":{"from":{"relation":"ChainStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_step_in_chain_admitted_yogfp2eg6o"},
 				{"described":{"from":{"relation":"ChainStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_step_in_chain_root_uugqmiobjl"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ChainStep"},"law":"__chain_step_pk_step_root_q3xf7mebbe"},
-				{"described":{"from":{"relation":"ChainWithin","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_within_in_chain_root_b6t3vm7o4m"},
-				{"described":{"from":{"relation":"ChainWithin","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_within_in_chain_scope_5v4rj76tef"},
-				{"described":{"from":{"relation":"ChainWithin","selection":{"conjuncts":[]},"terms":[{"field":"parent","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_within_in_chain_scope_ufb3pt7tmb"},
-				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"ChainWithin"},"law":"__chain_within_pk_scope_root_fvfv7436dm"},
 				{"described":{"fields":["learner"],"kind":"primaryKey","relation":"Concluded"},"law":"__concluded_pk_learner_2t5fhoqsf2"},
 				{"described":{"fields":["relation","run"],"kind":"primaryKey","relation":"Copied"},"law":"__copied_pk_relation_run_r2fqzejpu3"},
 				{"described":{"fields":["feed","position"],"kind":"primaryKey","relation":"Cursor"},"law":"__cursor_pk_feed_position_hylioo6cog"},
@@ -11222,7 +10305,7 @@
 				{"described":{"from":{"relation":"FanAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_admitted_in_fan_scope_5qkq46iyrk"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"FanAdmitted"},"law":"__fan_admitted_pk_scope_root_44damu7eun"},
 				{"described":{"from":{"relation":"FanBatchInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_batch_input_in_fan_root_wmhyrqhasn"},
-				{"described":{"from":{"relation":"FanBatchInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Batch"}}]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_batch_input_in_fan_scope_pnkgban2ix"},
+				{"described":{"from":{"relation":"FanBatchInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanWithin","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Batch"}}]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_batch_input_in_fan_within_sx7cuovskn"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"FanBatchInput"},"law":"__fan_batch_input_pk_scope_root_hsgaaei53l"},
 				{"described":{"from":{"relation":"FanClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:2"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_claim_attempt_in_fan_claim_afbpo2wrxj"},
 				{"described":{"kind":"check","name":"AttemptFromOne","relation":"FanClaim"},"law":"__fan_claim_check_attempt_from_one_pagmo5a6sv"},
@@ -11239,7 +10322,7 @@
 				{"described":{"from":{"relation":"FanFailed","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_failed_in_fan_root_l7x6w743lm"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"FanFailed"},"law":"__fan_failed_pk_step_root_okqg4jsz7f"},
 				{"described":{"from":{"relation":"FanFanRunInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_fan_run_input_in_fan_root_xx3vyjtcmh"},
-				{"described":{"from":{"relation":"FanFanRunInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"FanRun"}}]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_fan_run_input_in_fan_scope_tqfwf3l6wh"},
+				{"described":{"from":{"relation":"FanFanRunInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"FanRun"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_fan_run_input_in_fan_root_z6cpi2vcoy"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"FanFanRunInput"},"law":"__fan_fan_run_input_pk_scope_root_d3caajpryt"},
 				{"described":{"from":{"relation":"FanFenced","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_fenced_in_fan_claim_6uvct342c7"},
 				{"described":{"from":{"relation":"FanFenced","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_fenced_in_fan_root_alkg2wodls"},
@@ -11343,7 +10426,7 @@
 				{"described":{"from":{"relation":"RetryHeld","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_held_in_retry_root_yd534odiuo"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"RetryHeld"},"law":"__retry_held_pk_step_root_6m3jmpcqna"},
 				{"described":{"from":{"relation":"RetryLaddersInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_ladders_input_in_retry_root_5ou6jrdt6j"},
-				{"described":{"from":{"relation":"RetryLaddersInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryScope","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Ladders"}}]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_ladders_input_in_retry_scope_xauizqr2su"},
+				{"described":{"from":{"relation":"RetryLaddersInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Ladders"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_ladders_input_in_retry_root_jbqul573mm"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"RetryLaddersInput"},"law":"__retry_ladders_input_pk_scope_root_q4msz5kkgi"},
 				{"described":{"from":{"relation":"RetryPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"RetryResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__retry_paused_in_retry_resumed_nio3dbvr5y"},
 				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"RetryPaused"},"law":"__retry_paused_pk_target_turn_bvyk5hdglc"},
@@ -11365,11 +10448,6 @@
 				{"described":{"from":{"relation":"RetrySkipped","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_skipped_in_retry_root_p3jcoah2db"},
 				{"described":{"from":{"relation":"RetrySkipped","selection":{"conjuncts":[]},"terms":[{"field":"by","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_skipped_in_retry_root_urvq5d5hmm"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"RetrySkipped"},"law":"__retry_skipped_pk_scope_root_helbprph4k"},
-				{"described":{"from":{"relation":"RetryStartScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_start_scope_in_retry_admitted_elqmsvp7x7"},
-				{"described":{"from":{"relation":"RetryStartScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_start_scope_in_retry_root_kl5jk2kcoc"},
-				{"described":{"from":{"relation":"RetryStartScope","selection":{"conjuncts":[]},"terms":[{"field":"child","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_start_scope_in_retry_scope_oxxvan5s35"},
-				{"described":{"kind":"key","side":{"relation":"RetryStartScope","selection":{"conjuncts":[]},"terms":[{"field":"child","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_start_scope_key_child_root_ys6fq5srfr"},
-				{"described":{"fields":["scope","ordinal","root"],"kind":"primaryKey","relation":"RetryStartScope"},"law":"__retry_start_scope_pk_scope_ordinal_root_j7bgi6ew7s"},
 				{"described":{"from":{"relation":"RetryStartStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_start_step_in_retry_admitted_ybur5lizmf"},
 				{"described":{"from":{"relation":"RetryStartStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_start_step_in_retry_root_j6rshwwanm"},
 				{"described":{"from":{"relation":"RetryStartStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_start_step_in_retry_step_54bom7zhy3"},
@@ -11385,10 +10463,6 @@
 				{"described":{"from":{"relation":"RetryStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_step_in_retry_admitted_374byvi4oe"},
 				{"described":{"from":{"relation":"RetryStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_step_in_retry_root_ydnqenbqjn"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"RetryStep"},"law":"__retry_step_pk_step_root_cazqqyactz"},
-				{"described":{"from":{"relation":"RetryWithin","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__retry_within_in_retry_root_bk64gewx5a"},
-				{"described":{"from":{"relation":"RetryWithin","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_within_in_retry_scope_7xtlujwzy6"},
-				{"described":{"from":{"relation":"RetryWithin","selection":{"conjuncts":[]},"terms":[{"field":"parent","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"RetryScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__retry_within_in_retry_scope_dfv2zpqvjj"},
-				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"RetryWithin"},"law":"__retry_within_pk_scope_root_ahvf2lk3vs"},
 				{"described":{"fields":["learner","passage"],"kind":"primaryKey","relation":"Seen"},"law":"__seen_pk_learner_passage_z5kbmlojhe"},
 				{"described":{"contract":"Seq","kind":"contract"},"law":"__seq_fssxeyunev"},
 				{"described":{"fields":["batch"],"kind":"primaryKey","relation":"Settled"},"law":"__settled_pk_batch_qfhu63z7q7"},
@@ -11437,7 +10511,7 @@
 				{"described":{"kind":"key","side":{"relation":"SyncFinish","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_finish_key_step_root_z2d3qgmhvh"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"SyncFinish"},"law":"__sync_finish_pk_scope_root_hboxg5f5eu"},
 				{"described":{"from":{"relation":"SyncGoldInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_gold_input_in_sync_root_ikfuapdiki"},
-				{"described":{"from":{"relation":"SyncGoldInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncScope","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Gold"}}]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_gold_input_in_sync_scope_4sfm4viab3"},
+				{"described":{"from":{"relation":"SyncGoldInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Gold"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_gold_input_in_sync_root_wntzudbkdm"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"SyncGoldInput"},"law":"__sync_gold_input_pk_scope_root_5dhgrgeqtv"},
 				{"described":{"from":{"relation":"SyncHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_held_in_sync_claim_5vpmdqzgww"},
 				{"described":{"from":{"relation":"SyncHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_held_in_sync_result_gki6hygqsq"},
@@ -11465,11 +10539,6 @@
 				{"described":{"from":{"relation":"SyncSkipped","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_skipped_in_sync_root_6xnmpa6kac"},
 				{"described":{"from":{"relation":"SyncSkipped","selection":{"conjuncts":[]},"terms":[{"field":"by","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_skipped_in_sync_root_7emt62h76w"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"SyncSkipped"},"law":"__sync_skipped_pk_scope_root_zjlkghhvvq"},
-				{"described":{"from":{"relation":"SyncStartScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_start_scope_in_sync_admitted_vuxhhrtsyn"},
-				{"described":{"from":{"relation":"SyncStartScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_start_scope_in_sync_root_qlo3ym3dri"},
-				{"described":{"from":{"relation":"SyncStartScope","selection":{"conjuncts":[]},"terms":[{"field":"child","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_start_scope_in_sync_scope_sg5r3fpypw"},
-				{"described":{"kind":"key","side":{"relation":"SyncStartScope","selection":{"conjuncts":[]},"terms":[{"field":"child","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_start_scope_key_child_root_wdgdsw5yg5"},
-				{"described":{"fields":["scope","ordinal","root"],"kind":"primaryKey","relation":"SyncStartScope"},"law":"__sync_start_scope_pk_scope_ordinal_root_k23pa5rhc4"},
 				{"described":{"from":{"relation":"SyncStartStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_start_step_in_sync_admitted_dvqwxuwf46"},
 				{"described":{"from":{"relation":"SyncStartStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_start_step_in_sync_root_dpcom7bbpl"},
 				{"described":{"from":{"relation":"SyncStartStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_start_step_in_sync_step_zetgq4l5qn"},
@@ -11478,13 +10547,9 @@
 				{"described":{"from":{"relation":"SyncStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_step_in_sync_admitted_yvjysgp2jo"},
 				{"described":{"from":{"relation":"SyncStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_step_in_sync_root_fvyfuw6ryw"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"SyncStep"},"law":"__sync_step_pk_step_root_6cjtf7tld7"},
+				{"described":{"from":{"relation":"SyncSyncRunInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"SyncRun"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_sync_run_input_in_sync_root_qadsh2ioyk"},
 				{"described":{"from":{"relation":"SyncSyncRunInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_sync_run_input_in_sync_root_tscj2524o4"},
-				{"described":{"from":{"relation":"SyncSyncRunInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncScope","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"SyncRun"}}]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_sync_run_input_in_sync_scope_pmhdowao4r"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"SyncSyncRunInput"},"law":"__sync_sync_run_input_pk_scope_root_akh2vi52lk"},
-				{"described":{"from":{"relation":"SyncWithin","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__sync_within_in_sync_root_ymbaybj7jo"},
-				{"described":{"from":{"relation":"SyncWithin","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_within_in_sync_scope_fgarm3tx4w"},
-				{"described":{"from":{"relation":"SyncWithin","selection":{"conjuncts":[]},"terms":[{"field":"parent","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"SyncScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__sync_within_in_sync_scope_xpf2vjk3y2"},
-				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"SyncWithin"},"law":"__sync_within_pk_scope_root_7mldutgqlo"},
 				{"described":{"fields":["batch"],"kind":"primaryKey","relation":"Tally"},"law":"__tally_pk_batch_ae65tx2wol"},
 				{"described":{"fields":["feed","factor"],"kind":"primaryKey","relation":"Weight"},"law":"__weight_pk_feed_factor_ecfc3qemnh"}
 			],
@@ -11492,7 +10557,7 @@
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "4e4e24212727335d832dc71b7d37043eba15fcb59782c17636eff6a45cb5b070",
+			"fingerprint": "d355088851103c9eed7dec7854ebb922e25d929b1da5ef28b0a33aaa89a86d7b",
 			"laws": [
 				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"}
 			],
@@ -11632,12 +10697,6 @@
 				]
 			},
 			{
-				"relation": "AssignScope",
-				"routes": [
-					"scope"
-				]
-			},
-			{
 				"relation": "AssignSkipped",
 				"routes": [
 					"scope"
@@ -11648,13 +10707,6 @@
 				"routes": [
 					"scope",
 					"step"
-				]
-			},
-			{
-				"relation": "AssignWithin",
-				"routes": [
-					"parent",
-					"scope"
 				]
 			},
 			{
@@ -11766,20 +10818,10 @@
 				]
 			},
 			{
-				"relation": "ChainScope",
-				"routes": [
-					"scope"
-				]
-			},
-			{
 				"relation": "ChainSkipped",
 				"routes": [
 					"scope"
 				]
-			},
-			{
-				"relation": "ChainStartScope",
-				"routes": []
 			},
 			{
 				"relation": "ChainStartStep",
@@ -11790,13 +10832,6 @@
 				"routes": [
 					"scope",
 					"step"
-				]
-			},
-			{
-				"relation": "ChainWithin",
-				"routes": [
-					"parent",
-					"scope"
 				]
 			},
 			{
@@ -11883,12 +10918,6 @@
 			},
 			{
 				"relation": "FanRoot",
-				"routes": [
-					"scope"
-				]
-			},
-			{
-				"relation": "FanScope",
 				"routes": [
 					"scope"
 				]
@@ -12024,12 +11053,6 @@
 				]
 			},
 			{
-				"relation": "RetryScope",
-				"routes": [
-					"scope"
-				]
-			},
-			{
 				"relation": "RetrySkipped",
 				"routes": [
 					"scope"
@@ -12050,13 +11073,6 @@
 				"routes": [
 					"scope",
 					"step"
-				]
-			},
-			{
-				"relation": "RetryWithin",
-				"routes": [
-					"parent",
-					"scope"
 				]
 			},
 			{
@@ -12158,12 +11174,6 @@
 				]
 			},
 			{
-				"relation": "SyncScope",
-				"routes": [
-					"scope"
-				]
-			},
-			{
 				"relation": "SyncSkipped",
 				"routes": [
 					"scope"
@@ -12179,13 +11189,6 @@
 			{
 				"relation": "SyncSyncRunInput",
 				"routes": [
-					"scope"
-				]
-			},
-			{
-				"relation": "SyncWithin",
-				"routes": [
-					"parent",
 					"scope"
 				]
 			},
@@ -12233,12 +11236,6 @@
 				"kind": "live"
 			}
 		],
-		"AssignJoin": [
-			{
-				"handle": "Assignment",
-				"kind": "live"
-			}
-		],
 		"AssignKind": [
 			{
 				"handle": "AssignmentFinish",
@@ -12278,16 +11275,6 @@
 			},
 			{
 				"handle": "sport",
-				"kind": "live"
-			}
-		],
-		"ChainJoin": [
-			{
-				"handle": "ChainRun",
-				"kind": "live"
-			},
-			{
-				"handle": "Ordered",
 				"kind": "live"
 			}
 		],
@@ -12355,13 +11342,9 @@
 				"kind": "live"
 			}
 		],
-		"FanJoin": [
+		"FanChildKind": [
 			{
 				"handle": "Batch",
-				"kind": "live"
-			},
-			{
-				"handle": "FanRun",
 				"kind": "live"
 			}
 		],
@@ -12421,12 +11404,6 @@
 				"kind": "live"
 			}
 		],
-		"RetryJoin": [
-			{
-				"handle": "Ladders",
-				"kind": "live"
-			}
-		],
 		"RetryKind": [
 			{
 				"handle": "Brittle",
@@ -12460,16 +11437,6 @@
 		"RetryRootKind": [
 			{
 				"handle": "Ladders",
-				"kind": "live"
-			}
-		],
-		"SyncJoin": [
-			{
-				"handle": "Gold",
-				"kind": "live"
-			},
-			{
-				"handle": "SyncRun",
 				"kind": "live"
 			}
 		],

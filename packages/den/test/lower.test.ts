@@ -44,6 +44,8 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * relation in a containment; each chain's turns are keyed by its coordinates and turn, its ends contained in its turns
  * and each turn's predecessor in its ends; the exclusivity chain exists exactly when a root is exclusive, and the seat
  * chain, with its seat counts and its seat level, the live holds checked below them, exactly when a step uses a resource.
+ * A scope's kind is its place's: a root's on its Root row, among the flow's roots, and a child scope's on its Within
+ * row, among its child scope kinds, whose relations (Within, StartScope) exist exactly when the flow declares one.
  * Every graph relation but the root is a body of one retirable unit headed by the root: its root in every key and on
  * both sides of every containment between bodies, and no coordination relation carries one.
  *
@@ -558,6 +560,28 @@ it.effect(
 							sketch.resource
 						)
 						assert.strictEqual(has("ExclusiveKey"), sketch.exclusive)
+						assert.strictEqual(has("Within"), sketch.scoped)
+						assert.strictEqual(has("StartScope"), sketch.scoped)
+						const kindOf = (suffix: string) =>
+							Option.flatMap(
+								Arr.findFirst(lowered.relations, (r) => r.name === `${P}${suffix}`),
+								(r) =>
+									Option.map(
+										Arr.findFirst(r.fields, (field) => field.name === "kind"),
+										(field) => field.type
+									)
+							)
+						assert.deepStrictEqual(kindOf("Scope"), Option.none())
+						assert.deepStrictEqual(
+							kindOf("Root"),
+							Option.some({ kind: "closed", roster: `${P}RootKind` })
+						)
+						assert.deepStrictEqual(
+							kindOf("Within"),
+							sketch.scoped
+								? Option.some({ kind: "closed", roster: `${P}ChildKind` })
+								: Option.none()
+						)
 						const bodies = Arr.filter(
 							relations,
 							(name) => name !== `${P}Root` && !Arr.contains(lowered.coordination, name)

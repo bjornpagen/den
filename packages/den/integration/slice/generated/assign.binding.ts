@@ -41,11 +41,9 @@ import { AssignPausable } from "#integration/slice/generated/assign.fragment.ts"
 import type {
 	AssignStep,
 	AssignScope,
-	AssignWithin,
 	AssignAdmitted,
 	AssignFinish,
 	AssignStartStep,
-	AssignStartScope,
 	AssignDecideInput,
 	AssignDecideInputExclude,
 	AssignDecideInputModeNearest,
@@ -84,11 +82,9 @@ export interface AssignHandles {
 interface Rows {
 	readonly AssignStep: ReadonlyArray<Addition<typeof AssignStep>>
 	readonly AssignScope: ReadonlyArray<Addition<typeof AssignScope>>
-	readonly AssignWithin: ReadonlyArray<Addition<typeof AssignWithin>>
 	readonly AssignAdmitted: ReadonlyArray<Addition<typeof AssignAdmitted>>
 	readonly AssignFinish: ReadonlyArray<Addition<typeof AssignFinish>>
 	readonly AssignStartStep: ReadonlyArray<Addition<typeof AssignStartStep>>
-	readonly AssignStartScope: ReadonlyArray<Addition<typeof AssignStartScope>>
 	readonly AssignDecideInput: ReadonlyArray<Addition<typeof AssignDecideInput>>
 	readonly AssignDecideInputExclude: ReadonlyArray<Addition<typeof AssignDecideInputExclude>>
 	readonly AssignDecideInputModeNearest: ReadonlyArray<
@@ -114,11 +110,9 @@ export const assignLedger = (h: AssignHandles) => {
 	const noRows: Rows = {
 		AssignStep: [],
 		AssignScope: [],
-		AssignWithin: [],
 		AssignAdmitted: [],
 		AssignFinish: [],
 		AssignStartStep: [],
-		AssignStartScope: [],
 		AssignDecideInput: [],
 		AssignDecideInputExclude: [],
 		AssignDecideInputModeNearest: [],
@@ -126,17 +120,14 @@ export const assignLedger = (h: AssignHandles) => {
 	}
 	const nothingGrown: Grown = { rows: noRows, spawned: { steps: [], finishes: [] } }
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
-		Arr.some(grown.rows.AssignStartStep, (s) => s.scope === scope) ||
-		Arr.some(grown.rows.AssignStartScope, (s) => s.scope === scope)
+		Arr.some(grown.rows.AssignStartStep, (s) => s.scope === scope)
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			AssignStep: [...a.rows.AssignStep, ...b.rows.AssignStep],
 			AssignScope: [...a.rows.AssignScope, ...b.rows.AssignScope],
-			AssignWithin: [...a.rows.AssignWithin, ...b.rows.AssignWithin],
 			AssignAdmitted: [...a.rows.AssignAdmitted, ...b.rows.AssignAdmitted],
 			AssignFinish: [...a.rows.AssignFinish, ...b.rows.AssignFinish],
 			AssignStartStep: [...a.rows.AssignStartStep, ...b.rows.AssignStartStep],
-			AssignStartScope: [...a.rows.AssignStartScope, ...b.rows.AssignStartScope],
 			AssignDecideInput: [...a.rows.AssignDecideInput, ...b.rows.AssignDecideInput],
 			AssignDecideInputExclude: [
 				...a.rows.AssignDecideInputExclude,
@@ -357,7 +348,7 @@ export const assignLedger = (h: AssignHandles) => {
 								params: {},
 								facts: {
 									insert: {
-										AssignScope: [{ scope, kind: "Assignment" as const, root: scope }],
+										AssignScope: [{ scope, root: scope }],
 										AssignRoot: [{ scope, kind: "Assignment" as const, key, at }],
 										AssignAssignmentInput: [
 											{
@@ -631,9 +622,7 @@ export const assignLedger = (h: AssignHandles) => {
 							facts: {
 								insert: {
 									AssignScope: grown.rows.AssignScope,
-									AssignWithin: grown.rows.AssignWithin,
 									AssignStartStep: grown.rows.AssignStartStep,
-									AssignStartScope: grown.rows.AssignStartScope,
 									AssignDecideInput: grown.rows.AssignDecideInput,
 									AssignDecideInputExclude: grown.rows.AssignDecideInputExclude,
 									AssignDecideInputModeNearest: grown.rows.AssignDecideInputModeNearest,
@@ -686,28 +675,12 @@ export const assignLedger = (h: AssignHandles) => {
 			Effect.map(settled(h.den.assignFencedOf.once({ params: { step }, facts: {} })), rowsOf),
 		scopeOf: (scope) =>
 			Effect.gen(function* () {
-				const row = yield* Effect.map(
-					settled(h.den.assignScopeOf.once({ params: { scope: scope }, facts: {} })),
-					one
-				)
-				if (Option.isNone(row)) {
-					return Option.none()
-				}
 				const root = yield* Effect.map(
 					settled(h.den.assignRootOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				if (Option.isNone(root)) {
-					const within = yield* Effect.map(
-						settled(h.den.assignWithinOf.once({ params: { scope: scope }, facts: {} })),
-						one
-					)
-					return Option.map(within, (w): ScopeView => ({
-						place: "child",
-						scope,
-						kind: row.value.kind,
-						parent: w.parent
-					}))
+					return Option.none()
 				}
 				const admitted = yield* Effect.map(
 					settled(h.den.assignAdmittedOf.once({ params: { scope: scope }, facts: {} })),
@@ -734,13 +707,7 @@ export const assignLedger = (h: AssignHandles) => {
 				})
 			}),
 		unended: (scope) =>
-			Effect.flatMap(
-				h.den.assignUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
-				(steps) =>
-					steps
-						? Effect.succeed(true)
-						: h.den.assignOpenChildren.once({ params: { scope }, facts: {} }).pipe(settled, any)
-			),
+			h.den.assignUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		finished: (scope) =>
 			h.den.assignFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
@@ -803,11 +770,7 @@ export const assignLedger = (h: AssignHandles) => {
 			settled(h.den.assignSnapshot.once({ params: {}, facts: {} })),
 			(rows) =>
 				Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof assign>> => {
-					const view = (
-						scope: ScopeKey,
-						kind: string,
-						admission: Admission
-					): ReadonlyArray<ScopeView> =>
+					const view = (scope: ScopeKey, admission: Admission): ReadonlyArray<ScopeView> =>
 						Option.match(
 							Arr.findFirst(read.roots, (o) => o.scope === scope),
 							{
@@ -823,11 +786,7 @@ export const assignLedger = (h: AssignHandles) => {
 										runner: roots[o.kind]
 									}
 								],
-								onNone: () =>
-									Arr.map(
-										Option.toArray(Arr.findFirst(read.withins, (w) => w.scope === scope)),
-										(w): ScopeView => ({ place: "child", scope, kind, parent: w.parent })
-									)
+								onNone: (): ReadonlyArray<ScopeView> => []
 							}
 						)
 					return {
@@ -841,8 +800,8 @@ export const assignLedger = (h: AssignHandles) => {
 						retries: read.retries,
 						fenced: read.fenced,
 						scopes: [
-							...Arr.flatMap(read.requested, (s) => view(s.scope, s.kind, "requested")),
-							...Arr.flatMap(read.running, (s) => view(s.scope, s.kind, "admitted"))
+							...Arr.flatMap(read.requested, (s) => view(s.scope, "requested")),
+							...Arr.flatMap(read.running, (s) => view(s.scope, "admitted"))
 						],
 						holds: [],
 						exclusives: [],

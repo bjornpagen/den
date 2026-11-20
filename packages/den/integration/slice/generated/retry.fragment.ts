@@ -19,16 +19,14 @@ import {
 } from "@bjornpagen/grizzle"
 
 export const RetryKind = closed.unordered("RetryKind", ["Steadfast", "Brittle", "LaddersFinish"])
-export const RetryJoin = closed.unordered("RetryJoin", ["Ladders"])
 export const RetryRootKind = closed.unordered("RetryRootKind", ["Ladders"])
 export const RetryOutcome = closed.unordered("RetryOutcome", ["done", "failed"])
 export const RetryPausable = closed.unordered("RetryPausable", ["Ladders"])
 
-export const RetryScope = relation(
-	"RetryScope",
-	{ scope: DenScope, kind: closedId(RetryJoin), root: DenScope },
-	["scope", "root"]
-)
+export const RetryScope = relation("RetryScope", { scope: DenScope, root: DenScope }, [
+	"scope",
+	"root"
+])
 export const RetryRoot = relation(
 	"RetryRoot",
 	{
@@ -39,11 +37,6 @@ export const RetryRoot = relation(
 		retired: retirement
 	},
 	["scope"]
-)
-export const RetryWithin = relation(
-	"RetryWithin",
-	{ scope: DenScope, parent: DenScope, root: DenScope },
-	["scope", "root"]
 )
 export const RetryAdmitted = relation("RetryAdmitted", { scope: DenScope, root: DenScope }, [
 	"scope",
@@ -62,11 +55,6 @@ export const RetryStep = relation(
 export const RetryStartStep = relation(
 	"RetryStartStep",
 	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
-	["scope", "ordinal", "root"]
-)
-export const RetryStartScope = relation(
-	"RetryStartScope",
-	{ scope: DenScope, ordinal: natural, child: DenScope, root: DenScope },
 	["scope", "ordinal", "root"]
 )
 export const RetryFinish = relation(
@@ -153,18 +141,15 @@ export const RetryResumed = relation(
 export const retryGraph = fragment(
 	[
 		RetryKind,
-		RetryJoin,
 		RetryRootKind,
 		RetryOutcome,
 		RetryPausable,
 		RetryScope,
 		RetryRoot,
-		RetryWithin,
 		RetryAdmitted,
 		RetrySkipped,
 		RetryStep,
 		RetryStartStep,
-		RetryStartScope,
 		RetryFinish,
 		RetryClaim,
 		RetryRetry,
@@ -182,8 +167,6 @@ export const retryGraph = fragment(
 		RetryBrittleOutput
 	],
 	[
-		contained(on(RetryWithin, "scope", "root"), on(RetryScope, "scope", "root")),
-		contained(on(RetryWithin, "parent", "root"), on(RetryScope, "scope", "root")),
 		contained(on(RetryAdmitted, "scope", "root"), on(RetryScope, "scope", "root")),
 		contained(on(RetrySkipped, "scope"), on(RetryRoot, "scope")),
 		contained(on(RetrySkipped, "by"), on(RetryRoot, "scope")),
@@ -191,9 +174,6 @@ export const retryGraph = fragment(
 		contained(on(RetryStartStep, "scope", "root"), on(RetryAdmitted, "scope", "root")),
 		contained(on(RetryStartStep, "step", "root"), on(RetryStep, "step", "root")),
 		key(on(RetryStartStep, "step", "root")),
-		contained(on(RetryStartScope, "scope", "root"), on(RetryAdmitted, "scope", "root")),
-		contained(on(RetryStartScope, "child", "root"), on(RetryScope, "scope", "root")),
-		key(on(RetryStartScope, "child", "root")),
 		contained(on(RetryFinish, "scope", "root"), on(RetryAdmitted, "scope", "root")),
 		contained(on(RetryFinish, "step", "root"), on(RetryStep, "step", "root")),
 		key(on(RetryFinish, "step", "root")),
@@ -252,11 +232,10 @@ export const retryGraph = fragment(
 			)
 		),
 		contained(
-			on(RetryLaddersInput, "scope", "root"),
+			on(RetryLaddersInput, "scope"),
 			on(
-				select(RetryScope, (row) => row.eq(row.kind, "Ladders")),
-				"scope",
-				"root"
+				select(RetryRoot, (row) => row.eq(row.kind, "Ladders")),
+				"scope"
 			)
 		),
 		contained(on(RetrySteadfastOutput, "step", "root"), on(RetrySteadfastInput, "step", "root")),
@@ -265,12 +244,10 @@ export const retryGraph = fragment(
 		contained(on(RetryBrittleOutput, "step", "root"), on(RetryDone, "step", "root")),
 		retirable(RetryRoot, [
 			on(RetryScope, "root"),
-			on(RetryWithin, "root"),
 			on(RetryAdmitted, "root"),
 			on(RetrySkipped, "root"),
 			on(RetryStep, "root"),
 			on(RetryStartStep, "root"),
-			on(RetryStartScope, "root"),
 			on(RetryFinish, "root"),
 			on(RetryClaim, "root"),
 			on(RetryRetry, "root"),
@@ -292,7 +269,7 @@ export const retryGraph = fragment(
 
 /** The flow's coordination group: its rosters, its seat counts, and its chains of holds, exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const retryCoordination = fragment(
-	[RetryKind, RetryJoin, RetryRootKind, RetryOutcome, RetryPausable, RetryPaused, RetryResumed],
+	[RetryKind, RetryRootKind, RetryOutcome, RetryPausable, RetryPaused, RetryResumed],
 	[
 		contained(on(RetryResumed, "target", "turn"), on(RetryPaused, "target", "turn")),
 		contained(on(RetryPaused, "target", pred("turn")), on(RetryResumed, "target", "turn"))

@@ -21,7 +21,6 @@ import {
 import { Passage, Seen } from "#integration/slice/relations.ts"
 
 export const AssignKind = closed.unordered("AssignKind", ["Decide", "AssignmentFinish"])
-export const AssignJoin = closed.unordered("AssignJoin", ["Assignment"])
 export const AssignRootKind = closed.unordered("AssignRootKind", ["Assignment"])
 export const AssignOutcome = closed.unordered("AssignOutcome", ["done", "failed"])
 export const AssignPausable = closed.unordered("AssignPausable", ["Assignment"])
@@ -38,11 +37,10 @@ export const AssignDecideOutputStage = closed.unordered("AssignDecideOutputStage
 	"Rest"
 ])
 
-export const AssignScope = relation(
-	"AssignScope",
-	{ scope: DenScope, kind: closedId(AssignJoin), root: DenScope },
-	["scope", "root"]
-)
+export const AssignScope = relation("AssignScope", { scope: DenScope, root: DenScope }, [
+	"scope",
+	"root"
+])
 export const AssignRoot = relation(
 	"AssignRoot",
 	{
@@ -53,11 +51,6 @@ export const AssignRoot = relation(
 		retired: retirement
 	},
 	["scope"]
-)
-export const AssignWithin = relation(
-	"AssignWithin",
-	{ scope: DenScope, parent: DenScope, root: DenScope },
-	["scope", "root"]
 )
 export const AssignAdmitted = relation("AssignAdmitted", { scope: DenScope, root: DenScope }, [
 	"scope",
@@ -76,11 +69,6 @@ export const AssignStep = relation(
 export const AssignStartStep = relation(
 	"AssignStartStep",
 	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
-	["scope", "ordinal", "root"]
-)
-export const AssignStartScope = relation(
-	"AssignStartScope",
-	{ scope: DenScope, ordinal: natural, child: DenScope, root: DenScope },
 	["scope", "ordinal", "root"]
 )
 export const AssignFinish = relation(
@@ -255,7 +243,6 @@ export const AssignResumed = relation(
 export const assignGraph = fragment(
 	[
 		AssignKind,
-		AssignJoin,
 		AssignRootKind,
 		AssignOutcome,
 		AssignPausable,
@@ -264,12 +251,10 @@ export const assignGraph = fragment(
 		AssignDecideOutputStage,
 		AssignScope,
 		AssignRoot,
-		AssignWithin,
 		AssignAdmitted,
 		AssignSkipped,
 		AssignStep,
 		AssignStartStep,
-		AssignStartScope,
 		AssignFinish,
 		AssignClaim,
 		AssignRetry,
@@ -296,8 +281,6 @@ export const assignGraph = fragment(
 		AssignDecideSeenRead
 	],
 	[
-		contained(on(AssignWithin, "scope", "root"), on(AssignScope, "scope", "root")),
-		contained(on(AssignWithin, "parent", "root"), on(AssignScope, "scope", "root")),
 		contained(on(AssignAdmitted, "scope", "root"), on(AssignScope, "scope", "root")),
 		contained(on(AssignSkipped, "scope"), on(AssignRoot, "scope")),
 		contained(on(AssignSkipped, "by"), on(AssignRoot, "scope")),
@@ -305,9 +288,6 @@ export const assignGraph = fragment(
 		contained(on(AssignStartStep, "scope", "root"), on(AssignAdmitted, "scope", "root")),
 		contained(on(AssignStartStep, "step", "root"), on(AssignStep, "step", "root")),
 		key(on(AssignStartStep, "step", "root")),
-		contained(on(AssignStartScope, "scope", "root"), on(AssignAdmitted, "scope", "root")),
-		contained(on(AssignStartScope, "child", "root"), on(AssignScope, "scope", "root")),
-		key(on(AssignStartScope, "child", "root")),
 		contained(on(AssignFinish, "scope", "root"), on(AssignAdmitted, "scope", "root")),
 		contained(on(AssignFinish, "step", "root"), on(AssignStep, "step", "root")),
 		key(on(AssignFinish, "step", "root")),
@@ -409,11 +389,10 @@ export const assignGraph = fragment(
 			Compute.isFinite(row.radius)
 		),
 		contained(
-			on(AssignAssignmentInput, "scope", "root"),
+			on(AssignAssignmentInput, "scope"),
 			on(
-				select(AssignScope, (row) => row.eq(row.kind, "Assignment")),
-				"scope",
-				"root"
+				select(AssignRoot, (row) => row.eq(row.kind, "Assignment")),
+				"scope"
 			)
 		),
 		contained(
@@ -524,12 +503,10 @@ export const assignGraph = fragment(
 		contained(on(AssignDecideSeenRead, "step", "root"), on(AssignResult, "step", "root")),
 		retirable(AssignRoot, [
 			on(AssignScope, "root"),
-			on(AssignWithin, "root"),
 			on(AssignAdmitted, "root"),
 			on(AssignSkipped, "root"),
 			on(AssignStep, "root"),
 			on(AssignStartStep, "root"),
-			on(AssignStartScope, "root"),
 			on(AssignFinish, "root"),
 			on(AssignClaim, "root"),
 			on(AssignRetry, "root"),
@@ -562,7 +539,6 @@ export const assignGraph = fragment(
 export const assignCoordination = fragment(
 	[
 		AssignKind,
-		AssignJoin,
 		AssignRootKind,
 		AssignOutcome,
 		AssignPausable,

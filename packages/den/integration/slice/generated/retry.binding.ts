@@ -39,11 +39,9 @@ import { RetryPausable } from "#integration/slice/generated/retry.fragment.ts"
 import type {
 	RetryStep,
 	RetryScope,
-	RetryWithin,
 	RetryAdmitted,
 	RetryFinish,
 	RetryStartStep,
-	RetryStartScope,
 	RetrySteadfastInput,
 	RetryBrittleInput,
 	RetryRootKind
@@ -78,11 +76,9 @@ export interface RetryHandles {
 interface Rows {
 	readonly RetryStep: ReadonlyArray<Addition<typeof RetryStep>>
 	readonly RetryScope: ReadonlyArray<Addition<typeof RetryScope>>
-	readonly RetryWithin: ReadonlyArray<Addition<typeof RetryWithin>>
 	readonly RetryAdmitted: ReadonlyArray<Addition<typeof RetryAdmitted>>
 	readonly RetryFinish: ReadonlyArray<Addition<typeof RetryFinish>>
 	readonly RetryStartStep: ReadonlyArray<Addition<typeof RetryStartStep>>
-	readonly RetryStartScope: ReadonlyArray<Addition<typeof RetryStartScope>>
 	readonly RetrySteadfastInput: ReadonlyArray<Addition<typeof RetrySteadfastInput>>
 	readonly RetryBrittleInput: ReadonlyArray<Addition<typeof RetryBrittleInput>>
 }
@@ -104,27 +100,22 @@ export const retryLedger = (h: RetryHandles) => {
 	const noRows: Rows = {
 		RetryStep: [],
 		RetryScope: [],
-		RetryWithin: [],
 		RetryAdmitted: [],
 		RetryFinish: [],
 		RetryStartStep: [],
-		RetryStartScope: [],
 		RetrySteadfastInput: [],
 		RetryBrittleInput: []
 	}
 	const nothingGrown: Grown = { rows: noRows, spawned: { steps: [], finishes: [] } }
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
-		Arr.some(grown.rows.RetryStartStep, (s) => s.scope === scope) ||
-		Arr.some(grown.rows.RetryStartScope, (s) => s.scope === scope)
+		Arr.some(grown.rows.RetryStartStep, (s) => s.scope === scope)
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			RetryStep: [...a.rows.RetryStep, ...b.rows.RetryStep],
 			RetryScope: [...a.rows.RetryScope, ...b.rows.RetryScope],
-			RetryWithin: [...a.rows.RetryWithin, ...b.rows.RetryWithin],
 			RetryAdmitted: [...a.rows.RetryAdmitted, ...b.rows.RetryAdmitted],
 			RetryFinish: [...a.rows.RetryFinish, ...b.rows.RetryFinish],
 			RetryStartStep: [...a.rows.RetryStartStep, ...b.rows.RetryStartStep],
-			RetryStartScope: [...a.rows.RetryStartScope, ...b.rows.RetryStartScope],
 			RetrySteadfastInput: [...a.rows.RetrySteadfastInput, ...b.rows.RetrySteadfastInput],
 			RetryBrittleInput: [...a.rows.RetryBrittleInput, ...b.rows.RetryBrittleInput]
 		},
@@ -262,7 +253,7 @@ export const retryLedger = (h: RetryHandles) => {
 								params: {},
 								facts: {
 									insert: {
-										RetryScope: [{ scope, kind: "Ladders" as const, root: scope }],
+										RetryScope: [{ scope, root: scope }],
 										RetryRoot: [{ scope, kind: "Ladders" as const, key, at }],
 										RetryLaddersInput: [
 											{
@@ -459,9 +450,7 @@ export const retryLedger = (h: RetryHandles) => {
 							facts: {
 								insert: {
 									RetryScope: grown.rows.RetryScope,
-									RetryWithin: grown.rows.RetryWithin,
 									RetryStartStep: grown.rows.RetryStartStep,
-									RetryStartScope: grown.rows.RetryStartScope,
 									RetrySteadfastInput: grown.rows.RetrySteadfastInput,
 									RetryBrittleInput: grown.rows.RetryBrittleInput,
 									RetryStep: steps,
@@ -512,28 +501,12 @@ export const retryLedger = (h: RetryHandles) => {
 			Effect.map(settled(h.den.retryFencedOf.once({ params: { step }, facts: {} })), rowsOf),
 		scopeOf: (scope) =>
 			Effect.gen(function* () {
-				const row = yield* Effect.map(
-					settled(h.den.retryScopeOf.once({ params: { scope: scope }, facts: {} })),
-					one
-				)
-				if (Option.isNone(row)) {
-					return Option.none()
-				}
 				const root = yield* Effect.map(
 					settled(h.den.retryRootOf.once({ params: { scope: scope }, facts: {} })),
 					one
 				)
 				if (Option.isNone(root)) {
-					const within = yield* Effect.map(
-						settled(h.den.retryWithinOf.once({ params: { scope: scope }, facts: {} })),
-						one
-					)
-					return Option.map(within, (w): ScopeView => ({
-						place: "child",
-						scope,
-						kind: row.value.kind,
-						parent: w.parent
-					}))
+					return Option.none()
 				}
 				const admitted = yield* Effect.map(
 					settled(h.den.retryAdmittedOf.once({ params: { scope: scope }, facts: {} })),
@@ -560,13 +533,7 @@ export const retryLedger = (h: RetryHandles) => {
 				})
 			}),
 		unended: (scope) =>
-			Effect.flatMap(
-				h.den.retryUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
-				(steps) =>
-					steps
-						? Effect.succeed(true)
-						: h.den.retryOpenChildren.once({ params: { scope }, facts: {} }).pipe(settled, any)
-			),
+			h.den.retryUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		finished: (scope) =>
 			h.den.retryFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
@@ -627,11 +594,7 @@ export const retryLedger = (h: RetryHandles) => {
 			),
 		snapshot: Effect.flatMap(settled(h.den.retrySnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof retry>> => {
-				const view = (
-					scope: ScopeKey,
-					kind: string,
-					admission: Admission
-				): ReadonlyArray<ScopeView> =>
+				const view = (scope: ScopeKey, admission: Admission): ReadonlyArray<ScopeView> =>
 					Option.match(
 						Arr.findFirst(read.roots, (o) => o.scope === scope),
 						{
@@ -647,11 +610,7 @@ export const retryLedger = (h: RetryHandles) => {
 									runner: roots[o.kind]
 								}
 							],
-							onNone: () =>
-								Arr.map(
-									Option.toArray(Arr.findFirst(read.withins, (w) => w.scope === scope)),
-									(w): ScopeView => ({ place: "child", scope, kind, parent: w.parent })
-								)
+							onNone: (): ReadonlyArray<ScopeView> => []
 						}
 					)
 				return {
@@ -665,8 +624,8 @@ export const retryLedger = (h: RetryHandles) => {
 					retries: read.retries,
 					fenced: read.fenced,
 					scopes: [
-						...Arr.flatMap(read.requested, (s) => view(s.scope, s.kind, "requested")),
-						...Arr.flatMap(read.running, (s) => view(s.scope, s.kind, "admitted"))
+						...Arr.flatMap(read.requested, (s) => view(s.scope, "requested")),
+						...Arr.flatMap(read.running, (s) => view(s.scope, "admitted"))
 					],
 					holds: [],
 					exclusives: [],

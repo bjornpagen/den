@@ -31,25 +31,18 @@ export const SyncKind = closed.unordered("SyncKind", [
 	"SyncRunFinish",
 	"GoldFinish"
 ])
-export const SyncJoin = closed.unordered("SyncJoin", ["SyncRun", "Gold"])
 export const SyncRootKind = closed.unordered("SyncRootKind", ["SyncRun", "Gold"])
 export const SyncOutcome = closed.unordered("SyncOutcome", ["done", "failed"])
 export const SyncPausable = closed.unordered("SyncPausable", ["SyncRun", "Gold"])
 
-export const SyncScope = relation(
-	"SyncScope",
-	{ scope: DenScope, kind: closedId(SyncJoin), root: DenScope },
-	["scope", "root"]
-)
+export const SyncScope = relation("SyncScope", { scope: DenScope, root: DenScope }, [
+	"scope",
+	"root"
+])
 export const SyncRoot = relation(
 	"SyncRoot",
 	{ scope: DenScope, kind: closedId(SyncRootKind), key: Text, at: DenInstant, retired: retirement },
 	["scope"]
-)
-export const SyncWithin = relation(
-	"SyncWithin",
-	{ scope: DenScope, parent: DenScope, root: DenScope },
-	["scope", "root"]
 )
 export const SyncExclusiveKey = relation(
 	"SyncExclusiveKey",
@@ -73,11 +66,6 @@ export const SyncStep = relation(
 export const SyncStartStep = relation(
 	"SyncStartStep",
 	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
-	["scope", "ordinal", "root"]
-)
-export const SyncStartScope = relation(
-	"SyncStartScope",
-	{ scope: DenScope, ordinal: natural, child: DenScope, root: DenScope },
 	["scope", "ordinal", "root"]
 )
 export const SyncFinish = relation(
@@ -178,19 +166,16 @@ export const SyncResumed = relation(
 export const syncGraph = fragment(
 	[
 		SyncKind,
-		SyncJoin,
 		SyncRootKind,
 		SyncOutcome,
 		SyncPausable,
 		SyncScope,
 		SyncRoot,
-		SyncWithin,
 		SyncExclusiveKey,
 		SyncAdmitted,
 		SyncSkipped,
 		SyncStep,
 		SyncStartStep,
-		SyncStartScope,
 		SyncFinish,
 		SyncClaim,
 		SyncRetry,
@@ -210,8 +195,6 @@ export const syncGraph = fragment(
 	],
 	[
 		contained(on(SyncExclusiveKey, "scope", "root"), on(SyncScope, "scope", "root")),
-		contained(on(SyncWithin, "scope", "root"), on(SyncScope, "scope", "root")),
-		contained(on(SyncWithin, "parent", "root"), on(SyncScope, "scope", "root")),
 		contained(on(SyncAdmitted, "scope", "root"), on(SyncScope, "scope", "root")),
 		contained(on(SyncSkipped, "scope"), on(SyncRoot, "scope")),
 		contained(on(SyncSkipped, "by"), on(SyncRoot, "scope")),
@@ -219,9 +202,6 @@ export const syncGraph = fragment(
 		contained(on(SyncStartStep, "scope", "root"), on(SyncAdmitted, "scope", "root")),
 		contained(on(SyncStartStep, "step", "root"), on(SyncStep, "step", "root")),
 		key(on(SyncStartStep, "step", "root")),
-		contained(on(SyncStartScope, "scope", "root"), on(SyncAdmitted, "scope", "root")),
-		contained(on(SyncStartScope, "child", "root"), on(SyncScope, "scope", "root")),
-		key(on(SyncStartScope, "child", "root")),
 		contained(on(SyncFinish, "scope", "root"), on(SyncAdmitted, "scope", "root")),
 		contained(on(SyncFinish, "step", "root"), on(SyncStep, "step", "root")),
 		key(on(SyncFinish, "step", "root")),
@@ -277,19 +257,17 @@ export const syncGraph = fragment(
 			)
 		),
 		contained(
-			on(SyncSyncRunInput, "scope", "root"),
+			on(SyncSyncRunInput, "scope"),
 			on(
-				select(SyncScope, (row) => row.eq(row.kind, "SyncRun")),
-				"scope",
-				"root"
+				select(SyncRoot, (row) => row.eq(row.kind, "SyncRun")),
+				"scope"
 			)
 		),
 		contained(
-			on(SyncGoldInput, "scope", "root"),
+			on(SyncGoldInput, "scope"),
 			on(
-				select(SyncScope, (row) => row.eq(row.kind, "Gold")),
-				"scope",
-				"root"
+				select(SyncRoot, (row) => row.eq(row.kind, "Gold")),
+				"scope"
 			)
 		),
 		contained(on(SyncCopyOutput, "step", "root"), on(SyncCopyInput, "step", "root")),
@@ -298,13 +276,11 @@ export const syncGraph = fragment(
 		contained(on(SyncBuildOutput, "step", "root"), on(SyncDone, "step", "root")),
 		retirable(SyncRoot, [
 			on(SyncScope, "root"),
-			on(SyncWithin, "root"),
 			on(SyncExclusiveKey, "root"),
 			on(SyncAdmitted, "root"),
 			on(SyncSkipped, "root"),
 			on(SyncStep, "root"),
 			on(SyncStartStep, "root"),
-			on(SyncStartScope, "root"),
 			on(SyncFinish, "root"),
 			on(SyncClaim, "root"),
 			on(SyncRetry, "root"),
@@ -329,7 +305,6 @@ export const syncGraph = fragment(
 export const syncCoordination = fragment(
 	[
 		SyncKind,
-		SyncJoin,
 		SyncRootKind,
 		SyncOutcome,
 		SyncPausable,

@@ -13,7 +13,6 @@ import {
 import { App } from "#integration/slice/app.ts"
 import {
 	AssignKind,
-	AssignJoin,
 	AssignRootKind,
 	AssignOutcome,
 	AssignPausable,
@@ -22,12 +21,10 @@ import {
 	AssignDecideOutputStage,
 	AssignScope,
 	AssignRoot,
-	AssignWithin,
 	AssignAdmitted,
 	AssignSkipped,
 	AssignStep,
 	AssignStartStep,
-	AssignStartScope,
 	AssignFinish,
 	AssignClaim,
 	AssignRetry,
@@ -68,12 +65,10 @@ export const AssignDen = role(
 		insert: [
 			"AssignScope",
 			"AssignRoot",
-			"AssignWithin",
 			"AssignAdmitted",
 			"AssignSkipped",
 			"AssignStep",
 			"AssignStartStep",
-			"AssignStartScope",
 			"AssignFinish",
 			"AssignClaim",
 			"AssignRetry",
@@ -104,7 +99,6 @@ export const AssignCoordinator = role(
 	"assign_coordinator",
 	{
 		AssignKind,
-		AssignJoin,
 		AssignRootKind,
 		AssignOutcome,
 		AssignPausable,
@@ -126,21 +120,16 @@ const assignPendingRead = query(AssignDen).rule((r) => {
 })
 
 const assignRequestedRead = query(AssignDen).rule((r) => {
-	const { scope, kind } = v(AssignScope, "scope")
+	const { scope } = v(AssignRoot, "root")
 	return r
-		.match(AssignScope, { scope, kind })
+		.match(AssignRoot, { scope })
 		.where(r.not(AssignAdmitted, { scope }), r.not(AssignSkipped, { scope }))
-		.find({ scope, kind })
+		.find({ scope })
 })
 
 const assignRunningRead = query(AssignDen).rule((r) => {
-	const { scope, kind } = v(AssignScope, "scope")
-	const { step } = v(AssignFinish, "finish")
-	return r
-		.match(AssignScope, { scope, kind })
-		.match(AssignFinish, { scope, step })
-		.where(r.not(AssignResult, { step }))
-		.find({ scope, kind })
+	const { scope, step } = v(AssignFinish, "finish")
+	return r.match(AssignFinish, { scope, step }).where(r.not(AssignResult, { step })).find({ scope })
 })
 
 export const assignDenPrograms = Object.freeze({
@@ -181,10 +170,8 @@ export const assignDenPrograms = Object.freeze({
 		.insert(AssignAdmitted, [])
 		.insert(AssignFinish, [])
 		.insert(AssignStartStep, [])
-		.insert(AssignStartScope, [])
 		.insert(AssignStep, [])
 		.insert(AssignScope, [])
-		.insert(AssignWithin, [])
 		.insert(AssignDecideInput, [])
 		.insert(AssignDecideInputExclude, [])
 		.insert(AssignDecideInputModeNearest, [])
@@ -217,20 +204,6 @@ export const assignDenPrograms = Object.freeze({
 			.match(AssignHeld, { step, attempt, root })
 			.where(r.eq(step, r.param("step", AssignHeld.fields.step)))
 			.find({ step, attempt, root })
-	}),
-	assignScopeOf: query(assignGraph).rule((r) => {
-		const { scope, kind, root } = v(AssignScope, "assignScope")
-		return r
-			.match(AssignScope, { scope, kind, root })
-			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
-			.find({ scope, kind, root })
-	}),
-	assignWithinOf: query(assignGraph).rule((r) => {
-		const { scope, parent, root } = v(AssignWithin, "assignWithin")
-		return r
-			.match(AssignWithin, { scope, parent, root })
-			.where(r.eq(scope, r.param("scope", AssignWithin.fields.scope)))
-			.find({ scope, parent, root })
 	}),
 	assignAdmittedOf: query(assignGraph).rule((r) => {
 		const { scope, root } = v(AssignAdmitted, "assignAdmitted")
@@ -297,29 +270,6 @@ export const assignDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	assignOpenChildren: query(assignGraph)
-		.rule((r) => {
-			const { scope, parent } = v(AssignWithin, "within")
-			return r
-				.match(AssignWithin, { scope, parent })
-				.where(
-					r.eq(parent, r.param("scope", AssignScope.fields.scope)),
-					r.not(AssignAdmitted, { scope })
-				)
-				.find({ child: scope })
-		})
-		.rule((r) => {
-			const { scope, parent } = v(AssignWithin, "within")
-			const { step } = v(AssignFinish, "finish")
-			return r
-				.match(AssignWithin, { scope, parent })
-				.match(AssignFinish, { scope, step })
-				.where(
-					r.eq(parent, r.param("scope", AssignScope.fields.scope)),
-					r.not(AssignResult, { step })
-				)
-				.find({ child: scope })
-		}),
 	assignFinished: query(assignGraph).rule((r) => {
 		const { scope, step } = v(AssignFinish, "finish")
 		return r
@@ -357,10 +307,6 @@ export const assignDenPrograms = Object.freeze({
 			}),
 			requested: assignRequestedRead,
 			running: assignRunningRead,
-			withins: query(AssignDen).rule((r) => {
-				const { scope, parent } = v(AssignWithin, "assignWithin")
-				return r.match(AssignWithin, { scope, parent }).find({ scope, parent })
-			}),
 			roots: query(AssignDen).rule((r) => {
 				const { scope, kind, key, at } = v(AssignRoot, "assignRoot")
 				return r.match(AssignRoot, { scope, kind, key, at }).find({ scope, kind, key, at })

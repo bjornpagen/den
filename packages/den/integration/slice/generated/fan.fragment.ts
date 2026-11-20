@@ -22,8 +22,8 @@ import {
 } from "@bjornpagen/grizzle"
 
 export const FanKind = closed.unordered("FanKind", ["Square", "BatchFinish", "FanRunFinish"])
-export const FanJoin = closed.unordered("FanJoin", ["Batch", "FanRun"])
 export const FanRootKind = closed.unordered("FanRootKind", ["FanRun"])
+export const FanChildKind = closed.unordered("FanChildKind", ["Batch"])
 export const FanOutcome = closed.unordered("FanOutcome", ["done", "failed"])
 export const FanPausable = closed.unordered("FanPausable", ["Pool", "FanRun"])
 export const FanResource = closed.unordered("FanResource", ["Pool"])
@@ -34,11 +34,7 @@ const FanSeats = closed.relation(
 	[{ resource: "Pool", seats: 2n }]
 )
 
-export const FanScope = relation(
-	"FanScope",
-	{ scope: DenScope, kind: closedId(FanJoin), root: DenScope },
-	["scope", "root"]
-)
+export const FanScope = relation("FanScope", { scope: DenScope, root: DenScope }, ["scope", "root"])
 export const FanRoot = relation(
 	"FanRoot",
 	{ scope: DenScope, kind: closedId(FanRootKind), key: Text, at: DenInstant, retired: retirement },
@@ -46,7 +42,7 @@ export const FanRoot = relation(
 )
 export const FanWithin = relation(
 	"FanWithin",
-	{ scope: DenScope, parent: DenScope, root: DenScope },
+	{ scope: DenScope, parent: DenScope, kind: closedId(FanChildKind), root: DenScope },
 	["scope", "root"]
 )
 export const FanAdmitted = relation("FanAdmitted", { scope: DenScope, root: DenScope }, [
@@ -161,8 +157,8 @@ export const FanResumed = relation("FanResumed", { target: closedId(FanPausable)
 export const fanGraph = fragment(
 	[
 		FanKind,
-		FanJoin,
 		FanRootKind,
+		FanChildKind,
 		FanOutcome,
 		FanPausable,
 		FanResource,
@@ -192,6 +188,9 @@ export const fanGraph = fragment(
 	[
 		contained(on(FanWithin, "scope", "root"), on(FanScope, "scope", "root")),
 		contained(on(FanWithin, "parent", "root"), on(FanScope, "scope", "root")),
+		contained(on(FanStartScope, "scope", "root"), on(FanAdmitted, "scope", "root")),
+		contained(on(FanStartScope, "child", "root"), on(FanScope, "scope", "root")),
+		key(on(FanStartScope, "child", "root")),
 		contained(on(FanAdmitted, "scope", "root"), on(FanScope, "scope", "root")),
 		contained(on(FanSkipped, "scope"), on(FanRoot, "scope")),
 		contained(on(FanSkipped, "by"), on(FanRoot, "scope")),
@@ -199,9 +198,6 @@ export const fanGraph = fragment(
 		contained(on(FanStartStep, "scope", "root"), on(FanAdmitted, "scope", "root")),
 		contained(on(FanStartStep, "step", "root"), on(FanStep, "step", "root")),
 		key(on(FanStartStep, "step", "root")),
-		contained(on(FanStartScope, "scope", "root"), on(FanAdmitted, "scope", "root")),
-		contained(on(FanStartScope, "child", "root"), on(FanScope, "scope", "root")),
-		key(on(FanStartScope, "child", "root")),
 		contained(on(FanFinish, "scope", "root"), on(FanAdmitted, "scope", "root")),
 		contained(on(FanFinish, "step", "root"), on(FanStep, "step", "root")),
 		key(on(FanFinish, "step", "root")),
@@ -251,17 +247,16 @@ export const fanGraph = fragment(
 		contained(
 			on(FanBatchInput, "scope", "root"),
 			on(
-				select(FanScope, (row) => row.eq(row.kind, "Batch")),
+				select(FanWithin, (row) => row.eq(row.kind, "Batch")),
 				"scope",
 				"root"
 			)
 		),
 		contained(
-			on(FanFanRunInput, "scope", "root"),
+			on(FanFanRunInput, "scope"),
 			on(
-				select(FanScope, (row) => row.eq(row.kind, "FanRun")),
-				"scope",
-				"root"
+				select(FanRoot, (row) => row.eq(row.kind, "FanRun")),
+				"scope"
 			)
 		),
 		contained(on(FanSquareOutput, "step", "root"), on(FanSquareInput, "step", "root")),
@@ -296,8 +291,8 @@ export const fanGraph = fragment(
 export const fanCoordination = fragment(
 	[
 		FanKind,
-		FanJoin,
 		FanRootKind,
+		FanChildKind,
 		FanOutcome,
 		FanPausable,
 		FanResource,

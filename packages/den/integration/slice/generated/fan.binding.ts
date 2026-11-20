@@ -209,8 +209,8 @@ export const fanLedger = (h: FanHandles) => {
 								joined(inner, {
 									rows: {
 										...noRows,
-										FanScope: [{ scope: key, kind: "Batch", root: root }],
-										FanWithin: [{ scope: key, parent: scope, root: root }],
+										FanScope: [{ scope: key, root: root }],
+										FanWithin: [{ scope: key, parent: scope, kind: "Batch", root: root }],
 										FanAdmitted: [{ scope: key, root: root }],
 										FanFinish: [{ scope: key, step: finish, root: root }],
 										FanStep: [
@@ -328,7 +328,7 @@ export const fanLedger = (h: FanHandles) => {
 								params: {},
 								facts: {
 									insert: {
-										FanScope: [{ scope, kind: "FanRun" as const, root: scope }],
+										FanScope: [{ scope, root: scope }],
 										FanRoot: [{ scope, kind: "FanRun" as const, key, at }],
 										FanFanRunInput: [
 											{ scope: scope, root: scope, batch: input.batch, size: input.size }
@@ -590,13 +590,6 @@ export const fanLedger = (h: FanHandles) => {
 			Effect.map(settled(h.den.fanFencedOf.once({ params: { step }, facts: {} })), rowsOf),
 		scopeOf: (scope) =>
 			Effect.gen(function* () {
-				const row = yield* Effect.map(
-					settled(h.den.fanScopeOf.once({ params: { scope: scope }, facts: {} })),
-					one
-				)
-				if (Option.isNone(row)) {
-					return Option.none()
-				}
 				const root = yield* Effect.map(
 					settled(h.den.fanRootOf.once({ params: { scope: scope }, facts: {} })),
 					one
@@ -609,7 +602,7 @@ export const fanLedger = (h: FanHandles) => {
 					return Option.map(within, (w): ScopeView => ({
 						place: "child",
 						scope,
-						kind: row.value.kind,
+						kind: w.kind,
 						parent: w.parent
 					}))
 				}
@@ -702,11 +695,7 @@ export const fanLedger = (h: FanHandles) => {
 			),
 		snapshot: Effect.flatMap(settled(h.den.fanSnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof fan>> => {
-				const view = (
-					scope: ScopeKey,
-					kind: string,
-					admission: Admission
-				): ReadonlyArray<ScopeView> =>
+				const view = (scope: ScopeKey, admission: Admission): ReadonlyArray<ScopeView> =>
 					Option.match(
 						Arr.findFirst(read.roots, (o) => o.scope === scope),
 						{
@@ -725,7 +714,7 @@ export const fanLedger = (h: FanHandles) => {
 							onNone: () =>
 								Arr.map(
 									Option.toArray(Arr.findFirst(read.withins, (w) => w.scope === scope)),
-									(w): ScopeView => ({ place: "child", scope, kind, parent: w.parent })
+									(w): ScopeView => ({ place: "child", scope, kind: w.kind, parent: w.parent })
 								)
 						}
 					)
@@ -740,8 +729,8 @@ export const fanLedger = (h: FanHandles) => {
 					retries: read.retries,
 					fenced: read.fenced,
 					scopes: [
-						...Arr.flatMap(read.requested, (s) => view(s.scope, s.kind, "requested")),
-						...Arr.flatMap(read.running, (s) => view(s.scope, s.kind, "admitted"))
+						...Arr.flatMap(read.requested, (s) => view(s.scope, "requested")),
+						...Arr.flatMap(read.running, (s) => view(s.scope, "admitted"))
 					],
 					holds: read.holds,
 					exclusives: [],

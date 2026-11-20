@@ -4,19 +4,16 @@ import { ChangeSet, clocked, deferrable, query, role, v, workload } from "@bjorn
 import { App } from "#integration/slice/app.ts"
 import {
 	SyncKind,
-	SyncJoin,
 	SyncRootKind,
 	SyncOutcome,
 	SyncPausable,
 	SyncScope,
 	SyncRoot,
-	SyncWithin,
 	SyncExclusiveKey,
 	SyncAdmitted,
 	SyncSkipped,
 	SyncStep,
 	SyncStartStep,
-	SyncStartScope,
 	SyncFinish,
 	SyncClaim,
 	SyncRetry,
@@ -59,13 +56,11 @@ export const SyncDen = role(
 		insert: [
 			"SyncScope",
 			"SyncRoot",
-			"SyncWithin",
 			"SyncExclusiveKey",
 			"SyncAdmitted",
 			"SyncSkipped",
 			"SyncStep",
 			"SyncStartStep",
-			"SyncStartScope",
 			"SyncFinish",
 			"SyncClaim",
 			"SyncRetry",
@@ -90,7 +85,6 @@ export const SyncCoordinator = role(
 	"sync_coordinator",
 	{
 		SyncKind,
-		SyncJoin,
 		SyncRootKind,
 		SyncOutcome,
 		SyncPausable,
@@ -111,21 +105,16 @@ const syncPendingRead = query(SyncDen).rule((r) => {
 })
 
 const syncRequestedRead = query(SyncDen).rule((r) => {
-	const { scope, kind } = v(SyncScope, "scope")
+	const { scope } = v(SyncRoot, "root")
 	return r
-		.match(SyncScope, { scope, kind })
+		.match(SyncRoot, { scope })
 		.where(r.not(SyncAdmitted, { scope }), r.not(SyncSkipped, { scope }))
-		.find({ scope, kind })
+		.find({ scope })
 })
 
 const syncRunningRead = query(SyncDen).rule((r) => {
-	const { scope, kind } = v(SyncScope, "scope")
-	const { step } = v(SyncFinish, "finish")
-	return r
-		.match(SyncScope, { scope, kind })
-		.match(SyncFinish, { scope, step })
-		.where(r.not(SyncResult, { step }))
-		.find({ scope, kind })
+	const { scope, step } = v(SyncFinish, "finish")
+	return r.match(SyncFinish, { scope, step }).where(r.not(SyncResult, { step })).find({ scope })
 })
 
 const syncBusyChainRead = query(SyncDen).rule((r) => {
@@ -174,10 +163,8 @@ export const syncDenPrograms = Object.freeze({
 		.insert(SyncAdmitted, [])
 		.insert(SyncFinish, [])
 		.insert(SyncStartStep, [])
-		.insert(SyncStartScope, [])
 		.insert(SyncStep, [])
 		.insert(SyncScope, [])
-		.insert(SyncWithin, [])
 		.insert(SyncCopyInput, [])
 		.insert(SyncBuildInput, []),
 	syncSkip: ChangeSet.empty(syncGraph).insert(SyncSkipped, []),
@@ -208,20 +195,6 @@ export const syncDenPrograms = Object.freeze({
 			.match(SyncHeld, { step, attempt, root })
 			.where(r.eq(step, r.param("step", SyncHeld.fields.step)))
 			.find({ step, attempt, root })
-	}),
-	syncScopeOf: query(syncGraph).rule((r) => {
-		const { scope, kind, root } = v(SyncScope, "syncScope")
-		return r
-			.match(SyncScope, { scope, kind, root })
-			.where(r.eq(scope, r.param("scope", SyncScope.fields.scope)))
-			.find({ scope, kind, root })
-	}),
-	syncWithinOf: query(syncGraph).rule((r) => {
-		const { scope, parent, root } = v(SyncWithin, "syncWithin")
-		return r
-			.match(SyncWithin, { scope, parent, root })
-			.where(r.eq(scope, r.param("scope", SyncWithin.fields.scope)))
-			.find({ scope, parent, root })
 	}),
 	syncAdmittedOf: query(syncGraph).rule((r) => {
 		const { scope, root } = v(SyncAdmitted, "syncAdmitted")
@@ -295,26 +268,6 @@ export const syncDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	syncOpenChildren: query(syncGraph)
-		.rule((r) => {
-			const { scope, parent } = v(SyncWithin, "within")
-			return r
-				.match(SyncWithin, { scope, parent })
-				.where(
-					r.eq(parent, r.param("scope", SyncScope.fields.scope)),
-					r.not(SyncAdmitted, { scope })
-				)
-				.find({ child: scope })
-		})
-		.rule((r) => {
-			const { scope, parent } = v(SyncWithin, "within")
-			const { step } = v(SyncFinish, "finish")
-			return r
-				.match(SyncWithin, { scope, parent })
-				.match(SyncFinish, { scope, step })
-				.where(r.eq(parent, r.param("scope", SyncScope.fields.scope)), r.not(SyncResult, { step }))
-				.find({ child: scope })
-		}),
 	syncFinished: query(syncGraph).rule((r) => {
 		const { scope, step } = v(SyncFinish, "finish")
 		return r
@@ -354,10 +307,6 @@ export const syncDenPrograms = Object.freeze({
 			}),
 			requested: syncRequestedRead,
 			running: syncRunningRead,
-			withins: query(SyncDen).rule((r) => {
-				const { scope, parent } = v(SyncWithin, "syncWithin")
-				return r.match(SyncWithin, { scope, parent }).find({ scope, parent })
-			}),
 			roots: query(SyncDen).rule((r) => {
 				const { scope, kind, key, at } = v(SyncRoot, "syncRoot")
 				return r.match(SyncRoot, { scope, kind, key, at }).find({ scope, kind, key, at })

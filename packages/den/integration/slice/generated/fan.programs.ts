@@ -4,8 +4,8 @@ import { ChangeSet, clocked, deferrable, query, role, v, workload } from "@bjorn
 import { App } from "#integration/slice/app.ts"
 import {
 	FanKind,
-	FanJoin,
 	FanRootKind,
+	FanChildKind,
 	FanOutcome,
 	FanPausable,
 	FanResource,
@@ -90,8 +90,8 @@ export const FanCoordinator = role(
 	"fan_coordinator",
 	{
 		FanKind,
-		FanJoin,
 		FanRootKind,
+		FanChildKind,
 		FanOutcome,
 		FanPausable,
 		FanResource,
@@ -118,21 +118,16 @@ const fanPendingRead = query(FanDen).rule((r) => {
 })
 
 const fanRequestedRead = query(FanDen).rule((r) => {
-	const { scope, kind } = v(FanScope, "scope")
+	const { scope } = v(FanRoot, "root")
 	return r
-		.match(FanScope, { scope, kind })
+		.match(FanRoot, { scope })
 		.where(r.not(FanAdmitted, { scope }), r.not(FanSkipped, { scope }))
-		.find({ scope, kind })
+		.find({ scope })
 })
 
 const fanRunningRead = query(FanDen).rule((r) => {
-	const { scope, kind } = v(FanScope, "scope")
-	const { step } = v(FanFinish, "finish")
-	return r
-		.match(FanScope, { scope, kind })
-		.match(FanFinish, { scope, step })
-		.where(r.not(FanResult, { step }))
-		.find({ scope, kind })
+	const { scope, step } = v(FanFinish, "finish")
+	return r.match(FanFinish, { scope, step }).where(r.not(FanResult, { step })).find({ scope })
 })
 
 export const fanDenPrograms = Object.freeze({
@@ -173,10 +168,10 @@ export const fanDenPrograms = Object.freeze({
 		.insert(FanAdmitted, [])
 		.insert(FanFinish, [])
 		.insert(FanStartStep, [])
-		.insert(FanStartScope, [])
 		.insert(FanStep, [])
 		.insert(FanScope, [])
 		.insert(FanWithin, [])
+		.insert(FanStartScope, [])
 		.insert(FanSquareInput, [])
 		.insert(FanBatchInput, []),
 	fanSkip: ChangeSet.empty(fanGraph).insert(FanSkipped, []),
@@ -208,19 +203,12 @@ export const fanDenPrograms = Object.freeze({
 			.where(r.eq(step, r.param("step", FanHeld.fields.step)))
 			.find({ step, attempt, root })
 	}),
-	fanScopeOf: query(fanGraph).rule((r) => {
-		const { scope, kind, root } = v(FanScope, "fanScope")
-		return r
-			.match(FanScope, { scope, kind, root })
-			.where(r.eq(scope, r.param("scope", FanScope.fields.scope)))
-			.find({ scope, kind, root })
-	}),
 	fanWithinOf: query(fanGraph).rule((r) => {
-		const { scope, parent, root } = v(FanWithin, "fanWithin")
+		const { scope, parent, kind, root } = v(FanWithin, "fanWithin")
 		return r
-			.match(FanWithin, { scope, parent, root })
+			.match(FanWithin, { scope, parent, kind, root })
 			.where(r.eq(scope, r.param("scope", FanWithin.fields.scope)))
-			.find({ scope, parent, root })
+			.find({ scope, parent, kind, root })
 	}),
 	fanAdmittedOf: query(fanGraph).rule((r) => {
 		const { scope, root } = v(FanAdmitted, "fanAdmitted")
@@ -287,23 +275,15 @@ export const fanDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	fanOpenChildren: query(fanGraph)
-		.rule((r) => {
-			const { scope, parent } = v(FanWithin, "within")
-			return r
-				.match(FanWithin, { scope, parent })
-				.where(r.eq(parent, r.param("scope", FanScope.fields.scope)), r.not(FanAdmitted, { scope }))
-				.find({ child: scope })
-		})
-		.rule((r) => {
-			const { scope, parent } = v(FanWithin, "within")
-			const { step } = v(FanFinish, "finish")
-			return r
-				.match(FanWithin, { scope, parent })
-				.match(FanFinish, { scope, step })
-				.where(r.eq(parent, r.param("scope", FanScope.fields.scope)), r.not(FanResult, { step }))
-				.find({ child: scope })
-		}),
+	fanOpenChildren: query(fanGraph).rule((r) => {
+		const { scope, parent } = v(FanWithin, "within")
+		const { step } = v(FanFinish, "finish")
+		return r
+			.match(FanWithin, { scope, parent })
+			.match(FanFinish, { scope, step })
+			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)), r.not(FanResult, { step }))
+			.find({ child: scope })
+	}),
 	fanFinished: query(fanGraph).rule((r) => {
 		const { scope, step } = v(FanFinish, "finish")
 		return r
@@ -342,8 +322,8 @@ export const fanDenPrograms = Object.freeze({
 			requested: fanRequestedRead,
 			running: fanRunningRead,
 			withins: query(FanDen).rule((r) => {
-				const { scope, parent } = v(FanWithin, "fanWithin")
-				return r.match(FanWithin, { scope, parent }).find({ scope, parent })
+				const { scope, parent, kind } = v(FanWithin, "fanWithin")
+				return r.match(FanWithin, { scope, parent, kind }).find({ scope, parent, kind })
 			}),
 			roots: query(FanDen).rule((r) => {
 				const { scope, kind, key, at } = v(FanRoot, "fanRoot")
@@ -411,8 +391,7 @@ export const fanDenPrograms = Object.freeze({
 		const { step } = v(FanFinish, "finish")
 		const { outcome } = v(FanResult, "result")
 		return r
-			.match(FanWithin, { scope, parent })
-			.match(FanScope, { scope, kind: "Batch" })
+			.match(FanWithin, { scope, parent, kind: "Batch" })
 			.match(FanFinish, { scope, step })
 			.match(FanResult, { step, outcome })
 			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))

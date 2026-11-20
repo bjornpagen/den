@@ -23,7 +23,6 @@ import { Weight } from "#integration/slice/relations.ts"
 const Seq = contract("Seq", pg.bigint)
 
 export const ChainKind = closed.unordered("ChainKind", ["Page", "ChainRunFinish", "OrderedFinish"])
-export const ChainJoin = closed.unordered("ChainJoin", ["ChainRun", "Ordered"])
 export const ChainRootKind = closed.unordered("ChainRootKind", ["ChainRun", "Ordered"])
 export const ChainOutcome = closed.unordered("ChainOutcome", ["done", "failed"])
 export const ChainPausable = closed.unordered("ChainPausable", ["ChainRun", "Ordered"])
@@ -31,11 +30,10 @@ export const ChainPageInputFeed = closed.unordered("ChainPageInputFeed", ["news"
 export const ChainChainRunInputFeed = closed.unordered("ChainChainRunInputFeed", ["news", "sport"])
 export const ChainOrderedInputFeed = closed.unordered("ChainOrderedInputFeed", ["news", "sport"])
 
-export const ChainScope = relation(
-	"ChainScope",
-	{ scope: DenScope, kind: closedId(ChainJoin), root: DenScope },
-	["scope", "root"]
-)
+export const ChainScope = relation("ChainScope", { scope: DenScope, root: DenScope }, [
+	"scope",
+	"root"
+])
 export const ChainRoot = relation(
 	"ChainRoot",
 	{
@@ -46,11 +44,6 @@ export const ChainRoot = relation(
 		retired: retirement
 	},
 	["scope"]
-)
-export const ChainWithin = relation(
-	"ChainWithin",
-	{ scope: DenScope, parent: DenScope, root: DenScope },
-	["scope", "root"]
 )
 export const ChainAdmitted = relation("ChainAdmitted", { scope: DenScope, root: DenScope }, [
 	"scope",
@@ -69,11 +62,6 @@ export const ChainStep = relation(
 export const ChainStartStep = relation(
 	"ChainStartStep",
 	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
-	["scope", "ordinal", "root"]
-)
-export const ChainStartScope = relation(
-	"ChainStartScope",
-	{ scope: DenScope, ordinal: natural, child: DenScope, root: DenScope },
 	["scope", "ordinal", "root"]
 )
 export const ChainFinish = relation(
@@ -181,7 +169,6 @@ export const ChainResumed = relation(
 export const chainGraph = fragment(
 	[
 		ChainKind,
-		ChainJoin,
 		ChainRootKind,
 		ChainOutcome,
 		ChainPausable,
@@ -190,12 +177,10 @@ export const chainGraph = fragment(
 		ChainOrderedInputFeed,
 		ChainScope,
 		ChainRoot,
-		ChainWithin,
 		ChainAdmitted,
 		ChainSkipped,
 		ChainStep,
 		ChainStartStep,
-		ChainStartScope,
 		ChainFinish,
 		ChainClaim,
 		ChainRetry,
@@ -216,8 +201,6 @@ export const chainGraph = fragment(
 		ChainPageWeightsRead
 	],
 	[
-		contained(on(ChainWithin, "scope", "root"), on(ChainScope, "scope", "root")),
-		contained(on(ChainWithin, "parent", "root"), on(ChainScope, "scope", "root")),
 		contained(on(ChainAdmitted, "scope", "root"), on(ChainScope, "scope", "root")),
 		contained(on(ChainSkipped, "scope"), on(ChainRoot, "scope")),
 		contained(on(ChainSkipped, "by"), on(ChainRoot, "scope")),
@@ -225,9 +208,6 @@ export const chainGraph = fragment(
 		contained(on(ChainStartStep, "scope", "root"), on(ChainAdmitted, "scope", "root")),
 		contained(on(ChainStartStep, "step", "root"), on(ChainStep, "step", "root")),
 		key(on(ChainStartStep, "step", "root")),
-		contained(on(ChainStartScope, "scope", "root"), on(ChainAdmitted, "scope", "root")),
-		contained(on(ChainStartScope, "child", "root"), on(ChainScope, "scope", "root")),
-		key(on(ChainStartScope, "child", "root")),
 		contained(on(ChainFinish, "scope", "root"), on(ChainAdmitted, "scope", "root")),
 		contained(on(ChainFinish, "step", "root"), on(ChainStep, "step", "root")),
 		key(on(ChainFinish, "step", "root")),
@@ -279,19 +259,17 @@ export const chainGraph = fragment(
 		),
 		contained(on(ChainPageInputAfter, "step", "root"), on(ChainPageInput, "step", "root")),
 		contained(
-			on(ChainChainRunInput, "scope", "root"),
+			on(ChainChainRunInput, "scope"),
 			on(
-				select(ChainScope, (row) => row.eq(row.kind, "ChainRun")),
-				"scope",
-				"root"
+				select(ChainRoot, (row) => row.eq(row.kind, "ChainRun")),
+				"scope"
 			)
 		),
 		contained(
-			on(ChainOrderedInput, "scope", "root"),
+			on(ChainOrderedInput, "scope"),
 			on(
-				select(ChainScope, (row) => row.eq(row.kind, "Ordered")),
-				"scope",
-				"root"
+				select(ChainRoot, (row) => row.eq(row.kind, "Ordered")),
+				"scope"
 			)
 		),
 		contained(on(ChainNext, "from", "root"), on(ChainPageInput, "step", "root")),
@@ -303,12 +281,10 @@ export const chainGraph = fragment(
 		contained(on(ChainPageWeightsRead, "step", "root"), on(ChainResult, "step", "root")),
 		retirable(ChainRoot, [
 			on(ChainScope, "root"),
-			on(ChainWithin, "root"),
 			on(ChainAdmitted, "root"),
 			on(ChainSkipped, "root"),
 			on(ChainStep, "root"),
 			on(ChainStartStep, "root"),
-			on(ChainStartScope, "root"),
 			on(ChainFinish, "root"),
 			on(ChainClaim, "root"),
 			on(ChainRetry, "root"),
@@ -335,7 +311,6 @@ export const chainGraph = fragment(
 export const chainCoordination = fragment(
 	[
 		ChainKind,
-		ChainJoin,
 		ChainRootKind,
 		ChainOutcome,
 		ChainPausable,
@@ -361,11 +336,9 @@ export const chainWriter = [
 	"ChainPageWeightsRead",
 	"ChainStep",
 	"ChainScope",
-	"ChainWithin",
 	"ChainAdmitted",
 	"ChainFinish",
 	"ChainStartStep",
-	"ChainStartScope",
 	"ChainPageInput",
 	"ChainPageInputAfter",
 	"ChainNext",
