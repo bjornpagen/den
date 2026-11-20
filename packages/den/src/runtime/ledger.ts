@@ -147,15 +147,16 @@ export interface Turn {
 }
 
 /**
- * What a kind's runner did: committed, recorded a typed failure, met a write's error, waited out its deadline with a
- * write still running (run again on each transient refusal), or spent its attempt (a defect, an interruption, its
- * deadline), the detail for its span.
+ * What a kind's runner did: committed, recorded a typed failure, met a write's error, waited without spending its
+ * attempt, or spent its attempt (a defect, an interruption, its deadline), the detail for its span. A wait is due again
+ * `after` the write that records it: at once for a write still running at its deadline (run again on each transient
+ * refusal, `transient`), or the delay its body's source named (`later`).
  */
 export type Ran =
 	| { readonly kind: "committed"; readonly committed: Committed }
 	| { readonly kind: "failed" }
 	| { readonly kind: "error"; readonly error: Settled }
-	| { readonly kind: "waited" }
+	| { readonly kind: "waited"; readonly why: "transient" | "later"; readonly after: Delay }
 	| { readonly kind: "spent"; readonly detail: string }
 
 /** A step kind's runner: what the scheduler reads of its declaration, and its turn after the claim. */

@@ -244,6 +244,10 @@ CREATE INDEX "__retry_ladders_input_ix_root_co4bnpgzm5" ON "slice"."retry_ladder
 
 CREATE INDEX "__retry_paused_ix_target_pred_turn_qryngij_6_c_4_5kkljt6kwu" ON "slice"."retry_paused" USING btree ("target", "__pred_turn_qryngij6c4");
 
+CREATE INDEX "__retry_polite_input_ix_root_step_begldsasuy" ON "slice"."retry_polite_input" USING btree ("root", "step");
+
+CREATE INDEX "__retry_polite_output_ix_root_x5djpoz7ix" ON "slice"."retry_polite_output" USING btree ("root");
+
 CREATE INDEX "__retry_refusal_ix_root_7f4y3ykjiz" ON "slice"."retry_refusal" USING btree ("root");
 
 CREATE INDEX "__retry_result_ix_root_step_n7qrlleymb" ON "slice"."retry_result" USING btree ("root", "step");
@@ -267,6 +271,10 @@ CREATE INDEX "__retry_steadfast_output_ix_root_sp7in5arxz" ON "slice"."retry_ste
 CREATE INDEX "__retry_step_ix_root_scope_ogbhay3han" ON "slice"."retry_step" USING btree ("root", "scope");
 
 CREATE INDEX "__retry_step_ix_scope_kind_step_m6ufaqcqmk" ON "slice"."retry_step" USING btree ("scope", "kind", "step");
+
+CREATE INDEX "__retry_throttled_finish_output_ix_root_tjndqsonfa" ON "slice"."retry_throttled_finish_output" USING btree ("root");
+
+CREATE INDEX "__retry_throttled_input_ix_root_jl6ezw6jux" ON "slice"."retry_throttled_input" USING btree ("root");
 
 CREATE INDEX "__review_admitted_ix_root_yaphj2wqrq" ON "slice"."review_admitted" USING btree ("root");
 

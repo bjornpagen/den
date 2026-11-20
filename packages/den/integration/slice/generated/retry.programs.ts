@@ -36,10 +36,14 @@ import {
 	RetryExhausted,
 	RetrySteadfastInput,
 	RetryBrittleInput,
+	RetryPoliteInput,
 	RetryLaddersInput,
+	RetryThrottledInput,
 	RetrySteadfastOutput,
 	RetryBrittleOutput,
+	RetryPoliteOutput,
 	RetryLaddersFinishOutput,
+	RetryThrottledFinishOutput,
 	RetryPaused,
 	RetryResumed,
 	retryGraph,
@@ -73,8 +77,11 @@ export const RetryDen = role(
 			"RetryExhausted",
 			"RetrySteadfastInput",
 			"RetryBrittleInput",
+			"RetryPoliteInput",
 			"RetryLaddersInput",
-			"RetryLaddersFinishOutput"
+			"RetryThrottledInput",
+			"RetryLaddersFinishOutput",
+			"RetryThrottledFinishOutput"
 		]
 	}
 )
@@ -177,6 +184,7 @@ export const retryDenPrograms = Object.freeze({
 			.insert(RetryScope, [])
 			.insert(RetrySteadfastInput, [])
 			.insert(RetryBrittleInput, [])
+			.insert(RetryPoliteInput, [])
 			.insert(
 				RetryStep,
 				query(retryGraph).rule((r) => {
@@ -359,6 +367,13 @@ export const retryDenPrograms = Object.freeze({
 			.where(r.eq(step, r.param("step", RetryBrittleInput.fields.step)))
 			.find({ step, key, root })
 	}),
+	retryReadRetryPoliteInput: query(retryGraph).rule((r) => {
+		const { step, key, root } = v(RetryPoliteInput, "retryPoliteInput")
+		return r
+			.match(RetryPoliteInput, { step, key, root })
+			.where(r.eq(step, r.param("step", RetryPoliteInput.fields.step)))
+			.find({ step, key, root })
+	}),
 	retryReadRetryLaddersInput: query(retryGraph).rule((r) => {
 		const { scope, steadfast, brittle, root } = v(RetryLaddersInput, "retryLaddersInput")
 		return r
@@ -413,6 +428,47 @@ export const retryDenPrograms = Object.freeze({
 		const { step, scope } = v(RetryStep, "step")
 		return r
 			.match(RetryStep, { step, kind: "Brittle", scope })
+			.match(RetryResult, { step, outcome: "failed" })
+			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
+			.find({ step })
+	}),
+	retryReadRetryThrottledInput: query(retryGraph).rule((r) => {
+		const { scope, key, root } = v(RetryThrottledInput, "retryThrottledInput")
+		return r
+			.match(RetryThrottledInput, { scope, key, root })
+			.where(r.eq(scope, r.param("scope", RetryThrottledInput.fields.scope)))
+			.find({ scope, key, root })
+	}),
+	retryRequestThrottled: clocked(
+		ChangeSet.empty(retryGraph)
+			.insert(RetryScope, [])
+			.insert(RetryThrottledInput, [])
+			.insert(
+				RetryRoot,
+				query(retryGraph).rule((r) =>
+					r.find({
+						scope: r.param("retryThrottledScope", RetryRoot.fields.scope),
+						kind: RetryRootKind.handle("Throttled"),
+						key: r.param("retryThrottledKey", RetryRoot.fields.key),
+						at: r.param("now", RetryRoot.fields.at)
+					})
+				)
+			),
+		{ now: "millis" }
+	),
+	retryOutputsThrottledPolite: query(retryGraph).rule((r) => {
+		const { step, scope } = v(RetryStep, "step")
+		const { key } = v(RetryPoliteOutput, "output")
+		return r
+			.match(RetryStep, { step, kind: "Polite", scope })
+			.match(RetryPoliteOutput, { step, key })
+			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
+			.find({ step, key })
+	}),
+	retryFailuresThrottledPolite: query(retryGraph).rule((r) => {
+		const { step, scope } = v(RetryStep, "step")
+		return r
+			.match(RetryStep, { step, kind: "Polite", scope })
 			.match(RetryResult, { step, outcome: "failed" })
 			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
 			.find({ step })
@@ -473,11 +529,21 @@ export const retryCommitPrograms = Object.freeze({
 		.insert(RetryDone, [])
 		.insert(RetryHeld, [])
 		.insert(RetryBrittleOutput, []),
+	retryCommitPolite: ChangeSet.empty(retryGraph)
+		.insert(RetryResult, [])
+		.insert(RetryDone, [])
+		.insert(RetryHeld, [])
+		.insert(RetryPoliteOutput, []),
 	retryCommitLaddersFinish: ChangeSet.empty(retryGraph)
 		.insert(RetryResult, [])
 		.insert(RetryDone, [])
 		.insert(RetryHeld, [])
-		.insert(RetryLaddersFinishOutput, [])
+		.insert(RetryLaddersFinishOutput, []),
+	retryCommitThrottledFinish: ChangeSet.empty(retryGraph)
+		.insert(RetryResult, [])
+		.insert(RetryDone, [])
+		.insert(RetryHeld, [])
+		.insert(RetryThrottledFinishOutput, [])
 })
 
 export const retryCommits = workload(Loader, retryCommitPrograms)

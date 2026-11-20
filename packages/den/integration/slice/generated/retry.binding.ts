@@ -44,6 +44,7 @@ import type {
 	RetryStartStep,
 	RetrySteadfastInput,
 	RetryBrittleInput,
+	RetryPoliteInput,
 	RetryKind,
 	RetryRootKind
 } from "#integration/slice/generated/retry.fragment.ts"
@@ -81,6 +82,7 @@ interface Rows {
 	readonly RetryStartStep: ReadonlyArray<Addition<typeof RetryStartStep>>
 	readonly RetrySteadfastInput: ReadonlyArray<Addition<typeof RetrySteadfastInput>>
 	readonly RetryBrittleInput: ReadonlyArray<Addition<typeof RetryBrittleInput>>
+	readonly RetryPoliteInput: ReadonlyArray<Addition<typeof RetryPoliteInput>>
 }
 
 /** A step a call spawns, as the call names it: the database writes its due instant, its delay after the call's reading. */
@@ -113,7 +115,8 @@ export const retryLedger = (h: RetryHandles) => {
 		RetryFinish: [],
 		RetryStartStep: [],
 		RetrySteadfastInput: [],
-		RetryBrittleInput: []
+		RetryBrittleInput: [],
+		RetryPoliteInput: []
 	}
 	const nothingGrown: Grown = { rows: noRows, steps: [], spawned: { steps: [], finishes: [] } }
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
@@ -125,7 +128,8 @@ export const retryLedger = (h: RetryHandles) => {
 			RetryFinish: [...a.rows.RetryFinish, ...b.rows.RetryFinish],
 			RetryStartStep: [...a.rows.RetryStartStep, ...b.rows.RetryStartStep],
 			RetrySteadfastInput: [...a.rows.RetrySteadfastInput, ...b.rows.RetrySteadfastInput],
-			RetryBrittleInput: [...a.rows.RetryBrittleInput, ...b.rows.RetryBrittleInput]
+			RetryBrittleInput: [...a.rows.RetryBrittleInput, ...b.rows.RetryBrittleInput],
+			RetryPoliteInput: [...a.rows.RetryPoliteInput, ...b.rows.RetryPoliteInput]
 		},
 		steps: [...a.steps, ...b.steps],
 		spawned: {
@@ -188,6 +192,32 @@ export const retryLedger = (h: RetryHandles) => {
 			),
 			(parts) => Arr.reduce(parts, nothingGrown, joined)
 		)
+	const startThrottled = (
+		root: ScopeKey,
+		scope: ScopeKey,
+		input: Parameters<(typeof retry.kinds)[4]["start"]>[0]
+	): Effect.Effect<Grown, never, Digest.Digest> =>
+		Effect.map(
+			Effect.forEach(
+				retry.kinds[4].start(input),
+				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
+					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
+						rows: {
+							...noRows,
+							RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+							RetryPoliteInput: [{ step: key, root: root, key: spawn.input.key }]
+						},
+						steps: [
+							{ step: key, kind: "Polite", scope: scope, delay: delayAfter(retry.kinds[3].due) }
+						],
+						spawned: {
+							steps: [{ step: key, kind: "Polite", delay: delayAfter(retry.kinds[3].due) }],
+							finishes: []
+						}
+					}))
+			),
+			(parts) => Arr.reduce(parts, nothingGrown, joined)
+		)
 	const readRetrySteadfastInput = (step: StepKey) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
@@ -204,6 +234,14 @@ export const retryLedger = (h: RetryHandles) => {
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
+	const readRetryPoliteInput = (step: StepKey) =>
+		Effect.gen(function* () {
+			const row = yield* Effect.map(
+				settled(h.den.retryReadRetryPoliteInput.once({ params: { step: step }, facts: {} })),
+				one
+			)
+			return Option.map(row, (found) => ({ key: found.key }))
+		})
 	const readRetryLaddersInput = (scope: ScopeKey) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
@@ -211,6 +249,14 @@ export const retryLedger = (h: RetryHandles) => {
 				one
 			)
 			return Option.map(row, (found) => ({ steadfast: found.steadfast, brittle: found.brittle }))
+		})
+	const readRetryThrottledInput = (scope: ScopeKey) =>
+		Effect.gen(function* () {
+			const row = yield* Effect.map(
+				settled(h.den.retryReadRetryThrottledInput.once({ params: { scope: scope }, facts: {} })),
+				one
+			)
+			return Option.map(row, (found) => ({ key: found.key }))
 		})
 	const pauseChains: PauseChains<(typeof RetryPausable)["handles"][number]> = {
 		flow: FlowName.make("Retry"),
@@ -271,6 +317,26 @@ export const retryLedger = (h: RetryHandles) => {
 					),
 					(accepted) => ({ flow: FlowName.make("Retry"), scope, fresh: accepted })
 				)
+			),
+		Throttled: (key: string, input: Parameters<(typeof retry.kinds)[4]["start"]>[0]) =>
+			Effect.flatMap(rootScope("Retry", "Throttled", key), (scope) =>
+				Effect.map(
+					fresh(
+						"Retry",
+						settled(
+							h.den.retryRequestThrottled.once({
+								params: { retryThrottledScope: scope, retryThrottledKey: key },
+								facts: {
+									insert: {
+										RetryScope: [{ scope, root: scope }],
+										RetryThrottledInput: [{ scope: scope, root: scope, key: input.key }]
+									}
+								}
+							})
+						)
+					),
+					(accepted) => ({ flow: FlowName.make("Retry"), scope, fresh: accepted })
+				)
 			)
 	}
 	const runners = {
@@ -324,6 +390,37 @@ export const retryLedger = (h: RetryHandles) => {
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
 										RetryBrittleOutput: [
+											{ step: done.turn.step, root: done.turn.root, key: done.output.key }
+										]
+									}
+								}
+							})
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.none()
+		),
+		Polite: runnerOf(
+			retry.kinds[3],
+			{
+				input: (step) => readRetryPoliteInput(step),
+				read: () => Effect.succeed({}),
+				commit: (done) =>
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
+							h.commits.retryCommitPolite.once({
+								params: {},
+								facts: {
+									insert: {
+										RetryResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										RetryDone: [{ step: done.turn.step, root: done.turn.root }],
+										RetryHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										RetryPoliteOutput: [
 											{ step: done.turn.step, root: done.turn.root, key: done.output.key }
 										]
 									}
@@ -417,6 +514,73 @@ export const retryLedger = (h: RetryHandles) => {
 				fail: (failed) => Effect.die(failed.error)
 			},
 			Option.some("Ladders")
+		),
+		ThrottledFinish: runnerOf(
+			{
+				name: "ThrottledFinish",
+				uses: [],
+				retry: retry.kinds[4].finish.retry,
+				body: (read: {
+					readonly input: Parameters<(typeof retry.kinds)[4]["start"]>[0]
+					readonly endings: Parameters<(typeof retry.kinds)[4]["finish"]["body"]>[1]
+				}) => retry.kinds[4].finish.body(read.input, read.endings)
+			},
+			{
+				input: (step) =>
+					Effect.gen(function* () {
+						const located = yield* Effect.map(
+							settled(h.den.retryStepOf.once({ params: { step }, facts: {} })),
+							one
+						)
+						if (Option.isNone(located)) {
+							return Option.none()
+						}
+						const scope = located.value.scope
+						const input = yield* readRetryThrottledInput(scope)
+						if (Option.isNone(input)) {
+							return Option.none()
+						}
+						const rowsPolite = yield* Effect.map(
+							settled(h.den.retryOutputsThrottledPolite.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const failuresPolite = yield* Effect.map(
+							settled(h.den.retryFailuresThrottledPolite.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const Polite = [
+							...Arr.map(rowsPolite, (row) => ({
+								_tag: "Done" as const,
+								output: { key: row.key }
+							})),
+							...Arr.map(failuresPolite, () => ({ _tag: "Failed" as const }))
+						]
+						return Option.some({ input: input.value, endings: { Polite } })
+					}),
+				read: () => Effect.succeed([]),
+				commit: (done) =>
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
+							h.commits.retryCommitThrottledFinish.once({
+								params: {},
+								facts: {
+									insert: {
+										RetryResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										RetryDone: [{ step: done.turn.step, root: done.turn.root }],
+										RetryHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										RetryThrottledFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
+									}
+								}
+							})
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.some("Throttled")
 		)
 	}
 	const roots: { readonly [K in (typeof RetryRootKind)["handles"][number]]: RootRunner } = {
@@ -452,6 +616,55 @@ export const retryLedger = (h: RetryHandles) => {
 									RetryStartStep: grown.rows.RetryStartStep,
 									RetrySteadfastInput: grown.rows.RetrySteadfastInput,
 									RetryBrittleInput: grown.rows.RetryBrittleInput,
+									RetryPoliteInput: grown.rows.RetryPoliteInput,
+									RetryAdmitted: admitted,
+									RetryFinish: finishes
+								}
+							}
+						})
+					)
+					return Option.some({
+						outcome,
+						spawned: {
+							steps: grown.spawned.steps,
+							finishes: [...grown.spawned.finishes, ...(hasChildren(grown, scope) ? [] : [finish])]
+						}
+					})
+				})
+		},
+		Throttled: {
+			window: retry.kinds[4].window,
+			precondition: retry.kinds[4].precondition,
+			admit: (scope: ScopeKey) =>
+				Effect.gen(function* () {
+					const input = yield* readRetryThrottledInput(scope)
+					if (Option.isNone(input)) {
+						return Option.none()
+					}
+					const grown = yield* startThrottled(scope, scope, input.value)
+					const finish = yield* finishStep(scope)
+					const steps: ReadonlyArray<SpawnRow> = [
+						...grown.steps,
+						{ step: finish, kind: "ThrottledFinish", scope, delay: atOnce }
+					]
+					const admitted: ReadonlyArray<Addition<typeof RetryAdmitted>> = [
+						...grown.rows.RetryAdmitted,
+						{ scope, root: scope }
+					]
+					const finishes: ReadonlyArray<Addition<typeof RetryFinish>> = [
+						...grown.rows.RetryFinish,
+						{ scope, step: finish, root: scope }
+					]
+					const outcome = yield* settled(
+						h.den.retryAdmit.once({
+							params: { steps, root: scope },
+							facts: {
+								insert: {
+									RetryScope: grown.rows.RetryScope,
+									RetryStartStep: grown.rows.RetryStartStep,
+									RetrySteadfastInput: grown.rows.RetrySteadfastInput,
+									RetryBrittleInput: grown.rows.RetryBrittleInput,
+									RetryPoliteInput: grown.rows.RetryPoliteInput,
 									RetryAdmitted: admitted,
 									RetryFinish: finishes
 								}

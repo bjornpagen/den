@@ -3,9 +3,11 @@ import { Array as Arr, Cause, Duration, Effect, Exit, Option } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Ladder, Resource } from "#algebra/kinds.ts"
 import { censusPeriodSeconds } from "#algebra/kinds.ts"
+import { Later } from "#algebra/later.ts"
 import { eligible, isOpen, lapsedAttempt, opensAt, standing } from "#runtime/eligible.ts"
 import {
 	atOnce,
+	type Delay,
 	delayOf,
 	finishStep,
 	type Instant,
@@ -188,6 +190,7 @@ export type Wait =
 	| "precondition"
 	| "unready"
 	| "transient"
+	| "later"
 	| "unread"
 
 /**
@@ -339,7 +342,10 @@ export interface StepPort<I, Rows, O, E, W> {
 	}) => Effect.Effect<WriteOutcome<unknown>, Settled>
 }
 
-/** What a runner runs: a step kind's body, or a finish's over its scope's input and its children's endings. */
+/**
+ * What a runner runs: a step kind's body, or a finish's over its scope's input and its children's endings, which fails
+ * with its typed error or with `Later`, its source's named delay.
+ */
 export interface Runnable<I, Rows, O, E, W, R> {
 	readonly name: string
 	readonly uses: ReadonlyArray<Resource>
@@ -347,8 +353,11 @@ export interface Runnable<I, Rows, O, E, W, R> {
 	readonly body: (
 		input: I,
 		rows: Rows
-	) => Effect.Effect<{ readonly output: O; readonly writes: W }, E, R>
+	) => Effect.Effect<{ readonly output: O; readonly writes: W }, E | Later, R>
 }
+
+/** A wait for a write still running at its turn's deadline: due again at once. */
+const stillRunning: Ran = { kind: "waited", why: "transient", after: atOnce }
 
 /**
  * A kind's runner: its input, its declared read in one read-only call, its body under the turn's deadline from the
@@ -386,16 +395,19 @@ export const runnerOf = <I, Rows, O, E, W, R>(
 			Effect.timeoutOption(runnable.body(read, rows), delayTo(at, turn.deadline))
 		)
 		if (Exit.isFailure(exit)) {
-			const failure = Option.getOrUndefined(Exit.findErrorOption(exit))
-			if (failure === undefined) {
+			const typed = Exit.findErrorOption(exit)
+			if (Option.isNone(typed)) {
 				return { kind: "spent", detail: Cause.pretty(exit.cause) } satisfies Ran
+			}
+			const failure = typed.value
+			if (failure instanceof Later) {
+				return { kind: "waited", why: "later", after: failure.after } satisfies Ran
 			}
 			return yield* Effect.match(
 				written(port.fail({ turn, input: read, rows, error: failure }), clock, turn.deadline),
 				{
 					onFailure: (error): Ran => ({ kind: "error", error }),
-					onSuccess: (outcome): Ran =>
-						Option.isSome(outcome) ? { kind: "failed" } : { kind: "waited" }
+					onSuccess: (outcome): Ran => (Option.isSome(outcome) ? { kind: "failed" } : stillRunning)
 				}
 			)
 		}
@@ -408,9 +420,7 @@ export const runnerOf = <I, Rows, O, E, W, R>(
 			{
 				onFailure: (error): Ran => ({ kind: "error", error }),
 				onSuccess: (outcome): Ran =>
-					Option.isSome(outcome)
-						? { kind: "committed", committed: outcome.value }
-						: { kind: "waited" }
+					Option.isSome(outcome) ? { kind: "committed", committed: outcome.value } : stillRunning
 			}
 		)
 	})
@@ -548,18 +558,20 @@ const settled = <R>(
 	}).pipe(Effect.orElseSucceed((): ReadonlyArray<Onward> => []))
 
 /**
- * How a claimed attempt ended without a result: `spent`, its attempt spent; `waited`, a wait that spends nothing; or
- * `fenced`, a call met the deployment's fault, which spends nothing either.
+ * How a claimed attempt ended without a result: `spent`, its attempt spent; `waited`, a wait that spends nothing, due
+ * again `after` the write that records it, for a write still running or a source's named delay; or `fenced`, a call met
+ * the deployment's fault, which spends nothing either.
  */
 type Unfinished =
 	| { readonly kind: "spent" }
-	| { readonly kind: "waited" }
+	| { readonly kind: "waited"; readonly why: "transient" | "later"; readonly after: Delay }
 	| { readonly kind: "fenced"; readonly fault: Fault }
 
 /**
  * An attempt that ended without a result, recorded at a reading of the database's instant: a spent one's retry due a
- * rung later, or the step failed once its ladder is spent; a wait recorded as a retry that spent nothing, due at once,
- * whose next attempt it rings at once; a fenced one recorded as fenced, where its own login still can, so it spends
+ * rung later, or the step failed once its ladder is spent; a wait recorded as a retry that spent nothing, due its delay
+ * after the write (at once for a write still running, the source's own for a `Later`), whose next attempt it rings
+ * then; a fenced one recorded as fenced, where its own login still can, so it spends
  * nothing, no lapse of its claim counts it spent, and it waits on the deployment: it rings nothing, and the census rings
  * its step only once the commits' login is let in again, so no body runs while the deployment stays broken and the
  * step never fails of it.
@@ -606,11 +618,16 @@ const ended = <R>(
 						step: turn.step,
 						root: turn.root,
 						attempt: turn.attempt,
-						delay: atOnce,
+						delay: how.after,
 						spent: false
 					}),
 					wake,
-					{ kind: "waiting", wake: next, why: "transient", until: Option.some(at) }
+					{
+						kind: "waiting",
+						wake: next,
+						why: how.why,
+						until: Option.some(instantOf(Number(at) + Number(how.after)))
+					}
 				)
 			case "fenced":
 				return yield* recorded(
@@ -649,7 +666,7 @@ const endingOf = <R>(
 		case "failed":
 			return Effect.succeed({ kind: "failed", wake, why: "error" })
 		case "waited":
-			return ended(ledger, runner, turn, spentSoFar, { kind: "waited" }, wake)
+			return ended(ledger, runner, turn, spentSoFar, ran, wake)
 		case "spent":
 			return Effect.andThen(
 				Effect.annotateCurrentSpan("den.spent", ran.detail),

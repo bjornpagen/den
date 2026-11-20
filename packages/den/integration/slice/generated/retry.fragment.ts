@@ -17,10 +17,16 @@ import {
 	select
 } from "@bjornpagen/grizzle"
 
-export const RetryKind = closed.unordered("RetryKind", ["Steadfast", "Brittle", "LaddersFinish"])
-export const RetryRootKind = closed.unordered("RetryRootKind", ["Ladders"])
+export const RetryKind = closed.unordered("RetryKind", [
+	"Steadfast",
+	"Brittle",
+	"Polite",
+	"LaddersFinish",
+	"ThrottledFinish"
+])
+export const RetryRootKind = closed.unordered("RetryRootKind", ["Ladders", "Throttled"])
 export const RetryOutcome = closed.unordered("RetryOutcome", ["done", "failed"])
-export const RetryPausable = closed.unordered("RetryPausable", ["Ladders"])
+export const RetryPausable = closed.unordered("RetryPausable", ["Ladders", "Throttled"])
 
 export const RetryScope = relation("RetryScope", { scope: DenScope, root: DenScope }, [
 	"scope",
@@ -114,9 +120,19 @@ export const RetryBrittleInput = relation(
 	{ step: DenStep, key: Text, root: DenScope },
 	["step", "root"]
 )
+export const RetryPoliteInput = relation(
+	"RetryPoliteInput",
+	{ step: DenStep, key: Text, root: DenScope },
+	["step", "root"]
+)
 export const RetryLaddersInput = relation(
 	"RetryLaddersInput",
 	{ scope: DenScope, steadfast: Text, brittle: Text, root: DenScope },
+	["scope", "root"]
+)
+export const RetryThrottledInput = relation(
+	"RetryThrottledInput",
+	{ scope: DenScope, key: Text, root: DenScope },
 	["scope", "root"]
 )
 export const RetrySteadfastOutput = relation(
@@ -129,8 +145,18 @@ export const RetryBrittleOutput = relation(
 	{ step: DenStep, key: Text, root: DenScope },
 	["step", "root"]
 )
+export const RetryPoliteOutput = relation(
+	"RetryPoliteOutput",
+	{ step: DenStep, key: Text, root: DenScope },
+	["step", "root"]
+)
 export const RetryLaddersFinishOutput = relation(
 	"RetryLaddersFinishOutput",
+	{ step: DenStep, root: DenScope },
+	["step", "root"]
+)
+export const RetryThrottledFinishOutput = relation(
+	"RetryThrottledFinishOutput",
 	{ step: DenStep, root: DenScope },
 	["step", "root"]
 )
@@ -171,10 +197,14 @@ export const retryGraph = fragment(
 		RetryExhausted,
 		RetrySteadfastInput,
 		RetryBrittleInput,
+		RetryPoliteInput,
 		RetryLaddersInput,
+		RetryThrottledInput,
 		RetrySteadfastOutput,
 		RetryBrittleOutput,
-		RetryLaddersFinishOutput
+		RetryPoliteOutput,
+		RetryLaddersFinishOutput,
+		RetryThrottledFinishOutput
 	],
 	[
 		contained(on(RetryAdmitted, "scope", "root"), on(RetryScope, "scope", "root")),
@@ -241,9 +271,24 @@ export const retryGraph = fragment(
 			)
 		),
 		contained(
+			on(RetryPoliteInput, "step", "root"),
+			on(
+				select(RetryStep, (row) => row.eq(row.kind, "Polite")),
+				"step",
+				"root"
+			)
+		),
+		contained(
 			on(RetryLaddersInput, "scope"),
 			on(
 				select(RetryRoot, (row) => row.eq(row.kind, "Ladders")),
+				"scope"
+			)
+		),
+		contained(
+			on(RetryThrottledInput, "scope"),
+			on(
+				select(RetryRoot, (row) => row.eq(row.kind, "Throttled")),
 				"scope"
 			)
 		),
@@ -251,7 +296,10 @@ export const retryGraph = fragment(
 		contained(on(RetrySteadfastOutput, "step", "root"), on(RetryDone, "step", "root")),
 		contained(on(RetryBrittleOutput, "step", "root"), on(RetryBrittleInput, "step", "root")),
 		contained(on(RetryBrittleOutput, "step", "root"), on(RetryDone, "step", "root")),
+		contained(on(RetryPoliteOutput, "step", "root"), on(RetryPoliteInput, "step", "root")),
+		contained(on(RetryPoliteOutput, "step", "root"), on(RetryDone, "step", "root")),
 		contained(on(RetryLaddersFinishOutput, "step", "root"), on(RetryDone, "step", "root")),
+		contained(on(RetryThrottledFinishOutput, "step", "root"), on(RetryDone, "step", "root")),
 		retirable(RetryRoot, [
 			on(RetryScope, "root"),
 			on(RetryAdmitted, "root"),
@@ -271,10 +319,14 @@ export const retryGraph = fragment(
 			on(RetryExhausted, "root"),
 			on(RetrySteadfastInput, "root"),
 			on(RetryBrittleInput, "root"),
+			on(RetryPoliteInput, "root"),
 			on(RetryLaddersInput, "root"),
+			on(RetryThrottledInput, "root"),
 			on(RetrySteadfastOutput, "root"),
 			on(RetryBrittleOutput, "root"),
-			on(RetryLaddersFinishOutput, "root")
+			on(RetryPoliteOutput, "root"),
+			on(RetryLaddersFinishOutput, "root"),
+			on(RetryThrottledFinishOutput, "root")
 		])
 	]
 )
@@ -295,5 +347,7 @@ export const retryWriter = [
 	"RetryHeld",
 	"RetrySteadfastOutput",
 	"RetryBrittleOutput",
-	"RetryLaddersFinishOutput"
+	"RetryPoliteOutput",
+	"RetryLaddersFinishOutput",
+	"RetryThrottledFinishOutput"
 ] as const

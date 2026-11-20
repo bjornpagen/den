@@ -23,6 +23,7 @@ import {
 	writes,
 	writesNothing
 } from "@bjornpagen/den/algebra/kinds"
+import { laterOf } from "@bjornpagen/den/algebra/later"
 import { Array as Arr, Context, Effect, Option, Order, Schema } from "effect"
 import {
 	Assigned,
@@ -390,10 +391,17 @@ const Gold = root("Gold", {
 
 export const sync = flow("Sync", { writes: loader, kinds: [Copy, SyncRun, Build, Gold], edges: [] })
 
-/** The faults the retry suite plants: how many more times each key's body dies before it succeeds. */
+/**
+ * The faults the retry suites plant: how many more times each key's body dies before it succeeds, and the responses of
+ * a source that refuses each key's calls for now, each naming when to call again in its headers, one a call while they
+ * last.
+ */
 export class Faults extends Context.Service<
 	Faults,
-	{ readonly dies: (key: string) => Effect.Effect<boolean> }
+	{
+		readonly dies: (key: string) => Effect.Effect<boolean>
+		readonly refuses: (key: string) => Effect.Effect<Option.Option<Headers>>
+	}
 >()("@bjornpagen/den/integration/slice/flows/Faults") {}
 
 /** A step that dies while its key's planted faults last, then succeeds. */
@@ -462,9 +470,64 @@ const Ladders = root("Ladders", {
 	}
 })
 
+/**
+ * A step whose source refuses its calls for now while its key's planted refusals last, each response naming when to
+ * call again, and then answers: its body parses the delay the source named at the boundary and fails with it, `Later`.
+ * Its ladder allows one attempt, so a refusal that spent an attempt would fail it.
+ */
+const Polite = step(
+	"Polite",
+	{
+		input: Attempted,
+		output: Attempted,
+		error: Schema.Never,
+		reads: {},
+		uses: [],
+		retry: attempts(1),
+		due: atSpawn,
+		writes: writesNothing
+	},
+	(input) =>
+		Effect.flatMap(Faults, (faults) => faults.refuses(input.key)).pipe(
+			Effect.flatMap((refused) =>
+				Option.match(refused, {
+					onNone: () =>
+						Effect.succeed({
+							output: { key: input.key },
+							writes: { insert: {}, put: {}, delete: {} }
+						}),
+					onSome: (headers) =>
+						Option.match(laterOf(headers), {
+							onNone: () => Effect.die(`a planted refusal of ${input.key} names no delay`),
+							onSome: (later) => Effect.fail(later)
+						})
+				})
+			)
+		)
+)
+
+/** A run of the polite step, whose finish reads how it ended. */
+const Throttled = root("Throttled", {
+	trigger: operator,
+	input: Attempted,
+	children: [Polite],
+	start: (input) => [Polite.of(input)],
+	exclusive: shared,
+	window: always,
+	precondition: unconditional,
+	finish: {
+		reads: [Polite],
+		output: Finished,
+		error: Schema.Never,
+		retry: attempts(3),
+		writes: writesNothing,
+		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
+	}
+})
+
 export const retry = flow("Retry", {
 	writes: loader,
-	kinds: [Steadfast, Brittle, Ladders],
+	kinds: [Steadfast, Brittle, Ladders, Polite, Throttled],
 	edges: []
 })
 

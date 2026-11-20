@@ -39,7 +39,7 @@ import { retryLedger } from "#integration/slice/generated/retry.binding.ts"
 import { reviewLedger } from "#integration/slice/generated/review.binding.ts"
 import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
 import type { AppLogin, Worker } from "#integration/slice/logins.ts"
-import initMigration from "#integration/slice/migrations/slice/20261120072610_init/meta.json" with { type: "json" }
+import initMigration from "#integration/slice/migrations/slice/20261120074422_init/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -69,7 +69,7 @@ const grizzleBin = `${import.meta.dirname}/../../node_modules/.bin/grizzle`
  * record lacks, or lacks one it holds (committedFolders).
  */
 const committed = Object.freeze({
-	"20261120072610_init": initMigration
+	"20261120074422_init": initMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
@@ -372,14 +372,16 @@ const loginsLayer = (installed: Installed) => {
 }
 
 /**
- * The faults the retry suites plant, as a service: each key's remaining deaths, counted down by its bodies, and how many
- * times each key's body ran, since a body asks once a run whether it dies.
+ * The faults the retry suites plant, as a service: each key's remaining deaths, counted down by its bodies, how many
+ * times each key's body ran, since a body asks once a run whether it dies, and each key's remaining refusals, the
+ * responses its source answers in order, taken one a call.
  */
 export class Planted extends Context.Service<
 	Planted,
 	{
 		readonly faults: Ref.Ref<HashMap.HashMap<string, number>>
 		readonly runs: Ref.Ref<HashMap.HashMap<string, number>>
+		readonly refusals: Ref.Ref<HashMap.HashMap<string, ReadonlyArray<Headers>>>
 	}
 >()("@bjornpagen/den/integration/support/slice/Planted") {}
 
@@ -387,10 +389,11 @@ const faultsLayer = Layer.effectContext(
 	Effect.map(
 		Effect.all([
 			Ref.make(HashMap.empty<string, number>()),
-			Ref.make(HashMap.empty<string, number>())
+			Ref.make(HashMap.empty<string, number>()),
+			Ref.make(HashMap.empty<string, ReadonlyArray<Headers>>())
 		]),
-		([faults, runs]) =>
-			Context.make(Planted, { faults, runs }).pipe(
+		([faults, runs, refusals]) =>
+			Context.make(Planted, { faults, runs, refusals }).pipe(
 				Context.add(Faults, {
 					dies: (key) =>
 						Effect.andThen(
@@ -401,7 +404,12 @@ const faultsLayer = Layer.effectContext(
 								const left = Option.getOrElse(HashMap.get(map, key), () => 0)
 								return left > 0 ? [true, HashMap.set(map, key, left - 1)] : [false, map]
 							})
-						)
+						),
+					refuses: (key) =>
+						Ref.modify(refusals, (map) => {
+							const left = Option.getOrElse(HashMap.get(map, key), () => [])
+							return [Arr.head(left), HashMap.set(map, key, Arr.drop(left, 1))]
+						})
 				})
 			)
 	)

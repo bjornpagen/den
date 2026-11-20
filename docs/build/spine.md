@@ -156,8 +156,11 @@ output into `select(PResult, outcome = done)`) certifies.
    `PRefusal(step, law id)`; `stale` and `credentialRefused` are `fenced` (the attempt recorded in `PFenced` where it
    can be, waiting on the deployment, which the census asks after before it rings the step; acknowledge and exit);
    `commitUnknown` reads `PHeld` back and is
-   `done` when it holds this attempt. A body's typed error is `failed` with `PKError`; a defect, an interruption or a
-   body past its deadline spends the attempt. Past a lane's ceiling of attempts, the claim is made and `PExhausted`
+   `done` when it holds this attempt. A body's typed error is `failed` with `PKError`; a body that fails with `Later`
+   (`algebra/later.ts`: its source refused the call for now and named when to call again, parsed at the boundary from
+   its `Retry-After`, delay-seconds or an IMF-fixdate measured from the response's `Date`) waits: its retry spends
+   nothing and is due that delay past the write's own reading, so a rate limit is the source's wait and never a rung
+   of the ladder (`later.test.ts`); a defect, an interruption or a body past its deadline spends the attempt. Past a lane's ceiling of attempts, the claim is made and `PExhausted`
    recorded: `failed`.
 6. **Defect values.** Not stored: a defect only spends an attempt, and the ceiling turns endless defects into `failed`.
 7. **Which role runs a step's writes.** The flow's worker role (`<flow>_worker`) writes the app relations its steps and

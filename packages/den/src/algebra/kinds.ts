@@ -9,6 +9,7 @@ import {
 	Record as Rec,
 	type Schema
 } from "effect"
+import type { Later } from "#algebra/later.ts"
 
 /**
  * How often the census can tick: Vercel Cron's minimum interval on the Pro and Enterprise plans. A window shorter than
@@ -401,12 +402,13 @@ const spawnOf =
 
 /**
  * A step's body: from its input and what its declared reads found, by name, to its output and writes, never holding
- * grizzle's Db, which den alone opens.
+ * grizzle's Db, which den alone opens. It fails with its step's typed error, or with `Later` where its source refused
+ * the call for now and named when to call again.
  */
 export type Body<I, F, O, E, W extends WritesDeclaration, R> = (
 	input: I,
 	found: F
-) => Effect.Effect<Done<O, W>, E, R>
+) => Effect.Effect<Done<O, W>, E | Later, R>
 
 /** What a step kind declares besides its body. */
 export interface StepShape<
@@ -528,7 +530,7 @@ export interface Finish<
 	readonly body: (
 		input: I,
 		endings: EndingsOf<Ended>
-	) => Effect.Effect<Done<OS["Type"], W>, ES["Type"], R>
+	) => Effect.Effect<Done<OS["Type"], W>, ES["Type"] | Later, R>
 }
 
 /** Any finish, as a flow reads it. */

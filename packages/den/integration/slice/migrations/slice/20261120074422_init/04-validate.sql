@@ -1188,7 +1188,7 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_fan_square_input_zpxf6iizzy"("pg_catalog"."text"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__judge_retry_brittle_input_e4oxym4quk"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__judge_retry_brittle_input_xc2lfk27yf"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 DECLARE
@@ -1201,6 +1201,14 @@ BEGIN
     ;
     IF EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_brittle_input_nl76wgehgl" AS "r1") THEN
       "__rowed" := "__rowed" || '__delta_news_retry_brittle_input_nl76wgehgl'::"pg_catalog"."text";
+    END IF;
+  END IF;
+  IF "__written" @> '{"__delta_news_retry_polite_input_krbwnqd5lt"}'::"pg_catalog"."text"[] THEN
+    DELETE FROM "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" AS "r1"
+    WHERE "r1"."ctid" IN (SELECT "r3"."c1" FROM (SELECT "r2"."ctid" AS "c1", "pg_catalog"."sum"("r2"."__count") OVER (PARTITION BY "r2"."step", "r2"."root") AS "c2", "pg_catalog"."row_number"() OVER (PARTITION BY "r2"."step", "r2"."root" ORDER BY "r2"."__count" DESC) AS "c3" FROM "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" AS "r2") AS "r3"("c1", "c2", "c3") WHERE "r3"."c2" <= 0::bigint OR "r3"."c3" > 1::bigint)
+    ;
+    IF EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" AS "r1") THEN
+      "__rowed" := "__rowed" || '__delta_news_retry_polite_input_krbwnqd5lt'::"pg_catalog"."text";
     END IF;
   END IF;
   IF "__written" @> '{"__delta_news_retry_steadfast_input_4le3o7ctyk"}'::"pg_catalog"."text"[] THEN
@@ -1225,6 +1233,16 @@ BEGIN
     END IF;
   END IF;
   IF "__rowed" && '{"__delta_olds_retry_step_6cohs5hdw7"}'::"pg_catalog"."text"[] THEN
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" ("key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "step" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "__count" smallint) ON COMMIT DELETE ROWS;
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+      RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+        USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+              SCHEMA = 'pg_temp'::"pg_catalog"."text",
+              TABLE = '__delta_news_retry_polite_input_krbwnqd5lt'::"pg_catalog"."text";
+    END IF;
+  END IF;
+  IF "__rowed" && '{"__delta_olds_retry_step_6cohs5hdw7"}'::"pg_catalog"."text"[] THEN
     IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_steadfast_input_4le3o7ctyk"'::"pg_catalog"."text")) THEN
       CREATE TEMPORARY TABLE "pg_temp"."__delta_news_retry_steadfast_input_4le3o7ctyk" ("key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "step" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "__count" smallint) ON COMMIT DELETE ROWS;
     ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_steadfast_input_4le3o7ctyk"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
@@ -1234,7 +1252,7 @@ BEGIN
               TABLE = '__delta_news_retry_steadfast_input_4le3o7ctyk'::"pg_catalog"."text";
     END IF;
   END IF;
-  IF "__rowed" && '{"__delta_news_retry_brittle_input_nl76wgehgl","__delta_news_retry_steadfast_input_4le3o7ctyk"}'::"pg_catalog"."text"[] THEN
+  IF "__rowed" && '{"__delta_news_retry_brittle_input_nl76wgehgl","__delta_news_retry_polite_input_krbwnqd5lt","__delta_news_retry_steadfast_input_4le3o7ctyk"}'::"pg_catalog"."text"[] THEN
     IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_step_6cohs5hdw7"'::"pg_catalog"."text")) THEN
       CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_retry_step_6cohs5hdw7" ("due" bigint, "kind" smallint, "root" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "scope" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "step" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8") ON COMMIT DELETE ROWS;
     ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_step_6cohs5hdw7"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
@@ -1254,8 +1272,18 @@ BEGIN
               TABLE = 'retry_brittle_input'::"pg_catalog"."text";
     END IF;
   END IF;
+  IF "__rowed" && '{"__delta_news_retry_polite_input_krbwnqd5lt","__delta_olds_retry_step_6cohs5hdw7"}'::"pg_catalog"."text"[] THEN
+    PERFORM 1 FROM (SELECT "r24"."c47", "r24"."c48" FROM (SELECT "r23"."c45", "r23"."c46" FROM (SELECT "r11"."c20", "r11"."c21", "r22"."c41", "r22"."c42" FROM (SELECT "r10"."c18", "r10"."c19" FROM ((SELECT "r4"."c5"::"pg_catalog"."text", "r4"."c6"::"pg_catalog"."text" FROM (SELECT "r3"."c3", "r3"."c4" FROM (SELECT "r2"."c2", "r2"."c1" FROM (SELECT "r1"."root", "r1"."step" FROM "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") UNION SELECT "r9"."c16"::"pg_catalog"."text", "r9"."c17"::"pg_catalog"."text" FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."step" FROM "pg_temp"."__delta_olds_retry_step_6cohs5hdw7" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 2::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17"))) AS "r10"("c18", "c19") OFFSET 0) AS "r11"("c20", "c21"), LATERAL (SELECT "r21"."c39", "r21"."c40" FROM (SELECT "r15"."c26", "r15"."c27" FROM (SELECT "r14"."c24", "r14"."c25" FROM (SELECT "r11"."c20", "r11"."c21" FROM (SELECT "r12"."root", "r12"."step" FROM "slice"."retry_polite_input" AS "r12") AS "r13"("c22", "c23") WHERE "r13"."c22" = "r11"."c21" AND "r13"."c23" = "r11"."c20") AS "r14"("c24", "c25")) AS "r15"("c26", "c27") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c34", "r19"."c35" FROM (SELECT "r18"."c31", "r18"."c32", "r18"."c33" FROM (SELECT "r17"."c30", "r17"."c29", "r17"."c28" FROM (SELECT "r16"."kind", "r16"."root", "r16"."step" FROM "slice"."retry_step" AS "r16") AS "r17"("c28", "c29", "c30")) AS "r18"("c31", "c32", "c33") WHERE "r18"."c33" = 2::smallint) AS "r19"("c34", "c35", "c36")) AS "r20"("c37", "c38") WHERE "r20"."c37" = "r15"."c26" AND "r20"."c38" = "r15"."c27")) AS "r21"("c39", "c40") OFFSET 0) AS "r22"("c41", "c42")) AS "r23"("c43", "c44", "c45", "c46")) AS "r24"("c47", "c48")) AS "found";
+    IF FOUND THEN
+      RAISE EXCEPTION 'a write breaks a rule over a query'
+        USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text",
+              CONSTRAINT = '__rule_retry_polite_input_in_retry_step_m4pqzwpy52'::"pg_catalog"."text",
+              SCHEMA = 'slice'::"pg_catalog"."text",
+              TABLE = 'retry_polite_input'::"pg_catalog"."text";
+    END IF;
+  END IF;
   IF "__rowed" && '{"__delta_news_retry_steadfast_input_4le3o7ctyk","__delta_olds_retry_step_6cohs5hdw7"}'::"pg_catalog"."text"[] THEN
-    PERFORM 1 FROM (SELECT "r24"."c47", "r24"."c48" FROM (SELECT "r23"."c45", "r23"."c46" FROM (SELECT "r11"."c20", "r11"."c21", "r22"."c41", "r22"."c42" FROM (SELECT "r10"."c18", "r10"."c19" FROM ((SELECT "r4"."c5"::"pg_catalog"."text", "r4"."c6"::"pg_catalog"."text" FROM (SELECT "r3"."c3", "r3"."c4" FROM (SELECT "r2"."c2", "r2"."c1" FROM (SELECT "r1"."root", "r1"."step" FROM "pg_temp"."__delta_news_retry_steadfast_input_4le3o7ctyk" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") UNION SELECT "r9"."c16"::"pg_catalog"."text", "r9"."c17"::"pg_catalog"."text" FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."step" FROM "pg_temp"."__delta_olds_retry_step_6cohs5hdw7" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 2::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17"))) AS "r10"("c18", "c19") OFFSET 0) AS "r11"("c20", "c21"), LATERAL (SELECT "r21"."c39", "r21"."c40" FROM (SELECT "r15"."c26", "r15"."c27" FROM (SELECT "r14"."c24", "r14"."c25" FROM (SELECT "r11"."c20", "r11"."c21" FROM (SELECT "r12"."root", "r12"."step" FROM "slice"."retry_steadfast_input" AS "r12") AS "r13"("c22", "c23") WHERE "r13"."c22" = "r11"."c21" AND "r13"."c23" = "r11"."c20") AS "r14"("c24", "c25")) AS "r15"("c26", "c27") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c34", "r19"."c35" FROM (SELECT "r18"."c31", "r18"."c32", "r18"."c33" FROM (SELECT "r17"."c30", "r17"."c29", "r17"."c28" FROM (SELECT "r16"."kind", "r16"."root", "r16"."step" FROM "slice"."retry_step" AS "r16") AS "r17"("c28", "c29", "c30")) AS "r18"("c31", "c32", "c33") WHERE "r18"."c33" = 2::smallint) AS "r19"("c34", "c35", "c36")) AS "r20"("c37", "c38") WHERE "r20"."c37" = "r15"."c26" AND "r20"."c38" = "r15"."c27")) AS "r21"("c39", "c40") OFFSET 0) AS "r22"("c41", "c42")) AS "r23"("c43", "c44", "c45", "c46")) AS "r24"("c47", "c48")) AS "found";
+    PERFORM 1 FROM (SELECT "r24"."c47", "r24"."c48" FROM (SELECT "r23"."c45", "r23"."c46" FROM (SELECT "r11"."c20", "r11"."c21", "r22"."c41", "r22"."c42" FROM (SELECT "r10"."c18", "r10"."c19" FROM ((SELECT "r4"."c5"::"pg_catalog"."text", "r4"."c6"::"pg_catalog"."text" FROM (SELECT "r3"."c3", "r3"."c4" FROM (SELECT "r2"."c2", "r2"."c1" FROM (SELECT "r1"."root", "r1"."step" FROM "pg_temp"."__delta_news_retry_steadfast_input_4le3o7ctyk" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") UNION SELECT "r9"."c16"::"pg_catalog"."text", "r9"."c17"::"pg_catalog"."text" FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."step" FROM "pg_temp"."__delta_olds_retry_step_6cohs5hdw7" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 3::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17"))) AS "r10"("c18", "c19") OFFSET 0) AS "r11"("c20", "c21"), LATERAL (SELECT "r21"."c39", "r21"."c40" FROM (SELECT "r15"."c26", "r15"."c27" FROM (SELECT "r14"."c24", "r14"."c25" FROM (SELECT "r11"."c20", "r11"."c21" FROM (SELECT "r12"."root", "r12"."step" FROM "slice"."retry_steadfast_input" AS "r12") AS "r13"("c22", "c23") WHERE "r13"."c22" = "r11"."c21" AND "r13"."c23" = "r11"."c20") AS "r14"("c24", "c25")) AS "r15"("c26", "c27") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c34", "r19"."c35" FROM (SELECT "r18"."c31", "r18"."c32", "r18"."c33" FROM (SELECT "r17"."c30", "r17"."c29", "r17"."c28" FROM (SELECT "r16"."kind", "r16"."root", "r16"."step" FROM "slice"."retry_step" AS "r16") AS "r17"("c28", "c29", "c30")) AS "r18"("c31", "c32", "c33") WHERE "r18"."c33" = 3::smallint) AS "r19"("c34", "c35", "c36")) AS "r20"("c37", "c38") WHERE "r20"."c37" = "r15"."c26" AND "r20"."c38" = "r15"."c27")) AS "r21"("c39", "c40") OFFSET 0) AS "r22"("c41", "c42")) AS "r23"("c43", "c44", "c45", "c46")) AS "r24"("c47", "c48")) AS "found";
     IF FOUND THEN
       RAISE EXCEPTION 'a write breaks a rule over a query'
         USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text",
@@ -1267,7 +1295,7 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__judge_retry_brittle_input_e4oxym4quk"("pg_catalog"."text"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_retry_brittle_input_xc2lfk27yf"("pg_catalog"."text"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge_retry_done_exdy4mgpv7"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -1350,7 +1378,7 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_retry_done_exdy4mgpv7"("pg_catalog"."text"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__judge_retry_ladders_input_rvyvp655kl"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__judge_retry_ladders_input_5kxhnl4kwe"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 DECLARE
@@ -1363,6 +1391,14 @@ BEGIN
     ;
     IF EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_ladders_input_wllyl2jqoh" AS "r1") THEN
       "__rowed" := "__rowed" || '__delta_news_retry_ladders_input_wllyl2jqoh'::"pg_catalog"."text";
+    END IF;
+  END IF;
+  IF "__written" @> '{"__delta_news_retry_throttled_input_txjaharq2k"}'::"pg_catalog"."text"[] THEN
+    DELETE FROM "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" AS "r1"
+    WHERE "r1"."ctid" IN (SELECT "r3"."c1" FROM (SELECT "r2"."ctid" AS "c1", "pg_catalog"."sum"("r2"."__count") OVER (PARTITION BY "r2"."scope", "r2"."root") AS "c2", "pg_catalog"."row_number"() OVER (PARTITION BY "r2"."scope", "r2"."root" ORDER BY "r2"."__count" DESC) AS "c3" FROM "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" AS "r2") AS "r3"("c1", "c2", "c3") WHERE "r3"."c2" <= 0::bigint OR "r3"."c3" > 1::bigint)
+    ;
+    IF EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" AS "r1") THEN
+      "__rowed" := "__rowed" || '__delta_news_retry_throttled_input_txjaharq2k'::"pg_catalog"."text";
     END IF;
   END IF;
   IF "__written" @> '{"__delta_olds_retry_root_b5qenyw22g"}'::"pg_catalog"."text"[] THEN
@@ -1378,7 +1414,17 @@ BEGIN
               TABLE = '__delta_news_retry_ladders_input_wllyl2jqoh'::"pg_catalog"."text";
     END IF;
   END IF;
-  IF "__rowed" && '{"__delta_news_retry_ladders_input_wllyl2jqoh"}'::"pg_catalog"."text"[] THEN
+  IF "__rowed" && '{"__delta_olds_retry_root_b5qenyw22g"}'::"pg_catalog"."text"[] THEN
+    IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_throttled_input_txjaharq2k"'::"pg_catalog"."text")) THEN
+      CREATE TEMPORARY TABLE "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" ("key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "scope" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "__count" smallint) ON COMMIT DELETE ROWS;
+    ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_throttled_input_txjaharq2k"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+      RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+        USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+              SCHEMA = 'pg_temp'::"pg_catalog"."text",
+              TABLE = '__delta_news_retry_throttled_input_txjaharq2k'::"pg_catalog"."text";
+    END IF;
+  END IF;
+  IF "__rowed" && '{"__delta_news_retry_ladders_input_wllyl2jqoh","__delta_news_retry_throttled_input_txjaharq2k"}'::"pg_catalog"."text"[] THEN
     IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_root_b5qenyw22g"'::"pg_catalog"."text")) THEN
       CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_retry_root_b5qenyw22g" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "retired" boolean, "scope" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8") ON COMMIT DELETE ROWS;
     ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_root_b5qenyw22g"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
@@ -1398,10 +1444,20 @@ BEGIN
               TABLE = 'retry_ladders_input'::"pg_catalog"."text";
     END IF;
   END IF;
+  IF "__rowed" && '{"__delta_news_retry_throttled_input_txjaharq2k","__delta_olds_retry_root_b5qenyw22g"}'::"pg_catalog"."text"[] THEN
+    PERFORM 1 FROM (SELECT "r24"."c28" FROM (SELECT DISTINCT "r23"."c27" FROM (SELECT "r11"."c12", "r22"."c25" FROM (SELECT "r10"."c11" FROM ((SELECT "r4"."c3"::"pg_catalog"."text" FROM (SELECT "r3"."c2" FROM (SELECT "r2"."c1" FROM (SELECT "r1"."scope" FROM "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" AS "r1") AS "r2"("c1")) AS "r3"("c2")) AS "r4"("c3") UNION SELECT "r9"."c10"::"pg_catalog"."text" FROM (SELECT "r8"."c8" FROM (SELECT "r7"."c6", "r7"."c7" FROM (SELECT "r6"."c5", "r6"."c4" FROM (SELECT "r5"."kind", "r5"."scope" FROM "pg_temp"."__delta_olds_retry_root_b5qenyw22g" AS "r5") AS "r6"("c4", "c5")) AS "r7"("c6", "c7") WHERE "r7"."c7" = 1::smallint) AS "r8"("c8", "c9")) AS "r9"("c10"))) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r21"."c24" FROM (SELECT "r15"."c16" FROM (SELECT "r14"."c15" FROM (SELECT "r11"."c12" FROM (SELECT "r12"."root", "r12"."scope" FROM "slice"."retry_throttled_input" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15")) AS "r15"("c16") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r19"."c21" FROM (SELECT "r18"."c19", "r18"."c20" FROM (SELECT "r17"."c18", "r17"."c17" FROM (SELECT "r16"."kind", "r16"."scope" FROM "slice"."retry_root" AS "r16") AS "r17"("c17", "c18")) AS "r18"("c19", "c20") WHERE "r18"."c20" = 1::smallint) AS "r19"("c21", "c22")) AS "r20"("c23") WHERE "r20"."c23" = "r15"."c16")) AS "r21"("c24") OFFSET 0) AS "r22"("c25")) AS "r23"("c26", "c27")) AS "r24"("c28")) AS "found";
+    IF FOUND THEN
+      RAISE EXCEPTION 'a write breaks a rule over a query'
+        USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text",
+              CONSTRAINT = '__rule_retry_throttled_input_in_retry_root_zbcksgvhia'::"pg_catalog"."text",
+              SCHEMA = 'slice'::"pg_catalog"."text",
+              TABLE = 'retry_root'::"pg_catalog"."text";
+    END IF;
+  END IF;
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__judge_retry_ladders_input_rvyvp655kl"("pg_catalog"."text"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_retry_ladders_input_5kxhnl4kwe"("pg_catalog"."text"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge_review_analyze_input_ggjatlxopu"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -1996,14 +2052,14 @@ BEGIN
   IF "__written" && '{"__delta_news_fan_square_input_qbcgxymh4m","__delta_olds_fan_step_eribsfky6x"}'::"pg_catalog"."text"[] THEN
     PERFORM "slice"."__judge_fan_square_input_zpxf6iizzy"("__written");
   END IF;
-  IF "__written" && '{"__delta_news_retry_brittle_input_nl76wgehgl","__delta_news_retry_steadfast_input_4le3o7ctyk","__delta_olds_retry_step_6cohs5hdw7"}'::"pg_catalog"."text"[] THEN
-    PERFORM "slice"."__judge_retry_brittle_input_e4oxym4quk"("__written");
+  IF "__written" && '{"__delta_news_retry_brittle_input_nl76wgehgl","__delta_news_retry_polite_input_krbwnqd5lt","__delta_news_retry_steadfast_input_4le3o7ctyk","__delta_olds_retry_step_6cohs5hdw7"}'::"pg_catalog"."text"[] THEN
+    PERFORM "slice"."__judge_retry_brittle_input_xc2lfk27yf"("__written");
   END IF;
   IF "__written" && '{"__delta_news_retry_done_gl4uribtvf","__delta_news_retry_failed_pqelqrzkgz","__delta_olds_retry_result_rhla2oyczu"}'::"pg_catalog"."text"[] THEN
     PERFORM "slice"."__judge_retry_done_exdy4mgpv7"("__written");
   END IF;
-  IF "__written" && '{"__delta_news_retry_ladders_input_wllyl2jqoh","__delta_olds_retry_root_b5qenyw22g"}'::"pg_catalog"."text"[] THEN
-    PERFORM "slice"."__judge_retry_ladders_input_rvyvp655kl"("__written");
+  IF "__written" && '{"__delta_news_retry_ladders_input_wllyl2jqoh","__delta_news_retry_throttled_input_txjaharq2k","__delta_olds_retry_root_b5qenyw22g"}'::"pg_catalog"."text"[] THEN
+    PERFORM "slice"."__judge_retry_ladders_input_5kxhnl4kwe"("__written");
   END IF;
   IF "__written" && '{"__delta_news_review_analyze_input_ffxr3ab6fk","__delta_news_review_gather_input_pb4lgfgjmy","__delta_news_review_save_input_3aff7dagyh","__delta_olds_review_step_k2qkjecqzc"}'::"pg_catalog"."text"[] THEN
     PERFORM "slice"."__judge_review_analyze_input_ggjatlxopu"("__written");
@@ -5876,6 +5932,98 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_retry_ladders_input_omks52b5nc"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__capture_retry_polite_input_4s6i2erlwp"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF TG_OP = 'INSERT'::"pg_catalog"."text" THEN
+    IF EXISTS (SELECT FROM "news" AS "r4") THEN
+      IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text")) THEN
+        CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT DELETE ROWS;
+        CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"();
+      ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2", "pg_catalog"."pg_trigger" AS "r3" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text" AND "r3"."tgrelid" = "r2"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text")) THEN
+        RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+          USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+                SCHEMA = 'pg_temp'::"pg_catalog"."text",
+                TABLE = '__sentinel_53ts4wdrci'::"pg_catalog"."text";
+      END IF;
+      INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written")
+      SELECT '{}'::"pg_catalog"."text"[] WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1")
+      ;
+      IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt"'::"pg_catalog"."text")) THEN
+        CREATE TEMPORARY TABLE "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" ("key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "step" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "__count" smallint) ON COMMIT DELETE ROWS;
+      ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+        RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+          USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+                SCHEMA = 'pg_temp'::"pg_catalog"."text",
+                TABLE = '__delta_news_retry_polite_input_krbwnqd5lt'::"pg_catalog"."text";
+      END IF;
+      INSERT INTO "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" ("key", "root", "step", "__count")
+      SELECT "r1"."key", "r1"."root", "r1"."step", 1::smallint FROM "news" AS "r1"
+      ;
+      IF EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" AS "r1") THEN
+        UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2"
+        SET "__written" = "r2"."__written" || '__delta_news_retry_polite_input_krbwnqd5lt'::"pg_catalog"."text"
+        WHERE NOT "r2"."__written" @> '{"__delta_news_retry_polite_input_krbwnqd5lt"}'::"pg_catalog"."text"[]
+        ;
+      END IF;
+    END IF;
+  ELSIF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN
+    IF EXISTS (SELECT FROM "news" AS "r4") THEN
+      IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text")) THEN
+        CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT DELETE ROWS;
+        CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"();
+      ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2", "pg_catalog"."pg_trigger" AS "r3" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text" AND "r3"."tgrelid" = "r2"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text")) THEN
+        RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+          USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+                SCHEMA = 'pg_temp'::"pg_catalog"."text",
+                TABLE = '__sentinel_53ts4wdrci'::"pg_catalog"."text";
+      END IF;
+      INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written")
+      SELECT '{}'::"pg_catalog"."text"[] WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1")
+      ;
+      IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt"'::"pg_catalog"."text")) THEN
+        CREATE TEMPORARY TABLE "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" ("key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "step" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "__count" smallint) ON COMMIT DELETE ROWS;
+      ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+        RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+          USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+                SCHEMA = 'pg_temp'::"pg_catalog"."text",
+                TABLE = '__delta_news_retry_polite_input_krbwnqd5lt'::"pg_catalog"."text";
+      END IF;
+      INSERT INTO "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" ("key", "root", "step", "__count")
+      SELECT "r1"."key", "r1"."root", "r1"."step", 1::smallint FROM "news" AS "r1" WHERE NOT EXISTS (SELECT FROM "olds" AS "r2" WHERE "r2"."step" = "r1"."step" AND "r2"."root" = "r1"."root")
+      ;
+      INSERT INTO "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" ("key", "root", "step", "__count")
+      SELECT "r1"."key", "r1"."root", "r1"."step", (-1)::smallint FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."step" = "r1"."step" AND "r2"."root" = "r1"."root") AND EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" AS "r3")
+      ;
+      IF EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" AS "r1") THEN
+        UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2"
+        SET "__written" = "r2"."__written" || '__delta_news_retry_polite_input_krbwnqd5lt'::"pg_catalog"."text"
+        WHERE NOT "r2"."__written" @> '{"__delta_news_retry_polite_input_krbwnqd5lt"}'::"pg_catalog"."text"[]
+        ;
+      END IF;
+    END IF;
+  ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN
+    IF EXISTS (SELECT FROM "olds" AS "r4") THEN
+      IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt"'::"pg_catalog"."text")) THEN
+        IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+          RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+            USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+                  SCHEMA = 'pg_temp'::"pg_catalog"."text",
+                  TABLE = '__delta_news_retry_polite_input_krbwnqd5lt'::"pg_catalog"."text";
+        END IF;
+        INSERT INTO "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" ("key", "root", "step", "__count")
+        SELECT "r1"."key", "r1"."root", "r1"."step", (-1)::smallint FROM "olds" AS "r1" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_polite_input_krbwnqd5lt" AS "r3")
+        ;
+      END IF;
+    END IF;
+  END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_retry_polite_input_4s6i2erlwp"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__capture_retry_result_oof7kiqgid"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -6192,6 +6340,98 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_retry_step_gox3p6ldla"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__capture_retry_throttled_input_yo3mnkz5vy"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF TG_OP = 'INSERT'::"pg_catalog"."text" THEN
+    IF EXISTS (SELECT FROM "news" AS "r4") THEN
+      IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text")) THEN
+        CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT DELETE ROWS;
+        CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"();
+      ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2", "pg_catalog"."pg_trigger" AS "r3" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text" AND "r3"."tgrelid" = "r2"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text")) THEN
+        RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+          USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+                SCHEMA = 'pg_temp'::"pg_catalog"."text",
+                TABLE = '__sentinel_53ts4wdrci'::"pg_catalog"."text";
+      END IF;
+      INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written")
+      SELECT '{}'::"pg_catalog"."text"[] WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1")
+      ;
+      IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_throttled_input_txjaharq2k"'::"pg_catalog"."text")) THEN
+        CREATE TEMPORARY TABLE "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" ("key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "scope" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "__count" smallint) ON COMMIT DELETE ROWS;
+      ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_throttled_input_txjaharq2k"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+        RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+          USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+                SCHEMA = 'pg_temp'::"pg_catalog"."text",
+                TABLE = '__delta_news_retry_throttled_input_txjaharq2k'::"pg_catalog"."text";
+      END IF;
+      INSERT INTO "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" ("key", "root", "scope", "__count")
+      SELECT "r1"."key", "r1"."root", "r1"."scope", 1::smallint FROM "news" AS "r1"
+      ;
+      IF EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" AS "r1") THEN
+        UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2"
+        SET "__written" = "r2"."__written" || '__delta_news_retry_throttled_input_txjaharq2k'::"pg_catalog"."text"
+        WHERE NOT "r2"."__written" @> '{"__delta_news_retry_throttled_input_txjaharq2k"}'::"pg_catalog"."text"[]
+        ;
+      END IF;
+    END IF;
+  ELSIF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN
+    IF EXISTS (SELECT FROM "news" AS "r4") THEN
+      IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text")) THEN
+        CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT DELETE ROWS;
+        CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"();
+      ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2", "pg_catalog"."pg_trigger" AS "r3" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text" AND "r3"."tgrelid" = "r2"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text")) THEN
+        RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+          USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+                SCHEMA = 'pg_temp'::"pg_catalog"."text",
+                TABLE = '__sentinel_53ts4wdrci'::"pg_catalog"."text";
+      END IF;
+      INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written")
+      SELECT '{}'::"pg_catalog"."text"[] WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1")
+      ;
+      IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_throttled_input_txjaharq2k"'::"pg_catalog"."text")) THEN
+        CREATE TEMPORARY TABLE "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" ("key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "scope" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "__count" smallint) ON COMMIT DELETE ROWS;
+      ELSIF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_throttled_input_txjaharq2k"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+        RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+          USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+                SCHEMA = 'pg_temp'::"pg_catalog"."text",
+                TABLE = '__delta_news_retry_throttled_input_txjaharq2k'::"pg_catalog"."text";
+      END IF;
+      INSERT INTO "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" ("key", "root", "scope", "__count")
+      SELECT "r1"."key", "r1"."root", "r1"."scope", 1::smallint FROM "news" AS "r1" WHERE NOT EXISTS (SELECT FROM "olds" AS "r2" WHERE "r2"."scope" = "r1"."scope" AND "r2"."root" = "r1"."root")
+      ;
+      INSERT INTO "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" ("key", "root", "scope", "__count")
+      SELECT "r1"."key", "r1"."root", "r1"."scope", (-1)::smallint FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."scope" = "r1"."scope" AND "r2"."root" = "r1"."root") AND EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" AS "r3")
+      ;
+      IF EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" AS "r1") THEN
+        UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2"
+        SET "__written" = "r2"."__written" || '__delta_news_retry_throttled_input_txjaharq2k'::"pg_catalog"."text"
+        WHERE NOT "r2"."__written" @> '{"__delta_news_retry_throttled_input_txjaharq2k"}'::"pg_catalog"."text"[]
+        ;
+      END IF;
+    END IF;
+  ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN
+    IF EXISTS (SELECT FROM "olds" AS "r4") THEN
+      IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_throttled_input_txjaharq2k"'::"pg_catalog"."text")) THEN
+        IF NOT EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r2" WHERE "r2"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_throttled_input_txjaharq2k"'::"pg_catalog"."text") AND "pg_catalog"."pg_get_userbyid"("r2"."relowner") = CURRENT_USER AND "r2"."relpersistence" = 't'::"pg_catalog"."text") THEN
+          RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own'
+            USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text",
+                  SCHEMA = 'pg_temp'::"pg_catalog"."text",
+                  TABLE = '__delta_news_retry_throttled_input_txjaharq2k'::"pg_catalog"."text";
+        END IF;
+        INSERT INTO "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" ("key", "root", "scope", "__count")
+        SELECT "r1"."key", "r1"."root", "r1"."scope", (-1)::smallint FROM "olds" AS "r1" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_throttled_input_txjaharq2k" AS "r3")
+        ;
+      END IF;
+    END IF;
+  END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_retry_throttled_input_yo3mnkz5vy"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_review_analyze_input_fkzkzvqpo6"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -8440,6 +8680,21 @@ CREATE TRIGGER "__capture_update"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_ladders_input_omks52b5nc"();
 
 CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice"."retry_polite_input"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_polite_input_4s6i2erlwp"();
+
+CREATE TRIGGER "__capture_insert"
+  AFTER INSERT ON "slice"."retry_polite_input"
+  REFERENCING NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_polite_input_4s6i2erlwp"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice"."retry_polite_input"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_polite_input_4s6i2erlwp"();
+
+CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice"."retry_result"
   REFERENCING OLD TABLE AS "olds"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_result_oof7kiqgid"();
@@ -8483,6 +8738,21 @@ CREATE TRIGGER "__capture_update"
   AFTER UPDATE ON "slice"."retry_step"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_step_gox3p6ldla"();
+
+CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice"."retry_throttled_input"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_throttled_input_yo3mnkz5vy"();
+
+CREATE TRIGGER "__capture_insert"
+  AFTER INSERT ON "slice"."retry_throttled_input"
+  REFERENCING NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_throttled_input_yo3mnkz5vy"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice"."retry_throttled_input"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_throttled_input_yo3mnkz5vy"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice"."review_analyze_input"
@@ -9121,14 +9391,38 @@ BEGIN
 END
 $$;
 
+-- The full violation query of law __retry_polite_input_in_retry_step_vsvknlv3vi.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r10"."c18", "r10"."c19" FROM (SELECT "r4"."c5", "r4"."c6" FROM (SELECT "r3"."c4", "r3"."c3" FROM (SELECT "r2"."c1", "r2"."c2" FROM (SELECT "r1"."root", "r1"."step" FROM "slice"."retry_polite_input" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."step" FROM "slice"."retry_step" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 2::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17") WHERE "r9"."c16" = "r4"."c5" AND "r9"."c17" = "r4"."c6")) AS "r10"("c18", "c19")) AS "found";
+  IF FOUND THEN
+    RAISE EXCEPTION 'law __retry_polite_input_in_retry_step_vsvknlv3vi is violated by existing rows'
+      USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text",
+            CONSTRAINT = '__retry_polite_input_in_retry_step_vsvknlv3vi'::"pg_catalog"."text";
+  END IF;
+END
+$$;
+
 -- The full violation query of law __retry_steadfast_input_in_retry_step_hx2xvxlsob.
 DO $$
 BEGIN
-  PERFORM 1 FROM (SELECT "r10"."c18", "r10"."c19" FROM (SELECT "r4"."c5", "r4"."c6" FROM (SELECT "r3"."c4", "r3"."c3" FROM (SELECT "r2"."c1", "r2"."c2" FROM (SELECT "r1"."root", "r1"."step" FROM "slice"."retry_steadfast_input" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."step" FROM "slice"."retry_step" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 2::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17") WHERE "r9"."c16" = "r4"."c5" AND "r9"."c17" = "r4"."c6")) AS "r10"("c18", "c19")) AS "found";
+  PERFORM 1 FROM (SELECT "r10"."c18", "r10"."c19" FROM (SELECT "r4"."c5", "r4"."c6" FROM (SELECT "r3"."c4", "r3"."c3" FROM (SELECT "r2"."c1", "r2"."c2" FROM (SELECT "r1"."root", "r1"."step" FROM "slice"."retry_steadfast_input" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3", "c4")) AS "r4"("c5", "c6") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r8"."c13", "r8"."c14" FROM (SELECT "r7"."c10", "r7"."c11", "r7"."c12" FROM (SELECT "r6"."c9", "r6"."c8", "r6"."c7" FROM (SELECT "r5"."kind", "r5"."root", "r5"."step" FROM "slice"."retry_step" AS "r5") AS "r6"("c7", "c8", "c9")) AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 3::smallint) AS "r8"("c13", "c14", "c15")) AS "r9"("c16", "c17") WHERE "r9"."c16" = "r4"."c5" AND "r9"."c17" = "r4"."c6")) AS "r10"("c18", "c19")) AS "found";
   IF FOUND THEN
     RAISE EXCEPTION 'law __retry_steadfast_input_in_retry_step_hx2xvxlsob is violated by existing rows'
       USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text",
             CONSTRAINT = '__retry_steadfast_input_in_retry_step_hx2xvxlsob'::"pg_catalog"."text";
+  END IF;
+END
+$$;
+
+-- The full violation query of law __retry_throttled_input_in_retry_root_mbo7vy4v4x.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r10"."c12" FROM (SELECT DISTINCT "r4"."c4" FROM (SELECT "r3"."c3" FROM (SELECT "r2"."c2" FROM (SELECT "r1"."root", "r1"."scope" FROM "slice"."retry_throttled_input" AS "r1") AS "r2"("c1", "c2")) AS "r3"("c3")) AS "r4"("c4") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r8"."c9" FROM (SELECT "r7"."c7", "r7"."c8" FROM (SELECT "r6"."c6", "r6"."c5" FROM (SELECT "r5"."kind", "r5"."scope" FROM "slice"."retry_root" AS "r5") AS "r6"("c5", "c6")) AS "r7"("c7", "c8") WHERE "r7"."c8" = 1::smallint) AS "r8"("c9", "c10")) AS "r9"("c11") WHERE "r9"."c11" = "r4"."c4")) AS "r10"("c12")) AS "found";
+  IF FOUND THEN
+    RAISE EXCEPTION 'law __retry_throttled_input_in_retry_root_mbo7vy4v4x is violated by existing rows'
+      USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text",
+            CONSTRAINT = '__retry_throttled_input_in_retry_root_mbo7vy4v4x'::"pg_catalog"."text";
   END IF;
 END
 $$;

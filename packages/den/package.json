@@ -14,6 +14,7 @@
 	"exports": {
 		"./algebra/flow": "./src/algebra/flow.ts",
 		"./algebra/kinds": "./src/algebra/kinds.ts",
+		"./algebra/later": "./src/algebra/later.ts",
 		"./lower/fragment": "./src/lower/fragment.ts",
 		"./lower/generate": "./src/lower/generate.ts",
 		"./lower/keys": "./src/lower/keys.ts",
