@@ -16,6 +16,7 @@ import {
 	AssignKind,
 	AssignRootKind,
 	AssignOutcome,
+	AssignRetryWhy,
 	AssignPausable,
 	AssignDecideInputMode,
 	AssignAssignmentInputMode,
@@ -106,6 +107,7 @@ export const AssignCoordinator = role(
 		AssignKind,
 		AssignRootKind,
 		AssignOutcome,
+		AssignRetryWhy,
 		AssignPausable,
 		AssignDecideInputMode,
 		AssignAssignmentInputMode,
@@ -181,7 +183,7 @@ export const assignDenPrograms = Object.freeze({
 							),
 							DenInstant
 						),
-						spent: r.param("spent", AssignRetry.fields.spent),
+						why: r.param("why", AssignRetry.fields.why),
 						root: r.param("root", AssignRetry.fields.root)
 					})
 				)
@@ -300,11 +302,11 @@ export const assignDenPrograms = Object.freeze({
 			.find({ step, attempt, until })
 	}),
 	assignRetriesOf: query(assignGraph).rule((r) => {
-		const { step, attempt, at, spent } = v(AssignRetry, "retry")
+		const { step, attempt, at, why } = v(AssignRetry, "retry")
 		return r
-			.match(AssignRetry, { step, attempt, at, spent })
+			.match(AssignRetry, { step, attempt, at, why })
 			.where(r.eq(step, r.param("step", AssignStep.fields.step)))
-			.find({ step, attempt, at, spent })
+			.find({ step, attempt, at, why })
 	}),
 	assignFencedOf: query(assignGraph).rule((r) => {
 		const { step, attempt } = v(AssignFenced, "fenced")
@@ -346,11 +348,11 @@ export const assignDenPrograms = Object.freeze({
 					.find({ step, attempt, until })
 			}),
 			retries: query(AssignDen).rule((r) => {
-				const { step, attempt, at, spent } = v(AssignRetry, "retry")
+				const { step, attempt, at, why } = v(AssignRetry, "retry")
 				return r
-					.match(AssignRetry, { step, attempt, at, spent })
+					.match(AssignRetry, { step, attempt, at, why })
 					.where(r.not(AssignResult, { step }))
-					.find({ step, attempt, at, spent })
+					.find({ step, attempt, at, why })
 			}),
 			fenced: query(AssignDen).rule((r) => {
 				const { step, attempt } = v(AssignFenced, "fenced")

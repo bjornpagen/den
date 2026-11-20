@@ -113,7 +113,7 @@ export const aSeatGivenBackRingsTheStepsWaitingOnIt = property.explore(runs, {
 									root,
 									attempt: holder.attempt,
 									delay: atOnce,
-									spent: false
+									why: "transient"
 								})
 								const again = yield* serve(ledgers, wakeOf(holder.step, holder.attempt + 1n), ends)
 								assert.equal(again.ending.kind, "done")

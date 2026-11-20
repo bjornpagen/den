@@ -530,6 +530,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				name: "QuestionsFinish",
 				uses: review.kinds[1].finish.uses,
 				retry: review.kinds[1].finish.retry,
+				waits: review.kinds[1].finish.waits,
 				body: (read: {
 					readonly input: Parameters<(typeof review.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof review.kinds)[1]["finish"]["body"]>[1]
@@ -665,6 +666,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				name: "ReviewRunFinish",
 				uses: review.kinds[4].finish.uses,
 				retry: review.kinds[4].finish.retry,
+				waits: review.kinds[4].finish.waits,
 				body: (read: {
 					readonly input: Parameters<(typeof review.kinds)[4]["start"]>[0]
 					readonly endings: Parameters<(typeof review.kinds)[4]["finish"]["body"]>[1]
@@ -905,7 +907,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 						step: row.step,
 						attempt: row.attempt,
 						delay: row.delay,
-						spent: row.spent,
+						why: row.why,
 						root: row.root
 					},
 					facts: {

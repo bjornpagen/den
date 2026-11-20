@@ -47,13 +47,14 @@ import type {
 	HoldRow,
 	Ledger,
 	RetryRow,
+	RetryWhy,
 	RootRunner,
 	ScopeView,
 	Snapshot,
 	StepRunner
 } from "#runtime/ledger.ts"
 import { backoffFirstMillis, backoffLastMillis } from "#runtime/turn.ts"
-import { rungMillis, spentBefore } from "#runtime/turn.ts"
+import { rungMillis, spentBefore, waitedOn } from "#runtime/turn.ts"
 import { caseHangMillis } from "#test/support/suites.ts"
 import { FlowName, type Wake, wakeText } from "#transport.ts"
 
@@ -88,6 +89,7 @@ const runnerOf = (
 	kind,
 	uses,
 	retry: attempts(1),
+	waits: 0,
 	finishes,
 	run: unread
 })
@@ -146,7 +148,7 @@ const ledger: Ledger<never> = {
 
 /** How a claimed attempt ended without a result: a retry, due at an offset, or a fence on a refused credential. */
 type EndSketch =
-	| { readonly kind: "retry"; readonly at: number; readonly spent: boolean }
+	| { readonly kind: "retry"; readonly at: number; readonly why: RetryWhy }
 	| { readonly kind: "fenced" }
 
 /** A pending step of a root: its kind, its latest claim, if any, with how it ended, and its first due instant. */
@@ -205,7 +207,11 @@ const stepSketch: Gen<StepSketch> = (source) => ({
 			end: s.draw(
 				option(
 					oneOf<EndSketch>([
-						(r) => ({ kind: "retry", at: r.draw(offset), spent: r.draw(boolean) }),
+						(r) => ({
+							kind: "retry",
+							at: r.draw(offset),
+							why: r.draw(element<RetryWhy>(["spent", "transient", "later"]))
+						}),
 						() => ({ kind: "fenced" })
 					])
 				)
@@ -312,7 +318,7 @@ const built = (w: World) =>
 				if (Option.isSome(c.end)) {
 					const end = c.end.value
 					if (end.kind === "retry") {
-						retries.push({ step, attempt: BigInt(c.attempt), at: at(end.at), spent: end.spent })
+						retries.push({ step, attempt: BigInt(c.attempt), at: at(end.at), why: end.why })
 					} else {
 						fenced.push({ step, attempt: BigInt(c.attempt) })
 					}
@@ -791,7 +797,7 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 						suite: "retry ladder",
 						oracle: {
 							kind: "specification",
-							name: "rung(1) = first, rung(n) ≤ rung(n + 1) ≤ last, and spentBefore counts every attempt but a wait or a fence"
+							name: "rung(1) = first, rung(n) ≤ rung(n + 1) ≤ last, spentBefore counts every attempt but a wait or a fence, and waitedOn counts the waits on a source"
 						},
 						draw: drawn((source) => ({
 							spent: source.draw(int(1, 12)),
@@ -799,7 +805,9 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 								array(
 									(s) => ({
 										ended: s.draw(
-											option(element<"spent" | "waited" | "fenced">(["spent", "waited", "fenced"]))
+											option(
+												element<RetryWhy | "fenced">(["spent", "transient", "later", "fenced"])
+											)
 										)
 									}),
 									{ min: 0, max: 5 }
@@ -851,7 +859,7 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 													step,
 													attempt: BigInt(i),
 													at: instantOf(0),
-													spent: ended === "spent"
+													why: ended
 												})
 									)
 								)
@@ -863,10 +871,15 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 								Arr.map(l.claims, (cl, i) => ({ cl, attempt: i })),
 								({ cl, attempt }) =>
 									attempt < l.next &&
-									!Option.contains(cl.ended, "waited") &&
+									!Option.contains(cl.ended, "transient") &&
+									!Option.contains(cl.ended, "later") &&
 									!Option.contains(cl.ended, "fenced")
 							).length
 							assert.strictEqual(spentBefore(claims, retries, fenced, BigInt(l.next)), expected)
+							assert.strictEqual(
+								waitedOn(retries),
+								Arr.filter(l.claims, (cl) => Option.contains(cl.ended, "later")).length
+							)
 						})
 				)
 			)

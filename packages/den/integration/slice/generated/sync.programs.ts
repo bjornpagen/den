@@ -16,6 +16,7 @@ import {
 	SyncKind,
 	SyncRootKind,
 	SyncOutcome,
+	SyncRetryWhy,
 	SyncPausable,
 	SyncScope,
 	SyncRoot,
@@ -103,6 +104,7 @@ export const SyncCoordinator = role(
 		SyncKind,
 		SyncRootKind,
 		SyncOutcome,
+		SyncRetryWhy,
 		SyncPausable,
 		SyncExclusive,
 		SyncReleased,
@@ -185,7 +187,7 @@ export const syncDenPrograms = Object.freeze({
 							),
 							DenInstant
 						),
-						spent: r.param("spent", SyncRetry.fields.spent),
+						why: r.param("why", SyncRetry.fields.why),
 						root: r.param("root", SyncRetry.fields.root)
 					})
 				)
@@ -309,11 +311,11 @@ export const syncDenPrograms = Object.freeze({
 			.find({ step, attempt, until })
 	}),
 	syncRetriesOf: query(syncGraph).rule((r) => {
-		const { step, attempt, at, spent } = v(SyncRetry, "retry")
+		const { step, attempt, at, why } = v(SyncRetry, "retry")
 		return r
-			.match(SyncRetry, { step, attempt, at, spent })
+			.match(SyncRetry, { step, attempt, at, why })
 			.where(r.eq(step, r.param("step", SyncStep.fields.step)))
-			.find({ step, attempt, at, spent })
+			.find({ step, attempt, at, why })
 	}),
 	syncFencedOf: query(syncGraph).rule((r) => {
 		const { step, attempt } = v(SyncFenced, "fenced")
@@ -357,11 +359,11 @@ export const syncDenPrograms = Object.freeze({
 					.find({ step, attempt, until })
 			}),
 			retries: query(SyncDen).rule((r) => {
-				const { step, attempt, at, spent } = v(SyncRetry, "retry")
+				const { step, attempt, at, why } = v(SyncRetry, "retry")
 				return r
-					.match(SyncRetry, { step, attempt, at, spent })
+					.match(SyncRetry, { step, attempt, at, why })
 					.where(r.not(SyncResult, { step }))
-					.find({ step, attempt, at, spent })
+					.find({ step, attempt, at, why })
 			}),
 			fenced: query(SyncDen).rule((r) => {
 				const { step, attempt } = v(SyncFenced, "fenced")

@@ -420,6 +420,7 @@ export const chainLedger = (h: ChainHandles) => {
 				name: "ChainRunFinish",
 				uses: chain.kinds[1].finish.uses,
 				retry: chain.kinds[1].finish.retry,
+				waits: chain.kinds[1].finish.waits,
 				body: (read: {
 					readonly input: Parameters<(typeof chain.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof chain.kinds)[1]["finish"]["body"]>[1]
@@ -499,6 +500,7 @@ export const chainLedger = (h: ChainHandles) => {
 				name: "OrderedFinish",
 				uses: chain.kinds[2].finish.uses,
 				retry: chain.kinds[2].finish.retry,
+				waits: chain.kinds[2].finish.waits,
 				body: (read: {
 					readonly input: Parameters<(typeof chain.kinds)[2]["start"]>[0]
 					readonly endings: Parameters<(typeof chain.kinds)[2]["finish"]["body"]>[1]
@@ -757,7 +759,7 @@ export const chainLedger = (h: ChainHandles) => {
 						step: row.step,
 						attempt: row.attempt,
 						delay: row.delay,
-						spent: row.spent,
+						why: row.why,
 						root: row.root
 					},
 					facts: {

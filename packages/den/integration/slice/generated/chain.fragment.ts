@@ -24,6 +24,7 @@ const Seq = contract("Seq", pg.bigint)
 export const ChainKind = closed.unordered("ChainKind", ["Page", "ChainRunFinish", "OrderedFinish"])
 export const ChainRootKind = closed.unordered("ChainRootKind", ["ChainRun", "Ordered"])
 export const ChainOutcome = closed.unordered("ChainOutcome", ["done", "failed"])
+export const ChainRetryWhy = closed.unordered("ChainRetryWhy", ["spent", "transient", "later"])
 export const ChainPausable = closed.unordered("ChainPausable", ["ChainRun", "Ordered"])
 export const ChainPageInputFeed = closed.unordered("ChainPageInputFeed", ["news", "sport"])
 export const ChainChainRunInputFeed = closed.unordered("ChainChainRunInputFeed", ["news", "sport"])
@@ -80,7 +81,7 @@ export const ChainEnded = relation(
 )
 export const ChainRetry = relation(
 	"ChainRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean, root: DenScope },
+	{ step: DenStep, attempt: natural, at: DenInstant, why: closedId(ChainRetryWhy), root: DenScope },
 	["step", "attempt", "root"]
 )
 export const ChainFenced = relation(
@@ -184,6 +185,7 @@ export const chainGraph = fragment(
 		ChainKind,
 		ChainRootKind,
 		ChainOutcome,
+		ChainRetryWhy,
 		ChainPausable,
 		ChainPageInputFeed,
 		ChainChainRunInputFeed,
@@ -333,6 +335,7 @@ export const chainCoordination = fragment(
 		ChainKind,
 		ChainRootKind,
 		ChainOutcome,
+		ChainRetryWhy,
 		ChainPausable,
 		ChainPageInputFeed,
 		ChainChainRunInputFeed,

@@ -32,8 +32,8 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * A flow's declaration-time checks: a well-formed flow is accepted, and each fault is refused with Refused when the
  * flow or one of its kinds is declared, naming the declaration: a kind declared twice, an edge from a step the flow does
  * not declare, a kind no scope owns, a finish reading a kind its scope never holds, no root at all, a name den cannot
- * lower into a relation's, two resources of one name, a resource of no seats, a ladder of no attempts, and a window
- * that is empty or reaches past a day.
+ * lower into a relation's, two resources of one name, a resource of no seats, a ladder of no attempts, a count of waits
+ * below 0, and a window that is empty or reaches past a day.
  *
  * Oracle (specification): the proposal's rules of section 4, one fault at a time.
  */
@@ -49,6 +49,7 @@ const Fault = Schema.Literals([
 	"resource name twice",
 	"no seats",
 	"no attempts",
+	"negative waits",
 	"empty window",
 	"window past a day"
 ])
@@ -98,6 +99,7 @@ const windowOf = (fault: Fault): Window => {
 		case "resource name twice":
 		case "no seats":
 		case "no attempts":
+		case "negative waits":
 			return always
 	}
 }
@@ -113,6 +115,7 @@ const declare = (fault: Fault) => {
 		reads: {},
 		uses,
 		retry: ladder,
+		waits: fault === "negative waits" ? -1 : 0,
 		due: atSpawn,
 		writes: writesNothing
 	})
@@ -126,6 +129,7 @@ const declare = (fault: Fault) => {
 		error: Schema.Never,
 		uses: [],
 		retry: attempts(1),
+		waits: 0,
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
 	})

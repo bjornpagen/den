@@ -412,6 +412,7 @@ export const syncLedger = (h: SyncHandles) => {
 				name: "SyncRunFinish",
 				uses: sync.kinds[1].finish.uses,
 				retry: sync.kinds[1].finish.retry,
+				waits: sync.kinds[1].finish.waits,
 				body: (read: {
 					readonly input: Parameters<(typeof sync.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof sync.kinds)[1]["finish"]["body"]>[1]
@@ -464,6 +465,7 @@ export const syncLedger = (h: SyncHandles) => {
 				name: "GoldFinish",
 				uses: sync.kinds[3].finish.uses,
 				retry: sync.kinds[3].finish.retry,
+				waits: sync.kinds[3].finish.waits,
 				body: (read: {
 					readonly input: Parameters<(typeof sync.kinds)[3]["start"]>[0]
 					readonly endings: Parameters<(typeof sync.kinds)[3]["finish"]["body"]>[1]
@@ -701,7 +703,7 @@ export const syncLedger = (h: SyncHandles) => {
 						step: row.step,
 						attempt: row.attempt,
 						delay: row.delay,
-						spent: row.spent,
+						why: row.why,
 						root: row.root
 					},
 					facts: {

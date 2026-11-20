@@ -57,6 +57,13 @@ const positive = (declaration: string, what: string, n: number): void => {
 	}
 }
 
+/** Refuses a count that is no integer of at least 0. */
+const nonNegative = (declaration: string, what: string, n: number): void => {
+	if (!Number.isSafeInteger(n) || n < 0) {
+		throw new Refused({ declaration, why: `${what} ${String(n)} is no count of 0 or more` })
+	}
+}
+
 /**
  * A resource: a named bottleneck whose capacity is its seats, each a row, so no two holders share one and a bound is
  * never exceeded. Its count is a limit with evidence (W1's replica holds 8). A step holds a seat of every resource it
@@ -424,6 +431,16 @@ export interface StepShape<
 	readonly reads: D
 	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
+	/**
+	 * How many times the step may wait on its source, each a body that failed with `Later`, before the next `Later`
+	 * ends it `failed`, recorded as exhausted, as a spent ladder ends it: a wait spends no attempt, so without this count
+	 * a source that keeps refusing would hold its step waiting for good, with no failure for its scope's finish to read.
+	 * It counts every wait of the step, across its attempts, and is always finite: no step waits on its source forever.
+	 * A step whose body never fails with `Later` states 0, and so does one that fails at its source's first refusal. A
+	 * count above 0 is a limit with its evidence beside the step that states it (an Anthropic call's, upstream's five
+	 * waits).
+	 */
+	readonly waits: number
 	readonly due: Due
 	readonly writes: W
 }
@@ -454,6 +471,7 @@ export interface AnyStepKind {
 	readonly reads: Reads
 	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
+	readonly waits: number
 	readonly due: Due
 	readonly writes: WritesDeclaration
 }
@@ -473,6 +491,7 @@ export const step = <
 ): StepKind<Name, IS, OS, ES, D, W, R> => {
 	named("step", name)
 	Arr.forEach(Rec.keys(shape.reads), (read) => readNamed(`step ${name}`, read))
+	nonNegative(`step ${name}`, "waits", shape.waits)
 	return { _tag: "Step", name, ...shape, body, of: spawnOf(name) }
 }
 
@@ -528,6 +547,8 @@ export interface Finish<
 	readonly error: ES
 	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
+	/** How many times the finish may wait on its source before its next `Later` fails it, as a step's waits. */
+	readonly waits: number
 	readonly writes: W
 	readonly body: (
 		input: I,
@@ -542,6 +563,7 @@ export interface AnyFinish {
 	readonly error: ErrorSchema
 	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
+	readonly waits: number
 	readonly writes: WritesDeclaration
 }
 
@@ -641,6 +663,7 @@ export const scope = <
 	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, W, R>>
 ): ScopeKind<Name, IS, Children, Finish<IS["Type"], Ended, OS, ES, W, R>> => {
 	named("scope", name)
+	nonNegative(`the finish of ${name}`, "waits", shape.finish.waits)
 	return { _tag: "Scope", name, ...shape, of: spawnOf(name) }
 }
 
@@ -700,6 +723,7 @@ export const root = <
 	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, W, R>> & RootGates<IS["Type"]>
 ): RootKind<Name, IS, Children, Finish<IS["Type"], Ended, OS, ES, W, R>> => {
 	named("root", name)
+	nonNegative(`the finish of ${name}`, "waits", shape.finish.waits)
 	return { _tag: "Root", name, ...shape }
 }
 

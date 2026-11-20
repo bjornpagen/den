@@ -265,6 +265,7 @@ export const clockLedger = (h: ClockHandles) => {
 				name: "HourlyFinish",
 				uses: clock.kinds[1].finish.uses,
 				retry: clock.kinds[1].finish.retry,
+				waits: clock.kinds[1].finish.waits,
 				body: (read: {
 					readonly input: Parameters<(typeof clock.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof clock.kinds)[1]["finish"]["body"]>[1]
@@ -448,7 +449,7 @@ export const clockLedger = (h: ClockHandles) => {
 						step: row.step,
 						attempt: row.attempt,
 						delay: row.delay,
-						spent: row.spent,
+						why: row.why,
 						root: row.root
 					},
 					facts: {

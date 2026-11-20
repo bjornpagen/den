@@ -155,4 +155,14 @@
   waiting on a seat it gave back among them; a finish answers an output, a child scope ends as its finish does, and an
   edge may leave a child scope kind, so the next stage after a scope is an ordinary edge spawned in its parent; and a
   body whose source named when to call again fails with `Later`, a wait that spends nothing, due the source's own delay.
+- **A source's waits end (settled by AlphaTest's need, 2026-11-20).** A wait spends no attempt, so a source that keeps
+  refusing would hold its step waiting for good, with no failure, status or alert (upstream's DCAN gives up after five
+  waits, `persistent-agent.ts` `RATE_LIMIT_RETRY_DELAYS`, and its run's failure policy then reports the failure). So a
+  step kind and a finish state `waits`, how many times they may wait on their source, a count of 0 or more beside their
+  ladder, and the `Later` past them fails the step as a spent ladder does, recorded as exhausted, so its scope's finish
+  reads it failed. A retry records why its attempt ended without a result, `spent`, `transient` or `later` (a roster
+  where it was a flag of spent or not), so the waits counted are facts of the graph.
+  - Rejected: a deadline measured from the step's first due, which a delay the source names can overshoot in one wait
+    and which no source publishes; an unbounded form beside the count, which would keep the case it exists to end; a
+    sleep or a counter inside the body, which would give a body a memory of its earlier attempts.
 

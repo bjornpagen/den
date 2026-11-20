@@ -34,6 +34,7 @@ export const ReviewKind = closed.unordered("ReviewKind", [
 export const ReviewRootKind = closed.unordered("ReviewRootKind", ["ReviewRun"])
 export const ReviewChildKind = closed.unordered("ReviewChildKind", ["Questions"])
 export const ReviewOutcome = closed.unordered("ReviewOutcome", ["done", "failed"])
+export const ReviewRetryWhy = closed.unordered("ReviewRetryWhy", ["spent", "transient", "later"])
 export const ReviewPausable = closed.unordered("ReviewPausable", ["Anthropic", "ReviewRun"])
 export const ReviewResource = closed.unordered("ReviewResource", ["Anthropic"])
 const ReviewSeats = closed.relation(
@@ -104,7 +105,13 @@ export const ReviewEnded = relation(
 )
 export const ReviewRetry = relation(
 	"ReviewRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean, root: DenScope },
+	{
+		step: DenStep,
+		attempt: natural,
+		at: DenInstant,
+		why: closedId(ReviewRetryWhy),
+		root: DenScope
+	},
 	["step", "attempt", "root"]
 )
 export const ReviewFenced = relation(
@@ -246,6 +253,7 @@ export const reviewGraph = fragment(
 		ReviewRootKind,
 		ReviewChildKind,
 		ReviewOutcome,
+		ReviewRetryWhy,
 		ReviewPausable,
 		ReviewResource,
 		ReviewScope,
@@ -467,6 +475,7 @@ export const reviewCoordination = fragment(
 		ReviewRootKind,
 		ReviewChildKind,
 		ReviewOutcome,
+		ReviewRetryWhy,
 		ReviewPausable,
 		ReviewResource,
 		ReviewSeats,

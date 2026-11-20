@@ -20,6 +20,7 @@ import {
 export const ClockKind = closed.unordered("ClockKind", ["Chime", "HourlyFinish"])
 export const ClockRootKind = closed.unordered("ClockRootKind", ["Hourly"])
 export const ClockOutcome = closed.unordered("ClockOutcome", ["done", "failed"])
+export const ClockRetryWhy = closed.unordered("ClockRetryWhy", ["spent", "transient", "later"])
 export const ClockPausable = closed.unordered("ClockPausable", ["Hourly"])
 
 export const ClockScope = relation("ClockScope", { scope: DenScope, root: DenScope }, [
@@ -73,7 +74,7 @@ export const ClockEnded = relation(
 )
 export const ClockRetry = relation(
 	"ClockRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean, root: DenScope },
+	{ step: DenStep, attempt: natural, at: DenInstant, why: closedId(ClockRetryWhy), root: DenScope },
 	["step", "attempt", "root"]
 )
 export const ClockFenced = relation(
@@ -141,6 +142,7 @@ export const clockGraph = fragment(
 		ClockKind,
 		ClockRootKind,
 		ClockOutcome,
+		ClockRetryWhy,
 		ClockPausable,
 		ClockScope,
 		ClockRoot,
@@ -257,7 +259,7 @@ export const clockGraph = fragment(
 
 /** The flow's coordination group: its rosters, its seat counts, and its chains of exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const clockCoordination = fragment(
-	[ClockKind, ClockRootKind, ClockOutcome, ClockPausable, ClockPaused, ClockResumed],
+	[ClockKind, ClockRootKind, ClockOutcome, ClockRetryWhy, ClockPausable, ClockPaused, ClockResumed],
 	[
 		contained(on(ClockResumed, "target", "turn"), on(ClockPaused, "target", "turn")),
 		contained(on(ClockPaused, "target", pred("turn")), on(ClockResumed, "target", "turn"))

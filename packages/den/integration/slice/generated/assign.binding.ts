@@ -475,6 +475,7 @@ export const assignLedger = (h: AssignHandles) => {
 				name: "AssignmentFinish",
 				uses: assign.kinds[1].finish.uses,
 				retry: assign.kinds[1].finish.retry,
+				waits: assign.kinds[1].finish.waits,
 				body: (read: {
 					readonly input: Parameters<(typeof assign.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof assign.kinds)[1]["finish"]["body"]>[1]
@@ -724,7 +725,7 @@ export const assignLedger = (h: AssignHandles) => {
 						step: row.step,
 						attempt: row.attempt,
 						delay: row.delay,
-						spent: row.spent,
+						why: row.why,
 						root: row.root
 					},
 					facts: {

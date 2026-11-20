@@ -16,6 +16,7 @@ import {
 	ChainKind,
 	ChainRootKind,
 	ChainOutcome,
+	ChainRetryWhy,
 	ChainPausable,
 	ChainPageInputFeed,
 	ChainChainRunInputFeed,
@@ -97,6 +98,7 @@ export const ChainCoordinator = role(
 		ChainKind,
 		ChainRootKind,
 		ChainOutcome,
+		ChainRetryWhy,
 		ChainPausable,
 		ChainPageInputFeed,
 		ChainChainRunInputFeed,
@@ -172,7 +174,7 @@ export const chainDenPrograms = Object.freeze({
 							),
 							DenInstant
 						),
-						spent: r.param("spent", ChainRetry.fields.spent),
+						why: r.param("why", ChainRetry.fields.why),
 						root: r.param("root", ChainRetry.fields.root)
 					})
 				)
@@ -289,11 +291,11 @@ export const chainDenPrograms = Object.freeze({
 			.find({ step, attempt, until })
 	}),
 	chainRetriesOf: query(chainGraph).rule((r) => {
-		const { step, attempt, at, spent } = v(ChainRetry, "retry")
+		const { step, attempt, at, why } = v(ChainRetry, "retry")
 		return r
-			.match(ChainRetry, { step, attempt, at, spent })
+			.match(ChainRetry, { step, attempt, at, why })
 			.where(r.eq(step, r.param("step", ChainStep.fields.step)))
-			.find({ step, attempt, at, spent })
+			.find({ step, attempt, at, why })
 	}),
 	chainFencedOf: query(chainGraph).rule((r) => {
 		const { step, attempt } = v(ChainFenced, "fenced")
@@ -335,11 +337,11 @@ export const chainDenPrograms = Object.freeze({
 					.find({ step, attempt, until })
 			}),
 			retries: query(ChainDen).rule((r) => {
-				const { step, attempt, at, spent } = v(ChainRetry, "retry")
+				const { step, attempt, at, why } = v(ChainRetry, "retry")
 				return r
-					.match(ChainRetry, { step, attempt, at, spent })
+					.match(ChainRetry, { step, attempt, at, why })
 					.where(r.not(ChainResult, { step }))
-					.find({ step, attempt, at, spent })
+					.find({ step, attempt, at, why })
 			}),
 			fenced: query(ChainDen).rule((r) => {
 				const { step, attempt } = v(ChainFenced, "fenced")

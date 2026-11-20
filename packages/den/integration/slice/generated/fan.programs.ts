@@ -17,6 +17,7 @@ import {
 	FanRootKind,
 	FanChildKind,
 	FanOutcome,
+	FanRetryWhy,
 	FanPausable,
 	FanResource,
 	FanScope,
@@ -106,6 +107,7 @@ export const FanCoordinator = role(
 		FanRootKind,
 		FanChildKind,
 		FanOutcome,
+		FanRetryWhy,
 		FanPausable,
 		FanResource,
 		FanPaused,
@@ -185,7 +187,7 @@ export const fanDenPrograms = Object.freeze({
 							),
 							DenInstant
 						),
-						spent: r.param("spent", FanRetry.fields.spent),
+						why: r.param("why", FanRetry.fields.why),
 						root: r.param("root", FanRetry.fields.root)
 					})
 				)
@@ -319,11 +321,11 @@ export const fanDenPrograms = Object.freeze({
 			.find({ step, attempt, until })
 	}),
 	fanRetriesOf: query(fanGraph).rule((r) => {
-		const { step, attempt, at, spent } = v(FanRetry, "retry")
+		const { step, attempt, at, why } = v(FanRetry, "retry")
 		return r
-			.match(FanRetry, { step, attempt, at, spent })
+			.match(FanRetry, { step, attempt, at, why })
 			.where(r.eq(step, r.param("step", FanStep.fields.step)))
-			.find({ step, attempt, at, spent })
+			.find({ step, attempt, at, why })
 	}),
 	fanFencedOf: query(fanGraph).rule((r) => {
 		const { step, attempt } = v(FanFenced, "fenced")
@@ -374,11 +376,11 @@ export const fanDenPrograms = Object.freeze({
 					.find({ step, attempt, until })
 			}),
 			retries: query(FanDen).rule((r) => {
-				const { step, attempt, at, spent } = v(FanRetry, "retry")
+				const { step, attempt, at, why } = v(FanRetry, "retry")
 				return r
-					.match(FanRetry, { step, attempt, at, spent })
+					.match(FanRetry, { step, attempt, at, why })
 					.where(r.not(FanResult, { step }))
-					.find({ step, attempt, at, spent })
+					.find({ step, attempt, at, why })
 			}),
 			fenced: query(FanDen).rule((r) => {
 				const { step, attempt } = v(FanFenced, "fenced")

@@ -16,6 +16,7 @@ import {
 	ClockKind,
 	ClockRootKind,
 	ClockOutcome,
+	ClockRetryWhy,
 	ClockPausable,
 	ClockScope,
 	ClockRoot,
@@ -80,7 +81,15 @@ export const ClockDen = role(
 export const ClockCoordinator = role(
 	App,
 	"clock_coordinator",
-	{ ClockKind, ClockRootKind, ClockOutcome, ClockPausable, ClockPaused, ClockResumed },
+	{
+		ClockKind,
+		ClockRootKind,
+		ClockOutcome,
+		ClockRetryWhy,
+		ClockPausable,
+		ClockPaused,
+		ClockResumed
+	},
 	{ insert: ["ClockPaused", "ClockResumed"] }
 )
 
@@ -149,7 +158,7 @@ export const clockDenPrograms = Object.freeze({
 							),
 							DenInstant
 						),
-						spent: r.param("spent", ClockRetry.fields.spent),
+						why: r.param("why", ClockRetry.fields.why),
 						root: r.param("root", ClockRetry.fields.root)
 					})
 				)
@@ -265,11 +274,11 @@ export const clockDenPrograms = Object.freeze({
 			.find({ step, attempt, until })
 	}),
 	clockRetriesOf: query(clockGraph).rule((r) => {
-		const { step, attempt, at, spent } = v(ClockRetry, "retry")
+		const { step, attempt, at, why } = v(ClockRetry, "retry")
 		return r
-			.match(ClockRetry, { step, attempt, at, spent })
+			.match(ClockRetry, { step, attempt, at, why })
 			.where(r.eq(step, r.param("step", ClockStep.fields.step)))
-			.find({ step, attempt, at, spent })
+			.find({ step, attempt, at, why })
 	}),
 	clockFencedOf: query(clockGraph).rule((r) => {
 		const { step, attempt } = v(ClockFenced, "fenced")
@@ -311,11 +320,11 @@ export const clockDenPrograms = Object.freeze({
 					.find({ step, attempt, until })
 			}),
 			retries: query(ClockDen).rule((r) => {
-				const { step, attempt, at, spent } = v(ClockRetry, "retry")
+				const { step, attempt, at, why } = v(ClockRetry, "retry")
 				return r
-					.match(ClockRetry, { step, attempt, at, spent })
+					.match(ClockRetry, { step, attempt, at, why })
 					.where(r.not(ClockResult, { step }))
-					.find({ step, attempt, at, spent })
+					.find({ step, attempt, at, why })
 			}),
 			fenced: query(ClockDen).rule((r) => {
 				const { step, attempt } = v(ClockFenced, "fenced")

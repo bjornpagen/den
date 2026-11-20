@@ -196,6 +196,7 @@ const finishing = {
 	error: Schema.Never,
 	uses: [],
 	retry: attempts(1),
+	waits: 0,
 	writes: writesNothing,
 	body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
 } as const
@@ -214,6 +215,7 @@ const built = (sketch: Sketch): AnyFlow => {
 			reads: readsOf(sketch.reads),
 			uses: sketch.resource ? [pool] : [],
 			retry: attempts(1),
+			waits: 0,
 			due: atSpawn,
 			writes: writesNothing
 		},
@@ -229,6 +231,7 @@ const built = (sketch: Sketch): AnyFlow => {
 				reads: {},
 				uses: [],
 				retry: attempts(1),
+				waits: 0,
 				due: atSpawn,
 				writes: writesNothing
 			},
@@ -256,6 +259,7 @@ const built = (sketch: Sketch): AnyFlow => {
 			reads: {},
 			uses: [],
 			retry: attempts(1),
+			waits: 0,
 			due: atSpawn,
 			writes: writesNothing
 		},

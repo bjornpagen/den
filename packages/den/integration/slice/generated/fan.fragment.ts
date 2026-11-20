@@ -28,6 +28,7 @@ export const FanKind = closed.unordered("FanKind", ["Square", "BatchFinish", "Fa
 export const FanRootKind = closed.unordered("FanRootKind", ["FanRun"])
 export const FanChildKind = closed.unordered("FanChildKind", ["Batch"])
 export const FanOutcome = closed.unordered("FanOutcome", ["done", "failed"])
+export const FanRetryWhy = closed.unordered("FanRetryWhy", ["spent", "transient", "later"])
 export const FanPausable = closed.unordered("FanPausable", ["Pool", "FanRun"])
 export const FanResource = closed.unordered("FanResource", ["Pool"])
 const FanSeats = closed.relation(
@@ -88,7 +89,7 @@ export const FanEnded = relation("FanEnded", { step: DenStep, attempt: natural, 
 ])
 export const FanRetry = relation(
 	"FanRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean, root: DenScope },
+	{ step: DenStep, attempt: natural, at: DenInstant, why: closedId(FanRetryWhy), root: DenScope },
 	["step", "attempt", "root"]
 )
 export const FanFenced = relation(
@@ -173,6 +174,7 @@ export const fanGraph = fragment(
 		FanRootKind,
 		FanChildKind,
 		FanOutcome,
+		FanRetryWhy,
 		FanPausable,
 		FanResource,
 		FanScope,
@@ -317,6 +319,7 @@ export const fanCoordination = fragment(
 		FanRootKind,
 		FanChildKind,
 		FanOutcome,
+		FanRetryWhy,
 		FanPausable,
 		FanResource,
 		FanSeats,

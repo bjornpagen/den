@@ -159,8 +159,8 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 										Array.from({ length: planned.deaths + 2 }, (_, i) => BigInt(i))
 									)
 									assert.deepEqual(
-										Arr.map(Arr.sort(retried, byAttempt), (r) => [r.attempt, r.spent] as const),
-										Array.from({ length: planned.deaths }, (_, i) => [BigInt(i), true] as const)
+										Arr.map(Arr.sort(retried, byAttempt), (r) => [r.attempt, r.why] as const),
+										Array.from({ length: planned.deaths }, (_, i) => [BigInt(i), "spent"] as const)
 									)
 									assert.deepEqual(
 										Arr.map(fenced, (f) => f.attempt),
@@ -194,9 +194,9 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 			{
 				file: "packages/den/src/runtime/turn.ts",
 				original:
-					'\t\t\t\tcase "stale":\n\t\t\t\tcase "credentialRefused":\n\t\t\t\t\treturn ended(ledger, runner, turn, spentSoFar, { kind: "fenced", fault: error }, wake)\n',
+					'\t\t\t\tcase "stale":\n\t\t\t\tcase "credentialRefused":\n\t\t\t\t\treturn ended(ledger, runner, turn, used, { kind: "fenced", fault: error }, wake)\n',
 				replacement:
-					'\t\t\t\tcase "stale":\n\t\t\t\t\treturn ended(ledger, runner, turn, spentSoFar, { kind: "fenced", fault: error }, wake)\n\t\t\t\tcase "credentialRefused":\n\t\t\t\t\treturn ended(ledger, runner, turn, spentSoFar, { kind: "spent" }, wake)\n',
+					'\t\t\t\tcase "stale":\n\t\t\t\t\treturn ended(ledger, runner, turn, used, { kind: "fenced", fault: error }, wake)\n\t\t\t\tcase "credentialRefused":\n\t\t\t\t\treturn ended(ledger, runner, turn, used, { kind: "spent" }, wake)\n',
 				why: "A refused credential spends its attempt; the property fails on it (one of den's kept mutants before the conversion)."
 			},
 			{

@@ -213,7 +213,7 @@ CREATE TABLE "slice"."assign_retry" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "spent" boolean NOT NULL,
+  "why" "slice"."assign_retry_why" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__assign_retry_pk_4dcm5yzzhe" PRIMARY KEY ("step", "attempt", "root")
 );
@@ -444,7 +444,7 @@ CREATE TABLE "slice"."chain_retry" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "spent" boolean NOT NULL,
+  "why" "slice"."chain_retry_why" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__chain_retry_pk_522nodru3s" PRIMARY KEY ("step", "attempt", "root")
 );
@@ -612,7 +612,7 @@ CREATE TABLE "slice"."clock_retry" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "spent" boolean NOT NULL,
+  "why" "slice"."clock_retry_why" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__clock_retry_pk_4kyiqeoeqd" PRIMARY KEY ("step", "attempt", "root")
 );
@@ -807,7 +807,7 @@ CREATE TABLE "slice"."fan_retry" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "spent" boolean NOT NULL,
+  "why" "slice"."fan_retry_why" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__fan_retry_pk_7xubce4v66" PRIMARY KEY ("step", "attempt", "root")
 );
@@ -882,6 +882,12 @@ CREATE TABLE "slice"."fan_within" (
   "kind" "slice"."fan_child_kind" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__fan_within_pk_g5tswgjfa6" PRIMARY KEY ("scope", "root")
+);
+
+CREATE TABLE "slice"."heard" (
+  "key" "slice"."__text_t4rwovzmqj" NOT NULL,
+  "answered" boolean NOT NULL,
+  CONSTRAINT "__heard_pk_sdu7ysinks" PRIMARY KEY ("key")
 );
 
 CREATE TABLE "slice"."item" (
@@ -1045,7 +1051,7 @@ CREATE TABLE "slice"."retry_retry" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "spent" boolean NOT NULL,
+  "why" "slice"."retry_retry_why" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__retry_retry_pk_slrwn4rt5d" PRIMARY KEY ("step", "attempt", "root")
 );
@@ -1275,7 +1281,7 @@ CREATE TABLE "slice"."review_retry" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "spent" boolean NOT NULL,
+  "why" "slice"."review_retry_why" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__review_retry_pk_is3m5sa5tx" PRIMARY KEY ("step", "attempt", "root")
 );
@@ -1575,7 +1581,7 @@ CREATE TABLE "slice"."sync_retry" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "spent" boolean NOT NULL,
+  "why" "slice"."sync_retry_why" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__sync_retry_pk_6q52red7iw" PRIMARY KEY ("step", "attempt", "root")
 );
@@ -3603,6 +3609,10 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_within"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."heard"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"

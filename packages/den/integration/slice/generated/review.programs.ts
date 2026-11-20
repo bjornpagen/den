@@ -17,6 +17,7 @@ import {
 	ReviewRootKind,
 	ReviewChildKind,
 	ReviewOutcome,
+	ReviewRetryWhy,
 	ReviewPausable,
 	ReviewResource,
 	ReviewScope,
@@ -118,6 +119,7 @@ export const ReviewCoordinator = role(
 		ReviewRootKind,
 		ReviewChildKind,
 		ReviewOutcome,
+		ReviewRetryWhy,
 		ReviewPausable,
 		ReviewResource,
 		ReviewPaused,
@@ -197,7 +199,7 @@ export const reviewDenPrograms = Object.freeze({
 							),
 							DenInstant
 						),
-						spent: r.param("spent", ReviewRetry.fields.spent),
+						why: r.param("why", ReviewRetry.fields.why),
 						root: r.param("root", ReviewRetry.fields.root)
 					})
 				)
@@ -337,11 +339,11 @@ export const reviewDenPrograms = Object.freeze({
 			.find({ step, attempt, until })
 	}),
 	reviewRetriesOf: query(reviewGraph).rule((r) => {
-		const { step, attempt, at, spent } = v(ReviewRetry, "retry")
+		const { step, attempt, at, why } = v(ReviewRetry, "retry")
 		return r
-			.match(ReviewRetry, { step, attempt, at, spent })
+			.match(ReviewRetry, { step, attempt, at, why })
 			.where(r.eq(step, r.param("step", ReviewStep.fields.step)))
-			.find({ step, attempt, at, spent })
+			.find({ step, attempt, at, why })
 	}),
 	reviewFencedOf: query(reviewGraph).rule((r) => {
 		const { step, attempt } = v(ReviewFenced, "fenced")
@@ -395,11 +397,11 @@ export const reviewDenPrograms = Object.freeze({
 					.find({ step, attempt, until })
 			}),
 			retries: query(ReviewDen).rule((r) => {
-				const { step, attempt, at, spent } = v(ReviewRetry, "retry")
+				const { step, attempt, at, why } = v(ReviewRetry, "retry")
 				return r
-					.match(ReviewRetry, { step, attempt, at, spent })
+					.match(ReviewRetry, { step, attempt, at, why })
 					.where(r.not(ReviewResult, { step }))
-					.find({ step, attempt, at, spent })
+					.find({ step, attempt, at, why })
 			}),
 			fenced: query(ReviewDen).rule((r) => {
 				const { step, attempt } = v(ReviewFenced, "fenced")

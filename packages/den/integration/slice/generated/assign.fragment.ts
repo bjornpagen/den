@@ -23,6 +23,7 @@ import { Passage, Seen } from "#integration/slice/relations.ts"
 export const AssignKind = closed.unordered("AssignKind", ["Decide", "AssignmentFinish"])
 export const AssignRootKind = closed.unordered("AssignRootKind", ["Assignment"])
 export const AssignOutcome = closed.unordered("AssignOutcome", ["done", "failed"])
+export const AssignRetryWhy = closed.unordered("AssignRetryWhy", ["spent", "transient", "later"])
 export const AssignPausable = closed.unordered("AssignPausable", ["Assignment"])
 export const AssignDecideInputMode = closed.unordered("AssignDecideInputMode", [
 	"Nearest",
@@ -88,7 +89,13 @@ export const AssignEnded = relation(
 )
 export const AssignRetry = relation(
 	"AssignRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean, root: DenScope },
+	{
+		step: DenStep,
+		attempt: natural,
+		at: DenInstant,
+		why: closedId(AssignRetryWhy),
+		root: DenScope
+	},
 	["step", "attempt", "root"]
 )
 export const AssignFenced = relation(
@@ -254,6 +261,7 @@ export const assignGraph = fragment(
 		AssignKind,
 		AssignRootKind,
 		AssignOutcome,
+		AssignRetryWhy,
 		AssignPausable,
 		AssignDecideInputMode,
 		AssignAssignmentInputMode,
@@ -557,6 +565,7 @@ export const assignCoordination = fragment(
 		AssignKind,
 		AssignRootKind,
 		AssignOutcome,
+		AssignRetryWhy,
 		AssignPausable,
 		AssignDecideInputMode,
 		AssignAssignmentInputMode,

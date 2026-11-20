@@ -25,6 +25,7 @@ export const SyncKind = closed.unordered("SyncKind", [
 ])
 export const SyncRootKind = closed.unordered("SyncRootKind", ["SyncRun", "Gold"])
 export const SyncOutcome = closed.unordered("SyncOutcome", ["done", "failed"])
+export const SyncRetryWhy = closed.unordered("SyncRetryWhy", ["spent", "transient", "later"])
 export const SyncPausable = closed.unordered("SyncPausable", ["SyncRun", "Gold"])
 
 export const SyncScope = relation("SyncScope", { scope: DenScope, root: DenScope }, [
@@ -77,7 +78,7 @@ export const SyncEnded = relation(
 )
 export const SyncRetry = relation(
 	"SyncRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, spent: pg.boolean, root: DenScope },
+	{ step: DenStep, attempt: natural, at: DenInstant, why: closedId(SyncRetryWhy), root: DenScope },
 	["step", "attempt", "root"]
 )
 export const SyncFenced = relation(
@@ -174,6 +175,7 @@ export const syncGraph = fragment(
 		SyncKind,
 		SyncRootKind,
 		SyncOutcome,
+		SyncRetryWhy,
 		SyncPausable,
 		SyncScope,
 		SyncRoot,
@@ -320,6 +322,7 @@ export const syncCoordination = fragment(
 		SyncKind,
 		SyncRootKind,
 		SyncOutcome,
+		SyncRetryWhy,
 		SyncPausable,
 		SyncExclusive,
 		SyncReleased,

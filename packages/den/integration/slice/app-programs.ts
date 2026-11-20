@@ -71,6 +71,7 @@ import {
 	Concluded,
 	Copied,
 	Cursor,
+	Heard,
 	Item,
 	Missed,
 	Order,
@@ -145,6 +146,7 @@ export const Auditor = role(
 		FanStartStep,
 		FanStep,
 		FanWithin,
+		Heard,
 		Item,
 		Order,
 		RetryClaim,
@@ -337,6 +339,12 @@ const retryClaims = query(Auditor).rule((r) => {
 const retryExhausted = query(Auditor).rule((r) => {
 	const { step } = v(RetryExhausted, "exhausted")
 	return r.match(RetryExhausted, { step }).find({ step })
+})
+
+/** What each throttled call's run heard from its source. */
+const heard = query(Auditor).rule((r) => {
+	const { key, answered } = v(Heard, "heard")
+	return r.match(Heard, { key, answered }).find({ key, answered })
 })
 
 /** Every assignment step's result, with its scope. */
@@ -560,6 +568,7 @@ export const auditWorkload = workload(Auditor, {
 	retryResults,
 	retryClaims,
 	retryExhausted,
+	heard,
 	chainGraphRows,
 	chainHeaders,
 	assignResults,

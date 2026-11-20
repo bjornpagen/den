@@ -455,6 +455,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		rosters.push({ name: name("ChildKind"), handles: childNames })
 	}
 	rosters.push({ name: name("Outcome"), handles: ["done", "failed"] })
+	rosters.push({ name: name("RetryWhy"), handles: ["spent", "transient", "later"] })
 	rosters.push({ name: name("Pausable"), handles: pausable })
 	const resourceNames = Arr.map(flow.resources, (r) => r.name)
 	if (Arr.isReadonlyArrayNonEmpty(resourceNames)) {
@@ -593,7 +594,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 			{ name: "step", type: stepKey },
 			{ name: "attempt", type: natural },
 			{ name: "at", type: instant },
-			{ name: "spent", type: { kind: "base", base: "boolean" } }
+			{ name: "why", type: { kind: "closed", roster: name("RetryWhy") } }
 		],
 		key: ["step", "attempt"]
 	})

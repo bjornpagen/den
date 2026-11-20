@@ -327,6 +327,7 @@ export const fanLedger = (h: FanHandles) => {
 				name: "BatchFinish",
 				uses: fan.kinds[1].finish.uses,
 				retry: fan.kinds[1].finish.retry,
+				waits: fan.kinds[1].finish.waits,
 				body: (read: {
 					readonly input: Parameters<(typeof fan.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof fan.kinds)[1]["finish"]["body"]>[1]
@@ -395,6 +396,7 @@ export const fanLedger = (h: FanHandles) => {
 				name: "FanRunFinish",
 				uses: fan.kinds[2].finish.uses,
 				retry: fan.kinds[2].finish.retry,
+				waits: fan.kinds[2].finish.waits,
 				body: (read: {
 					readonly input: Parameters<(typeof fan.kinds)[2]["start"]>[0]
 					readonly endings: Parameters<(typeof fan.kinds)[2]["finish"]["body"]>[1]
@@ -612,7 +614,7 @@ export const fanLedger = (h: FanHandles) => {
 						step: row.step,
 						attempt: row.attempt,
 						delay: row.delay,
-						spent: row.spent,
+						why: row.why,
 						root: row.root
 					},
 					facts: {

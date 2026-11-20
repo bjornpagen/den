@@ -685,6 +685,9 @@
 				"__fan_within_pk_g5tswgjfa6": "__fan_within_pk_scope_root_cezmybwbla",
 				"__rule_fan_batch_input_in_fan_within_a66oofagwd": "__fan_batch_input_in_fan_within_sx7cuovskn"
 			},
+			"heard": {
+				"__heard_pk_sdu7ysinks": "__heard_pk_key_2l5lefmt7t"
+			},
 			"item": {
 				"__item_pk_ai4obgmq4k": "__item_pk_feed_seq_n_y4mrwtlrwm"
 			},
@@ -1582,6 +1585,7 @@
 					"parent",
 					"scope"
 				],
+				"heard": [],
 				"item": [],
 				"missed": [
 					"question"
@@ -9346,6 +9350,29 @@
 					},
 					"relation": "FanWithin"
 				},
+				"heard": {
+					"indexes": {
+						"__heard_pk_sdu7ysinks": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "key",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__heard_pk_key_2l5lefmt7t"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "Heard"
+				},
 				"item": {
 					"indexes": {
 						"__item_pk_ai4obgmq4k": {
@@ -15674,11 +15701,11 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "280c069cf4d1c218321152ed2617cb428383f4c472566b224477df0c24d380a5",
+	"fingerprint": "52bb00cb7da201bd09a030f13a47a60536836c8fe76d82f743dd5a9042907cd4",
 	"format": 3,
 	"levels": [
 		{
-			"fingerprint": "38e694d58ceee86672eb474a6682abb6c6dae92c779b81f710a65d19dfc934a6",
+			"fingerprint": "9ddc345cfc5f2207fa27d7dcee3c78b08dd7c48c4dfb9c29005d140cb2d3600e",
 			"laws": [
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_root_56frawwv2n"},
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_s3xk3phh7y"},
@@ -16065,6 +16092,7 @@
 				{"described":{"from":{"relation":"FanWithin","selection":{"conjuncts":[]},"terms":[{"field":"parent","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_within_in_fan_scope_5q7ganvwrf"},
 				{"described":{"from":{"relation":"FanWithin","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__fan_within_in_fan_scope_qohkwqidqi"},
 				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"FanWithin"},"law":"__fan_within_pk_scope_root_cezmybwbla"},
+				{"described":{"fields":["key"],"kind":"primaryKey","relation":"Heard"},"law":"__heard_pk_key_2l5lefmt7t"},
 				{"described":{"fields":["feed","seq","n"],"kind":"primaryKey","relation":"Item"},"law":"__item_pk_feed_seq_n_y4mrwtlrwm"},
 				{"described":{"fields":["question"],"kind":"primaryKey","relation":"Missed"},"law":"__missed_pk_question_6tqtipmgbw"},
 				{"described":{"contract":"natural","kind":"contract"},"law":"__natural_hcnvygsglu"},
@@ -16388,7 +16416,7 @@
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "5b03ba8a8e19038fe037a9969393bfa937dd4aee4bb2a888603431b903632b7b",
+			"fingerprint": "a3a38ab19655c9a5a6b2d37004009459d70d0514dba41187406cee005dfb8e7f",
 			"laws": [
 				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"},
 				{"described":{"kind":"key","side":{"relation":"FanLive","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"}]}},"law":"__fan_live_key_resource_seat_wqkc2jfkpw"},
@@ -16900,6 +16928,10 @@
 				]
 			},
 			{
+				"relation": "Heard",
+				"routes": []
+			},
+			{
 				"relation": "Item",
 				"routes": []
 			},
@@ -17375,6 +17407,20 @@
 				"kind": "live"
 			}
 		],
+		"AssignRetryWhy": [
+			{
+				"handle": "later",
+				"kind": "live"
+			},
+			{
+				"handle": "spent",
+				"kind": "live"
+			},
+			{
+				"handle": "transient",
+				"kind": "live"
+			}
+		],
 		"AssignRootKind": [
 			{
 				"handle": "Assignment",
@@ -17445,6 +17491,20 @@
 				"kind": "live"
 			}
 		],
+		"ChainRetryWhy": [
+			{
+				"handle": "later",
+				"kind": "live"
+			},
+			{
+				"handle": "spent",
+				"kind": "live"
+			},
+			{
+				"handle": "transient",
+				"kind": "live"
+			}
+		],
 		"ChainRootKind": [
 			{
 				"handle": "ChainRun",
@@ -17478,6 +17538,20 @@
 		"ClockPausable": [
 			{
 				"handle": "Hourly",
+				"kind": "live"
+			}
+		],
+		"ClockRetryWhy": [
+			{
+				"handle": "later",
+				"kind": "live"
+			},
+			{
+				"handle": "spent",
+				"kind": "live"
+			},
+			{
+				"handle": "transient",
 				"kind": "live"
 			}
 		],
@@ -17530,6 +17604,20 @@
 		"FanResource": [
 			{
 				"handle": "Pool",
+				"kind": "live"
+			}
+		],
+		"FanRetryWhy": [
+			{
+				"handle": "later",
+				"kind": "live"
+			},
+			{
+				"handle": "spent",
+				"kind": "live"
+			},
+			{
+				"handle": "transient",
 				"kind": "live"
 			}
 		],
@@ -17588,6 +17676,20 @@
 			},
 			{
 				"handle": "Throttled",
+				"kind": "live"
+			}
+		],
+		"RetryRetryWhy": [
+			{
+				"handle": "later",
+				"kind": "live"
+			},
+			{
+				"handle": "spent",
+				"kind": "live"
+			},
+			{
+				"handle": "transient",
 				"kind": "live"
 			}
 		],
@@ -17655,6 +17757,20 @@
 				"kind": "live"
 			}
 		],
+		"ReviewRetryWhy": [
+			{
+				"handle": "later",
+				"kind": "live"
+			},
+			{
+				"handle": "spent",
+				"kind": "live"
+			},
+			{
+				"handle": "transient",
+				"kind": "live"
+			}
+		],
 		"ReviewRootKind": [
 			{
 				"handle": "ReviewRun",
@@ -17696,6 +17812,20 @@
 			},
 			{
 				"handle": "SyncRun",
+				"kind": "live"
+			}
+		],
+		"SyncRetryWhy": [
+			{
+				"handle": "later",
+				"kind": "live"
+			},
+			{
+				"handle": "spent",
+				"kind": "live"
+			},
+			{
+				"handle": "transient",
 				"kind": "live"
 			}
 		],

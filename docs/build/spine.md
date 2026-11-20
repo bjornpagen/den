@@ -160,8 +160,12 @@ output into `select(PResult, outcome = done)`) certifies.
    (`algebra/later.ts`: its source refused the call for now and named when to call again, parsed at the boundary from
    its `Retry-After`, delay-seconds or an IMF-fixdate measured from the response's `Date`) waits: its retry spends
    nothing and is due that delay past the write's own reading, so a rate limit is the source's wait and never a rung
-   of the ladder (`later.test.ts`); a defect, an interruption or a body past its deadline spends the attempt. Past a lane's ceiling of attempts, the claim is made and `PExhausted`
-   recorded: `failed`.
+   of the ladder; a step kind and a finish state how many times they may wait on their source (`waits`, a count of 0
+   or more, always finite), each wait a retry whose why (`PRetryWhy`: `spent`, `transient`, `later`) says it was the
+   source's, and a `Later` once the step has waited that often is `failed`, recorded in `PExhausted` as a spent ladder
+   is, so a source that keeps refusing ends its step and its scope's finish reads it failed (`later.test.ts`); a
+   defect, an interruption or a body past its deadline spends the attempt. Past a lane's ceiling of attempts, the
+   claim is made and `PExhausted` recorded: `failed`.
 6. **Defect values.** Not stored: a defect only spends an attempt, and the ceiling turns endless defects into `failed`.
 7. **Which role runs a step's writes.** The flow's worker role (`<flow>_worker`) writes the app relations its steps and
    finishes declare, by `insert` (or `write`, which forfeits READ COMMITTED, if any step declares a put or a delete).
@@ -235,7 +239,7 @@ PostgreSQL (`pnpm test:network`, six files, each its own database):
   suite yet); a `den check` that holds the committed
   modules to a fresh print, as `grizzle check` holds served files.
 - **coordination** (`src/runtime/turn.ts`, `census.ts`, the fragment): width as a law (slots taken by key race), pause
-  and resume as facts, a lane's window in the census, stopping a scope, the ceilings on reclaims and waits, `Retry`
+  and resume as facts, a lane's window in the census, stopping a scope, the ceiling on reclaims, `Retry`
   facts for waits that must outlive a turn.
 - **relay and census** (`src/runtime/census.ts`, a new relay module): the relay over a served live read of due steps
   (grizzle's `watch`), the census as Vercel Cron, its reads as DEFERRABLE once they exist.

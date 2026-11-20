@@ -206,7 +206,11 @@ export type Ending =
 	| { readonly kind: "done"; readonly wake: Wake; readonly spawned: Spawned }
 	| { readonly kind: "admitted"; readonly wake: Wake; readonly spawned: Spawned }
 	| { readonly kind: "skipped"; readonly wake: Wake; readonly by: ScopeKey }
-	| { readonly kind: "failed"; readonly wake: Wake; readonly why: "error" | "law" | "attempts" }
+	| {
+			readonly kind: "failed"
+			readonly wake: Wake
+			readonly why: "error" | "law" | "attempts" | "waits"
+	  }
 	| { readonly kind: "retry"; readonly wake: Wake; readonly delay: Duration.Duration }
 	| {
 			readonly kind: "waiting"
@@ -285,9 +289,19 @@ export const spentBefore = (
 		claims,
 		(c) =>
 			c.attempt < next &&
-			!Arr.some(retries, (r) => r.attempt === c.attempt && !r.spent) &&
+			!Arr.some(retries, (r) => r.attempt === c.attempt && r.why !== "spent") &&
 			!Arr.some(fenced, (f) => f.attempt === c.attempt)
 	).length
+
+/** How many times a step has waited on its source: its retries a `Later` recorded. */
+export const waitedOn = (retries: ReadonlyArray<RetryRow>): number =>
+	Arr.filter(retries, (r) => r.why === "later").length
+
+/** What a step has used of its ladder and of its waits before the attempt a turn runs. */
+interface Used {
+	readonly attempts: number
+	readonly waits: number
+}
 
 /**
  * Whether a refusal is a key race this turn lost: the step's Result or Held already held by another attempt's commit,
@@ -353,6 +367,7 @@ export interface Runnable<I, Rows, O, E, W, R> {
 	readonly name: string
 	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
+	readonly waits: number
 	readonly body: (
 		input: I,
 		rows: Rows
@@ -375,6 +390,7 @@ export const runnerOf = <I, Rows, O, E, W, R>(
 	kind: runnable.name,
 	uses: runnable.uses,
 	retry: runnable.retry,
+	waits: runnable.waits,
 	finishes,
 	run: Effect.fn(`den.turn.${runnable.name}`)(function* (
 		turn: Turn,
@@ -574,7 +590,8 @@ type Unfinished =
  * An attempt that ended without a result, recorded at a reading of the database's instant: a spent one's retry due a
  * rung later, or the step failed once its ladder is spent; a wait recorded as a retry that spent nothing, due its delay
  * after the write (at once for a write still running, the source's own for a `Later`), whose next attempt it rings
- * then; a fenced one recorded as fenced, where its own login still can, so it spends
+ * then, or, for a `Later` once the step has waited on its source as often as its waits allow, the step failed as a
+ * spent ladder fails it; a fenced one recorded as fenced, where its own login still can, so it spends
  * nothing, no lapse of its claim counts it spent, and it waits on the deployment: it rings nothing, and the census rings
  * its step only once the commits' login is let in again, so no body runs while the deployment stays broken and the
  * step never fails of it.
@@ -583,7 +600,7 @@ const ended = <R>(
 	ledger: Ledger<R>,
 	runner: StepRunner<R>,
 	turn: Turn,
-	spentSoFar: number,
+	used: Used,
 	how: Unfinished,
 	wake: Wake
 ): Effect.Effect<Ending> =>
@@ -592,7 +609,7 @@ const ended = <R>(
 		const next = stepWake(ledger.flow, turn.step, turn.attempt + 1n)
 		switch (how.kind) {
 			case "spent": {
-				const total = spentSoFar + 1
+				const total = used.attempts + 1
 				if (!allows(runner.retry, total)) {
 					return yield* recorded(ledger, ledger.exhaust(turn), wake, {
 						kind: "failed",
@@ -608,13 +625,20 @@ const ended = <R>(
 						root: turn.root,
 						attempt: turn.attempt,
 						delay: delayOf(rung),
-						spent: true
+						why: "spent"
 					}),
 					wake,
 					{ kind: "retry", wake: next, delay: Duration.millis(rung) }
 				)
 			}
 			case "waited":
+				if (how.why === "later" && used.waits >= runner.waits) {
+					return yield* recorded(ledger, ledger.exhaust(turn), wake, {
+						kind: "failed",
+						wake,
+						why: "waits"
+					})
+				}
 				return yield* recorded(
 					ledger,
 					ledger.retry({
@@ -622,7 +646,7 @@ const ended = <R>(
 						root: turn.root,
 						attempt: turn.attempt,
 						delay: how.after,
-						spent: false
+						why: how.why
 					}),
 					wake,
 					{
@@ -660,7 +684,7 @@ const endingOf = <R>(
 	runner: StepRunner<R>,
 	turn: Turn,
 	ran: Ran,
-	spentSoFar: number,
+	used: Used,
 	wake: Wake
 ): Effect.Effect<Ending> => {
 	switch (ran.kind) {
@@ -669,18 +693,18 @@ const endingOf = <R>(
 		case "failed":
 			return Effect.succeed({ kind: "failed", wake, why: "error" })
 		case "waited":
-			return ended(ledger, runner, turn, spentSoFar, ran, wake)
+			return ended(ledger, runner, turn, used, ran, wake)
 		case "spent":
 			return Effect.andThen(
 				Effect.annotateCurrentSpan("den.spent", ran.detail),
-				ended(ledger, runner, turn, spentSoFar, { kind: "spent" }, wake)
+				ended(ledger, runner, turn, used, { kind: "spent" }, wake)
 			)
 		case "error": {
 			const error = ran.error
 			switch (error.kind) {
 				case "stale":
 				case "credentialRefused":
-					return ended(ledger, runner, turn, spentSoFar, { kind: "fenced", fault: error }, wake)
+					return ended(ledger, runner, turn, used, { kind: "fenced", fault: error }, wake)
 				case "refused":
 					return lostRace(ledger.flow, error)
 						? Effect.succeed({ kind: "lost", wake })
@@ -693,7 +717,7 @@ const endingOf = <R>(
 					return Effect.flatMap(Effect.option(ledger.heldOf(turn.step)), (held) =>
 						Option.contains(Option.flatten(held), turn.attempt)
 							? Effect.succeed<Ending>({ kind: "done", wake, spawned: { steps: [], finishes: [] } })
-							: ended(ledger, runner, turn, spentSoFar, { kind: "spent" }, wake)
+							: ended(ledger, runner, turn, used, { kind: "spent" }, wake)
 					)
 				case "unavailable":
 				case "transport":
@@ -706,7 +730,7 @@ const endingOf = <R>(
 				case "failed":
 					return Effect.andThen(
 						Effect.annotateCurrentSpan("den.spent", error.message),
-						ended(ledger, runner, turn, spentSoFar, { kind: "spent" }, wake)
+						ended(ledger, runner, turn, used, { kind: "spent" }, wake)
 					)
 			}
 		}
@@ -826,10 +850,13 @@ const serveStep = <R>(
 				return served({ kind: "waiting", wake, why: "unready", until: Option.none() })
 			}
 		}
-		const spentSoFar = spentBefore(claims, retries, fenced, next)
+		const used: Used = {
+			attempts: spentBefore(claims, retries, fenced, next),
+			waits: waitedOn(retries)
+		}
 		const deadline = instantOf(Number(ends) - leaseMarginMillis)
 		const budget = delayOf(Number(ends) - Number(at))
-		const exhausted = !allows(runner.retry, spentSoFar)
+		const exhausted = !allows(runner.retry, used.attempts)
 		const lapsed = Arr.map(
 			Option.toArray(lapsedAttempt(claims, retries, fenced, at)),
 			(attempt) => ({
@@ -861,7 +888,7 @@ const serveStep = <R>(
 			}
 		}
 		const ran = yield* runner.run(turn, at, ledger.now)
-		const ending = yield* endingOf(ledger, runner, turn, ran, spentSoFar, wake)
+		const ending = yield* endingOf(ledger, runner, turn, ran, used, wake)
 		return { ending, onward: yield* settledOn(ledger, runner, scope, ending, claimed.seats) }
 	})
 

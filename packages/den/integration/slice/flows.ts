@@ -33,6 +33,7 @@ import {
 	Concluded,
 	Copied,
 	Cursor,
+	Heard,
 	Item,
 	Missed,
 	Passage,
@@ -100,6 +101,7 @@ const Page = step(
 		},
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		due: atSpawn,
 		writes: writes({ insert: [Item], put: [], delete: [] })
 	},
@@ -152,6 +154,7 @@ const moveCursor = Object.freeze({
 	error: Schema.Never,
 	uses: [],
 	retry: attempts(3),
+	waits: 0,
 	writes: writes({ insert: [Cursor], put: [], delete: [] }),
 	body: (
 		run: typeof ChainInput.Type,
@@ -238,6 +241,7 @@ const Square = step(
 		reads: {},
 		uses: [pool],
 		retry: attempts(3),
+		waits: 0,
 		due: atSpawn,
 		writes: writesNothing
 	},
@@ -260,6 +264,7 @@ const Batch = scope("Batch", {
 		error: Schema.Never,
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		writes: writes({ insert: [Tally], put: [], delete: [] }),
 		body: (b, endings) =>
 			Effect.succeed({
@@ -298,6 +303,7 @@ const FanRun = root("FanRun", {
 		error: Schema.Never,
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		writes: writes({ insert: [Settled], put: [], delete: [] }),
 		body: (run) =>
 			Effect.succeed({
@@ -322,6 +328,7 @@ const Copy = step(
 		reads: {},
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		due: atSpawn,
 		writes: writes({ insert: [Copied], put: [], delete: [] })
 	},
@@ -351,6 +358,7 @@ const SyncRun = root("SyncRun", {
 		error: Schema.Never,
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
 	}
@@ -366,6 +374,7 @@ const Build = step(
 		reads: {},
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		due: atSpawn,
 		writes: writes({ insert: [Built], put: [], delete: [] })
 	},
@@ -391,6 +400,7 @@ const Gold = root("Gold", {
 		error: Schema.Never,
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
 	}
@@ -436,6 +446,7 @@ const Steadfast = step(
 		reads: {},
 		uses: [],
 		retry: never,
+		waits: 0,
 		due: atSpawn,
 		writes: writesNothing
 	},
@@ -452,6 +463,7 @@ const Brittle = step(
 		reads: {},
 		uses: [],
 		retry: attempts(2),
+		waits: 0,
 		due: atSpawn,
 		writes: writesNothing
 	},
@@ -473,15 +485,23 @@ const Ladders = root("Ladders", {
 		error: Schema.Never,
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
 	}
 })
 
 /**
+ * How many times the polite step may wait on its source before its next refusal fails it: the suite's own count, below
+ * the most refusals the suite plants, so a source that keeps refusing past it is drawn beside one that answers within it.
+ */
+export const politeWaits = 2
+
+/**
  * A step whose source refuses its calls for now while its key's planted refusals last, each response naming when to
  * call again, and then answers: its body parses the delay the source named at the boundary and fails with it, `Later`.
- * Its ladder allows one attempt, so a refusal that spent an attempt would fail it.
+ * Its ladder allows one attempt, so a refusal that spent an attempt would fail it, and it waits on its source at most
+ * `politeWaits` times, so the refusal after them fails it.
  */
 const Polite = step(
 	"Polite",
@@ -492,6 +512,7 @@ const Polite = step(
 		reads: {},
 		uses: [],
 		retry: attempts(1),
+		waits: politeWaits,
 		due: atSpawn,
 		writes: writesNothing
 	},
@@ -514,7 +535,7 @@ const Polite = step(
 		)
 )
 
-/** A run of the polite step, whose finish reads how it ended. */
+/** A run of the polite step, whose finish records what it heard: its source's answer, or a refusal past its waits. */
 const Throttled = root("Throttled", {
 	trigger: operator,
 	input: Attempted,
@@ -529,8 +550,22 @@ const Throttled = root("Throttled", {
 		error: Schema.Never,
 		uses: [],
 		retry: attempts(3),
-		writes: writesNothing,
-		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
+		waits: 0,
+		writes: writes({ insert: [Heard], put: [], delete: [] }),
+		body: (input, endings) =>
+			Effect.succeed({
+				output: {},
+				writes: {
+					insert: {
+						Heard: Arr.map(endings.Polite, (ending) => ({
+							key: input.key,
+							answered: ending._tag === "Done"
+						}))
+					},
+					put: {},
+					delete: {}
+				}
+			})
 	}
 })
 
@@ -629,6 +664,7 @@ const Decide = step(
 		},
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		due: atSpawn,
 		writes: writes({ insert: [Assigned], put: [], delete: [] })
 	},
@@ -672,6 +708,7 @@ const Assignment = root("Assignment", {
 		error: Schema.Never,
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		writes: writes({ insert: [Concluded], put: [], delete: [] }),
 		body: (
 			probe: typeof Probe.Type,
@@ -755,6 +792,7 @@ const Analyze = step(
 		reads: {},
 		uses: [anthropic],
 		retry: attempts(3),
+		waits: 0,
 		due: atSpawn,
 		writes: writesNothing
 	},
@@ -783,6 +821,7 @@ const Questions = scope("Questions", {
 		error: Schema.Never,
 		uses: [anthropic],
 		retry: attempts(3),
+		waits: 0,
 		writes: writesNothing,
 		body: (_group, endings) =>
 			Effect.succeed({
@@ -807,6 +846,7 @@ const Gather = step(
 		reads: {},
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		due: atSpawn,
 		writes: writesNothing
 	},
@@ -837,6 +877,7 @@ const Save = step(
 		reads: {},
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		due: atSpawn,
 		writes: writes({ insert: [Reviewed], put: [], delete: [] })
 	},
@@ -878,6 +919,7 @@ const ReviewRun = root("ReviewRun", {
 		error: Schema.Never,
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		writes: writes({ insert: [Summary], put: [], delete: [] }),
 		body: (review, endings) =>
 			Effect.succeed({
@@ -920,6 +962,7 @@ const Chime = step(
 		reads: {},
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		due: atSpawn,
 		writes: writes({ insert: [Chimed], put: [], delete: [] })
 	},
@@ -948,6 +991,7 @@ const Hourly = root("Hourly", {
 		error: Schema.Never,
 		uses: [],
 		retry: attempts(3),
+		waits: 0,
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
 	}

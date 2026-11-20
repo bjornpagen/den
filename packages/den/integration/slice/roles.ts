@@ -14,6 +14,7 @@ import {
 	Concluded,
 	Copied,
 	Cursor,
+	Heard,
 	Item,
 	Missed,
 	Order,
@@ -28,7 +29,7 @@ import {
 
 /**
  * The app's writer role: it inserts the app's items, cursors, orders, tallies, settled batches, copies, builds,
- * passages, missed questions, seen passages, assignments and their conclusions, reviews' saved groups and summaries, the clock's chimes, and reads the weights its pages read and the passages and seen passages its
+ * passages, missed questions, seen passages, assignments and their conclusions, reviews' saved groups and summaries, what throttled calls heard, the clock's chimes, and reads the weights its pages read and the passages and seen passages its
  * decisions read. Every flow names it as the role its steps write under, so den adds its commits to
  * it: it holds each flow's graph whole, which serves den's commits, and inserts into what each flow's `Writer` lists.
  */
@@ -51,6 +52,7 @@ export const Loader = role(
 		Concluded,
 		Reviewed,
 		Summary,
+		Heard,
 		Chimed,
 		...chainGraph.relations,
 		...fanGraph.relations,
@@ -77,6 +79,7 @@ export const Loader = role(
 			"Concluded",
 			"Reviewed",
 			"Summary",
+			"Heard",
 			"Chimed",
 			...chainWriter,
 			...fanWriter,

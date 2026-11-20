@@ -157,7 +157,7 @@ export const admitsLoweringASeatCountExactlyWhenNoLiveHoldSitsAtOrAboveTheNewCou
 										root: requested.scope,
 										attempt: second.attempt,
 										delay: atOnce,
-										spent: false
+										why: "transient"
 									})
 								}
 							}

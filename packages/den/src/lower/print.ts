@@ -733,8 +733,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	return r.match(${r("Claim")}, { step, attempt, until }).where(r.not(${r("Result")}, { step })).find({ step, attempt, until })
 })`,
 		`retries: query(${n.den}).rule((r) => {
-	const { step, attempt, at, spent } = v(${r("Retry")}, "retry")
-	return r.match(${r("Retry")}, { step, attempt, at, spent }).where(r.not(${r("Result")}, { step })).find({ step, attempt, at, spent })
+	const { step, attempt, at, why } = v(${r("Retry")}, "retry")
+	return r.match(${r("Retry")}, { step, attempt, at, why }).where(r.not(${r("Result")}, { step })).find({ step, attempt, at, why })
 })`,
 		`fenced: query(${n.den}).rule((r) => {
 	const { step, attempt } = v(${r("Fenced")}, "fenced")
@@ -770,7 +770,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 					step: r.param("step", ${r("Retry")}.fields.step),
 					attempt: r.param("attempt", ${r("Retry")}.fields.attempt),
 					at: Compute.cast(Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(r.param("delay", DenDelay))), DenInstant),
-					spent: r.param("spent", ${r("Retry")}.fields.spent),
+					why: r.param("why", ${r("Retry")}.fields.why),
 					root: r.param("root", ${r("Retry")}.fields.root)
 				})
 			)
@@ -838,8 +838,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		[
 			n.program("RetriesOf"),
 			`query(${n.graph}).rule((r) => {
-	const { step, attempt, at, spent } = v(${r("Retry")}, "retry")
-	return r.match(${r("Retry")}, { step, attempt, at, spent }).where(r.eq(step, ${stepParam})).find({ step, attempt, at, spent })
+	const { step, attempt, at, why } = v(${r("Retry")}, "retry")
+	return r.match(${r("Retry")}, { step, attempt, at, why }).where(r.eq(step, ${stepParam})).find({ step, attempt, at, why })
 })`
 		],
 		[
@@ -1618,6 +1618,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			`\t\tname: ${q(j.finish.name)},`,
 			`\t\tuses: ${kind}.finish.uses,`,
 			`\t\tretry: ${kind}.finish.retry,`,
+			`\t\twaits: ${kind}.finish.waits,`,
 			`\t\tbody: (read: { readonly input: Parameters<(typeof ${kind})["start"]>[0]; readonly endings: Parameters<(typeof ${kind})["finish"]["body"]>[1]${spawns ? "; readonly parent: ScopeKey" : ""} }) => ${kind}.finish.body(read.input, read.endings)`,
 			"\t},",
 			"\t{",
@@ -1948,7 +1949,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		resources
 			? `\t\tclaim: (row) => Effect.flatMap(settled(h.den.${n.program("Claim")}.once({ params: { budget: row.budget }, facts: { insert: { ${r("Claim")}: [{ step: row.step, root: row.root, holds: holdsOf(row.seats) }], ${r("Ended")}: row.lapsed } } })), (outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)),`
 			: `\t\tclaim: (row) => Effect.flatMap(settled(h.den.${n.program("Claim")}.once({ params: { budget: row.budget }, facts: { insert: { ${r("Claim")}: [{ step: row.step, root: row.root }], ${r("Ended")}: row.lapsed } } })), (outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)),`,
-		`\t\tretry: (row) => settled(h.den.${n.program("Retry")}.once({ params: { step: row.step, attempt: row.attempt, delay: row.delay, spent: row.spent, root: row.root }, facts: { insert: { ${r("Ended")}: [{ step: row.step, root: row.root, attempt: row.attempt }] } } })),`,
+		`\t\tretry: (row) => settled(h.den.${n.program("Retry")}.once({ params: { step: row.step, attempt: row.attempt, delay: row.delay, why: row.why, root: row.root }, facts: { insert: { ${r("Ended")}: [{ step: row.step, root: row.root, attempt: row.attempt }] } } })),`,
 		`\t\tfence: (row) => settled(h.den.${n.program("Fence")}.once({ params: {}, facts: { insert: { ${r("Ended")}: [{ step: row.step, root: row.root, attempt: row.attempt }], ${r("Fenced")}: [row] } } })),`,
 		`\t\trefuse: ({ step, root, attempt }, law) => settled(h.den.${n.program("Refuse")}.once({ params: {}, facts: { insert: { ${r("Result")}: [{ step, root, outcome: "failed" }], ${r("Failed")}: [{ step, root }], ${r("Held")}: [{ step, root, attempt }], ${r("Refusal")}: [{ step, root, law }] } } })),`,
 		`\t\tskip: (scope, by) => settled(h.den.${n.program("Skip")}.once({ params: {}, facts: { insert: { ${r("Skipped")}: [{ scope, by, root: scope }] } } })),`,

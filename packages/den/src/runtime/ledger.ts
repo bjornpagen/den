@@ -103,14 +103,18 @@ export interface ClaimOf {
 }
 
 /**
- * An attempt that ended without a result: the step, the attempt, when the next is due, and whether it spent the attempt
- * (`false` for a wait: a write still running at the turn's deadline, run again on each transient refusal).
+ * Why an attempt ended without a result: `spent`, it spent its attempt on the step's ladder; `transient`, a wait for a
+ * write still running at the turn's deadline, run again on each transient refusal; `later`, a wait on its source,
+ * which named when to call again. The two waits spend nothing; a step's `later` waits are counted against its waits.
  */
+export type RetryWhy = "spent" | "transient" | "later"
+
+/** An attempt that ended without a result: the step, the attempt, when the next is due, and why it ended so. */
 export interface RetryRow {
 	readonly step: StepKey
 	readonly attempt: bigint
 	readonly at: Instant
-	readonly spent: boolean
+	readonly why: RetryWhy
 }
 
 /** A retry as a turn records it: when the next attempt is due, its delay after the database's reading in the write. */
@@ -118,7 +122,7 @@ export interface RetryOf {
 	readonly step: StepKey
 	readonly attempt: bigint
 	readonly delay: Delay
-	readonly spent: boolean
+	readonly why: RetryWhy
 }
 
 /**
@@ -157,6 +161,8 @@ export interface StepRunner<R> {
 	readonly kind: string
 	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
+	/** How many times it may wait on its source before its next `Later` ends it failed. */
+	readonly waits: number
 	/** The scope it finishes, for a finish; none for a step kind. */
 	readonly finishes: Option.Option<string>
 	/**

@@ -111,7 +111,7 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 						})
 						/** Ends a session's attempt, which gives its seats back. */
 						const end = (step: StepKey, mine: Holding) =>
-							ledger.retry({ step, root, attempt: mine.attempt, delay: atOnce, spent: false })
+							ledger.retry({ step, root, attempt: mine.attempt, delay: atOnce, why: "transient" })
 						/** Claims a session's square with a seat of the Pool, picked again from a fresh read when another takes it. */
 						const claimSeat = (
 							step: StepKey,

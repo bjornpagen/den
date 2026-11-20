@@ -16,6 +16,7 @@ import {
 	RetryKind,
 	RetryRootKind,
 	RetryOutcome,
+	RetryRetryWhy,
 	RetryPausable,
 	RetryScope,
 	RetryRoot,
@@ -90,7 +91,15 @@ export const RetryDen = role(
 export const RetryCoordinator = role(
 	App,
 	"retry_coordinator",
-	{ RetryKind, RetryRootKind, RetryOutcome, RetryPausable, RetryPaused, RetryResumed },
+	{
+		RetryKind,
+		RetryRootKind,
+		RetryOutcome,
+		RetryRetryWhy,
+		RetryPausable,
+		RetryPaused,
+		RetryResumed
+	},
 	{ insert: ["RetryPaused", "RetryResumed"] }
 )
 
@@ -159,7 +168,7 @@ export const retryDenPrograms = Object.freeze({
 							),
 							DenInstant
 						),
-						spent: r.param("spent", RetryRetry.fields.spent),
+						why: r.param("why", RetryRetry.fields.why),
 						root: r.param("root", RetryRetry.fields.root)
 					})
 				)
@@ -277,11 +286,11 @@ export const retryDenPrograms = Object.freeze({
 			.find({ step, attempt, until })
 	}),
 	retryRetriesOf: query(retryGraph).rule((r) => {
-		const { step, attempt, at, spent } = v(RetryRetry, "retry")
+		const { step, attempt, at, why } = v(RetryRetry, "retry")
 		return r
-			.match(RetryRetry, { step, attempt, at, spent })
+			.match(RetryRetry, { step, attempt, at, why })
 			.where(r.eq(step, r.param("step", RetryStep.fields.step)))
-			.find({ step, attempt, at, spent })
+			.find({ step, attempt, at, why })
 	}),
 	retryFencedOf: query(retryGraph).rule((r) => {
 		const { step, attempt } = v(RetryFenced, "fenced")
@@ -323,11 +332,11 @@ export const retryDenPrograms = Object.freeze({
 					.find({ step, attempt, until })
 			}),
 			retries: query(RetryDen).rule((r) => {
-				const { step, attempt, at, spent } = v(RetryRetry, "retry")
+				const { step, attempt, at, why } = v(RetryRetry, "retry")
 				return r
-					.match(RetryRetry, { step, attempt, at, spent })
+					.match(RetryRetry, { step, attempt, at, why })
 					.where(r.not(RetryResult, { step }))
-					.find({ step, attempt, at, spent })
+					.find({ step, attempt, at, why })
 			}),
 			fenced: query(RetryDen).rule((r) => {
 				const { step, attempt } = v(RetryFenced, "fenced")
@@ -537,11 +546,14 @@ export const retryCommitPrograms = Object.freeze({
 		.insert(RetryDone, [])
 		.insert(RetryHeld, [])
 		.insert(RetryLaddersFinishOutput, []),
-	retryCommitThrottledFinish: ChangeSet.empty(retryGraph)
-		.insert(RetryResult, [])
-		.insert(RetryDone, [])
-		.insert(RetryHeld, [])
-		.insert(RetryThrottledFinishOutput, [])
+	retryCommitThrottledFinish: ChangeSet.union(
+		ChangeSet.empty(retryGraph)
+			.insert(RetryResult, [])
+			.insert(RetryDone, [])
+			.insert(RetryHeld, [])
+			.insert(RetryThrottledFinishOutput, []),
+		ChangeSet.empty(Loader).insert(App.relations.Heard, [])
+	)
 })
 
 export const retryCommits = workload(Loader, retryCommitPrograms)

@@ -438,6 +438,7 @@ export const retryLedger = (h: RetryHandles) => {
 				name: "LaddersFinish",
 				uses: retry.kinds[2].finish.uses,
 				retry: retry.kinds[2].finish.retry,
+				waits: retry.kinds[2].finish.waits,
 				body: (read: {
 					readonly input: Parameters<(typeof retry.kinds)[2]["start"]>[0]
 					readonly endings: Parameters<(typeof retry.kinds)[2]["finish"]["body"]>[1]
@@ -520,6 +521,7 @@ export const retryLedger = (h: RetryHandles) => {
 				name: "ThrottledFinish",
 				uses: retry.kinds[4].finish.uses,
 				retry: retry.kinds[4].finish.retry,
+				waits: retry.kinds[4].finish.waits,
 				body: (read: {
 					readonly input: Parameters<(typeof retry.kinds)[4]["start"]>[0]
 					readonly endings: Parameters<(typeof retry.kinds)[4]["finish"]["body"]>[1]
@@ -571,7 +573,8 @@ export const retryLedger = (h: RetryHandles) => {
 										RetryHeld: [
 											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
 										],
-										RetryThrottledFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
+										RetryThrottledFinishOutput: [{ step: done.turn.step, root: done.turn.root }],
+										Heard: done.writes.insert.Heard
 									}
 								}
 							})
@@ -768,7 +771,7 @@ export const retryLedger = (h: RetryHandles) => {
 						step: row.step,
 						attempt: row.attempt,
 						delay: row.delay,
-						spent: row.spent,
+						why: row.why,
 						root: row.root
 					},
 					facts: {

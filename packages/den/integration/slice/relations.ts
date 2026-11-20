@@ -6,7 +6,7 @@ import { closed, closedId, natural, pg, relation, str } from "@bjornpagen/grizzl
  * pages hold, each feed's weight (which a page reads before its body runs), each feed's cursor as insert-only
  * position facts (the latest is the cursor), the orders the app writes beside a root it requests in its own
  * transaction, each batch's tally, the batches whose whole run finished, the relations a sync copied, the builds the
- * Gold step made, each review's saved groups and its summary, the hours the clock chimed, an auditor's notes on den's results, and the assignment
+ * Gold step made, each review's saved groups and its summary, what each throttled call heard, the hours the clock chimed, an auditor's notes on den's results, and the assignment
  * engine's shape in miniature: passages and their
  * embeddings, the questions a learner missed and theirs, the passages a learner has seen, the passage each assignment gave a learner, and each assignment's
  * conclusion.
@@ -58,6 +58,9 @@ export const Reviewed = relation(
 export const Summary = relation("Summary", { review: Name, groups: natural, total: pg.bigint }, [
 	"review"
 ])
+
+/** What a throttled call's run heard from its source, by its key: an answer, or a refusal past its step's waits. */
+export const Heard = relation("Heard", { key: Name, answered: pg.boolean }, ["key"])
 
 /** An hour the clock chimed, by the instant its schedule named. */
 export const Chimed = relation("Chimed", { hour: pg.bigint }, ["hour"])

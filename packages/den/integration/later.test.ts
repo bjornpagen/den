@@ -1,9 +1,10 @@
 import { instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName, type Wake } from "@bjornpagen/den/transport"
+import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
-import { array, boolean, type Gen, int } from "@bjornpagen/testing/gen"
+import { array, boolean, type Gen, int, oneOf } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import {
 	Array as Arr,
@@ -16,24 +17,34 @@ import {
 	String as Str
 } from "effect"
 import { TestClock } from "effect/testing"
+import { politeWaits } from "#integration/slice/flows.ts"
 import { ringOnAndDrain } from "#integration/support/run.ts"
-import { openLedgers, Planted, sliceCase } from "#integration/support/slice.ts"
+import { AppServed, openLedgers, Planted, rows, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
 
 /**
  * A source's named delay on PostgreSQL 19: the Polite step's source refuses its calls for now, each response naming
  * when to call again in its `Retry-After`, as delay-seconds or as an IMF-fixdate beside its `Date`, and then answers.
  * Each refusal's turn is served by hand: its body parses the delay at the boundary and fails with it, `Later`; the turn
- * ends waiting and records its attempt's retry with nothing spent, due that delay past the database's reading in the
- * write that records it, and rings its next attempt after the delay; the suite's clock is moved by the delay before
- * the next attempt is served. Polite's ladder allows one attempt, so a refusal that spent one would fail it.
+ * ends waiting and records its attempt's retry as a wait on its source, nothing spent, due that delay past the
+ * database's reading in the write that records it, and rings its next attempt after the delay; the suite's clock is
+ * moved by the delay before the next attempt is served. Polite's ladder allows one attempt, so a refusal that spent one
+ * would fail it, and it may wait on its source `politeWaits` times: a source that refuses past them fails the step at
+ * its next refusal, recorded as exhausted, and its root's finish reads it failed.
  *
- * Oracle (specification): each refused attempt ends waiting on its source, its retry unspent and due the stated delay
- * after a reading between the turn's start and end, its next attempt rung no later than that; the step then ends done
- * on its last claim, one more than its refusals, and its root's finish runs.
+ * Oracle (specification): each refusal within the step's waits ends waiting on its source, its retry a wait on its
+ * source due the stated delay after a reading between the turn's start and end, its next attempt rung no later than
+ * that; the step then ends done on its last claim, one more than its refusals, or, where the source refuses past its
+ * waits, failed and exhausted at the refusal after them, on its waits plus one claims; and its root's finish records
+ * what it read, answered or not.
  */
 
-type Feature = "no refusal" | "delay-seconds" | "an HTTP-date" | "several refusals"
+type Feature =
+	| "no refusal"
+	| "delay-seconds"
+	| "an HTTP-date"
+	| "several refusals"
+	| "refused past its waits"
 
 /** A refusal's response: the delay it names in seconds, and whether it names it as a date. */
 interface Refusal {
@@ -41,10 +52,17 @@ interface Refusal {
 	readonly dated: boolean
 }
 
-const refusals: Gen<ReadonlyArray<Refusal>> = array(
-	(source) => ({ seconds: source.draw(int(1, 900)), dated: source.draw(boolean) }),
-	{ min: 0, max: 3 }
-)
+const drawnRefusal: Gen<Refusal> = (source) => ({
+	seconds: source.draw(int(1, 900)),
+	dated: source.draw(boolean)
+})
+
+/** No refusal, refusals within the step's waits, or refusals past them, each an arm of its own. */
+const refusals: Gen<ReadonlyArray<Refusal>> = oneOf([
+	() => [],
+	array(drawnRefusal, { min: 1, max: politeWaits }),
+	array(drawnRefusal, { min: politeWaits + 1, max: politeWaits + 2 })
+])
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const
 const MONTHS = [
@@ -85,133 +103,172 @@ const responseOf = (refusal: Refusal): Headers =>
 	)
 
 /**
- * Waits each delay its source names, spending no attempt, and answers once the source does.
+ * Waits each delay its source names, spending no attempt, and answers once the source does, or fails once the source
+ * refuses past the step's waits.
  *
- * Budget: provisional, the retry ladders' (8 independent cases and 8 steered), over up to three refusals.
+ * Budget: provisional, the retry ladders' (8 independent cases and 8 steered), over up to two refusals past the step's
+ * waits.
  */
-export const aSourcesNamedDelayIsAWaitThatSpendsNothing = property.explore(refusals, {
-	needs: { slice: sliceCase },
-	situations: [
-		"no refusal",
-		"delay-seconds",
-		"an HTTP-date",
-		"several refusals"
-	] satisfies ReadonlyArray<Reached<Feature>>,
-	check:
-		({ slice }, c: Case<Feature>) =>
-		(planned) =>
-			Effect.flatMap(slice, (services) =>
-				Effect.provideContext(
-					Effect.gen(function* () {
-						if (Arr.isReadonlyArrayEmpty(planned)) {
-							c.note("no refusal")
-						}
-						if (planned.length > 1) {
-							c.note("several refusals")
-						}
-						const { retry, ledgers } = yield* openLedgers
-						const ledger = retry.ledger
-						const flow = FlowName.make("Retry")
-						const { refusals: planted } = yield* Planted
-						const key = "polite"
-						const responses: ReadonlyArray<Headers> = Arr.map(planned, responseOf)
-						yield* Ref.update(planted, HashMap.set(key, responses))
-						const requested = yield* retry.request.Throttled(key, { key })
-						const endsFrom = Effect.map(ledger.now, (at) =>
-							instantOf(Number(at) + longestLeaseMillis)
-						)
-						const opening = yield* endsFrom
-						const admitted = yield* serve(
-							ledgers,
-							{ _tag: "Admit", flow, scope: requested.scope },
-							opening
-						)
-						const spawned = admitted.ending.kind === "admitted" ? admitted.ending.spawned.steps : []
-						assert.equal(spawned.length, 1)
-						const step: StepKey = Option.getOrThrow(Arr.head(spawned)).step
-						const wakeOf = (attempt: number): Wake => ({
-							_tag: "Step",
-							flow,
-							step,
-							attempt: AttemptNumber.make(attempt)
-						})
-						const travelled = yield* Ref.make(0)
-						/** The database's own reading: the ledger's, less what the suite's clock has travelled. */
-						const reading = Effect.zipWith(
-							ledger.now,
-							Ref.get(travelled),
-							(at, travel) => Number(at) - travel
-						)
-						yield* Effect.forEach(planned, (refusal, attempt) =>
-							Effect.gen(function* () {
-								c.note(refusal.dated ? "an HTTP-date" : "delay-seconds")
-								const millis = refusal.seconds * 1000
-								const before = yield* reading
-								const ends = yield* endsFrom
-								const waited = yield* serve(ledgers, wakeOf(attempt), ends)
-								const after = yield* reading
-								assert.equal(
-									waited.ending.kind === "waiting" ? waited.ending.why : waited.ending.kind,
-									"later"
-								)
-								assert.deepEqual(
-									Arr.map(waited.onward, (o) => o.wake),
-									[wakeOf(attempt + 1)]
-								)
-								assert.ok(
-									Arr.every(waited.onward, (o) => Duration.toMillis(o.delay) <= millis),
-									"the next attempt is rung no later than the source's delay"
-								)
-								const retries = yield* ledger.retriesOf(step)
-								const mine = Arr.filter(retries, (r) => r.attempt === BigInt(attempt))
-								assert.deepEqual(
-									Arr.map(mine, (r) => r.spent),
-									[false]
-								)
-								assert.ok(
-									Arr.every(
-										mine,
-										(r) => Number(r.at) >= before + millis && Number(r.at) <= after + millis
-									),
-									"the retry is due the source's delay after the write's reading"
-								)
-								yield* TestClock.adjust(Duration.millis(millis))
-								yield* Ref.update(travelled, (t) => t + millis)
+export const aSourcesNamedDelayIsAWaitThatSpendsNothingUpToItsStepsWaits = property.explore(
+	refusals,
+	{
+		needs: { slice: sliceCase },
+		situations: [
+			"no refusal",
+			"delay-seconds",
+			"an HTTP-date",
+			"several refusals",
+			"refused past its waits"
+		] satisfies ReadonlyArray<Reached<Feature>>,
+		check:
+			({ slice }, c: Case<Feature>) =>
+			(planned) =>
+				Effect.flatMap(slice, (services) =>
+					Effect.provideContext(
+						Effect.gen(function* () {
+							if (Arr.isReadonlyArrayEmpty(planned)) {
+								c.note("no refusal")
+							}
+							if (planned.length > 1) {
+								c.note("several refusals")
+							}
+							const { retry, ledgers } = yield* openLedgers
+							const ledger = retry.ledger
+							const flow = FlowName.make("Retry")
+							const { refusals: planted } = yield* Planted
+							const key = "polite"
+							const responses: ReadonlyArray<Headers> = Arr.map(planned, responseOf)
+							yield* Ref.update(planted, HashMap.set(key, responses))
+							const requested = yield* retry.request.Throttled(key, { key })
+							const endsFrom = Effect.map(ledger.now, (at) =>
+								instantOf(Number(at) + longestLeaseMillis)
+							)
+							const opening = yield* endsFrom
+							const admitted = yield* serve(
+								ledgers,
+								{ _tag: "Admit", flow, scope: requested.scope },
+								opening
+							)
+							const spawned =
+								admitted.ending.kind === "admitted" ? admitted.ending.spawned.steps : []
+							assert.equal(spawned.length, 1)
+							const step: StepKey = Option.getOrThrow(Arr.head(spawned)).step
+							const wakeOf = (attempt: number): Wake => ({
+								_tag: "Step",
+								flow,
+								step,
+								attempt: AttemptNumber.make(attempt)
 							})
-						)
-						const ends = yield* endsFrom
-						const answered = yield* serve(ledgers, wakeOf(planned.length), ends)
-						assert.equal(answered.ending.kind, "done")
-						yield* ringOnAndDrain(ledgers, answered)
-						const claims = yield* ledger.claimsOf(step)
-						assert.equal(claims.length, planned.length + 1)
-						const outcome = yield* ledger.resultOf(step)
-						assert.deepEqual(outcome, Option.some("done" as const))
-						const finished = yield* ledger.finished(requested.scope)
-						assert.equal(finished, true)
-					}),
-					services
-				)
-			),
-	oracle: {
-		kind: "specification",
-		name: "each refusal a wait due the source's delay with nothing spent, then done on its refusals plus one claims"
-	},
-	budget: { runs: 8, steered: 8 },
-	kept: [],
-	kills: [
-		{
-			file: "packages/den/src/runtime/turn.ts",
-			original:
-				'\t\t\t\treturn { kind: "waited", why: "later", after: failure.after } satisfies Ran',
-			replacement: '\t\t\t\treturn { kind: "spent", detail: "later" } satisfies Ran',
-			why: "A source's named delay spends the attempt on den's ladder: the one-attempt step is exhausted by its first refusal, and its wait is den's rung, not the source's."
+							const travelled = yield* Ref.make(0)
+							/** The database's own reading: the ledger's, less what the suite's clock has travelled. */
+							const reading = Effect.zipWith(
+								ledger.now,
+								Ref.get(travelled),
+								(at, travel) => Number(at) - travel
+							)
+							const waited = Arr.take(planned, politeWaits)
+							yield* Effect.forEach(waited, (refusal, attempt) =>
+								Effect.gen(function* () {
+									c.note(refusal.dated ? "an HTTP-date" : "delay-seconds")
+									const millis = refusal.seconds * 1000
+									const before = yield* reading
+									const ends = yield* endsFrom
+									const turn = yield* serve(ledgers, wakeOf(attempt), ends)
+									const after = yield* reading
+									assert.equal(
+										turn.ending.kind === "waiting" ? turn.ending.why : turn.ending.kind,
+										"later"
+									)
+									assert.deepEqual(
+										Arr.map(turn.onward, (o) => o.wake),
+										[wakeOf(attempt + 1)]
+									)
+									assert.ok(
+										Arr.every(turn.onward, (o) => Duration.toMillis(o.delay) <= millis),
+										"the next attempt is rung no later than the source's delay"
+									)
+									const retries = yield* ledger.retriesOf(step)
+									const mine = Arr.filter(retries, (r) => r.attempt === BigInt(attempt))
+									assert.deepEqual(
+										Arr.map(mine, (r) => r.why),
+										["later"]
+									)
+									assert.ok(
+										Arr.every(
+											mine,
+											(r) => Number(r.at) >= before + millis && Number(r.at) <= after + millis
+										),
+										"the retry is due the source's delay after the write's reading"
+									)
+									yield* TestClock.adjust(Duration.millis(millis))
+									yield* Ref.update(travelled, (t) => t + millis)
+								})
+							)
+							const past = planned.length > politeWaits
+							if (past) {
+								c.note("refused past its waits")
+							}
+							const ends = yield* endsFrom
+							const last = yield* serve(ledgers, wakeOf(waited.length), ends)
+							assert.deepEqual(
+								last.ending.kind === "failed"
+									? `failed by its ${last.ending.why}`
+									: last.ending.kind,
+								past ? "failed by its waits" : "done"
+							)
+							yield* ringOnAndDrain(ledgers, last)
+							const claims = yield* ledger.claimsOf(step)
+							assert.equal(claims.length, waited.length + 1)
+							const outcome = yield* ledger.resultOf(step)
+							assert.deepEqual(outcome, Option.some(past ? ("failed" as const) : ("done" as const)))
+							const app = yield* Db.open(AppServed.roles.auditor, {})
+							const exhausted = yield* rows(
+								app.workload.retryExhausted.once({ params: {}, facts: {} })
+							)
+							assert.equal(
+								Arr.some(exhausted, (row) => row.step === step),
+								past
+							)
+							const finished = yield* ledger.finished(requested.scope)
+							assert.equal(finished, true)
+							const heard = yield* rows(app.workload.heard.once({ params: {}, facts: {} }))
+							assert.deepEqual(
+								Arr.map(
+									Arr.filter(heard, (row) => row.key === key),
+									(row) => row.answered
+								),
+								[!past]
+							)
+						}),
+						services
+					)
+				),
+		oracle: {
+			kind: "specification",
+			name: "each refusal within the step's waits a wait due the source's delay with nothing spent, then done on its refusals plus one claims, or failed at the refusal past its waits"
 		},
-		{
-			file: "packages/den/src/runtime/turn.ts",
-			original: "\t\t\t\t\t\tdelay: how.after,",
-			replacement: "\t\t\t\t\t\tdelay: atOnce,",
-			why: "A wait records its retry due at once, whatever delay its source named: the next attempt is due before the source asked to be called again."
-		}
-	]
-})
+		budget: { runs: 8, steered: 8 },
+		kept: [],
+		kills: [
+			{
+				file: "packages/den/src/runtime/turn.ts",
+				original:
+					'\t\t\t\treturn { kind: "waited", why: "later", after: failure.after } satisfies Ran',
+				replacement: '\t\t\t\treturn { kind: "spent", detail: "later" } satisfies Ran',
+				why: "A source's named delay spends the attempt on den's ladder: the one-attempt step is exhausted by its first refusal, and its wait is den's rung, not the source's."
+			},
+			{
+				file: "packages/den/src/runtime/turn.ts",
+				original: "\t\t\t\t\t\tdelay: how.after,",
+				replacement: "\t\t\t\t\t\tdelay: atOnce,",
+				why: "A wait records its retry due at once, whatever delay its source named: the next attempt is due before the source asked to be called again."
+			},
+			{
+				file: "packages/den/src/runtime/turn.ts",
+				original: '\t\t\t\tif (how.why === "later" && used.waits >= runner.waits) {',
+				replacement: "\t\t\t\tif (false) {",
+				why: "A source that keeps refusing holds its step waiting with no ceiling: the refusal past the step's waits waits again, the step never fails, and its finish never reads it failed."
+			}
+		]
+	}
+)
