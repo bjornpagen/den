@@ -15,7 +15,7 @@
 		}
 	},
 	"scripts": {
-		"prepare": "effect-tsgo patch",
+		"prepare": "effect-tsgo patch && lefthook install",
 		"check": "turbo run typecheck workspace-gate oxlint format dead-code architecture dedupe load --filter=./packages/* --filter=// --continue=dependencies-successful",
 		"check:full": "turbo run typecheck --filter=./packages/* --filter=// --continue=dependencies-successful --force -- --incremental false; typecheck=$?; turbo run workspace-gate oxlint format dead-code architecture dedupe load --filter=./packages/* --filter=// --continue=dependencies-successful --force && exit $typecheck",
 		"types": "turbo run typecheck --filter=./packages/* --filter=//",
@@ -30,6 +30,7 @@
 		"test": "turbo run test --filter=./packages/*",
 		"test:network": "pnpm --filter @bjornpagen/den test:network",
 		"fuzz": "node vendor/toolchain/packages/testing/scripts/fuzz.ts",
+		"land": "sh vendor/toolchain/packages/devtools/bin/land.sh",
 		"pg": "pnpm --filter @bjornpagen/den pg"
 	},
 	"devDependencies": {

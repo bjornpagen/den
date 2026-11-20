@@ -89,5 +89,10 @@ Inside a package, import through its own `#` map with the real extension; across
 ## Working here
 
 - Commit only when asked, by explicit paths. Never run `git stash` in any form.
+- Land on `main` with `pnpm land` (the toolchain's `vendor/toolchain/packages/devtools/bin/land.sh`, bound in
+  `toolchain.config.ts`'s `land`), from a clean tree on `main`: it waits for the machine's push lock
+  (`~/.cache/toolchain-land/den.lock`), and holding it rebases the clone onto origin's `main`, aborting on a conflict
+  with nothing pushed, and pushes, so the push gate runs once, on the commit that lands. The push gate refuses any
+  other push to `main`.
 - The remote is github.com/bjornpagen/den. Nothing is published to npm.
 - `../edullm` and `../grizzle` are read, never changed, from here.
