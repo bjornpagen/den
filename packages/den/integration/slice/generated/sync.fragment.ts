@@ -103,11 +103,10 @@ export const SyncRefusal = relation("SyncRefusal", { step: DenStep, law: Text, r
 	"step",
 	"root"
 ])
-export const SyncExhausted = relation(
-	"SyncExhausted",
-	{ step: DenStep, attempts: natural, root: DenScope },
-	["step", "root"]
-)
+export const SyncExhausted = relation("SyncExhausted", { step: DenStep, root: DenScope }, [
+	"step",
+	"root"
+])
 export const SyncCopyInput = relation(
 	"SyncCopyInput",
 	{ step: DenStep, relation: Text, run: pg.bigint, root: DenScope },

@@ -603,7 +603,7 @@ export const retryLedger = (h: RetryHandles) => {
 							RetryResult: [{ step, root, outcome: "failed" }],
 							RetryFailed: [{ step, root }],
 							RetryHeld: [{ step, root, attempt }],
-							RetryExhausted: [{ step, root, attempts: attempt }]
+							RetryExhausted: [{ step, root }]
 						}
 					}
 				})

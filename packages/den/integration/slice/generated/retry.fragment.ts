@@ -100,11 +100,10 @@ export const RetryRefusal = relation("RetryRefusal", { step: DenStep, law: Text,
 	"step",
 	"root"
 ])
-export const RetryExhausted = relation(
-	"RetryExhausted",
-	{ step: DenStep, attempts: natural, root: DenScope },
-	["step", "root"]
-)
+export const RetryExhausted = relation("RetryExhausted", { step: DenStep, root: DenScope }, [
+	"step",
+	"root"
+])
 export const RetrySteadfastInput = relation(
 	"RetrySteadfastInput",
 	{ step: DenStep, key: Text, root: DenScope },

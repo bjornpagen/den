@@ -62,13 +62,14 @@ kind, its trigger's key and its instant), `PWithin` (a child scope: its parent a
 scope, the instant its first attempt is due), `PStartStep`, `PStartScope` (a join's start edges, keyed by scope and
 ordinal; `PWithin` and `PStartScope` only where the flow declares a child scope), `PFinish`
 (scope → its finish step, the finish's key race), `PClaim` (step, its stamped attempt, until, and its holds' count), `PHold` (a claim's seats, its ordered family), `PEnded` (an attempt's end), `PResult` (one per step,
-done or failed), `PHeld` (the attempt whose commit holds the result), `PRefusal` (the law's id), `PExhausted`; per
-step kind `PKInput` and `PKOutput` (and `PKError` for a typed error), per join `PJInput`, per finish `PJFinishError`,
-per Option field a relation of its own, per declared read `PKNRead` (step, ordinal, the fields it delivers, and a
-nearest read's `distance`), and per edge kind `PE` (from, ordinal, to). Every law is a key, a native containment or a
-row check: attempts run gap-free from 1 (`AttemptFromOne`, and a `pred` containment over attempts ≥ 2); a finite
-number's column is finite; an edge's sides are contained in its kinds' input relations; an output in its kind's input
-and in its done result; a read's record in its step's result.
+done or failed), `PHeld` (the attempt whose commit holds the result), `PRefusal` (the law's id), `PExhausted` (a step
+failed by its ladder's end, at the attempt `PHeld` names); per step kind `PKInput` and `PKOutput` (and `PKError` for a
+typed error), per join `PJInput`, per finish `PJFinishError`, per Option field a relation of its own, per declared read
+`PKNRead` (step, ordinal, the fields it delivers, and a nearest read's `distance`), and per edge kind `PE` (from,
+ordinal, to). Every law is a key, a native containment or a row check: a claim's attempt is its place among its step's
+claims, stamped gap-free from 0, and each past 0 follows its predecessor's end (a `pred` containment over attempts ≥ 1
+into `PEnded`); a finite number's column is finite; an edge's sides are contained in its kinds' input relations; an
+output in its kind's input and in its done result; a read's record in its step's result.
 
 ## What `grizzle generate` certified
 

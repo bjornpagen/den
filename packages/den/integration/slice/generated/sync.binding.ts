@@ -763,7 +763,7 @@ export const syncLedger = (h: SyncHandles) => {
 							SyncResult: [{ step, root, outcome: "failed" }],
 							SyncFailed: [{ step, root }],
 							SyncHeld: [{ step, root, attempt }],
-							SyncExhausted: [{ step, root, attempts: attempt }]
+							SyncExhausted: [{ step, root }]
 						}
 					}
 				})

@@ -629,10 +629,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 	})
 	const Exhausted = relation({
 		name: name("Exhausted"),
-		fields: [
-			{ name: "step", type: stepKey },
-			{ name: "attempts", type: natural }
-		],
+		fields: [{ name: "step", type: stepKey }],
 		key: ["step"]
 	})
 	const done: Selection = { kind: "handle", field: "outcome", handle: "done" }

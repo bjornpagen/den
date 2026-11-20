@@ -159,8 +159,8 @@ CREATE VIEW "slice_seats__assign_den"."assign_ended" ("step", "attempt", "root")
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."assign_ended" AS "r1";
 
-CREATE VIEW "slice_seats__assign_den"."assign_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__assign_den"."assign_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."assign_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__assign_den"."assign_failed" ("step", "root") AS
@@ -291,8 +291,8 @@ CREATE VIEW "slice_seats__assign_retirer"."assign_ended" ("step", "attempt", "ro
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."assign_ended" AS "r1";
 
-CREATE VIEW "slice_seats__assign_retirer"."assign_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__assign_retirer"."assign_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."assign_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__assign_retirer"."assign_failed" ("step", "root") AS
@@ -523,8 +523,8 @@ CREATE VIEW "slice_seats__auditor"."retry_claim" ("step", "attempt", "until", "r
 SELECT "r1"."step", "r1"."attempt", "r1"."until", "r1"."root"
 FROM "slice"."retry_claim" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."retry_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__auditor"."retry_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."retry_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__auditor"."retry_result" ("step", "outcome", "outcome_name", "root") AS
@@ -595,8 +595,8 @@ CREATE VIEW "slice_seats__chain_den"."chain_ended" ("step", "attempt", "root") A
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."chain_ended" AS "r1";
 
-CREATE VIEW "slice_seats__chain_den"."chain_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__chain_den"."chain_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."chain_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__chain_den"."chain_failed" ("step", "root") AS
@@ -703,8 +703,8 @@ CREATE VIEW "slice_seats__chain_retirer"."chain_ended" ("step", "attempt", "root
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."chain_ended" AS "r1";
 
-CREATE VIEW "slice_seats__chain_retirer"."chain_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__chain_retirer"."chain_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."chain_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__chain_retirer"."chain_failed" ("step", "root") AS
@@ -815,8 +815,8 @@ CREATE VIEW "slice_seats__fan_den"."fan_ended" ("step", "attempt", "root") AS
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."fan_ended" AS "r1";
 
-CREATE VIEW "slice_seats__fan_den"."fan_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__fan_den"."fan_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."fan_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__fan_den"."fan_failed" ("step", "root") AS
@@ -923,8 +923,8 @@ CREATE VIEW "slice_seats__fan_retirer"."fan_ended" ("step", "attempt", "root") A
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."fan_ended" AS "r1";
 
-CREATE VIEW "slice_seats__fan_retirer"."fan_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__fan_retirer"."fan_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."fan_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__fan_retirer"."fan_failed" ("step", "root") AS
@@ -1071,8 +1071,8 @@ CREATE VIEW "slice_seats__loader"."assign_ended" ("step", "attempt", "root") AS
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."assign_ended" AS "r1";
 
-CREATE VIEW "slice_seats__loader"."assign_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__loader"."assign_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."assign_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."assign_failed" ("step", "root") AS
@@ -1151,8 +1151,8 @@ CREATE VIEW "slice_seats__loader"."chain_ended" ("step", "attempt", "root") AS
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."chain_ended" AS "r1";
 
-CREATE VIEW "slice_seats__loader"."chain_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__loader"."chain_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."chain_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."chain_failed" ("step", "root") AS
@@ -1263,8 +1263,8 @@ CREATE VIEW "slice_seats__loader"."fan_ended" ("step", "attempt", "root") AS
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."fan_ended" AS "r1";
 
-CREATE VIEW "slice_seats__loader"."fan_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__loader"."fan_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."fan_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."fan_failed" ("step", "root") AS
@@ -1379,8 +1379,8 @@ CREATE VIEW "slice_seats__loader"."retry_ended" ("step", "attempt", "root") AS
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."retry_ended" AS "r1";
 
-CREATE VIEW "slice_seats__loader"."retry_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__loader"."retry_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."retry_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."retry_failed" ("step", "root") AS
@@ -1487,8 +1487,8 @@ CREATE VIEW "slice_seats__loader"."sync_exclusive_key" ("scope", "key", "id", "r
 SELECT "r1"."scope", "r1"."key", "r1"."id", "r1"."root"
 FROM "slice"."sync_exclusive_key" AS "r1";
 
-CREATE VIEW "slice_seats__loader"."sync_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__loader"."sync_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."sync_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__loader"."sync_failed" ("step", "root") AS
@@ -1587,8 +1587,8 @@ CREATE VIEW "slice_seats__retry_den"."retry_ended" ("step", "attempt", "root") A
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."retry_ended" AS "r1";
 
-CREATE VIEW "slice_seats__retry_den"."retry_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__retry_den"."retry_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."retry_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__retry_den"."retry_failed" ("step", "root") AS
@@ -1683,8 +1683,8 @@ CREATE VIEW "slice_seats__retry_retirer"."retry_ended" ("step", "attempt", "root
 SELECT "r1"."step", "r1"."attempt", "r1"."root"
 FROM "slice"."retry_ended" AS "r1";
 
-CREATE VIEW "slice_seats__retry_retirer"."retry_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__retry_retirer"."retry_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."retry_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__retry_retirer"."retry_failed" ("step", "root") AS
@@ -1811,8 +1811,8 @@ CREATE VIEW "slice_seats__sync_den"."sync_exclusive_key" ("scope", "key", "id", 
 SELECT "r1"."scope", "r1"."key", "r1"."id", "r1"."root"
 FROM "slice"."sync_exclusive_key" AS "r1";
 
-CREATE VIEW "slice_seats__sync_den"."sync_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__sync_den"."sync_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."sync_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__sync_den"."sync_failed" ("step", "root") AS
@@ -1919,8 +1919,8 @@ CREATE VIEW "slice_seats__sync_retirer"."sync_exclusive_key" ("scope", "key", "i
 SELECT "r1"."scope", "r1"."key", "r1"."id", "r1"."root"
 FROM "slice"."sync_exclusive_key" AS "r1";
 
-CREATE VIEW "slice_seats__sync_retirer"."sync_exhausted" ("step", "attempts", "root") AS
-SELECT "r1"."step", "r1"."attempts", "r1"."root"
+CREATE VIEW "slice_seats__sync_retirer"."sync_exhausted" ("step", "root") AS
+SELECT "r1"."step", "r1"."root"
 FROM "slice"."sync_exhausted" AS "r1";
 
 CREATE VIEW "slice_seats__sync_retirer"."sync_failed" ("step", "root") AS

@@ -156,14 +156,14 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 									const claimed = yield* retry.ledger.claimsOf(step)
 									const retried = yield* retry.ledger.retriesOf(step)
 									const fenced = yield* retry.ledger.fencedOf(step)
-									const fence = BigInt(planned.deaths + 1)
+									const fence = BigInt(planned.deaths)
 									assert.deepEqual(
 										Arr.map(Arr.sort(claimed, byAttempt), (cl) => cl.attempt),
-										Array.from({ length: planned.deaths + 2 }, (_, i) => BigInt(i + 1))
+										Array.from({ length: planned.deaths + 2 }, (_, i) => BigInt(i))
 									)
 									assert.deepEqual(
 										Arr.map(Arr.sort(retried, byAttempt), (r) => [r.attempt, r.spent] as const),
-										Array.from({ length: planned.deaths }, (_, i) => [BigInt(i + 1), true] as const)
+										Array.from({ length: planned.deaths }, (_, i) => [BigInt(i), true] as const)
 									)
 									assert.deepEqual(
 										Arr.map(fenced, (f) => f.attempt),

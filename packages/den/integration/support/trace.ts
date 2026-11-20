@@ -19,8 +19,8 @@ import { Array as Arr, HashMap, Option } from "effect"
  * Compared: each root admitted under its key; each child scope opened, its kind and its owner; each step spawned, its
  * kind and input (a finish by its identity alone, since the model spawns it once its children end, with their endings
  * as its input, and the engine at its scope's admission); each step done with its output, or failed; each scope
- * finished and how. Not compared, each decided by one side alone: claims (the engine counts attempts from 1 under a
- * holder of its own, the model from 0 under its turn), retries and their due instants, seats taken and given back,
+ * finished and how. Not compared, each decided by one side alone: claims (the engine's stamped by the database under
+ * its leases, the model's under its own turns), retries and their due instants, seats taken and given back,
  * reads (the engine records rows of the app's relation, the model the rows of its own app store), app writes, and every
  * instant.
  */

@@ -663,7 +663,7 @@ export const fanLedger = (h: FanHandles) => {
 							FanResult: [{ step, root, outcome: "failed" }],
 							FanFailed: [{ step, root }],
 							FanHeld: [{ step, root, attempt }],
-							FanExhausted: [{ step, root, attempts: attempt }]
+							FanExhausted: [{ step, root }]
 						}
 					}
 				})

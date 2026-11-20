@@ -111,11 +111,10 @@ export const FanRefusal = relation("FanRefusal", { step: DenStep, law: Text, roo
 	"step",
 	"root"
 ])
-export const FanExhausted = relation(
-	"FanExhausted",
-	{ step: DenStep, attempts: natural, root: DenScope },
-	["step", "root"]
-)
+export const FanExhausted = relation("FanExhausted", { step: DenStep, root: DenScope }, [
+	"step",
+	"root"
+])
 export const FanSquareInput = relation(
 	"FanSquareInput",
 	{ step: DenStep, batch: Text, n: pg.bigint, root: DenScope },

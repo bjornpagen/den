@@ -21,7 +21,7 @@ import { longestLeaseMillis, reclaimableAfterMillis } from "#runtime/turn.ts"
  * its next attempt once its lease lapses, a reclaim counted on its ladder.
  *
  * Oracle (specification): after the ticks every page has its result and the finish is done; no tick while the lease
- * stands rings that step; the reclaimed step's result is held by attempt 2.
+ * stands rings that step; the reclaimed step's result is held by attempt 1, the one after the dead holder's 0.
  */
 
 type Feature = "an admission lost" | "a page's wake lost" | "a dead holder" | "several pages"
@@ -129,7 +129,7 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 							assert.equal(Arr.filter(pages, (p) => p.scope === requested.scope).length, loss.pages)
 							if (loss.deadHolder && Option.isSome(first)) {
 								const attempt = yield* chain.ledger.heldOf(first.value.step)
-								assert.deepEqual(attempt, Option.some(2n))
+								assert.deepEqual(attempt, Option.some(1n))
 							}
 						}),
 						services
@@ -137,7 +137,7 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 				),
 		oracle: {
 			kind: "specification",
-			name: "every page and the finish done after the ticks, a standing lease never rung, the dead holder's step held by attempt 2"
+			name: "every page and the finish done after the ticks, a standing lease never rung, the dead holder's step held by attempt 1"
 		},
 		budget: { runs: 8, steered: 8 },
 		kept: [],

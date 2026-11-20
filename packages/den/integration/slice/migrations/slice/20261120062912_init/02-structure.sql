@@ -145,7 +145,6 @@ CREATE TABLE "slice"."assign_ended" (
 
 CREATE TABLE "slice"."assign_exhausted" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "attempts" "slice"."__domain_gfw43vigph" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__assign_exhausted_pk_utz6lwqgv6" PRIMARY KEY ("step", "root")
 );
@@ -308,7 +307,6 @@ CREATE TABLE "slice"."chain_ended" (
 
 CREATE TABLE "slice"."chain_exhausted" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "attempts" "slice"."__domain_gfw43vigph" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__chain_exhausted_pk_nc4gvildnw" PRIMARY KEY ("step", "root")
 );
@@ -531,7 +529,6 @@ CREATE TABLE "slice"."fan_ended" (
 
 CREATE TABLE "slice"."fan_exhausted" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "attempts" "slice"."__domain_gfw43vigph" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__fan_exhausted_pk_4t3sxjskvd" PRIMARY KEY ("step", "root")
 );
@@ -760,7 +757,6 @@ CREATE TABLE "slice"."retry_ended" (
 
 CREATE TABLE "slice"."retry_exhausted" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "attempts" "slice"."__domain_gfw43vigph" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__retry_exhausted_pk_v56c23krid" PRIMARY KEY ("step", "root")
 );
@@ -975,7 +971,6 @@ CREATE TABLE "slice"."sync_exclusive_key" (
 
 CREATE TABLE "slice"."sync_exhausted" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "attempts" "slice"."__domain_gfw43vigph" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__sync_exhausted_pk_ek6zxvo6it" PRIMARY KEY ("step", "root")
 );

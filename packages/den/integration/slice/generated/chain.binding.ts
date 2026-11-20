@@ -818,7 +818,7 @@ export const chainLedger = (h: ChainHandles) => {
 							ChainResult: [{ step, root, outcome: "failed" }],
 							ChainFailed: [{ step, root }],
 							ChainHeld: [{ step, root, attempt }],
-							ChainExhausted: [{ step, root, attempts: attempt }]
+							ChainExhausted: [{ step, root }]
 						}
 					}
 				})

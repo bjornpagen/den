@@ -776,7 +776,7 @@ export const assignLedger = (h: AssignHandles) => {
 							AssignResult: [{ step, root, outcome: "failed" }],
 							AssignFailed: [{ step, root }],
 							AssignHeld: [{ step, root, attempt }],
-							AssignExhausted: [{ step, root, attempts: attempt }]
+							AssignExhausted: [{ step, root }]
 						}
 					}
 				})

@@ -260,8 +260,8 @@ const retryClaims = query(Auditor).rule((r) => {
 })
 
 const retryExhausted = query(Auditor).rule((r) => {
-	const { step, attempts } = v(RetryExhausted, "exhausted")
-	return r.match(RetryExhausted, { step, attempts }).find({ step, attempts })
+	const { step } = v(RetryExhausted, "exhausted")
+	return r.match(RetryExhausted, { step }).find({ step })
 })
 
 /** Every assignment step's result, with its scope. */

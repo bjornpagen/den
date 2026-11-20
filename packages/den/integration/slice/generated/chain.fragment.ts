@@ -107,11 +107,10 @@ export const ChainRefusal = relation("ChainRefusal", { step: DenStep, law: Text,
 	"step",
 	"root"
 ])
-export const ChainExhausted = relation(
-	"ChainExhausted",
-	{ step: DenStep, attempts: natural, root: DenScope },
-	["step", "root"]
-)
+export const ChainExhausted = relation("ChainExhausted", { step: DenStep, root: DenScope }, [
+	"step",
+	"root"
+])
 export const ChainPageInput = relation(
 	"ChainPageInput",
 	{ step: DenStep, feed: closedId(ChainPageInputFeed), seq: Seq, pages: pg.bigint, root: DenScope },

@@ -797,7 +797,7 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 									{ min: 0, max: 5 }
 								)
 							),
-							next: source.draw(int(1, 6))
+							next: source.draw(int(0, 5))
 						})),
 						literal: Formatter.format,
 						coverage: required<LadderFeature>(
@@ -831,7 +831,7 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 							const step = yield* startedStep(ladder, 0)
 							const claims: ReadonlyArray<ClaimRow> = Arr.map(l.claims, (_, i): ClaimRow => ({
 								step,
-								attempt: BigInt(i + 1),
+								attempt: BigInt(i),
 								until: instantOf(0)
 							}))
 							const retries: ReadonlyArray<RetryRow> = Arr.flatMap(l.claims, (cl, i) =>
@@ -841,7 +841,7 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 											? Option.none()
 											: Option.some({
 													step,
-													attempt: BigInt(i + 1),
+													attempt: BigInt(i),
 													at: instantOf(0),
 													spent: ended === "spent"
 												})
@@ -849,10 +849,10 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 								)
 							)
 							const fenced: ReadonlyArray<FencedRow> = Arr.flatMap(l.claims, (cl, i) =>
-								Option.contains(cl.ended, "fenced") ? [{ step, attempt: BigInt(i + 1) }] : []
+								Option.contains(cl.ended, "fenced") ? [{ step, attempt: BigInt(i) }] : []
 							)
 							const expected = Arr.filter(
-								Arr.map(l.claims, (cl, i) => ({ cl, attempt: i + 1 })),
+								Arr.map(l.claims, (cl, i) => ({ cl, attempt: i })),
 								({ cl, attempt }) =>
 									attempt < l.next &&
 									!Option.contains(cl.ended, "waited") &&

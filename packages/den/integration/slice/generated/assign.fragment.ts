@@ -119,11 +119,10 @@ export const AssignRefusal = relation(
 	{ step: DenStep, law: Text, root: DenScope },
 	["step", "root"]
 )
-export const AssignExhausted = relation(
-	"AssignExhausted",
-	{ step: DenStep, attempts: natural, root: DenScope },
-	["step", "root"]
-)
+export const AssignExhausted = relation("AssignExhausted", { step: DenStep, root: DenScope }, [
+	"step",
+	"root"
+])
 export const AssignDecideInput = relation(
 	"AssignDecideInput",
 	{

@@ -103,10 +103,7 @@ export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.
 							)
 							assert.equal(claimsOf("Brittle"), 2)
 							assert.ok(
-								Arr.some(
-									exhausted,
-									(e) => Arr.some(of("Brittle"), (r) => r.step === e.step) && e.attempts === 2n
-								)
+								Arr.some(exhausted, (e) => Arr.some(of("Brittle"), (r) => r.step === e.step))
 							)
 						}
 						assert.deepEqual(
