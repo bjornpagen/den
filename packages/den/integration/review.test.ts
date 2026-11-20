@@ -77,9 +77,12 @@ export const aScopesFinishSpawnsTheNextStageInItsParent = property.explore(runs,
 						const root = requested.scope
 						const reviewed = yield* rows(app.workload.reviewed.once({ params: {}, facts: {} }))
 						assert.deepEqual(
-							Arr.map(
-								Arr.filter(reviewed, (r) => r.review === key),
-								(r) => [r.group, r.count, r.total] as const
+							Arr.sort(
+								Arr.map(
+									Arr.filter(reviewed, (r) => r.review === key),
+									(r) => [r.group, r.count, r.total] as const
+								),
+								Order.mapInput(Order.BigInt, (row: readonly [bigint, bigint, bigint]) => row[0])
 							),
 							Arr.map(run.sizes, (size, group) => {
 								const n = BigInt(size)

@@ -460,12 +460,11 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 		kept: [],
 		kills: [
 			{
-				file: "packages/den/src/transport.ts",
+				file: "packages/den/src/runtime/turn.ts",
 				original:
-					"\t\t\t\t\t\tRef.update(held, (list) => [\n\t\t\t\t\t\t\t...list,\n\t\t\t\t\t\t\t...Arr.map(rings, (ring) => ({\n\t\t\t\t\t\t\t\twake: ring.wake,\n\t\t\t\t\t\t\t\tat: millis + Duration.toMillis(ring.delay)\n\t\t\t\t\t\t\t}))\n\t\t\t\t\t\t])",
-				replacement:
-					"\t\t\t\t\t\tRef.update(held, (list) => [...Arr.map(rings, (ring) => ({\n\t\t\t\t\t\t\t\twake: ring.wake,\n\t\t\t\t\t\t\t\tat: millis + Duration.toMillis(ring.delay)\n\t\t\t\t\t\t\t}))])",
-				why: "Operator mutant (element) at packages/den/src/transport.ts:137 in <module>: `[ ...list, ...Arr.map(rings, (ring) => ({ wake: ring.wake, at: millis + Duration` becomes `[...Arr.map(rings, (ring) => ({ wake: ring.wake, at: millis + Duration.toMillis(`; the property fails (lane CATCH, den 9cffaba)."
+					"\t\t\t\tArr.isReadonlyArrayEmpty(spawned.steps) && Arr.isReadonlyArrayEmpty(spawned.finishes)\n",
+				replacement: "\t\t\t\tfalse\n",
+				why: "A step's end never rings its scope's finish, though it was the scope's last open child: a batch's and a feed's finish never run, where the model's do."
 			}
 		]
 	}

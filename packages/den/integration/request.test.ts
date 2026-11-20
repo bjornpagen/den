@@ -98,8 +98,15 @@ export const aCommittedRequestRingsItsRootsAdmission = property.explore(runs, {
 							"the write rings the current period's census beside its admissions"
 						)
 						yield* drain(ledgers)
-						const finishes = yield* rows(app.workload.chainFinishes.once({ params: {}, facts: {} }))
-						assert.ok(Arr.some(finishes, (f) => f.scope === request.scope && f.outcome === "done"))
+						const cursors = yield* rows(app.workload.cursors.once({ params: {}, facts: {} }))
+						assert.deepEqual(
+							Arr.map(
+								Arr.filter(cursors, (cursor) => cursor.feed === run.feed),
+								(cursor) => cursor.position
+							),
+							[BigInt(run.pages - 1)],
+							"the chain ran to its finish, which moved the feed's cursor: an app row, which the census's retirement of the finished graph keeps"
+						)
 					}),
 					services
 				)
