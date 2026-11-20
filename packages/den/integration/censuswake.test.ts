@@ -17,8 +17,8 @@ import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/sl
  * chain runs to its finish; and it rings the next period's census, held until that period starts. The suite's clock is
  * moved to it and the transport drained again, periods on end: each census rings the next, a chain.
  *
- * Oracle (specification): the chain finishes from the census's ring alone; after each census exactly one census wake is
- * held, the next period's, at its start; and each period's census runs once.
+ * Oracle (specification): the chain finishes from the census's ring alone, its feed's cursor at its last page; after
+ * each census exactly one census wake is held, the next period's, at its start; and each period's census runs once.
  */
 
 type Feature = "news" | "sport" | "a census chain"
@@ -54,7 +54,7 @@ export const aCensusWakeTicksEveryFlowAndRingsTheNextPeriods = property.explore(
 						const app = yield* Db.open(AppServed.roles.auditor, {})
 						const { held } = yield* InProcess
 						const transport = yield* Transport
-						const requested = yield* chain.request.ChainRun(`lost-${run.feed}`, {
+						yield* chain.request.ChainRun(`lost-${run.feed}`, {
 							feed: run.feed,
 							pages: BigInt(run.pages)
 						})
@@ -82,10 +82,14 @@ export const aCensusWakeTicksEveryFlowAndRingsTheNextPeriods = property.explore(
 							censuses,
 							Arr.map(Array.from({ length: run.periods }), () => 1)
 						)
-						const finishes = yield* rows(app.workload.chainFinishes.once({ params: {}, facts: {} }))
-						assert.ok(
-							Arr.some(finishes, (f) => f.scope === requested.scope && f.outcome === "done"),
-							"the chain finished from the census's ring"
+						const cursors = yield* rows(app.workload.cursors.once({ params: {}, facts: {} }))
+						assert.deepEqual(
+							Arr.map(
+								Arr.filter(cursors, (cursor) => cursor.feed === run.feed),
+								(cursor) => cursor.position
+							),
+							[BigInt(run.pages - 1)],
+							"the chain ran to its finish from the census's ring, which moved the feed's cursor: an app row, which a later census's retirement of the finished graph keeps"
 						)
 					}),
 					services

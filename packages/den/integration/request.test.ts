@@ -12,21 +12,24 @@ import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/sl
 /**
  * The write that requests a root rings its admission once it has committed (runtime/request.ts): the app's own
  * transaction records an order and requests a chain root, run through `afterCommit` on the in-process transport, and
- * the transport is drained with no census and no relay. A write the database refuses, an order whose key an earlier
- * order (written with a request of its own, rung by no one) already holds, commits nothing and rings nothing.
+ * the transport is drained with no relay. A write the database refuses, an order whose key an earlier order of another
+ * feed (written with a request of its own, rung by no one) already holds, commits nothing and rings nothing.
  *
  * Oracle (specification): a committed write rings exactly its root's admission, caused by its request, and the
  * current period's census beside it, and the chain runs to its finish, the order's row beside it; a refused write
  * leaves no ring, no root and no graph.
  */
 
-type Feature = "news" | "sport" | "a committed request" | "a refused request"
+type Feature = "a committed request" | "a refused request"
 
 interface Run {
 	readonly feed: "news" | "sport"
 	readonly pages: number
 	readonly refused: boolean
 }
+
+/** The feed beside `feed`: an order of the same key and another feed is no repeat of it, which its key refuses. */
+const otherFeed = (feed: "news" | "sport"): "news" | "sport" => (feed === "news" ? "sport" : "news")
 
 const runs: Gen<Run> = (source) => ({
 	feed: source.draw(element(["news", "sport"])),
@@ -38,11 +41,12 @@ const runs: Gen<Run> = (source) => ({
  * Starts the root an app's committed write requested from the ring that write sent, and rings nothing for a refused
  * one.
  *
- * Budget: provisional, the relay's (4 independent cases and 4 steered), which rings the same request from the log.
+ * Budget: provisional, the retry ladders' (8 independent cases and 8 steered), over both feeds and a committed and a
+ * refused write.
  */
 export const aCommittedRequestRingsItsRootsAdmission = property.explore(runs, {
 	needs: { slice: sliceCase },
-	situations: ["news", "sport", "a committed request", "a refused request"] satisfies ReadonlyArray<
+	situations: ["a committed request", "a refused request"] satisfies ReadonlyArray<
 		Reached<Feature>
 	>,
 	check:
@@ -51,7 +55,6 @@ export const aCommittedRequestRingsItsRootsAdmission = property.explore(runs, {
 			Effect.flatMap(slice, (services) =>
 				Effect.provideContext(
 					Effect.gen(function* () {
-						c.note(run.feed)
 						const { chain, ledgers, loader } = yield* openLedgers
 						const app = yield* Db.open(AppServed.roles.auditor, {})
 						const { held } = yield* InProcess
@@ -69,7 +72,12 @@ export const aCommittedRequestRingsItsRootsAdmission = property.explore(runs, {
 							afterCommit(
 								loader.workload.order.once({
 									params: request.params,
-									facts: { insert: { Order: [{ order, feed: run.feed }], ...request.facts } }
+									facts: {
+										insert: {
+											Order: [{ order, feed: run.refused ? otherFeed(run.feed) : run.feed }],
+											...request.facts
+										}
+									}
 								}),
 								() => [request]
 							)
@@ -115,7 +123,7 @@ export const aCommittedRequestRingsItsRootsAdmission = property.explore(runs, {
 		kind: "specification",
 		name: "a committed request's one admission ring, which alone runs its chain to the finish; none for a refused one"
 	},
-	budget: { runs: 4, steered: 4 },
+	budget: { runs: 8, steered: 8 },
 	kept: [],
 	kills: [
 		{
