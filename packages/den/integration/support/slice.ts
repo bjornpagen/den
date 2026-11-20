@@ -34,12 +34,13 @@ import pg from "pg"
 import { Faults } from "#integration/slice/flows.ts"
 import { assignLedger } from "#integration/slice/generated/assign.binding.ts"
 import { chainLedger } from "#integration/slice/generated/chain.binding.ts"
+import { clockLedger } from "#integration/slice/generated/clock.binding.ts"
 import { fanLedger } from "#integration/slice/generated/fan.binding.ts"
 import { retryLedger } from "#integration/slice/generated/retry.binding.ts"
 import { reviewLedger } from "#integration/slice/generated/review.binding.ts"
 import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
 import type { AppLogin, Worker } from "#integration/slice/logins.ts"
-import initMigration from "#integration/slice/migrations/slice/20261120074422_init/meta.json" with { type: "json" }
+import initMigration from "#integration/slice/migrations/slice/20261120080824_init/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -69,7 +70,7 @@ const grizzleBin = `${import.meta.dirname}/../../node_modules/.bin/grizzle`
  * record lacks, or lacks one it holds (committedFolders).
  */
 const committed = Object.freeze({
-	"20261120074422_init": initMigration
+	"20261120080824_init": initMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
@@ -616,10 +617,11 @@ const byFlow = (all: ReadonlyArray<Ledger<Faults>>): Ledgers<Faults> =>
 	new Map(Arr.map(all, (l) => [l.flow, l] as const))
 
 /**
- * The slice's six flows' ledgers over Dbs opened on the worker's den and coordinator roles and the app's loader, each
+ * The slice's flows' ledgers over Dbs opened on the worker's den and coordinator roles and the app's loader, each
  * reading the database's instant moved on by the time the suite's clock travels from here; and `misconfigured`, the
  * same six committing through the misconfigured loader, whose every commit meets `credentialRefused` while their own
- * roles' calls are let in.
+ * roles' calls are let in. The clock's ledger serves its wakes beside them but stands apart from `all`, the flows a
+ * tick of every flow ticks, since each of its ticks requests a root of its own; its suite ticks it alone.
  */
 export const openLedgers = Effect.gen(function* () {
 	const opened = yield* Clock.currentTimeMillis
@@ -656,6 +658,11 @@ export const openLedgers = Effect.gen(function* () {
 			den: (yield* Db.open(WorkerServed.roles.review_den, {})).workload,
 			coordinator: (yield* Db.open(WorkerServed.roles.review_coordinator, {})).workload,
 			retirer: (yield* Db.open(WorkerServed.roles.review_retirer, {})).workload
+		},
+		clock: {
+			den: (yield* Db.open(WorkerServed.roles.clock_den, {})).workload,
+			coordinator: (yield* Db.open(WorkerServed.roles.clock_coordinator, {})).workload,
+			retirer: (yield* Db.open(WorkerServed.roles.clock_retirer, {})).workload
 		}
 	}
 	const chainBound = chainLedger({ ...roles.chain, commits })
@@ -664,12 +671,14 @@ export const openLedgers = Effect.gen(function* () {
 	const retryBound = retryLedger({ ...roles.retry, commits })
 	const assignBound = assignLedger({ ...roles.assign, commits })
 	const reviewBound = reviewLedger({ ...roles.review, commits })
+	const clockBound = clockLedger({ ...roles.clock, commits })
 	const chain = { ...chainBound, ledger: travelling(chainBound.ledger, opened) }
 	const fan = { ...fanBound, ledger: travelling(fanBound.ledger, opened) }
 	const sync = { ...syncBound, ledger: travelling(syncBound.ledger, opened) }
 	const retry = { ...retryBound, ledger: travelling(retryBound.ledger, opened) }
 	const assign = { ...assignBound, ledger: travelling(assignBound.ledger, opened) }
 	const review = { ...reviewBound, ledger: travelling(reviewBound.ledger, opened) }
+	const clock = { ...clockBound, ledger: travelling(clockBound.ledger, opened) }
 	const all: ReadonlyArray<Ledger<Faults>> = [
 		chain.ledger,
 		fan.ledger,
@@ -696,8 +705,9 @@ export const openLedgers = Effect.gen(function* () {
 		retry,
 		assign,
 		review,
+		clock,
 		all,
-		ledgers: byFlow(all),
+		ledgers: byFlow([...all, clock.ledger]),
 		misconfigured: { all: refused, ledgers: byFlow(refused) },
 		loader
 	}

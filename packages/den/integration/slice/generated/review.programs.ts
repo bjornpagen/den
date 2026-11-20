@@ -125,6 +125,7 @@ const reviewRequestedRead = query(ReviewDen).rule((r) => {
 	const { scope } = v(ReviewRoot, "root")
 	return r
 		.match(ReviewRoot, { scope })
+		.match(ReviewScope, { scope })
 		.where(r.not(ReviewAdmitted, { scope }), r.not(ReviewSkipped, { scope }))
 		.find({ scope })
 })
@@ -285,20 +286,17 @@ export const reviewDenPrograms = Object.freeze({
 	reviewFinishedRoots: deferrable(
 		query(reviewGraph)
 			.rule((r) => {
-				const { scope, kind, at } = v(ReviewRoot, "root")
+				const { scope } = v(ReviewRoot, "root")
 				const { step } = v(ReviewFinish, "finish")
 				return r
-					.match(ReviewRoot, { scope, kind, at })
+					.match(ReviewRoot, { scope })
 					.match(ReviewFinish, { scope, step })
 					.match(ReviewResult, { step })
-					.find({ scope, kind, at })
+					.find({ scope })
 			})
 			.rule((r) => {
-				const { scope, kind, at } = v(ReviewRoot, "root")
-				return r
-					.match(ReviewRoot, { scope, kind, at })
-					.match(ReviewSkipped, { scope })
-					.find({ scope, kind, at })
+				const { scope } = v(ReviewRoot, "root")
+				return r.match(ReviewRoot, { scope }).match(ReviewSkipped, { scope }).find({ scope })
 			})
 	),
 	reviewClaimsOf: query(reviewGraph).rule((r) => {

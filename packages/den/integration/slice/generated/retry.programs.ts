@@ -106,6 +106,7 @@ const retryRequestedRead = query(RetryDen).rule((r) => {
 	const { scope } = v(RetryRoot, "root")
 	return r
 		.match(RetryRoot, { scope })
+		.match(RetryScope, { scope })
 		.where(r.not(RetryAdmitted, { scope }), r.not(RetrySkipped, { scope }))
 		.find({ scope })
 })
@@ -255,20 +256,17 @@ export const retryDenPrograms = Object.freeze({
 	retryFinishedRoots: deferrable(
 		query(retryGraph)
 			.rule((r) => {
-				const { scope, kind, at } = v(RetryRoot, "root")
+				const { scope } = v(RetryRoot, "root")
 				const { step } = v(RetryFinish, "finish")
 				return r
-					.match(RetryRoot, { scope, kind, at })
+					.match(RetryRoot, { scope })
 					.match(RetryFinish, { scope, step })
 					.match(RetryResult, { step })
-					.find({ scope, kind, at })
+					.find({ scope })
 			})
 			.rule((r) => {
-				const { scope, kind, at } = v(RetryRoot, "root")
-				return r
-					.match(RetryRoot, { scope, kind, at })
-					.match(RetrySkipped, { scope })
-					.find({ scope, kind, at })
+				const { scope } = v(RetryRoot, "root")
+				return r.match(RetryRoot, { scope }).match(RetrySkipped, { scope }).find({ scope })
 			})
 	),
 	retryClaimsOf: query(retryGraph).rule((r) => {

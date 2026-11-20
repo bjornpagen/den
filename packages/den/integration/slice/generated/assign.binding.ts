@@ -781,7 +781,7 @@ export const assignLedger = (h: AssignHandles) => {
 			),
 		finishedRoots: Effect.map(
 			settled(h.den.assignFinishedRoots.once({ params: {}, facts: {} })),
-			(rows) => Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))
+			(rows) => Arr.map(rowsOf(rows), (row) => row.scope)
 		),
 		retire: (root) =>
 			settled(

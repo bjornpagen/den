@@ -124,6 +124,7 @@ const syncRequestedRead = query(SyncDen).rule((r) => {
 	const { scope } = v(SyncRoot, "root")
 	return r
 		.match(SyncRoot, { scope })
+		.match(SyncScope, { scope })
 		.where(r.not(SyncAdmitted, { scope }), r.not(SyncSkipped, { scope }))
 		.find({ scope })
 })
@@ -287,20 +288,17 @@ export const syncDenPrograms = Object.freeze({
 	syncFinishedRoots: deferrable(
 		query(syncGraph)
 			.rule((r) => {
-				const { scope, kind, at } = v(SyncRoot, "root")
+				const { scope } = v(SyncRoot, "root")
 				const { step } = v(SyncFinish, "finish")
 				return r
-					.match(SyncRoot, { scope, kind, at })
+					.match(SyncRoot, { scope })
 					.match(SyncFinish, { scope, step })
 					.match(SyncResult, { step })
-					.find({ scope, kind, at })
+					.find({ scope })
 			})
 			.rule((r) => {
-				const { scope, kind, at } = v(SyncRoot, "root")
-				return r
-					.match(SyncRoot, { scope, kind, at })
-					.match(SyncSkipped, { scope })
-					.find({ scope, kind, at })
+				const { scope } = v(SyncRoot, "root")
+				return r.match(SyncRoot, { scope }).match(SyncSkipped, { scope }).find({ scope })
 			})
 	),
 	syncClaimsOf: query(syncGraph).rule((r) => {

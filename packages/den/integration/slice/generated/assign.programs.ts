@@ -128,6 +128,7 @@ const assignRequestedRead = query(AssignDen).rule((r) => {
 	const { scope } = v(AssignRoot, "root")
 	return r
 		.match(AssignRoot, { scope })
+		.match(AssignScope, { scope })
 		.where(r.not(AssignAdmitted, { scope }), r.not(AssignSkipped, { scope }))
 		.find({ scope })
 })
@@ -278,20 +279,17 @@ export const assignDenPrograms = Object.freeze({
 	assignFinishedRoots: deferrable(
 		query(assignGraph)
 			.rule((r) => {
-				const { scope, kind, at } = v(AssignRoot, "root")
+				const { scope } = v(AssignRoot, "root")
 				const { step } = v(AssignFinish, "finish")
 				return r
-					.match(AssignRoot, { scope, kind, at })
+					.match(AssignRoot, { scope })
 					.match(AssignFinish, { scope, step })
 					.match(AssignResult, { step })
-					.find({ scope, kind, at })
+					.find({ scope })
 			})
 			.rule((r) => {
-				const { scope, kind, at } = v(AssignRoot, "root")
-				return r
-					.match(AssignRoot, { scope, kind, at })
-					.match(AssignSkipped, { scope })
-					.find({ scope, kind, at })
+				const { scope } = v(AssignRoot, "root")
+				return r.match(AssignRoot, { scope }).match(AssignSkipped, { scope }).find({ scope })
 			})
 	),
 	assignClaimsOf: query(assignGraph).rule((r) => {

@@ -489,6 +489,174 @@ CREATE TABLE "slice"."chain_step" (
   CONSTRAINT "__chain_step_pk_u6x5wnvfbv" PRIMARY KEY ("step", "root")
 );
 
+CREATE TABLE "slice"."chimed" (
+  "hour" bigint NOT NULL,
+  CONSTRAINT "__chimed_pk_7p6ypuplhn" PRIMARY KEY ("hour")
+);
+
+CREATE TABLE "slice"."clock_admitted" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_admitted_pk_a7wwsyakra" PRIMARY KEY ("scope", "root")
+);
+
+CREATE TABLE "slice"."clock_chime_input" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "hour" bigint NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_chime_input_pk_rx6722hrpy" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."clock_chime_output" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "hour" bigint NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_chime_output_pk_aqm3k5vyxa" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."clock_claim" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
+  "until" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_claim_pk_ihqmnokjqm" PRIMARY KEY ("step", "root", "attempt")
+);
+
+CREATE TABLE "slice"."clock_done" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_done_pk_f4vl6frrax" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."clock_ended" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_ended_pk_pqp6yh3qgg" PRIMARY KEY ("step", "attempt", "root")
+);
+
+CREATE TABLE "slice"."clock_exhausted" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_exhausted_pk_4m2tieyrky" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."clock_failed" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_failed_pk_6twuzcs6kf" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."clock_fenced" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_fenced_pk_mzppv2rrab" PRIMARY KEY ("step", "attempt", "root")
+);
+
+CREATE TABLE "slice"."clock_finish" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_finish_pk_eqj7fcnrnq" PRIMARY KEY ("scope", "root"),
+  CONSTRAINT "__clock_finish_key_step_root_qqome46md2" UNIQUE NULLS DISTINCT ("step", "root")
+);
+
+CREATE TABLE "slice"."clock_held" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_held_pk_qqxrvee2gy" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."clock_hourly_finish_output" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_hourly_finish_output_pk_6bcdc5q3dt" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."clock_hourly_input" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "hour" bigint NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_hourly_input_pk_s536mhvux3" PRIMARY KEY ("scope", "root")
+);
+
+CREATE TABLE "slice"."clock_paused" (
+  "target" "slice"."clock_pausable" NOT NULL,
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__clock_paused_pk_fsld2lekav" PRIMARY KEY ("target", "turn")
+);
+
+CREATE TABLE "slice"."clock_refusal" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_refusal_pk_dslb6cgxa3" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."clock_result" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "outcome" "slice"."clock_outcome" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_result_pk_yptcdjm6pu" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."clock_resumed" (
+  "target" "slice"."clock_pausable" NOT NULL,
+  "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__clock_resumed_pk_iqjwv5tioc" PRIMARY KEY ("target", "turn")
+);
+
+CREATE TABLE "slice"."clock_retry" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
+  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "spent" boolean NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_retry_pk_4kyiqeoeqd" PRIMARY KEY ("step", "attempt", "root")
+);
+
+CREATE TABLE "slice"."clock_root" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "kind" "slice"."clock_root_kind" NOT NULL,
+  "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "retired" boolean DEFAULT false NOT NULL,
+  CONSTRAINT "__clock_root_pk_rnmiw3efr2" PRIMARY KEY ("scope")
+);
+
+CREATE TABLE "slice"."clock_scope" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_scope_pk_dux445xz6c" PRIMARY KEY ("scope", "root")
+);
+
+CREATE TABLE "slice"."clock_skipped" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "by" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_skipped_pk_2whj2jo6zo" PRIMARY KEY ("scope", "root")
+);
+
+CREATE TABLE "slice"."clock_start_step" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_start_step_pk_qgw6bnuo54" PRIMARY KEY ("scope", "ordinal", "root"),
+  CONSTRAINT "__clock_start_step_key_step_root_oseon2uqng" UNIQUE NULLS DISTINCT ("step", "root")
+);
+
+CREATE TABLE "slice"."clock_step" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "kind" "slice"."clock_kind" NOT NULL,
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_step_pk_jjmk3diqpl" PRIMARY KEY ("step", "root")
+);
+
 CREATE TABLE "slice"."concluded" (
   "learner" "slice"."__text_t4rwovzmqj" NOT NULL,
   "served" "slice"."__text_t4rwovzmqj" NOT NULL,
@@ -1475,6 +1643,8 @@ ALTER TABLE "slice"."assign_step" REPLICA IDENTITY FULL;
 
 ALTER TABLE "slice"."chain_step" REPLICA IDENTITY FULL;
 
+ALTER TABLE "slice"."clock_step" REPLICA IDENTITY FULL;
+
 ALTER TABLE "slice"."fan_step" REPLICA IDENTITY FULL;
 
 ALTER TABLE "slice"."fan_within" REPLICA IDENTITY FULL;
@@ -1525,6 +1695,17 @@ ALTER TABLE "slice"."chain_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GE
 ALTER TABLE "slice"."chain_root"
   ADD COLUMN "__scope_jdl7uajdrr" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
   ADD CONSTRAINT "__chain_root_key_scope_prbadyie6j" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr");
+
+ALTER TABLE "slice"."clock_claim"
+  ADD COLUMN "__root_yewsvvtcyz" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "root" END) STORED,
+  ADD COLUMN "__step_ouvkclqzzd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
+  ADD COLUMN "__pred_attempt_dqbvoe7dfs" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint AND "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED;
+
+ALTER TABLE "slice"."clock_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
+
+ALTER TABLE "slice"."clock_root"
+  ADD COLUMN "__scope_jdl7uajdrr" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
+  ADD CONSTRAINT "__clock_root_key_scope_cpqrcv6qzu" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr");
 
 ALTER TABLE "slice"."fan_claim"
   ADD COLUMN "__root_yewsvvtcyz" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "root" END) STORED,
@@ -1610,6 +1791,17 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__hold_chain_root_wgndggnfwf"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__hold_clock_root_bawnkhmkww"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM "slice"."clock_root" AS "r1" JOIN (SELECT DISTINCT "r3"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r3"("c1")) AS "r2"("c1") ON "r1"."scope" = "r2"."c1" WHERE NOT "r1"."retired" ORDER BY "r1"."scope" FOR KEY SHARE OF "r1";
+  PERFORM "slice"."__refuse"('23000'::"pg_catalog"."text", '__clock_admitted_in_clock_root_oaqmbannn3'::"pg_catalog"."text", 'k["ClockAdmitted",["root"],['::"pg_catalog"."text" || "pg_catalog"."to_jsonb"("r1"."c1"::"pg_catalog"."text")::"pg_catalog"."text" || ']]'::"pg_catalog"."text") FROM (SELECT DISTINCT "r2"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r2"("c1")) AS "r1"("c1") WHERE NOT EXISTS (SELECT 1 FROM "slice"."clock_root" AS "r3" WHERE "r3"."scope" = "r1"."c1" AND NOT "r3"."retired") ORDER BY "r1"."c1" LIMIT 1::bigint;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__hold_clock_root_bawnkhmkww"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__hold_fan_root_4vwfxofrxw"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -2046,6 +2238,151 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__retire_chain_root_ji6nmac7of"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__retire_clock_root_6pfo6eeroe"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS SETOF bigint[]
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM "slice"."clock_root" AS "r1" JOIN (SELECT DISTINCT "r3"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r3"("c1")) AS "r2"("c1") ON "r1"."scope" = "r2"."c1" WHERE NOT "r1"."retired" ORDER BY "r1"."scope" FOR UPDATE OF "r1";
+  RETURN QUERY
+  WITH "r1"("c1") AS MATERIALIZED (
+    SELECT "r2"."scope" AS "c1" FROM "slice"."clock_root" AS "r2" JOIN (SELECT DISTINCT "r4"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r4"("c1")) AS "r3"("c1") ON "r2"."scope" = "r3"."c1" WHERE NOT "r2"."retired"
+  ),
+  "r5" AS (
+    DELETE FROM "slice"."clock_admitted" AS "r6"
+    USING "r1" AS "r7"
+    WHERE "r6"."root" = "r7"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r8" AS (
+    DELETE FROM "slice"."clock_chime_input" AS "r9"
+    USING "r1" AS "r10"
+    WHERE "r9"."root" = "r10"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r11" AS (
+    DELETE FROM "slice"."clock_chime_output" AS "r12"
+    USING "r1" AS "r13"
+    WHERE "r12"."root" = "r13"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r14" AS (
+    DELETE FROM "slice"."clock_claim" AS "r15"
+    USING "r1" AS "r16"
+    WHERE "r15"."root" = "r16"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r17" AS (
+    DELETE FROM "slice"."clock_done" AS "r18"
+    USING "r1" AS "r19"
+    WHERE "r18"."root" = "r19"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r20" AS (
+    DELETE FROM "slice"."clock_ended" AS "r21"
+    USING "r1" AS "r22"
+    WHERE "r21"."root" = "r22"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r23" AS (
+    DELETE FROM "slice"."clock_exhausted" AS "r24"
+    USING "r1" AS "r25"
+    WHERE "r24"."root" = "r25"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r26" AS (
+    DELETE FROM "slice"."clock_failed" AS "r27"
+    USING "r1" AS "r28"
+    WHERE "r27"."root" = "r28"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r29" AS (
+    DELETE FROM "slice"."clock_fenced" AS "r30"
+    USING "r1" AS "r31"
+    WHERE "r30"."root" = "r31"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r32" AS (
+    DELETE FROM "slice"."clock_finish" AS "r33"
+    USING "r1" AS "r34"
+    WHERE "r33"."root" = "r34"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r35" AS (
+    DELETE FROM "slice"."clock_held" AS "r36"
+    USING "r1" AS "r37"
+    WHERE "r36"."root" = "r37"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r38" AS (
+    DELETE FROM "slice"."clock_hourly_finish_output" AS "r39"
+    USING "r1" AS "r40"
+    WHERE "r39"."root" = "r40"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r41" AS (
+    DELETE FROM "slice"."clock_hourly_input" AS "r42"
+    USING "r1" AS "r43"
+    WHERE "r42"."root" = "r43"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r44" AS (
+    DELETE FROM "slice"."clock_refusal" AS "r45"
+    USING "r1" AS "r46"
+    WHERE "r45"."root" = "r46"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r47" AS (
+    DELETE FROM "slice"."clock_result" AS "r48"
+    USING "r1" AS "r49"
+    WHERE "r48"."root" = "r49"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r50" AS (
+    DELETE FROM "slice"."clock_retry" AS "r51"
+    USING "r1" AS "r52"
+    WHERE "r51"."root" = "r52"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r53" AS (
+    DELETE FROM "slice"."clock_scope" AS "r54"
+    USING "r1" AS "r55"
+    WHERE "r54"."root" = "r55"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r56" AS (
+    DELETE FROM "slice"."clock_skipped" AS "r57"
+    USING "r1" AS "r58"
+    WHERE "r57"."root" = "r58"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r59" AS (
+    DELETE FROM "slice"."clock_start_step" AS "r60"
+    USING "r1" AS "r61"
+    WHERE "r60"."root" = "r61"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r62" AS (
+    DELETE FROM "slice"."clock_step" AS "r63"
+    USING "r1" AS "r64"
+    WHERE "r63"."root" = "r64"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r65" AS (
+    UPDATE "slice"."clock_root" AS "r66"
+    SET "retired" = true
+    FROM "r1" AS "r67"
+    WHERE "r66"."scope" = "r67"."c1"
+    RETURNING 1 AS "c1"
+  )
+  SELECT "r69"."c1" AS "c1"
+  FROM (SELECT "pg_catalog"."array_agg"("r68"."c2" ORDER BY "r68"."c1") AS "c1", "r68"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r70" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r71" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r72" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r73" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r74" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r75" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r76" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r77" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r78" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r79" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r80" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r81" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r82" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r83" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r84" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r85" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r86" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r87" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r88" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r89" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r90") AS "r68"("c1", "c2", "c3") GROUP BY "r68"."c3") AS "r69"("c1", "c2")
+  LIMIT 1::bigint
+  ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__retire_clock_root_6pfo6eeroe"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__retire_fan_root_niesya7vcd"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS SETOF bigint[]
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -3040,6 +3377,94 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."chimed"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_admitted"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_chime_input"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_chime_output"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_claim"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_done"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_ended"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_exhausted"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_failed"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_fenced"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_finish"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_held"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_hourly_finish_output"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_hourly_input"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_refusal"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_result"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_retry"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_root"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_scope"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_skipped"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_start_step"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_step"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."concluded"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -3758,6 +4183,86 @@ ALTER TABLE "slice"."chain_start_step"
 ALTER TABLE "slice"."chain_step"
   ADD CONSTRAINT "__chain_step_fk_root_n4wedmpzhn" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_step_fk_scope_root_jmx7nw7i4f" FOREIGN KEY ("scope", "root") REFERENCES "slice"."chain_admitted" ("scope", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."clock_admitted"
+  ADD CONSTRAINT "__clock_admitted_fk_root_7dydra2fa6" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_admitted_fk_scope_root_iq667y6auq" FOREIGN KEY ("scope", "root") REFERENCES "slice"."clock_scope" ("scope", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."clock_chime_input" ADD CONSTRAINT "__clock_chime_input_fk_root_plvhx4qyi5" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_chime_output"
+  ADD CONSTRAINT "__clock_chime_output_fk_root_75doh4g3jb" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_chime_output_fk_step_root_x3amhltgq6" FOREIGN KEY ("step", "root") REFERENCES "slice"."clock_chime_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_chime_output_fk_step_root_3wm3i6ov6f" FOREIGN KEY ("step", "root") REFERENCES "slice"."clock_done" ("step", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."clock_claim"
+  ADD CONSTRAINT "__clock_claim_fk_root_hmpra5qlcp" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_claim_fk_step_root_vptogyiqam" FOREIGN KEY ("step", "root") REFERENCES "slice"."clock_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_claim_fk_step_pred_attempt_root_xb6x2tmmoj" FOREIGN KEY ("__step_ouvkclqzzd", "__pred_attempt_dqbvoe7dfs", "__root_yewsvvtcyz") REFERENCES "slice"."clock_ended" ("step", "attempt", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_done" ADD CONSTRAINT "__clock_done_fk_root_soqskjsjao" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_ended"
+  ADD CONSTRAINT "__clock_ended_fk_root_g3cnl7xafr" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_ended_fk_step_attempt_root_dimjqmfaqh" FOREIGN KEY ("step", "attempt", "root") REFERENCES "slice"."clock_claim" ("step", "attempt", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_exhausted"
+  ADD CONSTRAINT "__clock_exhausted_fk_root_xskm7prc74" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_exhausted_fk_step_root_ydvibsvd3a" FOREIGN KEY ("step", "root") REFERENCES "slice"."clock_failed" ("step", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."clock_failed" ADD CONSTRAINT "__clock_failed_fk_root_tkhs7qqr4z" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_fenced"
+  ADD CONSTRAINT "__clock_fenced_fk_root_t4ntcqjpyp" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_fenced_fk_step_attempt_root_6wai42b7gk" FOREIGN KEY ("step", "attempt", "root") REFERENCES "slice"."clock_ended" ("step", "attempt", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."clock_finish"
+  ADD CONSTRAINT "__clock_finish_fk_root_pmnnbogxf6" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_finish_fk_scope_root_ncra3pc2vm" FOREIGN KEY ("scope", "root") REFERENCES "slice"."clock_admitted" ("scope", "root") MATCH SIMPLE,
+  ADD CONSTRAINT "__clock_finish_fk_step_root_kr2hfecrdl" FOREIGN KEY ("step", "root") REFERENCES "slice"."clock_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_held"
+  ADD CONSTRAINT "__clock_held_fk_root_u3vxrlyseh" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_held_fk_step_attempt_root_rggju54zr5" FOREIGN KEY ("step", "attempt", "root") REFERENCES "slice"."clock_claim" ("step", "attempt", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_held_fk_step_root_oboys6ct6s" FOREIGN KEY ("step", "root") REFERENCES "slice"."clock_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_hourly_finish_output"
+  ADD CONSTRAINT "__clock_hourly_finish_output_fk_root_wn7gvu3f26" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_hourly_finish_output_fk_step_root_xwntxefqc6" FOREIGN KEY ("step", "root") REFERENCES "slice"."clock_done" ("step", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."clock_hourly_input" ADD CONSTRAINT "__clock_hourly_input_fk_root_ixovd5y6h4" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_paused" ADD CONSTRAINT "__clock_paused_fk_target_pred_turn_7tgjovpr6x" FOREIGN KEY ("target", "__pred_turn_qryngij6c4") REFERENCES "slice"."clock_resumed" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_refusal"
+  ADD CONSTRAINT "__clock_refusal_fk_root_ekomnyuzgo" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_refusal_fk_step_root_cwz55xrfvz" FOREIGN KEY ("step", "root") REFERENCES "slice"."clock_failed" ("step", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."clock_result"
+  ADD CONSTRAINT "__clock_result_fk_root_mlw7uyvsd5" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_result_fk_step_root_ywzn6yx56v" FOREIGN KEY ("step", "root") REFERENCES "slice"."clock_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_resumed" ADD CONSTRAINT "__clock_resumed_fk_target_turn_45dwn4cwo5" FOREIGN KEY ("target", "turn") REFERENCES "slice"."clock_paused" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_retry"
+  ADD CONSTRAINT "__clock_retry_fk_root_zrptzgm66d" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_retry_fk_step_attempt_root_rbqzkwnwmy" FOREIGN KEY ("step", "attempt", "root") REFERENCES "slice"."clock_ended" ("step", "attempt", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."clock_scope" ADD CONSTRAINT "__clock_scope_fk_root_2os4agb6vo" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_skipped"
+  ADD CONSTRAINT "__clock_skipped_fk_by_joxrltqt4a" FOREIGN KEY ("by") REFERENCES "slice"."clock_root" ("scope") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_skipped_fk_root_w4ixxvhwt2" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_skipped_fk_scope_e5ndey7rqw" FOREIGN KEY ("scope") REFERENCES "slice"."clock_root" ("scope") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_start_step"
+  ADD CONSTRAINT "__clock_start_step_fk_root_s7u7hg3lzj" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_start_step_fk_scope_root_oqopxtg4cc" FOREIGN KEY ("scope", "root") REFERENCES "slice"."clock_admitted" ("scope", "root") MATCH SIMPLE,
+  ADD CONSTRAINT "__clock_start_step_fk_step_root_7tv5nylxvh" FOREIGN KEY ("step", "root") REFERENCES "slice"."clock_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_step"
+  ADD CONSTRAINT "__clock_step_fk_root_pi7kop6duk" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_step_fk_scope_root_ivit5j6zqd" FOREIGN KEY ("scope", "root") REFERENCES "slice"."clock_admitted" ("scope", "root") MATCH SIMPLE;
 
 ALTER TABLE "slice"."fan_admitted"
   ADD CONSTRAINT "__fan_admitted_fk_root_ui6p5vdrhk" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,

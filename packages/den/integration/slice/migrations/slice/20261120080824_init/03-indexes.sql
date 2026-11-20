@@ -144,6 +144,56 @@ CREATE INDEX "__chain_step_ix_scope_kind_step_tsdjtgaey5" ON "slice"."chain_step
 
 CREATE INDEX "__chain_step_ix_step_kind_root_2pdoze4bhr" ON "slice"."chain_step" USING btree ("step", "kind", "root");
 
+CREATE INDEX "__clock_admitted_ix_root_s7zcjrj5vn" ON "slice"."clock_admitted" USING btree ("root");
+
+CREATE INDEX "__clock_chime_input_ix_root_step_ctwanc2seb" ON "slice"."clock_chime_input" USING btree ("root", "step");
+
+CREATE INDEX "__clock_chime_output_ix_root_ivn554pu5g" ON "slice"."clock_chime_output" USING btree ("root");
+
+CREATE INDEX "__clock_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_g5rslzs3if" ON "slice"."clock_claim" USING btree ("__step_ouvkclqzzd", "__pred_attempt_dqbvoe7dfs", "__root_yewsvvtcyz");
+
+CREATE INDEX "__clock_claim_ix_root_3qy2b6fpno" ON "slice"."clock_claim" USING btree ("root");
+
+CREATE INDEX "__clock_done_ix_root_step_y7b7fracbz" ON "slice"."clock_done" USING btree ("root", "step");
+
+CREATE INDEX "__clock_ended_ix_root_brohrxygrw" ON "slice"."clock_ended" USING btree ("root");
+
+CREATE INDEX "__clock_exhausted_ix_root_mqjwzmnkg2" ON "slice"."clock_exhausted" USING btree ("root");
+
+CREATE INDEX "__clock_failed_ix_root_step_h2u36dbqyr" ON "slice"."clock_failed" USING btree ("root", "step");
+
+CREATE INDEX "__clock_fenced_ix_root_os2tzc4ej6" ON "slice"."clock_fenced" USING btree ("root");
+
+CREATE INDEX "__clock_finish_ix_root_dig34tapz4" ON "slice"."clock_finish" USING btree ("root");
+
+CREATE INDEX "__clock_finish_ix_scope_step_q2cyoxfrgy" ON "slice"."clock_finish" USING btree ("scope", "step");
+
+CREATE INDEX "__clock_held_ix_root_x4d2isfem4" ON "slice"."clock_held" USING btree ("root");
+
+CREATE INDEX "__clock_hourly_finish_output_ix_root_fcxtbzly5h" ON "slice"."clock_hourly_finish_output" USING btree ("root");
+
+CREATE INDEX "__clock_hourly_input_ix_root_nsyqbwry4l" ON "slice"."clock_hourly_input" USING btree ("root");
+
+CREATE INDEX "__clock_paused_ix_target_pred_turn_qryngij_6_c_4_la4ocjtto2" ON "slice"."clock_paused" USING btree ("target", "__pred_turn_qryngij6c4");
+
+CREATE INDEX "__clock_refusal_ix_root_xdxq3ho5kd" ON "slice"."clock_refusal" USING btree ("root");
+
+CREATE INDEX "__clock_result_ix_root_step_vo4ykwoczk" ON "slice"."clock_result" USING btree ("root", "step");
+
+CREATE INDEX "__clock_retry_ix_root_zejdeyf4de" ON "slice"."clock_retry" USING btree ("root");
+
+CREATE INDEX "__clock_scope_ix_root_5jnjt75iyn" ON "slice"."clock_scope" USING btree ("root");
+
+CREATE INDEX "__clock_skipped_ix_by_252vuphujb" ON "slice"."clock_skipped" USING btree ("by");
+
+CREATE INDEX "__clock_skipped_ix_root_f3tj6hnqvq" ON "slice"."clock_skipped" USING btree ("root");
+
+CREATE INDEX "__clock_start_step_ix_root_scope_xs5a3wv234" ON "slice"."clock_start_step" USING btree ("root", "scope");
+
+CREATE INDEX "__clock_step_ix_root_scope_xautpoatwk" ON "slice"."clock_step" USING btree ("root", "scope");
+
+CREATE INDEX "__clock_step_ix_scope_ttvc76thdq" ON "slice"."clock_step" USING btree ("scope");
+
 CREATE INDEX "__fan_admitted_ix_root_cjavzjrmil" ON "slice"."fan_admitted" USING btree ("root");
 
 CREATE INDEX "__fan_batch_finish_output_ix_root_xzmsfqk7gw" ON "slice"."fan_batch_finish_output" USING btree ("root");
@@ -427,6 +477,8 @@ CREATE STATISTICS "slice"."__assign_step_stats_kind_scope_wiztsdmmtf" (ndistinct
 CREATE STATISTICS "slice"."__chain_finish_stats_scope_step_z7lvm6j2l6" (ndistinct, dependencies, mcv) ON "scope", "step" FROM "slice"."chain_finish";
 
 CREATE STATISTICS "slice"."__chain_step_stats_kind_scope_tc5nmidpxu" (ndistinct, dependencies, mcv) ON "kind", "scope" FROM "slice"."chain_step";
+
+CREATE STATISTICS "slice"."__clock_finish_stats_scope_step_ejqaucw3q4" (ndistinct, dependencies, mcv) ON "scope", "step" FROM "slice"."clock_finish";
 
 CREATE STATISTICS "slice"."__fan_finish_stats_scope_step_4mm4p6zm66" (ndistinct, dependencies, mcv) ON "scope", "step" FROM "slice"."fan_finish";
 

@@ -385,6 +385,132 @@
 				"__chain_step_pk_u6x5wnvfbv": "__chain_step_pk_step_root_q3xf7mebbe",
 				"__rule_chain_page_input_in_chain_step_iui2bqi4eg": "__chain_page_input_in_chain_step_vnrubtwikd"
 			},
+			"chimed": {
+				"__chimed_pk_7p6ypuplhn": "__chimed_pk_hour_e4k2ybd3wq"
+			},
+			"clock_admitted": {
+				"__clock_admitted_fk_root_7dydra2fa6": "__clock_admitted_in_clock_root_oaqmbannn3",
+				"__clock_admitted_fk_scope_root_iq667y6auq": "__clock_admitted_in_clock_scope_oheztqcnyq",
+				"__clock_admitted_pk_a7wwsyakra": "__clock_admitted_pk_scope_root_vh5phzc37y"
+			},
+			"clock_chime_input": {
+				"__clock_chime_input_fk_root_plvhx4qyi5": "__clock_chime_input_in_clock_root_euk6k7xbdq",
+				"__clock_chime_input_pk_rx6722hrpy": "__clock_chime_input_pk_step_root_jzbdmskhoj",
+				"__rule_clock_chime_input_in_clock_step_i5zqwllgux": "__clock_chime_input_in_clock_step_hdwxxzth5z"
+			},
+			"clock_chime_output": {
+				"__clock_chime_output_fk_root_75doh4g3jb": "__clock_chime_output_in_clock_root_s6mv52eecj",
+				"__clock_chime_output_fk_step_root_3wm3i6ov6f": "__clock_chime_output_in_clock_done_jyw5xlzfln",
+				"__clock_chime_output_fk_step_root_x3amhltgq6": "__clock_chime_output_in_clock_chime_input_yk63w2u3td",
+				"__clock_chime_output_pk_aqm3k5vyxa": "__clock_chime_output_pk_step_root_en4r6gosvp"
+			},
+			"clock_claim": {
+				"__clock_claim_fk_root_hmpra5qlcp": "__clock_claim_in_clock_root_6hwivql6wq",
+				"__clock_claim_fk_step_pred_attempt_root_xb6x2tmmoj": "__clock_claim_attempt_in_clock_ended_q2vzm6mrfr",
+				"__clock_claim_fk_step_root_vptogyiqam": "__clock_claim_in_clock_step_qf42ujanxz",
+				"__clock_claim_pk_ihqmnokjqm": "__clock_claim_pk_step_root_attempt_tjjbqoxtgw"
+			},
+			"clock_done": {
+				"__clock_done_fk_root_soqskjsjao": "__clock_done_in_clock_root_v25uedgzw5",
+				"__clock_done_pk_f4vl6frrax": "__clock_done_pk_step_root_endylralnw",
+				"__rule_clock_done_in_clock_result_sqgdls6sc3": "__clock_done_in_clock_result_526qg3j5yz"
+			},
+			"clock_ended": {
+				"__clock_ended_fk_root_g3cnl7xafr": "__clock_ended_in_clock_root_y4beaynbex",
+				"__clock_ended_fk_step_attempt_root_dimjqmfaqh": "__clock_ended_in_clock_claim_sg7clz567m",
+				"__clock_ended_pk_pqp6yh3qgg": "__clock_ended_pk_step_attempt_root_bj7t2m3uxd"
+			},
+			"clock_exhausted": {
+				"__clock_exhausted_fk_root_xskm7prc74": "__clock_exhausted_in_clock_root_wg6qon7hla",
+				"__clock_exhausted_fk_step_root_ydvibsvd3a": "__clock_exhausted_in_clock_failed_7qt5kz4mbj",
+				"__clock_exhausted_pk_4m2tieyrky": "__clock_exhausted_pk_step_root_cocaiubeuc"
+			},
+			"clock_failed": {
+				"__clock_failed_fk_root_tkhs7qqr4z": "__clock_failed_in_clock_root_uewl37imd7",
+				"__clock_failed_pk_6twuzcs6kf": "__clock_failed_pk_step_root_e34v3ak2rh",
+				"__rule_clock_failed_in_clock_result_tzkwbfryij": "__clock_failed_in_clock_result_7uvlxkgpcv"
+			},
+			"clock_fenced": {
+				"__clock_fenced_fk_root_t4ntcqjpyp": "__clock_fenced_in_clock_root_6mo777hkre",
+				"__clock_fenced_fk_step_attempt_root_6wai42b7gk": "__clock_fenced_in_clock_ended_fdbdmwaaue",
+				"__clock_fenced_pk_mzppv2rrab": "__clock_fenced_pk_step_attempt_root_qwzrtc7zz6"
+			},
+			"clock_finish": {
+				"__clock_finish_fk_root_pmnnbogxf6": "__clock_finish_in_clock_root_myu56chusc",
+				"__clock_finish_fk_scope_root_ncra3pc2vm": "__clock_finish_in_clock_admitted_q47krtdcrg",
+				"__clock_finish_fk_step_root_kr2hfecrdl": "__clock_finish_in_clock_step_px5idhm2tg",
+				"__clock_finish_key_step_root_qqome46md2": "__clock_finish_key_step_root_hy2ypgwmid",
+				"__clock_finish_pk_eqj7fcnrnq": "__clock_finish_pk_scope_root_x3k2zh3ait"
+			},
+			"clock_held": {
+				"__clock_held_fk_root_u3vxrlyseh": "__clock_held_in_clock_root_fahxongk72",
+				"__clock_held_fk_step_attempt_root_rggju54zr5": "__clock_held_in_clock_claim_aqfssb46j7",
+				"__clock_held_fk_step_root_oboys6ct6s": "__clock_held_in_clock_result_5spaepqxv5",
+				"__clock_held_pk_qqxrvee2gy": "__clock_held_pk_step_root_wgm3r2irbm"
+			},
+			"clock_hourly_finish_output": {
+				"__clock_hourly_finish_output_fk_root_wn7gvu3f26": "__clock_hourly_finish_output_in_clock_root_rtyfypa3vw",
+				"__clock_hourly_finish_output_fk_step_root_xwntxefqc6": "__clock_hourly_finish_output_in_clock_done_jgibepajgy",
+				"__clock_hourly_finish_output_pk_6bcdc5q3dt": "__clock_hourly_finish_output_pk_step_root_stph4sxmnm"
+			},
+			"clock_hourly_input": {
+				"__clock_hourly_input_fk_root_ixovd5y6h4": "__clock_hourly_input_in_clock_root_ynphhknpel",
+				"__clock_hourly_input_pk_s536mhvux3": "__clock_hourly_input_pk_scope_root_q3pcl4qhpl",
+				"__rule_clock_hourly_input_in_clock_root_2wwjvq3jsp": "__clock_hourly_input_in_clock_root_upfq5hqex3"
+			},
+			"clock_paused": {
+				"__clock_paused_fk_target_pred_turn_7tgjovpr6x": "__clock_paused_in_clock_resumed_2p7f3spwzi",
+				"__clock_paused_pk_fsld2lekav": "__clock_paused_pk_target_turn_hghrkxmwlv"
+			},
+			"clock_refusal": {
+				"__clock_refusal_fk_root_ekomnyuzgo": "__clock_refusal_in_clock_root_uq6mqlxuvk",
+				"__clock_refusal_fk_step_root_cwz55xrfvz": "__clock_refusal_in_clock_failed_htvhejjf5g",
+				"__clock_refusal_pk_dslb6cgxa3": "__clock_refusal_pk_step_root_e44uuhjlst"
+			},
+			"clock_result": {
+				"__clock_result_fk_root_mlw7uyvsd5": "__clock_result_in_clock_root_lgtbrteox7",
+				"__clock_result_fk_step_root_ywzn6yx56v": "__clock_result_in_clock_step_qpcbhuv5py",
+				"__clock_result_pk_yptcdjm6pu": "__clock_result_pk_step_root_qlvtvdd77m",
+				"__rule_clock_done_in_clock_result_sqgdls6sc3": "__clock_done_in_clock_result_526qg3j5yz",
+				"__rule_clock_failed_in_clock_result_tzkwbfryij": "__clock_failed_in_clock_result_7uvlxkgpcv"
+			},
+			"clock_resumed": {
+				"__clock_resumed_fk_target_turn_45dwn4cwo5": "__clock_resumed_in_clock_paused_y2gbfw75lg",
+				"__clock_resumed_pk_iqjwv5tioc": "__clock_resumed_pk_target_turn_saku4m3uwl"
+			},
+			"clock_retry": {
+				"__clock_retry_fk_root_zrptzgm66d": "__clock_retry_in_clock_root_4p7o3n5oq5",
+				"__clock_retry_fk_step_attempt_root_rbqzkwnwmy": "__clock_retry_in_clock_ended_2iag2b7lr4",
+				"__clock_retry_pk_4kyiqeoeqd": "__clock_retry_pk_step_attempt_root_o4peav34v7"
+			},
+			"clock_root": {
+				"__clock_root_key_scope_cpqrcv6qzu": "__clock_root_pk_scope_43wwzt3ooi",
+				"__clock_root_pk_rnmiw3efr2": "__clock_root_pk_scope_43wwzt3ooi",
+				"__rule_clock_hourly_input_in_clock_root_2wwjvq3jsp": "__clock_hourly_input_in_clock_root_upfq5hqex3"
+			},
+			"clock_scope": {
+				"__clock_scope_fk_root_2os4agb6vo": "__clock_scope_in_clock_root_safrsk6m5r",
+				"__clock_scope_pk_dux445xz6c": "__clock_scope_pk_scope_root_crubgkddvr"
+			},
+			"clock_skipped": {
+				"__clock_skipped_fk_by_joxrltqt4a": "__clock_skipped_in_clock_root_tvhfyv46fb",
+				"__clock_skipped_fk_root_w4ixxvhwt2": "__clock_skipped_in_clock_root_qbur4jikhl",
+				"__clock_skipped_fk_scope_e5ndey7rqw": "__clock_skipped_in_clock_root_ubqzxaol5h",
+				"__clock_skipped_pk_2whj2jo6zo": "__clock_skipped_pk_scope_root_bp6axun7v2"
+			},
+			"clock_start_step": {
+				"__clock_start_step_fk_root_s7u7hg3lzj": "__clock_start_step_in_clock_root_ut3jxlfp6x",
+				"__clock_start_step_fk_scope_root_oqopxtg4cc": "__clock_start_step_in_clock_admitted_x6bjjrc5bi",
+				"__clock_start_step_fk_step_root_7tv5nylxvh": "__clock_start_step_in_clock_step_itadu2b3ay",
+				"__clock_start_step_key_step_root_oseon2uqng": "__clock_start_step_key_step_root_w5noy5ftu7",
+				"__clock_start_step_pk_qgw6bnuo54": "__clock_start_step_pk_scope_ordinal_root_mgjqwxzf4b"
+			},
+			"clock_step": {
+				"__clock_step_fk_root_pi7kop6duk": "__clock_step_in_clock_root_yknigr2tnc",
+				"__clock_step_fk_scope_root_ivit5j6zqd": "__clock_step_in_clock_admitted_zho4kpgfip",
+				"__clock_step_pk_jjmk3diqpl": "__clock_step_pk_step_root_kdpvxug7i7",
+				"__rule_clock_chime_input_in_clock_step_i5zqwllgux": "__clock_chime_input_in_clock_step_hdwxxzth5z"
+			},
 			"concluded": {
 				"__concluded_pk_b44jbktrki": "__concluded_pk_learner_2t5fhoqsf2"
 			},
@@ -1151,6 +1277,14 @@
 				"ChainResumed"
 			],
 			[
+				"ClockClaim",
+				"ClockEnded"
+			],
+			[
+				"ClockPaused",
+				"ClockResumed"
+			],
+			[
 				"FanClaim",
 				"FanEnded"
 			],
@@ -1246,6 +1380,7 @@
 				"assign_root": [
 					"scope"
 				],
+				"assign_scope": [],
 				"assign_skipped": [
 					"scope"
 				],
@@ -1298,11 +1433,53 @@
 				"chain_root": [
 					"scope"
 				],
+				"chain_scope": [],
 				"chain_skipped": [
 					"scope"
 				],
 				"chain_start_step": [],
 				"chain_step": [
+					"scope",
+					"step"
+				],
+				"chimed": [],
+				"clock_admitted": [
+					"scope"
+				],
+				"clock_chime_input": [
+					"step"
+				],
+				"clock_claim": [
+					"step"
+				],
+				"clock_fenced": [
+					"step"
+				],
+				"clock_finish": [
+					"scope"
+				],
+				"clock_held": [
+					"step"
+				],
+				"clock_hourly_input": [
+					"scope"
+				],
+				"clock_paused": [],
+				"clock_result": [
+					"step"
+				],
+				"clock_resumed": [],
+				"clock_retry": [
+					"step"
+				],
+				"clock_root": [
+					"scope"
+				],
+				"clock_scope": [],
+				"clock_skipped": [
+					"scope"
+				],
+				"clock_step": [
 					"scope",
 					"step"
 				],
@@ -1344,6 +1521,7 @@
 				"fan_root": [
 					"scope"
 				],
+				"fan_scope": [],
 				"fan_skipped": [
 					"scope"
 				],
@@ -1406,6 +1584,7 @@
 				"retry_root": [
 					"scope"
 				],
+				"retry_scope": [],
 				"retry_skipped": [
 					"scope"
 				],
@@ -1470,6 +1649,7 @@
 					"step"
 				],
 				"review_save_output": [],
+				"review_scope": [],
 				"review_skipped": [
 					"scope"
 				],
@@ -1527,6 +1707,7 @@
 				"sync_root": [
 					"scope"
 				],
+				"sync_scope": [],
 				"sync_skipped": [
 					"scope"
 				],
@@ -5720,6 +5901,1415 @@
 						}
 					},
 					"relation": "ChainStep"
+				},
+				"chimed": {
+					"indexes": {
+						"__chimed_pk_7p6ypuplhn": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "hour",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chimed_pk_hour_e4k2ybd3wq"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "Chimed"
+				},
+				"clock_admitted": {
+					"indexes": {
+						"__clock_admitted_ix_root_s7zcjrj5vn": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_admitted_in_clock_root_oaqmbannn3"
+								}
+							]
+						},
+						"__clock_admitted_pk_a7wwsyakra": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_admitted_pk_scope_root_vh5phzc37y"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_admitted_in_clock_scope_oheztqcnyq"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockAdmitted"
+				},
+				"clock_chime_input": {
+					"indexes": {
+						"__clock_chime_input_ix_root_step_ctwanc2seb": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_chime_input_in_clock_root_euk6k7xbdq"
+								}
+							]
+						},
+						"__clock_chime_input_pk_rx6722hrpy": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_chime_input_pk_step_root_jzbdmskhoj"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_chime_input_in_clock_step_hdwxxzth5z"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockChimeInput"
+				},
+				"clock_chime_output": {
+					"indexes": {
+						"__clock_chime_output_ix_root_ivn554pu5g": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_chime_output_in_clock_root_s6mv52eecj"
+								}
+							]
+						},
+						"__clock_chime_output_pk_aqm3k5vyxa": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_chime_output_pk_step_root_en4r6gosvp"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_chime_output_in_clock_chime_input_yk63w2u3td"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_chime_output_in_clock_done_jyw5xlzfln"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockChimeOutput"
+				},
+				"clock_claim": {
+					"indexes": {
+						"__clock_claim_ix_root_3qy2b6fpno": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_claim_in_clock_root_6hwivql6wq"
+								}
+							]
+						},
+						"__clock_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_g5rslzs3if": {
+							"columns": [
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "step",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__clock_claim_attempt_in_clock_ended_q2vzm6mrfr"
+									]
+								},
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "attempt",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__clock_claim_attempt_in_clock_ended_q2vzm6mrfr"
+									]
+								},
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "root",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__clock_claim_attempt_in_clock_ended_q2vzm6mrfr"
+									]
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_claim_attempt_in_clock_ended_q2vzm6mrfr"
+								}
+							]
+						},
+						"__clock_claim_pk_ihqmnokjqm": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_claim_pk_step_root_attempt_tjjbqoxtgw"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_claim_in_clock_step_qf42ujanxz"
+								}
+							]
+						}
+					},
+					"relation": "ClockClaim"
+				},
+				"clock_done": {
+					"indexes": {
+						"__clock_done_ix_root_step_y7b7fracbz": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_done_in_clock_root_v25uedgzw5"
+								}
+							]
+						},
+						"__clock_done_pk_f4vl6frrax": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_done_pk_step_root_endylralnw"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_done_in_clock_result_526qg3j5yz"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockDone"
+				},
+				"clock_ended": {
+					"indexes": {
+						"__clock_ended_ix_root_brohrxygrw": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_ended_in_clock_root_y4beaynbex"
+								}
+							]
+						},
+						"__clock_ended_pk_pqp6yh3qgg": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_ended_pk_step_attempt_root_bj7t2m3uxd"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_ended_in_clock_claim_sg7clz567m"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockEnded"
+				},
+				"clock_exhausted": {
+					"indexes": {
+						"__clock_exhausted_ix_root_mqjwzmnkg2": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_exhausted_in_clock_root_wg6qon7hla"
+								}
+							]
+						},
+						"__clock_exhausted_pk_4m2tieyrky": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_exhausted_pk_step_root_cocaiubeuc"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_exhausted_in_clock_failed_7qt5kz4mbj"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockExhausted"
+				},
+				"clock_failed": {
+					"indexes": {
+						"__clock_failed_ix_root_step_h2u36dbqyr": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_failed_in_clock_root_uewl37imd7"
+								}
+							]
+						},
+						"__clock_failed_pk_6twuzcs6kf": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_failed_pk_step_root_e34v3ak2rh"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_failed_in_clock_result_7uvlxkgpcv"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockFailed"
+				},
+				"clock_fenced": {
+					"indexes": {
+						"__clock_fenced_ix_root_os2tzc4ej6": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_fenced_in_clock_root_6mo777hkre"
+								}
+							]
+						},
+						"__clock_fenced_pk_mzppv2rrab": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_fenced_pk_step_attempt_root_qwzrtc7zz6"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_fenced_in_clock_ended_fdbdmwaaue"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockFenced"
+				},
+				"clock_finish": {
+					"indexes": {
+						"__clock_finish_ix_root_dig34tapz4": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_finish_in_clock_root_myu56chusc"
+								}
+							]
+						},
+						"__clock_finish_ix_scope_step_q2cyoxfrgy": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__clock_finish_key_step_root_qqome46md2": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_finish_key_step_root_hy2ypgwmid"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_finish_in_clock_step_px5idhm2tg"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__clock_finish_pk_eqj7fcnrnq": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_finish_pk_scope_root_x3k2zh3ait"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_finish_in_clock_admitted_q47krtdcrg"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockFinish"
+				},
+				"clock_held": {
+					"indexes": {
+						"__clock_held_ix_root_x4d2isfem4": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_held_in_clock_root_fahxongk72"
+								}
+							]
+						},
+						"__clock_held_pk_qqxrvee2gy": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_held_pk_step_root_wgm3r2irbm"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_held_in_clock_claim_aqfssb46j7"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_held_in_clock_result_5spaepqxv5"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockHeld"
+				},
+				"clock_hourly_finish_output": {
+					"indexes": {
+						"__clock_hourly_finish_output_ix_root_fcxtbzly5h": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_hourly_finish_output_in_clock_root_rtyfypa3vw"
+								}
+							]
+						},
+						"__clock_hourly_finish_output_pk_6bcdc5q3dt": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_hourly_finish_output_pk_step_root_stph4sxmnm"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_hourly_finish_output_in_clock_done_jgibepajgy"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockHourlyFinishOutput"
+				},
+				"clock_hourly_input": {
+					"indexes": {
+						"__clock_hourly_input_ix_root_nsyqbwry4l": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_hourly_input_in_clock_root_ynphhknpel"
+								}
+							]
+						},
+						"__clock_hourly_input_pk_s536mhvux3": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_hourly_input_pk_scope_root_q3pcl4qhpl"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_hourly_input_in_clock_root_upfq5hqex3"
+								}
+							]
+						}
+					},
+					"relation": "ClockHourlyInput"
+				},
+				"clock_paused": {
+					"indexes": {
+						"__clock_paused_ix_target_pred_turn_qryngij_6_c_4_la4ocjtto2": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "target",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "turn",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__clock_paused_in_clock_resumed_2p7f3spwzi"
+									]
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_paused_in_clock_resumed_2p7f3spwzi"
+								}
+							]
+						},
+						"__clock_paused_pk_fsld2lekav": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "target",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "turn",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_paused_pk_target_turn_hghrkxmwlv"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockPaused"
+				},
+				"clock_refusal": {
+					"indexes": {
+						"__clock_refusal_ix_root_xdxq3ho5kd": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_refusal_in_clock_root_uq6mqlxuvk"
+								}
+							]
+						},
+						"__clock_refusal_pk_dslb6cgxa3": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_refusal_pk_step_root_e44uuhjlst"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_refusal_in_clock_failed_htvhejjf5g"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockRefusal"
+				},
+				"clock_result": {
+					"indexes": {
+						"__clock_result_ix_root_step_vo4ykwoczk": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_result_in_clock_root_lgtbrteox7"
+								}
+							]
+						},
+						"__clock_result_pk_yptcdjm6pu": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_result_pk_step_root_qlvtvdd77m"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_done_in_clock_result_526qg3j5yz"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_failed_in_clock_result_7uvlxkgpcv"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_result_in_clock_step_qpcbhuv5py"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockResult"
+				},
+				"clock_resumed": {
+					"indexes": {
+						"__clock_resumed_pk_iqjwv5tioc": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "target",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "turn",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_resumed_pk_target_turn_saku4m3uwl"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_resumed_in_clock_paused_y2gbfw75lg"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockResumed"
+				},
+				"clock_retry": {
+					"indexes": {
+						"__clock_retry_ix_root_zejdeyf4de": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_retry_in_clock_root_4p7o3n5oq5"
+								}
+							]
+						},
+						"__clock_retry_pk_4kyiqeoeqd": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "attempt",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_retry_pk_step_attempt_root_o4peav34v7"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_retry_in_clock_ended_2iag2b7lr4"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockRetry"
+				},
+				"clock_root": {
+					"indexes": {
+						"__clock_root_key_scope_cpqrcv6qzu": {
+							"columns": [
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "scope",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__clock_admitted_in_clock_root_oaqmbannn3",
+										"__clock_chime_input_in_clock_root_euk6k7xbdq",
+										"__clock_chime_output_in_clock_root_s6mv52eecj",
+										"__clock_claim_in_clock_root_6hwivql6wq",
+										"__clock_done_in_clock_root_v25uedgzw5",
+										"__clock_ended_in_clock_root_y4beaynbex",
+										"__clock_exhausted_in_clock_root_wg6qon7hla",
+										"__clock_failed_in_clock_root_uewl37imd7",
+										"__clock_fenced_in_clock_root_6mo777hkre",
+										"__clock_finish_in_clock_root_myu56chusc",
+										"__clock_held_in_clock_root_fahxongk72",
+										"__clock_hourly_finish_output_in_clock_root_rtyfypa3vw",
+										"__clock_hourly_input_in_clock_root_ynphhknpel",
+										"__clock_refusal_in_clock_root_uq6mqlxuvk",
+										"__clock_result_in_clock_root_lgtbrteox7",
+										"__clock_retry_in_clock_root_4p7o3n5oq5",
+										"__clock_scope_in_clock_root_safrsk6m5r",
+										"__clock_skipped_in_clock_root_qbur4jikhl",
+										"__clock_start_step_in_clock_root_ut3jxlfp6x",
+										"__clock_step_in_clock_root_yknigr2tnc"
+									]
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_root_pk_scope_43wwzt3ooi"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_admitted_in_clock_root_oaqmbannn3"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_chime_input_in_clock_root_euk6k7xbdq"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_chime_output_in_clock_root_s6mv52eecj"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_claim_in_clock_root_6hwivql6wq"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_done_in_clock_root_v25uedgzw5"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_ended_in_clock_root_y4beaynbex"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_exhausted_in_clock_root_wg6qon7hla"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_failed_in_clock_root_uewl37imd7"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_fenced_in_clock_root_6mo777hkre"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_finish_in_clock_root_myu56chusc"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_held_in_clock_root_fahxongk72"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_hourly_finish_output_in_clock_root_rtyfypa3vw"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_hourly_input_in_clock_root_ynphhknpel"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_refusal_in_clock_root_uq6mqlxuvk"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_result_in_clock_root_lgtbrteox7"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_retry_in_clock_root_4p7o3n5oq5"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_scope_in_clock_root_safrsk6m5r"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_skipped_in_clock_root_qbur4jikhl"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_start_step_in_clock_root_ut3jxlfp6x"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_step_in_clock_root_yknigr2tnc"
+								}
+							]
+						},
+						"__clock_root_pk_rnmiw3efr2": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_root_pk_scope_43wwzt3ooi"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_hourly_input_in_clock_root_upfq5hqex3"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockRoot"
+				},
+				"clock_scope": {
+					"indexes": {
+						"__clock_scope_ix_root_5jnjt75iyn": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_scope_in_clock_root_safrsk6m5r"
+								}
+							]
+						},
+						"__clock_scope_pk_dux445xz6c": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_scope_pk_scope_root_crubgkddvr"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockScope"
+				},
+				"clock_skipped": {
+					"indexes": {
+						"__clock_skipped_ix_by_252vuphujb": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "by",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_skipped_in_clock_root_tvhfyv46fb"
+								}
+							]
+						},
+						"__clock_skipped_ix_root_f3tj6hnqvq": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_skipped_in_clock_root_qbur4jikhl"
+								}
+							]
+						},
+						"__clock_skipped_pk_2whj2jo6zo": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_skipped_pk_scope_root_bp6axun7v2"
+								},
+								{
+									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_skipped_in_clock_root_ubqzxaol5h"
+								}
+							]
+						}
+					},
+					"relation": "ClockSkipped"
+				},
+				"clock_start_step": {
+					"indexes": {
+						"__clock_start_step_ix_root_scope_xs5a3wv234": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_start_step_in_clock_admitted_x6bjjrc5bi"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_start_step_in_clock_root_ut3jxlfp6x"
+								}
+							]
+						},
+						"__clock_start_step_key_step_root_oseon2uqng": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_start_step_key_step_root_w5noy5ftu7"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_start_step_in_clock_step_itadu2b3ay"
+								}
+							]
+						},
+						"__clock_start_step_pk_qgw6bnuo54": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "ordinal",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_start_step_pk_scope_ordinal_root_mgjqwxzf4b"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockStartStep"
+				},
+				"clock_step": {
+					"indexes": {
+						"__clock_step_ix_root_scope_xautpoatwk": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_step_in_clock_admitted_zho4kpgfip"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_step_in_clock_root_yknigr2tnc"
+								}
+							]
+						},
+						"__clock_step_ix_scope_ttvc76thdq": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__clock_step_pk_jjmk3diqpl": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_step_pk_step_root_kdpvxug7i7"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_chime_input_in_clock_step_hdwxxzth5z"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockStep"
 				},
 				"concluded": {
 					"indexes": {
@@ -13832,11 +15422,11 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "a30c8d40949b339b66eb6a01edffe6b377444db29c46cb50fbe1cc8dfff7f1f4",
+	"fingerprint": "426d61359e52d34d9e50f0528774091f6cda1672f9ebfabae700aa9749c54208",
 	"format": 3,
 	"levels": [
 		{
-			"fingerprint": "ccfb31aa015ff6773fa6e390628980ae81328a6810e6d7f0c64d9109b4b257d1",
+			"fingerprint": "96c8bd067877928d6f6bcbf2afd0ad13bfd47d17be763bec121b728f412f240a",
 			"laws": [
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_root_56frawwv2n"},
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_s3xk3phh7y"},
@@ -14053,6 +15643,79 @@
 				{"described":{"from":{"relation":"ChainStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_step_in_chain_admitted_yogfp2eg6o"},
 				{"described":{"from":{"relation":"ChainStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_step_in_chain_root_uugqmiobjl"},
 				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ChainStep"},"law":"__chain_step_pk_step_root_q3xf7mebbe"},
+				{"described":{"fields":["hour"],"kind":"primaryKey","relation":"Chimed"},"law":"__chimed_pk_hour_e4k2ybd3wq"},
+				{"described":{"from":{"relation":"ClockAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_admitted_in_clock_root_oaqmbannn3"},
+				{"described":{"from":{"relation":"ClockAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_admitted_in_clock_scope_oheztqcnyq"},
+				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"ClockAdmitted"},"law":"__clock_admitted_pk_scope_root_vh5phzc37y"},
+				{"described":{"from":{"relation":"ClockChimeInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_chime_input_in_clock_root_euk6k7xbdq"},
+				{"described":{"from":{"relation":"ClockChimeInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockStep","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Chime"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_chime_input_in_clock_step_hdwxxzth5z"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ClockChimeInput"},"law":"__clock_chime_input_pk_step_root_jzbdmskhoj"},
+				{"described":{"from":{"relation":"ClockChimeOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockChimeInput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_chime_output_in_clock_chime_input_yk63w2u3td"},
+				{"described":{"from":{"relation":"ClockChimeOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_chime_output_in_clock_done_jyw5xlzfln"},
+				{"described":{"from":{"relation":"ClockChimeOutput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_chime_output_in_clock_root_s6mv52eecj"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ClockChimeOutput"},"law":"__clock_chime_output_pk_step_root_en4r6gosvp"},
+				{"described":{"from":{"relation":"ClockClaim","selection":{"conjuncts":[{"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"pred"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_claim_attempt_in_clock_ended_q2vzm6mrfr"},
+				{"described":{"from":{"relation":"ClockClaim","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_claim_in_clock_root_6hwivql6wq"},
+				{"described":{"from":{"relation":"ClockClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_claim_in_clock_step_qf42ujanxz"},
+				{"described":{"fields":["step","root","attempt"],"kind":"primaryKey","relation":"ClockClaim"},"law":"__clock_claim_pk_step_root_attempt_tjjbqoxtgw"},
+				{"described":{"from":{"relation":"ClockDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"done"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_done_in_clock_result_526qg3j5yz"},
+				{"described":{"from":{"relation":"ClockDone","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_done_in_clock_root_v25uedgzw5"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ClockDone"},"law":"__clock_done_pk_step_root_endylralnw"},
+				{"described":{"from":{"relation":"ClockEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_ended_in_clock_claim_sg7clz567m"},
+				{"described":{"from":{"relation":"ClockEnded","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_ended_in_clock_root_y4beaynbex"},
+				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"ClockEnded"},"law":"__clock_ended_pk_step_attempt_root_bj7t2m3uxd"},
+				{"described":{"from":{"relation":"ClockExhausted","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_exhausted_in_clock_failed_7qt5kz4mbj"},
+				{"described":{"from":{"relation":"ClockExhausted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_exhausted_in_clock_root_wg6qon7hla"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ClockExhausted"},"law":"__clock_exhausted_pk_step_root_cocaiubeuc"},
+				{"described":{"from":{"relation":"ClockFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockResult","selection":{"conjuncts":[{"kind":"compare","left":{"field":"outcome","kind":"field"},"op":"eq","right":{"kind":"literal","value":"failed"}}]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_failed_in_clock_result_7uvlxkgpcv"},
+				{"described":{"from":{"relation":"ClockFailed","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_failed_in_clock_root_uewl37imd7"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ClockFailed"},"law":"__clock_failed_pk_step_root_e34v3ak2rh"},
+				{"described":{"from":{"relation":"ClockFenced","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_fenced_in_clock_ended_fdbdmwaaue"},
+				{"described":{"from":{"relation":"ClockFenced","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_fenced_in_clock_root_6mo777hkre"},
+				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"ClockFenced"},"law":"__clock_fenced_pk_step_attempt_root_qwzrtc7zz6"},
+				{"described":{"from":{"relation":"ClockFinish","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_finish_in_clock_admitted_q47krtdcrg"},
+				{"described":{"from":{"relation":"ClockFinish","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_finish_in_clock_root_myu56chusc"},
+				{"described":{"from":{"relation":"ClockFinish","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_finish_in_clock_step_px5idhm2tg"},
+				{"described":{"kind":"key","side":{"relation":"ClockFinish","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_finish_key_step_root_hy2ypgwmid"},
+				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"ClockFinish"},"law":"__clock_finish_pk_scope_root_x3k2zh3ait"},
+				{"described":{"from":{"relation":"ClockHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockClaim","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_held_in_clock_claim_aqfssb46j7"},
+				{"described":{"from":{"relation":"ClockHeld","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_held_in_clock_result_5spaepqxv5"},
+				{"described":{"from":{"relation":"ClockHeld","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_held_in_clock_root_fahxongk72"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ClockHeld"},"law":"__clock_held_pk_step_root_wgm3r2irbm"},
+				{"described":{"from":{"relation":"ClockHourlyFinishOutput","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockDone","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_hourly_finish_output_in_clock_done_jgibepajgy"},
+				{"described":{"from":{"relation":"ClockHourlyFinishOutput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_hourly_finish_output_in_clock_root_rtyfypa3vw"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ClockHourlyFinishOutput"},"law":"__clock_hourly_finish_output_pk_step_root_stph4sxmnm"},
+				{"described":{"from":{"relation":"ClockHourlyInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Hourly"}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_hourly_input_in_clock_root_upfq5hqex3"},
+				{"described":{"from":{"relation":"ClockHourlyInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_hourly_input_in_clock_root_ynphhknpel"},
+				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"ClockHourlyInput"},"law":"__clock_hourly_input_pk_scope_root_q3pcl4qhpl"},
+				{"described":{"from":{"relation":"ClockPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"ClockResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__clock_paused_in_clock_resumed_2p7f3spwzi"},
+				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"ClockPaused"},"law":"__clock_paused_pk_target_turn_hghrkxmwlv"},
+				{"described":{"from":{"relation":"ClockRefusal","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_refusal_in_clock_failed_htvhejjf5g"},
+				{"described":{"from":{"relation":"ClockRefusal","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_refusal_in_clock_root_uq6mqlxuvk"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ClockRefusal"},"law":"__clock_refusal_pk_step_root_e44uuhjlst"},
+				{"described":{"from":{"relation":"ClockResult","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_result_in_clock_root_lgtbrteox7"},
+				{"described":{"from":{"relation":"ClockResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_result_in_clock_step_qpcbhuv5py"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ClockResult"},"law":"__clock_result_pk_step_root_qlvtvdd77m"},
+				{"described":{"from":{"relation":"ClockResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]},"kind":"contained","to":{"relation":"ClockPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__clock_resumed_in_clock_paused_y2gbfw75lg"},
+				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"ClockResumed"},"law":"__clock_resumed_pk_target_turn_saku4m3uwl"},
+				{"described":{"from":{"relation":"ClockRetry","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockEnded","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"attempt","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_retry_in_clock_ended_2iag2b7lr4"},
+				{"described":{"from":{"relation":"ClockRetry","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_retry_in_clock_root_4p7o3n5oq5"},
+				{"described":{"fields":["step","attempt","root"],"kind":"primaryKey","relation":"ClockRetry"},"law":"__clock_retry_pk_step_attempt_root_o4peav34v7"},
+				{"described":{"fields":["scope"],"kind":"primaryKey","relation":"ClockRoot"},"law":"__clock_root_pk_scope_43wwzt3ooi"},
+				{"described":{"from":{"relation":"ClockScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_scope_in_clock_root_safrsk6m5r"},
+				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"ClockScope"},"law":"__clock_scope_pk_scope_root_crubgkddvr"},
+				{"described":{"from":{"relation":"ClockSkipped","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_skipped_in_clock_root_qbur4jikhl"},
+				{"described":{"from":{"relation":"ClockSkipped","selection":{"conjuncts":[]},"terms":[{"field":"by","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_skipped_in_clock_root_tvhfyv46fb"},
+				{"described":{"from":{"relation":"ClockSkipped","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_skipped_in_clock_root_ubqzxaol5h"},
+				{"described":{"fields":["scope","root"],"kind":"primaryKey","relation":"ClockSkipped"},"law":"__clock_skipped_pk_scope_root_bp6axun7v2"},
+				{"described":{"from":{"relation":"ClockStartStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_start_step_in_clock_admitted_x6bjjrc5bi"},
+				{"described":{"from":{"relation":"ClockStartStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_start_step_in_clock_root_ut3jxlfp6x"},
+				{"described":{"from":{"relation":"ClockStartStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_start_step_in_clock_step_itadu2b3ay"},
+				{"described":{"kind":"key","side":{"relation":"ClockStartStep","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_start_step_key_step_root_w5noy5ftu7"},
+				{"described":{"fields":["scope","ordinal","root"],"kind":"primaryKey","relation":"ClockStartStep"},"law":"__clock_start_step_pk_scope_ordinal_root_mgjqwxzf4b"},
+				{"described":{"from":{"relation":"ClockStep","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__clock_step_in_clock_admitted_zho4kpgfip"},
+				{"described":{"from":{"relation":"ClockStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__clock_step_in_clock_root_yknigr2tnc"},
+				{"described":{"fields":["step","root"],"kind":"primaryKey","relation":"ClockStep"},"law":"__clock_step_pk_step_root_kdpvxug7i7"},
 				{"described":{"fields":["learner"],"kind":"primaryKey","relation":"Concluded"},"law":"__concluded_pk_learner_2t5fhoqsf2"},
 				{"described":{"fields":["relation","run"],"kind":"primaryKey","relation":"Copied"},"law":"__copied_pk_relation_run_r2fqzejpu3"},
 				{"described":{"fields":["feed","position"],"kind":"primaryKey","relation":"Cursor"},"law":"__cursor_pk_feed_position_hylioo6cog"},
@@ -14470,7 +16133,7 @@
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "5dd45e470b79f9dad82b8803f57619c5b0a4c904539da4f2fa405ba77ef83594",
+			"fingerprint": "869ae6ea48c5bce912c86f5bfdcbfaff2719da7a2196acb351c9b9791be7eb6b",
 			"laws": [
 				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"},
 				{"described":{"kind":"key","side":{"relation":"FanLive","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"}]}},"law":"__fan_live_key_resource_seat_wqkc2jfkpw"}
@@ -14611,6 +16274,10 @@
 				]
 			},
 			{
+				"relation": "AssignScope",
+				"routes": []
+			},
+			{
 				"relation": "AssignSkipped",
 				"routes": [
 					"scope"
@@ -14732,6 +16399,10 @@
 				]
 			},
 			{
+				"relation": "ChainScope",
+				"routes": []
+			},
+			{
 				"relation": "ChainSkipped",
 				"routes": [
 					"scope"
@@ -14743,6 +16414,95 @@
 			},
 			{
 				"relation": "ChainStep",
+				"routes": [
+					"scope",
+					"step"
+				]
+			},
+			{
+				"relation": "Chimed",
+				"routes": []
+			},
+			{
+				"relation": "ClockAdmitted",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "ClockChimeInput",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "ClockClaim",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "ClockFenced",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "ClockFinish",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "ClockHeld",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "ClockHourlyInput",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "ClockPaused",
+				"routes": []
+			},
+			{
+				"relation": "ClockResult",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "ClockResumed",
+				"routes": []
+			},
+			{
+				"relation": "ClockRetry",
+				"routes": [
+					"step"
+				]
+			},
+			{
+				"relation": "ClockRoot",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "ClockScope",
+				"routes": []
+			},
+			{
+				"relation": "ClockSkipped",
+				"routes": [
+					"scope"
+				]
+			},
+			{
+				"relation": "ClockStep",
 				"routes": [
 					"scope",
 					"step"
@@ -14839,6 +16599,10 @@
 				"routes": [
 					"scope"
 				]
+			},
+			{
+				"relation": "FanScope",
+				"routes": []
 			},
 			{
 				"relation": "FanSkipped",
@@ -14981,6 +16745,10 @@
 				]
 			},
 			{
+				"relation": "RetryScope",
+				"routes": []
+			},
+			{
 				"relation": "RetrySkipped",
 				"routes": [
 					"scope"
@@ -15120,6 +16888,10 @@
 				"routes": []
 			},
 			{
+				"relation": "ReviewScope",
+				"routes": []
+			},
+			{
 				"relation": "ReviewSkipped",
 				"routes": [
 					"scope"
@@ -15244,6 +17016,10 @@
 				"routes": [
 					"scope"
 				]
+			},
+			{
+				"relation": "SyncScope",
+				"routes": []
 			},
 			{
 				"relation": "SyncSkipped",
@@ -15411,6 +17187,38 @@
 			},
 			{
 				"handle": "Ordered",
+				"kind": "live"
+			}
+		],
+		"ClockKind": [
+			{
+				"handle": "Chime",
+				"kind": "live"
+			},
+			{
+				"handle": "HourlyFinish",
+				"kind": "live"
+			}
+		],
+		"ClockOutcome": [
+			{
+				"handle": "done",
+				"kind": "live"
+			},
+			{
+				"handle": "failed",
+				"kind": "live"
+			}
+		],
+		"ClockPausable": [
+			{
+				"handle": "Hourly",
+				"kind": "live"
+			}
+		],
+		"ClockRootKind": [
+			{
+				"handle": "Hourly",
 				"kind": "live"
 			}
 		],

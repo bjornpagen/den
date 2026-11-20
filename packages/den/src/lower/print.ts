@@ -223,12 +223,8 @@ const busyName = (flow: string): string => `${BUSY}${flow}`
 /** Whether a join is a root the app's own write requests. */
 const isApp = (j: JoinIR): boolean => Option.exists(j.root, (r) => r.trigger === "app")
 
-/**
- * Whether a join is a root requested at the instant its request runs: an operator's or the app's, known by its kind and
- * its trigger's idempotency key, so its instant is the request's own reading of the database's clock, where a scheduled
- * root's is the instant its cron named, the request's data.
- */
-const requestedNow = (j: JoinIR): boolean => Option.exists(j.root, (r) => r.trigger !== "schedule")
+/** Whether a join is a root a schedule starts, which the census requests at each instant its cron names. */
+const isScheduled = (j: JoinIR): boolean => Option.exists(j.root, (r) => r.trigger === "schedule")
 
 /**
  * The parameters a root's request names its scope and key by, the flow's and the kind's, so the app's write that unions
@@ -677,7 +673,9 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const children = has(r("Within"))
 	/**
 	 * The reads the relay watches and the scheduler's snapshot reads too, each one query over den's role, declared once
-	 * in the programs module and named there: the pending steps, the requested and the running scopes, and each idle
+	 * in the programs module and named there: the pending steps, the requested scopes (a root whose graph is open, its
+	 * Scope standing, and that is neither admitted nor skipped: a retired root's graph is gone, so it is no longer requested),
+	 * the running scopes, and each idle
 	 * flow's pending steps.
 	 */
 	const sharedReads = {
@@ -692,7 +690,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			n.program("RequestedRead"),
 			`query(${n.den}).rule((r) => {
 	const { scope } = v(${r("Root")}, "root")
-	return r.match(${r("Root")}, { scope }).where(r.not(${r("Admitted")}, { scope }), r.not(${r("Skipped")}, { scope })).find({ scope })
+	return r.match(${r("Root")}, { scope }).match(${r("Scope")}, { scope }).where(r.not(${r("Admitted")}, { scope }), r.not(${r("Skipped")}, { scope })).find({ scope })
 })`
 		],
 		running: [
@@ -821,13 +819,13 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			n.program("FinishedRoots"),
 			deferred(`query(${n.graph})
 	.rule((r) => {
-		const { scope, kind, at } = v(${r("Root")}, "root")
+		const { scope } = v(${r("Root")}, "root")
 		const { step } = v(${r("Finish")}, "finish")
-		return r.match(${r("Root")}, { scope, kind, at }).match(${r("Finish")}, { scope, step }).match(${r("Result")}, { step }).find({ scope, kind, at })
+		return r.match(${r("Root")}, { scope }).match(${r("Finish")}, { scope, step }).match(${r("Result")}, { step }).find({ scope })
 	})
 	.rule((r) => {
-		const { scope, kind, at } = v(${r("Root")}, "root")
-		return r.match(${r("Root")}, { scope, kind, at }).match(${r("Skipped")}, { scope }).find({ scope, kind, at })
+		const { scope } = v(${r("Root")}, "root")
+		return r.match(${r("Root")}, { scope }).match(${r("Skipped")}, { scope }).find({ scope })
 	})`)
 		],
 		[
@@ -947,17 +945,14 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			const request = `ChangeSet.empty(${n.graph})${members(
 				[
 					r("Scope"),
-					...(requestedNow(j) ? [] : [r("Root")]),
+
 					...(isExclusive(j) ? [r("ExclusiveKey")] : []),
 					...valueRelations(j.input)
 				],
 				none,
 				app
-			)}${requestedNow(j) ? requestedRootOf(P, j, n.graph, r("Root"), r("RootKind")) : ""}`
-			denPrograms.push([
-				n.program(`Request${j.name}`),
-				requestedNow(j) ? `clocked(${request}, { now: "millis" })` : request
-			])
+			)}${requestedRootOf(P, j, n.graph, r("Root"), r("RootKind"))}`
+			denPrograms.push([n.program(`Request${j.name}`), `clocked(${request}, { now: "millis" })`])
 		}
 		Arr.forEach(j.finish.reads, (read) => {
 			const output = read.output
@@ -1698,7 +1693,6 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const roots = Arr.filter(l.joins, (j) => Option.isSome(j.root))
 	const requestFacts = (j: JoinIR): ReadonlyArray<string> => [
 		`${r("Scope")}: [{ scope, root: scope }]`,
-		...(requestedNow(j) ? [] : [`${r("Root")}: [{ scope, kind: ${q(j.name)} as const, key, at }]`]),
 		...(isExclusive(j)
 			? [`${r("ExclusiveKey")}: Arr.map(keys, (k) => ({ ...k, root: scope }))`]
 			: []),
@@ -1710,11 +1704,9 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				? `Effect.flatMap(exclusiveRows(${q(P)}, ${q(j.name)}, ${kindAt(j.index)}.exclusive, input, scope), (keys) => ${body})`
 				: body
 		const input = `input: Parameters<(typeof ${kindAt(j.index)})["start"]>[0]`
-		const signature = requestedNow(j)
-			? `(key: string, ${input})`
-			: `(key: string, at: Instant, ${input})`
+		const signature = `(key: string, ${input})`
 		const names = requestParams(P, j)
-		const params = requestedNow(j) ? `{ ${names.scope}: scope, ${names.key}: key }` : "{}"
+		const params = `{ ${names.scope}: scope, ${names.key}: key }`
 		const facts = `({ flow: FlowName.make(${q(P)}), scope, params: ${params}, facts: { ${commas(requestFacts(j))} } })`
 		return isApp(j)
 			? isExclusive(j)
@@ -1821,7 +1813,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"atOnce",
 		"type Delay",
 		"finishStep",
-		...(Arr.some(roots, (j) => !requestedNow(j)) ? ["type Instant"] : []),
+		...(Arr.some(roots, isScheduled) ? ["type Instant"] : []),
 		"rootScope",
 		"type ScopeKey",
 		...(Arr.some(l.joins, (j) => Arr.some(j.children, (c) => c.kind === "scope"))
@@ -1836,7 +1828,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`/** The ledger port of the flow ${P} over its served programs; \`den generate\` writes it, and nothing edits it. */`,
 		`import type { Addition } from "@bjornpagen/grizzle"`,
 		`import { type MemberHandle, settled } from "@bjornpagen/grizzle/runtime"`,
-		`import { ${commas(["any", "delayAfter", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishUnions ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", "rowsOf", ...(Arr.some(denRoots, (j) => !requestedNow(j)) ? ["scheduleOf"] : []), "signals"])} } from "@bjornpagen/den/runtime/bind"`,
+		`import { ${commas(["any", "delayAfter", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishUnions ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", "rowsOf", ...(Arr.some(denRoots, isScheduled) ? ["scheduleOf"] : []), "signals"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
 		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), "Admission", "Ledger", "RootRunner", "ScopeView", ...(resources ? ["SeatAt"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
 		`import { UnknownPauseTarget } from "@bjornpagen/den/runtime/ledger"`,
@@ -1961,16 +1953,16 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\t\trefuse: ({ step, root, attempt }, law) => settled(h.den.${n.program("Refuse")}.once({ params: {}, facts: { insert: { ${r("Result")}: [{ step, root, outcome: "failed" }], ${r("Failed")}: [{ step, root }], ${r("Held")}: [{ step, root, attempt }], ${r("Refusal")}: [{ step, root, law }] } } })),`,
 		`\t\tskip: (scope, by) => settled(h.den.${n.program("Skip")}.once({ params: {}, facts: { insert: { ${r("Skipped")}: [{ scope, by, root: scope }] } } })),`,
 		`\t\texhaust: ({ step, root, attempt }) => settled(h.den.${n.program("Exhaust")}.once({ params: {}, facts: { insert: { ${r("Result")}: [{ step, root, outcome: "failed" }], ${r("Failed")}: [{ step, root }], ${r("Held")}: [{ step, root, attempt }], ${r("Exhausted")}: [{ step, root }] } } })),`,
-		`\t\tfinishedRoots: Effect.map(settled(h.den.${n.program("FinishedRoots")}.once({ params: {}, facts: {} })), (rows) => Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))),`,
+		`\t\tfinishedRoots: Effect.map(settled(h.den.${n.program("FinishedRoots")}.once({ params: {}, facts: {} })), (rows) => Arr.map(rowsOf(rows), (row) => row.scope)),`,
 		`\t\tretire: (root) => settled(h.retirer.${n.program("Retire")}.once({ params: {}, facts: { retire: { ${r("Root")}: [{ scope: root }] } } })),`,
 		`\t\tsnapshot: ${indented("\t\t")(snapshot)},`,
 		`\t\tchanges: Stream.mergeAll([${commas(watched)}], { concurrency: "unbounded" }),`,
 		"\t\tcoordination,",
 		`\t\tscheduled: [${commas(
 			Arr.map(
-				Arr.filter(denRoots, (j) => !requestedNow(j)),
+				Arr.filter(denRoots, isScheduled),
 				(j) =>
-					`...Option.toArray(Option.map(scheduleOf(${kindAt(j.index)}.trigger), (s) => ({ kind: ${q(j.name)}, cron: s.cron, request: (at: Instant) => request.${j.name}(String(at), at, s.input(at)) })))`
+					`...Option.toArray(Option.map(scheduleOf(${kindAt(j.index)}.trigger), (s) => ({ kind: ${q(j.name)}, cron: s.cron, request: (at: Instant) => request.${j.name}(String(at), s.input(at)) })))`
 			)
 		)}]`,
 		"\t}",

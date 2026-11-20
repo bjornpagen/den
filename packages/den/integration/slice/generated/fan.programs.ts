@@ -132,6 +132,7 @@ const fanRequestedRead = query(FanDen).rule((r) => {
 	const { scope } = v(FanRoot, "root")
 	return r
 		.match(FanRoot, { scope })
+		.match(FanScope, { scope })
 		.where(r.not(FanAdmitted, { scope }), r.not(FanSkipped, { scope }))
 		.find({ scope })
 })
@@ -297,20 +298,17 @@ export const fanDenPrograms = Object.freeze({
 	fanFinishedRoots: deferrable(
 		query(fanGraph)
 			.rule((r) => {
-				const { scope, kind, at } = v(FanRoot, "root")
+				const { scope } = v(FanRoot, "root")
 				const { step } = v(FanFinish, "finish")
 				return r
-					.match(FanRoot, { scope, kind, at })
+					.match(FanRoot, { scope })
 					.match(FanFinish, { scope, step })
 					.match(FanResult, { step })
-					.find({ scope, kind, at })
+					.find({ scope })
 			})
 			.rule((r) => {
-				const { scope, kind, at } = v(FanRoot, "root")
-				return r
-					.match(FanRoot, { scope, kind, at })
-					.match(FanSkipped, { scope })
-					.find({ scope, kind, at })
+				const { scope } = v(FanRoot, "root")
+				return r.match(FanRoot, { scope }).match(FanSkipped, { scope }).find({ scope })
 			})
 	),
 	fanClaimsOf: query(fanGraph).rule((r) => {

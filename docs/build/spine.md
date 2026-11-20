@@ -174,8 +174,12 @@ output into `select(PResult, outcome = done)`) certifies.
    stage in the scope's parent from the scope's input and that output, in the finish's own commit, so the parent never
    sees the scope ended without its successors (`review.test.ts`).
 10. **Retirement.** Built on grizzle's RETIRE (`docs/build/repin.md`): `runtime/retire.ts` retires each ended root's
-    graph whole once its exclusivity seat is given back and the census no longer requests its key; an app row that
-    references it keeps it. The app's census runs it beside its tick.
+    graph whole once its exclusivity seat is given back; an app row that references it keeps it. The app's census runs
+    it beside its tick. Every root is requested at its request's own instant, a schedule's too (its cron's instant is
+    its key and its input's), so a request of any key again, retired or not, meets its header's key and answers that
+    it was already requested, and a schedule's key the census still requests retires like any other
+    (`schedule.test.ts`); a root is requested while its graph is open, its Scope standing, so a retired one is never
+    rung again.
 11. **Stopping.** Not built.
 12. **Ringing.** A turn rings what its end made eligible: what its commit spawned, its scope's finish once its last
     child ended, and, for an attempt that held seats, the steps eligibility finds waiting on a resource it held, at a

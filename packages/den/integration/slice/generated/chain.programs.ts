@@ -119,6 +119,7 @@ const chainRequestedRead = query(ChainDen).rule((r) => {
 	const { scope } = v(ChainRoot, "root")
 	return r
 		.match(ChainRoot, { scope })
+		.match(ChainScope, { scope })
 		.where(r.not(ChainAdmitted, { scope }), r.not(ChainSkipped, { scope }))
 		.find({ scope })
 })
@@ -267,20 +268,17 @@ export const chainDenPrograms = Object.freeze({
 	chainFinishedRoots: deferrable(
 		query(chainGraph)
 			.rule((r) => {
-				const { scope, kind, at } = v(ChainRoot, "root")
+				const { scope } = v(ChainRoot, "root")
 				const { step } = v(ChainFinish, "finish")
 				return r
-					.match(ChainRoot, { scope, kind, at })
+					.match(ChainRoot, { scope })
 					.match(ChainFinish, { scope, step })
 					.match(ChainResult, { step })
-					.find({ scope, kind, at })
+					.find({ scope })
 			})
 			.rule((r) => {
-				const { scope, kind, at } = v(ChainRoot, "root")
-				return r
-					.match(ChainRoot, { scope, kind, at })
-					.match(ChainSkipped, { scope })
-					.find({ scope, kind, at })
+				const { scope } = v(ChainRoot, "root")
+				return r.match(ChainRoot, { scope }).match(ChainSkipped, { scope }).find({ scope })
 			})
 	),
 	chainClaimsOf: query(chainGraph).rule((r) => {

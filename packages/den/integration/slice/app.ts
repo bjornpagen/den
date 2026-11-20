@@ -5,6 +5,7 @@ import {
 	chainCoordination,
 	chainGraph
 } from "#integration/slice/generated/chain.fragment.ts"
+import { clockCoordination, clockGraph } from "#integration/slice/generated/clock.fragment.ts"
 import {
 	fanCoordination,
 	fanGraph,
@@ -17,6 +18,7 @@ import {
 	Assigned,
 	Audit,
 	Built,
+	Chimed,
 	Concluded,
 	Copied,
 	Cursor,
@@ -33,7 +35,7 @@ import {
 	Weight
 } from "#integration/slice/relations.ts"
 
-/** The toy app's own level, each of den's six flows listed as its graph and its coordination fragments. */
+/** The toy app's own level, each of den's seven flows listed as its graph and its coordination fragments. */
 const Listed = schema(
 	"Slice",
 	[
@@ -54,6 +56,7 @@ const Listed = schema(
 		Concluded,
 		Reviewed,
 		Summary,
+		Chimed,
 		chainGraph,
 		chainCoordination,
 		fanGraph,
@@ -65,7 +68,9 @@ const Listed = schema(
 		assignGraph,
 		assignCoordination,
 		reviewGraph,
-		reviewCoordination
+		reviewCoordination,
+		clockGraph,
+		clockCoordination
 	],
 	[contained(on(Audit, "step", "root"), on(ChainResult, "step", "root"))]
 )

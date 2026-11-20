@@ -107,6 +107,30 @@ RETURN '{"ChainRun","Ordered"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__chain_root_kind_names_ndmuh43zki"() FROM PUBLIC;
 
+CREATE FUNCTION "slice"."__clock_kind_names_k5pt6cyq72"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"Chime","HourlyFinish"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__clock_kind_names_k5pt6cyq72"() FROM PUBLIC;
+
+CREATE FUNCTION "slice"."__clock_outcome_names_rqtqczot4q"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"done","failed"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__clock_outcome_names_rqtqczot4q"() FROM PUBLIC;
+
+CREATE FUNCTION "slice"."__clock_pausable_names_2gtv46cvxy"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"Hourly"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__clock_pausable_names_2gtv46cvxy"() FROM PUBLIC;
+
+CREATE FUNCTION "slice"."__clock_root_kind_names_4bi3qkrmmh"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"Hourly"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__clock_root_kind_names_4bi3qkrmmh"() FROM PUBLIC;
+
 CREATE FUNCTION "slice"."__fan_child_kind_names_i6k53d3e2e"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN '{"Batch"}'::"pg_catalog"."name"[];
@@ -254,6 +278,14 @@ CREATE DOMAIN "slice"."chain_page_input_feed" AS smallint CONSTRAINT "check" CHE
 CREATE DOMAIN "slice"."chain_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_pausable_names_vjdoymenyq"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."chain_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_root_kind_names_ndmuh43zki"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."clock_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__clock_kind_names_k5pt6cyq72"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."clock_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__clock_outcome_names_rqtqczot4q"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."clock_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__clock_pausable_names_2gtv46cvxy"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."clock_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__clock_root_kind_names_4bi3qkrmmh"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."fan_child_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__fan_child_kind_names_i6k53d3e2e"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 

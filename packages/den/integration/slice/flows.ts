@@ -15,6 +15,7 @@ import {
 	rows,
 	resource,
 	root,
+	schedule,
 	scope,
 	shared,
 	step,
@@ -24,10 +25,11 @@ import {
 	writesNothing
 } from "@bjornpagen/den/algebra/kinds"
 import { laterOf } from "@bjornpagen/den/algebra/later"
-import { Array as Arr, Context, Effect, Option, Order, Schema } from "effect"
+import { Array as Arr, Context, Cron, Effect, Option, Order, Schema } from "effect"
 import {
 	Assigned,
 	Built,
+	Chimed,
 	Concluded,
 	Copied,
 	Cursor,
@@ -44,14 +46,14 @@ import {
 import type { Loader } from "#integration/slice/roles.ts"
 
 /**
- * The slice's six flows: a chain whose pages read a weight before their bodies run, started by an operator or by the
+ * The slice's seven flows: a chain whose pages read a weight before their bodies run, started by an operator or by the
  * app's own write; a fan-out whose squares share a resource of two seats; a sync whose roots hold an exclusivity seat
  * per relation, beside a Gold build admitted only while the chain has nothing pending; two retry ladders, one that ends
  * and one that never does; and an assignment, the assignment engine's shape, whose one step reads the passages nearest
  * a missed question's stored embedding and the passages its learner has seen, in one snapshot; and a review, AlphaTest's
  * gap analysis's shape, whose first step's edge opens a child scope per group of questions, each group's finish a
- * cluster over its questions whose commit spawns the group's save in the review. Every flow writes the app's relations
- * under its app role `loader`.
+ * cluster over its questions whose commit spawns the group's save in the review; and a clock, a root its schedule starts
+ * each hour, which the census requests. Every flow writes the app's relations under its app role `loader`.
  */
 
 const loader = writer<typeof Loader>("loader")
@@ -875,3 +877,50 @@ export const review = flow("Review", {
 	kinds: [Analyze, Questions, Gather, Save, ReviewRun],
 	edges: [Split, Saved]
 })
+
+/** An hour of the clock: the instant its schedule named. */
+const Hour = Schema.Struct({ hour: Schema.BigInt })
+
+/** Chimes one hour: the app's row of it. */
+const Chime = step(
+	"Chime",
+	{
+		input: Hour,
+		output: Hour,
+		error: Schema.Never,
+		reads: {},
+		uses: [],
+		retry: attempts(3),
+		due: atSpawn,
+		writes: writes({ insert: [Chimed], put: [], delete: [] })
+	},
+	(hour) =>
+		Effect.succeed({
+			output: hour,
+			writes: { insert: { Chimed: [{ hour: hour.hour }] }, put: {}, delete: {} }
+		})
+)
+
+/**
+ * A root its schedule starts at the top of every hour, keyed by the instant its cron named, which every census tick
+ * requests until the next hour's: its one step chimes.
+ */
+const Hourly = root("Hourly", {
+	trigger: schedule(Cron.parseUnsafe("0 * * * *"), (at) => ({ hour: at })),
+	input: Hour,
+	children: [Chime],
+	start: (hour) => [Chime.of(hour)],
+	exclusive: shared,
+	window: always,
+	precondition: unconditional,
+	finish: {
+		reads: [],
+		output: Finished,
+		error: Schema.Never,
+		retry: attempts(3),
+		writes: writesNothing,
+		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
+	}
+})
+
+export const clock = flow("Clock", { writes: loader, kinds: [Chime, Hourly], edges: [] })

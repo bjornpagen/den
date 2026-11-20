@@ -50,13 +50,6 @@ export interface StepAt {
 	readonly attempt: bigint
 }
 
-/** A root whose graph has ended: its finish has a result, or it was recorded skipped, with its kind and instant. */
-export interface FinishedRoot {
-	readonly scope: ScopeKey
-	readonly kind: string
-	readonly at: Instant
-}
-
 /** A step a commit or an admission spawned, with how long after the call it is first due. */
 export interface SpawnedStep {
 	readonly step: StepKey
@@ -362,8 +355,11 @@ export interface Ledger<R> {
 	readonly exhaust: (at: StepAt) => Effect.Effect<WriteOutcome<unknown>, Settled>
 	/** Records a root not admitted because another live root of its kind, `by`, holds its exclusivity seat. */
 	readonly skip: (scope: ScopeKey, by: ScopeKey) => Effect.Effect<WriteOutcome<unknown>, Settled>
-	/** The roots whose graphs have ended and are not yet retired, a retirement's candidates. */
-	readonly finishedRoots: Effect.Effect<ReadonlyArray<FinishedRoot>, Settled>
+	/**
+	 * The roots whose graphs have ended (a finish with its result, or recorded skipped) and are not yet retired, a
+	 * retirement's candidates.
+	 */
+	readonly finishedRoots: Effect.Effect<ReadonlyArray<ScopeKey>, Settled>
 	/**
 	 * Retires a root's graph whole, grizzle's retirement of the flow's unit under den's retiring role: every row its
 	 * graph holds goes, its header stays retired, and its key never starts a graph again. An app row that references

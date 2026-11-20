@@ -669,7 +669,7 @@ export const fanLedger = (h: FanHandles) => {
 			),
 		finishedRoots: Effect.map(
 			settled(h.den.fanFinishedRoots.once({ params: {}, facts: {} })),
-			(rows) => Arr.map(rowsOf(rows), (row) => ({ scope: row.scope, kind: row.kind, at: row.at }))
+			(rows) => Arr.map(rowsOf(rows), (row) => row.scope)
 		),
 		retire: (root) =>
 			settled(

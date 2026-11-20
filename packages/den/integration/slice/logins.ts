@@ -20,6 +20,15 @@ import {
 	chainRetirerWorkload
 } from "#integration/slice/generated/chain.programs.ts"
 import {
+	ClockCoordinator,
+	ClockDen,
+	ClockRetirer,
+	clockCommits,
+	clockCoordinatorWorkload,
+	clockDenWorkload,
+	clockRetirerWorkload
+} from "#integration/slice/generated/clock.programs.ts"
+import {
 	FanDen,
 	FanCoordinator,
 	FanRetirer,
@@ -79,7 +88,10 @@ export const Worker = login(
 		AssignRetirer,
 		ReviewDen,
 		ReviewCoordinator,
-		ReviewRetirer
+		ReviewRetirer,
+		ClockDen,
+		ClockCoordinator,
+		ClockRetirer
 	],
 	{
 		workload: [
@@ -100,7 +112,10 @@ export const Worker = login(
 			assignRetirerWorkload,
 			reviewDenWorkload,
 			reviewCoordinatorWorkload,
-			reviewRetirerWorkload
+			reviewRetirerWorkload,
+			clockDenWorkload,
+			clockCoordinatorWorkload,
+			clockRetirerWorkload
 		]
 	}
 )
@@ -114,6 +129,7 @@ export const AppLogin = login(App, "app", [Loader, Auditor], {
 		retryCommits,
 		assignCommits,
 		reviewCommits,
+		clockCommits,
 		appWorkload,
 		auditWorkload
 	]

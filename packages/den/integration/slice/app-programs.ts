@@ -66,6 +66,7 @@ import {
 	Assigned,
 	Audit,
 	Built,
+	Chimed,
 	Concluded,
 	Copied,
 	Cursor,
@@ -107,6 +108,7 @@ export const Auditor = role(
 		AssignStep,
 		Audit,
 		Built,
+		Chimed,
 		Concluded,
 		ChainAdmitted,
 		ChainChainRunInput,
@@ -228,6 +230,12 @@ const fanFinishes = query(Auditor).rule((r) => {
 		.match(FanFinish, { scope, step })
 		.match(FanResult, { step, outcome })
 		.find({ scope, step, outcome })
+})
+
+/** Every hour the clock chimed. */
+const chimes = query(Auditor).rule((r) => {
+	const { hour } = v(Chimed, "chimed")
+	return r.match(Chimed, { hour }).find({ hour })
 })
 
 /** Each review's saved groups. */
@@ -527,6 +535,7 @@ export const auditWorkload = workload(Auditor, {
 	reviewSteps,
 	reviewWithins,
 	reviewFinishes,
+	chimes,
 	copied,
 	built,
 	syncAdmitted,
