@@ -70,7 +70,7 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 							feed: "sport",
 							pages: BigInt(race.pages)
 						})
-						assert.isTrue(requested.fresh)
+						assert.ok(requested.fresh)
 						const ends = (from: bigint) => instantOf(Number(from) + longestLeaseMillis)
 						const admitted = yield* serve(
 							ledgers,
@@ -119,12 +119,12 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 							)
 						const earlyRan = yield* finish(early)
 						const lateRan = yield* finish(late)
-						assert.strictEqual(earlyRan.kind, "committed")
-						assert.isTrue(lateRan.kind === "error" && lostRace("Chain", lateRan.error))
+						assert.equal(earlyRan.kind, "committed")
+						assert.ok(lateRan.kind === "error" && lostRace("Chain", lateRan.error))
 						const held = yield* chain.ledger.heldOf(step)
-						assert.deepStrictEqual(held, Option.some(early.attempt))
+						assert.deepEqual(held, Option.some(early.attempt))
 						const pages = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
-						assert.strictEqual(Arr.filter(pages, (p) => p.step === step).length, 1)
+						assert.equal(Arr.filter(pages, (p) => p.step === step).length, 1)
 						const forgedAt = yield* chain.ledger.now
 						const other = yield* chain.request.ChainRun(`${key}-forged`, forgedAt, {
 							feed: "sport",
@@ -148,9 +148,9 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 							{ _tag: "Step", flow, step: otherPage.value.step, attempt: AttemptNumber.make(2) },
 							ends(forgedAt)
 						)
-						assert.strictEqual(forged.ending.kind, "lost")
+						assert.equal(forged.ending.kind, "lost")
 						const claims = yield* chain.ledger.claimsOf(otherPage.value.step)
-						assert.deepStrictEqual(claims, [])
+						assert.deepEqual(claims, [])
 					}),
 					services
 				)

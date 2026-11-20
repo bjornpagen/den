@@ -129,7 +129,7 @@ export const admitsLoweringASeatCountExactlyWhenNoLiveHoldSitsAtOrAboveTheNewCou
 							const takeOne = (ordinal: number) =>
 								Effect.flatMap(holder(ordinal), (h) => take(ledger, [pool], h, until, at))
 							const first = yield* takeOne(0)
-							assert.deepStrictEqual(
+							assert.deepEqual(
 								Option.map(
 									first,
 									Arr.map((hold) => hold.seat)
@@ -138,7 +138,7 @@ export const admitsLoweringASeatCountExactlyWhenNoLiveHoldSitsAtOrAboveTheNewCou
 							)
 							if (seat !== "never taken") {
 								const second = yield* takeOne(1)
-								assert.deepStrictEqual(
+								assert.deepEqual(
 									Option.map(
 										second,
 										Arr.map((hold) => hold.seat)
@@ -154,7 +154,7 @@ export const admitsLoweringASeatCountExactlyWhenNoLiveHoldSitsAtOrAboveTheNewCou
 							}
 							const copy = yield* loweredCopy
 							const migrated = yield* Effect.result(migrateIn(copy))
-							assert.deepStrictEqual(
+							assert.deepEqual(
 								migrated._tag === "Success"
 									? "admitted"
 									: Str.includes("SQLSTATE 23000")(migrated.failure.message) &&

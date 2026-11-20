@@ -64,20 +64,20 @@ export const aPreconditionRootAdmitsTheGoldBuildOnlyOnceTheChainHasNothingPendin
 								pages: BigInt(run.pages)
 							})
 							const gold = yield* sync.request.Gold("gold", at, { build })
-							assert.isTrue(chained.fresh)
-							assert.isTrue(gold.fresh)
+							assert.ok(chained.fresh)
+							assert.ok(gold.fresh)
 							const chainAdmitted = yield* serve(
 								ledgers,
 								{ _tag: "Admit", flow: FlowName.make("Chain"), scope: chained.scope },
 								ends
 							)
-							assert.strictEqual(chainAdmitted.ending.kind, "admitted")
+							assert.equal(chainAdmitted.ending.kind, "admitted")
 							const held = yield* serve(
 								ledgers,
 								{ _tag: "Admit", flow: FlowName.make("Sync"), scope: gold.scope },
 								ends
 							)
-							assert.deepStrictEqual(
+							assert.deepEqual(
 								held.ending.kind === "waiting"
 									? [held.ending.why, held.onward.length]
 									: [held.ending.kind],
@@ -85,17 +85,21 @@ export const aPreconditionRootAdmitsTheGoldBuildOnlyOnceTheChainHasNothingPendin
 							)
 							c.note("the build waited")
 							const busyTick = yield* tick(sync.ledger)
-							assert.isFalse(
+							assert.equal(
 								Arr.some(
 									busyTick.rings,
 									(ring) => ring.wake._tag === "Admit" && ring.wake.scope === gold.scope
-								)
+								),
+								false
 							)
 							const builtBefore = yield* rows(app.workload.built.once({ params: {}, facts: {} }))
-							assert.isFalse(Arr.some(builtBefore, (b) => b.build === build))
+							assert.equal(
+								Arr.some(builtBefore, (b) => b.build === build),
+								false
+							)
 							yield* ringOnAndDrain(ledgers, chainAdmitted)
 							const idleTick = yield* tick(sync.ledger)
-							assert.isTrue(
+							assert.ok(
 								Arr.some(
 									idleTick.rings,
 									(ring) => ring.wake._tag === "Admit" && ring.wake.scope === gold.scope
@@ -103,7 +107,7 @@ export const aPreconditionRootAdmitsTheGoldBuildOnlyOnceTheChainHasNothingPendin
 							)
 							yield* drain(ledgers)
 							const built = yield* rows(app.workload.built.once({ params: {}, facts: {} }))
-							assert.isTrue(Arr.some(built, (b) => b.build === build))
+							assert.ok(Arr.some(built, (b) => b.build === build))
 						}),
 						services
 					)

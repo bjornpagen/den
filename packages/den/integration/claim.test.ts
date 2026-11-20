@@ -96,13 +96,13 @@ export const admitsOneClaimerOfAnAttemptInEveryInterleaving = property.exhaust(f
 										)
 									)
 								)
-								assert.deepStrictEqual(
+								assert.deepEqual(
 									Arr.sort(outcomes, (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)),
 									["claimed", "lost"]
 								)
 								const held = yield* Ref.get(current)
 								const claims = yield* chain.ledger.claimsOf(Option.getOrThrow(held))
-								assert.strictEqual(claims.length, 1)
+								assert.equal(claims.length, 1)
 							}).pipe(Effect.orDie)
 						yield* interleave(
 							{

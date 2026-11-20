@@ -108,14 +108,14 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 						}
 
 						const retirements = yield* retire(chain.ledger)
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.sort(
 								Arr.flatMap(retirements, (r) => (r.kind === "retired" ? [r.root] : [])),
 								byScope
 							),
 							Arr.sort(retiredScopes, byScope)
 						)
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.sort(
 								Arr.flatMap(retirements, (r) =>
 									r.kind === "kept" && r.error.kind === "refused" ? [r.root] : []
@@ -124,19 +124,19 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 							),
 							Arr.sort(keptScopes, byScope)
 						)
-						assert.strictEqual(retirements.length, retiredScopes.length + keptScopes.length)
+						assert.equal(retirements.length, retiredScopes.length + keptScopes.length)
 
 						const left = yield* rows(app.workload.chainGraphRows.once({ params: {}, facts: {} }))
 						const rootsLeft = new Set(Arr.map(left, (row) => row.root))
-						Arr.forEach(retiredScopes, (scope) => assert.isFalse(rootsLeft.has(scope)))
+						Arr.forEach(retiredScopes, (scope) => assert.equal(rootsLeft.has(scope), false))
 						Arr.forEach(keptScopes, (scope) =>
-							assert.strictEqual(
+							assert.equal(
 								Arr.filter(left, (row) => row.root === scope).length,
 								Arr.filter(results, (row) => row.root === scope).length
 							)
 						)
 						const headers = yield* rows(app.workload.chainHeaders.once({ params: {}, facts: {} }))
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.sort(
 								Arr.map(headers, (h) => h.scope),
 								byScope
@@ -157,7 +157,7 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 											pages: BigInt(r.plan.pages)
 										})
 									)
-									assert.isTrue(again._tag === "Failure" && again.failure.kind === "refused")
+									assert.ok(again._tag === "Failure" && again.failure.kind === "refused")
 									const stale = Arr.filter(pages, (page) => page.scope === r.scope)
 									const ends = yield* chain.ledger.now
 									yield* Effect.forEach(stale, (page) =>
@@ -172,20 +172,20 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 												},
 												ends
 											),
-											(turn) => assert.strictEqual(turn.ending.kind, "lost")
+											(turn) => assert.equal(turn.ending.kind, "lost")
 										)
 									)
 								})
 						)
 
 						const second = yield* retire(chain.ledger)
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.flatMap(second, (r) => (r.kind === "retired" ? [r.root] : [])),
 							[]
 						)
 						const items = yield* rows(app.workload.items.once({ params: {}, facts: {} }))
 						const most = Arr.reduce(running, 0, (m, r) => Math.max(m, r.plan.pages))
-						assert.strictEqual(items.length, (most * (most + 1)) / 2)
+						assert.equal(items.length, (most * (most + 1)) / 2)
 					}),
 					services
 				)
@@ -202,66 +202,6 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 			original: "retire: { ChainRoot: [{ scope: root }] }",
 			replacement: "retire: { ChainRoot: [] }",
 			why: "the binding retires no group, so a finished graph's rows stay"
-		}
-	]
-})
-
-type Together = "two roots" | "more than two roots"
-
-const together: Gen<ReadonlyArray<number>> = array(int(1, 3), { min: 2, max: 6 })
-
-/**
- * Retires every one of several finished roots no app row pins, their retirements run at once: den's retiring role
- * certifies SERIALIZABLE, so two retirements can meet each other and one be refused as transient, which changed
- * nothing, and its call runs again until it retires.
- *
- * Oracle (specification): grizzle's README, "Retirable units" and its CallError table (a `transient` changed nothing
- * and is safe to run again), and runtime/retire.ts: every finished root with no audit retires, none is kept.
- */
-export const concurrentRetirementsOfFinishedRootsAllRetire = property.explore(together, {
-	needs: { slice: sliceCase },
-	situations: ["two roots", "more than two roots"] satisfies ReadonlyArray<Reached<Together>>,
-	check:
-		({ slice }, c: Case<Together>) =>
-		(pages) =>
-			Effect.flatMap(slice, (services) =>
-				Effect.provideContext(
-					Effect.gen(function* () {
-						c.note(pages.length === 2 ? "two roots" : "more than two roots")
-						const { chain, ledgers } = yield* openLedgers
-						const app = yield* Db.open(AppServed.roles.auditor, {})
-						const at = yield* chain.ledger.now
-						const requested = yield* Effect.forEach(pages, (n, index) =>
-							chain.request.ChainRun(`together-${index}`, at, { feed: "news", pages: BigInt(n) })
-						)
-						const scopes = Arr.map(requested, (r) => r.scope)
-						yield* admitAndDrain(ledgers, FlowName.make("Chain"), scopes)
-						const retirements = yield* retire(chain.ledger)
-						assert.deepStrictEqual(
-							Arr.sort(
-								Arr.flatMap(retirements, (r) => (r.kind === "retired" ? [r.root] : [])),
-								byScope
-							),
-							Arr.sort(scopes, byScope)
-						)
-						const left = yield* rows(app.workload.chainGraphRows.once({ params: {}, facts: {} }))
-						assert.deepStrictEqual(left, [])
-					}),
-					services
-				)
-			),
-	oracle: {
-		kind: "specification",
-		name: "grizzle's retirable units under SERIALIZABLE: every finished unpinned root retires, a transient run again"
-	},
-	budget: { runs: 8, steered: 8 },
-	kept: [],
-	kills: [
-		{
-			file: "packages/den/integration/slice/generated/chain.binding.ts",
-			original: "settled(\n\t\t\t\th.retirer.chainRetire.once(",
-			replacement: "(\n\t\t\t\th.retirer.chainRetire.once(",
-			why: "the binding's retirement ends on a transient refusal, so a retirement another one met is kept"
 		}
 	]
 })

@@ -447,11 +447,9 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 							const mine = (texts: ReadonlyArray<string>) =>
 								Arr.filter(texts, Str.includes(rootText({ kind: started.root, key })))
 							const engine = mine(agreed(factsOf(graph)))
-							assert.deepStrictEqual(engine, mine(agreed(started.model)))
-							assert.isTrue(
-								Arr.contains(engine, `admitted ${rootText({ kind: started.root, key })}`)
-							)
-							assert.isTrue(Arr.some(engine, Str.startsWith("finished ")))
+							assert.deepEqual(engine, mine(agreed(started.model)))
+							assert.ok(Arr.contains(engine, `admitted ${rootText({ kind: started.root, key })}`))
+							assert.ok(Arr.some(engine, Str.startsWith("finished ")))
 						}),
 						services
 					)

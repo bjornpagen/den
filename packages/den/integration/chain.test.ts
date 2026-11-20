@@ -80,13 +80,13 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 							feed: run.feed,
 							pages: BigInt(run.pages)
 						})
-						assert.isTrue(requested.fresh)
+						assert.ok(requested.fresh)
 						c.note("first request")
 						yield* admitAndDrain(ledgers, FlowName.make("Chain"), [requested.scope])
 						const scope = requested.scope
 						const read = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
 						const pages = Arr.filter(read, (page) => page.scope === scope)
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.sort(
 								Arr.map(pages, (page): bigint => page.seq),
 								Order.BigInt
@@ -98,10 +98,10 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 						Arr.forEach(pages, (page) => {
 							const recorded = Arr.filter(reads, (r) => r.step === page.step)
 							c.note(Arr.isReadonlyArrayEmpty(recorded) ? "no weight" : "a weight read")
-							assert.isTrue(Arr.every(recorded, (r) => r.feed === run.feed))
+							assert.ok(Arr.every(recorded, (r) => r.feed === run.feed))
 							const factor = Arr.reduce(recorded, 0n, (sum, r) => sum + r.factor)
-							assert.strictEqual(page.items, (page.seq + 1n) * (factor > 0n ? factor : 1n))
-							assert.isTrue(
+							assert.equal(page.items, (page.seq + 1n) * (factor > 0n ? factor : 1n))
+							assert.ok(
 								BigInt(
 									Arr.filter(items, (item) => item.feed === run.feed && item.seq === page.seq)
 										.length
@@ -110,12 +110,12 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 						})
 						const finished = yield* rows(app.workload.chainFinishes.once({ params: {}, facts: {} }))
 						const finishes = Arr.filter(finished, (finish) => finish.scope === scope)
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.map(finishes, (finish) => finish.outcome),
 							["done"]
 						)
 						const cursors = yield* rows(app.workload.cursors.once({ params: {}, facts: {} }))
-						assert.isTrue(
+						assert.ok(
 							Arr.some(
 								cursors,
 								(cursor) => cursor.feed === run.feed && cursor.position === BigInt(run.pages - 1)
@@ -125,7 +125,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 							feed: run.feed,
 							pages: BigInt(run.pages)
 						})
-						assert.isFalse(again.fresh)
+						assert.equal(again.fresh, false)
 						c.note("request again")
 						const ends = yield* chain.ledger.now
 						const rerung: ReadonlyArray<Ending> = yield* Effect.forEach(pages, (page) =>
@@ -143,9 +143,9 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 								(turn) => turn.ending
 							)
 						)
-						assert.isTrue(Arr.every(rerung, (ending) => ending.kind === "lost"))
+						assert.ok(Arr.every(rerung, (ending) => ending.kind === "lost"))
 						const after = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
-						assert.strictEqual(Arr.filter(after, (page) => page.scope === scope).length, run.pages)
+						assert.equal(Arr.filter(after, (page) => page.scope === scope).length, run.pages)
 					}),
 					services
 				)

@@ -84,7 +84,7 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 								feed: "news",
 								pages: BigInt(loss.pages)
 							})
-							assert.isTrue(requested.fresh)
+							assert.ok(requested.fresh)
 							const ends = instantOf(Number(at) + longestLeaseMillis)
 							const flow = FlowName.make("Chain")
 							const first = loss.admitted
@@ -105,11 +105,12 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 								const root = Option.getOrThrow(located).root
 								yield* chain.ledger.claim({ step, root, attempt: 1n, holder, until: ends })
 								const standing = yield* tick(chain.ledger)
-								assert.isFalse(
+								assert.equal(
 									Arr.some(
 										standing.rings,
 										(ring) => ring.wake._tag === "Step" && ring.wake.step === step
-									)
+									),
+									false
 								)
 								yield* Ref.set(held, [])
 								yield* TestClock.adjust(Duration.millis(reclaimableAfterMillis))
@@ -127,15 +128,12 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 									return yield* finished
 								})
 							)
-							assert.isTrue(Arr.some(passes, (done) => done))
+							assert.ok(Arr.some(passes, (done) => done))
 							const pages = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
-							assert.strictEqual(
-								Arr.filter(pages, (p) => p.scope === requested.scope).length,
-								loss.pages
-							)
+							assert.equal(Arr.filter(pages, (p) => p.scope === requested.scope).length, loss.pages)
 							if (loss.deadHolder && Option.isSome(first)) {
 								const attempt = yield* chain.ledger.heldOf(first.value.step)
-								assert.deepStrictEqual(attempt, Option.some(2n))
+								assert.deepEqual(attempt, Option.some(2n))
 							}
 						}),
 						services

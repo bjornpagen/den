@@ -72,7 +72,7 @@ export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.
 							steadfast,
 							brittle
 						})
-						assert.isTrue(requested.fresh)
+						assert.ok(requested.fresh)
 						yield* admitAndDrain(ledgers, FlowName.make("Retry"), [requested.scope])
 						yield* Effect.forEach(Array.from({ length: run.steadfast + run.brittle + 2 }), () =>
 							Effect.andThen(TestClock.adjust(Duration.millis(backoffLastMillis)), drain(ledgers))
@@ -86,31 +86,31 @@ export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.
 						const of = (kind: string) => Arr.filter(mine, (r) => r.kind === kind)
 						const claimsOf = (kind: string) =>
 							Arr.flatMap(of(kind), (r) => Arr.filter(claims, (cl) => cl.step === r.step)).length
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.map(of("Steadfast"), (r) => r.outcome),
 							["done"]
 						)
-						assert.strictEqual(claimsOf("Steadfast"), run.steadfast + 1)
+						assert.equal(claimsOf("Steadfast"), run.steadfast + 1)
 						if (run.brittle < 2) {
-							assert.deepStrictEqual(
+							assert.deepEqual(
 								Arr.map(of("Brittle"), (r) => r.outcome),
 								["done"]
 							)
-							assert.strictEqual(claimsOf("Brittle"), run.brittle + 1)
+							assert.equal(claimsOf("Brittle"), run.brittle + 1)
 						} else {
-							assert.deepStrictEqual(
+							assert.deepEqual(
 								Arr.map(of("Brittle"), (r) => r.outcome),
 								["failed"]
 							)
-							assert.strictEqual(claimsOf("Brittle"), 2)
-							assert.isTrue(
+							assert.equal(claimsOf("Brittle"), 2)
+							assert.ok(
 								Arr.some(
 									exhausted,
 									(e) => Arr.some(of("Brittle"), (r) => r.step === e.step) && e.attempts === 2n
 								)
 							)
 						}
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.map(of("LaddersFinish"), (r) => r.outcome),
 							["done"]
 						)

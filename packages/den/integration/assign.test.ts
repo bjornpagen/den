@@ -175,17 +175,17 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 							exclude: excluded,
 							mode: run.mode
 						})
-						assert.isTrue(requested.fresh)
+						assert.ok(requested.fresh)
 						yield* admitAndDrain(ledgers, FlowName.make("Assign"), [requested.scope])
 
 						const results = yield* rows(app.workload.assignResults.once({ params: {}, facts: {} }))
 						const mine = Arr.filter(results, (r) => r.scope === requested.scope)
 						const decided = Arr.filter(mine, (r) => r.kind === "Decide")
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.map(decided, (r) => r.outcome),
 							["done"]
 						)
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.map(
 								Arr.filter(mine, (r) => r.kind === "AssignmentFinish"),
 								(r) => r.outcome
@@ -213,21 +213,18 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 							Arr.filter(recordedNearest, (r) => r.step === step),
 							byOrdinal
 						)
-						assert.deepStrictEqual(
+						assert.deepEqual<ReadonlyArray<bigint>>(
 							Arr.map(nearest, (r) => r.ordinal),
 							ordinals(nearest.length)
 						)
-						assert.strictEqual(
-							nearest.length,
-							run.stored ? Math.min(assignedAmong, ofTopic.length) : 0
-						)
+						assert.equal(nearest.length, run.stored ? Math.min(assignedAmong, ofTopic.length) : 0)
 						const exact = new Map(
 							Arr.map(ofTopic, (p) => [p.passage, cosine(p.components, run.near)] as const)
 						)
 						Arr.forEach(nearest, (r) => {
-							assert.strictEqual(r.topic, "near")
+							assert.equal(r.topic, "near")
 							const distance = exact.get(r.passage)
-							assert.isTrue(distance !== undefined && close(r.distance, distance))
+							assert.ok(distance !== undefined && close(r.distance, distance))
 						})
 						const smallest = Arr.take(
 							Arr.sort(Array.from(exact.values()), Order.Number),
@@ -237,8 +234,8 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 							Arr.map(nearest, (r) => r.distance),
 							Order.Number
 						)
-						assert.isTrue(Arr.every(Arr.zip(found, smallest), ([a, b]) => close(a, b)))
-						assert.deepStrictEqual(
+						assert.ok(Arr.every(Arr.zip(found, smallest), ([a, b]) => close(a, b)))
+						assert.deepEqual(
 							Arr.sort(
 								Arr.map(
 									Arr.filter(recordedSeen, (r) => r.step === step),
@@ -271,11 +268,11 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 							Arr.filter(weighed, (r) => r.step === step),
 							byOrdinal
 						)
-						assert.deepStrictEqual(
+						assert.deepEqual<ReadonlyArray<bigint>>(
 							Arr.map(family, (r) => r.ordinal),
 							ordinals(family.length)
 						)
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.map(family, (r) => ({
 								passage: r.passage,
 								distance: r.distance,
@@ -283,19 +280,19 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 							})),
 							expectedWeighed
 						)
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.map(
 								Arr.filter(decisions, (r) => r.step === step),
 								(r) => ({ stage: r.stage, confidence: r.confidence })
 							),
 							[
 								Option.match(chosen, {
-									onNone: () => ({ stage: "Rest", confidence: 0 }),
-									onSome: (r) => ({ stage: "Serve", confidence: 1 - r.distance / 2 })
+									onNone: () => ({ stage: "Rest" as const, confidence: 0 }),
+									onSome: (r) => ({ stage: "Serve" as const, confidence: 1 - r.distance / 2 })
 								})
 							]
 						)
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.map(
 								Arr.filter(served, (r) => r.step === step),
 								(r) => ({ passage: r.passage, distance: r.distance })
@@ -304,7 +301,7 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 								Option.map(chosen, (r) => ({ passage: r.passage, distance: r.distance }))
 							)
 						)
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.map(concluded, (r) => ({
 								learner: r.learner,
 								served: r.served,
@@ -318,7 +315,7 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 								}
 							]
 						)
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.map(assigned, (r) => r.passage),
 							Option.toArray(Option.map(chosen, (r) => r.passage))
 						)

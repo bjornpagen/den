@@ -61,11 +61,11 @@ export const theFanOutFlowTalliesEverySquare = property.explore(runs, {
 							batch,
 							size: BigInt(run.size)
 						})
-						assert.isTrue(requested.fresh)
+						assert.ok(requested.fresh)
 						yield* admitAndDrain(ledgers, FlowName.make("Fan"), [requested.scope])
 						const tallies = yield* rows(app.workload.tallies.once({ params: {}, facts: {} }))
 						const n = BigInt(run.size)
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.map(
 								Arr.filter(tallies, (t) => t.batch === batch),
 								(t) => ({ batch: t.batch, count: t.count, total: t.total })
@@ -73,13 +73,13 @@ export const theFanOutFlowTalliesEverySquare = property.explore(runs, {
 							[{ batch, count: n, total: (n * (n + 1n) * (2n * n + 1n)) / 6n }]
 						)
 						const settled = yield* rows(app.workload.settled.once({ params: {}, facts: {} }))
-						assert.isTrue(Arr.some(settled, (s) => s.batch === batch))
+						assert.ok(Arr.some(settled, (s) => s.batch === batch))
 						const finishes = yield* rows(app.workload.fanFinishes.once({ params: {}, facts: {} }))
-						assert.isTrue(
+						assert.ok(
 							Arr.some(finishes, (f) => f.scope === requested.scope && f.outcome === "done")
 						)
 						const holds = yield* fan.ledger.coordination.holds
-						assert.deepStrictEqual(holds, [])
+						assert.deepEqual(holds, [])
 					}),
 					services
 				)

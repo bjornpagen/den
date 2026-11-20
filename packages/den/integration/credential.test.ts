@@ -119,7 +119,7 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 								steadfast: "steadfast",
 								brittle: "brittle"
 							})
-							assert.isTrue(requested.fresh)
+							assert.ok(requested.fresh)
 							const first = yield* admitAndDrain(misconfigured.ledgers, FlowName.make("Retry"), [
 								requested.scope
 							])
@@ -131,12 +131,12 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 								round(misconfigured.all, misconfigured.ledgers)
 							)
 							const brokenRuns = yield* Effect.forEach(steps, (s) => runsOf(s.key))
-							assert.deepStrictEqual(
+							assert.deepEqual(
 								brokenRuns,
 								fencedRuns,
 								"a body ran while the deployment stayed broken"
 							)
-							assert.deepStrictEqual(
+							assert.deepEqual(
 								Arr.flatten(broken),
 								[],
 								"a turn ran while the deployment stayed broken"
@@ -149,7 +149,7 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 							const settled = (planned: Planned) =>
 								Effect.gen(function* () {
 									const done = of(planned.kind)
-									assert.deepStrictEqual(
+									assert.deepEqual(
 										Arr.map(done, (r) => r.outcome),
 										["done"]
 									)
@@ -158,27 +158,24 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 									const retried = yield* retry.ledger.retriesOf(step)
 									const fenced = yield* retry.ledger.fencedOf(step)
 									const fence = BigInt(planned.deaths + 1)
-									assert.deepStrictEqual(
+									assert.deepEqual(
 										Arr.map(Arr.sort(claimed, byAttempt), (cl) => cl.attempt),
 										Array.from({ length: planned.deaths + 2 }, (_, i) => BigInt(i + 1))
 									)
-									assert.deepStrictEqual(
+									assert.deepEqual(
 										Arr.map(Arr.sort(retried, byAttempt), (r) => [r.attempt, r.spent] as const),
 										Array.from({ length: planned.deaths }, (_, i) => [BigInt(i + 1), true] as const)
 									)
-									assert.deepStrictEqual(
+									assert.deepEqual(
 										Arr.map(fenced, (f) => f.attempt),
 										[fence]
 									)
-									assert.strictEqual(
-										Arr.filter(endings, (ending) => refusedAt(step, ending)).length,
-										1
-									)
+									assert.equal(Arr.filter(endings, (ending) => refusedAt(step, ending)).length, 1)
 									const bodies = yield* runsOf(planned.key)
-									assert.strictEqual(bodies, planned.deaths + 2)
+									assert.equal(bodies, planned.deaths + 2)
 								})
 							yield* Effect.forEach(steps, settled, { discard: true })
-							assert.deepStrictEqual(
+							assert.deepEqual(
 								Arr.map(of("LaddersFinish"), (r) => r.outcome),
 								["done"]
 							)

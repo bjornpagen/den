@@ -75,7 +75,7 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 						const batch = "contended"
 						const at = yield* fan.ledger.now
 						const requested = yield* fan.request.FanRun(batch, at, { batch, size: 5n })
-						assert.isTrue(requested.fresh)
+						assert.ok(requested.fresh)
 						const ends = instantOf(Number(at) + longestLeaseMillis)
 						const admitted = yield* serve(
 							ledgers,
@@ -83,7 +83,7 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 							ends
 						)
 						const squares = admitted.ending.kind === "admitted" ? admitted.ending.spawned.steps : []
-						assert.strictEqual(squares.length, 5)
+						assert.equal(squares.length, 5)
 						const pairs = yield* Effect.forEach(
 							Arr.zip(Arr.zip(sessions, drawnTakers.lapsed), squares),
 							([[session, lapsed], square]) =>
@@ -101,12 +101,9 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 						const exact = Effect.gen(function* () {
 							const live = yield* ledger.coordination.holds
 							yield* Ref.update(peak, (p) => Math.max(p, live.length))
-							assert.isAtMost(live.length, 2)
-							assert.strictEqual(
-								Arr.dedupeWith(live, (a, b) => a.seat === b.seat).length,
-								live.length
-							)
-							assert.isTrue(Arr.every(live, (row) => Arr.contains(holders, row.holder)))
+							assert.ok(live.length <= 2)
+							assert.equal(Arr.dedupeWith(live, (a, b) => a.seat === b.seat).length, live.length)
+							assert.ok(Arr.every(live, (row) => Arr.contains(holders, row.holder)))
 							return live
 						})
 						const run = (session: Session, move: Move): Effect.Effect<Outcome> =>
@@ -144,7 +141,7 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 								}
 								const live = yield* exact
 								if (!taker.lapsed) {
-									assert.isTrue(
+									assert.ok(
 										Arr.every(
 											Option.getOrElse(taken, () => []),
 											(hold) => Arr.some(live, (row) => sameTurn(row, hold))
@@ -213,7 +210,7 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 						}
 						yield* ringOnAndDrain(ledgers, admitted)
 						const left = yield* ledger.coordination.holds
-						assert.deepStrictEqual(left, [])
+						assert.deepEqual(left, [])
 					}),
 					services
 				)

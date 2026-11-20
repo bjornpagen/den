@@ -70,14 +70,14 @@ export const theCensusKeepsTheSeatOfEveryRootAdmittedWhileItReads = property.exh
 											{ _tag: "Admit", flow: FlowName.make("Sync"), scope: requested.scope },
 											ends
 										)
-										assert.strictEqual(served.ending.kind, "admitted")
+										assert.equal(served.ending.kind, "admitted")
 										return requested.scope
 									})
 							)
 							const [, scopes] = yield* readAcrossWrite(chainSteps, tick(sync.ledger), admitted)
 							const held = yield* sync.ledger.coordination.exclusives
 							const sorted = (all: ReadonlyArray<ScopeKey>) => Arr.sort(all, Order.String)
-							assert.deepStrictEqual(sorted(Arr.map(held, (seat) => seat.scope)), sorted(scopes))
+							assert.deepEqual(sorted(Arr.map(held, (seat) => seat.scope)), sorted(scopes))
 						}).pipe(Effect.orDie),
 						services
 					)

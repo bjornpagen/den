@@ -3111,11 +3111,7 @@ COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_scope_pred_gg2bohya6
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_mode_nearest_fk_root_t23ef5vjhv" ON "slice"."assign_assignment_input_mode_nearest" IS 'foreign key AssignAssignmentInputModeNearest(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_mode_nearest_fk_scope_root_vebzvu6gah" ON "slice"."assign_assignment_input_mode_nearest" IS 'foreign key AssignAssignmentInputModeNearest(scope, root) to AssignAssignmentInput(scope, root)';
-
 COMMENT ON CONSTRAINT "__assign_assignment_input_mode_within_fk_root_jimtsl3pcm" ON "slice"."assign_assignment_input_mode_within" IS 'foreign key AssignAssignmentInputModeWithin(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__assign_assignment_input_mode_within_fk_scope_root_cbt7higc4i" ON "slice"."assign_assignment_input_mode_within" IS 'foreign key AssignAssignmentInputModeWithin(scope, root) to AssignAssignmentInput(scope, root)';
 
 COMMENT ON CONSTRAINT "__assign_claim_fk_root_tccogfd3gj" ON "slice"."assign_claim" IS 'foreign key AssignClaim(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3125,8 +3121,6 @@ COMMENT ON CONSTRAINT "__assign_claim_fk_step_pred_attempt_root_wmdynbkcix" ON "
 
 COMMENT ON CONSTRAINT "__assign_decide_input_fk_root_2ru7zbrfcg" ON "slice"."assign_decide_input" IS 'foreign key AssignDecideInput(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__assign_decide_input_fk_step_root_hmrut5ye7t" ON "slice"."assign_decide_input" IS 'foreign key AssignDecideInput(step, root) to AssignStep(step, root)';
-
 COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_root_ms4jvh65c5" ON "slice"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_step_root_in6yyrl43w" ON "slice"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(step, root) to AssignDecideInput(step, root)';
@@ -3135,11 +3129,7 @@ COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_step_pred_ordinal_7st2gu
 
 COMMENT ON CONSTRAINT "__assign_decide_input_mode_nearest_fk_root_vgxth6ulqd" ON "slice"."assign_decide_input_mode_nearest" IS 'foreign key AssignDecideInputModeNearest(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__assign_decide_input_mode_nearest_fk_step_root_3pztluvaw3" ON "slice"."assign_decide_input_mode_nearest" IS 'foreign key AssignDecideInputModeNearest(step, root) to AssignDecideInput(step, root)';
-
 COMMENT ON CONSTRAINT "__assign_decide_input_mode_within_fk_root_5fhvbm7o2j" ON "slice"."assign_decide_input_mode_within" IS 'foreign key AssignDecideInputModeWithin(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__assign_decide_input_mode_within_fk_step_root_isztipdtml" ON "slice"."assign_decide_input_mode_within" IS 'foreign key AssignDecideInputModeWithin(step, root) to AssignDecideInput(step, root)';
 
 COMMENT ON CONSTRAINT "__assign_decide_nearest_read_fk_root_bofoevlhaq" ON "slice"."assign_decide_nearest_read" IS 'foreign key AssignDecideNearestRead(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3153,11 +3143,7 @@ COMMENT ON CONSTRAINT "__assign_decide_output_fk_step_root_b4qrx4ukam" ON "slice
 
 COMMENT ON CONSTRAINT "__assign_decide_output_stage_rest_fk_root_emwjzdjgvs" ON "slice"."assign_decide_output_stage_rest" IS 'foreign key AssignDecideOutputStageRest(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__assign_decide_output_stage_rest_fk_step_root_hnm7wtskut" ON "slice"."assign_decide_output_stage_rest" IS 'foreign key AssignDecideOutputStageRest(step, root) to AssignDecideOutput(step, root)';
-
 COMMENT ON CONSTRAINT "__assign_decide_output_stage_serve_fk_root_nv2zgv5hrt" ON "slice"."assign_decide_output_stage_serve" IS 'foreign key AssignDecideOutputStageServe(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__assign_decide_output_stage_serve_fk_step_root_3ohxxrfuva" ON "slice"."assign_decide_output_stage_serve" IS 'foreign key AssignDecideOutputStageServe(step, root) to AssignDecideOutput(step, root)';
 
 COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_root_tymno4wjr4" ON "slice"."assign_decide_output_weighed" IS 'foreign key AssignDecideOutputWeighed(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3171,15 +3157,11 @@ COMMENT ON CONSTRAINT "__assign_decide_seen_read_fk_step_root_lfxhtzprjs" ON "sl
 
 COMMENT ON CONSTRAINT "__assign_done_fk_root_bm6oxygwbu" ON "slice"."assign_done" IS 'foreign key AssignDone(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__assign_done_fk_step_root_ngf72h7577" ON "slice"."assign_done" IS 'foreign key AssignDone(step, root) to AssignResult(step, root)';
-
 COMMENT ON CONSTRAINT "__assign_exhausted_fk_root_vljhubi73b" ON "slice"."assign_exhausted" IS 'foreign key AssignExhausted(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__assign_exhausted_fk_step_root_juabgscovy" ON "slice"."assign_exhausted" IS 'foreign key AssignExhausted(step, root) to AssignFailed(step, root)';
 
 COMMENT ON CONSTRAINT "__assign_failed_fk_root_oyplqvhznf" ON "slice"."assign_failed" IS 'foreign key AssignFailed(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__assign_failed_fk_step_root_covug6mgbg" ON "slice"."assign_failed" IS 'foreign key AssignFailed(step, root) to AssignResult(step, root)';
 
 COMMENT ON CONSTRAINT "__assign_fenced_fk_root_53vovdvcd2" ON "slice"."assign_fenced" IS 'foreign key AssignFenced(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3247,15 +3229,11 @@ COMMENT ON CONSTRAINT "__chain_claim_fk_step_pred_attempt_root_hf2626wosn" ON "s
 
 COMMENT ON CONSTRAINT "__chain_done_fk_root_p5unbx53ay" ON "slice"."chain_done" IS 'foreign key ChainDone(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__chain_done_fk_step_root_nhwqto76dv" ON "slice"."chain_done" IS 'foreign key ChainDone(step, root) to ChainResult(step, root)';
-
 COMMENT ON CONSTRAINT "__chain_exhausted_fk_root_az7it7tady" ON "slice"."chain_exhausted" IS 'foreign key ChainExhausted(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__chain_exhausted_fk_step_root_x7otp3oe7t" ON "slice"."chain_exhausted" IS 'foreign key ChainExhausted(step, root) to ChainFailed(step, root)';
 
 COMMENT ON CONSTRAINT "__chain_failed_fk_root_ku7hd36hr4" ON "slice"."chain_failed" IS 'foreign key ChainFailed(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__chain_failed_fk_step_root_usbatdtsvr" ON "slice"."chain_failed" IS 'foreign key ChainFailed(step, root) to ChainResult(step, root)';
 
 COMMENT ON CONSTRAINT "__chain_fenced_fk_root_dpd2zsy45p" ON "slice"."chain_fenced" IS 'foreign key ChainFenced(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3282,8 +3260,6 @@ COMMENT ON CONSTRAINT "__chain_next_fk_to_root_juwf5tsgbs" ON "slice"."chain_nex
 COMMENT ON CONSTRAINT "__chain_ordered_input_fk_root_yo2fvi6v6v" ON "slice"."chain_ordered_input" IS 'foreign key ChainOrderedInput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__chain_page_input_fk_root_s74r6jkeai" ON "slice"."chain_page_input" IS 'foreign key ChainPageInput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__chain_page_input_fk_step_root_ne5cs7xlsn" ON "slice"."chain_page_input" IS 'foreign key ChainPageInput(step, root) to ChainStep(step, root)';
 
 COMMENT ON CONSTRAINT "__chain_page_input_after_fk_root_uksq5ttkd4" ON "slice"."chain_page_input_after" IS 'foreign key ChainPageInputAfter(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3343,8 +3319,6 @@ COMMENT ON CONSTRAINT "__fan_admitted_fk_scope_root_zj52ntgcx6" ON "slice"."fan_
 
 COMMENT ON CONSTRAINT "__fan_batch_input_fk_root_d4g2u2spvl" ON "slice"."fan_batch_input" IS 'foreign key FanBatchInput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__fan_batch_input_fk_scope_root_mo4mgqhyzc" ON "slice"."fan_batch_input" IS 'foreign key FanBatchInput(scope, root) to FanWithin(scope, root)';
-
 COMMENT ON CONSTRAINT "__fan_claim_fk_root_t3hwth6mh7" ON "slice"."fan_claim" IS 'foreign key FanClaim(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__fan_claim_fk_step_root_6jsjsejmab" ON "slice"."fan_claim" IS 'foreign key FanClaim(step, root) to FanStep(step, root)';
@@ -3353,15 +3327,11 @@ COMMENT ON CONSTRAINT "__fan_claim_fk_step_pred_attempt_root_msshdcusww" ON "sli
 
 COMMENT ON CONSTRAINT "__fan_done_fk_root_cfizuozacw" ON "slice"."fan_done" IS 'foreign key FanDone(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__fan_done_fk_step_root_xbvvletha2" ON "slice"."fan_done" IS 'foreign key FanDone(step, root) to FanResult(step, root)';
-
 COMMENT ON CONSTRAINT "__fan_exhausted_fk_root_mlbxyrjdjk" ON "slice"."fan_exhausted" IS 'foreign key FanExhausted(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__fan_exhausted_fk_step_root_jyggt4fgpd" ON "slice"."fan_exhausted" IS 'foreign key FanExhausted(step, root) to FanFailed(step, root)';
 
 COMMENT ON CONSTRAINT "__fan_failed_fk_root_3gq7ifprza" ON "slice"."fan_failed" IS 'foreign key FanFailed(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__fan_failed_fk_step_root_6qgaqfb45o" ON "slice"."fan_failed" IS 'foreign key FanFailed(step, root) to FanResult(step, root)';
 
 COMMENT ON CONSTRAINT "__fan_fan_run_input_fk_root_oztqak3s27" ON "slice"."fan_fan_run_input" IS 'foreign key FanFanRunInput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3411,8 +3381,6 @@ COMMENT ON CONSTRAINT "__fan_skipped_fk_scope_eomkgfbxwj" ON "slice"."fan_skippe
 
 COMMENT ON CONSTRAINT "__fan_square_input_fk_root_gpj7rrapja" ON "slice"."fan_square_input" IS 'foreign key FanSquareInput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__fan_square_input_fk_step_root_st4uawhcxt" ON "slice"."fan_square_input" IS 'foreign key FanSquareInput(step, root) to FanStep(step, root)';
-
 COMMENT ON CONSTRAINT "__fan_square_output_fk_root_dpyr2dahw3" ON "slice"."fan_square_output" IS 'foreign key FanSquareOutput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__fan_square_output_fk_step_root_ibp6l2tkc5" ON "slice"."fan_square_output" IS 'foreign key FanSquareOutput(step, root) to FanDone(step, root)';
@@ -3447,8 +3415,6 @@ COMMENT ON CONSTRAINT "__retry_admitted_fk_scope_root_kufu5v4g3v" ON "slice"."re
 
 COMMENT ON CONSTRAINT "__retry_brittle_input_fk_root_3kdpo5sepg" ON "slice"."retry_brittle_input" IS 'foreign key RetryBrittleInput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__retry_brittle_input_fk_step_root_lxvyjd4ne5" ON "slice"."retry_brittle_input" IS 'foreign key RetryBrittleInput(step, root) to RetryStep(step, root)';
-
 COMMENT ON CONSTRAINT "__retry_brittle_output_fk_root_baznemh4df" ON "slice"."retry_brittle_output" IS 'foreign key RetryBrittleOutput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__retry_brittle_output_fk_step_root_o5pt3hukix" ON "slice"."retry_brittle_output" IS 'foreign key RetryBrittleOutput(step, root) to RetryBrittleInput(step, root)';
@@ -3463,15 +3429,11 @@ COMMENT ON CONSTRAINT "__retry_claim_fk_step_pred_attempt_root_jmq6tipywk" ON "s
 
 COMMENT ON CONSTRAINT "__retry_done_fk_root_eegigvha5p" ON "slice"."retry_done" IS 'foreign key RetryDone(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__retry_done_fk_step_root_lohfpft573" ON "slice"."retry_done" IS 'foreign key RetryDone(step, root) to RetryResult(step, root)';
-
 COMMENT ON CONSTRAINT "__retry_exhausted_fk_root_fetyfw4rhv" ON "slice"."retry_exhausted" IS 'foreign key RetryExhausted(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__retry_exhausted_fk_step_root_pj2owyq2rw" ON "slice"."retry_exhausted" IS 'foreign key RetryExhausted(step, root) to RetryFailed(step, root)';
 
 COMMENT ON CONSTRAINT "__retry_failed_fk_root_uy6ypbkhl7" ON "slice"."retry_failed" IS 'foreign key RetryFailed(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__retry_failed_fk_step_root_7gtqkxrndy" ON "slice"."retry_failed" IS 'foreign key RetryFailed(step, root) to RetryResult(step, root)';
 
 COMMENT ON CONSTRAINT "__retry_fenced_fk_root_q2hes57bil" ON "slice"."retry_fenced" IS 'foreign key RetryFenced(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3523,8 +3485,6 @@ COMMENT ON CONSTRAINT "__retry_start_step_fk_step_root_wftarsumzh" ON "slice"."r
 
 COMMENT ON CONSTRAINT "__retry_steadfast_input_fk_root_4xkwhc353t" ON "slice"."retry_steadfast_input" IS 'foreign key RetrySteadfastInput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__retry_steadfast_input_fk_step_root_bwpdgxe5cs" ON "slice"."retry_steadfast_input" IS 'foreign key RetrySteadfastInput(step, root) to RetryStep(step, root)';
-
 COMMENT ON CONSTRAINT "__retry_steadfast_output_fk_root_ypuiq33fkv" ON "slice"."retry_steadfast_output" IS 'foreign key RetrySteadfastOutput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__retry_steadfast_output_fk_step_root_3x6tbszpyw" ON "slice"."retry_steadfast_output" IS 'foreign key RetrySteadfastOutput(step, root) to RetryDone(step, root)';
@@ -3541,8 +3501,6 @@ COMMENT ON CONSTRAINT "__sync_admitted_fk_scope_root_ieiyxemub7" ON "slice"."syn
 
 COMMENT ON CONSTRAINT "__sync_build_input_fk_root_qlycqp6gk2" ON "slice"."sync_build_input" IS 'foreign key SyncBuildInput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__sync_build_input_fk_step_root_zi3urkj4ra" ON "slice"."sync_build_input" IS 'foreign key SyncBuildInput(step, root) to SyncStep(step, root)';
-
 COMMENT ON CONSTRAINT "__sync_build_output_fk_root_grwezm3fcr" ON "slice"."sync_build_output" IS 'foreign key SyncBuildOutput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__sync_build_output_fk_step_root_o3zx5hom3t" ON "slice"."sync_build_output" IS 'foreign key SyncBuildOutput(step, root) to SyncBuildInput(step, root)';
@@ -3557,8 +3515,6 @@ COMMENT ON CONSTRAINT "__sync_claim_fk_step_pred_attempt_root_rrog54g4mf" ON "sl
 
 COMMENT ON CONSTRAINT "__sync_copy_input_fk_root_d7u63yuxxs" ON "slice"."sync_copy_input" IS 'foreign key SyncCopyInput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__sync_copy_input_fk_step_root_fg22wdg5dt" ON "slice"."sync_copy_input" IS 'foreign key SyncCopyInput(step, root) to SyncStep(step, root)';
-
 COMMENT ON CONSTRAINT "__sync_copy_output_fk_root_x2xt2l75vg" ON "slice"."sync_copy_output" IS 'foreign key SyncCopyOutput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__sync_copy_output_fk_step_root_65fyg7xb6t" ON "slice"."sync_copy_output" IS 'foreign key SyncCopyOutput(step, root) to SyncCopyInput(step, root)';
@@ -3566,8 +3522,6 @@ COMMENT ON CONSTRAINT "__sync_copy_output_fk_step_root_65fyg7xb6t" ON "slice"."s
 COMMENT ON CONSTRAINT "__sync_copy_output_fk_step_root_gfjlcri22w" ON "slice"."sync_copy_output" IS 'foreign key SyncCopyOutput(step, root) to SyncDone(step, root)';
 
 COMMENT ON CONSTRAINT "__sync_done_fk_root_kbt6t66k7r" ON "slice"."sync_done" IS 'foreign key SyncDone(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__sync_done_fk_step_root_3vsafhvwu2" ON "slice"."sync_done" IS 'foreign key SyncDone(step, root) to SyncResult(step, root)';
 
 COMMENT ON CONSTRAINT "__sync_exclusive_fk_kind_key_pred_turn_opo5gkimc4" ON "slice"."sync_exclusive" IS 'foreign key SyncExclusive(kind, key, pred(turn)) to SyncReleased(kind, key, turn)';
 
@@ -3580,8 +3534,6 @@ COMMENT ON CONSTRAINT "__sync_exhausted_fk_root_w5rujdfs5u" ON "slice"."sync_exh
 COMMENT ON CONSTRAINT "__sync_exhausted_fk_step_root_vd7jhdnvet" ON "slice"."sync_exhausted" IS 'foreign key SyncExhausted(step, root) to SyncFailed(step, root)';
 
 COMMENT ON CONSTRAINT "__sync_failed_fk_root_utdobwjqln" ON "slice"."sync_failed" IS 'foreign key SyncFailed(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
-
-COMMENT ON CONSTRAINT "__sync_failed_fk_step_root_m4n5euelml" ON "slice"."sync_failed" IS 'foreign key SyncFailed(step, root) to SyncResult(step, root)';
 
 COMMENT ON CONSTRAINT "__sync_fenced_fk_root_pft7kt3u6c" ON "slice"."sync_fenced" IS 'foreign key SyncFenced(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -3987,47 +3939,47 @@ COMMENT ON STATISTICS "slice"."__sync_exclusive_stats_key_kind_smed76p3zh" IS 's
 
 COMMENT ON STATISTICS "slice"."__sync_finish_stats_scope_step_xiaq6np7mf" IS 'statistics SyncFinish(scope, step)';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_numdwqphuf"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_dpvskfbw3i"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_nearest_gp4j43rmv4"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInputModeNearest and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_nearest_sej7dmyvlf"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInputModeNearest and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_447sodnw77"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_h37zupbgfb"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_nearest_fx5bcrc2ao"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInputModeNearest and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_nearest_aibo4ks6us"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInputModeNearest and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_mppefsithx"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideOutput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_kcb3mghrg7"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideOutput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_rest_qlbend26ms"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideOutputStageRest and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_rest_ruanw2bl75"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideOutputStageRest and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_done_uvgox4xms6"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDone and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_assign_done_wrlybryi4s"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_chain_chain_run_input_2i76tea7vf"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainChainRunInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_chain_chain_run_input_ot3zvelorz"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainChainRunInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_chain_done_dlqjjysn3f"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainDone and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_chain_done_y2ormhj72r"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_chain_page_input_lzwnhifptj"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainPageInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_chain_page_input_fam7xb7qci"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainPageInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_fan_batch_input_5ggxse4kkl"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanBatchInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_fan_batch_input_vhcapnrowm"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanBatchInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_fan_done_mflioj3j23"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanDone and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_fan_done_hood3y6xyi"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_fan_fan_run_input_wx6e3wxagr"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanFanRunInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_fan_fan_run_input_ik6bv3a6l5"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanFanRunInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_fan_hold_hkncojanio"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanHold and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_fan_hold_4zgdv7utgb"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanHold and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_fan_square_input_qfcrpe5mni"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanSquareInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_fan_square_input_wplhr5v3qm"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanSquareInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_retry_brittle_input_bitlzpxhll"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryBrittleInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_retry_brittle_input_ldyj6mctye"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryBrittleInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_retry_done_qvurptzp5o"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryDone and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_retry_done_5zd2zpqtmq"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_retry_ladders_input_j4z3sn7yyj"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryLaddersInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_retry_ladders_input_2cot23fhaz"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryLaddersInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_sync_build_input_5c2c4lbjyg"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncBuildInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_sync_build_input_qydbzuulm4"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncBuildInput and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_sync_done_aojyv7p4ap"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncDone and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_sync_done_d45nfx2tip"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncDone and the relations its rules join it to';
 
-COMMENT ON FUNCTION "slice"."__judge_sync_gold_input_hrbc6rs75n"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncGoldInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__judge_sync_gold_input_vildj5yaap"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncGoldInput and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__capture_assign_assignment_input_v4dsbpafdp"() IS 'rule capture of AssignAssignmentInput';
 

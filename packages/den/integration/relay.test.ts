@@ -80,18 +80,16 @@ export const theRelayRingsARootTheAppRequestedInItsOwnTransaction = property.exp
 							)
 						)
 						yield* Fiber.interrupt(relayed)
-						assert.strictEqual(admission._tag, "Some")
+						assert.equal(admission._tag, "Some")
 						if (Option.isSome(admission)) {
-							assert.strictEqual(admission.value.cause._tag, "Relay")
+							assert.equal(admission.value.cause._tag, "Relay")
 							c.note("a relay ring")
 							const transport = yield* Transport
 							yield* transport.send([admission.value])
 						}
 						yield* drain(ledgers)
 						const finishes = yield* rows(app.workload.chainFinishes.once({ params: {}, facts: {} }))
-						assert.isTrue(
-							Arr.some(finishes, (f) => f.scope === request.scope && f.outcome === "done")
-						)
+						assert.ok(Arr.some(finishes, (f) => f.scope === request.scope && f.outcome === "done"))
 					}),
 					services
 				)

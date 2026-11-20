@@ -37,6 +37,11 @@
 				"$TURBO_ROOT$/vendor/toolchain/packages/devtools/src/**"
 			]
 		},
+		"load": {
+			"description": "toolchain-test load: every test module a package's runner config includes loaded apart, each in a process of its own under the runner's flags, failing on one that throws as it loads (a const read in its temporal dead zone, an initializer that throws, an export that is no property). Uncached by turbo: toolchain-test keeps each module's pass by its closure hash, so a check loads only what changed.",
+			"dependsOn": ["^surface"],
+			"cache": false
+		},
 		"test": {
 			"description": "Every package's searches, through Vitest. Each run draws a fresh rotating seed, so a run never replays from cache, and the run's seed, a replay token and `pnpm fuzz`'s suite and fuzz time come through the environment.",
 			"dependsOn": ["^surface"],

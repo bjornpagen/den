@@ -65,12 +65,12 @@ export const pausesAndResumesATargetAsOneLiveTurnAtATime = property.explore(oper
 							Arr.filter(rows, (row) => row.target === target)
 						)
 						const paused = Effect.map(live, (rows) => {
-							assert.isAtMost(rows.length, 1)
+							assert.ok(rows.length <= 1)
 							return Arr.isReadonlyArrayNonEmpty(rows)
 						})
 						yield* ledger.coordination.resume(target)
 						const cleared = yield* paused
-						assert.isFalse(cleared)
+						assert.equal(cleared, false)
 						const run = (_session: Session, move: Move): Effect.Effect<Move> =>
 							Effect.gen(function* () {
 								yield* move === "pause"
@@ -91,7 +91,7 @@ export const pausesAndResumesATargetAsOneLiveTurnAtATime = property.explore(oper
 						const judge = (_record: Interleaving<Session, Move, Move, never, never, never>) =>
 							Effect.gen(function* () {
 								const ended = yield* paused
-								assert.isTrue(Arr.contains([lastA, lastB], ended ? "pause" : "resume"))
+								assert.ok(Arr.contains([lastA, lastB], ended ? "pause" : "resume"))
 							}).pipe(Effect.orDie)
 						yield* interleave(
 							{
@@ -121,10 +121,10 @@ export const pausesAndResumesATargetAsOneLiveTurnAtATime = property.explore(oper
 						)
 						yield* ledger.coordination.pause(target)
 						const pausedAfter = yield* paused
-						assert.isTrue(pausedAfter)
+						assert.ok(pausedAfter)
 						yield* ledger.coordination.resume(target)
 						const resumedAfter = yield* paused
-						assert.isFalse(resumedAfter)
+						assert.equal(resumedAfter, false)
 					}),
 					services
 				)
@@ -183,12 +183,9 @@ export const refusesAPauseOrAResumeOfANameNoTargetHolds = property.exhaust(finit
 								Effect.succeedSome({ flow: refusal.flow, target: refusal.target })
 							)
 						)
-						assert.deepStrictEqual(
-							refused,
-							Option.some({ flow: FlowName.make("Fan"), target: unknown })
-						)
+						assert.deepEqual(refused, Option.some({ flow: FlowName.make("Fan"), target: unknown }))
 						const live = yield* coordination.paused
-						assert.deepStrictEqual(live, [])
+						assert.deepEqual(live, [])
 					}).pipe(Effect.orDie),
 					services
 				)

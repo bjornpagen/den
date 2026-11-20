@@ -65,15 +65,15 @@ export const exclusivityAdmitsOneLiveSyncPerRelation = property.explore(runs, {
 							Array.from({ length: run.roots - 1 }, (_, ordinal) => ordinal + 2),
 							request
 						)
-						assert.isTrue(Arr.every([first, ...rest], (r) => r.fresh))
+						assert.ok(Arr.every([first, ...rest], (r) => r.fresh))
 						const ends = instantOf(Number(at) + longestLeaseMillis)
 						const admit = (scope: typeof first.scope) =>
 							serve(ledgers, { _tag: "Admit", flow: FlowName.make("Sync"), scope }, ends)
 						const winner = yield* admit(first.scope)
-						assert.strictEqual(winner.ending.kind, "admitted")
+						assert.equal(winner.ending.kind, "admitted")
 						const losers = yield* Effect.forEach(rest, (r) => admit(r.scope))
 						Arr.forEach(losers, (loser) => {
-							assert.deepStrictEqual(
+							assert.deepEqual(
 								loser.ending.kind === "skipped"
 									? [loser.ending.by, loser.onward.length]
 									: [loser.ending.kind],
@@ -81,7 +81,7 @@ export const exclusivityAdmitsOneLiveSyncPerRelation = property.explore(runs, {
 							)
 						})
 						const skipped = yield* rows(app.workload.syncSkipped.once({ params: {}, facts: {} }))
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.map(
 								Arr.filter(skipped, (s) => Arr.some(rest, (r) => r.scope === s.scope)),
 								(s) => s.by
@@ -90,17 +90,17 @@ export const exclusivityAdmitsOneLiveSyncPerRelation = property.explore(runs, {
 						)
 						yield* ringOnAndDrain(ledgers, winner)
 						const freed = yield* sync.ledger.coordination.exclusives
-						assert.deepStrictEqual(freed, [])
+						assert.deepEqual(freed, [])
 						const later = yield* sync.request.SyncRun(`${relation}-later`, at, {
 							relation,
 							run: 0n
 						})
 						yield* admitAndDrain(ledgers, FlowName.make("Sync"), [later.scope])
 						const admitted = yield* rows(app.workload.syncAdmitted.once({ params: {}, facts: {} }))
-						assert.isTrue(Arr.some(admitted, (a) => a.scope === later.scope))
+						assert.ok(Arr.some(admitted, (a) => a.scope === later.scope))
 						c.note("admitted after the seat was given back")
 						const copied = yield* rows(app.workload.copied.once({ params: {}, facts: {} }))
-						assert.deepStrictEqual(
+						assert.deepEqual(
 							Arr.sort(
 								Arr.map(
 									Arr.filter(copied, (row) => row.relation === relation),

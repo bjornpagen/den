@@ -26,6 +26,7 @@
 	"scripts": {
 		"typecheck": "toolchain-typecheck",
 		"oxlint": "toolchain-oxlint",
+		"load": "toolchain-test load",
 		"test": "toolchain-test run"
 	},
 	"dependencies": {

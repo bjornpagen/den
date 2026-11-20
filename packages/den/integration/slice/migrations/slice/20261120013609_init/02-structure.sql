@@ -2602,35 +2602,25 @@ ALTER TABLE "slice"."assign_assignment_input_exclude"
   ADD CONSTRAINT "__assign_assignment_input_exclude_fk_scope_root_z5moccsgvx" FOREIGN KEY ("scope", "root") REFERENCES "slice"."assign_assignment_input" ("scope", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_assignment_input_exclude_fk_scope_pred_gg2bohya6p" FOREIGN KEY ("__scope_u6ypqf2r2z", "__pred_ordinal_rdz3ttleig", "__root_yjobx7uyrd") REFERENCES "slice"."assign_assignment_input_exclude" ("scope", "ordinal", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."assign_assignment_input_mode_nearest"
-  ADD CONSTRAINT "__assign_assignment_input_mode_nearest_fk_root_t23ef5vjhv" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_assignment_input_mode_nearest_fk_scope_root_vebzvu6gah" FOREIGN KEY ("scope", "root") REFERENCES "slice"."assign_assignment_input" ("scope", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."assign_assignment_input_mode_nearest" ADD CONSTRAINT "__assign_assignment_input_mode_nearest_fk_root_t23ef5vjhv" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."assign_assignment_input_mode_within"
-  ADD CONSTRAINT "__assign_assignment_input_mode_within_fk_root_jimtsl3pcm" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_assignment_input_mode_within_fk_scope_root_cbt7higc4i" FOREIGN KEY ("scope", "root") REFERENCES "slice"."assign_assignment_input" ("scope", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."assign_assignment_input_mode_within" ADD CONSTRAINT "__assign_assignment_input_mode_within_fk_root_jimtsl3pcm" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."assign_claim"
   ADD CONSTRAINT "__assign_claim_fk_root_tccogfd3gj" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_claim_fk_step_root_i4wvemd6lc" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_claim_fk_step_pred_attempt_root_wmdynbkcix" FOREIGN KEY ("__step_fxyms236d4", "__pred_attempt_xnnzpydhox", "__root_47s5vbj2pp") REFERENCES "slice"."assign_claim" ("step", "attempt", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."assign_decide_input"
-  ADD CONSTRAINT "__assign_decide_input_fk_root_2ru7zbrfcg" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_decide_input_fk_step_root_hmrut5ye7t" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."assign_decide_input" ADD CONSTRAINT "__assign_decide_input_fk_root_2ru7zbrfcg" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."assign_decide_input_exclude"
   ADD CONSTRAINT "__assign_decide_input_exclude_fk_root_ms4jvh65c5" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_input_exclude_fk_step_root_in6yyrl43w" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_decide_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_input_exclude_fk_step_pred_ordinal_7st2gu5z77" FOREIGN KEY ("__step_mjpuijzth4", "__pred_ordinal_rdz3ttleig", "__root_yjobx7uyrd") REFERENCES "slice"."assign_decide_input_exclude" ("step", "ordinal", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."assign_decide_input_mode_nearest"
-  ADD CONSTRAINT "__assign_decide_input_mode_nearest_fk_root_vgxth6ulqd" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_decide_input_mode_nearest_fk_step_root_3pztluvaw3" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_decide_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."assign_decide_input_mode_nearest" ADD CONSTRAINT "__assign_decide_input_mode_nearest_fk_root_vgxth6ulqd" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."assign_decide_input_mode_within"
-  ADD CONSTRAINT "__assign_decide_input_mode_within_fk_root_5fhvbm7o2j" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_decide_input_mode_within_fk_step_root_isztipdtml" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_decide_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."assign_decide_input_mode_within" ADD CONSTRAINT "__assign_decide_input_mode_within_fk_root_5fhvbm7o2j" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."assign_decide_nearest_read"
   ADD CONSTRAINT "__assign_decide_nearest_read_fk_root_bofoevlhaq" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -2641,13 +2631,9 @@ ALTER TABLE "slice"."assign_decide_output"
   ADD CONSTRAINT "__assign_decide_output_fk_step_root_oxey3s55bw" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_decide_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_output_fk_step_root_b4qrx4ukam" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_done" ("step", "root") MATCH SIMPLE;
 
-ALTER TABLE "slice"."assign_decide_output_stage_rest"
-  ADD CONSTRAINT "__assign_decide_output_stage_rest_fk_root_emwjzdjgvs" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_decide_output_stage_rest_fk_step_root_hnm7wtskut" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_decide_output" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."assign_decide_output_stage_rest" ADD CONSTRAINT "__assign_decide_output_stage_rest_fk_root_emwjzdjgvs" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."assign_decide_output_stage_serve"
-  ADD CONSTRAINT "__assign_decide_output_stage_serve_fk_root_nv2zgv5hrt" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_decide_output_stage_serve_fk_step_root_3ohxxrfuva" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_decide_output" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."assign_decide_output_stage_serve" ADD CONSTRAINT "__assign_decide_output_stage_serve_fk_root_nv2zgv5hrt" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."assign_decide_output_weighed"
   ADD CONSTRAINT "__assign_decide_output_weighed_fk_root_tymno4wjr4" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -2658,17 +2644,13 @@ ALTER TABLE "slice"."assign_decide_seen_read"
   ADD CONSTRAINT "__assign_decide_seen_read_fk_root_padlqqdvnt" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_seen_read_fk_step_root_lfxhtzprjs" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."assign_done"
-  ADD CONSTRAINT "__assign_done_fk_root_bm6oxygwbu" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_done_fk_step_root_ngf72h7577" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."assign_done" ADD CONSTRAINT "__assign_done_fk_root_bm6oxygwbu" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."assign_exhausted"
   ADD CONSTRAINT "__assign_exhausted_fk_root_vljhubi73b" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_exhausted_fk_step_root_juabgscovy" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_failed" ("step", "root") MATCH SIMPLE;
 
-ALTER TABLE "slice"."assign_failed"
-  ADD CONSTRAINT "__assign_failed_fk_root_oyplqvhznf" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_failed_fk_step_root_covug6mgbg" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."assign_failed" ADD CONSTRAINT "__assign_failed_fk_root_oyplqvhznf" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."assign_fenced"
   ADD CONSTRAINT "__assign_fenced_fk_root_53vovdvcd2" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -2729,17 +2711,13 @@ ALTER TABLE "slice"."chain_claim"
   ADD CONSTRAINT "__chain_claim_fk_step_root_dz35k5kajb" FOREIGN KEY ("step", "root") REFERENCES "slice"."chain_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_claim_fk_step_pred_attempt_root_hf2626wosn" FOREIGN KEY ("__step_fxyms236d4", "__pred_attempt_xnnzpydhox", "__root_47s5vbj2pp") REFERENCES "slice"."chain_claim" ("step", "attempt", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."chain_done"
-  ADD CONSTRAINT "__chain_done_fk_root_p5unbx53ay" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__chain_done_fk_step_root_nhwqto76dv" FOREIGN KEY ("step", "root") REFERENCES "slice"."chain_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."chain_done" ADD CONSTRAINT "__chain_done_fk_root_p5unbx53ay" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."chain_exhausted"
   ADD CONSTRAINT "__chain_exhausted_fk_root_az7it7tady" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_exhausted_fk_step_root_x7otp3oe7t" FOREIGN KEY ("step", "root") REFERENCES "slice"."chain_failed" ("step", "root") MATCH SIMPLE;
 
-ALTER TABLE "slice"."chain_failed"
-  ADD CONSTRAINT "__chain_failed_fk_root_ku7hd36hr4" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__chain_failed_fk_step_root_usbatdtsvr" FOREIGN KEY ("step", "root") REFERENCES "slice"."chain_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."chain_failed" ADD CONSTRAINT "__chain_failed_fk_root_ku7hd36hr4" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."chain_fenced"
   ADD CONSTRAINT "__chain_fenced_fk_root_dpd2zsy45p" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -2762,9 +2740,7 @@ ALTER TABLE "slice"."chain_next"
 
 ALTER TABLE "slice"."chain_ordered_input" ADD CONSTRAINT "__chain_ordered_input_fk_root_yo2fvi6v6v" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."chain_page_input"
-  ADD CONSTRAINT "__chain_page_input_fk_root_s74r6jkeai" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__chain_page_input_fk_step_root_ne5cs7xlsn" FOREIGN KEY ("step", "root") REFERENCES "slice"."chain_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."chain_page_input" ADD CONSTRAINT "__chain_page_input_fk_root_s74r6jkeai" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."chain_page_input_after"
   ADD CONSTRAINT "__chain_page_input_after_fk_root_uksq5ttkd4" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -2819,26 +2795,20 @@ ALTER TABLE "slice"."fan_admitted"
   ADD CONSTRAINT "__fan_admitted_fk_root_ui6p5vdrhk" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_admitted_fk_scope_root_zj52ntgcx6" FOREIGN KEY ("scope", "root") REFERENCES "slice"."fan_scope" ("scope", "root") MATCH SIMPLE;
 
-ALTER TABLE "slice"."fan_batch_input"
-  ADD CONSTRAINT "__fan_batch_input_fk_root_d4g2u2spvl" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__fan_batch_input_fk_scope_root_mo4mgqhyzc" FOREIGN KEY ("scope", "root") REFERENCES "slice"."fan_within" ("scope", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."fan_batch_input" ADD CONSTRAINT "__fan_batch_input_fk_root_d4g2u2spvl" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."fan_claim"
   ADD CONSTRAINT "__fan_claim_fk_root_t3hwth6mh7" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_claim_fk_step_root_6jsjsejmab" FOREIGN KEY ("step", "root") REFERENCES "slice"."fan_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_claim_fk_step_pred_attempt_root_msshdcusww" FOREIGN KEY ("__step_fxyms236d4", "__pred_attempt_xnnzpydhox", "__root_47s5vbj2pp") REFERENCES "slice"."fan_claim" ("step", "attempt", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."fan_done"
-  ADD CONSTRAINT "__fan_done_fk_root_cfizuozacw" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__fan_done_fk_step_root_xbvvletha2" FOREIGN KEY ("step", "root") REFERENCES "slice"."fan_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."fan_done" ADD CONSTRAINT "__fan_done_fk_root_cfizuozacw" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."fan_exhausted"
   ADD CONSTRAINT "__fan_exhausted_fk_root_mlbxyrjdjk" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_exhausted_fk_step_root_jyggt4fgpd" FOREIGN KEY ("step", "root") REFERENCES "slice"."fan_failed" ("step", "root") MATCH SIMPLE;
 
-ALTER TABLE "slice"."fan_failed"
-  ADD CONSTRAINT "__fan_failed_fk_root_3gq7ifprza" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__fan_failed_fk_step_root_6qgaqfb45o" FOREIGN KEY ("step", "root") REFERENCES "slice"."fan_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."fan_failed" ADD CONSTRAINT "__fan_failed_fk_root_3gq7ifprza" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."fan_fan_run_input" ADD CONSTRAINT "__fan_fan_run_input_fk_root_oztqak3s27" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
@@ -2883,9 +2853,7 @@ ALTER TABLE "slice"."fan_skipped"
   ADD CONSTRAINT "__fan_skipped_fk_root_j6gpqvvx57" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_skipped_fk_scope_eomkgfbxwj" FOREIGN KEY ("scope") REFERENCES "slice"."fan_root" ("scope") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."fan_square_input"
-  ADD CONSTRAINT "__fan_square_input_fk_root_gpj7rrapja" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__fan_square_input_fk_step_root_st4uawhcxt" FOREIGN KEY ("step", "root") REFERENCES "slice"."fan_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."fan_square_input" ADD CONSTRAINT "__fan_square_input_fk_root_gpj7rrapja" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."fan_square_output"
   ADD CONSTRAINT "__fan_square_output_fk_root_dpyr2dahw3" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -2915,9 +2883,7 @@ ALTER TABLE "slice"."retry_admitted"
   ADD CONSTRAINT "__retry_admitted_fk_root_n65ucxnw7g" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__retry_admitted_fk_scope_root_kufu5v4g3v" FOREIGN KEY ("scope", "root") REFERENCES "slice"."retry_scope" ("scope", "root") MATCH SIMPLE;
 
-ALTER TABLE "slice"."retry_brittle_input"
-  ADD CONSTRAINT "__retry_brittle_input_fk_root_3kdpo5sepg" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__retry_brittle_input_fk_step_root_lxvyjd4ne5" FOREIGN KEY ("step", "root") REFERENCES "slice"."retry_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."retry_brittle_input" ADD CONSTRAINT "__retry_brittle_input_fk_root_3kdpo5sepg" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."retry_brittle_output"
   ADD CONSTRAINT "__retry_brittle_output_fk_root_baznemh4df" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -2929,17 +2895,13 @@ ALTER TABLE "slice"."retry_claim"
   ADD CONSTRAINT "__retry_claim_fk_step_root_zffmzj357l" FOREIGN KEY ("step", "root") REFERENCES "slice"."retry_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__retry_claim_fk_step_pred_attempt_root_jmq6tipywk" FOREIGN KEY ("__step_fxyms236d4", "__pred_attempt_xnnzpydhox", "__root_47s5vbj2pp") REFERENCES "slice"."retry_claim" ("step", "attempt", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."retry_done"
-  ADD CONSTRAINT "__retry_done_fk_root_eegigvha5p" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__retry_done_fk_step_root_lohfpft573" FOREIGN KEY ("step", "root") REFERENCES "slice"."retry_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."retry_done" ADD CONSTRAINT "__retry_done_fk_root_eegigvha5p" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."retry_exhausted"
   ADD CONSTRAINT "__retry_exhausted_fk_root_fetyfw4rhv" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__retry_exhausted_fk_step_root_pj2owyq2rw" FOREIGN KEY ("step", "root") REFERENCES "slice"."retry_failed" ("step", "root") MATCH SIMPLE;
 
-ALTER TABLE "slice"."retry_failed"
-  ADD CONSTRAINT "__retry_failed_fk_root_uy6ypbkhl7" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__retry_failed_fk_step_root_7gtqkxrndy" FOREIGN KEY ("step", "root") REFERENCES "slice"."retry_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."retry_failed" ADD CONSTRAINT "__retry_failed_fk_root_uy6ypbkhl7" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."retry_fenced"
   ADD CONSTRAINT "__retry_fenced_fk_root_q2hes57bil" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -2985,9 +2947,7 @@ ALTER TABLE "slice"."retry_start_step"
   ADD CONSTRAINT "__retry_start_step_fk_scope_root_va3ypig5rc" FOREIGN KEY ("scope", "root") REFERENCES "slice"."retry_admitted" ("scope", "root") MATCH SIMPLE,
   ADD CONSTRAINT "__retry_start_step_fk_step_root_wftarsumzh" FOREIGN KEY ("step", "root") REFERENCES "slice"."retry_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."retry_steadfast_input"
-  ADD CONSTRAINT "__retry_steadfast_input_fk_root_4xkwhc353t" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__retry_steadfast_input_fk_step_root_bwpdgxe5cs" FOREIGN KEY ("step", "root") REFERENCES "slice"."retry_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."retry_steadfast_input" ADD CONSTRAINT "__retry_steadfast_input_fk_root_4xkwhc353t" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."retry_steadfast_output"
   ADD CONSTRAINT "__retry_steadfast_output_fk_root_ypuiq33fkv" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3002,9 +2962,7 @@ ALTER TABLE "slice"."sync_admitted"
   ADD CONSTRAINT "__sync_admitted_fk_root_pazobscutb" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__sync_admitted_fk_scope_root_ieiyxemub7" FOREIGN KEY ("scope", "root") REFERENCES "slice"."sync_scope" ("scope", "root") MATCH SIMPLE;
 
-ALTER TABLE "slice"."sync_build_input"
-  ADD CONSTRAINT "__sync_build_input_fk_root_qlycqp6gk2" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__sync_build_input_fk_step_root_zi3urkj4ra" FOREIGN KEY ("step", "root") REFERENCES "slice"."sync_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."sync_build_input" ADD CONSTRAINT "__sync_build_input_fk_root_qlycqp6gk2" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."sync_build_output"
   ADD CONSTRAINT "__sync_build_output_fk_root_grwezm3fcr" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3016,18 +2974,14 @@ ALTER TABLE "slice"."sync_claim"
   ADD CONSTRAINT "__sync_claim_fk_step_root_gvtcn764xc" FOREIGN KEY ("step", "root") REFERENCES "slice"."sync_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__sync_claim_fk_step_pred_attempt_root_rrog54g4mf" FOREIGN KEY ("__step_fxyms236d4", "__pred_attempt_xnnzpydhox", "__root_47s5vbj2pp") REFERENCES "slice"."sync_claim" ("step", "attempt", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice"."sync_copy_input"
-  ADD CONSTRAINT "__sync_copy_input_fk_root_d7u63yuxxs" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__sync_copy_input_fk_step_root_fg22wdg5dt" FOREIGN KEY ("step", "root") REFERENCES "slice"."sync_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."sync_copy_input" ADD CONSTRAINT "__sync_copy_input_fk_root_d7u63yuxxs" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."sync_copy_output"
   ADD CONSTRAINT "__sync_copy_output_fk_root_x2xt2l75vg" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__sync_copy_output_fk_step_root_65fyg7xb6t" FOREIGN KEY ("step", "root") REFERENCES "slice"."sync_copy_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__sync_copy_output_fk_step_root_gfjlcri22w" FOREIGN KEY ("step", "root") REFERENCES "slice"."sync_done" ("step", "root") MATCH SIMPLE;
 
-ALTER TABLE "slice"."sync_done"
-  ADD CONSTRAINT "__sync_done_fk_root_kbt6t66k7r" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__sync_done_fk_step_root_3vsafhvwu2" FOREIGN KEY ("step", "root") REFERENCES "slice"."sync_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."sync_done" ADD CONSTRAINT "__sync_done_fk_root_kbt6t66k7r" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."sync_exclusive" ADD CONSTRAINT "__sync_exclusive_fk_kind_key_pred_turn_opo5gkimc4" FOREIGN KEY ("kind", "key", "__pred_turn_qryngij6c4") REFERENCES "slice"."sync_released" ("kind", "key", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
@@ -3039,9 +2993,7 @@ ALTER TABLE "slice"."sync_exhausted"
   ADD CONSTRAINT "__sync_exhausted_fk_root_w5rujdfs5u" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__sync_exhausted_fk_step_root_vd7jhdnvet" FOREIGN KEY ("step", "root") REFERENCES "slice"."sync_failed" ("step", "root") MATCH SIMPLE;
 
-ALTER TABLE "slice"."sync_failed"
-  ADD CONSTRAINT "__sync_failed_fk_root_utdobwjqln" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__sync_failed_fk_step_root_m4n5euelml" FOREIGN KEY ("step", "root") REFERENCES "slice"."sync_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice"."sync_failed" ADD CONSTRAINT "__sync_failed_fk_root_utdobwjqln" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."sync_fenced"
   ADD CONSTRAINT "__sync_fenced_fk_root_pft7kt3u6c" FOREIGN KEY ("root") REFERENCES "slice"."sync_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
