@@ -255,9 +255,9 @@ CREATE DOMAIN "slice"."sync_pausable" AS smallint CONSTRAINT "check" CHECK (VALU
 
 CREATE DOMAIN "slice"."sync_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__sync_root_kind_names_drp422srbk"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
-CREATE DOMAIN "slice"."__domain_jotafzuj2i" AS "pg_catalog"."uuid";
-
 CREATE DOMAIN "slice"."__domain_gfw43vigph" AS bigint CONSTRAINT "check" CHECK (VALUE IS NULL OR (VALUE >= 0::bigint) IS TRUE);
+
+CREATE DOMAIN "slice"."__domain_jevqauzmw6" AS "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" CONSTRAINT "check" CHECK (VALUE IS NULL OR (VALUE ~ '\A[0-9a-f]{64}\Z'::"pg_catalog"."text") IS TRUE);
 
 CREATE DOMAIN "slice"."__domain_mxhao3k6ss" AS bigint;
 

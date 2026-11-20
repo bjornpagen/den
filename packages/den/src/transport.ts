@@ -1,3 +1,4 @@
+import { regex } from "arkregex"
 import { Array as Arr, Clock, Context, Duration, Effect, Layer, Ref, Schema } from "effect"
 
 /**
@@ -11,25 +12,16 @@ import { Array as Arr, Clock, Context, Duration, Effect, Layer, Ref, Schema } fr
 export const FlowName = Schema.String.pipe(Schema.brand("den/FlowName"))
 export type FlowName = typeof FlowName.Type
 
-/** A uuid's text, five hyphenated groups. */
-const UuidText = Schema.TemplateLiteral([
-	Schema.String,
-	"-",
-	Schema.String,
-	"-",
-	Schema.String,
-	"-",
-	Schema.String,
-	"-",
-	Schema.String
-]).check(Schema.isUUID())
+/** A SHA-256 digest's text, 64 lowercase hex digits, as den derives a key (runtime/identity.ts) and grizzle's `sha256`
+ * holds it. */
+const DigestText = Schema.String.check(Schema.isPattern(regex("^[0-9a-f]{64}$")))
 
-/** A step's key as text: the uuid den derives for it, branded as the ledger's DenStep. */
-export const StepText = UuidText.pipe(Schema.brand("DenStep"))
+/** A step's key as text: the digest den derives for it, branded as the ledger's DenStep. */
+export const StepText = DigestText.pipe(Schema.brand("DenStep"))
 export type StepText = typeof StepText.Type
 
-/** A scope's key as text: the uuid den derives for it, branded as the ledger's DenScope. */
-export const ScopeText = UuidText.pipe(Schema.brand("DenScope"))
+/** A scope's key as text: the digest den derives for it, branded as the ledger's DenScope. */
+export const ScopeText = DigestText.pipe(Schema.brand("DenScope"))
 export type ScopeText = typeof ScopeText.Type
 
 /** The claim attempt a wake rings for: an integer of at least 1. */

@@ -46,7 +46,7 @@ import {
  */
 
 const wakeOf = (encoded: Encoded): Effect.Effect<Wake> =>
-	Effect.orDie(Schema.decodeUnknownEffect(WakeSchema)(encoded))
+	Effect.orDie(Schema.decodeEffect(WakeSchema)(encoded))
 
 const causeOf = (encoded: EncodedCause): Effect.Effect<Cause> => {
 	switch (encoded._tag) {

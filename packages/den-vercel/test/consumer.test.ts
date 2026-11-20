@@ -146,13 +146,10 @@ it.effect("the consumer acknowledges every delivery, a stale ending included", (
 					)
 					const bodies = yield* Effect.forEach(drawnDeliveries.bodies, (b) =>
 						b.kind === "wake"
-							? Effect.map(
-									Effect.orDie(Schema.decodeUnknownEffect(WakeSchema)(b.wake)),
-									(wake) => ({
-										wake: Option.some({ wake, outcome: b.outcome }),
-										payload: Effect.orDie(Schema.encodeEffect(WakeJson)(wake))
-									})
-								)
+							? Effect.map(Effect.orDie(Schema.decodeEffect(WakeSchema)(b.wake)), (wake) => ({
+									wake: Option.some({ wake, outcome: b.outcome }),
+									payload: Effect.orDie(Schema.encodeEffect(WakeJson)(wake))
+								}))
 							: Effect.succeed({ wake: Option.none(), payload: Effect.succeed(b.text) })
 					)
 					const outcomes = new Map(

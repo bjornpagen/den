@@ -4,6 +4,9 @@
 			"__domain_gfw43vigph": {
 				"check": "__natural_hcnvygsglu"
 			},
+			"__domain_jevqauzmw6": {
+				"check": "__den_scope_g3mjgc2ytk"
+			},
 			"__text_t4rwovzmqj": {
 				"check": "__assign_decide_nearest_read_pattern_passage_7ovh7m5g22"
 			}
@@ -10061,11 +10064,11 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "54ef0d0693a73cf7bce32249ead4c3598bd8c55eaa16cfd1b40d99681d2f6a74",
+	"fingerprint": "6e9d3f2982ae0ab0bb68cc3c41adaf7cd3c248ab583030854d3c527a667a2d6b",
 	"format": 2,
 	"levels": [
 		{
-			"fingerprint": "253d16aeb66cd6895eda032da26fd2162cd889f61272e56249dccecc4d930023",
+			"fingerprint": "8d8b1c8fb95ce12edad2bce9551385abeb0bfe9d0ac076488b1646c8f0c5add0",
 			"laws": [
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_root_56frawwv2n"},
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_s3xk3phh7y"},
@@ -10533,7 +10536,7 @@
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "d355088851103c9eed7dec7854ebb922e25d929b1da5ef28b0a33aaa89a86d7b",
+			"fingerprint": "00397e6bc48c115ccc15dff83b59a35efeff18d3fa424a602b7d5994a2f8b510",
 			"laws": [
 				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"}
 			],

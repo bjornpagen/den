@@ -14,11 +14,8 @@ export type Encoded =
 
 const hex = characterOf(["0", "1", "a"])
 
-const group = (length: number): Gen<string> => string(hex, { min: length, max: length })
-
-/** A uuid of version 8 and its variant, as den derives one. */
-const uuid: Gen<string> = (source) =>
-	`${source.draw(group(8))}-${source.draw(group(4))}-8${source.draw(group(3))}-a${source.draw(group(3))}-${source.draw(group(12))}`
+/** A SHA-256 digest's text, 64 hex digits, as den derives a key. */
+const digest: Gen<string> = string(hex, { min: 64, max: 64 })
 
 /** A flow's name, from letters a key also spells and its separator. */
 const flow: Gen<string> = string(characterOf(["Q", ":", "s", "t", "e", "p", "a"]), {
@@ -33,7 +30,7 @@ const attempt: Gen<number> = int(1, 12)
 const step: Gen<Encoded> = (source) => ({
 	_tag: "Step",
 	flow: source.draw(flow),
-	step: source.draw(uuid),
+	step: source.draw(digest),
 	attempt: source.draw(attempt)
 })
 
@@ -41,7 +38,7 @@ const step: Gen<Encoded> = (source) => ({
 const admit: Gen<Encoded> = (source) => ({
 	_tag: "Admit",
 	flow: source.draw(flow),
-	scope: source.draw(uuid)
+	scope: source.draw(digest)
 })
 
 /** A wake of either kind. */

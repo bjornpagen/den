@@ -22,7 +22,7 @@ constants with their evidence beside the code they bound (`src/runtime/turn.ts`,
 | `src/lower/print.ts`, `generate.ts` | the fragment, the programs and the binding printed as three TypeScript modules the app commits (`den generate`) |
 | `src/lower/merge.ts` | den's clash check: the app's relations and a fragment merged, a shared name refused |
 | `src/lower/keys.ts` | den's contracts (`DenStep`, `DenScope`, `DenHolder`, `DenInstant`) and `Text`, which an app's relation referencing den's facts types its column by |
-| `src/runtime/identity.ts` | derived identity: uuid version 8 of the SHA-256 of a key's parts (Effect's `Digest`) |
+| `src/runtime/identity.ts` | derived identity: the SHA-256 of a key's parts (Effect's `Digest`), grizzle's `sha256` |
 | `src/runtime/ledger.ts` | the ledger port, in den's own types, that a flow's generated binding fills |
 | `src/runtime/turn.ts` | one turn (`serve`), the claim (`claimed`), a kind's runner, endings from `CallError`, settling a scope (`settle`), a start's wakes (`begin`), one invocation under a budget (`invoke`) |
 | `src/runtime/census.ts` | the census tick: due steps (no claim, or a lapsed one) at most a lane's free width, and finishes of complete open scopes |
@@ -104,7 +104,7 @@ output into `select(PResult, outcome = done)`) certifies.
    (`packages/grizzle/src/adapter/types/layer.ts:222`): the suites build `LiveSource.layer` for the installation with a
    credential that never connects.
 4. **Contracts of one definition share one domain**: `DenStep`, `DenHolder` (and `DenScope`) are one PostgreSQL domain
-   over uuid, told apart only by TypeScript's brands. As documented, not a defect; recorded because the database cannot
+   over `sha256`'s text, told apart only by TypeScript's brands. As documented, not a defect; recorded because the database cannot
    tell a holder from a step.
 5. **A role prefix is converted** (`m1` installs as `m_1__…`): take every name from `roleNameOf`, as the harness does.
 

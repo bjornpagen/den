@@ -25,7 +25,7 @@ import { Array as Arr, HashMap, Option } from "effect"
  * instant.
  */
 
-/** A graph as the engine committed it: each relation's rows the harness reads, keys as their uuid text. */
+/** A graph as the engine committed it: each relation's rows the harness reads, keys as their digest text. */
 export interface Graph {
 	readonly roots: ReadonlyArray<{
 		readonly scope: string
