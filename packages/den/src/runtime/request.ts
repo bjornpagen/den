@@ -1,4 +1,5 @@
-import { Array as Arr, Duration, Effect } from "effect"
+import { Array as Arr, Clock, Duration, Effect } from "effect"
+import { censusRing } from "#runtime/census.ts"
 import type { ScopeKey } from "#runtime/identity.ts"
 import { type FlowName, type Ring, Transport } from "#transport.ts"
 
@@ -28,11 +29,19 @@ export const admissionOf = (requested: Requested): Ring => ({
 	cause: { _tag: "Request" }
 })
 
-/** Rings the admissions of roots a committed write requested. */
+/**
+ * Rings the admissions of roots a committed write requested, and the current period's census beside them, which
+ * revives a census chain that stopped (runtime/census.ts) and is one message with the chain's own where it runs. Its
+ * period is read off the host's clock: it names the census, and judges nothing.
+ */
 export const ringRequested = (
 	requested: ReadonlyArray<Requested>
 ): Effect.Effect<void, never, Transport> =>
-	Effect.flatMap(Transport, (transport) => transport.send(Arr.map(requested, admissionOf)))
+	Effect.gen(function* () {
+		const transport = yield* Transport
+		const millis = yield* Clock.currentTimeMillis
+		yield* transport.send([...Arr.map(requested, admissionOf), censusRing(millis)])
+	})
 
 /**
  * Runs `write`, a write that requests roots (the app's own transaction that unions their request facts with its own, or

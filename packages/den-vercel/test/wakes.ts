@@ -11,6 +11,7 @@ import { Array as Arr } from "effect"
 export type Encoded =
 	| Readonly<{ _tag: "Step"; flow: string; step: string; attempt: number }>
 	| Readonly<{ _tag: "Admit"; flow: string; scope: string }>
+	| Readonly<{ _tag: "Census"; at: number }>
 
 const hex = characterOf(["0", "1", "a"])
 
@@ -41,8 +42,11 @@ const admit: Gen<Encoded> = (source) => ({
 	scope: source.draw(digest)
 })
 
-/** A wake of either kind. */
-export const encodedWake: Gen<Encoded> = oneOf([step, admit])
+/** A wake for a period's census: one of a few periods' starts, a minute apart, so two often name one period. */
+const census: Gen<Encoded> = (source) => ({ _tag: "Census", at: source.draw(int(0, 2)) * 60_000 })
+
+/** A wake of any kind. */
+export const encodedWake: Gen<Encoded> = oneOf([step, admit, census])
 
 /** A ring's cause as the suites draw it, a turn's by the wake it served in its encoded form. */
 export type EncodedCause =

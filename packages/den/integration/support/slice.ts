@@ -612,10 +612,6 @@ const travelling = <R>(ledger: Ledger<R>, opened: number): Ledger<R> => ({
 	)
 })
 
-/** Ledgers by their flow's name. */
-const byFlow = (all: ReadonlyArray<Ledger<Faults>>): Ledgers<Faults> =>
-	new Map(Arr.map(all, (l) => [l.flow, l] as const))
-
 /**
  * The slice's flows' ledgers over Dbs opened on the worker's den and coordinator roles and the app's loader, each
  * reading the database's instant moved on by the time the suite's clock travels from here; and `misconfigured`, the
@@ -679,7 +675,7 @@ export const openLedgers = Effect.gen(function* () {
 	const assign = { ...assignBound, ledger: travelling(assignBound.ledger, opened) }
 	const review = { ...reviewBound, ledger: travelling(reviewBound.ledger, opened) }
 	const clock = { ...clockBound, ledger: travelling(clockBound.ledger, opened) }
-	const all: ReadonlyArray<Ledger<Faults>> = [
+	const all: Ledgers<Faults> = [
 		chain.ledger,
 		fan.ledger,
 		sync.ledger,
@@ -687,17 +683,15 @@ export const openLedgers = Effect.gen(function* () {
 		assign.ledger,
 		review.ledger
 	]
-	const refused: ReadonlyArray<Ledger<Faults>> = Arr.map(
-		[
-			chainLedger({ ...roles.chain, commits: refusing }).ledger,
-			fanLedger({ ...roles.fan, commits: refusing }).ledger,
-			syncLedger({ ...roles.sync, commits: refusing }).ledger,
-			retryLedger({ ...roles.retry, commits: refusing }).ledger,
-			assignLedger({ ...roles.assign, commits: refusing }).ledger,
-			reviewLedger({ ...roles.review, commits: refusing }).ledger
-		],
-		(ledger) => travelling(ledger, opened)
-	)
+	const misconfiguredLedgers: Ledgers<Faults> = [
+		chainLedger({ ...roles.chain, commits: refusing }).ledger,
+		fanLedger({ ...roles.fan, commits: refusing }).ledger,
+		syncLedger({ ...roles.sync, commits: refusing }).ledger,
+		retryLedger({ ...roles.retry, commits: refusing }).ledger,
+		assignLedger({ ...roles.assign, commits: refusing }).ledger,
+		reviewLedger({ ...roles.review, commits: refusing }).ledger
+	]
+	const refused = Arr.map(misconfiguredLedgers, (ledger) => travelling(ledger, opened))
 	return {
 		chain,
 		fan,
@@ -707,8 +701,8 @@ export const openLedgers = Effect.gen(function* () {
 		review,
 		clock,
 		all,
-		ledgers: byFlow([...all, clock.ledger]),
-		misconfigured: { all: refused, ledgers: byFlow(refused) },
+		ledgers: Arr.append(all, clock.ledger),
+		misconfigured: { all: refused, ledgers: refused },
 		loader
 	}
 })

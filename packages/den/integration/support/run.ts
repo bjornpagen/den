@@ -1,6 +1,6 @@
 import { now } from "@bjornpagen/den/runtime/clock"
 import { drain } from "@bjornpagen/den/runtime/drive"
-import { type Requested, ringRequested } from "@bjornpagen/den/runtime/request"
+import { admissionOf, type Requested } from "@bjornpagen/den/runtime/request"
 import type { Ledgers, Served } from "@bjornpagen/den/runtime/turn"
 import { Transport } from "@bjornpagen/den/transport"
 import type { InProcess } from "@bjornpagen/den/transport"
@@ -9,14 +9,14 @@ import type { Digest } from "effect/crypto"
 
 /**
  * How a suite runs what it requested: it rings the roots' admissions as the write that requested them does once it has
- * committed (runtime/request.ts), and drains the in-process transport until no wake is due.
+ * committed (runtime/request.ts), and drains the in-process transport until no wake is due. The census that write
+ * rings beside them is left out: a suite's census is its own, rung where it means to tick.
  */
 export const ringAndDrain = <R>(ledgers: Ledgers<R>, requested: ReadonlyArray<Requested>) =>
-	Effect.andThen(ringRequested(requested), drain(ledgers)) satisfies Effect.Effect<
-		unknown,
-		never,
-		R | Digest.Digest | Transport | InProcess
-	>
+	Effect.andThen(
+		Effect.flatMap(Transport, (transport) => transport.send(Arr.map(requested, admissionOf))),
+		drain(ledgers)
+	) satisfies Effect.Effect<unknown, never, R | Digest.Digest | Transport | InProcess>
 
 /** Rings what a turn served by hand would have rung on, as its own continuation would, then drains. */
 export const ringOnAndDrain = <R>(ledgers: Ledgers<R>, served: Served) =>

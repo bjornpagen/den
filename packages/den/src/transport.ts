@@ -40,17 +40,35 @@ export const StepWake = Schema.TaggedStruct("Step", {
 /** A wake for a scope's admission: its exclusivity seat, its precondition, then its start. */
 export const AdmitWake = Schema.TaggedStruct("Admit", { flow: FlowName, scope: ScopeText })
 
-/** A wake: a step's attempt or a scope's admission. Decoded once, at a consumer's boundary. */
-export const WakeSchema = Schema.Union([StepWake, AdmitWake])
+/** An instant a census wake is for: the start of a census period, in milliseconds since the epoch. */
+export const CensusInstant = Schema.Int.check(Schema.isGreaterThanOrEqualTo(0)).pipe(
+	Schema.brand("den/CensusInstant")
+)
+export type CensusInstant = typeof CensusInstant.Type
+
+/**
+ * A wake for the census of one period, named by the instant it starts: its tick of every flow an app runs, its
+ * retirements, and the next period's wake. The census is a doorbell like any other, so it runs wherever the transport
+ * delivers, every environment alike, and its timer is the transport's delay.
+ */
+export const CensusWake = Schema.TaggedStruct("Census", { at: CensusInstant })
+
+/** A wake: a step's attempt, a scope's admission, or a period's census. Decoded once, at a consumer's boundary. */
+export const WakeSchema = Schema.Union([StepWake, AdmitWake, CensusWake])
 export type Wake = typeof WakeSchema.Type
 
-/** What a wake names, as text: its flow, and the step's attempt or the scope it rings. */
+/** A wake of one flow: a step's attempt or a scope's admission, which that flow's ledger serves. */
+export type FlowWake = Extract<Wake, { readonly flow: FlowName }>
+
+/** What a wake names, as text: its flow, and the step's attempt or the scope it rings; or its census's period. */
 export const wakeText = (wake: Wake): string => {
 	switch (wake._tag) {
 		case "Step":
 			return `${wake.flow}:step:${wake.step}:${wake.attempt}`
 		case "Admit":
 			return `${wake.flow}:admit:${wake.scope}`
+		case "Census":
+			return `census:${wake.at}`
 	}
 }
 
@@ -90,10 +108,19 @@ export interface Ring {
 /**
  * A ring's idempotency key: the wake and the cause that rang it, so two rings of one cause share a key and a transport
  * delivers them once, while a wake rung again by another cause (a later tick, another commit) is never dropped as a
- * duplicate of the first, whatever became of it. A duplicate delivery is harmless: the claim decides.
+ * duplicate of the first, whatever became of it. A duplicate delivery is harmless: the claim decides. A census wake is
+ * its period's own, whoever rings it (the census before it, a cron, a write's revival), so its key is its wake alone,
+ * and the rings of one period's census, from any number of chains, are one message.
  */
-export const idempotencyKey = (ring: Pick<Ring, "wake" | "cause">): string =>
-	`${wakeText(ring.wake)}@${causeText(ring.cause)}`
+export const idempotencyKey = (ring: Pick<Ring, "wake" | "cause">): string => {
+	switch (ring.wake._tag) {
+		case "Census":
+			return wakeText(ring.wake)
+		case "Step":
+		case "Admit":
+			return `${wakeText(ring.wake)}@${causeText(ring.cause)}`
+	}
+}
 
 /**
  * The doorbell. `send` never fails its caller: a wake it loses is healed by the relay or the census, so a transport logs

@@ -23,8 +23,13 @@ delay (derived), the idempotency key's length (256, published), the census cron'
 | `src/config.ts` | `fragment(routes)`: the consumer's function (`maxDuration` the function lifetime, one `queue/v2beta` trigger on `den-wakes` with `maxDeliveries`), the census route's function (`maxDuration`), the census cron (`*/1 * * * *`); `check(text, routes)`: den's two functions hold the fragment's `maxDuration` and the consumer exactly its trigger (other keys are the host's), no other function's trigger takes den's topic (a wildcard included), and the census path is requested by exactly the fragment's cron |
 
 A host serves two routes: `export const POST = await runtime.runPromise(consumer(serve))` over den's runtime, and
-`export const GET = await runtime.runPromise(census(tick, secret))`, with `transport` (over `live`) as the runtime's
-`Transport`, and calls `check` from its own repository check on its `vercel.json` text.
+`export const GET = await runtime.runPromise(census(ringCensus, secret))`, with `transport` (over `live`) as the
+runtime's `Transport`, and calls `check` from its own repository check on its `vercel.json` text. The census is a wake
+(`runtime/census.ts`): its cron route only rings the current period's census, keyed by its period, and the consumer
+serves it, ticking every flow, retiring what ended and ringing the next period's, so the census runs in every
+environment the queue delivers to, a preview or a staging one whose cron Vercel never calls included; there a chain
+that stopped is revived by the next write that requests a root (`afterCommit`), which rings the current period's
+census beside its admissions, one message with the chain's own.
 
 ## Decisions
 

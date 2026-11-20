@@ -509,8 +509,16 @@ const specified = (
 	}
 }
 
-const textOf = (wake: Wake): string =>
-	wake._tag === "Admit" ? `admit ${wake.scope}` : `step ${wake.step} ${wake.attempt}`
+const textOf = (wake: Wake): string => {
+	switch (wake._tag) {
+		case "Admit":
+			return `admit ${wake.scope}`
+		case "Step":
+			return `step ${wake.step} ${wake.attempt}`
+		case "Census":
+			return `census ${wake.at}`
+	}
+}
 
 type Feature =
 	| "contended seats"

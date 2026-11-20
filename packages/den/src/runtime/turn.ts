@@ -4,6 +4,7 @@ import type { Digest } from "effect/crypto"
 import type { Ladder, Resource } from "#algebra/kinds.ts"
 import { censusPeriodSeconds } from "#algebra/kinds.ts"
 import { Later } from "#algebra/later.ts"
+import { census } from "#runtime/census.ts"
 import { eligible, isOpen, lapsedAttempt, opensAt, standing } from "#runtime/eligible.ts"
 import {
 	atOnce,
@@ -198,7 +199,8 @@ export type Wait =
  * a root not admitted because another live root of its kind holds its exclusivity seat, recorded as such; `failed`
  * by its typed error, a law that refused its commit, or its ladder's end; `retry`, an attempt spent and the next due at
  * an instant; `waiting`, no attempt spent, rung again at an instant or by the relay; `lost`, another fact already holds
- * its key; `fenced`, a call met the deployment's fault, named, on which it acknowledges its wake and exits.
+ * its key; `fenced`, a call met the deployment's fault, named, on which it acknowledges its wake and exits;
+ * `censused`, a period's census, with how many due wakes it rang.
  */
 export type Ending =
 	| { readonly kind: "done"; readonly wake: Wake; readonly spawned: Spawned }
@@ -214,6 +216,7 @@ export type Ending =
 	  }
 	| { readonly kind: "lost"; readonly wake: Wake }
 	| { readonly kind: "fenced"; readonly wake: Wake; readonly fault: Fault }
+	| { readonly kind: "censused"; readonly wake: Wake; readonly rung: number }
 
 /**
  * The deployment's faults: `stale`, the database holds another snapshot than this deployment's, and
@@ -924,6 +927,7 @@ const settledOn = <R>(
 			case "skipped":
 			case "lost":
 			case "fenced":
+			case "censused":
 				return Effect.succeed([])
 		}
 	})()
@@ -1001,8 +1005,36 @@ const serveAdmit = <R>(
 		}
 	})
 
-/** The flows an app runs, each its ledger, by name. */
-export type Ledgers<R> = ReadonlyMap<string, Ledger<R>>
+/**
+ * The flows an app runs, each its ledger: at least one, an app's whole set, which a census ticks and whose first's
+ * clock, the database's, it reads.
+ */
+export type Ledgers<R> = Arr.NonEmptyReadonlyArray<Ledger<R>>
+
+/** The ledger of the flow a wake names, none for a flow the app does not run. */
+const ledgerOf = <R>(ledgers: Ledgers<R>, flow: FlowName): Option.Option<Ledger<R>> =>
+	Arr.findFirst(ledgers, (ledger) => ledger.flow === flow)
+
+/**
+ * Serves a period's census (runtime/census.ts): every flow's due wakes rung at once and the next period's census when
+ * it starts. A census that read nothing still rings the next.
+ */
+const serveCensus = <R>(
+	ledgers: Ledgers<R>,
+	wake: Extract<Wake, { readonly _tag: "Census" }>
+): Effect.Effect<Served, never, Digest.Digest> =>
+	census(ledgers).pipe(
+		Effect.match({
+			onFailure: (): Served => ({ ending: { kind: "censused", wake, rung: 0 }, onward: [] }),
+			onSuccess: (done): Served => ({
+				ending: { kind: "censused", wake, rung: done.due.length },
+				onward: [
+					...Arr.map(done.due, (due): Onward => ({ wake: due, delay: Duration.zero })),
+					done.next
+				]
+			})
+		})
+	)
 
 /**
  * Serves one wake under the invocation that ends at `ends`. It never fails: every failure is an ending, and the runtime
@@ -1013,12 +1045,19 @@ export const serve = <R>(
 	wake: Wake,
 	ends: Instant
 ): Effect.Effect<Served, never, R | Digest.Digest> => {
-	const ledger = ledgers.get(wake.flow)
-	if (ledger === undefined) {
-		return Effect.succeed(served({ kind: "lost", wake }))
+	switch (wake._tag) {
+		case "Census":
+			return serveCensus(ledgers, wake)
+		case "Step":
+		case "Admit":
+			return Option.match(ledgerOf(ledgers, wake.flow), {
+				onNone: () => Effect.succeed(served({ kind: "lost", wake })),
+				onSome: (ledger) =>
+					(wake._tag === "Step" ? serveStep(ledger, wake, ends) : serveAdmit(ledger, wake)).pipe(
+						Effect.catch((ending: Ending) => Effect.succeed(served(ending)))
+					)
+			})
 	}
-	const turn = wake._tag === "Step" ? serveStep(ledger, wake, ends) : serveAdmit(ledger, wake)
-	return turn.pipe(Effect.catch((ending: Ending) => Effect.succeed(served(ending))))
 }
 
 /**
@@ -1034,12 +1073,21 @@ export const invoke = <R>(
 ): Effect.Effect<ReadonlyArray<Ending>, never, R | Digest.Digest | Transport> =>
 	Effect.gen(function* () {
 		const transport = yield* Transport
-		/** A reading of the instant of the ledger a wake names, or the ending of a wake no ledger serves. */
+		/**
+		 * A reading of the database's instant: by the ledger a wake names, or by the first flow's for a census; the ending
+		 * of a wake no ledger serves.
+		 */
 		const readingOf = (serving: Wake): Effect.Effect<Instant, Ending> => {
-			const ledger = ledgers.get(serving.flow)
-			return ledger === undefined
-				? Effect.fail({ kind: "lost", wake: serving })
-				: readOr(ledger.now, serving)
+			switch (serving._tag) {
+				case "Census":
+					return readOr(Arr.headNonEmpty(ledgers).now, serving)
+				case "Step":
+				case "Admit":
+					return Option.match(ledgerOf(ledgers, serving.flow), {
+						onNone: () => Effect.fail<Ending>({ kind: "lost", wake: serving }),
+						onSome: (ledger) => readOr(ledger.now, serving)
+					})
+			}
 		}
 		const loop = (
 			serving: Wake,

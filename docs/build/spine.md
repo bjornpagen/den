@@ -186,7 +186,10 @@ output into `select(PResult, outcome = done)`) certifies.
     fresh read of the scheduler's snapshot (`turn.ts` waitersOf), so a fan-out on a resource drains as its seats free;
     the write that requests a root rings its admission once it has committed (`runtime/request.ts` `afterCommit`: the
     app's own transaction, or an operator's request); the relay (`runtime/relay.ts`), where a host keeps a process
-    alive, rings what anyone else's commit made eligible; the census heals whatever any of them loses.
+    alive, rings what anyone else's commit made eligible; the census heals whatever any of them loses. The census is a
+    wake, `Census`, named by the period it ticks (`runtime/census.ts`): served like any other, it ticks every flow,
+    retires what ended and rings the next period's, its key its period alone, so any number of rings of one period are
+    one census and no environment needs a cron of its own (`censuswake.test.ts`).
 
 ## Seams, each one module for one coming grizzle feature
 

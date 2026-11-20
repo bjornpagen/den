@@ -15,9 +15,9 @@ import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/sl
  * the transport is drained with no census and no relay. A write the database refuses, an order whose key an earlier
  * order (written with a request of its own, rung by no one) already holds, commits nothing and rings nothing.
  *
- * Oracle (specification): a committed write rings exactly its root's admission, caused by its request, and the chain
- * runs to its finish from that ring alone, the order's row beside it; a refused write leaves no ring, no root and no
- * graph.
+ * Oracle (specification): a committed write rings exactly its root's admission, caused by its request, and the
+ * current period's census beside it, and the chain runs to its finish, the order's row beside it; a refused write
+ * leaves no ring, no root and no graph.
  */
 
 type Feature = "news" | "sport" | "a committed request" | "a refused request"
@@ -86,8 +86,16 @@ export const aCommittedRequestRingsItsRootsAdmission = property.explore(runs, {
 						c.note("a committed request")
 						assert.equal(written._tag, "Success")
 						assert.deepEqual(
-							Arr.map(rung, (ring) => ring.wake),
+							Arr.filter(
+								Arr.map(rung, (ring) => ring.wake),
+								(wake) => wake._tag !== "Census"
+							),
 							[{ _tag: "Admit", flow: request.flow, scope: request.scope }]
+						)
+						assert.equal(
+							Arr.filter(rung, (ring) => ring.wake._tag === "Census").length,
+							1,
+							"the write rings the current period's census beside its admissions"
 						)
 						yield* drain(ledgers)
 						const finishes = yield* rows(app.workload.chainFinishes.once({ params: {}, facts: {} }))

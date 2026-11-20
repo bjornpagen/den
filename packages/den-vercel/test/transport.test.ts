@@ -2,6 +2,7 @@ import { censusPeriodSeconds } from "@bjornpagen/den/algebra/kinds"
 import { caseHangMillis } from "@bjornpagen/den/test/support/suites"
 import {
 	type Cause,
+	CensusInstant,
 	idempotencyKey,
 	type Ring,
 	type Wake,
@@ -41,7 +42,7 @@ import {
 
 /**
  * The transport against a fake of Vercel Queues that drops, duplicates, delays and redelivers: every wake a ring sends
- * is delivered at least once or healed by a census; keys never collide across distinct rings, and repeat for a ring its
+ * is delivered at least once or healed by a census, a period's census by a later period's; keys never collide across distinct rings, and repeat for a ring its
  * cause sends again, while a wake two causes ring is sent for each; a timer is held for its delay and never less.
  */
 
@@ -68,7 +69,19 @@ const ringFrom = (encoded: EncodedRing, delay: Duration.Duration): Effect.Effect
 	}))
 
 /** What a ring names, its wake and its cause, without its delay. */
-const rang = (ring: Ring) => ({ wake: ring.wake, cause: ring.cause })
+/**
+ * What a ring names, which its key names: its wake and its cause, or a census's wake alone, which is its period's
+ * whoever rings it.
+ */
+const rang = (ring: Ring) => {
+	switch (ring.wake._tag) {
+		case "Census":
+			return { wake: ring.wake }
+		case "Step":
+		case "Admit":
+			return { wake: ring.wake, cause: ring.cause }
+	}
+}
 
 /** den's transport and consumer over a fake whose consumer group reads `maxDeliveries` from its trigger. */
 const harness = (queue: Fake) => ({
@@ -173,17 +186,35 @@ it.effect("every wake a ring sends is delivered at least once or healed by a cen
 					)
 					const { send, route: routeOf } = harness(queue)
 					const heard = new Map<string, number>()
+					const censuses: Array<number> = []
 					const route = yield* routeOf((wake) =>
 						Effect.sync(() => {
 							const text = wakeText(wake)
 							heard.set(text, (heard.get(text) ?? 0) + 1)
+							if (wake._tag === "Census") {
+								censuses.push(wake.at)
+							}
 						})
 					)
 					const wakes = Arr.dedupeWith(
 						Arr.map(sent, (ring) => ring.wake),
 						Equal.equals
 					)
-					const unheard = () => Arr.filter(wakes, (wake) => !heard.has(wakeText(wake)))
+					/**
+					 * Whether a wake was heard: a step's or an admission's itself, and a period's census once its own or a later
+					 * period's census was, which supersedes it, since a census wake's key is its period's and a lost one is never
+					 * rung again under it.
+					 */
+					const heardOf = (wake: Wake): boolean => {
+						switch (wake._tag) {
+							case "Census":
+								return Arr.some(censuses, (at) => at >= wake.at)
+							case "Step":
+							case "Admit":
+								return heard.has(wakeText(wake))
+						}
+					}
+					const unheard = () => Arr.filter(wakes, (wake) => !heardOf(wake))
 					const lease = visibilityTimeoutSeconds * 1000
 					const horizon = (drawnRun.faults + 1) * (drawnRun.maxDeliveries * lease + 2 * period)
 					yield* send(sent)
@@ -199,7 +230,10 @@ it.effect("every wake a ring sends is delivered at least once or healed by a cen
 						if (census <= delivery) {
 							yield* send(
 								Arr.map(waiting, (wake): Ring => ({
-									wake,
+									wake:
+										wake._tag === "Census"
+											? { _tag: "Census", at: CensusInstant.make(census) }
+											: wake,
 									delay: Duration.zero,
 									cause: { _tag: "Census", at: census }
 								}))
@@ -279,7 +313,7 @@ it.effect(
 					suite: "keys",
 					oracle: {
 						kind: "universal",
-						name: "key(a) = key(b) ⇔ a and b ring one wake for one cause, over every message sent, each payload the wake it keys"
+						name: "key(a) = key(b) ⇔ a and b ring one wake for one cause, or one period's census, over every message sent, each payload the wake it keys"
 					},
 					draw: drawn(many),
 					literal: Formatter.format,

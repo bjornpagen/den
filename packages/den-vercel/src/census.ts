@@ -2,9 +2,11 @@ import { Effect, Redacted } from "effect"
 import type { Route } from "#consumer.ts"
 
 /**
- * The census as Vercel Cron: once a minute, on the production deployment serving the domain, a tick rings every step a
- * lost wake would have. Its sends are pinned to that deployment, so the census is what moves work off an old
- * deployment's code. A missed or doubled run costs nothing: a tick writes only key races.
+ * The census as Vercel Cron: once a minute, on the production deployment serving the domain, the route runs what the
+ * host gives it, den's `ringCensus`, which rings the current period's census wake (runtime/census.ts); the consumer
+ * serves it, ticking every flow and ringing the next period's, so the census runs wherever the queue delivers and the
+ * cron is one of its doorbells. Its sends are pinned to that deployment, so the census is what moves work off an old
+ * deployment's code. A missed or doubled run costs nothing: a period's census is one message by its key.
  */
 
 /**
