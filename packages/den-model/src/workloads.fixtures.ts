@@ -8,6 +8,7 @@ import { rootOfStep, rootText, stepText } from "#identity.ts"
 import { type Ladder, ordinals, type Window } from "#program.ts"
 import type { FairEnd, Seen } from "#simulator.ts"
 import type { Limits, World } from "#workloads/edullm.ts"
+import { type Delivery, type Report, TIMEBACK_REPORTS } from "#workloads/reports.ts"
 
 /** A workload's own law broken: a cursor moved over work that did not land, a present child hung up, and the like. */
 class WorkloadBroken extends Data.TaggedError("WorkloadBroken")<{ message: string }> {}
@@ -33,7 +34,7 @@ export type Noticed =
 	| "w8-seeded"
 
 /** A ladder of edullm's five attempts, its rungs a tick doubling to ten; small ones a fifth of the time. */
-const ladderGen: Gen<Ladder> = (source) => ({
+export const ladderGen: Gen<Ladder> = (source) => ({
 	_tag: "Attempts",
 	attempts: source.draw(production(5, [1, 2])),
 	first: 1,
@@ -53,7 +54,7 @@ const windowGen: Gen<Option.Option<Window>> = weighted<Option.Option<Window>>([
 	[2, () => Option.some({ period: 24, opens: 7, closes: 13 })]
 ])
 
-const leaseGen: Gen<number> = production(10, [2, 3, 5])
+export const leaseGen: Gen<number> = production(10, [2, 3, 5])
 
 export const limitsGen: Gen<Limits> = (source) => ({
 	timeback: {
@@ -90,7 +91,7 @@ export const limitsGen: Gen<Limits> = (source) => ({
 })
 
 /** Up to `most` of something, none a third of the time, so a case runs a few workloads or all of them. */
-const someOf =
+export const someOf =
 	<A>(most: number, each: (index: number) => Gen<A>): Gen<ReadonlyArray<A>> =>
 	(source) =>
 		Arr.map(
@@ -204,7 +205,7 @@ export const worldGen: Gen<World> = (source) => ({
 })
 
 /** Every write each root's steps landed, by root, as `relation/key` to its value. */
-const writesByRoot = (trace: Trace): ReadonlyMap<string, ReadonlyMap<string, Datum>> => {
+export const writesByRoot = (trace: Trace): ReadonlyMap<string, ReadonlyMap<string, Datum>> => {
 	const roots = new Map<string, Map<string, Datum>>()
 	for (const entry of trace) {
 		for (const fact of entry.facts) {
@@ -221,7 +222,7 @@ const writesByRoot = (trace: Trace): ReadonlyMap<string, ReadonlyMap<string, Dat
 }
 
 /** The first of a list of witnesses, as a workload's broken law. */
-const firstOf = (witnesses: ReadonlyArray<string>): Option.Option<WorkloadBroken> =>
+export const firstOf = (witnesses: ReadonlyArray<string>): Option.Option<WorkloadBroken> =>
 	Option.map(Arr.head(witnesses), (message) => new WorkloadBroken({ message }))
 
 /**
@@ -275,7 +276,7 @@ export const ownLaws = (
 		if (fact._tag === "Spawned" && fact.kind === "Takedown" && fact.step._tag === "EdgeStep") {
 			note("w5-rearmed")
 		}
-		if (fact._tag === "Retried" && rootOfStep(fact.step).kind === "TimebackReport") {
+		if (fact._tag === "Retried" && rootOfStep(fact.step).kind === TIMEBACK_REPORTS.root) {
 			note("w6-retried")
 		}
 		if (
@@ -364,7 +365,7 @@ export const ownLaws = (
 		...qti,
 		...gold,
 		...takedowns(trace, limits, world, quiet, note),
-		...delivered(trace, world, quiet, note),
+		...deliveredAll(TIMEBACK_REPORTS, trace, world.reports, quiet, () => note("w6-delivered")),
 		...reconciled(trace, quiet, note),
 		...Arr.flatMap(world.seeds, ({ what: seeding }) => {
 			const landed = of("SilverSeedRun", seeding.key)
@@ -459,31 +460,35 @@ const takedowns = (
 	]
 }
 
-/** W6's law: no report's delivery fails, and once the run is quiescent every report was delivered. */
-const delivered = (
+/**
+ * A delivery program's law (W6, AlphaTest's time-spent events): no delivery fails, and once the run is quiescent every
+ * row was delivered; `delivered` is noted once any was.
+ */
+export const deliveredAll = (
+	names: Delivery,
 	trace: Trace,
-	world: World,
+	rows: ReadonlyArray<Report>,
 	quiet: boolean,
-	note: (noticed: Noticed) => void
+	delivered: () => void
 ): ReadonlyArray<string> => {
 	const facts = Arr.flatMap(trace, (entry) => entry.facts)
 	const failed = Arr.flatMap(facts, (fact) =>
-		fact._tag === "Failed" && rootOfStep(fact.step).kind === "TimebackReport"
-			? [`W6: ${stepText(fact.step)} failed, on a ladder that never ends`]
+		fact._tag === "Failed" && rootOfStep(fact.step).kind === names.root
+			? [`${names.root}: ${stepText(fact.step)} failed, on a ladder that never ends`]
 			: []
 	)
 	const sent = new Set(
 		Arr.flatMap(facts, (fact) =>
-			fact._tag === "Wrote" && fact.write.relation === "report_delivered" ? [fact.write.key] : []
+			fact._tag === "Wrote" && fact.write.relation === names.delivered ? [fact.write.key] : []
 		)
 	)
 	if (sent.size > 0) {
-		note("w6-delivered")
+		delivered()
 	}
 	return [
 		...failed,
-		...Arr.flatMap(world.reports, (report) =>
-			quiet && !sent.has(report.id) ? [`W6: ${report.id} was never delivered`] : []
+		...Arr.flatMap(rows, (row) =>
+			quiet && !sent.has(row.id) ? [`${names.root}: ${row.id} was never delivered`] : []
 		)
 	]
 }

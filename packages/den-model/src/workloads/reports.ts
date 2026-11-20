@@ -24,11 +24,35 @@ export type ReportLimits = Readonly<{ delay: number; lease: number; first: numbe
 export type Report = Readonly<{ id: string; written: number; stretch: boolean; heals: number }>
 
 /**
- * W6, the Timeback reports, as a den program: the app's own write of a report row admits its root in the same
- * transaction, whose one delivery is due at once, or after the delay for a stretch; a delivery Timeback refuses is
- * retried on a ladder that never ends, until Timeback takes it.
+ * The names of a delivery program: its root kind, its one step kind, the app relation whose row requests it, and the
+ * relation its delivery writes once the outside system took it. One shape serves two workloads, so each is these
+ * names over it.
+ */
+export type Delivery = Readonly<{ root: string; step: string; row: string; delivered: string }>
+
+/** W6, the Timeback reports. */
+export const TIMEBACK_REPORTS: Delivery = {
+	root: "TimebackReport",
+	step: "ReportDelivery",
+	row: "report",
+	delivered: "report_delivered"
+}
+
+/** AlphaTest's time-spent Caliper events, one root per segment the app writes, keyed by the segment's event id. */
+export const TIME_SPENT: Delivery = {
+	root: "TimeSpent",
+	step: "CaliperDelivery",
+	row: "time_segment",
+	delivered: "caliper_accepted"
+}
+
+/**
+ * A delivery program (W6, the Timeback reports; AlphaTest's time-spent events): the app's own write of a row admits
+ * its root in the same transaction, whose one delivery is due at once, or after the delay for a stretch; a delivery
+ * the outside system refuses is retried on a ladder that never ends, until it takes it.
  */
 export const reportsOf = (
+	names: Delivery,
 	limits: ReportLimits
 ): Readonly<{ program: Program; write: (report: Report) => Admission }> => {
 	const runs: Runs = {
@@ -38,7 +62,7 @@ export const reportsOf = (
 	}
 
 	const Deliver: StepKind<Report, boolean, never> = {
-		name: "ReportDelivery",
+		name: names.step,
 		runs,
 		input: (report) => ({ id: report.id, stretch: report.stretch }),
 		output: (taken) => taken,
@@ -54,19 +78,19 @@ export const reportsOf = (
 				: {
 						_tag: "Output",
 						output: true,
-						writes: [{ relation: "report_delivered", key: report.id, value: claimed.at }]
+						writes: [{ relation: names.delivered, key: report.id, value: claimed.at }]
 					},
 		edges: () => []
 	}
 
 	const ReportRoot: RootKind<Report, number, never> = {
-		name: "TimebackReport",
+		name: names.root,
 		trigger: { _tag: "App" },
 		precondition: Option.none(),
 		window: Option.none(),
 		exclusive: Option.none(),
 		scope: {
-			name: "TimebackReport",
+			name: names.root,
 			input: (report) => ({ id: report.id }),
 			start: (report) => [
 				stepAt(Deliver, report, report.written + (report.stretch ? limits.delay : 0))
@@ -81,7 +105,7 @@ export const reportsOf = (
 	}
 
 	return {
-		program: { name: "reports", resources: [], roots: [rootedOf(ReportRoot)] },
+		program: { name: names.root, resources: [], roots: [rootedOf(ReportRoot)] },
 		write: (report) => admissionOf(ReportRoot, report.id, report)
 	}
 }

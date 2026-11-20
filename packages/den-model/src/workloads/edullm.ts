@@ -10,7 +10,7 @@ import {
 import { type EnrollmentLimits, enrollmentOf } from "#workloads/enrollment.ts"
 import { type GoldLimits, goldOf, type Refresh } from "#workloads/gold.ts"
 import { type Night as QtiNight, type QtiLimits, qtiOf } from "#workloads/qti.ts"
-import { type Report, type ReportLimits, reportsOf } from "#workloads/reports.ts"
+import { type Report, type ReportLimits, reportsOf, TIMEBACK_REPORTS } from "#workloads/reports.ts"
 import { type SeedLimits, type Seeding, seedOf } from "#workloads/seed.ts"
 import { type Attempt, type TakedownLimits, takedownOf } from "#workloads/takedown.ts"
 import { type Daily, type TimebackLimits, timebackOf } from "#workloads/timeback.ts"
@@ -62,7 +62,7 @@ export const edullmOf = (
 	const qti = qtiOf(limits.qti)
 	const gold = goldOf(limits.gold)
 	const takedown = takedownOf(limits.takedown)
-	const reports = reportsOf(limits.reports)
+	const reports = reportsOf(TIMEBACK_REPORTS, limits.reports)
 	const enrollment = enrollmentOf(limits.enrollment)
 	const seed = seedOf(limits.seed)
 	const admit = (at: number, by: By, admission: Admission): Act => ({

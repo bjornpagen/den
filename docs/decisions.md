@@ -137,3 +137,22 @@
   app's committing role certify SERIALIZABLE, and den takes that. A call refused as `transient` changed nothing and
   runs again until it ends otherwise, with no bound; a transient is never an ending, a record or a retirement's
   outcome ([build/repin.md](build/repin.md), Certificates).
+
+## Owner direction, 2026-11-20: AlphaTest is den's first user
+
+- **AlphaTest's background work joins the workloads den serves (owner, 2026-11-20).** Bjorn: "we must implement what
+  den is missing RIGHT NOW. Repin to the very latest green grizzle and implement these den features", and "den has
+  zero backwards compat, zero legacy behavior. If we need something from den, push hard on the representation-first
+  fix. Don't worry about breaking den, it has ZERO users right now. We would be its first user." This extends the
+  workloads by AlphaTest's (the alphatest-cutover plan's background work): the Timeback writeback at grading, a chain
+  per attempt on Timeback's seats; the gap analysis as a map and a reduce, one model call per wrong answer on
+  Anthropic's seats and the cluster as its questions scope's finish, then the save, the stamp and the dispatch, and its
+  plan (DCAN) as a chain of orchestrator turns with a fan-out scope of subagents; one time-spent delivery per segment;
+  and the history load as parallel chains over an outside source. den-model holds each as a program under den's laws
+  and its own (`novus.test.ts`).
+- **What they needed is built, each a change of representation, never a branch.** The write that requests a root
+  rings its admission once it has committed (`runtime/request.ts`); a turn rings what its end made eligible, the steps
+  waiting on a seat it gave back among them; a finish answers an output, a child scope ends as its finish does, and an
+  edge may leave a child scope kind, so the next stage after a scope is an ordinary edge spawned in its parent; and a
+  body whose source named when to call again fails with `Later`, a wait that spends nothing, due the source's own delay.
+

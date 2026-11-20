@@ -13,3 +13,6 @@
   waits on Bjorn.
 - **Wave 2b:** the operator surface, the eight workloads as den flows on the fakes of `packages/edullm`, differential
   runs at scale, an adversarial review.
+- **AlphaTest (owner, 2026-11-20):** ring after request, the seat handoff, finish spawns with child-scope edges and the
+  source's named delay are built, and AlphaTest's background work is modelled in den-model; running on Vercel and a
+  census for staging (Vercel Cron calls production only) are next.
