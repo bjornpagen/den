@@ -62,6 +62,7 @@ export default localCluster({
 		family: { kind: "one" },
 		connections: { perWorker, outside },
 		replication: { kind: "perWorker", perWorker: 1, outside: 0 },
-		sharedBuffers: { kind: "default" }
+		sharedBuffers: { kind: "default" },
+		locks: { kind: "default" }
 	}
 })
