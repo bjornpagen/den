@@ -1,4 +1,4 @@
-import { Array as Arr, Option, Predicate, Record, String as Str } from "effect"
+import { Array as Arr, Option, Record, String as Str } from "effect"
 import {
 	type AnyFlow,
 	type AnyJoin,
@@ -44,7 +44,7 @@ import {
  */
 
 /** One of den's own key contracts, every flow's alike. */
-export type DenKey = "DenStep" | "DenScope" | "DenExclusive" | "DenInstant"
+export type DenKey = "DenStep" | "DenScope" | "DenExclusive" | "DenInstant" | "DenRow"
 
 /** What a lowered field holds. */
 export type FieldType =
@@ -57,6 +57,7 @@ export type FieldType =
 	| { readonly kind: "base"; readonly base: Base }
 	| { readonly kind: "retirement" }
 	| { readonly kind: "app"; readonly relation: string; readonly field: string }
+	| { readonly kind: "vector"; readonly dimensions: number }
 
 /** A lowered relation: its name, its fields in order, and its primary key. */
 export interface RelationIR {
@@ -190,30 +191,15 @@ export interface EdgeIR {
 }
 
 /**
- * A step's declared read, lowered: its name, the app relation it reads, the fields it reads by, the fields it delivers
- * and the relation it records them in, row by row under the step and an ordinal. A nearest read also names the vector
- * field it ranks by, which it does not deliver, its bound, and its anchor: the relation, the vector field and the whole
- * key of the stored row whose vector it ranks by; it records each row's distance beside it.
+ * One named query of a step's declared reads, lowered: its name, its record's columns, the relation that holds each row
+ * it found once per root, by the digest of its record, and the relation of the step's references to them, by ordinal.
  */
-export type ReadIR = {
+export interface ReadIR {
 	readonly name: string
-	readonly relation: string
-	readonly by: ReadonlyArray<string>
-	readonly fields: ReadonlyArray<string>
+	readonly columns: ReadonlyArray<Column>
+	readonly row: string
 	readonly record: string
-} & (
-	| { readonly kind: "rows" }
-	| {
-			readonly kind: "nearest"
-			readonly vector: string
-			readonly take: number
-			readonly anchor: {
-				readonly relation: string
-				readonly vector: string
-				readonly key: readonly [string, ...Array<string>]
-			}
-	  }
-)
+}
 
 /**
  * A fact a step awaits, lowered: the app relation, and each field of its whole key with the step's input field that
@@ -333,8 +319,6 @@ export interface Lowered {
 	readonly coordination: ReadonlyArray<string>
 	/** The app's relations the flow's steps and finishes write, by operation. */
 	readonly app: WritesIR
-	/** The app's relations the flow's steps read, each once. */
-	readonly read: ReadonlyArray<string>
 	/** The flows its scopes' preconditions read, each once. */
 	readonly idle: ReadonlyArray<string>
 	/** The app's relations its steps await a fact of, each once. */
@@ -363,19 +347,6 @@ const writesOf = (declared: WritesDeclaration): WritesIR => ({
 	put: Arr.map(declared.put, (r) => r.name),
 	delete: Arr.map(declared.delete, (r) => r.name)
 })
-
-/** The field names of an app relation, in its declared order. */
-const fieldNamesOf = (
-	declaration: string,
-	relation: { readonly name: string; readonly fields: unknown }
-) => {
-	const fields = relation.fields
-	const names = Predicate.isObject(fields) ? Record.keys(fields) : []
-	if (!Arr.isReadonlyArrayNonEmpty(names)) {
-		throw new Refused({ declaration, why: `the relation ${relation.name} it reads has no fields` })
-	}
-	return names
-}
 
 /** Lowers a flow to its fragment, refusing a name two of its relations, rosters or brands would share. */
 export const lower = (flow: AnyFlow): Lowered => {
@@ -408,6 +379,8 @@ export const lower = (flow: AnyFlow): Lowered => {
 			case "brand":
 				brand({ name: column.type.brand, base: column.type.base })
 				return { kind: "brand", brand: column.type.brand }
+			case "vector":
+				return { kind: "vector", dimensions: column.type.dimensions }
 			case "roster": {
 				const roster = `${owner}${capitalized(column.name)}`
 				rosters.push({ name: roster, handles: column.type.handles })
@@ -438,6 +411,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const stepKey: FieldType = { kind: "key", contract: "DenStep" }
 	const scopeKey: FieldType = { kind: "key", contract: "DenScope" }
 	const instant: FieldType = { kind: "key", contract: "DenInstant" }
+	const rowKey: FieldType = { kind: "key", contract: "DenRow" }
 	const text: FieldType = { kind: "base", base: "text" }
 	const natural: FieldType = { kind: "natural" }
 	const place: FieldType = { kind: "place" }
@@ -960,75 +934,67 @@ export const lower = (flow: AnyFlow): Lowered => {
 		return { name: e.name, index, from: e.from.name, to, relation: edgeRelation }
 	})
 
+	/**
+	 * A step's records: per named query, a relation of the rows it found, keyed by the digest of the record and the root,
+	 * so a row a sibling step of the root found stays one row, and a relation of the step's references to them, keyed by
+	 * the step and the row's place in what it found, each contained in its row and in the step's result. A record is a
+	 * flat struct of columns, never a vector, which a body never sees.
+	 */
 	const readsOf = (s: AnyStepKind): ReadonlyArray<ReadIR> =>
-		Arr.map(Record.toEntries(s.reads), ([readName, declared]): ReadIR => {
-			const declaration = `step ${s.name}, its read ${readName}`
-			const fields = fieldNamesOf(declaration, declared.relation)
-			Arr.forEach(declared.by, (field) => {
-				if (!Arr.contains(fields, field)) {
-					throw new Refused({
-						declaration,
-						why: `it reads ${declared.relation.name} by ${field}, no field of it`
+		s.reads.kind === "none"
+			? []
+			: Arr.map(Record.toEntries(s.reads.records), ([readName, recorded]): ReadIR => {
+					const declaration = `step ${s.name}, its read ${readName}`
+					const shape = shapeOf(declaration, recorded)
+					if (
+						!Arr.isReadonlyArrayEmpty(shape.options) ||
+						!Arr.isReadonlyArrayEmpty(shape.arrays) ||
+						!Arr.isReadonlyArrayEmpty(shape.unions)
+					) {
+						throw new Refused({ declaration, why: "its record is no flat struct of columns" })
+					}
+					Arr.forEach(shape.columns, (c) => {
+						if (c.type.kind === "vector") {
+							throw new Refused({
+								declaration,
+								why: `its record holds the vector ${c.name}: a record holds what a body sees, never a vector`
+							})
+						}
+						if (c.name === "digest" || c.name === "root") {
+							throw new Refused({
+								declaration,
+								why: `its record has a field ${c.name}, which its relation keeps for itself`
+							})
+						}
 					})
-				}
-			})
-			const reserved =
-				declared.kind === "nearest"
-					? ["step", "ordinal", "root", "distance"]
-					: ["step", "ordinal", "root"]
-			Arr.forEach(fields, (field) => {
-				if (Arr.contains(reserved, field)) {
-					throw new Refused({
-						declaration,
-						why: `the relation ${declared.relation.name} it reads has a field ${field}, which its record keeps for itself`
+					const stem = `${s.name}${capitalized(readName)}`
+					const row = relation({
+						name: name(`${stem}Row`),
+						fields: [
+							{ name: "digest", type: rowKey },
+							...Arr.map(shape.columns, (c) => ({
+								name: c.name,
+								type: fieldOf(name(`${stem}Row`), c)
+							}))
+						],
+						key: ["digest"]
 					})
-				}
-			})
-			const delivered =
-				declared.kind === "nearest"
-					? Arr.filter(fields, (field) => field !== declared.vector)
-					: fields
-			const record = relation({
-				name: name(`${s.name}${capitalized(readName)}Read`),
-				fields: [
-					{ name: "step", type: stepKey },
-					{ name: "ordinal", type: natural },
-					...Arr.map(delivered, (field) => ({
-						name: field,
-						type: { kind: "app", relation: declared.relation.name, field } satisfies FieldType
-					})),
-					...(declared.kind === "nearest"
-						? [{ name: "distance", type: { kind: "base", base: "double" } satisfies FieldType }]
-						: [])
-				],
-				key: ["step", "ordinal"]
-			})
-			laws.push(into(side(record, ["step"]), side(Result, ["step"])))
-			const read = {
-				name: readName,
-				relation: declared.relation.name,
-				by: declared.by,
-				fields: delivered,
-				record
-			}
-			if (declared.kind === "rows") {
-				return { ...read, kind: "rows" }
-			}
-			const key = declared.anchor.relation.primaryKey
-			if (!Arr.isReadonlyArrayNonEmpty(key)) {
-				throw new Refused({
-					declaration,
-					why: `its anchor ${declared.anchor.relation.name} has no key to name a row by`
+					finite(row, shape.columns)
+					const record = relation({
+						name: name(`${stem}Read`),
+						fields: [
+							{ name: "step", type: stepKey },
+							{ name: "ordinal", type: natural },
+							{ name: "digest", type: rowKey }
+						],
+						key: ["step", "ordinal"]
+					})
+					laws.push(
+						into(side(record, ["step"]), side(Result, ["step"])),
+						into(side(record, ["digest"]), side(row, ["digest"]))
+					)
+					return { name: readName, columns: shape.columns, row, record }
 				})
-			}
-			return {
-				...read,
-				kind: "nearest",
-				vector: declared.vector,
-				take: declared.take,
-				anchor: { relation: declared.anchor.relation.name, vector: declared.anchor.vector, key }
-			}
-		})
 
 	/**
 	 * The facts a step awaits: each refused unless its key fields are its relation's whole key and each names a column
@@ -1343,7 +1309,6 @@ export const lower = (flow: AnyFlow): Lowered => {
 		requesting,
 		coordination,
 		app: { insert: union("insert"), put: union("put"), delete: union("delete") },
-		read: Arr.dedupe(Arr.flatMap(stepsIR, (s) => Arr.map(s.reads, (r) => r.relation))),
 		idle: Arr.dedupe(
 			Arr.flatMap(joinsIR, (j) => Option.match(j.root, { onNone: () => [], onSome: (r) => r.idle }))
 		),

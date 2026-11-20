@@ -5,16 +5,16 @@ import {
 	type Ending,
 	atSpawn,
 	attempts,
-	anchor,
 	awaitFact,
 	edge,
 	exclusiveBy,
 	idle,
-	nearest,
 	never,
+	noReads,
 	operator,
-	rows,
+	reads,
 	resource,
+	vectorOf,
 	root,
 	schedule,
 	scope,
@@ -26,6 +26,7 @@ import {
 	writesNothing
 } from "@bjornpagen/den/algebra/kinds"
 import { laterOf } from "@bjornpagen/den/algebra/later"
+import { Compute, query, v, Vector } from "@bjornpagen/grizzle"
 import { Array as Arr, Context, Cron, Effect, Option, Order, Schema } from "effect"
 import {
 	Assigned,
@@ -35,9 +36,9 @@ import {
 	Copied,
 	Cursor,
 	Delivered,
+	embeddingDimensions,
 	Heard,
 	Item,
-	Missed,
 	Passage,
 	Reviewed,
 	Seen,
@@ -81,17 +82,23 @@ const PageInput = Schema.Struct({
 	after: Schema.Option(Schema.String)
 })
 
-/** What a page read: its position, how many items it held, and the cursor of the page after it, if any. */
+/**
+ * What a page read: its position, how many items it held, how many of its feed's items the pages before it had, and the
+ * cursor of the page after it, if any.
+ */
 const PageRead = Schema.Struct({
 	seq: Seq,
 	items: Schema.BigInt,
+	earlier: Schema.BigInt,
 	next: Schema.Option(Schema.String)
 })
 
 /**
  * Reads one page of a feed: a page holds its position plus one items for each unit of the feed's weight, which it reads
  * before its body runs (a feed with no weight counts as weight one), and every page but the feed's last names the
- * next. Its items are the app's rows, committed with its result and the weight rows it read.
+ * next. It reads its feed's items so far beside the weight, as each turn of a conversation reads its thread, and counts
+ * them. Its items are the app's rows, committed with its result and the rows it read: each a reference to a row its
+ * root records once, so the feed's items, which every later page reads again, are stored once each.
  */
 const Page = step(
 	"Page",
@@ -99,9 +106,30 @@ const Page = step(
 		input: PageInput,
 		output: PageRead,
 		error: Schema.Never,
-		reads: {
-			weights: rows(Weight, ["feed"], (page: typeof PageInput.Type) => ({ feed: page.feed }))
-		},
+		reads: reads(
+			(loader: typeof Loader) =>
+				query(loader).reads({
+					weights: query(loader).rule((r) => {
+						const { feed, factor } = v(Weight, "weight")
+						return r
+							.match(Weight, { feed, factor })
+							.where(r.eq(feed, r.param("feed", Weight.fields.feed)))
+							.find({ feed, factor })
+					}),
+					earlier: query(loader).rule((r) => {
+						const { feed, seq, n } = v(Item, "item")
+						return r
+							.match(Item, { feed, seq, n })
+							.where(r.eq(feed, r.param("feed", Item.fields.feed)))
+							.find({ feed, seq, n })
+					})
+				}),
+			{
+				weights: Schema.Struct({ feed: Feed, factor: Schema.BigInt }),
+				earlier: Schema.Struct({ feed: Feed, seq: Schema.BigInt, n: Schema.BigInt })
+			},
+			(page: typeof PageInput.Type) => ({ "weights.feed": page.feed, "earlier.feed": page.feed })
+		),
 		awaits: [],
 		uses: [],
 		retry: attempts(3),
@@ -109,13 +137,14 @@ const Page = step(
 		due: atSpawn,
 		writes: writes({ insert: [Item], put: [], delete: [] })
 	},
-	(page, { weights }) => {
+	(page, { weights, earlier }) => {
 		const factor = Arr.reduce(weights, 0n, (sum, w) => sum + w.factor)
 		const items = (page.seq + 1n) * (factor > 0n ? factor : 1n)
 		return Effect.succeed({
 			output: {
 				seq: page.seq,
 				items,
+				earlier: BigInt(earlier.length),
 				next: page.seq + 1n < page.pages ? Option.some(`after-${page.seq}`) : Option.none<string>()
 			},
 			writes: {
@@ -242,7 +271,7 @@ const Square = step(
 		input: Schema.Struct({ batch: Schema.String, n: Schema.BigInt }),
 		output: Schema.Struct({ square: Schema.BigInt }),
 		error: Schema.Never,
-		reads: {},
+		reads: noReads,
 		awaits: [],
 		uses: [pool],
 		retry: attempts(3),
@@ -330,7 +359,7 @@ const Copy = step(
 		input: SyncInput,
 		output: Schema.Struct({ run: Schema.BigInt }),
 		error: Schema.Never,
-		reads: {},
+		reads: noReads,
 		awaits: [],
 		uses: [],
 		retry: attempts(3),
@@ -377,7 +406,7 @@ const Build = step(
 		input: Schema.Struct({ build: Schema.BigInt }),
 		output: Schema.Struct({ build: Schema.BigInt }),
 		error: Schema.Never,
-		reads: {},
+		reads: noReads,
 		awaits: [],
 		uses: [],
 		retry: attempts(3),
@@ -450,7 +479,7 @@ const Steadfast = step(
 		input: Attempted,
 		output: Attempted,
 		error: Schema.Never,
-		reads: {},
+		reads: noReads,
 		awaits: [],
 		uses: [],
 		retry: never,
@@ -468,7 +497,7 @@ const Brittle = step(
 		input: Attempted,
 		output: Attempted,
 		error: Schema.Never,
-		reads: {},
+		reads: noReads,
 		awaits: [],
 		uses: [],
 		retry: attempts(2),
@@ -518,7 +547,7 @@ const Polite = step(
 		input: Attempted,
 		output: Attempted,
 		error: Schema.Never,
-		reads: {},
+		reads: noReads,
 		awaits: [],
 		uses: [],
 		retry: attempts(1),
@@ -585,18 +614,57 @@ export const retry = flow("Retry", {
 	edges: []
 })
 
+/** How near a passage must be: the nearest one found, or one within a radius. */
+const Mode = Schema.TaggedUnion({ Nearest: {}, Within: { radius: Schema.Finite } })
+
 /**
- * An assignment's question: a learner, a topic, the question it missed, whose stored embedding its passages are ranked
- * by, passages to pass over beside those the learner has seen, and how near a passage must be: the nearest one found,
- * or one within a radius.
+ * An assignment's question: a learner, a topic, the question it missed as its embedding's components, which its first
+ * step embeds, passages to pass over beside those the learner has seen, and how near a passage must be.
  */
 const Probe = Schema.Struct({
 	learner: Schema.String,
 	topic: Schema.String,
-	missed: Schema.String,
+	near: Schema.Array(Schema.Finite),
 	exclude: Schema.Array(Schema.String),
-	mode: Schema.TaggedUnion({ Nearest: {}, Within: { radius: Schema.Finite } })
+	mode: Mode
 })
+
+/** A question embedded: the vector its passages are ranked by, which its embedding's step computed. */
+const Embedded = Schema.Struct({ query: vectorOf(embeddingDimensions) })
+
+/** What a decision takes: the probe's learner, topic, passes and mode, and the query vector the step before it made. */
+const Question = Schema.Struct({
+	learner: Schema.String,
+	topic: Schema.String,
+	query: vectorOf(embeddingDimensions),
+	exclude: Schema.Array(Schema.String),
+	mode: Mode
+})
+
+/**
+ * Embeds an assignment's question, as a model's embedding call would: its body computes the query vector, which its
+ * edge carries to the decision, whose search ranks by it.
+ */
+const Embed = step(
+	"Embed",
+	{
+		input: Probe,
+		output: Embedded,
+		error: Schema.Never,
+		reads: noReads,
+		awaits: [],
+		uses: [],
+		retry: attempts(3),
+		waits: 0,
+		due: atSpawn,
+		writes: writesNothing
+	},
+	(probe) =>
+		Effect.succeed({
+			output: { query: Vector.make(Float32Array.from(probe.near), embeddingDimensions) },
+			writes: { insert: {}, put: {}, delete: {} }
+		})
+)
 
 /**
  * A decision, the shape of a model's structured answer: what it serves (a passage at its distance, or rest), every
@@ -655,23 +723,50 @@ const decide = (
 const Decide = step(
 	"Decide",
 	{
-		input: Probe,
+		input: Question,
 		output: Decision,
 		error: Schema.Never,
-		reads: {
-			nearest: nearest(
-				Passage,
-				"embedding",
-				assignedAmong,
-				["topic"],
-				anchor(Missed, "embedding"),
-				(probe: typeof Probe.Type) => ({
-					topic: probe.topic,
-					anchor: { question: probe.missed }
-				})
-			),
-			seen: rows(Seen, ["learner"], (probe: typeof Probe.Type) => ({ learner: probe.learner }))
-		},
+		reads: reads(
+			(loader: typeof Loader) =>
+				query(loader).reads({
+					nearest: query(loader)
+						.rule((r) => {
+							const { passage, topic, embedding } = v(Passage, "passage")
+							return r
+								.match(Passage, { passage, topic, embedding })
+								.where(r.eq(topic, r.param("topic", Passage.fields.topic)))
+								.find({
+									passage,
+									topic,
+									distance: Compute.cosineDistance(
+										embedding,
+										r.param("query", Passage.fields.embedding)
+									)
+								})
+						})
+						.approximateNearest({ by: "distance", take: assignedAmong }),
+					seen: query(loader).rule((r) => {
+						const { learner, passage } = v(Seen, "seen")
+						return r
+							.match(Seen, { learner, passage })
+							.where(r.eq(learner, r.param("learner", Seen.fields.learner)))
+							.find({ learner, passage })
+					})
+				}),
+			{
+				nearest: Schema.Struct({
+					passage: Schema.String,
+					topic: Schema.String,
+					distance: Schema.Finite
+				}),
+				seen: Schema.Struct({ learner: Schema.String, passage: Schema.String })
+			},
+			(question: typeof Question.Type) => ({
+				"nearest.query": question.query,
+				"nearest.topic": question.topic,
+				"seen.learner": question.learner
+			})
+		),
 		awaits: [],
 		uses: [],
 		retry: attempts(3),
@@ -679,11 +774,11 @@ const Decide = step(
 		due: atSpawn,
 		writes: writes({ insert: [Assigned], put: [], delete: [] })
 	},
-	(probe, found) => {
+	(question, found) => {
 		const decision = decide(
-			probe.mode,
+			question.mode,
 			found.nearest,
-			new Set([...Arr.map(found.seen, (row) => row.passage), ...probe.exclude])
+			new Set([...Arr.map(found.seen, (row) => row.passage), ...question.exclude])
 		)
 		return Effect.succeed({
 			output: decision,
@@ -691,7 +786,7 @@ const Decide = step(
 				insert: {
 					Assigned:
 						decision.stage._tag === "Serve"
-							? [{ learner: probe.learner, passage: decision.stage.passage }]
+							? [{ learner: question.learner, passage: decision.stage.passage }]
 							: []
 				},
 				put: {},
@@ -701,15 +796,26 @@ const Decide = step(
 	}
 )
 
+/** The decision after its question is embedded, from the probe and the query vector the embedding computed. */
+const Asked = edge("Asked", Embed, Decide, (probe, embedded) => [
+	{
+		learner: probe.learner,
+		topic: probe.topic,
+		query: embedded.query,
+		exclude: probe.exclude,
+		mode: probe.mode
+	}
+])
+
 /**
- * An operator's assignment of one learner, its one step the decision; its finish reads the decision back from the
- * graph and concludes the learner's assignment with what it served and how many passages it weighed.
+ * An operator's assignment of one learner: its question embedded, then the decision; its finish reads the decision
+ * back from the graph and concludes the learner's assignment with what it served and how many passages it weighed.
  */
 const Assignment = root("Assignment", {
 	trigger: operator,
 	input: Probe,
-	children: [Decide],
-	start: (probe) => [Decide.of(probe)],
+	children: [Embed],
+	start: (probe) => [Embed.of(probe)],
 	exclusive: shared,
 	window: always,
 	precondition: unconditional,
@@ -751,8 +857,8 @@ const Assignment = root("Assignment", {
 
 export const assign = flow("Assign", {
 	writes: loader,
-	kinds: [Decide, Assignment],
-	edges: []
+	kinds: [Embed, Decide, Assignment],
+	edges: [Asked]
 })
 
 /**
@@ -800,7 +906,7 @@ const Analyze = step(
 		input: QuestionInput,
 		output: Schema.Struct({ score: Schema.BigInt }),
 		error: Schema.Never,
-		reads: {},
+		reads: noReads,
 		awaits: [],
 		uses: [anthropic],
 		retry: attempts(3),
@@ -859,7 +965,7 @@ const Gather = step(
 		input: ReviewInput,
 		output: Schema.Struct({ groups: Schema.BigInt }),
 		error: Schema.Never,
-		reads: {},
+		reads: noReads,
 		awaits: [awaitFact(Delivered, { attempt: "review" })],
 		uses: [],
 		retry: attempts(3),
@@ -891,7 +997,7 @@ const Save = step(
 		}),
 		output: Schema.Struct({ total: Schema.BigInt }),
 		error: Schema.Never,
-		reads: {},
+		reads: noReads,
 		awaits: [],
 		uses: [],
 		retry: attempts(3),
@@ -977,7 +1083,7 @@ const Deliver = step(
 		input: Graded,
 		output: Graded,
 		error: Schema.Never,
-		reads: {},
+		reads: noReads,
 		awaits: [],
 		uses: [],
 		retry: attempts(3),
@@ -1029,7 +1135,7 @@ const Chime = step(
 		input: Hour,
 		output: Hour,
 		error: Schema.Never,
-		reads: {},
+		reads: noReads,
 		awaits: [],
 		uses: [],
 		retry: attempts(3),

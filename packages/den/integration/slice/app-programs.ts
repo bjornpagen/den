@@ -2,10 +2,12 @@ import { ChangeSet, clocked, query, role, v, workload } from "@bjornpagen/grizzl
 import { App } from "#integration/slice/app.ts"
 import {
 	AssignDecideNearestRead,
+	AssignDecideNearestRow,
 	AssignDecideOutput,
 	AssignDecideOutputStageServe,
 	AssignDecideOutputWeighed,
 	AssignDecideSeenRead,
+	AssignDecideSeenRow,
 	AssignResult,
 	AssignStep
 } from "#integration/slice/generated/assign.fragment.ts"
@@ -21,6 +23,8 @@ import {
 	ChainPageOutput,
 	ChainPageOutputNext,
 	ChainPageWeightsRead,
+	ChainPageEarlierRow,
+	ChainPageWeightsRow,
 	ChainResult,
 	ChainRoot,
 	ChainScope,
@@ -73,7 +77,6 @@ import {
 	Cursor,
 	Heard,
 	Item,
-	Missed,
 	Order,
 	Passage,
 	Reviewed,
@@ -105,10 +108,12 @@ export const Auditor = role(
 	{
 		Assigned,
 		AssignDecideNearestRead,
+		AssignDecideNearestRow,
 		AssignDecideOutput,
 		AssignDecideOutputStageServe,
 		AssignDecideOutputWeighed,
 		AssignDecideSeenRead,
+		AssignDecideSeenRow,
 		AssignResult,
 		AssignStep,
 		Audit,
@@ -126,6 +131,8 @@ export const Auditor = role(
 		ChainPageOutput,
 		ChainPageOutputNext,
 		ChainPageWeightsRead,
+		ChainPageEarlierRow,
+		ChainPageWeightsRow,
 		ChainResult,
 		ChainRoot,
 		ChainScope,
@@ -175,20 +182,30 @@ export const Auditor = role(
 /** Every page den read, as the typed row of its output, with the scope it ran in. */
 const pages = query(Auditor).rule((r) => {
 	const { step, scope } = v(ChainStep, "step")
-	const { seq, items } = v(ChainPageOutput, "output")
+	const { seq, items, earlier } = v(ChainPageOutput, "output")
 	return r
 		.match(ChainStep, { step, kind: "Page", scope })
-		.match(ChainPageOutput, { step, seq, items })
+		.match(ChainPageOutput, { step, seq, items, earlier })
 		.match(ChainResult, { step, outcome: "done" })
-		.find({ step, scope, seq, items })
+		.find({ step, scope, seq, items, earlier })
 })
 
-/** The weight rows each page read before its body ran, recorded with its result. */
+/** The weight rows each page read before its body ran, recorded with its result: each reference with its row. */
 const pageReads = query(Auditor).rule((r) => {
-	const { step, ordinal, feed, factor } = v(ChainPageWeightsRead, "read")
+	const { step, ordinal, digest, root } = v(ChainPageWeightsRead, "read")
+	const { feed, factor } = v(ChainPageWeightsRow, "row")
 	return r
-		.match(ChainPageWeightsRead, { step, ordinal, feed, factor })
+		.match(ChainPageWeightsRead, { step, ordinal, digest, root })
+		.match(ChainPageWeightsRow, { digest, root, feed, factor })
 		.find({ step, ordinal, feed, factor })
+})
+
+/** The items the chain's pages read of their feed before them, each recorded once per root. */
+const earlierRows = query(Auditor).rule((r) => {
+	const { digest, root, feed, seq, n } = v(ChainPageEarlierRow, "row")
+	return r
+		.match(ChainPageEarlierRow, { digest, root, feed, seq, n })
+		.find({ digest, root, feed, seq, n })
 })
 
 const weights = query(Auditor).rule((r) => {
@@ -359,17 +376,21 @@ const assignResults = query(Auditor).rule((r) => {
 
 /** The passages each decision's nearest read found, recorded with its result: each one's ordinal and distance. */
 const nearestReads = query(Auditor).rule((r) => {
-	const { step, ordinal, passage, topic, distance } = v(AssignDecideNearestRead, "read")
+	const { step, ordinal, digest, root } = v(AssignDecideNearestRead, "read")
+	const { passage, topic, distance } = v(AssignDecideNearestRow, "row")
 	return r
-		.match(AssignDecideNearestRead, { step, ordinal, passage, topic, distance })
+		.match(AssignDecideNearestRead, { step, ordinal, digest, root })
+		.match(AssignDecideNearestRow, { digest, root, passage, topic, distance })
 		.find({ step, ordinal, passage, topic, distance })
 })
 
 /** The seen passages each decision read, recorded with its result. */
 const seenReads = query(Auditor).rule((r) => {
-	const { step, ordinal, learner, passage } = v(AssignDecideSeenRead, "read")
+	const { step, ordinal, digest, root } = v(AssignDecideSeenRead, "read")
+	const { learner, passage } = v(AssignDecideSeenRow, "row")
 	return r
-		.match(AssignDecideSeenRead, { step, ordinal, learner, passage })
+		.match(AssignDecideSeenRead, { step, ordinal, digest, root })
+		.match(AssignDecideSeenRow, { digest, root, learner, passage })
 		.find({ step, ordinal, learner, passage })
 })
 
@@ -545,6 +566,7 @@ export const auditWorkload = workload(Auditor, {
 	audited,
 	pages,
 	pageReads,
+	earlierRows,
 	weights,
 	items,
 	cursors,
@@ -596,6 +618,5 @@ export const appWorkload = workload(Loader, {
 	),
 	weigh: ChangeSet.empty(Loader).insert(App.relations.Weight, []),
 	place: ChangeSet.empty(Loader).insert(Passage, []),
-	miss: ChangeSet.empty(Loader).insert(Missed, []),
 	see: ChangeSet.empty(Loader).insert(Seen, [])
 })

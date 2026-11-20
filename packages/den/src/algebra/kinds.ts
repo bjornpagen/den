@@ -1,4 +1,12 @@
-import type { AnyRelation, Fact, Vector, Addition } from "@bjornpagen/grizzle"
+import type {
+	AnyRelation,
+	Fact,
+	Addition,
+	HeadOf,
+	ParamArg,
+	ParamsOf,
+	Vector
+} from "@bjornpagen/grizzle"
 import { regex } from "arkregex"
 import {
 	Array as Arr,
@@ -6,8 +14,9 @@ import {
 	Data,
 	Duration,
 	type Effect,
+	Option,
 	Record as Rec,
-	type Schema
+	Schema
 } from "effect"
 import type { Later } from "#algebra/later.ts"
 
@@ -134,8 +143,33 @@ export const utcHours = (opens: number, closes: number): Window => {
 	return { kind: "utcHours", opens, closes }
 }
 
+/** A vector's schema: grizzle's Vector of its dimensions, a Float32Array. */
+export type VectorSchema<N extends number = number> = Schema.declare<Vector<N>>
+
+/** The dimensions of each vector schema `vectorOf` made, read by lowering: a schema value holds no number of its own. */
+const vectorDimensions = new WeakMap<Schema.Top, number>()
+
 /**
- * A column's schema: text, a bigint, a finite number, a boolean, a literal union of texts, or a brand of one.
+ * A vector of `dimensions` components, which lowers to grizzle's `pg.vector(dimensions)`: a step's input or output may
+ * hold one, so a vector a body computed (a query's embedding) reaches the next step on an edge and its reads as a
+ * parameter of their query. A read's record holds none: a body never sees the vectors a search ranked by.
+ */
+export const vectorOf = <const N extends number>(dimensions: N): VectorSchema<N> => {
+	positive("vector", "dimensions", dimensions)
+	const schema = Schema.declare(
+		(value: unknown): value is Vector<N> =>
+			value instanceof Float32Array && value.length === dimensions
+	)
+	vectorDimensions.set(schema, dimensions)
+	return schema
+}
+
+/** The dimensions of a schema `vectorOf` made, none for any other schema. */
+export const dimensionsOf = (schema: Schema.Top): Option.Option<number> =>
+	Option.fromNullishOr(vectorDimensions.get(schema))
+
+/**
+ * A column's schema: text, a bigint, a finite number, a boolean, a literal union of texts, a brand of one, or a vector.
  * A number is `Schema.Finite`, which lowers to double precision under a row check that holds it finite.
  */
 export type ColumnSchema =
@@ -146,6 +180,7 @@ export type ColumnSchema =
 	| Schema.Literal<string>
 	| Schema.Literals<ReadonlyArray<string>>
 	| Schema.brand<Schema.String | Schema.BigInt | Schema.Finite | Schema.Boolean, string>
+	| VectorSchema
 
 /** The fields of a struct an array holds or a tagged union's variant carries: columns. */
 export type ColumnFields = { readonly [field: string]: ColumnSchema }
@@ -227,148 +262,92 @@ export const writesNothing: WritesDeclaration<readonly [], readonly [], readonly
 /** A read's name, which lowers into its record's relation name: camelCase, letters and digits. */
 const READ = regex("^[a-z][A-Za-z0-9]*$")
 
-/** The fields of `R` that hold a vector, the fields a nearest read ranks by. */
-export type VectorFieldOf<R extends AnyRelation> = {
-	readonly [K in keyof Fact<R>]: Fact<R>[K] extends Vector ? K : never
-}[keyof Fact<R>] &
-	string
+/**
+ * What a read records of each row it found, and what a body sees of it: a flat struct of columns. Lowering refuses a
+ * record with a field no column schema states.
+ */
+export type RecordSchema = Schema.Struct<ColumnFields>
+
+/** A step's records, by the name of the query whose rows each records. */
+export type Records = { readonly [name: string]: RecordSchema }
 
 /**
- * A step's declared reads, all taken in one statement after the claim and before the body (grizzle's `reads`), so they
- * read one snapshot of the database, and recorded with its result row by row, so every input a step saw is a fact of
- * the graph, describing one moment (W1's fingerprint, W5's presence, W7's intents, the assignment engine's ledger rows
- * and nearest content). Two forms:
- *
- * - `rows`: the rows of one of the app's relations whose fields `by` equal what `params` takes from the step's input;
- * - `nearest`: at most `take` rows of one of the app's relations whose fields `by` equal what `params` takes, nearest
- *   by the cosine distance of their field `vector` to the stored vector of an anchor, the row of the anchor relation
- *   whose whole key `params` gives under `anchor` (the engine's missed question), through grizzle's
- *   `approximateNearest` over pgvector's HNSW index. Each row arrives without the vector it was ranked by and with its
- *   `distance`, and that is what is recorded: the neighbours and how near each was, never their vectors. An anchor key
- *   that holds no row finds none.
- *
- * Which rows a nearest read finds depends on the index and the database owner's pgvector settings as well as on the
- * facts (grizzle's README, "Every answer is a function of the facts"), so the record, not a second search, is what the
- * step saw. A read that depends on what a body computed becomes its own step, joined by an edge.
+ * A step's declared reads: one grizzle query over the flow's app role, `query(W).reads({ name: query, ... })`, a record
+ * of named queries, any a grizzle query can state (a range or a set of values, an exact order by a computed distance
+ * and a take, `approximateNearest` from a parameter's vector or a stored row's, a hybrid of searches), whose parameters
+ * `params` takes from the step's input, a vector a body before it computed among them. They are taken in one statement
+ * after the claim and before the body, deferrable, so they read one snapshot and what they record describes one moment
+ * of the database (W1's fingerprint, W5's presence, W7's intents, the assignment engine's ledger rows and nearest
+ * content, DCAN's catalog search and its thread); each named query's rows are recorded with the step's result by its
+ * record, so every input a step saw is a fact of the graph, and the body sees each name's rows as its record states
+ * them. A row is recorded once per root, by the digest of its record, and each step's record of it is a reference: a
+ * chain of turns that reads a thread as it grows stores each of its rows once, not once per turn. Which rows an
+ * approximate search finds depends on the index and the database owner's pgvector settings as well as on the facts
+ * (grizzle's README, "Every answer is a function of the facts"), so the record, not a second search, is what the step
+ * saw. The query is a function of the app role, which a flow declared before the schema its fragment is spread into
+ * cannot hold.
  */
-export type Read<I = never> =
+export interface Reads<W, Q, I, R extends Records> {
+	readonly kind: "query"
+	readonly query: (writer: W) => Q
+	readonly records: R
+	readonly params: (input: I) => ParamArg<ParamsOf<Q>>
+}
+
+/** A step's reads over its input `I`, whatever role, query and records they name. */
+export type ReadsOver<I> =
+	| { readonly kind: "none" }
 	| {
-			readonly kind: "rows"
-			readonly relation: AnyRelation
-			readonly by: ReadonlyArray<string>
-			readonly params: (input: I) => Readonly<Record<string, unknown>>
+			readonly kind: "query"
+			readonly query: (writer: never) => unknown
+			readonly records: Records
+			readonly params: (input: I) => unknown
 	  }
+
+/** Any step's reads, as a flow and lowering read them. */
+export type AnyReads =
+	| { readonly kind: "none" }
 	| {
-			readonly kind: "nearest"
-			readonly relation: AnyRelation
-			readonly vector: string
-			readonly take: number
-			readonly by: ReadonlyArray<string>
-			readonly anchor: { readonly relation: AnyRelation; readonly vector: string }
-			readonly params: (input: I) => Readonly<Record<string, unknown>>
+			readonly kind: "query"
+			readonly query: (writer: never) => unknown
+			readonly records: Records
+			readonly params: (input: never) => unknown
 	  }
 
-/** A step's declared reads, by name: none, one, or several, taken together before the body runs and recorded. */
-export type Reads<I = never> = { readonly [name: string]: Read<I> }
-
-/** A declared read of `relation`'s rows whose fields `by` hold what `params` gives. */
-export interface RowsRead<R extends AnyRelation, I, By extends keyof Fact<R> & string> {
-	readonly kind: "rows"
-	readonly relation: R
-	readonly by: ReadonlyArray<By>
-	readonly params: (input: I) => Pick<Fact<R>, By>
-}
-
-/** The rows of `relation` whose fields `by` hold the values `params` takes from the input. */
-export const rows = <R extends AnyRelation, const By extends keyof Fact<R> & string, I>(
-	relation: R,
-	by: ReadonlyArray<By>,
-	params: (input: I) => Pick<Fact<R>, By>
-): RowsRead<R, I, By> => ({ kind: "rows", relation, by, params })
-
-/** A relation's whole key, as a fact's fields: what names one of its rows. */
-export type KeyOf<A extends AnyRelation> = Pick<Fact<A>, A["primaryKey"][number] & keyof Fact<A>>
-
-/** The stored vector a nearest read ranks by: the field `vector` of the row of `relation` its whole key names. */
-export interface Anchor<A extends AnyRelation, AV extends VectorFieldOf<A>> {
-	readonly relation: A
-	readonly vector: AV
-}
-
-/** The anchor of a nearest read: the field `vector` of one row of `relation`, named by its whole key. */
-export const anchor = <A extends AnyRelation, const AV extends VectorFieldOf<A>>(
-	relation: A,
-	vector: AV
-): Anchor<A, AV> => ({ relation, vector })
-
-/** What a nearest read takes from the input: the fields it filters by, and the anchor's whole key. */
-export type NearParams<R extends AnyRelation, By extends string, A extends AnyRelation> = Pick<
-	Fact<R>,
-	By & keyof Fact<R>
-> & { readonly anchor: KeyOf<A> }
-
-/** A declared read of at most `take` rows of `relation` nearest an anchor's vector by `vector`, among those `by` holds. */
-export interface NearestRead<
-	R extends AnyRelation,
-	I,
-	V extends VectorFieldOf<R>,
-	By extends keyof Fact<R> & string,
-	Take extends number,
-	A extends AnyRelation,
-	AV extends VectorFieldOf<A>
-> {
-	readonly kind: "nearest"
-	readonly relation: R
-	readonly vector: V
-	readonly take: Take
-	readonly by: ReadonlyArray<By>
-	readonly anchor: Anchor<A, AV>
-	readonly params: (input: I) => NearParams<R, By, A>
-}
+/** A step that reads nothing before its body. */
+export const noReads: { readonly kind: "none" } = { kind: "none" }
 
 /**
- * At most `take` rows of `relation`, among those whose fields `by` hold what `params` gives, nearest by the cosine
- * distance of their vector field `ranked` to the vector of the anchor's row its whole key, `params`' `anchor`, names.
- * `take` is the result's bound, the caller's number with its evidence; den refuses one that is no positive integer.
+ * The records a reads query's rows fit: one record per named query, each a record whose type holds that query's rows,
+ * and none for a name the query does not read.
  */
-export const nearest = <
-	R extends AnyRelation,
-	const V extends VectorFieldOf<R>,
-	const Take extends number,
-	const By extends Exclude<keyof Fact<R> & string, V | "anchor">,
-	A extends AnyRelation,
-	const AV extends VectorFieldOf<A>,
-	I
->(
-	relation: R,
-	ranked: V,
-	take: Take,
-	by: ReadonlyArray<By>,
-	near: Anchor<A, AV>,
-	params: (input: I) => NearParams<R, By, A>
-): NearestRead<R, I, V, By, Take, A, AV> => {
-	positive(`nearest ${relation.name}`, "take", take)
-	return { kind: "nearest", relation, vector: ranked, take, by, anchor: near, params }
-}
+type RecordsOf<H, R> = {
+	readonly [K in keyof H]: K extends keyof R
+		? R[K] extends { readonly Type: infer T }
+			? H[K] extends ReadonlyArray<T>
+				? R[K]
+				: never
+			: never
+		: RecordSchema
+} & { readonly [K in Exclude<keyof R, keyof H>]: never }
 
-/** What a nearest read finds of one row: the row but the vector it was ranked by, and its distance to the query. */
-export type Neighbour<R extends AnyRelation, V extends string> = Omit<Fact<R>, V> & {
-	readonly distance: number
-}
+/**
+ * A step's reads: the query `query` makes of the flow's app role, the record of each of its named queries' rows, and its
+ * parameters from the step's input.
+ */
+export const reads = <W, Q, const R extends Records, I>(
+	query: (writer: W) => Q,
+	records: R & RecordsOf<HeadOf<Q>, R>,
+	params: (input: I) => ParamArg<ParamsOf<Q>>
+): Reads<W, Q, I, R> => ({ kind: "query", query, records, params })
 
-/** What a body sees of one declared read: the rows it found, or the neighbours a nearest read found. */
-export type FoundOf<D> = D extends {
-	readonly kind: "nearest"
-	readonly relation: infer R extends AnyRelation
-	readonly vector: infer V extends string
+/** What a body sees of its declared reads: each named query's rows, as its record states them. */
+export type Found<D> = D extends {
+	readonly kind: "query"
+	readonly records: infer R extends Records
 }
-	? ReadonlyArray<Neighbour<R, V>>
-	: D extends { readonly kind: "rows"; readonly relation: infer R extends AnyRelation }
-		? ReadonlyArray<Fact<R>>
-		: never
-
-/** What a body sees of its declared reads, by name. */
-export type Found<D> = { readonly [K in keyof D]: FoundOf<D[K]> }
+	? { readonly [K in keyof R]: ReadonlyArray<R[K]["Type"]> }
+	: { readonly [name: string]: never }
 
 /** Refuses a read's name den cannot lower into its record's relation name. */
 export const readNamed = (declaration: string, name: string): void => {
@@ -449,7 +428,7 @@ export interface StepShape<
 	IS extends Stored,
 	OS extends Stored,
 	ES extends ErrorSchema,
-	D extends Reads<IS["Type"]>,
+	D extends ReadsOver<IS["Type"]>,
 	W extends WritesDeclaration
 > {
 	readonly input: IS
@@ -480,7 +459,7 @@ export interface StepKind<
 	IS extends Stored,
 	OS extends Stored,
 	ES extends ErrorSchema,
-	D extends Reads<IS["Type"]>,
+	D extends ReadsOver<IS["Type"]>,
 	W extends WritesDeclaration,
 	R
 > extends StepShape<IS, OS, ES, D, W> {
@@ -497,7 +476,7 @@ export interface AnyStepKind {
 	readonly input: Stored
 	readonly output: Stored
 	readonly error: ErrorSchema
-	readonly reads: Reads
+	readonly reads: AnyReads
 	readonly awaits: ReadonlyArray<AwaitedFact>
 	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
@@ -511,7 +490,7 @@ export const step = <
 	IS extends Stored,
 	OS extends Stored,
 	ES extends ErrorSchema,
-	D extends Reads<IS["Type"]>,
+	D extends ReadsOver<IS["Type"]>,
 	W extends WritesDeclaration,
 	R
 >(
@@ -520,7 +499,9 @@ export const step = <
 	body: Body<IS["Type"], Found<D>, OS["Type"], ES["Type"], W, R>
 ): StepKind<Name, IS, OS, ES, D, W, R> => {
 	named("step", name)
-	Arr.forEach(Rec.keys(shape.reads), (read) => readNamed(`step ${name}`, read))
+	Arr.forEach(shape.reads.kind === "query" ? Rec.keys(shape.reads.records) : [], (read) =>
+		readNamed(`step ${name}`, read)
+	)
 	nonNegative(`step ${name}`, "waits", shape.waits)
 	return { _tag: "Step", name, ...shape, body, of: spawnOf(name) }
 }

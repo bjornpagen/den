@@ -1,5 +1,7 @@
 CREATE INDEX "__assign_admitted_ix_root_pot3vpqjrt" ON "slice"."assign_admitted" USING btree ("root");
 
+CREATE INDEX "__assign_asked_ix_root_from_tqt7dg3fxl" ON "slice"."assign_asked" USING btree ("root", "from");
+
 CREATE INDEX "__assign_assignment_finish_output_ix_root_t2nmfubzxm" ON "slice"."assign_assignment_finish_output" USING btree ("root");
 
 CREATE INDEX "__assign_assignment_input_ix_root_scope_ndn57wfv5p" ON "slice"."assign_assignment_input" USING btree ("root", "scope");
@@ -11,6 +13,10 @@ CREATE INDEX "__assign_assignment_input_exclude_ix_root_scope_s3ar3mqhyb" ON "sl
 CREATE INDEX "__assign_assignment_input_mode_nearest_ix_root_scope_2jryb7pj2a" ON "slice"."assign_assignment_input_mode_nearest" USING btree ("root", "scope");
 
 CREATE INDEX "__assign_assignment_input_mode_within_ix_root_scope_yleeo72liv" ON "slice"."assign_assignment_input_mode_within" USING btree ("root", "scope");
+
+CREATE INDEX "__assign_assignment_input_near_ix_scope_u_6_ypqf_2_r_jq2z6paeb4" ON "slice"."assign_assignment_input_near" USING btree ("__scope_u6ypqf2r2z", "__pred_ordinal_rdz3ttleig", "__root_yjobx7uyrd");
+
+CREATE INDEX "__assign_assignment_input_near_ix_root_scope_gswnizhczo" ON "slice"."assign_assignment_input_near" USING btree ("root", "scope");
 
 CREATE INDEX "__assign_claim_ix_step_ouvkclqzzd_pred_attempt_x7szewvena" ON "slice"."assign_claim" USING btree ("__step_ouvkclqzzd", "__pred_attempt_dqbvoe7dfs", "__root_yewsvvtcyz");
 
@@ -26,7 +32,11 @@ CREATE INDEX "__assign_decide_input_mode_nearest_ix_root_step_v54e6no7cj" ON "sl
 
 CREATE INDEX "__assign_decide_input_mode_within_ix_root_step_trlkcqxcfp" ON "slice"."assign_decide_input_mode_within" USING btree ("root", "step");
 
+CREATE INDEX "__assign_decide_nearest_read_ix_root_digest_ahoyjoscuz" ON "slice"."assign_decide_nearest_read" USING btree ("root", "digest");
+
 CREATE INDEX "__assign_decide_nearest_read_ix_root_step_4c4574ihrx" ON "slice"."assign_decide_nearest_read" USING btree ("root", "step");
+
+CREATE INDEX "__assign_decide_nearest_row_ix_root_auwnhrklbq" ON "slice"."assign_decide_nearest_row" USING btree ("root");
 
 CREATE INDEX "__assign_decide_output_ix_root_step_uxq3vbvjoa" ON "slice"."assign_decide_output" USING btree ("root", "step");
 
@@ -38,9 +48,29 @@ CREATE INDEX "__assign_decide_output_weighed_ix_step_mjpuijzth_4_6xa7a6vtga" ON 
 
 CREATE INDEX "__assign_decide_output_weighed_ix_root_step_gncwdipl43" ON "slice"."assign_decide_output_weighed" USING btree ("root", "step");
 
+CREATE INDEX "__assign_decide_seen_read_ix_root_digest_m6pnjyf3tl" ON "slice"."assign_decide_seen_read" USING btree ("root", "digest");
+
 CREATE INDEX "__assign_decide_seen_read_ix_root_step_ybtvecx7oy" ON "slice"."assign_decide_seen_read" USING btree ("root", "step");
 
+CREATE INDEX "__assign_decide_seen_row_ix_root_yq77kgv2h4" ON "slice"."assign_decide_seen_row" USING btree ("root");
+
 CREATE INDEX "__assign_done_ix_root_step_edz2spjbbn" ON "slice"."assign_done" USING btree ("root", "step");
+
+CREATE INDEX "__assign_embed_input_ix_root_step_5ltjxo25vr" ON "slice"."assign_embed_input" USING btree ("root", "step");
+
+CREATE INDEX "__assign_embed_input_exclude_ix_step_mjpuijzth_4_mirtepmnac" ON "slice"."assign_embed_input_exclude" USING btree ("__step_mjpuijzth4", "__pred_ordinal_rdz3ttleig", "__root_yjobx7uyrd");
+
+CREATE INDEX "__assign_embed_input_exclude_ix_root_step_hkkmfupglo" ON "slice"."assign_embed_input_exclude" USING btree ("root", "step");
+
+CREATE INDEX "__assign_embed_input_mode_nearest_ix_root_step_nyvoanaxpc" ON "slice"."assign_embed_input_mode_nearest" USING btree ("root", "step");
+
+CREATE INDEX "__assign_embed_input_mode_within_ix_root_step_jaqihe4eqt" ON "slice"."assign_embed_input_mode_within" USING btree ("root", "step");
+
+CREATE INDEX "__assign_embed_input_near_ix_step_mjpuijzth_4_pred_gutp25ese5" ON "slice"."assign_embed_input_near" USING btree ("__step_mjpuijzth4", "__pred_ordinal_rdz3ttleig", "__root_yjobx7uyrd");
+
+CREATE INDEX "__assign_embed_input_near_ix_root_step_lkjh7aey4z" ON "slice"."assign_embed_input_near" USING btree ("root", "step");
+
+CREATE INDEX "__assign_embed_output_ix_root_qha7oj27r7" ON "slice"."assign_embed_output" USING btree ("root");
 
 CREATE INDEX "__assign_ended_ix_root_dw6oimqu3h" ON "slice"."assign_ended" USING btree ("root");
 
@@ -110,6 +140,12 @@ CREATE INDEX "__chain_ordered_finish_output_ix_root_hrdok3djgq" ON "slice"."chai
 
 CREATE INDEX "__chain_ordered_input_ix_root_wmmk2yqn4t" ON "slice"."chain_ordered_input" USING btree ("root");
 
+CREATE INDEX "__chain_page_earlier_read_ix_root_digest_fxiecdnqw4" ON "slice"."chain_page_earlier_read" USING btree ("root", "digest");
+
+CREATE INDEX "__chain_page_earlier_read_ix_root_step_pi6qz5bfaw" ON "slice"."chain_page_earlier_read" USING btree ("root", "step");
+
+CREATE INDEX "__chain_page_earlier_row_ix_root_r5voiiw2rg" ON "slice"."chain_page_earlier_row" USING btree ("root");
+
 CREATE INDEX "__chain_page_input_ix_root_step_25b4lmpnjr" ON "slice"."chain_page_input" USING btree ("root", "step");
 
 CREATE INDEX "__chain_page_input_after_ix_root_hmbetlosxh" ON "slice"."chain_page_input_after" USING btree ("root");
@@ -118,7 +154,11 @@ CREATE INDEX "__chain_page_output_ix_root_g3alpbog4o" ON "slice"."chain_page_out
 
 CREATE INDEX "__chain_page_output_next_ix_root_r662e4fglp" ON "slice"."chain_page_output_next" USING btree ("root");
 
+CREATE INDEX "__chain_page_weights_read_ix_root_digest_75flfwbh4w" ON "slice"."chain_page_weights_read" USING btree ("root", "digest");
+
 CREATE INDEX "__chain_page_weights_read_ix_root_step_qkx2asxvn7" ON "slice"."chain_page_weights_read" USING btree ("root", "step");
+
+CREATE INDEX "__chain_page_weights_row_ix_root_tbrq2r7f3p" ON "slice"."chain_page_weights_row" USING btree ("root");
 
 CREATE INDEX "__chain_paused_ix_target_pred_turn_qryngij_6_c_4_azkairtri3" ON "slice"."chain_paused" USING btree ("target", "__pred_turn_qryngij6c4");
 
@@ -261,6 +301,8 @@ CREATE INDEX "__fan_within_ix_parent_kind_scope_5ywepfmzj2" ON "slice"."fan_with
 CREATE INDEX "__fan_within_ix_root_parent_ivgq62e3yc" ON "slice"."fan_within" USING btree ("root", "parent");
 
 CREATE INDEX "__passage_ix_topic_lzh6djzwn4" ON "slice"."passage" USING btree ("topic");
+
+CREATE INDEX "__passage_ix_embedding_ujugi77ft2" ON "slice"."passage" USING hnsw ("embedding" "vector_ext"."vector_cosine_ops");
 
 CREATE INDEX "__retry_admitted_ix_root_ewgjxicsia" ON "slice"."retry_admitted" USING btree ("root");
 

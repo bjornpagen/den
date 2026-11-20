@@ -11,10 +11,12 @@ import {
 	signals
 } from "@bjornpagen/den/runtime/bind"
 import {
+	edgeStep,
 	atOnce,
 	type Delay,
 	finishStep,
 	rootScope,
+	rowDigest,
 	type ScopeKey,
 	startedStep,
 	type StepKey
@@ -44,10 +46,16 @@ import type {
 	AssignAdmitted,
 	AssignFinish,
 	AssignStartStep,
+	AssignEmbedInput,
+	AssignEmbedInputNear,
+	AssignEmbedInputExclude,
+	AssignEmbedInputModeNearest,
+	AssignEmbedInputModeWithin,
 	AssignDecideInput,
 	AssignDecideInputExclude,
 	AssignDecideInputModeNearest,
 	AssignDecideInputModeWithin,
+	AssignAsked,
 	AssignKind,
 	AssignRootKind
 } from "#integration/slice/generated/assign.fragment.ts"
@@ -85,12 +93,18 @@ interface Rows {
 	readonly AssignAdmitted: ReadonlyArray<Addition<typeof AssignAdmitted>>
 	readonly AssignFinish: ReadonlyArray<Addition<typeof AssignFinish>>
 	readonly AssignStartStep: ReadonlyArray<Addition<typeof AssignStartStep>>
+	readonly AssignEmbedInput: ReadonlyArray<Addition<typeof AssignEmbedInput>>
+	readonly AssignEmbedInputNear: ReadonlyArray<Addition<typeof AssignEmbedInputNear>>
+	readonly AssignEmbedInputExclude: ReadonlyArray<Addition<typeof AssignEmbedInputExclude>>
+	readonly AssignEmbedInputModeNearest: ReadonlyArray<Addition<typeof AssignEmbedInputModeNearest>>
+	readonly AssignEmbedInputModeWithin: ReadonlyArray<Addition<typeof AssignEmbedInputModeWithin>>
 	readonly AssignDecideInput: ReadonlyArray<Addition<typeof AssignDecideInput>>
 	readonly AssignDecideInputExclude: ReadonlyArray<Addition<typeof AssignDecideInputExclude>>
 	readonly AssignDecideInputModeNearest: ReadonlyArray<
 		Addition<typeof AssignDecideInputModeNearest>
 	>
 	readonly AssignDecideInputModeWithin: ReadonlyArray<Addition<typeof AssignDecideInputModeWithin>>
+	readonly AssignAsked: ReadonlyArray<Addition<typeof AssignAsked>>
 }
 
 /** A step a call spawns, as the call names it: the database writes its due instant, its delay after the call's reading. */
@@ -122,10 +136,16 @@ export const assignLedger = (h: AssignHandles) => {
 		AssignAdmitted: [],
 		AssignFinish: [],
 		AssignStartStep: [],
+		AssignEmbedInput: [],
+		AssignEmbedInputNear: [],
+		AssignEmbedInputExclude: [],
+		AssignEmbedInputModeNearest: [],
+		AssignEmbedInputModeWithin: [],
 		AssignDecideInput: [],
 		AssignDecideInputExclude: [],
 		AssignDecideInputModeNearest: [],
-		AssignDecideInputModeWithin: []
+		AssignDecideInputModeWithin: [],
+		AssignAsked: []
 	}
 	const nothingGrown: Grown = { rows: noRows, steps: [], spawned: { steps: [], finishes: [] } }
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
@@ -136,6 +156,20 @@ export const assignLedger = (h: AssignHandles) => {
 			AssignAdmitted: [...a.rows.AssignAdmitted, ...b.rows.AssignAdmitted],
 			AssignFinish: [...a.rows.AssignFinish, ...b.rows.AssignFinish],
 			AssignStartStep: [...a.rows.AssignStartStep, ...b.rows.AssignStartStep],
+			AssignEmbedInput: [...a.rows.AssignEmbedInput, ...b.rows.AssignEmbedInput],
+			AssignEmbedInputNear: [...a.rows.AssignEmbedInputNear, ...b.rows.AssignEmbedInputNear],
+			AssignEmbedInputExclude: [
+				...a.rows.AssignEmbedInputExclude,
+				...b.rows.AssignEmbedInputExclude
+			],
+			AssignEmbedInputModeNearest: [
+				...a.rows.AssignEmbedInputModeNearest,
+				...b.rows.AssignEmbedInputModeNearest
+			],
+			AssignEmbedInputModeWithin: [
+				...a.rows.AssignEmbedInputModeWithin,
+				...b.rows.AssignEmbedInputModeWithin
+			],
 			AssignDecideInput: [...a.rows.AssignDecideInput, ...b.rows.AssignDecideInput],
 			AssignDecideInputExclude: [
 				...a.rows.AssignDecideInputExclude,
@@ -148,7 +182,8 @@ export const assignLedger = (h: AssignHandles) => {
 			AssignDecideInputModeWithin: [
 				...a.rows.AssignDecideInputModeWithin,
 				...b.rows.AssignDecideInputModeWithin
-			]
+			],
+			AssignAsked: [...a.rows.AssignAsked, ...b.rows.AssignAsked]
 		},
 		steps: [...a.steps, ...b.steps],
 		spawned: {
@@ -159,50 +194,102 @@ export const assignLedger = (h: AssignHandles) => {
 	const startAssignment = (
 		root: ScopeKey,
 		scope: ScopeKey,
-		input: Parameters<(typeof assign.kinds)[1]["start"]>[0]
+		input: Parameters<(typeof assign.kinds)[2]["start"]>[0]
 	): Effect.Effect<Grown, never, Digest.Digest> =>
 		Effect.map(
 			Effect.forEach(
-				assign.kinds[1].start(input),
+				assign.kinds[2].start(input),
 				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
 					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
 						rows: {
 							...noRows,
 							AssignStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-							AssignDecideInput: [
+							AssignEmbedInput: [
 								{
 									step: key,
 									root: root,
 									learner: spawn.input.learner,
 									topic: spawn.input.topic,
-									missed: spawn.input.missed,
 									mode: spawn.input.mode._tag
 								}
 							],
-							AssignDecideInputExclude: Arr.map(spawn.input.exclude, (element, index) => ({
+							AssignEmbedInputNear: Arr.map(spawn.input.near, (element, index) => ({
 								step: key,
 								root: root,
 								ordinal: BigInt(index),
 								value: element
 							})),
-							AssignDecideInputModeNearest: Arr.flatMap([spawn.input.mode], (variant) =>
+							AssignEmbedInputExclude: Arr.map(spawn.input.exclude, (element, index) => ({
+								step: key,
+								root: root,
+								ordinal: BigInt(index),
+								value: element
+							})),
+							AssignEmbedInputModeNearest: Arr.flatMap([spawn.input.mode], (variant) =>
 								variant._tag === "Nearest" ? [{ step: key, root: root }] : []
 							),
-							AssignDecideInputModeWithin: Arr.flatMap([spawn.input.mode], (variant) =>
+							AssignEmbedInputModeWithin: Arr.flatMap([spawn.input.mode], (variant) =>
 								variant._tag === "Within" ? [{ step: key, root: root, radius: variant.radius }] : []
 							)
 						},
 						steps: [
-							{ step: key, kind: "Decide", scope: scope, delay: delayAfter(assign.kinds[0].due) }
+							{ step: key, kind: "Embed", scope: scope, delay: delayAfter(assign.kinds[0].due) }
 						],
 						spawned: {
-							steps: [{ step: key, kind: "Decide", delay: delayAfter(assign.kinds[0].due) }],
+							steps: [{ step: key, kind: "Embed", delay: delayAfter(assign.kinds[0].due) }],
 							finishes: []
 						}
 					}))
 			),
 			(parts) => Arr.reduce(parts, nothingGrown, joined)
 		)
+	const readAssignEmbedInput = (step: StepKey) =>
+		Effect.gen(function* () {
+			const row = yield* Effect.map(
+				settled(h.den.assignReadAssignEmbedInput.once({ params: { step: step }, facts: {} })),
+				one
+			)
+			const family0 = yield* Effect.map(
+				settled(h.den.assignReadAssignEmbedInputNear.once({ params: { step }, facts: {} })),
+				rowsOf
+			)
+			const family1 = yield* Effect.map(
+				settled(h.den.assignReadAssignEmbedInputExclude.once({ params: { step }, facts: {} })),
+				rowsOf
+			)
+			const variant0_0 = yield* Effect.map(
+				settled(
+					h.den.assignReadAssignEmbedInputModeNearest.once({ params: { step: step }, facts: {} })
+				),
+				one
+			)
+			const variant0_1 = yield* Effect.map(
+				settled(
+					h.den.assignReadAssignEmbedInputModeWithin.once({ params: { step: step }, facts: {} })
+				),
+				one
+			)
+			return Option.flatMap(row, (found) =>
+				Option.map(
+					Option.all({
+						mode:
+							found.mode === "Nearest"
+								? Option.map(variant0_0, () => ({ _tag: "Nearest" as const }))
+								: Option.map(variant0_1, (part) => ({
+										_tag: "Within" as const,
+										radius: part.radius
+									}))
+					}),
+					(unions) => ({
+						learner: found.learner,
+						topic: found.topic,
+						near: Arr.map(ordered(family0), (e) => e.value),
+						exclude: Arr.map(ordered(family1), (e) => e.value),
+						mode: unions.mode
+					})
+				)
+			)
+		})
 	const readAssignDecideInput = (step: StepKey) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
@@ -239,7 +326,7 @@ export const assignLedger = (h: AssignHandles) => {
 					(unions) => ({
 						learner: found.learner,
 						topic: found.topic,
-						missed: found.missed,
+						query: found.query,
 						exclude: Arr.map(ordered(family0), (e) => e.value),
 						mode: unions.mode
 					})
@@ -255,6 +342,10 @@ export const assignLedger = (h: AssignHandles) => {
 				one
 			)
 			const family0 = yield* Effect.map(
+				settled(h.den.assignReadAssignAssignmentInputNear.once({ params: { scope }, facts: {} })),
+				rowsOf
+			)
+			const family1 = yield* Effect.map(
 				settled(
 					h.den.assignReadAssignAssignmentInputExclude.once({ params: { scope }, facts: {} })
 				),
@@ -292,8 +383,8 @@ export const assignLedger = (h: AssignHandles) => {
 					(unions) => ({
 						learner: found.learner,
 						topic: found.topic,
-						missed: found.missed,
-						exclude: Arr.map(ordered(family0), (e) => e.value),
+						near: Arr.map(ordered(family0), (e) => e.value),
+						exclude: Arr.map(ordered(family1), (e) => e.value),
 						mode: unions.mode
 					})
 				)
@@ -335,7 +426,7 @@ export const assignLedger = (h: AssignHandles) => {
 		resume: (target) => Effect.flatMap(pausableOf(target), resumeIn(pauseChains))
 	}
 	const request = {
-		Assignment: (key: string, input: Parameters<(typeof assign.kinds)[1]["start"]>[0]) =>
+		Assignment: (key: string, input: Parameters<(typeof assign.kinds)[2]["start"]>[0]) =>
 			Effect.flatMap(rootScope("Assign", "Assignment", key), (scope) =>
 				Effect.map(
 					fresh(
@@ -352,10 +443,15 @@ export const assignLedger = (h: AssignHandles) => {
 												root: scope,
 												learner: input.learner,
 												topic: input.topic,
-												missed: input.missed,
 												mode: input.mode._tag
 											}
 										],
+										AssignAssignmentInputNear: Arr.map(input.near, (element, index) => ({
+											scope: scope,
+											root: scope,
+											ordinal: BigInt(index),
+											value: element
+										})),
 										AssignAssignmentInputExclude: Arr.map(input.exclude, (element, index) => ({
 											scope: scope,
 											root: scope,
@@ -380,30 +476,147 @@ export const assignLedger = (h: AssignHandles) => {
 			)
 	}
 	const runners = {
-		Decide: runnerOf(
+		Embed: runnerOf(
 			assign.kinds[0],
 			{
+				input: (step) => readAssignEmbedInput(step),
+				read: () => Effect.succeed({}),
+				commit: (done) =>
+					Effect.gen(function* () {
+						const grown = yield* Effect.map(
+							Effect.all([
+								Effect.map(
+									Effect.forEach(
+										assign.edges[0].next(done.input, done.output),
+										(input, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
+											Effect.map(edgeStep(done.turn.step, "Asked", ordinal), (key): Grown => ({
+												rows: {
+													...noRows,
+													AssignAsked: [
+														{
+															from: done.turn.step,
+															ordinal: BigInt(ordinal),
+															to: key,
+															root: done.turn.root
+														}
+													],
+													AssignDecideInput: [
+														{
+															step: key,
+															root: done.turn.root,
+															learner: input.learner,
+															topic: input.topic,
+															query: input.query,
+															mode: input.mode._tag
+														}
+													],
+													AssignDecideInputExclude: Arr.map(input.exclude, (element, index) => ({
+														step: key,
+														root: done.turn.root,
+														ordinal: BigInt(index),
+														value: element
+													})),
+													AssignDecideInputModeNearest: Arr.flatMap([input.mode], (variant) =>
+														variant._tag === "Nearest" ? [{ step: key, root: done.turn.root }] : []
+													),
+													AssignDecideInputModeWithin: Arr.flatMap([input.mode], (variant) =>
+														variant._tag === "Within"
+															? [{ step: key, root: done.turn.root, radius: variant.radius }]
+															: []
+													)
+												},
+												steps: [
+													{
+														step: key,
+														kind: "Decide",
+														scope: done.turn.scope,
+														delay: delayAfter(assign.kinds[1].due)
+													}
+												],
+												spawned: {
+													steps: [
+														{ step: key, kind: "Decide", delay: delayAfter(assign.kinds[1].due) }
+													],
+													finishes: []
+												}
+											}))
+									),
+									(parts) => Arr.reduce(parts, nothingGrown, joined)
+								)
+							]),
+							(parts) => Arr.reduce(parts, nothingGrown, joined)
+						)
+						const outcome = yield* settled(
+							h.commits.assignCommitEmbed.once({
+								params: { steps: grown.steps, root: done.turn.root },
+								facts: {
+									insert: {
+										...grown.rows,
+										AssignResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										AssignDone: [{ step: done.turn.step, root: done.turn.root }],
+										AssignHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										AssignEmbedOutput: [
+											{ step: done.turn.step, root: done.turn.root, query: done.output.query }
+										]
+									}
+								}
+							})
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.none()
+		),
+		Decide: runnerOf(
+			assign.kinds[1],
+			{
 				input: (step) => readAssignDecideInput(step),
-				read: (input) => {
-					const nearest = assign.kinds[0].reads.nearest.params(input)
-					const seen = assign.kinds[0].reads.seen.params(input)
-					return Effect.flatMap(
+				read: (input) =>
+					Effect.flatMap(
 						settled(
 							h.commits.assignReadDecide.once({
-								params: {
-									"nearest.topic": nearest.topic,
-									"nearest.anchor.question": nearest.anchor.question,
-									"seen.learner": seen.learner
-								},
+								params: assign.kinds[1].reads.params(input),
 								facts: {}
 							})
 						),
-						(rows) => Effect.map(only(rows), (row) => ({ nearest: row.nearest, seen: row.seen }))
-					)
-				},
+						(rows) =>
+							Effect.map(only(rows), (row) => ({
+								nearest: Arr.map(row.nearest, (found) => ({
+									passage: found.passage,
+									topic: found.topic,
+									distance: found.distance
+								})),
+								seen: Arr.map(row.seen, (found) => ({
+									learner: found.learner,
+									passage: found.passage
+								}))
+							}))
+					),
 				commit: (done) =>
 					Effect.gen(function* () {
 						const grown = yield* Effect.succeed(nothingGrown)
+						const recordedNearest = yield* Effect.forEach(done.rows.nearest, (row) =>
+							Effect.map(
+								rowDigest("nearest", [
+									["passage", row.passage],
+									["topic", row.topic],
+									["distance", row.distance]
+								]),
+								(digest) => ({ ...row, digest })
+							)
+						)
+						const recordedSeen = yield* Effect.forEach(done.rows.seen, (row) =>
+							Effect.map(
+								rowDigest("seen", [
+									["learner", row.learner],
+									["passage", row.passage]
+								]),
+								(digest) => ({ ...row, digest })
+							)
+						)
 						const outcome = yield* settled(
 							h.commits.assignCommitDecide.once({
 								params: {},
@@ -447,17 +660,25 @@ export const assignLedger = (h: AssignHandles) => {
 												? [{ step: done.turn.step, root: done.turn.root }]
 												: []
 										),
-										AssignDecideNearestRead: Arr.map(done.rows.nearest, (row, ordinal) => ({
-											...row,
+										AssignDecideNearestRow: Arr.dedupeWith(
+											Arr.map(recordedNearest, (row) => ({ ...row, root: done.turn.root })),
+											(a, b) => a.digest === b.digest
+										),
+										AssignDecideNearestRead: Arr.map(recordedNearest, (row, ordinal) => ({
 											step: done.turn.step,
 											root: done.turn.root,
-											ordinal: BigInt(ordinal)
+											ordinal: BigInt(ordinal),
+											digest: row.digest
 										})),
-										AssignDecideSeenRead: Arr.map(done.rows.seen, (row, ordinal) => ({
-											...row,
+										AssignDecideSeenRow: Arr.dedupeWith(
+											Arr.map(recordedSeen, (row) => ({ ...row, root: done.turn.root })),
+											(a, b) => a.digest === b.digest
+										),
+										AssignDecideSeenRead: Arr.map(recordedSeen, (row, ordinal) => ({
 											step: done.turn.step,
 											root: done.turn.root,
-											ordinal: BigInt(ordinal)
+											ordinal: BigInt(ordinal),
+											digest: row.digest
 										})),
 										Assigned: done.writes.insert.Assigned
 									}
@@ -473,15 +694,15 @@ export const assignLedger = (h: AssignHandles) => {
 		AssignmentFinish: runnerOf(
 			{
 				name: "AssignmentFinish",
-				uses: assign.kinds[1].finish.uses,
-				retry: assign.kinds[1].finish.retry,
-				waits: assign.kinds[1].finish.waits,
+				uses: assign.kinds[2].finish.uses,
+				retry: assign.kinds[2].finish.retry,
+				waits: assign.kinds[2].finish.waits,
 				awaits: [],
-				writes: assign.kinds[1].finish.writes,
+				writes: assign.kinds[2].finish.writes,
 				body: (read: {
-					readonly input: Parameters<(typeof assign.kinds)[1]["start"]>[0]
-					readonly endings: Parameters<(typeof assign.kinds)[1]["finish"]["body"]>[1]
-				}) => assign.kinds[1].finish.body(read.input, read.endings)
+					readonly input: Parameters<(typeof assign.kinds)[2]["start"]>[0]
+					readonly endings: Parameters<(typeof assign.kinds)[2]["finish"]["body"]>[1]
+				}) => assign.kinds[2].finish.body(read.input, read.endings)
 			},
 			{
 				input: (step) =>
@@ -591,8 +812,8 @@ export const assignLedger = (h: AssignHandles) => {
 	}
 	const roots: { readonly [K in (typeof AssignRootKind)["handles"][number]]: RootRunner } = {
 		Assignment: {
-			window: assign.kinds[1].window,
-			precondition: assign.kinds[1].precondition,
+			window: assign.kinds[2].window,
+			precondition: assign.kinds[2].precondition,
 			admit: (scope: ScopeKey) =>
 				Effect.gen(function* () {
 					const input = yield* readAssignAssignmentInput(scope)
@@ -620,6 +841,11 @@ export const assignLedger = (h: AssignHandles) => {
 								insert: {
 									AssignScope: grown.rows.AssignScope,
 									AssignStartStep: grown.rows.AssignStartStep,
+									AssignEmbedInput: grown.rows.AssignEmbedInput,
+									AssignEmbedInputNear: grown.rows.AssignEmbedInputNear,
+									AssignEmbedInputExclude: grown.rows.AssignEmbedInputExclude,
+									AssignEmbedInputModeNearest: grown.rows.AssignEmbedInputModeNearest,
+									AssignEmbedInputModeWithin: grown.rows.AssignEmbedInputModeWithin,
 									AssignDecideInput: grown.rows.AssignDecideInput,
 									AssignDecideInputExclude: grown.rows.AssignDecideInputExclude,
 									AssignDecideInputModeNearest: grown.rows.AssignDecideInputModeNearest,

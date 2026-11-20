@@ -16,7 +16,9 @@ import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/sl
  *
  * Oracle (specification): a run of n pages leaves n done Page results whose outputs are typed rows; each page's read
  * is recorded with its result and is exactly the feed's weight rows when it ran (only added to, so the rows standing
- * after the run); page s holds (s + 1) × max(1, Σ factors) items, committed with its result; exactly one done finish
+ * after the run); page s holds (s + 1) × max(1, Σ factors) items, committed with its result, and reads every item of
+ * the pages before it; the root stores each item a later page read once, Σ over s < n − 1 of page s's items, however
+ * many pages read it (a work count: linear in the feed, where a copy per page is quadratic); exactly one done finish
  * of the run's scope; the feed's cursor at n − 1; and requesting it again with the same key and instant, and ringing
  * every page's first wake once more, changes nothing.
  */
@@ -107,6 +109,27 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 								) >= page.items
 							)
 						})
+						const itemsOf = (seq: bigint): bigint =>
+							Arr.reduce(
+								Arr.filter(pages, (page) => page.seq === seq),
+								0n,
+								(sum, page) => sum + page.items
+							)
+						const before = (seq: bigint): bigint =>
+							Arr.reduce(
+								Array.from({ length: Number(seq) }, (_, s) => itemsOf(BigInt(s))),
+								0n,
+								(sum, n) => sum + n
+							)
+						Arr.forEach(pages, (page) =>
+							assert.equal(page.earlier, before(page.seq), "a page reads every item before it")
+						)
+						const stored = yield* rows(app.workload.earlierRows.once({ params: {}, facts: {} }))
+						assert.equal(
+							BigInt(Arr.filter(stored, (row) => row.root === scope).length),
+							before(BigInt(run.pages - 1)),
+							"each item a later page read is stored once in its root, however many pages read it"
+						)
 						const finished = yield* rows(app.workload.chainFinishes.once({ params: {}, facts: {} }))
 						const finishes = Arr.filter(finished, (finish) => finish.scope === scope)
 						assert.deepEqual(
@@ -151,7 +174,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 			),
 	oracle: {
 		kind: "specification",
-		name: "n typed pages with their reads recorded, their items, one finish, the cursor at n − 1, no change on a rerun"
+		name: "n typed pages with their reads recorded, each read row stored once per root, their items, one finish, the cursor at n − 1, no change on a rerun"
 	},
 	budget: { runs: 12, steered: 12 },
 	kept: [],
@@ -161,6 +184,12 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 			original: "\tDuration.millis(Math.max(0, Number(until) - Number(at)))",
 			replacement: "\tDuration.millis(Math.max(0, Number(at) - Number(until)))",
 			why: "Operator mutant (operand-swap) at packages/den/src/runtime/turn.ts:235 in delayTo: `Number(until) - Number(at)` becomes `Number(at) - Number(until)`; the property fails (lane CATCH, den 9cffaba)."
+		},
+		{
+			file: "packages/den/integration/slice/generated/chain.binding.ts",
+			original: '\t\t\t\t\t\t\t\trowDigest("earlier", [',
+			replacement: "\t\t\t\t\t\t\t\trowDigest(done.turn.step, [",
+			why: "Each page stores its own copy of every item it read, keyed by its own step: a chain of n pages stores the items before each page again, quadratic in the feed where it was linear."
 		}
 	]
 })

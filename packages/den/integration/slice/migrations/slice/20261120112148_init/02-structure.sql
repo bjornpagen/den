@@ -4,6 +4,15 @@ CREATE TABLE "slice"."assign_admitted" (
   CONSTRAINT "__assign_admitted_pk_gj2obtfaxk" PRIMARY KEY ("scope", "root")
 );
 
+CREATE TABLE "slice"."assign_asked" (
+  "from" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
+  "to" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__assign_asked_pk_5hpdamg2sv" PRIMARY KEY ("from", "ordinal", "root"),
+  CONSTRAINT "__assign_asked_key_to_root_7prfl6pubf" UNIQUE NULLS DISTINCT ("to", "root")
+);
+
 CREATE TABLE "slice"."assign_assignment_finish_output" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
@@ -14,7 +23,6 @@ CREATE TABLE "slice"."assign_assignment_input" (
   "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
   "learner" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "topic" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "missed" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "mode" "slice"."assign_assignment_input_mode" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__assign_assignment_input_pk_rhoa22jovt" PRIMARY KEY ("scope", "root")
@@ -42,6 +50,15 @@ CREATE TABLE "slice"."assign_assignment_input_mode_within" (
   CONSTRAINT "assign_assignment_input_mode_within_radius_finite" CHECK (("radius" > '-Infinity'::double precision AND "radius" < 'Infinity'::double precision) IS TRUE)
 );
 
+CREATE TABLE "slice"."assign_assignment_input_near" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
+  "value" double precision NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__assign_assignment_input_near_pk_yr4pki7m7t" PRIMARY KEY ("scope", "ordinal", "root"),
+  CONSTRAINT "assign_assignment_input_near_value_finite" CHECK (("value" > '-Infinity'::double precision AND "value" < 'Infinity'::double precision) IS TRUE)
+);
+
 CREATE TABLE "slice"."assign_claim" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
@@ -54,10 +71,11 @@ CREATE TABLE "slice"."assign_decide_input" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "learner" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "topic" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "missed" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "query" "vector_ext"."vector"(4) NOT NULL,
   "mode" "slice"."assign_decide_input_mode" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
-  CONSTRAINT "__assign_decide_input_pk_phi7dovwvq" PRIMARY KEY ("step", "root")
+  CONSTRAINT "__assign_decide_input_pk_phi7dovwvq" PRIMARY KEY ("step", "root"),
+  CONSTRAINT "__assign_decide_input_norm_query_l3gj7nad75" CHECK (("vector_ext"."vector_norm"("query") BETWEEN '3.3881317890172014e-21'::double precision AND '9223372036854776000'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_decide_input_exclude" (
@@ -85,11 +103,19 @@ CREATE TABLE "slice"."assign_decide_input_mode_within" (
 CREATE TABLE "slice"."assign_decide_nearest_read" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "passage" "slice"."__text_t4rwovzmqj" NOT NULL,
-  "topic" "slice"."__text_t4rwovzmqj" NOT NULL,
-  "distance" double precision NOT NULL,
+  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__assign_decide_nearest_read_pk_jc4zqvfwss" PRIMARY KEY ("step", "ordinal", "root")
+);
+
+CREATE TABLE "slice"."assign_decide_nearest_row" (
+  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "passage" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "topic" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "distance" double precision NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__assign_decide_nearest_row_pk_6muanewnph" PRIMARY KEY ("digest", "root"),
+  CONSTRAINT "assign_decide_nearest_row_distance_finite" CHECK (("distance" > '-Infinity'::double precision AND "distance" < 'Infinity'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_decide_output" (
@@ -130,16 +156,71 @@ CREATE TABLE "slice"."assign_decide_output_weighed" (
 CREATE TABLE "slice"."assign_decide_seen_read" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "learner" "slice"."__text_t4rwovzmqj" NOT NULL,
-  "passage" "slice"."__text_t4rwovzmqj" NOT NULL,
+  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__assign_decide_seen_read_pk_sczf2f7gz7" PRIMARY KEY ("step", "ordinal", "root")
+);
+
+CREATE TABLE "slice"."assign_decide_seen_row" (
+  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "learner" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "passage" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__assign_decide_seen_row_pk_lwsmcq6igk" PRIMARY KEY ("digest", "root")
 );
 
 CREATE TABLE "slice"."assign_done" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__assign_done_pk_gzil7jvxpz" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."assign_embed_input" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "learner" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "topic" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "mode" "slice"."assign_embed_input_mode" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__assign_embed_input_pk_q4ezcfvwia" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."assign_embed_input_exclude" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
+  "value" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__assign_embed_input_exclude_pk_5bklowmkgt" PRIMARY KEY ("step", "ordinal", "root")
+);
+
+CREATE TABLE "slice"."assign_embed_input_mode_nearest" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__assign_embed_input_mode_nearest_pk_wiskd5j54m" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."assign_embed_input_mode_within" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "radius" double precision NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__assign_embed_input_mode_within_pk_zldmxccjlo" PRIMARY KEY ("step", "root"),
+  CONSTRAINT "assign_embed_input_mode_within_radius_finite" CHECK (("radius" > '-Infinity'::double precision AND "radius" < 'Infinity'::double precision) IS TRUE)
+);
+
+CREATE TABLE "slice"."assign_embed_input_near" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
+  "value" double precision NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__assign_embed_input_near_pk_bkusmda72a" PRIMARY KEY ("step", "ordinal", "root"),
+  CONSTRAINT "assign_embed_input_near_value_finite" CHECK (("value" > '-Infinity'::double precision AND "value" < 'Infinity'::double precision) IS TRUE)
+);
+
+CREATE TABLE "slice"."assign_embed_output" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "query" "vector_ext"."vector"(4) NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__assign_embed_output_pk_noiv3qgtry" PRIMARY KEY ("step", "root"),
+  CONSTRAINT "__assign_embed_output_norm_query_c5dnqwghei" CHECK (("vector_ext"."vector_norm"("query") BETWEEN '3.3881317890172014e-21'::double precision AND '9223372036854776000'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_ended" (
@@ -374,6 +455,23 @@ CREATE TABLE "slice"."chain_ordered_input" (
   CONSTRAINT "__chain_ordered_input_pk_iv2357obqh" PRIMARY KEY ("scope", "root")
 );
 
+CREATE TABLE "slice"."chain_page_earlier_read" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
+  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__chain_page_earlier_read_pk_y5utsccddc" PRIMARY KEY ("step", "ordinal", "root")
+);
+
+CREATE TABLE "slice"."chain_page_earlier_row" (
+  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "feed" "slice"."chain_page_earlier_row_feed" NOT NULL,
+  "seq" bigint NOT NULL,
+  "n" bigint NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__chain_page_earlier_row_pk_itz6dseape" PRIMARY KEY ("digest", "root")
+);
+
 CREATE TABLE "slice"."chain_page_input" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "feed" "slice"."chain_page_input_feed" NOT NULL,
@@ -394,6 +492,7 @@ CREATE TABLE "slice"."chain_page_output" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "seq" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "items" bigint NOT NULL,
+  "earlier" bigint NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__chain_page_output_pk_whwnpdfgmi" PRIMARY KEY ("step", "root")
 );
@@ -408,10 +507,17 @@ CREATE TABLE "slice"."chain_page_output_next" (
 CREATE TABLE "slice"."chain_page_weights_read" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "feed" "slice"."feed" NOT NULL,
-  "factor" "slice"."__domain_gfw43vigph" NOT NULL,
+  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__chain_page_weights_read_pk_mvr5jc4gry" PRIMARY KEY ("step", "ordinal", "root")
+);
+
+CREATE TABLE "slice"."chain_page_weights_row" (
+  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "feed" "slice"."chain_page_weights_row_feed" NOT NULL,
+  "factor" bigint NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__chain_page_weights_row_pk_qxdvvigywk" PRIMARY KEY ("digest", "root")
 );
 
 CREATE TABLE "slice"."chain_paused" (
@@ -900,13 +1006,6 @@ CREATE TABLE "slice"."item" (
   "seq" bigint NOT NULL,
   "n" "slice"."__domain_gfw43vigph" NOT NULL,
   CONSTRAINT "__item_pk_ai4obgmq4k" PRIMARY KEY ("feed", "seq", "n")
-);
-
-CREATE TABLE "slice"."missed" (
-  "question" "slice"."__text_t4rwovzmqj" NOT NULL,
-  "embedding" "vector_ext"."vector"(4) NOT NULL,
-  CONSTRAINT "__missed_pk_yzhoj6jwnt" PRIMARY KEY ("question"),
-  CONSTRAINT "__missed_norm_embedding_q23vgxiv6r" CHECK (("vector_ext"."vector_norm"("embedding") BETWEEN '3.3881317890172014e-21'::double precision AND '9223372036854776000'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."order" (
@@ -1852,6 +1951,11 @@ ALTER TABLE "slice"."assign_assignment_input_exclude"
   ADD COLUMN "__scope_u6ypqf2r2z" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "scope" END) STORED,
   ADD COLUMN "__pred_ordinal_rdz3ttleig" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint AND "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED;
 
+ALTER TABLE "slice"."assign_assignment_input_near"
+  ADD COLUMN "__root_yjobx7uyrd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "root" END) STORED,
+  ADD COLUMN "__scope_u6ypqf2r2z" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "scope" END) STORED,
+  ADD COLUMN "__pred_ordinal_rdz3ttleig" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint AND "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED;
+
 ALTER TABLE "slice"."assign_claim"
   ADD COLUMN "__root_yewsvvtcyz" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "root" END) STORED,
   ADD COLUMN "__step_ouvkclqzzd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
@@ -1863,6 +1967,16 @@ ALTER TABLE "slice"."assign_decide_input_exclude"
   ADD COLUMN "__pred_ordinal_rdz3ttleig" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint AND "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED;
 
 ALTER TABLE "slice"."assign_decide_output_weighed"
+  ADD COLUMN "__root_yjobx7uyrd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "root" END) STORED,
+  ADD COLUMN "__step_mjpuijzth4" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "step" END) STORED,
+  ADD COLUMN "__pred_ordinal_rdz3ttleig" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint AND "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED;
+
+ALTER TABLE "slice"."assign_embed_input_exclude"
+  ADD COLUMN "__root_yjobx7uyrd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "root" END) STORED,
+  ADD COLUMN "__step_mjpuijzth4" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "step" END) STORED,
+  ADD COLUMN "__pred_ordinal_rdz3ttleig" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint AND "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED;
+
+ALTER TABLE "slice"."assign_embed_input_near"
   ADD COLUMN "__root_yjobx7uyrd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "root" END) STORED,
   ADD COLUMN "__step_mjpuijzth4" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "step" END) STORED,
   ADD COLUMN "__pred_ordinal_rdz3ttleig" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint AND "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED;
@@ -2080,194 +2194,254 @@ BEGIN
     RETURNING 1 AS "c1"
   ),
   "r8" AS (
-    DELETE FROM "slice"."assign_assignment_finish_output" AS "r9"
+    DELETE FROM "slice"."assign_asked" AS "r9"
     USING "r1" AS "r10"
     WHERE "r9"."root" = "r10"."c1"
     RETURNING 1 AS "c1"
   ),
   "r11" AS (
-    DELETE FROM "slice"."assign_assignment_input" AS "r12"
+    DELETE FROM "slice"."assign_assignment_finish_output" AS "r12"
     USING "r1" AS "r13"
     WHERE "r12"."root" = "r13"."c1"
     RETURNING 1 AS "c1"
   ),
   "r14" AS (
-    DELETE FROM "slice"."assign_assignment_input_exclude" AS "r15"
+    DELETE FROM "slice"."assign_assignment_input" AS "r15"
     USING "r1" AS "r16"
     WHERE "r15"."root" = "r16"."c1"
     RETURNING 1 AS "c1"
   ),
   "r17" AS (
-    DELETE FROM "slice"."assign_assignment_input_mode_nearest" AS "r18"
+    DELETE FROM "slice"."assign_assignment_input_exclude" AS "r18"
     USING "r1" AS "r19"
     WHERE "r18"."root" = "r19"."c1"
     RETURNING 1 AS "c1"
   ),
   "r20" AS (
-    DELETE FROM "slice"."assign_assignment_input_mode_within" AS "r21"
+    DELETE FROM "slice"."assign_assignment_input_mode_nearest" AS "r21"
     USING "r1" AS "r22"
     WHERE "r21"."root" = "r22"."c1"
     RETURNING 1 AS "c1"
   ),
   "r23" AS (
-    DELETE FROM "slice"."assign_claim" AS "r24"
+    DELETE FROM "slice"."assign_assignment_input_mode_within" AS "r24"
     USING "r1" AS "r25"
     WHERE "r24"."root" = "r25"."c1"
     RETURNING 1 AS "c1"
   ),
   "r26" AS (
-    DELETE FROM "slice"."assign_decide_input" AS "r27"
+    DELETE FROM "slice"."assign_assignment_input_near" AS "r27"
     USING "r1" AS "r28"
     WHERE "r27"."root" = "r28"."c1"
     RETURNING 1 AS "c1"
   ),
   "r29" AS (
-    DELETE FROM "slice"."assign_decide_input_exclude" AS "r30"
+    DELETE FROM "slice"."assign_claim" AS "r30"
     USING "r1" AS "r31"
     WHERE "r30"."root" = "r31"."c1"
     RETURNING 1 AS "c1"
   ),
   "r32" AS (
-    DELETE FROM "slice"."assign_decide_input_mode_nearest" AS "r33"
+    DELETE FROM "slice"."assign_decide_input" AS "r33"
     USING "r1" AS "r34"
     WHERE "r33"."root" = "r34"."c1"
     RETURNING 1 AS "c1"
   ),
   "r35" AS (
-    DELETE FROM "slice"."assign_decide_input_mode_within" AS "r36"
+    DELETE FROM "slice"."assign_decide_input_exclude" AS "r36"
     USING "r1" AS "r37"
     WHERE "r36"."root" = "r37"."c1"
     RETURNING 1 AS "c1"
   ),
   "r38" AS (
-    DELETE FROM "slice"."assign_decide_nearest_read" AS "r39"
+    DELETE FROM "slice"."assign_decide_input_mode_nearest" AS "r39"
     USING "r1" AS "r40"
     WHERE "r39"."root" = "r40"."c1"
     RETURNING 1 AS "c1"
   ),
   "r41" AS (
-    DELETE FROM "slice"."assign_decide_output" AS "r42"
+    DELETE FROM "slice"."assign_decide_input_mode_within" AS "r42"
     USING "r1" AS "r43"
     WHERE "r42"."root" = "r43"."c1"
     RETURNING 1 AS "c1"
   ),
   "r44" AS (
-    DELETE FROM "slice"."assign_decide_output_stage_rest" AS "r45"
+    DELETE FROM "slice"."assign_decide_nearest_read" AS "r45"
     USING "r1" AS "r46"
     WHERE "r45"."root" = "r46"."c1"
     RETURNING 1 AS "c1"
   ),
   "r47" AS (
-    DELETE FROM "slice"."assign_decide_output_stage_serve" AS "r48"
+    DELETE FROM "slice"."assign_decide_nearest_row" AS "r48"
     USING "r1" AS "r49"
     WHERE "r48"."root" = "r49"."c1"
     RETURNING 1 AS "c1"
   ),
   "r50" AS (
-    DELETE FROM "slice"."assign_decide_output_weighed" AS "r51"
+    DELETE FROM "slice"."assign_decide_output" AS "r51"
     USING "r1" AS "r52"
     WHERE "r51"."root" = "r52"."c1"
     RETURNING 1 AS "c1"
   ),
   "r53" AS (
-    DELETE FROM "slice"."assign_decide_seen_read" AS "r54"
+    DELETE FROM "slice"."assign_decide_output_stage_rest" AS "r54"
     USING "r1" AS "r55"
     WHERE "r54"."root" = "r55"."c1"
     RETURNING 1 AS "c1"
   ),
   "r56" AS (
-    DELETE FROM "slice"."assign_done" AS "r57"
+    DELETE FROM "slice"."assign_decide_output_stage_serve" AS "r57"
     USING "r1" AS "r58"
     WHERE "r57"."root" = "r58"."c1"
     RETURNING 1 AS "c1"
   ),
   "r59" AS (
-    DELETE FROM "slice"."assign_ended" AS "r60"
+    DELETE FROM "slice"."assign_decide_output_weighed" AS "r60"
     USING "r1" AS "r61"
     WHERE "r60"."root" = "r61"."c1"
     RETURNING 1 AS "c1"
   ),
   "r62" AS (
-    DELETE FROM "slice"."assign_exhausted" AS "r63"
+    DELETE FROM "slice"."assign_decide_seen_read" AS "r63"
     USING "r1" AS "r64"
     WHERE "r63"."root" = "r64"."c1"
     RETURNING 1 AS "c1"
   ),
   "r65" AS (
-    DELETE FROM "slice"."assign_failed" AS "r66"
+    DELETE FROM "slice"."assign_decide_seen_row" AS "r66"
     USING "r1" AS "r67"
     WHERE "r66"."root" = "r67"."c1"
     RETURNING 1 AS "c1"
   ),
   "r68" AS (
-    DELETE FROM "slice"."assign_fenced" AS "r69"
+    DELETE FROM "slice"."assign_done" AS "r69"
     USING "r1" AS "r70"
     WHERE "r69"."root" = "r70"."c1"
     RETURNING 1 AS "c1"
   ),
   "r71" AS (
-    DELETE FROM "slice"."assign_finish" AS "r72"
+    DELETE FROM "slice"."assign_embed_input" AS "r72"
     USING "r1" AS "r73"
     WHERE "r72"."root" = "r73"."c1"
     RETURNING 1 AS "c1"
   ),
   "r74" AS (
-    DELETE FROM "slice"."assign_held" AS "r75"
+    DELETE FROM "slice"."assign_embed_input_exclude" AS "r75"
     USING "r1" AS "r76"
     WHERE "r75"."root" = "r76"."c1"
     RETURNING 1 AS "c1"
   ),
   "r77" AS (
-    DELETE FROM "slice"."assign_refusal" AS "r78"
+    DELETE FROM "slice"."assign_embed_input_mode_nearest" AS "r78"
     USING "r1" AS "r79"
     WHERE "r78"."root" = "r79"."c1"
     RETURNING 1 AS "c1"
   ),
   "r80" AS (
-    DELETE FROM "slice"."assign_result" AS "r81"
+    DELETE FROM "slice"."assign_embed_input_mode_within" AS "r81"
     USING "r1" AS "r82"
     WHERE "r81"."root" = "r82"."c1"
     RETURNING 1 AS "c1"
   ),
   "r83" AS (
-    DELETE FROM "slice"."assign_retry" AS "r84"
+    DELETE FROM "slice"."assign_embed_input_near" AS "r84"
     USING "r1" AS "r85"
     WHERE "r84"."root" = "r85"."c1"
     RETURNING 1 AS "c1"
   ),
   "r86" AS (
-    DELETE FROM "slice"."assign_scope" AS "r87"
+    DELETE FROM "slice"."assign_embed_output" AS "r87"
     USING "r1" AS "r88"
     WHERE "r87"."root" = "r88"."c1"
     RETURNING 1 AS "c1"
   ),
   "r89" AS (
-    DELETE FROM "slice"."assign_skipped" AS "r90"
+    DELETE FROM "slice"."assign_ended" AS "r90"
     USING "r1" AS "r91"
     WHERE "r90"."root" = "r91"."c1"
     RETURNING 1 AS "c1"
   ),
   "r92" AS (
-    DELETE FROM "slice"."assign_start_step" AS "r93"
+    DELETE FROM "slice"."assign_exhausted" AS "r93"
     USING "r1" AS "r94"
     WHERE "r93"."root" = "r94"."c1"
     RETURNING 1 AS "c1"
   ),
   "r95" AS (
-    DELETE FROM "slice"."assign_step" AS "r96"
+    DELETE FROM "slice"."assign_failed" AS "r96"
     USING "r1" AS "r97"
     WHERE "r96"."root" = "r97"."c1"
     RETURNING 1 AS "c1"
   ),
   "r98" AS (
-    UPDATE "slice"."assign_root" AS "r99"
+    DELETE FROM "slice"."assign_fenced" AS "r99"
+    USING "r1" AS "r100"
+    WHERE "r99"."root" = "r100"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r101" AS (
+    DELETE FROM "slice"."assign_finish" AS "r102"
+    USING "r1" AS "r103"
+    WHERE "r102"."root" = "r103"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r104" AS (
+    DELETE FROM "slice"."assign_held" AS "r105"
+    USING "r1" AS "r106"
+    WHERE "r105"."root" = "r106"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r107" AS (
+    DELETE FROM "slice"."assign_refusal" AS "r108"
+    USING "r1" AS "r109"
+    WHERE "r108"."root" = "r109"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r110" AS (
+    DELETE FROM "slice"."assign_result" AS "r111"
+    USING "r1" AS "r112"
+    WHERE "r111"."root" = "r112"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r113" AS (
+    DELETE FROM "slice"."assign_retry" AS "r114"
+    USING "r1" AS "r115"
+    WHERE "r114"."root" = "r115"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r116" AS (
+    DELETE FROM "slice"."assign_scope" AS "r117"
+    USING "r1" AS "r118"
+    WHERE "r117"."root" = "r118"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r119" AS (
+    DELETE FROM "slice"."assign_skipped" AS "r120"
+    USING "r1" AS "r121"
+    WHERE "r120"."root" = "r121"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r122" AS (
+    DELETE FROM "slice"."assign_start_step" AS "r123"
+    USING "r1" AS "r124"
+    WHERE "r123"."root" = "r124"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r125" AS (
+    DELETE FROM "slice"."assign_step" AS "r126"
+    USING "r1" AS "r127"
+    WHERE "r126"."root" = "r127"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r128" AS (
+    UPDATE "slice"."assign_root" AS "r129"
     SET "retired" = true
-    FROM "r1" AS "r100"
-    WHERE "r99"."scope" = "r100"."c1"
+    FROM "r1" AS "r130"
+    WHERE "r129"."scope" = "r130"."c1"
     RETURNING 1 AS "c1"
   )
-  SELECT "r102"."c1" AS "c1"
-  FROM (SELECT "pg_catalog"."array_agg"("r101"."c2" ORDER BY "r101"."c1") AS "c1", "r101"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r98" AS "r103" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r104" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r105" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r106" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r107" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r108" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r109" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r110" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r111" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r112" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r113" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r114" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r115" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r116" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r117" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r118" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r119" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r120" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r121" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r122" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r123" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r124" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r125" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r126" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r127" UNION ALL SELECT 25 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r128" UNION ALL SELECT 26 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r80" AS "r129" UNION ALL SELECT 27 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r83" AS "r130" UNION ALL SELECT 28 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r86" AS "r131" UNION ALL SELECT 29 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r89" AS "r132" UNION ALL SELECT 30 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r92" AS "r133" UNION ALL SELECT 31 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r95" AS "r134") AS "r101"("c1", "c2", "c3") GROUP BY "r101"."c3") AS "r102"("c1", "c2")
+  SELECT "r132"."c1" AS "c1"
+  FROM (SELECT "pg_catalog"."array_agg"("r131"."c2" ORDER BY "r131"."c1") AS "c1", "r131"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r128" AS "r133" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r134" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r135" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r136" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r137" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r138" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r139" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r140" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r141" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r142" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r143" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r144" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r145" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r146" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r147" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r148" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r149" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r150" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r151" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r152" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r153" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r154" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r155" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r156" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r157" UNION ALL SELECT 25 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r158" UNION ALL SELECT 26 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r80" AS "r159" UNION ALL SELECT 27 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r83" AS "r160" UNION ALL SELECT 28 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r86" AS "r161" UNION ALL SELECT 29 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r89" AS "r162" UNION ALL SELECT 30 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r92" AS "r163" UNION ALL SELECT 31 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r95" AS "r164" UNION ALL SELECT 32 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r98" AS "r165" UNION ALL SELECT 33 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r101" AS "r166" UNION ALL SELECT 34 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r104" AS "r167" UNION ALL SELECT 35 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r107" AS "r168" UNION ALL SELECT 36 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r110" AS "r169" UNION ALL SELECT 37 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r113" AS "r170" UNION ALL SELECT 38 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r116" AS "r171" UNION ALL SELECT 39 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r119" AS "r172" UNION ALL SELECT 40 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r122" AS "r173" UNION ALL SELECT 41 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r125" AS "r174") AS "r131"("c1", "c2", "c3") GROUP BY "r131"."c3") AS "r132"("c1", "c2")
   LIMIT 1::bigint
   ;
 END
@@ -2369,86 +2543,104 @@ BEGIN
     RETURNING 1 AS "c1"
   ),
   "r47" AS (
-    DELETE FROM "slice"."chain_page_input" AS "r48"
+    DELETE FROM "slice"."chain_page_earlier_read" AS "r48"
     USING "r1" AS "r49"
     WHERE "r48"."root" = "r49"."c1"
     RETURNING 1 AS "c1"
   ),
   "r50" AS (
-    DELETE FROM "slice"."chain_page_input_after" AS "r51"
+    DELETE FROM "slice"."chain_page_earlier_row" AS "r51"
     USING "r1" AS "r52"
     WHERE "r51"."root" = "r52"."c1"
     RETURNING 1 AS "c1"
   ),
   "r53" AS (
-    DELETE FROM "slice"."chain_page_output" AS "r54"
+    DELETE FROM "slice"."chain_page_input" AS "r54"
     USING "r1" AS "r55"
     WHERE "r54"."root" = "r55"."c1"
     RETURNING 1 AS "c1"
   ),
   "r56" AS (
-    DELETE FROM "slice"."chain_page_output_next" AS "r57"
+    DELETE FROM "slice"."chain_page_input_after" AS "r57"
     USING "r1" AS "r58"
     WHERE "r57"."root" = "r58"."c1"
     RETURNING 1 AS "c1"
   ),
   "r59" AS (
-    DELETE FROM "slice"."chain_page_weights_read" AS "r60"
+    DELETE FROM "slice"."chain_page_output" AS "r60"
     USING "r1" AS "r61"
     WHERE "r60"."root" = "r61"."c1"
     RETURNING 1 AS "c1"
   ),
   "r62" AS (
-    DELETE FROM "slice"."chain_refusal" AS "r63"
+    DELETE FROM "slice"."chain_page_output_next" AS "r63"
     USING "r1" AS "r64"
     WHERE "r63"."root" = "r64"."c1"
     RETURNING 1 AS "c1"
   ),
   "r65" AS (
-    DELETE FROM "slice"."chain_result" AS "r66"
+    DELETE FROM "slice"."chain_page_weights_read" AS "r66"
     USING "r1" AS "r67"
     WHERE "r66"."root" = "r67"."c1"
     RETURNING 1 AS "c1"
   ),
   "r68" AS (
-    DELETE FROM "slice"."chain_retry" AS "r69"
+    DELETE FROM "slice"."chain_page_weights_row" AS "r69"
     USING "r1" AS "r70"
     WHERE "r69"."root" = "r70"."c1"
     RETURNING 1 AS "c1"
   ),
   "r71" AS (
-    DELETE FROM "slice"."chain_scope" AS "r72"
+    DELETE FROM "slice"."chain_refusal" AS "r72"
     USING "r1" AS "r73"
     WHERE "r72"."root" = "r73"."c1"
     RETURNING 1 AS "c1"
   ),
   "r74" AS (
-    DELETE FROM "slice"."chain_skipped" AS "r75"
+    DELETE FROM "slice"."chain_result" AS "r75"
     USING "r1" AS "r76"
     WHERE "r75"."root" = "r76"."c1"
     RETURNING 1 AS "c1"
   ),
   "r77" AS (
-    DELETE FROM "slice"."chain_start_step" AS "r78"
+    DELETE FROM "slice"."chain_retry" AS "r78"
     USING "r1" AS "r79"
     WHERE "r78"."root" = "r79"."c1"
     RETURNING 1 AS "c1"
   ),
   "r80" AS (
-    DELETE FROM "slice"."chain_step" AS "r81"
+    DELETE FROM "slice"."chain_scope" AS "r81"
     USING "r1" AS "r82"
     WHERE "r81"."root" = "r82"."c1"
     RETURNING 1 AS "c1"
   ),
   "r83" AS (
-    UPDATE "slice"."chain_root" AS "r84"
+    DELETE FROM "slice"."chain_skipped" AS "r84"
+    USING "r1" AS "r85"
+    WHERE "r84"."root" = "r85"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r86" AS (
+    DELETE FROM "slice"."chain_start_step" AS "r87"
+    USING "r1" AS "r88"
+    WHERE "r87"."root" = "r88"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r89" AS (
+    DELETE FROM "slice"."chain_step" AS "r90"
+    USING "r1" AS "r91"
+    WHERE "r90"."root" = "r91"."c1"
+    RETURNING 1 AS "c1"
+  ),
+  "r92" AS (
+    UPDATE "slice"."chain_root" AS "r93"
     SET "retired" = true
-    FROM "r1" AS "r85"
-    WHERE "r84"."scope" = "r85"."c1"
+    FROM "r1" AS "r94"
+    WHERE "r93"."scope" = "r94"."c1"
     RETURNING 1 AS "c1"
   )
-  SELECT "r87"."c1" AS "c1"
-  FROM (SELECT "pg_catalog"."array_agg"("r86"."c2" ORDER BY "r86"."c1") AS "c1", "r86"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r83" AS "r88" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r89" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r90" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r91" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r92" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r93" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r94" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r95" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r96" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r97" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r98" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r99" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r100" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r101" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r102" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r103" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r104" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r105" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r106" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r107" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r108" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r109" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r110" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r111" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r112" UNION ALL SELECT 25 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r113" UNION ALL SELECT 26 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r80" AS "r114") AS "r86"("c1", "c2", "c3") GROUP BY "r86"."c3") AS "r87"("c1", "c2")
+  SELECT "r96"."c1" AS "c1"
+  FROM (SELECT "pg_catalog"."array_agg"("r95"."c2" ORDER BY "r95"."c1") AS "c1", "r95"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r92" AS "r97" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r98" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r99" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r100" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r101" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r102" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r103" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r104" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r105" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r106" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r107" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r108" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r109" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r110" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r111" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r112" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r113" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r114" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r115" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r116" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r117" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r118" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r119" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r120" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r121" UNION ALL SELECT 25 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r122" UNION ALL SELECT 26 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r80" AS "r123" UNION ALL SELECT 27 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r83" AS "r124" UNION ALL SELECT 28 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r86" AS "r125" UNION ALL SELECT 29 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r89" AS "r126") AS "r95"("c1", "c2", "c3") GROUP BY "r95"."c3") AS "r96"("c1", "c2")
   LIMIT 1::bigint
   ;
 END
@@ -3505,6 +3697,10 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_asked"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_assignment_finish_output"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -3522,6 +3718,10 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_assignment_input_mode_within"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_assignment_input_near"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -3549,6 +3749,10 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_decide_nearest_row"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_decide_output"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -3569,7 +3773,35 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_decide_seen_row"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_done"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_embed_input"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_embed_input_exclude"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_embed_input_mode_nearest"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_embed_input_mode_within"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_embed_input_near"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_embed_output"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -3693,6 +3925,14 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."chain_page_earlier_read"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."chain_page_earlier_row"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."chain_page_input"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -3710,6 +3950,10 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."chain_page_weights_read"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."chain_page_weights_row"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -3958,10 +4202,6 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."item"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."missed"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -4432,6 +4672,11 @@ ALTER TABLE "slice"."assign_admitted"
   ADD CONSTRAINT "__assign_admitted_fk_root_a4ab52rbpf" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_admitted_fk_scope_root_axpol5zgcd" FOREIGN KEY ("scope", "root") REFERENCES "slice"."assign_scope" ("scope", "root") MATCH SIMPLE;
 
+ALTER TABLE "slice"."assign_asked"
+  ADD CONSTRAINT "__assign_asked_fk_from_root_jbwoju3nkb" FOREIGN KEY ("from", "root") REFERENCES "slice"."assign_embed_output" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__assign_asked_fk_root_zheeongpsu" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__assign_asked_fk_to_root_kg4yqbs5ps" FOREIGN KEY ("to", "root") REFERENCES "slice"."assign_decide_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice"."assign_assignment_finish_output"
   ADD CONSTRAINT "__assign_assignment_finish_output_fk_root_cxywb372kl" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_assignment_finish_output_fk_step_root_btb6cwfo73" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_done" ("step", "root") MATCH SIMPLE;
@@ -4446,6 +4691,11 @@ ALTER TABLE "slice"."assign_assignment_input_exclude"
 ALTER TABLE "slice"."assign_assignment_input_mode_nearest" ADD CONSTRAINT "__assign_assignment_input_mode_nearest_fk_root_t23ef5vjhv" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."assign_assignment_input_mode_within" ADD CONSTRAINT "__assign_assignment_input_mode_within_fk_root_jimtsl3pcm" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."assign_assignment_input_near"
+  ADD CONSTRAINT "__assign_assignment_input_near_fk_root_6cdqioe6mu" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__assign_assignment_input_near_fk_scope_root_lyuzgkqxtu" FOREIGN KEY ("scope", "root") REFERENCES "slice"."assign_assignment_input" ("scope", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__assign_assignment_input_near_fk_scope_pred_ordinal_uyb7izqlpx" FOREIGN KEY ("__scope_u6ypqf2r2z", "__pred_ordinal_rdz3ttleig", "__root_yjobx7uyrd") REFERENCES "slice"."assign_assignment_input_near" ("scope", "ordinal", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."assign_claim"
   ADD CONSTRAINT "__assign_claim_fk_root_tccogfd3gj" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4464,8 +4714,11 @@ ALTER TABLE "slice"."assign_decide_input_mode_nearest" ADD CONSTRAINT "__assign_
 ALTER TABLE "slice"."assign_decide_input_mode_within" ADD CONSTRAINT "__assign_decide_input_mode_within_fk_root_5fhvbm7o2j" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."assign_decide_nearest_read"
+  ADD CONSTRAINT "__assign_decide_nearest_read_fk_digest_root_nabgfbbfiv" FOREIGN KEY ("digest", "root") REFERENCES "slice"."assign_decide_nearest_row" ("digest", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_nearest_read_fk_root_bofoevlhaq" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_nearest_read_fk_step_root_bdcjrgm56g" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."assign_decide_nearest_row" ADD CONSTRAINT "__assign_decide_nearest_row_fk_root_uvtvvcuvan" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."assign_decide_output"
   ADD CONSTRAINT "__assign_decide_output_fk_root_keez6pmczm" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4482,10 +4735,34 @@ ALTER TABLE "slice"."assign_decide_output_weighed"
   ADD CONSTRAINT "__assign_decide_output_weighed_fk_step_pred_ordinal_zt6dalxe4q" FOREIGN KEY ("__step_mjpuijzth4", "__pred_ordinal_rdz3ttleig", "__root_yjobx7uyrd") REFERENCES "slice"."assign_decide_output_weighed" ("step", "ordinal", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."assign_decide_seen_read"
+  ADD CONSTRAINT "__assign_decide_seen_read_fk_digest_root_wdcopjmkbl" FOREIGN KEY ("digest", "root") REFERENCES "slice"."assign_decide_seen_row" ("digest", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_seen_read_fk_root_padlqqdvnt" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_seen_read_fk_step_root_lfxhtzprjs" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
+ALTER TABLE "slice"."assign_decide_seen_row" ADD CONSTRAINT "__assign_decide_seen_row_fk_root_3mnfet3qme" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice"."assign_done" ADD CONSTRAINT "__assign_done_fk_root_bm6oxygwbu" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."assign_embed_input" ADD CONSTRAINT "__assign_embed_input_fk_root_cwfcfjex6q" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."assign_embed_input_exclude"
+  ADD CONSTRAINT "__assign_embed_input_exclude_fk_root_ukjqxbt7ap" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__assign_embed_input_exclude_fk_step_root_wl7z42ozbz" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_embed_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__assign_embed_input_exclude_fk_step_pred_ordinal_pq6u3rnwav" FOREIGN KEY ("__step_mjpuijzth4", "__pred_ordinal_rdz3ttleig", "__root_yjobx7uyrd") REFERENCES "slice"."assign_embed_input_exclude" ("step", "ordinal", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."assign_embed_input_mode_nearest" ADD CONSTRAINT "__assign_embed_input_mode_nearest_fk_root_4znytbmmeu" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."assign_embed_input_mode_within" ADD CONSTRAINT "__assign_embed_input_mode_within_fk_root_sntsbzyy4j" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."assign_embed_input_near"
+  ADD CONSTRAINT "__assign_embed_input_near_fk_root_tre2sdwjfz" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__assign_embed_input_near_fk_step_root_rjswhmogx2" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_embed_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__assign_embed_input_near_fk_step_pred_ordinal_root_b6eu6czlww" FOREIGN KEY ("__step_mjpuijzth4", "__pred_ordinal_rdz3ttleig", "__root_yjobx7uyrd") REFERENCES "slice"."assign_embed_input_near" ("step", "ordinal", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."assign_embed_output"
+  ADD CONSTRAINT "__assign_embed_output_fk_root_2s3kxqf4fq" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__assign_embed_output_fk_step_root_amg3l6sdib" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_done" ("step", "root") MATCH SIMPLE,
+  ADD CONSTRAINT "__assign_embed_output_fk_step_root_yoz2l6kzsz" FOREIGN KEY ("step", "root") REFERENCES "slice"."assign_embed_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."assign_ended"
   ADD CONSTRAINT "__assign_ended_fk_root_snn64so4y5" FOREIGN KEY ("root") REFERENCES "slice"."assign_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4597,6 +4874,13 @@ ALTER TABLE "slice"."chain_ordered_finish_output"
 
 ALTER TABLE "slice"."chain_ordered_input" ADD CONSTRAINT "__chain_ordered_input_fk_root_yo2fvi6v6v" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
+ALTER TABLE "slice"."chain_page_earlier_read"
+  ADD CONSTRAINT "__chain_page_earlier_read_fk_digest_root_rdy323u3bs" FOREIGN KEY ("digest", "root") REFERENCES "slice"."chain_page_earlier_row" ("digest", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__chain_page_earlier_read_fk_root_dfn3birdd5" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__chain_page_earlier_read_fk_step_root_qfjrh5spdl" FOREIGN KEY ("step", "root") REFERENCES "slice"."chain_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."chain_page_earlier_row" ADD CONSTRAINT "__chain_page_earlier_row_fk_root_zlddkw7rkf" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice"."chain_page_input" ADD CONSTRAINT "__chain_page_input_fk_root_s74r6jkeai" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."chain_page_input_after"
@@ -4613,8 +4897,11 @@ ALTER TABLE "slice"."chain_page_output_next"
   ADD CONSTRAINT "__chain_page_output_next_fk_step_root_srapg45mao" FOREIGN KEY ("step", "root") REFERENCES "slice"."chain_page_output" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."chain_page_weights_read"
+  ADD CONSTRAINT "__chain_page_weights_read_fk_digest_root_uhg6hn6q56" FOREIGN KEY ("digest", "root") REFERENCES "slice"."chain_page_weights_row" ("digest", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_page_weights_read_fk_root_jeksctdxbs" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_page_weights_read_fk_step_root_cs5oeb2hng" FOREIGN KEY ("step", "root") REFERENCES "slice"."chain_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."chain_page_weights_row" ADD CONSTRAINT "__chain_page_weights_row_fk_root_jfbrlyb33o" FOREIGN KEY ("root") REFERENCES "slice"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."chain_paused" ADD CONSTRAINT "__chain_paused_fk_target_pred_turn_mokmv27wuy" FOREIGN KEY ("target", "__pred_turn_qryngij6c4") REFERENCES "slice"."chain_resumed" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 

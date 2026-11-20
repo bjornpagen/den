@@ -18,6 +18,9 @@ export type ScopeKey = string & Brand.Brand<"DenScope">
 /** An exclusivity seat's key: the digest of a scope kind and the key text its input names, the ledger's `DenExclusive`. */
 export type ExclusiveId = string & Brand.Brand<"DenExclusive">
 
+/** A recorded row's key: the digest of what a step's read found of it, the ledger's `DenRow`. */
+export type RowDigest = string & Brand.Brand<"DenRow">
+
 /** An instant, milliseconds since the epoch: the ledger's `DenInstant`, as the database's clock reads it. */
 export type Instant = bigint & Brand.Brand<"DenInstant">
 
@@ -31,6 +34,7 @@ export type Delay = bigint & Brand.Brand<"DenDelay">
 const derivedStep: (value: string) => asserts value is StepKey = () => undefined
 const derivedScope: (value: string) => asserts value is ScopeKey = () => undefined
 const derivedExclusive: (value: string) => asserts value is ExclusiveId = () => undefined
+const derivedRow: (value: string) => asserts value is RowDigest = () => undefined
 const readInstant: (value: bigint) => asserts value is Instant = () => undefined
 const readDelay: (value: bigint) => asserts value is Delay = () => undefined
 
@@ -98,3 +102,36 @@ export const exclusiveId = (flow: string, kind: string, key: string) =>
 		derivedExclusive(value)
 		return value
 	})
+
+/** A recorded column's value: what a record's column holds. */
+export type Recorded = string | bigint | number | boolean
+
+/**
+ * A recorded value's text, told apart by its type: a text as itself, a bigint and a finite number by their decimal
+ * spellings, -0 apart from 0, and a boolean by its name.
+ */
+const recordedText = (value: Recorded): string => {
+	switch (typeof value) {
+		case "string":
+			return `s${value}`
+		case "bigint":
+			return `b${String(value)}`
+		case "number":
+			return Object.is(value, -0) ? "n-0" : `n${String(value)}`
+		case "boolean":
+			return value ? "t" : "f"
+	}
+}
+
+/**
+ * The key of a row a step's read `read` found, the digest of its record's columns in their order, each its name and its
+ * value's text: rows of one record agree exactly when their digests do, so a root holds each once.
+ */
+export const rowDigest = (read: string, columns: ReadonlyArray<readonly [string, Recorded]>) =>
+	Effect.map(
+		derive(["row", read, ...Arr.flatMap(columns, ([name, value]) => [name, recordedText(value)])]),
+		(value) => {
+			derivedRow(value)
+			return value
+		}
+	)

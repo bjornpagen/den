@@ -12,12 +12,14 @@ import {
 	workload
 } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
+import { assign } from "#integration/slice/flows.ts"
 import {
 	AssignKind,
 	AssignRootKind,
 	AssignOutcome,
 	AssignRetryWhy,
 	AssignPausable,
+	AssignEmbedInputMode,
 	AssignDecideInputMode,
 	AssignAssignmentInputMode,
 	AssignDecideOutputStage,
@@ -38,20 +40,30 @@ import {
 	AssignHeld,
 	AssignRefusal,
 	AssignExhausted,
+	AssignEmbedInput,
+	AssignEmbedInputNear,
+	AssignEmbedInputExclude,
+	AssignEmbedInputModeNearest,
+	AssignEmbedInputModeWithin,
 	AssignDecideInput,
 	AssignDecideInputExclude,
 	AssignDecideInputModeNearest,
 	AssignDecideInputModeWithin,
 	AssignAssignmentInput,
+	AssignAssignmentInputNear,
 	AssignAssignmentInputExclude,
 	AssignAssignmentInputModeNearest,
 	AssignAssignmentInputModeWithin,
+	AssignEmbedOutput,
 	AssignDecideOutput,
 	AssignDecideOutputWeighed,
 	AssignDecideOutputStageServe,
 	AssignDecideOutputStageRest,
 	AssignAssignmentFinishOutput,
+	AssignAsked,
+	AssignDecideNearestRow,
 	AssignDecideNearestRead,
+	AssignDecideSeenRow,
 	AssignDecideSeenRead,
 	AssignPaused,
 	AssignResumed,
@@ -84,16 +96,24 @@ export const AssignDen = role(
 			"AssignHeld",
 			"AssignRefusal",
 			"AssignExhausted",
+			"AssignEmbedInput",
+			"AssignEmbedInputNear",
+			"AssignEmbedInputExclude",
+			"AssignEmbedInputModeNearest",
+			"AssignEmbedInputModeWithin",
 			"AssignDecideInput",
 			"AssignDecideInputExclude",
 			"AssignDecideInputModeNearest",
 			"AssignDecideInputModeWithin",
 			"AssignAssignmentInput",
+			"AssignAssignmentInputNear",
 			"AssignAssignmentInputExclude",
 			"AssignAssignmentInputModeNearest",
 			"AssignAssignmentInputModeWithin",
 			"AssignAssignmentFinishOutput",
+			"AssignDecideNearestRow",
 			"AssignDecideNearestRead",
+			"AssignDecideSeenRow",
 			"AssignDecideSeenRead"
 		]
 	}
@@ -109,6 +129,7 @@ export const AssignCoordinator = role(
 		AssignOutcome,
 		AssignRetryWhy,
 		AssignPausable,
+		AssignEmbedInputMode,
 		AssignDecideInputMode,
 		AssignAssignmentInputMode,
 		AssignDecideOutputStage,
@@ -207,6 +228,11 @@ export const assignDenPrograms = Object.freeze({
 			.insert(AssignFinish, [])
 			.insert(AssignStartStep, [])
 			.insert(AssignScope, [])
+			.insert(AssignEmbedInput, [])
+			.insert(AssignEmbedInputNear, [])
+			.insert(AssignEmbedInputExclude, [])
+			.insert(AssignEmbedInputModeNearest, [])
+			.insert(AssignEmbedInputModeWithin, [])
 			.insert(AssignDecideInput, [])
 			.insert(AssignDecideInputExclude, [])
 			.insert(AssignDecideInputModeNearest, [])
@@ -376,12 +402,47 @@ export const assignDenPrograms = Object.freeze({
 			})
 		})
 	),
-	assignReadAssignDecideInput: query(assignGraph).rule((r) => {
-		const { step, learner, topic, missed, mode, root } = v(AssignDecideInput, "assignDecideInput")
+	assignReadAssignEmbedInput: query(assignGraph).rule((r) => {
+		const { step, learner, topic, mode, root } = v(AssignEmbedInput, "assignEmbedInput")
 		return r
-			.match(AssignDecideInput, { step, learner, topic, missed, mode, root })
+			.match(AssignEmbedInput, { step, learner, topic, mode, root })
+			.where(r.eq(step, r.param("step", AssignEmbedInput.fields.step)))
+			.find({ step, learner, topic, mode, root })
+	}),
+	assignReadAssignEmbedInputModeNearest: query(assignGraph).rule((r) => {
+		const { step, root } = v(AssignEmbedInputModeNearest, "assignEmbedInputModeNearest")
+		return r
+			.match(AssignEmbedInputModeNearest, { step, root })
+			.where(r.eq(step, r.param("step", AssignEmbedInputModeNearest.fields.step)))
+			.find({ step, root })
+	}),
+	assignReadAssignEmbedInputModeWithin: query(assignGraph).rule((r) => {
+		const { step, radius, root } = v(AssignEmbedInputModeWithin, "assignEmbedInputModeWithin")
+		return r
+			.match(AssignEmbedInputModeWithin, { step, radius, root })
+			.where(r.eq(step, r.param("step", AssignEmbedInputModeWithin.fields.step)))
+			.find({ step, radius, root })
+	}),
+	assignReadAssignEmbedInputNear: query(assignGraph).rule((r) => {
+		const { step, ordinal, value } = v(AssignEmbedInputNear, "part")
+		return r
+			.match(AssignEmbedInputNear, { step, ordinal, value })
+			.where(r.eq(step, r.param("step", AssignEmbedInputNear.fields.step)))
+			.find({ step, ordinal, value })
+	}),
+	assignReadAssignEmbedInputExclude: query(assignGraph).rule((r) => {
+		const { step, ordinal, value } = v(AssignEmbedInputExclude, "part")
+		return r
+			.match(AssignEmbedInputExclude, { step, ordinal, value })
+			.where(r.eq(step, r.param("step", AssignEmbedInputExclude.fields.step)))
+			.find({ step, ordinal, value })
+	}),
+	assignReadAssignDecideInput: query(assignGraph).rule((r) => {
+		const { step, learner, topic, query, mode, root } = v(AssignDecideInput, "assignDecideInput")
+		return r
+			.match(AssignDecideInput, { step, learner, topic, query, mode, root })
 			.where(r.eq(step, r.param("step", AssignDecideInput.fields.step)))
-			.find({ step, learner, topic, missed, mode, root })
+			.find({ step, learner, topic, query, mode, root })
 	}),
 	assignReadAssignDecideInputModeNearest: query(assignGraph).rule((r) => {
 		const { step, root } = v(AssignDecideInputModeNearest, "assignDecideInputModeNearest")
@@ -405,14 +466,11 @@ export const assignDenPrograms = Object.freeze({
 			.find({ step, ordinal, value })
 	}),
 	assignReadAssignAssignmentInput: query(assignGraph).rule((r) => {
-		const { scope, learner, topic, missed, mode, root } = v(
-			AssignAssignmentInput,
-			"assignAssignmentInput"
-		)
+		const { scope, learner, topic, mode, root } = v(AssignAssignmentInput, "assignAssignmentInput")
 		return r
-			.match(AssignAssignmentInput, { scope, learner, topic, missed, mode, root })
+			.match(AssignAssignmentInput, { scope, learner, topic, mode, root })
 			.where(r.eq(scope, r.param("scope", AssignAssignmentInput.fields.scope)))
-			.find({ scope, learner, topic, missed, mode, root })
+			.find({ scope, learner, topic, mode, root })
 	}),
 	assignReadAssignAssignmentInputModeNearest: query(assignGraph).rule((r) => {
 		const { scope, root } = v(AssignAssignmentInputModeNearest, "assignAssignmentInputModeNearest")
@@ -431,6 +489,13 @@ export const assignDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", AssignAssignmentInputModeWithin.fields.scope)))
 			.find({ scope, radius, root })
 	}),
+	assignReadAssignAssignmentInputNear: query(assignGraph).rule((r) => {
+		const { scope, ordinal, value } = v(AssignAssignmentInputNear, "part")
+		return r
+			.match(AssignAssignmentInputNear, { scope, ordinal, value })
+			.where(r.eq(scope, r.param("scope", AssignAssignmentInputNear.fields.scope)))
+			.find({ scope, ordinal, value })
+	}),
 	assignReadAssignAssignmentInputExclude: query(assignGraph).rule((r) => {
 		const { scope, ordinal, value } = v(AssignAssignmentInputExclude, "part")
 		return r
@@ -442,6 +507,7 @@ export const assignDenPrograms = Object.freeze({
 		ChangeSet.empty(assignGraph)
 			.insert(AssignScope, [])
 			.insert(AssignAssignmentInput, [])
+			.insert(AssignAssignmentInputNear, [])
 			.insert(AssignAssignmentInputExclude, [])
 			.insert(AssignAssignmentInputModeNearest, [])
 			.insert(AssignAssignmentInputModeWithin, [])
@@ -547,6 +613,50 @@ export const assignCommitPrograms = Object.freeze({
 		query(assignGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
 	),
+	assignCommitEmbed: clocked(
+		ChangeSet.empty(assignGraph)
+			.insert(AssignResult, [])
+			.insert(AssignDone, [])
+			.insert(AssignHeld, [])
+			.insert(AssignEmbedOutput, [])
+			.insert(AssignScope, [])
+			.insert(AssignAdmitted, [])
+			.insert(AssignFinish, [])
+			.insert(AssignStartStep, [])
+			.insert(AssignEmbedInput, [])
+			.insert(AssignEmbedInputNear, [])
+			.insert(AssignEmbedInputExclude, [])
+			.insert(AssignEmbedInputModeNearest, [])
+			.insert(AssignEmbedInputModeWithin, [])
+			.insert(AssignDecideInput, [])
+			.insert(AssignDecideInputExclude, [])
+			.insert(AssignDecideInputModeNearest, [])
+			.insert(AssignDecideInputModeWithin, [])
+			.insert(AssignAsked, [])
+			.insert(
+				AssignStep,
+				query(assignGraph).rule((r) => {
+					const steps = r.relation("steps", {
+						step: AssignStep.fields.step,
+						kind: AssignStep.fields.kind,
+						scope: AssignStep.fields.scope,
+						delay: DenDelay
+					})
+					const { step, kind, scope, delay } = v(steps, "spawned")
+					return r.match(steps, { step, kind, scope, delay }).find({
+						step,
+						kind,
+						scope,
+						due: Compute.cast(
+							Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(delay)),
+							DenInstant
+						),
+						root: r.param("root", AssignStep.fields.root)
+					})
+				})
+			),
+		{ now: "millis" }
+	),
 	assignCommitDecide: ChangeSet.union(
 		ChangeSet.empty(assignGraph)
 			.insert(AssignResult, [])
@@ -556,38 +666,13 @@ export const assignCommitPrograms = Object.freeze({
 			.insert(AssignDecideOutputWeighed, [])
 			.insert(AssignDecideOutputStageServe, [])
 			.insert(AssignDecideOutputStageRest, [])
+			.insert(AssignDecideNearestRow, [])
 			.insert(AssignDecideNearestRead, [])
+			.insert(AssignDecideSeenRow, [])
 			.insert(AssignDecideSeenRead, []),
 		ChangeSet.empty(Loader).insert(App.relations.Assigned, [])
 	),
-	assignReadDecide: deferrable(
-		query(Loader).reads({
-			nearest: query(Loader)
-				.rule((r) => {
-					const { passage, topic, embedding } = v(App.relations.Passage, "row")
-					const anchor = v(App.relations.Missed, "anchor")
-					return r
-						.match(App.relations.Missed, { question: anchor.question, embedding: anchor.embedding })
-						.match(App.relations.Passage, { passage, topic, embedding })
-						.where(
-							r.eq(
-								anchor.question,
-								r.param("anchor.question", App.relations.Missed.fields.question)
-							),
-							r.eq(topic, r.param("topic", App.relations.Passage.fields.topic))
-						)
-						.find({ passage, topic, distance: Compute.cosineDistance(embedding, anchor.embedding) })
-				})
-				.approximateNearest({ by: "distance", take: 3 }),
-			seen: query(Loader).rule((r) => {
-				const { learner, passage } = v(App.relations.Seen, "row")
-				return r
-					.match(App.relations.Seen, { learner, passage })
-					.where(r.eq(learner, r.param("learner", App.relations.Seen.fields.learner)))
-					.find({ learner, passage })
-			})
-		})
-	),
+	assignReadDecide: deferrable(assign.kinds[1].reads.query(Loader)),
 	assignCommitAssignmentFinish: ChangeSet.union(
 		ChangeSet.empty(assignGraph)
 			.insert(AssignResult, [])

@@ -1,4 +1,4 @@
-import { DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
+import { DenInstant, DenRow, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Chain to; `den generate` writes it, and nothing edits it. */
 import {
 	closed,
@@ -17,7 +17,6 @@ import {
 	retirement,
 	select
 } from "@bjornpagen/grizzle"
-import { Weight } from "#integration/slice/relations.ts"
 
 const Seq = contract("Seq", pg.bigint)
 
@@ -29,6 +28,14 @@ export const ChainPausable = closed.unordered("ChainPausable", ["ChainRun", "Ord
 export const ChainPageInputFeed = closed.unordered("ChainPageInputFeed", ["news", "sport"])
 export const ChainChainRunInputFeed = closed.unordered("ChainChainRunInputFeed", ["news", "sport"])
 export const ChainOrderedInputFeed = closed.unordered("ChainOrderedInputFeed", ["news", "sport"])
+export const ChainPageWeightsRowFeed = closed.unordered("ChainPageWeightsRowFeed", [
+	"news",
+	"sport"
+])
+export const ChainPageEarlierRowFeed = closed.unordered("ChainPageEarlierRowFeed", [
+	"news",
+	"sport"
+])
 
 export const ChainScope = relation("ChainScope", { scope: DenScope, root: DenScope }, [
 	"scope",
@@ -134,7 +141,7 @@ export const ChainOrderedInput = relation(
 )
 export const ChainPageOutput = relation(
 	"ChainPageOutput",
-	{ step: DenStep, seq: Seq, items: pg.bigint, root: DenScope },
+	{ step: DenStep, seq: Seq, items: pg.bigint, earlier: pg.bigint, root: DenScope },
 	["step", "root"]
 )
 export const ChainPageOutputNext = relation(
@@ -157,15 +164,30 @@ export const ChainNext = relation(
 	{ from: DenStep, ordinal: natural, to: DenStep, root: DenScope },
 	["from", "ordinal", "root"]
 )
+export const ChainPageWeightsRow = relation(
+	"ChainPageWeightsRow",
+	{ digest: DenRow, feed: closedId(ChainPageWeightsRowFeed), factor: pg.bigint, root: DenScope },
+	["digest", "root"]
+)
 export const ChainPageWeightsRead = relation(
 	"ChainPageWeightsRead",
+	{ step: DenStep, ordinal: natural, digest: DenRow, root: DenScope },
+	["step", "ordinal", "root"]
+)
+export const ChainPageEarlierRow = relation(
+	"ChainPageEarlierRow",
 	{
-		step: DenStep,
-		ordinal: natural,
-		feed: Weight.fields.feed,
-		factor: Weight.fields.factor,
+		digest: DenRow,
+		feed: closedId(ChainPageEarlierRowFeed),
+		seq: pg.bigint,
+		n: pg.bigint,
 		root: DenScope
 	},
+	["digest", "root"]
+)
+export const ChainPageEarlierRead = relation(
+	"ChainPageEarlierRead",
+	{ step: DenStep, ordinal: natural, digest: DenRow, root: DenScope },
 	["step", "ordinal", "root"]
 )
 export const ChainPaused = relation(
@@ -190,6 +212,8 @@ export const chainGraph = fragment(
 		ChainPageInputFeed,
 		ChainChainRunInputFeed,
 		ChainOrderedInputFeed,
+		ChainPageWeightsRowFeed,
+		ChainPageEarlierRowFeed,
 		ChainScope,
 		ChainRoot,
 		ChainAdmitted,
@@ -216,7 +240,10 @@ export const chainGraph = fragment(
 		ChainChainRunFinishOutput,
 		ChainOrderedFinishOutput,
 		ChainNext,
-		ChainPageWeightsRead
+		ChainPageWeightsRow,
+		ChainPageWeightsRead,
+		ChainPageEarlierRow,
+		ChainPageEarlierRead
 	],
 	[
 		contained(on(ChainAdmitted, "scope", "root"), on(ChainScope, "scope", "root")),
@@ -298,6 +325,15 @@ export const chainGraph = fragment(
 		contained(on(ChainNext, "to", "root"), on(ChainPageInput, "step", "root")),
 		key(on(ChainNext, "to", "root")),
 		contained(on(ChainPageWeightsRead, "step", "root"), on(ChainResult, "step", "root")),
+		contained(
+			on(ChainPageWeightsRead, "digest", "root"),
+			on(ChainPageWeightsRow, "digest", "root")
+		),
+		contained(on(ChainPageEarlierRead, "step", "root"), on(ChainResult, "step", "root")),
+		contained(
+			on(ChainPageEarlierRead, "digest", "root"),
+			on(ChainPageEarlierRow, "digest", "root")
+		),
 		retirable(ChainRoot, [
 			on(ChainScope, "root"),
 			on(ChainAdmitted, "root"),
@@ -324,7 +360,10 @@ export const chainGraph = fragment(
 			on(ChainChainRunFinishOutput, "root"),
 			on(ChainOrderedFinishOutput, "root"),
 			on(ChainNext, "root"),
-			on(ChainPageWeightsRead, "root")
+			on(ChainPageWeightsRow, "root"),
+			on(ChainPageWeightsRead, "root"),
+			on(ChainPageEarlierRow, "root"),
+			on(ChainPageEarlierRead, "root")
 		])
 	]
 )
@@ -340,6 +379,8 @@ export const chainCoordination = fragment(
 		ChainPageInputFeed,
 		ChainChainRunInputFeed,
 		ChainOrderedInputFeed,
+		ChainPageWeightsRowFeed,
+		ChainPageEarlierRowFeed,
 		ChainPaused,
 		ChainResumed
 	],
@@ -358,7 +399,10 @@ export const chainWriter = [
 	"ChainPageOutputNext",
 	"ChainChainRunFinishOutput",
 	"ChainOrderedFinishOutput",
+	"ChainPageWeightsRow",
 	"ChainPageWeightsRead",
+	"ChainPageEarlierRow",
+	"ChainPageEarlierRead",
 	"ChainStep",
 	"ChainScope",
 	"ChainAdmitted",

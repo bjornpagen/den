@@ -8,7 +8,6 @@ import {
 	type JoinIR,
 	type LawIR,
 	type Lowered,
-	type ReadIR,
 	type SeatsIR,
 	type SideIR,
 	type SpawnedScopeIR,
@@ -75,6 +74,8 @@ const fieldExpr = (type: FieldType): string => {
 			return type.brand
 		case "app":
 			return `${type.relation}.fields.${type.field}`
+		case "vector":
+			return `pg.vector(${type.dimensions})`
 		case "retirement":
 			return "retirement"
 		case "base":
@@ -266,11 +267,20 @@ const writerRelationsOf = (l: Lowered): ReadonlyArray<string> => {
 		`${P}Held`,
 		...Arr.flatMap(l.steps, (s) => valueRelations(s.output)),
 		...Arr.flatMap(l.joins, (j) => valueRelations(j.finish.output)),
-		...Arr.flatMap(l.steps, (s) => Arr.map(s.reads, (r) => r.record)),
+		...Arr.flatMap(l.steps, (s) => Arr.flatMap(s.reads, (r) => [r.row, r.record])),
 		...(anySpawn ? l.spawning : []),
 		...(appRoots ? l.requesting : [])
 	])
 }
+
+/** What a commit records of its step's reads: the lines that digest each row, and the facts that hold them. */
+interface Recording {
+	readonly lines: ReadonlyArray<string>
+	readonly facts: ReadonlyArray<string>
+}
+
+/** A commit that records no read: a finish's, a step's of no reads. */
+const unrecorded: Recording = { lines: [], facts: [] }
 
 /** An identifier of a printed module's text, for the names the module uses. */
 const IDENTIFIER = regex("[A-Za-z_$][A-Za-z0-9_$]*", "g")
@@ -338,7 +348,7 @@ const countsExpr = (counts: CountsIR): string =>
  */
 export const printFragment = (l: Lowered, place: Placement): string => {
 	const n = naming(l)
-	const reads = Arr.dedupe([...l.read, ...l.awaited])
+	const reads = l.awaited
 	const writer = writerRelationsOf(l)
 	const rosterNames = Arr.map(l.rosters, (r) => r.name)
 	const seats = Option.toArray(l.seats)
@@ -589,58 +599,6 @@ const spawnedStepsOf = (graph: string, step: string): string => `.insert(
 			})
 	})
 )`
-
-/** The parameters a step's read takes from its input, each by the name it has inside the read's own query. */
-const paramsOf = (rd: ReadIR): ReadonlyArray<string> =>
-	rd.kind === "nearest" ? [...rd.by, ...Arr.map(rd.anchor.key, (k) => `anchor.${k}`)] : rd.by
-
-/**
- * A step's declared read over the app's schema, under its app role `writer`: the rows of the relation whose fields `by`
- * equal the parameters of their names, or, for a nearest read, those rows scored by the cosine distance of their
- * vector to the vector of the anchor's row its whole key names, each key field the parameter `anchor.<field>`, and
- * searched by `approximateNearest`, delivered without the vector and with their distance.
- */
-const readOf = (rd: ReadIR, app: string, writer: string): string => {
-	const rel = `${app}.relations.${rd.relation}`
-	const by = Arr.map(rd.by, (f) => `r.eq(${f}, r.param(${q(f)}, ${rel}.fields.${f}))`)
-	if (rd.kind === "rows") {
-		return `query(${writer}).rule((r) => {
-	const { ${commas(rd.fields)} } = v(${rel}, "row")
-	return r
-		.match(${rel}, { ${commas(rd.fields)} })${
-			Arr.isReadonlyArrayNonEmpty(by)
-				? `
-		.where(${commas(by)})`
-				: ""
-		}
-		.find({ ${commas(rd.fields)} })
-})`
-	}
-	const anchored = `${app}.relations.${rd.anchor.relation}`
-	const keyed = Arr.map(
-		rd.anchor.key,
-		(k) => `r.eq(anchor.${k}, r.param(${q(`anchor.${k}`)}, ${anchored}.fields.${k}))`
-	)
-	return `query(${writer})
-	.rule((r) => {
-		const { ${commas([...rd.fields, rd.vector])} } = v(${rel}, "row")
-		const anchor = v(${anchored}, "anchor")
-		return r
-			.match(${anchored}, { ${commas([...Arr.map(rd.anchor.key, (k) => `${k}: anchor.${k}`), `${rd.anchor.vector}: anchor.${rd.anchor.vector}`])} })
-			.match(${rel}, { ${commas([...rd.fields, rd.vector])} })
-			.where(${commas([...keyed, ...by])})
-			.find({ ${commas([...rd.fields, `distance: Compute.cosineDistance(${rd.vector}, anchor.${rd.anchor.vector})`])} })
-	})
-	.approximateNearest({ by: "distance", take: ${rd.take} })`
-}
-
-/**
- * A step's declared reads as one read, grizzle's record of named queries: one statement, so every read a step declares
- * sees one snapshot and what it records describes one moment of the database. Each read's parameters are its own
- * under its name, `<read>.<parameter>`.
- */
-const readsOf = (reads: readonly [ReadIR, ...Array<ReadIR>], app: string, writer: string): string =>
-	`query(${writer}).reads({ ${commas(Arr.map(reads, (rd) => `${rd.name}: ${readOf(rd, app, writer)}`))} })`
 
 /**
  * The programs module: den's programs over the flow's graph and coordination fragments, the roles over the app's
@@ -990,7 +948,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 						r("Failed"),
 						r("Held"),
 						...valueRelations(e),
-						...Arr.map(s.reads, (rd) => rd.record)
+						...Arr.flatMap(s.reads, (rd) => [rd.row, rd.record])
 					],
 					none,
 					app
@@ -1185,12 +1143,15 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		committing(
 			s.name,
 			s.output,
-			Arr.map(s.reads, (rd) => rd.record),
+			Arr.flatMap(s.reads, (rd) => [rd.row, rd.record]),
 			s.edges,
 			s.writes
 		)
 		if (Arr.isReadonlyArrayNonEmpty(s.reads)) {
-			commitPrograms.push([n.program(`Read${s.name}`), deferred(readsOf(s.reads, app, W))])
+			commitPrograms.push([
+				n.program(`Read${s.name}`),
+				deferred(`${place.flow.name}.kinds[${s.index}].reads.query(${W})`)
+			])
 		}
 	})
 	Arr.forEach(l.joins, (j) =>
@@ -1257,6 +1218,9 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		`import { ${commas(Arr.filter(["DenDelay", "DenInstant"], (name) => tokens.has(name)))} } from "@bjornpagen/den/lower/keys"`,
 		`import { ${app} } from ${q(place.schema.from)}`,
 		`import { ${W} } from ${q(place.writer.from)}`,
+		...(Arr.some(l.steps, (st) => Arr.isReadonlyArrayNonEmpty(st.reads))
+			? [`import { ${place.flow.name} } from ${q(place.flow.from)}`]
+			: []),
 		`import { ${commas(imported)} } from ${q(place.fragment)}`,
 		"",
 		body
@@ -1534,7 +1498,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		output: ValueIR,
 		edges: ReadonlyArray<EdgeIR>,
 		w: WritesIR,
-		records: ReadonlyArray<string>,
+		records: Recording,
 		from: Node
 	): string => {
 		const grow = Arr.isReadonlyArrayNonEmpty(edges)
@@ -1543,6 +1507,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		return lines([
 			"commit: (done) => Effect.gen(function* () {",
 			`\tconst grown = yield* ${grow}`,
+			...records.lines,
 			`\tconst outcome = yield* settled(h.commits.${n.program(`Commit${name}`)}.once({ params: ${Arr.isReadonlyArrayNonEmpty(edges) ? "{ steps: grown.steps, root: done.turn.root }" : "{}"}, facts: { ${opsOf(
 				[
 					...(Arr.isReadonlyArrayNonEmpty(edges) ? ["...grown.rows"] : []),
@@ -1550,7 +1515,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 					`${r("Done")}: [{ step: done.turn.step, root: done.turn.root }]`,
 					`${r("Held")}: [{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }]`,
 					...factsOf(output, "done.turn.step", "done.output", "done.turn.root"),
-					...records
+					...records.facts
 				],
 				w,
 				"done"
@@ -1573,53 +1538,48 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				: [])
 		])
 
-	const recordFacts = (s: StepIR, found: string, turn: string): ReadonlyArray<string> =>
-		Arr.map(
+	/**
+	 * What a step's commit records of its reads, from the rows `found` names and the turn `turn` names: each row's digest
+	 * computed first, then each row once per root, by its digest, and the step's reference to each in the order it found
+	 * them.
+	 */
+	const recordingOf = (s: StepIR, found: string, turn: string): Recording => ({
+		lines: Arr.map(
 			s.reads,
 			(rd) =>
-				`${rd.record}: Arr.map(${found}.${rd.name}, (row, ordinal) => ({ ...row, step: ${turn}.step, root: ${turn}.root, ordinal: BigInt(ordinal) }))`
-		)
+				`\tconst recorded${Str.capitalize(rd.name)} = yield* Effect.forEach(${found}.${rd.name}, (row) => Effect.map(rowDigest(${q(rd.name)}, [${commas(Arr.map(rd.columns, (c) => `[${q(c.name)}, row.${c.name}]`))}]), (digest) => ({ ...row, digest })))`
+		),
+		facts: Arr.flatMap(s.reads, (rd) => [
+			`${rd.row}: Arr.dedupeWith(Arr.map(recorded${Str.capitalize(rd.name)}, (row) => ({ ...row, root: ${turn}.root })), (a, b) => a.digest === b.digest)`,
+			`${rd.record}: Arr.map(recorded${Str.capitalize(rd.name)}, (row, ordinal) => ({ step: ${turn}.step, root: ${turn}.root, ordinal: BigInt(ordinal), digest: row.digest }))`
+		])
+	})
 
-	const failPort = (
-		name: string,
-		error: Option.Option<ValueIR>,
-		records: (rows: string, turn: string) => ReadonlyArray<string>
-	): string =>
+	const failPort = (name: string, error: Option.Option<ValueIR>, records: Recording): string =>
 		Option.match(error, {
 			onNone: () => "fail: (failed) => Effect.die(failed.error)",
 			onSome: (e) =>
-				`fail: (failed) => settled(h.den.${n.program(`Fail${name}`)}.once({ params: {}, facts: { insert: { ${commas(
+				`fail: (failed) => Effect.gen(function* () {\n${lines(records.lines)}\n\treturn yield* settled(h.den.${n.program(`Fail${name}`)}.once({ params: {}, facts: { insert: { ${commas(
 					[
 						`${r("Result")}: [{ step: failed.turn.step, root: failed.turn.root, outcome: "failed" }]`,
 						`${r("Failed")}: [{ step: failed.turn.step, root: failed.turn.root }]`,
 						`${r("Held")}: [{ step: failed.turn.step, root: failed.turn.root, attempt: failed.turn.attempt }]`,
 						...factsOf(e, "failed.turn.step", "failed.error", "failed.turn.root"),
-						...records("failed.rows", "failed.turn")
+						...records.facts
 					]
-				)} } } }))`
+				)} } } }))\n})`
 		})
 
 	const stepRunner = (s: StepIR): string => {
-		const params = Arr.flatMap(s.reads, (rd) =>
-			Arr.map(paramsOf(rd), (param) => `${q(`${rd.name}.${param}`)}: ${rd.name}.${param}`)
-		)
 		const read = Arr.isReadonlyArrayNonEmpty(s.reads)
-			? lines([
-					"read: (input) => {",
-					...Arr.map(
-						s.reads,
-						(rd) => `\tconst ${rd.name} = ${kindAt(s.index)}.reads.${rd.name}.params(input)`
-					),
-					`\treturn Effect.flatMap(settled(h.commits.${n.program(`Read${s.name}`)}.once({ params: { ${commas(params)} }, facts: {} })), (rows) => Effect.map(only(rows), (row) => ({ ${commas(Arr.map(s.reads, (rd) => `${rd.name}: row.${rd.name}`))} })))`,
-					"}"
-				])
+			? `read: (input) => Effect.flatMap(settled(h.commits.${n.program(`Read${s.name}`)}.once({ params: ${kindAt(s.index)}.reads.params(input), facts: {} })), (rows) => Effect.map(only(rows), (row) => ({ ${commas(Arr.map(s.reads, (rd) => `${rd.name}: Arr.map(row.${rd.name}, (found) => ({ ${commas(Arr.map(rd.columns, (c) => `${c.name}: found.${c.name}`))} }))`))} })))`
 			: "read: () => Effect.succeed({})"
 		return lines([
 			`runnerOf(${kindAt(s.index)}, {`,
 			`\tinput: (step) => ${readerOf(s.input)}(step),`,
 			`\t${read},`,
 			`\t${indented("\t")(
-				commitPort(s.name, s.output, s.edges, s.writes, recordFacts(s, "done.rows", "done.turn"), {
+				commitPort(s.name, s.output, s.edges, s.writes, recordingOf(s, "done.rows", "done.turn"), {
 					step: "done.turn.step",
 					input: "done.input",
 					output: "done.output",
@@ -1627,7 +1587,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 					root: "done.turn.root"
 				})
 			)},`,
-			`\t${failPort(s.name, s.error, (rows, turn) => recordFacts(s, rows, turn))}`,
+			`\t${failPort(s.name, s.error, recordingOf(s, "failed.rows", "failed.turn"))}`,
 			"}, Option.none())"
 		])
 	}
@@ -1712,7 +1672,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			"\t}),",
 			"\t\tread: () => Effect.succeed([]),",
 			`\t\t${indented("\t\t")(
-				commitPort(j.finish.name, j.finish.output, j.finish.edges, j.finish.writes, [], {
+				commitPort(j.finish.name, j.finish.output, j.finish.edges, j.finish.writes, unrecorded, {
 					step: "done.turn.step",
 					input: "done.input.input",
 					output: "done.output",
@@ -1720,7 +1680,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 					root: "done.turn.root"
 				})
 			)},`,
-			`\t\t${failPort(j.finish.name, j.finish.error, () => [])}`,
+			`\t\t${failPort(j.finish.name, j.finish.error, unrecorded)}`,
 			"\t},",
 			`\tOption.some(${q(j.name)})`,
 			")"
@@ -1889,6 +1849,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"finishStep",
 		...(Arr.some(roots, isScheduled) ? ["type Instant"] : []),
 		"rootScope",
+		...(Arr.some(l.steps, (st) => Arr.isReadonlyArrayNonEmpty(st.reads)) ? ["rowDigest"] : []),
 		"type ScopeKey",
 		...(Arr.some(l.joins, (j) => Arr.some(j.children, (c) => c.kind === "scope"))
 			? ["startedScope"]

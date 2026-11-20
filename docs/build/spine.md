@@ -15,7 +15,7 @@ constants with their evidence beside the code they bound (`src/runtime/turn.ts`,
 | module | what it holds |
 |---|---|
 | `src/transport.ts` | the wake contract: `Wake` `{ lane, step, attempt }`, each field branded (`den/LaneName`, `DenStep`, `den/Attempt` ≥ 1), decoded by `WakeSchema`; `idempotencyKey` (`${lane}:${step}:${attempt}`); `Transport`, a `Context.Service` whose `send` never fails; the in-process transport over an unbounded `Queue` |
-| `src/algebra/kinds.ts` | `lane` (width, window, pause, ceiling of attempts), `step`, `awaiting`, `scope`, `root`, `edge`, `writes`; a step's reads by name, each `rows` (equality over one relation) or `nearest` (grizzle's `approximateNearest` from an `anchor`, a stored row's vector by its whole key), taken in one statement; spawns typed by their kind (`Page.of(input)`); bodies `(input, found) → Effect<{ output, writes }, E, R>`, `found` each read's rows by its name; `Refused` |
+| `src/algebra/kinds.ts` | `lane` (width, window, pause, ceiling of attempts), `step`, `awaiting`, `scope`, `root`, `edge`, `writes`; a step's reads, `reads(query, records, params)`, one grizzle query of the app role, a record of named queries, its parameters from the step's input, each name's rows recorded by its record, taken in one statement; the facts a step awaits (`awaitFact`); its waits on its source; spawns typed by their kind (`Page.of(input)`); bodies `(input, found) → Effect<{ output, writes }, E, R>`, `found` each read's rows by its name; `Refused` |
 | `src/algebra/flow.ts` | `flow(name, { lanes, kinds, edges })` and its declaration-time checks (below) |
 | `src/lower/schema.ts` | Effect Schema to relations: columns of `String`, `BigInt`, `Finite` (double precision, held finite by a row check), `Boolean`, a literal union of texts (a roster) or a brand of one (a contract); an `Option` of a column (a relation of its own); an `Array` of columns or of structs of them (an ordered family keyed by owner and a gap-free ordinal from 0); a `TaggedUnion` of structs of columns (its tag a roster column of the owner's row, a relation per variant holding a row exactly where the tag names it); anything else, a refinement by a check included, `Refused` |
 | `src/lower/fragment.ts` | a flow to its fragment as data (`Lowered`): rosters, contracts, relations, laws, and the kinds, joins and edges the printer reads |
@@ -35,11 +35,17 @@ the app's `app` login with an `auditor` role), `grizzle.config.ts`, and `migrati
 and `grizzle check` passes.
 
 - **Chain** (`Chain`): root `ChainRun` starts `Page` 0 of a feed; `Next` spawns page n + 1 while a page names one; each
-  page inserts its items (an app relation) with its result; the root's finish reads every page's output and inserts the
-  feed's cursor position.
+  page reads its feed's weight and every item of the pages before it, as a turn reads its thread, each such row
+  recorded once in the root however many pages read it, and inserts its items (an app relation) with its result; the
+  root's finish reads every page's output and inserts the feed's cursor position.
 - **Fan-out** (`Fan`): root `FanRun` starts one `Batch` scope, which starts one `Square` per number up to its size; the
   batch's finish tallies them once all have results; the root's finish runs after the batch's and inserts `Settled`.
-- **Review** (`Review`, AlphaTest's gap analysis's shape): root `ReviewRun` starts `Gather`, whose edge `Split` opens
+- **Assignment** (`Assign`, the assignment engine's shape): root `Assignment` starts `Embed`, whose body computes a
+  question's query vector and whose edge `Asked` carries it to `Decide`, whose one grizzle query reads the passages
+  nearest that vector, a parameter from its input, and those its learner has seen, and answers a structured decision.
+- **Writeback** (`Writeback`): root `Writeback`'s step `Deliver` inserts the gradebook's `Delivered` of an attempt.
+- **Review** (`Review`, AlphaTest's gap analysis's shape): root `ReviewRun` starts `Gather`, which awaits its attempt's
+  `Delivered` and whose edge `Split` opens
   one `Questions` scope per group, each starting one `Analyze` per question; a group's finish, the cluster, answers
   its count and total, and the edge `Saved` from `Questions` spawns the group's `Save` in the review from that output;
   the root's finish reads every group's ending with its output and every save, and inserts `Summary`.
@@ -70,11 +76,12 @@ ordinal; `PWithin` and `PStartScope` only where the flow declares a child scope)
 done or failed), `PHeld` (the attempt whose commit holds the result), `PRefusal` (the law's id), `PExhausted` (a step
 failed by its ladder's end, at the attempt `PHeld` names); per step kind `PKInput` and `PKOutput` (and `PKError` for a
 typed error), per join `PJInput`, per finish `PJFinishError`, per Option field a relation of its own, per declared read
-`PKNRead` (step, ordinal, the fields it delivers, and a nearest read's `distance`), and per edge kind `PE` (from,
+`PKNRow` (each row the read named N found, once per root, keyed by the digest of its record) and `PKNRead` (the
+step's references to them: step, ordinal, digest), and per edge kind `PE` (from,
 ordinal, to). Every law is a key, a native containment or a row check: a claim's attempt is its place among its step's
 claims, stamped gap-free from 0, and each past 0 follows its predecessor's end (a `pred` containment over attempts ≥ 1
 into `PEnded`); a finite number's column is finite; an edge's sides are contained in its kinds' input relations; an
-output in its kind's input and in its done result; a read's record in its step's result.
+output in its kind's input and in its done result; a read's reference in its step's result and in its row.
 
 ## What `grizzle generate` certified
 

@@ -84,33 +84,35 @@
   Gateway for a structured decision, which becomes the step's recorded output exactly once, and writes the app's
   Decision, Stage and ItemSession rows in the same commit; at publish time a chain of pages embeds the content with
   gemini-embedding-2. A feature the engine needs is built; nothing beside it is.
-- **A step's reads are named, taken in one statement, and a read may be a nearest-neighbour search from a stored row
-  (settled by the engine's need, 2026-11-18; one snapshot and the stored anchor by edullm-1f the same day, under
-  Bjorn's order that a gap the engine needs is fixed upstream, never worked around).** A step declares
-  `reads: { name: rows(R, by, params) | nearest(R, vector, take, by, anchor(A, field), params) }`. Every read of a step
-  is one statement, grizzle's `query(W).reads({ … })` (DENREADS, f21623e76), served deferrable after the claim and
-  before the body, so its reads see one snapshot and what they record describes one moment of the database; each is
-  recorded with the result in `<P><Step><Name>Read(step, ordinal, …)`, and the body sees each read's rows by its name.
-  A nearest read is grizzle's `approximateNearest` on pgvector's HNSW index, which `grizzle generate` installs from the
-  served read: at most `take` rows of `R` whose fields `by` equal the parameters, nearest by the cosine distance of
-  their field `vector` to the field `field` of the row of `A` whose whole key `params` gives under `anchor` (the
-  engine's missed question), which grizzle reads once, before the one index scan; an anchor key that holds no row
-  finds none. Each neighbour is delivered and recorded without the vector it was ranked by and with its `distance`.
-  - Named, because a decision reads several relations: the child's ledger and the nearest content. One read a step
-    would put each in a step of its own and carry its rows through outputs. The reference model already names reads.
+- **A step's reads are one grizzle query, named, taken in one statement, and recorded once per root (settled by the
+  engine's need, 2026-11-18, under Bjorn's order that a gap the engine needs is fixed upstream, never worked around;
+  restated by AlphaTest's, 2026-11-20).** A step declares `reads(query, records, params)`: `query` is a function of
+  the flow's app role to one grizzle query, `query(W).reads({ name: query, ... })`, a record of named queries, any a
+  grizzle query states (equalities, a range or a set of values, an exact order by a computed distance and a `take`,
+  `approximateNearest` from a parameter's vector or a stored row's, a hybrid of searches); `params` takes its
+  parameters, `<name>.<parameter>`, from the step's input; and `records` gives each name's record, a flat struct of
+  columns whose type holds that query's rows. den prints `deferrable(<flow>.kinds[i].reads.query(W))` over the app
+  role, served after the claim and before the body, so a step's reads see one snapshot and what they record describes
+  one moment of the database; the body sees each name's rows as its record states them. Each row is recorded in
+  `<P><Step><Name>Row(digest, …, root)`, keyed by the SHA-256 of its record's columns and its root, and the step's
+  record of it is a reference, `<P><Step><Name>Read(step, ordinal, digest, root)`, contained in its row and in the
+  step's result: a row two steps of one root found is stored once (an insert of a row already present is no change),
+  so a chain of turns that reads a conversation as it grows stores each of its rows once, linear in the thread, where
+  a copy per step was quadratic (DCAN's turns read their whole thread; alphatest-novus's ask).
+  - Named, because a decision reads several relations: the child's ledger and the nearest content.
   - One statement, because a step's record is its input: reads taken on several snapshots would record a moment that
-    never was. Each read's parameters are its own under its name, `<read>.<parameter>`.
-  - From a stored row, because the engine searches from a missed question's stored embedding; a query vector the input
-    carried was den's work-around while grizzle could not, and it is gone with den's step field of vectors, which
-    nothing else needed. A vector a body computes would reach a read on an edge, as any read that depends on a body
-    does, once a need for one appears.
+    never was.
+  - A grizzle query, because den's own read forms (equality rows, a nearest read from a stored anchor) could state
+    neither a range, a set of values, an exact order nor a search from a vector the input carries (DCAN's catalog
+    search, its route-scoped filters and its hybrid of vectors and full text), and a second query language in den
+    would trail grizzle's; a function of the app role, because the flow is declared before the schema its fragment is
+    spread into, which the role is over.
   - Recorded, never searched again: which rows an HNSW search returns depends on the index and the database owner's
-    pgvector settings as well as the facts (grizzle's README), so the record is what the step saw.
-  - Without the neighbours' vectors: at 1536 dimensions each is 6 KiB that the body never sees.
-  - Rejected: a search the body runs itself, which would give a body the database (proposal, section 3.7); the
-    neighbours as one array or JSON column, a blob; ranking every vector of a rows read in den, which reads the whole
-    relation for every decision and uses no index; and a search from a stored row's vector chained in den as two calls
-    on two snapshots.
+    pgvector settings as well as the facts (grizzle's README), so the record is what the step saw. A record holds no
+    vector, which the body never sees.
+  - Rejected: a search the body runs itself, which would give a body the database (proposal, section 3.7); the rows as
+    one array or JSON column, a blob; a record of only the found rows' keys into the app's relations, which a put or a
+    delete there would rewrite and which records nothing a query computes; and a copy of every row per step.
 - **A number is `Schema.Finite`, held finite by the database (2026-11-18).** Effect's `schemaNumber` diagnostic
   refuses `Schema.Number`, so a number field is `Schema.Finite`, lowered to double precision under a row check
   (`Compute.isFinite`), so the database holds what the schema states.

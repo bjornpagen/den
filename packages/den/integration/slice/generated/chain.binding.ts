@@ -14,6 +14,7 @@ import {
 	type Delay,
 	finishStep,
 	rootScope,
+	rowDigest,
 	type ScopeKey,
 	startedStep,
 	type StepKey
@@ -306,15 +307,27 @@ export const chainLedger = (h: ChainHandles) => {
 			chain.kinds[0],
 			{
 				input: (step) => readChainPageInput(step),
-				read: (input) => {
-					const weights = chain.kinds[0].reads.weights.params(input)
-					return Effect.flatMap(
+				read: (input) =>
+					Effect.flatMap(
 						settled(
-							h.commits.chainReadPage.once({ params: { "weights.feed": weights.feed }, facts: {} })
+							h.commits.chainReadPage.once({
+								params: chain.kinds[0].reads.params(input),
+								facts: {}
+							})
 						),
-						(rows) => Effect.map(only(rows), (row) => ({ weights: row.weights }))
-					)
-				},
+						(rows) =>
+							Effect.map(only(rows), (row) => ({
+								weights: Arr.map(row.weights, (found) => ({
+									feed: found.feed,
+									factor: found.factor
+								})),
+								earlier: Arr.map(row.earlier, (found) => ({
+									feed: found.feed,
+									seq: found.seq,
+									n: found.n
+								}))
+							}))
+					),
 				commit: (done) =>
 					Effect.gen(function* () {
 						const grown = yield* Effect.map(
@@ -372,6 +385,25 @@ export const chainLedger = (h: ChainHandles) => {
 							]),
 							(parts) => Arr.reduce(parts, nothingGrown, joined)
 						)
+						const recordedWeights = yield* Effect.forEach(done.rows.weights, (row) =>
+							Effect.map(
+								rowDigest("weights", [
+									["feed", row.feed],
+									["factor", row.factor]
+								]),
+								(digest) => ({ ...row, digest })
+							)
+						)
+						const recordedEarlier = yield* Effect.forEach(done.rows.earlier, (row) =>
+							Effect.map(
+								rowDigest("earlier", [
+									["feed", row.feed],
+									["seq", row.seq],
+									["n", row.n]
+								]),
+								(digest) => ({ ...row, digest })
+							)
+						)
 						const outcome = yield* settled(
 							h.commits.chainCommitPage.once({
 								params: { steps: grown.steps, root: done.turn.root },
@@ -388,7 +420,8 @@ export const chainLedger = (h: ChainHandles) => {
 												step: done.turn.step,
 												root: done.turn.root,
 												seq: done.output.seq,
-												items: done.output.items
+												items: done.output.items,
+												earlier: done.output.earlier
 											}
 										],
 										ChainPageOutputNext: Option.toArray(
@@ -398,11 +431,25 @@ export const chainLedger = (h: ChainHandles) => {
 												value
 											}))
 										),
-										ChainPageWeightsRead: Arr.map(done.rows.weights, (row, ordinal) => ({
-											...row,
+										ChainPageWeightsRow: Arr.dedupeWith(
+											Arr.map(recordedWeights, (row) => ({ ...row, root: done.turn.root })),
+											(a, b) => a.digest === b.digest
+										),
+										ChainPageWeightsRead: Arr.map(recordedWeights, (row, ordinal) => ({
 											step: done.turn.step,
 											root: done.turn.root,
-											ordinal: BigInt(ordinal)
+											ordinal: BigInt(ordinal),
+											digest: row.digest
+										})),
+										ChainPageEarlierRow: Arr.dedupeWith(
+											Arr.map(recordedEarlier, (row) => ({ ...row, root: done.turn.root })),
+											(a, b) => a.digest === b.digest
+										),
+										ChainPageEarlierRead: Arr.map(recordedEarlier, (row, ordinal) => ({
+											step: done.turn.step,
+											root: done.turn.root,
+											ordinal: BigInt(ordinal),
+											digest: row.digest
 										})),
 										Item: done.writes.insert.Item
 									}
@@ -461,6 +508,7 @@ export const chainLedger = (h: ChainHandles) => {
 								output: {
 									seq: row.seq,
 									items: row.items,
+									earlier: row.earlier,
 									next: Option.map(
 										Arr.findFirst(sidePage0, (o) => o.step === row.step),
 										(o) => o.value
@@ -543,6 +591,7 @@ export const chainLedger = (h: ChainHandles) => {
 								output: {
 									seq: row.seq,
 									items: row.items,
+									earlier: row.earlier,
 									next: Option.map(
 										Arr.findFirst(sidePage0, (o) => o.step === row.step),
 										(o) => o.value

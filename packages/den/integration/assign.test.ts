@@ -13,15 +13,14 @@ import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/sl
 /**
  * The assignment flow end to end on PostgreSQL 19 with pgvector, the assignment engine's shape: an operator requests an
  * assignment of a learner with a topic, a question it missed, passages to pass over and a mode (the nearest passage
- * found, or one within a radius). Its one step reads, before its body runs and in one statement, the passages of the
- * topic nearest the missed question's stored embedding (a nearest read, grizzle's `approximateNearest` over the
- * passages' HNSW index, its query vector the anchor's by its key) and the passages the learner has seen (a rows read),
- * and answers a decision of a model's shape: a tagged union of what it serves, an array of structs of what
+ * found, or one within a radius). Its first step embeds the question, its body computing the query vector, which its
+ * edge carries to the decision; the decision reads, before its body runs and in one grizzle query, one statement, the
+ * passages of the topic nearest that vector (grizzle's `approximateNearest` over the passages' HNSW index, its query
+ * vector a parameter its input gives) and the passages the learner has seen, and answers a decision of a model's shape: a tagged union of what it serves, an array of structs of what
  * it weighed, and a finite confidence. The root's finish reads the decision back from the graph and concludes it.
  *
  * Oracle (second implementation): the exact cosine search over the same vectors, and the decision recomputed here from
- * the two records. The nearest read's record holds as many passages as the topic holds, up to the bound, or none when
- * the missed question has no stored embedding, each of the
+ * the two records. The nearest read's record holds as many passages as the topic holds, up to the bound, each of the
  * topic at its exact cosine distance, their distances the topic's smallest; the seen read's record is the learner's
  * seen passages; the decision's tag, its variant's row, its weighed family (gap-free from 0, in order) and its
  * confidence are what the records and the input's array and union give; the finish's conclusion, from the decision it
@@ -35,7 +34,6 @@ type Feature =
 	| "within a radius"
 	| "served"
 	| "rest"
-	| "no stored anchor"
 
 /** The ratio a distance pgvector computes in binary32 may lie from the exact one, well above its rounding. */
 const tolerance = 1e-5
@@ -60,7 +58,6 @@ interface Run {
 	readonly seen: ReadonlyArray<number>
 	readonly exclude: ReadonlyArray<number>
 	readonly near: ReadonlyArray<number>
-	readonly stored: boolean
 	readonly mode: (typeof modes)[number]
 }
 
@@ -85,7 +82,6 @@ const runs: Gen<Run> = (source) => {
 		seen: source.draw(subset(ats, { min: 0, max: passages.length })),
 		exclude: source.draw(subset(ats, { min: 0, max: passages.length })),
 		near: source.draw(components),
-		stored: source.draw(int(0, 5)) > 0,
 		mode: source.draw(element(modes))
 	}
 }
@@ -121,8 +117,7 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 		"a passed passage among the nearest",
 		"within a radius",
 		"served",
-		"rest",
-		"no stored anchor"
+		"rest"
 	] satisfies ReadonlyArray<Reached<Feature>>,
 	check:
 		({ slice }, c: Case<Feature>) =>
@@ -155,21 +150,11 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 							params: {},
 							facts: { insert: { Seen: Arr.map(seenNames, (passage) => ({ learner, passage })) } }
 						})
-						if (run.stored) {
-							yield* loader.workload.miss.once({
-								params: {},
-								facts: {
-									insert: { Missed: [{ question: "missed", embedding: vectorOf(run.near) }] }
-								}
-							})
-						} else {
-							c.note("no stored anchor")
-						}
 						const excluded = Arr.map(run.exclude, nameOf)
 						const requested = yield* assign.request.Assignment("assignment", {
 							learner,
 							topic: "near",
-							missed: "missed",
+							near: run.near,
 							exclude: excluded,
 							mode: run.mode
 						})
@@ -215,7 +200,7 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 							Arr.map(nearest, (r) => r.ordinal),
 							ordinals(nearest.length)
 						)
-						assert.equal(nearest.length, run.stored ? Math.min(assignedAmong, ofTopic.length) : 0)
+						assert.equal(nearest.length, Math.min(assignedAmong, ofTopic.length))
 						const exact = new Map(
 							Arr.map(ofTopic, (p) => [p.passage, cosine(p.components, run.near)] as const)
 						)
@@ -330,9 +315,9 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 	kills: [
 		{
 			file: "packages/den/integration/slice/generated/assign.binding.ts",
-			original: "AssignDecideNearestRead: Arr.map(done.rows.nearest, (row, ordinal) => ({",
+			original: "AssignDecideNearestRead: Arr.map(recordedNearest, (row, ordinal) => ({",
 			replacement:
-				"AssignDecideNearestRead: Arr.map(Arr.take(done.rows.nearest, 1), (row, ordinal) => ({",
+				"AssignDecideNearestRead: Arr.map(Arr.take(recordedNearest, 1), (row, ordinal) => ({",
 			why: "the binding records only the first passage the nearest read found, so the record is no longer what the body saw"
 		}
 	]

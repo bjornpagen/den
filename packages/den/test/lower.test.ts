@@ -1,4 +1,3 @@
-import { natural, pg, relation } from "@bjornpagen/grizzle"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { boolean, element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -11,16 +10,15 @@ import { type AnyFlow, flow } from "#algebra/flow.ts"
 import {
 	type AnyEdge,
 	type AnyStepKind,
-	anchor,
 	always,
 	atSpawn,
 	attempts,
 	edge,
 	exclusiveBy,
 	type FieldSchema,
-	nearest,
+	noReads,
 	operator,
-	rows,
+	type ReadsOver,
 	resource,
 	root,
 	scope,
@@ -50,9 +48,10 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * both sides of every containment between bodies, and no coordination relation carries one.
  *
  * Oracle (specification): the proposal's sections 5 and 6, over flows of up to three steps, chained or not, of each
- * field form, with or without a resource, an exclusive root, a child scope, a rows read, a nearest read and a typed
- * error. A nearest read records its neighbours without the vector they were ranked by and with their distance, and a
- * finite number is held finite by a row check.
+ * field form, with or without a resource, an exclusive root, a child scope, one or two named reads and a typed
+ * error. Each named read records its rows once per root by their digest, in a relation of its record's columns, and
+ * the step's references to them by ordinal, each contained in its row and in the step's result; a finite number is held
+ * finite by a row check, a record's as a value's.
  */
 
 const Form = Schema.Literals([
@@ -76,12 +75,12 @@ type Feature =
 	| "a resource"
 	| "an exclusive root"
 	| "a child scope"
-	| "a rows read"
-	| "a nearest read"
+	| "a read"
+	| "two reads"
 	| "a typed error"
 
-/** Which reads the first step declares: none, a rows read, a nearest read, or both. */
-const Reading = Schema.Literals(["none", "rows", "nearest", "both"])
+/** Which reads the first step declares: none, one, or two, the second recording a finite number. */
+const Reading = Schema.Literals(["none", "one", "two"])
 
 interface Sketch {
 	readonly prefix: "Alpha" | "Beta"
@@ -132,49 +131,28 @@ const fieldOf = (form: Form): FieldSchema => {
 	}
 }
 
-/** An app relation a step may read: a feed's weight. */
-const Weight = relation("Weight", { feed: pg.bigint, factor: natural }, ["feed", "factor"])
+/** A record of a feed's weights, the rows a read finds of it. */
+const WeightRecord = Schema.Struct({ feed: Schema.BigInt, factor: Schema.BigInt })
 
-/** The suite's own vector width. */
-const passageDimensions = 4
+/** A record of passages, each with its distance: a finite number, held finite in its row's relation. */
+const PassageRecord = Schema.Struct({ passage: Schema.BigInt, distance: Schema.Finite })
 
-/** An app relation a step's nearest read ranks: a passage and its embedding. */
-const Passage = relation(
-	"Passage",
-	{ passage: pg.bigint, embedding: pg.vector(passageDimensions) },
-	["passage"]
-)
-
-/** How many passages a nearest read finds at most, the suite's own size. */
-const passagesFound = 2
-
-/** The anchor a nearest read searches from: a question's stored embedding, named by its key. */
-const Question = relation(
-	"Question",
-	{ question: pg.bigint, embedding: pg.vector(passageDimensions) },
-	["question"]
-)
-
-/** The reads a sketch's first step declares. */
-const readsOf = (reading: typeof Reading.Type) => ({
-	...(reading === "rows" || reading === "both"
-		? { weights: rows(Weight, ["feed"], () => ({ feed: 0n })) }
-		: {}),
-	...(reading === "nearest" || reading === "both"
-		? {
-				passages: nearest(
-					Passage,
-					"embedding",
-					passagesFound,
-					[],
-					anchor(Question, "embedding"),
-					() => ({
-						anchor: { question: 0n }
-					})
-				)
+/**
+ * The reads a sketch's first step declares, by their records alone: lowering never runs a read's query, which the
+ * programs module calls over the flow's app role, so a sketch's query is no query at all.
+ */
+const readsOf = <I>(reading: typeof Reading.Type): ReadsOver<I> =>
+	reading === "none"
+		? noReads
+		: {
+				kind: "query",
+				query: (writer: never) => writer,
+				records:
+					reading === "one"
+						? { weights: WeightRecord }
+						: { weights: WeightRecord, passages: PassageRecord },
+				params: () => ({})
 			}
-		: {})
-})
 
 /**
  * The box of grizzle's own work-queue law suite: two seats.
@@ -229,7 +207,7 @@ const built = (sketch: Sketch): AnyFlow => {
 				input: value,
 				output: value,
 				error: Schema.Never,
-				reads: {},
+				reads: noReads,
 				awaits: [],
 				uses: [],
 				retry: attempts(1),
@@ -258,7 +236,7 @@ const built = (sketch: Sketch): AnyFlow => {
 			input: value,
 			output: value,
 			error: Schema.Never,
-			reads: {},
+			reads: noReads,
 			awaits: [],
 			uses: [],
 			retry: attempts(1),
@@ -317,8 +295,8 @@ it.effect(
 							"a resource",
 							"an exclusive root",
 							"a child scope",
-							"a rows read",
-							"a nearest read",
+							"a read",
+							"two reads",
 							"a typed error"
 						],
 						{ cases: 80, sense: notesOnly }
@@ -343,14 +321,14 @@ it.effect(
 							c.note("a child scope")
 						}
 						const reading = {
-							rows: sketch.reads === "rows" || sketch.reads === "both",
-							nearest: sketch.reads === "nearest" || sketch.reads === "both"
+							weights: sketch.reads !== "none",
+							passages: sketch.reads === "two"
 						}
-						if (reading.rows) {
-							c.note("a rows read")
+						if (sketch.reads === "one") {
+							c.note("a read")
 						}
-						if (reading.nearest) {
-							c.note("a nearest read")
+						if (sketch.reads === "two") {
+							c.note("two reads")
 						}
 						if (sketch.typed) {
 							c.note("a typed error")
@@ -480,25 +458,71 @@ it.effect(
 								)
 							)
 						}
-						assert.strictEqual(has("S0WeightsRead"), reading.rows)
-						assert.strictEqual(has("S0PassagesRead"), reading.nearest)
+						assert.strictEqual(has("S0WeightsRead"), reading.weights)
+						assert.strictEqual(has("S0WeightsRow"), reading.weights)
+						assert.strictEqual(has("S0PassagesRead"), reading.passages)
+						assert.strictEqual(has("S0PassagesRow"), reading.passages)
 						const fieldsOf = (name: string) =>
 							Option.map(
 								Arr.findFirst(lowered.relations, (r) => r.name === name),
 								(r) => Arr.map(r.fields, (field) => [field.name, field.type.kind] as const)
 							)
-						if (reading.nearest) {
+						if (reading.passages) {
+							assert.deepStrictEqual(
+								fieldsOf(`${P}S0PassagesRow`),
+								Option.some([
+									["digest", "key"],
+									["passage", "base"],
+									["distance", "base"],
+									["root", "key"]
+								])
+							)
 							assert.deepStrictEqual(
 								fieldsOf(`${P}S0PassagesRead`),
 								Option.some([
 									["step", "key"],
 									["ordinal", "natural"],
-									["passage", "app"],
-									["distance", "base"],
+									["digest", "key"],
 									["root", "key"]
 								])
 							)
+							assert.isTrue(
+								Arr.some(
+									lowered.laws,
+									(law) =>
+										law.kind === "check" &&
+										law.relation === `${P}S0PassagesRow` &&
+										law.field === "distance" &&
+										law.holds.kind === "finite"
+								)
+							)
 						}
+						Arr.forEach(
+							[...(reading.weights ? ["Weights"] : []), ...(reading.passages ? ["Passages"] : [])],
+							(read) => {
+								assert.isTrue(
+									Arr.some(
+										containments,
+										(law) =>
+											law.from.relation === `${P}S0${read}Read` &&
+											law.to.relation === `${P}S0${read}Row` &&
+											Arr.join(
+												Arr.map(law.from.terms, (t) => t.field),
+												","
+											) === "digest,root"
+									),
+									`each reference of ${read} names its row in its root`
+								)
+								assert.deepStrictEqual(
+									Option.map(
+										Arr.findFirst(lowered.relations, (r) => r.name === `${P}S0${read}Row`),
+										(r) => Arr.join(r.key, ",")
+									),
+									Option.some("digest,root"),
+									`${read}'s rows are keyed by their digest and root`
+								)
+							}
+						)
 						assert.strictEqual(
 							Arr.some(
 								lowered.laws,

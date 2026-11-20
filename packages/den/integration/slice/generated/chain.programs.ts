@@ -12,6 +12,7 @@ import {
 	workload
 } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
+import { chain } from "#integration/slice/flows.ts"
 import {
 	ChainKind,
 	ChainRootKind,
@@ -21,6 +22,8 @@ import {
 	ChainPageInputFeed,
 	ChainChainRunInputFeed,
 	ChainOrderedInputFeed,
+	ChainPageWeightsRowFeed,
+	ChainPageEarlierRowFeed,
 	ChainScope,
 	ChainRoot,
 	ChainAdmitted,
@@ -47,7 +50,10 @@ import {
 	ChainChainRunFinishOutput,
 	ChainOrderedFinishOutput,
 	ChainNext,
+	ChainPageWeightsRow,
 	ChainPageWeightsRead,
+	ChainPageEarlierRow,
+	ChainPageEarlierRead,
 	ChainPaused,
 	ChainResumed,
 	chainGraph,
@@ -85,7 +91,10 @@ export const ChainDen = role(
 			"ChainOrderedInput",
 			"ChainChainRunFinishOutput",
 			"ChainOrderedFinishOutput",
-			"ChainPageWeightsRead"
+			"ChainPageWeightsRow",
+			"ChainPageWeightsRead",
+			"ChainPageEarlierRow",
+			"ChainPageEarlierRead"
 		]
 	}
 )
@@ -103,6 +112,8 @@ export const ChainCoordinator = role(
 		ChainPageInputFeed,
 		ChainChainRunInputFeed,
 		ChainOrderedInputFeed,
+		ChainPageWeightsRowFeed,
+		ChainPageEarlierRowFeed,
 		ChainPaused,
 		ChainResumed
 	},
@@ -405,12 +416,12 @@ export const chainDenPrograms = Object.freeze({
 	),
 	chainOutputsChainRunPage: query(chainGraph).rule((r) => {
 		const { step, scope } = v(ChainStep, "step")
-		const { seq, items } = v(ChainPageOutput, "output")
+		const { seq, items, earlier } = v(ChainPageOutput, "output")
 		return r
 			.match(ChainStep, { step, kind: "Page", scope })
-			.match(ChainPageOutput, { step, seq, items })
+			.match(ChainPageOutput, { step, seq, items, earlier })
 			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
-			.find({ step, seq, items })
+			.find({ step, seq, items, earlier })
 	}),
 	chainOutputsChainRunPageNext: query(chainGraph).rule((r) => {
 		const { step, scope } = v(ChainStep, "step")
@@ -438,12 +449,12 @@ export const chainDenPrograms = Object.freeze({
 	}),
 	chainOutputsOrderedPage: query(chainGraph).rule((r) => {
 		const { step, scope } = v(ChainStep, "step")
-		const { seq, items } = v(ChainPageOutput, "output")
+		const { seq, items, earlier } = v(ChainPageOutput, "output")
 		return r
 			.match(ChainStep, { step, kind: "Page", scope })
-			.match(ChainPageOutput, { step, seq, items })
+			.match(ChainPageOutput, { step, seq, items, earlier })
 			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
-			.find({ step, seq, items })
+			.find({ step, seq, items, earlier })
 	}),
 	chainOutputsOrderedPageNext: query(chainGraph).rule((r) => {
 		const { step, scope } = v(ChainStep, "step")
@@ -516,7 +527,10 @@ export const chainCommitPrograms = Object.freeze({
 				.insert(ChainHeld, [])
 				.insert(ChainPageOutput, [])
 				.insert(ChainPageOutputNext, [])
+				.insert(ChainPageWeightsRow, [])
 				.insert(ChainPageWeightsRead, [])
+				.insert(ChainPageEarlierRow, [])
+				.insert(ChainPageEarlierRead, [])
 				.insert(ChainScope, [])
 				.insert(ChainAdmitted, [])
 				.insert(ChainFinish, [])
@@ -550,17 +564,7 @@ export const chainCommitPrograms = Object.freeze({
 		),
 		{ now: "millis" }
 	),
-	chainReadPage: deferrable(
-		query(Loader).reads({
-			weights: query(Loader).rule((r) => {
-				const { feed, factor } = v(App.relations.Weight, "row")
-				return r
-					.match(App.relations.Weight, { feed, factor })
-					.where(r.eq(feed, r.param("feed", App.relations.Weight.fields.feed)))
-					.find({ feed, factor })
-			})
-		})
-	),
+	chainReadPage: deferrable(chain.kinds[0].reads.query(Loader)),
 	chainCommitChainRunFinish: ChangeSet.union(
 		ChangeSet.empty(chainGraph)
 			.insert(ChainResult, [])

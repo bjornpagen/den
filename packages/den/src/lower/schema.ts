@@ -1,5 +1,6 @@
 import { Array as Arr, Option, Record, Schema } from "effect"
 import {
+	dimensionsOf,
 	type ElementSchema,
 	type ErrorSchema,
 	type FieldSchema,
@@ -12,7 +13,7 @@ import {
 /**
  * Effect Schema, lowered to typed relations: a struct to a relation keyed by its owner; text, bigint, finite number and
  * boolean to their PostgreSQL types (a finite number to double precision, held finite by a row check), a literal union
- * of texts to a closed roster, a brand to a contract of its base; an Option to a relation of its own, holding a row
+ * of texts to a closed roster, a brand to a contract of its base, a vector to pgvector's of its dimensions; an Option to a relation of its own, holding a row
  * exactly when the value is there; an array to an ordered family; and a tagged union to its tag and a relation per
  * variant. `Unknown` and `Any` have no typed home and never reach here: the algebra's types admit only these forms, and
  * anything else is refused by name.
@@ -26,6 +27,7 @@ export type ColumnType =
 	| { readonly kind: "base"; readonly base: Base }
 	| { readonly kind: "roster"; readonly handles: readonly [string, ...Array<string>] }
 	| { readonly kind: "brand"; readonly brand: string; readonly base: Base }
+	| { readonly kind: "vector"; readonly dimensions: number }
 
 /** A column: its field's name and type. */
 export interface Column {
@@ -114,6 +116,10 @@ const textsOf = (
  * else is a base or refused.
  */
 const columnOf = (declaration: string, field: string, schema: Schema.Top): ColumnType => {
+	const dimensions = dimensionsOf(schema)
+	if (Option.isSome(dimensions)) {
+		return { kind: "vector", dimensions: dimensions.value }
+	}
 	if (
 		"identifier" in schema &&
 		typeof schema.identifier === "string" &&
