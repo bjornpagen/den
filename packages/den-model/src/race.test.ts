@@ -3,7 +3,7 @@ import { boolean, type Gen, int, weighted } from "@bjornpagen/testing/gen"
 import { type Driver, interleave } from "@bjornpagen/testing/interleave"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Option } from "effect"
-import { type Answer, type Entry, TRACE_VERSION } from "#facts.ts"
+import type { Answer, Entry } from "#facts.ts"
 import type { StepId } from "#identity.ts"
 import { emptyState, type Lease, ledger, type State } from "#ledger.ts"
 import {
@@ -228,7 +228,7 @@ const judged = (
 			})
 		})
 		yield* holds(laws, {
-			trace: { version: TRACE_VERSION, entries: trace },
+			trace,
 			program,
 			reruns: [],
 			sends: [],

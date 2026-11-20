@@ -22,7 +22,7 @@ import { ordinals, type Program, type Query, windowsOf } from "#program.ts"
 import type { FairEnd, Rerun, Sent } from "#simulator.ts"
 
 /**
- * den's laws, each checked over what a run leaves:
+ * den's laws, in the order a run is checked, each over what a run leaves:
  * - `no-stall`: under fair scheduling every pending step moves within its program's patience, none passes its ladder,
  *   and the run ends with every root finished and retired;
  * - `one-result`: a step has at most one result, ever, since its key never recurs; an app write lands only with its
@@ -43,22 +43,7 @@ import type { FairEnd, Rerun, Sent } from "#simulator.ts"
  * - `rewake`: a wake re-rung by a later cause is always delivered: the transport drops a send as a duplicate only when
  *   an earlier send of its key had the same cause, so no step waits on a key an earlier ring spent.
  */
-export type Law =
-	| "no-stall"
-	| "one-result"
-	| "scope-once"
-	| "seats"
-	| "exclusive"
-	| "precondition"
-	| "reads"
-	| "rerun"
-	| "stale-drains"
-	| "owned"
-	| "window-tick"
-	| "rewake"
-
-/** Every law, in the order a run is checked. */
-export const LAWS: Arr.NonEmptyReadonlyArray<Law> = [
+export const LAWS = [
 	"no-stall",
 	"one-result",
 	"scope-once",
@@ -71,7 +56,10 @@ export const LAWS: Arr.NonEmptyReadonlyArray<Law> = [
 	"owned",
 	"window-tick",
 	"rewake"
-]
+] as const
+
+/** A law of den's, by name. */
+export type Law = (typeof LAWS)[number]
 
 /** A law a run broke, the law named as data and the witness in the message. */
 export class LawBroken extends Data.TaggedError("LawBroken")<{ law: Law; message: string }> {}
@@ -105,7 +93,7 @@ const firstBreak = <S>(
 	) => Readonly<{ state: S; broke: Option.Option<LawBroken> }>
 ): Readonly<{ state: S; broke: Option.Option<LawBroken> }> => {
 	let state = initial
-	for (const entry of trace.entries) {
+	for (const entry of trace) {
 		for (const fact of entry.facts) {
 			const next = step(state, fact, entry)
 			if (Option.isSome(next.broke)) {
@@ -133,7 +121,7 @@ export const oneResult = (evidence: Evidence): Option.Option<LawBroken> => {
 	const ended = new Set<string>()
 	const turns = new Map<string, string>()
 	const latest = new Map<string, number>()
-	for (const entry of evidence.trace.entries) {
+	for (const entry of evidence.trace) {
 		const command = entry.command
 		if (command._tag === "Commit" && entry.answer === "accepted") {
 			const step = stepText(command.step)
@@ -412,7 +400,7 @@ export const seats = (evidence: Evidence): Option.Option<LawBroken> => {
 	const holders = new Map<string, Holder>()
 	const until = new Map<string, number>()
 	const holds = new Map<string, ReadonlyArray<string>>()
-	for (const entry of evidence.trace.entries) {
+	for (const entry of evidence.trace) {
 		const where = whereOf(entry)
 		for (const fact of entry.facts) {
 			if (fact._tag === "Spawned") {
@@ -492,7 +480,7 @@ const rootOfHolder = (holder: Holder): string => {
 export const exclusive = (evidence: Evidence): Option.Option<LawBroken> => {
 	const live = new Map<string, string>()
 	const keys = new Map<string, string>()
-	for (const entry of evidence.trace.entries) {
+	for (const entry of evidence.trace) {
 		const contested = new Set<string>()
 		for (const fact of entry.facts) {
 			if (fact._tag === "Admitted" && Option.isSome(fact.exclusive)) {
@@ -699,7 +687,7 @@ export const rerun = (evidence: Evidence): Option.Option<LawBroken> =>
  */
 export const staleDrains = (evidence: Evidence): Option.Option<LawBroken> => {
 	let current = 0
-	for (const entry of evidence.trace.entries) {
+	for (const entry of evidence.trace) {
 		const command = entry.command
 		if (
 			(command._tag === "Claim" || command._tag === "Commit") &&
@@ -750,7 +738,7 @@ export const noStall = (evidence: Evidence): Option.Option<LawBroken> => {
  * misses every tick is never rung, since only the census rings what a window's opening made eligible.
  */
 export const windowTick = (evidence: Evidence): Option.Option<LawBroken> => {
-	const ticks = Arr.flatMap(evidence.trace.entries, (entry) =>
+	const ticks = Arr.flatMap(evidence.trace, (entry) =>
 		entry.command._tag === "Census" && entry.at >= evidence.fairFrom ? [entry.at] : []
 	)
 	const until = evidence.end.at

@@ -1,13 +1,5 @@
 import { Array as Arr, HashMap, Option } from "effect"
-import {
-	type Answer,
-	type By,
-	type Entry,
-	type Fact,
-	type Target,
-	TRACE_VERSION,
-	type Trace
-} from "#facts.ts"
+import { type Answer, type By, type Entry, type Fact, type Target, type Trace } from "#facts.ts"
 import { type StepId, stepText } from "#identity.ts"
 import {
 	type Answered,
@@ -1049,7 +1041,7 @@ const fair = (setup: Setup, world: World, hands: Hands): Run => {
 	}
 	const ended = end()
 	return {
-		trace: { version: TRACE_VERSION, entries: world.trace },
+		trace: world.trace,
 		reruns: world.reruns,
 		sends: world.sends,
 		fairFrom,

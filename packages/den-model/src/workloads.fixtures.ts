@@ -206,7 +206,7 @@ export const worldGen: Gen<World> = (source) => ({
 /** Every write each root's steps landed, by root, as `relation/key` to its value. */
 const writesByRoot = (trace: Trace): ReadonlyMap<string, ReadonlyMap<string, Datum>> => {
 	const roots = new Map<string, Map<string, Datum>>()
-	for (const entry of trace.entries) {
+	for (const entry of trace) {
 		for (const fact of entry.facts) {
 			if (fact._tag !== "Wrote" || fact.writer._tag !== "Step") {
 				continue
@@ -245,7 +245,7 @@ export const ownLaws = (
 			() => new Map<string, Datum>()
 		)
 	const quiet = end._tag === "Quiescent"
-	const facts = Arr.flatMap(trace.entries, (entry) => Arr.map(entry.facts, (fact) => ({ fact })))
+	const facts = Arr.flatMap(trace, (entry) => Arr.map(entry.facts, (fact) => ({ fact })))
 	Arr.forEach(facts, ({ fact }) => {
 		if (fact._tag === "Spawned" && fact.step._tag === "EdgeStep" && fact.step.edge === "split") {
 			note("w1-split")
@@ -286,7 +286,7 @@ export const ownLaws = (
 			note("w4-stopped")
 		}
 	})
-	Arr.forEach(trace.entries, (entry) => {
+	Arr.forEach(trace, (entry) => {
 		if (
 			entry.command._tag === "Admit" &&
 			entry.command.root.kind === "GoldRefresh" &&
@@ -402,7 +402,7 @@ const takedowns = (
 	const claims = new Map<string, Readonly<{ at: number; last: number }>>()
 	const hungUp = new Map<string, number>()
 	const witnesses: Array<string> = []
-	for (const entry of trace.entries) {
+	for (const entry of trace) {
 		for (const fact of entry.facts) {
 			if (fact._tag === "Wrote" && fact.writer._tag === "App" && fact.write.relation === "beacon") {
 				beacons.set(fact.write.key, typeof fact.write.value === "number" ? fact.write.value : 0)
@@ -466,7 +466,7 @@ const delivered = (
 	quiet: boolean,
 	note: (noticed: Noticed) => void
 ): ReadonlyArray<string> => {
-	const facts = Arr.flatMap(trace.entries, (entry) => entry.facts)
+	const facts = Arr.flatMap(trace, (entry) => entry.facts)
 	const failed = Arr.flatMap(facts, (fact) =>
 		fact._tag === "Failed" && rootOfStep(fact.step).kind === "TimebackReport"
 			? [`W6: ${stepText(fact.step)} failed, on a ladder that never ends`]
@@ -502,7 +502,7 @@ const reconciled = (
 	const seen = new Map<string, ReadonlyMap<string, Datum>>()
 	const passes = new Set<string>()
 	let last: ReadonlyMap<string, Datum> = new Map()
-	for (const entry of trace.entries) {
+	for (const entry of trace) {
 		for (const fact of entry.facts) {
 			if (fact._tag === "Spawned" && fact.kind === "Reconcile") {
 				passes.add(stepText(fact.step))

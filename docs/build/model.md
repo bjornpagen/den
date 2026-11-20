@@ -15,7 +15,7 @@ evidence (`decisions.md`, "Settled by the evidence"), and the model follows thos
 | `datum.ts` | `Datum`, the JSON tree a value is once it leaves typed code, and its canonical text |
 | `identity.ts` | derived identities of roots, scopes and steps, and their canonical texts |
 | `program.ts` | the primitives: resources, windows, ladders, runs, declared reads, step, scope, root and edge kinds, their erasure, `Program` |
-| `facts.ts` | the trace format, version 2: facts, commands, answers, entries, `Trace`, and the canonical texts of seats, holders and pause targets |
+| `facts.ts` | the trace format: facts, commands, answers, entries, `Trace`, and the canonical texts of seats, holders and pause targets |
 | `ledger.ts` | the state as a projection of facts, eligibility and order (`standings`), every transition (`ledger`) |
 | `simulator.ts` | workers, transport, deaths, clock, census, relay, deployments, the world's acts; the chaotic and the fair phase |
 | `properties.ts` | the twelve laws, each a pure check over a trace and the run's sends |
@@ -122,9 +122,9 @@ The patience (`patienceOf`) is derived: a pending step's next move waits at most
 instant or retry, and the closed span of a window, then for the census's next tick, which rings it. A step on
 `attempts(n)` that still pends with `n` attempts spent is `Spent` at once.
 
-## The trace format, version 2
+## The trace format
 
-`Trace` (`facts.ts`) is `{ version: 2, entries }`: every ledger call a run made, in commit order, each the clock's
+`Trace` (`facts.ts`) is the entries of every ledger call a run made, in commit order, each the clock's
 instant, the `Command`, the `Answer` and the `Fact`s it committed in order. Steps and scopes are named by their derived
 identity paths (`<root>/start#n`, `<step>/<edge>#n`, `<step>/<edge>[n]`, `<scope>/start[n]`, `<scope>/finish`). The
 facts: `Admitted` (with exclusivity key and trigger), `Opened`, `Spawned` (with due instant and resources held),

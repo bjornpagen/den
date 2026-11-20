@@ -3,9 +3,6 @@ import type { Datum } from "#datum.ts"
 import { type RootKey, type ScopeId, type StepId, scopeText, stepText } from "#identity.ts"
 import type { Counts, Query, Write } from "#program.ts"
 
-/** The version of the trace format this module states. A reader refuses a trace of any other. */
-export const TRACE_VERSION = 2
-
 /**
  * One seat's key: a resource and a seat of it. A counted resource's seats are `"0" … "<seats − 1>"`; a scope kind's
  * exclusivity seat is the kind's name and the key its input names. No two holders share a key.
@@ -72,7 +69,7 @@ export type Failure =
 export type ScopeEnding = "Done" | "Failed" | "Held"
 
 /**
- * One fact the ledger commits, version 2 of the trace. Facts only accumulate; a transition is the facts it adds, in
+ * One fact the ledger commits. Facts only accumulate; a transition is the facts it adds, in
  * order, and retirement is the one fact that deletes: a finished root's graph, whole. Its key never recurs. Every fact
  * carries the instant of the ledger's clock it committed at.
  *
@@ -246,11 +243,11 @@ export type Entry = Readonly<{
 }>
 
 /**
- * A run's trace, den's differential format: its version and every call the run made of its ledger, in commit order.
+ * A run's trace, den's differential format: every call the run made of its ledger, in commit order.
  * The model writes one for every simulated run. The real engine's harness writes one by reading its committed rows in
  * commit order (a claim's `Claim` row and its reads, a seat's rows taken and deleted, a result's `Finished` or `Failed`
  * row, a spawn's `Step` and edge rows, the app's own rows) and naming each step and scope by the path its derived
  * identity is (identity.ts), so the same program under the same commands compares fact by fact, turns renamed one to
  * one; the laws (properties.ts) read either.
  */
-export type Trace = Readonly<{ version: typeof TRACE_VERSION; entries: ReadonlyArray<Entry> }>
+export type Trace = ReadonlyArray<Entry>
