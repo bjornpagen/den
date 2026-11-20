@@ -15,7 +15,11 @@ import {
 } from "#program.ts"
 
 /** W3's limits, each the test's input: the window a collection's read claims in, and how a page runs. */
-export type QtiLimits = Readonly<{ window: Option.Option<Window>; lease: number; ladder: Ladder }>
+export type QtiSyncLimits = Readonly<{
+	window: Option.Option<Window>
+	lease: number
+	ladder: Ladder
+}>
 
 /**
  * A QTI collection as the source answers it: its pages, how many times the source throttles a page before it answers
@@ -47,16 +51,16 @@ const PAGE_DOCUMENTS = 50
 export type Night = Readonly<{ night: number; collections: ReadonlyArray<Collection> }>
 
 /** The root kind of W3, by name, for the precondition of W4. */
-export const QTI_READ = "QtiRead"
+export const QTI_SYNC = "QtiSync"
 
 /**
- * W3, edullm's QTI chain, as a den program: each night the schedule admits one root per collection, exclusive per
+ * W3, edullm's QTI sync (qti-sync), as a den program: each night the schedule admits one root per collection, exclusive per
  * collection and inside its window, so a night whose previous read of a collection still runs is held for that
  * collection and reads the others; a read is a chain of pages, each naming the next, until the list's end; its finish
  * moves the collection's frontier to its span's end, or holds it where a page failed.
  */
-export const qtiOf = (
-	limits: QtiLimits
+export const qtiSyncOf = (
+	limits: QtiSyncLimits
 ): Readonly<{ program: Program; admit: (night: Night) => ReadonlyArray<Admission> }> => {
 	const runs: Runs = { lease: limits.lease, holds: [], ladder: limits.ladder }
 	const showPage = (page: PageInput): Datum => ({
@@ -66,7 +70,7 @@ export const qtiOf = (
 	})
 
 	const Page: StepKind<PageInput, PageRead, QtiRefused> = {
-		name: "QtiPage",
+		name: "QtiSyncPage",
 		runs,
 		input: showPage,
 		output: (read) =>
@@ -92,7 +96,11 @@ export const qtiOf = (
 					documents: PAGE_DOCUMENTS
 				},
 				writes: [
-					{ relation: "qti_document", key: `${collection.name}:${page.seq}`, value: page.after }
+					{
+						relation: "qti_sync_document",
+						key: `${collection.name}:${page.seq}`,
+						value: page.after
+					}
 				]
 			}
 		},
@@ -107,13 +115,13 @@ export const qtiOf = (
 	}
 
 	const Read: RootKind<Span, boolean, never> = {
-		name: QTI_READ,
+		name: QTI_SYNC,
 		trigger: { _tag: "Schedule", every: 1 },
 		precondition: Option.none(),
 		exclusive: Option.some((span) => span.collection.name),
 		window: limits.window,
 		scope: {
-			name: QTI_READ,
+			name: QTI_SYNC,
 			input: (span) => ({ collection: span.collection.name, since: span.since, until: span.until }),
 			start: (span) => [stepOf(Page, { span, seq: 0, after: span.since })],
 			finish: {
@@ -126,7 +134,7 @@ export const qtiOf = (
 						_tag: "Output",
 						output: moved,
 						writes: moved
-							? [{ relation: "qti_cursor", key: span.collection.name, value: span.until }]
+							? [{ relation: "qti_sync_cursor", key: span.collection.name, value: span.until }]
 							: []
 					}
 				}
@@ -136,7 +144,7 @@ export const qtiOf = (
 
 	return {
 		program: {
-			name: "qti",
+			name: "qti-sync",
 			resources: [],
 			roots: [rootedOf(Read)]
 		},

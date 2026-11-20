@@ -30,7 +30,7 @@ records it (its `packages/platform/pipeline/src/limits.ts` and `packages/data/al
 | `flow-control.ts` | the AlphaTest controller of `fetch.ts` as a pure state machine (`bbr`: BBR's probes, TCP's halving) | W2 |
 | `replica.ts` | Timeback's replica behind the bastion: catalog, pages, the daily print, bucket keys, edits, seatings | W1, W8 |
 | `alphatest.ts` | AlphaTest's five kinds at their knees, the gateway throttle, final answers, the 200-row listing | W2 |
-| `qti.ts` | QTI's three collections, `after` chains over a frozen window, a source that changes mid-chain | W3 |
+| `qti-sync.ts` | QTI's three collections, `after` chains over a frozen window, a source that changes mid-chain | W3 |
 | `reports.ts` | Timeback's Caliper endpoint: an outage until an instant, weather, first acceptance kept by report id | W6 |
 | `presence.ts` | an attempt's beacons and the child heard, away derived and permanent, the takedown consumer's standing | W5 |
 | `enrollment.ts` | the shared roster that drifts, EduBridge's two writes, edullm's `plan`, the intent ledger fenced by version | W7 |
@@ -44,7 +44,7 @@ W4 (Gold) has no outside system: its views are the app's own SQL.
 Each is a constant of the fake that reads it, with its evidence in its JSDoc, citing edullm's `limits.ts`: the AlphaTest knees, the 200-row
 listing page and the gateway's 40–68 requests a second (drawn by a simulation, never fixed) in `alphatest`; the
 bastion's eight seats at 5,227,836.87 bytes a second and 13,941 keys a second a session in `bastion`; QTI's published
-1,000-document page in `qti`; BBR's and TCP's published constants in `flow-control`. The 65,536 print buckets are a
+1,000-document page in `qti-sync`; BBR's and TCP's published constants in `flow-control`. The 65,536 print buckets are a
 format's width (`@formatConstant`), no limit. Every other time, retry or concurrency bound is a caller's input: the
 suites draw edullm's values in force with `production`, small ones a sixth of the time.
 
@@ -60,7 +60,7 @@ Every case is a search; the bugs a pure piece's search must catch are its proper
 | `flow-control` | the window ≥ 1; it moves only by a kept probe or a once-per-event halving; no ratchet past the knee |
 | `alphatest` | 429 exactly past the threshold, Retry-After only where the world sends one; each target's one final status; listing pages; rate grows to the knee and is flat above it |
 | `replica` | a page answers within its timeout and holds its blocks' rows; a timeout splits, a one-block page is refused; a changes read; the print and bucket keys prune what the source deleted |
-| `qti` | each document of the window once, in identifier order; every document stable for the whole read is read; a chain ends with no `next` |
+| `qti-sync` | each document of the window once, in identifier order; every document stable for the whole read is read; a chain ends with no `next` |
 | `bronze` (`interleave`) | racing writers: one object a body under its SHA-256, never changed, created at most once |
 | `reports` (`interleave`) | racing deliveries: one record a report, at its first acceptance, none during the outage, never a malformed report |
 | `presence` | the takedown timer, re-armed for the whole-second remainder, takes an attempt down within a second of its going away, never while present |

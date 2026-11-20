@@ -21,7 +21,7 @@ evidence (`decisions.md`, "Settled by the evidence"), and the model follows thos
 | `properties.ts` | the twelve laws, each a pure check over a trace and the run's sends |
 | `machine.ts` | the ledger as a `@bjornpagen/testing/commands` machine over a flat program |
 | `scenarios.ts`, `search.ts` | generators, the simulator's nature drawn from a case's tape, the declaration check, a run's evidence and its laws' verdict |
-| `workloads/` | `synthetic.ts` (generated programs), W1 `timeback.ts`, W2 `alphatest.ts`, W3 `qti.ts`, W4 `gold.ts`, W5 `takedown.ts`, W6 `reports.ts`, W7 `enrollment.ts`, W8 `seed.ts`, and `edullm.ts`, all eight on one ledger |
+| `workloads/` | `synthetic.ts` (generated programs), W1 `timeback.ts`, W2 `alphatest.ts`, W3 `qti-sync.ts`, W4 `gold.ts`, W5 `takedown.ts`, W6 `reports.ts` (one delivery program, which AlphaTest's time-spent events share), W7 `enrollment.ts`, W8 `seed.ts`, and `edullm.ts`, all eight on one ledger; AlphaTest's work, `writeback.ts`, `gap.ts` (its plan, DCAN, inside), `history.ts`, on one ledger in `novus.ts` |
 
 ## The program model
 
@@ -187,11 +187,11 @@ Each is a `toolchain-test` property (`pnpm test` in the package):
   one chain per request kind (the singleton root keeps each the only live one), the flow window travelling along each
   chain edge, then the scans.
   Law: the frontier moves only over every listing page, request batch and scan.
-- **W3** (`qti.ts`): each night the schedule admits one root per collection, exclusive per collection and in its
+- **W3** (`qti-sync.ts`): each night the schedule admits one root per collection, exclusive per collection and in its
   window, a chain of pages; a night whose previous read of the collection still runs is held for it. Law: a frontier
   moves only over every page.
 - **W4** (`gold.ts`): a singleton root with no window, behind the quiescence precondition (no `TimebackDaily` or
-  `QtiRead` step pending), a chain of views that stops at a failed one, its finish swapping the generation. Law: the swap only over
+  `QtiSync` step pending), a chain of views that stops at a failed one, its finish swapping the generation. Law: the swap only over
   every view.
 - **W5** (`takedown.ts`): the app's write of an attempt's entry admits its root; a timer due `idle` later reads the
   attempt's presence and re-arms for the instant its last beacon makes it away, or hangs up; the browser's beacons are

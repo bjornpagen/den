@@ -25,7 +25,7 @@
 		"./workloads/gold": "./src/workloads/gold.ts",
 		"./workloads/history": "./src/workloads/history.ts",
 		"./workloads/novus": "./src/workloads/novus.ts",
-		"./workloads/qti": "./src/workloads/qti.ts",
+		"./workloads/qti-sync": "./src/workloads/qti-sync.ts",
 		"./workloads/reports": "./src/workloads/reports.ts",
 		"./workloads/seed": "./src/workloads/seed.ts",
 		"./workloads/synthetic": "./src/workloads/synthetic.ts",

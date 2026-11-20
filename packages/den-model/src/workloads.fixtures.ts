@@ -8,6 +8,7 @@ import { rootOfStep, rootText, stepText } from "#identity.ts"
 import { type Ladder, ordinals, type Window } from "#program.ts"
 import type { FairEnd, Seen } from "#simulator.ts"
 import type { Limits, World } from "#workloads/edullm.ts"
+import { QTI_SYNC } from "#workloads/qti-sync.ts"
 import { type Delivery, type Report, TIMEBACK_REPORTS } from "#workloads/reports.ts"
 
 /** A workload's own law broken: a cursor moved over work that did not land, a present child hung up, and the like. */
@@ -69,7 +70,7 @@ export const limitsGen: Gen<Limits> = (source) => ({
 		lease: source.draw(leaseGen),
 		ladder: source.draw(ladderGen)
 	},
-	qti: {
+	qtiSync: {
 		window: source.draw(windowGen),
 		lease: source.draw(leaseGen),
 		ladder: source.draw(ladderGen)
@@ -142,7 +143,7 @@ export const worldGen: Gen<World> = (source) => ({
 			}
 		}))
 	),
-	qti: source.draw(
+	qtiSync: source.draw(
 		someOf(2, (index) => (inner) => ({
 			at: inner.draw(int(0, 30)),
 			what: {
@@ -269,7 +270,7 @@ export const ownLaws = (
 			fact._tag === "Finished" &&
 			fact.ending === "Held" &&
 			fact.scope._tag === "RootScope" &&
-			fact.scope.root.kind === "QtiRead"
+			fact.scope.root.kind === QTI_SYNC
 		) {
 			note("w3-held")
 		}
@@ -333,15 +334,15 @@ export const ownLaws = (
 			? []
 			: [`W2: the frontier moved for night ${night.night} with answers or scans missing`]
 	})
-	const qti = Arr.flatMap(world.qti, ({ what: night }) =>
+	const qtiSync = Arr.flatMap(world.qtiSync, ({ what: night }) =>
 		Arr.flatMap(night.collections, (collection) => {
-			const landed = of("QtiRead", `${collection.name}:${night.night}`)
-			if (!landed.has(`qti_cursor/${collection.name}`)) {
+			const landed = of(QTI_SYNC, `${collection.name}:${night.night}`)
+			if (!landed.has(`qti_sync_cursor/${collection.name}`)) {
 				return []
 			}
 			note("w3-moved")
 			return Arr.every(ordinals(collection.pages), (seq) =>
-				landed.has(`qti_document/${collection.name}:${seq}`)
+				landed.has(`qti_sync_document/${collection.name}:${seq}`)
 			)
 				? []
 				: [`W3: ${collection.name}'s frontier moved for night ${night.night} with pages missing`]
@@ -362,7 +363,7 @@ export const ownLaws = (
 	return firstOf([
 		...timeback,
 		...alphatest,
-		...qti,
+		...qtiSync,
 		...gold,
 		...takedowns(trace, limits, world, quiet, note),
 		...deliveredAll(TIMEBACK_REPORTS, trace, world.reports, quiet, () => note("w6-delivered")),

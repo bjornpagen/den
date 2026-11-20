@@ -9,7 +9,7 @@ import {
 } from "#workloads/alphatest.ts"
 import { type EnrollmentLimits, enrollmentOf } from "#workloads/enrollment.ts"
 import { type GoldLimits, goldOf, type Refresh } from "#workloads/gold.ts"
-import { type Night as QtiNight, type QtiLimits, qtiOf } from "#workloads/qti.ts"
+import { type Night as QtiSyncNight, type QtiSyncLimits, qtiSyncOf } from "#workloads/qti-sync.ts"
 import { type Report, type ReportLimits, reportsOf, TIMEBACK_REPORTS } from "#workloads/reports.ts"
 import { type SeedLimits, type Seeding, seedOf } from "#workloads/seed.ts"
 import { type Attempt, type TakedownLimits, takedownOf } from "#workloads/takedown.ts"
@@ -19,7 +19,7 @@ import { type Daily, type TimebackLimits, timebackOf } from "#workloads/timeback
 export type Limits = Readonly<{
 	timeback: TimebackLimits
 	alphatest: AlphaTestLimits
-	qti: QtiLimits
+	qtiSync: QtiSyncLimits
 	gold: GoldLimits
 	takedown: TakedownLimits
 	reports: ReportLimits
@@ -38,7 +38,7 @@ type At<A> = Readonly<{ at: number; what: A }>
 export type World = Readonly<{
 	timeback: ReadonlyArray<At<Daily>>
 	alphatest: ReadonlyArray<At<AlphaTestNight>>
-	qti: ReadonlyArray<At<QtiNight>>
+	qtiSync: ReadonlyArray<At<QtiSyncNight>>
 	gold: ReadonlyArray<At<Readonly<{ refresh: Refresh; by: By }>>>
 	attempts: ReadonlyArray<Readonly<{ attempt: Attempt; leaves: number }>>
 	reports: ReadonlyArray<Report>
@@ -59,7 +59,7 @@ export const edullmOf = (
 ): Readonly<{ program: Program; acts: ReadonlyArray<Act>; horizon: number }> => {
 	const timeback = timebackOf(limits.timeback)
 	const alphatest = alphatestOf(limits.alphatest)
-	const qti = qtiOf(limits.qti)
+	const qtiSync = qtiSyncOf(limits.qtiSync)
 	const gold = goldOf(limits.gold)
 	const takedown = takedownOf(limits.takedown)
 	const reports = reportsOf(TIMEBACK_REPORTS, limits.reports)
@@ -74,8 +74,8 @@ export const edullmOf = (
 	const acts: ReadonlyArray<Act> = [
 		...Arr.map(world.timeback, (act) => admit(act.at, "schedule", timeback.admit(act.what))),
 		...Arr.map(world.alphatest, (act) => admit(act.at, "schedule", alphatest.admit(act.what))),
-		...Arr.flatMap(world.qti, (act) =>
-			Arr.map(qti.admit(act.what), (admission) => admit(act.at, "schedule", admission))
+		...Arr.flatMap(world.qtiSync, (act) =>
+			Arr.map(qtiSync.admit(act.what), (admission) => admit(act.at, "schedule", admission))
 		),
 		...Arr.map(world.gold, (act) => admit(act.at, act.what.by, gold.admit(act.what.refresh))),
 		...Arr.flatMap(world.attempts, ({ attempt, leaves }): ReadonlyArray<Act> => [
@@ -127,7 +127,7 @@ export const edullmOf = (
 		program: together("edullm", [
 			timeback.program,
 			alphatest.program,
-			qti.program,
+			qtiSync.program,
 			gold.program,
 			takedown.program,
 			reports.program,

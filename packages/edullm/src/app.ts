@@ -1,6 +1,6 @@
 import { Schema } from "effect"
 import { Sha256 } from "#bronze.ts"
-import { COLLECTIONS } from "#qti.ts"
+import { COLLECTIONS } from "#qti-sync.ts"
 
 /**
  * The app's own facts that edullm's workloads write, as Effect Schemas, the types den lowers into the app's grizzle
@@ -29,20 +29,20 @@ export const SilverRow = Schema.Struct({
 export type SilverRow = typeof SilverRow.Type
 
 /** W3: a QTI collection's frontier: every document updated before it is read. */
-export const QtiCursor = Schema.Struct({
+export const QtiSyncCursor = Schema.Struct({
 	collection: Schema.Literals(COLLECTIONS),
 	frontier: Instant
 })
-export type QtiCursor = typeof QtiCursor.Type
+export type QtiSyncCursor = typeof QtiSyncCursor.Type
 
 /** W3: a QTI document as Silver holds it, with the Bronze page it was read from. */
-export const QtiDocument = Schema.Struct({
+export const QtiSyncDocument = Schema.Struct({
 	collection: Schema.Literals(COLLECTIONS),
 	id: Schema.NonEmptyString,
 	updatedAt: Instant,
 	page: Sha256
 })
-export type QtiDocument = typeof QtiDocument.Type
+export type QtiSyncDocument = typeof QtiSyncDocument.Type
 
 /** W2: AlphaTest's frontier: every assignment changed before it is read. */
 export const AlphaTestCursor = Schema.Struct({ frontier: Instant })

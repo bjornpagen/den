@@ -11,7 +11,7 @@ import {
 	spawn,
 	stepOf
 } from "#program.ts"
-import { QTI_READ } from "#workloads/qti.ts"
+import { QTI_SYNC } from "#workloads/qti-sync.ts"
 import { TIMEBACK_DAILY } from "#workloads/timeback.ts"
 
 /** W4's limits, each the test's input: how a view's build runs. */
@@ -61,7 +61,7 @@ export const goldOf = (
 	const GoldRefresh: RootKind<Refresh, boolean, never> = {
 		name: "GoldRefresh",
 		trigger: { _tag: "Operator" },
-		precondition: Option.some({ _tag: "Pending", roots: [TIMEBACK_DAILY, QTI_READ] }),
+		precondition: Option.some({ _tag: "Pending", roots: [TIMEBACK_DAILY, QTI_SYNC] }),
 		window: Option.none(),
 		exclusive: Option.some(() => "gold"),
 		scope: {

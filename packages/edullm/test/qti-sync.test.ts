@@ -10,8 +10,8 @@
 import type { Reached } from "@bjornpagen/testing/features"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Option } from "effect"
-import { type Document, makeQti, pageOf, QtiApi } from "#qti.ts"
-import { inWindow, type Scenario, scenarioGen, type Seen } from "#test/qti.fixtures.ts"
+import { type Document, makeQti, pageOf, QtiApi } from "#qti-sync.ts"
+import { inWindow, type Scenario, scenarioGen, type Seen } from "#test/qti-sync.fixtures.ts"
 import { law } from "#test/support/law.ts"
 
 /**
@@ -119,10 +119,10 @@ export const afterChain = property.explore(scenarioGen, {
 	kept: [],
 	kills: [
 		{
-			file: "packages/edullm/src/qti.ts",
+			file: "packages/edullm/src/qti-sync.ts",
 			original: "\t\t\t\t\t\t...Arr.filter(held[collection], (other) => other.id !== document.id),",
 			replacement: "\t\t\t\t\t\t...Arr.filter(held[collection], (other) => true),",
-			why: "Operator mutant (boolean-return) at packages/edullm/src/qti.ts:157 in makeQti: `other.id !== document.id` becomes `true`; the property fails (lane CATCH, den 9cffaba)."
+			why: "Operator mutant (boolean-return) at packages/edullm/src/qti-sync.ts:157 in makeQti: `other.id !== document.id` becomes `true`; the property fails (lane CATCH, den 9cffaba)."
 		}
 	]
 })

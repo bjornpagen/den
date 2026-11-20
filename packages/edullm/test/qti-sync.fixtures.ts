@@ -1,4 +1,4 @@
-/** What the properties of qti.test.ts read: its spaces, models and helpers. */
+/** What the properties of qti-sync.test.ts read: its spaces, models and helpers. */
 
 import { array, constant, element, type Gen, int, option, weighted } from "@bjornpagen/testing/gen"
 import { Array as Arr } from "effect"
@@ -9,7 +9,7 @@ import {
 	type Weather,
 	type Window,
 	type World
-} from "#qti.ts"
+} from "#qti-sync.ts"
 
 /** A chain's collection, window and page size, and the edits the source makes before each page. */
 export type Scenario = Readonly<{

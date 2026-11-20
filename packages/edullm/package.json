@@ -18,7 +18,7 @@
 		"./flow-control": "./src/flow-control.ts",
 		"./nature": "./src/nature.ts",
 		"./presence": "./src/presence.ts",
-		"./qti": "./src/qti.ts",
+		"./qti-sync": "./src/qti-sync.ts",
 		"./ranges": "./src/ranges.ts",
 		"./replica": "./src/replica.ts",
 		"./reports": "./src/reports.ts"

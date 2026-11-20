@@ -90,7 +90,7 @@ export class QtiApi extends Context.Service<
 		readonly page: (request: PageRequest) => Effect.Effect<Response>
 		readonly edit: (collection: Collection, document: Document) => Effect.Effect<void>
 	}
->()("@den/edullm/qti/QtiApi") {}
+>()("@den/edullm/qti-sync/QtiApi") {}
 
 /** The documents of a page: the first `limit` after the position, in identifier order, whose clock is in the window. */
 const listed = (documents: ReadonlyArray<Document>, request: PageRequest) =>
