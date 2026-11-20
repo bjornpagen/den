@@ -167,8 +167,12 @@ output into `select(PResult, outcome = done)`) certifies.
     graph whole once its exclusivity seat is given back and the census no longer requests its key; an app row that
     references it keeps it. The app's census runs it beside its tick.
 11. **Stopping.** Not built.
-12. **The relay.** Not built: a committing turn sends its children's wakes itself after its commit, and the census heals
-    any it loses.
+12. **Ringing.** A turn rings what its end made eligible: what its commit spawned, its scope's finish once its last
+    child ended, and, for an attempt that held seats, the steps eligibility finds waiting on a resource it held, at a
+    fresh read of the scheduler's snapshot (`turn.ts` waitersOf), so a fan-out on a resource drains as its seats free;
+    the write that requests a root rings its admission once it has committed (`runtime/request.ts` `afterCommit`: the
+    app's own transaction, or an operator's request); the relay (`runtime/relay.ts`), where a host keeps a process
+    alive, rings what anyone else's commit made eligible; the census heals whatever any of them loses.
 
 ## Seams, each one module for one coming grizzle feature
 

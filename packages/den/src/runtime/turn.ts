@@ -3,7 +3,7 @@ import { Array as Arr, Cause, Duration, Effect, Exit, Option } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Ladder, Resource } from "#algebra/kinds.ts"
 import { censusPeriodSeconds } from "#algebra/kinds.ts"
-import { isOpen, lapsedAttempt, opensAt, standing } from "#runtime/eligible.ts"
+import { eligible, isOpen, lapsedAttempt, opensAt, standing } from "#runtime/eligible.ts"
 import {
 	atOnce,
 	delayOf,
@@ -23,6 +23,7 @@ import type {
 	RetryRow,
 	Rooted,
 	RootView,
+	SeatAt,
 	Spawned,
 	StepRunner,
 	Turn
@@ -692,9 +693,12 @@ const endingOf = <R>(
 	}
 }
 
-/** A claim's end: the attempt the database stamped, or the ending of a claim that found no seat, lost or failed. */
+/**
+ * A claim's end: the attempt the database stamped with the seats its write holds, or the ending of a claim that found no
+ * seat, lost or failed.
+ */
 type Claimed =
-	| { readonly kind: "claimed"; readonly attempt: bigint }
+	| { readonly kind: "claimed"; readonly attempt: bigint; readonly seats: ReadonlyArray<SeatAt> }
 	| { readonly kind: "ended"; readonly ending: Ending }
 
 /**
@@ -728,7 +732,11 @@ const claimSeated = <R>(
 			ledger.claim({ ...claim, seats: taken.value.seats, lapsed })
 		)
 		if (outcome._tag === "Success") {
-			return { kind: "claimed", attempt: outcome.success } satisfies Claimed
+			return {
+				kind: "claimed",
+				attempt: outcome.success,
+				seats: taken.value.seats
+			} satisfies Claimed
 		}
 		if (seatTaken(ledger.flow, outcome.failure)) {
 			return yield* claimSeated(ledger, at, wake, claim, uses)
@@ -827,43 +835,82 @@ const serveStep = <R>(
 				wake,
 				why: "attempts"
 			})
-			return { ending: failed, onward: yield* settledOn(ledger, runner, scope, failed) }
+			return {
+				ending: failed,
+				onward: yield* settledOn(ledger, runner, scope, failed, claimed.seats)
+			}
 		}
 		const ran = yield* runner.run(turn, at, ledger.now)
 		const ending = yield* endingOf(ledger, runner, turn, ran, spentSoFar, wake)
-		return { ending, onward: yield* settledOn(ledger, runner, scope, ending) }
+		return { ending, onward: yield* settledOn(ledger, runner, scope, ending, claimed.seats) }
 	})
 
-/** What an ending rings on: a step's end settles its scope; a retry or a timed wait rings its own next attempt. */
+/**
+ * The waiters a claimed attempt's end rings, once it gave back `freed`: the steps eligibility finds due at a fresh
+ * reading of the scheduler's snapshot, one statement, that wait on a resource it held a seat of, as many as the seats it
+ * finds free, the oldest root first. A step that found no seat free ended waiting and rang nothing, so the end of the
+ * attempt that held the seat rings it, as that end made it eligible; without it, a fan-out of N steps on S seats would
+ * run S at each census tick. An attempt that held no seat reads nothing. A read that fails rings nothing: the census
+ * heals it.
+ */
+const waitersOf = <R>(
+	ledger: Ledger<R>,
+	freed: ReadonlyArray<SeatAt>
+): Effect.Effect<ReadonlyArray<Onward>> =>
+	Arr.isReadonlyArrayEmpty(freed)
+		? Effect.succeed([])
+		: Effect.zipWith(ledger.snapshot, ledger.now, (snapshot, at) => {
+				const waits = (wake: Wake): boolean =>
+					wake._tag === "Step" &&
+					Arr.some(
+						snapshot.steps,
+						(p) =>
+							p.step === wake.step &&
+							Arr.some(p.runner.uses, (r) => Arr.some(freed, (seat) => seat.resource === r.name))
+					)
+				return Arr.map(Arr.filter(eligible(ledger, snapshot, at).wakes, waits), (wake): Onward => ({
+					wake,
+					delay: Duration.zero
+				}))
+			}).pipe(Effect.orElseSucceed((): ReadonlyArray<Onward> => []))
+
+/**
+ * What an ending rings on: a step's end settles its scope; a retry or a timed wait rings its own next attempt; and an
+ * attempt that held seats, `freed`, rings the waiters its end made eligible (waitersOf), whatever its ending.
+ */
 const settledOn = <R>(
 	ledger: Ledger<R>,
 	runner: StepRunner<R>,
 	scope: ScopeKey,
-	ending: Ending
+	ending: Ending,
+	freed: ReadonlyArray<SeatAt>
 ): Effect.Effect<ReadonlyArray<Onward>, never, Digest.Digest> => {
 	const ringAt = (wake: Wake, until: Instant): Effect.Effect<ReadonlyArray<Onward>> =>
 		Effect.match(ledger.now, {
 			onFailure: (): ReadonlyArray<Onward> => [],
 			onSuccess: (at) => [{ wake, delay: delayTo(at, until) }]
 		})
-	switch (ending.kind) {
-		case "done":
-			return settled(ledger, runner, scope, ending.spawned)
-		case "failed":
-			return settled(ledger, runner, scope, { steps: [], finishes: [] })
-		case "retry":
-			return Effect.succeed([{ wake: ending.wake, delay: ending.delay }])
-		case "waiting":
-			return Option.match(ending.until, {
-				onNone: () => Effect.succeed([]),
-				onSome: (until) => ringAt(ending.wake, until)
-			})
-		case "admitted":
-		case "skipped":
-		case "lost":
-		case "fenced":
-			return Effect.succeed([])
-	}
+	const own = ((): Effect.Effect<ReadonlyArray<Onward>, never, Digest.Digest> => {
+		switch (ending.kind) {
+			case "done":
+				return settled(ledger, runner, scope, ending.spawned)
+			case "failed":
+				return settled(ledger, runner, scope, { steps: [], finishes: [] })
+			case "retry":
+				return Effect.succeed([{ wake: ending.wake, delay: ending.delay }])
+			case "waiting":
+				return Option.match(ending.until, {
+					onNone: () => Effect.succeed([]),
+					onSome: (until) => ringAt(ending.wake, until)
+				})
+			case "admitted":
+			case "skipped":
+			case "lost":
+			case "fenced":
+				return Effect.succeed([])
+		}
+	})()
+	return Effect.zipWith(own, waitersOf(ledger, freed), (mine, waiters) => [...mine, ...waiters])
 }
 
 /**
