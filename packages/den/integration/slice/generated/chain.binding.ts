@@ -746,12 +746,9 @@ export const chainLedger = (h: ChainHandles) => {
 			Effect.flatMap(
 				settled(
 					h.den.chainClaim.once({
-						params: {},
+						params: { budget: row.budget },
 						facts: {
-							insert: {
-								ChainClaim: [{ step: row.step, root: row.root, until: row.until }],
-								ChainEnded: row.lapsed
-							}
+							insert: { ChainClaim: [{ step: row.step, root: row.root }], ChainEnded: row.lapsed }
 						}
 					})
 				),

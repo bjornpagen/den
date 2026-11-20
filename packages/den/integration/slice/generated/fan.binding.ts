@@ -593,12 +593,10 @@ export const fanLedger = (h: FanHandles) => {
 			Effect.flatMap(
 				settled(
 					h.den.fanClaim.once({
-						params: {},
+						params: { budget: row.budget },
 						facts: {
 							insert: {
-								FanClaim: [
-									{ step: row.step, root: row.root, until: row.until, holds: holdsOf(row.seats) }
-								],
+								FanClaim: [{ step: row.step, root: row.root, holds: holdsOf(row.seats) }],
 								FanEnded: row.lapsed
 							}
 						}

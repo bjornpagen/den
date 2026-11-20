@@ -1,6 +1,6 @@
 import { lower } from "@bjornpagen/den/lower/fragment"
 import { printFragment } from "@bjornpagen/den/lower/print"
-import { atOnce, instantOf } from "@bjornpagen/den/runtime/identity"
+import { atOnce, delayOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 import { assert } from "@bjornpagen/testing/assert"
@@ -124,7 +124,7 @@ export const admitsLoweringASeatCountExactlyWhenNoLiveHoldSitsAtOrAboveTheNewCou
 							const { fan: ledgers, ledgers: all } = yield* openLedgers
 							const ledger = ledgers.ledger
 							const at = yield* ledger.now
-							const until = instantOf(Number(at) + longestLeaseMillis)
+							const ends = instantOf(Number(at) + longestLeaseMillis)
 							const requested = yield* ledgers.request.FanRun("seat counts", {
 								batch: "seat counts",
 								size: 2n
@@ -132,7 +132,7 @@ export const admitsLoweringASeatCountExactlyWhenNoLiveHoldSitsAtOrAboveTheNewCou
 							const admitted = yield* serve(
 								all,
 								{ _tag: "Admit", flow: FlowName.make("Fan"), scope: requested.scope },
-								until
+								ends
 							)
 							const squares =
 								admitted.ending.kind === "admitted" ? admitted.ending.spawned.steps : []
@@ -142,7 +142,7 @@ export const admitsLoweringASeatCountExactlyWhenNoLiveHoldSitsAtOrAboveTheNewCou
 									const attempt = yield* ledger.claim({
 										step: square.step,
 										root: requested.scope,
-										until,
+										budget: delayOf(longestLeaseMillis),
 										seats: [{ resource: "Pool", seat: BigInt(ordinal) }],
 										lapsed: []
 									})

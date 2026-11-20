@@ -130,8 +130,9 @@ output into `select(PResult, outcome = done)`) certifies.
 
 ## Provisional, for the owner
 
-1. **Claim protocol.** A claim is an insert of `PClaim(step, until)` whose attempt the database stamps, its place among
-   the step's claims from 0, with its seats nested under it, one write that reads its attempt back; a claim after the
+1. **Claim protocol.** A claim is an insert of `PClaim(step)` whose attempt the database stamps, its place among the
+   step's claims from 0, and whose `until` the statement computes, its reading of the database's clock plus the time
+   the turn's invocation has left, with its seats nested under it, one write that reads its attempt back; a claim after the
    first follows its predecessor's `PEnded`, so a second claimant is refused whole and a forged or stale wake for an
    attempt that is not the step's next loses. A result is `PResult` plus `PHeld(step, attempt)`, keyed by step: whichever attempt commits first holds the
    step, and any later commit, stale or fresh, is refused on that key and ends `lost`, its writes rolled back with it.
@@ -140,8 +141,10 @@ output into `select(PResult, outcome = done)`) certifies.
 3. **Window and pause.** A lane declares `window` (always, or an Effect `Cron`) and `pause` (the standing it is
    installed in); a turn outside the window ends `retry` at the window's next instant, no attempt spent. Pause is
    declared but not yet enforced: pausing and resuming as facts are wave 2's.
-4. **Clock.** The runtime's Effect `Clock`, passed to grizzle as a parameter (`until`, the census's `now`). The lease is
-   the function lifetime (800 s); the census rings a lapsed claim at `until + 1 ms`.
+4. **Clock.** The database's: every reading is a clocked call's `transaction_timestamp()`, and every instant a write
+   stores is computed in its statement, the call's reading plus a delay (a claim's lease the time its invocation has
+   left, at most the function lifetime, 800 s; a retry's rung; a step's delay after its spawn); the census rings a
+   lapsed claim at `until + 1 ms`.
 5. **Endings.** `transient` is retried in place, within the claim's deadline, with no attempt spent; `unavailable`,
    `transport`, `input`, `outsideWorld`, `route`, `token*` and `failed` spend the attempt (`retry`, due at `until`);
    `refused` on `PResult`, `PHeld` or `PClaim` (or the attempts' `pred` law) is `lost`, on any other law `failed` with

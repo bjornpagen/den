@@ -5,6 +5,7 @@ import {
 	Compute,
 	clocked,
 	deferrable,
+	param,
 	query,
 	role,
 	v,
@@ -139,17 +140,28 @@ export const assignDenPrograms = Object.freeze({
 		query(assignGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
 	),
-	assignClaim: ChangeSet.empty(assignGraph)
-		.insert(AssignClaim, [])
-		.insert(AssignEnded, [])
-		.read("held", (delta) =>
-			query(assignGraph).rule((r) => {
-				const { step, root, attempt } = v(delta.added(AssignClaim), "added")
-				return r
-					.match(delta.added(AssignClaim), { step, root, attempt })
-					.find({ step, root, attempt })
+	assignClaim: clocked(
+		ChangeSet.empty(assignGraph)
+			.insertComputed(AssignClaim, [], {
+				until: Compute.cast(
+					Compute.add(
+						Compute.base(param("now", DenInstant)),
+						Compute.base(param("budget", DenDelay))
+					),
+					DenInstant
+				)
 			})
-		),
+			.insert(AssignEnded, [])
+			.read("held", (delta) =>
+				query(assignGraph).rule((r) => {
+					const { step, root, attempt } = v(delta.added(AssignClaim), "added")
+					return r
+						.match(delta.added(AssignClaim), { step, root, attempt })
+						.find({ step, root, attempt })
+				})
+			),
+		{ now: "millis" }
+	),
 	assignRetry: clocked(
 		ChangeSet.empty(assignGraph)
 			.insert(AssignEnded, [])

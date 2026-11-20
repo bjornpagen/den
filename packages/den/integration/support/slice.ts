@@ -582,7 +582,9 @@ export const rows = <A, E>(
  * A ledger whose readings of the database's instant are moved on by the time the suite's clock, its TestClock, has
  * travelled since `opened`. The database's clock cannot be moved, and a suite moves its TestClock to let a lease lapse
  * or a retry come due, which the in-process transport's delays follow too; while the suite's clock stands, a reading is
- * the database's own.
+ * the database's own. The instants a clocked write computes (a step's due, a retry's, a claim's lease) are the
+ * database's own reading plus their delay, so to these readings one written after the suite's clock travelled comes due
+ * or lapses that much earlier: two clocks, until a test Db reads the database's clock shifted by the travel.
  */
 const travelling = <R>(ledger: Ledger<R>, opened: number): Ledger<R> => ({
 	...ledger,

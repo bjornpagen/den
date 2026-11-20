@@ -1,4 +1,4 @@
-import { atOnce, instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
+import { atOnce, delayOf, instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
 import type { SeatAt } from "@bjornpagen/den/runtime/ledger"
 import { seatsFor, seatTaken } from "@bjornpagen/den/runtime/seats"
 import { serve } from "@bjornpagen/den/runtime/turn"
@@ -9,7 +9,8 @@ import type { Reached } from "@bjornpagen/testing/features"
 import { boolean, type Gen } from "@bjornpagen/testing/gen"
 import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
 import { type Case, property } from "@bjornpagen/testing/property"
-import { Array as Arr, Effect, HashMap, Option, Ref } from "effect"
+import { Array as Arr, Duration, Effect, HashMap, Option, Ref } from "effect"
+import { TestClock } from "effect/testing"
 import { pool } from "#integration/slice/flows.ts"
 import { ringOnAndDrain } from "#integration/support/run.ts"
 import { openLedgers, sliceCase } from "#integration/support/slice.ts"
@@ -19,8 +20,8 @@ import { longestLeaseMillis } from "#runtime/turn.ts"
  * Exact seats: the Pool holds two seats and a batch, admitted with its root, makes five squares eligible at once. Five
  * sessions, one per square, each claim its square's first attempt with a seat of the Pool, the claim and its hold one
  * write, and end the attempt, which gives the seat back, in an interleaving drawn from the case's tape, every move of
- * each in flight beside the others'; some claim under a lease already lapsed, which another claim ends and takes over in
- * its own write. Then the batch runs to its end. No two live holds ever share a seat, so never more than two hold a seat
+ * each in flight beside the others'; some claim under a lease of no time, which lapses while they hold it as the
+ * suite's clock moves past it, and which another claim ends and takes over in its own write. Then the batch runs to its end. No two live holds ever share a seat, so never more than two hold a seat
  * at once; a claim that finds no seat free claims nothing; a standing lease is never taken over; a lapsed attempt ended
  * after it was taken over frees nothing of its taker's; and every seat is free again at the end.
  *
@@ -37,7 +38,7 @@ type Feature = "a full pool" | "both seats held" | "a seat taken again" | "a lap
 
 const sessions: ReadonlyArray<Session> = ["s0", "s1", "s2", "s3", "s4"]
 
-/** A case: which sessions claim under a lease already lapsed. */
+/** A case: which sessions claim under a lease that lapses while they hold it. */
 interface Takers {
 	readonly lapsed: ReadonlyArray<boolean>
 }
@@ -123,14 +124,11 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 								if (Option.isNone(picked)) {
 									return Option.none()
 								}
-								const until = instantOf(
-									lapsed ? Number(instant) - 1 : Number(instant) + longestLeaseMillis
-								)
 								const claimed = yield* Effect.result(
 									ledger.claim({
 										step,
 										root,
-										until,
+										budget: lapsed ? atOnce : delayOf(longestLeaseMillis),
 										seats: picked.value.seats,
 										lapsed: Arr.map(picked.value.lapsed, (h) => ({
 											step: h.step,
@@ -140,6 +138,9 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 									})
 								)
 								if (claimed._tag === "Success") {
+									if (lapsed) {
+										yield* TestClock.adjust(Duration.millis(1))
+									}
 									return Option.some({
 										attempt: claimed.success,
 										seats: picked.value.seats,

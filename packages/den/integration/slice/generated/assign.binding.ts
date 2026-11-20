@@ -711,12 +711,9 @@ export const assignLedger = (h: AssignHandles) => {
 			Effect.flatMap(
 				settled(
 					h.den.assignClaim.once({
-						params: {},
+						params: { budget: row.budget },
 						facts: {
-							insert: {
-								AssignClaim: [{ step: row.step, root: row.root, until: row.until }],
-								AssignEnded: row.lapsed
-							}
+							insert: { AssignClaim: [{ step: row.step, root: row.root }], AssignEnded: row.lapsed }
 						}
 					})
 				),

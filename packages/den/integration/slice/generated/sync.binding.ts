@@ -690,12 +690,9 @@ export const syncLedger = (h: SyncHandles) => {
 			Effect.flatMap(
 				settled(
 					h.den.syncClaim.once({
-						params: {},
+						params: { budget: row.budget },
 						facts: {
-							insert: {
-								SyncClaim: [{ step: row.step, root: row.root, until: row.until }],
-								SyncEnded: row.lapsed
-							}
+							insert: { SyncClaim: [{ step: row.step, root: row.root }], SyncEnded: row.lapsed }
 						}
 					})
 				),

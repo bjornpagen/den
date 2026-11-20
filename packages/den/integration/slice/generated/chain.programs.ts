@@ -5,6 +5,7 @@ import {
 	Compute,
 	clocked,
 	deferrable,
+	param,
 	query,
 	role,
 	v,
@@ -128,17 +129,28 @@ export const chainDenPrograms = Object.freeze({
 		query(chainGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
 	),
-	chainClaim: ChangeSet.empty(chainGraph)
-		.insert(ChainClaim, [])
-		.insert(ChainEnded, [])
-		.read("held", (delta) =>
-			query(chainGraph).rule((r) => {
-				const { step, root, attempt } = v(delta.added(ChainClaim), "added")
-				return r
-					.match(delta.added(ChainClaim), { step, root, attempt })
-					.find({ step, root, attempt })
+	chainClaim: clocked(
+		ChangeSet.empty(chainGraph)
+			.insertComputed(ChainClaim, [], {
+				until: Compute.cast(
+					Compute.add(
+						Compute.base(param("now", DenInstant)),
+						Compute.base(param("budget", DenDelay))
+					),
+					DenInstant
+				)
 			})
-		),
+			.insert(ChainEnded, [])
+			.read("held", (delta) =>
+				query(chainGraph).rule((r) => {
+					const { step, root, attempt } = v(delta.added(ChainClaim), "added")
+					return r
+						.match(delta.added(ChainClaim), { step, root, attempt })
+						.find({ step, root, attempt })
+				})
+			),
+		{ now: "millis" }
+	),
 	chainRetry: clocked(
 		ChangeSet.empty(chainGraph)
 			.insert(ChainEnded, [])

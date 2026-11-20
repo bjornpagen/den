@@ -542,12 +542,9 @@ export const retryLedger = (h: RetryHandles) => {
 			Effect.flatMap(
 				settled(
 					h.den.retryClaim.once({
-						params: {},
+						params: { budget: row.budget },
 						facts: {
-							insert: {
-								RetryClaim: [{ step: row.step, root: row.root, until: row.until }],
-								RetryEnded: row.lapsed
-							}
+							insert: { RetryClaim: [{ step: row.step, root: row.root }], RetryEnded: row.lapsed }
 						}
 					})
 				),

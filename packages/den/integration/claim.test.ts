@@ -1,4 +1,4 @@
-import { instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
+import { delayOf, instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
 import { lostRace, serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 import { assert } from "@bjornpagen/testing/assert"
@@ -71,14 +71,13 @@ export const admitsOneClaimerOfAnAttemptInEveryInterleaving = property.exhaust(f
 							Effect.gen(function* () {
 								const held = yield* Ref.get(current)
 								const step = Option.getOrThrow(held)
-								const at = yield* chain.ledger.now
 								const located = yield* Effect.orDie(chain.ledger.stepOf(step))
 								const root = Option.getOrThrow(located).root
 								const outcome = yield* Effect.result(
 									chain.ledger.claim({
 										step,
 										root,
-										until: instantOf(Number(at) + longestLeaseMillis),
+										budget: delayOf(longestLeaseMillis),
 										seats: [],
 										lapsed: []
 									})

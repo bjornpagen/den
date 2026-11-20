@@ -97,13 +97,14 @@ export interface AttemptOf {
 }
 
 /**
- * A claim as a turn asks for it: the step, until when, the seats it takes, which the claim's one write holds, and the
- * attempts it names lapsed (its step's latest claim, and each claim holding one of its seats), whose ends the write
- * records where the database's instant has passed their leases.
+ * A claim as a turn asks for it: the step, how long its lease holds from the claim's own reading of the database's
+ * clock, the seats it takes, which the claim's one write holds, and the attempts it names lapsed (its step's latest
+ * claim, and each claim holding one of its seats), whose ends the write records where the database's instant has passed
+ * their leases.
  */
 export interface ClaimOf {
 	readonly step: StepKey
-	readonly until: Instant
+	readonly budget: Delay
 	readonly seats: ReadonlyArray<SeatAt>
 	readonly lapsed: ReadonlyArray<AttemptOf>
 }
@@ -136,14 +137,13 @@ export interface FencedRow {
 	readonly attempt: bigint
 }
 
-/** A turn of a step, once claimed: the step, its attempt, scope and root, and its claim's deadline and lease. */
+/** A turn of a step, once claimed: the step, its attempt, scope and root, and the deadline its body runs to. */
 export interface Turn {
 	readonly step: StepKey
 	readonly root: ScopeKey
 	readonly attempt: bigint
 	readonly scope: ScopeKey
 	readonly deadline: Instant
-	readonly until: Instant
 }
 
 /**

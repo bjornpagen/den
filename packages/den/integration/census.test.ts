@@ -1,6 +1,6 @@
 import { tick } from "@bjornpagen/den/runtime/census"
 import { drain } from "@bjornpagen/den/runtime/drive"
-import { instantOf } from "@bjornpagen/den/runtime/identity"
+import { delayOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName, InProcess } from "@bjornpagen/den/transport"
 import { Db } from "@bjornpagen/grizzle/runtime"
@@ -99,7 +99,13 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 								const step = first.value.step
 								const located = yield* chain.ledger.stepOf(step)
 								const root = Option.getOrThrow(located).root
-								yield* chain.ledger.claim({ step, root, until: ends, seats: [], lapsed: [] })
+								yield* chain.ledger.claim({
+									step,
+									root,
+									budget: delayOf(longestLeaseMillis),
+									seats: [],
+									lapsed: []
+								})
 								const standing = yield* tick(chain.ledger)
 								assert.equal(
 									Arr.some(

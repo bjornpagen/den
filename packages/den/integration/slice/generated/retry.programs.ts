@@ -5,6 +5,7 @@ import {
 	Compute,
 	clocked,
 	deferrable,
+	param,
 	query,
 	role,
 	v,
@@ -110,17 +111,28 @@ export const retryDenPrograms = Object.freeze({
 		query(retryGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
 	),
-	retryClaim: ChangeSet.empty(retryGraph)
-		.insert(RetryClaim, [])
-		.insert(RetryEnded, [])
-		.read("held", (delta) =>
-			query(retryGraph).rule((r) => {
-				const { step, root, attempt } = v(delta.added(RetryClaim), "added")
-				return r
-					.match(delta.added(RetryClaim), { step, root, attempt })
-					.find({ step, root, attempt })
+	retryClaim: clocked(
+		ChangeSet.empty(retryGraph)
+			.insertComputed(RetryClaim, [], {
+				until: Compute.cast(
+					Compute.add(
+						Compute.base(param("now", DenInstant)),
+						Compute.base(param("budget", DenDelay))
+					),
+					DenInstant
+				)
 			})
-		),
+			.insert(RetryEnded, [])
+			.read("held", (delta) =>
+				query(retryGraph).rule((r) => {
+					const { step, root, attempt } = v(delta.added(RetryClaim), "added")
+					return r
+						.match(delta.added(RetryClaim), { step, root, attempt })
+						.find({ step, root, attempt })
+				})
+			),
+		{ now: "millis" }
+	),
 	retryRetry: clocked(
 		ChangeSet.empty(retryGraph)
 			.insert(RetryEnded, [])

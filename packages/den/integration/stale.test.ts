@@ -1,4 +1,4 @@
-import { instantOf } from "@bjornpagen/den/runtime/identity"
+import { delayOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import type { Ran, Turn } from "@bjornpagen/den/runtime/ledger"
 import { lostRace, serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
@@ -91,11 +91,10 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 						const claimAt = (lapsed: ReadonlyArray<bigint>) =>
 							Effect.gen(function* () {
 								const from = yield* chain.ledger.now
-								const until = ends(from)
 								const attempt = yield* chain.ledger.claim({
 									step,
 									root: requested.scope,
-									until,
+									budget: delayOf(longestLeaseMillis),
 									seats: [],
 									lapsed: Arr.map(lapsed, (a) => ({ step, root: requested.scope, attempt: a }))
 								})
@@ -104,15 +103,14 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 									root: requested.scope,
 									attempt,
 									scope: requested.scope,
-									deadline: instantOf(Number(until) - 1),
-									until
+									deadline: instantOf(Number(ends(from)) - 1)
 								}
 								return turn
 							})
 						const first = yield* claimAt([])
 						yield* TestClock.adjust(Duration.millis(reclaimableAfterMillis))
 						const fresh = yield* claimAt([first.attempt])
-						const stale: Turn = { ...first, deadline: fresh.deadline, until: fresh.until }
+						const stale: Turn = { ...first, deadline: fresh.deadline }
 						const [early, late] =
 							race.order === "stale commits first" ? [stale, fresh] : [fresh, stale]
 						const finish = (turn: Turn): Effect.Effect<Ran, CallError, Digest.Digest> =>

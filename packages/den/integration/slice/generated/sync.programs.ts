@@ -5,6 +5,7 @@ import {
 	Compute,
 	clocked,
 	deferrable,
+	param,
 	query,
 	role,
 	v,
@@ -141,17 +142,28 @@ export const syncDenPrograms = Object.freeze({
 		query(syncGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
 	),
-	syncClaim: ChangeSet.empty(syncGraph)
-		.insert(SyncClaim, [])
-		.insert(SyncEnded, [])
-		.read("held", (delta) =>
-			query(syncGraph).rule((r) => {
-				const { step, root, attempt } = v(delta.added(SyncClaim), "added")
-				return r
-					.match(delta.added(SyncClaim), { step, root, attempt })
-					.find({ step, root, attempt })
+	syncClaim: clocked(
+		ChangeSet.empty(syncGraph)
+			.insertComputed(SyncClaim, [], {
+				until: Compute.cast(
+					Compute.add(
+						Compute.base(param("now", DenInstant)),
+						Compute.base(param("budget", DenDelay))
+					),
+					DenInstant
+				)
 			})
-		),
+			.insert(SyncEnded, [])
+			.read("held", (delta) =>
+				query(syncGraph).rule((r) => {
+					const { step, root, attempt } = v(delta.added(SyncClaim), "added")
+					return r
+						.match(delta.added(SyncClaim), { step, root, attempt })
+						.find({ step, root, attempt })
+				})
+			),
+		{ now: "millis" }
+	),
 	syncRetry: clocked(
 		ChangeSet.empty(syncGraph)
 			.insert(SyncEnded, [])

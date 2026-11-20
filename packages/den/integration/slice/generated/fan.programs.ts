@@ -5,6 +5,7 @@ import {
 	Compute,
 	clocked,
 	deferrable,
+	param,
 	query,
 	role,
 	v,
@@ -141,15 +142,28 @@ export const fanDenPrograms = Object.freeze({
 		query(fanGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
 	),
-	fanClaim: ChangeSet.empty(fanGraph)
-		.insert(FanClaim, [])
-		.insert(FanEnded, [])
-		.read("held", (delta) =>
-			query(fanGraph).rule((r) => {
-				const { step, root, attempt } = v(delta.added(FanClaim), "added")
-				return r.match(delta.added(FanClaim), { step, root, attempt }).find({ step, root, attempt })
+	fanClaim: clocked(
+		ChangeSet.empty(fanGraph)
+			.insertComputed(FanClaim, [], {
+				until: Compute.cast(
+					Compute.add(
+						Compute.base(param("now", DenInstant)),
+						Compute.base(param("budget", DenDelay))
+					),
+					DenInstant
+				)
 			})
-		),
+			.insert(FanEnded, [])
+			.read("held", (delta) =>
+				query(fanGraph).rule((r) => {
+					const { step, root, attempt } = v(delta.added(FanClaim), "added")
+					return r
+						.match(delta.added(FanClaim), { step, root, attempt })
+						.find({ step, root, attempt })
+				})
+			),
+		{ now: "millis" }
+	),
 	fanRetry: clocked(
 		ChangeSet.empty(fanGraph)
 			.insert(FanEnded, [])

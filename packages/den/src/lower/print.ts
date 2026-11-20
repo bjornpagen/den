@@ -478,22 +478,29 @@ const liveHoldsOf = (role: string, st: SeatsIR): string => {
 }
 
 /**
- * A claim's one write: the claim of a step, its attempt left out for the database to stamp in the step's group, with its
- * holds nested under it, which carry its step, root and attempt; and the end of each attempt its turn found lapsed at its
- * reading of the database's clock (its step's latest claim, and each claim holding a seat this claim takes), so a lapsed
- * holder's seats are free in the write that takes them and a claim after a lapsed one follows its end. The ends are the
- * call's rows, each stating its root's graph, since a call holds every graph it touches before it touches it. The
- * stamped attempt is read back from the same write, the claim's one way to know which attempt it holds.
+ * A claim's one write: the claim of a step, its attempt left out for the database to stamp in the step's group and its
+ * lease's end computed in the statement, the call's reading of the database's clock plus the turn's `budget`, a
+ * DenDelay, so no host names the instant its lease ends, with its holds nested under it, which carry its step, root and
+ * attempt; and the end of each attempt its turn found lapsed at its reading of the database's clock (its step's latest
+ * claim, and each claim holding a seat this claim takes), so a lapsed holder's seats are free in the write that takes
+ * them and a claim after a lapsed one follows its end. The ends are the call's rows, each stating its root's graph, since
+ * a call holds every graph it touches before it touches it. The stamped attempt is read back from the same write, the
+ * claim's one way to know which attempt it holds.
  */
-const claimOf = (graph: string, r: (s: string) => string): string => `ChangeSet.empty(${graph})
-	.insert(${r("Claim")}, [])
-	.insert(${r("Ended")}, [])
-	.read("held", (delta) =>
-		query(${graph}).rule((r) => {
-			const { step, root, attempt } = v(delta.added(${r("Claim")}), "added")
-			return r.match(delta.added(${r("Claim")}), { step, root, attempt }).find({ step, root, attempt })
+const claimOf = (graph: string, r: (s: string) => string): string => `clocked(
+	ChangeSet.empty(${graph})
+		.insertComputed(${r("Claim")}, [], {
+			until: Compute.cast(Compute.add(Compute.base(param("now", DenInstant)), Compute.base(param("budget", DenDelay))), DenInstant)
 		})
-	)`
+		.insert(${r("Ended")}, [])
+		.read("held", (delta) =>
+			query(${graph}).rule((r) => {
+				const { step, root, attempt } = v(delta.added(${r("Claim")}), "added")
+				return r.match(delta.added(${r("Claim")}), { step, root, attempt }).find({ step, root, attempt })
+			})
+		),
+	{ now: "millis" }
+)`
 
 /** A query over `role` of each chain's live turn: every turn of `held` that no row of `ended` ends. */
 const liveOf = (
@@ -1170,7 +1177,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	)
 	return `${lines([
 		`/** The programs den lowered the flow ${P} to, over its fragments, and its roles over the schema ${app}; \`den generate\` writes them, and nothing edits them. */`,
-		`import { ${commas(Arr.filter(["ChangeSet", "Compute", "clocked", "deferrable", "query", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
+		`import { ${commas(Arr.filter(["ChangeSet", "Compute", "clocked", "deferrable", "param", "query", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
 		`import { ${commas(Arr.filter(["DenDelay", "DenInstant"], (name) => tokens.has(name)))} } from "@bjornpagen/den/lower/keys"`,
 		`import { ${app} } from ${q(place.schema.from)}`,
 		`import { ${W} } from ${q(place.writer.from)}`,
@@ -1881,8 +1888,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\t\tfinished: (scope) => h.den.${n.program("Finished")}.once({ params: { scope }, facts: {} }).pipe(settled, any),`,
 		`\t\tbusy: ${indented("\t\t")(busyFlows)},`,
 		resources
-			? `\t\tclaim: (row) => Effect.flatMap(settled(h.den.${n.program("Claim")}.once({ params: {}, facts: { insert: { ${r("Claim")}: [{ step: row.step, root: row.root, until: row.until, holds: holdsOf(row.seats) }], ${r("Ended")}: row.lapsed } } })), (outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)),`
-			: `\t\tclaim: (row) => Effect.flatMap(settled(h.den.${n.program("Claim")}.once({ params: {}, facts: { insert: { ${r("Claim")}: [{ step: row.step, root: row.root, until: row.until }], ${r("Ended")}: row.lapsed } } })), (outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)),`,
+			? `\t\tclaim: (row) => Effect.flatMap(settled(h.den.${n.program("Claim")}.once({ params: { budget: row.budget }, facts: { insert: { ${r("Claim")}: [{ step: row.step, root: row.root, holds: holdsOf(row.seats) }], ${r("Ended")}: row.lapsed } } })), (outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)),`
+			: `\t\tclaim: (row) => Effect.flatMap(settled(h.den.${n.program("Claim")}.once({ params: { budget: row.budget }, facts: { insert: { ${r("Claim")}: [{ step: row.step, root: row.root }], ${r("Ended")}: row.lapsed } } })), (outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)),`,
 		`\t\tretry: (row) => settled(h.den.${n.program("Retry")}.once({ params: { step: row.step, attempt: row.attempt, delay: row.delay, spent: row.spent, root: row.root }, facts: { insert: { ${r("Ended")}: [{ step: row.step, root: row.root, attempt: row.attempt }] } } })),`,
 		`\t\tfence: (row) => settled(h.den.${n.program("Fence")}.once({ params: {}, facts: { insert: { ${r("Ended")}: [{ step: row.step, root: row.root, attempt: row.attempt }], ${r("Fenced")}: [row] } } })),`,
 		`\t\trefuse: ({ step, root, attempt }, law) => settled(h.den.${n.program("Refuse")}.once({ params: {}, facts: { insert: { ${r("Result")}: [{ step, root, outcome: "failed" }], ${r("Failed")}: [{ step, root }], ${r("Held")}: [{ step, root, attempt }], ${r("Refusal")}: [{ step, root, law }] } } })),`,

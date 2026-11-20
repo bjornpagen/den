@@ -698,7 +698,7 @@ type Claimed =
 	| { readonly kind: "ended"; readonly ending: Ending }
 
 /**
- * Claims a step's next attempt until `until` with one seat of each resource it uses, in one write: the attempt the
+ * Claims a step's next attempt for `budget` with one seat of each resource it uses, in one write: the attempt the
  * database stamped; waiting on seats when some resource has no seat free at `at`; lost when another claim of the step
  * stands unended; or the ending of a write that failed. A seat another claim took between the read and the claim
  * refuses the claim whole on the live holds' key, and the seats are picked again from a fresh read, so it ends once it
@@ -742,7 +742,8 @@ const claimSeated = <R>(
 /**
  * Serves one wake of a step's attempt: refuses a wake that names no pending step or not its next attempt, waits for its
  * due instant, its windows, its pauses and, for a finish, its scope's last child; fails it once its ladder is spent;
- * claims it until `ends` (its invocation's end) with its seats in one write, runs its kind's turn, whose end gives its
+ * claims it with its seats in one write, its lease the time its invocation has left at its reading of the database's
+ * instant, so the lease ends at `ends` (its invocation's end) read from the claim's own clock, runs its kind's turn, whose end gives its
  * seats back, and rings on what its end made eligible.
  */
 const serveStep = <R>(
@@ -799,7 +800,7 @@ const serveStep = <R>(
 		}
 		const spentSoFar = spentBefore(claims, retries, fenced, next)
 		const deadline = instantOf(Number(ends) - leaseMarginMillis)
-		const until = ends
+		const budget = delayOf(Number(ends) - Number(at))
 		const exhausted = !allows(runner.retry, spentSoFar)
 		const lapsed = Arr.map(
 			Option.toArray(lapsedAttempt(claims, retries, fenced, at)),
@@ -813,13 +814,13 @@ const serveStep = <R>(
 			ledger,
 			at,
 			wake,
-			{ step, root, until, lapsed },
+			{ step, root, budget, lapsed },
 			exhausted ? [] : runner.uses
 		)
 		if (claimed.kind === "ended") {
 			return served(claimed.ending)
 		}
-		const turn: Turn = { step, root, attempt: claimed.attempt, scope, deadline, until }
+		const turn: Turn = { step, root, attempt: claimed.attempt, scope, deadline }
 		if (exhausted) {
 			const failed = yield* recorded(ledger, ledger.exhaust(turn), wake, {
 				kind: "failed",
