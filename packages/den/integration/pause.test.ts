@@ -1,7 +1,8 @@
-import { pause, resume } from "@bjornpagen/den/runtime/seats"
+import { UnknownPauseTarget } from "@bjornpagen/den/runtime/ledger"
+import { FlowName } from "@bjornpagen/den/transport"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
-import { array, boolean, type Gen } from "@bjornpagen/testing/gen"
+import { array, boolean, finite, type Gen, int } from "@bjornpagen/testing/gen"
 import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Option } from "effect"
@@ -67,12 +68,14 @@ export const pausesAndResumesATargetAsOneLiveTurnAtATime = property.explore(oper
 							assert.isAtMost(rows.length, 1)
 							return Arr.isReadonlyArrayNonEmpty(rows)
 						})
-						yield* resume(ledger, target)
+						yield* ledger.coordination.resume(target)
 						const cleared = yield* paused
 						assert.isFalse(cleared)
 						const run = (_session: Session, move: Move): Effect.Effect<Move> =>
 							Effect.gen(function* () {
-								yield* move === "pause" ? pause(ledger, target) : resume(ledger, target)
+								yield* move === "pause"
+									? ledger.coordination.pause(target)
+									: ledger.coordination.resume(target)
 								yield* paused
 								return move
 							}).pipe(Effect.orDie)
@@ -116,10 +119,10 @@ export const pausesAndResumesATargetAsOneLiveTurnAtATime = property.explore(oper
 							{ kind: "drawn", nature: c },
 							judge
 						)
-						yield* pause(ledger, target)
+						yield* ledger.coordination.pause(target)
 						const pausedAfter = yield* paused
 						assert.isTrue(pausedAfter)
-						yield* resume(ledger, target)
+						yield* ledger.coordination.resume(target)
 						const resumedAfter = yield* paused
 						assert.isFalse(resumedAfter)
 					}),
@@ -135,9 +138,80 @@ export const pausesAndResumesATargetAsOneLiveTurnAtATime = property.explore(oper
 	kills: [
 		{
 			file: "packages/den/src/runtime/seats.ts",
-			original: "\t\tif (Arr.some(live, (row) => row.target === target)) {",
-			replacement: "\t\tif (Arr.some(live, (row) => false)) {",
-			why: "Operator mutant (boolean-return) at packages/den/src/runtime/seats.ts:225 in pause: `row.target === target` becomes `false`; the property fails (lane CATCH, den 9cffaba)."
+			original: "\t\t\tif (Arr.some(live, (row) => row.target === target)) {",
+			replacement: "\t\t\tif (Arr.some(live, (row) => false)) {",
+			why: "Operator mutant (boolean-return) at packages/den/src/runtime/seats.ts:225 in pauseIn: `row.target === target` becomes `false`; the property fails (lane CATCH, den 9cffaba)."
+		}
+	]
+})
+
+type Refusal = "a pause of an unknown name" | "a resume of an unknown name"
+
+/** A name an operator could mean for Fan's Pool, which is no target of Fan's: its Pool resource and its FanRun root. */
+const unknown = "Pol"
+
+/**
+ * A pause or a resume of a name that is no resource and no root kind of its flow is refused, naming the flow and the
+ * name, before anything is read or written, where a pause of it wrote no row and a resume of it found nothing live, and
+ * each reported success, leaving the target the operator meant as it was.
+ *
+ * Oracle (specification): the call fails with UnknownPauseTarget, Fan's and the name's, and the coordinator role's
+ * live pauses read back are none, as before it.
+ *
+ * Box: its suite's, every case of it (a pause, and a resume, of a name that is no target of Fan's).
+ */
+export const refusesAPauseOrAResumeOfANameNoTargetHolds = property.exhaust(finite(int(0, 1)), {
+	box: "a pause, and a resume, of a name that is no target of Fan's",
+	needs: { slice: sliceCase },
+	situations: ["a pause of an unknown name", "a resume of an unknown name"] satisfies ReadonlyArray<
+		Reached<Refusal>
+	>,
+	check:
+		({ slice }, c: Case<Refusal>) =>
+		(move) =>
+			Effect.flatMap(slice, (services) =>
+				Effect.provideContext(
+					Effect.gen(function* () {
+						const { fan } = yield* openLedgers
+						const coordination = fan.ledger.coordination
+						c.note(move === 0 ? "a pause of an unknown name" : "a resume of an unknown name")
+						const refused = yield* (
+							move === 0 ? coordination.pause(unknown) : coordination.resume(unknown)
+						).pipe(
+							Effect.as(Option.none<{ readonly flow: FlowName; readonly target: string }>()),
+							Effect.catchTag("UnknownPauseTarget", (refusal: UnknownPauseTarget) =>
+								Effect.succeedSome({ flow: refusal.flow, target: refusal.target })
+							)
+						)
+						assert.deepStrictEqual(
+							refused,
+							Option.some({ flow: FlowName.make("Fan"), target: unknown })
+						)
+						const live = yield* coordination.paused
+						assert.deepStrictEqual(live, [])
+					}).pipe(Effect.orDie),
+					services
+				)
+			),
+	oracle: {
+		kind: "specification",
+		name: "an unknown name's pause and resume each fail with UnknownPauseTarget, the live pauses read back unchanged"
+	},
+	kept: [],
+	kills: [
+		{
+			file: "packages/den/integration/slice/generated/fan.binding.ts",
+			original: "\t\tpause: (target) => Effect.flatMap(pausableOf(target), pauseIn(pauseChains)),",
+			replacement:
+				'\t\tpause: (target) => Effect.catchTag(Effect.flatMap(pausableOf(target), pauseIn(pauseChains)), "UnknownPauseTarget", () => Effect.void),',
+			why: "A pause of a name no target holds reports success having written nothing, as the binding's pause did when it dropped a row whose target was no handle of the flow's Pausable roster."
+		},
+		{
+			file: "packages/den/integration/slice/generated/fan.binding.ts",
+			original: "\t\tresume: (target) => Effect.flatMap(pausableOf(target), resumeIn(pauseChains))",
+			replacement:
+				'\t\tresume: (target) => Effect.catchTag(Effect.flatMap(pausableOf(target), resumeIn(pauseChains)), "UnknownPauseTarget", () => Effect.void)',
+			why: "A resume of a name no target holds reports success, as the seat module's resume did when it found no live pause of the name."
 		}
 	]
 })

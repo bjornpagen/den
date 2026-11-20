@@ -23,12 +23,13 @@ import type {
 	ExclusiveTurn,
 	Admission,
 	Ledger,
-	PauseRow,
 	RootRunner,
 	ScopeView,
 	Snapshot,
 	Spawned
 } from "@bjornpagen/den/runtime/ledger"
+import { UnknownPauseTarget } from "@bjornpagen/den/runtime/ledger"
+import { type PauseChains, pauseIn, resumeIn } from "@bjornpagen/den/runtime/seats"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Sync over its served programs; `den generate` writes it, and nothing edits it. */
@@ -89,17 +90,18 @@ interface Grown {
 
 const rootKindOf = (name: string): Option.Option<(typeof SyncRootKind)["handles"][number]> =>
 	Arr.findFirst(SyncRootKind.handles, (handle) => handle === name)
-const pausableOf = (name: string): Option.Option<(typeof SyncPausable)["handles"][number]> =>
-	Arr.findFirst(SyncPausable.handles, (handle) => handle === name)
+const pausableOf = (
+	target: string
+): Effect.Effect<(typeof SyncPausable)["handles"][number], UnknownPauseTarget> =>
+	Effect.mapError(
+		Effect.fromOption(Arr.findFirst(SyncPausable.handles, (handle) => handle === target)),
+		() => new UnknownPauseTarget({ flow: FlowName.make("Sync"), target })
+	)
 const exclusiveTurnsOf = (turns: ReadonlyArray<ExclusiveTurn>) =>
 	Arr.flatMap(turns, (turn) =>
 		Option.toArray(
 			Option.map(rootKindOf(turn.kind), (kind) => ({ kind, key: turn.key, turn: turn.turn }))
 		)
-	)
-const pausesOf = (rows: ReadonlyArray<PauseRow>) =>
-	Arr.flatMap(rows, (row) =>
-		Option.toArray(Option.map(pausableOf(row.target), (target) => ({ target, turn: row.turn })))
 	)
 
 /** The ledger of the flow Sync over its handles, with the requests of its roots. */
@@ -231,6 +233,28 @@ export const syncLedger = (h: SyncHandles) => {
 			)
 			return Option.map(row, (found) => ({ build: found.build }))
 		})
+	const pauseChains: PauseChains<(typeof SyncPausable)["handles"][number]> = {
+		flow: FlowName.make("Sync"),
+		turns: Effect.map(
+			settled(h.coordinator.syncPauseTurns.once({ params: {}, facts: {} })),
+			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		),
+		live: Effect.map(settled(h.coordinator.syncPausedAll.once({ params: {}, facts: {} })), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		),
+		pause: (row) =>
+			Effect.asVoid(
+				settled(
+					h.coordinator.syncPause.once({ params: {}, facts: { insert: { SyncPaused: [row] } } })
+				)
+			),
+		resume: (row) =>
+			Effect.asVoid(
+				settled(
+					h.coordinator.syncResume.once({ params: {}, facts: { insert: { SyncResumed: [row] } } })
+				)
+			)
+	}
 	const coordination: Ledger<never>["coordination"] = {
 		seatTurns: Effect.succeed([]),
 		holds: Effect.succeed([]),
@@ -248,14 +272,7 @@ export const syncLedger = (h: SyncHandles) => {
 					scope: row.scope
 				}))
 		),
-		pauseTurns: Effect.map(
-			settled(h.coordinator.syncPauseTurns.once({ params: {}, facts: {} })),
-			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
-		),
-		paused: Effect.map(
-			settled(h.coordinator.syncPausedAll.once({ params: {}, facts: {} })),
-			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
-		),
+		paused: pauseChains.live,
 		take: () => Effect.void,
 		giveBack: () => Effect.void,
 		holdExclusive: (row) =>
@@ -282,24 +299,8 @@ export const syncLedger = (h: SyncHandles) => {
 					})
 				)
 			),
-		pause: (row) =>
-			Effect.asVoid(
-				settled(
-					h.coordinator.syncPause.once({
-						params: {},
-						facts: { insert: { SyncPaused: pausesOf([row]) } }
-					})
-				)
-			),
-		resume: (row) =>
-			Effect.asVoid(
-				settled(
-					h.coordinator.syncResume.once({
-						params: {},
-						facts: { insert: { SyncResumed: pausesOf([row]) } }
-					})
-				)
-			)
+		pause: (target) => Effect.flatMap(pausableOf(target), pauseIn(pauseChains)),
+		resume: (target) => Effect.flatMap(pausableOf(target), resumeIn(pauseChains))
 	}
 	const busyOf = (read: { readonly busyChain: ReadonlyArray<unknown> }): ReadonlyArray<string> =>
 		Arr.filter(["Chain"] as const, (flow) => Arr.isReadonlyArrayNonEmpty(read[`busy${flow}`]))

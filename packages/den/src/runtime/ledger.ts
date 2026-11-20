@@ -1,5 +1,5 @@
 import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, type Cron, type Effect, Option, type Stream } from "effect"
+import { Array as Arr, type Cron, Data, type Effect, Option, type Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Ladder, Precondition, Resource, Window } from "#algebra/kinds.ts"
 import type { ExclusiveId, Holder, Instant, ScopeKey, StepKey } from "#runtime/identity.ts"
@@ -232,6 +232,16 @@ export interface PauseRow {
 }
 
 /**
+ * A pause or a resume named a target that is no resource and no root kind of its flow: the flow's coordinator role
+ * refuses the name before it reads or writes anything, since a pause of it would hold nothing paused and a resume of
+ * it would leave the target the operator meant paused.
+ */
+export class UnknownPauseTarget extends Data.TaggedError("UnknownPauseTarget")<{
+	readonly flow: FlowName
+	readonly target: string
+}> {}
+
+/**
  * Everything the scheduler reads, for the relay's and the census's eligibility, in one statement of den's role and so
  * one snapshot of the database: the pending steps, each with its first due instant, and their claims, retries and fenced
  * attempts;
@@ -271,7 +281,6 @@ export interface Coordination {
 	readonly holds: Effect.Effect<ReadonlyArray<HoldRow>, Settled>
 	readonly exclusiveTurns: Effect.Effect<ReadonlyArray<ExclusiveTurn>, Settled>
 	readonly exclusives: Effect.Effect<ReadonlyArray<ExclusiveRow>, Settled>
-	readonly pauseTurns: Effect.Effect<ReadonlyArray<PauseRow>, Settled>
 	readonly paused: Effect.Effect<ReadonlyArray<PauseRow>, Settled>
 	/** Frees `lapsed` and holds `taken` in one call, refused whole on any turn another holder took first. */
 	readonly take: (
@@ -281,8 +290,13 @@ export interface Coordination {
 	readonly giveBack: (holds: ReadonlyArray<SeatTurn>) => Effect.Effect<void, Settled>
 	readonly holdExclusive: (row: ExclusiveRow) => Effect.Effect<void, Settled>
 	readonly releaseExclusive: (rows: ReadonlyArray<ExclusiveTurn>) => Effect.Effect<void, Settled>
-	readonly pause: (row: PauseRow) => Effect.Effect<void, Settled>
-	readonly resume: (row: PauseRow) => Effect.Effect<void, Settled>
+	/**
+	 * Pauses a resource or a root kind by its name (seats.ts pauseIn over the flow's chains of pauses), refused when the
+	 * name is no target of the flow's.
+	 */
+	readonly pause: (target: string) => Effect.Effect<void, Settled | UnknownPauseTarget>
+	/** Resumes a resource or a root kind by its name (seats.ts resumeIn), refused when the name is no target of the flow's. */
+	readonly resume: (target: string) => Effect.Effect<void, Settled | UnknownPauseTarget>
 }
 
 /**

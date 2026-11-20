@@ -23,13 +23,14 @@ import type {
 	HoldRow,
 	Admission,
 	Ledger,
-	PauseRow,
 	RootRunner,
 	ScopeView,
 	SeatTurn,
 	Snapshot,
 	Spawned
 } from "@bjornpagen/den/runtime/ledger"
+import { UnknownPauseTarget } from "@bjornpagen/den/runtime/ledger"
+import { type PauseChains, pauseIn, resumeIn } from "@bjornpagen/den/runtime/seats"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Fan over its served programs; `den generate` writes it, and nothing edits it. */
@@ -93,8 +94,13 @@ interface Grown {
 	readonly spawned: Spawned
 }
 
-const pausableOf = (name: string): Option.Option<(typeof FanPausable)["handles"][number]> =>
-	Arr.findFirst(FanPausable.handles, (handle) => handle === name)
+const pausableOf = (
+	target: string
+): Effect.Effect<(typeof FanPausable)["handles"][number], UnknownPauseTarget> =>
+	Effect.mapError(
+		Effect.fromOption(Arr.findFirst(FanPausable.handles, (handle) => handle === target)),
+		() => new UnknownPauseTarget({ flow: FlowName.make("Fan"), target })
+	)
 const resourceOf = (name: string): Option.Option<(typeof FanResource)["handles"][number]> =>
 	Arr.findFirst(FanResource.handles, (handle) => handle === name)
 const seatTurnsOf = (turns: ReadonlyArray<SeatTurn>) =>
@@ -118,10 +124,6 @@ const holdsOf = (holds: ReadonlyArray<HoldRow>) =>
 				until: hold.until
 			}))
 		)
-	)
-const pausesOf = (rows: ReadonlyArray<PauseRow>) =>
-	Arr.flatMap(rows, (row) =>
-		Option.toArray(Option.map(pausableOf(row.target), (target) => ({ target, turn: row.turn })))
 	)
 
 /** The ledger of the flow Fan over its handles, with the requests of its roots. */
@@ -253,6 +255,28 @@ export const fanLedger = (h: FanHandles) => {
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, size: found.size }))
 		})
+	const pauseChains: PauseChains<(typeof FanPausable)["handles"][number]> = {
+		flow: FlowName.make("Fan"),
+		turns: Effect.map(
+			settled(h.coordinator.fanPauseTurns.once({ params: {}, facts: {} })),
+			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		),
+		live: Effect.map(settled(h.coordinator.fanPausedAll.once({ params: {}, facts: {} })), (rows) =>
+			Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
+		),
+		pause: (row) =>
+			Effect.asVoid(
+				settled(
+					h.coordinator.fanPause.once({ params: {}, facts: { insert: { FanPaused: [row] } } })
+				)
+			),
+		resume: (row) =>
+			Effect.asVoid(
+				settled(
+					h.coordinator.fanResume.once({ params: {}, facts: { insert: { FanResumed: [row] } } })
+				)
+			)
+	}
 	const coordination: Ledger<never>["coordination"] = {
 		seatTurns: Effect.map(
 			settled(h.coordinator.fanSeatTurns.once({ params: {}, facts: {} })),
@@ -270,14 +294,7 @@ export const fanLedger = (h: FanHandles) => {
 		),
 		exclusiveTurns: Effect.succeed([]),
 		exclusives: Effect.succeed([]),
-		pauseTurns: Effect.map(
-			settled(h.coordinator.fanPauseTurns.once({ params: {}, facts: {} })),
-			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
-		),
-		paused: Effect.map(
-			settled(h.coordinator.fanPausedAll.once({ params: {}, facts: {} })),
-			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
-		),
+		paused: pauseChains.live,
 		take: (lapsed, taken) =>
 			Effect.asVoid(
 				settled(
@@ -298,24 +315,8 @@ export const fanLedger = (h: FanHandles) => {
 			),
 		holdExclusive: () => Effect.void,
 		releaseExclusive: () => Effect.void,
-		pause: (row) =>
-			Effect.asVoid(
-				settled(
-					h.coordinator.fanPause.once({
-						params: {},
-						facts: { insert: { FanPaused: pausesOf([row]) } }
-					})
-				)
-			),
-		resume: (row) =>
-			Effect.asVoid(
-				settled(
-					h.coordinator.fanResume.once({
-						params: {},
-						facts: { insert: { FanResumed: pausesOf([row]) } }
-					})
-				)
-			)
+		pause: (target) => Effect.flatMap(pausableOf(target), pauseIn(pauseChains)),
+		resume: (target) => Effect.flatMap(pausableOf(target), resumeIn(pauseChains))
 	}
 	const request = {
 		FanRun: (key: string, at: Instant, input: Parameters<(typeof fan.kinds)[2]["start"]>[0]) =>

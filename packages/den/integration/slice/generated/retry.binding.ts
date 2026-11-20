@@ -21,12 +21,13 @@ import type {
 	FlowNeeds,
 	Admission,
 	Ledger,
-	PauseRow,
 	RootRunner,
 	ScopeView,
 	Snapshot,
 	Spawned
 } from "@bjornpagen/den/runtime/ledger"
+import { UnknownPauseTarget } from "@bjornpagen/den/runtime/ledger"
+import { type PauseChains, pauseIn, resumeIn } from "@bjornpagen/den/runtime/seats"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Retry over its served programs; `den generate` writes it, and nothing edits it. */
@@ -88,11 +89,12 @@ interface Grown {
 	readonly spawned: Spawned
 }
 
-const pausableOf = (name: string): Option.Option<(typeof RetryPausable)["handles"][number]> =>
-	Arr.findFirst(RetryPausable.handles, (handle) => handle === name)
-const pausesOf = (rows: ReadonlyArray<PauseRow>) =>
-	Arr.flatMap(rows, (row) =>
-		Option.toArray(Option.map(pausableOf(row.target), (target) => ({ target, turn: row.turn })))
+const pausableOf = (
+	target: string
+): Effect.Effect<(typeof RetryPausable)["handles"][number], UnknownPauseTarget> =>
+	Effect.mapError(
+		Effect.fromOption(Arr.findFirst(RetryPausable.handles, (handle) => handle === target)),
+		() => new UnknownPauseTarget({ flow: FlowName.make("Retry"), target })
 	)
 
 /** The ledger of the flow Retry over its handles, with the requests of its roots. */
@@ -206,41 +208,41 @@ export const retryLedger = (h: RetryHandles) => {
 			)
 			return Option.map(row, (found) => ({ steadfast: found.steadfast, brittle: found.brittle }))
 		})
-	const coordination: Ledger<never>["coordination"] = {
-		seatTurns: Effect.succeed([]),
-		holds: Effect.succeed([]),
-		exclusiveTurns: Effect.succeed([]),
-		exclusives: Effect.succeed([]),
-		pauseTurns: Effect.map(
+	const pauseChains: PauseChains<(typeof RetryPausable)["handles"][number]> = {
+		flow: FlowName.make("Retry"),
+		turns: Effect.map(
 			settled(h.coordinator.retryPauseTurns.once({ params: {}, facts: {} })),
 			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
 		),
-		paused: Effect.map(
+		live: Effect.map(
 			settled(h.coordinator.retryPausedAll.once({ params: {}, facts: {} })),
 			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
 		),
-		take: () => Effect.void,
-		giveBack: () => Effect.void,
-		holdExclusive: () => Effect.void,
-		releaseExclusive: () => Effect.void,
 		pause: (row) =>
 			Effect.asVoid(
 				settled(
-					h.coordinator.retryPause.once({
-						params: {},
-						facts: { insert: { RetryPaused: pausesOf([row]) } }
-					})
+					h.coordinator.retryPause.once({ params: {}, facts: { insert: { RetryPaused: [row] } } })
 				)
 			),
 		resume: (row) =>
 			Effect.asVoid(
 				settled(
-					h.coordinator.retryResume.once({
-						params: {},
-						facts: { insert: { RetryResumed: pausesOf([row]) } }
-					})
+					h.coordinator.retryResume.once({ params: {}, facts: { insert: { RetryResumed: [row] } } })
 				)
 			)
+	}
+	const coordination: Ledger<never>["coordination"] = {
+		seatTurns: Effect.succeed([]),
+		holds: Effect.succeed([]),
+		exclusiveTurns: Effect.succeed([]),
+		exclusives: Effect.succeed([]),
+		paused: pauseChains.live,
+		take: () => Effect.void,
+		giveBack: () => Effect.void,
+		holdExclusive: () => Effect.void,
+		releaseExclusive: () => Effect.void,
+		pause: (target) => Effect.flatMap(pausableOf(target), pauseIn(pauseChains)),
+		resume: (target) => Effect.flatMap(pausableOf(target), resumeIn(pauseChains))
 	}
 	const request = {
 		Ladders: (key: string, at: Instant, input: Parameters<(typeof retry.kinds)[2]["start"]>[0]) =>

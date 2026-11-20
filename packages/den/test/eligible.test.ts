@@ -137,7 +137,6 @@ const ledger: Ledger<never> = {
 		holds: Effect.die("unread"),
 		exclusiveTurns: Effect.die("unread"),
 		exclusives: Effect.die("unread"),
-		pauseTurns: Effect.die("unread"),
 		paused: Effect.die("unread"),
 		take: unread,
 		giveBack: unread,

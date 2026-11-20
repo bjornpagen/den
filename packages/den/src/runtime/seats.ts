@@ -11,6 +11,7 @@ import type {
 	SeatTurn
 } from "#runtime/ledger.ts"
 import { refusedOnKey } from "#runtime/ledger.ts"
+import type { FlowName } from "#transport.ts"
 
 /**
  * The seat module: exact seats as chains of turns. A seat's turns run from 0, each held by one holder until it is
@@ -193,37 +194,60 @@ export const exclusiveOf = <R>(
 	)
 
 /**
+ * A flow's chains of pauses over its own targets T, its Pausable roster's handles, as its binding reads and writes them
+ * once it has parsed a target's name (Coordination's pause and resume): each target's latest turn, its live turns, a
+ * pause's turn taken and a live turn resumed.
+ */
+export interface PauseChains<T extends string> {
+	readonly flow: FlowName
+	readonly turns: Effect.Effect<ReadonlyArray<PauseOf<T>>, Settled>
+	readonly live: Effect.Effect<ReadonlyArray<PauseOf<T>>, Settled>
+	readonly pause: (row: PauseOf<T>) => Effect.Effect<void, Settled>
+	readonly resume: (row: PauseOf<T>) => Effect.Effect<void, Settled>
+}
+
+/** A pause's turn of a target T of the flow's. */
+interface PauseOf<T extends string> {
+	readonly target: T
+	readonly turn: bigint
+}
+
+/**
  * Pauses a resource or a root kind: nothing that touches it is eligible until it is resumed. A target already paused
  * stays paused at its live turn; another target's pause is taken at its next turn, and a turn another pauser took
  * first is judged again from a fresh read.
  */
-export const pause = <R>(ledger: Ledger<R>, target: string): Effect.Effect<void, Settled> =>
-	Effect.gen(function* () {
-		const live = yield* ledger.coordination.paused
-		if (Arr.some(live, (row) => row.target === target)) {
-			return
-		}
-		const turns = yield* ledger.coordination.pauseTurns
-		const turn = nextTurn(
-			Option.map(
-				Arr.findFirst(turns, (t) => t.target === target),
-				(t) => t.turn
+export const pauseIn =
+	<T extends string>(chains: PauseChains<T>) =>
+	(target: T): Effect.Effect<void, Settled> =>
+		Effect.gen(function* () {
+			const live = yield* chains.live
+			if (Arr.some(live, (row) => row.target === target)) {
+				return
+			}
+			const turns = yield* chains.turns
+			const turn = nextTurn(
+				Option.map(
+					Arr.findFirst(turns, (t) => t.target === target),
+					(t) => t.turn
+				)
 			)
-		)
-		yield* ledger.coordination.pause({ target, turn }).pipe(
-			Effect.catchIf(
-				(error: Settled) => refusedOnKey(error, [`${ledger.flow}Paused`]),
-				() => pause(ledger, target)
+			yield* chains.pause({ target, turn }).pipe(
+				Effect.catchIf(
+					(error: Settled) => refusedOnKey(error, [`${chains.flow}Paused`]),
+					() => pauseIn(chains)(target)
+				)
 			)
-		)
-	})
+		})
 
 /** Resumes a paused resource or root kind: its live pause's turn resumed, nothing for a target not paused. */
-export const resume = <R>(ledger: Ledger<R>, target: string): Effect.Effect<void, Settled> =>
-	Effect.flatMap(ledger.coordination.paused, (live) =>
-		Effect.forEach(
-			Arr.filter(live, (row) => row.target === target),
-			(row) => ledger.coordination.resume(row),
-			{ discard: true }
+export const resumeIn =
+	<T extends string>(chains: PauseChains<T>) =>
+	(target: T): Effect.Effect<void, Settled> =>
+		Effect.flatMap(chains.live, (live) =>
+			Effect.forEach(
+				Arr.filter(live, (row) => row.target === target),
+				(row) => chains.resume(row),
+				{ discard: true }
+			)
 		)
-	)

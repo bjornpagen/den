@@ -23,12 +23,13 @@ import type {
 	FlowNeeds,
 	Admission,
 	Ledger,
-	PauseRow,
 	RootRunner,
 	ScopeView,
 	Snapshot,
 	Spawned
 } from "@bjornpagen/den/runtime/ledger"
+import { UnknownPauseTarget } from "@bjornpagen/den/runtime/ledger"
+import { type PauseChains, pauseIn, resumeIn } from "@bjornpagen/den/runtime/seats"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Assign over its served programs; `den generate` writes it, and nothing edits it. */
@@ -98,11 +99,12 @@ interface Grown {
 	readonly spawned: Spawned
 }
 
-const pausableOf = (name: string): Option.Option<(typeof AssignPausable)["handles"][number]> =>
-	Arr.findFirst(AssignPausable.handles, (handle) => handle === name)
-const pausesOf = (rows: ReadonlyArray<PauseRow>) =>
-	Arr.flatMap(rows, (row) =>
-		Option.toArray(Option.map(pausableOf(row.target), (target) => ({ target, turn: row.turn })))
+const pausableOf = (
+	target: string
+): Effect.Effect<(typeof AssignPausable)["handles"][number], UnknownPauseTarget> =>
+	Effect.mapError(
+		Effect.fromOption(Arr.findFirst(AssignPausable.handles, (handle) => handle === target)),
+		() => new UnknownPauseTarget({ flow: FlowName.make("Assign"), target })
 	)
 
 /** The ledger of the flow Assign over its handles, with the requests of its roots. */
@@ -297,30 +299,20 @@ export const assignLedger = (h: AssignHandles) => {
 				)
 			)
 		})
-	const coordination: Ledger<never>["coordination"] = {
-		seatTurns: Effect.succeed([]),
-		holds: Effect.succeed([]),
-		exclusiveTurns: Effect.succeed([]),
-		exclusives: Effect.succeed([]),
-		pauseTurns: Effect.map(
+	const pauseChains: PauseChains<(typeof AssignPausable)["handles"][number]> = {
+		flow: FlowName.make("Assign"),
+		turns: Effect.map(
 			settled(h.coordinator.assignPauseTurns.once({ params: {}, facts: {} })),
 			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
 		),
-		paused: Effect.map(
+		live: Effect.map(
 			settled(h.coordinator.assignPausedAll.once({ params: {}, facts: {} })),
 			(rows) => Arr.map(rowsOf(rows), (row) => ({ target: row.target, turn: row.turn }))
 		),
-		take: () => Effect.void,
-		giveBack: () => Effect.void,
-		holdExclusive: () => Effect.void,
-		releaseExclusive: () => Effect.void,
 		pause: (row) =>
 			Effect.asVoid(
 				settled(
-					h.coordinator.assignPause.once({
-						params: {},
-						facts: { insert: { AssignPaused: pausesOf([row]) } }
-					})
+					h.coordinator.assignPause.once({ params: {}, facts: { insert: { AssignPaused: [row] } } })
 				)
 			),
 		resume: (row) =>
@@ -328,10 +320,23 @@ export const assignLedger = (h: AssignHandles) => {
 				settled(
 					h.coordinator.assignResume.once({
 						params: {},
-						facts: { insert: { AssignResumed: pausesOf([row]) } }
+						facts: { insert: { AssignResumed: [row] } }
 					})
 				)
 			)
+	}
+	const coordination: Ledger<never>["coordination"] = {
+		seatTurns: Effect.succeed([]),
+		holds: Effect.succeed([]),
+		exclusiveTurns: Effect.succeed([]),
+		exclusives: Effect.succeed([]),
+		paused: pauseChains.live,
+		take: () => Effect.void,
+		giveBack: () => Effect.void,
+		holdExclusive: () => Effect.void,
+		releaseExclusive: () => Effect.void,
+		pause: (target) => Effect.flatMap(pausableOf(target), pauseIn(pauseChains)),
+		resume: (target) => Effect.flatMap(pausableOf(target), resumeIn(pauseChains))
 	}
 	const request = {
 		Assignment: (

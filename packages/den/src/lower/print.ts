@@ -1551,6 +1551,15 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`Effect.map(${call(program, "{ params: {}, facts: {} }")}, (rows) => Arr.map(rowsOf(rows), (row) => (${row})))`
 	const write = (program: string, facts: string) =>
 		`Effect.asVoid(${call(program, `{ params: {}, facts: { insert: { ${facts} } } }`)})`
+	const pauseChains = lines([
+		`{`,
+		`\tflow: FlowName.make(${q(P)}),`,
+		`\tturns: ${read("PauseTurns", "{ target: row.target, turn: row.turn }")},`,
+		`\tlive: ${read("PausedAll", "{ target: row.target, turn: row.turn }")},`,
+		`\tpause: (row) => ${write("Pause", `${r("Paused")}: [row]`)},`,
+		`\tresume: (row) => ${write("Resume", `${r("Resumed")}: [row]`)}`,
+		"}"
+	])
 	const coordination = lines([
 		"{",
 		resources
@@ -1565,8 +1574,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		exclusives
 			? `\texclusives: ${read("Exclusives", "{ kind: row.kind, key: row.key, turn: row.turn, scope: row.scope }")},`
 			: "\texclusives: Effect.succeed([]),",
-		`\tpauseTurns: ${read("PauseTurns", "{ target: row.target, turn: row.turn }")},`,
-		`\tpaused: ${read("PausedAll", "{ target: row.target, turn: row.turn }")},`,
+		"\tpaused: pauseChains.live,",
 		resources
 			? `\ttake: (lapsed, taken) => ${write("Take", `${r("Freed")}: seatTurnsOf(lapsed), ${r("Hold")}: holdsOf(taken)`)},`
 			: "\ttake: () => Effect.void,",
@@ -1579,8 +1587,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		exclusives
 			? `\treleaseExclusive: (rows) => ${write("ReleaseExclusive", `${r("Released")}: exclusiveTurnsOf(rows)`)},`
 			: "\treleaseExclusive: () => Effect.void,",
-		`\tpause: (row) => ${write("Pause", `${r("Paused")}: pausesOf([row])`)},`,
-		`\tresume: (row) => ${write("Resume", `${r("Resumed")}: pausesOf([row])`)}`,
+		"\tpause: (target) => Effect.flatMap(pausableOf(target), pauseIn(pauseChains)),",
+		"\tresume: (target) => Effect.flatMap(pausableOf(target), resumeIn(pauseChains))",
 		"}"
 	])
 	const snapshot = lines([
@@ -1657,7 +1665,9 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`import { type MemberHandle, settled } from "@bjornpagen/grizzle/runtime"`,
 		`import { ${commas(["any", "dueAt", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishUnions ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", "rowsOf", "scheduleOf", "signals"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
-		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), ...(resources ? ["HoldRow"] : []), "Admission", "Ledger", "PauseRow", "RootRunner", "ScopeView", ...(resources ? ["SeatTurn"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
+		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), ...(resources ? ["HoldRow"] : []), "Admission", "Ledger", "RootRunner", "ScopeView", ...(resources ? ["SeatTurn"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
+		`import { UnknownPauseTarget } from "@bjornpagen/den/runtime/ledger"`,
+		`import { type PauseChains, pauseIn, resumeIn } from "@bjornpagen/den/runtime/seats"`,
 		`import { runnerOf } from "@bjornpagen/den/runtime/turn"`,
 		`import { FlowName } from "@bjornpagen/den/transport"`,
 		`import { Array as Arr, Effect, Option, Stream } from "effect"`,
@@ -1683,7 +1693,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"}",
 		"",
 		...(exclusives ? [`const rootKindOf = ${handleOf(r("RootKind"))}`] : []),
-		`const pausableOf = ${handleOf(r("Pausable"))}`,
+		`const pausableOf = (target: string): Effect.Effect<${scoped(r("Pausable"))}, UnknownPauseTarget> => Effect.mapError(Effect.fromOption(Arr.findFirst(${r("Pausable")}.handles, (handle) => handle === target)), () => new UnknownPauseTarget({ flow: FlowName.make(${q(P)}), target }))`,
 		...(resources ? [`const resourceOf = ${handleOf(r("Resource"))}`] : []),
 		...(resources
 			? [
@@ -1696,7 +1706,6 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 					`const exclusiveTurnsOf = (turns: ReadonlyArray<ExclusiveTurn>) => Arr.flatMap(turns, (turn) => Option.toArray(Option.map(rootKindOf(turn.kind), (kind) => ({ kind, key: turn.key, turn: turn.turn }))))`
 				]
 			: []),
-		`const pausesOf = (rows: ReadonlyArray<PauseRow>) => Arr.flatMap(rows, (row) => Option.toArray(Option.map(pausableOf(row.target), (target) => ({ target, turn: row.turn }))))`,
 		"",
 		`/** The ledger of the flow ${P} over its handles, with the requests of its roots. */`,
 		`export const ${n.ledger} = (h: ${n.handles}) => {`,
@@ -1712,6 +1721,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\t${indented("\t")(joined)}`,
 		...Arr.map(l.joins, (j) => `\t${indented("\t")(startOf(j))}`),
 		...Arr.map(valueReaders, (v) => `\t${indented("\t")(readerDef(v))}`),
+		`\tconst pauseChains: PauseChains<${scoped(r("Pausable"))}> = ${indented("\t")(pauseChains)}`,
 		`\tconst coordination: Ledger<never>["coordination"] = ${indented("\t")(coordination)}`,
 		...(Arr.isReadonlyArrayNonEmpty(l.idle) ? [`\t${busyOf}`] : []),
 		`\tconst request = { ${commas(Arr.map(denRoots, requestOf))} }`,
