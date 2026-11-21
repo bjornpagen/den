@@ -187,6 +187,15 @@
     into a spent attempt that retries forever, which trades the source's named delay for den's rungs; a deadline
     measured from the step's first due, which a delay the source names can overshoot in one wait and which no source
     publishes; and a sleep or a counter inside the body, which would give a body a memory of its earlier attempts.
+- **A call goes again past its transient refusals by den's `settled`, and grizzle keeps no retry (Bjorn,
+  2026-11-21).** Bjorn: den is the only retry mechanism, with no retries anywhere in grizzle. So the combinator that
+  runs a grizzle call again at once while it is refused as `transient`, and the failure it ends with (`Settled`, every
+  CallError but `transient`), are den's (`runtime/settled.ts`, @bjornpagen/den/runtime/settled): every printed
+  binding runs its calls through it, and an app runs its own calls to its served programs through it too. It keeps no
+  count and no delay ([build/repin.md](build/repin.md), Certificates); a caller that answers by a deadline states it
+  on its call (`Effect.timeout`).
+  - Rejected: grizzle's `settled`, a retry inside the library under den; a copy in each app, a second spelling of one
+    concept.
 - **A schedule starts a root per member of its roster (settled by the plan's need, 2026-11-20).** `schedule(cron,
   members, (at, member) => input)` starts one root per member at each instant its cron names, keyed by the instant
   and the member, so a nightly copy of each of W1's relations or each of W3's collections is one schedule, not a root

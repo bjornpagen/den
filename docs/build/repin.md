@@ -102,16 +102,17 @@ for the coordination group, and DBCLOCK:
   whatever it needs to be correct, and performance only after correctness, so den takes those certificates.
 
   Under SERIALIZABLE a call can be refused as `transient`, which changed nothing, and grizzle never runs a call again
-  of its own. So the ledger port fails only with grizzle's `Settled`, every CallError but `transient`: the printed
-  binding runs each of its calls through grizzle's `settled` (@bjornpagen/grizzle/runtime), again at once while it is refused as
-  transient, with no bound, since PostgreSQL cancels a transaction for a serialization failure only once another
-  transaction of the conflict has committed, so the next run reads that work and does not fail on conflicts with the
-  same transactions (README-SSI), and a deadlock cancels one of its two transactions, the other going on. No ending,
-  record or retirement of den's holds a transient: the turn's retries of its claim and writes and the seat module's
-  are the port's, a write still running at its turn's deadline is a wait that spends nothing, and two retirements of
-  one flow, which run at once, both retire (`retire.test.ts`'s
+  of its own. So the ledger port fails only with den's `Settled`, every CallError but `transient`: the printed
+  binding runs each of its calls through den's `settled` (`runtime/settled.ts`, @bjornpagen/den/runtime/settled), again
+  at once while it is refused as transient, with no bound, since PostgreSQL cancels a transaction for a serialization
+  failure only once another transaction of the conflict has committed, so the next run reads that work and does not
+  fail on conflicts with the same transactions (README-SSI), and a deadlock cancels one of its two transactions, the
+  other going on. No ending, record or retirement of den's holds a transient: the turn's retries of its claim and
+  writes and the seat module's are the port's, a write still running at its turn's deadline is a wait that spends
+  nothing, and two retirements of one flow, which run at once, both retire (`retire.test.ts`'s
   `concurrentRetirementsOfFinishedRootsAllRetire`, whose kill ends the binding's retirement on a transient refusal and
-  keeps the root).
+  keeps the root). The combinator is den's, not grizzle's: den is the one place anything goes again (Bjorn,
+  2026-11-21), so grizzle keeps none, and an app runs its own calls to its served programs through den's too.
 
 - **The moved clock (grizzle d37c40141).** A suite reads the database's clock at the instant its TestClock stands at,
   through the statements the served files run: `integration/support/slice.ts` serves each login from its file compiled

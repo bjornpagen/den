@@ -1,4 +1,4 @@
-import type { Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
+import type { WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Cause, Duration, Effect, Exit, Option } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Again, Resource, Use } from "#algebra/kinds.ts"
@@ -40,6 +40,7 @@ import {
 	seatsFor,
 	seatTaken
 } from "#runtime/seats.ts"
+import type { Settled } from "#runtime/settled.ts"
 import { AttemptNumber, type FlowName, type Ring, Transport, type Wake } from "#transport.ts"
 
 /**

@@ -32,11 +32,12 @@ import type {
 } from "@bjornpagen/den/runtime/ledger"
 import { UnknownPauseTarget } from "@bjornpagen/den/runtime/ledger"
 import { type PauseChains, pauseIn, resumeIn } from "@bjornpagen/den/runtime/seats"
+import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Sync over its served programs; `den generate` writes it, and nothing edits it. */
 import type { Addition } from "@bjornpagen/grizzle"
-import { type MemberHandle, settled } from "@bjornpagen/grizzle/runtime"
+import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import { sync } from "#integration/slice/flows.ts"

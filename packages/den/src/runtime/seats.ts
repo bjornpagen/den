@@ -1,4 +1,3 @@
-import type { Settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option } from "effect"
 import type { Resource } from "#algebra/kinds.ts"
 import type { Instant, ScopeKey } from "#runtime/identity.ts"
@@ -11,6 +10,7 @@ import type {
 	SeatAt
 } from "#runtime/ledger.ts"
 import { refusedOnKey } from "#runtime/ledger.ts"
+import type { Settled } from "#runtime/settled.ts"
 import type { FlowName } from "#transport.ts"
 
 /**

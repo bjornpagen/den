@@ -1,4 +1,3 @@
-import type { Settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Clock, Cron, Duration, Effect } from "effect"
 import type { Digest } from "effect/crypto"
 import { censusPeriodSeconds } from "#algebra/kinds.ts"
@@ -7,6 +6,7 @@ import { type Instant, instantOf } from "#runtime/identity.ts"
 import type { Ledger } from "#runtime/ledger.ts"
 import { retire } from "#runtime/retire.ts"
 import { releaseExclusive } from "#runtime/seats.ts"
+import type { Settled } from "#runtime/settled.ts"
 import { CensusInstant, type Ring, Transport, type Wake } from "#transport.ts"
 
 /**

@@ -1,7 +1,7 @@
-import type { Settled } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect } from "effect"
 import type { ScopeKey } from "#runtime/identity.ts"
 import type { Ledger } from "#runtime/ledger.ts"
+import type { Settled } from "#runtime/settled.ts"
 
 /**
  * Retirement: a root's graph is retired whole once it has ended (its root's finish has its result, or it was recorded

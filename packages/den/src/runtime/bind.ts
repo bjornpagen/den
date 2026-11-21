@@ -1,4 +1,4 @@
-import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
+import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, type Cron, Effect, Option, Order, Predicate, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Due, Exclusive, Scheduled, Trigger } from "#algebra/kinds.ts"
@@ -12,11 +12,13 @@ import {
 	type StepKey
 } from "#runtime/identity.ts"
 import { refusedOnKey, type SpawnDue, type Spawned } from "#runtime/ledger.ts"
+import type { Settled } from "#runtime/settled.ts"
 
 /**
- * What every printed binding shares (lower/print.ts): every call settled, reading a key member's one row, the
- * database's instant and a read's rows, an array's elements in order and a value's tagged unions, a spawn's due
- * instant, a scope's exclusivity key and a root's schedule, and a watch's events as the relay's signals.
+ * What every printed binding shares (lower/print.ts) beside running each call settled (runtime/settled.ts): reading a
+ * key member's one row, the database's instant and a read's rows, an array's elements in order and a value's tagged
+ * unions, a spawn's due instant, a scope's exclusivity key and a root's schedule, and a watch's events as the relay's
+ * signals.
  */
 
 /** The one row a key member found, if it found one. */

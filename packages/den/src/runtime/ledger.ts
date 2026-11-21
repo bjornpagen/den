@@ -1,8 +1,9 @@
-import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
+import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, type Cron, Data, type Effect, Option, type Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Again, Precondition, Use, Window } from "#algebra/kinds.ts"
 import type { Delay, ExclusiveId, Instant, ScopeKey, StepKey } from "#runtime/identity.ts"
+import type { Settled } from "#runtime/settled.ts"
 import type { FlowName } from "#transport.ts"
 
 /**

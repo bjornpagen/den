@@ -24,6 +24,7 @@ constants with their evidence beside the code they bound (`src/runtime/turn.ts`,
 | `src/lower/keys.ts` | den's contracts (`DenStep`, `DenScope`, `DenExclusive`, `DenInstant`) and `Text`, which an app's relation referencing den's facts types its column by |
 | `src/runtime/identity.ts` | derived identity: the SHA-256 of a key's parts (Effect's `Digest`), grizzle's `sha256` |
 | `src/runtime/ledger.ts` | the ledger port, in den's own types, that a flow's generated binding fills |
+| `src/runtime/settled.ts` | `settled`, a grizzle call run again at once past its transient refusals, with no count, and `Settled`, what it ends with |
 | `src/runtime/turn.ts` | one turn (`serve`), the claim (`claimed`), a kind's runner, endings from `CallError`, settling a scope (`settle`), a start's wakes (`begin`), one invocation under a budget (`invoke`) |
 | `src/runtime/census.ts` | the census tick: due steps (no claim, or a lapsed one) at most a lane's free width, and finishes of complete open scopes |
 | `src/runtime/drive.ts` | the in-process driver: delivers every queued wake, one invocation each, until none is left |
