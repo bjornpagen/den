@@ -1,4 +1,7 @@
+import { censusPeriodSeconds } from "@bjornpagen/den/algebra/kinds"
+import { censusRing } from "@bjornpagen/den/runtime/census"
 import { caseHangMillis } from "@bjornpagen/den/test/support/suites"
+import { idempotencyKey } from "@bjornpagen/den/transport"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { characterOf, type Gen, oneOf, option, string } from "@bjornpagen/testing/gen"
@@ -69,7 +72,10 @@ it.effect("the census runs its tick only for the cron secret, and says how the t
 					let ticks = 0
 					const tick = Effect.suspend(() => {
 						ticks += 1
-						return drawnCall.fails ? Effect.fail("unreadable ledger") : Effect.succeed(ticks)
+						const ring = censusRing(ticks * censusPeriodSeconds * 1000)
+						return drawnCall.fails
+							? Effect.fail("unreadable ledger")
+							: Effect.succeed({ at: ring.wake.at, key: idempotencyKey(ring) })
 					})
 					const route = yield* census(tick, Redacted.make(drawnCall.secret))
 					const headers = Option.match(drawnCall.authorization, {

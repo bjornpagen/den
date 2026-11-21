@@ -19,10 +19,10 @@ delay (derived), the idempotency key's length (256, published), the census cron'
 | `src/live.ts` | `live`: `@vercel/queue`'s `QueueClient` with the `text` serializer and every other option at the client's default (region, OIDC, the deployment a send is pinned to) |
 | `src/send.ts` | `messageOf` (a ring to its message: payload, the contract's key, its delay in whole seconds rounded up), `sender` and `transport` (den's `Transport` over the client, batches of 100, every failed message or batch logged, never a failure) |
 | `src/consumer.ts` | `consumer(serve)`: the route on the one topic; each delivery decoded once with `WakeJson`, handed to `serve`, logged, and acknowledged whatever happened; lease `visibilityTimeoutSeconds`; a retry hook that answers `{ acknowledge: true }` to anything, so a lost acknowledgement is sent again by the client |
-| `src/census.ts` | `census(tick, secret)`: the cron route; a request whose bearer is the cron secret runs one tick and answers 200 or 500, any other answers 401 and runs nothing |
+| `src/census.ts` | `census(ringCensus, secret)`: the cron route; a request whose bearer is the cron secret runs den's `ringCensus`, logs what it rang (`den census rung`, the period's instant and the ring's idempotency key, one a minute) and answers 200, or 500 when it failed; any other answers 401 and runs nothing |
 | `src/config.ts` | `fragment(routes)`: the consumer's function (`maxDuration` the function lifetime, one `queue/v2beta` trigger on `den-wakes` with `maxDeliveries`), the census route's function (`maxDuration`), the census cron (`*/1 * * * *`); `check(text, routes)`: den's two functions hold the fragment's `maxDuration` and the consumer exactly its trigger (other keys are the host's), no other function's trigger takes den's topic (a wildcard included), and the census path is requested by exactly the fragment's cron |
 
-A host serves two routes: `export const POST = await runtime.runPromise(consumer(serve))` over den's runtime, and
+A host serves two routes (its setup is below): `export const POST = await runtime.runPromise(consumer(serve))` over den's runtime, and
 `export const GET = await runtime.runPromise(census(ringCensus, secret))`, with `transport` (over `live`) as the
 runtime's `Transport`, and calls `check` from its own repository check on its `vercel.json` text. The census is a wake
 (`runtime/census.ts`): its cron route only rings the current period's census, keyed by its period, and the consumer
@@ -30,6 +30,43 @@ serves it, ticking every flow, retiring what ended and ringing the next period's
 environment the queue delivers to, a preview or a staging one whose cron Vercel never calls included; there a chain
 that stopped is revived by the next write that requests a root (`afterCommit`), which rings the current period's
 census beside its admissions, one message with the chain's own.
+
+## What a host must set up
+
+Vercel's docs (Queues concepts, SDK and API reference, read 2026-11-21) and `@vercel/queue` 0.11.0's source, against
+which den's spellings were checked: the trigger is `functions["<route file>"].experimentalTriggers: [{ "type":
+"queue/v2beta", "topic": "den-wakes", "maxDeliveries": 32 }]`, the consumer route exports `POST` built by
+`handleCallback` (den's `consumer`), and a batch send is `sendBatch(topic, messages)`, each as Vercel spells it. No
+project setting turns Queues on: they are in beta on every plan, and a push consumer is registered by the deployment
+whose `vercel.json` declares its trigger.
+
+1. **`vercel.json` in the project's Root Directory**, the one Vercel builds (a monorepo's app folder, such as
+   `packages/nextjs-app`): its `functions` keys are paths from that directory to the route's source file, `src/`
+   included where the app has one (`src/app/api/den/wakes/route.ts`), so the trigger lands on the route's function.
+   Render den's part with `fragment(routes)` and hold the file to it with `check(text, routes)` from the repository's
+   own check, `routes.consumer` spelled exactly as the route's source path.
+2. **The consumer route is an App Router route handler** that exports `POST` (`export const POST = …consumer(serve)`),
+   on the Node.js runtime (no `export const runtime = "edge"`). A Pages Router or Express host needs the client's
+   `handleNodeCallback`, which den does not wrap.
+3. **One region.** A send goes to the queue of the region its function runs in (`VERCEL_REGION`, `iad1` when unset), and
+   a message sent to one region is consumed in that region only, so every function of den's (the census route, the
+   consumer, and every route whose write rings) runs in one region: `vercel.json`'s `regions` names one.
+4. **Fluid compute on, on Pro or Enterprise**: both functions' `maxDuration` is den's function lifetime, 800 s
+   (`functionLifetimeSeconds`, its evidence beside it), which Vercel gives only there; push deliveries run on it.
+5. **`CRON_SECRET`** in the production environment: Vercel Cron sends it as the census route's bearer, and calls a
+   project's crons on its production deployment alone.
+6. **Deploy after the trigger is in `vercel.json`.** Push consumers are configured when a deployment is built, and
+   every message is pinned to the deployment that sent it (`Vqs-Deployment-Id`, read from `VERCEL_DEPLOYMENT_ID`): the
+   census rung on the production deployment is delivered to that deployment's consumer, so a deployment built before
+   its trigger existed never consumes, whatever a later one declares.
+7. **Credentials are the deployment's own** (its OIDC token); a host sets none.
+
+To tell where a consumer that never runs stops: each minute's census logs `den census rung` with its key. A send the
+queue refused logs `den wake not sent` (with its status and whether it may be retried), and a batch that threw logs
+`den wakes not known to be sent` (with its cause, such as a missing OIDC token or deployment id, or a
+`ConsumerDiscoveryError`); either names the send as the break. With neither logged, the queue accepted every census,
+and the break is the trigger: Queues observability shows whether `den-wakes` holds messages no consumer takes, and the
+deployment's function list whether the consumer's function carries its trigger. Check items 1, 3 and 6 first.
 
 ## Decisions
 
@@ -89,7 +126,9 @@ consumed only while unexpired, a delay holds it back, a lapsed lease delivers it
 
 ## Not verified
 
-Nothing here ran against Vercel. A first deployment must confirm: the trigger and the census cron are accepted as
-rendered (`*/1 * * * *` included); `handleCallback` and `sendBatch` behave with the `text` serializer as the client's
-source reads; `vercel dev`, whose dev consumers are registered by the caller's stack trace, finds the host's route
-even though `handleCallback` is called from this package.
+metis's production deployment (2026-11-21) ran the census cron every minute and never invoked its consumer in 20
+minutes, with no cold start: the cron and `ringCensus` work as rendered, and the queue's trigger did not fire. den's
+spellings match Vercel's docs and client (above); the host's setup is what a first deployment must confirm, item by
+item, with the log lines above. Still unconfirmed: `handleCallback` and `sendBatch` with the `text` serializer as the
+client's source reads; `vercel dev`, whose dev consumers are registered by the caller's stack trace, finding the host's
+route even though `handleCallback` is called from this package.

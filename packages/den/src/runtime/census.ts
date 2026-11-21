@@ -7,7 +7,7 @@ import type { Ledger } from "#runtime/ledger.ts"
 import { retire } from "#runtime/retire.ts"
 import { releaseExclusive } from "#runtime/seats.ts"
 import type { Settled } from "#runtime/settled.ts"
-import { CensusInstant, type Ring, Transport, type Wake } from "#transport.ts"
+import { CensusInstant, idempotencyKey, type Ring, Transport, type Wake } from "#transport.ts"
 
 /**
  * The census: a tick, once a census period, that rings what time made eligible (due instants passed, windows opened,
@@ -111,19 +111,33 @@ export const nextCensus = (
  * cron's call, a write's revival), which is one message with the chain's own where the chain runs, and the census now
  * where it stopped.
  */
-export const censusRing = (millis: number): Ring => {
+export const censusRing = (
+	millis: number
+): Ring & { readonly wake: Extract<Wake, { readonly _tag: "Census" }> } => {
 	const wake = censusOf(Math.floor(millis / periodMillis) * periodMillis)
 	return { wake, delay: Duration.zero, cause: { _tag: "Census", at: wake.at } }
 }
 
 /**
- * Rings the census of the current period, by the host's clock, which names the period and judges nothing: what a cron
- * route runs, so a platform's cron is a doorbell of the census and its work runs where wakes are served.
+ * What a ring of the census sent: the period its census wake names, by the instant the period starts, and the
+ * idempotency key the ring was sent under, so a host's log of its cron shows one census a period, each by its key.
  */
-export const ringCensus: Effect.Effect<void, never, Transport> = Effect.gen(function* () {
+export interface CensusRung {
+	readonly at: CensusInstant
+	readonly key: string
+}
+
+/**
+ * Rings the census of the current period, by the host's clock, which names the period and judges nothing: what a cron
+ * route runs, so a platform's cron is a doorbell of the census and its work runs where wakes are served. It answers
+ * what it rang; a send that failed is logged by the transport, which never fails its caller.
+ */
+export const ringCensus: Effect.Effect<CensusRung, never, Transport> = Effect.gen(function* () {
 	const transport = yield* Transport
 	const millis = yield* Clock.currentTimeMillis
-	yield* transport.send([censusRing(millis)])
+	const ring = censusRing(millis)
+	yield* transport.send([ring])
+	return { at: ring.wake.at, key: idempotencyKey(ring) }
 })
 
 /** What one period's census did: the wakes it found due in every flow, and the wake of the period after it. */
