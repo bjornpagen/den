@@ -1,8 +1,8 @@
 import type { Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Cause, Duration, Effect, Exit, Option } from "effect"
 import type { Digest } from "effect/crypto"
-import type { Ladder, Resource, Use } from "#algebra/kinds.ts"
-import { censusPeriodSeconds, seatedOf } from "#algebra/kinds.ts"
+import type { Again, Resource, Use } from "#algebra/kinds.ts"
+import { censusPeriodSeconds, goesAgain, seatedOf } from "#algebra/kinds.ts"
 import { Later } from "#algebra/later.ts"
 import { census } from "#runtime/census.ts"
 import { eligible, isOpen, lapsedAttempt, opensAt, pausedBy, standing } from "#runtime/eligible.ts"
@@ -272,10 +272,6 @@ const stepWake = (flow: FlowName, step: StepKey, attempt: bigint): Wake => ({
 export const rungMillis = (spent: number): number =>
 	Math.min(backoffFirstMillis * 2 ** Math.max(0, spent - 1), backoffLastMillis)
 
-/** Whether a ladder allows another attempt after `spent` spent ones. */
-const allows = (ladder: Ladder, spent: number): boolean =>
-	ladder.kind === "never" || spent < ladder.attempts
-
 /**
  * How many of a step's attempts before `next` were spent: every claimed attempt but those whose retry says it waited
  * without spending and those fenced on a refused credential; a claim whose holder vanished, recording neither, spent its
@@ -295,14 +291,9 @@ export const spentBefore = (
 			!Arr.some(fenced, (f) => f.attempt === c.attempt)
 	).length
 
-/** How many times a step has waited on its source: its retries a `Later` recorded. */
-export const waitedOn = (retries: ReadonlyArray<RetryRow>): number =>
-	Arr.filter(retries, (r) => r.why === "later").length
-
-/** What a step has used of its ladder and of its waits before the attempt a turn runs. */
+/** What a step has spent before the attempt a turn runs: its spent attempts, which its next rung doubles over. */
 interface Used {
 	readonly attempts: number
-	readonly waits: number
 }
 
 /**
@@ -367,8 +358,8 @@ export interface StepPort<I, Rows, D, E> {
 export interface Runnable<I, Rows, D, E, R> {
 	readonly name: string
 	readonly uses: ReadonlyArray<Use>
-	readonly retry: Ladder
-	readonly waits: number
+	readonly retry: Again
+	readonly waits: Again
 	/** The facts it awaits beside its input, none for a finish. */
 	readonly awaits: ReadonlyArray<{ readonly relation: { readonly name: string } }>
 	readonly body: (input: I, rows: Rows) => Effect.Effect<D, E | Later, R>
@@ -623,10 +614,10 @@ type Unfinished =
 
 /**
  * An attempt that ended without a result, recorded at a reading of the database's instant: a spent one's retry due a
- * rung later, or the step failed once its ladder is spent; a wait recorded as a retry that spent nothing, due its delay
- * after the write (at once for a write still running, the source's own for a `Later`), whose next attempt it rings
- * then, or, for a `Later` once the step has waited on its source as often as its waits allow, the step failed as a
- * spent ladder fails it; a fenced one recorded as fenced, where its own login still can, so it spends
+ * rung later, or the step failed where it is not tried again; a wait recorded as a retry that spent nothing, due its
+ * delay after the write (at once for a write still running, the source's own for a `Later`), whose next attempt it
+ * rings then, or, for a `Later` of a step that does not wait on its source, the step failed as a spent attempt of a
+ * step not tried again fails it; a fenced one recorded as fenced, where its own login still can, so it spends
  * nothing, no lapse of its claim counts it spent, and it waits on the deployment: it rings nothing, and the census rings
  * its step only once the commits' login is let in again, so no body runs while the deployment stays broken and the
  * step never fails of it.
@@ -645,7 +636,7 @@ const ended = <R>(
 		switch (how.kind) {
 			case "spent": {
 				const total = used.attempts + 1
-				if (!allows(runner.retry, total)) {
+				if (!goesAgain(runner.retry)) {
 					return yield* recorded(ledger, ledger.exhaust(turn), wake, {
 						kind: "failed",
 						wake,
@@ -667,7 +658,7 @@ const ended = <R>(
 				)
 			}
 			case "waited":
-				if (how.why === "later" && used.waits >= runner.waits) {
+				if (how.why === "later" && !goesAgain(runner.waits)) {
 					return yield* recorded(ledger, ledger.exhaust(turn), wake, {
 						kind: "failed",
 						wake,
@@ -828,7 +819,8 @@ const claimSeated = <R>(
 
 /**
  * Serves one wake of a step's attempt: refuses a wake that names no pending step or not its next attempt, waits for its
- * due instant, its windows, its pauses and, for a finish, its scope's last child; fails it once its ladder is spent;
+ * due instant, its windows, its pauses and, for a finish, its scope's last child; fails it where an attempt was spent
+ * and it is not tried again;
  * claims it with its seats in one write, its lease the time its invocation has left at its reading of the database's
  * instant, so the lease ends at `ends` (its invocation's end) read from the claim's own clock, runs its kind's turn, whose end gives its
  * seats back, and rings on what its end made eligible.
@@ -892,13 +884,10 @@ const serveStep = <R>(
 				return served({ kind: "waiting", wake, why: "awaiting", until: Option.none() })
 			}
 		}
-		const used: Used = {
-			attempts: spentBefore(claims, retries, fenced, next),
-			waits: waitedOn(retries)
-		}
+		const used: Used = { attempts: spentBefore(claims, retries, fenced, next) }
 		const deadline = instantOf(Number(ends) - leaseMarginMillis)
 		const budget = delayOf(Number(ends) - Number(at))
-		const exhausted = !allows(runner.retry, used.attempts)
+		const exhausted = used.attempts > 0 && !goesAgain(runner.retry)
 		const lapsed = Arr.map(
 			Option.toArray(lapsedAttempt(claims, retries, fenced, at)),
 			(attempt) => ({

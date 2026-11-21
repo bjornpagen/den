@@ -10,8 +10,8 @@ import {
 	type AnyStepKind,
 	always,
 	atSpawn,
-	attempts,
 	edge,
+	none,
 	noReads,
 	operator,
 	pauseHandle,
@@ -36,8 +36,8 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * flow or one of its kinds is declared, naming the declaration: a kind declared twice, an edge from a step the flow does
  * not declare, a kind no scope owns, a finish reading a kind its scope never holds, no root at all, a name den cannot
  * lower into a relation's, two resources of one name, a resource of no seats, a pause handle named as a resource or as a
- * root kind (each a target of the flow's pauses), a ladder of no attempts, a count of waits below 0, a schedule that
- * lists a member twice, and a window that is empty or reaches past a day.
+ * root kind (each a target of the flow's pauses), a schedule that lists a member twice, and a window that is empty or
+ * reaches past a day.
  *
  * Oracle (specification): the proposal's rules of section 4, one fault at a time.
  */
@@ -54,8 +54,6 @@ const Fault = Schema.Literals([
 	"no seats",
 	"a pause handle named as a resource",
 	"a pause handle named as a root",
-	"no attempts",
-	"negative waits",
 	"a schedule's member twice",
 	"empty window",
 	"window past a day"
@@ -107,8 +105,6 @@ const windowOf = (fault: Fault): Window => {
 		case "no seats":
 		case "a pause handle named as a resource":
 		case "a pause handle named as a root":
-		case "no attempts":
-		case "negative waits":
 		case "a schedule's member twice":
 			return always
 	}
@@ -124,7 +120,6 @@ const declare = (fault: Fault) => {
 				? "Run"
 				: "Hush"
 	)
-	const ladder = fault === "no attempts" ? attempts(0) : attempts(1)
 	const shape = (uses: ReadonlyArray<Use>) => ({
 		input: Empty,
 		output: Empty,
@@ -132,8 +127,8 @@ const declare = (fault: Fault) => {
 		reads: noReads,
 		awaits: [],
 		uses,
-		retry: ladder,
-		waits: fault === "negative waits" ? -1 : 0,
+		retry: none,
+		waits: none,
 		due: atSpawn,
 		writes: writesNothing
 	})
@@ -146,8 +141,8 @@ const declare = (fault: Fault) => {
 		output: Empty,
 		error: Schema.Never,
 		uses: [],
-		retry: attempts(1),
-		waits: 0,
+		retry: none,
+		waits: none,
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {} })
 	})

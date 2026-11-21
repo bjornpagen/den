@@ -1,7 +1,7 @@
 import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, type Cron, Data, type Effect, Option, type Stream } from "effect"
 import type { Digest } from "effect/crypto"
-import type { Ladder, Precondition, Use, Window } from "#algebra/kinds.ts"
+import type { Again, Precondition, Use, Window } from "#algebra/kinds.ts"
 import type { Delay, ExclusiveId, Instant, ScopeKey, StepKey } from "#runtime/identity.ts"
 import type { FlowName } from "#transport.ts"
 
@@ -113,7 +113,7 @@ export interface ClaimOf {
 /**
  * Why an attempt ended without a result: `spent`, it spent its attempt on the step's ladder; `transient`, a wait for a
  * write still running at the turn's deadline, run again on each transient refusal; `later`, a wait on its source,
- * which named when to call again. The two waits spend nothing; a step's `later` waits are counted against its waits.
+ * which named when to call again. The two waits spend nothing; a `later` fails a step that does not wait on its source.
  */
 export type RetryWhy = "spent" | "transient" | "later"
 
@@ -168,9 +168,10 @@ export type Ran =
 export interface StepRunner<R> {
 	readonly kind: string
 	readonly uses: ReadonlyArray<Use>
-	readonly retry: Ladder
-	/** How many times it may wait on its source before its next `Later` ends it failed. */
-	readonly waits: number
+	/** Whether it is tried again after a spent attempt. */
+	readonly retry: Again
+	/** Whether it waits on its source when the source answers `Later`. */
+	readonly waits: Again
 	/** The app's relations it awaits a fact of: none for a kind that awaits nothing, and for a finish. */
 	readonly awaits: ReadonlyArray<string>
 	/** The scope it finishes, for a finish; none for a step kind. */

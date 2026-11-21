@@ -19,8 +19,8 @@ import {
 import { Digest } from "effect/crypto"
 import {
 	always,
-	attempts,
 	idle,
+	none,
 	type Precondition,
 	type Resource,
 	resource,
@@ -54,7 +54,7 @@ import type {
 	StepRunner
 } from "#runtime/ledger.ts"
 import { backoffFirstMillis, backoffLastMillis } from "#runtime/turn.ts"
-import { rungMillis, spentBefore, waitedOn } from "#runtime/turn.ts"
+import { rungMillis, spentBefore } from "#runtime/turn.ts"
 import { caseHangMillis } from "#test/support/suites.ts"
 import { FlowName, type Wake, wakeText } from "#transport.ts"
 
@@ -89,8 +89,8 @@ const runnerOf = (
 ): StepRunner<never> => ({
 	kind,
 	uses,
-	retry: attempts(1),
-	waits: 0,
+	retry: none,
+	waits: none,
 	awaits: [],
 	finishes,
 	run: unread
@@ -820,7 +820,7 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 						suite: "retry ladder",
 						oracle: {
 							kind: "specification",
-							name: "rung(1) = first, rung(n) ≤ rung(n + 1) ≤ last, spentBefore counts every attempt but a wait or a fence, and waitedOn counts the waits on a source"
+							name: "rung(1) = first, rung(n) ≤ rung(n + 1) ≤ last, and spentBefore counts every attempt but a wait or a fence"
 						},
 						draw: drawn((source) => ({
 							spent: source.draw(int(1, 12)),
@@ -899,10 +899,6 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 									!Option.contains(cl.ended, "fenced")
 							).length
 							assert.strictEqual(spentBefore(claims, retries, fenced, BigInt(l.next)), expected)
-							assert.strictEqual(
-								waitedOn(retries),
-								Arr.filter(l.claims, (cl) => Option.contains(cl.ended, "later")).length
-							)
 						})
 				)
 			)

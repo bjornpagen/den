@@ -12,7 +12,7 @@ import {
 	type AnyCommit,
 	type AnyStepKind,
 	type Due,
-	type Ladder,
+	type Again,
 	Refused,
 	type Stored,
 	type Trigger
@@ -246,7 +246,7 @@ export interface StepIR {
 	readonly writes: CommitIR
 	readonly edges: ReadonlyArray<EdgeIR>
 	readonly uses: ReadonlyArray<string>
-	readonly retry: Ladder
+	readonly retry: Again
 	readonly due: Due<never>
 }
 
@@ -303,7 +303,7 @@ export interface JoinIR {
 		readonly output: ValueIR
 		readonly error: Option.Option<ValueIR>
 		readonly writes: CommitIR
-		readonly retry: Ladder
+		readonly retry: Again
 		readonly reads: ReadonlyArray<FinishReadIR>
 		/** The edges that leave the scope kind, which its finish's commit spawns in the scope's parent. */
 		readonly edges: ReadonlyArray<EdgeIR>

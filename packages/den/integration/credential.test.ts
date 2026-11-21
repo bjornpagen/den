@@ -17,8 +17,9 @@ import { backoffLastMillis } from "#runtime/turn.ts"
 /**
  * A refused credential fences, spends nothing, and runs no body again while it stands. A deployment whose app login
  * offers the worker's password, which PostgreSQL refuses, runs a Ladders root: each step's commit meets
- * `credentialRefused` while the worker's own login, which claims and records, is let in. `Brittle` first dies as many
- * times as the case plants, each a spent attempt; `Steadfast` never dies. A round moves the suite's clock a whole
+ * `credentialRefused` while the worker's own login, which claims and records, is let in. `Steadfast`, tried again until
+ * it settles, first dies as many times as the case plants, each a spent attempt; `Brittle`, never tried again, never
+ * dies, so a fence that spent its attempt would fail it. A round moves the suite's clock a whole
  * longest rung on, ticks the census, as it does about once a minute, and drains the transport. Once both steps are
  * fenced, the deployment stays broken for as many more rounds as the case draws; then its credential is set right, for
  * one round more.
@@ -82,7 +83,7 @@ const refusedAt = (step: StepKey, ending: Ending): boolean =>
 export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = property.exhaust(
 	finite(runs),
 	{
-		box: "a two-attempt ladder dead at most once, then its commit refused, beside a never-ending one, the deployment broken one to three ticks after",
+		box: "a step tried again until it settles and dead at most once, beside one never tried again, then their commits refused, the deployment broken one to three ticks after",
 		needs: { slice: sliceCase },
 		situations: [
 			"fenced at its first attempt",
@@ -104,8 +105,8 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 							const app = yield* openAuditor
 							const { faults, runs: ran } = yield* Planted
 							const steps: ReadonlyArray<Planned> = [
-								{ kind: "Steadfast", key: "steadfast", deaths: 0 },
-								{ kind: "Brittle", key: "brittle", deaths: run.deaths }
+								{ kind: "Steadfast", key: "steadfast", deaths: run.deaths },
+								{ kind: "Brittle", key: "brittle", deaths: 0 }
 							]
 							yield* Ref.update(faults, (map) =>
 								Arr.reduce(steps, map, (acc, s) => HashMap.set(acc, s.key, s.deaths))

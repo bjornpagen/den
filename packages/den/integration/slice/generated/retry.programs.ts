@@ -40,13 +40,17 @@ import {
 	RetrySteadfastInput,
 	RetryBrittleInput,
 	RetryPoliteInput,
+	RetryPatientInput,
 	RetryLaddersInput,
 	RetryThrottledInput,
+	RetryUnhurriedInput,
 	RetrySteadfastOutput,
 	RetryBrittleOutput,
 	RetryPoliteOutput,
+	RetryPatientOutput,
 	RetryLaddersFinishOutput,
 	RetryThrottledFinishOutput,
+	RetryUnhurriedFinishOutput,
 	RetryPaused,
 	RetryResumed,
 	retryGraph,
@@ -81,10 +85,13 @@ export const RetryDen = role(
 			"RetrySteadfastInput",
 			"RetryBrittleInput",
 			"RetryPoliteInput",
+			"RetryPatientInput",
 			"RetryLaddersInput",
 			"RetryThrottledInput",
+			"RetryUnhurriedInput",
 			"RetryLaddersFinishOutput",
-			"RetryThrottledFinishOutput"
+			"RetryThrottledFinishOutput",
+			"RetryUnhurriedFinishOutput"
 		]
 	}
 )
@@ -191,6 +198,7 @@ export const retryDenPrograms = Object.freeze({
 			.insert(RetrySteadfastInput, [])
 			.insert(RetryBrittleInput, [])
 			.insert(RetryPoliteInput, [])
+			.insert(RetryPatientInput, [])
 			.insert(
 				RetryStep,
 				query(retryGraph).rule((r) => {
@@ -377,6 +385,13 @@ export const retryDenPrograms = Object.freeze({
 			.where(r.eq(step, r.param("step", RetryPoliteInput.fields.step)))
 			.find({ step, key, root })
 	}),
+	retryReadRetryPatientInput: query(retryGraph).rule((r) => {
+		const { step, key, root } = v(RetryPatientInput, "retryPatientInput")
+		return r
+			.match(RetryPatientInput, { step, key, root })
+			.where(r.eq(step, r.param("step", RetryPatientInput.fields.step)))
+			.find({ step, key, root })
+	}),
 	retryReadRetryLaddersInput: query(retryGraph).rule((r) => {
 		const { scope, steadfast, brittle, root } = v(RetryLaddersInput, "retryLaddersInput")
 		return r
@@ -502,6 +517,56 @@ export const retryDenPrograms = Object.freeze({
 			.match(RetryResult, { step, outcome: "failed" })
 			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
 			.find({ step })
+	}),
+	retryReadRetryUnhurriedInput: query(retryGraph).rule((r) => {
+		const { scope, key, root } = v(RetryUnhurriedInput, "retryUnhurriedInput")
+		return r
+			.match(RetryUnhurriedInput, { scope, key, root })
+			.where(r.eq(scope, r.param("scope", RetryUnhurriedInput.fields.scope)))
+			.find({ scope, key, root })
+	}),
+	retryRequestUnhurried: clocked(
+		ChangeSet.empty(retryGraph)
+			.insert(RetryScope, [])
+			.insert(RetryUnhurriedInput, [])
+			.insert(
+				RetryRoot,
+				query(retryGraph).rule((r) =>
+					r.find({
+						scope: r.param("retryUnhurriedScope", RetryRoot.fields.scope),
+						kind: RetryRootKind.handle("Unhurried"),
+						key: r.param("retryUnhurriedKey", RetryRoot.fields.key),
+						at: r.param("now", RetryRoot.fields.at)
+					})
+				)
+			),
+		{ now: "millis" }
+	),
+	retryOutputsUnhurriedPatient: query(retryGraph).rule((r) => {
+		const { step, scope } = v(RetryStep, "step")
+		const { key } = v(RetryPatientOutput, "output")
+		return r
+			.match(RetryStep, { step, kind: "Patient", scope })
+			.match(RetryPatientOutput, { step, key })
+			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
+			.find({ step, key })
+	}),
+	retryInputsUnhurriedPatient: query(retryGraph).rule((r) => {
+		const { step, scope } = v(RetryStep, "step")
+		const { key } = v(RetryPatientInput, "input")
+		return r
+			.match(RetryStep, { step, kind: "Patient", scope })
+			.match(RetryPatientInput, { step, key })
+			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
+			.find({ step, key })
+	}),
+	retryFailuresUnhurriedPatient: query(retryGraph).rule((r) => {
+		const { step, scope } = v(RetryStep, "step")
+		return r
+			.match(RetryStep, { step, kind: "Patient", scope })
+			.match(RetryResult, { step, outcome: "failed" })
+			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
+			.find({ step })
 	})
 })
 
@@ -564,6 +629,11 @@ export const retryCommitPrograms = Object.freeze({
 		.insert(RetryDone, [])
 		.insert(RetryHeld, [])
 		.insert(RetryPoliteOutput, []),
+	retryCommitPatient: ChangeSet.empty(retryGraph)
+		.insert(RetryResult, [])
+		.insert(RetryDone, [])
+		.insert(RetryHeld, [])
+		.insert(RetryPatientOutput, []),
 	retryCommitLaddersFinish: ChangeSet.union(
 		ChangeSet.empty(retryGraph)
 			.insert(RetryResult, [])
@@ -579,6 +649,14 @@ export const retryCommitPrograms = Object.freeze({
 			.insert(RetryHeld, [])
 			.insert(RetryThrottledFinishOutput, []),
 		declaredFlow.kinds[4].finish.writes.changes(Loader)
+	),
+	retryCommitUnhurriedFinish: ChangeSet.union(
+		ChangeSet.empty(retryGraph)
+			.insert(RetryResult, [])
+			.insert(RetryDone, [])
+			.insert(RetryHeld, [])
+			.insert(RetryUnhurriedFinishOutput, []),
+		declaredFlow.kinds[6].finish.writes.changes(Loader)
 	)
 })
 

@@ -149,9 +149,9 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 		kills: [
 			{
 				file: "packages/den/src/runtime/turn.ts",
-				original: "\t\tconst exhausted = !allows(runner.retry, used.attempts)",
-				replacement: "\t\tconst exhausted = allows(runner.retry, used.attempts)",
-				why: "Operator mutant (negation) in serveStep: `!allows(runner.retry, used.attempts)` becomes `allows(runner.retry, used.attempts)`; the property fails (lane CATCH, den 9cffaba)."
+				original: "\t\tconst exhausted = used.attempts > 0 && !goesAgain(runner.retry)",
+				replacement: "\t\tconst exhausted = !(used.attempts > 0 && !goesAgain(runner.retry))",
+				why: "Operator mutant (negation) in serveStep: whether the step is exhausted becomes its negation, so its first attempt is exhausted; the property fails (lane CATCH, den 9cffaba)."
 			}
 		]
 	}

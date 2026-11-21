@@ -1,3 +1,4 @@
+import { type Again, none as noRetry } from "@bjornpagen/den/algebra/kinds"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int, oneOf } from "@bjornpagen/testing/gen"
@@ -64,13 +65,15 @@ const programs: Gen<Program> = oneOf<Program>([
 	(source) => ({ kind: "fan", size: source.draw(int(0, 4)) })
 ])
 
-/** The model's ladder of a den ladder of n attempts, its rungs den's own. */
-const ladderOf = (attempts: number): Ladder => ({
-	_tag: "Attempts",
-	attempts,
-	first: backoffFirstMillis,
-	last: backoffLastMillis
-})
+/** The model's ladder of a den step's retry: no end until it settles, or its first attempt alone; den's rungs. */
+const ladderOf = (retry: Again): Ladder => {
+	switch (retry.kind) {
+		case "untilSettled":
+			return { _tag: "Never", first: backoffFirstMillis, last: backoffLastMillis }
+		case "none":
+			return { _tag: "Attempts", attempts: 1, first: backoffFirstMillis, last: backoffLastMillis }
+	}
+}
 
 /** How the model runs a kind: den's longest lease, its resources, and its ladder. */
 const runsOf = (holds: ReadonlyArray<Resource>, ladder: Ladder): Runs => ({
@@ -82,8 +85,8 @@ const runsOf = (holds: ReadonlyArray<Resource>, ladder: Ladder): Runs => ({
 const pageLadder = Option.match(
 	Arr.findFirst(chain.kinds, (k) => k._tag === "Step"),
 	{
-		onNone: () => ladderOf(1),
-		onSome: (s) => ladderOf(s.retry.kind === "attempts" ? s.retry.attempts : 1)
+		onNone: () => ladderOf(noRetry),
+		onSome: (s) => ladderOf(s.retry)
 	}
 )
 

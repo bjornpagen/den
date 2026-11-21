@@ -15,7 +15,7 @@ constants with their evidence beside the code they bound (`src/runtime/turn.ts`,
 | module | what it holds |
 |---|---|
 | `src/transport.ts` | the wake contract: `Wake` `{ lane, step, attempt }`, each field branded (`den/LaneName`, `DenStep`, `den/Attempt` ≥ 1), decoded by `WakeSchema`; `idempotencyKey` (`${lane}:${step}:${attempt}`); `Transport`, a `Context.Service` whose `send` never fails; the in-process transport over an unbounded `Queue` |
-| `src/algebra/kinds.ts` | `lane` (width, window, pause, ceiling of attempts), `step`, `awaiting`, `scope`, `root`, `edge`, `writes`; a step's reads, `reads(query, records, params)`, one grizzle query of the app role, a record of named queries, its parameters from the step's input, each name's rows recorded by its record, taken in one statement; the facts a step awaits (`awaitFact`); what it uses, each a `resource`, a seat of which it holds while it runs, or a `pauseHandle`, a target of the flow's pauses with no seats; its waits on its source; spawns typed by their kind (`Page.of(input)`); bodies `(input, found) → Effect<{ output, writes }, E, R>`, `found` each read's rows by its name; `Refused` |
+| `src/algebra/kinds.ts` | `lane` (width, window, pause, ceiling of attempts), `step`, `awaiting`, `scope`, `root`, `edge`, `writes`; a step's reads, `reads(query, records, params)`, one grizzle query of the app role, a record of named queries, its parameters from the step's input, each name's rows recorded by its record, taken in one statement; the facts a step awaits (`awaitFact`); what it uses, each a `resource`, a seat of which it holds while it runs, or a `pauseHandle`, a target of the flow's pauses with no seats; whether it is tried again after a spent attempt and waits on its source (`untilSettled` or `none`); spawns typed by their kind (`Page.of(input)`); bodies `(input, found) → Effect<{ output, writes }, E, R>`, `found` each read's rows by its name; `Refused` |
 | `src/algebra/flow.ts` | `flow(name, { lanes, kinds, edges })` and its declaration-time checks (below) |
 | `src/lower/schema.ts` | Effect Schema to relations: columns of `String`, `BigInt`, `Finite` (double precision, held finite by a row check), `Boolean`, a literal union of texts (a roster) or a brand of one (a contract); an `Option` of a column (a relation of its own); an `Array` of columns or of structs of them (an ordered family keyed by owner and a gap-free ordinal from 0); a `TaggedUnion` of structs of columns (its tag a roster column of the owner's row, a relation per variant holding a row exactly where the tag names it); anything else, a refinement by a check included, `Refused` |
 | `src/lower/fragment.ts` | a flow to its fragment as data (`Lowered`): rosters, contracts, relations, laws, and the kinds, joins and edges the printer reads |
@@ -169,13 +169,14 @@ output into `select(PResult, outcome = done)`) certifies.
    (`algebra/later.ts`: its source refused the call for now and named when to call again, parsed at the boundary from
    its `Retry-After`, delay-seconds or an IMF-fixdate measured from the response's `Date`) waits: its retry spends
    nothing and is due that delay past the write's own reading, so a rate limit is the source's wait and never a rung
-   of the ladder; a step kind and a finish state how many times they may wait on their source (`waits`, a count of 0
-   or more, always finite), each wait a retry whose why (`PRetryWhy`: `spent`, `transient`, `later`) says it was the
-   source's, and a `Later` once the step has waited that often is `failed`, recorded in `PExhausted` as a spent ladder
-   is, so a source that keeps refusing ends its step and its scope's finish reads it failed (`later.test.ts`); a
-   defect, an interruption or a body past its deadline spends the attempt. Past a lane's ceiling of attempts, the
-   claim is made and `PExhausted` recorded: `failed`.
-6. **Defect values.** Not stored: a defect only spends an attempt, and the ceiling turns endless defects into `failed`.
+   of the ladder; a step kind and a finish state whether they go again (`Again`: `untilSettled` or `none`, with no
+   count), after a spent attempt (`retry`) and on their source (`waits`), each a retry whose why (`PRetryWhy`: `spent`,
+   `transient`, `later`) says which; under `untilSettled` every such end goes again, so only the step's answer or its
+   typed error ends it, and under `none` the first is `failed`, recorded in `PExhausted`, and its scope's finish reads
+   it failed (`ladder.test.ts`, `later.test.ts`); a
+   defect, an interruption or a body past its deadline spends the attempt. A spent attempt of a step not tried again
+   makes its next claim and records `PExhausted`: `failed`.
+6. **Defect values.** Not stored: a defect only spends an attempt, and a step not tried again turns it into `failed`.
 7. **Which role runs a step's writes.** The flow's worker role (`<flow>_worker`) writes the app relations its steps and
    finishes declare, by `insert` (or `write`, which forfeits READ COMMITTED, if any step declares a put or a delete).
 8. **A step's writes** are the array facts of its commit program, by operation and relation, which the step declares

@@ -72,13 +72,6 @@ const positive = (declaration: string, what: string, n: number): void => {
 	}
 }
 
-/** Refuses a count that is no integer of at least 0. */
-const nonNegative = (declaration: string, what: string, n: number): void => {
-	if (!Number.isSafeInteger(n) || n < 0) {
-		throw new Refused({ declaration, why: `${what} ${String(n)} is no count of 0 or more` })
-	}
-}
-
 /**
  * A resource: a named bottleneck whose capacity is its seats, each a row, so no two holders share one and a bound is
  * never exceeded. Its count is a limit with evidence (W1's replica holds 8). A step holds a seat of every resource it
@@ -123,21 +116,25 @@ export const seatedOf = (uses: ReadonlyArray<Use>): ReadonlyArray<Resource> =>
 	Arr.flatMap(uses, (use) => (use._tag === "Resource" ? [use] : []))
 
 /**
- * A step's retry ladder, written out: it ends after `attempts` attempts (W1 to W4), its next claim then failing the
- * step, or it never ends (W6's reports). Each spent attempt waits a rung before the next is due.
+ * Whether a step goes again after a turn that ended without a result: until its call settles, as often as it ends so,
+ * so only its result (an answer, or its typed error) ends it and the step stays joined by its scope, which waits for
+ * it; or never, the first such end failing it, recorded as exhausted, so its scope's finish reads it failed (a call
+ * that must not run twice). A step states one for its spent attempts (`retry`, each tried again a rung of den's backoff
+ * later) and one for its waits on its source (`waits`, each a body that failed with `Later`, due at the instant its
+ * source named, which spends no attempt). Retrying is den's alone, and no count bounds it: an app keeps no retry loop,
+ * count, backoff or give-up cap of its own (Bjorn, 2026-11-21: "hard delete ALL arbitrary retries", since "it should
+ * already be handled upstream by den retries"), and no source publishes a maximum a counted arm would carry.
  */
-export type Ladder =
-	| { readonly kind: "attempts"; readonly attempts: number }
-	| { readonly kind: "never" }
+export type Again = { readonly kind: "untilSettled" } | { readonly kind: "none" }
 
-/** A ladder that ends the step `failed` once `count` attempts are spent. */
-export const attempts = (count: number): Ladder => {
-	positive("ladder", "attempts", count)
-	return { kind: "attempts", attempts: count }
-}
+/** Goes again as often as the step ends without a result, until its call settles. */
+export const untilSettled: Again = { kind: "untilSettled" }
 
-/** A ladder that never ends: the step is due again after every spent attempt. */
-export const never: Ladder = { kind: "never" }
+/** Never goes again: the step's first end without a result fails it. */
+export const none: Again = { kind: "none" }
+
+/** Whether a step goes again after a turn that ended without a result. */
+export const goesAgain = (again: Again): boolean => again.kind === "untilSettled"
 
 /**
  * When a scope's work may run: at every instant, or inside the UTC hours `[opens, closes)` of each day (W1 to W4's
@@ -543,17 +540,10 @@ export interface StepShape<
 	/** The facts it awaits beside its input: it is eligible once each exists. */
 	readonly awaits: ReadonlyArray<AwaitedFact>
 	readonly uses: ReadonlyArray<Use>
-	readonly retry: Ladder
-	/**
-	 * How many times the step may wait on its source, each a body that failed with `Later`, before the next `Later`
-	 * ends it `failed`, recorded as exhausted, as a spent ladder ends it: a wait spends no attempt, so without this count
-	 * a source that keeps refusing would hold its step waiting for good, with no failure for its scope's finish to read.
-	 * It counts every wait of the step, across its attempts, and is always finite: no step waits on its source forever.
-	 * A step whose body never fails with `Later` states 0, and so does one that fails at its source's first refusal. A
-	 * count above 0 is a limit with its evidence beside the step that states it (an Anthropic call's, upstream's five
-	 * waits).
-	 */
-	readonly waits: number
+	/** Whether it is tried again after a spent attempt (Again). */
+	readonly retry: Again
+	/** Whether it waits on its source when the source answers `Later` (Again). */
+	readonly waits: Again
 	readonly due: Due<IS["Type"]>
 	readonly writes: T
 }
@@ -584,8 +574,8 @@ export interface AnyStepKind {
 	readonly reads: AnyReads
 	readonly awaits: ReadonlyArray<AwaitedFact>
 	readonly uses: ReadonlyArray<Use>
-	readonly retry: Ladder
-	readonly waits: number
+	readonly retry: Again
+	readonly waits: Again
 	readonly due: Due<never>
 	readonly writes: AnyCommit
 }
@@ -607,7 +597,6 @@ export const step = <
 	Arr.forEach(shape.reads.kind === "query" ? Rec.keys(shape.reads.records) : [], (read) =>
 		readNamed(`step ${name}`, read)
 	)
-	nonNegative(`step ${name}`, "waits", shape.waits)
 	return { _tag: "Step", name, ...shape, body, of: spawnOf(name) }
 }
 
@@ -674,9 +663,10 @@ export interface Finish<
 	readonly output: OS
 	readonly error: ES
 	readonly uses: ReadonlyArray<Use>
-	readonly retry: Ladder
-	/** How many times the finish may wait on its source before its next `Later` fails it, as a step's waits. */
-	readonly waits: number
+	/** Whether the finish is tried again after a spent attempt, as a step's retry. */
+	readonly retry: Again
+	/** Whether the finish waits on its source, as a step's waits. */
+	readonly waits: Again
 	readonly writes: T
 	readonly body: (
 		input: I,
@@ -690,8 +680,8 @@ export interface AnyFinish {
 	readonly output: Stored
 	readonly error: ErrorSchema
 	readonly uses: ReadonlyArray<Use>
-	readonly retry: Ladder
-	readonly waits: number
+	readonly retry: Again
+	readonly waits: Again
 	readonly writes: AnyCommit
 }
 
@@ -791,7 +781,6 @@ export const scope = <
 	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>>
 ): ScopeKind<Name, IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>> => {
 	named("scope", name)
-	nonNegative(`the finish of ${name}`, "waits", shape.finish.waits)
 	return { _tag: "Scope", name, ...shape, of: spawnOf(name) }
 }
 
@@ -878,7 +867,6 @@ export const root = <
 	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>> & RootGates<IS["Type"]>
 ): RootKind<Name, IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>> => {
 	named("root", name)
-	nonNegative(`the finish of ${name}`, "waits", shape.finish.waits)
 	return { _tag: "Root", name, ...shape }
 }
 

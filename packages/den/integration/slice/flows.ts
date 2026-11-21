@@ -4,14 +4,13 @@ import {
 	app,
 	type Ending,
 	atSpawn,
-	attempts,
 	awaitFact,
 	dueAt,
 	edge,
 	exclusiveBy,
 	idle,
 	instant,
-	never,
+	none,
 	noReads,
 	operator,
 	pauseHandle,
@@ -24,6 +23,7 @@ import {
 	shared,
 	step,
 	unconditional,
+	untilSettled,
 	through,
 	writer,
 	writesNothing
@@ -190,8 +190,8 @@ const Page = step(
 		),
 		awaits: [],
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: atSpawn,
 		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Item, []), {})
 	},
@@ -245,8 +245,8 @@ const moveCursor = Object.freeze({
 	output: Finished,
 	error: Schema.Never,
 	uses: [],
-	retry: attempts(3),
-	waits: 0,
+	retry: untilSettled,
+	waits: none,
 	writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Cursor, []), {}),
 	body: (
 		run: typeof ChainInput.Type,
@@ -334,8 +334,8 @@ const Square = step(
 		reads: noReads,
 		awaits: [],
 		uses: [pool],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: atSpawn,
 		writes: writesNothing
 	},
@@ -356,8 +356,8 @@ const Batch = scope("Batch", {
 		output: Finished,
 		error: Schema.Never,
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Tally, []), {}),
 		body: (b, endings) =>
 			Effect.succeed({
@@ -396,8 +396,8 @@ const FanRun = root("FanRun", {
 		output: Finished,
 		error: Schema.Never,
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Settled, []), {}),
 		body: (run) =>
 			Effect.succeed({
@@ -427,8 +427,8 @@ const Dust = step(
 		reads: noReads,
 		awaits: [],
 		uses: [vendor],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: atSpawn,
 		writes: writesNothing
 	},
@@ -448,8 +448,8 @@ const Mop = step(
 		reads: noReads,
 		awaits: [],
 		uses: [pool, vendor],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: atSpawn,
 		writes: writesNothing
 	},
@@ -470,8 +470,8 @@ const Sweep = root("Sweep", {
 		output: Finished,
 		error: Schema.Never,
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {} })
 	}
@@ -496,8 +496,8 @@ const Copy = step(
 		reads: noReads,
 		awaits: [],
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: atSpawn,
 		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Copied, []), {})
 	},
@@ -525,8 +525,8 @@ const SyncRun = root("SyncRun", {
 		output: Finished,
 		error: Schema.Never,
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {} })
 	}
@@ -542,8 +542,8 @@ const Build = step(
 		reads: noReads,
 		awaits: [],
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: atSpawn,
 		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Built, []), {})
 	},
@@ -568,8 +568,8 @@ const Gold = root("Gold", {
 		output: Finished,
 		error: Schema.Never,
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {} })
 	}
@@ -604,7 +604,7 @@ const faulty = (input: typeof Attempted.Type) =>
 		)
 	)
 
-/** A step whose ladder never ends: it is due again after every spent attempt (W6's reports). */
+/** A step tried again until it succeeds: it is due again after every spent attempt (W6's reports). */
 const Steadfast = step(
 	"Steadfast",
 	{
@@ -614,15 +614,15 @@ const Steadfast = step(
 		reads: noReads,
 		awaits: [],
 		uses: [],
-		retry: never,
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: atSpawn,
 		writes: writesNothing
 	},
 	faulty
 )
 
-/** A step whose ladder ends after two spent attempts. */
+/** A step never tried again: its first spent attempt fails it. */
 const Brittle = step(
 	"Brittle",
 	{
@@ -632,8 +632,8 @@ const Brittle = step(
 		reads: noReads,
 		awaits: [],
 		uses: [],
-		retry: attempts(2),
-		waits: 0,
+		retry: none,
+		waits: none,
 		due: atSpawn,
 		writes: writesNothing
 	},
@@ -657,8 +657,8 @@ const Ladders = root("Ladders", {
 		output: Finished,
 		error: Schema.Never,
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Heard, []), {}),
 		body: (_, endings) =>
 			Effect.succeed({
@@ -679,16 +679,31 @@ const Ladders = root("Ladders", {
 })
 
 /**
- * How many times the polite step may wait on its source before its next refusal fails it: the suite's own count, below
- * the most refusals the suite plants, so a source that keeps refusing past it is drawn beside one that answers within it.
+ * Calls a source that refuses its calls for now while its key's planted refusals last, each response naming when to
+ * call again, and then answers: it parses the delay the source named at the boundary and fails with it, `Later`.
  */
-export const politeWaits = 2
+const asksSource = (input: typeof Attempted.Type) =>
+	Effect.flatMap(Faults, (faults) => faults.refuses(input.key)).pipe(
+		Effect.flatMap((refused) =>
+			Option.match(refused, {
+				onNone: () =>
+					Effect.succeed({
+						output: { key: input.key }
+					}),
+				onSome: (headers) =>
+					Option.match(laterOf(headers), {
+						onNone: () => Effect.die(`a planted refusal of ${input.key} names no delay`),
+						onSome: (later) => Effect.fail(later)
+					})
+			})
+		)
+	)
 
 /**
  * A step whose source refuses its calls for now while its key's planted refusals last, each response naming when to
  * call again, and then answers: its body parses the delay the source named at the boundary and fails with it, `Later`.
- * Its ladder allows one attempt, so a refusal that spent an attempt would fail it, and it waits on its source at most
- * `politeWaits` times, so the refusal after them fails it.
+ * It is never tried again, so a refusal that spent an attempt would fail it, and it does not wait on its source, so
+ * its source's first refusal fails it.
  */
 const Polite = step(
 	"Polite",
@@ -699,30 +714,15 @@ const Polite = step(
 		reads: noReads,
 		awaits: [],
 		uses: [],
-		retry: attempts(1),
-		waits: politeWaits,
+		retry: none,
+		waits: none,
 		due: atSpawn,
 		writes: writesNothing
 	},
-	(input) =>
-		Effect.flatMap(Faults, (faults) => faults.refuses(input.key)).pipe(
-			Effect.flatMap((refused) =>
-				Option.match(refused, {
-					onNone: () =>
-						Effect.succeed({
-							output: { key: input.key }
-						}),
-					onSome: (headers) =>
-						Option.match(laterOf(headers), {
-							onNone: () => Effect.die(`a planted refusal of ${input.key} names no delay`),
-							onSome: (later) => Effect.fail(later)
-						})
-				})
-			)
-		)
+	asksSource
 )
 
-/** A run of the polite step, whose finish records what it heard: its source's answer, or a refusal past its waits. */
+/** A run of the polite step, whose finish records what it heard: its source's answer, or a refusal. */
 const Throttled = root("Throttled", {
 	trigger: operator,
 	input: Attempted,
@@ -736,8 +736,8 @@ const Throttled = root("Throttled", {
 		output: Finished,
 		error: Schema.Never,
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Heard, []), {}),
 		body: (input, endings) =>
 			Effect.succeed({
@@ -757,9 +757,67 @@ const Throttled = root("Throttled", {
 	}
 })
 
+/**
+ * A step whose source refuses its calls for now while its key's planted refusals last, as the polite step's does, and
+ * which waits on it until it answers: however often it refuses, each refusal is a wait due at the instant it named, and
+ * only the source's answer ends the step (metis's Timeback writes). It is never tried again, so a refusal that spent an
+ * attempt would fail it.
+ */
+const Patient = step(
+	"Patient",
+	{
+		input: Attempted,
+		output: Attempted,
+		error: Schema.Never,
+		reads: noReads,
+		awaits: [],
+		uses: [],
+		retry: none,
+		waits: untilSettled,
+		due: atSpawn,
+		writes: writesNothing
+	},
+	asksSource
+)
+
+/** A run of the patient step, whose finish records what it heard: its source's answer, however late. */
+const Unhurried = root("Unhurried", {
+	trigger: operator,
+	input: Attempted,
+	children: [Patient],
+	start: (input) => [Patient.of(input)],
+	exclusive: shared,
+	window: always,
+	precondition: unconditional,
+	finish: {
+		reads: [Patient],
+		output: Finished,
+		error: Schema.Never,
+		uses: [],
+		retry: untilSettled,
+		waits: none,
+		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Heard, []), {}),
+		body: (input, endings) =>
+			Effect.succeed({
+				output: {},
+				writes: {
+					params: {},
+					facts: {
+						insert: {
+							Heard: Arr.map(endings.Patient, (ending) => ({
+								key: input.key,
+								answered: ending._tag === "Done"
+							}))
+						}
+					}
+				}
+			})
+	}
+})
+
 export const retry = flow("Retry", {
 	writes: loader,
-	kinds: [Steadfast, Brittle, Ladders, Polite, Throttled],
+	kinds: [Steadfast, Brittle, Ladders, Polite, Throttled, Patient, Unhurried],
 	edges: []
 })
 
@@ -803,8 +861,8 @@ const Embed = step(
 		reads: noReads,
 		awaits: [],
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: atSpawn,
 		writes: writesNothing
 	},
@@ -914,8 +972,8 @@ const Decide = step(
 		),
 		awaits: [],
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: atSpawn,
 		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Assigned, []), {})
 	},
@@ -970,8 +1028,8 @@ const Assignment = root("Assignment", {
 		output: Finished,
 		error: Schema.Never,
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Concluded, []), {}),
 		body: (
 			probe: typeof Probe.Type,
@@ -1060,8 +1118,8 @@ const Analyze = step(
 		reads: noReads,
 		awaits: [],
 		uses: [anthropic],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: atSpawn,
 		writes: writesNothing
 	},
@@ -1088,8 +1146,8 @@ const Questions = scope("Questions", {
 		output: Clustered,
 		error: Schema.Never,
 		uses: [anthropic],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		writes: writesNothing,
 		body: (_group, endings) =>
 			Effect.succeed({
@@ -1117,8 +1175,8 @@ const Gather = step(
 		reads: noReads,
 		awaits: [awaitFact(Delivered, { attempt: "review" })],
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: atSpawn,
 		writes: writesNothing
 	},
@@ -1148,8 +1206,8 @@ const Save = step(
 		reads: noReads,
 		awaits: [],
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: atSpawn,
 		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Reviewed, []), {})
 	},
@@ -1191,8 +1249,8 @@ const ReviewRun = root("ReviewRun", {
 		output: Finished,
 		error: Schema.Never,
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Summary, []), {}),
 		body: (review, endings) =>
 			Effect.succeed({
@@ -1236,8 +1294,8 @@ const Deliver = step(
 		reads: noReads,
 		awaits: [],
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: atSpawn,
 		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Delivered, []), {})
 	},
@@ -1262,8 +1320,8 @@ const Writeback = root("Writeback", {
 		output: Finished,
 		error: Schema.Never,
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {} })
 	}
@@ -1288,8 +1346,8 @@ const Chime = step(
 		reads: noReads,
 		awaits: [],
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: atSpawn,
 		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Chimed, []), {})
 	},
@@ -1320,8 +1378,8 @@ const Hourly = root("Hourly", {
 		output: Finished,
 		error: Schema.Never,
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {} })
 	}
@@ -1340,8 +1398,8 @@ const Close = step(
 		reads: noReads,
 		awaits: [],
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		due: dueAt("deadline"),
 		writes: writesNothing
 	},
@@ -1362,8 +1420,8 @@ const Sitting = root("Sitting", {
 		output: Finished,
 		error: Schema.Never,
 		uses: [],
-		retry: attempts(3),
-		waits: 0,
+		retry: untilSettled,
+		waits: none,
 		writes: writesNothing,
 		body: () => Effect.succeed({ output: {} })
 	}

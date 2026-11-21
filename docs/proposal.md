@@ -82,7 +82,7 @@ edges nobody declared, a bound without evidence.
 The QTI chain, as an illustration of shape only:
 
 ```ts
-const Page = step("QtiPage", { input: PageInput, output: PageRead, error: QtiRefused, retry: attempts(5) }, readPage)
+const Page = step("QtiPage", { input: PageInput, output: PageRead, error: QtiRefused, retry: untilSettled }, readPage)
 const Next = edge(Page, Page, (page, read) => Option.map(read.next, (after) => ({ ...page, seq: page.seq + 1n, after })))
 const Read = scope("QtiRead", { input: Window, exclusive: (w) => w.collection, window: utcHours(7, 13), start: (w) => [Page.first(w)], finish: moveFrontier })
 const Nightly = root("QtiNightly", { trigger: schedule("0 7 * * *"), start: () => COLLECTIONS.map(Read.of) })

@@ -1219,6 +1219,20 @@ CREATE TABLE "slice"."retry_ladders_input" (
   CONSTRAINT "__retry_ladders_input_pk_5cdnkfgg3x" PRIMARY KEY ("scope", "root")
 );
 
+CREATE TABLE "slice"."retry_patient_input" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__retry_patient_input_pk_74247zb7wo" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."retry_patient_output" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__retry_patient_output_pk_whtgus732k" PRIMARY KEY ("step", "root")
+);
+
 CREATE TABLE "slice"."retry_paused" (
   "target" "slice"."retry_pausable" NOT NULL,
   "turn" "slice"."__domain_gfw43vigph" NOT NULL,
@@ -1333,6 +1347,19 @@ CREATE TABLE "slice"."retry_throttled_input" (
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__retry_throttled_input_pk_zv264azw4s" PRIMARY KEY ("scope", "root")
+);
+
+CREATE TABLE "slice"."retry_unhurried_finish_output" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__retry_unhurried_finish_output_pk_d5mmuqfkuq" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."retry_unhurried_input" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__retry_unhurried_input_pk_g5dkiedexm" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."review_admitted" (
@@ -2323,7 +2350,7 @@ LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_t
 AS $$
 BEGIN
   PERFORM 1 FROM "slice"."retry_root" AS "r1" JOIN (SELECT DISTINCT "r3"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r3"("c1")) AS "r2"("c1") ON "r1"."scope" = "r2"."c1" WHERE NOT "r1"."retired" ORDER BY "r1"."scope" FOR UPDATE OF "r1";
-  RETURN QUERY WITH "r1"("c1") AS MATERIALIZED ( SELECT "r2"."scope" AS "c1" FROM "slice"."retry_root" AS "r2" JOIN (SELECT DISTINCT "r4"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r4"("c1")) AS "r3"("c1") ON "r2"."scope" = "r3"."c1" WHERE NOT "r2"."retired" ), "r5" AS ( DELETE FROM "slice"."retry_admitted" AS "r6" USING "r1" AS "r7" WHERE "r6"."root" = "r7"."c1" RETURNING 1 AS "c1" ), "r8" AS ( DELETE FROM "slice"."retry_brittle_input" AS "r9" USING "r1" AS "r10" WHERE "r9"."root" = "r10"."c1" RETURNING 1 AS "c1" ), "r11" AS ( DELETE FROM "slice"."retry_brittle_output" AS "r12" USING "r1" AS "r13" WHERE "r12"."root" = "r13"."c1" RETURNING 1 AS "c1" ), "r14" AS ( DELETE FROM "slice"."retry_claim" AS "r15" USING "r1" AS "r16" WHERE "r15"."root" = "r16"."c1" RETURNING 1 AS "c1" ), "r17" AS ( DELETE FROM "slice"."retry_done" AS "r18" USING "r1" AS "r19" WHERE "r18"."root" = "r19"."c1" RETURNING 1 AS "c1" ), "r20" AS ( DELETE FROM "slice"."retry_ended" AS "r21" USING "r1" AS "r22" WHERE "r21"."root" = "r22"."c1" RETURNING 1 AS "c1" ), "r23" AS ( DELETE FROM "slice"."retry_exhausted" AS "r24" USING "r1" AS "r25" WHERE "r24"."root" = "r25"."c1" RETURNING 1 AS "c1" ), "r26" AS ( DELETE FROM "slice"."retry_failed" AS "r27" USING "r1" AS "r28" WHERE "r27"."root" = "r28"."c1" RETURNING 1 AS "c1" ), "r29" AS ( DELETE FROM "slice"."retry_fenced" AS "r30" USING "r1" AS "r31" WHERE "r30"."root" = "r31"."c1" RETURNING 1 AS "c1" ), "r32" AS ( DELETE FROM "slice"."retry_finish" AS "r33" USING "r1" AS "r34" WHERE "r33"."root" = "r34"."c1" RETURNING 1 AS "c1" ), "r35" AS ( DELETE FROM "slice"."retry_held" AS "r36" USING "r1" AS "r37" WHERE "r36"."root" = "r37"."c1" RETURNING 1 AS "c1" ), "r38" AS ( DELETE FROM "slice"."retry_ladders_finish_output" AS "r39" USING "r1" AS "r40" WHERE "r39"."root" = "r40"."c1" RETURNING 1 AS "c1" ), "r41" AS ( DELETE FROM "slice"."retry_ladders_input" AS "r42" USING "r1" AS "r43" WHERE "r42"."root" = "r43"."c1" RETURNING 1 AS "c1" ), "r44" AS ( DELETE FROM "slice"."retry_polite_input" AS "r45" USING "r1" AS "r46" WHERE "r45"."root" = "r46"."c1" RETURNING 1 AS "c1" ), "r47" AS ( DELETE FROM "slice"."retry_polite_output" AS "r48" USING "r1" AS "r49" WHERE "r48"."root" = "r49"."c1" RETURNING 1 AS "c1" ), "r50" AS ( DELETE FROM "slice"."retry_refusal" AS "r51" USING "r1" AS "r52" WHERE "r51"."root" = "r52"."c1" RETURNING 1 AS "c1" ), "r53" AS ( DELETE FROM "slice"."retry_result" AS "r54" USING "r1" AS "r55" WHERE "r54"."root" = "r55"."c1" RETURNING 1 AS "c1" ), "r56" AS ( DELETE FROM "slice"."retry_retry" AS "r57" USING "r1" AS "r58" WHERE "r57"."root" = "r58"."c1" RETURNING 1 AS "c1" ), "r59" AS ( DELETE FROM "slice"."retry_scope" AS "r60" USING "r1" AS "r61" WHERE "r60"."root" = "r61"."c1" RETURNING 1 AS "c1" ), "r62" AS ( DELETE FROM "slice"."retry_skipped" AS "r63" USING "r1" AS "r64" WHERE "r63"."root" = "r64"."c1" RETURNING 1 AS "c1" ), "r65" AS ( DELETE FROM "slice"."retry_start_step" AS "r66" USING "r1" AS "r67" WHERE "r66"."root" = "r67"."c1" RETURNING 1 AS "c1" ), "r68" AS ( DELETE FROM "slice"."retry_steadfast_input" AS "r69" USING "r1" AS "r70" WHERE "r69"."root" = "r70"."c1" RETURNING 1 AS "c1" ), "r71" AS ( DELETE FROM "slice"."retry_steadfast_output" AS "r72" USING "r1" AS "r73" WHERE "r72"."root" = "r73"."c1" RETURNING 1 AS "c1" ), "r74" AS ( DELETE FROM "slice"."retry_step" AS "r75" USING "r1" AS "r76" WHERE "r75"."root" = "r76"."c1" RETURNING 1 AS "c1" ), "r77" AS ( DELETE FROM "slice"."retry_throttled_finish_output" AS "r78" USING "r1" AS "r79" WHERE "r78"."root" = "r79"."c1" RETURNING 1 AS "c1" ), "r80" AS ( DELETE FROM "slice"."retry_throttled_input" AS "r81" USING "r1" AS "r82" WHERE "r81"."root" = "r82"."c1" RETURNING 1 AS "c1" ), "r83" AS ( UPDATE "slice"."retry_root" AS "r84" SET "retired" = true FROM "r1" AS "r85" WHERE "r84"."scope" = "r85"."c1" RETURNING 1 AS "c1" ) SELECT "r87"."c1" AS "c1" FROM (SELECT "pg_catalog"."array_agg"("r86"."c2" ORDER BY "r86"."c1") AS "c1", "r86"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r83" AS "r88" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r89" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r90" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r91" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r92" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r93" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r94" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r95" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r96" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r97" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r98" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r99" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r100" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r101" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r102" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r103" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r104" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r105" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r106" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r107" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r108" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r109" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r110" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r111" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r112" UNION ALL SELECT 25 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r113" UNION ALL SELECT 26 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r80" AS "r114") AS "r86"("c1", "c2", "c3") GROUP BY "r86"."c3") AS "r87"("c1", "c2") LIMIT 1::bigint ;
+  RETURN QUERY WITH "r1"("c1") AS MATERIALIZED ( SELECT "r2"."scope" AS "c1" FROM "slice"."retry_root" AS "r2" JOIN (SELECT DISTINCT "r4"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r4"("c1")) AS "r3"("c1") ON "r2"."scope" = "r3"."c1" WHERE NOT "r2"."retired" ), "r5" AS ( DELETE FROM "slice"."retry_admitted" AS "r6" USING "r1" AS "r7" WHERE "r6"."root" = "r7"."c1" RETURNING 1 AS "c1" ), "r8" AS ( DELETE FROM "slice"."retry_brittle_input" AS "r9" USING "r1" AS "r10" WHERE "r9"."root" = "r10"."c1" RETURNING 1 AS "c1" ), "r11" AS ( DELETE FROM "slice"."retry_brittle_output" AS "r12" USING "r1" AS "r13" WHERE "r12"."root" = "r13"."c1" RETURNING 1 AS "c1" ), "r14" AS ( DELETE FROM "slice"."retry_claim" AS "r15" USING "r1" AS "r16" WHERE "r15"."root" = "r16"."c1" RETURNING 1 AS "c1" ), "r17" AS ( DELETE FROM "slice"."retry_done" AS "r18" USING "r1" AS "r19" WHERE "r18"."root" = "r19"."c1" RETURNING 1 AS "c1" ), "r20" AS ( DELETE FROM "slice"."retry_ended" AS "r21" USING "r1" AS "r22" WHERE "r21"."root" = "r22"."c1" RETURNING 1 AS "c1" ), "r23" AS ( DELETE FROM "slice"."retry_exhausted" AS "r24" USING "r1" AS "r25" WHERE "r24"."root" = "r25"."c1" RETURNING 1 AS "c1" ), "r26" AS ( DELETE FROM "slice"."retry_failed" AS "r27" USING "r1" AS "r28" WHERE "r27"."root" = "r28"."c1" RETURNING 1 AS "c1" ), "r29" AS ( DELETE FROM "slice"."retry_fenced" AS "r30" USING "r1" AS "r31" WHERE "r30"."root" = "r31"."c1" RETURNING 1 AS "c1" ), "r32" AS ( DELETE FROM "slice"."retry_finish" AS "r33" USING "r1" AS "r34" WHERE "r33"."root" = "r34"."c1" RETURNING 1 AS "c1" ), "r35" AS ( DELETE FROM "slice"."retry_held" AS "r36" USING "r1" AS "r37" WHERE "r36"."root" = "r37"."c1" RETURNING 1 AS "c1" ), "r38" AS ( DELETE FROM "slice"."retry_ladders_finish_output" AS "r39" USING "r1" AS "r40" WHERE "r39"."root" = "r40"."c1" RETURNING 1 AS "c1" ), "r41" AS ( DELETE FROM "slice"."retry_ladders_input" AS "r42" USING "r1" AS "r43" WHERE "r42"."root" = "r43"."c1" RETURNING 1 AS "c1" ), "r44" AS ( DELETE FROM "slice"."retry_patient_input" AS "r45" USING "r1" AS "r46" WHERE "r45"."root" = "r46"."c1" RETURNING 1 AS "c1" ), "r47" AS ( DELETE FROM "slice"."retry_patient_output" AS "r48" USING "r1" AS "r49" WHERE "r48"."root" = "r49"."c1" RETURNING 1 AS "c1" ), "r50" AS ( DELETE FROM "slice"."retry_polite_input" AS "r51" USING "r1" AS "r52" WHERE "r51"."root" = "r52"."c1" RETURNING 1 AS "c1" ), "r53" AS ( DELETE FROM "slice"."retry_polite_output" AS "r54" USING "r1" AS "r55" WHERE "r54"."root" = "r55"."c1" RETURNING 1 AS "c1" ), "r56" AS ( DELETE FROM "slice"."retry_refusal" AS "r57" USING "r1" AS "r58" WHERE "r57"."root" = "r58"."c1" RETURNING 1 AS "c1" ), "r59" AS ( DELETE FROM "slice"."retry_result" AS "r60" USING "r1" AS "r61" WHERE "r60"."root" = "r61"."c1" RETURNING 1 AS "c1" ), "r62" AS ( DELETE FROM "slice"."retry_retry" AS "r63" USING "r1" AS "r64" WHERE "r63"."root" = "r64"."c1" RETURNING 1 AS "c1" ), "r65" AS ( DELETE FROM "slice"."retry_scope" AS "r66" USING "r1" AS "r67" WHERE "r66"."root" = "r67"."c1" RETURNING 1 AS "c1" ), "r68" AS ( DELETE FROM "slice"."retry_skipped" AS "r69" USING "r1" AS "r70" WHERE "r69"."root" = "r70"."c1" RETURNING 1 AS "c1" ), "r71" AS ( DELETE FROM "slice"."retry_start_step" AS "r72" USING "r1" AS "r73" WHERE "r72"."root" = "r73"."c1" RETURNING 1 AS "c1" ), "r74" AS ( DELETE FROM "slice"."retry_steadfast_input" AS "r75" USING "r1" AS "r76" WHERE "r75"."root" = "r76"."c1" RETURNING 1 AS "c1" ), "r77" AS ( DELETE FROM "slice"."retry_steadfast_output" AS "r78" USING "r1" AS "r79" WHERE "r78"."root" = "r79"."c1" RETURNING 1 AS "c1" ), "r80" AS ( DELETE FROM "slice"."retry_step" AS "r81" USING "r1" AS "r82" WHERE "r81"."root" = "r82"."c1" RETURNING 1 AS "c1" ), "r83" AS ( DELETE FROM "slice"."retry_throttled_finish_output" AS "r84" USING "r1" AS "r85" WHERE "r84"."root" = "r85"."c1" RETURNING 1 AS "c1" ), "r86" AS ( DELETE FROM "slice"."retry_throttled_input" AS "r87" USING "r1" AS "r88" WHERE "r87"."root" = "r88"."c1" RETURNING 1 AS "c1" ), "r89" AS ( DELETE FROM "slice"."retry_unhurried_finish_output" AS "r90" USING "r1" AS "r91" WHERE "r90"."root" = "r91"."c1" RETURNING 1 AS "c1" ), "r92" AS ( DELETE FROM "slice"."retry_unhurried_input" AS "r93" USING "r1" AS "r94" WHERE "r93"."root" = "r94"."c1" RETURNING 1 AS "c1" ), "r95" AS ( UPDATE "slice"."retry_root" AS "r96" SET "retired" = true FROM "r1" AS "r97" WHERE "r96"."scope" = "r97"."c1" RETURNING 1 AS "c1" ) SELECT "r99"."c1" AS "c1" FROM (SELECT "pg_catalog"."array_agg"("r98"."c2" ORDER BY "r98"."c1") AS "c1", "r98"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r95" AS "r100" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r101" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r102" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r103" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r104" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r105" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r106" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r107" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r108" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r109" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r110" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r111" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r112" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r113" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r114" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r115" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r116" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r117" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r118" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r119" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r120" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r121" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r122" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r123" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r124" UNION ALL SELECT 25 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r125" UNION ALL SELECT 26 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r80" AS "r126" UNION ALL SELECT 27 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r83" AS "r127" UNION ALL SELECT 28 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r86" AS "r128" UNION ALL SELECT 29 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r89" AS "r129" UNION ALL SELECT 30 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r92" AS "r130") AS "r98"("c1", "c2", "c3") GROUP BY "r98"."c3") AS "r99"("c1", "c2") LIMIT 1::bigint ;
 END
 $$;
 
@@ -2991,6 +3018,14 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."retry_patient_input"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."retry_patient_output"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."retry_polite_input"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -3044,6 +3079,14 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."retry_throttled_input"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."retry_unhurried_finish_output"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."retry_unhurried_input"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -3940,6 +3983,13 @@ ALTER TABLE "slice"."retry_ladders_finish_output"
 
 ALTER TABLE "slice"."retry_ladders_input" ADD CONSTRAINT "__retry_ladders_input_fk_root_cnlwmpha3w" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
+ALTER TABLE "slice"."retry_patient_input" ADD CONSTRAINT "__retry_patient_input_fk_root_x4fak4nifc" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."retry_patient_output"
+  ADD CONSTRAINT "__retry_patient_output_fk_root_36wgu5rnaa" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__retry_patient_output_fk_step_root_waswby3piq" FOREIGN KEY ("step", "root") REFERENCES "slice"."retry_done" ("step", "root") MATCH SIMPLE,
+  ADD CONSTRAINT "__retry_patient_output_fk_step_root_buctg5fpry" FOREIGN KEY ("step", "root") REFERENCES "slice"."retry_patient_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice"."retry_paused" ADD CONSTRAINT "__retry_paused_fk_target_pred_turn_i33p2skdd4" FOREIGN KEY ("target", "__pred_turn_qryngij6c4") REFERENCES "slice"."retry_resumed" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."retry_polite_input" ADD CONSTRAINT "__retry_polite_input_fk_root_5mkc2d4wg5" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
@@ -3991,6 +4041,12 @@ ALTER TABLE "slice"."retry_throttled_finish_output"
   ADD CONSTRAINT "__retry_throttled_finish_output_fk_step_root_7s3twuagha" FOREIGN KEY ("step", "root") REFERENCES "slice"."retry_done" ("step", "root") MATCH SIMPLE;
 
 ALTER TABLE "slice"."retry_throttled_input" ADD CONSTRAINT "__retry_throttled_input_fk_root_gx2jscz4sq" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."retry_unhurried_finish_output"
+  ADD CONSTRAINT "__retry_unhurried_finish_output_fk_root_jiiefymglf" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__retry_unhurried_finish_output_fk_step_root_65bjp55xj7" FOREIGN KEY ("step", "root") REFERENCES "slice"."retry_done" ("step", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."retry_unhurried_input" ADD CONSTRAINT "__retry_unhurried_input_fk_root_eff4ilou6c" FOREIGN KEY ("root") REFERENCES "slice"."retry_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."review_admitted"
   ADD CONSTRAINT "__review_admitted_fk_root_5a2j3m7nju" FOREIGN KEY ("root") REFERENCES "slice"."review_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,

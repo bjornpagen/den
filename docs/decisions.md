@@ -166,16 +166,27 @@
   waiting on a seat it gave back among them; a finish answers an output, a child scope ends as its finish does, and an
   edge may leave a child scope kind, so the next stage after a scope is an ordinary edge spawned in its parent; and a
   body whose source named when to call again fails with `Later`, a wait that spends nothing, due the source's own delay.
-- **A source's waits end (settled by AlphaTest's need, 2026-11-20).** A wait spends no attempt, so a source that keeps
-  refusing would hold its step waiting for good, with no failure, status or alert (upstream's DCAN gives up after five
-  waits, `persistent-agent.ts` `RATE_LIMIT_RETRY_DELAYS`, and its run's failure policy then reports the failure). So a
-  step kind and a finish state `waits`, how many times they may wait on their source, a count of 0 or more beside their
-  ladder, and the `Later` past them fails the step as a spent ladder does, recorded as exhausted, so its scope's finish
-  reads it failed. A retry records why its attempt ended without a result, `spent`, `transient` or `later` (a roster
-  where it was a flag of spent or not), so the waits counted are facts of the graph.
-  - Rejected: a deadline measured from the step's first due, which a delay the source names can overshoot in one wait
-    and which no source publishes; an unbounded form beside the count, which would keep the case it exists to end; a
-    sleep or a counter inside the body, which would give a body a memory of its earlier attempts.
+- **A step goes again until its call settles, or never; no count bounds it (settled by metis's Timeback writes and
+  Bjorn's ruling, 2026-11-21).** Bjorn: "hard delete ALL arbitrary retries", since "it should already be handled upstream
+  by den retries": den's steps (and the transport's redelivery) are the only retry an app has, so an app keeps no retry
+  loop, count, backoff or give-up cap of its own. A step kind and a finish state whether they go again after a turn that
+  ended without a result, one representation (`Again`) for both: `retry`, after a spent attempt, each due a rung of
+  den's backoff later, and `waits`, on their source, each a body that failed with `Later`, spending nothing and due at
+  the instant the source named. `untilSettled` goes again as often as the step ends so, and only its result (an answer,
+  or its typed error) ends it, so a write to an outside system is never dropped while the system answers "not now"
+  (metis retries a Timeback write until Timeback settles it, and only a refusal ends it), the step joined by its scope
+  throughout. `none` never goes again: the first such end fails the step, recorded as exhausted, so its scope's finish
+  reads it failed (a call that must not run twice). A retry records why its attempt ended without a result, `spent`,
+  `transient` or `later` (a roster where it was a flag of spent or not), so each time a step went again is a fact of
+  the graph.
+  - Rejected: a count of retries or waits (`attempts(n)`, `waits: n`), which every consumer filled with a number of its
+    own choosing (upstream's DCAN's five waits and its hole-filling adapter's `maxAttempts: 3` are upstream's choices,
+    not limits a source publishes), so it only invited indefensible numbers; a counted arm returns only beside a maximum
+    a source publishes, with its evidence. Also a sentinel count (Infinity, -1) or an optional one meaning no bound; two
+    shapes for the two (a ladder of attempts beside a count of waits), which spell one concept twice; a `Later` turned
+    into a spent attempt that retries forever, which trades the source's named delay for den's rungs; a deadline
+    measured from the step's first due, which a delay the source names can overshoot in one wait and which no source
+    publishes; and a sleep or a counter inside the body, which would give a body a memory of its earlier attempts.
 - **A schedule starts a root per member of its roster (settled by the plan's need, 2026-11-20).** `schedule(cron,
   members, (at, member) => input)` starts one root per member at each instant its cron names, keyed by the instant
   and the member, so a nightly copy of each of W1's relations or each of W3's collections is one schedule, not a root

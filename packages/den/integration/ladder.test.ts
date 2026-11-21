@@ -10,18 +10,18 @@ import { openAuditor, openLedgers, Planted, rows, sliceCase } from "#integration
 import { backoffLastMillis } from "#runtime/turn.ts"
 
 /**
- * Retry ladders, written out: `Steadfast` never stops retrying (W6's reports), `Brittle` ends after two spent attempts.
+ * Retries, written out: `Steadfast` is tried again until it succeeds (W6's reports), `Brittle` never, so its first
+ * spent attempt fails it.
  * Each dies, a defect, as many times as the case plants, then succeeds. A spent attempt records its retry due a rung
  * later and rings itself with that delay; the suite's clock is moved a whole longest rung at a time and the transport
  * drained, so every delayed wake lands.
  *
  * Oracle (specification): Steadfast ends done after its planted deaths plus one claims, however many; Brittle ends done
- * after its deaths plus one claims when it dies at most once, and otherwise failed, exhausted after its second spent
- * attempt with two claims; the root's finish runs once both have ended, and records what it heard of each by the key of
+ * on its one claim when it never dies, and otherwise failed, exhausted after its first spent attempt on that claim; the root's finish runs once both have ended, and records what it heard of each by the key of
  * the input its ending carries: the steadfast step's answered, the brittle step's answered exactly when it was done.
  */
 
-type Feature = "a long never-ending ladder" | "brittle done" | "brittle exhausted"
+type Feature = "a long run of retries" | "brittle done" | "brittle exhausted"
 
 interface Run {
 	readonly steadfast: number
@@ -36,7 +36,7 @@ const runs: Gen<Run> = (source) => ({
 })
 
 /**
- * Retries a never-ending ladder until it succeeds, and fails one past its attempts.
+ * Retries a step until it succeeds, and fails one never tried again at its first spent attempt.
  *
  * Budget: its suite's count before the conversion (retry ladders: 8 independent cases and 8 steered, Vitest at den
  * dc5bd11).
@@ -44,7 +44,7 @@ const runs: Gen<Run> = (source) => ({
 export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.explore(runs, {
 	needs: { slice: sliceCase },
 	situations: [
-		"a long never-ending ladder",
+		"a long run of retries",
 		"brittle done",
 		"brittle exhausted"
 	] satisfies ReadonlyArray<Reached<Feature>>,
@@ -55,9 +55,9 @@ export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.
 				Effect.provideContext(
 					Effect.gen(function* () {
 						if (run.steadfast > 2) {
-							c.note("a long never-ending ladder")
+							c.note("a long run of retries")
 						}
-						c.note(run.brittle < 2 ? "brittle done" : "brittle exhausted")
+						c.note(run.brittle === 0 ? "brittle done" : "brittle exhausted")
 						const { retry, ledgers } = yield* openLedgers
 						const app = yield* openAuditor
 						const { faults } = yield* Planted
@@ -89,18 +89,17 @@ export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.
 							["done"]
 						)
 						assert.equal(claimsOf("Steadfast"), run.steadfast + 1)
-						if (run.brittle < 2) {
+						assert.equal(claimsOf("Brittle"), 1)
+						if (run.brittle === 0) {
 							assert.deepEqual(
 								Arr.map(of("Brittle"), (r) => r.outcome),
 								["done"]
 							)
-							assert.equal(claimsOf("Brittle"), run.brittle + 1)
 						} else {
 							assert.deepEqual(
 								Arr.map(of("Brittle"), (r) => r.outcome),
 								["failed"]
 							)
-							assert.equal(claimsOf("Brittle"), 2)
 							assert.ok(
 								Arr.some(exhausted, (e) => Arr.some(of("Brittle"), (r) => r.step === e.step))
 							)
@@ -115,7 +114,7 @@ export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.
 								Arr.map(heard, (h) => `${h.key}:${String(h.answered)}`),
 								Order.String
 							),
-							[`brittle:${String(run.brittle < 2)}`, "steadfast:true"]
+							[`brittle:${String(run.brittle === 0)}`, "steadfast:true"]
 						)
 					}),
 					services
@@ -123,7 +122,7 @@ export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.
 			),
 	oracle: {
 		kind: "specification",
-		name: "the never-ending step done after its deaths; the two-attempt step done or exhausted at two"
+		name: "the step retried until it settles done after its deaths; the step never retried done or exhausted on its one claim"
 	},
 	budget: { runs: 8, steered: 8 },
 	kept: [],
@@ -139,6 +138,18 @@ export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.
 			original: "\t\t\t\t\t({ h }) => h.at <= Number(at)",
 			replacement: "\t\t\t\t\t({ h }) => h.at > Number(at)",
 			why: "Operator mutant (comparison) at packages/den/src/runtime/drive.ts:27 in deliver: `<=` becomes `>`; the property fails (lane CATCH, den 9cffaba)."
+		},
+		{
+			file: "packages/den/src/algebra/kinds.ts",
+			original: 'export const goesAgain = (again: Again): boolean => again.kind === "untilSettled"',
+			replacement: "export const goesAgain = (again: Again): boolean => false",
+			why: "A step tried again until it settles is never tried again: the steadfast step's first death fails it, so a call den was to retry until it settles is dropped."
+		},
+		{
+			file: "packages/den/src/algebra/kinds.ts",
+			original: 'export const goesAgain = (again: Again): boolean => again.kind === "untilSettled"',
+			replacement: "export const goesAgain = (again: Again): boolean => true",
+			why: "A step never tried again is tried again until it settles: the brittle step's death is retried, and it ends done where it should have failed."
 		}
 	]
 })
