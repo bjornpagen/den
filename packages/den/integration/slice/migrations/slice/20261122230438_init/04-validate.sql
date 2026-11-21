@@ -4813,6 +4813,17 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_assign_scope_wbrdyjflor"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__immutable_assign_served_7za7irllan"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."environment", OLD."at", OLD."deployment"), (NEW."environment", NEW."at", NEW."deployment")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(AssignServed) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_assign_served_7za7irllan"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__immutable_assign_skipped_s6cqm663up"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -5242,6 +5253,17 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_chain_scope_gfs52bg6zj"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__immutable_chain_served_dqa4yeivrn"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."environment", OLD."at", OLD."deployment"), (NEW."environment", NEW."at", NEW."deployment")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ChainServed) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_chain_served_dqa4yeivrn"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__immutable_chain_skipped_b2kct5uern"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -5527,6 +5549,17 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_clock_scope_kdthxacmiq"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__immutable_clock_served_rxiknybpmu"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."environment", OLD."at", OLD."deployment"), (NEW."environment", NEW."at", NEW."deployment")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ClockServed) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_clock_served_rxiknybpmu"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__immutable_clock_sitting_finish_output_omv4mzb4kb"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -5901,6 +5934,17 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_fan_scope_33cpecik4x"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__immutable_fan_served_xsm6rsme66"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."environment", OLD."at", OLD."deployment"), (NEW."environment", NEW."at", NEW."deployment")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(FanServed) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_fan_served_xsm6rsme66"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__immutable_fan_skipped_z4jbjt32cw"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -6308,6 +6352,17 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_retry_scope_tcb2yvske4"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__immutable_retry_served_hyzc4o4ezw"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."environment", OLD."at", OLD."deployment"), (NEW."environment", NEW."at", NEW."deployment")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(RetryServed) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_retry_served_hyzc4o4ezw"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__immutable_retry_skipped_nnwrhr4oeq"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -6738,6 +6793,17 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_review_scope_dd33gxfgmm"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__immutable_review_served_klodk5ysgl"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."environment", OLD."at", OLD."deployment"), (NEW."environment", NEW."at", NEW."deployment")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ReviewServed) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_review_served_klodk5ysgl"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__immutable_review_skipped_wufsmxgze2"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -7123,6 +7189,17 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_sync_scope_e7doa3r4xk"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__immutable_sync_served_a7364rtkid"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."environment", OLD."at", OLD."deployment"), (NEW."environment", NEW."at", NEW."deployment")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(SyncServed) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_sync_served_a7364rtkid"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__immutable_sync_skipped_7o6y2lhuvw"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -7398,6 +7475,17 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_writeback_scope_tbcrtfkxbs"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__immutable_writeback_served_eyz5dxxige"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."environment", OLD."at", OLD."deployment"), (NEW."environment", NEW."at", NEW."deployment")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(WritebackServed) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_writeback_served_eyz5dxxige"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__immutable_writeback_skipped_mfw3kwqglv"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -7618,6 +7706,10 @@ CREATE TRIGGER "__immutable"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_assign_scope_wbrdyjflor"();
 
 CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice"."assign_served"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_assign_served_7za7irllan"();
+
+CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice"."assign_skipped"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_assign_skipped_s6cqm663up"();
 
@@ -7774,6 +7866,10 @@ CREATE TRIGGER "__immutable"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_scope_gfs52bg6zj"();
 
 CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice"."chain_served"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_served_dqa4yeivrn"();
+
+CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice"."chain_skipped"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_skipped_b2kct5uern"();
 
@@ -7876,6 +7972,10 @@ CREATE TRIGGER "__immutable"
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice"."clock_scope"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_clock_scope_kdthxacmiq"();
+
+CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice"."clock_served"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_clock_served_rxiknybpmu"();
 
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice"."clock_sitting_finish_output"
@@ -8012,6 +8112,10 @@ CREATE TRIGGER "__immutable"
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice"."fan_scope"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_fan_scope_33cpecik4x"();
+
+CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice"."fan_served"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_fan_served_xsm6rsme66"();
 
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice"."fan_skipped"
@@ -8160,6 +8264,10 @@ CREATE TRIGGER "__immutable"
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice"."retry_scope"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_retry_scope_tcb2yvske4"();
+
+CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice"."retry_served"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_retry_served_hyzc4o4ezw"();
 
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice"."retry_skipped"
@@ -8318,6 +8426,10 @@ CREATE TRIGGER "__immutable"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_review_scope_dd33gxfgmm"();
 
 CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice"."review_served"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_review_served_klodk5ysgl"();
+
+CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice"."review_skipped"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_review_skipped_wufsmxgze2"();
 
@@ -8458,6 +8570,10 @@ CREATE TRIGGER "__immutable"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_sync_scope_e7doa3r4xk"();
 
 CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice"."sync_served"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_sync_served_a7364rtkid"();
+
+CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice"."sync_skipped"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_sync_skipped_7o6y2lhuvw"();
 
@@ -8556,6 +8672,10 @@ CREATE TRIGGER "__immutable"
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice"."writeback_scope"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_writeback_scope_tbcrtfkxbs"();
+
+CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice"."writeback_served"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_writeback_served_eyz5dxxige"();
 
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice"."writeback_skipped"

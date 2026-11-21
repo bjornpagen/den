@@ -859,6 +859,28 @@ export const chainLedger = (h: ChainHandles) => {
 	const ledger: Ledger<FlowNeeds<typeof chain>> = {
 		flow: FlowName.make("Chain"),
 		now: Effect.flatMap(settled(h.den.chainNow.once({ params: {}, facts: {} })), readingOf),
+		reading: (environment) =>
+			Effect.flatMap(
+				settled(
+					h.den.chainReading.once({ params: { "serving.environment": environment }, facts: {} })
+				),
+				(rows) =>
+					Effect.flatMap(only(rows), (row) =>
+						Effect.map(readingOf(row.now), (now) => ({
+							now,
+							serving: Option.map(Arr.head(row.serving), (served) => served.deployment)
+						}))
+					)
+			),
+		promote: (host) =>
+			Effect.asVoid(
+				settled(
+					h.coordinator.chainPromote.once({
+						params: { environment: host.environment, deployment: host.deployment },
+						facts: {}
+					})
+				)
+			),
 		authenticated: Effect.asVoid(
 			settled(h.commits.chainAuthenticated.once({ params: {}, facts: {} }))
 		),

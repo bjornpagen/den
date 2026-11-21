@@ -39,7 +39,7 @@ import {
 	seatTaken
 } from "#runtime/seats.ts"
 import type { Settled } from "#runtime/settled.ts"
-import { AttemptNumber, type FlowName, type Ring, Transport, type Wake } from "#transport.ts"
+import { AttemptNumber, type FlowName, Host, type Ring, Transport, type Wake } from "#transport.ts"
 
 /**
  * How long a PostgreSQL server lets a client take to authenticate before it closes the connection, by default: no
@@ -222,6 +222,8 @@ export type Ending =
 	| { readonly kind: "lost"; readonly wake: Wake }
 	| { readonly kind: "fenced"; readonly wake: Wake; readonly fault: Fault }
 	| { readonly kind: "censused"; readonly wake: Wake; readonly rung: number }
+	| { readonly kind: "unserved"; readonly wake: Wake }
+	| { readonly kind: "replaced"; readonly wake: Wake; readonly by: string }
 
 /**
  * The deployment's faults: `stale`, the database holds another snapshot than this deployment's, and
@@ -1023,6 +1025,8 @@ const settledOn = <R>(
 			case "lost":
 			case "fenced":
 			case "censused":
+			case "unserved":
+			case "replaced":
 				return Effect.succeed([])
 		}
 	})()
@@ -1157,6 +1161,16 @@ export const serve = <R>(
 }
 
 /**
+ * The deploy step's promotion of the deployment `Host` names to serve its environment, in every flow the app runs: from
+ * then on a turn on any other deployment of the environment ends `replaced`, writing nothing and ringing nothing, so a
+ * replaced deployment's chains, its census's among them, end at their next ring.
+ */
+export const promote = <R>(ledgers: Ledgers<R>): Effect.Effect<void, Settled, Host> =>
+	Effect.flatMap(Host, (host) =>
+		Effect.forEach(ledgers, (ledger) => ledger.promote(host), { discard: true })
+	)
+
+/**
  * One invocation of `budget`: serves the wake it was woken for, then continues with the first of each turn's onward
  * wakes due at once while a turn's deadline and margin still fit, and rings the rest through the transport as each turn
  * ends, so no step waits for a delivery its invocation could have run itself. Its end is its first reading of the
@@ -1166,22 +1180,35 @@ export const invoke = <R>(
 	ledgers: Ledgers<R>,
 	wake: Wake,
 	budget: Duration.Duration
-): Effect.Effect<ReadonlyArray<Ending>, never, R | Transport> =>
+): Effect.Effect<ReadonlyArray<Ending>, never, R | Transport | Host> =>
 	Effect.gen(function* () {
 		const transport = yield* Transport
+		const host = yield* Host
 		/**
-		 * A reading of the database's instant: by the ledger a wake names, or by the first flow's for a census; the ending
-		 * of a wake no ledger serves.
+		 * A turn's first reading, by the ledger a wake names, or by the first flow's for a census: the database's instant
+		 * where the environment serves this deployment; the ending of a wake no ledger serves, of one whose environment
+		 * serves no deployment yet, and of one whose environment serves another deployment, which ends this deployment's
+		 * chain there, writing nothing and ringing nothing.
 		 */
+		const judged = (ledger: Ledger<R>, serving: Wake): Effect.Effect<Instant, Ending> =>
+			Effect.flatMap(readOr(ledger.reading(host.environment), serving), (reading) =>
+				Option.match(reading.serving, {
+					onNone: () => Effect.fail<Ending>({ kind: "unserved", wake: serving }),
+					onSome: (deployment) =>
+						deployment === host.deployment
+							? Effect.succeed(reading.now)
+							: Effect.fail<Ending>({ kind: "replaced", wake: serving, by: deployment })
+				})
+			)
 		const readingOf = (serving: Wake): Effect.Effect<Instant, Ending> => {
 			switch (serving._tag) {
 				case "Census":
-					return readOr(Arr.headNonEmpty(ledgers).now, serving)
+					return judged(Arr.headNonEmpty(ledgers), serving)
 				case "Step":
 				case "Admit":
 					return Option.match(ledgerOf(ledgers, serving.flow), {
 						onNone: () => Effect.fail<Ending>({ kind: "lost", wake: serving }),
-						onSome: (ledger) => readOr(ledger.now, serving)
+						onSome: (ledger) => judged(ledger, serving)
 					})
 			}
 		}

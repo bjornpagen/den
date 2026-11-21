@@ -373,6 +373,28 @@ export const writebackLedger = (h: WritebackHandles) => {
 	const ledger: Ledger<FlowNeeds<typeof writeback>> = {
 		flow: FlowName.make("Writeback"),
 		now: Effect.flatMap(settled(h.den.writebackNow.once({ params: {}, facts: {} })), readingOf),
+		reading: (environment) =>
+			Effect.flatMap(
+				settled(
+					h.den.writebackReading.once({ params: { "serving.environment": environment }, facts: {} })
+				),
+				(rows) =>
+					Effect.flatMap(only(rows), (row) =>
+						Effect.map(readingOf(row.now), (now) => ({
+							now,
+							serving: Option.map(Arr.head(row.serving), (served) => served.deployment)
+						}))
+					)
+			),
+		promote: (host) =>
+			Effect.asVoid(
+				settled(
+					h.coordinator.writebackPromote.once({
+						params: { environment: host.environment, deployment: host.deployment },
+						facts: {}
+					})
+				)
+			),
 		authenticated: Effect.asVoid(
 			settled(h.commits.writebackAuthenticated.once({ params: {}, facts: {} }))
 		),

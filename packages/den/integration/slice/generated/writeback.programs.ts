@@ -43,6 +43,7 @@ import {
 	WritebackWritebackFinishOutput,
 	WritebackPaused,
 	WritebackResumed,
+	WritebackServed,
 	writebackGraph,
 	writebackCoordination
 } from "#integration/slice/generated/writeback.fragment.ts"
@@ -52,7 +53,7 @@ import { Loader } from "#integration/slice/roles.ts"
 export const WritebackDen = role(
 	App,
 	"writeback_den",
-	{ ...writebackGraph.relations, WritebackPaused, WritebackResumed },
+	{ ...writebackGraph.relations, WritebackPaused, WritebackResumed, WritebackServed },
 	{
 		insert: [
 			"WritebackScope",
@@ -90,9 +91,10 @@ export const WritebackCoordinator = role(
 		WritebackRetryWhy,
 		WritebackPausable,
 		WritebackPaused,
-		WritebackResumed
+		WritebackResumed,
+		WritebackServed
 	},
-	{ insert: ["WritebackPaused", "WritebackResumed"] }
+	{ insert: ["WritebackPaused", "WritebackResumed", "WritebackServed"] }
 )
 
 const writebackPendingRead = query(WritebackDen).rule((r) => {
@@ -120,10 +122,36 @@ const writebackRunningRead = query(WritebackDen).rule((r) => {
 		.find({ scope })
 })
 
+const writebackLatestServed = query(WritebackDen).rule((r) => {
+	const { environment, at } = v(WritebackServed, "served")
+	return r
+		.match(WritebackServed, { environment, at })
+		.where(r.eq(environment, r.param("environment", WritebackServed.fields.environment)))
+		.find({ environment, at: r.max(at) })
+})
+
 export const writebackDenPrograms = Object.freeze({
 	writebackNow: clocked(
 		query(writebackGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
+	),
+	writebackReading: clocked(
+		query(WritebackDen).reads({
+			now: query(writebackGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			serving: query(WritebackDen).rule((r) => {
+				const { environment, at, deployment } = v(WritebackServed, "served")
+				return r
+					.match(
+						writebackLatestServed.bind({
+							environment: r.param("environment", WritebackServed.fields.environment)
+						}),
+						{ environment, at }
+					)
+					.match(WritebackServed, { environment, at, deployment })
+					.find({ deployment })
+			})
+		}),
+		{ "now.now": "millis" }
 	),
 	writebackClaim: clocked(
 		ChangeSet.empty(writebackGraph)
@@ -385,6 +413,19 @@ export const writebackDenPrograms = Object.freeze({
 export const writebackDenWorkload = workload(WritebackDen, writebackDenPrograms)
 
 export const writebackCoordinatorPrograms = Object.freeze({
+	writebackPromote: clocked(
+		ChangeSet.empty(writebackCoordination).insert(
+			WritebackServed,
+			query(writebackCoordination).rule((r) =>
+				r.find({
+					environment: r.param("environment", WritebackServed.fields.environment),
+					at: r.param("now", WritebackServed.fields.at),
+					deployment: r.param("deployment", WritebackServed.fields.deployment)
+				})
+			)
+		),
+		{ now: "millis" }
+	),
 	writebackPause: ChangeSet.empty(writebackCoordination).insert(WritebackPaused, []),
 	writebackResume: ChangeSet.empty(writebackCoordination).insert(WritebackResumed, []),
 	writebackPauseTurns: deferrable(

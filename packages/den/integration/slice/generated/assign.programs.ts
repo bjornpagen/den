@@ -68,6 +68,7 @@ import {
 	AssignDecideSeenRead,
 	AssignPaused,
 	AssignResumed,
+	AssignServed,
 	assignGraph,
 	assignCoordination
 } from "#integration/slice/generated/assign.fragment.ts"
@@ -77,7 +78,7 @@ import { Loader } from "#integration/slice/roles.ts"
 export const AssignDen = role(
 	App,
 	"assign_den",
-	{ ...assignGraph.relations, AssignPaused, AssignResumed },
+	{ ...assignGraph.relations, AssignPaused, AssignResumed, AssignServed },
 	{
 		insert: [
 			"AssignScope",
@@ -135,9 +136,10 @@ export const AssignCoordinator = role(
 		AssignAssignmentInputMode,
 		AssignDecideOutputStage,
 		AssignPaused,
-		AssignResumed
+		AssignResumed,
+		AssignServed
 	},
-	{ insert: ["AssignPaused", "AssignResumed"] }
+	{ insert: ["AssignPaused", "AssignResumed", "AssignServed"] }
 )
 
 const assignPendingRead = query(AssignDen).rule((r) => {
@@ -162,10 +164,36 @@ const assignRunningRead = query(AssignDen).rule((r) => {
 	return r.match(AssignFinish, { scope, step }).where(r.not(AssignResult, { step })).find({ scope })
 })
 
+const assignLatestServed = query(AssignDen).rule((r) => {
+	const { environment, at } = v(AssignServed, "served")
+	return r
+		.match(AssignServed, { environment, at })
+		.where(r.eq(environment, r.param("environment", AssignServed.fields.environment)))
+		.find({ environment, at: r.max(at) })
+})
+
 export const assignDenPrograms = Object.freeze({
 	assignNow: clocked(
 		query(assignGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
+	),
+	assignReading: clocked(
+		query(AssignDen).reads({
+			now: query(assignGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			serving: query(AssignDen).rule((r) => {
+				const { environment, at, deployment } = v(AssignServed, "served")
+				return r
+					.match(
+						assignLatestServed.bind({
+							environment: r.param("environment", AssignServed.fields.environment)
+						}),
+						{ environment, at }
+					)
+					.match(AssignServed, { environment, at, deployment })
+					.find({ deployment })
+			})
+		}),
+		{ "now.now": "millis" }
 	),
 	assignClaim: clocked(
 		ChangeSet.empty(assignGraph)
@@ -602,6 +630,19 @@ export const assignDenPrograms = Object.freeze({
 export const assignDenWorkload = workload(AssignDen, assignDenPrograms)
 
 export const assignCoordinatorPrograms = Object.freeze({
+	assignPromote: clocked(
+		ChangeSet.empty(assignCoordination).insert(
+			AssignServed,
+			query(assignCoordination).rule((r) =>
+				r.find({
+					environment: r.param("environment", AssignServed.fields.environment),
+					at: r.param("now", AssignServed.fields.at),
+					deployment: r.param("deployment", AssignServed.fields.deployment)
+				})
+			)
+		),
+		{ now: "millis" }
+	),
 	assignPause: ChangeSet.empty(assignCoordination).insert(AssignPaused, []),
 	assignResume: ChangeSet.empty(assignCoordination).insert(AssignResumed, []),
 	assignPauseTurns: deferrable(

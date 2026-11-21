@@ -264,3 +264,15 @@
   statement adds, and rings it timed to its instant from a reading after the call, the census as the net.
   - Rejected: a polling chain that rechecks a deadline, which spends a turn per period and runs late by one; a delay
     computed on the host from its own clock to the deadline, which names an instant the database never read.
+- **A turn runs only on the deployment its environment serves (settled by metis's need, 2026-11-21).** Vercel Queues
+  partitions a topic by deployment, so a wake rung from a deployment lands on it again, and the census re-rings itself
+  from wherever it ran: every deployment that ever rang kept its own census chain, and before a migration fenced it
+  `stale`, a replaced deployment's old code ran beside the new one's. So an environment's serving deployment is a fact
+  of each flow's coordination group, `<P>Served(environment, at, deployment)`, written by the deploy step's `promote`
+  at the database's clock, the environment serving its latest; a host names where it runs once at its boundary (`Host`,
+  Vercel's `VERCEL_ENV` and `VERCEL_DEPLOYMENT_ID`), and a turn's first reading, one clocked read, reads the deployment
+  its environment serves beside the database's instant. A wake on a deployment its environment no longer serves ends
+  `replaced`, and one in an environment no promotion named yet `unserved`: either writes nothing and rings nothing, so
+  the replaced deployment's chains, its census's among them, end at their next ring, and the serving deployment's
+  census heals what they left.
+  - Rejected: a Vercel API call on a turn's path; the environment's variables alone, which name no replacement.

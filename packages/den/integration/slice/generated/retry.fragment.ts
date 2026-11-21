@@ -1,4 +1,4 @@
-import { DenInstant, Text } from "@bjornpagen/den/lower/keys"
+import { DenEnvironment, DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Retry to; `den generate` writes it, and nothing edits it. */
 import {
 	closed,
@@ -185,6 +185,11 @@ export const RetryResumed = relation(
 	"RetryResumed",
 	{ target: closedId(RetryPausable), turn: natural },
 	["target", "turn"]
+)
+export const RetryServed = relation(
+	"RetryServed",
+	{ environment: DenEnvironment, at: DenInstant, deployment: Text },
+	["environment", "at"]
 )
 
 /** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
@@ -376,7 +381,16 @@ export const retryGraph = fragment(
 
 /** The flow's coordination group: its rosters, its seat counts, and its chains of exclusivity seats and pauses, which den's coordinator role holds whole. */
 export const retryCoordination = fragment(
-	[RetryKind, RetryRootKind, RetryOutcome, RetryRetryWhy, RetryPausable, RetryPaused, RetryResumed],
+	[
+		RetryKind,
+		RetryRootKind,
+		RetryOutcome,
+		RetryRetryWhy,
+		RetryPausable,
+		RetryPaused,
+		RetryResumed,
+		RetryServed
+	],
 	[
 		contained(on(RetryResumed, "target", "turn"), on(RetryPaused, "target", "turn")),
 		contained(on(RetryPaused, "target", pred("turn")), on(RetryResumed, "target", "turn"))

@@ -113,6 +113,8 @@ const ledger: Ledger<never> = {
 	flow: flowName,
 	now: Effect.die("eligibility judges the instant it is given"),
 	authenticated: Effect.die("the census asks after the deployment, never eligibility"),
+	reading: () => Effect.die("a turn's first reading is invoke's, never eligibility's"),
+	promote: () => Effect.die("a deploy step promotes, never eligibility"),
 	stepOf: unread,
 	resultOf: unread,
 	heldOf: unread,

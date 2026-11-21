@@ -1287,6 +1287,21 @@ export const lower = (flow: AnyFlow): Lowered => {
 			[]
 		)
 	)
+	/**
+	 * Each deployment an environment served, from the instant its deploy step promoted it, on the database's clock: the
+	 * environment serves its latest, so a promotion replaces the deployment before it with no update, and a turn on a
+	 * deployment its environment no longer serves ends itself (runtime/turn.ts invoke).
+	 */
+	const Served = relation({
+		name: name("Served"),
+		fields: [
+			{ name: "environment", type: { kind: "key", contract: "DenEnvironment" } },
+			{ name: "at", type: { kind: "key", contract: "DenInstant" } },
+			{ name: "deployment", type: { kind: "base", base: "text" } }
+		],
+		key: ["environment", "at"]
+	})
+	coordination.push(Served)
 
 	const spawning = [
 		Step,

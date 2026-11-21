@@ -1,5 +1,5 @@
-import { authenticationTimeoutSeconds, type Ledgers } from "@bjornpagen/den/runtime/turn"
-import { inProcess } from "@bjornpagen/den/transport"
+import { authenticationTimeoutSeconds, type Ledgers, promote } from "@bjornpagen/den/runtime/turn"
+import { DeploymentId, EnvironmentName, Host, inProcess } from "@bjornpagen/den/transport"
 import { compileServedMoved } from "@bjornpagen/grizzle/compile"
 import { Db, DbLayer, LiveSource, roleNameOf, served } from "@bjornpagen/grizzle/runtime"
 import { waitingOn } from "@bjornpagen/testing/live"
@@ -40,7 +40,7 @@ import { reviewLedger } from "#integration/slice/generated/review.binding.ts"
 import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
 import { writebackLedger } from "#integration/slice/generated/writeback.binding.ts"
 import { AppLogin, Worker } from "#integration/slice/logins.ts"
-import initMigration from "#integration/slice/migrations/slice/20261122201427_init/meta.json" with { type: "json" }
+import initMigration from "#integration/slice/migrations/slice/20261122230438_init/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -111,7 +111,7 @@ const grizzleBin = `${import.meta.dirname}/../../node_modules/.bin/grizzle`
  * record lacks, or lacks one it holds (committedFolders).
  */
 const committed = Object.freeze({
-	"20261122201427_init": initMigration
+	"20261122230438_init": initMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
@@ -543,7 +543,9 @@ const offsetLayer = (clock: CaseClock) =>
 const caseLayer = (installed: Installed, clock: CaseClock) =>
 	loginsLayer(installed).pipe(
 		Layer.provideMerge(Layer.succeed(Installation, installed)),
-		Layer.provideMerge(Layer.mergeAll(inProcess, faultsLayer, offsetLayer(clock))),
+		Layer.provideMerge(
+			Layer.mergeAll(inProcess, faultsLayer, offsetLayer(clock), Layer.succeed(Host, sliceHost))
+		),
 		Layer.provideMerge(NodeServices.layer)
 	)
 
@@ -721,6 +723,16 @@ export const rows = <A, E>(
 ): Effect.Effect<ReadonlyArray<A>, E> => Effect.map(read, Arr.fromIterable)
 
 /**
+/**
+ * Where a slice case runs: the case's environment and its one deployment, which its ledgers promote when they open, so
+ * every turn of the case is served; the serving suite opens a deployment of its own beside it.
+ */
+export const sliceHost = Object.freeze({
+	environment: EnvironmentName.make("case"),
+	deployment: DeploymentId.make("slice")
+})
+
+/**
  * The slice's flows' ledgers over Dbs opened on the worker's den, coordinator and retiring roles and the app's loader,
  * each over the case's moved clock, so every reading of the database's instant, a clocked read's and a commit's alike,
  * is moved on by the time the case's clock travels; and `misconfigured`, the
@@ -804,6 +816,7 @@ export const openLedgers = Effect.gen(function* () {
 		reviewLedger({ ...roles.review, commits: refusing }).ledger,
 		writebackLedger({ ...roles.writeback, commits: refusing }).ledger
 	]
+	yield* promote(Arr.append(all, clock.ledger))
 	return {
 		chain,
 		fan,

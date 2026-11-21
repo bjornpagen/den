@@ -331,6 +331,13 @@ CREATE TABLE "slice"."assign_scope" (
   CONSTRAINT "__assign_scope_pk_xytntbncid" PRIMARY KEY ("scope", "root")
 );
 
+CREATE TABLE "slice"."assign_served" (
+  "environment" "slice"."__domain_e5fpjchj5r" NOT NULL,
+  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "deployment" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  CONSTRAINT "__assign_served_pk_gahaxyiegw" PRIMARY KEY ("environment", "at")
+);
+
 CREATE TABLE "slice"."assign_skipped" (
   "scope" "slice"."__sha256" NOT NULL,
   "by" "slice"."__sha256" NOT NULL,
@@ -627,6 +634,13 @@ CREATE TABLE "slice"."chain_scope" (
   CONSTRAINT "__chain_scope_pk_fxzt444lf6" PRIMARY KEY ("scope", "root")
 );
 
+CREATE TABLE "slice"."chain_served" (
+  "environment" "slice"."__domain_e5fpjchj5r" NOT NULL,
+  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "deployment" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  CONSTRAINT "__chain_served_pk_wzbdafznld" PRIMARY KEY ("environment", "at")
+);
+
 CREATE TABLE "slice"."chain_skipped" (
   "scope" "slice"."__sha256" NOT NULL,
   "by" "slice"."__sha256" NOT NULL,
@@ -818,6 +832,13 @@ CREATE TABLE "slice"."clock_scope" (
   "scope" "slice"."__sha256" NOT NULL,
   "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_scope_pk_dux445xz6c" PRIMARY KEY ("scope", "root")
+);
+
+CREATE TABLE "slice"."clock_served" (
+  "environment" "slice"."__domain_e5fpjchj5r" NOT NULL,
+  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "deployment" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  CONSTRAINT "__clock_served_pk_t5lm3cvd5b" PRIMARY KEY ("environment", "at")
 );
 
 CREATE TABLE "slice"."clock_sitting_finish_output" (
@@ -1070,6 +1091,13 @@ CREATE TABLE "slice"."fan_scope" (
   "scope" "slice"."__sha256" NOT NULL,
   "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_scope_pk_7bvjfihnef" PRIMARY KEY ("scope", "root")
+);
+
+CREATE TABLE "slice"."fan_served" (
+  "environment" "slice"."__domain_e5fpjchj5r" NOT NULL,
+  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "deployment" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  CONSTRAINT "__fan_served_pk_hcfoxxhdsr" PRIMARY KEY ("environment", "at")
 );
 
 CREATE TABLE "slice"."fan_skipped" (
@@ -1339,6 +1367,13 @@ CREATE TABLE "slice"."retry_scope" (
   "scope" "slice"."__sha256" NOT NULL,
   "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_scope_pk_fgji2phvxy" PRIMARY KEY ("scope", "root")
+);
+
+CREATE TABLE "slice"."retry_served" (
+  "environment" "slice"."__domain_e5fpjchj5r" NOT NULL,
+  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "deployment" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  CONSTRAINT "__retry_served_pk_wgxtug7z34" PRIMARY KEY ("environment", "at")
 );
 
 CREATE TABLE "slice"."retry_skipped" (
@@ -1645,6 +1680,13 @@ CREATE TABLE "slice"."review_scope" (
   CONSTRAINT "__review_scope_pk_grsivyyp7b" PRIMARY KEY ("scope", "root")
 );
 
+CREATE TABLE "slice"."review_served" (
+  "environment" "slice"."__domain_e5fpjchj5r" NOT NULL,
+  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "deployment" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  CONSTRAINT "__review_served_pk_bkbrtbk3k7" PRIMARY KEY ("environment", "at")
+);
+
 CREATE TABLE "slice"."review_skipped" (
   "scope" "slice"."__sha256" NOT NULL,
   "by" "slice"."__sha256" NOT NULL,
@@ -1904,6 +1946,13 @@ CREATE TABLE "slice"."sync_scope" (
   CONSTRAINT "__sync_scope_pk_bg72sm6p4z" PRIMARY KEY ("scope", "root")
 );
 
+CREATE TABLE "slice"."sync_served" (
+  "environment" "slice"."__domain_e5fpjchj5r" NOT NULL,
+  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "deployment" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  CONSTRAINT "__sync_served_pk_ed5gkrpyzv" PRIMARY KEY ("environment", "at")
+);
+
 CREATE TABLE "slice"."sync_skipped" (
   "scope" "slice"."__sha256" NOT NULL,
   "by" "slice"."__sha256" NOT NULL,
@@ -2084,6 +2133,13 @@ CREATE TABLE "slice"."writeback_scope" (
   "scope" "slice"."__sha256" NOT NULL,
   "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_scope_pk_aywjorzcsy" PRIMARY KEY ("scope", "root")
+);
+
+CREATE TABLE "slice"."writeback_served" (
+  "environment" "slice"."__domain_e5fpjchj5r" NOT NULL,
+  "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "deployment" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  CONSTRAINT "__writeback_served_pk_pw2fwekjjm" PRIMARY KEY ("environment", "at")
 );
 
 CREATE TABLE "slice"."writeback_skipped" (

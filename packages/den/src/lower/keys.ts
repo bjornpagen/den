@@ -1,7 +1,7 @@
 import { contract, Logic, pg, str } from "@bjornpagen/grizzle"
 
 /**
- * den's own contracts, every flow's alike: an instant and a delay. A step's key, a scope's key, an exclusivity seat's
+ * den's own contracts, every flow's alike: an instant, a delay and an environment's name. A step's key, a scope's key, an exclusivity seat's
  * key (the digest of its kind and the key text its scope's input names, so any text keys a seat) and a recorded row's
  * key (the digest of what a read found of it) are each a SHA-256 digest of what identifies it (runtime/identity.ts),
  * grizzle's `sha256` field itself, its 32 bytes: a digest's one predicate is its length, which grizzle's digest domain
@@ -9,6 +9,25 @@ import { contract, Logic, pg, str } from "@bjornpagen/grizzle"
  * types its column `sha256`, as den's own relations do.
  */
 export const DenInstant = contract("DenInstant", pg.bigint)
+
+/**
+ * An environment's name, as a host names the environment it serves (Vercel's `VERCEL_ENV`: production, preview,
+ * development or a custom environment's name): letters, digits, `_`, `.` and `-`, at most 64 of them.
+ *
+ * @limitKind provisional
+ * @owner den's contracts (packages/den/src/lower/keys.ts)
+ * @unit characters
+ * @scope an environment's name, the key of the deployments it served (`<P>Served`)
+ * @guards grizzle keys a text only under a pattern that bounds its bytes, so an unbounded name cannot key a promotion
+ * @measure read the longest environment name Vercel admits (its custom environments' documented limit) and make it the
+ *   bound
+ * @origin written with no evidence by lane DENFEAT4 for the deployment fence (2026-11-21)
+ * @recorded 2026-11-21
+ */
+export const environmentPattern = "^[A-Za-z0-9_.-]{1,64}$"
+
+/** An environment's name, the key of the deployments it served. */
+export const DenEnvironment = contract("DenEnvironment", str.regex(environmentPattern, "u"))
 
 /**
  * The most milliseconds a den delay holds: a due instant, a retry's or a lease's end is the database's clock reading plus

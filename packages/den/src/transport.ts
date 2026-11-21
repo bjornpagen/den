@@ -1,4 +1,5 @@
 import { Sha256 } from "@bjornpagen/grizzle"
+import { regex } from "arkregex"
 import {
 	Array as Arr,
 	Clock,
@@ -11,6 +12,7 @@ import {
 	Result,
 	Schema
 } from "effect"
+import { environmentPattern } from "#lower/keys.ts"
 
 /**
  * The wake contract every transport meets. A wake is a doorbell: the ledger is the only authority, so a lost,
@@ -41,6 +43,30 @@ export type CensusInstant = typeof CensusInstant.Type
  * delivers, every environment alike, and its timer is the transport's delay.
  */
 export const CensusWake = Schema.TaggedStruct("Census", { at: CensusInstant })
+
+/** A deployment's id, as its host names it (Vercel's `VERCEL_DEPLOYMENT_ID`): the code a consumer runs. */
+export const DeploymentId = Schema.NonEmptyString.pipe(Schema.brand("den/DeploymentId"))
+export type DeploymentId = typeof DeploymentId.Type
+
+/**
+ * An environment's name, as its host names it (Vercel's `VERCEL_ENV`): each serves one deployment at a time, and its
+ * name is the ledger's DenEnvironment, parsed here once.
+ */
+export const EnvironmentName = Schema.String.check(
+	Schema.isPattern(regex(environmentPattern, "u"))
+).pipe(Schema.brand("DenEnvironment"))
+export type EnvironmentName = typeof EnvironmentName.Type
+
+/**
+ * Where an invocation runs: the environment it serves and the deployment whose code it runs, read once at a host's
+ * boundary. A transport partitions its wakes by deployment (Vercel Queues', each topic by deployment), so a wake rung
+ * from a deployment lands on that deployment again, and a turn serves a wake only where its environment still serves
+ * its deployment (runtime/turn.ts invoke).
+ */
+export class Host extends Context.Service<
+	Host,
+	{ readonly environment: EnvironmentName; readonly deployment: DeploymentId }
+>()("@bjornpagen/den/transport/Host") {}
 
 /**
  * A wake as the wire carries it: a step's attempt, a scope's admission, or a period's census, each key its digest's hex

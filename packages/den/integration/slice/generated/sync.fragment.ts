@@ -1,4 +1,4 @@
-import { DenInstant, Text } from "@bjornpagen/den/lower/keys"
+import { DenEnvironment, DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Sync to; `den generate` writes it, and nothing edits it. */
 import {
 	closed,
@@ -161,6 +161,11 @@ export const SyncResumed = relation(
 	{ target: closedId(SyncPausable), turn: natural },
 	["target", "turn"]
 )
+export const SyncServed = relation(
+	"SyncServed",
+	{ environment: DenEnvironment, at: DenInstant, deployment: Text },
+	["environment", "at"]
+)
 
 /** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
 export const syncGraph = fragment(
@@ -320,7 +325,8 @@ export const syncCoordination = fragment(
 		SyncExclusive,
 		SyncReleased,
 		SyncPaused,
-		SyncResumed
+		SyncResumed,
+		SyncServed
 	],
 	[
 		contained(on(SyncReleased, "kind", "key", "turn"), on(SyncExclusive, "kind", "key", "turn")),

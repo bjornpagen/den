@@ -811,6 +811,28 @@ export const fanLedger = (h: FanHandles) => {
 	const ledger: Ledger<FlowNeeds<typeof fan>> = {
 		flow: FlowName.make("Fan"),
 		now: Effect.flatMap(settled(h.den.fanNow.once({ params: {}, facts: {} })), readingOf),
+		reading: (environment) =>
+			Effect.flatMap(
+				settled(
+					h.den.fanReading.once({ params: { "serving.environment": environment }, facts: {} })
+				),
+				(rows) =>
+					Effect.flatMap(only(rows), (row) =>
+						Effect.map(readingOf(row.now), (now) => ({
+							now,
+							serving: Option.map(Arr.head(row.serving), (served) => served.deployment)
+						}))
+					)
+			),
+		promote: (host) =>
+			Effect.asVoid(
+				settled(
+					h.coordinator.fanPromote.once({
+						params: { environment: host.environment, deployment: host.deployment },
+						facts: {}
+					})
+				)
+			),
 		authenticated: Effect.asVoid(
 			settled(h.commits.fanAuthenticated.once({ params: {}, facts: {} }))
 		),

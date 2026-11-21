@@ -3,7 +3,7 @@ import { drain } from "@bjornpagen/den/runtime/drive"
 import { admissionOf, type Requested } from "@bjornpagen/den/runtime/request"
 import type { Ledgers, Served } from "@bjornpagen/den/runtime/turn"
 import { Transport } from "@bjornpagen/den/transport"
-import type { InProcess } from "@bjornpagen/den/transport"
+import type { Host, InProcess } from "@bjornpagen/den/transport"
 import { Array as Arr, Effect } from "effect"
 
 /**
@@ -15,7 +15,7 @@ export const ringAndDrain = <R>(ledgers: Ledgers<R>, requested: ReadonlyArray<Re
 	Effect.andThen(
 		Effect.flatMap(Transport, (transport) => transport.send(Arr.map(requested, admissionOf))),
 		drain(ledgers)
-	) satisfies Effect.Effect<unknown, never, R | Transport | InProcess>
+	) satisfies Effect.Effect<unknown, never, R | Transport | InProcess | Host>
 
 /** Rings what a turn served by hand would have rung on, as its own continuation would, then drains. */
 export const ringOnAndDrain = <R>(ledgers: Ledgers<R>, served: Served) =>
@@ -29,4 +29,4 @@ export const ringOnAndDrain = <R>(ledgers: Ledgers<R>, served: Served) =>
 			}))
 		)
 		return yield* drain(ledgers)
-	}) satisfies Effect.Effect<unknown, never, R | Transport | InProcess>
+	}) satisfies Effect.Effect<unknown, never, R | Transport | InProcess | Host>

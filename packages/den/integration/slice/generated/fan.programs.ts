@@ -55,6 +55,7 @@ import {
 	FanSweepFinishOutput,
 	FanPaused,
 	FanResumed,
+	FanServed,
 	fanGraph,
 	fanCoordination
 } from "#integration/slice/generated/fan.fragment.ts"
@@ -68,6 +69,7 @@ export const FanDen = role(
 		...fanGraph.relations,
 		FanPaused,
 		FanResumed,
+		FanServed,
 		FanLive: query(App).rule((r) => {
 			const { resource, seat, step, root, attempt, until } = v(App.relations.FanLive, "live")
 			return r
@@ -124,6 +126,7 @@ export const FanCoordinator = role(
 		FanResource,
 		FanPaused,
 		FanResumed,
+		FanServed,
 		FanLive: query(App).rule((r) => {
 			const { resource, seat, step, root, attempt, until } = v(App.relations.FanLive, "live")
 			return r
@@ -131,7 +134,7 @@ export const FanCoordinator = role(
 				.find({ resource, seat, step, root, attempt, until })
 		})
 	},
-	{ insert: ["FanPaused", "FanResumed"] }
+	{ insert: ["FanPaused", "FanResumed", "FanServed"] }
 )
 
 const fanPendingRead = query(FanDen).rule((r) => {
@@ -156,10 +159,36 @@ const fanRunningRead = query(FanDen).rule((r) => {
 	return r.match(FanFinish, { scope, step }).where(r.not(FanResult, { step })).find({ scope })
 })
 
+const fanLatestServed = query(FanDen).rule((r) => {
+	const { environment, at } = v(FanServed, "served")
+	return r
+		.match(FanServed, { environment, at })
+		.where(r.eq(environment, r.param("environment", FanServed.fields.environment)))
+		.find({ environment, at: r.max(at) })
+})
+
 export const fanDenPrograms = Object.freeze({
 	fanNow: clocked(
 		query(fanGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
+	),
+	fanReading: clocked(
+		query(FanDen).reads({
+			now: query(fanGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			serving: query(FanDen).rule((r) => {
+				const { environment, at, deployment } = v(FanServed, "served")
+				return r
+					.match(
+						fanLatestServed.bind({
+							environment: r.param("environment", FanServed.fields.environment)
+						}),
+						{ environment, at }
+					)
+					.match(FanServed, { environment, at, deployment })
+					.find({ deployment })
+			})
+		}),
+		{ "now.now": "millis" }
 	),
 	fanClaim: clocked(
 		ChangeSet.empty(fanGraph)
@@ -560,6 +589,19 @@ export const fanDenPrograms = Object.freeze({
 export const fanDenWorkload = workload(FanDen, fanDenPrograms)
 
 export const fanCoordinatorPrograms = Object.freeze({
+	fanPromote: clocked(
+		ChangeSet.empty(fanCoordination).insert(
+			FanServed,
+			query(fanCoordination).rule((r) =>
+				r.find({
+					environment: r.param("environment", FanServed.fields.environment),
+					at: r.param("now", FanServed.fields.at),
+					deployment: r.param("deployment", FanServed.fields.deployment)
+				})
+			)
+		),
+		{ now: "millis" }
+	),
 	fanPause: ChangeSet.empty(fanCoordination).insert(FanPaused, []),
 	fanResume: ChangeSet.empty(fanCoordination).insert(FanResumed, []),
 	fanPauseTurns: deferrable(

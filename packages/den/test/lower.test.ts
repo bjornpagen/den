@@ -660,7 +660,10 @@ it.effect(
 								: []),
 							{ held: "Paused", ended: "Resumed", at: ["target"] }
 						]
-						const coordination = Arr.flatMap(chains, (ch) => [`${P}${ch.held}`, `${P}${ch.ended}`])
+						const coordination = [
+							...Arr.flatMap(chains, (ch) => [`${P}${ch.held}`, `${P}${ch.ended}`]),
+							`${P}Served`
+						]
 						assert.deepStrictEqual(lowered.coordination, coordination)
 						assert.isTrue(
 							Arr.every(

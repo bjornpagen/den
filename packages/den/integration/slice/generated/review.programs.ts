@@ -57,6 +57,7 @@ import {
 	ReviewSaved,
 	ReviewPaused,
 	ReviewResumed,
+	ReviewServed,
 	reviewGraph,
 	reviewCoordination
 } from "#integration/slice/generated/review.fragment.ts"
@@ -70,6 +71,7 @@ export const ReviewDen = role(
 		...reviewGraph.relations,
 		ReviewPaused,
 		ReviewResumed,
+		ReviewServed,
 		ReviewLive: query(App).rule((r) => {
 			const { resource, seat, step, root, attempt, until } = v(App.relations.ReviewLive, "live")
 			return r
@@ -127,6 +129,7 @@ export const ReviewCoordinator = role(
 		ReviewResource,
 		ReviewPaused,
 		ReviewResumed,
+		ReviewServed,
 		ReviewLive: query(App).rule((r) => {
 			const { resource, seat, step, root, attempt, until } = v(App.relations.ReviewLive, "live")
 			return r
@@ -134,7 +137,7 @@ export const ReviewCoordinator = role(
 				.find({ resource, seat, step, root, attempt, until })
 		})
 	},
-	{ insert: ["ReviewPaused", "ReviewResumed"] }
+	{ insert: ["ReviewPaused", "ReviewResumed", "ReviewServed"] }
 )
 
 const reviewPendingRead = query(ReviewDen).rule((r) => {
@@ -159,10 +162,36 @@ const reviewRunningRead = query(ReviewDen).rule((r) => {
 	return r.match(ReviewFinish, { scope, step }).where(r.not(ReviewResult, { step })).find({ scope })
 })
 
+const reviewLatestServed = query(ReviewDen).rule((r) => {
+	const { environment, at } = v(ReviewServed, "served")
+	return r
+		.match(ReviewServed, { environment, at })
+		.where(r.eq(environment, r.param("environment", ReviewServed.fields.environment)))
+		.find({ environment, at: r.max(at) })
+})
+
 export const reviewDenPrograms = Object.freeze({
 	reviewNow: clocked(
 		query(reviewGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
+	),
+	reviewReading: clocked(
+		query(ReviewDen).reads({
+			now: query(reviewGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			serving: query(ReviewDen).rule((r) => {
+				const { environment, at, deployment } = v(ReviewServed, "served")
+				return r
+					.match(
+						reviewLatestServed.bind({
+							environment: r.param("environment", ReviewServed.fields.environment)
+						}),
+						{ environment, at }
+					)
+					.match(ReviewServed, { environment, at, deployment })
+					.find({ deployment })
+			})
+		}),
+		{ "now.now": "millis" }
 	),
 	reviewClaim: clocked(
 		ChangeSet.empty(reviewGraph)
@@ -619,6 +648,19 @@ export const reviewDenPrograms = Object.freeze({
 export const reviewDenWorkload = workload(ReviewDen, reviewDenPrograms)
 
 export const reviewCoordinatorPrograms = Object.freeze({
+	reviewPromote: clocked(
+		ChangeSet.empty(reviewCoordination).insert(
+			ReviewServed,
+			query(reviewCoordination).rule((r) =>
+				r.find({
+					environment: r.param("environment", ReviewServed.fields.environment),
+					at: r.param("now", ReviewServed.fields.at),
+					deployment: r.param("deployment", ReviewServed.fields.deployment)
+				})
+			)
+		),
+		{ now: "millis" }
+	),
 	reviewPause: ChangeSet.empty(reviewCoordination).insert(ReviewPaused, []),
 	reviewResume: ChangeSet.empty(reviewCoordination).insert(ReviewResumed, []),
 	reviewPauseTurns: deferrable(

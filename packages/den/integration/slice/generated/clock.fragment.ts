@@ -1,4 +1,4 @@
-import { DenInstant, Text } from "@bjornpagen/den/lower/keys"
+import { DenEnvironment, DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Clock to; `den generate` writes it, and nothing edits it. */
 import {
 	closed,
@@ -148,6 +148,11 @@ export const ClockResumed = relation(
 	"ClockResumed",
 	{ target: closedId(ClockPausable), turn: natural },
 	["target", "turn"]
+)
+export const ClockServed = relation(
+	"ClockServed",
+	{ environment: DenEnvironment, at: DenInstant, deployment: Text },
+	["environment", "at"]
 )
 
 /** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
@@ -312,7 +317,8 @@ export const clockCoordination = fragment(
 		ClockHourlyInputBell,
 		ClockChimeOutputBell,
 		ClockPaused,
-		ClockResumed
+		ClockResumed,
+		ClockServed
 	],
 	[
 		contained(on(ClockResumed, "target", "turn"), on(ClockPaused, "target", "turn")),

@@ -4,7 +4,7 @@ import { Array as Arr, type Cron, Data, type Effect, Option, type Stream } from 
 import type { Again, Precondition, Use, Window } from "#algebra/kinds.ts"
 import type { Delay, Instant } from "#runtime/identity.ts"
 import type { Settled } from "#runtime/settled.ts"
-import type { FlowName } from "#transport.ts"
+import type { DeploymentId, EnvironmentName, FlowName } from "#transport.ts"
 
 /**
  * The ledger port: what den's runtime asks of a flow's relations, in den's own types. The module den generates for an
@@ -347,6 +347,12 @@ export interface Coordination {
 	readonly resume: (target: string) => Effect.Effect<void, Settled | UnknownPauseTarget>
 }
 
+/** A turn's first reading: the database's instant, and the deployment its environment serves, none before any. */
+export interface Reading {
+	readonly now: Instant
+	readonly serving: Option.Option<string>
+}
+
 /**
  * A flow's ledger: its name (the prefix its lowered relations carry), its declared kinds, the database's instant,
  * reads by key, the claim and the endings every kind shares, the scheduler's snapshot, the coordinator role, and each
@@ -365,6 +371,19 @@ export interface Ledger<R> {
 	 * runs no body, so the census rings a fenced attempt's step again only once it succeeds.
 	 */
 	readonly authenticated: Effect.Effect<void, Settled>
+	/**
+	 * The database's instant beside the deployment the environment `environment` serves, its latest promotion's, none
+	 * before its first: one clocked read, the reading a turn starts from (turn.ts invoke).
+	 */
+	readonly reading: (environment: EnvironmentName) => Effect.Effect<Reading, Settled>
+	/**
+	 * The promotion of `host`'s deployment to serve its environment, from the call's reading of the database's clock: the
+	 * deploy step's, which replaces the deployment the environment served before.
+	 */
+	readonly promote: (host: {
+		readonly environment: EnvironmentName
+		readonly deployment: DeploymentId
+	}) => Effect.Effect<void, Settled>
 	readonly stepOf: (step: Sha256) => Effect.Effect<Option.Option<Located<R>>, Settled>
 	readonly resultOf: (step: Sha256) => Effect.Effect<Option.Option<Outcome>, Settled>
 	readonly heldOf: (step: Sha256) => Effect.Effect<Option.Option<bigint>, Settled>

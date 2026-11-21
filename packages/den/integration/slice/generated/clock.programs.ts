@@ -50,6 +50,7 @@ import {
 	ClockSittingFinishOutput,
 	ClockPaused,
 	ClockResumed,
+	ClockServed,
 	clockGraph,
 	clockCoordination
 } from "#integration/slice/generated/clock.fragment.ts"
@@ -59,7 +60,7 @@ import { Loader } from "#integration/slice/roles.ts"
 export const ClockDen = role(
 	App,
 	"clock_den",
-	{ ...clockGraph.relations, ClockPaused, ClockResumed },
+	{ ...clockGraph.relations, ClockPaused, ClockResumed, ClockServed },
 	{
 		insert: [
 			"ClockScope",
@@ -103,9 +104,10 @@ export const ClockCoordinator = role(
 		ClockHourlyInputBell,
 		ClockChimeOutputBell,
 		ClockPaused,
-		ClockResumed
+		ClockResumed,
+		ClockServed
 	},
-	{ insert: ["ClockPaused", "ClockResumed"] }
+	{ insert: ["ClockPaused", "ClockResumed", "ClockServed"] }
 )
 
 const clockPendingRead = query(ClockDen).rule((r) => {
@@ -130,10 +132,36 @@ const clockRunningRead = query(ClockDen).rule((r) => {
 	return r.match(ClockFinish, { scope, step }).where(r.not(ClockResult, { step })).find({ scope })
 })
 
+const clockLatestServed = query(ClockDen).rule((r) => {
+	const { environment, at } = v(ClockServed, "served")
+	return r
+		.match(ClockServed, { environment, at })
+		.where(r.eq(environment, r.param("environment", ClockServed.fields.environment)))
+		.find({ environment, at: r.max(at) })
+})
+
 export const clockDenPrograms = Object.freeze({
 	clockNow: clocked(
 		query(clockGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
+	),
+	clockReading: clocked(
+		query(ClockDen).reads({
+			now: query(clockGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			serving: query(ClockDen).rule((r) => {
+				const { environment, at, deployment } = v(ClockServed, "served")
+				return r
+					.match(
+						clockLatestServed.bind({
+							environment: r.param("environment", ClockServed.fields.environment)
+						}),
+						{ environment, at }
+					)
+					.match(ClockServed, { environment, at, deployment })
+					.find({ deployment })
+			})
+		}),
+		{ "now.now": "millis" }
 	),
 	clockClaim: clocked(
 		ChangeSet.empty(clockGraph)
@@ -438,6 +466,19 @@ export const clockDenPrograms = Object.freeze({
 export const clockDenWorkload = workload(ClockDen, clockDenPrograms)
 
 export const clockCoordinatorPrograms = Object.freeze({
+	clockPromote: clocked(
+		ChangeSet.empty(clockCoordination).insert(
+			ClockServed,
+			query(clockCoordination).rule((r) =>
+				r.find({
+					environment: r.param("environment", ClockServed.fields.environment),
+					at: r.param("now", ClockServed.fields.at),
+					deployment: r.param("deployment", ClockServed.fields.deployment)
+				})
+			)
+		),
+		{ now: "millis" }
+	),
 	clockPause: ChangeSet.empty(clockCoordination).insert(ClockPaused, []),
 	clockResume: ChangeSet.empty(clockCoordination).insert(ClockResumed, []),
 	clockPauseTurns: deferrable(

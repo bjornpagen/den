@@ -50,6 +50,7 @@ import {
 	SyncReleased,
 	SyncPaused,
 	SyncResumed,
+	SyncServed,
 	syncGraph,
 	syncCoordination
 } from "#integration/slice/generated/sync.fragment.ts"
@@ -65,6 +66,7 @@ export const SyncDen = role(
 		SyncReleased,
 		SyncPaused,
 		SyncResumed,
+		SyncServed,
 		ChainStep: App.relations.ChainStep,
 		ChainResult: App.relations.ChainResult
 	},
@@ -111,9 +113,10 @@ export const SyncCoordinator = role(
 		SyncExclusive,
 		SyncReleased,
 		SyncPaused,
-		SyncResumed
+		SyncResumed,
+		SyncServed
 	},
-	{ insert: ["SyncExclusive", "SyncReleased", "SyncPaused", "SyncResumed"] }
+	{ insert: ["SyncExclusive", "SyncReleased", "SyncPaused", "SyncResumed", "SyncServed"] }
 )
 
 const syncPendingRead = query(SyncDen).rule((r) => {
@@ -146,10 +149,36 @@ const syncBusyChainRead = query(SyncDen).rule((r) => {
 		.find({ step })
 })
 
+const syncLatestServed = query(SyncDen).rule((r) => {
+	const { environment, at } = v(SyncServed, "served")
+	return r
+		.match(SyncServed, { environment, at })
+		.where(r.eq(environment, r.param("environment", SyncServed.fields.environment)))
+		.find({ environment, at: r.max(at) })
+})
+
 export const syncDenPrograms = Object.freeze({
 	syncNow: clocked(
 		query(syncGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
+	),
+	syncReading: clocked(
+		query(SyncDen).reads({
+			now: query(syncGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			serving: query(SyncDen).rule((r) => {
+				const { environment, at, deployment } = v(SyncServed, "served")
+				return r
+					.match(
+						syncLatestServed.bind({
+							environment: r.param("environment", SyncServed.fields.environment)
+						}),
+						{ environment, at }
+					)
+					.match(SyncServed, { environment, at, deployment })
+					.find({ deployment })
+			})
+		}),
+		{ "now.now": "millis" }
 	),
 	syncClaim: clocked(
 		ChangeSet.empty(syncGraph)
@@ -479,6 +508,19 @@ export const syncCoordinatorPrograms = Object.freeze({
 				.where(r.not(SyncReleased, { kind, key, turn }))
 				.find({ kind, key, turn, scope })
 		})
+	),
+	syncPromote: clocked(
+		ChangeSet.empty(syncCoordination).insert(
+			SyncServed,
+			query(syncCoordination).rule((r) =>
+				r.find({
+					environment: r.param("environment", SyncServed.fields.environment),
+					at: r.param("now", SyncServed.fields.at),
+					deployment: r.param("deployment", SyncServed.fields.deployment)
+				})
+			)
+		),
+		{ now: "millis" }
 	),
 	syncPause: ChangeSet.empty(syncCoordination).insert(SyncPaused, []),
 	syncResume: ChangeSet.empty(syncCoordination).insert(SyncResumed, []),

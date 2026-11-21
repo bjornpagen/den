@@ -13,6 +13,7 @@
 		"./census": "./src/census.ts",
 		"./config": "./src/config.ts",
 		"./consumer": "./src/consumer.ts",
+		"./host": "./src/host.ts",
 		"./live": "./src/live.ts",
 		"./queue": "./src/queue.ts",
 		"./send": "./src/send.ts"

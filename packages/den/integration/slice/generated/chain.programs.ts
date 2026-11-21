@@ -62,6 +62,7 @@ import {
 	ChainPageTreeRead,
 	ChainPaused,
 	ChainResumed,
+	ChainServed,
 	chainGraph,
 	chainCoordination
 } from "#integration/slice/generated/chain.fragment.ts"
@@ -71,7 +72,7 @@ import { Loader } from "#integration/slice/roles.ts"
 export const ChainDen = role(
 	App,
 	"chain_den",
-	{ ...chainGraph.relations, ChainPaused, ChainResumed },
+	{ ...chainGraph.relations, ChainPaused, ChainResumed, ChainServed },
 	{
 		insert: [
 			"ChainScope",
@@ -126,9 +127,10 @@ export const ChainCoordinator = role(
 		ChainPageEarlierRowFeed,
 		ChainPageTreeRowFeed,
 		ChainPaused,
-		ChainResumed
+		ChainResumed,
+		ChainServed
 	},
-	{ insert: ["ChainPaused", "ChainResumed"] }
+	{ insert: ["ChainPaused", "ChainResumed", "ChainServed"] }
 )
 
 const chainPendingRead = query(ChainDen).rule((r) => {
@@ -153,10 +155,36 @@ const chainRunningRead = query(ChainDen).rule((r) => {
 	return r.match(ChainFinish, { scope, step }).where(r.not(ChainResult, { step })).find({ scope })
 })
 
+const chainLatestServed = query(ChainDen).rule((r) => {
+	const { environment, at } = v(ChainServed, "served")
+	return r
+		.match(ChainServed, { environment, at })
+		.where(r.eq(environment, r.param("environment", ChainServed.fields.environment)))
+		.find({ environment, at: r.max(at) })
+})
+
 export const chainDenPrograms = Object.freeze({
 	chainNow: clocked(
 		query(chainGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
+	),
+	chainReading: clocked(
+		query(ChainDen).reads({
+			now: query(chainGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			serving: query(ChainDen).rule((r) => {
+				const { environment, at, deployment } = v(ChainServed, "served")
+				return r
+					.match(
+						chainLatestServed.bind({
+							environment: r.param("environment", ChainServed.fields.environment)
+						}),
+						{ environment, at }
+					)
+					.match(ChainServed, { environment, at, deployment })
+					.find({ deployment })
+			})
+		}),
+		{ "now.now": "millis" }
 	),
 	chainClaim: clocked(
 		ChangeSet.empty(chainGraph)
@@ -519,6 +547,19 @@ export const chainDenPrograms = Object.freeze({
 export const chainDenWorkload = workload(ChainDen, chainDenPrograms)
 
 export const chainCoordinatorPrograms = Object.freeze({
+	chainPromote: clocked(
+		ChangeSet.empty(chainCoordination).insert(
+			ChainServed,
+			query(chainCoordination).rule((r) =>
+				r.find({
+					environment: r.param("environment", ChainServed.fields.environment),
+					at: r.param("now", ChainServed.fields.at),
+					deployment: r.param("deployment", ChainServed.fields.deployment)
+				})
+			)
+		),
+		{ now: "millis" }
+	),
 	chainPause: ChangeSet.empty(chainCoordination).insert(ChainPaused, []),
 	chainResume: ChangeSet.empty(chainCoordination).insert(ChainResumed, []),
 	chainPauseTurns: deferrable(

@@ -53,6 +53,7 @@ import {
 	RetryUnhurriedFinishOutput,
 	RetryPaused,
 	RetryResumed,
+	RetryServed,
 	retryGraph,
 	retryCoordination
 } from "#integration/slice/generated/retry.fragment.ts"
@@ -62,7 +63,7 @@ import { Loader } from "#integration/slice/roles.ts"
 export const RetryDen = role(
 	App,
 	"retry_den",
-	{ ...retryGraph.relations, RetryPaused, RetryResumed },
+	{ ...retryGraph.relations, RetryPaused, RetryResumed, RetryServed },
 	{
 		insert: [
 			"RetryScope",
@@ -107,9 +108,10 @@ export const RetryCoordinator = role(
 		RetryRetryWhy,
 		RetryPausable,
 		RetryPaused,
-		RetryResumed
+		RetryResumed,
+		RetryServed
 	},
-	{ insert: ["RetryPaused", "RetryResumed"] }
+	{ insert: ["RetryPaused", "RetryResumed", "RetryServed"] }
 )
 
 const retryPendingRead = query(RetryDen).rule((r) => {
@@ -134,10 +136,36 @@ const retryRunningRead = query(RetryDen).rule((r) => {
 	return r.match(RetryFinish, { scope, step }).where(r.not(RetryResult, { step })).find({ scope })
 })
 
+const retryLatestServed = query(RetryDen).rule((r) => {
+	const { environment, at } = v(RetryServed, "served")
+	return r
+		.match(RetryServed, { environment, at })
+		.where(r.eq(environment, r.param("environment", RetryServed.fields.environment)))
+		.find({ environment, at: r.max(at) })
+})
+
 export const retryDenPrograms = Object.freeze({
 	retryNow: clocked(
 		query(retryGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
 		{ now: "millis" }
+	),
+	retryReading: clocked(
+		query(RetryDen).reads({
+			now: query(retryGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			serving: query(RetryDen).rule((r) => {
+				const { environment, at, deployment } = v(RetryServed, "served")
+				return r
+					.match(
+						retryLatestServed.bind({
+							environment: r.param("environment", RetryServed.fields.environment)
+						}),
+						{ environment, at }
+					)
+					.match(RetryServed, { environment, at, deployment })
+					.find({ deployment })
+			})
+		}),
+		{ "now.now": "millis" }
 	),
 	retryClaim: clocked(
 		ChangeSet.empty(retryGraph)
@@ -573,6 +601,19 @@ export const retryDenPrograms = Object.freeze({
 export const retryDenWorkload = workload(RetryDen, retryDenPrograms)
 
 export const retryCoordinatorPrograms = Object.freeze({
+	retryPromote: clocked(
+		ChangeSet.empty(retryCoordination).insert(
+			RetryServed,
+			query(retryCoordination).rule((r) =>
+				r.find({
+					environment: r.param("environment", RetryServed.fields.environment),
+					at: r.param("now", RetryServed.fields.at),
+					deployment: r.param("deployment", RetryServed.fields.deployment)
+				})
+			)
+		),
+		{ now: "millis" }
+	),
 	retryPause: ChangeSet.empty(retryCoordination).insert(RetryPaused, []),
 	retryResume: ChangeSet.empty(retryCoordination).insert(RetryResumed, []),
 	retryPauseTurns: deferrable(

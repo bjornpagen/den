@@ -738,11 +738,23 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	return r.match(${app}.relations.${f}Step, { step }).where(r.not(${app}.relations.${f}Result, { step })).find({ step })
 })`
 	]
+	/** The instant each environment's latest promotion was served from: the one its deployment serves. */
+	const latestServed = [
+		`${Str.uncapitalize(P)}LatestServed`,
+		`query(${n.den}).rule((r) => {
+	const { environment, at } = v(${r("Served")}, "served")
+	return r
+		.match(${r("Served")}, { environment, at })
+		.where(r.eq(environment, r.param("environment", ${r("Served")}.fields.environment)))
+		.find({ environment, at: r.max(at) })
+})`
+	] as const
 	const sharedDeclarations: ReadonlyArray<readonly [string, string]> = [
 		sharedReads.pending,
 		sharedReads.requested,
 		sharedReads.running,
-		...Arr.map(l.idle, busyRead)
+		...Arr.map(l.idle, busyRead),
+		latestServed
 	]
 	const shared = {
 		pending: sharedReads.pending[0],
@@ -787,6 +799,22 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		[
 			n.program("Now"),
 			`clocked(query(${n.graph}).rule((r) => r.find({ now: r.param("now", DenInstant) })), { now: "millis" })`
+		],
+		[
+			n.program("Reading"),
+			`clocked(
+	query(${n.den}).reads({
+		now: query(${n.graph}).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+		serving: query(${n.den}).rule((r) => {
+			const { environment, at, deployment } = v(${r("Served")}, "served")
+			return r
+				.match(${latestServed[0]}.bind({ environment: r.param("environment", ${r("Served")}.fields.environment) }), { environment, at })
+				.match(${r("Served")}, { environment, at, deployment })
+				.find({ deployment })
+		})
+	}),
+	{ "now.now": "millis" }
+)`
 		],
 		[n.program("Claim"), claimOf(n.graph, r)],
 		[
@@ -1112,6 +1140,10 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		)
 	}
 	coordinatorPrograms.push(
+		[
+			n.program("Promote"),
+			`clocked(ChangeSet.empty(${n.coordination}).insert(${r("Served")}, query(${n.coordination}).rule((r) => r.find({ environment: r.param("environment", ${r("Served")}.fields.environment), at: r.param("now", ${r("Served")}.fields.at), deployment: r.param("deployment", ${r("Served")}.fields.deployment) }))), { now: "millis" })`
+		],
 		[n.program("Pause"), insertInto(r("Paused"))],
 		[n.program("Resume"), insertInto(r("Resumed"))],
 		[n.program("PauseTurns"), deferred(latestOf(n.coordination, r("Paused"), ["target"]))],
@@ -2081,6 +2113,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\tconst ledger: Ledger<FlowNeeds<typeof ${F}>> = {`,
 		`\t\tflow: FlowName.make(${q(P)}),`,
 		`\t\tnow: Effect.flatMap(settled(h.den.${n.program("Now")}.once({ params: {}, facts: {} })), readingOf),`,
+		`\t\treading: (environment) => Effect.flatMap(settled(h.den.${n.program("Reading")}.once({ params: { "serving.environment": environment }, facts: {} })), (rows) => Effect.flatMap(only(rows), (row) => Effect.map(readingOf(row.now), (now) => ({ now, serving: Option.map(Arr.head(row.serving), (served) => served.deployment) })))),`,
+		`\t\tpromote: (host) => Effect.asVoid(settled(h.coordinator.${n.program("Promote")}.once({ params: { environment: host.environment, deployment: host.deployment }, facts: {} }))),`,
 		`\t\tauthenticated: Effect.asVoid(settled(h.commits.${n.program("Authenticated")}.once({ params: {}, facts: {} }))),`,
 		resources
 			? `\t\tholds: Effect.map(settled(h.den.${n.program("Holds")}.once({ params: {}, facts: {} })), rowsOf),`
