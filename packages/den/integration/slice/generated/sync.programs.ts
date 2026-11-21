@@ -12,6 +12,7 @@ import {
 	workload
 } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
+import { sync as declaredFlow } from "#integration/slice/flows.ts"
 import {
 	SyncKind,
 	SyncRootKind,
@@ -531,7 +532,7 @@ export const syncCommitPrograms = Object.freeze({
 			.insert(SyncDone, [])
 			.insert(SyncHeld, [])
 			.insert(SyncCopyOutput, []),
-		ChangeSet.empty(Loader).insert(App.relations.Copied, [])
+		declaredFlow.kinds[0].writes.changes(Loader)
 	),
 	syncCommitBuild: ChangeSet.union(
 		ChangeSet.empty(syncGraph)
@@ -539,7 +540,7 @@ export const syncCommitPrograms = Object.freeze({
 			.insert(SyncDone, [])
 			.insert(SyncHeld, [])
 			.insert(SyncBuildOutput, []),
-		ChangeSet.empty(Loader).insert(App.relations.Built, [])
+		declaredFlow.kinds[2].writes.changes(Loader)
 	),
 	syncCommitSyncRunFinish: ChangeSet.empty(syncGraph)
 		.insert(SyncResult, [])

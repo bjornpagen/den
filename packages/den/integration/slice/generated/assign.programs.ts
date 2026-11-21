@@ -12,7 +12,7 @@ import {
 	workload
 } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
-import { assign } from "#integration/slice/flows.ts"
+import { assign as declaredFlow } from "#integration/slice/flows.ts"
 import {
 	AssignKind,
 	AssignRootKind,
@@ -559,6 +559,41 @@ export const assignDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
 			.find({ step })
 	}),
+	assignInputsAssignmentDecide: query(assignGraph).rule((r) => {
+		const { step, scope } = v(AssignStep, "step")
+		const { learner, topic, vector, mode } = v(AssignDecideInput, "input")
+		return r
+			.match(AssignStep, { step, kind: "Decide", scope })
+			.match(AssignDecideInput, { step, learner, topic, vector, mode })
+			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.find({ step, learner, topic, vector, mode })
+	}),
+	assignInputsAssignmentDecideExclude: query(assignGraph).rule((r) => {
+		const { step, scope } = v(AssignStep, "step")
+		const { ordinal, value } = v(AssignDecideInputExclude, "part")
+		return r
+			.match(AssignStep, { step, kind: "Decide", scope })
+			.match(AssignDecideInputExclude, { step, ordinal, value })
+			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.find({ step, ordinal, value })
+	}),
+	assignInputsAssignmentDecideModeNearest: query(assignGraph).rule((r) => {
+		const { step, scope } = v(AssignStep, "step")
+		return r
+			.match(AssignStep, { step, kind: "Decide", scope })
+			.match(AssignDecideInputModeNearest, { step })
+			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.find({ step })
+	}),
+	assignInputsAssignmentDecideModeWithin: query(assignGraph).rule((r) => {
+		const { step, scope } = v(AssignStep, "step")
+		const { radius } = v(AssignDecideInputModeWithin, "part")
+		return r
+			.match(AssignStep, { step, kind: "Decide", scope })
+			.match(AssignDecideInputModeWithin, { step, radius })
+			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.find({ step, radius })
+	}),
 	assignFailuresAssignmentDecide: query(assignGraph).rule((r) => {
 		const { step, scope } = v(AssignStep, "step")
 		return r
@@ -670,16 +705,16 @@ export const assignCommitPrograms = Object.freeze({
 			.insert(AssignDecideNearestRead, [])
 			.insert(AssignDecideSeenRow, [])
 			.insert(AssignDecideSeenRead, []),
-		ChangeSet.empty(Loader).insert(App.relations.Assigned, [])
+		declaredFlow.kinds[1].writes.changes(Loader)
 	),
-	assignReadDecide: deferrable(assign.kinds[1].reads.query(Loader)),
+	assignReadDecide: deferrable(declaredFlow.kinds[1].reads.query(Loader)),
 	assignCommitAssignmentFinish: ChangeSet.union(
 		ChangeSet.empty(assignGraph)
 			.insert(AssignResult, [])
 			.insert(AssignDone, [])
 			.insert(AssignHeld, [])
 			.insert(AssignAssignmentFinishOutput, []),
-		ChangeSet.empty(Loader).insert(App.relations.Concluded, [])
+		declaredFlow.kinds[2].finish.writes.changes(Loader)
 	)
 })
 

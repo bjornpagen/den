@@ -105,7 +105,7 @@ export const aStepJoinedOnTwoFactsRunsOnceBothExist = property.explore(joined, {
 		{
 			file: "packages/den/src/runtime/turn.ts",
 			original:
-				'\t\tconst readied = ending.kind === "done" ? yield* readiedBy(ledgers, runner.writes) : []',
+				'\t\tconst readied =\n\t\t\tran.kind === "committed" ? yield* readiedBy(ledgers, writtenBy(ran.committed.outcome)) : []',
 			replacement: "\t\tconst readied: ReadonlyArray<Onward> = []",
 			why: "A commit that writes an awaited fact rings no step waiting on it: a review requested before its delivery waits for a census that never ticks, and never runs."
 		},

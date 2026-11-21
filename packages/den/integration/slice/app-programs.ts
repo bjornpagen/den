@@ -24,6 +24,10 @@ import {
 	ChainPageOutputNext,
 	ChainPageWeightsRead,
 	ChainPageEarlierRow,
+	ChainPageTreeItems,
+	ChainPageTreeRead,
+	ChainPageTreeRow,
+	ChainPageTreeFirst,
 	ChainPageWeightsRow,
 	ChainResult,
 	ChainRoot,
@@ -132,6 +136,10 @@ export const Auditor = role(
 		ChainPageOutputNext,
 		ChainPageWeightsRead,
 		ChainPageEarlierRow,
+		ChainPageTreeItems,
+		ChainPageTreeRead,
+		ChainPageTreeRow,
+		ChainPageTreeFirst,
 		ChainPageWeightsRow,
 		ChainResult,
 		ChainRoot,
@@ -206,6 +214,30 @@ const earlierRows = query(Auditor).rule((r) => {
 	return r
 		.match(ChainPageEarlierRow, { digest, root, feed, seq, n })
 		.find({ digest, root, feed, seq, n })
+})
+
+/** Each page's tree of its feed's weight, by its reference: the row it found, by its digest in its root. */
+const treeReads = query(Auditor).rule((r) => {
+	const { step, ordinal, digest, root } = v(ChainPageTreeRead, "read")
+	const { feed, factor } = v(ChainPageTreeRow, "row")
+	return r
+		.match(ChainPageTreeRead, { step, ordinal, digest, root })
+		.match(ChainPageTreeRow, { digest, root, feed, factor })
+		.find({ step, ordinal, digest, root, feed, factor })
+})
+
+/** The items each recorded tree holds, by its digest in its root, each at its place. */
+const treeItems = query(Auditor).rule((r) => {
+	const { digest, root, items, seq, n } = v(ChainPageTreeItems, "item")
+	return r
+		.match(ChainPageTreeItems, { digest, root, items, seq, n })
+		.find({ digest, root, items, seq, n })
+})
+
+/** The first item of its page each recorded tree's item holds, by the tree's digest in its root and the item's place. */
+const treeFirsts = query(Auditor).rule((r) => {
+	const { digest, root, items, n } = v(ChainPageTreeFirst, "first")
+	return r.match(ChainPageTreeFirst, { digest, root, items, n }).find({ digest, root, items, n })
 })
 
 const weights = query(Auditor).rule((r) => {
@@ -567,6 +599,9 @@ export const auditWorkload = workload(Auditor, {
 	pages,
 	pageReads,
 	earlierRows,
+	treeReads,
+	treeItems,
+	treeFirsts,
 	weights,
 	items,
 	cursors,
@@ -617,6 +652,7 @@ export const appWorkload = workload(Loader, {
 		}
 	),
 	weigh: ChangeSet.empty(Loader).insert(App.relations.Weight, []),
+	hear: ChangeSet.empty(Loader).insert(Heard, []),
 	place: ChangeSet.empty(Loader).insert(Passage, []),
 	see: ChangeSet.empty(Loader).insert(Seen, [])
 })

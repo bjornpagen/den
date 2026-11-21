@@ -191,3 +191,37 @@
     step's eligibility to whatever a read can state; a cross-flow request from a commit, which would make the
     writeback own the gap analysis's start.
 
+
+## Owner order, 2026-11-21: metis's essay grading
+
+- **A finish's endings carry their children's inputs (settled by metis's need, 2026-11-21).** The essay grader's
+  finish records a decline for each draw that failed, by the application the draw graded, which a failed ending did not
+  name: an ending was `Done` with its output or `Failed` with nothing. So `Ending<I, O>` is `Done` with its input and
+  output or `Failed` with its input, the finish's reads of its children's inputs set reads beside their outputs, each
+  ending's input found by its step, which every child holds by law.
+- **A read's record holds the rows its query's attachments deliver (settled by metis's need, 2026-11-21).** The essay
+  grader reads an item's documents as pantry scans them, each document's nodes and each node's attributes and options,
+  a query whose rows carry attachments to any depth, which a flat record could not record. So a record's field is a
+  column, an `Option` of a record (an `"option"` attachment) or an array of records (an `"array"` one), and each
+  attachment's rows are relations of their own, keyed by the read's row's digest and the places of the arrays above
+  them, gap-free, contained in their owner; the row's digest covers every row under it, so a root stores a tree once and
+  two trees that differ anywhere are two rows. An attachment's relation is named by the read and its field, numbered
+  where a field name repeats, so a deep record's names stay within PostgreSQL's identifiers.
+  - Rejected: an attachment's rows content-addressed one by one, which names a relation per path all the same and adds
+    a relation of references per array.
+- **A step commits through the app's own ChangeSet, in its commit's call (settled by metis's need, 2026-11-21).** The
+  essay grader records its evaluation through the app's ChangeSet, which inserts what an insert of facts cannot state
+  (its rows from parameters, its instants the database's), so a step's `writes` is `through(changes, clock)`, a
+  ChangeSet `changes` makes of the flow's app role, or `writesNothing`; den's commit is
+  `ChangeSet.union(<den's facts>, changes(W))`, clocked for den's spawns' `now` and each instant `clock` names, and the
+  body returns its output and that ChangeSet's served input, its parameters and its array members' facts (an insert's
+  rows `AdditionIn`, nested members under their owners). A refusal of either refuses both: the step ends failed by the
+  law, with nothing of its own or of the app's committed. A commit rings the steps its rows made ready by what its
+  outcome counts, whatever its ChangeSet holds.
+  - den's commit names `steps`, `root` and `now` itself, and a ChangeSet's free parameters are one namespace, so
+    `through` refuses at the type level a ChangeSet that names any of them: a served commit binds no value when it is
+    built, so den cannot close its own parameters with `bind`. A scope of parameters a call still supplies is grizzle's
+    to add.
+  - Rejected: the fragment committed in a call of its own, which commits the step's result whether or not the app's
+    write stands; a declaration of the relations a step writes, which states less than a ChangeSet and could disagree
+    with it.

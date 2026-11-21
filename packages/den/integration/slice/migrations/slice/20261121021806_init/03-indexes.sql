@@ -154,6 +154,18 @@ CREATE INDEX "__chain_page_output_ix_root_g3alpbog4o" ON "slice"."chain_page_out
 
 CREATE INDEX "__chain_page_output_next_ix_root_r662e4fglp" ON "slice"."chain_page_output_next" USING btree ("root");
 
+CREATE INDEX "__chain_page_tree_first_ix_root_gxcpd2aguo" ON "slice"."chain_page_tree_first" USING btree ("root");
+
+CREATE INDEX "__chain_page_tree_items_ix_digest_eiwkcq_6_olq_pred_ke2reityjr" ON "slice"."chain_page_tree_items" USING btree ("__digest_eiwkcq6olq", "__pred_items_sinxzvyomd", "__root_gp6pfrpfoe");
+
+CREATE INDEX "__chain_page_tree_items_ix_root_digest_j4l2wg2mhr" ON "slice"."chain_page_tree_items" USING btree ("root", "digest");
+
+CREATE INDEX "__chain_page_tree_read_ix_root_digest_q3zaabcene" ON "slice"."chain_page_tree_read" USING btree ("root", "digest");
+
+CREATE INDEX "__chain_page_tree_read_ix_root_step_eh6ehvompc" ON "slice"."chain_page_tree_read" USING btree ("root", "step");
+
+CREATE INDEX "__chain_page_tree_row_ix_root_nik5vzvev7" ON "slice"."chain_page_tree_row" USING btree ("root");
+
 CREATE INDEX "__chain_page_weights_read_ix_root_digest_75flfwbh4w" ON "slice"."chain_page_weights_read" USING btree ("root", "digest");
 
 CREATE INDEX "__chain_page_weights_read_ix_root_step_qkx2asxvn7" ON "slice"."chain_page_weights_read" USING btree ("root", "step");

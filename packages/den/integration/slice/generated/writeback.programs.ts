@@ -12,6 +12,7 @@ import {
 	workload
 } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
+import { writeback as declaredFlow } from "#integration/slice/flows.ts"
 import {
 	WritebackKind,
 	WritebackRootKind,
@@ -439,7 +440,7 @@ export const writebackCommitPrograms = Object.freeze({
 			.insert(WritebackDone, [])
 			.insert(WritebackHeld, [])
 			.insert(WritebackDeliverOutput, []),
-		ChangeSet.empty(Loader).insert(App.relations.Delivered, [])
+		declaredFlow.kinds[0].writes.changes(Loader)
 	),
 	writebackCommitWritebackFinish: ChangeSet.empty(writebackGraph)
 		.insert(WritebackResult, [])

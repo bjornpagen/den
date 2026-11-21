@@ -1,5 +1,6 @@
 import {
 	any,
+	committedFacts,
 	delayAfter,
 	fresh,
 	one,
@@ -243,25 +244,29 @@ export const clockLedger = (h: ClockHandles) => {
 						const grown = yield* Effect.succeed(nothingGrown)
 						const outcome = yield* settled(
 							h.commits.clockCommitChime.once({
-								params: {},
-								facts: {
-									insert: {
-										ClockResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
-										ClockDone: [{ step: done.turn.step, root: done.turn.root }],
-										ClockHeld: [
-											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-										],
-										ClockChimeOutput: [
-											{
-												step: done.turn.step,
-												root: done.turn.root,
-												hour: done.output.hour,
-												bell: done.output.bell
-											}
-										],
-										Chimed: done.writes.insert.Chimed
-									}
-								}
+								params: { ...done.writes.params },
+								facts: committedFacts(
+									{
+										insert: {
+											ClockResult: [
+												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+											],
+											ClockDone: [{ step: done.turn.step, root: done.turn.root }],
+											ClockHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
+											ClockChimeOutput: [
+												{
+													step: done.turn.step,
+													root: done.turn.root,
+													hour: done.output.hour,
+													bell: done.output.bell
+												}
+											]
+										}
+									},
+									done.writes.facts
+								)
 							})
 						)
 						return { outcome, spawned: grown.spawned }
@@ -277,7 +282,6 @@ export const clockLedger = (h: ClockHandles) => {
 				retry: clock.kinds[1].finish.retry,
 				waits: clock.kinds[1].finish.waits,
 				awaits: [],
-				writes: clock.kinds[1].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof clock.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof clock.kinds)[1]["finish"]["body"]>[1]

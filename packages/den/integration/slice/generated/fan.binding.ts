@@ -1,7 +1,9 @@
 import {
 	any,
+	committedFacts,
 	delayAfter,
 	fresh,
+	held,
 	one,
 	only,
 	readingOf,
@@ -330,7 +332,6 @@ export const fanLedger = (h: FanHandles) => {
 				retry: fan.kinds[1].finish.retry,
 				waits: fan.kinds[1].finish.waits,
 				awaits: [],
-				writes: fan.kinds[1].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof fan.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof fan.kinds)[1]["finish"]["body"]>[1]
@@ -351,20 +352,41 @@ export const fanLedger = (h: FanHandles) => {
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
-						const rowsSquare = yield* Effect.map(
+						const outputSquareRows = yield* Effect.map(
 							settled(h.den.fanOutputsBatchSquare.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const inputSquareRows = yield* Effect.map(
+							settled(h.den.fanInputsBatchSquare.once({ params: { scope }, facts: {} })),
 							rowsOf
 						)
 						const failuresSquare = yield* Effect.map(
 							settled(h.den.fanFailuresBatchSquare.once({ params: { scope }, facts: {} })),
 							rowsOf
 						)
+						const inputSquare = (child: (typeof inputSquareRows)[number]["step"]) =>
+							held(
+								Option.map(
+									Arr.findFirst(inputSquareRows, (row) => row.step === child),
+									(row) => ({ batch: row.batch, n: row.n })
+								)
+							)
 						const Square = [
-							...Arr.map(rowsSquare, (row) => ({
-								_tag: "Done" as const,
-								output: { square: row.square }
-							})),
-							...Arr.map(failuresSquare, () => ({ _tag: "Failed" as const }))
+							...(yield* Effect.forEach(outputSquareRows, (row) =>
+								Effect.map(
+									Effect.all({
+										input: inputSquare(row.step),
+										output: Effect.succeed({ square: row.square })
+									}),
+									(ended) => ({ _tag: "Done" as const, ...ended })
+								)
+							)),
+							...(yield* Effect.forEach(failuresSquare, (failed) =>
+								Effect.map(inputSquare(failed.step), (given) => ({
+									_tag: "Failed" as const,
+									input: given
+								}))
+							))
 						]
 						return Option.some({ input: input.value, endings: { Square } })
 					}),
@@ -374,18 +396,20 @@ export const fanLedger = (h: FanHandles) => {
 						const grown = yield* Effect.succeed(nothingGrown)
 						const outcome = yield* settled(
 							h.commits.fanCommitBatchFinish.once({
-								params: {},
-								facts: {
-									insert: {
-										FanResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
-										FanDone: [{ step: done.turn.step, root: done.turn.root }],
-										FanHeld: [
-											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-										],
-										FanBatchFinishOutput: [{ step: done.turn.step, root: done.turn.root }],
-										Tally: done.writes.insert.Tally
-									}
-								}
+								params: { ...done.writes.params },
+								facts: committedFacts(
+									{
+										insert: {
+											FanResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+											FanDone: [{ step: done.turn.step, root: done.turn.root }],
+											FanHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
+											FanBatchFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
+										}
+									},
+									done.writes.facts
+								)
 							})
 						)
 						return { outcome, spawned: grown.spawned }
@@ -401,7 +425,6 @@ export const fanLedger = (h: FanHandles) => {
 				retry: fan.kinds[2].finish.retry,
 				waits: fan.kinds[2].finish.waits,
 				awaits: [],
-				writes: fan.kinds[2].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof fan.kinds)[2]["start"]>[0]
 					readonly endings: Parameters<(typeof fan.kinds)[2]["finish"]["body"]>[1]
@@ -422,17 +445,38 @@ export const fanLedger = (h: FanHandles) => {
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
-						const rowsBatch = yield* Effect.map(
+						const outputBatchRows = yield* Effect.map(
 							settled(h.den.fanOutputsFanRunBatch.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const inputBatchRows = yield* Effect.map(
+							settled(h.den.fanInputsFanRunBatch.once({ params: { scope }, facts: {} })),
 							rowsOf
 						)
 						const failuresBatch = yield* Effect.map(
 							settled(h.den.fanFailuresFanRunBatch.once({ params: { scope }, facts: {} })),
 							rowsOf
 						)
+						const inputBatch = (child: (typeof inputBatchRows)[number]["step"]) =>
+							held(
+								Option.map(
+									Arr.findFirst(inputBatchRows, (row) => row.step === child),
+									(row) => ({ batch: row.batch, size: row.size })
+								)
+							)
 						const Batch = [
-							...Arr.map(rowsBatch, () => ({ _tag: "Done" as const, output: {} })),
-							...Arr.map(failuresBatch, () => ({ _tag: "Failed" as const }))
+							...(yield* Effect.forEach(outputBatchRows, (row) =>
+								Effect.map(
+									Effect.all({ input: inputBatch(row.step), output: Effect.succeed({}) }),
+									(ended) => ({ _tag: "Done" as const, ...ended })
+								)
+							)),
+							...(yield* Effect.forEach(failuresBatch, (failed) =>
+								Effect.map(inputBatch(failed.step), (given) => ({
+									_tag: "Failed" as const,
+									input: given
+								}))
+							))
 						]
 						return Option.some({ input: input.value, endings: { Batch } })
 					}),
@@ -442,18 +486,20 @@ export const fanLedger = (h: FanHandles) => {
 						const grown = yield* Effect.succeed(nothingGrown)
 						const outcome = yield* settled(
 							h.commits.fanCommitFanRunFinish.once({
-								params: {},
-								facts: {
-									insert: {
-										FanResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
-										FanDone: [{ step: done.turn.step, root: done.turn.root }],
-										FanHeld: [
-											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-										],
-										FanFanRunFinishOutput: [{ step: done.turn.step, root: done.turn.root }],
-										Settled: done.writes.insert.Settled
-									}
-								}
+								params: { ...done.writes.params },
+								facts: committedFacts(
+									{
+										insert: {
+											FanResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+											FanDone: [{ step: done.turn.step, root: done.turn.root }],
+											FanHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
+											FanFanRunFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
+										}
+									},
+									done.writes.facts
+								)
 							})
 						)
 						return { outcome, spawned: grown.spawned }

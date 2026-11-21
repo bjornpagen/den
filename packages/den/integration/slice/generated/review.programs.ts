@@ -12,6 +12,7 @@ import {
 	workload
 } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
+import { review as declaredFlow } from "#integration/slice/flows.ts"
 import {
 	ReviewKind,
 	ReviewRootKind,
@@ -511,6 +512,15 @@ export const reviewDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", ReviewScope.fields.scope)))
 			.find({ step, score })
 	}),
+	reviewInputsQuestionsAnalyze: query(reviewGraph).rule((r) => {
+		const { step, scope } = v(ReviewStep, "step")
+		const { review, group, question } = v(ReviewAnalyzeInput, "input")
+		return r
+			.match(ReviewStep, { step, kind: "Analyze", scope })
+			.match(ReviewAnalyzeInput, { step, review, group, question })
+			.where(r.eq(scope, r.param("scope", ReviewScope.fields.scope)))
+			.find({ step, review, group, question })
+	}),
 	reviewFailuresQuestionsAnalyze: query(reviewGraph).rule((r) => {
 		const { step, scope } = v(ReviewStep, "step")
 		return r
@@ -562,6 +572,17 @@ export const reviewDenPrograms = Object.freeze({
 			.where(r.eq(parent, r.param("scope", ReviewScope.fields.scope)))
 			.find({ step, count, total })
 	}),
+	reviewInputsReviewRunQuestions: query(reviewGraph).rule((r) => {
+		const { scope, parent } = v(ReviewWithin, "within")
+		const { step } = v(ReviewFinish, "finish")
+		const { review, group, size } = v(ReviewQuestionsInput, "input")
+		return r
+			.match(ReviewWithin, { scope, parent, kind: "Questions" })
+			.match(ReviewFinish, { scope, step })
+			.match(ReviewQuestionsInput, { scope, review, group, size })
+			.where(r.eq(parent, r.param("scope", ReviewScope.fields.scope)))
+			.find({ step, review, group, size })
+	}),
 	reviewFailuresReviewRunQuestions: query(reviewGraph).rule((r) => {
 		const { scope, parent } = v(ReviewWithin, "within")
 		const { step } = v(ReviewFinish, "finish")
@@ -580,6 +601,15 @@ export const reviewDenPrograms = Object.freeze({
 			.match(ReviewSaveOutput, { step, total })
 			.where(r.eq(scope, r.param("scope", ReviewScope.fields.scope)))
 			.find({ step, total })
+	}),
+	reviewInputsReviewRunSave: query(reviewGraph).rule((r) => {
+		const { step, scope } = v(ReviewStep, "step")
+		const { review, group, count, total } = v(ReviewSaveInput, "input")
+		return r
+			.match(ReviewStep, { step, kind: "Save", scope })
+			.match(ReviewSaveInput, { step, review, group, count, total })
+			.where(r.eq(scope, r.param("scope", ReviewScope.fields.scope)))
+			.find({ step, review, group, count, total })
 	}),
 	reviewFailuresReviewRunSave: query(reviewGraph).rule((r) => {
 		const { step, scope } = v(ReviewStep, "step")
@@ -689,7 +719,7 @@ export const reviewCommitPrograms = Object.freeze({
 			.insert(ReviewDone, [])
 			.insert(ReviewHeld, [])
 			.insert(ReviewSaveOutput, []),
-		ChangeSet.empty(Loader).insert(App.relations.Reviewed, [])
+		declaredFlow.kinds[3].writes.changes(Loader)
 	),
 	reviewCommitQuestionsFinish: clocked(
 		ChangeSet.empty(reviewGraph)
@@ -740,7 +770,7 @@ export const reviewCommitPrograms = Object.freeze({
 			.insert(ReviewDone, [])
 			.insert(ReviewHeld, [])
 			.insert(ReviewReviewRunFinishOutput, []),
-		ChangeSet.empty(Loader).insert(App.relations.Summary, [])
+		declaredFlow.kinds[4].finish.writes.changes(Loader)
 	)
 })
 

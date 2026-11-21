@@ -119,6 +119,12 @@ RETURN '{"news","sport"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__chain_page_input_feed_names_dxuyhzkiur"() FROM PUBLIC;
 
+CREATE FUNCTION "slice"."__chain_page_tree_row_feed_names_w5f7gjcjkc"() RETURNS "pg_catalog"."name"[]
+LANGUAGE sql IMMUTABLE PARALLEL SAFE
+RETURN '{"news","sport"}'::"pg_catalog"."name"[];
+
+REVOKE ALL ON FUNCTION "slice"."__chain_page_tree_row_feed_names_w5f7gjcjkc"() FROM PUBLIC;
+
 CREATE FUNCTION "slice"."__chain_page_weights_row_feed_names_awtorq4cfe"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN '{"news","sport"}'::"pg_catalog"."name"[];
@@ -402,6 +408,8 @@ CREATE DOMAIN "slice"."chain_outcome" AS smallint CONSTRAINT "check" CHECK (VALU
 CREATE DOMAIN "slice"."chain_page_earlier_row_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_page_earlier_row_feed_names_tmqqz3lel4"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."chain_page_input_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_page_input_feed_names_dxuyhzkiur"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
+
+CREATE DOMAIN "slice"."chain_page_tree_row_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_page_tree_row_feed_names_w5f7gjcjkc"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 
 CREATE DOMAIN "slice"."chain_page_weights_row_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (("slice"."__chain_page_weights_row_feed_names_awtorq4cfe"())[VALUE + 1] <> ''::"pg_catalog"."name") IS TRUE);
 

@@ -21,12 +21,12 @@ import {
 	shared,
 	step,
 	unconditional,
+	through,
 	writer,
-	writes,
 	writesNothing
 } from "@bjornpagen/den/algebra/kinds"
 import { laterOf } from "@bjornpagen/den/algebra/later"
-import { Compute, query, v, Vector } from "@bjornpagen/grizzle"
+import { ChangeSet, Compute, query, v, Vector } from "@bjornpagen/grizzle"
 import { Array as Arr, Context, Cron, Effect, Option, Order, Schema } from "effect"
 import {
 	Assigned,
@@ -94,11 +94,30 @@ const PageRead = Schema.Struct({
 })
 
 /**
+ * A feed's weight as a tree of attachments two deep: the weight, the items its pages wrote so far in their order, an
+ * array, and under each item the first item of its page, an option (an essay's documents, each document's scan of
+ * nodes, each node's attributes).
+ */
+const WeightTree = Schema.Struct({
+	feed: Feed,
+	factor: Schema.BigInt,
+	items: Schema.Array(
+		Schema.Struct({
+			seq: Schema.BigInt,
+			n: Schema.BigInt,
+			first: Schema.Option(Schema.Struct({ n: Schema.BigInt }))
+		})
+	)
+})
+
+/**
  * Reads one page of a feed: a page holds its position plus one items for each unit of the feed's weight, which it reads
  * before its body runs (a feed with no weight counts as weight one), and every page but the feed's last names the
  * next. It reads its feed's items so far beside the weight, as each turn of a conversation reads its thread, and counts
  * them. Its items are the app's rows, committed with its result and the rows it read: each a reference to a row its
- * root records once, so the feed's items, which every later page reads again, are stored once each.
+ * root records once, so the feed's items, which every later page reads again, are stored once each. It reads the
+ * weight once more as a tree, the items so far attached under it and each item's page's first item under each, so each
+ * page's tree is a row of its own, recorded with every row its attachments delivered.
  */
 const Page = step(
 	"Page",
@@ -122,20 +141,55 @@ const Page = step(
 							.match(Item, { feed, seq, n })
 							.where(r.eq(feed, r.param("feed", Item.fields.feed)))
 							.find({ feed, seq, n })
-					})
+					}),
+					tree: query(role)
+						.rule((r) => {
+							const { feed, factor } = v(Weight, "weight")
+							return r
+								.match(Weight, { feed, factor })
+								.where(r.eq(feed, r.param("feed", Weight.fields.feed)))
+								.find({ feed, factor })
+						})
+						.attach(
+							"items",
+							(weight) =>
+								query(role)
+									.rule((r) => {
+										const { feed, seq, n } = v(Item, "item")
+										return r
+											.match(Item, { feed, seq, n })
+											.where(r.eq(feed, weight.feed))
+											.find({ feed, seq, n })
+									})
+									.attach(
+										"first",
+										(item) =>
+											query(role).rule((r) =>
+												r.match(Item, { feed: item.feed, seq: item.seq, n: 0n }).find({ n: 0n })
+											),
+										"option"
+									)
+									.orderBy(["seq", "asc"], ["n", "asc"]),
+							"array"
+						)
 				}),
 			{
 				weights: Schema.Struct({ feed: Feed, factor: Schema.BigInt }),
-				earlier: Schema.Struct({ feed: Feed, seq: Schema.BigInt, n: Schema.BigInt })
+				earlier: Schema.Struct({ feed: Feed, seq: Schema.BigInt, n: Schema.BigInt }),
+				tree: WeightTree
 			},
-			(page: typeof PageInput.Type) => ({ "weights.feed": page.feed, "earlier.feed": page.feed })
+			(page: typeof PageInput.Type) => ({
+				"weights.feed": page.feed,
+				"earlier.feed": page.feed,
+				"tree.feed": page.feed
+			})
 		),
 		awaits: [],
 		uses: [],
 		retry: attempts(3),
 		waits: 0,
 		due: atSpawn,
-		writes: writes({ insert: [Item], put: [], delete: [] })
+		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Item, []), {})
 	},
 	(page, { weights, earlier }) => {
 		const factor = Arr.reduce(weights, 0n, (sum, w) => sum + w.factor)
@@ -148,15 +202,16 @@ const Page = step(
 				next: page.seq + 1n < page.pages ? Option.some(`after-${page.seq}`) : Option.none<string>()
 			},
 			writes: {
-				insert: {
-					Item: Arr.map(ordinals(Number(items)), (n) => ({
-						feed: page.feed,
-						seq: page.seq,
-						n: BigInt(n)
-					}))
-				},
-				put: {},
-				delete: {}
+				params: {},
+				facts: {
+					insert: {
+						Item: Arr.map(ordinals(Number(items)), (n) => ({
+							feed: page.feed,
+							seq: page.seq,
+							n: BigInt(n)
+						}))
+					}
+				}
 			}
 		})
 	}
@@ -188,26 +243,27 @@ const moveCursor = Object.freeze({
 	uses: [],
 	retry: attempts(3),
 	waits: 0,
-	writes: writes({ insert: [Cursor], put: [], delete: [] }),
+	writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Cursor, []), {}),
 	body: (
 		run: typeof ChainInput.Type,
-		endings: { readonly Page: ReadonlyArray<Ending<typeof PageRead.Type>> }
+		endings: { readonly Page: ReadonlyArray<Ending<typeof PageInput.Type, typeof PageRead.Type>> }
 	) =>
 		Effect.succeed({
 			output: {},
 			writes: {
-				insert: {
-					Cursor: [
-						{
-							feed: run.feed,
-							position: Arr.reduce(endings.Page, -1n, (last, ending) =>
-								ending._tag === "Done" && ending.output.seq > last ? ending.output.seq : last
-							)
-						}
-					]
-				},
-				put: {},
-				delete: {}
+				params: {},
+				facts: {
+					insert: {
+						Cursor: [
+							{
+								feed: run.feed,
+								position: Arr.reduce(endings.Page, -1n, (last, ending) =>
+									ending._tag === "Done" && ending.output.seq > last ? ending.output.seq : last
+								)
+							}
+						]
+					}
+				}
 			}
 		})
 })
@@ -281,8 +337,7 @@ const Square = step(
 	},
 	(task) =>
 		Effect.succeed({
-			output: { square: task.n * task.n },
-			writes: { insert: {}, put: {}, delete: {} }
+			output: { square: task.n * task.n }
 		})
 )
 
@@ -299,24 +354,25 @@ const Batch = scope("Batch", {
 		uses: [],
 		retry: attempts(3),
 		waits: 0,
-		writes: writes({ insert: [Tally], put: [], delete: [] }),
+		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Tally, []), {}),
 		body: (b, endings) =>
 			Effect.succeed({
 				output: {},
 				writes: {
-					insert: {
-						Tally: [
-							{
-								batch: b.batch,
-								count: BigInt(endings.Square.length),
-								total: Arr.reduce(endings.Square, 0n, (sum, e) =>
-									e._tag === "Done" ? sum + e.output.square : sum
-								)
-							}
-						]
-					},
-					put: {},
-					delete: {}
+					params: {},
+					facts: {
+						insert: {
+							Tally: [
+								{
+									batch: b.batch,
+									count: BigInt(endings.Square.length),
+									total: Arr.reduce(endings.Square, 0n, (sum, e) =>
+										e._tag === "Done" ? sum + e.output.square : sum
+									)
+								}
+							]
+						}
+					}
 				}
 			})
 	}
@@ -338,11 +394,11 @@ const FanRun = root("FanRun", {
 		uses: [],
 		retry: attempts(3),
 		waits: 0,
-		writes: writes({ insert: [Settled], put: [], delete: [] }),
+		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Settled, []), {}),
 		body: (run) =>
 			Effect.succeed({
 				output: {},
-				writes: { insert: { Settled: [{ batch: run.batch }] }, put: {}, delete: {} }
+				writes: { params: {}, facts: { insert: { Settled: [{ batch: run.batch }] } } }
 			})
 	}
 })
@@ -365,15 +421,14 @@ const Copy = step(
 		retry: attempts(3),
 		waits: 0,
 		due: atSpawn,
-		writes: writes({ insert: [Copied], put: [], delete: [] })
+		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Copied, []), {})
 	},
 	(input) =>
 		Effect.succeed({
 			output: { run: input.run },
 			writes: {
-				insert: { Copied: [{ relation: input.relation, run: input.run }] },
-				put: {},
-				delete: {}
+				params: {},
+				facts: { insert: { Copied: [{ relation: input.relation, run: input.run }] } }
 			}
 		})
 )
@@ -395,7 +450,7 @@ const SyncRun = root("SyncRun", {
 		retry: attempts(3),
 		waits: 0,
 		writes: writesNothing,
-		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
+		body: () => Effect.succeed({ output: {} })
 	}
 })
 
@@ -412,12 +467,12 @@ const Build = step(
 		retry: attempts(3),
 		waits: 0,
 		due: atSpawn,
-		writes: writes({ insert: [Built], put: [], delete: [] })
+		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Built, []), {})
 	},
 	(input) =>
 		Effect.succeed({
 			output: { build: input.build },
-			writes: { insert: { Built: [{ build: input.build }] }, put: {}, delete: {} }
+			writes: { params: {}, facts: { insert: { Built: [{ build: input.build }] } } }
 		})
 )
 
@@ -438,7 +493,7 @@ const Gold = root("Gold", {
 		retry: attempts(3),
 		waits: 0,
 		writes: writesNothing,
-		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
+		body: () => Effect.succeed({ output: {} })
 	}
 })
 
@@ -466,8 +521,7 @@ const faulty = (input: typeof Attempted.Type) =>
 			dies
 				? Effect.die(`a planted fault of ${input.key}`)
 				: Effect.succeed({
-						output: { key: input.key },
-						writes: { insert: {}, put: {}, delete: {} }
+						output: { key: input.key }
 					})
 		)
 	)
@@ -508,7 +562,10 @@ const Brittle = step(
 	faulty
 )
 
-/** A run of both ladders, whose finish reads how each ended. */
+/**
+ * A run of both ladders, whose finish records what it heard of each, by the key of the input its ending carries:
+ * answered where the step was done, and not where its ladder failed it.
+ */
 const Ladders = root("Ladders", {
 	trigger: operator,
 	input: Schema.Struct({ steadfast: Schema.String, brittle: Schema.String }),
@@ -524,8 +581,22 @@ const Ladders = root("Ladders", {
 		uses: [],
 		retry: attempts(3),
 		waits: 0,
-		writes: writesNothing,
-		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
+		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Heard, []), {}),
+		body: (_, endings) =>
+			Effect.succeed({
+				output: {},
+				writes: {
+					params: {},
+					facts: {
+						insert: {
+							Heard: Arr.map([...endings.Steadfast, ...endings.Brittle], (ending) => ({
+								key: ending.input.key,
+								answered: ending._tag === "Done"
+							}))
+						}
+					}
+				}
+			})
 	}
 })
 
@@ -561,8 +632,7 @@ const Polite = step(
 				Option.match(refused, {
 					onNone: () =>
 						Effect.succeed({
-							output: { key: input.key },
-							writes: { insert: {}, put: {}, delete: {} }
+							output: { key: input.key }
 						}),
 					onSome: (headers) =>
 						Option.match(laterOf(headers), {
@@ -590,19 +660,20 @@ const Throttled = root("Throttled", {
 		uses: [],
 		retry: attempts(3),
 		waits: 0,
-		writes: writes({ insert: [Heard], put: [], delete: [] }),
+		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Heard, []), {}),
 		body: (input, endings) =>
 			Effect.succeed({
 				output: {},
 				writes: {
-					insert: {
-						Heard: Arr.map(endings.Polite, (ending) => ({
-							key: input.key,
-							answered: ending._tag === "Done"
-						}))
-					},
-					put: {},
-					delete: {}
+					params: {},
+					facts: {
+						insert: {
+							Heard: Arr.map(endings.Polite, (ending) => ({
+								key: input.key,
+								answered: ending._tag === "Done"
+							}))
+						}
+					}
 				}
 			})
 	}
@@ -661,8 +732,7 @@ const Embed = step(
 	},
 	(probe) =>
 		Effect.succeed({
-			output: { vector: Vector.make(Float32Array.from(probe.near), embeddingDimensions) },
-			writes: { insert: {}, put: {}, delete: {} }
+			output: { vector: Vector.make(Float32Array.from(probe.near), embeddingDimensions) }
 		})
 )
 
@@ -772,7 +842,7 @@ const Decide = step(
 		retry: attempts(3),
 		waits: 0,
 		due: atSpawn,
-		writes: writes({ insert: [Assigned], put: [], delete: [] })
+		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Assigned, []), {})
 	},
 	(question, found) => {
 		const decision = decide(
@@ -783,14 +853,15 @@ const Decide = step(
 		return Effect.succeed({
 			output: decision,
 			writes: {
-				insert: {
-					Assigned:
-						decision.stage._tag === "Serve"
-							? [{ learner: question.learner, passage: decision.stage.passage }]
-							: []
-				},
-				put: {},
-				delete: {}
+				params: {},
+				facts: {
+					insert: {
+						Assigned:
+							decision.stage._tag === "Serve"
+								? [{ learner: question.learner, passage: decision.stage.passage }]
+								: []
+					}
+				}
 			}
 		})
 	}
@@ -826,30 +897,35 @@ const Assignment = root("Assignment", {
 		uses: [],
 		retry: attempts(3),
 		waits: 0,
-		writes: writes({ insert: [Concluded], put: [], delete: [] }),
+		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Concluded, []), {}),
 		body: (
 			probe: typeof Probe.Type,
-			endings: { readonly Decide: ReadonlyArray<Ending<typeof Decision.Type>> }
+			endings: {
+				readonly Decide: ReadonlyArray<Ending<typeof Question.Type, typeof Decision.Type>>
+			}
 		) =>
 			Effect.succeed({
 				output: {},
 				writes: {
-					insert: {
-						Concluded: Arr.flatMap(endings.Decide, (ending) =>
-							ending._tag === "Done"
-								? [
-										{
-											learner: probe.learner,
-											served:
-												ending.output.stage._tag === "Serve" ? ending.output.stage.passage : "rest",
-											weighed: BigInt(ending.output.weighed.length)
-										}
-									]
-								: []
-						)
-					},
-					put: {},
-					delete: {}
+					params: {},
+					facts: {
+						insert: {
+							Concluded: Arr.flatMap(endings.Decide, (ending) =>
+								ending._tag === "Done"
+									? [
+											{
+												learner: probe.learner,
+												served:
+													ending.output.stage._tag === "Serve"
+														? ending.output.stage.passage
+														: "rest",
+												weighed: BigInt(ending.output.weighed.length)
+											}
+										]
+									: []
+							)
+						}
+					}
 				}
 			})
 	}
@@ -916,8 +992,7 @@ const Analyze = step(
 	},
 	(question) =>
 		Effect.succeed({
-			output: { score: question.question * question.question },
-			writes: { insert: {}, put: {}, delete: {} }
+			output: { score: question.question * question.question }
 		})
 )
 
@@ -948,8 +1023,7 @@ const Questions = scope("Questions", {
 					total: Arr.reduce(endings.Analyze, 0n, (sum, e) =>
 						e._tag === "Done" ? sum + e.output.score : sum
 					)
-				},
-				writes: { insert: {}, put: {}, delete: {} }
+				}
 			})
 	}
 })
@@ -975,8 +1049,7 @@ const Gather = step(
 	},
 	(review) =>
 		Effect.succeed({
-			output: { groups: BigInt(review.sizes.length) },
-			writes: { insert: {}, put: {}, delete: {} }
+			output: { groups: BigInt(review.sizes.length) }
 		})
 )
 
@@ -1003,19 +1076,20 @@ const Save = step(
 		retry: attempts(3),
 		waits: 0,
 		due: atSpawn,
-		writes: writes({ insert: [Reviewed], put: [], delete: [] })
+		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Reviewed, []), {})
 	},
 	(group) =>
 		Effect.succeed({
 			output: { total: group.total },
 			writes: {
-				insert: {
-					Reviewed: [
-						{ review: group.review, group: group.group, count: group.count, total: group.total }
-					]
-				},
-				put: {},
-				delete: {}
+				params: {},
+				facts: {
+					insert: {
+						Reviewed: [
+							{ review: group.review, group: group.group, count: group.count, total: group.total }
+						]
+					}
+				}
 			}
 		})
 )
@@ -1044,24 +1118,25 @@ const ReviewRun = root("ReviewRun", {
 		uses: [],
 		retry: attempts(3),
 		waits: 0,
-		writes: writes({ insert: [Summary], put: [], delete: [] }),
+		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Summary, []), {}),
 		body: (review, endings) =>
 			Effect.succeed({
 				output: {},
 				writes: {
-					insert: {
-						Summary: [
-							{
-								review: review.review,
-								groups: BigInt(Arr.filter(endings.Save, (e) => e._tag === "Done").length),
-								total: Arr.reduce(endings.Questions, 0n, (sum, e) =>
-									e._tag === "Done" ? sum + e.output.total : sum
-								)
-							}
-						]
-					},
-					put: {},
-					delete: {}
+					params: {},
+					facts: {
+						insert: {
+							Summary: [
+								{
+									review: review.review,
+									groups: BigInt(Arr.filter(endings.Save, (e) => e._tag === "Done").length),
+									total: Arr.reduce(endings.Questions, 0n, (sum, e) =>
+										e._tag === "Done" ? sum + e.output.total : sum
+									)
+								}
+							]
+						}
+					}
 				}
 			})
 	}
@@ -1089,12 +1164,12 @@ const Deliver = step(
 		retry: attempts(3),
 		waits: 0,
 		due: atSpawn,
-		writes: writes({ insert: [Delivered], put: [], delete: [] })
+		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Delivered, []), {})
 	},
 	(graded) =>
 		Effect.succeed({
 			output: graded,
-			writes: { insert: { Delivered: [{ attempt: graded.attempt }] }, put: {}, delete: {} }
+			writes: { params: {}, facts: { insert: { Delivered: [{ attempt: graded.attempt }] } } }
 		})
 )
 
@@ -1115,7 +1190,7 @@ const Writeback = root("Writeback", {
 		retry: attempts(3),
 		waits: 0,
 		writes: writesNothing,
-		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
+		body: () => Effect.succeed({ output: {} })
 	}
 })
 
@@ -1141,12 +1216,12 @@ const Chime = step(
 		retry: attempts(3),
 		waits: 0,
 		due: atSpawn,
-		writes: writes({ insert: [Chimed], put: [], delete: [] })
+		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Chimed, []), {})
 	},
 	(hour) =>
 		Effect.succeed({
 			output: hour,
-			writes: { insert: { Chimed: [{ hour: hour.hour, bell: hour.bell }] }, put: {}, delete: {} }
+			writes: { params: {}, facts: { insert: { Chimed: [{ hour: hour.hour, bell: hour.bell }] } } }
 		})
 )
 
@@ -1173,7 +1248,7 @@ const Hourly = root("Hourly", {
 		retry: attempts(3),
 		waits: 0,
 		writes: writesNothing,
-		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
+		body: () => Effect.succeed({ output: {} })
 	}
 })
 

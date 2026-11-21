@@ -1,5 +1,5 @@
 import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, type Cron, Effect, Option, Order, Stream } from "effect"
+import { Array as Arr, type Cron, Effect, Option, Order, Predicate, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Due, Exclusive, Scheduled, Trigger } from "#algebra/kinds.ts"
 import { atOnce, type Delay, delayOf, exclusiveId, type ScopeKey } from "#runtime/identity.ts"
@@ -41,14 +41,28 @@ export const ordered = <A extends { readonly ordinal: bigint }>(
 	)
 
 /**
- * A value whose tagged unions each found the row of the variant its tag names, which the database holds there by law:
- * none is a broken law, and dies.
+ * A value the database holds by law, found: a value whose tagged unions each found the row of the variant its tag
+ * names, or the input of a child a finish read the ending of, which every step and scope holds. None is a broken law,
+ * and dies.
  */
 export const held = <A>(value: Option.Option<A>): Effect.Effect<A> =>
 	Option.match(value, {
-		onNone: () => Effect.die("a tagged union's tag names a variant with no row"),
+		onNone: () => Effect.die("a value the database holds by law has no row"),
 		onSome: (found) => Effect.succeed(found)
 	})
+
+/**
+ * A commit's facts: den's own inserts, and the facts of the ChangeSet its step commits through, op by op, the inserts of
+ * both under `insert`, as the union of den's ChangeSet with the step's holds the array members of both, each under its
+ * own relation.
+ */
+export const committedFacts = <const D extends { readonly insert: object }, F extends object>(
+	den: D,
+	step: F
+): D & F =>
+	Predicate.hasProperty(step, "insert") && Predicate.isObject(step.insert)
+		? { ...den, ...step, insert: { ...den.insert, ...step.insert } }
+		: { ...den, ...step }
 
 /** How long after its spawn a step is first due, by its kind's declaration. */
 export const delayAfter = (due: Due): Delay => {

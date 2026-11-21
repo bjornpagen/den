@@ -12,6 +12,7 @@ import {
 	workload
 } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
+import { fan as declaredFlow } from "#integration/slice/flows.ts"
 import {
 	FanKind,
 	FanRootKind,
@@ -437,6 +438,15 @@ export const fanDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", FanScope.fields.scope)))
 			.find({ step, square })
 	}),
+	fanInputsBatchSquare: query(fanGraph).rule((r) => {
+		const { step, scope } = v(FanStep, "step")
+		const { batch, n } = v(FanSquareInput, "input")
+		return r
+			.match(FanStep, { step, kind: "Square", scope })
+			.match(FanSquareInput, { step, batch, n })
+			.where(r.eq(scope, r.param("scope", FanScope.fields.scope)))
+			.find({ step, batch, n })
+	}),
 	fanFailuresBatchSquare: query(fanGraph).rule((r) => {
 		const { step, scope } = v(FanStep, "step")
 		return r
@@ -478,6 +488,17 @@ export const fanDenPrograms = Object.freeze({
 			.match(FanBatchFinishOutput, { step })
 			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))
 			.find({ step })
+	}),
+	fanInputsFanRunBatch: query(fanGraph).rule((r) => {
+		const { scope, parent } = v(FanWithin, "within")
+		const { step } = v(FanFinish, "finish")
+		const { batch, size } = v(FanBatchInput, "input")
+		return r
+			.match(FanWithin, { scope, parent, kind: "Batch" })
+			.match(FanFinish, { scope, step })
+			.match(FanBatchInput, { scope, batch, size })
+			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))
+			.find({ step, batch, size })
 	}),
 	fanFailuresFanRunBatch: query(fanGraph).rule((r) => {
 		const { scope, parent } = v(FanWithin, "within")
@@ -546,7 +567,7 @@ export const fanCommitPrograms = Object.freeze({
 			.insert(FanDone, [])
 			.insert(FanHeld, [])
 			.insert(FanBatchFinishOutput, []),
-		ChangeSet.empty(Loader).insert(App.relations.Tally, [])
+		declaredFlow.kinds[1].finish.writes.changes(Loader)
 	),
 	fanCommitFanRunFinish: ChangeSet.union(
 		ChangeSet.empty(fanGraph)
@@ -554,7 +575,7 @@ export const fanCommitPrograms = Object.freeze({
 			.insert(FanDone, [])
 			.insert(FanHeld, [])
 			.insert(FanFanRunFinishOutput, []),
-		ChangeSet.empty(Loader).insert(App.relations.Settled, [])
+		declaredFlow.kinds[2].finish.writes.changes(Loader)
 	)
 })
 

@@ -18,9 +18,11 @@ import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/sl
  * is recorded with its result and is exactly the feed's weight rows when it ran (only added to, so the rows standing
  * after the run); page s holds (s + 1) × max(1, Σ factors) items, committed with its result, and reads every item of
  * the pages before it; the root stores each item a later page read once, Σ over s < n − 1 of page s's items, however
- * many pages read it (a work count: linear in the feed, where a copy per page is quadratic); exactly one done finish
- * of the run's scope; the feed's cursor at n − 1; and requesting it again with the same key and instant, and ringing
- * every page's first wake once more, changes nothing.
+ * many pages read it (a work count: linear in the feed, where a copy per page is quadratic); each page's tree of the
+ * feed's weight, read where the feed has one, is recorded as it found it, nested rows and all: the weight, the items of
+ * the pages before it in their order, each with its page's first item; exactly one done finish of the run's scope; the feed's
+ * cursor at n − 1; and requesting it again with the same key and instant, and ringing every page's first wake once
+ * more, changes nothing.
  */
 
 type Feature =
@@ -130,6 +132,48 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 							before(BigInt(run.pages - 1)),
 							"each item a later page read is stored once in its root, however many pages read it"
 						)
+						const trees = yield* rows(app.workload.treeReads.once({ params: {}, facts: {} }))
+						const treeItems = yield* rows(app.workload.treeItems.once({ params: {}, facts: {} }))
+						const treeFirsts = yield* rows(app.workload.treeFirsts.once({ params: {}, facts: {} }))
+						Arr.forEach(pages, (page) => {
+							const tree = Arr.filter(trees, (t) => t.step === page.step)
+							assert.deepEqual(
+								Arr.map(tree, (t) => [t.feed, t.factor]),
+								run.factor > 0 ? [[run.feed, BigInt(run.factor)]] : [],
+								"a page's tree is the feed's weight, where it has one"
+							)
+							Arr.forEach(tree, (t) => {
+								const held = Arr.sort(
+									Arr.filter(treeItems, (i) => i.digest === t.digest && i.root === t.root),
+									Order.mapInput(Order.BigInt, (i: (typeof treeItems)[number]) => i.items)
+								)
+								const pagesBefore = Arr.sort(
+									Arr.filter(pages, (p) => p.seq < page.seq),
+									Order.mapInput(Order.BigInt, (p: (typeof pages)[number]) => p.seq)
+								)
+								const expected = Arr.flatMap(pagesBefore, (p) =>
+									Array.from({ length: Number(p.items) }, (_, n) => [p.seq, BigInt(n)] as const)
+								)
+								assert.deepEqual(
+									Arr.map(held, (i) => [i.items, i.seq, i.n]),
+									Arr.map(expected, ([seq, n], at) => [BigInt(at), seq, n]),
+									"a recorded tree holds the items before its page, in order, each at its place"
+								)
+								const firsts = Arr.filter(
+									treeFirsts,
+									(f) => f.digest === t.digest && f.root === t.root
+								)
+								assert.deepEqual(
+									Arr.sort(
+										Arr.map(firsts, (f) => f.items),
+										Order.BigInt
+									),
+									Arr.map(expected, (_, at) => BigInt(at)),
+									"every item of a recorded tree holds its page's first item"
+								)
+								assert.ok(Arr.every(firsts, (f) => f.n === 0n))
+							})
+						})
 						const finished = yield* rows(app.workload.chainFinishes.once({ params: {}, facts: {} }))
 						const finishes = Arr.filter(finished, (finish) => finish.scope === scope)
 						assert.deepEqual(
@@ -190,6 +234,12 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 			original: '\t\t\t\t\t\t\t\trowDigest("earlier", [',
 			replacement: "\t\t\t\t\t\t\t\trowDigest(done.turn.step, [",
 			why: "Each page stores its own copy of every item it read, keyed by its own step: a chain of n pages stores the items before each page again, quadratic in the feed where it was linear."
+		},
+		{
+			file: "packages/den/src/runtime/identity.ts",
+			original: 'typeof value === "object" ? attachedParts(value.rows) : [columnText(value)]',
+			replacement: 'typeof value === "object" ? [] : [columnText(value)]',
+			why: "A row's digest leaves out the rows its attachments delivered: two pages' trees of one weight share a digest, so the later page's items land under the earlier page's reference and the record is no longer what the earlier page saw."
 		}
 	]
 })

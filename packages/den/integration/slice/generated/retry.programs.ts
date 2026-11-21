@@ -12,6 +12,7 @@ import {
 	workload
 } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
+import { retry as declaredFlow } from "#integration/slice/flows.ts"
 import {
 	RetryKind,
 	RetryRootKind,
@@ -414,6 +415,15 @@ export const retryDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
 			.find({ step, key })
 	}),
+	retryInputsLaddersSteadfast: query(retryGraph).rule((r) => {
+		const { step, scope } = v(RetryStep, "step")
+		const { key } = v(RetrySteadfastInput, "input")
+		return r
+			.match(RetryStep, { step, kind: "Steadfast", scope })
+			.match(RetrySteadfastInput, { step, key })
+			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
+			.find({ step, key })
+	}),
 	retryFailuresLaddersSteadfast: query(retryGraph).rule((r) => {
 		const { step, scope } = v(RetryStep, "step")
 		return r
@@ -428,6 +438,15 @@ export const retryDenPrograms = Object.freeze({
 		return r
 			.match(RetryStep, { step, kind: "Brittle", scope })
 			.match(RetryBrittleOutput, { step, key })
+			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
+			.find({ step, key })
+	}),
+	retryInputsLaddersBrittle: query(retryGraph).rule((r) => {
+		const { step, scope } = v(RetryStep, "step")
+		const { key } = v(RetryBrittleInput, "input")
+		return r
+			.match(RetryStep, { step, kind: "Brittle", scope })
+			.match(RetryBrittleInput, { step, key })
 			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
 			.find({ step, key })
 	}),
@@ -469,6 +488,15 @@ export const retryDenPrograms = Object.freeze({
 		return r
 			.match(RetryStep, { step, kind: "Polite", scope })
 			.match(RetryPoliteOutput, { step, key })
+			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
+			.find({ step, key })
+	}),
+	retryInputsThrottledPolite: query(retryGraph).rule((r) => {
+		const { step, scope } = v(RetryStep, "step")
+		const { key } = v(RetryPoliteInput, "input")
+		return r
+			.match(RetryStep, { step, kind: "Polite", scope })
+			.match(RetryPoliteInput, { step, key })
 			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
 			.find({ step, key })
 	}),
@@ -541,18 +569,21 @@ export const retryCommitPrograms = Object.freeze({
 		.insert(RetryDone, [])
 		.insert(RetryHeld, [])
 		.insert(RetryPoliteOutput, []),
-	retryCommitLaddersFinish: ChangeSet.empty(retryGraph)
-		.insert(RetryResult, [])
-		.insert(RetryDone, [])
-		.insert(RetryHeld, [])
-		.insert(RetryLaddersFinishOutput, []),
+	retryCommitLaddersFinish: ChangeSet.union(
+		ChangeSet.empty(retryGraph)
+			.insert(RetryResult, [])
+			.insert(RetryDone, [])
+			.insert(RetryHeld, [])
+			.insert(RetryLaddersFinishOutput, []),
+		declaredFlow.kinds[2].finish.writes.changes(Loader)
+	),
 	retryCommitThrottledFinish: ChangeSet.union(
 		ChangeSet.empty(retryGraph)
 			.insert(RetryResult, [])
 			.insert(RetryDone, [])
 			.insert(RetryHeld, [])
 			.insert(RetryThrottledFinishOutput, []),
-		ChangeSet.empty(Loader).insert(App.relations.Heard, [])
+		declaredFlow.kinds[4].finish.writes.changes(Loader)
 	)
 })
 

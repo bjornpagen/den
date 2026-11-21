@@ -1,7 +1,7 @@
 import type { Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Cause, Duration, Effect, Exit, Option } from "effect"
 import type { Digest } from "effect/crypto"
-import type { Ladder, Resource, WritesDeclaration } from "#algebra/kinds.ts"
+import type { Ladder, Resource } from "#algebra/kinds.ts"
 import { censusPeriodSeconds } from "#algebra/kinds.ts"
 import { Later } from "#algebra/later.ts"
 import { census } from "#runtime/census.ts"
@@ -341,17 +341,16 @@ export const written = <A, R>(
 ): Effect.Effect<Option.Option<A>, Settled, R> =>
 	Effect.flatMap(clock, (at) => Effect.timeoutOption(write, delayTo(at, deadline)))
 
-/** A step kind's typed port: its input, its declared read, its commit and its typed failure. */
-export interface StepPort<I, Rows, O, E, W> {
+/**
+ * A step kind's typed port: its input, its declared read, its commit of what its body returned, `D`, its output and,
+ * for a step that commits through a ChangeSet, that ChangeSet's input, and its typed failure.
+ */
+export interface StepPort<I, Rows, D, E> {
 	readonly input: (step: StepKey) => Effect.Effect<Option.Option<I>, Settled>
 	readonly read: (input: I) => Effect.Effect<Rows, Settled>
-	readonly commit: (done: {
-		readonly turn: Turn
-		readonly input: I
-		readonly rows: Rows
-		readonly output: O
-		readonly writes: W
-	}) => Effect.Effect<Committed, Settled, Digest.Digest>
+	readonly commit: (
+		done: { readonly turn: Turn; readonly input: I; readonly rows: Rows } & D
+	) => Effect.Effect<Committed, Settled, Digest.Digest>
 	readonly fail: (failed: {
 		readonly turn: Turn
 		readonly input: I
@@ -364,19 +363,14 @@ export interface StepPort<I, Rows, O, E, W> {
  * What a runner runs: a step kind's body, or a finish's over its scope's input and its children's endings, which fails
  * with its typed error or with `Later`, its source's named delay.
  */
-export interface Runnable<I, Rows, O, E, W, R> {
+export interface Runnable<I, Rows, D, E, R> {
 	readonly name: string
 	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
 	readonly waits: number
 	/** The facts it awaits beside its input, none for a finish. */
 	readonly awaits: ReadonlyArray<{ readonly relation: { readonly name: string } }>
-	/** The app's relations its commit writes. */
-	readonly writes: WritesDeclaration
-	readonly body: (
-		input: I,
-		rows: Rows
-	) => Effect.Effect<{ readonly output: O; readonly writes: W }, E | Later, R>
+	readonly body: (input: I, rows: Rows) => Effect.Effect<D, E | Later, R>
 }
 
 /** A wait for a write still running at its turn's deadline: due again at once. */
@@ -387,9 +381,9 @@ const stillRunning: Ran = { kind: "waited", why: "transient", after: atOnce }
  * turn's reading `at`, and the write its exit decides, each write retried in place while transient and its spawns due
  * from a fresh reading of the database's instant `clock` takes. A defect or an interruption spends the attempt.
  */
-export const runnerOf = <I, Rows, O, E, W, R>(
-	runnable: Runnable<I, Rows, O, E, W, R>,
-	port: StepPort<I, Rows, O, E, W>,
+export const runnerOf = <I, Rows, D, E, R>(
+	runnable: Runnable<I, Rows, D, E, R>,
+	port: StepPort<I, Rows, D, E>,
 	finishes: Option.Option<string>
 ): StepRunner<R> => ({
 	kind: runnable.name,
@@ -397,7 +391,6 @@ export const runnerOf = <I, Rows, O, E, W, R>(
 	retry: runnable.retry,
 	waits: runnable.waits,
 	awaits: Arr.map(runnable.awaits, (awaited) => awaited.relation.name),
-	writes: Arr.map([...runnable.writes.insert, ...runnable.writes.put], (relation) => relation.name),
 	finishes,
 	run: Effect.fn(`den.turn.${runnable.name}`)(function* (
 		turn: Turn,
@@ -440,9 +433,8 @@ export const runnerOf = <I, Rows, O, E, W, R>(
 		if (Option.isNone(exit.value)) {
 			return { kind: "spent", detail: "the body ran past the turn's deadline" } satisfies Ran
 		}
-		const { output, writes } = exit.value.value
 		return yield* Effect.match(
-			written(port.commit({ turn, input: read, rows, output, writes }), clock, turn.deadline),
+			written(port.commit({ turn, input: read, rows, ...exit.value.value }), clock, turn.deadline),
 			{
 				onFailure: (error): Ran => ({ kind: "error", error }),
 				onSuccess: (outcome): Ran =>
@@ -904,9 +896,22 @@ const serveStep = <R>(
 		const ran = yield* runner.run(turn, at, ledger.now)
 		const ending = yield* endingOf(ledger, runner, turn, ran, used, wake)
 		const onward = yield* settledOn(ledger, runner, scope, ending, claimed.seats)
-		const readied = ending.kind === "done" ? yield* readiedBy(ledgers, runner.writes) : []
+		const readied =
+			ran.kind === "committed" ? yield* readiedBy(ledgers, writtenBy(ran.committed.outcome)) : []
 		return { ending, onward: [...onward, ...readied] }
 	})
+
+/**
+ * The app's relations a commit's outcome added rows to or put rows into, whose rows may complete a step's awaited fact:
+ * read off what the commit did, so a commit through a ChangeSet rings what its rows touched, whatever members it holds.
+ */
+const writtenBy = (outcome: WriteOutcome<unknown>): ReadonlyArray<string> =>
+	outcome.kind === "accepted"
+		? Arr.map(
+				Arr.filter(outcome.counts, (c) => c.added > 0n || c.put > 0n),
+				(c) => c.relation
+			)
+		: []
 
 /**
  * The steps a commit that wrote `wrote` made ready, in every flow the app runs whose step kinds await a fact of one of

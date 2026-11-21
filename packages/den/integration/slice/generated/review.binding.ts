@@ -1,7 +1,9 @@
 import {
 	any,
+	committedFacts,
 	delayAfter,
 	fresh,
+	held,
 	one,
 	only,
 	ordered,
@@ -504,20 +506,24 @@ export const reviewLedger = (h: ReviewHandles) => {
 						const grown = yield* Effect.succeed(nothingGrown)
 						const outcome = yield* settled(
 							h.commits.reviewCommitSave.once({
-								params: {},
-								facts: {
-									insert: {
-										ReviewResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
-										ReviewDone: [{ step: done.turn.step, root: done.turn.root }],
-										ReviewHeld: [
-											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-										],
-										ReviewSaveOutput: [
-											{ step: done.turn.step, root: done.turn.root, total: done.output.total }
-										],
-										Reviewed: done.writes.insert.Reviewed
-									}
-								}
+								params: { ...done.writes.params },
+								facts: committedFacts(
+									{
+										insert: {
+											ReviewResult: [
+												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+											],
+											ReviewDone: [{ step: done.turn.step, root: done.turn.root }],
+											ReviewHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
+											ReviewSaveOutput: [
+												{ step: done.turn.step, root: done.turn.root, total: done.output.total }
+											]
+										}
+									},
+									done.writes.facts
+								)
 							})
 						)
 						return { outcome, spawned: grown.spawned }
@@ -533,7 +539,6 @@ export const reviewLedger = (h: ReviewHandles) => {
 				retry: review.kinds[1].finish.retry,
 				waits: review.kinds[1].finish.waits,
 				awaits: [],
-				writes: review.kinds[1].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof review.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof review.kinds)[1]["finish"]["body"]>[1]
@@ -562,20 +567,41 @@ export const reviewLedger = (h: ReviewHandles) => {
 						if (Option.isNone(within)) {
 							return Option.none()
 						}
-						const rowsAnalyze = yield* Effect.map(
+						const outputAnalyzeRows = yield* Effect.map(
 							settled(h.den.reviewOutputsQuestionsAnalyze.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const inputAnalyzeRows = yield* Effect.map(
+							settled(h.den.reviewInputsQuestionsAnalyze.once({ params: { scope }, facts: {} })),
 							rowsOf
 						)
 						const failuresAnalyze = yield* Effect.map(
 							settled(h.den.reviewFailuresQuestionsAnalyze.once({ params: { scope }, facts: {} })),
 							rowsOf
 						)
+						const inputAnalyze = (child: (typeof inputAnalyzeRows)[number]["step"]) =>
+							held(
+								Option.map(
+									Arr.findFirst(inputAnalyzeRows, (row) => row.step === child),
+									(row) => ({ review: row.review, group: row.group, question: row.question })
+								)
+							)
 						const Analyze = [
-							...Arr.map(rowsAnalyze, (row) => ({
-								_tag: "Done" as const,
-								output: { score: row.score }
-							})),
-							...Arr.map(failuresAnalyze, () => ({ _tag: "Failed" as const }))
+							...(yield* Effect.forEach(outputAnalyzeRows, (row) =>
+								Effect.map(
+									Effect.all({
+										input: inputAnalyze(row.step),
+										output: Effect.succeed({ score: row.score })
+									}),
+									(ended) => ({ _tag: "Done" as const, ...ended })
+								)
+							)),
+							...(yield* Effect.forEach(failuresAnalyze, (failed) =>
+								Effect.map(inputAnalyze(failed.step), (given) => ({
+									_tag: "Failed" as const,
+									input: given
+								}))
+							))
 						]
 						return Option.some({
 							input: input.value,
@@ -671,7 +697,6 @@ export const reviewLedger = (h: ReviewHandles) => {
 				retry: review.kinds[4].finish.retry,
 				waits: review.kinds[4].finish.waits,
 				awaits: [],
-				writes: review.kinds[4].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof review.kinds)[4]["start"]>[0]
 					readonly endings: Parameters<(typeof review.kinds)[4]["finish"]["body"]>[1]
@@ -692,8 +717,12 @@ export const reviewLedger = (h: ReviewHandles) => {
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
-						const rowsQuestions = yield* Effect.map(
+						const outputQuestionsRows = yield* Effect.map(
 							settled(h.den.reviewOutputsReviewRunQuestions.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const inputQuestionsRows = yield* Effect.map(
+							settled(h.den.reviewInputsReviewRunQuestions.once({ params: { scope }, facts: {} })),
 							rowsOf
 						)
 						const failuresQuestions = yield* Effect.map(
@@ -702,27 +731,70 @@ export const reviewLedger = (h: ReviewHandles) => {
 							),
 							rowsOf
 						)
+						const inputQuestions = (child: (typeof inputQuestionsRows)[number]["step"]) =>
+							held(
+								Option.map(
+									Arr.findFirst(inputQuestionsRows, (row) => row.step === child),
+									(row) => ({ review: row.review, group: row.group, size: row.size })
+								)
+							)
 						const Questions = [
-							...Arr.map(rowsQuestions, (row) => ({
-								_tag: "Done" as const,
-								output: { count: row.count, total: row.total }
-							})),
-							...Arr.map(failuresQuestions, () => ({ _tag: "Failed" as const }))
+							...(yield* Effect.forEach(outputQuestionsRows, (row) =>
+								Effect.map(
+									Effect.all({
+										input: inputQuestions(row.step),
+										output: Effect.succeed({ count: row.count, total: row.total })
+									}),
+									(ended) => ({ _tag: "Done" as const, ...ended })
+								)
+							)),
+							...(yield* Effect.forEach(failuresQuestions, (failed) =>
+								Effect.map(inputQuestions(failed.step), (given) => ({
+									_tag: "Failed" as const,
+									input: given
+								}))
+							))
 						]
-						const rowsSave = yield* Effect.map(
+						const outputSaveRows = yield* Effect.map(
 							settled(h.den.reviewOutputsReviewRunSave.once({ params: { scope }, facts: {} })),
+							rowsOf
+						)
+						const inputSaveRows = yield* Effect.map(
+							settled(h.den.reviewInputsReviewRunSave.once({ params: { scope }, facts: {} })),
 							rowsOf
 						)
 						const failuresSave = yield* Effect.map(
 							settled(h.den.reviewFailuresReviewRunSave.once({ params: { scope }, facts: {} })),
 							rowsOf
 						)
+						const inputSave = (child: (typeof inputSaveRows)[number]["step"]) =>
+							held(
+								Option.map(
+									Arr.findFirst(inputSaveRows, (row) => row.step === child),
+									(row) => ({
+										review: row.review,
+										group: row.group,
+										count: row.count,
+										total: row.total
+									})
+								)
+							)
 						const Save = [
-							...Arr.map(rowsSave, (row) => ({
-								_tag: "Done" as const,
-								output: { total: row.total }
-							})),
-							...Arr.map(failuresSave, () => ({ _tag: "Failed" as const }))
+							...(yield* Effect.forEach(outputSaveRows, (row) =>
+								Effect.map(
+									Effect.all({
+										input: inputSave(row.step),
+										output: Effect.succeed({ total: row.total })
+									}),
+									(ended) => ({ _tag: "Done" as const, ...ended })
+								)
+							)),
+							...(yield* Effect.forEach(failuresSave, (failed) =>
+								Effect.map(inputSave(failed.step), (given) => ({
+									_tag: "Failed" as const,
+									input: given
+								}))
+							))
 						]
 						return Option.some({ input: input.value, endings: { Questions, Save } })
 					}),
@@ -732,18 +804,22 @@ export const reviewLedger = (h: ReviewHandles) => {
 						const grown = yield* Effect.succeed(nothingGrown)
 						const outcome = yield* settled(
 							h.commits.reviewCommitReviewRunFinish.once({
-								params: {},
-								facts: {
-									insert: {
-										ReviewResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
-										ReviewDone: [{ step: done.turn.step, root: done.turn.root }],
-										ReviewHeld: [
-											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-										],
-										ReviewReviewRunFinishOutput: [{ step: done.turn.step, root: done.turn.root }],
-										Summary: done.writes.insert.Summary
-									}
-								}
+								params: { ...done.writes.params },
+								facts: committedFacts(
+									{
+										insert: {
+											ReviewResult: [
+												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+											],
+											ReviewDone: [{ step: done.turn.step, root: done.turn.root }],
+											ReviewHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
+											ReviewReviewRunFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
+										}
+									},
+									done.writes.facts
+								)
 							})
 						)
 						return { outcome, spawned: grown.spawned }

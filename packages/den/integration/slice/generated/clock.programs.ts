@@ -12,6 +12,7 @@ import {
 	workload
 } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
+import { clock as declaredFlow } from "#integration/slice/flows.ts"
 import {
 	ClockKind,
 	ClockRootKind,
@@ -437,7 +438,7 @@ export const clockCommitPrograms = Object.freeze({
 			.insert(ClockDone, [])
 			.insert(ClockHeld, [])
 			.insert(ClockChimeOutput, []),
-		ChangeSet.empty(Loader).insert(App.relations.Chimed, [])
+		declaredFlow.kinds[0].writes.changes(Loader)
 	),
 	clockCommitHourlyFinish: ChangeSet.empty(clockGraph)
 		.insert(ClockResult, [])

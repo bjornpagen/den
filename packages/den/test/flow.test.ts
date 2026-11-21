@@ -124,7 +124,7 @@ const declare = (fault: Fault) => {
 		due: atSpawn,
 		writes: writesNothing
 	})
-	const done = () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
+	const done = () => Effect.succeed({ output: {} })
 	const A = step("A", shape([pool]), done)
 	const B = step("B", shape([other]), done)
 	const Stray = step(fault === "twice" ? "A" : "Stray", shape([]), done)
@@ -136,7 +136,7 @@ const declare = (fault: Fault) => {
 		retry: attempts(1),
 		waits: 0,
 		writes: writesNothing,
-		body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
+		body: () => Effect.succeed({ output: {} })
 	})
 	const Inner = scope("Inner", {
 		input: Empty,

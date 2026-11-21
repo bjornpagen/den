@@ -77,10 +77,14 @@ type Feature =
 	| "a child scope"
 	| "a read"
 	| "two reads"
+	| "a tree read"
 	| "a typed error"
 
-/** Which reads the first step declares: none, one, or two, the second recording a finite number. */
-const Reading = Schema.Literals(["none", "one", "two"])
+/**
+ * Which reads the first step declares: none, one, or two, the second recording a finite number or a tree of
+ * attachments.
+ */
+const Reading = Schema.Literals(["none", "one", "two", "tree"])
 
 interface Sketch {
 	readonly prefix: "Alpha" | "Beta"
@@ -138,6 +142,28 @@ const WeightRecord = Schema.Struct({ feed: Schema.BigInt, factor: Schema.BigInt 
 const PassageRecord = Schema.Struct({ passage: Schema.BigInt, distance: Schema.Finite })
 
 /**
+ * A record of documents, its attachments two deep: each node an array's row, its comment an option's under it and its
+ * attributes an array's, each attribute's comment an option's again, a field named `comment` a second time, and the
+ * document's declaration an option of its own.
+ */
+const DocumentRecord = Schema.Struct({
+	path: Schema.String,
+	nodes: Schema.Array(
+		Schema.Struct({
+			start: Schema.BigInt,
+			comment: Schema.Option(Schema.Struct({ value: Schema.String })),
+			attributes: Schema.Array(
+				Schema.Struct({
+					name: Schema.String,
+					comment: Schema.Option(Schema.Struct({ value: Schema.String }))
+				})
+			)
+		})
+	),
+	declaration: Schema.Option(Schema.Struct({ version: Schema.String }))
+})
+
+/**
  * The reads a sketch's first step declares, by their records alone: lowering never runs a read's query, which the
  * programs module calls over the flow's app role, so a sketch's query is no query at all.
  */
@@ -150,7 +176,9 @@ const readsOf = <I>(reading: typeof Reading.Type): ReadsOver<I> =>
 				records:
 					reading === "one"
 						? { weights: WeightRecord }
-						: { weights: WeightRecord, passages: PassageRecord },
+						: reading === "two"
+							? { weights: WeightRecord, passages: PassageRecord }
+							: { weights: WeightRecord, documents: DocumentRecord },
 				params: () => ({})
 			}
 
@@ -176,14 +204,13 @@ const finishing = {
 	retry: attempts(1),
 	waits: 0,
 	writes: writesNothing,
-	body: () => Effect.succeed({ output: {}, writes: { insert: {}, put: {}, delete: {} } })
+	body: () => Effect.succeed({ output: {} })
 } as const
 
 const built = (sketch: Sketch): AnyFlow => {
 	const value = Schema.Struct({ value: fieldOf(sketch.form) })
 	const pool = resource("Pool", boxSeats)
-	const done = (x: typeof value.Type) =>
-		Effect.succeed({ output: x, writes: { insert: {}, put: {}, delete: {} } })
+	const done = (x: typeof value.Type) => Effect.succeed({ output: x })
 	const first = step(
 		"S0",
 		{
@@ -297,6 +324,7 @@ it.effect(
 							"a child scope",
 							"a read",
 							"two reads",
+							"a tree read",
 							"a typed error"
 						],
 						{ cases: 80, sense: notesOnly }
@@ -322,13 +350,17 @@ it.effect(
 						}
 						const reading = {
 							weights: sketch.reads !== "none",
-							passages: sketch.reads === "two"
+							passages: sketch.reads === "two",
+							documents: sketch.reads === "tree"
 						}
 						if (sketch.reads === "one") {
 							c.note("a read")
 						}
 						if (sketch.reads === "two") {
 							c.note("two reads")
+						}
+						if (sketch.reads === "tree") {
+							c.note("a tree read")
 						}
 						if (sketch.typed) {
 							c.note("a typed error")
@@ -497,8 +529,85 @@ it.effect(
 								)
 							)
 						}
+						if (reading.documents) {
+							const keyOf = (name: string) =>
+								Option.map(
+									Arr.findFirst(lowered.relations, (r) => r.name === `${P}S0Documents${name}`),
+									(r) => Arr.join(r.key, ",")
+								)
+							const tree = [
+								["Row", ["digest", "path", "root"], "digest,root", "", ""],
+								[
+									"Nodes",
+									["digest", "nodes", "start", "root"],
+									"digest,nodes,root",
+									"Row",
+									"nodes"
+								],
+								["Comment", ["digest", "nodes", "value", "root"], "digest,nodes,root", "Nodes", ""],
+								[
+									"Attributes",
+									["digest", "nodes", "attributes", "name", "root"],
+									"digest,nodes,attributes,root",
+									"Nodes",
+									"attributes"
+								],
+								[
+									"Comment2",
+									["digest", "nodes", "attributes", "value", "root"],
+									"digest,nodes,attributes,root",
+									"Attributes",
+									""
+								],
+								["Declaration", ["digest", "version", "root"], "digest,root", "Row", ""]
+							] as const
+							Arr.forEach(tree, ([name, fields, key, owner, place]) => {
+								assert.deepStrictEqual(
+									Option.map(fieldsOf(`${P}S0Documents${name}`), (all): ReadonlyArray<string> =>
+										Arr.map(all, ([field]) => field)
+									),
+									Option.some<ReadonlyArray<string>>(fields),
+									`the attachment ${name} holds its owner's key, its place and its columns`
+								)
+								assert.deepStrictEqual(keyOf(name), Option.some(key))
+								if (owner !== "") {
+									const ownerKey = Option.getOrElse(keyOf(owner), () => "")
+									assert.isTrue(
+										Arr.some(
+											containments,
+											(law) =>
+												law.from.relation === `${P}S0Documents${name}` &&
+												law.to.relation === `${P}S0Documents${owner}` &&
+												Arr.join(
+													Arr.map(law.from.terms, (t) => t.field),
+													","
+												) === ownerKey
+										),
+										`the attachment ${name} is contained in its owner ${owner}`
+									)
+								}
+								if (place !== "") {
+									assert.isTrue(
+										Arr.some(
+											containments,
+											(law) =>
+												law.from.relation === `${P}S0Documents${name}` &&
+												law.to.relation === `${P}S0Documents${name}` &&
+												law.from.selection.kind === "atLeast" &&
+												law.from.selection.field === place &&
+												Arr.some(law.from.terms, (t) => t.field === place && t.pred)
+										),
+										`the array ${name}'s rows are gap-free from 0`
+									)
+								}
+							})
+						}
 						Arr.forEach(
-							[...(reading.weights ? ["Weights"] : []), ...(reading.passages ? ["Passages"] : [])],
+							[
+								...(reading.weights ? ["Weights"] : []),
+								...(reading.passages ? ["Passages"] : []),
+								...(reading.documents ? ["Documents"] : [])
+							],
 							(read) => {
 								assert.isTrue(
 									Arr.some(

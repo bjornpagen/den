@@ -1,3 +1,4 @@
+import type { ClockUnit } from "@bjornpagen/grizzle"
 import { Array as Arr, Option, Record, String as Str } from "effect"
 import {
 	type AnyFlow,
@@ -8,19 +9,22 @@ import {
 	stepsOf
 } from "#algebra/flow.ts"
 import {
+	type AnyCommit,
 	type AnyStepKind,
 	type Due,
 	type Ladder,
 	Refused,
 	type Stored,
-	type Trigger,
-	type WritesDeclaration
+	type Trigger
 } from "#algebra/kinds.ts"
 import {
 	type ArrayField,
+	type Attached,
 	type Base,
 	type Column,
 	errorShapeOf,
+	type RecordShape,
+	recordShapeOf,
 	type Shape,
 	shapeOf,
 	type UnionField,
@@ -171,12 +175,13 @@ export const valueRelations = (value: ValueIR): ReadonlyArray<string> => [
 	...Arr.flatMap(value.unions, (u) => Arr.map(u.variants, (v) => v.relation))
 ]
 
-/** The relation names a step's writes name, by operation. */
-export interface WritesIR {
-	readonly insert: ReadonlyArray<string>
-	readonly put: ReadonlyArray<string>
-	readonly delete: ReadonlyArray<string>
-}
+/**
+ * What a step's or a finish's commit holds beside den's facts: nothing, or the app's ChangeSet over the flow's app role,
+ * with each of its parameters its clock binds and the unit of the reading.
+ */
+export type CommitIR =
+	| { readonly kind: "nothing" }
+	| { readonly kind: "through"; readonly clock: ReadonlyArray<readonly [string, ClockUnit]> }
 
 /**
  * An edge, lowered: the relation of its facts, the node it leaves (a step kind, or a child scope kind whose finish's
@@ -191,13 +196,34 @@ export interface EdgeIR {
 }
 
 /**
- * One named query of a step's declared reads, lowered: its name, its record's columns, the relation that holds each row
- * it found once per root, by the digest of its record, and the relation of the step's references to them, by ordinal.
+ * A read's record, lowered: the relation that holds its rows, keyed by the digest of the read's row and, for a row an
+ * array delivered, its place in it and the place of every array row above it (`places`, each a field named after its
+ * array), its columns, and its attachments, each a record of its own, contained in it.
+ */
+export interface RecordIR {
+	readonly relation: string
+	readonly places: ReadonlyArray<string>
+	readonly columns: ReadonlyArray<Column>
+	readonly attached: ReadonlyArray<{
+		readonly name: string
+		readonly delivery: Attached["delivery"]
+		readonly record: RecordIR
+	}>
+}
+
+/** Every relation of a record: its own, and each of its attachments', at every depth. */
+export const recordRelations = (record: RecordIR): ReadonlyArray<string> => [
+	record.relation,
+	...Arr.flatMap(record.attached, (a) => recordRelations(a.record))
+]
+
+/**
+ * One named query of a step's declared reads, lowered: its name, its record, whose relations hold each row it found once
+ * per root, by the digest of its record, and the relation of the step's references to them, by ordinal.
  */
 export interface ReadIR {
 	readonly name: string
-	readonly columns: ReadonlyArray<Column>
-	readonly row: string
+	readonly row: RecordIR
 	readonly record: string
 }
 
@@ -219,7 +245,7 @@ export interface StepIR {
 	readonly error: Option.Option<ValueIR>
 	readonly reads: ReadonlyArray<ReadIR>
 	readonly awaits: ReadonlyArray<AwaitIR>
-	readonly writes: WritesIR
+	readonly writes: CommitIR
 	readonly edges: ReadonlyArray<EdgeIR>
 	readonly uses: ReadonlyArray<string>
 	readonly retry: Ladder
@@ -249,13 +275,14 @@ export interface SpawnedScopeIR {
 export type SpawnedIR = SpawnedStepIR | SpawnedScopeIR
 
 /**
- * What a finish reads of a child kind: its endings with their outputs, a step kind's own or a child scope kind's, its
- * finish's, which the finish reads from the steps of the kind in its scope or from the finishes of the child scopes of
- * the kind under it.
+ * What a finish reads of a child kind: its endings with their inputs and outputs, a step kind's own or a child scope
+ * kind's, its finish's, which the finish reads from the steps of the kind in its scope or from the finishes of the child
+ * scopes of the kind under it, each child's input by its step or its scope.
  */
 export interface FinishReadIR {
 	readonly kind: "step" | "scope"
 	readonly name: string
+	readonly input: ValueIR
 	readonly output: ValueIR
 }
 
@@ -277,7 +304,7 @@ export interface JoinIR {
 		readonly name: string
 		readonly output: ValueIR
 		readonly error: Option.Option<ValueIR>
-		readonly writes: WritesIR
+		readonly writes: CommitIR
 		readonly retry: Ladder
 		readonly reads: ReadonlyArray<FinishReadIR>
 		/** The edges that leave the scope kind, which its finish's commit spawns in the scope's parent. */
@@ -317,8 +344,6 @@ export interface Lowered {
 	readonly requesting: ReadonlyArray<string>
 	/** The relations den's coordinator role inserts into: each chain's turns and their ends. */
 	readonly coordination: ReadonlyArray<string>
-	/** The app's relations the flow's steps and finishes write, by operation. */
-	readonly app: WritesIR
 	/** The flows its scopes' preconditions read, each once. */
 	readonly idle: ReadonlyArray<string>
 	/** The app's relations its steps await a fact of, each once. */
@@ -342,11 +367,14 @@ const keyOf = (relation: string, terms: ReadonlyArray<string>): LawIR => ({
 const capitalized = (text: string): string => Str.capitalize(text)
 
 /** The relation names a writes declaration names. */
-const writesOf = (declared: WritesDeclaration): WritesIR => ({
-	insert: Arr.map(declared.insert, (r) => r.name),
-	put: Arr.map(declared.put, (r) => r.name),
-	delete: Arr.map(declared.delete, (r) => r.name)
-})
+const writesOf = (declared: AnyCommit): CommitIR => {
+	switch (declared.kind) {
+		case "nothing":
+			return declared
+		case "through":
+			return { kind: "through", clock: Record.toEntries(declared.clock) }
+	}
+}
 
 /** Lowers a flow to its fragment, refusing a name two of its relations, rosters or brands would share. */
 export const lower = (flow: AnyFlow): Lowered => {
@@ -935,53 +963,105 @@ export const lower = (flow: AnyFlow): Lowered => {
 	})
 
 	/**
-	 * A step's records: per named query, a relation of the rows it found, keyed by the digest of the record and the root,
-	 * so a row a sibling step of the root found stays one row, and a relation of the step's references to them, keyed by
-	 * the step and the row's place in what it found, each contained in its row and in the step's result. A record is a
-	 * flat struct of columns, never a vector, which a body never sees.
+	 * A record's relations: `relationName`, keyed by the digest and `places`, holding its columns, and, for each of its
+	 * attachments, the relation of the rows delivered under it, contained in it: an option's keyed as its owner, at most
+	 * one row an owner, and an array's by its owner's key and its place, gap-free from 0, as a value's ordered family is.
+	 * An attachment's relation is named by the read and its field, so a record of any depth keeps its names within
+	 * PostgreSQL's identifiers; a field named again deeper in the record, or named as the read's own `row` or `read`, is
+	 * numbered by its occurrence (`taken`).
+	 */
+	const recordOf = (
+		declaration: string,
+		stem: string,
+		relationName: string,
+		shape: RecordShape,
+		places: ReadonlyArray<string>,
+		taken: Map<string, number>
+	): RecordIR => {
+		const key = ["digest", ...places]
+		Arr.forEach(shape.columns, (c) => {
+			if (c.type.kind === "vector") {
+				throw new Refused({
+					declaration,
+					why: `its record holds the vector ${c.name}: a record holds what a body sees, never a vector`
+				})
+			}
+			if (c.name === "root" || Arr.contains(key, c.name)) {
+				throw new Refused({
+					declaration,
+					why: `its record has a field ${c.name}, which its relation keeps for itself`
+				})
+			}
+		})
+		relation({
+			name: relationName,
+			fields: [
+				{ name: "digest", type: rowKey },
+				...Arr.map(places, (placeField) => ({ name: placeField, type: natural })),
+				...Arr.map(shape.columns, (c) => ({ name: c.name, type: fieldOf(relationName, c) }))
+			],
+			key: ["digest", ...places]
+		})
+		finite(relationName, shape.columns)
+		const attached = Arr.map(shape.attached, (a) => {
+			const seen = (taken.get(a.name) ?? 0) + 1
+			taken.set(a.name, seen)
+			const below = a.delivery === "array" ? [...places, a.name] : places
+			const child = recordOf(
+				`${declaration}, its attachment ${a.name}`,
+				stem,
+				`${stem}${capitalized(a.name)}${seen === 1 ? "" : String(seen)}`,
+				a.record,
+				below,
+				taken
+			)
+			laws.push(into(side(child.relation, key), side(relationName, key)))
+			if (a.delivery === "array") {
+				laws.push(
+					into(
+						{
+							relation: child.relation,
+							selection: { kind: "atLeast", field: a.name, bound: 1n },
+							terms: [
+								...Arr.map(key, (field) => ({ field, pred: false })),
+								{ field: a.name, pred: true }
+							]
+						},
+						side(child.relation, [...key, a.name])
+					)
+				)
+			}
+			return { name: a.name, delivery: a.delivery, record: child }
+		})
+		return { relation: relationName, places, columns: shape.columns, attached }
+	}
+
+	/**
+	 * A step's records: per named query, the relations of the rows it found, keyed by the digest of the record and the
+	 * root, so a row a sibling step of the root found stays one row, with the rows its attachments delivered under it,
+	 * and a relation of the step's references to them, keyed by the step and the row's place in what it found, each
+	 * contained in its row and in the step's result. A record holds columns and attachments, never a vector, which a body
+	 * never sees.
 	 */
 	const readsOf = (s: AnyStepKind): ReadonlyArray<ReadIR> =>
 		s.reads.kind === "none"
 			? []
 			: Arr.map(Record.toEntries(s.reads.records), ([readName, recorded]): ReadIR => {
 					const declaration = `step ${s.name}, its read ${readName}`
-					const shape = shapeOf(declaration, recorded)
-					if (
-						!Arr.isReadonlyArrayEmpty(shape.options) ||
-						!Arr.isReadonlyArrayEmpty(shape.arrays) ||
-						!Arr.isReadonlyArrayEmpty(shape.unions)
-					) {
-						throw new Refused({ declaration, why: "its record is no flat struct of columns" })
-					}
-					Arr.forEach(shape.columns, (c) => {
-						if (c.type.kind === "vector") {
-							throw new Refused({
-								declaration,
-								why: `its record holds the vector ${c.name}: a record holds what a body sees, never a vector`
-							})
-						}
-						if (c.name === "digest" || c.name === "root") {
-							throw new Refused({
-								declaration,
-								why: `its record has a field ${c.name}, which its relation keeps for itself`
-							})
-						}
-					})
-					const stem = `${s.name}${capitalized(readName)}`
-					const row = relation({
-						name: name(`${stem}Row`),
-						fields: [
-							{ name: "digest", type: rowKey },
-							...Arr.map(shape.columns, (c) => ({
-								name: c.name,
-								type: fieldOf(name(`${stem}Row`), c)
-							}))
-						],
-						key: ["digest"]
-					})
-					finite(row, shape.columns)
+					const stem = name(`${s.name}${capitalized(readName)}`)
+					const row = recordOf(
+						declaration,
+						stem,
+						`${stem}Row`,
+						recordShapeOf(declaration, recorded),
+						[],
+						new Map([
+							["row", 1],
+							["read", 1]
+						])
+					)
 					const record = relation({
-						name: name(`${stem}Read`),
+						name: `${stem}Read`,
 						fields: [
 							{ name: "step", type: stepKey },
 							{ name: "ordinal", type: natural },
@@ -991,9 +1071,9 @@ export const lower = (flow: AnyFlow): Lowered => {
 					})
 					laws.push(
 						into(side(record, ["step"]), side(Result, ["step"])),
-						into(side(record, ["digest"]), side(row, ["digest"]))
+						into(side(record, ["digest"]), side(row.relation, ["digest"]))
 					)
-					return { name: readName, columns: shape.columns, row, record }
+					return { name: readName, row, record }
 				})
 
 	/**
@@ -1096,6 +1176,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 				reads: Arr.map(j.finish.reads, (read): FinishReadIR => ({
 					kind: read._tag === "Step" ? "step" : "scope",
 					name: read.name,
+					input: inputOf(read.name),
 					output: outputOf(read.name)
 				})),
 				edges: Arr.filter(edgesIR, (e) => e.from === j.name)
@@ -1225,11 +1306,6 @@ export const lower = (flow: AnyFlow): Lowered => {
 			(j: JoinIR) => valueRelations(j.input)
 		)
 	]
-	const appWrites = [
-		...Arr.map(stepsIR, (s) => s.writes),
-		...Arr.map(joinsIR, (j) => j.finish.writes)
-	]
-	const union = (op: keyof WritesIR) => Arr.dedupe(Arr.flatMap(appWrites, (w) => w[op]))
 
 	/**
 	 * Every root's graph is one retirable unit of grizzle's: its header the root, every other graph relation a body
@@ -1308,7 +1384,6 @@ export const lower = (flow: AnyFlow): Lowered => {
 		spawning,
 		requesting,
 		coordination,
-		app: { insert: union("insert"), put: union("put"), delete: union("delete") },
 		idle: Arr.dedupe(
 			Arr.flatMap(joinsIR, (j) => Option.match(j.root, { onNone: () => [], onSome: (r) => r.idle }))
 		),

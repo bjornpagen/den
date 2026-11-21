@@ -1,5 +1,6 @@
 import {
 	any,
+	committedFacts,
 	delayAfter,
 	fresh,
 	one,
@@ -255,22 +256,24 @@ export const writebackLedger = (h: WritebackHandles) => {
 						const grown = yield* Effect.succeed(nothingGrown)
 						const outcome = yield* settled(
 							h.commits.writebackCommitDeliver.once({
-								params: {},
-								facts: {
-									insert: {
-										WritebackResult: [
-											{ step: done.turn.step, root: done.turn.root, outcome: "done" }
-										],
-										WritebackDone: [{ step: done.turn.step, root: done.turn.root }],
-										WritebackHeld: [
-											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-										],
-										WritebackDeliverOutput: [
-											{ step: done.turn.step, root: done.turn.root, attempt: done.output.attempt }
-										],
-										Delivered: done.writes.insert.Delivered
-									}
-								}
+								params: { ...done.writes.params },
+								facts: committedFacts(
+									{
+										insert: {
+											WritebackResult: [
+												{ step: done.turn.step, root: done.turn.root, outcome: "done" }
+											],
+											WritebackDone: [{ step: done.turn.step, root: done.turn.root }],
+											WritebackHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
+											WritebackDeliverOutput: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.output.attempt }
+											]
+										}
+									},
+									done.writes.facts
+								)
 							})
 						)
 						return { outcome, spawned: grown.spawned }
@@ -286,7 +289,6 @@ export const writebackLedger = (h: WritebackHandles) => {
 				retry: writeback.kinds[1].finish.retry,
 				waits: writeback.kinds[1].finish.waits,
 				awaits: [],
-				writes: writeback.kinds[1].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof writeback.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof writeback.kinds)[1]["finish"]["body"]>[1]

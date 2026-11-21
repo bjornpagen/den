@@ -165,8 +165,6 @@ export interface StepRunner<R> {
 	readonly waits: number
 	/** The app's relations it awaits a fact of: none for a kind that awaits nothing, and for a finish. */
 	readonly awaits: ReadonlyArray<string>
-	/** The app's relations its commit inserts into or puts into, whose rows may complete a step's awaited facts. */
-	readonly writes: ReadonlyArray<string>
 	/** The scope it finishes, for a finish; none for a step kind. */
 	readonly finishes: Option.Option<string>
 	/**

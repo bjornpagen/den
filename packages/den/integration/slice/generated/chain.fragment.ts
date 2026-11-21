@@ -36,6 +36,7 @@ export const ChainPageEarlierRowFeed = closed.unordered("ChainPageEarlierRowFeed
 	"news",
 	"sport"
 ])
+export const ChainPageTreeRowFeed = closed.unordered("ChainPageTreeRowFeed", ["news", "sport"])
 
 export const ChainScope = relation("ChainScope", { scope: DenScope, root: DenScope }, [
 	"scope",
@@ -190,6 +191,26 @@ export const ChainPageEarlierRead = relation(
 	{ step: DenStep, ordinal: natural, digest: DenRow, root: DenScope },
 	["step", "ordinal", "root"]
 )
+export const ChainPageTreeRow = relation(
+	"ChainPageTreeRow",
+	{ digest: DenRow, feed: closedId(ChainPageTreeRowFeed), factor: pg.bigint, root: DenScope },
+	["digest", "root"]
+)
+export const ChainPageTreeItems = relation(
+	"ChainPageTreeItems",
+	{ digest: DenRow, items: natural, seq: pg.bigint, n: pg.bigint, root: DenScope },
+	["digest", "items", "root"]
+)
+export const ChainPageTreeFirst = relation(
+	"ChainPageTreeFirst",
+	{ digest: DenRow, items: natural, n: pg.bigint, root: DenScope },
+	["digest", "items", "root"]
+)
+export const ChainPageTreeRead = relation(
+	"ChainPageTreeRead",
+	{ step: DenStep, ordinal: natural, digest: DenRow, root: DenScope },
+	["step", "ordinal", "root"]
+)
 export const ChainPaused = relation(
 	"ChainPaused",
 	{ target: closedId(ChainPausable), turn: natural },
@@ -214,6 +235,7 @@ export const chainGraph = fragment(
 		ChainOrderedInputFeed,
 		ChainPageWeightsRowFeed,
 		ChainPageEarlierRowFeed,
+		ChainPageTreeRowFeed,
 		ChainScope,
 		ChainRoot,
 		ChainAdmitted,
@@ -243,7 +265,11 @@ export const chainGraph = fragment(
 		ChainPageWeightsRow,
 		ChainPageWeightsRead,
 		ChainPageEarlierRow,
-		ChainPageEarlierRead
+		ChainPageEarlierRead,
+		ChainPageTreeRow,
+		ChainPageTreeItems,
+		ChainPageTreeFirst,
+		ChainPageTreeRead
 	],
 	[
 		contained(on(ChainAdmitted, "scope", "root"), on(ChainScope, "scope", "root")),
@@ -334,6 +360,22 @@ export const chainGraph = fragment(
 			on(ChainPageEarlierRead, "digest", "root"),
 			on(ChainPageEarlierRow, "digest", "root")
 		),
+		contained(
+			on(ChainPageTreeFirst, "digest", "items", "root"),
+			on(ChainPageTreeItems, "digest", "items", "root")
+		),
+		contained(on(ChainPageTreeItems, "digest", "root"), on(ChainPageTreeRow, "digest", "root")),
+		contained(
+			on(
+				select(ChainPageTreeItems, (row) => row.ge(row.items, 1n)),
+				"digest",
+				pred("items"),
+				"root"
+			),
+			on(ChainPageTreeItems, "digest", "items", "root")
+		),
+		contained(on(ChainPageTreeRead, "step", "root"), on(ChainResult, "step", "root")),
+		contained(on(ChainPageTreeRead, "digest", "root"), on(ChainPageTreeRow, "digest", "root")),
 		retirable(ChainRoot, [
 			on(ChainScope, "root"),
 			on(ChainAdmitted, "root"),
@@ -363,7 +405,11 @@ export const chainGraph = fragment(
 			on(ChainPageWeightsRow, "root"),
 			on(ChainPageWeightsRead, "root"),
 			on(ChainPageEarlierRow, "root"),
-			on(ChainPageEarlierRead, "root")
+			on(ChainPageEarlierRead, "root"),
+			on(ChainPageTreeRow, "root"),
+			on(ChainPageTreeItems, "root"),
+			on(ChainPageTreeFirst, "root"),
+			on(ChainPageTreeRead, "root")
 		])
 	]
 )
@@ -381,6 +427,7 @@ export const chainCoordination = fragment(
 		ChainOrderedInputFeed,
 		ChainPageWeightsRowFeed,
 		ChainPageEarlierRowFeed,
+		ChainPageTreeRowFeed,
 		ChainPaused,
 		ChainResumed
 	],
@@ -403,6 +450,10 @@ export const chainWriter = [
 	"ChainPageWeightsRead",
 	"ChainPageEarlierRow",
 	"ChainPageEarlierRead",
+	"ChainPageTreeRow",
+	"ChainPageTreeItems",
+	"ChainPageTreeFirst",
+	"ChainPageTreeRead",
 	"ChainStep",
 	"ChainScope",
 	"ChainAdmitted",

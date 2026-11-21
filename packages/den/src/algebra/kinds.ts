@@ -1,8 +1,11 @@
 import type {
+	AnyChangeSet,
 	AnyRelation,
+	ClockUnit,
+	Clocked,
 	Fact,
-	Addition,
 	HeadOf,
+	InputOf,
 	ParamArg,
 	ParamsOf,
 	Vector
@@ -223,53 +226,84 @@ export type Stored = Schema.Struct<{ readonly [field: string]: FieldSchema }>
 export type ErrorSchema = Stored | Schema.Never
 
 /**
- * What a step may write into the app's relations, by operation, as the facts of the ChangeSet its commit applies with
- * the step's result under the flow's app role: a served Db runs only workload members, so a step's writes are that
- * member's array facts, never a ChangeSet built at run time.
+ * The parameters den's own commit names: the steps a commit spawns, the root they spawn in, and the call's reading of
+ * the database's clock. A step's ChangeSet names none of them, since a ChangeSet's free parameters are one namespace,
+ * its union's and its members', and a served commit binds no value when it is built.
  */
-export interface WritesDeclaration<
-	Ins extends ReadonlyArray<AnyRelation> = ReadonlyArray<AnyRelation>,
-	Put extends ReadonlyArray<AnyRelation> = ReadonlyArray<AnyRelation>,
-	Del extends ReadonlyArray<AnyRelation> = ReadonlyArray<AnyRelation>
-> {
-	readonly insert: Ins
-	readonly put: Put
-	readonly delete: Del
+export type DenCommitParam = "steps" | "root" | "now"
+
+/** A ChangeSet's parameters bound to the database's clock, each by the unit of its reading. */
+export interface ClockBinding {
+	readonly [param: string]: ClockUnit
 }
 
-/** The facts a body returns for each relation its step declares, under each operation. */
-export type Writes<W extends WritesDeclaration> = {
-	readonly insert: { readonly [R in W["insert"][number] as R["name"]]: ReadonlyArray<Addition<R>> }
-	readonly put: { readonly [R in W["put"][number] as R["name"]]: ReadonlyArray<Addition<R>> }
-	readonly delete: { readonly [R in W["delete"][number] as R["name"]]: ReadonlyArray<Addition<R>> }
+/**
+ * What a step or a finish commits into the app's relations beside its result: a ChangeSet `changes` makes of the flow's
+ * app role, which den's commit unions with its own facts, so both commit in one call, in one transaction, and a
+ * refusal of either refuses both (the essay grader's evaluation, recorded through the app's own ChangeSet with the
+ * draw's result). `clock` binds the ChangeSet's instants to the database's clock, each in its unit, as the app's own
+ * workload would serve it `clocked`; a body supplies every other parameter and the facts of its array members, the
+ * ChangeSet's served input. A plain insert is the ChangeSet of that one member.
+ */
+export interface Through<W, C, B> {
+	readonly kind: "through"
+	readonly changes: (role: W) => C
+	readonly clock: B
 }
 
-/** The relations a step inserts into, puts and deletes from. */
-export const writes = <
-	const Ins extends ReadonlyArray<AnyRelation>,
-	const Put extends ReadonlyArray<AnyRelation>,
-	const Del extends ReadonlyArray<AnyRelation>
->(declared: {
-	readonly insert: Ins
-	readonly put: Put
-	readonly delete: Del
-}): WritesDeclaration<Ins, Put, Del> => declared
-
-/** A step that writes nothing outside den's own relations. */
-export const writesNothing: WritesDeclaration<readonly [], readonly [], readonly []> = {
-	insert: [],
-	put: [],
-	delete: []
+/** A step that commits nothing into the app's relations beside its result. */
+export interface CommitsNothing {
+	readonly kind: "nothing"
 }
+
+/** What any step commits, as a flow and lowering read it: nothing, or a ChangeSet over the app role. */
+export type AnyCommit =
+	| CommitsNothing
+	| {
+			readonly kind: "through"
+			readonly changes: (role: never) => unknown
+			readonly clock: ClockBinding
+	  }
+
+/**
+ * A ChangeSet that names none of den's commit parameters (DenCommitParam): any other refuses `through`, by the member
+ * this type adds, which no ChangeSet holds.
+ */
+type FreeOfDen<C> = [Extract<keyof ParamsOf<C>, DenCommitParam>] extends [never]
+	? unknown
+	: {
+			readonly "a step's ChangeSet names no parameter den's commit names: steps, root or now": never
+		}
+
+/** A step's commit through `changes`, a ChangeSet over the flow's app role, its instants bound by `clock`. */
+export const through = <W, const C extends AnyChangeSet, const B extends ClockBinding>(
+	changes: (role: W) => C & FreeOfDen<C>,
+	clock: B
+): Through<W, C, B> => ({ kind: "through", changes, clock })
+
+/** A step that commits nothing beside its result. */
+export const writesNothing: CommitsNothing = { kind: "nothing" }
 
 /** A read's name, which lowers into its record's relation name: camelCase, letters and digits. */
 const READ = regex("^[a-z][A-Za-z0-9]*$")
 
 /**
- * What a read records of each row it found, and what a body sees of it: a flat struct of columns. Lowering refuses a
- * record with a field no column schema states.
+ * A record's field: a column, or the rows an attachment of the query delivers under it (grizzle's `attach`), each a
+ * record of its own: at most one, an Option of a record (`"option"`), or in order, an array of records (`"array"`), to
+ * any depth (an essay's item and its stimuli, each document's scan of nodes and each node's attributes).
  */
-export type RecordSchema = Schema.Struct<ColumnFields>
+export type RecordField = ColumnSchema | Schema.Option<RecordSchema> | Schema.$Array<RecordSchema>
+
+/** The fields of a record. */
+export interface RecordFields {
+	readonly [field: PropertyKey]: RecordField
+}
+
+/**
+ * What a read records of each row it found, and what a body sees of it: a struct of columns and attachments. Lowering
+ * refuses a record with a field no column schema states, a vector, and an attachment delivered otherwise.
+ */
+export type RecordSchema = Schema.Struct<RecordFields>
 
 /** A step's records, by the name of the query whose rows each records. */
 export type Records = { readonly [name: string]: RecordSchema }
@@ -396,11 +430,17 @@ export const atSpawn: Due = { kind: "spawned" }
 /** Due `millis` after its spawn: an exact timer, which rides the transport's delay with the census as its net. */
 export const after = (millis: number): Due => ({ kind: "after", millis })
 
-/** What a body returns: its output and its writes into the app's relations, committed with its result in one call. */
-export interface Done<O, W extends WritesDeclaration> {
-	readonly output: O
-	readonly writes: Writes<W>
+/**
+ * What a body returns: its output, and, for a step that commits through a ChangeSet, that ChangeSet's served input, its
+ * parameters but those its clock binds and its array members' facts, committed with its result in one call.
+ */
+export type Done<O, T> = T extends {
+	readonly kind: "through"
+	readonly changes: (role: never) => infer C
+	readonly clock: infer B
 }
+	? { readonly output: O; readonly writes: InputOf<Clocked<C, B>> }
+	: { readonly output: O }
 
 /**
  * A spawn: a step or scope of the kind named `kind`, with its input. A spawn exists only as a scope's start or an
@@ -421,10 +461,7 @@ const spawnOf =
  * grizzle's Db, which den alone opens. It fails with its step's typed error, or with `Later` where its source refused
  * the call for now and named when to call again.
  */
-export type Body<I, F, O, E, W extends WritesDeclaration, R> = (
-	input: I,
-	found: F
-) => Effect.Effect<Done<O, W>, E | Later, R>
+export type Body<I, F, O, E, T, R> = (input: I, found: F) => Effect.Effect<Done<O, T>, E | Later, R>
 
 /** What a step kind declares besides its body. */
 export interface StepShape<
@@ -432,7 +469,7 @@ export interface StepShape<
 	OS extends Stored,
 	ES extends ErrorSchema,
 	D extends ReadsOver<IS["Type"]>,
-	W extends WritesDeclaration
+	T extends AnyCommit
 > {
 	readonly input: IS
 	readonly output: OS
@@ -453,7 +490,7 @@ export interface StepShape<
 	 */
 	readonly waits: number
 	readonly due: Due
-	readonly writes: W
+	readonly writes: T
 }
 
 /** A step kind: its name, its shape, and its body; `of` spawns one. */
@@ -463,12 +500,12 @@ export interface StepKind<
 	OS extends Stored,
 	ES extends ErrorSchema,
 	D extends ReadsOver<IS["Type"]>,
-	W extends WritesDeclaration,
+	T extends AnyCommit,
 	R
-> extends StepShape<IS, OS, ES, D, W> {
+> extends StepShape<IS, OS, ES, D, T> {
 	readonly _tag: "Step"
 	readonly name: Name
-	readonly body: Body<IS["Type"], Found<D>, OS["Type"], ES["Type"], W, R>
+	readonly body: Body<IS["Type"], Found<D>, OS["Type"], ES["Type"], T, R>
 	readonly of: (input: IS["Type"]) => Spawn<Name, IS["Type"]>
 }
 
@@ -485,7 +522,7 @@ export interface AnyStepKind {
 	readonly retry: Ladder
 	readonly waits: number
 	readonly due: Due
-	readonly writes: WritesDeclaration
+	readonly writes: AnyCommit
 }
 
 export const step = <
@@ -494,13 +531,13 @@ export const step = <
 	OS extends Stored,
 	ES extends ErrorSchema,
 	D extends ReadsOver<IS["Type"]>,
-	W extends WritesDeclaration,
+	T extends AnyCommit,
 	R
 >(
 	name: Name,
-	shape: StepShape<IS, OS, ES, D, W>,
-	body: Body<IS["Type"], Found<D>, OS["Type"], ES["Type"], W, R>
-): StepKind<Name, IS, OS, ES, D, W, R> => {
+	shape: StepShape<IS, OS, ES, D, T>,
+	body: Body<IS["Type"], Found<D>, OS["Type"], ES["Type"], T, R>
+): StepKind<Name, IS, OS, ES, D, T, R> => {
 	named("step", name)
 	Arr.forEach(shape.reads.kind === "query" ? Rec.keys(shape.reads.records) : [], (read) =>
 		readNamed(`step ${name}`, read)
@@ -517,8 +554,14 @@ export type SpawnOf<Children extends ReadonlyArray<ChildKind>> = {
 	readonly [K in keyof Children]: Spawn<Children[K]["name"], Children[K]["input"]["Type"]>
 }[number]
 
-/** How a child step ended, as its scope's finish reads it: done with its output, or failed. */
-export type Ending<O> = { readonly _tag: "Done"; readonly output: O } | { readonly _tag: "Failed" }
+/**
+ * How a child ended, as its scope's finish reads it: done with its output, or failed, each with the input it was spawned
+ * with, so a finish knows which child each ending is (the essay grader's draw that failed, whose application it records
+ * declined).
+ */
+export type Ending<I, O> =
+	| { readonly _tag: "Done"; readonly input: I; readonly output: O }
+	| { readonly _tag: "Failed"; readonly input: I }
 
 /**
  * What a node of a scope's graph gives the edges that leave it and the finish that reads it: a step kind's output, or
@@ -533,8 +576,13 @@ export type OutputOf<K> = K extends {
 		? OS["Type"]
 		: never
 
-/** What a finish reads of a child kind: its ending, done with its output (a child scope's, its finish's), or failed. */
-type EndingOf<K> = Ending<OutputOf<K>>
+/**
+ * What a finish reads of a child kind: its ending, with its input, done with its output (a child scope's, its finish's),
+ * or failed.
+ */
+type EndingOf<K> = K extends { readonly input: infer IS extends Stored }
+	? Ending<IS["Type"], OutputOf<K>>
+	: never
 
 /** The endings a finish reads, by the kind of each child it reads. */
 export type EndingsOf<Ended extends ReadonlyArray<ChildKind>> = {
@@ -553,7 +601,7 @@ export interface Finish<
 	Ended extends ReadonlyArray<ChildKind>,
 	OS extends Stored,
 	ES extends ErrorSchema,
-	W extends WritesDeclaration,
+	T extends AnyCommit,
 	R
 > {
 	readonly reads: Ended
@@ -563,11 +611,11 @@ export interface Finish<
 	readonly retry: Ladder
 	/** How many times the finish may wait on its source before its next `Later` fails it, as a step's waits. */
 	readonly waits: number
-	readonly writes: W
+	readonly writes: T
 	readonly body: (
 		input: I,
 		endings: EndingsOf<Ended>
-	) => Effect.Effect<Done<OS["Type"], W>, ES["Type"] | Later, R>
+	) => Effect.Effect<Done<OS["Type"], T>, ES["Type"] | Later, R>
 }
 
 /** Any finish, as a flow reads it. */
@@ -578,7 +626,7 @@ export interface AnyFinish {
 	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
 	readonly waits: number
-	readonly writes: WritesDeclaration
+	readonly writes: AnyCommit
 }
 
 /**
@@ -670,12 +718,12 @@ export const scope = <
 	const Ended extends ReadonlyArray<ChildKind>,
 	OS extends Stored,
 	ES extends ErrorSchema,
-	W extends WritesDeclaration,
+	T extends AnyCommit,
 	R
 >(
 	name: Name,
-	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, W, R>>
-): ScopeKind<Name, IS, Children, Finish<IS["Type"], Ended, OS, ES, W, R>> => {
+	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>>
+): ScopeKind<Name, IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>> => {
 	named("scope", name)
 	nonNegative(`the finish of ${name}`, "waits", shape.finish.waits)
 	return { _tag: "Scope", name, ...shape, of: spawnOf(name) }
@@ -757,12 +805,12 @@ export const root = <
 	const Ended extends ReadonlyArray<ChildKind>,
 	OS extends Stored,
 	ES extends ErrorSchema,
-	W extends WritesDeclaration,
+	T extends AnyCommit,
 	R
 >(
 	name: Name,
-	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, W, R>> & RootGates<IS["Type"]>
-): RootKind<Name, IS, Children, Finish<IS["Type"], Ended, OS, ES, W, R>> => {
+	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>> & RootGates<IS["Type"]>
+): RootKind<Name, IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>> => {
 	named("root", name)
 	nonNegative(`the finish of ${name}`, "waits", shape.finish.waits)
 	return { _tag: "Root", name, ...shape }

@@ -1,5 +1,6 @@
 import {
 	any,
+	committedFacts,
 	delayAfter,
 	exclusiveRows,
 	fresh,
@@ -353,20 +354,22 @@ export const syncLedger = (h: SyncHandles) => {
 						const grown = yield* Effect.succeed(nothingGrown)
 						const outcome = yield* settled(
 							h.commits.syncCommitCopy.once({
-								params: {},
-								facts: {
-									insert: {
-										SyncResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
-										SyncDone: [{ step: done.turn.step, root: done.turn.root }],
-										SyncHeld: [
-											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-										],
-										SyncCopyOutput: [
-											{ step: done.turn.step, root: done.turn.root, run: done.output.run }
-										],
-										Copied: done.writes.insert.Copied
-									}
-								}
+								params: { ...done.writes.params },
+								facts: committedFacts(
+									{
+										insert: {
+											SyncResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+											SyncDone: [{ step: done.turn.step, root: done.turn.root }],
+											SyncHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
+											SyncCopyOutput: [
+												{ step: done.turn.step, root: done.turn.root, run: done.output.run }
+											]
+										}
+									},
+									done.writes.facts
+								)
 							})
 						)
 						return { outcome, spawned: grown.spawned }
@@ -385,20 +388,22 @@ export const syncLedger = (h: SyncHandles) => {
 						const grown = yield* Effect.succeed(nothingGrown)
 						const outcome = yield* settled(
 							h.commits.syncCommitBuild.once({
-								params: {},
-								facts: {
-									insert: {
-										SyncResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
-										SyncDone: [{ step: done.turn.step, root: done.turn.root }],
-										SyncHeld: [
-											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
-										],
-										SyncBuildOutput: [
-											{ step: done.turn.step, root: done.turn.root, build: done.output.build }
-										],
-										Built: done.writes.insert.Built
-									}
-								}
+								params: { ...done.writes.params },
+								facts: committedFacts(
+									{
+										insert: {
+											SyncResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+											SyncDone: [{ step: done.turn.step, root: done.turn.root }],
+											SyncHeld: [
+												{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+											],
+											SyncBuildOutput: [
+												{ step: done.turn.step, root: done.turn.root, build: done.output.build }
+											]
+										}
+									},
+									done.writes.facts
+								)
 							})
 						)
 						return { outcome, spawned: grown.spawned }
@@ -414,7 +419,6 @@ export const syncLedger = (h: SyncHandles) => {
 				retry: sync.kinds[1].finish.retry,
 				waits: sync.kinds[1].finish.waits,
 				awaits: [],
-				writes: sync.kinds[1].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof sync.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof sync.kinds)[1]["finish"]["body"]>[1]
@@ -469,7 +473,6 @@ export const syncLedger = (h: SyncHandles) => {
 				retry: sync.kinds[3].finish.retry,
 				waits: sync.kinds[3].finish.waits,
 				awaits: [],
-				writes: sync.kinds[3].finish.writes,
 				body: (read: {
 					readonly input: Parameters<(typeof sync.kinds)[3]["start"]>[0]
 					readonly endings: Parameters<(typeof sync.kinds)[3]["finish"]["body"]>[1]

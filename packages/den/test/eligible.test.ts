@@ -92,7 +92,6 @@ const runnerOf = (
 	retry: attempts(1),
 	waits: 0,
 	awaits: [],
-	writes: [],
 	finishes,
 	run: unread
 })
