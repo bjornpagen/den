@@ -26,7 +26,7 @@ records it (its `packages/platform/pipeline/src/limits.ts` and `packages/data/al
 |---|---|---|
 | `copy-binary.ts` | PostgreSQL's binary COPY format as data, the frame scanner (`scannerOf`, `tuplesOf`), the body encoder | W1, W8 |
 | `ranges.ts` | half-open ranges never empty, root pages cut by the page budget, the midpoint split | W1 |
-| `fingerprint.ts` | MD5 key digests, marks (bucket, fingerprint), prints, the differing buckets, the prune's settle and its absent keys | W1 |
+| `fingerprint.ts` | MD5 key digests (Timeback's replica computes them; an outside fact), marks (bucket, fingerprint), prints, the differing buckets, the prune's settle and its absent keys | W1 |
 | `flow-control.ts` | the AlphaTest controller of `fetch.ts` as a pure state machine (`bbr`: BBR's probes, TCP's halving) | W2 |
 | `replica.ts` | Timeback's replica behind the bastion: catalog, pages, the daily print, bucket keys, edits, seatings | W1, W8 |
 | `alphatest.ts` | AlphaTest's five kinds at their knees, the gateway throttle, final answers, the 200-row listing | W2 |

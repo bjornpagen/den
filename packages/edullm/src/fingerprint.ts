@@ -22,8 +22,9 @@ export const EVERY_BUCKET: Range = { lo: 0, hi: PRINT_BUCKETS }
 export type Mark = Readonly<{ bucket: number; fingerprint: number }>
 
 /**
- * A key's digest, as the replica and Silver both compute it: MD5 of its parts joined by `|` (PostgreSQL's
- * `concat_ws('|', …)`), MD5 being the one hash both servers compute identically.
+ * A key's digest: MD5 of its parts joined by `|` (PostgreSQL's `concat_ws('|', …)`). MD5 is kept as the Timeback
+ * integration's: Timeback's Aurora replica computes it in the daily print and the prune's key fetch, and Silver's prune
+ * must compute the same.
  */
 export const digestOf = Effect.fnUntraced(function* (parts: Arr.NonEmptyReadonlyArray<string>) {
 	const digest = yield* Digest.Digest
