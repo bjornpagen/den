@@ -382,6 +382,9 @@ importers:
       '@bjornpagen/grizzle-engine':
         specifier: workspace:*
         version: link:../engine
+      '@bjornpagen/grizzle-openapi':
+        specifier: workspace:*
+        version: link:../openapi
       '@bjornpagen/grizzle-text':
         specifier: workspace:*
         version: link:../text
@@ -398,6 +401,15 @@ importers:
       pg:
         specifier: 'catalog:'
         version: 8.23.1
+
+  vendor/grizzle/packages/openapi:
+    dependencies:
+      '@bjornpagen/grizzle-engine':
+        specifier: workspace:*
+        version: link:../engine
+      '@bjornpagen/grizzle-text':
+        specifier: workspace:*
+        version: link:../text
 
   vendor/grizzle/packages/pg:
     dependencies:

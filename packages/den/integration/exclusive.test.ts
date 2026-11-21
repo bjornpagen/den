@@ -1,14 +1,13 @@
 import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect } from "effect"
 import { ringAndDrain, ringOnAndDrain } from "#integration/support/run.ts"
-import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
 
 /**
@@ -55,7 +54,7 @@ export const exclusivityAdmitsOneLiveSyncPerRelation = property.explore(runs, {
 					Effect.gen(function* () {
 						c.note(run.roots === 2 ? "one skipped" : "two skipped")
 						const { sync, ledgers } = yield* openLedgers
-						const app = yield* Db.open(AppServed.roles.auditor, {})
+						const app = yield* openAuditor
 						const relation = "rel"
 						const at = yield* sync.ledger.now
 						const request = (n: number) =>

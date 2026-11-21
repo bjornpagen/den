@@ -3,7 +3,6 @@ import { drain } from "@bjornpagen/den/runtime/drive"
 import type { StepKey } from "@bjornpagen/den/runtime/identity"
 import type { Ledger } from "@bjornpagen/den/runtime/ledger"
 import type { Ending, Ledgers } from "@bjornpagen/den/runtime/turn"
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { finite, type Gen, int } from "@bjornpagen/testing/gen"
@@ -12,7 +11,7 @@ import { Array as Arr, Duration, Effect, HashMap, Option, Order, Ref } from "eff
 import { TestClock } from "effect/testing"
 import type { Faults } from "#integration/slice/flows.ts"
 import { ringAndDrain } from "#integration/support/run.ts"
-import { AppServed, openLedgers, Planted, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, Planted, rows, sliceCase } from "#integration/support/slice.ts"
 import { backoffLastMillis } from "#runtime/turn.ts"
 
 /**
@@ -102,7 +101,7 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 							)
 							c.note(run.ticks > 1 ? "broken for several ticks" : "broken for one tick")
 							const { retry, ledgers, all, misconfigured } = yield* openLedgers
-							const app = yield* Db.open(AppServed.roles.auditor, {})
+							const app = yield* openAuditor
 							const { faults, runs: ran } = yield* Planted
 							const steps: ReadonlyArray<Planned> = [
 								{ kind: "Steadfast", key: "steadfast", deaths: 0 },

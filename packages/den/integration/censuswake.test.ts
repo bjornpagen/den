@@ -1,14 +1,13 @@
 import { nextCensus } from "@bjornpagen/den/runtime/census"
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { InProcess, Transport } from "@bjornpagen/den/transport"
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Duration, Effect, Ref } from "effect"
 import { TestClock } from "effect/testing"
-import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
  * The census as a wake, on PostgreSQL 19: an operator requests a chain root and no one rings its admission, as when a
@@ -51,7 +50,7 @@ export const aCensusWakeTicksEveryFlowAndRingsTheNextPeriods = property.explore(
 					Effect.gen(function* () {
 						c.note(run.feed)
 						const { chain, ledgers } = yield* openLedgers
-						const app = yield* Db.open(AppServed.roles.auditor, {})
+						const app = yield* openAuditor
 						const { held } = yield* InProcess
 						const transport = yield* Transport
 						yield* chain.request.ChainRun(`lost-${run.feed}`, {

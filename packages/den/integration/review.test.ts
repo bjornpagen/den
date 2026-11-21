@@ -1,11 +1,10 @@
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { array, type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Order } from "effect"
 import { ringAndDrain } from "#integration/support/run.ts"
-import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
  * The next stage after a scope ends, and edges that open child scopes, end to end on PostgreSQL 19, in the review flow,
@@ -68,7 +67,7 @@ export const aScopesFinishSpawnsTheNextStageInItsParent = property.explore(runs,
 							c.note("a group of several questions")
 						}
 						const { review, writeback, ledgers } = yield* openLedgers
-						const app = yield* Db.open(AppServed.roles.auditor, {})
+						const app = yield* openAuditor
 						const key = `r-${Arr.join(Arr.map(run.sizes, String), "-")}`
 						const delivered = yield* writeback.request.Writeback(key, { attempt: key })
 						const requested = yield* review.request.ReviewRun(key, {

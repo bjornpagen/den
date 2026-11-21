@@ -124,7 +124,7 @@ const lawExpr = (law: LawIR): string => {
 				case "atLeast":
 					return `check(${q(law.name)}, ${law.relation}, (row) => row.ge(row.${law.field}, ${law.holds.bound}n))`
 				case "finite":
-					return `check(${q(law.name)}, ${law.relation}, (row) => Compute.isFinite(row.${law.field}))`
+					return `check(${q(law.name)}, ${law.relation}, (row) => Num.isFinite(row.${law.field}))`
 			}
 		case "retirable":
 			return `retirable(${law.header}, [${commas(Arr.map(law.bodies, (b) => `on(${b}, "root")`))}])`
@@ -158,9 +158,6 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 	)
 	const seated = Option.isSome(l.seats)
 	return [
-		...(Arr.some(l.laws, (law) => law.kind === "check" && law.holds.kind === "finite")
-			? ["Compute"]
-			: []),
 		...(seated || Arr.some(l.laws, (law) => law.kind === "check") ? ["check"] : []),
 		"closed",
 		...(used("closed") ? ["closedId"] : []),
@@ -172,6 +169,9 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		"fragment",
 		"key",
 		...(used("natural") || used("drawn") ? ["natural"] : []),
+		...(Arr.some(l.laws, (law) => law.kind === "check" && law.holds.kind === "finite")
+			? ["Num"]
+			: []),
 		"on",
 		...(Arr.some(l.laws, (law) => law.kind === "ordered") ? ["ordered"] : []),
 		...(used("place") ? ["place"] : []),
@@ -416,7 +416,7 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 		.find({ ${commas(seatFields)} })
 }))`,
 			"",
-			`/** The flow's seat level: its live holds, at most one a seat, each held below its resource's count. A fragment declares no derived relation, so the schema that lists \`${n.graph}\` states these on a level over itself, \`schema.extend(listing, name, [...${n.seatLevel}.relations], [...${n.seatLevel}.laws])\`. */`,
+			`/** The flow's seat level: its live holds, at most one a seat, each held below its resource's count. A fragment declares no derived relation, so the schema that lists \`${n.graph}\` states these on a level over itself, \`schema.extend([listing], name, [...${n.seatLevel}.relations], [...${n.seatLevel}.laws])\`. */`,
 			`export const ${n.seatLevel} = { relations: [${st.live}], laws: [key(on(${st.live}, "resource", "seat")), check(${q(st.bound)}, ${st.live}, (row) => row.lt(row.seat, ${st.counts.name}.at(${q(st.counts.count)}, row.${st.counts.key.field})))] } as const`,
 			""
 		]),
@@ -495,7 +495,7 @@ const liveHoldsOf = (role: string, st: SeatsIR): string => {
 const claimOf = (graph: string, r: (s: string) => string): string => `clocked(
 	ChangeSet.empty(${graph})
 		.insertComputed(${r("Claim")}, [], {
-			until: Compute.cast(Compute.add(Compute.base(param("now", DenInstant)), Compute.base(param("budget", DenDelay))), DenInstant)
+			until: Type.cast(Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))), DenInstant)
 		})
 		.insert(${r("Ended")}, [])
 		.read("held", (delta) =>
@@ -595,7 +595,7 @@ const spawnedStepsOf = (graph: string, step: string): string => `.insert(
 				step,
 				kind,
 				scope,
-				due: Compute.cast(Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(delay)), DenInstant),
+				due: Type.cast(Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)), DenInstant),
 				root: r.param("root", ${step}.fields.root)
 			})
 	})
@@ -784,7 +784,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 				r.find({
 					step: r.param("step", ${r("Retry")}.fields.step),
 					attempt: r.param("attempt", ${r("Retry")}.fields.attempt),
-					at: Compute.cast(Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(r.param("delay", DenDelay))), DenInstant),
+					at: Type.cast(Num.add(Type.base(r.param("now", DenInstant)), Type.base(r.param("delay", DenDelay))), DenInstant),
 					why: r.param("why", ${r("Retry")}.fields.why),
 					root: r.param("root", ${r("Retry")}.fields.root)
 				})
@@ -1228,7 +1228,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	)
 	return `${lines([
 		`/** The programs den lowered the flow ${P} to, over its fragments, and its roles over the schema ${app}; \`den generate\` writes them, and nothing edits them. */`,
-		`import { ${commas(Arr.filter(["ChangeSet", "Compute", "clocked", "deferrable", "param", "query", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
+		`import { ${commas(Arr.filter(["ChangeSet", "Num", "Type", "clocked", "deferrable", "param", "query", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
 		`import { ${commas(Arr.filter(["DenDelay", "DenInstant"], (name) => tokens.has(name)))} } from "@bjornpagen/den/lower/keys"`,
 		`import { ${app} } from ${q(place.schema.from)}`,
 		`import { ${W} } from ${q(place.writer.from)}`,

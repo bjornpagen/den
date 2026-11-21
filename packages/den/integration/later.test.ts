@@ -1,7 +1,6 @@
 import { instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName, type Wake } from "@bjornpagen/den/transport"
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { array, boolean, type Gen, int, oneOf } from "@bjornpagen/testing/gen"
@@ -19,7 +18,7 @@ import {
 import { TestClock } from "effect/testing"
 import { politeWaits } from "#integration/slice/flows.ts"
 import { ringOnAndDrain } from "#integration/support/run.ts"
-import { AppServed, openLedgers, Planted, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, Planted, rows, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
 
 /**
@@ -159,13 +158,11 @@ export const aSourcesNamedDelayIsAWaitThatSpendsNothingUpToItsStepsWaits = prope
 								step,
 								attempt: AttemptNumber.make(attempt)
 							})
-							const travelled = yield* Ref.make(0)
-							/** The database's own reading: the ledger's, less what the suite's clock has travelled. */
-							const reading = Effect.zipWith(
-								ledger.now,
-								Ref.get(travelled),
-								(at, travel) => Number(at) - travel
-							)
+							/**
+							 * The database's reading, the one every call of the case reads, the retry's write among them: moved on by
+							 * what the suite's clock has travelled.
+							 */
+							const reading = Effect.map(ledger.now, Number)
 							const waited = Arr.take(planned, politeWaits)
 							yield* Effect.forEach(waited, (refusal, attempt) =>
 								Effect.gen(function* () {
@@ -201,7 +198,6 @@ export const aSourcesNamedDelayIsAWaitThatSpendsNothingUpToItsStepsWaits = prope
 										"the retry is due the source's delay after the write's reading"
 									)
 									yield* TestClock.adjust(Duration.millis(millis))
-									yield* Ref.update(travelled, (t) => t + millis)
 								})
 							)
 							const past = planned.length > politeWaits
@@ -221,7 +217,7 @@ export const aSourcesNamedDelayIsAWaitThatSpendsNothingUpToItsStepsWaits = prope
 							assert.equal(claims.length, waited.length + 1)
 							const outcome = yield* ledger.resultOf(step)
 							assert.deepEqual(outcome, Option.some(past ? ("failed" as const) : ("done" as const)))
-							const app = yield* Db.open(AppServed.roles.auditor, {})
+							const app = yield* openAuditor
 							const exhausted = yield* rows(
 								app.workload.retryExhausted.once({ params: {}, facts: {} })
 							)

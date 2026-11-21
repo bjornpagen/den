@@ -1,5 +1,4 @@
 import { drain } from "@bjornpagen/den/runtime/drive"
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
@@ -7,7 +6,7 @@ import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Duration, Effect, HashMap, Order, Ref } from "effect"
 import { TestClock } from "effect/testing"
 import { ringAndDrain } from "#integration/support/run.ts"
-import { AppServed, openLedgers, Planted, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, Planted, rows, sliceCase } from "#integration/support/slice.ts"
 import { backoffLastMillis } from "#runtime/turn.ts"
 
 /**
@@ -60,7 +59,7 @@ export const aLadderRetriesUntilItSucceedsAndFailsOnePastItsAttempts = property.
 						}
 						c.note(run.brittle < 2 ? "brittle done" : "brittle exhausted")
 						const { retry, ledgers } = yield* openLedgers
-						const app = yield* Db.open(AppServed.roles.auditor, {})
+						const app = yield* openAuditor
 						const { faults } = yield* Planted
 						const steadfast = "steadfast"
 						const brittle = "brittle"

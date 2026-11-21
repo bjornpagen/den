@@ -1,15 +1,14 @@
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { relay } from "@bjornpagen/den/runtime/relay"
 import { type Ring, Transport } from "@bjornpagen/den/transport"
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Fiber, Formatter, Option, Queue, Stream } from "effect"
 import {
-	AppServed,
 	installedSliceCase,
+	openAuditor,
 	openLedgers,
 	rows,
 	walLevel
@@ -56,7 +55,7 @@ export const theRelayRingsARootTheAppRequestedInItsOwnTransaction = property.exp
 					Effect.gen(function* () {
 						c.note(run.feed)
 						const { chain, ledgers, loader } = yield* openLedgers
-						const app = yield* Db.open(AppServed.roles.auditor, {})
+						const app = yield* openAuditor
 						const rung = yield* Queue.unbounded<Ring>()
 						const relayed = yield* Effect.forkChild(
 							relay(chain.ledger).pipe(

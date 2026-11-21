@@ -1,13 +1,12 @@
 import { tick } from "@bjornpagen/den/runtime/census"
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { retire } from "@bjornpagen/den/runtime/retire"
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Order } from "effect"
-import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
  * A schedule's roots, one per member of its roster, retired and requested again, on PostgreSQL 19: the census ticks
@@ -51,7 +50,7 @@ export const aRetiredScheduledRootsKeyRequestedAgainStartsNothing = property.exp
 					Effect.gen(function* () {
 						c.note(run.after > 1 ? "several ticks after" : "one tick after")
 						const { clock, ledgers } = yield* openLedgers
-						const app = yield* Db.open(AppServed.roles.auditor, {})
+						const app = yield* openAuditor
 						const first = yield* tick(clock.ledger)
 						const admits = Arr.filter(first.rings, (ring) => ring.wake._tag === "Admit")
 						assert.equal(admits.length, bells.length)

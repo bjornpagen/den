@@ -1,5 +1,4 @@
 import { Vector } from "@bjornpagen/grizzle"
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { array, element, type Gen, int, subset } from "@bjornpagen/testing/gen"
@@ -8,7 +7,7 @@ import { Array as Arr, Effect, Option, Order } from "effect"
 import { assignedAmong } from "#integration/slice/flows.ts"
 import { embeddingDimensions } from "#integration/slice/relations.ts"
 import { ringAndDrain } from "#integration/support/run.ts"
-import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
  * The assignment flow end to end on PostgreSQL 19 with pgvector, the assignment engine's shape: an operator requests an
@@ -126,7 +125,7 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 				Effect.provideContext(
 					Effect.gen(function* () {
 						const { assign, ledgers, loader } = yield* openLedgers
-						const app = yield* Db.open(AppServed.roles.auditor, {})
+						const app = yield* openAuditor
 						const learner = "learner"
 						const nameOf = (at: number) => `p-${at}`
 						const named = Arr.map(run.passages, (placed, at) => ({

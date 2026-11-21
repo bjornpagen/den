@@ -2,7 +2,8 @@ import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Retry to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
 import {
 	ChangeSet,
-	Compute,
+	Num,
+	Type,
 	clocked,
 	deferrable,
 	param,
@@ -134,11 +135,8 @@ export const retryDenPrograms = Object.freeze({
 	retryClaim: clocked(
 		ChangeSet.empty(retryGraph)
 			.insertComputed(RetryClaim, [], {
-				until: Compute.cast(
-					Compute.add(
-						Compute.base(param("now", DenInstant)),
-						Compute.base(param("budget", DenDelay))
-					),
+				until: Type.cast(
+					Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
 					DenInstant
 				)
 			})
@@ -162,11 +160,8 @@ export const retryDenPrograms = Object.freeze({
 					r.find({
 						step: r.param("step", RetryRetry.fields.step),
 						attempt: r.param("attempt", RetryRetry.fields.attempt),
-						at: Compute.cast(
-							Compute.add(
-								Compute.base(r.param("now", DenInstant)),
-								Compute.base(r.param("delay", DenDelay))
-							),
+						at: Type.cast(
+							Num.add(Type.base(r.param("now", DenInstant)), Type.base(r.param("delay", DenDelay))),
 							DenInstant
 						),
 						why: r.param("why", RetryRetry.fields.why),
@@ -210,8 +205,8 @@ export const retryDenPrograms = Object.freeze({
 						step,
 						kind,
 						scope,
-						due: Compute.cast(
-							Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(delay)),
+						due: Type.cast(
+							Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
 							DenInstant
 						),
 						root: r.param("root", RetryStep.fields.root)

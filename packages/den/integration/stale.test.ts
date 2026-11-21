@@ -2,7 +2,7 @@ import { delayOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import type { Ran, Turn } from "@bjornpagen/den/runtime/ledger"
 import { lostRace, serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
-import { type CallError, Db } from "@bjornpagen/grizzle/runtime"
+import type { CallError } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -10,7 +10,7 @@ import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Duration, Effect, Option } from "effect"
 import type { Digest } from "effect/crypto"
 import { TestClock } from "effect/testing"
-import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis, reclaimableAfterMillis } from "#runtime/turn.ts"
 
 /**
@@ -60,7 +60,7 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 					Effect.gen(function* () {
 						c.note(race.order)
 						const { chain, ledgers } = yield* openLedgers
-						const app = yield* Db.open(AppServed.roles.auditor, {})
+						const app = yield* openAuditor
 						const flow = FlowName.make("Chain")
 						const at = yield* chain.ledger.now
 						const key = "stale"

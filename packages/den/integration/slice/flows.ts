@@ -26,7 +26,7 @@ import {
 	writesNothing
 } from "@bjornpagen/den/algebra/kinds"
 import { laterOf } from "@bjornpagen/den/algebra/later"
-import { ChangeSet, Compute, query, v, Vector } from "@bjornpagen/grizzle"
+import { ChangeSet, Distance, query, v, Vector } from "@bjornpagen/grizzle"
 import { Array as Arr, Context, Cron, Effect, Option, Order, Schema } from "effect"
 import {
 	Assigned,
@@ -808,10 +808,7 @@ const Decide = step(
 								.find({
 									passage,
 									topic,
-									distance: Compute.cosineDistance(
-										embedding,
-										r.param("query", Passage.fields.embedding)
-									)
+									distance: Distance.cosine(embedding, r.param("query", Passage.fields.embedding))
 								})
 						})
 						.approximateNearest({ by: "distance", take: assignedAmong }),

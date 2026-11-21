@@ -3,14 +3,13 @@ import { drain } from "@bjornpagen/den/runtime/drive"
 import { delayOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName, InProcess } from "@bjornpagen/den/transport"
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { aimed, boolean, type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Duration, Effect, Option, Ref } from "effect"
 import { TestClock } from "effect/testing"
-import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis, reclaimableAfterMillis } from "#runtime/turn.ts"
 
 /**
@@ -74,7 +73,7 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 							}
 							const { held } = yield* InProcess
 							const { chain, ledgers } = yield* openLedgers
-							const app = yield* Db.open(AppServed.roles.auditor, {})
+							const app = yield* openAuditor
 							const at = yield* chain.ledger.now
 							const key = "census"
 							const requested = yield* chain.request.ChainRun(key, {

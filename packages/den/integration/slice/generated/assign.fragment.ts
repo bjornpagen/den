@@ -1,7 +1,6 @@
 import { DenInstant, DenRow, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Assign to; `den generate` writes it, and nothing edits it. */
 import {
-	Compute,
 	check,
 	closed,
 	closedId,
@@ -9,6 +8,7 @@ import {
 	fragment,
 	key,
 	natural,
+	Num,
 	on,
 	place,
 	pg,
@@ -428,7 +428,7 @@ export const assignGraph = fragment(
 			on(AssignEmbedInputNear, "step", "ordinal", "root")
 		),
 		check("AssignEmbedInputNearValueFinite", AssignEmbedInputNear, (row) =>
-			Compute.isFinite(row.value)
+			Num.isFinite(row.value)
 		),
 		contained(on(AssignEmbedInputExclude, "step", "root"), on(AssignEmbedInput, "step", "root")),
 		contained(
@@ -473,7 +473,7 @@ export const assignGraph = fragment(
 			on(AssignEmbedInputModeWithin, "step", "root")
 		),
 		check("AssignEmbedInputModeWithinRadiusFinite", AssignEmbedInputModeWithin, (row) =>
-			Compute.isFinite(row.radius)
+			Num.isFinite(row.radius)
 		),
 		contained(
 			on(AssignDecideInput, "step", "root"),
@@ -526,7 +526,7 @@ export const assignGraph = fragment(
 			on(AssignDecideInputModeWithin, "step", "root")
 		),
 		check("AssignDecideInputModeWithinRadiusFinite", AssignDecideInputModeWithin, (row) =>
-			Compute.isFinite(row.radius)
+			Num.isFinite(row.radius)
 		),
 		contained(
 			on(AssignAssignmentInput, "scope"),
@@ -549,7 +549,7 @@ export const assignGraph = fragment(
 			on(AssignAssignmentInputNear, "scope", "ordinal", "root")
 		),
 		check("AssignAssignmentInputNearValueFinite", AssignAssignmentInputNear, (row) =>
-			Compute.isFinite(row.value)
+			Num.isFinite(row.value)
 		),
 		contained(
 			on(AssignAssignmentInputExclude, "scope", "root"),
@@ -597,14 +597,14 @@ export const assignGraph = fragment(
 			on(AssignAssignmentInputModeWithin, "scope", "root")
 		),
 		check("AssignAssignmentInputModeWithinRadiusFinite", AssignAssignmentInputModeWithin, (row) =>
-			Compute.isFinite(row.radius)
+			Num.isFinite(row.radius)
 		),
 		contained(on(AssignEmbedOutput, "step", "root"), on(AssignEmbedInput, "step", "root")),
 		contained(on(AssignEmbedOutput, "step", "root"), on(AssignDone, "step", "root")),
 		contained(on(AssignDecideOutput, "step", "root"), on(AssignDecideInput, "step", "root")),
 		contained(on(AssignDecideOutput, "step", "root"), on(AssignDone, "step", "root")),
 		check("AssignDecideOutputConfidenceFinite", AssignDecideOutput, (row) =>
-			Compute.isFinite(row.confidence)
+			Num.isFinite(row.confidence)
 		),
 		contained(
 			on(AssignDecideOutputWeighed, "step", "root"),
@@ -620,7 +620,7 @@ export const assignGraph = fragment(
 			on(AssignDecideOutputWeighed, "step", "ordinal", "root")
 		),
 		check("AssignDecideOutputWeighedDistanceFinite", AssignDecideOutputWeighed, (row) =>
-			Compute.isFinite(row.distance)
+			Num.isFinite(row.distance)
 		),
 		contained(
 			on(AssignDecideOutputStageServe, "step", "root"),
@@ -639,7 +639,7 @@ export const assignGraph = fragment(
 			on(AssignDecideOutputStageServe, "step", "root")
 		),
 		check("AssignDecideOutputStageServeDistanceFinite", AssignDecideOutputStageServe, (row) =>
-			Compute.isFinite(row.distance)
+			Num.isFinite(row.distance)
 		),
 		contained(
 			on(AssignDecideOutputStageRest, "step", "root"),
@@ -662,7 +662,7 @@ export const assignGraph = fragment(
 		contained(on(AssignAsked, "to", "root"), on(AssignDecideInput, "step", "root")),
 		key(on(AssignAsked, "to", "root")),
 		check("AssignDecideNearestRowDistanceFinite", AssignDecideNearestRow, (row) =>
-			Compute.isFinite(row.distance)
+			Num.isFinite(row.distance)
 		),
 		contained(on(AssignDecideNearestRead, "step", "root"), on(AssignResult, "step", "root")),
 		contained(

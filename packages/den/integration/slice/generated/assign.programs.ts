@@ -2,7 +2,8 @@ import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Assign to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
 import {
 	ChangeSet,
-	Compute,
+	Num,
+	Type,
 	clocked,
 	deferrable,
 	param,
@@ -169,11 +170,8 @@ export const assignDenPrograms = Object.freeze({
 	assignClaim: clocked(
 		ChangeSet.empty(assignGraph)
 			.insertComputed(AssignClaim, [], {
-				until: Compute.cast(
-					Compute.add(
-						Compute.base(param("now", DenInstant)),
-						Compute.base(param("budget", DenDelay))
-					),
+				until: Type.cast(
+					Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
 					DenInstant
 				)
 			})
@@ -197,11 +195,8 @@ export const assignDenPrograms = Object.freeze({
 					r.find({
 						step: r.param("step", AssignRetry.fields.step),
 						attempt: r.param("attempt", AssignRetry.fields.attempt),
-						at: Compute.cast(
-							Compute.add(
-								Compute.base(r.param("now", DenInstant)),
-								Compute.base(r.param("delay", DenDelay))
-							),
+						at: Type.cast(
+							Num.add(Type.base(r.param("now", DenInstant)), Type.base(r.param("delay", DenDelay))),
 							DenInstant
 						),
 						why: r.param("why", AssignRetry.fields.why),
@@ -251,8 +246,8 @@ export const assignDenPrograms = Object.freeze({
 						step,
 						kind,
 						scope,
-						due: Compute.cast(
-							Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(delay)),
+						due: Type.cast(
+							Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
 							DenInstant
 						),
 						root: r.param("root", AssignStep.fields.root)
@@ -682,8 +677,8 @@ export const assignCommitPrograms = Object.freeze({
 						step,
 						kind,
 						scope,
-						due: Compute.cast(
-							Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(delay)),
+						due: Type.cast(
+							Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
 							DenInstant
 						),
 						root: r.param("root", AssignStep.fields.root)

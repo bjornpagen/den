@@ -94,7 +94,7 @@ const Listed = schema(
  * their seat counts, which no fragment can state: one installation, one migrations chain.
  */
 export const App = schema.extend(
-	Listed,
+	[Listed],
 	"SliceSeats",
 	[...fanSeatLevel.relations, ...reviewSeatLevel.relations],
 	[...fanSeatLevel.laws, ...reviewSeatLevel.laws]

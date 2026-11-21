@@ -27,7 +27,7 @@ for the coordination group, and DBCLOCK:
   `<P>Held`, keyed by `(resource, seat)` and under `check("<P>SeatBelowCount", <P>Live, (row) => row.lt(row.seat,
   <P>Seats.at("seats", row.resource)))`, rules over a query. A fragment declares no derived relation, so the fragment
   module exports them as `<p>SeatLevel`, and the schema that lists the graph states them on a level over itself (the
-  slice's `App`, `schema.extend(Listed, "SliceSeats", …)`). den's role reads the live holds through a query entry over
+  slice's `App`, `schema.extend([Listed], "SliceSeats", …)`). den's role reads the live holds through a query entry over
   `<P>Live`, so a schema without the level fails to typecheck. A migration that lowers a count is refused while a live
   hold sits at or above the new count and admitted over ended attempts' holds (`seatcount.test.ts`, whose kill checks
   every hold). Growing a count is a migration that validates at once.
@@ -57,7 +57,7 @@ for the coordination group, and DBCLOCK:
   due instants and windows at that reading; a turn judges its claim and its gates at a reading, and the timers it rings
   are its delays and the durations between two readings. A retry's due instant and every spawned step's are computed in
   the statement that writes them, the call's own reading plus a `DenDelay` (a step's delay after its spawn, a retry's
-  rung), `Compute.cast(Compute.add(Compute.base(now), Compute.base(delay)), DenInstant)` in a clocked ChangeSet, which
+  rung), `Type.cast(Num.add(Type.base(now), Type.base(delay)), DenInstant)` in a clocked ChangeSet, which
   grizzle types with no guard since a reading lies in the clock's range and a delay in its contract's (79874ab5f), so no
   host names an instant a write stores (DECISIONS 43(a)). An invocation's end is its first reading plus its budget, and
   a claim's lease is computed in the claim's own statement, its reading plus the time the invocation has left at the
@@ -65,9 +65,7 @@ for the coordination group, and DBCLOCK:
   lease ends and no host's clock judges anything. `runtime/clock.ts` keeps only the in-process transport's clock, at which the in-process driver
   delivers a held wake once its delay has passed. Clocked reads serve `once` and no `watch`, which matches den's split:
   the relay's watch reads what commits made eligible, without time, and the census reads what time made eligible. The
-  suites cannot move the database's clock: their ledgers read it moved on by the time their TestClock travelled since
-  they were opened (`integration/support/slice.ts`), and `stale.test.ts` holds each flow's reading between two of
-  PostgreSQL's own.
+  suites move the database's clock itself as they move their TestClock (**The moved clock** below).
 
 - **RETIRE (c70cbed8, 1f935498, f14a46da, and RETIRE3's c782217b2).** Each flow's graph is one retirable unit:
   `retirable(<P>Root, [on(<Rel>, "root"), …])`, the header `<P>Root` with its `retired: retirement` field, every other
@@ -113,5 +111,26 @@ for the coordination group, and DBCLOCK:
   one flow, which run at once, both retire (`retire.test.ts`'s
   `concurrentRetirementsOfFinishedRootsAllRetire`, whose kill ends the binding's retirement on a transient refusal and
   keeps the root).
+
+- **The moved clock (grizzle d37c40141).** A suite reads the database's clock at the instant its TestClock stands at,
+  through the statements the served files run: `integration/support/slice.ts` serves each login from its file compiled
+  for a moved clock (`compileServedMoved(login, snapshot, login.workload)`, from the committed snapshot, once a
+  process), and every Db of a case is opened by `Db.openMoved(role, {}, offset)`, the offset the case's `Offset`: under
+  the TestClock, the time it travelled since the case's services were built, in microseconds, read at each call; under
+  the machine's clock, none. So a clocked read's reading, a ChangeSet's `now` and every instant an insert stamps are all
+  the one moved instant of their call, a lease lapses and a retry comes due when the TestClock travels past it, and no
+  suite reads two clocks. The ledgers' `travelling`, which shifted den's `now` reads alone by the TestClock's travel while
+  clocked writes stamped the database's own instant, is deleted, and with it its double count under the machine's
+  clock, where it added real time the database had already read. The committed served files stay the roles'
+  addresses (`WorkerServed`, `AppServed`): a role opens on the layer of its login's name. The tests open the app's
+  auditor through `openAuditor`, a moved Db like the ledgers', since a moved file refuses a ChangeSet call that states
+  no offset.
+
+- **The scalar namespaces (grizzle 51dff4bc0)** and **a level's bases as a list (ca3c91ee3).** `Compute` is gone: den's
+  printed programs compute a due instant or a lease's end as `Type.cast(Num.add(Type.base(now), Type.base(delay)),
+  DenInstant)`, a finite double's law is `Num.isFinite`, `DenDelay`'s contract is `Logic.and(Logic.ge(d, 0n),
+  Logic.le(d, longestDelayMillis))`, and the slice's nearest-row distance is `Distance.cosine`. The slice's `App` is
+  `schema.extend([Listed], "SliceSeats", …)`. grizzle's packages include `packages/openapi`, which
+  `@bjornpagen/grizzle` depends on, so den's workspace lists it beside the others.
 
 Still to come from the grizzle session: GUARD and SCHEMAMAP.

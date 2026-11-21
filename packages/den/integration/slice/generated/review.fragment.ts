@@ -506,7 +506,7 @@ const ReviewLive = derived(
 	})
 )
 
-/** The flow's seat level: its live holds, at most one a seat, each held below its resource's count. A fragment declares no derived relation, so the schema that lists `reviewGraph` states these on a level over itself, `schema.extend(listing, name, [...reviewSeatLevel.relations], [...reviewSeatLevel.laws])`. */
+/** The flow's seat level: its live holds, at most one a seat, each held below its resource's count. A fragment declares no derived relation, so the schema that lists `reviewGraph` states these on a level over itself, `schema.extend([listing], name, [...reviewSeatLevel.relations], [...reviewSeatLevel.laws])`. */
 export const reviewSeatLevel = {
 	relations: [ReviewLive],
 	laws: [

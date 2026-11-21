@@ -2,7 +2,8 @@ import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Chain to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
 import {
 	ChangeSet,
-	Compute,
+	Num,
+	Type,
 	clocked,
 	deferrable,
 	param,
@@ -160,11 +161,8 @@ export const chainDenPrograms = Object.freeze({
 	chainClaim: clocked(
 		ChangeSet.empty(chainGraph)
 			.insertComputed(ChainClaim, [], {
-				until: Compute.cast(
-					Compute.add(
-						Compute.base(param("now", DenInstant)),
-						Compute.base(param("budget", DenDelay))
-					),
+				until: Type.cast(
+					Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
 					DenInstant
 				)
 			})
@@ -188,11 +186,8 @@ export const chainDenPrograms = Object.freeze({
 					r.find({
 						step: r.param("step", ChainRetry.fields.step),
 						attempt: r.param("attempt", ChainRetry.fields.attempt),
-						at: Compute.cast(
-							Compute.add(
-								Compute.base(r.param("now", DenInstant)),
-								Compute.base(r.param("delay", DenDelay))
-							),
+						at: Type.cast(
+							Num.add(Type.base(r.param("now", DenInstant)), Type.base(r.param("delay", DenDelay))),
 							DenInstant
 						),
 						why: r.param("why", ChainRetry.fields.why),
@@ -235,8 +230,8 @@ export const chainDenPrograms = Object.freeze({
 						step,
 						kind,
 						scope,
-						due: Compute.cast(
-							Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(delay)),
+						due: Type.cast(
+							Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
 							DenInstant
 						),
 						root: r.param("root", ChainStep.fields.root)
@@ -602,8 +597,8 @@ export const chainCommitPrograms = Object.freeze({
 							step,
 							kind,
 							scope,
-							due: Compute.cast(
-								Compute.add(Compute.base(r.param("now", DenInstant)), Compute.base(delay)),
+							due: Type.cast(
+								Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
 								DenInstant
 							),
 							root: r.param("root", ChainStep.fields.root)

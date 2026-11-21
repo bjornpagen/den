@@ -513,10 +513,7 @@ CREATE OR REPLACE FUNCTION "slice"."__refuse"("state" "pg_catalog"."text", "cons
 LANGUAGE plpgsql VOLATILE PARALLEL SAFE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
-  RAISE EXCEPTION 'grizzle refused the statement'
-    USING ERRCODE = "state",
-          CONSTRAINT = "constraint_name",
-          DETAIL = "detail";
+  RAISE EXCEPTION 'grizzle refused the statement' USING ERRCODE = "state", CONSTRAINT = "constraint_name", DETAIL = "detail";
 END
 $$;
 
@@ -526,13 +523,7 @@ CREATE OR REPLACE FUNCTION "slice"."__require_serializable"() RETURNS "pg_catalo
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
-  IF "pg_catalog"."current_setting"('transaction_isolation'::"pg_catalog"."text") <> 'serializable'::"pg_catalog"."text" THEN
-    RAISE EXCEPTION 'a write to a grizzle table requires SERIALIZABLE'
-      USING ERRCODE = 'invalid_transaction_state'::"pg_catalog"."text",
-            SCHEMA = TG_TABLE_SCHEMA,
-            TABLE = TG_TABLE_NAME,
-            HINT = 'write at SERIALIZABLE'::"pg_catalog"."text";
-  END IF;
+  IF "pg_catalog"."current_setting"('transaction_isolation'::"pg_catalog"."text") <> 'serializable'::"pg_catalog"."text" THEN RAISE EXCEPTION 'a write to a grizzle table requires SERIALIZABLE' USING ERRCODE = 'invalid_transaction_state'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'write at SERIALIZABLE'::"pg_catalog"."text"; END IF;
   RETURN NEW;
 END
 $$;
@@ -575,14 +566,8 @@ CREATE OR REPLACE FUNCTION "slice"."__snapshot_guard"("fingerprint" "pg_catalog"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
-  IF EXISTS (SELECT 1 FROM "slice"."__ledger" AS "r1" WHERE "r1"."ordinal" = 0 AND "r1"."files" <> (SELECT "pg_catalog"."count"(*) FROM "slice"."__ledger" AS "r2" WHERE "r2"."folder" = "r1"."folder" AND "r2"."ordinal" <> 0)) THEN
-    RAISE EXCEPTION 'a grizzle migration of this schema is running or stopped part-way'
-      USING ERRCODE = '55Z02'::"pg_catalog"."text";
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM "slice"."__ledger" AS "r3" WHERE "r3"."ordinal" = 0 AND "r3"."target" = "fingerprint" AND NOT EXISTS (SELECT 1 FROM "slice"."__ledger" AS "r4" WHERE "r4"."ordinal" = 0 AND "r4"."folder" > "r3"."folder")) THEN
-    RAISE EXCEPTION 'the latest grizzle migration of this schema is not the snapshot of this Db'
-      USING ERRCODE = '55Z01'::"pg_catalog"."text";
-  END IF;
+  IF EXISTS (SELECT 1 FROM "slice"."__ledger" AS "r1" WHERE "r1"."ordinal" = 0 AND "r1"."files" <> (SELECT "pg_catalog"."count"(*) FROM "slice"."__ledger" AS "r2" WHERE "r2"."folder" = "r1"."folder" AND "r2"."ordinal" <> 0)) THEN RAISE EXCEPTION 'a grizzle migration of this schema is running or stopped part-way' USING ERRCODE = '55Z02'::"pg_catalog"."text"; END IF;
+  IF NOT EXISTS (SELECT 1 FROM "slice"."__ledger" AS "r3" WHERE "r3"."ordinal" = 0 AND "r3"."target" = "fingerprint" AND NOT EXISTS (SELECT 1 FROM "slice"."__ledger" AS "r4" WHERE "r4"."ordinal" = 0 AND "r4"."folder" > "r3"."folder")) THEN RAISE EXCEPTION 'the latest grizzle migration of this schema is not the snapshot of this Db' USING ERRCODE = '55Z01'::"pg_catalog"."text"; END IF;
 END
 $$;
 

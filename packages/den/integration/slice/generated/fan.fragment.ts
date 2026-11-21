@@ -346,7 +346,7 @@ const FanLive = derived(
 	})
 )
 
-/** The flow's seat level: its live holds, at most one a seat, each held below its resource's count. A fragment declares no derived relation, so the schema that lists `fanGraph` states these on a level over itself, `schema.extend(listing, name, [...fanSeatLevel.relations], [...fanSeatLevel.laws])`. */
+/** The flow's seat level: its live holds, at most one a seat, each held below its resource's count. A fragment declares no derived relation, so the schema that lists `fanGraph` states these on a level over itself, `schema.extend([listing], name, [...fanSeatLevel.relations], [...fanSeatLevel.laws])`. */
 export const fanSeatLevel = {
 	relations: [FanLive],
 	laws: [

@@ -2,7 +2,6 @@ import { atOnce, delayOf, instantOf, type StepKey } from "@bjornpagen/den/runtim
 import { seatsFor } from "@bjornpagen/den/runtime/seats"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
@@ -10,7 +9,7 @@ import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Option } from "effect"
 import { pool, poolSeats } from "#integration/slice/flows.ts"
 import { ringOnAndDrain } from "#integration/support/run.ts"
-import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
 
 /**
@@ -57,7 +56,7 @@ export const aSeatGivenBackRingsTheStepsWaitingOnIt = property.explore(runs, {
 				Effect.provideContext(
 					Effect.gen(function* () {
 						const { fan, ledgers } = yield* openLedgers
-						const app = yield* Db.open(AppServed.roles.auditor, {})
+						const app = yield* openAuditor
 						const ledger = fan.ledger
 						const flow = FlowName.make("Fan")
 						const batch = `waited-${run.size}`

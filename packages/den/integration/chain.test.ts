@@ -1,13 +1,12 @@
 import { type Ending, serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Order } from "effect"
 import { ringAndDrain } from "#integration/support/run.ts"
-import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
  * The chain flow end to end on PostgreSQL 19: an operator requests a root, its admission starts page 0 of a feed, each
@@ -71,7 +70,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 					Effect.gen(function* () {
 						c.note(run.pages === 1 ? "one page" : "several pages")
 						const { chain, ledgers, loader } = yield* openLedgers
-						const app = yield* Db.open(AppServed.roles.auditor, {})
+						const app = yield* openAuditor
 						if (run.factor > 0) {
 							yield* loader.workload.weigh.once({
 								params: {},

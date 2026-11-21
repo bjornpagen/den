@@ -115,7 +115,7 @@
     delete there would rewrite and which records nothing a query computes; and a copy of every row per step.
 - **A number is `Schema.Finite`, held finite by the database (2026-11-18).** Effect's `schemaNumber` diagnostic
   refuses `Schema.Number`, so a number field is `Schema.Finite`, lowered to double precision under a row check
-  (`Compute.isFinite`), so the database holds what the schema states.
+  (`Num.isFinite`), so the database holds what the schema states.
 - **A model's structured answer is relations (settled by the engine's need, 2026-11-18).** A step's input, output and
   error take, beside columns and Options, an array of columns or of structs of columns and a tagged union of structs
   of columns, as the proposal's section 6 planned. An array is an ordered family, `<Owner><Field>(owner, ordinal, …)`

@@ -5333,83 +5333,61 @@ COMMENT ON CONSTRAINT "__writeback_writeback_finish_output_pk_payvcqalt7" ON "sl
 
 COMMENT ON CONSTRAINT "__writeback_writeback_input_pk_ejs235aju2" ON "slice"."writeback_writeback_input" IS 'primary key of WritebackWritebackInput';
 
-COMMENT ON COLUMN "slice"."assign_assignment_input_exclude"."__root_yjobx7uyrd" IS 'root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
 COMMENT ON COLUMN "slice"."assign_assignment_input_exclude"."__scope_u6ypqf2r2z" IS 'scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."assign_assignment_input_exclude"."__pred_ordinal_rdz3ttleig" IS 'pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
-COMMENT ON COLUMN "slice"."assign_assignment_input_near"."__root_yjobx7uyrd" IS 'root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."assign_assignment_input_exclude"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
 COMMENT ON COLUMN "slice"."assign_assignment_input_near"."__scope_u6ypqf2r2z" IS 'scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."assign_assignment_input_near"."__pred_ordinal_rdz3ttleig" IS 'pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
-COMMENT ON COLUMN "slice"."assign_claim"."__root_yewsvvtcyz" IS 'root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."assign_assignment_input_near"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
 COMMENT ON COLUMN "slice"."assign_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."assign_claim"."__pred_attempt_dqbvoe7dfs" IS 'pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
-COMMENT ON COLUMN "slice"."assign_decide_input_exclude"."__root_yjobx7uyrd" IS 'root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."assign_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice"."assign_decide_input_exclude"."__step_mjpuijzth4" IS 'step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."assign_decide_input_exclude"."__pred_ordinal_rdz3ttleig" IS 'pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
-COMMENT ON COLUMN "slice"."assign_decide_output_weighed"."__root_yjobx7uyrd" IS 'root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."assign_decide_input_exclude"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
 COMMENT ON COLUMN "slice"."assign_decide_output_weighed"."__step_mjpuijzth4" IS 'step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."assign_decide_output_weighed"."__pred_ordinal_rdz3ttleig" IS 'pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
-COMMENT ON COLUMN "slice"."assign_embed_input_exclude"."__root_yjobx7uyrd" IS 'root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."assign_decide_output_weighed"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
 COMMENT ON COLUMN "slice"."assign_embed_input_exclude"."__step_mjpuijzth4" IS 'step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."assign_embed_input_exclude"."__pred_ordinal_rdz3ttleig" IS 'pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
-COMMENT ON COLUMN "slice"."assign_embed_input_near"."__root_yjobx7uyrd" IS 'root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."assign_embed_input_exclude"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
 COMMENT ON COLUMN "slice"."assign_embed_input_near"."__step_mjpuijzth4" IS 'step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."assign_embed_input_near"."__pred_ordinal_rdz3ttleig" IS 'pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."assign_embed_input_near"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
 COMMENT ON COLUMN "slice"."assign_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
 COMMENT ON COLUMN "slice"."assign_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
 
-COMMENT ON COLUMN "slice"."chain_claim"."__root_yewsvvtcyz" IS 'root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
 COMMENT ON COLUMN "slice"."chain_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."chain_claim"."__pred_attempt_dqbvoe7dfs" IS 'pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."chain_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice"."chain_page_tree_items"."__digest_eiwkcq6olq" IS 'digest where {"kind":"compare","left":{"field":"items","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."chain_page_tree_items"."__root_gp6pfrpfoe" IS 'root where {"kind":"compare","left":{"field":"items","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
-COMMENT ON COLUMN "slice"."chain_page_tree_items"."__pred_items_sinxzvyomd" IS 'pred(items) where {"kind":"compare","left":{"field":"items","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."chain_page_tree_items"."__pred_items_3qltx5cx27" IS 'pred(items)';
 
 COMMENT ON COLUMN "slice"."chain_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
 COMMENT ON COLUMN "slice"."chain_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
 
-COMMENT ON COLUMN "slice"."clock_claim"."__root_yewsvvtcyz" IS 'root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
 COMMENT ON COLUMN "slice"."clock_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."clock_claim"."__pred_attempt_dqbvoe7dfs" IS 'pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."clock_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice"."clock_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
 COMMENT ON COLUMN "slice"."clock_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
 
-COMMENT ON COLUMN "slice"."fan_claim"."__root_yewsvvtcyz" IS 'root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
 COMMENT ON COLUMN "slice"."fan_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."fan_claim"."__pred_attempt_dqbvoe7dfs" IS 'pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."fan_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice"."fan_claim"."__pred_holds_lq7itfruzz" IS 'pred(holds)';
 
@@ -5421,29 +5399,23 @@ COMMENT ON COLUMN "slice"."fan_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
 COMMENT ON COLUMN "slice"."fan_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
 
-COMMENT ON COLUMN "slice"."retry_claim"."__root_yewsvvtcyz" IS 'root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
 COMMENT ON COLUMN "slice"."retry_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."retry_claim"."__pred_attempt_dqbvoe7dfs" IS 'pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."retry_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice"."retry_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
 COMMENT ON COLUMN "slice"."retry_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
 
-COMMENT ON COLUMN "slice"."review_claim"."__root_yewsvvtcyz" IS 'root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
 COMMENT ON COLUMN "slice"."review_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."review_claim"."__pred_attempt_dqbvoe7dfs" IS 'pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."review_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice"."review_claim"."__pred_holds_lq7itfruzz" IS 'pred(holds)';
 
-COMMENT ON COLUMN "slice"."review_gather_input_sizes"."__root_yjobx7uyrd" IS 'root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
 COMMENT ON COLUMN "slice"."review_gather_input_sizes"."__step_mjpuijzth4" IS 'step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."review_gather_input_sizes"."__pred_ordinal_rdz3ttleig" IS 'pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."review_gather_input_sizes"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
 COMMENT ON COLUMN "slice"."review_hold"."__copy_holds_j7qe5qdydj" IS 'the owner''s count of the family ReviewClaim.holds';
 
@@ -5451,19 +5423,15 @@ COMMENT ON COLUMN "slice"."review_hold"."__pred_at_xktcobhsti" IS 'pred(at)';
 
 COMMENT ON COLUMN "slice"."review_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
-COMMENT ON COLUMN "slice"."review_review_run_input_sizes"."__root_yjobx7uyrd" IS 'root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
 COMMENT ON COLUMN "slice"."review_review_run_input_sizes"."__scope_u6ypqf2r2z" IS 'scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."review_review_run_input_sizes"."__pred_ordinal_rdz3ttleig" IS 'pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."review_review_run_input_sizes"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
 COMMENT ON COLUMN "slice"."review_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
 
-COMMENT ON COLUMN "slice"."sync_claim"."__root_yewsvvtcyz" IS 'root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
 COMMENT ON COLUMN "slice"."sync_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."sync_claim"."__pred_attempt_dqbvoe7dfs" IS 'pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."sync_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice"."sync_exclusive"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
@@ -5471,11 +5439,9 @@ COMMENT ON COLUMN "slice"."sync_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)'
 
 COMMENT ON COLUMN "slice"."sync_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
 
-COMMENT ON COLUMN "slice"."writeback_claim"."__root_yewsvvtcyz" IS 'root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
-
 COMMENT ON COLUMN "slice"."writeback_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
 
-COMMENT ON COLUMN "slice"."writeback_claim"."__pred_attempt_dqbvoe7dfs" IS 'pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."writeback_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice"."writeback_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
@@ -5525,7 +5491,7 @@ COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_root_kuvjl3s6t5" ON 
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_scope_root_z5moccsgvx" ON "slice"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(scope, root) to AssignAssignmentInput(scope, root)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_scope_pred_gg2bohya6p" ON "slice"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to AssignAssignmentInputExclude(scope, ordinal, root)';
+COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_scope_pred_yyclsqsijg" ON "slice"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to AssignAssignmentInputExclude(scope, ordinal, root)';
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_mode_nearest_fk_root_t23ef5vjhv" ON "slice"."assign_assignment_input_mode_nearest" IS 'foreign key AssignAssignmentInputModeNearest(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -5535,13 +5501,13 @@ COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_root_6cdqioe6mu" ON "sl
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_scope_root_lyuzgkqxtu" ON "slice"."assign_assignment_input_near" IS 'foreign key AssignAssignmentInputNear(scope, root) to AssignAssignmentInput(scope, root)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_scope_pred_ordinal_uyb7izqlpx" ON "slice"."assign_assignment_input_near" IS 'foreign key AssignAssignmentInputNear(scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to AssignAssignmentInputNear(scope, ordinal, root)';
+COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_scope_pred_ordinal_m5mnmsqnzk" ON "slice"."assign_assignment_input_near" IS 'foreign key AssignAssignmentInputNear(scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to AssignAssignmentInputNear(scope, ordinal, root)';
 
 COMMENT ON CONSTRAINT "__assign_claim_fk_root_tccogfd3gj" ON "slice"."assign_claim" IS 'foreign key AssignClaim(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
 COMMENT ON CONSTRAINT "__assign_claim_fk_step_root_i4wvemd6lc" ON "slice"."assign_claim" IS 'foreign key AssignClaim(step, root) to AssignStep(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_claim_fk_step_pred_attempt_root_xr7gdduz2s" ON "slice"."assign_claim" IS 'foreign key AssignClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to AssignEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__assign_claim_fk_step_pred_attempt_root_qq7m4vgq5c" ON "slice"."assign_claim" IS 'foreign key AssignClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to AssignEnded(step, attempt, root)';
 
 COMMENT ON CONSTRAINT "__assign_decide_input_fk_root_2ru7zbrfcg" ON "slice"."assign_decide_input" IS 'foreign key AssignDecideInput(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -5549,7 +5515,7 @@ COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_root_ms4jvh65c5" ON "sli
 
 COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_step_root_in6yyrl43w" ON "slice"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(step, root) to AssignDecideInput(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_step_pred_ordinal_7st2gu5z77" ON "slice"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to AssignDecideInputExclude(step, ordinal, root)';
+COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_step_pred_ordinal_ud7okz5qbt" ON "slice"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to AssignDecideInputExclude(step, ordinal, root)';
 
 COMMENT ON CONSTRAINT "__assign_decide_input_mode_nearest_fk_root_vgxth6ulqd" ON "slice"."assign_decide_input_mode_nearest" IS 'foreign key AssignDecideInputModeNearest(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -5577,7 +5543,7 @@ COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_root_tymno4wjr4" ON "sl
 
 COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_step_root_nkudthcgg2" ON "slice"."assign_decide_output_weighed" IS 'foreign key AssignDecideOutputWeighed(step, root) to AssignDecideOutput(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_step_pred_ordinal_zt6dalxe4q" ON "slice"."assign_decide_output_weighed" IS 'foreign key AssignDecideOutputWeighed(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to AssignDecideOutputWeighed(step, ordinal, root)';
+COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_step_pred_ordinal_6nj2mzauma" ON "slice"."assign_decide_output_weighed" IS 'foreign key AssignDecideOutputWeighed(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to AssignDecideOutputWeighed(step, ordinal, root)';
 
 COMMENT ON CONSTRAINT "__assign_decide_seen_read_fk_digest_root_wdcopjmkbl" ON "slice"."assign_decide_seen_read" IS 'foreign key AssignDecideSeenRead(digest, root) to AssignDecideSeenRow(digest, root)';
 
@@ -5595,7 +5561,7 @@ COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_root_ukjqxbt7ap" ON "slic
 
 COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_step_root_wl7z42ozbz" ON "slice"."assign_embed_input_exclude" IS 'foreign key AssignEmbedInputExclude(step, root) to AssignEmbedInput(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_step_pred_ordinal_pq6u3rnwav" ON "slice"."assign_embed_input_exclude" IS 'foreign key AssignEmbedInputExclude(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to AssignEmbedInputExclude(step, ordinal, root)';
+COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_step_pred_ordinal_uyhiasutyq" ON "slice"."assign_embed_input_exclude" IS 'foreign key AssignEmbedInputExclude(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to AssignEmbedInputExclude(step, ordinal, root)';
 
 COMMENT ON CONSTRAINT "__assign_embed_input_mode_nearest_fk_root_4znytbmmeu" ON "slice"."assign_embed_input_mode_nearest" IS 'foreign key AssignEmbedInputModeNearest(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -5605,7 +5571,7 @@ COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_root_tre2sdwjfz" ON "slice".
 
 COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_step_root_rjswhmogx2" ON "slice"."assign_embed_input_near" IS 'foreign key AssignEmbedInputNear(step, root) to AssignEmbedInput(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_step_pred_ordinal_root_b6eu6czlww" ON "slice"."assign_embed_input_near" IS 'foreign key AssignEmbedInputNear(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to AssignEmbedInputNear(step, ordinal, root)';
+COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_step_pred_ordinal_root_4z756q6ieo" ON "slice"."assign_embed_input_near" IS 'foreign key AssignEmbedInputNear(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to AssignEmbedInputNear(step, ordinal, root)';
 
 COMMENT ON CONSTRAINT "__assign_embed_output_fk_root_2s3kxqf4fq" ON "slice"."assign_embed_output" IS 'foreign key AssignEmbedOutput(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -5689,7 +5655,7 @@ COMMENT ON CONSTRAINT "__chain_claim_fk_root_e4z56epu62" ON "slice"."chain_claim
 
 COMMENT ON CONSTRAINT "__chain_claim_fk_step_root_dz35k5kajb" ON "slice"."chain_claim" IS 'foreign key ChainClaim(step, root) to ChainStep(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_claim_fk_step_pred_attempt_root_zhusgp55bz" ON "slice"."chain_claim" IS 'foreign key ChainClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to ChainEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__chain_claim_fk_step_pred_attempt_root_mekmccmxkt" ON "slice"."chain_claim" IS 'foreign key ChainClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to ChainEnded(step, attempt, root)';
 
 COMMENT ON CONSTRAINT "__chain_done_fk_root_p5unbx53ay" ON "slice"."chain_done" IS 'foreign key ChainDone(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -5763,7 +5729,7 @@ COMMENT ON CONSTRAINT "__chain_page_tree_items_fk_digest_root_m6wzp3qjum" ON "sl
 
 COMMENT ON CONSTRAINT "__chain_page_tree_items_fk_root_dtaaizvian" ON "slice"."chain_page_tree_items" IS 'foreign key ChainPageTreeItems(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
-COMMENT ON CONSTRAINT "__chain_page_tree_items_fk_digest_pred_items_root_3wm4ll7lts" ON "slice"."chain_page_tree_items" IS 'foreign key ChainPageTreeItems(digest where {"kind":"compare","left":{"field":"items","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(items) where {"kind":"compare","left":{"field":"items","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"items","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to ChainPageTreeItems(digest, items, root)';
+COMMENT ON CONSTRAINT "__chain_page_tree_items_fk_digest_pred_items_root_cygr4alwsu" ON "slice"."chain_page_tree_items" IS 'foreign key ChainPageTreeItems(digest where {"kind":"compare","left":{"field":"items","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(items), root) to ChainPageTreeItems(digest, items, root)';
 
 COMMENT ON CONSTRAINT "__chain_page_tree_read_fk_digest_root_resd5qnln7" ON "slice"."chain_page_tree_read" IS 'foreign key ChainPageTreeRead(digest, root) to ChainPageTreeRow(digest, root)';
 
@@ -5831,7 +5797,7 @@ COMMENT ON CONSTRAINT "__clock_claim_fk_root_hmpra5qlcp" ON "slice"."clock_claim
 
 COMMENT ON CONSTRAINT "__clock_claim_fk_step_root_vptogyiqam" ON "slice"."clock_claim" IS 'foreign key ClockClaim(step, root) to ClockStep(step, root)';
 
-COMMENT ON CONSTRAINT "__clock_claim_fk_step_pred_attempt_root_xb6x2tmmoj" ON "slice"."clock_claim" IS 'foreign key ClockClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to ClockEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__clock_claim_fk_step_pred_attempt_root_qvfbouzl5p" ON "slice"."clock_claim" IS 'foreign key ClockClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to ClockEnded(step, attempt, root)';
 
 COMMENT ON CONSTRAINT "__clock_done_fk_root_soqskjsjao" ON "slice"."clock_done" IS 'foreign key ClockDone(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -5917,7 +5883,7 @@ COMMENT ON CONSTRAINT "__fan_claim_fk_step_root_6jsjsejmab" ON "slice"."fan_clai
 
 COMMENT ON CONSTRAINT "__fan_claim_fk_step_root_attempt_pred_holds_jqx7ma7cam" ON "slice"."fan_claim" IS 'foreign key FanClaim(step, root, attempt, pred(holds)) to FanHold(step, root, attempt, at)';
 
-COMMENT ON CONSTRAINT "__fan_claim_fk_step_pred_attempt_root_b62fsp2zir" ON "slice"."fan_claim" IS 'foreign key FanClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to FanEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__fan_claim_fk_step_pred_attempt_root_lvu6wwhaq3" ON "slice"."fan_claim" IS 'foreign key FanClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to FanEnded(step, attempt, root)';
 
 COMMENT ON CONSTRAINT "__fan_done_fk_root_cfizuozacw" ON "slice"."fan_done" IS 'foreign key FanDone(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -6029,7 +5995,7 @@ COMMENT ON CONSTRAINT "__retry_claim_fk_root_ilxn6ulsuq" ON "slice"."retry_claim
 
 COMMENT ON CONSTRAINT "__retry_claim_fk_step_root_zffmzj357l" ON "slice"."retry_claim" IS 'foreign key RetryClaim(step, root) to RetryStep(step, root)';
 
-COMMENT ON CONSTRAINT "__retry_claim_fk_step_pred_attempt_root_d5bu2ekplv" ON "slice"."retry_claim" IS 'foreign key RetryClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to RetryEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__retry_claim_fk_step_pred_attempt_root_pnatu7db5m" ON "slice"."retry_claim" IS 'foreign key RetryClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to RetryEnded(step, attempt, root)';
 
 COMMENT ON CONSTRAINT "__retry_done_fk_root_eegigvha5p" ON "slice"."retry_done" IS 'foreign key RetryDone(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -6139,7 +6105,7 @@ COMMENT ON CONSTRAINT "__review_claim_fk_step_root_yqgzabonm6" ON "slice"."revie
 
 COMMENT ON CONSTRAINT "__review_claim_fk_step_root_attempt_pred_holds_arudmqwanl" ON "slice"."review_claim" IS 'foreign key ReviewClaim(step, root, attempt, pred(holds)) to ReviewHold(step, root, attempt, at)';
 
-COMMENT ON CONSTRAINT "__review_claim_fk_step_pred_attempt_root_4ezcasjskf" ON "slice"."review_claim" IS 'foreign key ReviewClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to ReviewEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__review_claim_fk_step_pred_attempt_root_jwqvbkxdcf" ON "slice"."review_claim" IS 'foreign key ReviewClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to ReviewEnded(step, attempt, root)';
 
 COMMENT ON CONSTRAINT "__review_done_fk_root_f374tjslpg" ON "slice"."review_done" IS 'foreign key ReviewDone(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -6169,7 +6135,7 @@ COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_root_4jycj2gg73" ON "slice
 
 COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_step_root_xkxj3c72dv" ON "slice"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(step, root) to ReviewGatherInput(step, root)';
 
-COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_step_pred_ordinal_ytiuhepjbu" ON "slice"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to ReviewGatherInputSizes(step, ordinal, root)';
+COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_step_pred_ordinal_h3lguuktus" ON "slice"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to ReviewGatherInputSizes(step, ordinal, root)';
 
 COMMENT ON CONSTRAINT "__review_gather_output_fk_root_pfl7uynvxk" ON "slice"."review_gather_output" IS 'foreign key ReviewGatherOutput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -6221,7 +6187,7 @@ COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_root_otll5lik2n" ON "s
 
 COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_scope_root_qld3u5js7a" ON "slice"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(scope, root) to ReviewReviewRunInput(scope, root)';
 
-COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_scope_pred_lijpwha6ch" ON "slice"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal) where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to ReviewReviewRunInputSizes(scope, ordinal, root)';
+COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_scope_pred_2ecx6mfelf" ON "slice"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to ReviewReviewRunInputSizes(scope, ordinal, root)';
 
 COMMENT ON CONSTRAINT "__review_save_input_fk_root_75g3g3e6l3" ON "slice"."review_save_input" IS 'foreign key ReviewSaveInput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -6289,7 +6255,7 @@ COMMENT ON CONSTRAINT "__sync_claim_fk_root_4qbs7pxn2t" ON "slice"."sync_claim" 
 
 COMMENT ON CONSTRAINT "__sync_claim_fk_step_root_gvtcn764xc" ON "slice"."sync_claim" IS 'foreign key SyncClaim(step, root) to SyncStep(step, root)';
 
-COMMENT ON CONSTRAINT "__sync_claim_fk_step_pred_attempt_root_ogqckwblbr" ON "slice"."sync_claim" IS 'foreign key SyncClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to SyncEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__sync_claim_fk_step_pred_attempt_root_aeg32ogl5b" ON "slice"."sync_claim" IS 'foreign key SyncClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to SyncEnded(step, attempt, root)';
 
 COMMENT ON CONSTRAINT "__sync_copy_input_fk_root_d7u63yuxxs" ON "slice"."sync_copy_input" IS 'foreign key SyncCopyInput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -6389,7 +6355,7 @@ COMMENT ON CONSTRAINT "__writeback_claim_fk_root_7agc267qm7" ON "slice"."writeba
 
 COMMENT ON CONSTRAINT "__writeback_claim_fk_step_root_vh7k4u5nuz" ON "slice"."writeback_claim" IS 'foreign key WritebackClaim(step, root) to WritebackStep(step, root)';
 
-COMMENT ON CONSTRAINT "__writeback_claim_fk_step_pred_attempt_root_n7sim6icgo" ON "slice"."writeback_claim" IS 'foreign key WritebackClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt) where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, root where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}) to WritebackEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__writeback_claim_fk_step_pred_attempt_root_qpbpmxuik3" ON "slice"."writeback_claim" IS 'foreign key WritebackClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to WritebackEnded(step, attempt, root)';
 
 COMMENT ON CONSTRAINT "__writeback_deliver_input_fk_root_khq2esrmmb" ON "slice"."writeback_deliver_input" IS 'foreign key WritebackDeliverInput(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
 
@@ -6507,7 +6473,7 @@ COMMENT ON INDEX "slice"."__assign_assignment_finish_output_ix_root_t2nmfubzxm" 
 
 COMMENT ON INDEX "slice"."__assign_assignment_input_ix_root_scope_ndn57wfv5p" IS 'btree index AssignAssignmentInput(root, scope)';
 
-COMMENT ON INDEX "slice"."__assign_assignment_input_exclude_ix_scope_u_6_ypqf_45dew4mkec" IS 'btree index AssignAssignmentInputExclude(__scope_u6ypqf2r2z, __pred_ordinal_rdz3ttleig, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice"."__assign_assignment_input_exclude_ix_root_scope_u_6_7ph7zpbtp2" IS 'btree index AssignAssignmentInputExclude(root, __scope_u6ypqf2r2z, __pred_ordinal_e545zctcav)';
 
 COMMENT ON INDEX "slice"."__assign_assignment_input_exclude_ix_root_scope_s3ar3mqhyb" IS 'btree index AssignAssignmentInputExclude(root, scope)';
 
@@ -6515,17 +6481,15 @@ COMMENT ON INDEX "slice"."__assign_assignment_input_mode_nearest_ix_root_scope_2
 
 COMMENT ON INDEX "slice"."__assign_assignment_input_mode_within_ix_root_scope_yleeo72liv" IS 'btree index AssignAssignmentInputModeWithin(root, scope)';
 
-COMMENT ON INDEX "slice"."__assign_assignment_input_near_ix_scope_u_6_ypqf_2_r_jq2z6paeb4" IS 'btree index AssignAssignmentInputNear(__scope_u6ypqf2r2z, __pred_ordinal_rdz3ttleig, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice"."__assign_assignment_input_near_ix_root_scope_u_6_eoy4ujrqzz" IS 'btree index AssignAssignmentInputNear(root, __scope_u6ypqf2r2z, __pred_ordinal_e545zctcav)';
 
 COMMENT ON INDEX "slice"."__assign_assignment_input_near_ix_root_scope_gswnizhczo" IS 'btree index AssignAssignmentInputNear(root, scope)';
 
-COMMENT ON INDEX "slice"."__assign_claim_ix_step_ouvkclqzzd_pred_attempt_x7szewvena" IS 'btree index AssignClaim(__step_ouvkclqzzd, __pred_attempt_dqbvoe7dfs, __root_yewsvvtcyz)';
-
-COMMENT ON INDEX "slice"."__assign_claim_ix_root_wxxruhegpn" IS 'btree index AssignClaim(root)';
+COMMENT ON INDEX "slice"."__assign_claim_ix_root_step_ouvkclqzzd_pred_attempt_wrkk7rllts" IS 'btree index AssignClaim(root, __step_ouvkclqzzd, __pred_attempt_oey4tm5xyl)';
 
 COMMENT ON INDEX "slice"."__assign_decide_input_ix_root_step_erwflqvcsk" IS 'btree index AssignDecideInput(root, step)';
 
-COMMENT ON INDEX "slice"."__assign_decide_input_exclude_ix_step_mjpuijzth_4_2wmsrdnp2v" IS 'btree index AssignDecideInputExclude(__step_mjpuijzth4, __pred_ordinal_rdz3ttleig, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice"."__assign_decide_input_exclude_ix_root_step_mjpuijzth_26rzz2ekud" IS 'btree index AssignDecideInputExclude(root, __step_mjpuijzth4, __pred_ordinal_e545zctcav)';
 
 COMMENT ON INDEX "slice"."__assign_decide_input_exclude_ix_root_step_ksgou2rpv4" IS 'btree index AssignDecideInputExclude(root, step)';
 
@@ -6545,7 +6509,7 @@ COMMENT ON INDEX "slice"."__assign_decide_output_stage_rest_ix_root_step_hkqbk44
 
 COMMENT ON INDEX "slice"."__assign_decide_output_stage_serve_ix_root_step_65h35vi6kz" IS 'btree index AssignDecideOutputStageServe(root, step)';
 
-COMMENT ON INDEX "slice"."__assign_decide_output_weighed_ix_step_mjpuijzth_4_6xa7a6vtga" IS 'btree index AssignDecideOutputWeighed(__step_mjpuijzth4, __pred_ordinal_rdz3ttleig, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice"."__assign_decide_output_weighed_ix_root_step_5pk2o2aayf" IS 'btree index AssignDecideOutputWeighed(root, __step_mjpuijzth4, __pred_ordinal_e545zctcav)';
 
 COMMENT ON INDEX "slice"."__assign_decide_output_weighed_ix_root_step_gncwdipl43" IS 'btree index AssignDecideOutputWeighed(root, step)';
 
@@ -6559,7 +6523,7 @@ COMMENT ON INDEX "slice"."__assign_done_ix_root_step_edz2spjbbn" IS 'btree index
 
 COMMENT ON INDEX "slice"."__assign_embed_input_ix_root_step_5ltjxo25vr" IS 'btree index AssignEmbedInput(root, step)';
 
-COMMENT ON INDEX "slice"."__assign_embed_input_exclude_ix_step_mjpuijzth_4_mirtepmnac" IS 'btree index AssignEmbedInputExclude(__step_mjpuijzth4, __pred_ordinal_rdz3ttleig, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice"."__assign_embed_input_exclude_ix_root_step_mjpuijzth_7bmkgreoup" IS 'btree index AssignEmbedInputExclude(root, __step_mjpuijzth4, __pred_ordinal_e545zctcav)';
 
 COMMENT ON INDEX "slice"."__assign_embed_input_exclude_ix_root_step_hkkmfupglo" IS 'btree index AssignEmbedInputExclude(root, step)';
 
@@ -6567,7 +6531,7 @@ COMMENT ON INDEX "slice"."__assign_embed_input_mode_nearest_ix_root_step_nyvoana
 
 COMMENT ON INDEX "slice"."__assign_embed_input_mode_within_ix_root_step_jaqihe4eqt" IS 'btree index AssignEmbedInputModeWithin(root, step)';
 
-COMMENT ON INDEX "slice"."__assign_embed_input_near_ix_step_mjpuijzth_4_pred_gutp25ese5" IS 'btree index AssignEmbedInputNear(__step_mjpuijzth4, __pred_ordinal_rdz3ttleig, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice"."__assign_embed_input_near_ix_root_step_mjpuijzth_4_p67hugda6z" IS 'btree index AssignEmbedInputNear(root, __step_mjpuijzth4, __pred_ordinal_e545zctcav)';
 
 COMMENT ON INDEX "slice"."__assign_embed_input_near_ix_root_step_lkjh7aey4z" IS 'btree index AssignEmbedInputNear(root, step)';
 
@@ -6615,9 +6579,7 @@ COMMENT ON INDEX "slice"."__chain_chain_run_finish_output_ix_root_wb6phhwc2j" IS
 
 COMMENT ON INDEX "slice"."__chain_chain_run_input_ix_root_7abe6kcg67" IS 'btree index ChainChainRunInput(root)';
 
-COMMENT ON INDEX "slice"."__chain_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_gdjkwebwlh" IS 'btree index ChainClaim(__step_ouvkclqzzd, __pred_attempt_dqbvoe7dfs, __root_yewsvvtcyz)';
-
-COMMENT ON INDEX "slice"."__chain_claim_ix_root_i4kzudjuai" IS 'btree index ChainClaim(root)';
+COMMENT ON INDEX "slice"."__chain_claim_ix_root_step_ouvkclqzzd_pred_attempt_azuejmwwty" IS 'btree index ChainClaim(root, __step_ouvkclqzzd, __pred_attempt_oey4tm5xyl)';
 
 COMMENT ON INDEX "slice"."__chain_done_ix_root_step_nymmh7bgnk" IS 'btree index ChainDone(root, step)';
 
@@ -6657,7 +6619,7 @@ COMMENT ON INDEX "slice"."__chain_page_output_next_ix_root_r662e4fglp" IS 'btree
 
 COMMENT ON INDEX "slice"."__chain_page_tree_first_ix_root_gxcpd2aguo" IS 'btree index ChainPageTreeFirst(root)';
 
-COMMENT ON INDEX "slice"."__chain_page_tree_items_ix_digest_eiwkcq_6_olq_pred_ke2reityjr" IS 'btree index ChainPageTreeItems(__digest_eiwkcq6olq, __pred_items_sinxzvyomd, __root_gp6pfrpfoe)';
+COMMENT ON INDEX "slice"."__chain_page_tree_items_ix_root_digest_eiwkcq_6_olq_6yicp4cvau" IS 'btree index ChainPageTreeItems(root, __digest_eiwkcq6olq, __pred_items_3qltx5cx27)';
 
 COMMENT ON INDEX "slice"."__chain_page_tree_items_ix_root_digest_j4l2wg2mhr" IS 'btree index ChainPageTreeItems(root, digest)';
 
@@ -6703,9 +6665,7 @@ COMMENT ON INDEX "slice"."__clock_chime_input_ix_root_step_ctwanc2seb" IS 'btree
 
 COMMENT ON INDEX "slice"."__clock_chime_output_ix_root_ivn554pu5g" IS 'btree index ClockChimeOutput(root)';
 
-COMMENT ON INDEX "slice"."__clock_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_g5rslzs3if" IS 'btree index ClockClaim(__step_ouvkclqzzd, __pred_attempt_dqbvoe7dfs, __root_yewsvvtcyz)';
-
-COMMENT ON INDEX "slice"."__clock_claim_ix_root_3qy2b6fpno" IS 'btree index ClockClaim(root)';
+COMMENT ON INDEX "slice"."__clock_claim_ix_root_step_ouvkclqzzd_pred_attempt_4ndcvaxclz" IS 'btree index ClockClaim(root, __step_ouvkclqzzd, __pred_attempt_oey4tm5xyl)';
 
 COMMENT ON INDEX "slice"."__clock_done_ix_root_step_y7b7fracbz" IS 'btree index ClockDone(root, step)';
 
@@ -6753,9 +6713,7 @@ COMMENT ON INDEX "slice"."__fan_batch_finish_output_ix_root_xzmsfqk7gw" IS 'btre
 
 COMMENT ON INDEX "slice"."__fan_batch_input_ix_root_scope_24ynzsffio" IS 'btree index FanBatchInput(root, scope)';
 
-COMMENT ON INDEX "slice"."__fan_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_7_scbit3alr4" IS 'btree index FanClaim(__step_ouvkclqzzd, __pred_attempt_dqbvoe7dfs, __root_yewsvvtcyz)';
-
-COMMENT ON INDEX "slice"."__fan_claim_ix_root_step_t6nf6jsksj" IS 'btree index FanClaim(root, step)';
+COMMENT ON INDEX "slice"."__fan_claim_ix_root_step_ouvkclqzzd_pred_attempt_oey_kkpmouft4i" IS 'btree index FanClaim(root, __step_ouvkclqzzd, __pred_attempt_oey4tm5xyl)';
 
 COMMENT ON INDEX "slice"."__fan_done_ix_root_step_nrkfpkvyya" IS 'btree index FanDone(root, step)';
 
@@ -6823,9 +6781,7 @@ COMMENT ON INDEX "slice"."__retry_brittle_input_ix_root_step_hn2bnvkmi5" IS 'btr
 
 COMMENT ON INDEX "slice"."__retry_brittle_output_ix_root_zbwyfvhpop" IS 'btree index RetryBrittleOutput(root)';
 
-COMMENT ON INDEX "slice"."__retry_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_56kr6qlizb" IS 'btree index RetryClaim(__step_ouvkclqzzd, __pred_attempt_dqbvoe7dfs, __root_yewsvvtcyz)';
-
-COMMENT ON INDEX "slice"."__retry_claim_ix_root_l2dmax44om" IS 'btree index RetryClaim(root)';
+COMMENT ON INDEX "slice"."__retry_claim_ix_root_step_ouvkclqzzd_pred_attempt_4ee63gc76g" IS 'btree index RetryClaim(root, __step_ouvkclqzzd, __pred_attempt_oey4tm5xyl)';
 
 COMMENT ON INDEX "slice"."__retry_done_ix_root_step_2l3rh6d5g6" IS 'btree index RetryDone(root, step)';
 
@@ -6887,9 +6843,7 @@ COMMENT ON INDEX "slice"."__review_analyze_input_ix_root_step_bdsim6bffp" IS 'bt
 
 COMMENT ON INDEX "slice"."__review_analyze_output_ix_root_txmlnhynqs" IS 'btree index ReviewAnalyzeOutput(root)';
 
-COMMENT ON INDEX "slice"."__review_claim_ix_step_ouvkclqzzd_pred_attempt_5jggipiwlr" IS 'btree index ReviewClaim(__step_ouvkclqzzd, __pred_attempt_dqbvoe7dfs, __root_yewsvvtcyz)';
-
-COMMENT ON INDEX "slice"."__review_claim_ix_root_step_ffgfd5rmvs" IS 'btree index ReviewClaim(root, step)';
+COMMENT ON INDEX "slice"."__review_claim_ix_root_step_ouvkclqzzd_pred_attempt_y5c5zv3vi7" IS 'btree index ReviewClaim(root, __step_ouvkclqzzd, __pred_attempt_oey4tm5xyl)';
 
 COMMENT ON INDEX "slice"."__review_done_ix_root_step_wex3643ujb" IS 'btree index ReviewDone(root, step)';
 
@@ -6909,7 +6863,7 @@ COMMENT ON INDEX "slice"."__review_gather_input_ix_review_f2zafhsmtj" IS 'btree 
 
 COMMENT ON INDEX "slice"."__review_gather_input_ix_root_step_wsoyzlnuyr" IS 'btree index ReviewGatherInput(root, step)';
 
-COMMENT ON INDEX "slice"."__review_gather_input_sizes_ix_step_mjpuijzth_4_pred_be4mal6542" IS 'btree index ReviewGatherInputSizes(__step_mjpuijzth4, __pred_ordinal_rdz3ttleig, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice"."__review_gather_input_sizes_ix_root_step_mjpuijzth_4_kjg5fulkoq" IS 'btree index ReviewGatherInputSizes(root, __step_mjpuijzth4, __pred_ordinal_e545zctcav)';
 
 COMMENT ON INDEX "slice"."__review_gather_input_sizes_ix_root_step_dargnvbdje" IS 'btree index ReviewGatherInputSizes(root, step)';
 
@@ -6939,7 +6893,7 @@ COMMENT ON INDEX "slice"."__review_review_run_finish_output_ix_root_qafu34k5sc" 
 
 COMMENT ON INDEX "slice"."__review_review_run_input_ix_root_abc3mheba4" IS 'btree index ReviewReviewRunInput(root)';
 
-COMMENT ON INDEX "slice"."__review_review_run_input_sizes_ix_scope_u_6_ypqf_2_ufblvqrxeq" IS 'btree index ReviewReviewRunInputSizes(__scope_u6ypqf2r2z, __pred_ordinal_rdz3ttleig, __root_yjobx7uyrd)';
+COMMENT ON INDEX "slice"."__review_review_run_input_sizes_ix_root_scope_u_6_4kpsy5wss6" IS 'btree index ReviewReviewRunInputSizes(root, __scope_u6ypqf2r2z, __pred_ordinal_e545zctcav)';
 
 COMMENT ON INDEX "slice"."__review_review_run_input_sizes_ix_root_scope_2dnx7skohl" IS 'btree index ReviewReviewRunInputSizes(root, scope)';
 
@@ -6975,9 +6929,7 @@ COMMENT ON INDEX "slice"."__sync_build_input_ix_root_step_azxcsmj373" IS 'btree 
 
 COMMENT ON INDEX "slice"."__sync_build_output_ix_root_amskeycb7k" IS 'btree index SyncBuildOutput(root)';
 
-COMMENT ON INDEX "slice"."__sync_claim_ix_step_ouvkclqzzd_pred_attempt_dqbvoe_jozknhvn35" IS 'btree index SyncClaim(__step_ouvkclqzzd, __pred_attempt_dqbvoe7dfs, __root_yewsvvtcyz)';
-
-COMMENT ON INDEX "slice"."__sync_claim_ix_root_rcsm3ggsvs" IS 'btree index SyncClaim(root)';
+COMMENT ON INDEX "slice"."__sync_claim_ix_root_step_ouvkclqzzd_pred_attempt_f3q5xsae3q" IS 'btree index SyncClaim(root, __step_ouvkclqzzd, __pred_attempt_oey4tm5xyl)';
 
 COMMENT ON INDEX "slice"."__sync_copy_input_ix_root_step_42uulsghoj" IS 'btree index SyncCopyInput(root, step)';
 
@@ -7033,9 +6985,7 @@ COMMENT ON INDEX "slice"."__sync_sync_run_input_ix_root_bp43cbf2uj" IS 'btree in
 
 COMMENT ON INDEX "slice"."__writeback_admitted_ix_root_h3gyzivmzl" IS 'btree index WritebackAdmitted(root)';
 
-COMMENT ON INDEX "slice"."__writeback_claim_ix_step_ouvkclqzzd_pred_attempt_5kw4ikrxtr" IS 'btree index WritebackClaim(__step_ouvkclqzzd, __pred_attempt_dqbvoe7dfs, __root_yewsvvtcyz)';
-
-COMMENT ON INDEX "slice"."__writeback_claim_ix_root_bq6zyukkmq" IS 'btree index WritebackClaim(root)';
+COMMENT ON INDEX "slice"."__writeback_claim_ix_root_step_ouvkclqzzd_pred_vsh4c26q54" IS 'btree index WritebackClaim(root, __step_ouvkclqzzd, __pred_attempt_oey4tm5xyl)';
 
 COMMENT ON INDEX "slice"."__writeback_deliver_input_ix_root_step_42hexztzwm" IS 'btree index WritebackDeliverInput(root, step)';
 
@@ -7350,5 +7300,539 @@ COMMENT ON FUNCTION "slice"."__capture_writeback_root_4gkeh6e4ge"() IS 'rule cap
 COMMENT ON FUNCTION "slice"."__capture_writeback_step_dklkh3hpav"() IS 'rule capture of WritebackStep';
 
 COMMENT ON FUNCTION "slice"."__capture_writeback_writeback_input_wmdhzuwf32"() IS 'rule capture of WritebackWritebackInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_admitted_dmbitza5gi"() IS 'immutability guard of AssignAdmitted';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_asked_rftjphyude"() IS 'immutability guard of AssignAsked';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_assignment_finish_output_7ztgeqwapq"() IS 'immutability guard of AssignAssignmentFinishOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_assignment_input_26bgxjv3jk"() IS 'immutability guard of AssignAssignmentInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_assignment_input_exclude_hmyilvuaii"() IS 'immutability guard of AssignAssignmentInputExclude';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_assignment_input_mode_nearest_k7axrvsa5x"() IS 'immutability guard of AssignAssignmentInputModeNearest';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_assignment_input_mode_within_prql7mhf6o"() IS 'immutability guard of AssignAssignmentInputModeWithin';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_assignment_input_near_rv7fv5gqhd"() IS 'immutability guard of AssignAssignmentInputNear';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_claim_xbbzgda6vw"() IS 'immutability guard of AssignClaim';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_decide_input_5issm7uxuh"() IS 'immutability guard of AssignDecideInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_decide_input_exclude_g7vtqkvft7"() IS 'immutability guard of AssignDecideInputExclude';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_decide_input_mode_nearest_aye4p7qnad"() IS 'immutability guard of AssignDecideInputModeNearest';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_decide_input_mode_within_zt3h44y2rx"() IS 'immutability guard of AssignDecideInputModeWithin';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_decide_nearest_read_5yjnbdpdrp"() IS 'immutability guard of AssignDecideNearestRead';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_decide_nearest_row_3kw2p6zy6g"() IS 'immutability guard of AssignDecideNearestRow';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_decide_output_q7sye4ocju"() IS 'immutability guard of AssignDecideOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_decide_output_stage_rest_2l67dyutkv"() IS 'immutability guard of AssignDecideOutputStageRest';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_decide_output_stage_serve_bqiqmjczjs"() IS 'immutability guard of AssignDecideOutputStageServe';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_decide_output_weighed_yiycf2llnn"() IS 'immutability guard of AssignDecideOutputWeighed';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_decide_seen_read_lrclhhd2kt"() IS 'immutability guard of AssignDecideSeenRead';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_decide_seen_row_h3sk5n26fi"() IS 'immutability guard of AssignDecideSeenRow';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_done_qrcqni3ju2"() IS 'immutability guard of AssignDone';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_embed_input_yru3mcm5zw"() IS 'immutability guard of AssignEmbedInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_embed_input_exclude_42jkkh66qm"() IS 'immutability guard of AssignEmbedInputExclude';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_embed_input_mode_nearest_olysh66fm7"() IS 'immutability guard of AssignEmbedInputModeNearest';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_embed_input_mode_within_4kmqipjgdu"() IS 'immutability guard of AssignEmbedInputModeWithin';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_embed_input_near_hybwllbw5h"() IS 'immutability guard of AssignEmbedInputNear';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_embed_output_lshxp223af"() IS 'immutability guard of AssignEmbedOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_ended_j57uukfasp"() IS 'immutability guard of AssignEnded';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_exhausted_vp3saum6wy"() IS 'immutability guard of AssignExhausted';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_failed_yl6oy344n6"() IS 'immutability guard of AssignFailed';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_fenced_mpcwo52cz5"() IS 'immutability guard of AssignFenced';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_finish_4gwwhr7j7j"() IS 'immutability guard of AssignFinish';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_held_e5omypfirw"() IS 'immutability guard of AssignHeld';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_paused_5n3oauuljz"() IS 'immutability guard of AssignPaused';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_refusal_6ndeutorgg"() IS 'immutability guard of AssignRefusal';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_result_excrys6e3o"() IS 'immutability guard of AssignResult';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_resumed_wcgii3wia6"() IS 'immutability guard of AssignResumed';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_retry_qq4klsi3nn"() IS 'immutability guard of AssignRetry';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_root_z5tsxfpw75"() IS 'immutability guard of AssignRoot';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_scope_wbrdyjflor"() IS 'immutability guard of AssignScope';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_skipped_s6cqm663up"() IS 'immutability guard of AssignSkipped';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_start_step_qt7w56frlu"() IS 'immutability guard of AssignStartStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_assign_step_bwurcagx2e"() IS 'immutability guard of AssignStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_assigned_tbugyxabsc"() IS 'immutability guard of Assigned';
+
+COMMENT ON FUNCTION "slice"."__immutable_audit_tvhiun4dxz"() IS 'immutability guard of Audit';
+
+COMMENT ON FUNCTION "slice"."__immutable_built_2sr4obr6b3"() IS 'immutability guard of Built';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_admitted_fuqonu5big"() IS 'immutability guard of ChainAdmitted';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_chain_run_finish_output_u2vsexjljk"() IS 'immutability guard of ChainChainRunFinishOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_chain_run_input_cfqxbaar7v"() IS 'immutability guard of ChainChainRunInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_claim_ds4iaekgzm"() IS 'immutability guard of ChainClaim';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_done_d4qltap6a2"() IS 'immutability guard of ChainDone';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_ended_b7gitrghvy"() IS 'immutability guard of ChainEnded';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_exhausted_6ssacuqoj7"() IS 'immutability guard of ChainExhausted';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_failed_ygqiyt6fnh"() IS 'immutability guard of ChainFailed';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_fenced_7wtscdbzek"() IS 'immutability guard of ChainFenced';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_finish_ksgns4oqkj"() IS 'immutability guard of ChainFinish';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_held_cqkxomebpa"() IS 'immutability guard of ChainHeld';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_next_q5lvsogi6m"() IS 'immutability guard of ChainNext';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_ordered_finish_output_e5q4ti5eip"() IS 'immutability guard of ChainOrderedFinishOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_ordered_input_dcjkg5am3m"() IS 'immutability guard of ChainOrderedInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_page_earlier_read_nqoaojb6qw"() IS 'immutability guard of ChainPageEarlierRead';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_page_earlier_row_haywtldv4j"() IS 'immutability guard of ChainPageEarlierRow';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_page_input_ygs3x37afz"() IS 'immutability guard of ChainPageInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_page_input_after_ebt6pg2db2"() IS 'immutability guard of ChainPageInputAfter';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_page_output_jgnuxzjizs"() IS 'immutability guard of ChainPageOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_page_output_next_lihvo4atmg"() IS 'immutability guard of ChainPageOutputNext';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_page_tree_first_dx6efgvl7m"() IS 'immutability guard of ChainPageTreeFirst';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_page_tree_items_lkppdwfrxg"() IS 'immutability guard of ChainPageTreeItems';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_page_tree_read_h43ekusxgb"() IS 'immutability guard of ChainPageTreeRead';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_page_tree_row_25j5mamg5x"() IS 'immutability guard of ChainPageTreeRow';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_page_weights_read_54klb742qw"() IS 'immutability guard of ChainPageWeightsRead';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_page_weights_row_kngll2a2jo"() IS 'immutability guard of ChainPageWeightsRow';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_paused_aoyhzggt5w"() IS 'immutability guard of ChainPaused';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_refusal_26czlahjb4"() IS 'immutability guard of ChainRefusal';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_result_vjxlyihjif"() IS 'immutability guard of ChainResult';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_resumed_pyb74if2ds"() IS 'immutability guard of ChainResumed';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_retry_buegvn7dom"() IS 'immutability guard of ChainRetry';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_root_kfhmbkwvfv"() IS 'immutability guard of ChainRoot';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_scope_gfs52bg6zj"() IS 'immutability guard of ChainScope';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_skipped_b2kct5uern"() IS 'immutability guard of ChainSkipped';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_start_step_mc64f7frad"() IS 'immutability guard of ChainStartStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_chain_step_cxf3233wsk"() IS 'immutability guard of ChainStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_chimed_gtkcd6vluu"() IS 'immutability guard of Chimed';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_admitted_2qtned6dte"() IS 'immutability guard of ClockAdmitted';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_chime_input_s4ceffgsdh"() IS 'immutability guard of ClockChimeInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_chime_output_4wvji5tgxg"() IS 'immutability guard of ClockChimeOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_claim_v4m4qrly3o"() IS 'immutability guard of ClockClaim';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_done_vo636oloi4"() IS 'immutability guard of ClockDone';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_ended_ffrzkvzlmm"() IS 'immutability guard of ClockEnded';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_exhausted_gkejhufmzg"() IS 'immutability guard of ClockExhausted';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_failed_ayxzshcyg7"() IS 'immutability guard of ClockFailed';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_fenced_c5f64ttwnw"() IS 'immutability guard of ClockFenced';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_finish_wz5pcvxvhv"() IS 'immutability guard of ClockFinish';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_held_73wmb4e3nd"() IS 'immutability guard of ClockHeld';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_hourly_finish_output_ns5lfaamhx"() IS 'immutability guard of ClockHourlyFinishOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_hourly_input_vovqay4fkm"() IS 'immutability guard of ClockHourlyInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_paused_3ykaw355ga"() IS 'immutability guard of ClockPaused';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_refusal_i6pq3fa7fm"() IS 'immutability guard of ClockRefusal';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_result_ig7iwlfu3h"() IS 'immutability guard of ClockResult';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_resumed_yqfyfvv7pj"() IS 'immutability guard of ClockResumed';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_retry_rm5764fwqw"() IS 'immutability guard of ClockRetry';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_root_75oloon3nz"() IS 'immutability guard of ClockRoot';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_scope_kdthxacmiq"() IS 'immutability guard of ClockScope';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_skipped_oq2ldvr42g"() IS 'immutability guard of ClockSkipped';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_start_step_bpm7rc5yh6"() IS 'immutability guard of ClockStartStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_clock_step_s6q4x6gnea"() IS 'immutability guard of ClockStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_concluded_usqwygcl43"() IS 'immutability guard of Concluded';
+
+COMMENT ON FUNCTION "slice"."__immutable_copied_nroyctccyr"() IS 'immutability guard of Copied';
+
+COMMENT ON FUNCTION "slice"."__immutable_cursor_yzelwkrjiw"() IS 'immutability guard of Cursor';
+
+COMMENT ON FUNCTION "slice"."__immutable_delivered_bv4bssb7wd"() IS 'immutability guard of Delivered';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_admitted_k3af2vnbsn"() IS 'immutability guard of FanAdmitted';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_batch_finish_output_gfnclozxa5"() IS 'immutability guard of FanBatchFinishOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_batch_input_vy7siapsvq"() IS 'immutability guard of FanBatchInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_claim_7ntgxwf2ms"() IS 'immutability guard of FanClaim';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_done_4iktcrxdwx"() IS 'immutability guard of FanDone';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_ended_krmcsxkvy2"() IS 'immutability guard of FanEnded';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_exhausted_b7pqh4ycpd"() IS 'immutability guard of FanExhausted';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_failed_zvz5ofhsej"() IS 'immutability guard of FanFailed';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_fan_run_finish_output_u75rcmavct"() IS 'immutability guard of FanFanRunFinishOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_fan_run_input_mdpqvszyrd"() IS 'immutability guard of FanFanRunInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_fenced_plt6i5m3gf"() IS 'immutability guard of FanFenced';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_finish_3o3htccact"() IS 'immutability guard of FanFinish';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_held_dh5ht2fiop"() IS 'immutability guard of FanHeld';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_hold_ihna3m47qc"() IS 'immutability guard of FanHold';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_paused_ybdsv5d4um"() IS 'immutability guard of FanPaused';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_refusal_2c5njgmdwp"() IS 'immutability guard of FanRefusal';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_result_f7sqwayl4t"() IS 'immutability guard of FanResult';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_resumed_euttpstg26"() IS 'immutability guard of FanResumed';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_retry_qjvuzvpmag"() IS 'immutability guard of FanRetry';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_root_vjstxtlelj"() IS 'immutability guard of FanRoot';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_scope_33cpecik4x"() IS 'immutability guard of FanScope';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_skipped_z4jbjt32cw"() IS 'immutability guard of FanSkipped';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_square_input_a2dmgunaoc"() IS 'immutability guard of FanSquareInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_square_output_zkcnqinot6"() IS 'immutability guard of FanSquareOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_start_scope_mhqt7drk7y"() IS 'immutability guard of FanStartScope';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_start_step_ufa3fogq73"() IS 'immutability guard of FanStartStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_step_xh7ypb2uv7"() IS 'immutability guard of FanStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_fan_within_etr5iewvk6"() IS 'immutability guard of FanWithin';
+
+COMMENT ON FUNCTION "slice"."__immutable_heard_fdsu5343fb"() IS 'immutability guard of Heard';
+
+COMMENT ON FUNCTION "slice"."__immutable_item_4ldnoxfrc7"() IS 'immutability guard of Item';
+
+COMMENT ON FUNCTION "slice"."__immutable_order_ben75ltrft"() IS 'immutability guard of Order';
+
+COMMENT ON FUNCTION "slice"."__immutable_passage_iyn37vjgw2"() IS 'immutability guard of Passage';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_admitted_eolnjsfyxd"() IS 'immutability guard of RetryAdmitted';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_brittle_input_ausf5tibvp"() IS 'immutability guard of RetryBrittleInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_brittle_output_svmuqxhg2b"() IS 'immutability guard of RetryBrittleOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_claim_tz6ks3h3vp"() IS 'immutability guard of RetryClaim';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_done_6va27csru3"() IS 'immutability guard of RetryDone';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_ended_notesdh2cf"() IS 'immutability guard of RetryEnded';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_exhausted_pvd3vu4h2a"() IS 'immutability guard of RetryExhausted';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_failed_ieswkzb7hm"() IS 'immutability guard of RetryFailed';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_fenced_p7poekl7ys"() IS 'immutability guard of RetryFenced';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_finish_43po3yfg6c"() IS 'immutability guard of RetryFinish';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_held_lbawz6yff6"() IS 'immutability guard of RetryHeld';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_ladders_finish_output_3q4to6cght"() IS 'immutability guard of RetryLaddersFinishOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_ladders_input_okpacstpdm"() IS 'immutability guard of RetryLaddersInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_paused_ss7djxjrej"() IS 'immutability guard of RetryPaused';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_polite_input_irpdtwvabl"() IS 'immutability guard of RetryPoliteInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_polite_output_qhunb73svk"() IS 'immutability guard of RetryPoliteOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_refusal_zjllqdtyq6"() IS 'immutability guard of RetryRefusal';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_result_zxaurb7hrf"() IS 'immutability guard of RetryResult';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_resumed_dlzqou5yma"() IS 'immutability guard of RetryResumed';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_retry_c6bof3tqdn"() IS 'immutability guard of RetryRetry';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_root_tebbmtjoyc"() IS 'immutability guard of RetryRoot';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_scope_tcb2yvske4"() IS 'immutability guard of RetryScope';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_skipped_nnwrhr4oeq"() IS 'immutability guard of RetrySkipped';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_start_step_duikbwntxe"() IS 'immutability guard of RetryStartStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_steadfast_input_wq2rlbvnku"() IS 'immutability guard of RetrySteadfastInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_steadfast_output_5x5qblbkmn"() IS 'immutability guard of RetrySteadfastOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_step_qlqkam4l4t"() IS 'immutability guard of RetryStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_throttled_finish_output_qtfgse45jp"() IS 'immutability guard of RetryThrottledFinishOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_retry_throttled_input_7xho7h2vz4"() IS 'immutability guard of RetryThrottledInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_admitted_cctbtav3il"() IS 'immutability guard of ReviewAdmitted';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_analyze_input_ddoiygqq26"() IS 'immutability guard of ReviewAnalyzeInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_analyze_output_46xdivyhdg"() IS 'immutability guard of ReviewAnalyzeOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_claim_o4owny47xh"() IS 'immutability guard of ReviewClaim';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_done_ycpiz6hfvz"() IS 'immutability guard of ReviewDone';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_ended_jccxfvuswb"() IS 'immutability guard of ReviewEnded';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_exhausted_izyjr2fdnz"() IS 'immutability guard of ReviewExhausted';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_failed_em7gqggbu3"() IS 'immutability guard of ReviewFailed';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_fenced_rsk5lrhdou"() IS 'immutability guard of ReviewFenced';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_finish_alc7biausi"() IS 'immutability guard of ReviewFinish';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_gather_input_vaaijuigpf"() IS 'immutability guard of ReviewGatherInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_gather_input_sizes_dvuwnqrakr"() IS 'immutability guard of ReviewGatherInputSizes';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_gather_output_kdk2xfhyss"() IS 'immutability guard of ReviewGatherOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_held_qcoqzdpofm"() IS 'immutability guard of ReviewHeld';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_hold_xbvcwhgtjs"() IS 'immutability guard of ReviewHold';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_paused_cmayqb3lyz"() IS 'immutability guard of ReviewPaused';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_questions_finish_output_ufpabbpiqs"() IS 'immutability guard of ReviewQuestionsFinishOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_questions_input_vtjabhamvi"() IS 'immutability guard of ReviewQuestionsInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_refusal_ls4mkh2ynh"() IS 'immutability guard of ReviewRefusal';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_result_q2r5b333th"() IS 'immutability guard of ReviewResult';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_resumed_yerv455d7e"() IS 'immutability guard of ReviewResumed';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_retry_ooig554z7x"() IS 'immutability guard of ReviewRetry';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_review_run_finish_output_sqver4l3jr"() IS 'immutability guard of ReviewReviewRunFinishOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_review_run_input_prf4dxiueo"() IS 'immutability guard of ReviewReviewRunInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_review_run_input_sizes_7bptjeo4gj"() IS 'immutability guard of ReviewReviewRunInputSizes';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_root_po3ofptpdd"() IS 'immutability guard of ReviewRoot';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_save_input_smmbiztzle"() IS 'immutability guard of ReviewSaveInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_save_output_t54wngxzch"() IS 'immutability guard of ReviewSaveOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_saved_uvkannkbrb"() IS 'immutability guard of ReviewSaved';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_scope_dd33gxfgmm"() IS 'immutability guard of ReviewScope';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_skipped_wufsmxgze2"() IS 'immutability guard of ReviewSkipped';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_split_ciexnksfu3"() IS 'immutability guard of ReviewSplit';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_start_scope_vbor3ffd7c"() IS 'immutability guard of ReviewStartScope';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_start_step_iq772ofwks"() IS 'immutability guard of ReviewStartStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_step_mfylpvjfmn"() IS 'immutability guard of ReviewStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_review_within_zs65ukuncx"() IS 'immutability guard of ReviewWithin';
+
+COMMENT ON FUNCTION "slice"."__immutable_reviewed_al7kpguevt"() IS 'immutability guard of Reviewed';
+
+COMMENT ON FUNCTION "slice"."__immutable_seen_2hqyun4r6w"() IS 'immutability guard of Seen';
+
+COMMENT ON FUNCTION "slice"."__immutable_settled_wamxlunuss"() IS 'immutability guard of Settled';
+
+COMMENT ON FUNCTION "slice"."__immutable_summary_eaie3elgpy"() IS 'immutability guard of Summary';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_admitted_w6ae7iqgt2"() IS 'immutability guard of SyncAdmitted';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_build_input_eb5e7abm2z"() IS 'immutability guard of SyncBuildInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_build_output_se745rutp7"() IS 'immutability guard of SyncBuildOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_claim_rjzsqgkfdx"() IS 'immutability guard of SyncClaim';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_copy_input_p6rd7mws42"() IS 'immutability guard of SyncCopyInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_copy_output_sxuosus5zb"() IS 'immutability guard of SyncCopyOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_done_c7shzbinfq"() IS 'immutability guard of SyncDone';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_ended_6ruhhxomij"() IS 'immutability guard of SyncEnded';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_exclusive_wp25ozdfpb"() IS 'immutability guard of SyncExclusive';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_exclusive_key_4xe5fgrsg2"() IS 'immutability guard of SyncExclusiveKey';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_exhausted_g7lyw7ulss"() IS 'immutability guard of SyncExhausted';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_failed_i6efj76jpc"() IS 'immutability guard of SyncFailed';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_fenced_znp5pfqe6u"() IS 'immutability guard of SyncFenced';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_finish_gkf55x2w4v"() IS 'immutability guard of SyncFinish';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_gold_finish_output_kpbilw2xsy"() IS 'immutability guard of SyncGoldFinishOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_gold_input_odzfeneza2"() IS 'immutability guard of SyncGoldInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_held_anzzddtdo7"() IS 'immutability guard of SyncHeld';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_paused_2kerwzow7r"() IS 'immutability guard of SyncPaused';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_refusal_wv2age6imb"() IS 'immutability guard of SyncRefusal';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_released_vxed37ia4q"() IS 'immutability guard of SyncReleased';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_result_gijuwmex2z"() IS 'immutability guard of SyncResult';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_resumed_tbwsh2hgo7"() IS 'immutability guard of SyncResumed';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_retry_73rhk7zz4l"() IS 'immutability guard of SyncRetry';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_root_hayadibiof"() IS 'immutability guard of SyncRoot';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_scope_e7doa3r4xk"() IS 'immutability guard of SyncScope';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_skipped_7o6y2lhuvw"() IS 'immutability guard of SyncSkipped';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_start_step_agabfoxem4"() IS 'immutability guard of SyncStartStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_step_ophrrrzlnv"() IS 'immutability guard of SyncStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_sync_run_finish_output_vvsnwaeqr6"() IS 'immutability guard of SyncSyncRunFinishOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_sync_sync_run_input_hxmhcedtcp"() IS 'immutability guard of SyncSyncRunInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_tally_6vtadbiqmv"() IS 'immutability guard of Tally';
+
+COMMENT ON FUNCTION "slice"."__immutable_weight_sby3z3ax7g"() IS 'immutability guard of Weight';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_admitted_6cddwahck7"() IS 'immutability guard of WritebackAdmitted';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_claim_d446vlj34i"() IS 'immutability guard of WritebackClaim';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_deliver_input_g3bjjpambh"() IS 'immutability guard of WritebackDeliverInput';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_deliver_output_iq6gxg2khn"() IS 'immutability guard of WritebackDeliverOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_done_j6dpj2mxje"() IS 'immutability guard of WritebackDone';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_ended_u5cq6zdt5y"() IS 'immutability guard of WritebackEnded';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_exhausted_ztqr3blmpi"() IS 'immutability guard of WritebackExhausted';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_failed_mjo746nnho"() IS 'immutability guard of WritebackFailed';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_fenced_p36oq6vycf"() IS 'immutability guard of WritebackFenced';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_finish_mn4pvcwvca"() IS 'immutability guard of WritebackFinish';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_held_ln64q3nkzp"() IS 'immutability guard of WritebackHeld';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_paused_wlprgt3byb"() IS 'immutability guard of WritebackPaused';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_refusal_zd5sbhv6py"() IS 'immutability guard of WritebackRefusal';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_result_swcuiiltyv"() IS 'immutability guard of WritebackResult';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_resumed_vv3hrewq67"() IS 'immutability guard of WritebackResumed';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_retry_y45ily2j7s"() IS 'immutability guard of WritebackRetry';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_root_ysmkev76k2"() IS 'immutability guard of WritebackRoot';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_scope_tbcrtfkxbs"() IS 'immutability guard of WritebackScope';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_skipped_mfw3kwqglv"() IS 'immutability guard of WritebackSkipped';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_start_step_b6lnnboie7"() IS 'immutability guard of WritebackStartStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_step_cr32x75nun"() IS 'immutability guard of WritebackStep';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_writeback_finish_output_uug5ky36fj"() IS 'immutability guard of WritebackWritebackFinishOutput';
+
+COMMENT ON FUNCTION "slice"."__immutable_writeback_writeback_input_o6v4lziekt"() IS 'immutability guard of WritebackWritebackInput';
 
 COMMENT ON ROLE :"__live_wzkq6p2yii" IS 'live source of slice';

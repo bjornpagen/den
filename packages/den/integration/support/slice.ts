@@ -1,7 +1,6 @@
-import { instantOf } from "@bjornpagen/den/runtime/identity"
-import type { Ledger } from "@bjornpagen/den/runtime/ledger"
 import type { Ledgers } from "@bjornpagen/den/runtime/turn"
 import { inProcess } from "@bjornpagen/den/transport"
+import { compileServedMoved } from "@bjornpagen/grizzle/compile"
 import { Db, DbLayer, LiveSource, roleNameOf, served } from "@bjornpagen/grizzle/runtime"
 import { NeedFailed } from "@bjornpagen/testing/property"
 import { Database, type DatabaseNeed, type PgMember, Template } from "@bjornpagen/testing/resources"
@@ -40,8 +39,8 @@ import { retryLedger } from "#integration/slice/generated/retry.binding.ts"
 import { reviewLedger } from "#integration/slice/generated/review.binding.ts"
 import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
 import { writebackLedger } from "#integration/slice/generated/writeback.binding.ts"
-import type { AppLogin, Worker } from "#integration/slice/logins.ts"
-import initMigration from "#integration/slice/migrations/slice/20261121021806_init/meta.json" with { type: "json" }
+import { AppLogin, Worker } from "#integration/slice/logins.ts"
+import initMigration from "#integration/slice/migrations/slice/20261121045950_init/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -56,7 +55,41 @@ import { connectTimeoutMillis, connectionTo } from "#integration/support/cluster
  */
 
 const WorkerServed = served<typeof Worker>(workerFile, "worker")
-export const AppServed = served<typeof AppLogin>(appFile, "app")
+const AppServed = served<typeof AppLogin>(appFile, "app")
+
+/**
+ * The slice's two logins served for a moved clock (compileServedMoved), from the committed snapshot: every clocked read
+ * and every ChangeSet of theirs reads the database's clock moved by the case's offset (Offset), so a case moves the
+ * database's clock as it moves its TestClock, and nothing a case judges reads two clocks. The committed served files
+ * are their roles' addresses (WorkerServed, AppServed): a role opens on the layer of its login's name, whose roles these
+ * files share. Compiled once a process.
+ */
+const movedLogins = Effect.runSync(
+	Effect.cached(
+		Effect.all({
+			worker: Effect.map(compileServedMoved(Worker, snapshotFile, Worker.workload), (file) =>
+				served<typeof Worker>(file, "worker")
+			),
+			app: Effect.map(compileServedMoved(AppLogin, snapshotFile, AppLogin.workload), (file) =>
+				served<typeof AppLogin>(file, "app")
+			)
+		})
+	)
+)
+
+/**
+ * How far a case moves the database's clock past the instant each call's transaction began, in microseconds
+ * (Db.openMoved's offset): the time the case's TestClock has travelled since its services were built, or nothing under
+ * the machine's clock, which the database's already reads.
+ */
+class Offset extends Context.Service<Offset, Effect.Effect<bigint>>()(
+	"@bjornpagen/den/integration/support/slice/Offset"
+) {}
+
+/** The app's auditor, opened as every Db of a case is, over the case's moved clock (Offset). */
+export const openAuditor = Effect.flatMap(Offset, (offset) =>
+	Db.openMoved(AppServed.roles.auditor, {}, offset)
+)
 
 /** The slice's directory, where its migrations and a suite's configuration lie. */
 const sliceDir = `${import.meta.dirname}/../slice`
@@ -71,7 +104,7 @@ const grizzleBin = `${import.meta.dirname}/../../node_modules/.bin/grizzle`
  * record lacks, or lacks one it holds (committedFolders).
  */
 const committed = Object.freeze({
-	"20261121021806_init": initMigration
+	"20261121045950_init": initMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
@@ -340,8 +373,10 @@ const emptyTemplate = Template.database({
  */
 const pool = Object.freeze({ max: 4, min: 0, idleTimeoutMs: connectTimeoutMillis })
 
-/** The app's loader, which den's commits run under. */
-const openLoader = Db.open(AppServed.roles.loader, {})
+/** The app's loader, which den's commits run under, over the case's moved clock. */
+const openLoader = Effect.flatMap(Offset, (offset) =>
+	Db.openMoved(AppServed.roles.loader, {}, offset)
+)
 
 /**
  * The app's loader as a deployment configured with another login's secret opens it: its login offers the worker's
@@ -353,25 +388,31 @@ class Misconfigured extends Context.Service<
 >()("@bjornpagen/den/integration/support/slice/Misconfigured") {}
 
 /**
- * The worker and app logins' layers over the case's database, and the misconfigured loader, over the installation's
- * live source, which connects nothing until a Db's first watch.
+ * The worker and app logins' layers over the case's database, each serving its login compiled for a moved clock
+ * (movedLogins), and the misconfigured loader, over the installation's live source, which connects nothing until a
+ * Db's first watch.
  */
-const loginsLayer = (installed: Installed) => {
-	const connection = (password: Redacted.Redacted) => ({
-		...connectionTo(installed.member, installed.database, password),
-		rolePrefix: installed.rolePrefix
-	})
-	const live = LiveSource.layer({ ...connection(installed.decoder), login: WorkerServed })
-	const misconfigured = Layer.effect(
-		Misconfigured,
-		Effect.map(openLoader, (loader) => ({ loader }))
-	).pipe(Layer.provide(DbLayer.make({ ...connection(installed.worker), login: AppServed, pool })))
-	return Layer.mergeAll(
-		DbLayer.make({ ...connection(installed.worker), login: WorkerServed, pool }),
-		DbLayer.make({ ...connection(installed.app), login: AppServed, pool }),
-		misconfigured
-	).pipe(Layer.provide(live))
-}
+const loginsLayer = (installed: Installed) =>
+	Layer.unwrap(
+		Effect.map(movedLogins, (logins) => {
+			const connection = (password: Redacted.Redacted) => ({
+				...connectionTo(installed.member, installed.database, password),
+				rolePrefix: installed.rolePrefix
+			})
+			const live = LiveSource.layer({ ...connection(installed.decoder), login: logins.worker })
+			const misconfigured = Layer.effect(
+				Misconfigured,
+				Effect.map(openLoader, (loader) => ({ loader }))
+			).pipe(
+				Layer.provide(DbLayer.make({ ...connection(installed.worker), login: logins.app, pool }))
+			)
+			return Layer.mergeAll(
+				DbLayer.make({ ...connection(installed.worker), login: logins.worker, pool }),
+				DbLayer.make({ ...connection(installed.app), login: logins.app, pool }),
+				misconfigured
+			).pipe(Layer.provide(live))
+		})
+	)
 
 /**
  * The faults the retry suites plant, as a service: each key's remaining deaths, counted down by its bodies, how many
@@ -418,17 +459,6 @@ const faultsLayer = Layer.effectContext(
 )
 
 /**
- * Everything a slice case runs on, over its installation: its database, both logins, the in-process transport, SHA-256
- * and the faults, on the platform.
- */
-const caseLayer = (installed: Installed) =>
-	loginsLayer(installed).pipe(
-		Layer.provideMerge(Layer.succeed(Installation, installed)),
-		Layer.provideMerge(Layer.mergeAll(inProcess, Digest.layerWebCrypto, faultsLayer)),
-		Layer.provideMerge(NodeServices.layer)
-	)
-
-/**
  * A case's clock: the TestClock a case moves to let a lease lapse or a retry come due (as @effect/vitest gave every
  * suite but those streaming or migrating), or the machine's, for a case whose live reads and child processes wait on
  * real time.
@@ -436,14 +466,42 @@ const caseLayer = (installed: Installed) =>
 type CaseClock = "test" | "live"
 
 /**
- * The services of a slice case, built in the case's scope under the case's clock, so its transport's delays and its
- * logins' pools read the clock the case moves, as @effect/vitest built a suite's layer over its TestClock.
+ * The case's offset of the database's clock under `clock` (Offset): under the TestClock, the time it has travelled
+ * since the case's services were built, read at each call; under the machine's clock, none.
+ */
+const offsetLayer = (clock: CaseClock) =>
+	clock === "test"
+		? Layer.effect(
+				Offset,
+				Effect.map(Clock.currentTimeMillis, (built) =>
+					Effect.map(Clock.currentTimeMillis, (at) => BigInt(at - built) * 1000n)
+				)
+			)
+		: Layer.succeed(Offset, Effect.succeed(0n))
+
+/**
+ * Everything a slice case runs on, over its installation, under `clock`: its database, both logins, the in-process
+ * transport, SHA-256, the faults and the database's clock moved as the case's is, on the platform.
+ */
+const caseLayer = (installed: Installed, clock: CaseClock) =>
+	loginsLayer(installed).pipe(
+		Layer.provideMerge(Layer.succeed(Installation, installed)),
+		Layer.provideMerge(
+			Layer.mergeAll(inProcess, Digest.layerWebCrypto, faultsLayer, offsetLayer(clock))
+		),
+		Layer.provideMerge(NodeServices.layer)
+	)
+
+/**
+ * The services of a slice case, built in the case's scope under the case's clock, so its transport's delays, its
+ * logins' pools and its offset of the database's clock read the clock the case moves, as @effect/vitest built a suite's
+ * layer over its TestClock.
  */
 const caseOf = (installed: Installed, clock: CaseClock) =>
 	Layer.build(
 		clock === "test"
-			? Layer.provideMerge(caseLayer(installed), TestClock.layer())
-			: caseLayer(installed)
+			? Layer.provideMerge(caseLayer(installed, clock), TestClock.layer())
+			: caseLayer(installed, clock)
 	)
 
 /** The services of every slice case, whatever its clock. */
@@ -599,90 +657,71 @@ export const rows = <A, E>(
 ): Effect.Effect<ReadonlyArray<A>, E> => Effect.map(read, Arr.fromIterable)
 
 /**
- * A ledger whose readings of the database's instant are moved on by the time the suite's clock, its TestClock, has
- * travelled since `opened`. The database's clock cannot be moved, and a suite moves its TestClock to let a lease lapse
- * or a retry come due, which the in-process transport's delays follow too; while the suite's clock stands, a reading is
- * the database's own. The instants a clocked write computes (a step's due, a retry's, a claim's lease) are the
- * database's own reading plus their delay, so to these readings one written after the suite's clock travelled comes due
- * or lapses that much earlier: two clocks, until a test Db reads the database's clock shifted by the travel.
- */
-const travelling = <R>(ledger: Ledger<R>, opened: number): Ledger<R> => ({
-	...ledger,
-	now: Effect.zipWith(ledger.now, Clock.currentTimeMillis, (reading, at) =>
-		instantOf(Number(reading) + at - opened)
-	)
-})
-
-/**
- * The slice's flows' ledgers over Dbs opened on the worker's den and coordinator roles and the app's loader, each
- * reading the database's instant moved on by the time the suite's clock travels from here; and `misconfigured`, the
+ * The slice's flows' ledgers over Dbs opened on the worker's den, coordinator and retiring roles and the app's loader,
+ * each over the case's moved clock, so every reading of the database's instant, a clocked read's and a commit's alike,
+ * is moved on by the time the case's clock travels; and `misconfigured`, the
  * same seven committing through the misconfigured loader, whose every commit meets `credentialRefused` while their own
  * roles' calls are let in. The clock's ledger serves its wakes beside them but stands apart from `all`, the flows a
  * tick of every flow ticks, since each of its ticks requests a root of its own; its suite ticks it alone.
  */
 export const openLedgers = Effect.gen(function* () {
-	const opened = yield* Clock.currentTimeMillis
+	const offset = yield* Offset
 	const loader = yield* openLoader
 	const refusing = (yield* Misconfigured).loader.workload
 	const commits = loader.workload
 	const roles = {
 		chain: {
-			den: (yield* Db.open(WorkerServed.roles.chain_den, {})).workload,
-			coordinator: (yield* Db.open(WorkerServed.roles.chain_coordinator, {})).workload,
-			retirer: (yield* Db.open(WorkerServed.roles.chain_retirer, {})).workload
+			den: (yield* Db.openMoved(WorkerServed.roles.chain_den, {}, offset)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.chain_coordinator, {}, offset)).workload,
+			retirer: (yield* Db.openMoved(WorkerServed.roles.chain_retirer, {}, offset)).workload
 		},
 		fan: {
-			den: (yield* Db.open(WorkerServed.roles.fan_den, {})).workload,
-			coordinator: (yield* Db.open(WorkerServed.roles.fan_coordinator, {})).workload,
-			retirer: (yield* Db.open(WorkerServed.roles.fan_retirer, {})).workload
+			den: (yield* Db.openMoved(WorkerServed.roles.fan_den, {}, offset)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.fan_coordinator, {}, offset)).workload,
+			retirer: (yield* Db.openMoved(WorkerServed.roles.fan_retirer, {}, offset)).workload
 		},
 		sync: {
-			den: (yield* Db.open(WorkerServed.roles.sync_den, {})).workload,
-			coordinator: (yield* Db.open(WorkerServed.roles.sync_coordinator, {})).workload,
-			retirer: (yield* Db.open(WorkerServed.roles.sync_retirer, {})).workload
+			den: (yield* Db.openMoved(WorkerServed.roles.sync_den, {}, offset)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.sync_coordinator, {}, offset)).workload,
+			retirer: (yield* Db.openMoved(WorkerServed.roles.sync_retirer, {}, offset)).workload
 		},
 		retry: {
-			den: (yield* Db.open(WorkerServed.roles.retry_den, {})).workload,
-			coordinator: (yield* Db.open(WorkerServed.roles.retry_coordinator, {})).workload,
-			retirer: (yield* Db.open(WorkerServed.roles.retry_retirer, {})).workload
+			den: (yield* Db.openMoved(WorkerServed.roles.retry_den, {}, offset)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.retry_coordinator, {}, offset)).workload,
+			retirer: (yield* Db.openMoved(WorkerServed.roles.retry_retirer, {}, offset)).workload
 		},
 		assign: {
-			den: (yield* Db.open(WorkerServed.roles.assign_den, {})).workload,
-			coordinator: (yield* Db.open(WorkerServed.roles.assign_coordinator, {})).workload,
-			retirer: (yield* Db.open(WorkerServed.roles.assign_retirer, {})).workload
+			den: (yield* Db.openMoved(WorkerServed.roles.assign_den, {}, offset)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.assign_coordinator, {}, offset))
+				.workload,
+			retirer: (yield* Db.openMoved(WorkerServed.roles.assign_retirer, {}, offset)).workload
 		},
 		review: {
-			den: (yield* Db.open(WorkerServed.roles.review_den, {})).workload,
-			coordinator: (yield* Db.open(WorkerServed.roles.review_coordinator, {})).workload,
-			retirer: (yield* Db.open(WorkerServed.roles.review_retirer, {})).workload
+			den: (yield* Db.openMoved(WorkerServed.roles.review_den, {}, offset)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.review_coordinator, {}, offset))
+				.workload,
+			retirer: (yield* Db.openMoved(WorkerServed.roles.review_retirer, {}, offset)).workload
 		},
 		writeback: {
-			den: (yield* Db.open(WorkerServed.roles.writeback_den, {})).workload,
-			coordinator: (yield* Db.open(WorkerServed.roles.writeback_coordinator, {})).workload,
-			retirer: (yield* Db.open(WorkerServed.roles.writeback_retirer, {})).workload
+			den: (yield* Db.openMoved(WorkerServed.roles.writeback_den, {}, offset)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.writeback_coordinator, {}, offset))
+				.workload,
+			retirer: (yield* Db.openMoved(WorkerServed.roles.writeback_retirer, {}, offset)).workload
 		},
 		clock: {
-			den: (yield* Db.open(WorkerServed.roles.clock_den, {})).workload,
-			coordinator: (yield* Db.open(WorkerServed.roles.clock_coordinator, {})).workload,
-			retirer: (yield* Db.open(WorkerServed.roles.clock_retirer, {})).workload
+			den: (yield* Db.openMoved(WorkerServed.roles.clock_den, {}, offset)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.clock_coordinator, {}, offset)).workload,
+			retirer: (yield* Db.openMoved(WorkerServed.roles.clock_retirer, {}, offset)).workload
 		}
 	}
-	const chainBound = chainLedger({ ...roles.chain, commits })
-	const fanBound = fanLedger({ ...roles.fan, commits })
-	const syncBound = syncLedger({ ...roles.sync, commits })
-	const retryBound = retryLedger({ ...roles.retry, commits })
-	const assignBound = assignLedger({ ...roles.assign, commits })
-	const reviewBound = reviewLedger({ ...roles.review, commits })
-	const writebackBound = writebackLedger({ ...roles.writeback, commits })
-	const clockBound = clockLedger({ ...roles.clock, commits })
-	const chain = { ...chainBound, ledger: travelling(chainBound.ledger, opened) }
-	const fan = { ...fanBound, ledger: travelling(fanBound.ledger, opened) }
-	const sync = { ...syncBound, ledger: travelling(syncBound.ledger, opened) }
-	const retry = { ...retryBound, ledger: travelling(retryBound.ledger, opened) }
-	const assign = { ...assignBound, ledger: travelling(assignBound.ledger, opened) }
-	const review = { ...reviewBound, ledger: travelling(reviewBound.ledger, opened) }
-	const writeback = { ...writebackBound, ledger: travelling(writebackBound.ledger, opened) }
-	const clock = { ...clockBound, ledger: travelling(clockBound.ledger, opened) }
+	const chain = chainLedger({ ...roles.chain, commits })
+	const fan = fanLedger({ ...roles.fan, commits })
+	const sync = syncLedger({ ...roles.sync, commits })
+	const retry = retryLedger({ ...roles.retry, commits })
+	const assign = assignLedger({ ...roles.assign, commits })
+	const review = reviewLedger({ ...roles.review, commits })
+	const writeback = writebackLedger({ ...roles.writeback, commits })
+	const clock = clockLedger({ ...roles.clock, commits })
 	const all: Ledgers<Faults> = [
 		chain.ledger,
 		fan.ledger,
@@ -692,7 +731,7 @@ export const openLedgers = Effect.gen(function* () {
 		review.ledger,
 		writeback.ledger
 	]
-	const misconfiguredLedgers: Ledgers<Faults> = [
+	const refused: Ledgers<Faults> = [
 		chainLedger({ ...roles.chain, commits: refusing }).ledger,
 		fanLedger({ ...roles.fan, commits: refusing }).ledger,
 		syncLedger({ ...roles.sync, commits: refusing }).ledger,
@@ -701,7 +740,6 @@ export const openLedgers = Effect.gen(function* () {
 		reviewLedger({ ...roles.review, commits: refusing }).ledger,
 		writebackLedger({ ...roles.writeback, commits: refusing }).ledger
 	]
-	const refused = Arr.map(misconfiguredLedgers, (ledger) => travelling(ledger, opened))
 	return {
 		chain,
 		fan,

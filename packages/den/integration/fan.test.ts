@@ -1,11 +1,10 @@
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect } from "effect"
 import { ringAndDrain } from "#integration/support/run.ts"
-import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
  * The fan-out flow: a root admits one batch scope, whose admission starts one square per number from 1 to its size,
@@ -53,7 +52,7 @@ export const theFanOutFlowTalliesEverySquare = property.explore(runs, {
 									: "more squares than seats"
 						)
 						const { fan, ledgers } = yield* openLedgers
-						const app = yield* Db.open(AppServed.roles.auditor, {})
+						const app = yield* openAuditor
 						const batch = `b-${run.size}`
 						const requested = yield* fan.request.FanRun(batch, {
 							batch,

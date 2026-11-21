@@ -1,4 +1,3 @@
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int, oneOf } from "@bjornpagen/testing/gen"
@@ -23,7 +22,7 @@ import {
 import { Array as Arr, Effect, HashMap, Option, String as Str } from "effect"
 import { chain, poolSeats } from "#integration/slice/flows.ts"
 import { ringAndDrain } from "#integration/support/run.ts"
-import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 import { agreed, factsOf, type Graph } from "#integration/support/trace.ts"
 import { backoffFirstMillis, backoffLastMillis, longestLeaseMillis } from "#runtime/turn.ts"
 
@@ -294,7 +293,7 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 					Effect.provideContext(
 						Effect.gen(function* () {
 							const { chain: chainLedger, fan: fanLedger, ledgers, loader } = yield* openLedgers
-							const app = yield* Db.open(AppServed.roles.auditor, {})
+							const app = yield* openAuditor
 							const key = "diff"
 							const begin = (chosen: Program) =>
 								Effect.gen(function* () {

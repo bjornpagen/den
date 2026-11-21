@@ -1,4 +1,4 @@
-import { Compute, contract, pg, sha256, str } from "@bjornpagen/grizzle"
+import { contract, Logic, pg, sha256, str } from "@bjornpagen/grizzle"
 
 /**
  * den's own contracts, every flow's alike: a step's key, a scope's key, an exclusivity seat's key
@@ -31,7 +31,7 @@ const longestDelayMillis = 9214147718838775808n
 
 /** A delay in milliseconds, never negative and at most {@link longestDelayMillis}. */
 export const DenDelay = contract("DenDelay", pg.bigint, (d) =>
-	Compute.and(Compute.ge(d, 0n), Compute.le(d, longestDelayMillis))
+	Logic.and(Logic.ge(d, 0n), Logic.le(d, longestDelayMillis))
 )
 
 /** Any text, as a value's text column holds it. */

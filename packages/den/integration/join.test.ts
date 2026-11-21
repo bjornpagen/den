@@ -1,12 +1,11 @@
 import { startedStep } from "@bjornpagen/den/runtime/identity"
-import { Db } from "@bjornpagen/grizzle/runtime"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { array, element, type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Option } from "effect"
 import { ringAndDrain } from "#integration/support/run.ts"
-import { AppServed, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
+import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
  * A step joined on two facts, on PostgreSQL 19: the review flow's Gather awaits the gradebook's Delivered of the attempt
@@ -56,7 +55,7 @@ export const aStepJoinedOnTwoFactsRunsOnceBothExist = property.explore(joined, {
 							c.note("a review of groups")
 						}
 						const { review, writeback, ledgers } = yield* openLedgers
-						const app = yield* Db.open(AppServed.roles.auditor, {})
+						const app = yield* openAuditor
 						const key = `a-${Arr.join(Arr.map(run.sizes, String), "-")}`
 						const requestReview = review.request.ReviewRun(key, {
 							review: key,
