@@ -1,3 +1,5 @@
+import { tick } from "@bjornpagen/den/runtime/census"
+import { drain } from "@bjornpagen/den/runtime/drive"
 import { UnknownPauseTarget } from "@bjornpagen/den/runtime/ledger"
 import { FlowName } from "@bjornpagen/den/transport"
 import { assert } from "@bjornpagen/testing/assert"
@@ -5,8 +7,9 @@ import type { Reached } from "@bjornpagen/testing/features"
 import { array, boolean, finite, type Gen, int } from "@bjornpagen/testing/gen"
 import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
 import { type Case, property } from "@bjornpagen/testing/property"
-import { Array as Arr, Effect, Option } from "effect"
-import { openLedgers, sliceCase } from "#integration/support/slice.ts"
+import { Array as Arr, Effect, Option, Order } from "effect"
+import { ringAndDrain } from "#integration/support/run.ts"
+import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
  * A pause is a chain of turns: `Paused(target, turn)`, each turn after the first contained in its predecessor's
@@ -61,12 +64,12 @@ export const pausesAndResumesATargetAsOneLiveTurnAtATime = property.explore(oper
 					Effect.gen(function* () {
 						const { fan } = yield* openLedgers
 						const ledger = fan.ledger
-						const live = Effect.map(ledger.coordination.paused, (rows) =>
-							Arr.filter(rows, (row) => row.target === target)
+						const live = Effect.map(ledger.coordination.paused, (turns) =>
+							Arr.filter(turns, (turn) => turn.target === target)
 						)
-						const paused = Effect.map(live, (rows) => {
-							assert.ok(rows.length <= 1)
-							return Arr.isReadonlyArrayNonEmpty(rows)
+						const paused = Effect.map(live, (turns) => {
+							assert.ok(turns.length <= 1)
+							return Arr.isReadonlyArrayNonEmpty(turns)
 						})
 						yield* ledger.coordination.resume(target)
 						const cleared = yield* paused
@@ -209,6 +212,182 @@ export const refusesAPauseOrAResumeOfANameNoTargetHolds = property.exhaust(finit
 			replacement:
 				'\t\tresume: (target) => Effect.catchTag(Effect.flatMap(pausableOf(target), resumeIn(pauseChains)), "UnknownPauseTarget", () => Effect.void)',
 			why: "A resume of a name no target holds reports success, as the seat module's resume did when it found no live pause of the name."
+		}
+	]
+})
+
+type Held = "nothing paused" | "the Vendor alone paused" | "the Pool alone paused" | "both paused"
+
+/** Which of Fan's two pause targets a case pauses: its Vendor, a pause handle, and its Pool, a resource of two seats. */
+interface Paused {
+	readonly vendor: boolean
+	readonly pool: boolean
+}
+
+const pausedTargets = finite((source): Paused => ({
+	vendor: source.draw(boolean),
+	pool: source.draw(boolean)
+}))
+
+/** The step kinds of Fan that use the Vendor or the Pool, as a sweep and a fan-out of one square spawn them. */
+type UsingKind = "Dust" | "Mop" | "Square"
+
+/**
+ * A pause handle is a target of its flow's pauses that holds no seat: Fan's Vendor, which its sweeps' Dust uses alone
+ * and their Mop beside a seat of the Pool, while a fan-out's Square uses the Pool alone. With the Vendor, the Pool, both
+ * or neither paused, a sweep and a fan-out of one square run to quiet: a pause of the Vendor holds every Dust and Mop and
+ * no Square, a pause of the Pool every Mop and Square and no Dust, so a step that uses both is held by either; a held
+ * step has no claim and no seat, and every step nothing paused holds runs. Resumed, a census tick runs every held step
+ * and both roots finish: each Dust's claim holds no seat and writes no seat row, each Mop's and each Square's one seat
+ * of the Pool; no seat row can name the Vendor at all, since a seat row's resource is of Fan's Resource roster, which
+ * holds the Pool alone.
+ *
+ * Oracle (specification): a step is held exactly while one of its uses is paused, a pause handle as a resource, and
+ * takes a seat of each of its uses that is a resource and of nothing else, against the auditor's reads of Fan's steps,
+ * results, claims and holds.
+ *
+ * Box: its suite's, every case of it (each subset of Fan's Vendor and Pool paused, over a sweep and a fan-out of one
+ * square).
+ */
+export const aPauseHandleHoldsTheStepsThatUseItAndNoSeat = property.exhaust(pausedTargets, {
+	box: "each subset of Fan's Vendor and Pool paused, over a sweep and a fan-out of one square",
+	needs: { slice: sliceCase },
+	situations: [
+		"nothing paused",
+		"the Vendor alone paused",
+		"the Pool alone paused",
+		"both paused"
+	] satisfies ReadonlyArray<Reached<Held>>,
+	check:
+		({ slice }, c: Case<Held>) =>
+		(paused) =>
+			Effect.flatMap(slice, (services) =>
+				Effect.provideContext(
+					Effect.gen(function* () {
+						c.note(
+							paused.vendor
+								? paused.pool
+									? "both paused"
+									: "the Vendor alone paused"
+								: paused.pool
+									? "the Pool alone paused"
+									: "nothing paused"
+						)
+						const { fan, ledgers } = yield* openLedgers
+						const app = yield* openAuditor
+						const coordination = fan.ledger.coordination
+						const targets = [...(paused.vendor ? ["Vendor"] : []), ...(paused.pool ? ["Pool"] : [])]
+						yield* Effect.forEach(targets, (name) => coordination.pause(name))
+						const sweep = yield* fan.request.Sweep("sweep", { sweep: "sweep" })
+						const run = yield* fan.request.FanRun("run", { batch: "run", size: 1n })
+						yield* ringAndDrain(ledgers, [sweep, run])
+						const read = Effect.gen(function* () {
+							const steps = yield* rows(app.workload.fanSteps.once({ params: {}, facts: {} }))
+							const results = yield* rows(app.workload.fanResults.once({ params: {}, facts: {} }))
+							const claims = yield* rows(app.workload.fanClaims.once({ params: {}, facts: {} }))
+							const holds = yield* rows(app.workload.fanHolds.once({ params: {}, facts: {} }))
+							const ofKind = (kind: UsingKind) => Arr.filter(steps, (s) => s.kind === kind)
+							const claimed = (kind: UsingKind) =>
+								Arr.filter(claims, (claim) => Arr.some(ofKind(kind), (s) => s.step === claim.step))
+							const done = (kind: UsingKind) =>
+								Arr.every(ofKind(kind), (s) =>
+									Arr.some(results, (r) => r.step === s.step && r.outcome === "done")
+								)
+							const seatsOf = (kind: UsingKind) =>
+								Arr.sort(
+									Arr.map(
+										Arr.filter(holds, (h) => Arr.some(ofKind(kind), (s) => s.step === h.step)),
+										(h) => h.resource
+									),
+									Order.String
+								)
+							return { steps, holds, ofKind, claimed, done, seatsOf }
+						})
+						const kinds: ReadonlyArray<UsingKind> = ["Dust", "Mop", "Square"]
+						const heldBy = (kind: UsingKind): boolean => {
+							switch (kind) {
+								case "Dust":
+									return paused.vendor
+								case "Mop":
+									return paused.vendor || paused.pool
+								case "Square":
+									return paused.pool
+							}
+						}
+						const quiet = yield* read
+						Arr.forEach(kinds, (kind) => {
+							assert.equal(quiet.ofKind(kind).length, 1, `one ${kind} spawned`)
+							assert.equal(
+								Arr.isReadonlyArrayEmpty(quiet.claimed(kind)),
+								heldBy(kind),
+								`${kind} is held exactly while something it uses is paused`
+							)
+							assert.equal(quiet.done(kind), !heldBy(kind), `${kind} runs unless it is held`)
+						})
+						assert.deepEqual(
+							Arr.map(quiet.claimed("Dust"), (claim) => claim.holds),
+							Arr.map(quiet.claimed("Dust"), () => 0n),
+							"a Dust claims no seat"
+						)
+						assert.deepEqual(quiet.seatsOf("Dust"), [], "a Dust writes no seat row")
+						yield* Effect.forEach(targets, (name) => coordination.resume(name))
+						yield* tick(fan.ledger)
+						yield* drain(ledgers)
+						const resumed = yield* read
+						Arr.forEach(kinds, (kind) => {
+							assert.ok(resumed.done(kind), `${kind} runs once resumed`)
+						})
+						assert.deepEqual(
+							Arr.map(resumed.claimed("Dust"), (claim) => claim.holds),
+							[0n],
+							"a Dust's one claim holds no seat"
+						)
+						assert.deepEqual(resumed.seatsOf("Dust"), [], "a Dust writes no seat row")
+						assert.deepEqual(
+							Arr.map(resumed.claimed("Mop"), (claim) => claim.holds),
+							[1n],
+							"a Mop's one claim holds one seat"
+						)
+						assert.deepEqual(
+							resumed.seatsOf("Mop"),
+							["Pool"],
+							"a Mop holds a seat of the Pool alone"
+						)
+						assert.deepEqual(
+							resumed.seatsOf("Square"),
+							["Pool"],
+							"a Square holds a seat of the Pool"
+						)
+						const left = yield* fan.ledger.holds
+						assert.deepEqual(left, [], "every seat free at the end")
+						const finishes = yield* rows(app.workload.fanFinishes.once({ params: {}, facts: {} }))
+						assert.deepEqual(
+							Arr.map([sweep.scope, run.scope], (scope) =>
+								Arr.map(
+									Arr.filter(finishes, (f) => f.scope === scope),
+									(f) => f.outcome
+								)
+							),
+							[["done"], ["done"]],
+							"both roots finish"
+						)
+					}).pipe(Effect.orDie),
+					services
+				)
+			),
+	oracle: {
+		kind: "specification",
+		name: "a step held exactly while one of its uses is paused, holding a seat of each resource it uses and nothing of a pause handle"
+	},
+	kept: [],
+	kills: [
+		{
+			file: "packages/den/src/runtime/eligible.ts",
+			original:
+				"): ReadonlyArray<string> => [...Option.toArray(root), ...Arr.map(uses, (use) => use.name)]",
+			replacement:
+				"): ReadonlyArray<string> => [...Option.toArray(root), ...Arr.map(seatedOf(uses), (use) => use.name)]",
+			why: "A pause ignores pause handles, as when only resources were pause targets: a pause of the Vendor holds nothing, and every Dust and Mop runs while it is paused."
 		}
 	]
 })

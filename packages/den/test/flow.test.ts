@@ -14,8 +14,8 @@ import {
 	edge,
 	noReads,
 	operator,
+	pauseHandle,
 	Refused,
-	type Resource,
 	resource,
 	root,
 	schedule,
@@ -23,6 +23,7 @@ import {
 	shared,
 	step,
 	unconditional,
+	type Use,
 	utcHours,
 	type Window,
 	writer,
@@ -34,8 +35,9 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * A flow's declaration-time checks: a well-formed flow is accepted, and each fault is refused with Refused when the
  * flow or one of its kinds is declared, naming the declaration: a kind declared twice, an edge from a step the flow does
  * not declare, a kind no scope owns, a finish reading a kind its scope never holds, no root at all, a name den cannot
- * lower into a relation's, two resources of one name, a resource of no seats, a ladder of no attempts, a count of waits
- * below 0, a schedule that lists a member twice, and a window that is empty or reaches past a day.
+ * lower into a relation's, two resources of one name, a resource of no seats, a pause handle named as a resource or as a
+ * root kind (each a target of the flow's pauses), a ladder of no attempts, a count of waits below 0, a schedule that
+ * lists a member twice, and a window that is empty or reaches past a day.
  *
  * Oracle (specification): the proposal's rules of section 4, one fault at a time.
  */
@@ -50,6 +52,8 @@ const Fault = Schema.Literals([
 	"bad name",
 	"resource name twice",
 	"no seats",
+	"a pause handle named as a resource",
+	"a pause handle named as a root",
 	"no attempts",
 	"negative waits",
 	"a schedule's member twice",
@@ -101,6 +105,8 @@ const windowOf = (fault: Fault): Window => {
 		case "bad name":
 		case "resource name twice":
 		case "no seats":
+		case "a pause handle named as a resource":
+		case "a pause handle named as a root":
 		case "no attempts":
 		case "negative waits":
 		case "a schedule's member twice":
@@ -110,9 +116,16 @@ const windowOf = (fault: Fault): Window => {
 
 const declare = (fault: Fault) => {
 	const pool = resource("Pool", fault === "no seats" ? noSeats : boxSeats)
-	const other: Resource = fault === "resource name twice" ? resource("Pool", boxSeats) : pool
+	const other = fault === "resource name twice" ? resource("Pool", boxSeats) : pool
+	const hush = pauseHandle(
+		fault === "a pause handle named as a resource"
+			? "Pool"
+			: fault === "a pause handle named as a root"
+				? "Run"
+				: "Hush"
+	)
 	const ladder = fault === "no attempts" ? attempts(0) : attempts(1)
-	const shape = (uses: ReadonlyArray<Resource>) => ({
+	const shape = (uses: ReadonlyArray<Use>) => ({
 		input: Empty,
 		output: Empty,
 		error: Schema.Never,
@@ -126,7 +139,7 @@ const declare = (fault: Fault) => {
 	})
 	const done = () => Effect.succeed({ output: {} })
 	const A = step("A", shape([pool]), done)
-	const B = step("B", shape([other]), done)
+	const B = step("B", shape([other, hush]), done)
 	const Stray = step(fault === "twice" ? "A" : "Stray", shape([]), done)
 	const finish = <const Reads extends ReadonlyArray<AnyStepKind>>(reads: Reads) => ({
 		reads,
@@ -179,7 +192,7 @@ it.effect("accepts a well-formed flow and refuses each fault when it is declared
 				literal: Formatter.format,
 				coverage: requiredInSpace<Fault>(Fault.literals),
 				caseHang: caseHangMillis,
-				box: "a flow of two steps on one resource, a scope and a root, with each single fault",
+				box: "a flow of two steps on one resource and one pause handle, a scope and a root, with each single fault",
 				oracle: {
 					kind: "specification",
 					name: "the proposal's section 4 rules, one fault at a time"
@@ -203,6 +216,10 @@ it.effect("accepts a well-formed flow and refuses each fault when it is declared
 						assert.deepStrictEqual(
 							Arr.map(declared.value.resources, (r) => r.name),
 							["Pool"]
+						)
+						assert.deepStrictEqual(
+							Arr.map(declared.value.handles, (h) => h.name),
+							["Hush"]
 						)
 					}
 				})

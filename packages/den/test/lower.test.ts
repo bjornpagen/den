@@ -18,6 +18,7 @@ import {
 	type FieldSchema,
 	noReads,
 	operator,
+	pauseHandle,
 	type ReadsOver,
 	resource,
 	root,
@@ -41,14 +42,15 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * SERIALIZABLE. The coordination relations (each seat's, exclusivity seat's and pause's chain of turns) meet no graph
  * relation in a containment; each chain's turns are keyed by its coordinates and turn, its ends contained in its turns
  * and each turn's predecessor in its ends; the exclusivity chain exists exactly when a root is exclusive, and the seat
- * chain, with its seat counts and its seat level, the live holds checked below them, exactly when a step uses a resource.
+ * chain, with its seat counts and its seat level, the live holds checked below them, exactly when a step uses a resource,
+ * never for a pause handle, which only the flow's pausable targets name, beside its resources and its roots.
  * A scope's kind is its place's: a root's on its Root row, among the flow's roots, and a child scope's on its Within
  * row, among its child scope kinds, whose relations (Within, StartScope) exist exactly when the flow declares one.
  * Every graph relation but the root is a body of one retirable unit headed by the root: its root in every key and on
  * both sides of every containment between bodies, and no coordination relation carries one.
  *
  * Oracle (specification): the proposal's sections 5 and 6, over flows of up to three steps, chained or not, of each
- * field form, with or without a resource, an exclusive root, a child scope, one or two named reads and a typed
+ * field form, with or without a resource, a pause handle, an exclusive root, a child scope, one or two named reads and a typed
  * error. Each named read records its rows once per root by their digest, in a relation of its record's columns, and
  * the step's references to them by ordinal, each contained in its row and in the step's result; a finite number is held
  * finite by a row check, a record's as a value's.
@@ -73,6 +75,7 @@ type Feature =
 	| "chained"
 	| "unchained"
 	| "a resource"
+	| "a pause handle"
 	| "an exclusive root"
 	| "a child scope"
 	| "a read"
@@ -92,6 +95,7 @@ interface Sketch {
 	readonly chained: boolean
 	readonly form: Form
 	readonly resource: boolean
+	readonly handle: boolean
 	readonly exclusive: boolean
 	readonly scoped: boolean
 	readonly reads: typeof Reading.Type
@@ -104,6 +108,7 @@ const sketches: Gen<Sketch> = (source) => ({
 	chained: source.draw(boolean),
 	form: source.draw(element(Form.literals)),
 	resource: source.draw(boolean),
+	handle: source.draw(boolean),
 	exclusive: source.draw(boolean),
 	scoped: source.draw(boolean),
 	reads: source.draw(element(Reading.literals)),
@@ -210,6 +215,7 @@ const finishing = {
 const built = (sketch: Sketch): AnyFlow => {
 	const value = Schema.Struct({ value: fieldOf(sketch.form) })
 	const pool = resource("Pool", boxSeats)
+	const hush = pauseHandle("Hush")
 	const done = (x: typeof value.Type) => Effect.succeed({ output: x })
 	const first = step(
 		"S0",
@@ -219,7 +225,7 @@ const built = (sketch: Sketch): AnyFlow => {
 			error: sketch.typed ? Schema.Struct({ code: Schema.String }) : Schema.Never,
 			reads: readsOf(sketch.reads),
 			awaits: [],
-			uses: sketch.resource ? [pool] : [],
+			uses: [...(sketch.resource ? [pool] : []), ...(sketch.handle ? [hush] : [])],
 			retry: attempts(1),
 			waits: 0,
 			due: atSpawn,
@@ -320,6 +326,7 @@ it.effect(
 							"chained",
 							"unchained",
 							"a resource",
+							"a pause handle",
 							"an exclusive root",
 							"a child scope",
 							"a read",
@@ -341,6 +348,9 @@ it.effect(
 						c.note(sketch.chained && sketch.steps > 1 ? "chained" : "unchained")
 						if (sketch.resource) {
 							c.note("a resource")
+						}
+						if (sketch.handle) {
+							c.note("a pause handle")
 						}
 						if (sketch.exclusive) {
 							c.note("an exclusive root")
@@ -711,6 +721,23 @@ it.effect(
 								printFragment(lowered, placement)
 							),
 							sketch.resource
+						)
+						const rosterOf = (suffix: string) =>
+							Option.map(
+								Arr.findFirst(lowered.rosters, (r) => r.name === `${P}${suffix}`),
+								(r): ReadonlyArray<string> => r.handles
+							)
+						assert.deepStrictEqual(
+							rosterOf("Pausable"),
+							Option.some([
+								...(sketch.resource ? ["Pool"] : []),
+								...(sketch.handle ? ["Hush"] : []),
+								"Run"
+							])
+						)
+						assert.deepStrictEqual(
+							rosterOf("Resource"),
+							sketch.resource ? Option.some(["Pool"]) : Option.none()
 						)
 						assert.strictEqual(has("ExclusiveKey"), sketch.exclusive)
 						assert.strictEqual(has("Within"), sketch.scoped)

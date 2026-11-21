@@ -1,5 +1,5 @@
 import { Array as Arr, DateTime, HashMap, Option, Order } from "effect"
-import { HOURS_IN_DAY, type Resource, type Window } from "#algebra/kinds.ts"
+import { HOURS_IN_DAY, type Resource, seatedOf, type Use, type Window } from "#algebra/kinds.ts"
 import { type Instant, instantOf, type ScopeKey, type StepKey } from "#runtime/identity.ts"
 import {
 	type ExclusiveRow,
@@ -16,11 +16,20 @@ import { AttemptNumber, type Wake } from "#transport.ts"
  * census share. A step may run once its parent ended (an edge's child is spawned by its parent's commit, so its parent
  * has; a finish waits for every child of its scope), every fact it awaits exists, its due instant passed (or, its latest
  * attempt fenced on a refused credential, the deployment let in again, which the census asks), its root's window is open, nothing it
- * touches is paused (its root kind, its resources), and a seat of every resource it uses is
+ * touches is paused (its root kind, its resources and pause handles), and a seat of every resource it uses is
  * free. A root is rung for its admission once its window is open, its kind is not paused and its precondition holds;
  * its admission takes its exclusivity seat or records it skipped. When seats are contended, the oldest root goes first,
  * then the earliest due, so nothing starves; there is no priority or fairness key.
  */
+
+/**
+ * The pause targets that hold a step, any one of them paused: its root kind, where its root is live, and everything it
+ * uses, a resource or a pause handle alike. The relay's and the census's eligibility and a turn's gate read it.
+ */
+export const pausedBy = (
+	root: Option.Option<string>,
+	uses: ReadonlyArray<Use>
+): ReadonlyArray<string> => [...Option.toArray(root), ...Arr.map(uses, (use) => use.name)]
 
 /** Whether a window is open at `at`. */
 export const isOpen = (window: Window, at: Instant): boolean => {
@@ -66,13 +75,13 @@ export interface Eligible {
 }
 
 /**
- * A candidate step: its wake's parts, the resources it needs, its order key, and what it waited on: `time`, its due
- * instant, or `deployment`, its latest attempt fenced.
+ * A candidate step: its wake's parts, the resources it holds a seat of, its order key, and what it waited on: `time`,
+ * its due instant, or `deployment`, its latest attempt fenced.
  */
 interface Candidate {
 	readonly step: StepKey
 	readonly attempt: bigint
-	readonly uses: ReadonlyArray<Resource>
+	readonly seated: ReadonlyArray<Resource>
 	readonly age: Instant
 	readonly due: Instant
 	readonly waited: "time" | "deployment"
@@ -216,12 +225,13 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 		}
 		if (
 			!open(root.value) ||
-			paused(root.value.kind) ||
-			Arr.some(runner.uses, (r) => paused(r.name))
+			Arr.some(pausedBy(Option.some(root.value.kind), runner.uses), paused)
 		) {
 			return []
 		}
-		return [{ step: p.step, attempt, uses: runner.uses, age: root.value.at, due, waited }]
+		return [
+			{ step: p.step, attempt, seated: seatedOf(runner.uses), age: root.value.at, due, waited }
+		]
 	})
 
 	const held = (r: Resource): number =>
@@ -231,11 +241,11 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 		{ taken: HashMap.empty<string, number>(), chosen: Arr.empty<Candidate>() },
 		(acc, c) =>
 			Arr.every(
-				c.uses,
+				c.seated,
 				(r) => r.seats - held(r) - Option.getOrElse(HashMap.get(acc.taken, r.name), () => 0) > 0
 			)
 				? {
-						taken: Arr.reduce(c.uses, acc.taken, (taken, r) =>
+						taken: Arr.reduce(c.seated, acc.taken, (taken, r) =>
 							HashMap.set(taken, r.name, Option.getOrElse(HashMap.get(taken, r.name), () => 0) + 1)
 						),
 						chosen: [...acc.chosen, c]

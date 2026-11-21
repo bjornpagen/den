@@ -258,6 +258,10 @@ CREATE INDEX "__fan_claim_ix_root_step_ouvkclqzzd_pred_attempt_oey_kkpmouft4i" O
 
 CREATE INDEX "__fan_done_ix_root_step_nrkfpkvyya" ON "slice"."fan_done" USING btree ("root", "step");
 
+CREATE INDEX "__fan_dust_input_ix_root_step_3aq67uii4u" ON "slice"."fan_dust_input" USING btree ("root", "step");
+
+CREATE INDEX "__fan_dust_output_ix_root_72ib45pvnf" ON "slice"."fan_dust_output" USING btree ("root");
+
 CREATE INDEX "__fan_ended_ix_root_step_unjzbpnw46" ON "slice"."fan_ended" USING btree ("root", "step");
 
 CREATE INDEX "__fan_exhausted_ix_root_2diuxfgt5s" ON "slice"."fan_exhausted" USING btree ("root");
@@ -279,6 +283,10 @@ CREATE INDEX "__fan_held_ix_root_step_hgpfyg562f" ON "slice"."fan_held" USING bt
 CREATE INDEX "__fan_hold_ix_resource_seat_s7bnw22355" ON "slice"."fan_hold" USING btree ("resource", "seat");
 
 CREATE INDEX "__fan_hold_ix_root_ral35akxi3" ON "slice"."fan_hold" USING btree ("root");
+
+CREATE INDEX "__fan_mop_input_ix_root_step_fyigtnzcib" ON "slice"."fan_mop_input" USING btree ("root", "step");
+
+CREATE INDEX "__fan_mop_output_ix_root_sl77vgnqfl" ON "slice"."fan_mop_output" USING btree ("root");
 
 CREATE INDEX "__fan_paused_ix_target_pred_turn_qryngij_6_c_4_526conssyj" ON "slice"."fan_paused" USING btree ("target", "__pred_turn_qryngij6c4");
 
@@ -307,6 +315,10 @@ CREATE INDEX "__fan_start_step_ix_root_scope_vn7amkfoey" ON "slice"."fan_start_s
 CREATE INDEX "__fan_step_ix_root_scope_aw525h7gua" ON "slice"."fan_step" USING btree ("root", "scope");
 
 CREATE INDEX "__fan_step_ix_scope_kind_step_5arz2gb4sb" ON "slice"."fan_step" USING btree ("scope", "kind", "step");
+
+CREATE INDEX "__fan_sweep_finish_output_ix_root_xyklupvq4l" ON "slice"."fan_sweep_finish_output" USING btree ("root");
+
+CREATE INDEX "__fan_sweep_input_ix_root_txcp3teesu" ON "slice"."fan_sweep_input" USING btree ("root");
 
 CREATE INDEX "__fan_within_ix_parent_kind_scope_5ywepfmzj2" ON "slice"."fan_within" USING btree ("parent", "kind", "scope");
 

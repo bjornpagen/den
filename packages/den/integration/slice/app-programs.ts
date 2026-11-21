@@ -39,6 +39,7 @@ import { chainRequests } from "#integration/slice/generated/chain.programs.ts"
 import {
 	FanAdmitted,
 	FanBatchInput,
+	FanClaim,
 	FanFanRunInput,
 	FanFinish,
 	FanResult,
@@ -49,7 +50,8 @@ import {
 	FanStartScope,
 	FanStartStep,
 	FanStep,
-	FanWithin
+	FanWithin,
+	fanGraph
 } from "#integration/slice/generated/fan.fragment.ts"
 import {
 	RetryClaim,
@@ -101,6 +103,9 @@ import { Loader } from "#integration/slice/roles.ts"
 /** A review claim's seats, the graph's own relation, which the fragment lists and does not name apart. */
 const ReviewHold = reviewGraph.relations.ReviewHold
 
+/** A fan claim's seats, the graph's own relation, which the fragment lists and does not name apart. */
+const FanHold = fanGraph.relations.FanHold
+
 /**
  * The app's own reading role: it reads den's facts beside its own items, cursors and tallies, joins them, and inserts
  * audits that reference den's results by foreign key. Its reads are what the suites hold den to, the differential
@@ -150,8 +155,10 @@ export const Auditor = role(
 		Cursor,
 		FanAdmitted,
 		FanBatchInput,
+		FanClaim,
 		FanFanRunInput,
 		FanFinish,
+		FanHold,
 		FanResult,
 		FanRoot,
 		FanScope,
@@ -286,6 +293,18 @@ const fanFinishes = query(Auditor).rule((r) => {
 		.match(FanFinish, { scope, step })
 		.match(FanResult, { step, outcome })
 		.find({ scope, step, outcome })
+})
+
+/** Every fan claim: its step, its attempt, and how many seats it holds. */
+const fanClaims = query(Auditor).rule((r) => {
+	const { step, attempt, holds } = v(FanClaim, "claim")
+	return r.match(FanClaim, { step, attempt, holds }).find({ step, attempt, holds })
+})
+
+/** Every seat a fan claim held, by its step and attempt. */
+const fanHolds = query(Auditor).rule((r) => {
+	const { step, attempt, resource, seat } = v(FanHold, "hold")
+	return r.match(FanHold, { step, attempt, resource, seat }).find({ step, attempt, resource, seat })
 })
 
 /** Every hour the clock chimed. */
@@ -610,6 +629,8 @@ export const auditWorkload = workload(Auditor, {
 	tallies,
 	settled,
 	fanFinishes,
+	fanClaims,
+	fanHolds,
 	reviewed,
 	summaries,
 	reviewSteps,

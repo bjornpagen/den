@@ -149,7 +149,8 @@ database's (grizzle's DBCLOCK): every lease, due instant and window is judged at
 holds whatever the clocks say (Gray and Cheriton's lease).
 
 **Eligibility** (issue's law, durable): a step may run once its parent ended, its due instant passed, its root is
-inside its window, nothing it touches is paused, and a seat of every resource it uses is free. **Order** when seats
+inside its window, nothing it touches is paused (its root kind, a resource or a pause handle it uses), and a seat of
+every resource it uses is free (a pause handle has no seats). **Order** when seats
 are contended: the oldest root first, then the earliest due, so nothing starves; no priority or fairness keys.
 **Ringing**, three paths: the committing function continues with its own first spawn and rings the rest; the relay
 rings what someone else's commit made eligible (the app's own write, an operator); the census tick rings what time

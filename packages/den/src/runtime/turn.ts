@@ -1,11 +1,11 @@
 import type { Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Cause, Duration, Effect, Exit, Option } from "effect"
 import type { Digest } from "effect/crypto"
-import type { Ladder, Resource } from "#algebra/kinds.ts"
-import { censusPeriodSeconds } from "#algebra/kinds.ts"
+import type { Ladder, Resource, Use } from "#algebra/kinds.ts"
+import { censusPeriodSeconds, seatedOf } from "#algebra/kinds.ts"
 import { Later } from "#algebra/later.ts"
 import { census } from "#runtime/census.ts"
-import { eligible, isOpen, lapsedAttempt, opensAt, standing } from "#runtime/eligible.ts"
+import { eligible, isOpen, lapsedAttempt, opensAt, pausedBy, standing } from "#runtime/eligible.ts"
 import {
 	atOnce,
 	type Delay,
@@ -366,7 +366,7 @@ export interface StepPort<I, Rows, D, E> {
  */
 export interface Runnable<I, Rows, D, E, R> {
 	readonly name: string
-	readonly uses: ReadonlyArray<Resource>
+	readonly uses: ReadonlyArray<Use>
 	readonly retry: Ladder
 	readonly waits: number
 	/** The facts it awaits beside its input, none for a finish. */
@@ -476,11 +476,14 @@ const rootOf = <R>(
 		})
 	)
 
-/** Why work under `root` keeps waiting at `at`: its root kind's window shut, or its root kind or a resource paused. */
+/**
+ * Why work under `root` keeps waiting at `at`: its root kind's window shut, or its root kind or something it uses (a
+ * resource or a pause handle) paused.
+ */
 const gate = <R>(
 	ledger: Ledger<R>,
 	root: Option.Option<RootView>,
-	uses: ReadonlyArray<Resource>,
+	uses: ReadonlyArray<Use>,
 	at: Instant
 ): Effect.Effect<
 	Option.Option<{ readonly why: Wait; readonly until: Option.Option<Instant> }>,
@@ -497,8 +500,13 @@ const gate = <R>(
 		const live = yield* ledger.coordination.paused
 		const paused = Arr.map(live, (row) => row.target)
 		if (
-			Option.exists(root, (r) => Arr.contains(paused, r.kind)) ||
-			Arr.some(uses, (u) => Arr.contains(paused, u.name))
+			Arr.some(
+				pausedBy(
+					Option.map(root, (r) => r.kind),
+					uses
+				),
+				(target) => Arr.contains(paused, target)
+			)
 		) {
 			return Option.some({ why: "paused", until: Option.none() } as const)
 		}
@@ -773,22 +781,22 @@ type Claimed =
 	| { readonly kind: "ended"; readonly ending: Ending }
 
 /**
- * Claims a step's next attempt for `budget` with one seat of each resource it uses, in one write: the attempt the
- * database stamped; waiting on seats when some resource has no seat free at `at`; lost when another claim of the step
- * stands unended; or the ending of a write that failed. A seat another claim took between the read and the claim
- * refuses the claim whole on the live holds' key, and the seats are picked again from a fresh read, so it ends once it
- * claims or finds no seat free.
+ * Claims a step's next attempt for `budget` with one seat of each of `seated`, the resources it uses, in one write:
+ * the attempt the database stamped; waiting on seats when some resource has no seat free at `at`; lost when another
+ * claim of the step stands unended; or the ending of a write that failed. A seat another claim took between the read
+ * and the claim refuses the claim whole on the live holds' key, and the seats are picked again from a fresh read, so it
+ * ends once it claims or finds no seat free.
  */
 const claimSeated = <R>(
 	ledger: Ledger<R>,
 	at: Instant,
 	wake: Wake,
 	claim: Rooted<Omit<ClaimOf, "seats">>,
-	uses: ReadonlyArray<Resource>
+	seated: ReadonlyArray<Resource>
 ): Effect.Effect<Claimed, Ending> =>
 	Effect.gen(function* () {
-		const live = Arr.isReadonlyArrayEmpty(uses) ? [] : yield* readOr(ledger.holds, wake)
-		const taken = seatsFor(uses, live, at)
+		const live = Arr.isReadonlyArrayEmpty(seated) ? [] : yield* readOr(ledger.holds, wake)
+		const taken = seatsFor(seated, live, at)
 		if (Option.isNone(taken)) {
 			return {
 				kind: "ended",
@@ -810,7 +818,7 @@ const claimSeated = <R>(
 			} satisfies Claimed
 		}
 		if (seatTaken(ledger.flow, outcome.failure)) {
-			return yield* claimSeated(ledger, at, wake, claim, uses)
+			return yield* claimSeated(ledger, at, wake, claim, seated)
 		}
 		return {
 			kind: "ended",
@@ -904,7 +912,7 @@ const serveStep = <R>(
 			at,
 			wake,
 			{ step, root, budget, lapsed },
-			exhausted ? [] : runner.uses
+			exhausted ? [] : seatedOf(runner.uses)
 		)
 		if (claimed.kind === "ended") {
 			return served(claimed.ending)
@@ -985,7 +993,9 @@ const waitersOf = <R>(
 						snapshot.steps,
 						(p) =>
 							p.step === wake.step &&
-							Arr.some(p.runner.uses, (r) => Arr.some(freed, (seat) => seat.resource === r.name))
+							Arr.some(seatedOf(p.runner.uses), (r) =>
+								Arr.some(freed, (seat) => seat.resource === r.name)
+							)
 					)
 				return Arr.map(Arr.filter(eligible(ledger, snapshot, at).wakes, waits), (wake): Onward => ({
 					wake,

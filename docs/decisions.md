@@ -52,6 +52,15 @@
   request kind, one Gold build). No two holders share a seat key, so a bound is never exceeded. AlphaTest's adaptive
   window bounds requests inside a step, not steps; no workload needs a database or discovered resource. Taking and
   giving back seats certifies SERIALIZABLE at `a226cbac`; grizzle's LEASE moves the same relations to READ COMMITTED.
+- **A pause handle has no seats (settled by metis's switch, 2026-11-21).** metis's cutover pauses every Timeback write
+  and every Anthropic call, and no limit of either bounds how many run at once, so a step names each by
+  `pauseHandle(name)` in its `uses`, beside its resources: a target of its flow's pauses (`<P>Pausable`, with the
+  resources and the root kinds), held by a pause as a resource is, that takes nothing when the step runs. It is a kind
+  of its own, not a resource: every seat fact (the `<P>Resource` roster, `<P>Seats`, `<P>Hold`, `<P>Live`,
+  `<P>SeatBelowCount`) ranges over resources alone, so no seat count, seat row or live hold can name a handle.
+  - Rejected: a resource with an invented seat count, a number no provider limit defends (metis carried 151 and 10);
+    a resource whose seats may be "unbounded", an arm every seat fact would have to filter out again; and an optional
+    or sentinel count.
 - **A step's writes into the app's relations run under the app's own role (owner, 2026-11-11).** A flow names the
   app role that writes its steps' app relations, and den adds its commit programs to that role; den never creates a
   writer of the app's tables, and any certification effect shows in the app's own role's `grizzle generate` report.

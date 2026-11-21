@@ -42,11 +42,17 @@ import {
 	FanRefusal,
 	FanExhausted,
 	FanSquareInput,
+	FanDustInput,
+	FanMopInput,
 	FanBatchInput,
 	FanFanRunInput,
+	FanSweepInput,
 	FanSquareOutput,
+	FanDustOutput,
+	FanMopOutput,
 	FanBatchFinishOutput,
 	FanFanRunFinishOutput,
+	FanSweepFinishOutput,
 	FanPaused,
 	FanResumed,
 	fanGraph,
@@ -91,10 +97,14 @@ export const FanDen = role(
 			"FanRefusal",
 			"FanExhausted",
 			"FanSquareInput",
+			"FanDustInput",
+			"FanMopInput",
 			"FanBatchInput",
 			"FanFanRunInput",
+			"FanSweepInput",
 			"FanBatchFinishOutput",
 			"FanFanRunFinishOutput",
+			"FanSweepFinishOutput",
 			"FanHold"
 		]
 	}
@@ -218,6 +228,8 @@ export const fanDenPrograms = Object.freeze({
 			.insert(FanWithin, [])
 			.insert(FanStartScope, [])
 			.insert(FanSquareInput, [])
+			.insert(FanDustInput, [])
+			.insert(FanMopInput, [])
 			.insert(FanBatchInput, [])
 			.insert(
 				FanStep,
@@ -417,6 +429,20 @@ export const fanDenPrograms = Object.freeze({
 			.where(r.eq(step, r.param("step", FanSquareInput.fields.step)))
 			.find({ step, batch, n, root })
 	}),
+	fanReadFanDustInput: query(fanGraph).rule((r) => {
+		const { step, sweep, root } = v(FanDustInput, "fanDustInput")
+		return r
+			.match(FanDustInput, { step, sweep, root })
+			.where(r.eq(step, r.param("step", FanDustInput.fields.step)))
+			.find({ step, sweep, root })
+	}),
+	fanReadFanMopInput: query(fanGraph).rule((r) => {
+		const { step, sweep, root } = v(FanMopInput, "fanMopInput")
+		return r
+			.match(FanMopInput, { step, sweep, root })
+			.where(r.eq(step, r.param("step", FanMopInput.fields.step)))
+			.find({ step, sweep, root })
+	}),
 	fanReadFanBatchInput: query(fanGraph).rule((r) => {
 		const { scope, batch, size, root } = v(FanBatchInput, "fanBatchInput")
 		return r
@@ -504,7 +530,31 @@ export const fanDenPrograms = Object.freeze({
 			.match(FanResult, { step, outcome: "failed" })
 			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))
 			.find({ step })
-	})
+	}),
+	fanReadFanSweepInput: query(fanGraph).rule((r) => {
+		const { scope, sweep, root } = v(FanSweepInput, "fanSweepInput")
+		return r
+			.match(FanSweepInput, { scope, sweep, root })
+			.where(r.eq(scope, r.param("scope", FanSweepInput.fields.scope)))
+			.find({ scope, sweep, root })
+	}),
+	fanRequestSweep: clocked(
+		ChangeSet.empty(fanGraph)
+			.insert(FanScope, [])
+			.insert(FanSweepInput, [])
+			.insert(
+				FanRoot,
+				query(fanGraph).rule((r) =>
+					r.find({
+						scope: r.param("fanSweepScope", FanRoot.fields.scope),
+						kind: FanRootKind.handle("Sweep"),
+						key: r.param("fanSweepKey", FanRoot.fields.key),
+						at: r.param("now", FanRoot.fields.at)
+					})
+				)
+			),
+		{ now: "millis" }
+	)
 })
 
 export const fanDenWorkload = workload(FanDen, fanDenPrograms)
@@ -556,6 +606,16 @@ export const fanCommitPrograms = Object.freeze({
 		.insert(FanDone, [])
 		.insert(FanHeld, [])
 		.insert(FanSquareOutput, []),
+	fanCommitDust: ChangeSet.empty(fanGraph)
+		.insert(FanResult, [])
+		.insert(FanDone, [])
+		.insert(FanHeld, [])
+		.insert(FanDustOutput, []),
+	fanCommitMop: ChangeSet.empty(fanGraph)
+		.insert(FanResult, [])
+		.insert(FanDone, [])
+		.insert(FanHeld, [])
+		.insert(FanMopOutput, []),
 	fanCommitBatchFinish: ChangeSet.union(
 		ChangeSet.empty(fanGraph)
 			.insert(FanResult, [])
@@ -571,7 +631,12 @@ export const fanCommitPrograms = Object.freeze({
 			.insert(FanHeld, [])
 			.insert(FanFanRunFinishOutput, []),
 		declaredFlow.kinds[2].finish.writes.changes(Loader)
-	)
+	),
+	fanCommitSweepFinish: ChangeSet.empty(fanGraph)
+		.insert(FanResult, [])
+		.insert(FanDone, [])
+		.insert(FanHeld, [])
+		.insert(FanSweepFinishOutput, [])
 })
 
 export const fanCommits = workload(Loader, fanCommitPrograms)

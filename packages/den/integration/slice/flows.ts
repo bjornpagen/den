@@ -14,6 +14,7 @@ import {
 	never,
 	noReads,
 	operator,
+	pauseHandle,
 	reads,
 	resource,
 	vectorOf,
@@ -53,7 +54,8 @@ import type { Loader } from "#integration/slice/roles.ts"
 
 /**
  * The slice's eight flows: a chain whose pages read a weight before their bodies run, started by an operator or by the
- * app's own write; a fan-out whose squares share a resource of two seats; a sync whose roots hold an exclusivity seat
+ * app's own write; a fan-out whose squares share a resource of two seats, beside sweeps that call an outside system
+ * the operator pauses by a pause handle, one of them on a seat of the same resource; a sync whose roots hold an exclusivity seat
  * per relation, beside a Gold build admitted only while the chain has nothing pending; two retry ladders, one that ends
  * and one that never does; and an assignment, the assignment engine's shape, whose one step reads the passages nearest
  * a missed question's stored embedding and the passages its learner has seen, in one snapshot; and a review, AlphaTest's
@@ -405,7 +407,81 @@ const FanRun = root("FanRun", {
 	}
 })
 
-export const fan = flow("Fan", { writes: loader, kinds: [Square, Batch, FanRun], edges: [] })
+/**
+ * The outside system the fan's sweeps call, which no limit bounds: a pause handle, with no seats, that the operator
+ * pauses to hold every step that calls it, as metis's switch holds every Timeback write and Anthropic call at its
+ * cutover.
+ */
+const vendor = pauseHandle("Vendor")
+
+/** A sweep, by its key. */
+const SweepInput = Schema.Struct({ sweep: Schema.String })
+
+/** Dusts once for a sweep, calling the Vendor alone: it holds no seat, and a pause of the Vendor holds it. */
+const Dust = step(
+	"Dust",
+	{
+		input: SweepInput,
+		output: SweepInput,
+		error: Schema.Never,
+		reads: noReads,
+		awaits: [],
+		uses: [vendor],
+		retry: attempts(3),
+		waits: 0,
+		due: atSpawn,
+		writes: writesNothing
+	},
+	(sweep) => Effect.succeed({ output: sweep })
+)
+
+/**
+ * Mops once for a sweep, calling the Vendor on a seat of the Pool: it holds a Pool seat while it runs, and a pause of
+ * either holds it.
+ */
+const Mop = step(
+	"Mop",
+	{
+		input: SweepInput,
+		output: SweepInput,
+		error: Schema.Never,
+		reads: noReads,
+		awaits: [],
+		uses: [pool, vendor],
+		retry: attempts(3),
+		waits: 0,
+		due: atSpawn,
+		writes: writesNothing
+	},
+	(sweep) => Effect.succeed({ output: sweep })
+)
+
+/** A sweep: one Dust and one Mop, and a finish that reads neither. */
+const Sweep = root("Sweep", {
+	trigger: operator,
+	input: SweepInput,
+	children: [Dust, Mop],
+	start: (sweep) => [Dust.of(sweep), Mop.of(sweep)],
+	exclusive: shared,
+	window: always,
+	precondition: unconditional,
+	finish: {
+		reads: [],
+		output: Finished,
+		error: Schema.Never,
+		uses: [],
+		retry: attempts(3),
+		waits: 0,
+		writes: writesNothing,
+		body: () => Effect.succeed({ output: {} })
+	}
+})
+
+export const fan = flow("Fan", {
+	writes: loader,
+	kinds: [Square, Batch, FanRun, Dust, Mop, Sweep],
+	edges: []
+})
 
 /** A relation one sync run copies. */
 const SyncInput = Schema.Struct({ relation: Schema.String, run: Schema.BigInt })

@@ -331,7 +331,7 @@ export interface Lowered {
 	readonly joins: ReadonlyArray<JoinIR>
 	readonly edges: ReadonlyArray<EdgeIR>
 	readonly resources: ReadonlyArray<ResourceIR>
-	/** What a pause attaches to: each resource and each root kind, by name. */
+	/** What a pause attaches to: each resource, each pause handle and each root kind, by name. */
 	readonly pausable: readonly [string, ...Array<string>]
 	/**
 	 * The relations a spawn writes into, each written by every start and every commit with edges: a child scope is admitted
@@ -452,7 +452,11 @@ export const lower = (flow: AnyFlow): Lowered => {
 		Arr.filter(joins, (j) => j._tag === "Scope"),
 		(j) => j.name
 	)
-	const pausable = [...Arr.map(flow.resources, (r) => r.name), ...Arr.map(roots, (r) => r.name)]
+	const pausable = [
+		...Arr.map(flow.resources, (r) => r.name),
+		...Arr.map(flow.handles, (h) => h.name),
+		...Arr.map(roots, (r) => r.name)
+	]
 	if (
 		!Arr.isReadonlyArrayNonEmpty(kindNames) ||
 		!Arr.isReadonlyArrayNonEmpty(rootNames) ||

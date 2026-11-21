@@ -5,9 +5,11 @@ import {
 	type AnyStepKind,
 	type Exclusive,
 	named,
+	type PauseHandle,
 	type Precondition,
 	Refused,
 	type Resource,
+	seatedOf,
 	type Stored,
 	type Trigger,
 	type Window,
@@ -55,6 +57,8 @@ export interface Flow<
 	readonly edges: Edges
 	/** The resources its steps and finishes use, each once, in the order they name them. */
 	readonly resources: ReadonlyArray<Resource>
+	/** The pause handles its steps and finishes use, each once, in the order they name them. */
+	readonly handles: ReadonlyArray<PauseHandle>
 }
 
 /** Any flow. */
@@ -111,27 +115,39 @@ export const membersOf = (
 	return grow(Arr.flatMap(join.children, (child) => Option.toArray(declared(child.name))))
 }
 
-/** The resources a flow's steps and finishes use, each once, refusing two of one name. */
-const resourcesOf = (
+/**
+ * The resources and the pause handles a flow's steps and finishes use, each once, refusing two uses of one name and a
+ * use named as a root kind: each names a target of the flow's pauses, as a root kind does.
+ */
+const usesOf = (
 	declaration: string,
 	steps: ReadonlyArray<AnyStepKind>,
 	joins: ReadonlyArray<AnyJoin>
-): ReadonlyArray<Resource> => {
+): {
+	readonly resources: ReadonlyArray<Resource>
+	readonly handles: ReadonlyArray<PauseHandle>
+} => {
 	const used = [...Arr.flatMap(steps, (s) => s.uses), ...Arr.flatMap(joins, (j) => j.finish.uses)]
 	const distinct = Arr.dedupeWith(used, (a, b) => a === b)
-	unique(
-		`${declaration} resources`,
-		Arr.map(distinct, (r) => r.name)
-	)
-	return distinct
+	unique(`${declaration} pause targets`, [
+		...Arr.map(distinct, (u) => u.name),
+		...Arr.map(
+			Arr.filter(joins, (j) => j._tag === "Root"),
+			(j) => j.name
+		)
+	])
+	return {
+		resources: seatedOf(distinct),
+		handles: Arr.flatMap(distinct, (u) => (u._tag === "PauseHandle" ? [u] : []))
+	}
 }
 
 /**
  * A flow, checked: its names unique and PascalCase, every edge between declared kinds and from a step or a child scope (a
  * root has no parent to spawn its next stage in), every kind but a
  * root owned by some scope (named by a join's children or an edge's target), at least one root, every finish reading
- * only kinds its scope holds, and its resources distinct by name. A refusal is thrown as `Refused`, when the module
- * declaring the flow loads.
+ * only kinds its scope holds, and its resources, pause handles and roots distinct by name. A refusal is thrown as
+ * `Refused`, when the module declaring the flow loads.
  */
 export const flow = <
 	const Name extends string,
@@ -199,6 +215,6 @@ export const flow = <
 			}
 		})
 	})
-	const resources = resourcesOf(declaration, steps, joins)
-	return { _tag: "Flow", name, writes, kinds, edges, resources }
+	const { resources, handles } = usesOf(declaration, steps, joins)
+	return { _tag: "Flow", name, writes, kinds, edges, resources, handles }
 }

@@ -167,9 +167,9 @@ interface PauseOf<T extends string> {
 }
 
 /**
- * Pauses a resource or a root kind: nothing that touches it is eligible until it is resumed. A target already paused
- * stays paused at its live turn; another target's pause is taken at its next turn, and a turn another pauser took
- * first is judged again from a fresh read.
+ * Pauses a resource, a pause handle or a root kind: nothing that touches it is eligible until it is resumed. A target
+ * already paused stays paused at its live turn; another target's pause is taken at its next turn, and a turn another
+ * pauser took first is judged again from a fresh read.
  */
 export const pauseIn =
 	<T extends string>(chains: PauseChains<T>) =>
@@ -194,7 +194,9 @@ export const pauseIn =
 			)
 		})
 
-/** Resumes a paused resource or root kind: its live pause's turn resumed, nothing for a target not paused. */
+/**
+ * Resumes a paused resource, pause handle or root kind: its live pause's turn resumed, nothing for a target not paused.
+ */
 export const resumeIn =
 	<T extends string>(chains: PauseChains<T>) =>
 	(target: T): Effect.Effect<void, Settled> =>

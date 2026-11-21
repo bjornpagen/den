@@ -15,7 +15,7 @@ constants with their evidence beside the code they bound (`src/runtime/turn.ts`,
 | module | what it holds |
 |---|---|
 | `src/transport.ts` | the wake contract: `Wake` `{ lane, step, attempt }`, each field branded (`den/LaneName`, `DenStep`, `den/Attempt` ≥ 1), decoded by `WakeSchema`; `idempotencyKey` (`${lane}:${step}:${attempt}`); `Transport`, a `Context.Service` whose `send` never fails; the in-process transport over an unbounded `Queue` |
-| `src/algebra/kinds.ts` | `lane` (width, window, pause, ceiling of attempts), `step`, `awaiting`, `scope`, `root`, `edge`, `writes`; a step's reads, `reads(query, records, params)`, one grizzle query of the app role, a record of named queries, its parameters from the step's input, each name's rows recorded by its record, taken in one statement; the facts a step awaits (`awaitFact`); its waits on its source; spawns typed by their kind (`Page.of(input)`); bodies `(input, found) → Effect<{ output, writes }, E, R>`, `found` each read's rows by its name; `Refused` |
+| `src/algebra/kinds.ts` | `lane` (width, window, pause, ceiling of attempts), `step`, `awaiting`, `scope`, `root`, `edge`, `writes`; a step's reads, `reads(query, records, params)`, one grizzle query of the app role, a record of named queries, its parameters from the step's input, each name's rows recorded by its record, taken in one statement; the facts a step awaits (`awaitFact`); what it uses, each a `resource`, a seat of which it holds while it runs, or a `pauseHandle`, a target of the flow's pauses with no seats; its waits on its source; spawns typed by their kind (`Page.of(input)`); bodies `(input, found) → Effect<{ output, writes }, E, R>`, `found` each read's rows by its name; `Refused` |
 | `src/algebra/flow.ts` | `flow(name, { lanes, kinds, edges })` and its declaration-time checks (below) |
 | `src/lower/schema.ts` | Effect Schema to relations: columns of `String`, `BigInt`, `Finite` (double precision, held finite by a row check), `Boolean`, a literal union of texts (a roster) or a brand of one (a contract); an `Option` of a column (a relation of its own); an `Array` of columns or of structs of them (an ordered family keyed by owner and a gap-free ordinal from 0); a `TaggedUnion` of structs of columns (its tag a roster column of the owner's row, a relation per variant holding a row exactly where the tag names it); anything else, a refinement by a check included, `Refused` |
 | `src/lower/fragment.ts` | a flow to its fragment as data (`Lowered`): rosters, contracts, relations, laws, and the kinds, joins and edges the printer reads |
@@ -151,8 +151,10 @@ output into `select(PResult, outcome = done)`) certifies.
    Correctness rests on keys alone, never on a clock (`stale.test.ts` runs the stale claimer with a skewed clock).
 2. **Width.** Enforced by the census (at most a lane's width minus its standing leases is rung); no law bounds it yet.
 3. **Window and pause.** A lane declares `window` (always, or an Effect `Cron`) and `pause` (the standing it is
-   installed in); a turn outside the window ends `retry` at the window's next instant, no attempt spent. Pause is
-   declared but not yet enforced: pausing and resuming as facts are wave 2's.
+   installed in); a turn outside the window ends `retry` at the window's next instant, no attempt spent. A pause holds
+   every step that uses its target, a resource or a pause handle (`pauseHandle(name)`, a name with no seats, which a
+   step names in its `uses` as it names a resource and which takes nothing when it runs), and every root of its target
+   kind; `pause.test.ts` holds a handle's steps held while it is paused and holding no seat once resumed.
 4. **Clock.** The database's: every reading is a clocked call's `transaction_timestamp()`, and every instant a write
    stores is computed in its statement, the call's reading plus a delay (a claim's lease the time its invocation has
    left, at most the function lifetime, 800 s; a retry's rung; a step's delay after its spawn); the census rings a

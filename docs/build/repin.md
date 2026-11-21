@@ -10,7 +10,8 @@ for the coordination group, and DBCLOCK:
 
 - **LEASE for the coordination group (28496788).** The group is insert-only, and each flow's coordinator role
   certifies READ COMMITTED. Each exclusivity seat and pause is a chain of turns: exclusivity seats (`<P>Exclusive` and
-  `<P>Released`, by `(kind, key, turn)`) and pauses (`<P>Paused` and `<P>Resumed`, by `(target, turn)`), each turn after
+  `<P>Released`, by `(kind, key, turn)`) and pauses (`<P>Paused` and `<P>Resumed`, by `(target, turn)`, a target of
+  `<P>Pausable`: a resource, a pause handle or a root kind, a pause handle holding no seat), each turn after
   the first contained in its predecessor's end, so a chain holds at most one live turn, which the database enforces. A
   resource's seat count is a closed relation, `closed.relation("<P>Seats", { resource, seats }, ["resource"], …)` from
   the flow's declaration, and every live hold's seat is checked below it, so provisioning is gone. A step's seats are

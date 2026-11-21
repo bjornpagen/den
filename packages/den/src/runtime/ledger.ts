@@ -1,7 +1,7 @@
 import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, type Cron, Data, type Effect, Option, type Stream } from "effect"
 import type { Digest } from "effect/crypto"
-import type { Ladder, Precondition, Resource, Window } from "#algebra/kinds.ts"
+import type { Ladder, Precondition, Use, Window } from "#algebra/kinds.ts"
 import type { Delay, ExclusiveId, Instant, ScopeKey, StepKey } from "#runtime/identity.ts"
 import type { FlowName } from "#transport.ts"
 
@@ -167,7 +167,7 @@ export type Ran =
 /** A step kind's runner: what the scheduler reads of its declaration, and its turn after the claim. */
 export interface StepRunner<R> {
 	readonly kind: string
-	readonly uses: ReadonlyArray<Resource>
+	readonly uses: ReadonlyArray<Use>
 	readonly retry: Ladder
 	/** How many times it may wait on its source before its next `Later` ends it failed. */
 	readonly waits: number
@@ -259,16 +259,16 @@ export interface ExclusiveRow extends ExclusiveTurn {
 	readonly scope: ScopeKey
 }
 
-/** A pause's turn: a resource or a root kind, paused at a turn until that turn is resumed. */
+/** A pause's turn: a resource, a pause handle or a root kind, paused at a turn until that turn is resumed. */
 export interface PauseRow {
 	readonly target: string
 	readonly turn: bigint
 }
 
 /**
- * A pause or a resume named a target that is no resource and no root kind of its flow: the flow's coordinator role
- * refuses the name before it reads or writes anything, since a pause of it would hold nothing paused and a resume of
- * it would leave the target the operator meant paused.
+ * A pause or a resume named a target that is no resource, pause handle or root kind of its flow: the flow's coordinator
+ * role refuses the name before it reads or writes anything, since a pause of it would hold nothing paused and a resume
+ * of it would leave the target the operator meant paused.
  */
 export class UnknownPauseTarget extends Data.TaggedError("UnknownPauseTarget")<{
 	readonly flow: FlowName
@@ -319,11 +319,14 @@ export interface Coordination {
 	readonly holdExclusive: (row: ExclusiveRow) => Effect.Effect<void, Settled>
 	readonly releaseExclusive: (rows: ReadonlyArray<ExclusiveTurn>) => Effect.Effect<void, Settled>
 	/**
-	 * Pauses a resource or a root kind by its name (seats.ts pauseIn over the flow's chains of pauses), refused when the
-	 * name is no target of the flow's.
+	 * Pauses a resource, a pause handle or a root kind by its name (seats.ts pauseIn over the flow's chains of pauses),
+	 * refused when the name is no target of the flow's.
 	 */
 	readonly pause: (target: string) => Effect.Effect<void, Settled | UnknownPauseTarget>
-	/** Resumes a resource or a root kind by its name (seats.ts resumeIn), refused when the name is no target of the flow's. */
+	/**
+	 * Resumes a resource, a pause handle or a root kind by its name (seats.ts resumeIn), refused when the name is no
+	 * target of the flow's.
+	 */
 	readonly resume: (target: string) => Effect.Effect<void, Settled | UnknownPauseTarget>
 }
 

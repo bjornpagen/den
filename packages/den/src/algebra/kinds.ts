@@ -82,7 +82,7 @@ const nonNegative = (declaration: string, what: string, n: number): void => {
 /**
  * A resource: a named bottleneck whose capacity is its seats, each a row, so no two holders share one and a bound is
  * never exceeded. Its count is a limit with evidence (W1's replica holds 8). A step holds a seat of every resource it
- * uses while it runs.
+ * uses while it runs, and pausing the resource holds every step that uses it.
  */
 export interface Resource<Name extends string = string> {
 	readonly _tag: "Resource"
@@ -95,6 +95,32 @@ export const resource = <const Name extends string>(name: Name, seats: number): 
 	positive(`resource ${name}`, "seats", seats)
 	return { _tag: "Resource", name, seats }
 }
+
+/**
+ * A pause handle: a name an operator pauses, with no capacity, so pausing it holds every step that uses it and running
+ * such a step takes nothing (metis's switch holds every Timeback write and every Anthropic call at its cutover, and no
+ * limit of either bounds how many run at once). It has no seats, so it is no resource: a step that uses it holds no seat
+ * of it, and no seat count, seat row or live hold names it.
+ */
+export interface PauseHandle<Name extends string = string> {
+	readonly _tag: "PauseHandle"
+	readonly name: Name
+}
+
+export const pauseHandle = <const Name extends string>(name: Name): PauseHandle<Name> => {
+	named("pause handle", name)
+	return { _tag: "PauseHandle", name }
+}
+
+/**
+ * What a step or a finish uses: a resource, a seat of which it holds while it runs, or a pause handle, which it holds
+ * nothing of. Pausing either holds it.
+ */
+export type Use = Resource | PauseHandle
+
+/** The resources among `uses`, the ones a step holds a seat of: a pause handle has none. */
+export const seatedOf = (uses: ReadonlyArray<Use>): ReadonlyArray<Resource> =>
+	Arr.flatMap(uses, (use) => (use._tag === "Resource" ? [use] : []))
 
 /**
  * A step's retry ladder, written out: it ends after `attempts` attempts (W1 to W4), its next claim then failing the
@@ -516,7 +542,7 @@ export interface StepShape<
 	readonly reads: D
 	/** The facts it awaits beside its input: it is eligible once each exists. */
 	readonly awaits: ReadonlyArray<AwaitedFact>
-	readonly uses: ReadonlyArray<Resource>
+	readonly uses: ReadonlyArray<Use>
 	readonly retry: Ladder
 	/**
 	 * How many times the step may wait on its source, each a body that failed with `Later`, before the next `Later`
@@ -557,7 +583,7 @@ export interface AnyStepKind {
 	readonly error: ErrorSchema
 	readonly reads: AnyReads
 	readonly awaits: ReadonlyArray<AwaitedFact>
-	readonly uses: ReadonlyArray<Resource>
+	readonly uses: ReadonlyArray<Use>
 	readonly retry: Ladder
 	readonly waits: number
 	readonly due: Due<never>
@@ -631,9 +657,10 @@ export type EndingsOf<Ended extends ReadonlyArray<ChildKind>> = {
 /**
  * A scope's finish: a step that runs once every child has ended, reads the endings of the kinds it names (done with
  * their outputs, or failed), and returns its output and writes (a cursor moved, or held where a child failed), as a
- * step does, holding a seat of every resource it uses while it runs, as a step does (AlphaTest's cluster, a model call
- * on Anthropic's seats). A child scope ends as its finish does: its parent's finish reads the finish's output as the scope's, and
- * the edges that leave the scope kind spawn the next stage in its parent from the scope's input and that output.
+ * step does, holding a seat of every resource it uses while it runs and held by a pause of anything it uses, as a step
+ * is (AlphaTest's cluster, a model call on Anthropic's seats). A child scope ends as its finish does: its parent's
+ * finish reads the finish's output as the scope's, and the edges that leave the scope kind spawn the next stage in its
+ * parent from the scope's input and that output.
  */
 export interface Finish<
 	I,
@@ -646,7 +673,7 @@ export interface Finish<
 	readonly reads: Ended
 	readonly output: OS
 	readonly error: ES
-	readonly uses: ReadonlyArray<Resource>
+	readonly uses: ReadonlyArray<Use>
 	readonly retry: Ladder
 	/** How many times the finish may wait on its source before its next `Later` fails it, as a step's waits. */
 	readonly waits: number
@@ -662,7 +689,7 @@ export interface AnyFinish {
 	readonly reads: ReadonlyArray<{ readonly _tag: string; readonly name: string }>
 	readonly output: Stored
 	readonly error: ErrorSchema
-	readonly uses: ReadonlyArray<Resource>
+	readonly uses: ReadonlyArray<Use>
 	readonly retry: Ladder
 	readonly waits: number
 	readonly writes: AnyCommit

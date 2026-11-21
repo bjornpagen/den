@@ -24,12 +24,19 @@ import {
 	v
 } from "@bjornpagen/grizzle"
 
-export const FanKind = closed.unordered("FanKind", ["Square", "BatchFinish", "FanRunFinish"])
-export const FanRootKind = closed.unordered("FanRootKind", ["FanRun"])
+export const FanKind = closed.unordered("FanKind", [
+	"Square",
+	"Dust",
+	"Mop",
+	"BatchFinish",
+	"FanRunFinish",
+	"SweepFinish"
+])
+export const FanRootKind = closed.unordered("FanRootKind", ["FanRun", "Sweep"])
 export const FanChildKind = closed.unordered("FanChildKind", ["Batch"])
 export const FanOutcome = closed.unordered("FanOutcome", ["done", "failed"])
 export const FanRetryWhy = closed.unordered("FanRetryWhy", ["spent", "transient", "later"])
-export const FanPausable = closed.unordered("FanPausable", ["Pool", "FanRun"])
+export const FanPausable = closed.unordered("FanPausable", ["Pool", "Vendor", "FanRun", "Sweep"])
 export const FanResource = closed.unordered("FanResource", ["Pool"])
 const FanSeats = closed.relation(
 	"FanSeats",
@@ -121,6 +128,15 @@ export const FanSquareInput = relation(
 	{ step: DenStep, batch: Text, n: pg.bigint, root: DenScope },
 	["step", "root"]
 )
+export const FanDustInput = relation(
+	"FanDustInput",
+	{ step: DenStep, sweep: Text, root: DenScope },
+	["step", "root"]
+)
+export const FanMopInput = relation("FanMopInput", { step: DenStep, sweep: Text, root: DenScope }, [
+	"step",
+	"root"
+])
 export const FanBatchInput = relation(
 	"FanBatchInput",
 	{ scope: DenScope, batch: Text, size: pg.bigint, root: DenScope },
@@ -131,9 +147,24 @@ export const FanFanRunInput = relation(
 	{ scope: DenScope, batch: Text, size: pg.bigint, root: DenScope },
 	["scope", "root"]
 )
+export const FanSweepInput = relation(
+	"FanSweepInput",
+	{ scope: DenScope, sweep: Text, root: DenScope },
+	["scope", "root"]
+)
 export const FanSquareOutput = relation(
 	"FanSquareOutput",
 	{ step: DenStep, square: pg.bigint, root: DenScope },
+	["step", "root"]
+)
+export const FanDustOutput = relation(
+	"FanDustOutput",
+	{ step: DenStep, sweep: Text, root: DenScope },
+	["step", "root"]
+)
+export const FanMopOutput = relation(
+	"FanMopOutput",
+	{ step: DenStep, sweep: Text, root: DenScope },
 	["step", "root"]
 )
 export const FanBatchFinishOutput = relation(
@@ -143,6 +174,11 @@ export const FanBatchFinishOutput = relation(
 )
 export const FanFanRunFinishOutput = relation(
 	"FanFanRunFinishOutput",
+	{ step: DenStep, root: DenScope },
+	["step", "root"]
+)
+export const FanSweepFinishOutput = relation(
+	"FanSweepFinishOutput",
 	{ step: DenStep, root: DenScope },
 	["step", "root"]
 )
@@ -197,11 +233,17 @@ export const fanGraph = fragment(
 		FanRefusal,
 		FanExhausted,
 		FanSquareInput,
+		FanDustInput,
+		FanMopInput,
 		FanBatchInput,
 		FanFanRunInput,
+		FanSweepInput,
 		FanSquareOutput,
+		FanDustOutput,
+		FanMopOutput,
 		FanBatchFinishOutput,
 		FanFanRunFinishOutput,
+		FanSweepFinishOutput,
 		FanHold
 	],
 	[
@@ -263,6 +305,22 @@ export const fanGraph = fragment(
 			)
 		),
 		contained(
+			on(FanDustInput, "step", "root"),
+			on(
+				select(FanStep, (row) => row.eq(row.kind, "Dust")),
+				"step",
+				"root"
+			)
+		),
+		contained(
+			on(FanMopInput, "step", "root"),
+			on(
+				select(FanStep, (row) => row.eq(row.kind, "Mop")),
+				"step",
+				"root"
+			)
+		),
+		contained(
 			on(FanBatchInput, "scope", "root"),
 			on(
 				select(FanWithin, (row) => row.eq(row.kind, "Batch")),
@@ -277,10 +335,22 @@ export const fanGraph = fragment(
 				"scope"
 			)
 		),
+		contained(
+			on(FanSweepInput, "scope"),
+			on(
+				select(FanRoot, (row) => row.eq(row.kind, "Sweep")),
+				"scope"
+			)
+		),
 		contained(on(FanSquareOutput, "step", "root"), on(FanSquareInput, "step", "root")),
 		contained(on(FanSquareOutput, "step", "root"), on(FanDone, "step", "root")),
+		contained(on(FanDustOutput, "step", "root"), on(FanDustInput, "step", "root")),
+		contained(on(FanDustOutput, "step", "root"), on(FanDone, "step", "root")),
+		contained(on(FanMopOutput, "step", "root"), on(FanMopInput, "step", "root")),
+		contained(on(FanMopOutput, "step", "root"), on(FanDone, "step", "root")),
 		contained(on(FanBatchFinishOutput, "step", "root"), on(FanDone, "step", "root")),
 		contained(on(FanFanRunFinishOutput, "step", "root"), on(FanDone, "step", "root")),
+		contained(on(FanSweepFinishOutput, "step", "root"), on(FanDone, "step", "root")),
 		ordered(on(FanHold, "step", "root", "attempt", "at"), fin(FanClaim, "holds")),
 		retirable(FanRoot, [
 			on(FanScope, "root"),
@@ -302,11 +372,17 @@ export const fanGraph = fragment(
 			on(FanRefusal, "root"),
 			on(FanExhausted, "root"),
 			on(FanSquareInput, "root"),
+			on(FanDustInput, "root"),
+			on(FanMopInput, "root"),
 			on(FanBatchInput, "root"),
 			on(FanFanRunInput, "root"),
+			on(FanSweepInput, "root"),
 			on(FanSquareOutput, "root"),
+			on(FanDustOutput, "root"),
+			on(FanMopOutput, "root"),
 			on(FanBatchFinishOutput, "root"),
 			on(FanFanRunFinishOutput, "root"),
+			on(FanSweepFinishOutput, "root"),
 			on(FanHold, "root")
 		])
 	]
@@ -363,6 +439,9 @@ export const fanWriter = [
 	"FanDone",
 	"FanHeld",
 	"FanSquareOutput",
+	"FanDustOutput",
+	"FanMopOutput",
 	"FanBatchFinishOutput",
-	"FanFanRunFinishOutput"
+	"FanFanRunFinishOutput",
+	"FanSweepFinishOutput"
 ] as const

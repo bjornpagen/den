@@ -890,6 +890,20 @@ CREATE TABLE "slice"."fan_done" (
   CONSTRAINT "__fan_done_pk_5u65252q52" PRIMARY KEY ("step", "root")
 );
 
+CREATE TABLE "slice"."fan_dust_input" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "sweep" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__fan_dust_input_pk_xyleoykgmc" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."fan_dust_output" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "sweep" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__fan_dust_output_pk_3ve4gi5x6b" PRIMARY KEY ("step", "root")
+);
+
 CREATE TABLE "slice"."fan_ended" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
@@ -953,6 +967,20 @@ CREATE TABLE "slice"."fan_hold" (
   "seat" "slice"."__domain_gfw43vigph" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__fan_hold_pk_avuqdkljvb" PRIMARY KEY ("step", "root", "attempt", "at")
+);
+
+CREATE TABLE "slice"."fan_mop_input" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "sweep" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__fan_mop_input_pk_jwnqekad76" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."fan_mop_output" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "sweep" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__fan_mop_output_pk_rcebyoc32v" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_paused" (
@@ -1052,6 +1080,19 @@ CREATE TABLE "slice"."fan_step" (
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__fan_step_pk_2f4tcxnofk" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."fan_sweep_finish_output" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__fan_sweep_finish_output_pk_7dvx2ngckn" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."fan_sweep_input" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "sweep" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__fan_sweep_input_pk_zzlgjjqr6f" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."fan_within" (
@@ -2271,7 +2312,7 @@ LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_t
 AS $$
 BEGIN
   PERFORM 1 FROM "slice"."fan_root" AS "r1" JOIN (SELECT DISTINCT "r3"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r3"("c1")) AS "r2"("c1") ON "r1"."scope" = "r2"."c1" WHERE NOT "r1"."retired" ORDER BY "r1"."scope" FOR UPDATE OF "r1";
-  RETURN QUERY WITH "r1"("c1") AS MATERIALIZED ( SELECT "r2"."scope" AS "c1" FROM "slice"."fan_root" AS "r2" JOIN (SELECT DISTINCT "r4"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r4"("c1")) AS "r3"("c1") ON "r2"."scope" = "r3"."c1" WHERE NOT "r2"."retired" ), "r5" AS ( DELETE FROM "slice"."fan_admitted" AS "r6" USING "r1" AS "r7" WHERE "r6"."root" = "r7"."c1" RETURNING 1 AS "c1" ), "r8" AS ( DELETE FROM "slice"."fan_batch_finish_output" AS "r9" USING "r1" AS "r10" WHERE "r9"."root" = "r10"."c1" RETURNING 1 AS "c1" ), "r11" AS ( DELETE FROM "slice"."fan_batch_input" AS "r12" USING "r1" AS "r13" WHERE "r12"."root" = "r13"."c1" RETURNING 1 AS "c1" ), "r14" AS ( DELETE FROM "slice"."fan_claim" AS "r15" USING "r1" AS "r16" WHERE "r15"."root" = "r16"."c1" RETURNING 1 AS "c1" ), "r17" AS ( DELETE FROM "slice"."fan_done" AS "r18" USING "r1" AS "r19" WHERE "r18"."root" = "r19"."c1" RETURNING 1 AS "c1" ), "r20" AS ( DELETE FROM "slice"."fan_ended" AS "r21" USING "r1" AS "r22" WHERE "r21"."root" = "r22"."c1" RETURNING 1 AS "c1" ), "r23" AS ( DELETE FROM "slice"."fan_exhausted" AS "r24" USING "r1" AS "r25" WHERE "r24"."root" = "r25"."c1" RETURNING 1 AS "c1" ), "r26" AS ( DELETE FROM "slice"."fan_failed" AS "r27" USING "r1" AS "r28" WHERE "r27"."root" = "r28"."c1" RETURNING 1 AS "c1" ), "r29" AS ( DELETE FROM "slice"."fan_fan_run_finish_output" AS "r30" USING "r1" AS "r31" WHERE "r30"."root" = "r31"."c1" RETURNING 1 AS "c1" ), "r32" AS ( DELETE FROM "slice"."fan_fan_run_input" AS "r33" USING "r1" AS "r34" WHERE "r33"."root" = "r34"."c1" RETURNING 1 AS "c1" ), "r35" AS ( DELETE FROM "slice"."fan_fenced" AS "r36" USING "r1" AS "r37" WHERE "r36"."root" = "r37"."c1" RETURNING 1 AS "c1" ), "r38" AS ( DELETE FROM "slice"."fan_finish" AS "r39" USING "r1" AS "r40" WHERE "r39"."root" = "r40"."c1" RETURNING 1 AS "c1" ), "r41" AS ( DELETE FROM "slice"."fan_held" AS "r42" USING "r1" AS "r43" WHERE "r42"."root" = "r43"."c1" RETURNING 1 AS "c1" ), "r44" AS ( DELETE FROM "slice"."fan_hold" AS "r45" USING "r1" AS "r46" WHERE "r45"."root" = "r46"."c1" RETURNING 1 AS "c1" ), "r47" AS ( DELETE FROM "slice"."fan_refusal" AS "r48" USING "r1" AS "r49" WHERE "r48"."root" = "r49"."c1" RETURNING 1 AS "c1" ), "r50" AS ( DELETE FROM "slice"."fan_result" AS "r51" USING "r1" AS "r52" WHERE "r51"."root" = "r52"."c1" RETURNING 1 AS "c1" ), "r53" AS ( DELETE FROM "slice"."fan_retry" AS "r54" USING "r1" AS "r55" WHERE "r54"."root" = "r55"."c1" RETURNING 1 AS "c1" ), "r56" AS ( DELETE FROM "slice"."fan_scope" AS "r57" USING "r1" AS "r58" WHERE "r57"."root" = "r58"."c1" RETURNING 1 AS "c1" ), "r59" AS ( DELETE FROM "slice"."fan_skipped" AS "r60" USING "r1" AS "r61" WHERE "r60"."root" = "r61"."c1" RETURNING 1 AS "c1" ), "r62" AS ( DELETE FROM "slice"."fan_square_input" AS "r63" USING "r1" AS "r64" WHERE "r63"."root" = "r64"."c1" RETURNING 1 AS "c1" ), "r65" AS ( DELETE FROM "slice"."fan_square_output" AS "r66" USING "r1" AS "r67" WHERE "r66"."root" = "r67"."c1" RETURNING 1 AS "c1" ), "r68" AS ( DELETE FROM "slice"."fan_start_scope" AS "r69" USING "r1" AS "r70" WHERE "r69"."root" = "r70"."c1" RETURNING 1 AS "c1" ), "r71" AS ( DELETE FROM "slice"."fan_start_step" AS "r72" USING "r1" AS "r73" WHERE "r72"."root" = "r73"."c1" RETURNING 1 AS "c1" ), "r74" AS ( DELETE FROM "slice"."fan_step" AS "r75" USING "r1" AS "r76" WHERE "r75"."root" = "r76"."c1" RETURNING 1 AS "c1" ), "r77" AS ( DELETE FROM "slice"."fan_within" AS "r78" USING "r1" AS "r79" WHERE "r78"."root" = "r79"."c1" RETURNING 1 AS "c1" ), "r80" AS ( UPDATE "slice"."fan_root" AS "r81" SET "retired" = true FROM "r1" AS "r82" WHERE "r81"."scope" = "r82"."c1" RETURNING 1 AS "c1" ) SELECT "r84"."c1" AS "c1" FROM (SELECT "pg_catalog"."array_agg"("r83"."c2" ORDER BY "r83"."c1") AS "c1", "r83"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r80" AS "r85" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r86" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r87" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r88" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r89" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r90" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r91" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r92" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r93" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r94" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r95" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r96" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r97" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r98" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r99" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r100" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r101" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r102" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r103" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r104" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r105" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r106" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r107" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r108" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r109" UNION ALL SELECT 25 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r110") AS "r83"("c1", "c2", "c3") GROUP BY "r83"."c3") AS "r84"("c1", "c2") LIMIT 1::bigint ;
+  RETURN QUERY WITH "r1"("c1") AS MATERIALIZED ( SELECT "r2"."scope" AS "c1" FROM "slice"."fan_root" AS "r2" JOIN (SELECT DISTINCT "r4"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r4"("c1")) AS "r3"("c1") ON "r2"."scope" = "r3"."c1" WHERE NOT "r2"."retired" ), "r5" AS ( DELETE FROM "slice"."fan_admitted" AS "r6" USING "r1" AS "r7" WHERE "r6"."root" = "r7"."c1" RETURNING 1 AS "c1" ), "r8" AS ( DELETE FROM "slice"."fan_batch_finish_output" AS "r9" USING "r1" AS "r10" WHERE "r9"."root" = "r10"."c1" RETURNING 1 AS "c1" ), "r11" AS ( DELETE FROM "slice"."fan_batch_input" AS "r12" USING "r1" AS "r13" WHERE "r12"."root" = "r13"."c1" RETURNING 1 AS "c1" ), "r14" AS ( DELETE FROM "slice"."fan_claim" AS "r15" USING "r1" AS "r16" WHERE "r15"."root" = "r16"."c1" RETURNING 1 AS "c1" ), "r17" AS ( DELETE FROM "slice"."fan_done" AS "r18" USING "r1" AS "r19" WHERE "r18"."root" = "r19"."c1" RETURNING 1 AS "c1" ), "r20" AS ( DELETE FROM "slice"."fan_dust_input" AS "r21" USING "r1" AS "r22" WHERE "r21"."root" = "r22"."c1" RETURNING 1 AS "c1" ), "r23" AS ( DELETE FROM "slice"."fan_dust_output" AS "r24" USING "r1" AS "r25" WHERE "r24"."root" = "r25"."c1" RETURNING 1 AS "c1" ), "r26" AS ( DELETE FROM "slice"."fan_ended" AS "r27" USING "r1" AS "r28" WHERE "r27"."root" = "r28"."c1" RETURNING 1 AS "c1" ), "r29" AS ( DELETE FROM "slice"."fan_exhausted" AS "r30" USING "r1" AS "r31" WHERE "r30"."root" = "r31"."c1" RETURNING 1 AS "c1" ), "r32" AS ( DELETE FROM "slice"."fan_failed" AS "r33" USING "r1" AS "r34" WHERE "r33"."root" = "r34"."c1" RETURNING 1 AS "c1" ), "r35" AS ( DELETE FROM "slice"."fan_fan_run_finish_output" AS "r36" USING "r1" AS "r37" WHERE "r36"."root" = "r37"."c1" RETURNING 1 AS "c1" ), "r38" AS ( DELETE FROM "slice"."fan_fan_run_input" AS "r39" USING "r1" AS "r40" WHERE "r39"."root" = "r40"."c1" RETURNING 1 AS "c1" ), "r41" AS ( DELETE FROM "slice"."fan_fenced" AS "r42" USING "r1" AS "r43" WHERE "r42"."root" = "r43"."c1" RETURNING 1 AS "c1" ), "r44" AS ( DELETE FROM "slice"."fan_finish" AS "r45" USING "r1" AS "r46" WHERE "r45"."root" = "r46"."c1" RETURNING 1 AS "c1" ), "r47" AS ( DELETE FROM "slice"."fan_held" AS "r48" USING "r1" AS "r49" WHERE "r48"."root" = "r49"."c1" RETURNING 1 AS "c1" ), "r50" AS ( DELETE FROM "slice"."fan_hold" AS "r51" USING "r1" AS "r52" WHERE "r51"."root" = "r52"."c1" RETURNING 1 AS "c1" ), "r53" AS ( DELETE FROM "slice"."fan_mop_input" AS "r54" USING "r1" AS "r55" WHERE "r54"."root" = "r55"."c1" RETURNING 1 AS "c1" ), "r56" AS ( DELETE FROM "slice"."fan_mop_output" AS "r57" USING "r1" AS "r58" WHERE "r57"."root" = "r58"."c1" RETURNING 1 AS "c1" ), "r59" AS ( DELETE FROM "slice"."fan_refusal" AS "r60" USING "r1" AS "r61" WHERE "r60"."root" = "r61"."c1" RETURNING 1 AS "c1" ), "r62" AS ( DELETE FROM "slice"."fan_result" AS "r63" USING "r1" AS "r64" WHERE "r63"."root" = "r64"."c1" RETURNING 1 AS "c1" ), "r65" AS ( DELETE FROM "slice"."fan_retry" AS "r66" USING "r1" AS "r67" WHERE "r66"."root" = "r67"."c1" RETURNING 1 AS "c1" ), "r68" AS ( DELETE FROM "slice"."fan_scope" AS "r69" USING "r1" AS "r70" WHERE "r69"."root" = "r70"."c1" RETURNING 1 AS "c1" ), "r71" AS ( DELETE FROM "slice"."fan_skipped" AS "r72" USING "r1" AS "r73" WHERE "r72"."root" = "r73"."c1" RETURNING 1 AS "c1" ), "r74" AS ( DELETE FROM "slice"."fan_square_input" AS "r75" USING "r1" AS "r76" WHERE "r75"."root" = "r76"."c1" RETURNING 1 AS "c1" ), "r77" AS ( DELETE FROM "slice"."fan_square_output" AS "r78" USING "r1" AS "r79" WHERE "r78"."root" = "r79"."c1" RETURNING 1 AS "c1" ), "r80" AS ( DELETE FROM "slice"."fan_start_scope" AS "r81" USING "r1" AS "r82" WHERE "r81"."root" = "r82"."c1" RETURNING 1 AS "c1" ), "r83" AS ( DELETE FROM "slice"."fan_start_step" AS "r84" USING "r1" AS "r85" WHERE "r84"."root" = "r85"."c1" RETURNING 1 AS "c1" ), "r86" AS ( DELETE FROM "slice"."fan_step" AS "r87" USING "r1" AS "r88" WHERE "r87"."root" = "r88"."c1" RETURNING 1 AS "c1" ), "r89" AS ( DELETE FROM "slice"."fan_sweep_finish_output" AS "r90" USING "r1" AS "r91" WHERE "r90"."root" = "r91"."c1" RETURNING 1 AS "c1" ), "r92" AS ( DELETE FROM "slice"."fan_sweep_input" AS "r93" USING "r1" AS "r94" WHERE "r93"."root" = "r94"."c1" RETURNING 1 AS "c1" ), "r95" AS ( DELETE FROM "slice"."fan_within" AS "r96" USING "r1" AS "r97" WHERE "r96"."root" = "r97"."c1" RETURNING 1 AS "c1" ), "r98" AS ( UPDATE "slice"."fan_root" AS "r99" SET "retired" = true FROM "r1" AS "r100" WHERE "r99"."scope" = "r100"."c1" RETURNING 1 AS "c1" ) SELECT "r102"."c1" AS "c1" FROM (SELECT "pg_catalog"."array_agg"("r101"."c2" ORDER BY "r101"."c1") AS "c1", "r101"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r98" AS "r103" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r104" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r105" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r106" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r107" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r108" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r109" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r110" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r111" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r112" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r113" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r114" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r115" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r116" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r117" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r118" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r119" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r120" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r121" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r122" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r123" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r124" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r125" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r126" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r127" UNION ALL SELECT 25 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r128" UNION ALL SELECT 26 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r80" AS "r129" UNION ALL SELECT 27 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r83" AS "r130" UNION ALL SELECT 28 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r86" AS "r131" UNION ALL SELECT 29 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r89" AS "r132" UNION ALL SELECT 30 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r92" AS "r133" UNION ALL SELECT 31 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r95" AS "r134") AS "r101"("c1", "c2", "c3") GROUP BY "r101"."c3") AS "r102"("c1", "c2") LIMIT 1::bigint ;
 END
 $$;
 
@@ -2774,6 +2815,14 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_dust_input"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_dust_output"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_ended"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -2807,6 +2856,14 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_hold"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_mop_input"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_mop_output"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -2851,6 +2908,14 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_step"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_sweep_finish_output"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."fan_sweep_input"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -3723,6 +3788,13 @@ ALTER TABLE "slice"."fan_claim"
 
 ALTER TABLE "slice"."fan_done" ADD CONSTRAINT "__fan_done_fk_root_cfizuozacw" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
+ALTER TABLE "slice"."fan_dust_input" ADD CONSTRAINT "__fan_dust_input_fk_root_3733wzdt23" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."fan_dust_output"
+  ADD CONSTRAINT "__fan_dust_output_fk_root_6dquh32eog" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__fan_dust_output_fk_step_root_qzoffoc32g" FOREIGN KEY ("step", "root") REFERENCES "slice"."fan_done" ("step", "root") MATCH SIMPLE,
+  ADD CONSTRAINT "__fan_dust_output_fk_step_root_nxpsu4ielv" FOREIGN KEY ("step", "root") REFERENCES "slice"."fan_dust_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice"."fan_ended"
   ADD CONSTRAINT "__fan_ended_fk_root_uaaz527dex" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_ended_fk_step_attempt_root_guai42fujd" FOREIGN KEY ("step", "attempt", "root") REFERENCES "slice"."fan_claim" ("step", "attempt", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
@@ -3757,6 +3829,13 @@ ALTER TABLE "slice"."fan_hold"
   ADD CONSTRAINT "__fan_hold_fk_root_4at7ny23la" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_hold_fk_step_root_attempt_copy_holds_jzk5g7klso" FOREIGN KEY ("step", "root", "attempt", "__copy_holds_c6hi2i2kfb") REFERENCES "slice"."fan_claim" ("step", "root", "attempt", "holds") MATCH SIMPLE ON UPDATE CASCADE,
   ADD CONSTRAINT "__fan_hold_fk_step_root_attempt_pred_at_p4adu554h3" FOREIGN KEY ("step", "root", "attempt", "__pred_at_xktcobhsti") REFERENCES "slice"."fan_hold" ("step", "root", "attempt", "at") MATCH SIMPLE;
+
+ALTER TABLE "slice"."fan_mop_input" ADD CONSTRAINT "__fan_mop_input_fk_root_iflswncgct" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."fan_mop_output"
+  ADD CONSTRAINT "__fan_mop_output_fk_root_2oyshrk7i2" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__fan_mop_output_fk_step_root_dsgqll32vr" FOREIGN KEY ("step", "root") REFERENCES "slice"."fan_done" ("step", "root") MATCH SIMPLE,
+  ADD CONSTRAINT "__fan_mop_output_fk_step_root_j2cwqnpbda" FOREIGN KEY ("step", "root") REFERENCES "slice"."fan_mop_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."fan_paused" ADD CONSTRAINT "__fan_paused_fk_target_pred_turn_flvtnhgqoq" FOREIGN KEY ("target", "__pred_turn_qryngij6c4") REFERENCES "slice"."fan_resumed" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
@@ -3801,6 +3880,12 @@ ALTER TABLE "slice"."fan_start_step"
 ALTER TABLE "slice"."fan_step"
   ADD CONSTRAINT "__fan_step_fk_root_eueisdyp32" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_step_fk_scope_root_dyjpxhnjhz" FOREIGN KEY ("scope", "root") REFERENCES "slice"."fan_admitted" ("scope", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."fan_sweep_finish_output"
+  ADD CONSTRAINT "__fan_sweep_finish_output_fk_root_wuiuxdlyfz" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__fan_sweep_finish_output_fk_step_root_hvu6m73esm" FOREIGN KEY ("step", "root") REFERENCES "slice"."fan_done" ("step", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."fan_sweep_input" ADD CONSTRAINT "__fan_sweep_input_fk_root_uobuoei5yy" FOREIGN KEY ("root") REFERENCES "slice"."fan_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."fan_within"
   ADD CONSTRAINT "__fan_within_fk_parent_root_uep5w6udoh" FOREIGN KEY ("parent", "root") REFERENCES "slice"."fan_scope" ("scope", "root") MATCH SIMPLE,
