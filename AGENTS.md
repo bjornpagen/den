@@ -77,12 +77,11 @@ Inside a package, import through its own `#` map with the real extension; across
 - After every edit, run `pnpm types`: every project's typecheck, from scratch (toolchain-typecheck reads no build info:
   TypeScript 7.1.0-beta's incremental check passed an unused import over an earlier version's build info), and turbo
   replays every project whose inputs did not change. The root's `pnpm typecheck` checks the root's config files alone.
-- The hooks run the toolchain's gate (lefthook, which `pnpm install` installs), each on a snapshot of exactly what it
-  lets through, never the working tree: a commit runs `pnpm types`, oxfmt's check of the files it stages and the
-  AST-only oxlint (`oxlint.ast.config.ts`) on them; a push runs `pnpm check`, the whole gate: every project's typecheck,
-  type-aware oxlint, the workspace gate, oxfmt, fallow (`dead-code`, `architecture`) and
-  `pnpm dedupe --check`, and once a day `pnpm check:full`, the same gate with every task forced past its cache. A package's checks wait on its dependencies' `surface` (their source but
-  tests, SQL, docs and scratch), so a change to only those re-checks nothing downstream. Never commit or push with `--no-verify`. `pnpm test` runs the suites that need no database;
+- No git hook runs (jj runs none): a lane lands on den's hub behind the thin gate (the jj-lanes skill: the formatter,
+  the lockfile, `pnpm types` and the test files it changes), and trunk@den runs the whole gate on a batch of landings
+  before it pushes upstream: `pnpm check` (every project's typecheck, type-aware oxlint, the workspace gate, oxfmt,
+  fallow's `dead-code` and `architecture`, and `pnpm dedupe --check`). A package's checks wait on its dependencies' `surface` (their source but
+  tests, SQL, docs and scratch), so a change to only those re-checks nothing downstream. `pnpm test` runs the suites that need no database;
   every test case must run a search (`explore`, `exhaust` or `interleave`), and the reporter fails a run where one
   passed without.
 

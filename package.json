@@ -15,7 +15,7 @@
 		}
 	},
 	"scripts": {
-		"prepare": "effect-tsgo patch && lefthook install",
+		"prepare": "effect-tsgo patch",
 		"check": "toolchain-turbo run typecheck workspace-gate oxlint format dead-code architecture dedupe load --filter=./packages/* --filter=// --continue=dependencies-successful",
 		"check:full": "toolchain-turbo run typecheck workspace-gate oxlint format dead-code architecture dedupe load --filter=./packages/* --filter=// --continue=dependencies-successful --force",
 		"types": "toolchain-turbo run typecheck --filter=./packages/* --filter=//",
@@ -39,7 +39,6 @@
 		"@effect/tsgo": "catalog:",
 		"@types/node": "catalog:",
 		"fallow": "catalog:",
-		"lefthook": "catalog:",
 		"oxfmt": "catalog:",
 		"oxlint": "catalog:",
 		"tsrs": "catalog:",
