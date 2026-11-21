@@ -18,6 +18,7 @@
 		"prepare": "effect-tsgo patch",
 		"check": "toolchain-turbo run typecheck workspace-gate oxlint format dead-code architecture dedupe load --filter=./packages/* --filter=// --continue=dependencies-successful",
 		"check:full": "toolchain-turbo run typecheck workspace-gate oxlint format dead-code architecture dedupe load --filter=./packages/* --filter=// --continue=dependencies-successful --force",
+		"trunk": "pnpm check && pnpm test && pnpm --dir packages/den exec toolchain-pg settle && pnpm test:network",
 		"types": "toolchain-turbo run typecheck --filter=./packages/* --filter=//",
 		"typecheck": "toolchain-typecheck",
 		"workspace-gate": "workspace-gate",
