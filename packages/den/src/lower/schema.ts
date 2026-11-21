@@ -15,7 +15,7 @@ import {
 /**
  * Effect Schema, lowered to typed relations: a struct to a relation keyed by its owner; text, bigint, finite number and
  * boolean to their PostgreSQL types (a finite number to double precision, held finite by a row check), a literal union
- * of texts to a closed roster, a brand to a contract of its base, a vector to pgvector's of its dimensions; an Option to a relation of its own, holding a row
+ * of texts to a closed roster, a brand to a contract of its base (den's own contract, for a brand of its name), a vector to pgvector's of its dimensions; an Option to a relation of its own, holding a row
  * exactly when the value is there; an array to an ordered family; and a tagged union to its tag and a relation per
  * variant. `Unknown` and `Any` have no typed home and never reach here: the algebra's types admit only these forms, and
  * anything else is refused by name.
@@ -24,11 +24,27 @@ import {
 /** A column's base PostgreSQL type: text, bigint, double precision or boolean. */
 export type Base = "text" | "bigint" | "double" | "boolean"
 
+/**
+ * den's own contracts (lower/keys.ts), each by its name and its base: a value's brand of one of these names is that
+ * contract, so a step's input that holds an instant (`instant`) holds den's DenInstant, which the app's queries cast into.
+ */
+export const denContracts = {
+	DenStep: "text",
+	DenScope: "text",
+	DenExclusive: "text",
+	DenInstant: "bigint",
+	DenRow: "text"
+} as const satisfies Record<string, Base>
+
+/** One of den's own contracts, every flow's alike. */
+export type DenKey = keyof typeof denContracts
+
 /** What a column holds. */
 export type ColumnType =
 	| { readonly kind: "base"; readonly base: Base }
 	| { readonly kind: "roster"; readonly handles: readonly [string, ...Array<string>] }
 	| { readonly kind: "brand"; readonly brand: string; readonly base: Base }
+	| { readonly kind: "den"; readonly contract: DenKey }
 	| { readonly kind: "vector"; readonly dimensions: number }
 
 /** A column: its field's name and type. */
@@ -128,11 +144,23 @@ const columnOf = (declaration: string, field: string, schema: Schema.Top): Colum
 		"schema" in schema &&
 		Schema.isSchema(schema.schema)
 	) {
-		return {
-			kind: "brand",
-			brand: schema.identifier,
-			base: baseOf(declaration, field, schema.schema)
-		}
+		const brand = schema.identifier
+		const base = baseOf(declaration, field, schema.schema)
+		return Option.match(
+			Arr.findFirst(Record.keys(denContracts), (key) => key === brand),
+			{
+				onNone: (): ColumnType => ({ kind: "brand", brand, base }),
+				onSome: (contract): ColumnType => {
+					if (denContracts[contract] !== base) {
+						throw new Refused({
+							declaration,
+							why: `field ${field} brands a ${base} as den's ${contract}, which is a ${denContracts[contract]}`
+						})
+					}
+					return { kind: "den", contract }
+				}
+			}
+		)
 	}
 	if ("literals" in schema && Arr.isArray(schema.literals)) {
 		return { kind: "roster", handles: textsOf(declaration, field, schema.literals) }

@@ -225,3 +225,13 @@
   - Rejected: the fragment committed in a call of its own, which commits the step's result whether or not the app's
     write stands; a declaration of the relations a step writes, which states less than a ChangeSet and could disagree
     with it.
+- **A step may be due at the instant its input holds (settled by metis's need, 2026-11-21).** A timed sitting closes at
+  its own deadline, which is data, the limit times the extended time with the time left carried, so no delay a kind
+  declares can state it (BUG-01-11, #3316). So a step kind's `due` is `atSpawn`, `after(millis)` or `dueAt((input) =>
+  input.deadline)`, the instant an `instant` column of its input holds, den's `DenInstant` (a brand of that name is
+  den's own contract). The instant is the database's: the write that requested the root computes it from its own reading
+  of the database's clock (`Num.add(now, …)` cast to `DenInstant`), or a stored instant is carried, and no host mints one.
+  A spawn writes such a step's due instant as given, beside the steps due a delay after the call's reading, which the
+  statement adds, and rings it timed to its instant from a reading after the call, the census as the net.
+  - Rejected: a polling chain that rechecks a deadline, which spends a turn per period and runs late by one; a delay
+    computed on the host from its own clock to the deadline, which names an instant the database never read.

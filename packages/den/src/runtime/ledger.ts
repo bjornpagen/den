@@ -50,11 +50,19 @@ export interface StepAt {
 	readonly attempt: bigint
 }
 
-/** A step a commit or an admission spawned, with how long after the call it is first due. */
+/**
+ * When a spawned step is first due: a delay after the spawning call's own reading of the database's clock, which the
+ * statement adds, or the instant its input holds (kinds.ts `dueAt`), a value the database computed.
+ */
+export type SpawnDue =
+	| { readonly kind: "after"; readonly delay: Delay }
+	| { readonly kind: "at"; readonly instant: Instant }
+
+/** A step a commit or an admission spawned, with when it is first due. */
 export interface SpawnedStep {
 	readonly step: StepKey
 	readonly kind: string
-	readonly delay: Delay
+	readonly due: SpawnDue
 }
 
 /**

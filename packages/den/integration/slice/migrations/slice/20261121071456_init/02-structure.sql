@@ -664,6 +664,22 @@ CREATE TABLE "slice"."clock_claim" (
   CONSTRAINT "__clock_claim_pk_ihqmnokjqm" PRIMARY KEY ("step", "root", "attempt")
 );
 
+CREATE TABLE "slice"."clock_close_input" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "sitting" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "deadline" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_close_input_pk_kzcush3qdx" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."clock_close_output" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "sitting" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "deadline" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_close_output_pk_ckrp5oabyy" PRIMARY KEY ("step", "root")
+);
+
 CREATE TABLE "slice"."clock_done" (
   "step" "slice"."__domain_jevqauzmw6" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
@@ -773,6 +789,20 @@ CREATE TABLE "slice"."clock_scope" (
   "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
   "root" "slice"."__domain_jevqauzmw6" NOT NULL,
   CONSTRAINT "__clock_scope_pk_dux445xz6c" PRIMARY KEY ("scope", "root")
+);
+
+CREATE TABLE "slice"."clock_sitting_finish_output" (
+  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_sitting_finish_output_pk_pejmuwtji5" PRIMARY KEY ("step", "root")
+);
+
+CREATE TABLE "slice"."clock_sitting_input" (
+  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "sitting" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
+  "deadline" "slice"."__domain_mxhao3k6ss" NOT NULL,
+  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  CONSTRAINT "__clock_sitting_input_pk_le4qxvpabo" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."clock_skipped" (
@@ -2230,7 +2260,7 @@ LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_t
 AS $$
 BEGIN
   PERFORM 1 FROM "slice"."clock_root" AS "r1" JOIN (SELECT DISTINCT "r3"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r3"("c1")) AS "r2"("c1") ON "r1"."scope" = "r2"."c1" WHERE NOT "r1"."retired" ORDER BY "r1"."scope" FOR UPDATE OF "r1";
-  RETURN QUERY WITH "r1"("c1") AS MATERIALIZED ( SELECT "r2"."scope" AS "c1" FROM "slice"."clock_root" AS "r2" JOIN (SELECT DISTINCT "r4"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r4"("c1")) AS "r3"("c1") ON "r2"."scope" = "r3"."c1" WHERE NOT "r2"."retired" ), "r5" AS ( DELETE FROM "slice"."clock_admitted" AS "r6" USING "r1" AS "r7" WHERE "r6"."root" = "r7"."c1" RETURNING 1 AS "c1" ), "r8" AS ( DELETE FROM "slice"."clock_chime_input" AS "r9" USING "r1" AS "r10" WHERE "r9"."root" = "r10"."c1" RETURNING 1 AS "c1" ), "r11" AS ( DELETE FROM "slice"."clock_chime_output" AS "r12" USING "r1" AS "r13" WHERE "r12"."root" = "r13"."c1" RETURNING 1 AS "c1" ), "r14" AS ( DELETE FROM "slice"."clock_claim" AS "r15" USING "r1" AS "r16" WHERE "r15"."root" = "r16"."c1" RETURNING 1 AS "c1" ), "r17" AS ( DELETE FROM "slice"."clock_done" AS "r18" USING "r1" AS "r19" WHERE "r18"."root" = "r19"."c1" RETURNING 1 AS "c1" ), "r20" AS ( DELETE FROM "slice"."clock_ended" AS "r21" USING "r1" AS "r22" WHERE "r21"."root" = "r22"."c1" RETURNING 1 AS "c1" ), "r23" AS ( DELETE FROM "slice"."clock_exhausted" AS "r24" USING "r1" AS "r25" WHERE "r24"."root" = "r25"."c1" RETURNING 1 AS "c1" ), "r26" AS ( DELETE FROM "slice"."clock_failed" AS "r27" USING "r1" AS "r28" WHERE "r27"."root" = "r28"."c1" RETURNING 1 AS "c1" ), "r29" AS ( DELETE FROM "slice"."clock_fenced" AS "r30" USING "r1" AS "r31" WHERE "r30"."root" = "r31"."c1" RETURNING 1 AS "c1" ), "r32" AS ( DELETE FROM "slice"."clock_finish" AS "r33" USING "r1" AS "r34" WHERE "r33"."root" = "r34"."c1" RETURNING 1 AS "c1" ), "r35" AS ( DELETE FROM "slice"."clock_held" AS "r36" USING "r1" AS "r37" WHERE "r36"."root" = "r37"."c1" RETURNING 1 AS "c1" ), "r38" AS ( DELETE FROM "slice"."clock_hourly_finish_output" AS "r39" USING "r1" AS "r40" WHERE "r39"."root" = "r40"."c1" RETURNING 1 AS "c1" ), "r41" AS ( DELETE FROM "slice"."clock_hourly_input" AS "r42" USING "r1" AS "r43" WHERE "r42"."root" = "r43"."c1" RETURNING 1 AS "c1" ), "r44" AS ( DELETE FROM "slice"."clock_refusal" AS "r45" USING "r1" AS "r46" WHERE "r45"."root" = "r46"."c1" RETURNING 1 AS "c1" ), "r47" AS ( DELETE FROM "slice"."clock_result" AS "r48" USING "r1" AS "r49" WHERE "r48"."root" = "r49"."c1" RETURNING 1 AS "c1" ), "r50" AS ( DELETE FROM "slice"."clock_retry" AS "r51" USING "r1" AS "r52" WHERE "r51"."root" = "r52"."c1" RETURNING 1 AS "c1" ), "r53" AS ( DELETE FROM "slice"."clock_scope" AS "r54" USING "r1" AS "r55" WHERE "r54"."root" = "r55"."c1" RETURNING 1 AS "c1" ), "r56" AS ( DELETE FROM "slice"."clock_skipped" AS "r57" USING "r1" AS "r58" WHERE "r57"."root" = "r58"."c1" RETURNING 1 AS "c1" ), "r59" AS ( DELETE FROM "slice"."clock_start_step" AS "r60" USING "r1" AS "r61" WHERE "r60"."root" = "r61"."c1" RETURNING 1 AS "c1" ), "r62" AS ( DELETE FROM "slice"."clock_step" AS "r63" USING "r1" AS "r64" WHERE "r63"."root" = "r64"."c1" RETURNING 1 AS "c1" ), "r65" AS ( UPDATE "slice"."clock_root" AS "r66" SET "retired" = true FROM "r1" AS "r67" WHERE "r66"."scope" = "r67"."c1" RETURNING 1 AS "c1" ) SELECT "r69"."c1" AS "c1" FROM (SELECT "pg_catalog"."array_agg"("r68"."c2" ORDER BY "r68"."c1") AS "c1", "r68"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r70" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r71" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r72" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r73" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r74" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r75" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r76" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r77" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r78" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r79" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r80" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r81" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r82" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r83" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r84" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r85" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r86" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r87" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r88" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r89" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r90") AS "r68"("c1", "c2", "c3") GROUP BY "r68"."c3") AS "r69"("c1", "c2") LIMIT 1::bigint ;
+  RETURN QUERY WITH "r1"("c1") AS MATERIALIZED ( SELECT "r2"."scope" AS "c1" FROM "slice"."clock_root" AS "r2" JOIN (SELECT DISTINCT "r4"."c1" AS "c1" FROM "pg_catalog"."unnest"("keys_1") AS "r4"("c1")) AS "r3"("c1") ON "r2"."scope" = "r3"."c1" WHERE NOT "r2"."retired" ), "r5" AS ( DELETE FROM "slice"."clock_admitted" AS "r6" USING "r1" AS "r7" WHERE "r6"."root" = "r7"."c1" RETURNING 1 AS "c1" ), "r8" AS ( DELETE FROM "slice"."clock_chime_input" AS "r9" USING "r1" AS "r10" WHERE "r9"."root" = "r10"."c1" RETURNING 1 AS "c1" ), "r11" AS ( DELETE FROM "slice"."clock_chime_output" AS "r12" USING "r1" AS "r13" WHERE "r12"."root" = "r13"."c1" RETURNING 1 AS "c1" ), "r14" AS ( DELETE FROM "slice"."clock_claim" AS "r15" USING "r1" AS "r16" WHERE "r15"."root" = "r16"."c1" RETURNING 1 AS "c1" ), "r17" AS ( DELETE FROM "slice"."clock_close_input" AS "r18" USING "r1" AS "r19" WHERE "r18"."root" = "r19"."c1" RETURNING 1 AS "c1" ), "r20" AS ( DELETE FROM "slice"."clock_close_output" AS "r21" USING "r1" AS "r22" WHERE "r21"."root" = "r22"."c1" RETURNING 1 AS "c1" ), "r23" AS ( DELETE FROM "slice"."clock_done" AS "r24" USING "r1" AS "r25" WHERE "r24"."root" = "r25"."c1" RETURNING 1 AS "c1" ), "r26" AS ( DELETE FROM "slice"."clock_ended" AS "r27" USING "r1" AS "r28" WHERE "r27"."root" = "r28"."c1" RETURNING 1 AS "c1" ), "r29" AS ( DELETE FROM "slice"."clock_exhausted" AS "r30" USING "r1" AS "r31" WHERE "r30"."root" = "r31"."c1" RETURNING 1 AS "c1" ), "r32" AS ( DELETE FROM "slice"."clock_failed" AS "r33" USING "r1" AS "r34" WHERE "r33"."root" = "r34"."c1" RETURNING 1 AS "c1" ), "r35" AS ( DELETE FROM "slice"."clock_fenced" AS "r36" USING "r1" AS "r37" WHERE "r36"."root" = "r37"."c1" RETURNING 1 AS "c1" ), "r38" AS ( DELETE FROM "slice"."clock_finish" AS "r39" USING "r1" AS "r40" WHERE "r39"."root" = "r40"."c1" RETURNING 1 AS "c1" ), "r41" AS ( DELETE FROM "slice"."clock_held" AS "r42" USING "r1" AS "r43" WHERE "r42"."root" = "r43"."c1" RETURNING 1 AS "c1" ), "r44" AS ( DELETE FROM "slice"."clock_hourly_finish_output" AS "r45" USING "r1" AS "r46" WHERE "r45"."root" = "r46"."c1" RETURNING 1 AS "c1" ), "r47" AS ( DELETE FROM "slice"."clock_hourly_input" AS "r48" USING "r1" AS "r49" WHERE "r48"."root" = "r49"."c1" RETURNING 1 AS "c1" ), "r50" AS ( DELETE FROM "slice"."clock_refusal" AS "r51" USING "r1" AS "r52" WHERE "r51"."root" = "r52"."c1" RETURNING 1 AS "c1" ), "r53" AS ( DELETE FROM "slice"."clock_result" AS "r54" USING "r1" AS "r55" WHERE "r54"."root" = "r55"."c1" RETURNING 1 AS "c1" ), "r56" AS ( DELETE FROM "slice"."clock_retry" AS "r57" USING "r1" AS "r58" WHERE "r57"."root" = "r58"."c1" RETURNING 1 AS "c1" ), "r59" AS ( DELETE FROM "slice"."clock_scope" AS "r60" USING "r1" AS "r61" WHERE "r60"."root" = "r61"."c1" RETURNING 1 AS "c1" ), "r62" AS ( DELETE FROM "slice"."clock_sitting_finish_output" AS "r63" USING "r1" AS "r64" WHERE "r63"."root" = "r64"."c1" RETURNING 1 AS "c1" ), "r65" AS ( DELETE FROM "slice"."clock_sitting_input" AS "r66" USING "r1" AS "r67" WHERE "r66"."root" = "r67"."c1" RETURNING 1 AS "c1" ), "r68" AS ( DELETE FROM "slice"."clock_skipped" AS "r69" USING "r1" AS "r70" WHERE "r69"."root" = "r70"."c1" RETURNING 1 AS "c1" ), "r71" AS ( DELETE FROM "slice"."clock_start_step" AS "r72" USING "r1" AS "r73" WHERE "r72"."root" = "r73"."c1" RETURNING 1 AS "c1" ), "r74" AS ( DELETE FROM "slice"."clock_step" AS "r75" USING "r1" AS "r76" WHERE "r75"."root" = "r76"."c1" RETURNING 1 AS "c1" ), "r77" AS ( UPDATE "slice"."clock_root" AS "r78" SET "retired" = true FROM "r1" AS "r79" WHERE "r78"."scope" = "r79"."c1" RETURNING 1 AS "c1" ) SELECT "r81"."c1" AS "c1" FROM (SELECT "pg_catalog"."array_agg"("r80"."c2" ORDER BY "r80"."c1") AS "c1", "r80"."c3" AS "c2" FROM (SELECT 0 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r77" AS "r82" UNION ALL SELECT 1 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r5" AS "r83" UNION ALL SELECT 2 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r8" AS "r84" UNION ALL SELECT 3 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r11" AS "r85" UNION ALL SELECT 4 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r14" AS "r86" UNION ALL SELECT 5 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r17" AS "r87" UNION ALL SELECT 6 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r20" AS "r88" UNION ALL SELECT 7 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r23" AS "r89" UNION ALL SELECT 8 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r26" AS "r90" UNION ALL SELECT 9 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r29" AS "r91" UNION ALL SELECT 10 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r32" AS "r92" UNION ALL SELECT 11 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r35" AS "r93" UNION ALL SELECT 12 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r38" AS "r94" UNION ALL SELECT 13 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r41" AS "r95" UNION ALL SELECT 14 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r44" AS "r96" UNION ALL SELECT 15 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r47" AS "r97" UNION ALL SELECT 16 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r50" AS "r98" UNION ALL SELECT 17 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r53" AS "r99" UNION ALL SELECT 18 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r56" AS "r100" UNION ALL SELECT 19 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r59" AS "r101" UNION ALL SELECT 20 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r62" AS "r102" UNION ALL SELECT 21 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r65" AS "r103" UNION ALL SELECT 22 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r68" AS "r104" UNION ALL SELECT 23 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r71" AS "r105" UNION ALL SELECT 24 AS "c1", "pg_catalog"."count"(*) AS "c2", 0 AS "c3" FROM "r74" AS "r106") AS "r80"("c1", "c2", "c3") GROUP BY "r80"."c3") AS "r81"("c1", "c2") LIMIT 1::bigint ;
 END
 $$;
 
@@ -2624,6 +2654,14 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_close_input"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_close_output"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_done"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -2677,6 +2715,14 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_scope"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_sitting_finish_output"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."clock_sitting_input"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -3582,6 +3628,13 @@ ALTER TABLE "slice"."clock_claim"
   ADD CONSTRAINT "__clock_claim_fk_step_root_vptogyiqam" FOREIGN KEY ("step", "root") REFERENCES "slice"."clock_step" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__clock_claim_fk_step_pred_attempt_root_qvfbouzl5p" FOREIGN KEY ("__step_ouvkclqzzd", "__pred_attempt_oey4tm5xyl", "root") REFERENCES "slice"."clock_ended" ("step", "attempt", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
+ALTER TABLE "slice"."clock_close_input" ADD CONSTRAINT "__clock_close_input_fk_root_txagvl3rnl" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_close_output"
+  ADD CONSTRAINT "__clock_close_output_fk_root_5jk2orzbti" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_close_output_fk_step_root_fooxwxkcx3" FOREIGN KEY ("step", "root") REFERENCES "slice"."clock_close_input" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_close_output_fk_step_root_accrzxyiql" FOREIGN KEY ("step", "root") REFERENCES "slice"."clock_done" ("step", "root") MATCH SIMPLE;
+
 ALTER TABLE "slice"."clock_done" ADD CONSTRAINT "__clock_done_fk_root_soqskjsjao" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."clock_ended"
@@ -3631,6 +3684,12 @@ ALTER TABLE "slice"."clock_retry"
   ADD CONSTRAINT "__clock_retry_fk_step_attempt_root_rbqzkwnwmy" FOREIGN KEY ("step", "attempt", "root") REFERENCES "slice"."clock_ended" ("step", "attempt", "root") MATCH SIMPLE;
 
 ALTER TABLE "slice"."clock_scope" ADD CONSTRAINT "__clock_scope_fk_root_2os4agb6vo" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice"."clock_sitting_finish_output"
+  ADD CONSTRAINT "__clock_sitting_finish_output_fk_root_5s5nbif4nr" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
+  ADD CONSTRAINT "__clock_sitting_finish_output_fk_step_root_mkypttatse" FOREIGN KEY ("step", "root") REFERENCES "slice"."clock_done" ("step", "root") MATCH SIMPLE;
+
+ALTER TABLE "slice"."clock_sitting_input" ADD CONSTRAINT "__clock_sitting_input_fk_root_pedoscj3vp" FOREIGN KEY ("root") REFERENCES "slice"."clock_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice"."clock_skipped"
   ADD CONSTRAINT "__clock_skipped_fk_by_joxrltqt4a" FOREIGN KEY ("by") REFERENCES "slice"."clock_root" ("scope") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,

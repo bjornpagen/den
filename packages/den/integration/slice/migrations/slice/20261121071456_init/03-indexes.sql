@@ -200,6 +200,10 @@ CREATE INDEX "__clock_chime_output_ix_root_ivn554pu5g" ON "slice"."clock_chime_o
 
 CREATE INDEX "__clock_claim_ix_root_step_ouvkclqzzd_pred_attempt_4ndcvaxclz" ON "slice"."clock_claim" USING btree ("root", "__step_ouvkclqzzd", "__pred_attempt_oey4tm5xyl");
 
+CREATE INDEX "__clock_close_input_ix_root_step_3i3uxrbbrh" ON "slice"."clock_close_input" USING btree ("root", "step");
+
+CREATE INDEX "__clock_close_output_ix_root_56kq4rywmc" ON "slice"."clock_close_output" USING btree ("root");
+
 CREATE INDEX "__clock_done_ix_root_step_y7b7fracbz" ON "slice"."clock_done" USING btree ("root", "step");
 
 CREATE INDEX "__clock_ended_ix_root_brohrxygrw" ON "slice"."clock_ended" USING btree ("root");
@@ -229,6 +233,10 @@ CREATE INDEX "__clock_result_ix_root_step_vo4ykwoczk" ON "slice"."clock_result" 
 CREATE INDEX "__clock_retry_ix_root_zejdeyf4de" ON "slice"."clock_retry" USING btree ("root");
 
 CREATE INDEX "__clock_scope_ix_root_5jnjt75iyn" ON "slice"."clock_scope" USING btree ("root");
+
+CREATE INDEX "__clock_sitting_finish_output_ix_root_lvaxizxoa5" ON "slice"."clock_sitting_finish_output" USING btree ("root");
+
+CREATE INDEX "__clock_sitting_input_ix_root_zwyu7ep5i3" ON "slice"."clock_sitting_input" USING btree ("root");
 
 CREATE INDEX "__clock_skipped_ix_by_252vuphujb" ON "slice"."clock_skipped" USING btree ("by");
 

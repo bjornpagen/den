@@ -1,18 +1,19 @@
 import {
 	any,
 	committedFacts,
-	delayAfter,
+	dueOf,
 	fresh,
 	held,
 	one,
 	only,
 	readingOf,
 	rowsOf,
-	signals
+	signals,
+	spawnedOf,
+	type SpawnRows
 } from "@bjornpagen/den/runtime/bind"
 import {
 	atOnce,
-	type Delay,
 	finishStep,
 	rootScope,
 	type ScopeKey,
@@ -89,17 +90,9 @@ interface Rows {
 	readonly FanBatchInput: ReadonlyArray<Addition<typeof FanBatchInput>>
 }
 
-/** A step a call spawns, as the call names it: the database writes its due instant, its delay after the call's reading. */
-interface SpawnRow {
-	readonly step: StepKey
-	readonly kind: (typeof FanKind)["handles"][number]
-	readonly scope: ScopeKey
-	readonly delay: Delay
-}
-
-interface Grown {
+/** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
+interface Grown extends SpawnRows<(typeof FanKind)["handles"][number]> {
 	readonly rows: Rows
-	readonly steps: ReadonlyArray<SpawnRow>
 	readonly spawned: Spawned
 }
 
@@ -131,7 +124,12 @@ export const fanLedger = (h: FanHandles) => {
 		FanSquareInput: [],
 		FanBatchInput: []
 	}
-	const nothingGrown: Grown = { rows: noRows, steps: [], spawned: { steps: [], finishes: [] } }
+	const nothingGrown: Grown = {
+		rows: noRows,
+		steps: [],
+		timed: [],
+		spawned: { steps: [], finishes: [] }
+	}
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
 		Arr.some(grown.rows.FanStartStep, (s) => s.scope === scope) ||
 		Arr.some(grown.rows.FanStartScope, (s) => s.scope === scope)
@@ -147,6 +145,7 @@ export const fanLedger = (h: FanHandles) => {
 			FanBatchInput: [...a.rows.FanBatchInput, ...b.rows.FanBatchInput]
 		},
 		steps: [...a.steps, ...b.steps],
+		timed: [...a.timed, ...b.timed],
 		spawned: {
 			steps: [...a.spawned.steps, ...b.spawned.steps],
 			finishes: [...a.spawned.finishes, ...b.spawned.finishes]
@@ -169,13 +168,10 @@ export const fanLedger = (h: FanHandles) => {
 								{ step: key, root: root, batch: spawn.input.batch, n: spawn.input.n }
 							]
 						},
-						steps: [
-							{ step: key, kind: "Square", scope: scope, delay: delayAfter(fan.kinds[0].due) }
-						],
-						spawned: {
-							steps: [{ step: key, kind: "Square", delay: delayAfter(fan.kinds[0].due) }],
-							finishes: []
-						}
+						...spawnedOf(
+							{ step: key, kind: "Square", scope: scope },
+							dueOf(fan.kinds[0].due, spawn.input)
+						)
 					}))
 			),
 			(parts) => Arr.reduce(parts, nothingGrown, joined)
@@ -207,6 +203,7 @@ export const fanLedger = (h: FanHandles) => {
 										]
 									},
 									steps: [{ step: finish, kind: "BatchFinish", scope: key, delay: atOnce }],
+									timed: [],
 									spawned: { steps: [], finishes: hasChildren(inner, key) ? [] : [finish] }
 								})
 						)
@@ -521,7 +518,7 @@ export const fanLedger = (h: FanHandles) => {
 					}
 					const grown = yield* startFanRun(scope, scope, input.value)
 					const finish = yield* finishStep(scope)
-					const steps: ReadonlyArray<SpawnRow> = [
+					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "FanRunFinish", scope, delay: atOnce }
 					]

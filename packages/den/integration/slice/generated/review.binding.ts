@@ -1,7 +1,7 @@
 import {
 	any,
 	committedFacts,
-	delayAfter,
+	dueOf,
 	fresh,
 	held,
 	one,
@@ -9,13 +9,14 @@ import {
 	ordered,
 	readingOf,
 	rowsOf,
-	signals
+	signals,
+	spawnedOf,
+	type SpawnRows
 } from "@bjornpagen/den/runtime/bind"
 import {
 	edgeScope,
 	edgeStep,
 	atOnce,
-	type Delay,
 	finishStep,
 	rootScope,
 	type ScopeKey,
@@ -105,17 +106,9 @@ interface Rows {
 	readonly ReviewSaved: ReadonlyArray<Addition<typeof ReviewSaved>>
 }
 
-/** A step a call spawns, as the call names it: the database writes its due instant, its delay after the call's reading. */
-interface SpawnRow {
-	readonly step: StepKey
-	readonly kind: (typeof ReviewKind)["handles"][number]
-	readonly scope: ScopeKey
-	readonly delay: Delay
-}
-
-interface Grown {
+/** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
+interface Grown extends SpawnRows<(typeof ReviewKind)["handles"][number]> {
 	readonly rows: Rows
-	readonly steps: ReadonlyArray<SpawnRow>
 	readonly spawned: Spawned
 }
 
@@ -152,7 +145,12 @@ export const reviewLedger = (h: ReviewHandles) => {
 		ReviewSplit: [],
 		ReviewSaved: []
 	}
-	const nothingGrown: Grown = { rows: noRows, steps: [], spawned: { steps: [], finishes: [] } }
+	const nothingGrown: Grown = {
+		rows: noRows,
+		steps: [],
+		timed: [],
+		spawned: { steps: [], finishes: [] }
+	}
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
 		Arr.some(grown.rows.ReviewStartStep, (s) => s.scope === scope) ||
 		Arr.some(grown.rows.ReviewStartScope, (s) => s.scope === scope)
@@ -173,6 +171,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 			ReviewSaved: [...a.rows.ReviewSaved, ...b.rows.ReviewSaved]
 		},
 		steps: [...a.steps, ...b.steps],
+		timed: [...a.timed, ...b.timed],
 		spawned: {
 			steps: [...a.spawned.steps, ...b.spawned.steps],
 			finishes: [...a.spawned.finishes, ...b.spawned.finishes]
@@ -201,13 +200,10 @@ export const reviewLedger = (h: ReviewHandles) => {
 								}
 							]
 						},
-						steps: [
-							{ step: key, kind: "Analyze", scope: scope, delay: delayAfter(review.kinds[0].due) }
-						],
-						spawned: {
-							steps: [{ step: key, kind: "Analyze", delay: delayAfter(review.kinds[0].due) }],
-							finishes: []
-						}
+						...spawnedOf(
+							{ step: key, kind: "Analyze", scope: scope },
+							dueOf(review.kinds[0].due, spawn.input)
+						)
 					}))
 			),
 			(parts) => Arr.reduce(parts, nothingGrown, joined)
@@ -233,13 +229,10 @@ export const reviewLedger = (h: ReviewHandles) => {
 								value: element
 							}))
 						},
-						steps: [
-							{ step: key, kind: "Gather", scope: scope, delay: delayAfter(review.kinds[2].due) }
-						],
-						spawned: {
-							steps: [{ step: key, kind: "Gather", delay: delayAfter(review.kinds[2].due) }],
-							finishes: []
-						}
+						...spawnedOf(
+							{ step: key, kind: "Gather", scope: scope },
+							dueOf(review.kinds[2].due, spawn.input)
+						)
 					}))
 			),
 			(parts) => Arr.reduce(parts, nothingGrown, joined)
@@ -459,6 +452,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 															steps: [
 																{ step: finish, kind: "QuestionsFinish", scope: key, delay: atOnce }
 															],
+															timed: [],
 															spawned: {
 																steps: [],
 																finishes: hasChildren(inner, key) ? [] : [finish]
@@ -640,20 +634,10 @@ export const reviewLedger = (h: ReviewHandles) => {
 														}
 													]
 												},
-												steps: [
-													{
-														step: key,
-														kind: "Save",
-														scope: done.input.parent,
-														delay: delayAfter(review.kinds[3].due)
-													}
-												],
-												spawned: {
-													steps: [
-														{ step: key, kind: "Save", delay: delayAfter(review.kinds[3].due) }
-													],
-													finishes: []
-												}
+												...spawnedOf(
+													{ step: key, kind: "Save", scope: done.input.parent },
+													dueOf(review.kinds[3].due, input)
+												)
 											}))
 									),
 									(parts) => Arr.reduce(parts, nothingGrown, joined)
@@ -841,7 +825,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 					}
 					const grown = yield* startReviewRun(scope, scope, input.value)
 					const finish = yield* finishStep(scope)
-					const steps: ReadonlyArray<SpawnRow> = [
+					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "ReviewRunFinish", scope, delay: atOnce }
 					]

@@ -6,9 +6,11 @@ import {
 	atSpawn,
 	attempts,
 	awaitFact,
+	dueAt,
 	edge,
 	exclusiveBy,
 	idle,
+	instant,
 	never,
 	noReads,
 	operator,
@@ -58,7 +60,7 @@ import type { Loader } from "#integration/slice/roles.ts"
  * gap analysis's shape, whose first step's edge opens a child scope per group of questions, each group's finish a
  * cluster over its questions whose commit spawns the group's save in the review, its first step joined on the
  * gradebook's delivery of the attempt it reviews; a writeback, whose one step delivers it; and a clock, a root its schedule starts
- * each hour, which the census requests. Every flow writes the app's relations under its app role `loader`.
+ * each hour, which the census requests, beside a timed sitting whose close is due at the deadline its input holds. Every flow writes the app's relations under its app role `loader`.
  */
 
 const loader = writer<typeof Loader>("loader")
@@ -1249,4 +1251,50 @@ const Hourly = root("Hourly", {
 	}
 })
 
-export const clock = flow("Clock", { writes: loader, kinds: [Chime, Hourly], edges: [] })
+/** A timed sitting: its key, and the instant it closes at, which the write that started it computed on the database's clock. */
+const Timed = Schema.Struct({ sitting: Schema.String, deadline: instant })
+
+/** Closes a timed sitting at its own deadline, the instant its input holds: never before it, and at it. */
+const Close = step(
+	"Close",
+	{
+		input: Timed,
+		output: Timed,
+		error: Schema.Never,
+		reads: noReads,
+		awaits: [],
+		uses: [],
+		retry: attempts(3),
+		waits: 0,
+		due: dueAt("deadline"),
+		writes: writesNothing
+	},
+	(timed) => Effect.succeed({ output: timed })
+)
+
+/** A timed sitting, its one step its close at its deadline. */
+const Sitting = root("Sitting", {
+	trigger: operator,
+	input: Timed,
+	children: [Close],
+	start: (timed) => [Close.of(timed)],
+	exclusive: shared,
+	window: always,
+	precondition: unconditional,
+	finish: {
+		reads: [],
+		output: Finished,
+		error: Schema.Never,
+		uses: [],
+		retry: attempts(3),
+		waits: 0,
+		writes: writesNothing,
+		body: () => Effect.succeed({ output: {} })
+	}
+})
+
+export const clock = flow("Clock", {
+	writes: loader,
+	kinds: [Chime, Hourly, Close, Sitting],
+	edges: []
+})

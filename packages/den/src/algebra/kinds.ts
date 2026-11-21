@@ -421,14 +421,53 @@ export const awaitFact = <R extends AnyRelation>(
 	key: { readonly [K in KeyFieldOf<R>]: string }
 ): AwaitedFact => ({ relation, key })
 
-/** When a step is first due: as soon as it is spawned, or a delay after (W5's timer, W6's delay). */
-export type Due = { readonly kind: "spawned" } | { readonly kind: "after"; readonly millis: number }
+/**
+ * An instant on the database's clock, in milliseconds since the epoch, den's `DenInstant`, as a column of a step's or a
+ * root's input: a timed sitting's deadline, which the write that requested its root computed from its own reading of
+ * the database's clock. No host mints one: an input's instant is a value the database computed or stored, carried.
+ */
+export const instant = Schema.BigInt.pipe(Schema.brand("DenInstant"))
+
+/** An instant a step's input holds, as its `instant` column delivers it. */
+export type InstantValue = typeof instant.Type
+
+/** Due as soon as it is spawned. */
+export interface DueAtSpawn {
+	readonly kind: "spawned"
+}
+
+/** Due a fixed delay after its spawn. */
+export interface DueAfter {
+	readonly kind: "after"
+	readonly millis: number
+}
+
+/**
+ * When a step of input `I` is first due: as soon as it is spawned, a delay after (W5's timer, W6's delay), or at the
+ * instant its input holds (a timed sitting closed at its own deadline): each is an exact timer, which rides the
+ * transport's delay with the census as its net.
+ */
+export type Due<I> =
+	| DueAtSpawn
+	| DueAfter
+	| { readonly kind: "at"; readonly instant: (input: I) => InstantValue }
 
 /** Due when spawned. */
-export const atSpawn: Due = { kind: "spawned" }
+export const atSpawn: DueAtSpawn = { kind: "spawned" }
 
-/** Due `millis` after its spawn: an exact timer, which rides the transport's delay with the census as its net. */
-export const after = (millis: number): Due => ({ kind: "after", millis })
+/** Due `millis` after its spawn. */
+export const after = (millis: number): DueAfter => ({ kind: "after", millis })
+
+/**
+ * Due at the instant the step's input holds in its `instant` column `field`, a value the database computed: a step
+ * spawned after it is due at once. A step kind whose input holds no instant of that name is a type error.
+ */
+export const dueAt = <const F extends string>(
+	field: F
+): {
+	readonly kind: "at"
+	readonly instant: (input: { readonly [K in F]: InstantValue }) => InstantValue
+} => ({ kind: "at", instant: (input) => input[field] })
 
 /**
  * What a body returns: its output, and, for a step that commits through a ChangeSet, that ChangeSet's served input, its
@@ -489,7 +528,7 @@ export interface StepShape<
 	 * waits).
 	 */
 	readonly waits: number
-	readonly due: Due
+	readonly due: Due<IS["Type"]>
 	readonly writes: T
 }
 
@@ -521,7 +560,7 @@ export interface AnyStepKind {
 	readonly uses: ReadonlyArray<Resource>
 	readonly retry: Ladder
 	readonly waits: number
-	readonly due: Due
+	readonly due: Due<never>
 	readonly writes: AnyCommit
 }
 

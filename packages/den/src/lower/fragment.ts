@@ -22,6 +22,7 @@ import {
 	type Attached,
 	type Base,
 	type Column,
+	type DenKey,
 	errorShapeOf,
 	type RecordShape,
 	recordShapeOf,
@@ -46,9 +47,6 @@ import {
  * predecessor's end, so a chain holds at most one live turn, its latest, and nothing is ever deleted. A resource's seat
  * count is a closed relation, which every live hold's seat is checked below on the seat level (SeatsIR).
  */
-
-/** One of den's own key contracts, every flow's alike. */
-export type DenKey = "DenStep" | "DenScope" | "DenExclusive" | "DenInstant" | "DenRow"
 
 /** What a lowered field holds. */
 export type FieldType =
@@ -249,7 +247,7 @@ export interface StepIR {
 	readonly edges: ReadonlyArray<EdgeIR>
 	readonly uses: ReadonlyArray<string>
 	readonly retry: Ladder
-	readonly due: Due
+	readonly due: Due<never>
 }
 
 /** A step kind as a spawn writes it: its Step row's kind, its kind's index (its due and its input's admission) and its input. */
@@ -407,6 +405,8 @@ export const lower = (flow: AnyFlow): Lowered => {
 			case "brand":
 				brand({ name: column.type.brand, base: column.type.base })
 				return { kind: "brand", brand: column.type.brand }
+			case "den":
+				return { kind: "key", contract: column.type.contract }
 			case "vector":
 				return { kind: "vector", dimensions: column.type.dimensions }
 			case "roster": {

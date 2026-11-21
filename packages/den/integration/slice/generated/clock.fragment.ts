@@ -17,11 +17,16 @@ import {
 	select
 } from "@bjornpagen/grizzle"
 
-export const ClockKind = closed.unordered("ClockKind", ["Chime", "HourlyFinish"])
-export const ClockRootKind = closed.unordered("ClockRootKind", ["Hourly"])
+export const ClockKind = closed.unordered("ClockKind", [
+	"Chime",
+	"Close",
+	"HourlyFinish",
+	"SittingFinish"
+])
+export const ClockRootKind = closed.unordered("ClockRootKind", ["Hourly", "Sitting"])
 export const ClockOutcome = closed.unordered("ClockOutcome", ["done", "failed"])
 export const ClockRetryWhy = closed.unordered("ClockRetryWhy", ["spent", "transient", "later"])
-export const ClockPausable = closed.unordered("ClockPausable", ["Hourly"])
+export const ClockPausable = closed.unordered("ClockPausable", ["Hourly", "Sitting"])
 export const ClockChimeInputBell = closed.unordered("ClockChimeInputBell", ["east", "west"])
 export const ClockHourlyInputBell = closed.unordered("ClockHourlyInputBell", ["east", "west"])
 export const ClockChimeOutputBell = closed.unordered("ClockChimeOutputBell", ["east", "west"])
@@ -113,9 +118,19 @@ export const ClockChimeInput = relation(
 	{ step: DenStep, hour: pg.bigint, bell: closedId(ClockChimeInputBell), root: DenScope },
 	["step", "root"]
 )
+export const ClockCloseInput = relation(
+	"ClockCloseInput",
+	{ step: DenStep, sitting: Text, deadline: DenInstant, root: DenScope },
+	["step", "root"]
+)
 export const ClockHourlyInput = relation(
 	"ClockHourlyInput",
 	{ scope: DenScope, hour: pg.bigint, bell: closedId(ClockHourlyInputBell), root: DenScope },
+	["scope", "root"]
+)
+export const ClockSittingInput = relation(
+	"ClockSittingInput",
+	{ scope: DenScope, sitting: Text, deadline: DenInstant, root: DenScope },
 	["scope", "root"]
 )
 export const ClockChimeOutput = relation(
@@ -123,8 +138,18 @@ export const ClockChimeOutput = relation(
 	{ step: DenStep, hour: pg.bigint, bell: closedId(ClockChimeOutputBell), root: DenScope },
 	["step", "root"]
 )
+export const ClockCloseOutput = relation(
+	"ClockCloseOutput",
+	{ step: DenStep, sitting: Text, deadline: DenInstant, root: DenScope },
+	["step", "root"]
+)
 export const ClockHourlyFinishOutput = relation(
 	"ClockHourlyFinishOutput",
+	{ step: DenStep, root: DenScope },
+	["step", "root"]
+)
+export const ClockSittingFinishOutput = relation(
+	"ClockSittingFinishOutput",
 	{ step: DenStep, root: DenScope },
 	["step", "root"]
 )
@@ -168,9 +193,13 @@ export const clockGraph = fragment(
 		ClockRefusal,
 		ClockExhausted,
 		ClockChimeInput,
+		ClockCloseInput,
 		ClockHourlyInput,
+		ClockSittingInput,
 		ClockChimeOutput,
-		ClockHourlyFinishOutput
+		ClockCloseOutput,
+		ClockHourlyFinishOutput,
+		ClockSittingFinishOutput
 	],
 	[
 		contained(on(ClockAdmitted, "scope", "root"), on(ClockScope, "scope", "root")),
@@ -229,15 +258,33 @@ export const clockGraph = fragment(
 			)
 		),
 		contained(
+			on(ClockCloseInput, "step", "root"),
+			on(
+				select(ClockStep, (row) => row.eq(row.kind, "Close")),
+				"step",
+				"root"
+			)
+		),
+		contained(
 			on(ClockHourlyInput, "scope"),
 			on(
 				select(ClockRoot, (row) => row.eq(row.kind, "Hourly")),
 				"scope"
 			)
 		),
+		contained(
+			on(ClockSittingInput, "scope"),
+			on(
+				select(ClockRoot, (row) => row.eq(row.kind, "Sitting")),
+				"scope"
+			)
+		),
 		contained(on(ClockChimeOutput, "step", "root"), on(ClockChimeInput, "step", "root")),
 		contained(on(ClockChimeOutput, "step", "root"), on(ClockDone, "step", "root")),
+		contained(on(ClockCloseOutput, "step", "root"), on(ClockCloseInput, "step", "root")),
+		contained(on(ClockCloseOutput, "step", "root"), on(ClockDone, "step", "root")),
 		contained(on(ClockHourlyFinishOutput, "step", "root"), on(ClockDone, "step", "root")),
+		contained(on(ClockSittingFinishOutput, "step", "root"), on(ClockDone, "step", "root")),
 		retirable(ClockRoot, [
 			on(ClockScope, "root"),
 			on(ClockAdmitted, "root"),
@@ -256,9 +303,13 @@ export const clockGraph = fragment(
 			on(ClockRefusal, "root"),
 			on(ClockExhausted, "root"),
 			on(ClockChimeInput, "root"),
+			on(ClockCloseInput, "root"),
 			on(ClockHourlyInput, "root"),
+			on(ClockSittingInput, "root"),
 			on(ClockChimeOutput, "root"),
-			on(ClockHourlyFinishOutput, "root")
+			on(ClockCloseOutput, "root"),
+			on(ClockHourlyFinishOutput, "root"),
+			on(ClockSittingFinishOutput, "root")
 		])
 	]
 )
@@ -289,5 +340,7 @@ export const clockWriter = [
 	"ClockDone",
 	"ClockHeld",
 	"ClockChimeOutput",
-	"ClockHourlyFinishOutput"
+	"ClockCloseOutput",
+	"ClockHourlyFinishOutput",
+	"ClockSittingFinishOutput"
 ] as const

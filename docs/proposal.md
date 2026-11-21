@@ -46,7 +46,8 @@ parents, awaits completed from outside, stopping, fairness and priority are not 
 - **Step kind.** A name; a typed input, output and error (Effect Schemas); its declared reads (W1's fingerprint, W5's
   presence, W7's intents), taken before its body runs and recorded as part of its input; the resources it holds a
   seat of while it runs; its retry ladder, ending after `n` attempts (W1 to W4) or never (W6's reports), written out
-  either way; a due instant (backoff, W5's timer, W6's delay). Its body is
+  either way; a due instant (backoff, W5's timer, W6's delay, or the instant its input holds, a timed sitting's
+  deadline the database computed). Its body is
   `input → Effect<{ output, writes }, Error, R>`, where `writes` is a ChangeSet over the app's relations and `R` holds
   no grizzle handle.
 - **Scope kind.** A join: it owns the steps started in it and finishes exactly once, after every child has ended

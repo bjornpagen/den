@@ -1,7 +1,7 @@
 import {
 	any,
 	committedFacts,
-	delayAfter,
+	dueOf,
 	fresh,
 	one,
 	only,
@@ -9,11 +9,12 @@ import {
 	rowsOf,
 	scheduledKey,
 	scheduleOf,
-	signals
+	signals,
+	spawnedOf,
+	type SpawnRows
 } from "@bjornpagen/den/runtime/bind"
 import {
 	atOnce,
-	type Delay,
 	finishStep,
 	type Instant,
 	rootScope,
@@ -47,6 +48,7 @@ import type {
 	ClockFinish,
 	ClockStartStep,
 	ClockChimeInput,
+	ClockCloseInput,
 	ClockKind,
 	ClockRootKind
 } from "#integration/slice/generated/clock.fragment.ts"
@@ -83,19 +85,12 @@ interface Rows {
 	readonly ClockFinish: ReadonlyArray<Addition<typeof ClockFinish>>
 	readonly ClockStartStep: ReadonlyArray<Addition<typeof ClockStartStep>>
 	readonly ClockChimeInput: ReadonlyArray<Addition<typeof ClockChimeInput>>
+	readonly ClockCloseInput: ReadonlyArray<Addition<typeof ClockCloseInput>>
 }
 
-/** A step a call spawns, as the call names it: the database writes its due instant, its delay after the call's reading. */
-interface SpawnRow {
-	readonly step: StepKey
-	readonly kind: (typeof ClockKind)["handles"][number]
-	readonly scope: ScopeKey
-	readonly delay: Delay
-}
-
-interface Grown {
+/** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
+interface Grown extends SpawnRows<(typeof ClockKind)["handles"][number]> {
 	readonly rows: Rows
-	readonly steps: ReadonlyArray<SpawnRow>
 	readonly spawned: Spawned
 }
 
@@ -114,9 +109,15 @@ export const clockLedger = (h: ClockHandles) => {
 		ClockAdmitted: [],
 		ClockFinish: [],
 		ClockStartStep: [],
-		ClockChimeInput: []
+		ClockChimeInput: [],
+		ClockCloseInput: []
 	}
-	const nothingGrown: Grown = { rows: noRows, steps: [], spawned: { steps: [], finishes: [] } }
+	const nothingGrown: Grown = {
+		rows: noRows,
+		steps: [],
+		timed: [],
+		spawned: { steps: [], finishes: [] }
+	}
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
 		Arr.some(grown.rows.ClockStartStep, (s) => s.scope === scope)
 	const joined = (a: Grown, b: Grown): Grown => ({
@@ -125,9 +126,11 @@ export const clockLedger = (h: ClockHandles) => {
 			ClockAdmitted: [...a.rows.ClockAdmitted, ...b.rows.ClockAdmitted],
 			ClockFinish: [...a.rows.ClockFinish, ...b.rows.ClockFinish],
 			ClockStartStep: [...a.rows.ClockStartStep, ...b.rows.ClockStartStep],
-			ClockChimeInput: [...a.rows.ClockChimeInput, ...b.rows.ClockChimeInput]
+			ClockChimeInput: [...a.rows.ClockChimeInput, ...b.rows.ClockChimeInput],
+			ClockCloseInput: [...a.rows.ClockCloseInput, ...b.rows.ClockCloseInput]
 		},
 		steps: [...a.steps, ...b.steps],
+		timed: [...a.timed, ...b.timed],
 		spawned: {
 			steps: [...a.spawned.steps, ...b.spawned.steps],
 			finishes: [...a.spawned.finishes, ...b.spawned.finishes]
@@ -150,13 +153,40 @@ export const clockLedger = (h: ClockHandles) => {
 								{ step: key, root: root, hour: spawn.input.hour, bell: spawn.input.bell }
 							]
 						},
-						steps: [
-							{ step: key, kind: "Chime", scope: scope, delay: delayAfter(clock.kinds[0].due) }
-						],
-						spawned: {
-							steps: [{ step: key, kind: "Chime", delay: delayAfter(clock.kinds[0].due) }],
-							finishes: []
-						}
+						...spawnedOf(
+							{ step: key, kind: "Chime", scope: scope },
+							dueOf(clock.kinds[0].due, spawn.input)
+						)
+					}))
+			),
+			(parts) => Arr.reduce(parts, nothingGrown, joined)
+		)
+	const startSitting = (
+		root: ScopeKey,
+		scope: ScopeKey,
+		input: Parameters<(typeof clock.kinds)[3]["start"]>[0]
+	): Effect.Effect<Grown, never, Digest.Digest> =>
+		Effect.map(
+			Effect.forEach(
+				clock.kinds[3].start(input),
+				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
+					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
+						rows: {
+							...noRows,
+							ClockStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+							ClockCloseInput: [
+								{
+									step: key,
+									root: root,
+									sitting: spawn.input.sitting,
+									deadline: spawn.input.deadline
+								}
+							]
+						},
+						...spawnedOf(
+							{ step: key, kind: "Close", scope: scope },
+							dueOf(clock.kinds[2].due, spawn.input)
+						)
 					}))
 			),
 			(parts) => Arr.reduce(parts, nothingGrown, joined)
@@ -169,6 +199,14 @@ export const clockLedger = (h: ClockHandles) => {
 			)
 			return Option.map(row, (found) => ({ hour: found.hour, bell: found.bell }))
 		})
+	const readClockCloseInput = (step: StepKey) =>
+		Effect.gen(function* () {
+			const row = yield* Effect.map(
+				settled(h.den.clockReadClockCloseInput.once({ params: { step: step }, facts: {} })),
+				one
+			)
+			return Option.map(row, (found) => ({ sitting: found.sitting, deadline: found.deadline }))
+		})
 	const readClockHourlyInput = (scope: ScopeKey) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
@@ -176,6 +214,14 @@ export const clockLedger = (h: ClockHandles) => {
 				one
 			)
 			return Option.map(row, (found) => ({ hour: found.hour, bell: found.bell }))
+		})
+	const readClockSittingInput = (scope: ScopeKey) =>
+		Effect.gen(function* () {
+			const row = yield* Effect.map(
+				settled(h.den.clockReadClockSittingInput.once({ params: { scope: scope }, facts: {} })),
+				one
+			)
+			return Option.map(row, (found) => ({ sitting: found.sitting, deadline: found.deadline }))
 		})
 	const pauseChains: PauseChains<(typeof ClockPausable)["handles"][number]> = {
 		flow: FlowName.make("Clock"),
@@ -231,6 +277,33 @@ export const clockLedger = (h: ClockHandles) => {
 					),
 					(accepted) => ({ flow: FlowName.make("Clock"), scope, fresh: accepted })
 				)
+			),
+		Sitting: (key: string, input: Parameters<(typeof clock.kinds)[3]["start"]>[0]) =>
+			Effect.flatMap(rootScope("Clock", "Sitting", key), (scope) =>
+				Effect.map(
+					fresh(
+						"Clock",
+						settled(
+							h.den.clockRequestSitting.once({
+								params: { clockSittingScope: scope, clockSittingKey: key },
+								facts: {
+									insert: {
+										ClockScope: [{ scope, root: scope }],
+										ClockSittingInput: [
+											{
+												scope: scope,
+												root: scope,
+												sitting: input.sitting,
+												deadline: input.deadline
+											}
+										]
+									}
+								}
+							})
+						)
+					),
+					(accepted) => ({ flow: FlowName.make("Clock"), scope, fresh: accepted })
+				)
 			)
 	}
 	const runners = {
@@ -267,6 +340,42 @@ export const clockLedger = (h: ClockHandles) => {
 									},
 									done.writes.facts
 								)
+							})
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.none()
+		),
+		Close: runnerOf(
+			clock.kinds[2],
+			{
+				input: (step) => readClockCloseInput(step),
+				read: () => Effect.succeed({}),
+				commit: (done) =>
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
+							h.commits.clockCommitClose.once({
+								params: {},
+								facts: {
+									insert: {
+										ClockResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										ClockDone: [{ step: done.turn.step, root: done.turn.root }],
+										ClockHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										ClockCloseOutput: [
+											{
+												step: done.turn.step,
+												root: done.turn.root,
+												sitting: done.output.sitting,
+												deadline: done.output.deadline
+											}
+										]
+									}
+								}
 							})
 						)
 						return { outcome, spawned: grown.spawned }
@@ -328,6 +437,60 @@ export const clockLedger = (h: ClockHandles) => {
 				fail: (failed) => Effect.die(failed.error)
 			},
 			Option.some("Hourly")
+		),
+		SittingFinish: runnerOf(
+			{
+				name: "SittingFinish",
+				uses: clock.kinds[3].finish.uses,
+				retry: clock.kinds[3].finish.retry,
+				waits: clock.kinds[3].finish.waits,
+				awaits: [],
+				body: (read: {
+					readonly input: Parameters<(typeof clock.kinds)[3]["start"]>[0]
+					readonly endings: Parameters<(typeof clock.kinds)[3]["finish"]["body"]>[1]
+				}) => clock.kinds[3].finish.body(read.input, read.endings)
+			},
+			{
+				input: (step) =>
+					Effect.gen(function* () {
+						const located = yield* Effect.map(
+							settled(h.den.clockStepOf.once({ params: { step }, facts: {} })),
+							one
+						)
+						if (Option.isNone(located)) {
+							return Option.none()
+						}
+						const scope = located.value.scope
+						const input = yield* readClockSittingInput(scope)
+						if (Option.isNone(input)) {
+							return Option.none()
+						}
+						return Option.some({ input: input.value, endings: {} })
+					}),
+				read: () => Effect.succeed([]),
+				commit: (done) =>
+					Effect.gen(function* () {
+						const grown = yield* Effect.succeed(nothingGrown)
+						const outcome = yield* settled(
+							h.commits.clockCommitSittingFinish.once({
+								params: {},
+								facts: {
+									insert: {
+										ClockResult: [{ step: done.turn.step, root: done.turn.root, outcome: "done" }],
+										ClockDone: [{ step: done.turn.step, root: done.turn.root }],
+										ClockHeld: [
+											{ step: done.turn.step, root: done.turn.root, attempt: done.turn.attempt }
+										],
+										ClockSittingFinishOutput: [{ step: done.turn.step, root: done.turn.root }]
+									}
+								}
+							})
+						)
+						return { outcome, spawned: grown.spawned }
+					}),
+				fail: (failed) => Effect.die(failed.error)
+			},
+			Option.some("Sitting")
 		)
 	}
 	const roots: { readonly [K in (typeof ClockRootKind)["handles"][number]]: RootRunner } = {
@@ -342,7 +505,7 @@ export const clockLedger = (h: ClockHandles) => {
 					}
 					const grown = yield* startHourly(scope, scope, input.value)
 					const finish = yield* finishStep(scope)
-					const steps: ReadonlyArray<SpawnRow> = [
+					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "HourlyFinish", scope, delay: atOnce }
 					]
@@ -356,12 +519,60 @@ export const clockLedger = (h: ClockHandles) => {
 					]
 					const outcome = yield* settled(
 						h.den.clockAdmit.once({
-							params: { steps, root: scope },
+							params: { steps, timed: grown.timed, root: scope },
 							facts: {
 								insert: {
 									ClockScope: grown.rows.ClockScope,
 									ClockStartStep: grown.rows.ClockStartStep,
 									ClockChimeInput: grown.rows.ClockChimeInput,
+									ClockCloseInput: grown.rows.ClockCloseInput,
+									ClockAdmitted: admitted,
+									ClockFinish: finishes
+								}
+							}
+						})
+					)
+					return Option.some({
+						outcome,
+						spawned: {
+							steps: grown.spawned.steps,
+							finishes: [...grown.spawned.finishes, ...(hasChildren(grown, scope) ? [] : [finish])]
+						}
+					})
+				})
+		},
+		Sitting: {
+			window: clock.kinds[3].window,
+			precondition: clock.kinds[3].precondition,
+			admit: (scope: ScopeKey) =>
+				Effect.gen(function* () {
+					const input = yield* readClockSittingInput(scope)
+					if (Option.isNone(input)) {
+						return Option.none()
+					}
+					const grown = yield* startSitting(scope, scope, input.value)
+					const finish = yield* finishStep(scope)
+					const steps: Grown["steps"] = [
+						...grown.steps,
+						{ step: finish, kind: "SittingFinish", scope, delay: atOnce }
+					]
+					const admitted: ReadonlyArray<Addition<typeof ClockAdmitted>> = [
+						...grown.rows.ClockAdmitted,
+						{ scope, root: scope }
+					]
+					const finishes: ReadonlyArray<Addition<typeof ClockFinish>> = [
+						...grown.rows.ClockFinish,
+						{ scope, step: finish, root: scope }
+					]
+					const outcome = yield* settled(
+						h.den.clockAdmit.once({
+							params: { steps, timed: grown.timed, root: scope },
+							facts: {
+								insert: {
+									ClockScope: grown.rows.ClockScope,
+									ClockStartStep: grown.rows.ClockStartStep,
+									ClockChimeInput: grown.rows.ClockChimeInput,
+									ClockCloseInput: grown.rows.ClockCloseInput,
 									ClockAdmitted: admitted,
 									ClockFinish: finishes
 								}

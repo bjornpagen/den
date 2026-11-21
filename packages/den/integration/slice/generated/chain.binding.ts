@@ -1,19 +1,20 @@
 import {
 	any,
 	committedFacts,
-	delayAfter,
+	dueOf,
 	fresh,
 	held,
 	one,
 	only,
 	readingOf,
 	rowsOf,
-	signals
+	signals,
+	spawnedOf,
+	type SpawnRows
 } from "@bjornpagen/den/runtime/bind"
 import {
 	edgeStep,
 	atOnce,
-	type Delay,
 	finishStep,
 	rootScope,
 	attached,
@@ -91,17 +92,9 @@ interface Rows {
 	readonly ChainNext: ReadonlyArray<Addition<typeof ChainNext>>
 }
 
-/** A step a call spawns, as the call names it: the database writes its due instant, its delay after the call's reading. */
-interface SpawnRow {
-	readonly step: StepKey
-	readonly kind: (typeof ChainKind)["handles"][number]
-	readonly scope: ScopeKey
-	readonly delay: Delay
-}
-
-interface Grown {
+/** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
+interface Grown extends SpawnRows<(typeof ChainKind)["handles"][number]> {
 	readonly rows: Rows
-	readonly steps: ReadonlyArray<SpawnRow>
 	readonly spawned: Spawned
 }
 
@@ -124,7 +117,12 @@ export const chainLedger = (h: ChainHandles) => {
 		ChainPageInputAfter: [],
 		ChainNext: []
 	}
-	const nothingGrown: Grown = { rows: noRows, steps: [], spawned: { steps: [], finishes: [] } }
+	const nothingGrown: Grown = {
+		rows: noRows,
+		steps: [],
+		timed: [],
+		spawned: { steps: [], finishes: [] }
+	}
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
 		Arr.some(grown.rows.ChainStartStep, (s) => s.scope === scope)
 	const joined = (a: Grown, b: Grown): Grown => ({
@@ -138,6 +136,7 @@ export const chainLedger = (h: ChainHandles) => {
 			ChainNext: [...a.rows.ChainNext, ...b.rows.ChainNext]
 		},
 		steps: [...a.steps, ...b.steps],
+		timed: [...a.timed, ...b.timed],
 		spawned: {
 			steps: [...a.spawned.steps, ...b.spawned.steps],
 			finishes: [...a.spawned.finishes, ...b.spawned.finishes]
@@ -169,13 +168,10 @@ export const chainLedger = (h: ChainHandles) => {
 								Option.map(spawn.input.after, (value) => ({ step: key, root: root, value }))
 							)
 						},
-						steps: [
-							{ step: key, kind: "Page", scope: scope, delay: delayAfter(chain.kinds[0].due) }
-						],
-						spawned: {
-							steps: [{ step: key, kind: "Page", delay: delayAfter(chain.kinds[0].due) }],
-							finishes: []
-						}
+						...spawnedOf(
+							{ step: key, kind: "Page", scope: scope },
+							dueOf(chain.kinds[0].due, spawn.input)
+						)
 					}))
 			),
 			(parts) => Arr.reduce(parts, nothingGrown, joined)
@@ -206,13 +202,10 @@ export const chainLedger = (h: ChainHandles) => {
 								Option.map(spawn.input.after, (value) => ({ step: key, root: root, value }))
 							)
 						},
-						steps: [
-							{ step: key, kind: "Page", scope: scope, delay: delayAfter(chain.kinds[0].due) }
-						],
-						spawned: {
-							steps: [{ step: key, kind: "Page", delay: delayAfter(chain.kinds[0].due) }],
-							finishes: []
-						}
+						...spawnedOf(
+							{ step: key, kind: "Page", scope: scope },
+							dueOf(chain.kinds[0].due, spawn.input)
+						)
 					}))
 			),
 			(parts) => Arr.reduce(parts, nothingGrown, joined)
@@ -377,20 +370,10 @@ export const chainLedger = (h: ChainHandles) => {
 														}))
 													)
 												},
-												steps: [
-													{
-														step: key,
-														kind: "Page",
-														scope: done.turn.scope,
-														delay: delayAfter(chain.kinds[0].due)
-													}
-												],
-												spawned: {
-													steps: [
-														{ step: key, kind: "Page", delay: delayAfter(chain.kinds[0].due) }
-													],
-													finishes: []
-												}
+												...spawnedOf(
+													{ step: key, kind: "Page", scope: done.turn.scope },
+													dueOf(chain.kinds[0].due, input)
+												)
 											}))
 									),
 									(parts) => Arr.reduce(parts, nothingGrown, joined)
@@ -793,7 +776,7 @@ export const chainLedger = (h: ChainHandles) => {
 					}
 					const grown = yield* startChainRun(scope, scope, input.value)
 					const finish = yield* finishStep(scope)
-					const steps: ReadonlyArray<SpawnRow> = [
+					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "ChainRunFinish", scope, delay: atOnce }
 					]
@@ -840,7 +823,7 @@ export const chainLedger = (h: ChainHandles) => {
 					}
 					const grown = yield* startOrdered(scope, scope, input.value)
 					const finish = yield* finishStep(scope)
-					const steps: ReadonlyArray<SpawnRow> = [
+					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "OrderedFinish", scope, delay: atOnce }
 					]

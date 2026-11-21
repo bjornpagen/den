@@ -1,17 +1,18 @@
 import {
 	any,
 	committedFacts,
-	delayAfter,
+	dueOf,
 	fresh,
 	one,
 	only,
 	readingOf,
 	rowsOf,
-	signals
+	signals,
+	spawnedOf,
+	type SpawnRows
 } from "@bjornpagen/den/runtime/bind"
 import {
 	atOnce,
-	type Delay,
 	finishStep,
 	rootScope,
 	type ScopeKey,
@@ -86,17 +87,9 @@ interface Rows {
 	readonly WritebackDeliverInput: ReadonlyArray<Addition<typeof WritebackDeliverInput>>
 }
 
-/** A step a call spawns, as the call names it: the database writes its due instant, its delay after the call's reading. */
-interface SpawnRow {
-	readonly step: StepKey
-	readonly kind: (typeof WritebackKind)["handles"][number]
-	readonly scope: ScopeKey
-	readonly delay: Delay
-}
-
-interface Grown {
+/** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
+interface Grown extends SpawnRows<(typeof WritebackKind)["handles"][number]> {
 	readonly rows: Rows
-	readonly steps: ReadonlyArray<SpawnRow>
 	readonly spawned: Spawned
 }
 
@@ -117,7 +110,12 @@ export const writebackLedger = (h: WritebackHandles) => {
 		WritebackStartStep: [],
 		WritebackDeliverInput: []
 	}
-	const nothingGrown: Grown = { rows: noRows, steps: [], spawned: { steps: [], finishes: [] } }
+	const nothingGrown: Grown = {
+		rows: noRows,
+		steps: [],
+		timed: [],
+		spawned: { steps: [], finishes: [] }
+	}
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
 		Arr.some(grown.rows.WritebackStartStep, (s) => s.scope === scope)
 	const joined = (a: Grown, b: Grown): Grown => ({
@@ -129,6 +127,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 			WritebackDeliverInput: [...a.rows.WritebackDeliverInput, ...b.rows.WritebackDeliverInput]
 		},
 		steps: [...a.steps, ...b.steps],
+		timed: [...a.timed, ...b.timed],
 		spawned: {
 			steps: [...a.spawned.steps, ...b.spawned.steps],
 			finishes: [...a.spawned.finishes, ...b.spawned.finishes]
@@ -149,18 +148,10 @@ export const writebackLedger = (h: WritebackHandles) => {
 							WritebackStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
 							WritebackDeliverInput: [{ step: key, root: root, attempt: spawn.input.attempt }]
 						},
-						steps: [
-							{
-								step: key,
-								kind: "Deliver",
-								scope: scope,
-								delay: delayAfter(writeback.kinds[0].due)
-							}
-						],
-						spawned: {
-							steps: [{ step: key, kind: "Deliver", delay: delayAfter(writeback.kinds[0].due) }],
-							finishes: []
-						}
+						...spawnedOf(
+							{ step: key, kind: "Deliver", scope: scope },
+							dueOf(writeback.kinds[0].due, spawn.input)
+						)
 					}))
 			),
 			(parts) => Arr.reduce(parts, nothingGrown, joined)
@@ -351,7 +342,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 					}
 					const grown = yield* startWriteback(scope, scope, input.value)
 					const finish = yield* finishStep(scope)
-					const steps: ReadonlyArray<SpawnRow> = [
+					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "WritebackFinish", scope, delay: atOnce }
 					]

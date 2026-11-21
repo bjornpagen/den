@@ -1,18 +1,19 @@
 import {
 	any,
 	committedFacts,
-	delayAfter,
+	dueOf,
 	exclusiveRows,
 	fresh,
 	one,
 	only,
 	readingOf,
 	rowsOf,
-	signals
+	signals,
+	spawnedOf,
+	type SpawnRows
 } from "@bjornpagen/den/runtime/bind"
 import {
 	atOnce,
-	type Delay,
 	finishStep,
 	rootScope,
 	type ScopeKey,
@@ -83,17 +84,9 @@ interface Rows {
 	readonly SyncBuildInput: ReadonlyArray<Addition<typeof SyncBuildInput>>
 }
 
-/** A step a call spawns, as the call names it: the database writes its due instant, its delay after the call's reading. */
-interface SpawnRow {
-	readonly step: StepKey
-	readonly kind: (typeof SyncKind)["handles"][number]
-	readonly scope: ScopeKey
-	readonly delay: Delay
-}
-
-interface Grown {
+/** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
+interface Grown extends SpawnRows<(typeof SyncKind)["handles"][number]> {
 	readonly rows: Rows
-	readonly steps: ReadonlyArray<SpawnRow>
 	readonly spawned: Spawned
 }
 
@@ -123,7 +116,12 @@ export const syncLedger = (h: SyncHandles) => {
 		SyncCopyInput: [],
 		SyncBuildInput: []
 	}
-	const nothingGrown: Grown = { rows: noRows, steps: [], spawned: { steps: [], finishes: [] } }
+	const nothingGrown: Grown = {
+		rows: noRows,
+		steps: [],
+		timed: [],
+		spawned: { steps: [], finishes: [] }
+	}
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
 		Arr.some(grown.rows.SyncStartStep, (s) => s.scope === scope)
 	const joined = (a: Grown, b: Grown): Grown => ({
@@ -136,6 +134,7 @@ export const syncLedger = (h: SyncHandles) => {
 			SyncBuildInput: [...a.rows.SyncBuildInput, ...b.rows.SyncBuildInput]
 		},
 		steps: [...a.steps, ...b.steps],
+		timed: [...a.timed, ...b.timed],
 		spawned: {
 			steps: [...a.spawned.steps, ...b.spawned.steps],
 			finishes: [...a.spawned.finishes, ...b.spawned.finishes]
@@ -158,13 +157,10 @@ export const syncLedger = (h: SyncHandles) => {
 								{ step: key, root: root, relation: spawn.input.relation, run: spawn.input.run }
 							]
 						},
-						steps: [
-							{ step: key, kind: "Copy", scope: scope, delay: delayAfter(sync.kinds[0].due) }
-						],
-						spawned: {
-							steps: [{ step: key, kind: "Copy", delay: delayAfter(sync.kinds[0].due) }],
-							finishes: []
-						}
+						...spawnedOf(
+							{ step: key, kind: "Copy", scope: scope },
+							dueOf(sync.kinds[0].due, spawn.input)
+						)
 					}))
 			),
 			(parts) => Arr.reduce(parts, nothingGrown, joined)
@@ -184,13 +180,10 @@ export const syncLedger = (h: SyncHandles) => {
 							SyncStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
 							SyncBuildInput: [{ step: key, root: root, build: spawn.input.build }]
 						},
-						steps: [
-							{ step: key, kind: "Build", scope: scope, delay: delayAfter(sync.kinds[2].due) }
-						],
-						spawned: {
-							steps: [{ step: key, kind: "Build", delay: delayAfter(sync.kinds[2].due) }],
-							finishes: []
-						}
+						...spawnedOf(
+							{ step: key, kind: "Build", scope: scope },
+							dueOf(sync.kinds[2].due, spawn.input)
+						)
 					}))
 			),
 			(parts) => Arr.reduce(parts, nothingGrown, joined)
@@ -533,7 +526,7 @@ export const syncLedger = (h: SyncHandles) => {
 					}
 					const grown = yield* startSyncRun(scope, scope, input.value)
 					const finish = yield* finishStep(scope)
-					const steps: ReadonlyArray<SpawnRow> = [
+					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "SyncRunFinish", scope, delay: atOnce }
 					]
@@ -580,7 +573,7 @@ export const syncLedger = (h: SyncHandles) => {
 					}
 					const grown = yield* startGold(scope, scope, input.value)
 					const finish = yield* finishStep(scope)
-					const steps: ReadonlyArray<SpawnRow> = [
+					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "GoldFinish", scope, delay: atOnce }
 					]

@@ -173,8 +173,8 @@ export const aScopesFinishSpawnsTheNextStageInItsParent = property.explore(runs,
 		},
 		{
 			file: "packages/den/integration/slice/generated/review.binding.ts",
-			original: "scope: done.input.parent,",
-			replacement: "scope: done.turn.scope,",
+			original: "scope: done.input.parent }",
+			replacement: "scope: done.turn.scope }",
 			why: "A finish spawns the next stage in the scope it finished, after its own end, where it belongs to the scope's parent: the review's finish reads no save, and each group's save lives under a scope already done."
 		}
 	]

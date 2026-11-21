@@ -1,7 +1,7 @@
 import {
 	any,
 	committedFacts,
-	delayAfter,
+	dueOf,
 	fresh,
 	held,
 	one,
@@ -9,12 +9,13 @@ import {
 	ordered,
 	readingOf,
 	rowsOf,
-	signals
+	signals,
+	spawnedOf,
+	type SpawnRows
 } from "@bjornpagen/den/runtime/bind"
 import {
 	edgeStep,
 	atOnce,
-	type Delay,
 	finishStep,
 	rootScope,
 	rowDigest,
@@ -108,17 +109,9 @@ interface Rows {
 	readonly AssignAsked: ReadonlyArray<Addition<typeof AssignAsked>>
 }
 
-/** A step a call spawns, as the call names it: the database writes its due instant, its delay after the call's reading. */
-interface SpawnRow {
-	readonly step: StepKey
-	readonly kind: (typeof AssignKind)["handles"][number]
-	readonly scope: ScopeKey
-	readonly delay: Delay
-}
-
-interface Grown {
+/** What a call grows: the rows it inserts, the steps it spawns by when each is due, which the database writes, and what it spawned. */
+interface Grown extends SpawnRows<(typeof AssignKind)["handles"][number]> {
 	readonly rows: Rows
-	readonly steps: ReadonlyArray<SpawnRow>
 	readonly spawned: Spawned
 }
 
@@ -148,7 +141,12 @@ export const assignLedger = (h: AssignHandles) => {
 		AssignDecideInputModeWithin: [],
 		AssignAsked: []
 	}
-	const nothingGrown: Grown = { rows: noRows, steps: [], spawned: { steps: [], finishes: [] } }
+	const nothingGrown: Grown = {
+		rows: noRows,
+		steps: [],
+		timed: [],
+		spawned: { steps: [], finishes: [] }
+	}
 	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
 		Arr.some(grown.rows.AssignStartStep, (s) => s.scope === scope)
 	const joined = (a: Grown, b: Grown): Grown => ({
@@ -187,6 +185,7 @@ export const assignLedger = (h: AssignHandles) => {
 			AssignAsked: [...a.rows.AssignAsked, ...b.rows.AssignAsked]
 		},
 		steps: [...a.steps, ...b.steps],
+		timed: [...a.timed, ...b.timed],
 		spawned: {
 			steps: [...a.spawned.steps, ...b.spawned.steps],
 			finishes: [...a.spawned.finishes, ...b.spawned.finishes]
@@ -233,13 +232,10 @@ export const assignLedger = (h: AssignHandles) => {
 								variant._tag === "Within" ? [{ step: key, root: root, radius: variant.radius }] : []
 							)
 						},
-						steps: [
-							{ step: key, kind: "Embed", scope: scope, delay: delayAfter(assign.kinds[0].due) }
-						],
-						spawned: {
-							steps: [{ step: key, kind: "Embed", delay: delayAfter(assign.kinds[0].due) }],
-							finishes: []
-						}
+						...spawnedOf(
+							{ step: key, kind: "Embed", scope: scope },
+							dueOf(assign.kinds[0].due, spawn.input)
+						)
 					}))
 			),
 			(parts) => Arr.reduce(parts, nothingGrown, joined)
@@ -526,20 +522,10 @@ export const assignLedger = (h: AssignHandles) => {
 															: []
 													)
 												},
-												steps: [
-													{
-														step: key,
-														kind: "Decide",
-														scope: done.turn.scope,
-														delay: delayAfter(assign.kinds[1].due)
-													}
-												],
-												spawned: {
-													steps: [
-														{ step: key, kind: "Decide", delay: delayAfter(assign.kinds[1].due) }
-													],
-													finishes: []
-												}
+												...spawnedOf(
+													{ step: key, kind: "Decide", scope: done.turn.scope },
+													dueOf(assign.kinds[1].due, input)
+												)
 											}))
 									),
 									(parts) => Arr.reduce(parts, nothingGrown, joined)
@@ -898,7 +884,7 @@ export const assignLedger = (h: AssignHandles) => {
 					}
 					const grown = yield* startAssignment(scope, scope, input.value)
 					const finish = yield* finishStep(scope)
-					const steps: ReadonlyArray<SpawnRow> = [
+					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "AssignmentFinish", scope, delay: atOnce }
 					]

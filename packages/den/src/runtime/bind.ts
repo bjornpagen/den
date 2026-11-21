@@ -2,8 +2,16 @@ import type { CallError, Settled, WriteOutcome } from "@bjornpagen/grizzle/runti
 import { Array as Arr, type Cron, Effect, Option, Order, Predicate, Stream } from "effect"
 import type { Digest } from "effect/crypto"
 import type { Due, Exclusive, Scheduled, Trigger } from "#algebra/kinds.ts"
-import { atOnce, type Delay, delayOf, exclusiveId, type ScopeKey } from "#runtime/identity.ts"
-import { refusedOnKey } from "#runtime/ledger.ts"
+import {
+	atOnce,
+	type Delay,
+	delayOf,
+	exclusiveId,
+	type Instant,
+	type ScopeKey,
+	type StepKey
+} from "#runtime/identity.ts"
+import { refusedOnKey, type SpawnDue, type Spawned } from "#runtime/ledger.ts"
 
 /**
  * What every printed binding shares (lower/print.ts): every call settled, reading a key member's one row, the
@@ -64,13 +72,45 @@ export const committedFacts = <const D extends { readonly insert: object }, F ex
 		? { ...den, ...step, insert: { ...den.insert, ...step.insert } }
 		: { ...den, ...step }
 
-/** How long after its spawn a step is first due, by its kind's declaration. */
-export const delayAfter = (due: Due): Delay => {
+/** When a step of input `input` is first due, by its kind's declaration: a delay after its spawn, or its input's instant. */
+export const dueOf = <I>(due: Due<I>, input: I): SpawnDue => {
 	switch (due.kind) {
 		case "spawned":
-			return atOnce
+			return { kind: "after", delay: atOnce }
 		case "after":
-			return delayOf(due.millis)
+			return { kind: "after", delay: delayOf(due.millis) }
+		case "at":
+			return { kind: "at", instant: due.instant(input) }
+	}
+}
+
+/** A spawned step's row, as the call that spawns it names it: its key, its kind and its owning scope. */
+export interface SpawnAt<K> {
+	readonly step: StepKey
+	readonly kind: K
+	readonly scope: ScopeKey
+}
+
+/**
+ * The steps a call spawns, by when each is first due: its `steps`, each due its delay after the call's reading of the
+ * database's clock, which the statement adds, and its `timed`, each due at the instant its input holds.
+ */
+export interface SpawnRows<K> {
+	readonly steps: ReadonlyArray<SpawnAt<K> & { readonly delay: Delay }>
+	readonly timed: ReadonlyArray<SpawnAt<K> & { readonly due: Instant }>
+}
+
+/** A step a call spawns: its row among the call's `steps` or `timed`, by when it is due, and the step as spawned. */
+export const spawnedOf = <K extends string>(
+	at: SpawnAt<K>,
+	due: SpawnDue
+): SpawnRows<K> & { readonly spawned: Spawned } => {
+	const spawned: Spawned = { steps: [{ step: at.step, kind: at.kind, due }], finishes: [] }
+	switch (due.kind) {
+		case "after":
+			return { steps: [{ ...at, delay: due.delay }], timed: [], spawned }
+		case "at":
+			return { steps: [], timed: [{ ...at, due: due.instant }], spawned }
 	}
 }
 

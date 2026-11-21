@@ -27,6 +27,7 @@ import type {
 	Rooted,
 	RootView,
 	SeatAt,
+	SpawnDue,
 	Spawned,
 	StepRunner,
 	Turn
@@ -532,17 +533,44 @@ const nextWake = <R>(
 		}
 	})
 
-/** The wakes of what a commit or an admission spawned: each step after its delay, an exact timer, and each ready finish. */
-const spawnedRings = (flow: FlowName, spawned: Spawned): ReadonlyArray<Onward> => [
-	...Arr.map(spawned.steps, (s) => ({
-		wake: stepWake(flow, s.step, 0n),
-		delay: Duration.millis(Number(s.delay))
-	})),
-	...Arr.map(spawned.finishes, (finish) => ({
-		wake: stepWake(flow, finish, 0n),
-		delay: Duration.zero
-	}))
-]
+/** How long after `now` a spawned step is first due: its delay, or until its instant, at once where no reading was had. */
+const spawnDelay = (due: SpawnDue, now: Option.Option<Instant>): Duration.Duration => {
+	switch (due.kind) {
+		case "after":
+			return Duration.millis(Number(due.delay))
+		case "at":
+			return Option.match(now, {
+				onNone: () => Duration.zero,
+				onSome: (at) => delayTo(at, due.instant)
+			})
+	}
+}
+
+/**
+ * The wakes of what a commit or an admission spawned, each an exact timer: a step after its delay, or at its input's
+ * instant, timed from a reading of the database's clock taken once the call has committed (none needed where no step is
+ * timed), and each ready finish at once. A timed step whose reading fails is rung at once: its wake finds it not yet due
+ * and rings itself again at its instant, and the census is the net.
+ */
+const spawnedRings = <R>(
+	ledger: Ledger<R>,
+	spawned: Spawned
+): Effect.Effect<ReadonlyArray<Onward>> =>
+	Effect.map(
+		Arr.some(spawned.steps, (s) => s.due.kind === "at")
+			? Effect.option(ledger.now)
+			: Effect.succeedNone,
+		(now): ReadonlyArray<Onward> => [
+			...Arr.map(spawned.steps, (s) => ({
+				wake: stepWake(ledger.flow, s.step, 0n),
+				delay: spawnDelay(s.due, now)
+			})),
+			...Arr.map(spawned.finishes, (finish) => ({
+				wake: stepWake(ledger.flow, finish, 0n),
+				delay: Duration.zero
+			}))
+		]
+	)
 
 /**
  * What a step's end rings on: what it spawned, its scope's finish once its last child ended, and, for a finish, its
@@ -555,7 +583,7 @@ const settled = <R>(
 	spawned: Spawned
 ): Effect.Effect<ReadonlyArray<Onward>, never, Digest.Digest> =>
 	Effect.gen(function* () {
-		const children = spawnedRings(ledger.flow, spawned)
+		const children = yield* spawnedRings(ledger, spawned)
 		const ready = (s: ScopeKey) =>
 			Effect.flatMap(ledger.unended(s), (busy) =>
 				busy
@@ -1072,7 +1100,7 @@ const serveAdmit = <R>(
 		const spawned = admitted.success.value.spawned
 		return {
 			ending: { kind: "admitted", wake, spawned },
-			onward: spawnedRings(ledger.flow, spawned)
+			onward: yield* spawnedRings(ledger, spawned)
 		}
 	})
 
