@@ -4,7 +4,7 @@ import type { Reached } from "@bjornpagen/testing/features"
 import { array, element, type Gen, int, subset } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Option, Order } from "effect"
-import { assignedAmong } from "#integration/slice/flows.ts"
+import { assignedAmong } from "#integration/slice/reads.ts"
 import { embeddingDimensions } from "#integration/slice/relations.ts"
 import { ringAndDrain } from "#integration/support/run.ts"
 import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
@@ -314,9 +314,9 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 	kills: [
 		{
 			file: "packages/den/integration/slice/generated/assign.binding.ts",
-			original: "AssignDecideNearestRead: Arr.map(recordedNearest, (row, ordinal) => ({",
+			original: "AssignDecideReadNearest: Arr.map(recordedNearest, (found, ordinal) => ({",
 			replacement:
-				"AssignDecideNearestRead: Arr.map(Arr.take(recordedNearest, 1), (row, ordinal) => ({",
+				"AssignDecideReadNearest: Arr.map(Arr.take(recordedNearest, 1), (found, ordinal) => ({",
 			why: "the binding records only the first passage the nearest read found, so the record is no longer what the body saw"
 		}
 	]

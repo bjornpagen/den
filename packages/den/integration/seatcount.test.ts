@@ -84,7 +84,8 @@ const lowered = Effect.gen(function* () {
 			relations: `${specifier}relations.ts`,
 			schema: { from: `${specifier}app.ts`, name: "App" },
 			writer: { from: `${specifier}roles.ts`, name: "Loader" },
-			flow: { from: `${specifier}flows.ts`, name: "fan" }
+			flow: { from: `${specifier}flows.ts`, name: "fan" },
+			reads: { from: `${specifier}reads.ts`, exports: {} }
 		})
 	)
 	yield* grizzle("generate", {}, copy)

@@ -228,16 +228,23 @@
   name: an ending was `Done` with its output or `Failed` with nothing. So `Ending<I, O>` is `Done` with its input and
   output or `Failed` with its input, the finish's reads of its children's inputs set reads beside their outputs, each
   ending's input found by its step, which every child holds by law.
-- **A read's record holds the rows its query's attachments deliver (settled by metis's need, 2026-11-21).** The essay
-  grader reads an item's documents as pantry scans them, each document's nodes and each node's attributes and options,
-  a query whose rows carry attachments to any depth, which a flat record could not record. So a record's field is a
-  column, an `Option` of a record (an `"option"` attachment) or an array of records (an `"array"` one), and each
-  attachment's rows are relations of their own, keyed by the read's row's digest and the places of the arrays above
-  them, gap-free, contained in their owner; the row's digest covers every row under it, so a root stores a tree once and
-  two trees that differ anywhere are two rows. An attachment's relation is named by the read and its field, numbered
-  where a field name repeats, so a deep record's names stay within PostgreSQL's identifiers.
-  - Rejected: an attachment's rows content-addressed one by one, which names a relation per path all the same and adds
-    a relation of references per array.
+- **A read's records are grizzle's, of the query itself (Bjorn, 2026-11-21: "NO COMPROMISE. GRIZZLE ALL THE WAY").**
+  The essay grader reads an item's documents as pantry scans them, each document's nodes and each node's attributes and
+  options, a query whose rows carry attachments to any depth, for which a record schema of den's restated pantry's
+  vocabulary in a second spelling. So a step declares `reads(over, { name: query, ... }, params)`, named
+  queries over a level below den's fragment, which den takes as `query(W).reads(...)` over the flow's app role, which
+  holds that level whole; the body sees each name's rows
+  exactly as its query delivers them; and each named query's rows are recorded in the relations grizzle's `records`
+  makes of that query when den's fragment loads, each column the query's own field (its type, brand, contract or
+  roster) and each attachment a relation under its owner, keyed by the digest of the row's text (grizzle's `rowText`)
+  and its root, so a root stores a row once, a tree with it. They are written as ordinary typed inserts
+  (`recordsFacts`) and read back by an ordinary query whose rows are the query's own (`recordsQuery`), through grizzle's
+  one decoder. den restates no field of a read and stores no text of a row. A step's reads are a value of a module that
+  depends on their level alone (`<Step>Reads`), never on the flow, whose type names its app role, a role over the
+  schema den's fragment is spread into: the fragment builds the records from that one value, and `den generate` refuses
+  a step whose reads are any other.
+  - Rejected: a record schema of den's beside the query, a second spelling of its rows; a row's text stored, a blob;
+    wire cells as texts, which a field of the query types better.
 - **A step commits through the app's own ChangeSet, in its commit's call (settled by metis's need, 2026-11-21).** The
   essay grader records its evaluation through the app's ChangeSet, which inserts what an insert of facts cannot state
   (its rows from parameters, its instants the database's), so a step's `writes` is `through(changes, clock)`, a

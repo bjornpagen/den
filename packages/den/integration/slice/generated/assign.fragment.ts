@@ -13,12 +13,15 @@ import {
 	place,
 	pg,
 	pred,
+	records,
 	relation,
 	retirable,
 	retirement,
 	select,
 	sha256
 } from "@bjornpagen/grizzle"
+import { Array as Arr } from "effect"
+import { DecideReads } from "#integration/slice/reads.ts"
 
 export const AssignKind = closed.unordered("AssignKind", ["Embed", "Decide", "AssignmentFinish"])
 export const AssignRootKind = closed.unordered("AssignRootKind", ["Assignment"])
@@ -244,23 +247,13 @@ export const AssignAsked = relation(
 	{ from: sha256, ordinal: natural, to: sha256, root: sha256 },
 	["from", "ordinal", "root"]
 )
-export const AssignDecideNearestRow = relation(
-	"AssignDecideNearestRow",
-	{ digest: sha256, passage: Text, topic: Text, distance: pg["double precision"], root: sha256 },
-	["digest", "root"]
-)
-export const AssignDecideNearestRead = relation(
-	"AssignDecideNearestRead",
+export const AssignDecideReadNearest = relation(
+	"AssignDecideReadNearest",
 	{ step: sha256, ordinal: natural, digest: sha256, root: sha256 },
 	["step", "ordinal", "root"]
 )
-export const AssignDecideSeenRow = relation(
-	"AssignDecideSeenRow",
-	{ digest: sha256, learner: Text, passage: Text, root: sha256 },
-	["digest", "root"]
-)
-export const AssignDecideSeenRead = relation(
-	"AssignDecideSeenRead",
+export const AssignDecideReadSeen = relation(
+	"AssignDecideReadSeen",
 	{ step: sha256, ordinal: natural, digest: sha256, root: sha256 },
 	["step", "ordinal", "root"]
 )
@@ -279,6 +272,24 @@ export const AssignServed = relation(
 	{ environment: DenEnvironment, at: DenInstant, deployment: Text },
 	["environment", "at"]
 )
+
+/** The records of the rows step Decide's read `nearest` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest and its root. */
+export const AssignDecideReadNearestRecords = records(
+	"AssignDecideReadNearest",
+	DecideReads.named.nearest,
+	{ digest: sha256, root: sha256 },
+	["digest", "root"]
+)
+export const AssignDecideReadNearestRow = AssignDecideReadNearestRecords.row
+
+/** The records of the rows step Decide's read `seen` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest and its root. */
+export const AssignDecideReadSeenRecords = records(
+	"AssignDecideReadSeen",
+	DecideReads.named.seen,
+	{ digest: sha256, root: sha256 },
+	["digest", "root"]
+)
+export const AssignDecideReadSeenRow = AssignDecideReadSeenRecords.row
 
 /** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role `loader` hold whole. */
 export const assignGraph = fragment(
@@ -330,10 +341,10 @@ export const assignGraph = fragment(
 		AssignDecideOutputStageRest,
 		AssignAssignmentFinishOutput,
 		AssignAsked,
-		AssignDecideNearestRow,
-		AssignDecideNearestRead,
-		AssignDecideSeenRow,
-		AssignDecideSeenRead
+		AssignDecideReadNearest,
+		AssignDecideReadSeen,
+		...AssignDecideReadNearestRecords.relations,
+		...AssignDecideReadSeenRecords.relations
 	],
 	[
 		contained(on(AssignAdmitted, "scope", "root"), on(AssignScope, "scope", "root")),
@@ -644,18 +655,15 @@ export const assignGraph = fragment(
 		contained(on(AssignAsked, "from", "root"), on(AssignEmbedOutput, "step", "root")),
 		contained(on(AssignAsked, "to", "root"), on(AssignDecideInput, "step", "root")),
 		key(on(AssignAsked, "to", "root")),
-		check("AssignDecideNearestRowDistanceFinite", AssignDecideNearestRow, (row) =>
-			Num.isFinite(row.distance)
-		),
-		contained(on(AssignDecideNearestRead, "step", "root"), on(AssignResult, "step", "root")),
+		contained(on(AssignDecideReadNearest, "step", "root"), on(AssignResult, "step", "root")),
 		contained(
-			on(AssignDecideNearestRead, "digest", "root"),
-			on(AssignDecideNearestRow, "digest", "root")
+			on(AssignDecideReadNearest, "digest", "root"),
+			on(AssignDecideReadNearestRow, "digest", "root")
 		),
-		contained(on(AssignDecideSeenRead, "step", "root"), on(AssignResult, "step", "root")),
+		contained(on(AssignDecideReadSeen, "step", "root"), on(AssignResult, "step", "root")),
 		contained(
-			on(AssignDecideSeenRead, "digest", "root"),
-			on(AssignDecideSeenRow, "digest", "root")
+			on(AssignDecideReadSeen, "digest", "root"),
+			on(AssignDecideReadSeenRow, "digest", "root")
 		),
 		retirable(AssignRoot, [
 			on(AssignScope, "root"),
@@ -695,11 +703,13 @@ export const assignGraph = fragment(
 			on(AssignDecideOutputStageRest, "root"),
 			on(AssignAssignmentFinishOutput, "root"),
 			on(AssignAsked, "root"),
-			on(AssignDecideNearestRow, "root"),
-			on(AssignDecideNearestRead, "root"),
-			on(AssignDecideSeenRow, "root"),
-			on(AssignDecideSeenRead, "root")
-		])
+			on(AssignDecideReadNearest, "root"),
+			on(AssignDecideReadSeen, "root"),
+			on(AssignDecideReadNearestRecords, "root"),
+			on(AssignDecideReadSeenRecords, "root")
+		]),
+		...AssignDecideReadNearestRecords.rules,
+		...AssignDecideReadSeenRecords.rules
 	]
 )
 
@@ -736,10 +746,8 @@ export const assignWriter = [
 	"AssignDecideOutputStageServe",
 	"AssignDecideOutputStageRest",
 	"AssignAssignmentFinishOutput",
-	"AssignDecideNearestRow",
-	"AssignDecideNearestRead",
-	"AssignDecideSeenRow",
-	"AssignDecideSeenRead",
+	"AssignDecideReadNearest",
+	"AssignDecideReadSeen",
 	"AssignStep",
 	"AssignScope",
 	"AssignAdmitted",
@@ -754,5 +762,7 @@ export const assignWriter = [
 	"AssignDecideInputExclude",
 	"AssignDecideInputModeNearest",
 	"AssignDecideInputModeWithin",
-	"AssignAsked"
+	"AssignAsked",
+	...Arr.map(AssignDecideReadNearestRecords.relations, (rel) => rel.name),
+	...Arr.map(AssignDecideReadSeenRecords.relations, (rel) => rel.name)
 ] as const

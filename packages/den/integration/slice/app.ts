@@ -1,4 +1,5 @@
 import { contained, on, schema } from "@bjornpagen/grizzle"
+import { SliceBase } from "#integration/slice/base.ts"
 import { assignCoordination, assignGraph } from "#integration/slice/generated/assign.fragment.ts"
 import {
 	ChainResult,
@@ -22,53 +23,14 @@ import {
 	writebackCoordination,
 	writebackGraph
 } from "#integration/slice/generated/writeback.fragment.ts"
-import {
-	Assigned,
-	Audit,
-	Built,
-	Chimed,
-	Concluded,
-	Copied,
-	Cursor,
-	Delivered,
-	Bell,
-	Feed,
-	Heard,
-	Item,
-	Order,
-	Passage,
-	Reviewed,
-	Seen,
-	Settled,
-	Summary,
-	Tally,
-	Weight
-} from "#integration/slice/relations.ts"
+import { Audit } from "#integration/slice/relations.ts"
 
 /** The toy app's own level, each of den's eight flows listed as its graph and its coordination fragments. */
-const Listed = schema(
-	"Slice",
+const Listed = schema.extend(
+	[SliceBase],
+	"SliceDen",
 	[
-		Feed,
-		Bell,
-		Item,
-		Weight,
-		Cursor,
-		Order,
-		Tally,
-		Settled,
-		Copied,
-		Built,
 		Audit,
-		Passage,
-		Seen,
-		Assigned,
-		Concluded,
-		Reviewed,
-		Summary,
-		Delivered,
-		Heard,
-		Chimed,
 		chainGraph,
 		chainCoordination,
 		fanGraph,

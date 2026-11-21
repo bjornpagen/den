@@ -10,12 +10,14 @@ import { syncGraph, syncWriter } from "#integration/slice/generated/sync.fragmen
 import { writebackGraph, writebackWriter } from "#integration/slice/generated/writeback.fragment.ts"
 import {
 	Assigned,
+	Bell,
 	Built,
 	Chimed,
 	Concluded,
 	Copied,
 	Cursor,
 	Delivered,
+	Feed,
 	Heard,
 	Item,
 	Order,
@@ -38,6 +40,8 @@ export const Loader = role(
 	App,
 	"loader",
 	{
+		Feed,
+		Bell,
 		Item,
 		Weight,
 		Cursor,

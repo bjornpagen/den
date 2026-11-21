@@ -1,6 +1,6 @@
-import type { Sha256 } from "@bjornpagen/grizzle"
+import { type HeadOf, type RecordedQuery, rowText, type Sha256 } from "@bjornpagen/grizzle"
 import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, type Cron, Effect, Option, Order, Predicate, Stream } from "effect"
+import { Array as Arr, type Cron, Effect, Option, Order, Predicate, Result, Stream } from "effect"
 import type { Due, Exclusive, Scheduled, Trigger } from "#algebra/kinds.ts"
 import { atOnce, type Delay, delayOf, exclusiveId, type Instant } from "#runtime/identity.ts"
 import { refusedOnKey, type SpawnDue, type Spawned } from "#runtime/ledger.ts"
@@ -65,6 +65,26 @@ export const committedFacts = <const D extends { readonly insert: object }, F ex
 	Predicate.hasProperty(step, "insert") && Predicate.isObject(step.insert)
 		? { ...den, ...step, insert: { ...den.insert, ...step.insert } }
 		: { ...den, ...step }
+
+/**
+ * The text of a row a step's read `query` found, grizzle's rowText of the query, the input of the row's digest. The query
+ * is one grizzle made records of, so its text compiles, and each row is one the query delivered: a failure of either is
+ * a broken contract, and dies.
+ */
+export const recordText = <Q extends RecordedQuery>(
+	query: Q
+): ((row: HeadOf<Q>) => Effect.Effect<string>) => {
+	const texts = rowText(query)
+	return (row) =>
+		Result.match(texts, {
+			onFailure: (refused) => Effect.die(refused),
+			onSuccess: (text) =>
+				Result.match(text(row), {
+					onFailure: (fault) => Effect.die(fault),
+					onSuccess: (written) => Effect.succeed(written)
+				})
+		})
+}
 
 /** When a step of input `input` is first due, by its kind's declaration: a delay after its spawn, or its input's instant. */
 export const dueOf = <I>(due: Due<I>, input: I): SpawnDue => {

@@ -5,7 +5,7 @@ import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
-import { Array as Arr, Effect, Order } from "effect"
+import { Array as Arr, Effect, Option, Order } from "effect"
 import { ringAndDrain } from "#integration/support/run.ts"
 import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
@@ -46,6 +46,12 @@ const runs: Gen<Run> = (source) => ({
 	factor: source.draw(int(0, 3)),
 	copy: source.draw(int(0, 9))
 })
+
+/**
+ * A record as grizzle's row decoders deliver it: an object with no prototype, so a field named like a member of
+ * Object.prototype is an ordinary field; deepEqual compares prototypes, so a record read back is expected as one.
+ */
+const bareRecord = <T extends object>(fields: T): T => Object.assign({ __proto__: null }, fields)
 
 /**
  * Runs a feed's pages to its cursor, each page's read recorded with its result.
@@ -133,50 +139,45 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 							"each item a later page read is stored once in its root, however many pages read it"
 						)
 						const trees = yield* rows(app.workload.treeReads.once({ params: {}, facts: {} }))
-						const treeItems = yield* rows(app.workload.treeItems.once({ params: {}, facts: {} }))
-						const treeFirsts = yield* rows(app.workload.treeFirsts.once({ params: {}, facts: {} }))
-						Arr.forEach(pages, (page) => {
-							const tree = Arr.filter(trees, (t) => Sha256.equals(t.step, page.step))
-							assert.deepEqual(
-								Arr.map(tree, (t) => [t.feed, t.factor]),
-								run.factor > 0 ? [[run.feed, BigInt(run.factor)]] : [],
-								"a page's tree is the feed's weight, where it has one"
-							)
-							Arr.forEach(tree, (t) => {
-								const held = Arr.sort(
-									Arr.filter(
-										treeItems,
-										(i) => Sha256.equals(i.digest, t.digest) && Sha256.equals(i.root, t.root)
-									),
-									Order.mapInput(Order.BigInt, (i: (typeof treeItems)[number]) => i.items)
+						yield* Effect.forEach(pages, (page) =>
+							Effect.gen(function* () {
+								const tree = Arr.filter(trees, (t) => Sha256.equals(t.step, page.step))
+								assert.deepEqual(
+									Arr.map(tree, (t) => [t.feed, t.factor]),
+									run.factor > 0 ? [[run.feed, BigInt(run.factor)]] : [],
+									"a page's tree is the feed's weight, where it has one"
 								)
 								const pagesBefore = Arr.sort(
 									Arr.filter(pages, (p) => p.seq < page.seq),
 									Order.mapInput(Order.BigInt, (p: (typeof pages)[number]) => p.seq)
 								)
 								const expected = Arr.flatMap(pagesBefore, (p) =>
-									Array.from({ length: Number(p.items) }, (_, n) => [p.seq, BigInt(n)] as const)
+									Array.from({ length: Number(p.items) }, (_, n) =>
+										bareRecord({
+											feed: run.feed,
+											seq: p.seq,
+											n: BigInt(n),
+											first: Option.some(bareRecord({ n: 0n } as const))
+										})
+									)
 								)
-								assert.deepEqual(
-									Arr.map(held, (i) => [i.items, i.seq, i.n]),
-									Arr.map(expected, ([seq, n], at) => [BigInt(at), seq, n]),
-									"a recorded tree holds the items before its page, in order, each at its place"
+								yield* Effect.forEach(tree, (t) =>
+									Effect.gen(function* () {
+										const stored = yield* rows(
+											app.workload.treeRecords.once({
+												params: { digest: t.digest, root: t.root },
+												facts: {}
+											})
+										)
+										assert.deepEqual(
+											stored,
+											[bareRecord({ feed: run.feed, factor: BigInt(run.factor), items: expected })],
+											"a recorded tree reads back as the page found it: the items before its page in order, each with its page's first item"
+										)
+									})
 								)
-								const firsts = Arr.filter(
-									treeFirsts,
-									(f) => Sha256.equals(f.digest, t.digest) && Sha256.equals(f.root, t.root)
-								)
-								assert.deepEqual(
-									Arr.sort(
-										Arr.map(firsts, (f) => f.items),
-										Order.BigInt
-									),
-									Arr.map(expected, (_, at) => BigInt(at)),
-									"every item of a recorded tree holds its page's first item"
-								)
-								assert.ok(Arr.every(firsts, (f) => f.n === 0n))
 							})
-						})
+						)
 						const finished = yield* rows(app.workload.chainFinishes.once({ params: {}, facts: {} }))
 						const finishes = Arr.filter(finished, (finish) => Sha256.equals(finish.scope, scope))
 						assert.deepEqual(
@@ -237,15 +238,15 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 		},
 		{
 			file: "packages/den/integration/slice/generated/chain.binding.ts",
-			original: '\t\t\t\t\t\t\tdigest: rowDigest("earlier", [',
-			replacement: "\t\t\t\t\t\t\tdigest: rowDigest(Sha256.toHex(done.turn.step), [",
+			original: 'rowDigest("earlier", text)',
+			replacement: "rowDigest(Sha256.toHex(done.turn.step), text)",
 			why: "Each page stores its own copy of every item it read, keyed by its own step: a chain of n pages stores the items before each page again, quadratic in the feed where it was linear."
 		},
 		{
 			file: "packages/den/src/runtime/identity.ts",
-			original: 'typeof value === "object" ? attachedParts(value.rows) : [columnText(value)]',
-			replacement: 'typeof value === "object" ? [] : [columnText(value)]',
-			why: "A row's digest leaves out the rows its attachments delivered: two pages' trees of one weight share a digest, so the later page's items land under the earlier page's reference and the record is no longer what the earlier page saw."
+			original: 'derive(["row", read, text])',
+			replacement: 'derive(["row", read])',
+			why: "A row's digest leaves out the row: every tree a read found shares one digest, so a later page's items land under an earlier page's reference and the record is no longer what the earlier page saw."
 		}
 	]
 })

@@ -19,13 +19,10 @@ import {
 } from "#algebra/kinds.ts"
 import {
 	type ArrayField,
-	type Attached,
 	type Base,
 	type Column,
 	type DenKey,
 	errorShapeOf,
-	type RecordShape,
-	recordShapeOf,
 	type Shape,
 	shapeOf,
 	type UnionField,
@@ -106,7 +103,13 @@ export type LawIR =
 			readonly field: string
 			readonly holds: Holds
 	  }
-	| { readonly kind: "retirable"; readonly header: string; readonly bodies: ReadonlyArray<string> }
+	| {
+			readonly kind: "retirable"
+			readonly header: string
+			readonly bodies: ReadonlyArray<string>
+			/** The stems of the records whose relations are bodies too, every one of them, which grizzle makes. */
+			readonly records: ReadonlyArray<string>
+	  }
 	| {
 			readonly kind: "ordered"
 			readonly member: SideIR
@@ -195,34 +198,14 @@ export interface EdgeIR {
 }
 
 /**
- * A read's record, lowered: the relation that holds its rows, keyed by the digest of the read's row and, for a row an
- * array delivered, its place in it and the place of every array row above it (`places`, each a field named after its
- * array), its columns, and its attachments, each a record of its own, contained in it.
- */
-export interface RecordIR {
-	readonly relation: string
-	readonly places: ReadonlyArray<string>
-	readonly columns: ReadonlyArray<Column>
-	readonly attached: ReadonlyArray<{
-		readonly name: string
-		readonly delivery: Attached["delivery"]
-		readonly record: RecordIR
-	}>
-}
-
-/** Every relation of a record: its own, and each of its attachments', at every depth. */
-export const recordRelations = (record: RecordIR): ReadonlyArray<string> => [
-	record.relation,
-	...Arr.flatMap(record.attached, (a) => recordRelations(a.record))
-]
-
-/**
- * One named query of a step's declared reads, lowered: its name, its record, whose relations hold each row it found once
- * per root, by the digest of its record, and the relation of the step's references to them, by ordinal.
+ * One named query of a step's declared reads, lowered: its name; the stem its records are named by, the relations
+ * grizzle's `records` makes of the query when the fragment loads (`${stem}Row`, keyed by a row's digest and its root,
+ * and a relation per attachment under it, each the stem and a suffix), which den names nothing of but the root; and the
+ * relation of the step's references to the rows it found, by ordinal, named the stem itself, which no records name is.
  */
 export interface ReadIR {
 	readonly name: string
-	readonly row: RecordIR
+	readonly stem: string
 	readonly record: string
 }
 
@@ -969,105 +952,17 @@ export const lower = (flow: AnyFlow): Lowered => {
 	})
 
 	/**
-	 * A record's relations: `relationName`, keyed by the digest and `places`, holding its columns, and, for each of its
-	 * attachments, the relation of the rows delivered under it, contained in it: an option's keyed as its owner, at most
-	 * one row an owner, and an array's by its owner's key and its place, gap-free from 0, as a value's ordered family is.
-	 * An attachment's relation is named by the read and its field, so a record of any depth keeps its names within
-	 * PostgreSQL's identifiers; a field named again deeper in the record, or named as the read's own `row` or `read`, is
-	 * numbered by its occurrence (`taken`).
-	 */
-	const recordOf = (
-		declaration: string,
-		stem: string,
-		relationName: string,
-		shape: RecordShape,
-		places: ReadonlyArray<string>,
-		taken: Map<string, number>
-	): RecordIR => {
-		const key = ["digest", ...places]
-		Arr.forEach(shape.columns, (c) => {
-			if (c.type.kind === "vector") {
-				throw new Refused({
-					declaration,
-					why: `its record holds the vector ${c.name}: a record holds what a body sees, never a vector`
-				})
-			}
-			if (c.name === "root" || Arr.contains(key, c.name)) {
-				throw new Refused({
-					declaration,
-					why: `its record has a field ${c.name}, which its relation keeps for itself`
-				})
-			}
-		})
-		relation({
-			name: relationName,
-			fields: [
-				{ name: "digest", type: rowKey },
-				...Arr.map(places, (placeField) => ({ name: placeField, type: natural })),
-				...Arr.map(shape.columns, (c) => ({ name: c.name, type: fieldOf(relationName, c) }))
-			],
-			key: ["digest", ...places]
-		})
-		finite(relationName, shape.columns)
-		const attached = Arr.map(shape.attached, (a) => {
-			const seen = (taken.get(a.name) ?? 0) + 1
-			taken.set(a.name, seen)
-			const below = a.delivery === "array" ? [...places, a.name] : places
-			const child = recordOf(
-				`${declaration}, its attachment ${a.name}`,
-				stem,
-				`${stem}${capitalized(a.name)}${seen === 1 ? "" : String(seen)}`,
-				a.record,
-				below,
-				taken
-			)
-			laws.push(into(side(child.relation, key), side(relationName, key)))
-			if (a.delivery === "array") {
-				laws.push(
-					into(
-						{
-							relation: child.relation,
-							selection: { kind: "atLeast", field: a.name, bound: 1n },
-							terms: [
-								...Arr.map(key, (field) => ({ field, pred: false })),
-								{ field: a.name, pred: true }
-							]
-						},
-						side(child.relation, [...key, a.name])
-					)
-				)
-			}
-			return { name: a.name, delivery: a.delivery, record: child }
-		})
-		return { relation: relationName, places, columns: shape.columns, attached }
-	}
-
-	/**
-	 * A step's records: per named query, the relations of the rows it found, keyed by the digest of the record and the
-	 * root, so a row a sibling step of the root found stays one row, with the rows its attachments delivered under it,
-	 * and a relation of the step's references to them, keyed by the step and the row's place in what it found, each
-	 * contained in its row and in the step's result. A record holds columns and attachments, never a vector, which a body
-	 * never sees.
+	 * A step's records: per named query, the records grizzle makes of it, keyed by the digest of a row's text and its
+	 * root, so a row a sibling step of the root found stays one row, and a relation of the step's references to them,
+	 * keyed by the step and the row's place in what it found, each contained in its row and in the step's result.
 	 */
 	const readsOf = (s: AnyStepKind): ReadonlyArray<ReadIR> =>
 		s.reads.kind === "none"
 			? []
-			: Arr.map(Record.toEntries(s.reads.records), ([readName, recorded]): ReadIR => {
-					const declaration = `step ${s.name}, its read ${readName}`
-					const stem = name(`${s.name}${capitalized(readName)}`)
-					const row = recordOf(
-						declaration,
-						stem,
-						`${stem}Row`,
-						recordShapeOf(declaration, recorded),
-						[],
-						new Map([
-							["row", 1],
-							["read", 1]
-						])
-					)
+			: Arr.map(Record.keys(s.reads.named), (readName): ReadIR => {
+					const stem = name(`${s.name}Read${capitalized(readName)}`)
 					const record = relation({
-						name: `${stem}Read`,
+						name: stem,
 						fields: [
 							{ name: "step", type: stepKey },
 							{ name: "ordinal", type: natural },
@@ -1077,9 +972,9 @@ export const lower = (flow: AnyFlow): Lowered => {
 					})
 					laws.push(
 						into(side(record, ["step"]), side(Result, ["step"])),
-						into(side(record, ["digest"]), side(row.relation, ["digest"]))
+						into(side(record, ["digest"]), side(`${stem}Row`, ["digest"]))
 					)
-					return { name: readName, row, record }
+					return { name: readName, stem, record }
 				})
 
 	/**
@@ -1340,6 +1235,12 @@ export const lower = (flow: AnyFlow): Lowered => {
 			(r) => r !== Root && !Arr.contains(coordination, r)
 		)
 	)
+	/** The stems of the steps' records, each a body of the unit, its root `${stem}Row` keyed by its owner's root. */
+	const recorded = Arr.flatMap(stepsIR, (st) => Arr.map(st.reads, (rd) => rd.stem))
+	const recordRows = new Set(Arr.map(recorded, (stem) => `${stem}Row`))
+	/** Whether a relation is a body of a root's unit: one of den's, or the root of a step's records. */
+	const inUnit = (relationName: string): boolean =>
+		bodies.has(relationName) || recordRows.has(relationName)
 	const rootField = { name: "root", type: scopeKey }
 	const rooted = Arr.map(relations, (r): RelationIR => {
 		if (bodies.has(r.name)) {
@@ -1359,7 +1260,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		...Arr.map(laws, (law): LawIR => {
 			switch (law.kind) {
 				case "contained":
-					return bodies.has(law.from.relation) && bodies.has(law.to.relation)
+					return inUnit(law.from.relation) && inUnit(law.to.relation)
 						? { ...law, from: onRoot(law.from), to: onRoot(law.to) }
 						: law
 				case "key":
@@ -1371,7 +1272,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 					return law
 			}
 		}),
-		{ kind: "retirable", header: Root, bodies: Array.from(bodies) }
+		{ kind: "retirable", header: Root, bodies: Array.from(bodies), records: recorded }
 	]
 
 	const names = [

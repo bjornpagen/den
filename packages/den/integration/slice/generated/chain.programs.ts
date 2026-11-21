@@ -8,10 +8,12 @@ import {
 	deferrable,
 	param,
 	query,
+	recordsFacts,
 	role,
 	v,
 	workload
 } from "@bjornpagen/grizzle"
+import { Array as Arr } from "effect"
 import { App } from "#integration/slice/app.ts"
 import { chain as declaredFlow } from "#integration/slice/flows.ts"
 import {
@@ -23,9 +25,6 @@ import {
 	ChainPageInputFeed,
 	ChainChainRunInputFeed,
 	ChainOrderedInputFeed,
-	ChainPageWeightsRowFeed,
-	ChainPageEarlierRowFeed,
-	ChainPageTreeRowFeed,
 	ChainScope,
 	ChainRoot,
 	ChainAdmitted,
@@ -52,17 +51,15 @@ import {
 	ChainChainRunFinishOutput,
 	ChainOrderedFinishOutput,
 	ChainNext,
-	ChainPageWeightsRow,
-	ChainPageWeightsRead,
-	ChainPageEarlierRow,
-	ChainPageEarlierRead,
-	ChainPageTreeRow,
-	ChainPageTreeItems,
-	ChainPageTreeFirst,
-	ChainPageTreeRead,
+	ChainPageReadWeights,
+	ChainPageReadEarlier,
+	ChainPageReadTree,
 	ChainPaused,
 	ChainResumed,
 	ChainServed,
+	ChainPageReadWeightsRecords,
+	ChainPageReadEarlierRecords,
+	ChainPageReadTreeRecords,
 	chainGraph,
 	chainCoordination
 } from "#integration/slice/generated/chain.fragment.ts"
@@ -98,14 +95,12 @@ export const ChainDen = role(
 			"ChainOrderedInput",
 			"ChainChainRunFinishOutput",
 			"ChainOrderedFinishOutput",
-			"ChainPageWeightsRow",
-			"ChainPageWeightsRead",
-			"ChainPageEarlierRow",
-			"ChainPageEarlierRead",
-			"ChainPageTreeRow",
-			"ChainPageTreeItems",
-			"ChainPageTreeFirst",
-			"ChainPageTreeRead"
+			"ChainPageReadWeights",
+			"ChainPageReadEarlier",
+			"ChainPageReadTree",
+			...Arr.map(ChainPageReadWeightsRecords.relations, (rel) => rel.name),
+			...Arr.map(ChainPageReadEarlierRecords.relations, (rel) => rel.name),
+			...Arr.map(ChainPageReadTreeRecords.relations, (rel) => rel.name)
 		]
 	}
 )
@@ -123,9 +118,6 @@ export const ChainCoordinator = role(
 		ChainPageInputFeed,
 		ChainChainRunInputFeed,
 		ChainOrderedInputFeed,
-		ChainPageWeightsRowFeed,
-		ChainPageEarlierRowFeed,
-		ChainPageTreeRowFeed,
 		ChainPaused,
 		ChainResumed,
 		ChainServed
@@ -609,14 +601,9 @@ export const chainCommitPrograms = Object.freeze({
 				.insert(ChainHeld, [])
 				.insert(ChainPageOutput, [])
 				.insert(ChainPageOutputNext, [])
-				.insert(ChainPageWeightsRow, [])
-				.insert(ChainPageWeightsRead, [])
-				.insert(ChainPageEarlierRow, [])
-				.insert(ChainPageEarlierRead, [])
-				.insert(ChainPageTreeRow, [])
-				.insert(ChainPageTreeItems, [])
-				.insert(ChainPageTreeFirst, [])
-				.insert(ChainPageTreeRead, [])
+				.insert(ChainPageReadWeights, [])
+				.insert(ChainPageReadEarlier, [])
+				.insert(ChainPageReadTree, [])
 				.insert(ChainScope, [])
 				.insert(ChainAdmitted, [])
 				.insert(ChainFinish, [])
@@ -624,6 +611,9 @@ export const chainCommitPrograms = Object.freeze({
 				.insert(ChainPageInput, [])
 				.insert(ChainPageInputAfter, [])
 				.insert(ChainNext, [])
+				.insertAll(recordsFacts(chainGraph, ChainPageReadWeightsRecords)([]))
+				.insertAll(recordsFacts(chainGraph, ChainPageReadEarlierRecords)([]))
+				.insertAll(recordsFacts(chainGraph, ChainPageReadTreeRecords)([]))
 				.insert(
 					ChainStep,
 					query(chainGraph).rule((r) => {
@@ -650,7 +640,7 @@ export const chainCommitPrograms = Object.freeze({
 		),
 		{ now: "millis" }
 	),
-	chainReadPage: deferrable(declaredFlow.kinds[0].reads.query(Loader)),
+	chainReadPage: deferrable(query(Loader).reads(declaredFlow.kinds[0].reads.named)),
 	chainCommitChainRunFinish: ChangeSet.union(
 		ChangeSet.empty(chainGraph)
 			.insert(ChainResult, [])

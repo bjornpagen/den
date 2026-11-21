@@ -7,6 +7,8 @@ $$;
 
 CREATE SCHEMA "slice";
 
+CREATE SCHEMA "slice_den";
+
 CREATE SCHEMA "slice_seats";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
@@ -107,29 +109,11 @@ RETURN '{"done","failed"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__chain_outcome_names_vo4tgqx6qh"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__chain_page_earlier_row_feed_names_tmqqz3lel4"() RETURNS "pg_catalog"."name"[]
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"news","sport"}'::"pg_catalog"."name"[];
-
-REVOKE ALL ON FUNCTION "slice"."__chain_page_earlier_row_feed_names_tmqqz3lel4"() FROM PUBLIC;
-
 CREATE FUNCTION "slice"."__chain_page_input_feed_names_dxuyhzkiur"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN '{"news","sport"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__chain_page_input_feed_names_dxuyhzkiur"() FROM PUBLIC;
-
-CREATE FUNCTION "slice"."__chain_page_tree_row_feed_names_w5f7gjcjkc"() RETURNS "pg_catalog"."name"[]
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"news","sport"}'::"pg_catalog"."name"[];
-
-REVOKE ALL ON FUNCTION "slice"."__chain_page_tree_row_feed_names_w5f7gjcjkc"() FROM PUBLIC;
-
-CREATE FUNCTION "slice"."__chain_page_weights_row_feed_names_awtorq4cfe"() RETURNS "pg_catalog"."name"[]
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"news","sport"}'::"pg_catalog"."name"[];
-
-REVOKE ALL ON FUNCTION "slice"."__chain_page_weights_row_feed_names_awtorq4cfe"() FROM PUBLIC;
 
 CREATE FUNCTION "slice"."__chain_pausable_names_vjdoymenyq"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -461,29 +445,11 @@ RETURN X'C0'::bit varying;
 
 REVOKE ALL ON FUNCTION "slice"."__chain_outcome_live_azc7nb42gy"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__chain_page_earlier_row_feed_live_orkazo3lov"() RETURNS bit varying
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN X'C0'::bit varying;
-
-REVOKE ALL ON FUNCTION "slice"."__chain_page_earlier_row_feed_live_orkazo3lov"() FROM PUBLIC;
-
 CREATE FUNCTION "slice"."__chain_page_input_feed_live_zxgp5dub6j"() RETURNS bit varying
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN X'C0'::bit varying;
 
 REVOKE ALL ON FUNCTION "slice"."__chain_page_input_feed_live_zxgp5dub6j"() FROM PUBLIC;
-
-CREATE FUNCTION "slice"."__chain_page_tree_row_feed_live_m3isrn2bwm"() RETURNS bit varying
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN X'C0'::bit varying;
-
-REVOKE ALL ON FUNCTION "slice"."__chain_page_tree_row_feed_live_m3isrn2bwm"() FROM PUBLIC;
-
-CREATE FUNCTION "slice"."__chain_page_weights_row_feed_live_fueegj5g3p"() RETURNS bit varying
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN X'C0'::bit varying;
-
-REVOKE ALL ON FUNCTION "slice"."__chain_page_weights_row_feed_live_fueegj5g3p"() FROM PUBLIC;
 
 CREATE FUNCTION "slice"."__chain_pausable_live_ozpbw3gnsu"() RETURNS bit varying
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -733,123 +699,9 @@ REVOKE ALL ON FUNCTION "slice"."__writeback_root_kind_live_ifibfl2f7i"() FROM PU
 
 CREATE DOMAIN "slice"."__sha256" AS "pg_catalog"."bytea" CONSTRAINT "check" CHECK (VALUE IS NULL OR ("pg_catalog"."octet_length"(VALUE) = 32) IS TRUE);
 
-CREATE DOMAIN "slice"."assign_assignment_input_mode" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."assign_decide_input_mode" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."assign_decide_output_stage" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."assign_embed_input_mode" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."assign_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_kind_live_epoonlekfm"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."assign_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_outcome_live_3t7oirgwzl"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."assign_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_pausable_live_spku342qp6"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."assign_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_retry_why_live_qfzksuyq3m"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."assign_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_root_kind_live_nccqmed4lq"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
 CREATE DOMAIN "slice"."bell" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__bell_live_bk7zau3khi"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
-CREATE DOMAIN "slice"."chain_chain_run_input_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."chain_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_kind_live_4t2tj7pchx"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."chain_ordered_input_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."chain_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_outcome_live_azc7nb42gy"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."chain_page_earlier_row_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_page_earlier_row_feed_live_orkazo3lov"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."chain_page_input_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_page_input_feed_live_zxgp5dub6j"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."chain_page_tree_row_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_page_tree_row_feed_live_m3isrn2bwm"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."chain_page_weights_row_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_page_weights_row_feed_live_fueegj5g3p"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."chain_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_pausable_live_ozpbw3gnsu"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."chain_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_retry_why_live_m5qnitynhz"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."chain_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_root_kind_live_mnlnztwbz2"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."clock_chime_input_bell" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_chime_input_bell_live_vs2eypgl4v"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."clock_chime_output_bell" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_chime_output_bell_live_ikpwkv25mh"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."clock_hourly_input_bell" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_hourly_input_bell_live_yfdtebn7na"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."clock_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_kind_live_kem5uxahz7"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."clock_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_outcome_live_q7vjmi72sr"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."clock_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_pausable_live_waldzggn7s"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."clock_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_retry_why_live_auqnukeed5"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."clock_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_root_kind_live_dkya2k5nqw"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."fan_child_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_child_kind_live_lzght2aqpn"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."fan_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_kind_live_mosnikz3yn"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."fan_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_outcome_live_nos3iqln54"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."fan_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_pausable_live_uymd2oabeh"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."fan_resource" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_resource_live_yqyw4ee5fp"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."fan_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_retry_why_live_yom5egfb4x"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."fan_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_root_kind_live_sx7vmfeklj"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
 CREATE DOMAIN "slice"."feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__feed_live_pfwkvulieq"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."retry_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__retry_kind_live_lujs5xc25d"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."retry_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__retry_outcome_live_fdo5qezp4f"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."retry_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__retry_pausable_live_buioe34fit"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."retry_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__retry_retry_why_live_p4et7ysqjo"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."retry_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__retry_root_kind_live_euautuyuhd"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."review_child_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__review_child_kind_live_xb5v52t6gq"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."review_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__review_kind_live_3egbkjww5a"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."review_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__review_outcome_live_svq4irpcsp"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."review_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__review_pausable_live_at7bdrj2is"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."review_resource" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__review_resource_live_bbskolaran"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."review_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__review_retry_why_live_sp7od4pwim"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."review_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__review_root_kind_live_vkjzjpusnp"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."sync_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__sync_kind_live_mrzzgu2rqf"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."sync_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__sync_outcome_live_7gndrvrenw"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."sync_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__sync_pausable_live_7gx4kdgs6e"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."sync_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__sync_retry_why_live_t6r5ysh2pa"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."sync_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__sync_root_kind_live_vi4cdymudd"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."writeback_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__writeback_kind_live_gxqp25qbem"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."writeback_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__writeback_outcome_live_haxkgy2wa4"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."writeback_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__writeback_pausable_live_rwjxemvunq"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."writeback_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__writeback_retry_why_live_6vffrr6k2o"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice"."writeback_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__writeback_root_kind_live_ifibfl2f7i"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
 CREATE DOMAIN "slice"."__domain_gfw43vigph" AS bigint CONSTRAINT "check" CHECK (VALUE IS NULL OR (VALUE >= 0::bigint) IS TRUE);
 
@@ -864,6 +716,114 @@ CREATE DOMAIN "slice"."__text_t4rwovzmqj" AS "pg_catalog"."text" COLLATE "pg_cat
 CREATE DOMAIN "slice"."__param_nearest_topic_4eruqlfauv" AS "slice"."__text_t4rwovzmqj";
 
 CREATE DOMAIN "slice"."__param_seen_learner_exdgowkpja" AS "slice"."__text_t4rwovzmqj";
+
+CREATE DOMAIN "slice_den"."assign_assignment_input_mode" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."assign_decide_input_mode" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."assign_decide_output_stage" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."assign_embed_input_mode" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."assign_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_kind_live_epoonlekfm"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."assign_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_outcome_live_3t7oirgwzl"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."assign_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_pausable_live_spku342qp6"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."assign_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_retry_why_live_qfzksuyq3m"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."assign_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__assign_root_kind_live_nccqmed4lq"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."chain_chain_run_input_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."chain_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_kind_live_4t2tj7pchx"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."chain_ordered_input_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."chain_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_outcome_live_azc7nb42gy"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."chain_page_input_feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_page_input_feed_live_zxgp5dub6j"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."chain_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_pausable_live_ozpbw3gnsu"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."chain_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_retry_why_live_m5qnitynhz"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."chain_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_root_kind_live_mnlnztwbz2"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."clock_chime_input_bell" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_chime_input_bell_live_vs2eypgl4v"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."clock_chime_output_bell" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_chime_output_bell_live_ikpwkv25mh"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."clock_hourly_input_bell" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_hourly_input_bell_live_yfdtebn7na"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."clock_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_kind_live_kem5uxahz7"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."clock_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_outcome_live_q7vjmi72sr"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."clock_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_pausable_live_waldzggn7s"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."clock_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_retry_why_live_auqnukeed5"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."clock_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_root_kind_live_dkya2k5nqw"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."fan_child_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_child_kind_live_lzght2aqpn"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."fan_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_kind_live_mosnikz3yn"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."fan_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_outcome_live_nos3iqln54"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."fan_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_pausable_live_uymd2oabeh"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."fan_resource" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_resource_live_yqyw4ee5fp"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."fan_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_retry_why_live_yom5egfb4x"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."fan_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_root_kind_live_sx7vmfeklj"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."retry_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__retry_kind_live_lujs5xc25d"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."retry_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__retry_outcome_live_fdo5qezp4f"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."retry_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__retry_pausable_live_buioe34fit"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."retry_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__retry_retry_why_live_p4et7ysqjo"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."retry_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__retry_root_kind_live_euautuyuhd"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."review_child_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__review_child_kind_live_xb5v52t6gq"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."review_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__review_kind_live_3egbkjww5a"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."review_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__review_outcome_live_svq4irpcsp"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."review_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__review_pausable_live_at7bdrj2is"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."review_resource" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__review_resource_live_bbskolaran"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."review_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__review_retry_why_live_sp7od4pwim"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."review_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__review_root_kind_live_vkjzjpusnp"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."sync_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__sync_kind_live_mrzzgu2rqf"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."sync_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__sync_outcome_live_7gndrvrenw"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."sync_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__sync_pausable_live_7gx4kdgs6e"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."sync_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__sync_retry_why_live_t6r5ysh2pa"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."sync_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__sync_root_kind_live_vi4cdymudd"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."writeback_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__writeback_kind_live_gxqp25qbem"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."writeback_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__writeback_outcome_live_haxkgy2wa4"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."writeback_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__writeback_pausable_live_rwjxemvunq"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."writeback_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__writeback_retry_why_live_6vffrr6k2o"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+
+CREATE DOMAIN "slice_den"."writeback_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__writeback_root_kind_live_ifibfl2f7i"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
 CREATE TYPE "slice"."__row_news_assign_assignment_input_lznek7z3du" AS ("learner" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "mode" smallint, "root" "pg_catalog"."bytea", "scope" "pg_catalog"."bytea", "topic" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8");
 

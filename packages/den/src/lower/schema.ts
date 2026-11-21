@@ -5,8 +5,6 @@ import {
 	type ErrorSchema,
 	type FieldSchema,
 	named,
-	type RecordField,
-	type RecordSchema,
 	Refused,
 	type Stored,
 	type TaggedUnionSchema
@@ -252,68 +250,6 @@ export const shapeOf = (declaration: string, schema: Stored): Shape => {
 		),
 		unions: Arr.flatMap(parts, ({ name, part }) =>
 			part.kind === "union" ? [{ name, variants: part.variants }] : []
-		)
-	}
-}
-
-/**
- * A read's record, lowered: its columns, which its row holds, and its attachments, each the rows the query delivers
- * under a field, a record of its own.
- */
-export interface RecordShape {
-	readonly columns: ReadonlyArray<Column>
-	readonly attached: ReadonlyArray<Attached>
-}
-
-/** An attachment of a record: its field, how its rows are delivered, at most one or in order, and their record. */
-export interface Attached {
-	readonly name: string
-	readonly delivery: "option" | "array"
-	readonly record: RecordShape
-}
-
-const isAttachedArray = (schema: RecordField): schema is Schema.$Array<RecordSchema> =>
-	schema.ast._tag === "Arrays"
-
-/** A record field's part: a column, or an attachment's rows. */
-type RecordPart =
-	| { readonly kind: "column"; readonly type: ColumnType }
-	| {
-			readonly kind: "attached"
-			readonly delivery: Attached["delivery"]
-			readonly record: RecordSchema
-	  }
-
-const recordPartOf = (declaration: string, field: string, schema: RecordField): RecordPart => {
-	if (isAttachedArray(schema)) {
-		return { kind: "attached", delivery: "array", record: schema.value }
-	}
-	if ("value" in schema) {
-		return { kind: "attached", delivery: "option", record: schema.value }
-	}
-	return { kind: "column", type: columnOf(declaration, field, schema) }
-}
-
-/** The shape of a record: each field a column or an attachment, whose rows are a record's of their own. */
-export const recordShapeOf = (declaration: string, schema: RecordSchema): RecordShape => {
-	const parts = Arr.map(Record.toEntries(schema.fields), ([name, field]) => ({
-		name,
-		part: recordPartOf(declaration, name, field)
-	}))
-	return {
-		columns: Arr.flatMap(parts, ({ name, part }) =>
-			part.kind === "column" ? [{ name, type: part.type }] : []
-		),
-		attached: Arr.flatMap(parts, ({ name, part }) =>
-			part.kind === "attached"
-				? [
-						{
-							name,
-							delivery: part.delivery,
-							record: recordShapeOf(`${declaration}, its attachment ${name}`, part.record)
-						}
-					]
-				: []
 		)
 	}
 }

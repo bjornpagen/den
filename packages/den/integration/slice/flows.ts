@@ -14,7 +14,6 @@ import {
 	noReads,
 	operator,
 	pauseHandle,
-	reads,
 	resource,
 	vectorOf,
 	root,
@@ -29,8 +28,9 @@ import {
 	writesNothing
 } from "@bjornpagen/den/algebra/kinds"
 import { laterOf } from "@bjornpagen/den/algebra/later"
-import { ChangeSet, Distance, query, v, Vector } from "@bjornpagen/grizzle"
+import { ChangeSet, Vector } from "@bjornpagen/grizzle"
 import { Array as Arr, Context, Cron, Effect, Option, Order, Schema } from "effect"
+import { DecideReads, PageReads } from "#integration/slice/reads.ts"
 import {
 	Assigned,
 	Built,
@@ -42,13 +42,10 @@ import {
 	embeddingDimensions,
 	Heard,
 	Item,
-	Passage,
 	Reviewed,
-	Seen,
 	Settled,
 	Summary,
-	Tally,
-	Weight
+	Tally
 } from "#integration/slice/relations.ts"
 import type { Loader } from "#integration/slice/roles.ts"
 
@@ -98,23 +95,6 @@ const PageRead = Schema.Struct({
 })
 
 /**
- * A feed's weight as a tree of attachments two deep: the weight, the items its pages wrote so far in their order, an
- * array, and under each item the first item of its page, an option (an essay's documents, each document's scan of
- * nodes, each node's attributes).
- */
-const WeightTree = Schema.Struct({
-	feed: Feed,
-	factor: Schema.BigInt,
-	items: Schema.Array(
-		Schema.Struct({
-			seq: Schema.BigInt,
-			n: Schema.BigInt,
-			first: Schema.Option(Schema.Struct({ n: Schema.BigInt }))
-		})
-	)
-})
-
-/**
  * Reads one page of a feed: a page holds its position plus one items for each unit of the feed's weight, which it reads
  * before its body runs (a feed with no weight counts as weight one), and every page but the feed's last names the
  * next. It reads its feed's items so far beside the weight, as each turn of a conversation reads its thread, and counts
@@ -129,65 +109,7 @@ const Page = step(
 		input: PageInput,
 		output: PageRead,
 		error: Schema.Never,
-		reads: reads(
-			(role: typeof Loader) =>
-				query(role).reads({
-					weights: query(role).rule((r) => {
-						const { feed, factor } = v(Weight, "weight")
-						return r
-							.match(Weight, { feed, factor })
-							.where(r.eq(feed, r.param("feed", Weight.fields.feed)))
-							.find({ feed, factor })
-					}),
-					earlier: query(role).rule((r) => {
-						const { feed, seq, n } = v(Item, "item")
-						return r
-							.match(Item, { feed, seq, n })
-							.where(r.eq(feed, r.param("feed", Item.fields.feed)))
-							.find({ feed, seq, n })
-					}),
-					tree: query(role)
-						.rule((r) => {
-							const { feed, factor } = v(Weight, "weight")
-							return r
-								.match(Weight, { feed, factor })
-								.where(r.eq(feed, r.param("feed", Weight.fields.feed)))
-								.find({ feed, factor })
-						})
-						.attach(
-							"items",
-							(weight) =>
-								query(role)
-									.rule((r) => {
-										const { feed, seq, n } = v(Item, "item")
-										return r
-											.match(Item, { feed, seq, n })
-											.where(r.eq(feed, weight.feed))
-											.find({ feed, seq, n })
-									})
-									.attach(
-										"first",
-										(item) =>
-											query(role).rule((r) =>
-												r.match(Item, { feed: item.feed, seq: item.seq, n: 0n }).find({ n: 0n })
-											),
-										"option"
-									)
-									.orderBy(["seq", "asc"], ["n", "asc"]),
-							"array"
-						)
-				}),
-			{
-				weights: Schema.Struct({ feed: Feed, factor: Schema.BigInt }),
-				earlier: Schema.Struct({ feed: Feed, seq: Schema.BigInt, n: Schema.BigInt }),
-				tree: WeightTree
-			},
-			(page: typeof PageInput.Type) => ({
-				"weights.feed": page.feed,
-				"earlier.feed": page.feed,
-				"tree.feed": page.feed
-			})
-		),
+		reads: PageReads,
 		awaits: [],
 		uses: [],
 		retry: untilSettled,
@@ -887,12 +809,6 @@ const Decision = Schema.Struct({
 	confidence: Schema.Finite
 })
 
-/**
- * How many passages an assignment's nearest read finds at most, the suite's own size: within the topics' sizes the
- * suite draws, so a topic holds more passages than are found as often as fewer.
- */
-export const assignedAmong = 3
-
 /** What an assignment decides from the passages it found and those it passes over. */
 const decide = (
 	mode: typeof Probe.Type.mode,
@@ -932,44 +848,7 @@ const Decide = step(
 		input: Question,
 		output: Decision,
 		error: Schema.Never,
-		reads: reads(
-			(role: typeof Loader) =>
-				query(role).reads({
-					nearest: query(role)
-						.rule((r) => {
-							const { passage, topic, embedding } = v(Passage, "passage")
-							return r
-								.match(Passage, { passage, topic, embedding })
-								.where(r.eq(topic, r.param("topic", Passage.fields.topic)))
-								.find({
-									passage,
-									topic,
-									distance: Distance.cosine(embedding, r.param("query", Passage.fields.embedding))
-								})
-						})
-						.approximateNearest({ by: "distance", take: assignedAmong }),
-					seen: query(role).rule((r) => {
-						const { learner, passage } = v(Seen, "seen")
-						return r
-							.match(Seen, { learner, passage })
-							.where(r.eq(learner, r.param("learner", Seen.fields.learner)))
-							.find({ learner, passage })
-					})
-				}),
-			{
-				nearest: Schema.Struct({
-					passage: Schema.String,
-					topic: Schema.String,
-					distance: Schema.Finite
-				}),
-				seen: Schema.Struct({ learner: Schema.String, passage: Schema.String })
-			},
-			(question: typeof Question.Type) => ({
-				"nearest.query": question.vector,
-				"nearest.topic": question.topic,
-				"seen.learner": question.learner
-			})
-		),
+		reads: DecideReads,
 		awaits: [],
 		uses: [],
 		retry: untilSettled,

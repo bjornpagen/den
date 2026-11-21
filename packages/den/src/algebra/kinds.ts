@@ -8,6 +8,8 @@ import type {
 	InputOf,
 	ParamArg,
 	ParamsOf,
+	ReadsChildren,
+	ReadsQuery,
 	Vector
 } from "@bjornpagen/grizzle"
 import { regex } from "arkregex"
@@ -311,56 +313,40 @@ export const writesNothing: CommitsNothing = { kind: "nothing" }
 const READ = regex("^[a-z][A-Za-z0-9]*$")
 
 /**
- * A record's field: a column, or the rows an attachment of the query delivers under it (grizzle's `attach`), each a
- * record of its own: at most one, an Option of a record (`"option"`), or in order, an array of records (`"array"`), to
- * any depth (an essay's item and its stimuli, each document's scan of nodes and each node's attributes).
- */
-export type RecordField = ColumnSchema | Schema.Option<RecordSchema> | Schema.$Array<RecordSchema>
-
-/** The fields of a record. */
-export interface RecordFields {
-	readonly [field: PropertyKey]: RecordField
-}
-
-/**
- * What a read records of each row it found, and what a body sees of it: a struct of columns and attachments. Lowering
- * refuses a record with a field no column schema states, a vector, and an attachment delivered otherwise.
- */
-export type RecordSchema = Schema.Struct<RecordFields>
-
-/** A step's records, by the name of the query whose rows each records. */
-export type Records = { readonly [name: string]: RecordSchema }
-
-/**
- * A step's declared reads: one grizzle query over the flow's app role, `query(W).reads({ name: query, ... })`, a record
- * of named queries, any a grizzle query can state (a range or a set of values, an exact order by a computed distance
- * and a take, `approximateNearest` from a parameter's vector or a stored row's, a hybrid of searches), whose parameters
- * `params` takes from the step's input, a vector a body before it computed among them. They are taken in one statement
- * after the claim and before the body, deferrable, so they read one snapshot and what they record describes one moment
- * of the database (W1's fingerprint, W5's presence, W7's intents, the assignment engine's ledger rows and nearest
- * content, DCAN's catalog search and its thread); each named query's rows are recorded with the step's result by its
- * record, so every input a step saw is a fact of the graph, and the body sees each name's rows as its record states
- * them. A row is recorded once per root, by the digest of its record, and each step's record of it is a reference: a
- * chain of turns that reads a thread as it grows stores each of its rows once, not once per turn. Which rows an
+ * A step's declared reads: named grizzle queries `named` over `over`, a level of the app's below den's fragment
+ * (the app's relations, as metis's delivery level holds them), any a grizzle query can state (a range or a set of values,
+ * an exact order by a computed distance and a take, `approximateNearest` from a parameter's vector or a stored row's, a
+ * hybrid of searches, attachments to any depth: an essay's item and its stimuli, each document's scan of nodes), whose
+ * parameters `params` takes from the step's input, `<name>.<parameter>`, a vector a body before it computed among them.
+ * den takes them as one query over the flow's app role, `query(W).reads(named)`, which holds `over` whole, in one
+ * statement after the claim and before the body,
+ * deferrable, so they read one snapshot and what they record describes one moment of the database (W1's fingerprint,
+ * DCAN's catalog search and its thread); and each named query's rows are recorded with the step's result in the
+ * relations grizzle's `records` makes of that query, each column the query's own field and each attachment a relation
+ * under its owner, so every input a step saw is a typed fact of the graph, stated once, by the query itself. A row is
+ * recorded once per root, by the digest of its text (grizzle's `rowText`), and each step's record of it is a reference:
+ * a chain of turns that reads a thread as it grows stores each of its rows once, not once per turn. Which rows an
  * approximate search finds depends on the index and the database owner's pgvector settings as well as on the facts
  * (grizzle's README, "Every answer is a function of the facts"), so the record, not a second search, is what the step
- * saw. The query is a function of the app role, which a flow declared before the schema its fragment is spread into
- * cannot hold.
+ * saw. `over` is a level below den's fragment, which the fragment's records are built over when it loads; so the reads
+ * are a value of a module that depends on that level alone, `<Step>Reads`, never on the flow, whose type names its app
+ * role (den generate's Placement `reads`).
  */
-export interface Reads<W, Q, I, R extends Records> {
+export interface Reads<L, N extends ReadsChildren, I> {
 	readonly kind: "query"
-	readonly query: (writer: W) => Q
-	readonly records: R
-	readonly params: (input: I) => ParamArg<ParamsOf<Q>>
+	readonly over: L
+	/** The named queries over `over`. */
+	readonly named: N
+	readonly params: (input: I) => ParamArg<ParamsOf<ReadsQuery<L, N>>>
 }
 
-/** A step's reads over its input `I`, whatever role, query and records they name. */
+/** A step's reads over its input `I`, whatever level and queries they name. */
 export type ReadsOver<I> =
 	| { readonly kind: "none" }
 	| {
 			readonly kind: "query"
-			readonly query: (writer: never) => unknown
-			readonly records: Records
+			readonly over: unknown
+			readonly named: { readonly [name: string]: unknown }
 			readonly params: (input: I) => unknown
 	  }
 
@@ -369,8 +355,8 @@ export type AnyReads =
 	| { readonly kind: "none" }
 	| {
 			readonly kind: "query"
-			readonly query: (writer: never) => unknown
-			readonly records: Records
+			readonly over: unknown
+			readonly named: { readonly [name: string]: unknown }
 			readonly params: (input: never) => unknown
 	  }
 
@@ -378,35 +364,22 @@ export type AnyReads =
 export const noReads: { readonly kind: "none" } = { kind: "none" }
 
 /**
- * The records a reads query's rows fit: one record per named query, each a record whose type holds that query's rows,
- * and none for a name the query does not read.
+ * A step's reads: the named queries `named` over the level `over`, and their parameters from the step's input,
+ * each `<name>.<parameter>`.
  */
-type RecordsOf<H, R> = {
-	readonly [K in keyof H]: K extends keyof R
-		? R[K] extends { readonly Type: infer T }
-			? H[K] extends ReadonlyArray<T>
-				? R[K]
-				: never
-			: never
-		: RecordSchema
-} & { readonly [K in Exclude<keyof R, keyof H>]: never }
+export const reads = <L, const N extends ReadsChildren, I>(
+	over: L,
+	named: N,
+	params: (input: I) => NoInfer<ParamArg<ParamsOf<ReadsQuery<L, N>>>>
+): Reads<L, N, I> => ({ kind: "query", over, named, params })
 
-/**
- * A step's reads: the query `query` makes of the flow's app role, the record of each of its named queries' rows, and its
- * parameters from the step's input.
- */
-export const reads = <W, Q, const R extends Records, I>(
-	query: (writer: W) => Q,
-	records: R & RecordsOf<HeadOf<Q>, R>,
-	params: (input: I) => ParamArg<ParamsOf<Q>>
-): Reads<W, Q, I, R> => ({ kind: "query", query, records, params })
-
-/** What a body sees of its declared reads: each named query's rows, as its record states them. */
+/** What a body sees of its declared reads: each named query's rows, exactly as the query delivers them. */
 export type Found<D> = D extends {
 	readonly kind: "query"
-	readonly records: infer R extends Records
+	readonly over: infer L
+	readonly named: infer N extends ReadsChildren
 }
-	? { readonly [K in keyof R]: ReadonlyArray<R[K]["Type"]> }
+	? HeadOf<ReadsQuery<L, N>>
 	: { readonly [name: string]: never }
 
 /** Refuses a read's name den cannot lower into its record's relation name. */
@@ -594,7 +567,7 @@ export const step = <
 	body: Body<IS["Type"], Found<D>, OS["Type"], ES["Type"], T, R>
 ): StepKind<Name, IS, OS, ES, D, T, R> => {
 	named("step", name)
-	Arr.forEach(shape.reads.kind === "query" ? Rec.keys(shape.reads.records) : [], (read) =>
+	Arr.forEach(shape.reads.kind === "query" ? Rec.keys(shape.reads.named) : [], (read) =>
 		readNamed(`step ${name}`, read)
 	)
 	return { _tag: "Step", name, ...shape, body, of: spawnOf(name) }

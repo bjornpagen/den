@@ -8,10 +8,12 @@ import {
 	deferrable,
 	param,
 	query,
+	recordsFacts,
 	role,
 	v,
 	workload
 } from "@bjornpagen/grizzle"
+import { Array as Arr } from "effect"
 import { App } from "#integration/slice/app.ts"
 import { assign as declaredFlow } from "#integration/slice/flows.ts"
 import {
@@ -62,13 +64,13 @@ import {
 	AssignDecideOutputStageRest,
 	AssignAssignmentFinishOutput,
 	AssignAsked,
-	AssignDecideNearestRow,
-	AssignDecideNearestRead,
-	AssignDecideSeenRow,
-	AssignDecideSeenRead,
+	AssignDecideReadNearest,
+	AssignDecideReadSeen,
 	AssignPaused,
 	AssignResumed,
 	AssignServed,
+	AssignDecideReadNearestRecords,
+	AssignDecideReadSeenRecords,
 	assignGraph,
 	assignCoordination
 } from "#integration/slice/generated/assign.fragment.ts"
@@ -113,10 +115,10 @@ export const AssignDen = role(
 			"AssignAssignmentInputModeNearest",
 			"AssignAssignmentInputModeWithin",
 			"AssignAssignmentFinishOutput",
-			"AssignDecideNearestRow",
-			"AssignDecideNearestRead",
-			"AssignDecideSeenRow",
-			"AssignDecideSeenRead"
+			"AssignDecideReadNearest",
+			"AssignDecideReadSeen",
+			...Arr.map(AssignDecideReadNearestRecords.relations, (rel) => rel.name),
+			...Arr.map(AssignDecideReadSeenRecords.relations, (rel) => rel.name)
 		]
 	}
 )
@@ -737,13 +739,13 @@ export const assignCommitPrograms = Object.freeze({
 			.insert(AssignDecideOutputWeighed, [])
 			.insert(AssignDecideOutputStageServe, [])
 			.insert(AssignDecideOutputStageRest, [])
-			.insert(AssignDecideNearestRow, [])
-			.insert(AssignDecideNearestRead, [])
-			.insert(AssignDecideSeenRow, [])
-			.insert(AssignDecideSeenRead, []),
+			.insert(AssignDecideReadNearest, [])
+			.insert(AssignDecideReadSeen, [])
+			.insertAll(recordsFacts(assignGraph, AssignDecideReadNearestRecords)([]))
+			.insertAll(recordsFacts(assignGraph, AssignDecideReadSeenRecords)([])),
 		declaredFlow.kinds[1].writes.changes(Loader)
 	),
-	assignReadDecide: deferrable(declaredFlow.kinds[1].reads.query(Loader)),
+	assignReadDecide: deferrable(query(Loader).reads(declaredFlow.kinds[1].reads.named)),
 	assignCommitAssignmentFinish: ChangeSet.union(
 		ChangeSet.empty(assignGraph)
 			.insert(AssignResult, [])

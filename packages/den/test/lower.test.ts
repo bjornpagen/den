@@ -51,9 +51,9 @@ import { caseHangMillis } from "#test/support/suites.ts"
  *
  * Oracle (specification): the proposal's sections 5 and 6, over flows of up to three steps, chained or not, of each
  * field form, with or without a resource, a pause handle, an exclusive root, a child scope, one or two named reads and a typed
- * error. Each named read records its rows once per root by their digest, in a relation of its record's columns, and
- * the step's references to them by ordinal, each contained in its row and in the step's result; a finite number is held
- * finite by a row check, a record's as a value's.
+ * error. Each named read's references are a relation named by its step and read, keyed by the step and the row's
+ * place, each contained in its step's result and in the root of its records, which grizzle makes of the read's query
+ * when the fragment loads and which are bodies of the root's unit; a finite number is held finite by a row check.
  */
 
 const Form = Schema.Literals([
@@ -80,14 +80,10 @@ type Feature =
 	| "a child scope"
 	| "a read"
 	| "two reads"
-	| "a tree read"
 	| "a typed error"
 
-/**
- * Which reads the first step declares: none, one, or two, the second recording a finite number or a tree of
- * attachments.
- */
-const Reading = Schema.Literals(["none", "one", "two", "tree"])
+/** Which reads the first step declares: none, one, or two. */
+const Reading = Schema.Literals(["none", "one", "two"])
 
 interface Sketch {
 	readonly prefix: "Alpha" | "Beta"
@@ -140,50 +136,17 @@ const fieldOf = (form: Form): FieldSchema => {
 	}
 }
 
-/** A record of a feed's weights, the rows a read finds of it. */
-const WeightRecord = Schema.Struct({ feed: Schema.BigInt, factor: Schema.BigInt })
-
-/** A record of passages, each with its distance: a finite number, held finite in its row's relation. */
-const PassageRecord = Schema.Struct({ passage: Schema.BigInt, distance: Schema.Finite })
-
 /**
- * A record of documents, its attachments two deep: each node an array's row, its comment an option's under it and its
- * attributes an array's, each attribute's comment an option's again, a field named `comment` a second time, and the
- * document's declaration an option of its own.
- */
-const DocumentRecord = Schema.Struct({
-	path: Schema.String,
-	nodes: Schema.Array(
-		Schema.Struct({
-			start: Schema.BigInt,
-			comment: Schema.Option(Schema.Struct({ value: Schema.String })),
-			attributes: Schema.Array(
-				Schema.Struct({
-					name: Schema.String,
-					comment: Schema.Option(Schema.Struct({ value: Schema.String }))
-				})
-			)
-		})
-	),
-	declaration: Schema.Option(Schema.Struct({ version: Schema.String }))
-})
-
-/**
- * The reads a sketch's first step declares, by their records alone: lowering never runs a read's query, which the
- * programs module calls over the flow's app role, so a sketch's query is no query at all.
+ * The reads a sketch's first step declares, by their names alone: lowering never runs a read's query, whose records
+ * grizzle makes when the fragment loads, so a sketch's queries are no queries at all.
  */
 const readsOf = <I>(reading: typeof Reading.Type): ReadsOver<I> =>
 	reading === "none"
 		? noReads
 		: {
 				kind: "query",
-				query: (role: never) => role,
-				records:
-					reading === "one"
-						? { weights: WeightRecord }
-						: reading === "two"
-							? { weights: WeightRecord, passages: PassageRecord }
-							: { weights: WeightRecord, documents: DocumentRecord },
+				over: {},
+				named: reading === "one" ? { weights: {} } : { weights: {}, passages: {} },
 				params: () => ({})
 			}
 
@@ -331,7 +294,6 @@ it.effect(
 							"a child scope",
 							"a read",
 							"two reads",
-							"a tree read",
 							"a typed error"
 						],
 						{ cases: 80, sense: notesOnly }
@@ -360,17 +322,13 @@ it.effect(
 						}
 						const reading = {
 							weights: sketch.reads !== "none",
-							passages: sketch.reads === "two",
-							documents: sketch.reads === "tree"
+							passages: sketch.reads === "two"
 						}
 						if (sketch.reads === "one") {
 							c.note("a read")
 						}
 						if (sketch.reads === "two") {
 							c.note("two reads")
-						}
-						if (sketch.reads === "tree") {
-							c.note("a tree read")
 						}
 						if (sketch.typed) {
 							c.note("a typed error")
@@ -383,7 +341,15 @@ it.effect(
 							seats.counts.name,
 							seats.live
 						])
-						const names = [...relations, ...counts, ...Arr.map(lowered.rosters, (r) => r.name)]
+						const recordRoots = Arr.flatMap(lowered.steps, (step) =>
+							Arr.map(step.reads, (read) => `${read.stem}Row`)
+						)
+						const names = [
+							...relations,
+							...recordRoots,
+							...counts,
+							...Arr.map(lowered.rosters, (r) => r.name)
+						]
 						const has = (suffix: string) => Arr.contains(relations, `${P}${suffix}`)
 						assert.isTrue(Arr.every(names, Str.startsWith(P)))
 						const sides = Arr.flatMap(lowered.laws, (law) => {
@@ -500,10 +466,8 @@ it.effect(
 								)
 							)
 						}
-						assert.strictEqual(has("S0WeightsRead"), reading.weights)
-						assert.strictEqual(has("S0WeightsRow"), reading.weights)
-						assert.strictEqual(has("S0PassagesRead"), reading.passages)
-						assert.strictEqual(has("S0PassagesRow"), reading.passages)
+						assert.strictEqual(has("S0ReadWeights"), reading.weights)
+						assert.strictEqual(has("S0ReadPassages"), reading.passages)
 						const fieldsOf = (name: string) =>
 							Option.map(
 								Arr.findFirst(lowered.relations, (r) => r.name === name),
@@ -511,16 +475,7 @@ it.effect(
 							)
 						if (reading.passages) {
 							assert.deepStrictEqual(
-								fieldsOf(`${P}S0PassagesRow`),
-								Option.some([
-									["digest", "digest"],
-									["passage", "base"],
-									["distance", "base"],
-									["root", "digest"]
-								])
-							)
-							assert.deepStrictEqual(
-								fieldsOf(`${P}S0PassagesRead`),
+								fieldsOf(`${P}S0ReadPassages`),
 								Option.some([
 									["step", "digest"],
 									["ordinal", "natural"],
@@ -528,103 +483,16 @@ it.effect(
 									["root", "digest"]
 								])
 							)
-							assert.isTrue(
-								Arr.some(
-									lowered.laws,
-									(law) =>
-										law.kind === "check" &&
-										law.relation === `${P}S0PassagesRow` &&
-										law.field === "distance" &&
-										law.holds.kind === "finite"
-								)
-							)
-						}
-						if (reading.documents) {
-							const keyOf = (name: string) =>
-								Option.map(
-									Arr.findFirst(lowered.relations, (r) => r.name === `${P}S0Documents${name}`),
-									(r) => Arr.join(r.key, ",")
-								)
-							const tree = [
-								["Row", ["digest", "path", "root"], "digest,root", "", ""],
-								[
-									"Nodes",
-									["digest", "nodes", "start", "root"],
-									"digest,nodes,root",
-									"Row",
-									"nodes"
-								],
-								["Comment", ["digest", "nodes", "value", "root"], "digest,nodes,root", "Nodes", ""],
-								[
-									"Attributes",
-									["digest", "nodes", "attributes", "name", "root"],
-									"digest,nodes,attributes,root",
-									"Nodes",
-									"attributes"
-								],
-								[
-									"Comment2",
-									["digest", "nodes", "attributes", "value", "root"],
-									"digest,nodes,attributes,root",
-									"Attributes",
-									""
-								],
-								["Declaration", ["digest", "version", "root"], "digest,root", "Row", ""]
-							] as const
-							Arr.forEach(tree, ([name, fields, key, owner, place]) => {
-								assert.deepStrictEqual(
-									Option.map(fieldsOf(`${P}S0Documents${name}`), (all): ReadonlyArray<string> =>
-										Arr.map(all, ([field]) => field)
-									),
-									Option.some<ReadonlyArray<string>>(fields),
-									`the attachment ${name} holds its owner's key, its place and its columns`
-								)
-								assert.deepStrictEqual(keyOf(name), Option.some(key))
-								if (owner !== "") {
-									const ownerKey = Option.getOrElse(keyOf(owner), () => "")
-									assert.isTrue(
-										Arr.some(
-											containments,
-											(law) =>
-												law.from.relation === `${P}S0Documents${name}` &&
-												law.to.relation === `${P}S0Documents${owner}` &&
-												Arr.join(
-													Arr.map(law.from.terms, (t) => t.field),
-													","
-												) === ownerKey
-										),
-										`the attachment ${name} is contained in its owner ${owner}`
-									)
-								}
-								if (place !== "") {
-									assert.isTrue(
-										Arr.some(
-											containments,
-											(law) =>
-												law.from.relation === `${P}S0Documents${name}` &&
-												law.to.relation === `${P}S0Documents${name}` &&
-												law.from.selection.kind === "atLeast" &&
-												law.from.selection.field === place &&
-												Arr.some(law.from.terms, (t) => t.field === place && t.pred)
-										),
-										`the array ${name}'s rows are gap-free from 0`
-									)
-								}
-							})
 						}
 						Arr.forEach(
-							[
-								...(reading.weights ? ["Weights"] : []),
-								...(reading.passages ? ["Passages"] : []),
-								...(reading.documents ? ["Documents"] : [])
-							],
+							[...(reading.weights ? ["Weights"] : []), ...(reading.passages ? ["Passages"] : [])],
 							(read) => {
 								assert.isTrue(
 									Arr.some(
 										containments,
 										(law) =>
-											law.from.relation === `${P}S0${read}Read` &&
-											law.to.relation === `${P}S0${read}Row` &&
+											law.from.relation === `${P}S0Read${read}` &&
+											law.to.relation === `${P}S0Read${read}Row` &&
 											Arr.join(
 												Arr.map(law.from.terms, (t) => t.field),
 												","
@@ -633,12 +501,15 @@ it.effect(
 									`each reference of ${read} names its row in its root`
 								)
 								assert.deepStrictEqual(
-									Option.map(
-										Arr.findFirst(lowered.relations, (r) => r.name === `${P}S0${read}Row`),
-										(r) => Arr.join(r.key, ",")
+									Option.flatMap(
+										Arr.findFirst(lowered.laws, (law) => law.kind === "retirable"),
+										(law) =>
+											law.kind === "retirable" && Arr.contains(law.records, `${P}S0Read${read}`)
+												? Option.some(true)
+												: Option.none()
 									),
-									Option.some("digest,root"),
-									`${read}'s rows are keyed by their digest and root`
+									Option.some(true),
+									`${read}'s records are bodies of its root's unit`
 								)
 							}
 						)
@@ -803,5 +674,6 @@ const placement: Placement = {
 	relations: "#relations.ts",
 	schema: { from: "#app.ts", name: "App" },
 	writer: { from: "#roles.ts", name: "Loader" },
-	flow: { from: "#flows.ts", name: "flow" }
+	flow: { from: "#flows.ts", name: "flow" },
+	reads: { from: "#reads.ts", exports: {} }
 }

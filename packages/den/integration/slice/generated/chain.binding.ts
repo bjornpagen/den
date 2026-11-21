@@ -7,6 +7,7 @@ import {
 	one,
 	only,
 	readingOf,
+	recordText,
 	rowsOf,
 	signals,
 	spawnedOf,
@@ -17,8 +18,6 @@ import {
 	atOnce,
 	finishStep,
 	rootScope,
-	attached,
-	type RecordedRow,
 	rowDigest,
 	startedStep
 } from "@bjornpagen/den/runtime/identity"
@@ -37,11 +36,17 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Chain over its served programs; `den generate` writes it, and nothing edits it. */
-import { type Addition, Sha256 } from "@bjornpagen/grizzle"
+import { type Addition, recordsFacts, Sha256 } from "@bjornpagen/grizzle"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
 import { chain } from "#integration/slice/flows.ts"
-import { ChainPausable } from "#integration/slice/generated/chain.fragment.ts"
+import {
+	ChainPausable,
+	ChainPageReadWeightsRecords,
+	ChainPageReadEarlierRecords,
+	ChainPageReadTreeRecords,
+	chainGraph
+} from "#integration/slice/generated/chain.fragment.ts"
 import type {
 	ChainScope,
 	ChainAdmitted,
@@ -59,6 +64,13 @@ import type {
 	chainRetirerPrograms,
 	chainCommitPrograms
 } from "#integration/slice/generated/chain.programs.ts"
+
+/** The text of a row step Page's read `weights` found, its digest's input. */
+const ChainPageReadWeightsText = recordText(chain.kinds[0].reads.named.weights)
+/** The text of a row step Page's read `earlier` found, its digest's input. */
+const ChainPageReadEarlierText = recordText(chain.kinds[0].reads.named.earlier)
+/** The text of a row step Page's read `tree` found, its digest's input. */
+const ChainPageReadTreeText = recordText(chain.kinds[0].reads.named.tree)
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface ChainHandles {
@@ -308,27 +320,7 @@ export const chainLedger = (h: ChainHandles) => {
 								facts: {}
 							})
 						),
-						(rows) =>
-							Effect.map(only(rows), (row) => ({
-								weights: Arr.map(row.weights, (found) => ({
-									feed: found.feed,
-									factor: found.factor
-								})),
-								earlier: Arr.map(row.earlier, (found) => ({
-									feed: found.feed,
-									seq: found.seq,
-									n: found.n
-								})),
-								tree: Arr.map(row.tree, (found) => ({
-									feed: found.feed,
-									factor: found.factor,
-									items: Arr.map(found.items, (e0) => ({
-										seq: e0.seq,
-										n: e0.n,
-										first: Option.map(e0.first, (e1) => ({ n: e1.n }))
-									}))
-								}))
-							}))
+						only
 					),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -377,49 +369,30 @@ export const chainLedger = (h: ChainHandles) => {
 							nothingGrown,
 							joined
 						)
-						const recordedWeights = Arr.map(done.rows.weights, (row) => ({
-							...row,
-							digest: rowDigest("weights", [
-								["feed", row.feed],
-								["factor", row.factor]
-							])
-						}))
+						const recordedWeights = yield* Effect.forEach(done.rows.weights, (row) =>
+							Effect.map(ChainPageReadWeightsText(row), (text) => ({
+								row,
+								digest: rowDigest("weights", text)
+							}))
+						)
 						const uniqueWeights = Arr.dedupeWith(recordedWeights, (a, b) =>
 							Sha256.equals(a.digest, b.digest)
 						)
-						const recordedEarlier = Arr.map(done.rows.earlier, (row) => ({
-							...row,
-							digest: rowDigest("earlier", [
-								["feed", row.feed],
-								["seq", row.seq],
-								["n", row.n]
-							])
-						}))
+						const recordedEarlier = yield* Effect.forEach(done.rows.earlier, (row) =>
+							Effect.map(ChainPageReadEarlierText(row), (text) => ({
+								row,
+								digest: rowDigest("earlier", text)
+							}))
+						)
 						const uniqueEarlier = Arr.dedupeWith(recordedEarlier, (a, b) =>
 							Sha256.equals(a.digest, b.digest)
 						)
-						const recordedTree = Arr.map(done.rows.tree, (row) => ({
-							...row,
-							digest: rowDigest("tree", [
-								["feed", row.feed],
-								["factor", row.factor],
-								[
-									"items",
-									attached(
-										Arr.map(row.items, (m0): RecordedRow => [
-											["seq", m0.seq],
-											["n", m0.n],
-											[
-												"first",
-												attached(
-													Option.toArray(Option.map(m0.first, (m1): RecordedRow => [["n", m1.n]]))
-												)
-											]
-										])
-									)
-								]
-							])
-						}))
+						const recordedTree = yield* Effect.forEach(done.rows.tree, (row) =>
+							Effect.map(ChainPageReadTreeText(row), (text) => ({
+								row,
+								digest: rowDigest("tree", text)
+							}))
+						)
 						const uniqueTree = Arr.dedupeWith(recordedTree, (a, b) =>
 							Sha256.equals(a.digest, b.digest)
 						)
@@ -453,61 +426,53 @@ export const chainLedger = (h: ChainHandles) => {
 													value
 												}))
 											),
-											ChainPageWeightsRow: Arr.map(uniqueWeights, (row) => ({
-												digest: row.digest,
-												feed: row.feed,
-												factor: row.factor,
-												root: done.turn.root
-											})),
-											ChainPageWeightsRead: Arr.map(recordedWeights, (row, ordinal) => ({
-												step: done.turn.step,
-												root: done.turn.root,
-												ordinal: BigInt(ordinal),
-												digest: row.digest
-											})),
-											ChainPageEarlierRow: Arr.map(uniqueEarlier, (row) => ({
-												digest: row.digest,
-												feed: row.feed,
-												seq: row.seq,
-												n: row.n,
-												root: done.turn.root
-											})),
-											ChainPageEarlierRead: Arr.map(recordedEarlier, (row, ordinal) => ({
-												step: done.turn.step,
-												root: done.turn.root,
-												ordinal: BigInt(ordinal),
-												digest: row.digest
-											})),
-											ChainPageTreeRow: Arr.map(uniqueTree, (row) => ({
-												digest: row.digest,
-												feed: row.feed,
-												factor: row.factor,
-												root: done.turn.root
-											})),
-											ChainPageTreeItems: Arr.flatMap(uniqueTree, (row) =>
-												Arr.map(row.items, (m0, p0) => ({
-													digest: row.digest,
-													items: BigInt(p0),
-													seq: m0.seq,
-													n: m0.n,
-													root: done.turn.root
-												}))
-											),
-											ChainPageTreeFirst: Arr.flatMap(uniqueTree, (row) =>
-												Arr.flatMap(row.items, (m0, p0) =>
-													Arr.map(Option.toArray(m0.first), (m1) => ({
-														digest: row.digest,
-														items: BigInt(p0),
-														n: m1.n,
-														root: done.turn.root
-													}))
+											...recordsFacts(
+												chainGraph,
+												ChainPageReadWeightsRecords
+											)(
+												Arr.map(
+													uniqueWeights,
+													(found) =>
+														[{ digest: found.digest, root: done.turn.root }, found.row] as const
 												)
 											),
-											ChainPageTreeRead: Arr.map(recordedTree, (row, ordinal) => ({
+											ChainPageReadWeights: Arr.map(recordedWeights, (found, ordinal) => ({
 												step: done.turn.step,
 												root: done.turn.root,
 												ordinal: BigInt(ordinal),
-												digest: row.digest
+												digest: found.digest
+											})),
+											...recordsFacts(
+												chainGraph,
+												ChainPageReadEarlierRecords
+											)(
+												Arr.map(
+													uniqueEarlier,
+													(found) =>
+														[{ digest: found.digest, root: done.turn.root }, found.row] as const
+												)
+											),
+											ChainPageReadEarlier: Arr.map(recordedEarlier, (found, ordinal) => ({
+												step: done.turn.step,
+												root: done.turn.root,
+												ordinal: BigInt(ordinal),
+												digest: found.digest
+											})),
+											...recordsFacts(
+												chainGraph,
+												ChainPageReadTreeRecords
+											)(
+												Arr.map(
+													uniqueTree,
+													(found) =>
+														[{ digest: found.digest, root: done.turn.root }, found.row] as const
+												)
+											),
+											ChainPageReadTree: Arr.map(recordedTree, (found, ordinal) => ({
+												step: done.turn.step,
+												root: done.turn.root,
+												ordinal: BigInt(ordinal),
+												digest: found.digest
 											}))
 										}
 									},

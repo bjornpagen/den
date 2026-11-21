@@ -1,7 +1,14 @@
-import { Effect, FileSystem, Path } from "effect"
-import type { AnyFlow } from "#algebra/flow.ts"
+import { Array as Arr, Effect, FileSystem, Path } from "effect"
+import { type AnyFlow, stepsOf } from "#algebra/flow.ts"
+import { Refused } from "#algebra/kinds.ts"
 import { lower } from "#lower/fragment.ts"
-import { type Placement, printBinding, printFragment, printPrograms } from "#lower/print.ts"
+import {
+	type Placement,
+	printBinding,
+	printFragment,
+	printPrograms,
+	readsExport
+} from "#lower/print.ts"
 
 /** The three modules of a flow: its fragment, its programs and its binding. */
 export interface Printed {
@@ -10,8 +17,20 @@ export interface Printed {
 	readonly binding: string
 }
 
-/** A flow's modules, printed from its lowering. */
+/**
+ * A flow's modules, printed from its lowering. Each step's reads must be the placement's reads module's export of its
+ * name, the one value the fragment builds the read's records from and the flow runs: a step whose reads are any other
+ * value is refused, since no type can say which module a value came from.
+ */
 export const printed = (flow: AnyFlow, place: Placement): Printed => {
+	Arr.forEach(stepsOf(flow.kinds), (step) => {
+		if (step.reads.kind === "query" && place.reads.exports[readsExport(step.name)] !== step.reads) {
+			throw new Refused({
+				declaration: `step ${step.name}`,
+				why: `its reads are not ${place.reads.from}'s export ${readsExport(step.name)}, which den's fragment builds its records from`
+			})
+		}
+	})
 	const lowered = lower(flow)
 	return {
 		fragment: printFragment(lowered, place),

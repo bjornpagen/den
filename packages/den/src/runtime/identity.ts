@@ -1,5 +1,5 @@
 import { Sha256 } from "@bjornpagen/grizzle"
-import { Array as Arr, Match } from "effect"
+import { Array as Arr } from "effect"
 import type { Brand } from "effect"
 
 /**
@@ -75,57 +75,9 @@ export const finishStep = (scope: Sha256): Sha256 => derive(["finish", Sha256.to
 export const exclusiveId = (flow: string, kind: string, key: string): Sha256 =>
 	derive(["exclusive", flow, kind, key])
 
-/** A recorded column's value: what a record's column holds. */
-export type RecordedColumn = string | bigint | number | boolean
-
-/** What a record holds of a row: each field by its name, in its record's order, with its recorded value. */
-export type RecordedRow = ReadonlyArray<readonly [string, Recorded]>
-
 /**
- * A recorded field's value: a column's, or the rows an attachment delivered under it, in their order, at most one for
- * an attachment of one row at most.
+ * The key of a row a step's read `read` found, the digest of its text (grizzle's `rowText` of the read's query, every
+ * column and every row its attachments delivered, framed so two rows' texts agree exactly when the rows do): rows of
+ * one read agree exactly when their digests do, so a root holds each once.
  */
-export type Recorded =
-	| RecordedColumn
-	| { readonly _tag: "Attached"; readonly rows: ReadonlyArray<RecordedRow> }
-
-/** The rows an attachment delivered, as a record's field holds them. */
-export const attached = (rows: ReadonlyArray<RecordedRow>): Recorded => ({ _tag: "Attached", rows })
-
-/**
- * A recorded column's text, told apart by its type: a text as itself, a bigint and a finite number by their decimal
- * spellings, -0 apart from 0, and a boolean by its name.
- */
-const columnText = (value: RecordedColumn): string =>
-	Match.value(value).pipe(
-		Match.when(Match.string, (text) => `s${text}`),
-		Match.when(Match.bigint, (n) => `b${String(n)}`),
-		Match.when(Match.number, (x) => (Object.is(x, -0) ? "n-0" : `n${String(x)}`)),
-		Match.when(Match.boolean, (b) => (b ? "t" : "f")),
-		Match.exhaustive
-	)
-
-/**
- * A recorded row's parts: each field's name, then its value's parts. A record fixes its fields, their order and which
- * are attachments, so the parts of two rows of one record agree exactly when the rows do, nested rows and all.
- */
-const rowParts = (row: RecordedRow): ReadonlyArray<string> =>
-	Arr.flatMap(row, ([name, value]) => [name, ...valueParts(value)])
-
-/** A recorded value's parts: a column's text, or an attachment's rows. */
-const valueParts = (value: Recorded): ReadonlyArray<string> =>
-	typeof value === "object" ? attachedParts(value.rows) : [columnText(value)]
-
-/** The parts of the rows an attachment delivered: their count, then each row's parts in order. */
-const attachedParts = (rows: ReadonlyArray<RecordedRow>): ReadonlyArray<string> => [
-	"a",
-	String(rows.length),
-	...Arr.flatMap(rows, rowParts)
-]
-
-/**
- * The key of a row a step's read `read` found, the digest of its record, its columns and the rows its attachments
- * delivered, at every depth: rows of one record agree exactly when their digests do, so a root holds each once.
- */
-export const rowDigest = (read: string, row: RecordedRow): Sha256 =>
-	derive(["row", read, ...rowParts(row)])
+export const rowDigest = (read: string, text: string): Sha256 => derive(["row", read, text])

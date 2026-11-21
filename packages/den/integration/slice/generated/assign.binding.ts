@@ -8,6 +8,7 @@ import {
 	only,
 	ordered,
 	readingOf,
+	recordText,
 	rowsOf,
 	signals,
 	spawnedOf,
@@ -36,11 +37,16 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Assign over its served programs; `den generate` writes it, and nothing edits it. */
-import { type Addition, Sha256 } from "@bjornpagen/grizzle"
+import { type Addition, recordsFacts, Sha256 } from "@bjornpagen/grizzle"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
 import { assign } from "#integration/slice/flows.ts"
-import { AssignPausable } from "#integration/slice/generated/assign.fragment.ts"
+import {
+	AssignPausable,
+	AssignDecideReadNearestRecords,
+	AssignDecideReadSeenRecords,
+	assignGraph
+} from "#integration/slice/generated/assign.fragment.ts"
 import type {
 	AssignScope,
 	AssignAdmitted,
@@ -65,6 +71,11 @@ import type {
 	assignRetirerPrograms,
 	assignCommitPrograms
 } from "#integration/slice/generated/assign.programs.ts"
+
+/** The text of a row step Decide's read `nearest` found, its digest's input. */
+const AssignDecideReadNearestText = recordText(assign.kinds[1].reads.named.nearest)
+/** The text of a row step Decide's read `seen` found, its digest's input. */
+const AssignDecideReadSeenText = recordText(assign.kinds[1].reads.named.seen)
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface AssignHandles {
@@ -566,40 +577,26 @@ export const assignLedger = (h: AssignHandles) => {
 								facts: {}
 							})
 						),
-						(rows) =>
-							Effect.map(only(rows), (row) => ({
-								nearest: Arr.map(row.nearest, (found) => ({
-									passage: found.passage,
-									topic: found.topic,
-									distance: found.distance
-								})),
-								seen: Arr.map(row.seen, (found) => ({
-									learner: found.learner,
-									passage: found.passage
-								}))
-							}))
+						only
 					),
 				commit: (done) =>
 					Effect.gen(function* () {
 						const grown = nothingGrown
-						const recordedNearest = Arr.map(done.rows.nearest, (row) => ({
-							...row,
-							digest: rowDigest("nearest", [
-								["passage", row.passage],
-								["topic", row.topic],
-								["distance", row.distance]
-							])
-						}))
+						const recordedNearest = yield* Effect.forEach(done.rows.nearest, (row) =>
+							Effect.map(AssignDecideReadNearestText(row), (text) => ({
+								row,
+								digest: rowDigest("nearest", text)
+							}))
+						)
 						const uniqueNearest = Arr.dedupeWith(recordedNearest, (a, b) =>
 							Sha256.equals(a.digest, b.digest)
 						)
-						const recordedSeen = Arr.map(done.rows.seen, (row) => ({
-							...row,
-							digest: rowDigest("seen", [
-								["learner", row.learner],
-								["passage", row.passage]
-							])
-						}))
+						const recordedSeen = yield* Effect.forEach(done.rows.seen, (row) =>
+							Effect.map(AssignDecideReadSeenText(row), (text) => ({
+								row,
+								digest: rowDigest("seen", text)
+							}))
+						)
 						const uniqueSeen = Arr.dedupeWith(recordedSeen, (a, b) =>
 							Sha256.equals(a.digest, b.digest)
 						)
@@ -649,30 +646,37 @@ export const assignLedger = (h: AssignHandles) => {
 													? [{ step: done.turn.step, root: done.turn.root }]
 													: []
 											),
-											AssignDecideNearestRow: Arr.map(uniqueNearest, (row) => ({
-												digest: row.digest,
-												passage: row.passage,
-												topic: row.topic,
-												distance: row.distance,
-												root: done.turn.root
-											})),
-											AssignDecideNearestRead: Arr.map(recordedNearest, (row, ordinal) => ({
+											...recordsFacts(
+												assignGraph,
+												AssignDecideReadNearestRecords
+											)(
+												Arr.map(
+													uniqueNearest,
+													(found) =>
+														[{ digest: found.digest, root: done.turn.root }, found.row] as const
+												)
+											),
+											AssignDecideReadNearest: Arr.map(recordedNearest, (found, ordinal) => ({
 												step: done.turn.step,
 												root: done.turn.root,
 												ordinal: BigInt(ordinal),
-												digest: row.digest
+												digest: found.digest
 											})),
-											AssignDecideSeenRow: Arr.map(uniqueSeen, (row) => ({
-												digest: row.digest,
-												learner: row.learner,
-												passage: row.passage,
-												root: done.turn.root
-											})),
-											AssignDecideSeenRead: Arr.map(recordedSeen, (row, ordinal) => ({
+											...recordsFacts(
+												assignGraph,
+												AssignDecideReadSeenRecords
+											)(
+												Arr.map(
+													uniqueSeen,
+													(found) =>
+														[{ digest: found.digest, root: done.turn.root }, found.row] as const
+												)
+											),
+											AssignDecideReadSeen: Arr.map(recordedSeen, (found, ordinal) => ({
 												step: done.turn.step,
 												root: done.turn.root,
 												ordinal: BigInt(ordinal),
-												digest: row.digest
+												digest: found.digest
 											}))
 										}
 									},

@@ -9,8 +9,7 @@ import {
 	type JoinIR,
 	type LawIR,
 	type Lowered,
-	type RecordIR,
-	recordRelations,
+	type ReadIR,
 	type SeatsIR,
 	type SideIR,
 	type SpawnedScopeIR,
@@ -47,6 +46,13 @@ export interface Placement {
 	readonly writer: { readonly from: string; readonly name: string }
 	/** The module exporting the flow, and its export's name. */
 	readonly flow: { readonly from: string; readonly name: string }
+	/**
+	 * The module exporting each step's declared reads as `<Step>Reads`, over a level below den's fragment alone, which the
+	 * fragment imports to build each read's records: never the flow, whose type names its app role, a role over the
+	 * schema the fragment is spread into. `exports` is that module's namespace, which `den generate` holds each step's
+	 * reads to.
+	 */
+	readonly reads: { readonly from: string; readonly exports: { readonly [name: string]: unknown } }
 }
 
 /** A string literal of `text`, its quotes, backslashes and line breaks escaped. */
@@ -129,7 +135,10 @@ const lawExpr = (law: LawIR): string => {
 					return `check(${q(law.name)}, ${law.relation}, (row) => Num.isFinite(row.${law.field}))`
 			}
 		case "retirable":
-			return `retirable(${law.header}, [${commas(Arr.map(law.bodies, (b) => `on(${b}, "root")`))}])`
+			return `retirable(${law.header}, [${commas([
+				...Arr.map(law.bodies, (b) => `on(${b}, "root")`),
+				...Arr.map(law.records, (stem) => `on(${stem}Records, "root")`)
+			])}])`
 		case "ordered":
 			return `ordered(${sideExpr(law.member)}, fin(${law.owner}, ${q(law.count)}))`
 	}
@@ -181,6 +190,7 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		...(Arr.some(sides, (sd) => Arr.some(sd.terms, (t) => t.pred)) ? ["pred"] : []),
 		...(seated ? ["query"] : []),
 		...(Arr.some(l.laws, (law) => law.kind === "race") ? ["race"] : []),
+		...(Arr.some(l.steps, (st) => Arr.isReadonlyArrayNonEmpty(st.reads)) ? ["records"] : []),
 		"relation",
 		...(Arr.some(l.laws, (law) => law.kind === "retirable") ? ["retirable"] : []),
 		...(used("retirement") ? ["retirement"] : []),
@@ -275,9 +285,7 @@ const writerRelationsOf = (l: Lowered): ReadonlyArray<string> => {
 		`${P}Held`,
 		...Arr.flatMap(l.steps, (s) => valueRelations(s.output)),
 		...Arr.flatMap(l.joins, (j) => valueRelations(j.finish.output)),
-		...Arr.flatMap(l.steps, (s) =>
-			Arr.flatMap(s.reads, (r) => [...recordRelations(r.row), r.record])
-		),
+		...Arr.flatMap(l.steps, (s) => Arr.map(s.reads, (r) => r.record)),
 		...(anySpawn ? l.spawning : []),
 		...(appRoots ? l.requesting : [])
 	])
@@ -339,6 +347,20 @@ const lawRelations = (law: LawIR): ReadonlyArray<string> => {
 	}
 }
 
+/** The name a step's declared reads are exported under from the placement's reads module. */
+export const readsExport = (step: string): string => `${step}Reads`
+
+/** The steps' reads, each with its step's index in the flow's kinds. */
+const readsOfFlow = (l: Lowered): ReadonlyArray<{ readonly step: StepIR; readonly read: ReadIR }> =>
+	Arr.flatMap(l.steps, (step) => Arr.map(step.reads, (read) => ({ step, read })))
+
+/** Each spread of the names of the relations a flow's records hold, which grizzle made. */
+const recordNames = (l: Lowered): ReadonlyArray<string> =>
+	Arr.map(
+		readsOfFlow(l),
+		({ read }) => `...Arr.map(${read.stem}Records.relations, (rel) => rel.name)`
+	)
+
 /** The closed relation of a flow's seat counts, as its fragment module declares it. */
 const countsExpr = (counts: CountsIR): string =>
 	`const ${counts.name} = closed.relation(${q(counts.name)}, { ${counts.key.field}: closedId(${counts.key.roster}), ${counts.count}: natural }, [${q(counts.key.field)}], [${commas(
@@ -379,6 +401,12 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 		...(Arr.isReadonlyArrayNonEmpty(reads)
 			? [`import { ${commas(reads)} } from ${q(place.relations)}`]
 			: []),
+		...(Arr.isReadonlyArrayNonEmpty(readsOfFlow(l))
+			? [
+					`import { Array as Arr } from "effect"`,
+					`import { ${commas(Arr.dedupe(Arr.map(readsOfFlow(l), ({ step }) => readsExport(step.name))))} } from ${q(place.reads.from)}`
+				]
+			: []),
 		"",
 		...Arr.map(l.brands, (b) => `const ${b.name} = contract(${q(b.name)}, ${baseExpr(b.base)})`),
 		"",
@@ -397,13 +425,24 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 				)} }, [${commas(Arr.map(r.key, q))}])`
 		),
 		"",
+		...Arr.flatMap(readsOfFlow(l), ({ step, read }) => [
+			`/** The records of the rows step ${step.name}'s read \`${read.name}\` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest and its root. */`,
+			`export const ${read.stem}Records = records(${q(read.stem)}, ${readsExport(step.name)}.named.${read.name}, { digest: sha256, root: sha256 }, ["digest", "root"])`,
+			`export const ${read.stem}Row = ${read.stem}Records.row`,
+			""
+		]),
 		`/** The flow's graph: its rosters, its graph relations and their laws, which den's role and its app role \`${l.writer}\` hold whole. */`,
-		`export const ${n.graph} = fragment([${commas([...rosterNames, ...graphRelations])}], [${commas(
-			Arr.map(
+		`export const ${n.graph} = fragment([${commas([
+			...rosterNames,
+			...graphRelations,
+			...Arr.map(readsOfFlow(l), ({ read }) => `...${read.stem}Records.relations`)
+		])}], [${commas([
+			...Arr.map(
 				Arr.filter(l.laws, (law) => !coordinating(law)),
 				lawExpr
-			)
-		)}])`,
+			),
+			...Arr.map(readsOfFlow(l), ({ read }) => `...${read.stem}Records.rules`)
+		])}])`,
 		"",
 		`/** The flow's coordination group: its rosters, its seat counts, and its chains of exclusivity seats and pauses, which den's coordinator role holds whole. */`,
 		`export const ${n.coordination} = fragment([${commas([...rosterNames, ...countNames, ...l.coordination])}], [${commas(
@@ -427,9 +466,19 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 			""
 		]),
 		`/** The den relations the flow's app role \`${l.writer}\` inserts into: each step's commit's, and each app root's request's. */`,
-		`export const ${n.writerInserts} = [${commas(Arr.map(writer, q))}] as const`
+		`export const ${n.writerInserts} = [${commas([...Arr.map(writer, q), ...recordNames(l)])}] as const`
 	])}\n`
 }
+
+/**
+ * The array members of a commit that records a step's reads: for each, the insert of its records' every relation grizzle
+ * made of its query, the root's and each attachment's an insert states beside it.
+ */
+const recordsMembersOf = (graph: string, reads: ReadonlyArray<ReadIR>): string =>
+	Arr.join(
+		Arr.map(reads, (rd) => `.insertAll(recordsFacts(${graph}, ${rd.stem}Records)([]))`),
+		""
+	)
 
 /** The array members of a ChangeSet of den's: an insert of each relation. */
 const members = (inserts: ReadonlyArray<string>): string =>
@@ -570,9 +619,10 @@ const commitOf = (
 	inserts: ReadonlyArray<string>,
 	spawns: Option.Option<string>,
 	commit: CommitIR,
-	kind: string
+	kind: string,
+	recorded: string
 ): string => {
-	const den = `ChangeSet.empty(${graph})${members(inserts)}${Option.getOrElse(spawns, () => "")}`
+	const den = `ChangeSet.empty(${graph})${members(inserts)}${recorded}${Option.getOrElse(spawns, () => "")}`
 	const clock = [
 		...(Option.isSome(spawns) ? [["now", "millis"] as const] : []),
 		...(commit.kind === "through" ? commit.clock : [])
@@ -990,8 +1040,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 					r("Failed"),
 					r("Held"),
 					...valueRelations(e),
-					...Arr.flatMap(s.reads, (rd) => [...recordRelations(rd.row), rd.record])
-				])}`
+					...Arr.map(s.reads, (rd) => rd.record)
+				])}${recordsMembersOf(n.graph, s.reads)}`
 			])
 		)
 	})
@@ -1169,7 +1219,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		records: ReadonlyArray<string>,
 		edges: ReadonlyArray<EdgeIR>,
 		commit: CommitIR,
-		kind: string
+		kind: string,
+		reads: ReadonlyArray<ReadIR>
 	) =>
 		commitPrograms.push([
 			n.program(`Commit${name}`),
@@ -1190,22 +1241,24 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 					? Option.some(spawnedStepsOf(n.graph, r("Step"), timedKinds(l)))
 					: Option.none(),
 				commit,
-				kind
+				kind,
+				recordsMembersOf(n.graph, reads)
 			)
 		])
 	Arr.forEach(l.steps, (s) => {
 		committing(
 			s.name,
 			s.output,
-			Arr.flatMap(s.reads, (rd) => [...recordRelations(rd.row), rd.record]),
+			Arr.map(s.reads, (rd) => rd.record),
 			s.edges,
 			s.writes,
-			`declaredFlow.kinds[${s.index}]`
+			`declaredFlow.kinds[${s.index}]`,
+			s.reads
 		)
 		if (Arr.isReadonlyArrayNonEmpty(s.reads)) {
 			commitPrograms.push([
 				n.program(`Read${s.name}`),
-				deferred(`declaredFlow.kinds[${s.index}].reads.query(${W})`)
+				deferred(`query(${W}).reads(declaredFlow.kinds[${s.index}].reads.named)`)
 			])
 		}
 	})
@@ -1216,7 +1269,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			[],
 			j.finish.edges,
 			j.finish.writes,
-			`declaredFlow.kinds[${j.index}].finish`
+			`declaredFlow.kinds[${j.index}].finish`,
+			[]
 		)
 	)
 	const appRoots = Arr.filter(l.joins, isApp)
@@ -1237,7 +1291,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	]
 	const body = lines([
 		`/** den's role for the flow ${P}: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains${Option.isSome(l.seats) ? " and live holds" : ""} and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */`,
-		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([`...${n.graph}.relations`, ...l.coordination, ...liveEntry, ...idleEntries, ...awaitedEntries])} }, { insert: [${commas(Arr.map(den, q))}] })`,
+		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([`...${n.graph}.relations`, ...l.coordination, ...liveEntry, ...idleEntries, ...awaitedEntries])} }, { insert: [${commas([...Arr.map(den, q), ...recordNames(l)])}] })`,
 		"",
 		`/** den's coordinator role for the flow ${P}: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation${Option.isSome(l.seats) ? ", and reads its seats' live holds through the seat level the app's schema states, so a schema without it fails to typecheck" : ""}. */`,
 		`export const ${n.coordinator} = role(${app}, ${q(n.coordinatorName)}, { ${commas([...rosterNames, ...l.coordination, ...liveEntry])} }, { insert: [${commas(Arr.map(l.coordination, q))}] })`,
@@ -1271,13 +1325,16 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			: [])
 	])
 	const tokens = identifiersOf(body)
-	const imported = Arr.filter([...rosterNames, ...allRelations, n.graph, n.coordination], (name) =>
-		tokens.has(name)
+	const recordsNames = Arr.flatMap(l.steps, (st) => Arr.map(st.reads, (rd) => `${rd.stem}Records`))
+	const imported = Arr.filter(
+		[...rosterNames, ...allRelations, ...recordsNames, n.graph, n.coordination],
+		(name) => tokens.has(name)
 	)
 	return `${lines([
 		`/** The programs den lowered the flow ${P} to, over its fragments, and its roles over the schema ${app}; \`den generate\` writes them, and nothing edits them. */`,
-		`import { ${commas(Arr.filter(["ChangeSet", "Num", "Type", "clocked", "deferrable", "param", "query", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
+		`import { ${commas(Arr.filter(["ChangeSet", "Num", "Type", "clocked", "deferrable", "param", "query", "recordsFacts", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
 		`import { ${commas(Arr.filter(["DenDelay", "DenInstant"], (name) => tokens.has(name)))} } from "@bjornpagen/den/lower/keys"`,
+		...(tokens.has("Arr") ? [`import { Array as Arr } from "effect"`] : []),
 		`import { ${app} } from ${q(place.schema.from)}`,
 		`import { ${W} } from ${q(place.writer.from)}`,
 		...(Arr.some(
@@ -1410,85 +1467,6 @@ const familyFields = (f: ValueIR["families"][number]): ReadonlyArray<string> => 
 		? ["value"]
 		: Arr.map(f.field.element.columns, (c) => c.name))
 ]
-
-/** A record's value of the found row `e`, `depth` attachments deep: its columns, and each attachment's rows, as its record states them. */
-const projectionOf = (record: RecordIR, e: string, depth: number): string =>
-	`({ ${commas([
-		...Arr.map(record.columns, (c) => `${c.name}: ${e}.${c.name}`),
-		...Arr.map(
-			record.attached,
-			(a) =>
-				`${a.name}: ${a.delivery === "array" ? "Arr" : "Option"}.map(${e}.${a.name}, (e${String(depth)}) => ${projectionOf(a.record, `e${String(depth)}`, depth + 1)})`
-		)
-	])} })`
-
-/** What a record holds of the value `e`, `depth` attachments deep, for its digest: each column, then each attachment's rows. */
-const recordedOf = (record: RecordIR, e: string, depth: number): string => {
-	const m = `m${String(depth)}`
-	return `[${commas([
-		...Arr.map(record.columns, (c) => `[${q(c.name)}, ${e}.${c.name}]`),
-		...Arr.map(
-			record.attached,
-			(a) =>
-				`[${q(a.name)}, attached(${a.delivery === "array" ? `Arr.map(${e}.${a.name}, (${m}): RecordedRow => ${recordedOf(a.record, m, depth + 1)})` : `Option.toArray(Option.map(${e}.${a.name}, (${m}): RecordedRow => ${recordedOf(a.record, m, depth + 1)}))`})]`
-		)
-	])}]`
-}
-
-/** An attachment on the way from a read's row down to one of its records: its field and how it delivers its rows. */
-type Way = { readonly name: string; readonly delivery: "option" | "array" }
-
-/** Every record of a read, its row's first, each with the attachments that lead to it from the row. */
-const attachedPaths = (
-	record: RecordIR,
-	path: ReadonlyArray<Way>
-): ReadonlyArray<{ readonly record: RecordIR; readonly path: ReadonlyArray<Way> }> => [
-	{ record, path },
-	...Arr.flatMap(record.attached, (a) =>
-		attachedPaths(a.record, [...path, { name: a.name, delivery: a.delivery }])
-	)
-]
-
-/** The fact of `record`'s relation for the value `e` under the recorded row `row`, at the places `places` name. */
-const recordFact = (
-	record: RecordIR,
-	e: string,
-	places: ReadonlyArray<string>,
-	turn: string
-): string =>
-	`({ ${commas([
-		"digest: row.digest",
-		...Arr.zipWith(record.places, places, (field, place) => `${field}: BigInt(${place})`),
-		...Arr.map(record.columns, (c) => `${c.name}: ${e}.${c.name}`),
-		`root: ${turn}.root`
-	])} })`
-
-/**
- * The facts of `record`'s relation under the recorded row `row`: the rows each attachment on `path` delivered, in turn,
- * an array's with its place, an option's as the one row it holds or none.
- */
-const flattened = (
-	record: RecordIR,
-	path: ReadonlyArray<Way>,
-	at: number,
-	e: string,
-	places: ReadonlyArray<string>,
-	turn: string
-): string =>
-	Option.match(Arr.get(path, at), {
-		onNone: () => `[${recordFact(record, e, places, turn)}]`,
-		onSome: (way) => {
-			const m = `m${String(at)}`
-			const p = `p${String(at)}`
-			const source =
-				way.delivery === "array" ? `${e}.${way.name}` : `Option.toArray(${e}.${way.name})`
-			const below = way.delivery === "array" ? [...places, p] : places
-			const args = way.delivery === "array" ? `(${m}, ${p})` : `(${m})`
-			return at === path.length - 1
-				? `Arr.map(${source}, ${args} => ${recordFact(record, m, below, turn)})`
-				: `Arr.flatMap(${source}, ${args} => ${flattened(record, path, at + 1, m, below, turn)})`
-		}
-	})
 
 /** The binding module: the ledger port over the programs' served handles. */
 export const printBinding = (l: Lowered, place: Placement): string => {
@@ -1689,26 +1667,18 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 
 	/**
 	 * What a step's commit records of its reads, from the rows `found` names and the turn `turn` names: each row's digest
-	 * computed first, over its record's columns and the rows its attachments delivered; then each row once per root, by
-	 * its digest, its columns listed, and each row an attachment delivered under it, by its digest and its places; and the
+	 * computed first, from its text (grizzle's rowText of the read's query); then each row once per root, under its digest
+	 * and the root, into the records grizzle made of the query (recordsFacts, its attachments' rows with it); and the
 	 * step's reference to each in the order it found them.
 	 */
 	const recordingOf = (s: StepIR, found: string, turn: string): Recording => ({
 		lines: Arr.flatMap(s.reads, (rd) => [
-			`\tconst recorded${Str.capitalize(rd.name)} = Arr.map(${found}.${rd.name}, (row) => ({ ...row, digest: rowDigest(${q(rd.name)}, ${recordedOf(rd.row, "row", 0)}) }))`,
+			`\tconst recorded${Str.capitalize(rd.name)} = yield* Effect.forEach(${found}.${rd.name}, (row) => Effect.map(${rd.stem}Text(row), (text) => ({ row, digest: rowDigest(${q(rd.name)}, text) })))`,
 			`\tconst unique${Str.capitalize(rd.name)} = Arr.dedupeWith(recorded${Str.capitalize(rd.name)}, (a, b) => Sha256.equals(a.digest, b.digest))`
 		]),
 		facts: Arr.flatMap(s.reads, (rd) => [
-			...Arr.map(
-				attachedPaths(rd.row, []),
-				({ record, path }) =>
-					`${record.relation}: ${
-						Arr.isReadonlyArrayNonEmpty(path)
-							? `Arr.flatMap(unique${Str.capitalize(rd.name)}, (row) => ${flattened(record, path, 0, "row", [], turn)})`
-							: `Arr.map(unique${Str.capitalize(rd.name)}, (row) => ${recordFact(record, "row", [], turn)})`
-					}`
-			),
-			`${rd.record}: Arr.map(recorded${Str.capitalize(rd.name)}, (row, ordinal) => ({ step: ${turn}.step, root: ${turn}.root, ordinal: BigInt(ordinal), digest: row.digest }))`
+			`...recordsFacts(${n.graph}, ${rd.stem}Records)(Arr.map(unique${Str.capitalize(rd.name)}, (found) => [{ digest: found.digest, root: ${turn}.root }, found.row] as const))`,
+			`${rd.record}: Arr.map(recorded${Str.capitalize(rd.name)}, (found, ordinal) => ({ step: ${turn}.step, root: ${turn}.root, ordinal: BigInt(ordinal), digest: found.digest }))`
 		])
 	})
 
@@ -1729,7 +1699,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 
 	const stepRunner = (s: StepIR): string => {
 		const read = Arr.isReadonlyArrayNonEmpty(s.reads)
-			? `read: (input) => Effect.flatMap(settled(h.commits.${n.program(`Read${s.name}`)}.once({ params: ${kindAt(s.index)}.reads.params(input), facts: {} })), (rows) => Effect.map(only(rows), (row) => ({ ${commas(Arr.map(s.reads, (rd) => `${rd.name}: Arr.map(row.${rd.name}, (found) => ${projectionOf(rd.row, "found", 0)})`))} })))`
+			? `read: (input) => Effect.flatMap(settled(h.commits.${n.program(`Read${s.name}`)}.once({ params: ${kindAt(s.index)}.reads.params(input), facts: {} })), only)`
 			: "read: () => Effect.succeed({})"
 		return lines([
 			`runnerOf(${kindAt(s.index)}, {`,
@@ -1997,7 +1967,12 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		? `Effect.flatMap(settled(h.den.${n.program("Busy")}.once({ params: {}, facts: {} })), (rows) => Effect.map(only(rows), busyOf))`
 		: "Effect.succeed([])"
 	const busyOf = `const busyOf = (read: { ${commas(Arr.map(l.idle, (f) => `readonly ${busyName(f)}: ReadonlyArray<unknown>`))} }): ReadonlyArray<string> => Arr.filter([${commas(Arr.map(l.idle, q))}] as const, (flow) => Arr.isReadonlyArrayNonEmpty(read[\`${BUSY}\${flow}\`]))`
-	const fragmentValues = boundRostersOf(l)
+	const recordsValues = Arr.flatMap(l.steps, (st) => Arr.map(st.reads, (rd) => `${rd.stem}Records`))
+	const fragmentValues = [
+		...boundRostersOf(l),
+		...recordsValues,
+		...(Arr.isReadonlyArrayNonEmpty(recordsValues) ? [n.graph] : [])
+	]
 	const fragmentImports = Arr.dedupe([...spawning, r("Kind"), r("RootKind"), ...fragmentValues])
 	const fragmentTypes = Arr.filter(fragmentImports, (name) => !Arr.contains(fragmentValues, name))
 	const valueReaders = [...Arr.map(l.steps, (s) => s.input), ...Arr.map(l.joins, (j) => j.input)]
@@ -2020,11 +1995,6 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"finishStep",
 		...(Arr.some(roots, isScheduled) ? ["type Instant"] : []),
 		"rootScope",
-		...(Arr.some(l.steps, (st) =>
-			Arr.some(st.reads, (rd) => Arr.isReadonlyArrayNonEmpty(rd.row.attached))
-		)
-			? ["attached", "type RecordedRow"]
-			: []),
 		...(Arr.some(l.steps, (st) => Arr.isReadonlyArrayNonEmpty(st.reads)) ? ["rowDigest"] : []),
 		...(Arr.some(l.joins, (j) => Arr.some(j.children, (c) => c.kind === "scope"))
 			? ["startedScope"]
@@ -2035,9 +2005,9 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	])
 	return `${lines([
 		`/** The ledger port of the flow ${P} over its served programs; \`den generate\` writes it, and nothing edits it. */`,
-		`import { type Addition, Sha256 } from "@bjornpagen/grizzle"`,
+		`import { ${commas(["type Addition", ...(Arr.isReadonlyArrayNonEmpty(recordsValues) ? ["recordsFacts"] : []), "Sha256"])} } from "@bjornpagen/grizzle"`,
 		`import type { MemberHandle } from "@bjornpagen/grizzle/runtime"`,
-		`import { ${commas(["any", ...(throughs ? ["committedFacts"] : []), "dueOf", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishReads ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", "rowsOf", ...(Arr.some(denRoots, isScheduled) ? ["scheduledKey", "scheduleOf"] : []), "signals", "spawnedOf", "type SpawnRows"])} } from "@bjornpagen/den/runtime/bind"`,
+		`import { ${commas(["any", ...(throughs ? ["committedFacts"] : []), "dueOf", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishReads ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", ...(Arr.isReadonlyArrayNonEmpty(recordsValues) ? ["recordText"] : []), "rowsOf", ...(Arr.some(denRoots, isScheduled) ? ["scheduledKey", "scheduleOf"] : []), "signals", "spawnedOf", "type SpawnRows"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
 		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), "Admission", "Ledger", "RootRunner", "ScopeView", ...(resources ? ["SeatAt"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
 		`import { UnknownPauseTarget } from "@bjornpagen/den/runtime/ledger"`,
@@ -2050,6 +2020,14 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`import { ${commas(fragmentValues)} } from ${q(place.fragment)}`,
 		`import type { ${commas(fragmentTypes)} } from ${q(place.fragment)}`,
 		`import type { ${commas([n.denPrograms, n.coordinatorPrograms, n.retirerPrograms, n.commitPrograms])} } from ${q(place.programs)}`,
+		"",
+		...Arr.flatMap(l.steps, (st) =>
+			Arr.map(
+				st.reads,
+				(rd) =>
+					`/** The text of a row step ${st.name}'s read \`${rd.name}\` found, its digest's input. */\nconst ${rd.stem}Text = recordText(${kindAt(st.index)}.reads.named.${rd.name})`
+			)
+		),
 		"",
 		`/** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */`,
 		`export interface ${n.handles} {`,
