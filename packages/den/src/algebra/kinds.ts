@@ -10,6 +10,7 @@ import type {
 	ParamsOf,
 	ReadsChildren,
 	ReadsQuery,
+	RecordNames,
 	Vector
 } from "@bjornpagen/grizzle"
 import { regex } from "arkregex"
@@ -333,13 +334,32 @@ const READ = regex("^[a-z][A-Za-z0-9]*$")
  * are a value of a module that depends on that level alone, `<Step>Reads`, never on the flow, whose type names its app
  * role (den generate's Placement `reads`).
  */
-export interface Reads<L, N extends ReadsChildren, I> {
+export interface Reads<L, N extends ReadsChildren, I, O extends ReadsOptions<N>> {
 	readonly kind: "query"
 	readonly over: L
 	/** The named queries over `over`. */
 	readonly named: N
 	readonly params: (input: I) => ParamArg<ParamsOf<ReadsQuery<L, N>>>
+	/** Its options as it was given them: none, or the relation names its records state (ReadsOptions). */
+	readonly options: O
 }
+
+/**
+ * The relation names a step's reads state for their records, by named query: each grizzle's `names` of records(...),
+ * an attachment's path (its attachment names from the query's root, joined by `.`) to its relation's name, which
+ * replaces the name records derive from den's stem, `<P><Step>Read<Name>`, and the path. A derived name past PostgreSQL's
+ * 63 bytes is refused as RecordNameTooLong, naming the path to state: metis reads an item's document and its stimuli's
+ * in one step, each with its scan, a path den's stems leave too long.
+ */
+export type ReadsNames<N> = { readonly [K in keyof N]?: RecordNames<N[K]> }
+
+/** A step's reads' options: none, or the relation names their records state (ReadsNames). */
+export type ReadsOptions<N> = readonly [] | readonly [options: { readonly names: ReadsNames<N> }]
+
+/** The options of any step's reads: none, or the relation names their records state by named query. */
+type AnyReadsOptions =
+	| readonly []
+	| readonly [options: { readonly names: { readonly [name: string]: unknown } }]
 
 /** A step's reads over its input `I`, whatever level and queries they name. */
 export type ReadsOver<I> =
@@ -349,6 +369,7 @@ export type ReadsOver<I> =
 			readonly over: unknown
 			readonly named: { readonly [name: string]: unknown }
 			readonly params: (input: I) => unknown
+			readonly options: AnyReadsOptions
 	  }
 
 /** Any step's reads, as a flow and lowering read them. */
@@ -359,20 +380,23 @@ export type AnyReads =
 			readonly over: unknown
 			readonly named: { readonly [name: string]: unknown }
 			readonly params: (input: never) => unknown
+			readonly options: AnyReadsOptions
 	  }
 
 /** A step that reads nothing before its body. */
 export const noReads: { readonly kind: "none" } = { kind: "none" }
 
 /**
- * A step's reads: the named queries `named` over the level `over`, and their parameters from the step's input,
- * each `<name>.<parameter>`.
+ * A step's reads: the named queries `named` over the level `over`, their parameters from the step's input, each
+ * `<name>.<parameter>`, and its options, none or `{ names }`, the relation names their records state by named query
+ * (ReadsNames), each forwarded to grizzle's records(...) of that query.
  */
-export const reads = <L, const N extends ReadsChildren, I>(
+export const reads = <L, const N extends ReadsChildren, I, const O extends ReadsOptions<N>>(
 	over: L,
 	named: N,
-	params: (input: I) => NoInfer<ParamArg<ParamsOf<ReadsQuery<L, N>>>>
-): Reads<L, N, I> => ({ kind: "query", over, named, params })
+	params: (input: I) => NoInfer<ParamArg<ParamsOf<ReadsQuery<L, N>>>>,
+	...options: O
+): Reads<L, N, I, O> => ({ kind: "query", over, named, params, options })
 
 /** What a body sees of its declared reads: each named query's rows, exactly as the query delivers them. */
 export type Found<D> = D extends {

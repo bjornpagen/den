@@ -946,14 +946,6 @@
 					"__chain_page_read_tree_pk_step_ordinal_root_u45pwabp6b"
 				]
 			},
-			"chain_page_read_tree_first": {
-				"__chain_page_read_tree_first_fk_digest_at_mxnolu45np": [
-					"__chain_page_read_tree_first_in_chain_page_read_tree_xowjbilbgi"
-				],
-				"__chain_page_read_tree_first_pk_elrx4yzmnb": [
-					"__chain_page_read_tree_first_pk_digest_at_khhntwzi5j"
-				]
-			},
 			"chain_page_read_tree_items": {
 				"__chain_page_read_tree_items_check_chain_page_read_yoect27eee": [
 					"__chain_page_read_tree_items_ordered_chain_page_read_afqekd2ls5"
@@ -1002,6 +994,14 @@
 			"chain_page_read_weights_row": {
 				"__chain_page_read_weights_row_pk_bmwffycauu": [
 					"__chain_page_read_weights_row_pk_digest_63dzxa67yb"
+				]
+			},
+			"chain_page_tree_first": {
+				"__chain_page_tree_first_fk_digest_at_thwgbmxhwl": [
+					"__chain_page_tree_first_in_chain_page_read_tree_oipy7dbupt"
+				],
+				"__chain_page_tree_first_pk_zmjcrvbs5g": [
+					"__chain_page_tree_first_pk_digest_at_tyax2aexqz"
 				]
 			},
 			"chain_paused": {
@@ -3763,11 +3763,11 @@
 				"chain_page_output_next": [],
 				"chain_page_read_earlier_row": [],
 				"chain_page_read_tree": [],
-				"chain_page_read_tree_first": [],
 				"chain_page_read_tree_items": [],
 				"chain_page_read_tree_row": [],
 				"chain_page_read_weights": [],
 				"chain_page_read_weights_row": [],
+				"chain_page_tree_first": [],
 				"chain_paused": [],
 				"chain_result": [],
 				"chain_resumed": [],
@@ -8587,38 +8587,6 @@
 					},
 					"relation": "ChainPageReadTree"
 				},
-				"chain_page_read_tree_first": {
-					"indexes": {
-						"__chain_page_read_tree_first_pk_elrx4yzmnb": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "digest",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "at",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__chain_page_read_tree_first_pk_digest_at_khhntwzi5j"
-								},
-								{
-									"kind": "law",
-									"law": "__chain_page_read_tree_first_in_chain_page_read_tree_xowjbilbgi"
-								},
-								{
-									"kind": "access"
-								}
-							]
-						}
-					},
-					"relation": "ChainPageReadTreeFirst"
-				},
 				"chain_page_read_tree_items": {
 					"indexes": {
 						"__chain_page_read_tree_items_key_digest_pred_at_ipnjzk4wne": {
@@ -8829,6 +8797,38 @@
 						}
 					},
 					"relation": "ChainPageReadWeightsRow"
+				},
+				"chain_page_tree_first": {
+					"indexes": {
+						"__chain_page_tree_first_pk_zmjcrvbs5g": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "digest",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "at",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__chain_page_tree_first_pk_digest_at_tyax2aexqz"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_page_tree_first_in_chain_page_read_tree_oipy7dbupt"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ChainPageTreeFirst"
 				},
 				"chain_paused": {
 					"indexes": {
@@ -21200,7 +21200,7 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "fa2db41033a3b74791a0b9aaf99104cca86f88dd45792a618fb3634992040611",
+	"fingerprint": "e84904e2e5701fa9ddfddee50bf8255e409f8642b8beb1bf9e3e55642c4f5da9",
 	"format": 7,
 	"levels": [
 		{
@@ -21229,7 +21229,7 @@
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "17a034c0fae9bc378ce3f2c95cf040da0fd953ab07d7c12020bfd6a8793b5978",
+			"fingerprint": "3e36bd4638142006720909f4a252042fcf520e969bac06abe0e1ad797dc38b67",
 			"laws": [
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_root_56frawwv2n"},
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_s3xk3phh7y"},
@@ -21458,8 +21458,6 @@
 				{"described":{"from":{"relation":"ChainPageReadEarlier","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_page_read_earlier_in_chain_root_72nvs2njgc"},
 				{"described":{"fields":["step","ordinal","root"],"kind":"primaryKey","relation":"ChainPageReadEarlier"},"law":"__chain_page_read_earlier_pk_step_ordinal_root_yibhijh5co"},
 				{"described":{"fields":["digest"],"kind":"primaryKey","relation":"ChainPageReadEarlierRow"},"law":"__chain_page_read_earlier_row_pk_digest_towiglykbv"},
-				{"described":{"from":{"relation":"ChainPageReadTreeFirst","selection":{"conjuncts":[]},"terms":[{"field":"digest","kind":"field"},{"field":"at","kind":"field"}]},"kind":"contained","to":{"relation":"ChainPageReadTreeItems","selection":{"conjuncts":[]},"terms":[{"field":"digest","kind":"field"},{"field":"at","kind":"field"}]}},"law":"__chain_page_read_tree_first_in_chain_page_read_tree_xowjbilbgi"},
-				{"described":{"fields":["digest","at"],"kind":"primaryKey","relation":"ChainPageReadTreeFirst"},"law":"__chain_page_read_tree_first_pk_digest_at_khhntwzi5j"},
 				{"described":{"from":{"relation":"ChainPageReadTree","selection":{"conjuncts":[]},"terms":[{"field":"digest","kind":"field"}]},"kind":"contained","to":{"relation":"ChainPageReadTreeRow","selection":{"conjuncts":[]},"terms":[{"field":"digest","kind":"field"}]}},"law":"__chain_page_read_tree_in_chain_page_read_tree_row_vbk2i33fb2"},
 				{"described":{"from":{"relation":"ChainPageReadTree","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainResult","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_page_read_tree_in_chain_result_b2ics6p3pe"},
 				{"described":{"from":{"relation":"ChainPageReadTree","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_page_read_tree_in_chain_root_nu2p5igxmf"},
@@ -21472,6 +21470,8 @@
 				{"described":{"from":{"relation":"ChainPageReadWeights","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__chain_page_read_weights_in_chain_root_nv7raiv4pa"},
 				{"described":{"fields":["step","ordinal","root"],"kind":"primaryKey","relation":"ChainPageReadWeights"},"law":"__chain_page_read_weights_pk_step_ordinal_root_wbl4dcfpcr"},
 				{"described":{"fields":["digest"],"kind":"primaryKey","relation":"ChainPageReadWeightsRow"},"law":"__chain_page_read_weights_row_pk_digest_63dzxa67yb"},
+				{"described":{"from":{"relation":"ChainPageTreeFirst","selection":{"conjuncts":[]},"terms":[{"field":"digest","kind":"field"},{"field":"at","kind":"field"}]},"kind":"contained","to":{"relation":"ChainPageReadTreeItems","selection":{"conjuncts":[]},"terms":[{"field":"digest","kind":"field"},{"field":"at","kind":"field"}]}},"law":"__chain_page_tree_first_in_chain_page_read_tree_oipy7dbupt"},
+				{"described":{"fields":["digest","at"],"kind":"primaryKey","relation":"ChainPageTreeFirst"},"law":"__chain_page_tree_first_pk_digest_at_tyax2aexqz"},
 				{"described":{"from":{"relation":"ChainPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"ChainResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__chain_paused_in_chain_resumed_xxjpa5xxji"},
 				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"ChainPaused"},"law":"__chain_paused_pk_target_turn_4lwyl2ewln"},
 				{"described":{"from":{"relation":"ChainRefusal","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ChainFailed","selection":{"conjuncts":[]},"terms":[{"field":"step","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__chain_refusal_in_chain_failed_nrxy5zqhcc"},
@@ -22101,7 +22101,7 @@
 			"schema": "slice_den"
 		},
 		{
-			"fingerprint": "821206c1887c85be229220f6192a392f64b84fe2303379b3b515e3a5440ec593",
+			"fingerprint": "cd88eca689c8fd2f3874de34ddc037f06303ce8b0faf06acce6c1cb14b720471",
 			"laws": [
 				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"},
 				{"described":{"kind":"key","side":{"relation":"FanLive","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"}]}},"law":"__fan_live_key_resource_seat_wqkc2jfkpw"},
@@ -22324,10 +22324,6 @@
 				"routes": []
 			},
 			{
-				"relation": "ChainPageReadTreeFirst",
-				"routes": []
-			},
-			{
 				"relation": "ChainPageReadTreeItems",
 				"routes": []
 			},
@@ -22341,6 +22337,10 @@
 			},
 			{
 				"relation": "ChainPageReadWeightsRow",
+				"routes": []
+			},
+			{
+				"relation": "ChainPageTreeFirst",
 				"routes": []
 			},
 			{

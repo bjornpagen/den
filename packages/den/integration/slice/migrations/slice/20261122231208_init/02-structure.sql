@@ -630,12 +630,6 @@ CREATE TABLE "slice_den"."chain_page_read_tree" (
   CONSTRAINT "__chain_page_read_tree_pk_yi4lj5ou7f" PRIMARY KEY ("step", "ordinal", "root")
 );
 
-CREATE TABLE "slice_den"."chain_page_read_tree_first" (
-  "digest" "slice"."__sha256" NOT NULL,
-  "at" "slice"."__domain_gfw43vigph" NOT NULL,
-  CONSTRAINT "__chain_page_read_tree_first_pk_elrx4yzmnb" PRIMARY KEY ("digest", "at")
-);
-
 CREATE TABLE "slice_den"."chain_page_read_tree_items" (
   "digest" "slice"."__sha256" NOT NULL,
   "at" "slice"."__domain_gfw43vigph" NOT NULL,
@@ -672,6 +666,12 @@ CREATE TABLE "slice_den"."chain_page_read_weights_row" (
   "feed" "slice"."feed" NOT NULL,
   "factor" "slice"."__domain_gfw43vigph" NOT NULL,
   CONSTRAINT "__chain_page_read_weights_row_pk_bmwffycauu" PRIMARY KEY ("digest")
+);
+
+CREATE TABLE "slice_den"."chain_page_tree_first" (
+  "digest" "slice"."__sha256" NOT NULL,
+  "at" "slice"."__domain_gfw43vigph" NOT NULL,
+  CONSTRAINT "__chain_page_tree_first_pk_zmjcrvbs5g" PRIMARY KEY ("digest", "at")
 );
 
 CREATE TABLE "slice_den"."chain_paused" (
@@ -2680,10 +2680,6 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
-  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."chain_page_read_tree_first"
-  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
-
-CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."chain_page_read_tree_items"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -2697,6 +2693,10 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."chain_page_read_weights_row"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."chain_page_tree_first"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -3634,8 +3634,6 @@ ALTER TABLE "slice_den"."chain_page_read_tree"
   ADD CONSTRAINT "__chain_page_read_tree_fk_root_rjrvetlv52" FOREIGN KEY ("root") REFERENCES "slice_den"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_page_read_tree_fk_step_root_ryeeje5uel" FOREIGN KEY ("step", "root") REFERENCES "slice_den"."chain_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."chain_page_read_tree_first" ADD CONSTRAINT "__chain_page_read_tree_first_fk_digest_at_mxnolu45np" FOREIGN KEY ("digest", "at") REFERENCES "slice_den"."chain_page_read_tree_items" ("digest", "at") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
-
 ALTER TABLE "slice_den"."chain_page_read_tree_items"
   ADD CONSTRAINT "__chain_page_read_tree_items_fk_digest_copy_items_sicbcwc4zb" FOREIGN KEY ("digest", "__copy_items_jii5wy7azg") REFERENCES "slice_den"."chain_page_read_tree_row" ("digest", "items") MATCH SIMPLE ON UPDATE CASCADE,
   ADD CONSTRAINT "__chain_page_read_tree_items_fk_digest_pred_at_r7gpc2igze" FOREIGN KEY ("digest", "__pred_at_xktcobhsti") REFERENCES "slice_den"."chain_page_read_tree_items" ("digest", "at") MATCH SIMPLE;
@@ -3646,6 +3644,8 @@ ALTER TABLE "slice_den"."chain_page_read_weights"
   ADD CONSTRAINT "__chain_page_read_weights_fk_digest_73zfvhpwus" FOREIGN KEY ("digest") REFERENCES "slice_den"."chain_page_read_weights_row" ("digest") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_page_read_weights_fk_root_iuoy4px74k" FOREIGN KEY ("root") REFERENCES "slice_den"."chain_root" ("__scope_jdl7uajdrr") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_page_read_weights_fk_step_root_kdopovc7p6" FOREIGN KEY ("step", "root") REFERENCES "slice_den"."chain_result" ("step", "root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice_den"."chain_page_tree_first" ADD CONSTRAINT "__chain_page_tree_first_fk_digest_at_thwgbmxhwl" FOREIGN KEY ("digest", "at") REFERENCES "slice_den"."chain_page_read_tree_items" ("digest", "at") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."chain_paused" ADD CONSTRAINT "__chain_paused_fk_target_pred_turn_mokmv27wuy" FOREIGN KEY ("target", "__pred_turn_qryngij6c4") REFERENCES "slice_den"."chain_resumed" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 

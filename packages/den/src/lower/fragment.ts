@@ -206,6 +206,8 @@ export interface ReadIR {
 	readonly name: string
 	readonly stem: string
 	readonly record: string
+	/** Whether its step's reads state relation names for its records (kinds.ts ReadsNames), which den forwards. */
+	readonly statesNames: boolean
 }
 
 /**
@@ -955,26 +957,29 @@ export const lower = (flow: AnyFlow): Lowered => {
 	 * a row any step of any root found is stored once, content-addressed, and a relation of the step's references to
 	 * them, keyed by the step and the row's place in what it found, each contained in its row and in the step's result.
 	 */
-	const readsOf = (s: AnyStepKind): ReadonlyArray<ReadIR> =>
-		s.reads.kind === "none"
-			? []
-			: Arr.map(Record.keys(s.reads.named), (readName): ReadIR => {
-					const stem = name(`${s.name}Read${capitalized(readName)}`)
-					const record = relation({
-						name: stem,
-						fields: [
-							{ name: "step", type: stepKey },
-							{ name: "ordinal", type: natural },
-							{ name: "digest", type: rowKey }
-						],
-						key: ["step", "ordinal"]
-					})
-					laws.push(
-						into(side(record, ["step"]), side(Result, ["step"])),
-						into(side(record, ["digest"]), side(`${stem}Row`, ["digest"]))
-					)
-					return { name: readName, stem, record }
-				})
+	const readsOf = (s: AnyStepKind): ReadonlyArray<ReadIR> => {
+		if (s.reads.kind === "none") {
+			return []
+		}
+		const stated = Arr.flatMap(s.reads.options, (options) => Record.keys(options.names))
+		return Arr.map(Record.keys(s.reads.named), (readName): ReadIR => {
+			const stem = name(`${s.name}Read${capitalized(readName)}`)
+			const record = relation({
+				name: stem,
+				fields: [
+					{ name: "step", type: stepKey },
+					{ name: "ordinal", type: natural },
+					{ name: "digest", type: rowKey }
+				],
+				key: ["step", "ordinal"]
+			})
+			laws.push(
+				into(side(record, ["step"]), side(Result, ["step"])),
+				into(side(record, ["digest"]), side(`${stem}Row`, ["digest"]))
+			)
+			return { name: readName, stem, record, statesNames: Arr.contains(stated, readName) }
+		})
+	}
 
 	/**
 	 * The facts a step awaits: each refused unless its key fields are its relation's whole key and each names a column

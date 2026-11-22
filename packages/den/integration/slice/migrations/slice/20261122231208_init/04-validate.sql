@@ -5121,17 +5121,6 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_chain_page_read_tree_qm6sxo3gir"() FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__immutable_chain_page_read_tree_first_7nhghkx2et"() RETURNS "pg_catalog"."trigger"
-LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
-AS $$
-BEGIN
-  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."at"), (NEW."digest", NEW."at")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ChainPageReadTreeFirst) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
-  RETURN NEW;
-END
-$$;
-
-REVOKE EXECUTE ON FUNCTION "slice"."__immutable_chain_page_read_tree_first_7nhghkx2et"() FROM PUBLIC;
-
 CREATE OR REPLACE FUNCTION "slice"."__immutable_chain_page_read_tree_items_qhpl2uhihv"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -5175,6 +5164,17 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_chain_page_read_weights_row_gkwz27ked3"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__immutable_chain_page_tree_first_dx6efgvl7m"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."at"), (NEW."digest", NEW."at")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ChainPageTreeFirst) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_chain_page_tree_first_dx6efgvl7m"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__immutable_chain_paused_aoyhzggt5w"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -7878,10 +7878,6 @@ CREATE TRIGGER "__immutable"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_page_read_tree_qm6sxo3gir"();
 
 CREATE TRIGGER "__immutable"
-  BEFORE UPDATE ON "slice_den"."chain_page_read_tree_first"
-  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_page_read_tree_first_7nhghkx2et"();
-
-CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice_den"."chain_page_read_tree_items"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_page_read_tree_items_qhpl2uhihv"();
 
@@ -7896,6 +7892,10 @@ CREATE TRIGGER "__immutable"
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice_den"."chain_page_read_weights_row"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_page_read_weights_row_gkwz27ked3"();
+
+CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice_den"."chain_page_tree_first"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_page_tree_first_dx6efgvl7m"();
 
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice_den"."chain_paused"

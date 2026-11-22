@@ -246,6 +246,15 @@
   a step whose reads are any other.
   - Rejected: a record schema of den's beside the query, a second spelling of its rows; a row's text stored, a blob;
     wire cells as texts, which a field of the query types better.
+- **A step's reads may state their records' relation names (main's ruling on metis's documents, 2026-11-22).** grizzle
+  derives a records relation's name from den's stem for the read, `<P><Step>Read<Name>`, and the attachment's path,
+  chaining a repeated name under its parent's, and refuses one past PostgreSQL's 63 bytes as RecordNameTooLong, naming
+  the path; metis's one read of an item's documents, the item's scan and each stimulus's below it, derives such names,
+  which made it read each document in a step of its own (a workaround). So `reads(over, named, params, { names })`
+  takes, by named query, the relation names its records state, an attachment's path to a name (grizzle's `names` of
+  records(...), typed by the query's paths), and den forwards each read's to its records' call,
+  `records(stem, <Step>Reads.named.<name>, owner, key, { names: <Step>Reads.options[0].names.<name> })`, from the reads'
+  own value, so a name is stated once, where the read is.
 - **A read's records are content-addressed: a row is stored once, however many roots found it (main's ruling on
   metis's volume, 2026-11-22).** Keyed by a row's digest and its root, the records held each root's own copy of every
   row it read: measured on metis's rehearsal QTI data in grizzle's records layout, an item's document read is about 680

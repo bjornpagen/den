@@ -199,7 +199,8 @@ export const ChainPageReadTreeRecords = records(
 	"ChainPageReadTree",
 	PageReads.named.tree,
 	{ digest: sha256 },
-	["digest"]
+	["digest"],
+	{ names: PageReads.options[0].names.tree }
 )
 export const ChainPageReadTreeRow = ChainPageReadTreeRecords.row
 

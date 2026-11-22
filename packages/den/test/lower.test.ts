@@ -148,7 +148,8 @@ const readsOf = <I>(reading: typeof Reading.Type): ReadsOver<I> =>
 				kind: "query",
 				over: {},
 				named: reading === "one" ? { weights: {} } : { weights: {}, passages: {} },
-				params: () => ({})
+				params: () => ({}),
+				options: []
 			}
 
 /**

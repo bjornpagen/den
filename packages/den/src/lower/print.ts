@@ -499,7 +499,7 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 		"",
 		...Arr.flatMap(readsOfFlow(l), ({ step, read }) => [
 			`/** The records of the rows step ${step.name}'s read \`${read.name}\` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest alone, so every root that found a row shares it. */`,
-			`export const ${read.stem}Records = records(${q(read.stem)}, ${readsExport(step.name)}.named.${read.name}, { digest: sha256 }, ["digest"])`,
+			`export const ${read.stem}Records = records(${q(read.stem)}, ${readsExport(step.name)}.named.${read.name}, { digest: sha256 }, ["digest"]${read.statesNames ? `, { names: ${readsExport(step.name)}.options[0].names.${read.name} }` : ""})`,
 			`export const ${read.stem}Row = ${read.stem}Records.row`,
 			""
 		]),
