@@ -13,6 +13,7 @@ import {
 	place,
 	pg,
 	pred,
+	reachable,
 	records,
 	relation,
 	retirable,
@@ -656,9 +657,11 @@ export const assignGraph = fragment(
 		contained(on(AssignAsked, "to", "root"), on(AssignDecideInput, "step", "root")),
 		key(on(AssignAsked, "to", "root")),
 		contained(on(AssignDecideReadNearest, "step", "root"), on(AssignResult, "step", "root")),
-		contained(on(AssignDecideReadNearest, "digest"), on(AssignDecideReadNearestRow, "digest")),
+		reachable(on(AssignDecideReadNearestRecords, "digest"), [
+			on(AssignDecideReadNearest, "digest")
+		]),
 		contained(on(AssignDecideReadSeen, "step", "root"), on(AssignResult, "step", "root")),
-		contained(on(AssignDecideReadSeen, "digest"), on(AssignDecideReadSeenRow, "digest")),
+		reachable(on(AssignDecideReadSeenRecords, "digest"), [on(AssignDecideReadSeen, "digest")]),
 		retirable(AssignRoot, [
 			on(AssignScope, "root"),
 			on(AssignAdmitted, "root"),

@@ -264,14 +264,16 @@
   and a finished step's output is its record). So the records are keyed by the digest of a row's text alone, as git
   stores an object once however many trees name it: a row any step of any root found is one row, an insert of one
   already stored no change, and a root keeps only its step's references to it, `<P><Step>Read<Name>(step, ordinal,
-  digest, root)`, a body of its unit contained in the row by its digest. A record is as faithful as a copy: its digest
+  digest, root)`, a body of its unit that holds the row by its digest. A record is as faithful as a copy: its digest
   is of the row as the step found it, so a later edit of the source is a new row and leaves the old one as it was
   (integration/records.test.ts holds this against a model of the per-root copies, through edits of the sources).
-  - Known cost: no root owns a record row, so no root's retirement retires one, and grizzle retires nothing by
-    reachability yet (a row retired once no reference holds it: grizzle's next-pin work). Until it does, the records
-    grow with the distinct content any step ever read: bounded for QTI's items and stimuli, the bank's documents and
-    their versions, and unbounded for a read of a growing thread (DCAN's conversations), whose every turn's new rows
-    stay after their roots retire.
+  - A record lives while a reference names it (grizzle's `reachable`): each read's records are reachable
+    from its references, `reachable(on(<stem>Records, "digest"), [on(<P><Step>Read<Name>, "digest")])`, which states
+    the reference's containment in the row itself; a root's retirement deletes its references with its graph and, in
+    the same statement, the records' rows at every digest whose last reference it removed, from every relation of the
+    records, so the records hold exactly the distinct content some unretired root read: bounded by the live sittings'
+    documents for QTI, and by the live conversations for a read of a growing thread. A row no reference ever named is
+    never released, and den never writes one: a row is inserted beside its reference, in the step's commit.
   - Rejected: per-root copies, which grew with sittings times documents; a record of only the source's keys, which an
     edit of the source rewrites (the 2026-11-18 entry): a key is identity only where its source is immutable under it,
     and QTI's documents, keyed by their package and path, are not (pantry keying them by version or digest is edullm's

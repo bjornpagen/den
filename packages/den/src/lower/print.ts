@@ -213,6 +213,8 @@ const lawExpr = (law: LawIR): string => {
 			return `retirable(${law.header}, [${commas(Arr.map(law.bodies, (b) => `on(${b}, "root")`))}])`
 		case "ordered":
 			return `ordered(${sideExpr(law.member)}, fin(${law.owner}, ${q(law.count)}))`
+		case "reachable":
+			return `reachable(on(${law.records}Records, "digest"), [${commas(Arr.map(law.holders, sideExpr))}])`
 	}
 }
 
@@ -237,7 +239,13 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		Arr.some(fields, (t) => t.kind === "base" && t.base === b) ||
 		Arr.some(l.brands, (br) => br.base === b)
 	const sides = Arr.flatMap(l.laws, (law) =>
-		law.kind === "contained" ? [law.from, law.to] : law.kind === "key" ? [law.side] : []
+		law.kind === "contained"
+			? [law.from, law.to]
+			: law.kind === "key"
+				? [law.side]
+				: law.kind === "reachable"
+					? law.holders
+					: []
 	)
 	const seated = Option.isSome(l.seats)
 	return [
@@ -262,6 +270,7 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		...(Arr.some(sides, (sd) => Arr.some(sd.terms, (t) => t.pred)) ? ["pred"] : []),
 		...(seated ? ["query"] : []),
 		...(Arr.some(l.laws, (law) => law.kind === "race") ? ["race"] : []),
+		...(Arr.some(l.laws, (law) => law.kind === "reachable") ? ["reachable"] : []),
 		...(Arr.some(l.steps, (st) => Arr.isReadonlyArrayNonEmpty(st.reads)) ? ["records"] : []),
 		"relation",
 		...(Arr.some(l.laws, (law) => law.kind === "retirable") ? ["retirable"] : []),
@@ -416,6 +425,8 @@ const lawRelations = (law: LawIR): ReadonlyArray<string> => {
 			return [law.header, ...law.bodies]
 		case "ordered":
 			return [law.member.relation, law.owner]
+		case "reachable":
+			return [`${law.records}Row`, ...Arr.map(law.holders, (holder) => holder.relation)]
 	}
 }
 

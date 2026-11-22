@@ -58417,6 +58417,14 @@
 			},
 			{
 				"from": "table:slice_den.assign_decide_read_nearest_row",
+				"to": "function:slice_den.__hold_assign_root_rwboli77cc"
+			},
+			{
+				"from": "table:slice_den.assign_decide_read_nearest_row",
+				"to": "function:slice_den.__retire_assign_root_hwbj4sewrx"
+			},
+			{
+				"from": "table:slice_den.assign_decide_read_nearest_row",
 				"to": "privileges:slice_seats__assign_den"
 			},
 			{
@@ -58534,6 +58542,14 @@
 			{
 				"from": "table:slice_den.assign_decide_read_seen_row",
 				"to": "function:slice.__immutable_assign_decide_read_seen_row_fueqjd7hpy"
+			},
+			{
+				"from": "table:slice_den.assign_decide_read_seen_row",
+				"to": "function:slice_den.__hold_assign_root_rwboli77cc"
+			},
+			{
+				"from": "table:slice_den.assign_decide_read_seen_row",
+				"to": "function:slice_den.__retire_assign_root_hwbj4sewrx"
 			},
 			{
 				"from": "table:slice_den.assign_decide_read_seen_row",
@@ -61801,6 +61817,14 @@
 			},
 			{
 				"from": "table:slice_den.chain_page_read_earlier_row",
+				"to": "function:slice_den.__hold_chain_root_wgndggnfwf"
+			},
+			{
+				"from": "table:slice_den.chain_page_read_earlier_row",
+				"to": "function:slice_den.__retire_chain_root_ji6nmac7of"
+			},
+			{
+				"from": "table:slice_den.chain_page_read_earlier_row",
 				"to": "privileges:slice_seats__chain_den"
 			},
 			{
@@ -61949,6 +61973,14 @@
 			},
 			{
 				"from": "table:slice_den.chain_page_read_tree_items",
+				"to": "function:slice_den.__hold_chain_root_wgndggnfwf"
+			},
+			{
+				"from": "table:slice_den.chain_page_read_tree_items",
+				"to": "function:slice_den.__retire_chain_root_ji6nmac7of"
+			},
+			{
+				"from": "table:slice_den.chain_page_read_tree_items",
 				"to": "privileges:slice_seats__chain_den"
 			},
 			{
@@ -62010,6 +62042,14 @@
 			{
 				"from": "table:slice_den.chain_page_read_tree_row",
 				"to": "function:slice.__immutable_chain_page_read_tree_row_vrfgoh54h3"
+			},
+			{
+				"from": "table:slice_den.chain_page_read_tree_row",
+				"to": "function:slice_den.__hold_chain_root_wgndggnfwf"
+			},
+			{
+				"from": "table:slice_den.chain_page_read_tree_row",
+				"to": "function:slice_den.__retire_chain_root_ji6nmac7of"
 			},
 			{
 				"from": "table:slice_den.chain_page_read_tree_row",
@@ -62133,6 +62173,14 @@
 			},
 			{
 				"from": "table:slice_den.chain_page_read_weights_row",
+				"to": "function:slice_den.__hold_chain_root_wgndggnfwf"
+			},
+			{
+				"from": "table:slice_den.chain_page_read_weights_row",
+				"to": "function:slice_den.__retire_chain_root_ji6nmac7of"
+			},
+			{
+				"from": "table:slice_den.chain_page_read_weights_row",
 				"to": "privileges:slice_seats__chain_den"
 			},
 			{
@@ -62178,6 +62226,14 @@
 			{
 				"from": "table:slice_den.chain_page_tree_first",
 				"to": "function:slice.__immutable_chain_page_tree_first_dx6efgvl7m"
+			},
+			{
+				"from": "table:slice_den.chain_page_tree_first",
+				"to": "function:slice_den.__hold_chain_root_wgndggnfwf"
+			},
+			{
+				"from": "table:slice_den.chain_page_tree_first",
+				"to": "function:slice_den.__retire_chain_root_ji6nmac7of"
 			},
 			{
 				"from": "table:slice_den.chain_page_tree_first",
@@ -90723,7 +90779,7 @@
 			},
 			{
 				"ddl": [
-					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__retire_assign_root_hwbj4sewrx","schema":"slice_den"},"parallel":"UNSAFE","params":[{"name":"keys_1","type":{"array":true,"kind":"named","name":"__sha256","schema":"slice","typmod":[]}}],"returns":{"setOf":{"array":true,"kind":"builtin","name":"bigint"}},"security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"9ef1bdfeab0bc0375d6a568367266d22be844ee3b4e234b5bf91e880c55dfe2f"},
+					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__retire_assign_root_hwbj4sewrx","schema":"slice_den"},"parallel":"UNSAFE","params":[{"name":"keys_1","type":{"array":true,"kind":"named","name":"__sha256","schema":"slice","typmod":[]}}],"returns":{"setOf":{"array":true,"kind":"builtin","name":"bigint"}},"security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"e59dc1678012efaa8e39234ecb08fdc1928168a06fca113770fc457a67196f97"},
 					{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"FUNCTION","names":[{"args":[{"array":true,"kind":"named","name":"__sha256","schema":"slice","typmod":[]}],"name":"__retire_assign_root_hwbj4sewrx","schema":"slice_den"}]},"privileges":["EXECUTE"]}
 				],
 				"ident": "function:slice_den.__retire_assign_root_hwbj4sewrx",
@@ -90731,7 +90787,7 @@
 			},
 			{
 				"ddl": [
-					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__retire_chain_root_ji6nmac7of","schema":"slice_den"},"parallel":"UNSAFE","params":[{"name":"keys_1","type":{"array":true,"kind":"named","name":"__sha256","schema":"slice","typmod":[]}}],"returns":{"setOf":{"array":true,"kind":"builtin","name":"bigint"}},"security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"18e0c1ee8b3dcd367db5f4b307997ee5fdc12979367e9a26a8f0c3e076259090"},
+					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__retire_chain_root_ji6nmac7of","schema":"slice_den"},"parallel":"UNSAFE","params":[{"name":"keys_1","type":{"array":true,"kind":"named","name":"__sha256","schema":"slice","typmod":[]}}],"returns":{"setOf":{"array":true,"kind":"builtin","name":"bigint"}},"security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"0b3b3ead185beff0905b338abcd5f7c5eb8fb33b3b12d205f0aa9ef0d4f46046"},
 					{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"FUNCTION","names":[{"args":[{"array":true,"kind":"named","name":"__sha256","schema":"slice","typmod":[]}],"name":"__retire_chain_root_ji6nmac7of","schema":"slice_den"}]},"privileges":["EXECUTE"]}
 				],
 				"ident": "function:slice_den.__retire_chain_root_ji6nmac7of",
@@ -110381,7 +110437,7 @@
 	},
 	"schema": "slice",
 	"schemaName": "Slice",
-	"seal": "8b960b23d1d6c6cf1cc7a42fab9ac6e65f0745baec96494376d5520efe8312a0",
+	"seal": "a5dc6dcbcd6dd9ca634efd804d7f9d072b2c29d7cdf84ff34568dc2ef556ee91",
 	"theory": {
 		"laws": {
 			"__assign_admitted_in_assign_root_56frawwv2n": {
@@ -123642,7 +123698,7 @@
 				]
 			}
 		},
-		"schema": "cd88eca689c8fd2f3874de34ddc037f06303ce8b0faf06acce6c1cb14b720471",
+		"schema": "fa753388e939259a73a71ac631bc55a363840521a4691de55ce46310b1b67b3c",
 		"spellings": {}
 	},
 	"workload": {
