@@ -4564,7 +4564,7 @@ CREATE OR REPLACE FUNCTION "slice"."__immutable_assign_decide_read_nearest_row_l
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
-  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."root", OLD."passage", OLD."topic", OLD."distance"), (NEW."digest", NEW."root", NEW."passage", NEW."topic", NEW."distance")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(AssignDecideReadNearestRow) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."passage", OLD."topic", OLD."distance"), (NEW."digest", NEW."passage", NEW."topic", NEW."distance")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(AssignDecideReadNearestRow) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
   RETURN NEW;
 END
 $$;
@@ -4586,7 +4586,7 @@ CREATE OR REPLACE FUNCTION "slice"."__immutable_assign_decide_read_seen_row_fueq
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
-  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."root", OLD."learner", OLD."passage"), (NEW."digest", NEW."root", NEW."learner", NEW."passage")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(AssignDecideReadSeenRow) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."learner", OLD."passage"), (NEW."digest", NEW."learner", NEW."passage")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(AssignDecideReadSeenRow) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
   RETURN NEW;
 END
 $$;
@@ -5103,7 +5103,7 @@ CREATE OR REPLACE FUNCTION "slice"."__immutable_chain_page_read_earlier_row_fptn
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
-  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."root", OLD."feed", OLD."seq", OLD."n"), (NEW."digest", NEW."root", NEW."feed", NEW."seq", NEW."n")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ChainPageReadEarlierRow) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."feed", OLD."seq", OLD."n"), (NEW."digest", NEW."feed", NEW."seq", NEW."n")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ChainPageReadEarlierRow) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
   RETURN NEW;
 END
 $$;
@@ -5125,7 +5125,7 @@ CREATE OR REPLACE FUNCTION "slice"."__immutable_chain_page_read_tree_first_7nhgh
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
-  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."root", OLD."at"), (NEW."digest", NEW."root", NEW."at")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ChainPageReadTreeFirst) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."at"), (NEW."digest", NEW."at")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ChainPageReadTreeFirst) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
   RETURN NEW;
 END
 $$;
@@ -5136,7 +5136,7 @@ CREATE OR REPLACE FUNCTION "slice"."__immutable_chain_page_read_tree_items_qhpl2
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
-  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."root", OLD."at", OLD."feed", OLD."seq", OLD."n"), (NEW."digest", NEW."root", NEW."at", NEW."feed", NEW."seq", NEW."n")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ChainPageReadTreeItems) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."at", OLD."feed", OLD."seq", OLD."n"), (NEW."digest", NEW."at", NEW."feed", NEW."seq", NEW."n")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ChainPageReadTreeItems) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
   RETURN NEW;
 END
 $$;
@@ -5147,7 +5147,7 @@ CREATE OR REPLACE FUNCTION "slice"."__immutable_chain_page_read_tree_row_vrfgoh5
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
-  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."root", OLD."feed", OLD."factor", OLD."items"), (NEW."digest", NEW."root", NEW."feed", NEW."factor", NEW."items")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ChainPageReadTreeRow) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."feed", OLD."factor", OLD."items"), (NEW."digest", NEW."feed", NEW."factor", NEW."items")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ChainPageReadTreeRow) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
   RETURN NEW;
 END
 $$;
@@ -5169,7 +5169,7 @@ CREATE OR REPLACE FUNCTION "slice"."__immutable_chain_page_read_weights_row_gkwz
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
-  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."root", OLD."feed", OLD."factor"), (NEW."digest", NEW."root", NEW."feed", NEW."factor")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ChainPageReadWeightsRow) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  IF "pg_catalog"."record_image_ne"((OLD."digest", OLD."feed", OLD."factor"), (NEW."digest", NEW."feed", NEW."factor")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ChainPageReadWeightsRow) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
   RETURN NEW;
 END
 $$;

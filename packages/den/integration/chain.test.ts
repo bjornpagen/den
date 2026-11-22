@@ -134,9 +134,9 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 						)
 						const stored = yield* rows(app.workload.earlierRows.once({ params: {}, facts: {} }))
 						assert.equal(
-							BigInt(Arr.filter(stored, (row) => Sha256.equals(row.root, scope)).length),
+							BigInt(stored.length),
 							before(BigInt(run.pages - 1)),
-							"each item a later page read is stored once in its root, however many pages read it"
+							"each item a later page read is stored once, however many pages read it"
 						)
 						const trees = yield* rows(app.workload.treeReads.once({ params: {}, facts: {} }))
 						yield* Effect.forEach(pages, (page) =>
@@ -165,7 +165,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 									Effect.gen(function* () {
 										const stored = yield* rows(
 											app.workload.treeRecords.once({
-												params: { digest: t.digest, root: t.root },
+												params: { digest: t.digest },
 												facts: {}
 											})
 										)

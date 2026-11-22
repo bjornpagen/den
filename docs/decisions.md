@@ -237,7 +237,8 @@
   exactly as its query delivers them; and each named query's rows are recorded in the relations grizzle's `records`
   makes of that query when den's fragment loads, each column the query's own field (its type, brand, contract or
   roster) and each attachment a relation under its owner, keyed by the digest of the row's text (grizzle's `rowText`)
-  and its root, so a root stores a row once, a tree with it. They are written as ordinary typed inserts
+  alone, so a row is stored once, a tree with it, however many roots found it (below). They are written as ordinary
+  typed inserts
   (`recordsFacts`) and read back by an ordinary query whose rows are the query's own (`recordsQuery`), through grizzle's
   one decoder. den restates no field of a read and stores no text of a row. A step's reads are a value of a module that
   depends on their level alone (`<Step>Reads`), never on the flow, whose type names its app role, a role over the
@@ -245,6 +246,27 @@
   a step whose reads are any other.
   - Rejected: a record schema of den's beside the query, a second spelling of its rows; a row's text stored, a blob;
     wire cells as texts, which a field of the query types better.
+- **A read's records are content-addressed: a row is stored once, however many roots found it (main's ruling on
+  metis's volume, 2026-11-22).** Keyed by a row's digest and its root, the records held each root's own copy of every
+  row it read: measured on metis's rehearsal QTI data in grizzle's records layout, an item's document read is about 680
+  rows and 550 KB, so a thousand sittings of forty graded items stored 27 million rows and 22 GB of copies of a bank
+  whose 205 documents are 145,000 rows and 84 MB once. A
+  step's records state what it read; nothing runs it again from them (a step that dies before its commit reads again,
+  and a finished step's output is its record). So the records are keyed by the digest of a row's text alone, as git
+  stores an object once however many trees name it: a row any step of any root found is one row, an insert of one
+  already stored no change, and a root keeps only its step's references to it, `<P><Step>Read<Name>(step, ordinal,
+  digest, root)`, a body of its unit contained in the row by its digest. A record is as faithful as a copy: its digest
+  is of the row as the step found it, so a later edit of the source is a new row and leaves the old one as it was
+  (integration/records.test.ts holds this against a model of the per-root copies, through edits of the sources).
+  - Known cost: no root owns a record row, so no root's retirement retires one, and grizzle retires nothing by
+    reachability yet (a row retired once no reference holds it: grizzle's next-pin work). Until it does, the records
+    grow with the distinct content any step ever read: bounded for QTI's items and stimuli, the bank's documents and
+    their versions, and unbounded for a read of a growing thread (DCAN's conversations), whose every turn's new rows
+    stay after their roots retire.
+  - Rejected: per-root copies, which grew with sittings times documents; a record of only the source's keys, which an
+    edit of the source rewrites (the 2026-11-18 entry): a key is identity only where its source is immutable under it,
+    and QTI's documents, keyed by their package and path, are not (pantry keying them by version or digest is edullm's
+    call).
 - **A step commits through the app's own ChangeSet, in its commit's call (settled by metis's need, 2026-11-21).** The
   essay grader records its evaluation through the app's ChangeSet, which inserts what an insert of facts cannot state
   (its rows from parameters, its instants the database's), so a step's `writes` is `through(changes, clock)`, a

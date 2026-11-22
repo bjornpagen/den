@@ -188,29 +188,27 @@ const pageReads = query(Auditor).rule((r) => {
 	const { feed, factor } = v(ChainPageReadWeightsRow, "row")
 	return r
 		.match(ChainPageReadWeights, { step, ordinal, digest, root })
-		.match(ChainPageReadWeightsRow, { digest, root, feed, factor })
+		.match(ChainPageReadWeightsRow, { digest, feed, factor })
 		.find({ step, ordinal, feed, factor })
 })
 
-/** The items the chain's pages read of their feed before them, each recorded once per root. */
+/** The items the chain's pages read of their feed before them, each recorded once, however many roots read it. */
 const earlierRows = query(Auditor).rule((r) => {
-	const { digest, root, feed, seq, n } = v(ChainPageReadEarlierRow, "row")
-	return r
-		.match(ChainPageReadEarlierRow, { digest, root, feed, seq, n })
-		.find({ digest, root, feed, seq, n })
+	const { digest, feed, seq, n } = v(ChainPageReadEarlierRow, "row")
+	return r.match(ChainPageReadEarlierRow, { digest, feed, seq, n }).find({ digest, feed, seq, n })
 })
 
-/** Each page's tree of its feed's weight, by its reference: the row it found, by its digest in its root. */
+/** Each page's tree of its feed's weight, by its reference in its root: the row it found, by its digest. */
 const treeReads = query(Auditor).rule((r) => {
 	const { step, ordinal, digest, root } = v(ChainPageReadTree, "read")
 	const { feed, factor } = v(ChainPageReadTreeRow, "row")
 	return r
 		.match(ChainPageReadTree, { step, ordinal, digest, root })
-		.match(ChainPageReadTreeRow, { digest, root, feed, factor })
+		.match(ChainPageReadTreeRow, { digest, feed, factor })
 		.find({ step, ordinal, digest, root, feed, factor })
 })
 
-/** A recorded tree, read back by its digest in its root: the rows of the read's query as it found them. */
+/** A recorded tree, read back by its digest: the rows of the read's query as it found them. */
 const treeRecords = recordsQuery(chainGraph, ChainPageReadTreeRecords)
 
 const weights = query(Auditor).rule((r) => {
@@ -397,8 +395,16 @@ const nearestReads = query(Auditor).rule((r) => {
 	const { passage, topic, distance } = v(AssignDecideReadNearestRow, "row")
 	return r
 		.match(AssignDecideReadNearest, { step, ordinal, digest, root })
-		.match(AssignDecideReadNearestRow, { digest, root, passage, topic, distance })
-		.find({ step, ordinal, passage, topic, distance })
+		.match(AssignDecideReadNearestRow, { digest, passage, topic, distance })
+		.find({ step, ordinal, digest, root, passage, topic, distance })
+})
+
+/** Every passage row any decision's nearest read found, stored once by its digest however many roots found it. */
+const nearestRows = query(Auditor).rule((r) => {
+	const { digest, passage, topic, distance } = v(AssignDecideReadNearestRow, "row")
+	return r
+		.match(AssignDecideReadNearestRow, { digest, passage, topic, distance })
+		.find({ digest, passage, topic, distance })
 })
 
 /** The seen passages each decision read, recorded with its result. */
@@ -407,8 +413,16 @@ const seenReads = query(Auditor).rule((r) => {
 	const { learner, passage } = v(AssignDecideReadSeenRow, "row")
 	return r
 		.match(AssignDecideReadSeen, { step, ordinal, digest, root })
-		.match(AssignDecideReadSeenRow, { digest, root, learner, passage })
-		.find({ step, ordinal, learner, passage })
+		.match(AssignDecideReadSeenRow, { digest, learner, passage })
+		.find({ step, ordinal, digest, root, learner, passage })
+})
+
+/** Every seen row any decision read, stored once by its digest however many roots read it. */
+const seenRows = query(Auditor).rule((r) => {
+	const { digest, learner, passage } = v(AssignDecideReadSeenRow, "row")
+	return r
+		.match(AssignDecideReadSeenRow, { digest, learner, passage })
+		.find({ digest, learner, passage })
 })
 
 /** Each decision as its output row holds it: its stage's tag and its confidence. */
@@ -616,7 +630,9 @@ export const auditWorkload = workload(Auditor, {
 	chainHeaders,
 	assignResults,
 	nearestReads,
+	nearestRows,
 	seenReads,
+	seenRows,
 	decisions,
 	servings,
 	weighings,
@@ -641,4 +657,16 @@ export const appWorkload = workload(Loader, {
 	hear: ChangeSet.empty(Loader).insert(Heard, []),
 	place: ChangeSet.empty(Loader).insert(Passage, []),
 	see: ChangeSet.empty(Loader).insert(Seen, [])
+})
+
+/**
+ * The app's editor: it rewrites a passage in place and takes back a seen passage, the edits of a decision's sources
+ * after it read them, which leave what it recorded as it found it (integration/records.test.ts).
+ */
+export const Editor = role(App, "editor", { Passage, Seen }, { write: ["Passage", "Seen"] })
+
+/** The editor's edits: a passage put whole at its key, and seen passages deleted. */
+export const editWorkload = workload(Editor, {
+	replace: ChangeSet.empty(Editor).put(Passage, []),
+	unsee: ChangeSet.empty(Editor).delete(Seen, [])
 })

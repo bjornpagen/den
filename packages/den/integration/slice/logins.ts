@@ -1,5 +1,11 @@
 import { login } from "@bjornpagen/grizzle"
-import { appWorkload, Auditor, auditWorkload } from "#integration/slice/app-programs.ts"
+import {
+	appWorkload,
+	Auditor,
+	auditWorkload,
+	Editor,
+	editWorkload
+} from "#integration/slice/app-programs.ts"
 import { App } from "#integration/slice/app.ts"
 import {
 	AssignCoordinator,
@@ -135,8 +141,11 @@ export const Worker = login(
 	}
 )
 
-/** The app's login: its writer role, which den's commits run under beside the app's own writes, and its auditor. */
-export const AppLogin = login(App, "app", [Loader, Auditor], {
+/**
+ * The app's login: its writer role, which den's commits run under beside the app's own writes, its auditor, and its
+ * editor.
+ */
+export const AppLogin = login(App, "app", [Loader, Auditor, Editor], {
 	workload: [
 		chainCommits,
 		fanCommits,
@@ -147,6 +156,7 @@ export const AppLogin = login(App, "app", [Loader, Auditor], {
 		writebackCommits,
 		clockCommits,
 		appWorkload,
-		auditWorkload
+		auditWorkload,
+		editWorkload
 	]
 })

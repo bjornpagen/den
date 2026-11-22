@@ -107,8 +107,6 @@ export type LawIR =
 			readonly kind: "retirable"
 			readonly header: string
 			readonly bodies: ReadonlyArray<string>
-			/** The stems of the records whose relations are bodies too, every one of them, which grizzle makes. */
-			readonly records: ReadonlyArray<string>
 	  }
 	| {
 			readonly kind: "ordered"
@@ -199,9 +197,10 @@ export interface EdgeIR {
 
 /**
  * One named query of a step's declared reads, lowered: its name; the stem its records are named by, the relations
- * grizzle's `records` makes of the query when the fragment loads (`${stem}Row`, keyed by a row's digest and its root,
- * and a relation per attachment under it, each the stem and a suffix), which den names nothing of but the root; and the
- * relation of the step's references to the rows it found, by ordinal, named the stem itself, which no records name is.
+ * grizzle's `records` makes of the query when the fragment loads (`${stem}Row`, keyed by a row's digest alone, so a row
+ * every root that found it shares is stored once, and a relation per attachment under it, each the stem and a suffix),
+ * which den names nothing of but the root and which no root's unit holds; and the relation of the step's references to
+ * the rows it found, by ordinal, named the stem itself, which no records name is, a body of its root's unit.
  */
 export interface ReadIR {
 	readonly name: string
@@ -952,9 +951,9 @@ export const lower = (flow: AnyFlow): Lowered => {
 	})
 
 	/**
-	 * A step's records: per named query, the records grizzle makes of it, keyed by the digest of a row's text and its
-	 * root, so a row a sibling step of the root found stays one row, and a relation of the step's references to them,
-	 * keyed by the step and the row's place in what it found, each contained in its row and in the step's result.
+	 * A step's records: per named query, the records grizzle makes of it, keyed by the digest of a row's text alone, so
+	 * a row any step of any root found is stored once, content-addressed, and a relation of the step's references to
+	 * them, keyed by the step and the row's place in what it found, each contained in its row and in the step's result.
 	 */
 	const readsOf = (s: AnyStepKind): ReadonlyArray<ReadIR> =>
 		s.reads.kind === "none"
@@ -1235,12 +1234,6 @@ export const lower = (flow: AnyFlow): Lowered => {
 			(r) => r !== Root && !Arr.contains(coordination, r)
 		)
 	)
-	/** The stems of the steps' records, each a body of the unit, its root `${stem}Row` keyed by its owner's root. */
-	const recorded = Arr.flatMap(stepsIR, (st) => Arr.map(st.reads, (rd) => rd.stem))
-	const recordRows = new Set(Arr.map(recorded, (stem) => `${stem}Row`))
-	/** Whether a relation is a body of a root's unit: one of den's, or the root of a step's records. */
-	const inUnit = (relationName: string): boolean =>
-		bodies.has(relationName) || recordRows.has(relationName)
 	const rootField = { name: "root", type: scopeKey }
 	const rooted = Arr.map(relations, (r): RelationIR => {
 		if (bodies.has(r.name)) {
@@ -1260,7 +1253,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		...Arr.map(laws, (law): LawIR => {
 			switch (law.kind) {
 				case "contained":
-					return inUnit(law.from.relation) && inUnit(law.to.relation)
+					return bodies.has(law.from.relation) && bodies.has(law.to.relation)
 						? { ...law, from: onRoot(law.from), to: onRoot(law.to) }
 						: law
 				case "key":
@@ -1272,7 +1265,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 					return law
 			}
 		}),
-		{ kind: "retirable", header: Root, bodies: Array.from(bodies), records: recorded }
+		{ kind: "retirable", header: Root, bodies: Array.from(bodies) }
 	]
 
 	const names = [

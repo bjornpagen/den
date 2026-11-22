@@ -652,8 +652,7 @@ export const assignLedger = (h: AssignHandles) => {
 											)(
 												Arr.map(
 													uniqueNearest,
-													(found) =>
-														[{ digest: found.digest, root: done.turn.root }, found.row] as const
+													(found) => [{ digest: found.digest }, found.row] as const
 												)
 											),
 											AssignDecideReadNearest: Arr.map(recordedNearest, (found, ordinal) => ({
@@ -668,8 +667,7 @@ export const assignLedger = (h: AssignHandles) => {
 											)(
 												Arr.map(
 													uniqueSeen,
-													(found) =>
-														[{ digest: found.digest, root: done.turn.root }, found.row] as const
+													(found) => [{ digest: found.digest }, found.row] as const
 												)
 											),
 											AssignDecideReadSeen: Arr.map(recordedSeen, (found, ordinal) => ({

@@ -324,8 +324,9 @@ const READ = regex("^[a-z][A-Za-z0-9]*$")
  * DCAN's catalog search and its thread); and each named query's rows are recorded with the step's result in the
  * relations grizzle's `records` makes of that query, each column the query's own field and each attachment a relation
  * under its owner, so every input a step saw is a typed fact of the graph, stated once, by the query itself. A row is
- * recorded once per root, by the digest of its text (grizzle's `rowText`), and each step's record of it is a reference:
- * a chain of turns that reads a thread as it grows stores each of its rows once, not once per turn. Which rows an
+ * recorded once, by the digest of its text (grizzle's `rowText`), however many steps of however many roots found it,
+ * and each step's record of it is a reference in its root: a thousand sittings that read one document store it once,
+ * and a chain of turns that reads a thread as it grows stores each of its rows once, not once per turn. Which rows an
  * approximate search finds depends on the index and the database owner's pgvector settings as well as on the facts
  * (grizzle's README, "Every answer is a function of the facts"), so the record, not a second search, is what the step
  * saw. `over` is a level below den's fragment, which the fragment's records are built over when it loads; so the reads

@@ -176,30 +176,30 @@ export const ChainServed = relation(
 	["environment", "at"]
 )
 
-/** The records of the rows step Page's read `weights` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest and its root. */
+/** The records of the rows step Page's read `weights` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest alone, so every root that found a row shares it. */
 export const ChainPageReadWeightsRecords = records(
 	"ChainPageReadWeights",
 	PageReads.named.weights,
-	{ digest: sha256, root: sha256 },
-	["digest", "root"]
+	{ digest: sha256 },
+	["digest"]
 )
 export const ChainPageReadWeightsRow = ChainPageReadWeightsRecords.row
 
-/** The records of the rows step Page's read `earlier` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest and its root. */
+/** The records of the rows step Page's read `earlier` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest alone, so every root that found a row shares it. */
 export const ChainPageReadEarlierRecords = records(
 	"ChainPageReadEarlier",
 	PageReads.named.earlier,
-	{ digest: sha256, root: sha256 },
-	["digest", "root"]
+	{ digest: sha256 },
+	["digest"]
 )
 export const ChainPageReadEarlierRow = ChainPageReadEarlierRecords.row
 
-/** The records of the rows step Page's read `tree` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest and its root. */
+/** The records of the rows step Page's read `tree` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest alone, so every root that found a row shares it. */
 export const ChainPageReadTreeRecords = records(
 	"ChainPageReadTree",
 	PageReads.named.tree,
-	{ digest: sha256, root: sha256 },
-	["digest", "root"]
+	{ digest: sha256 },
+	["digest"]
 )
 export const ChainPageReadTreeRow = ChainPageReadTreeRecords.row
 
@@ -327,17 +327,11 @@ export const chainGraph = fragment(
 		contained(on(ChainNext, "to", "root"), on(ChainPageInput, "step", "root")),
 		key(on(ChainNext, "to", "root")),
 		contained(on(ChainPageReadWeights, "step", "root"), on(ChainResult, "step", "root")),
-		contained(
-			on(ChainPageReadWeights, "digest", "root"),
-			on(ChainPageReadWeightsRow, "digest", "root")
-		),
+		contained(on(ChainPageReadWeights, "digest"), on(ChainPageReadWeightsRow, "digest")),
 		contained(on(ChainPageReadEarlier, "step", "root"), on(ChainResult, "step", "root")),
-		contained(
-			on(ChainPageReadEarlier, "digest", "root"),
-			on(ChainPageReadEarlierRow, "digest", "root")
-		),
+		contained(on(ChainPageReadEarlier, "digest"), on(ChainPageReadEarlierRow, "digest")),
 		contained(on(ChainPageReadTree, "step", "root"), on(ChainResult, "step", "root")),
-		contained(on(ChainPageReadTree, "digest", "root"), on(ChainPageReadTreeRow, "digest", "root")),
+		contained(on(ChainPageReadTree, "digest"), on(ChainPageReadTreeRow, "digest")),
 		retirable(ChainRoot, [
 			on(ChainScope, "root"),
 			on(ChainAdmitted, "root"),
@@ -366,10 +360,7 @@ export const chainGraph = fragment(
 			on(ChainNext, "root"),
 			on(ChainPageReadWeights, "root"),
 			on(ChainPageReadEarlier, "root"),
-			on(ChainPageReadTree, "root"),
-			on(ChainPageReadWeightsRecords, "root"),
-			on(ChainPageReadEarlierRecords, "root"),
-			on(ChainPageReadTreeRecords, "root")
+			on(ChainPageReadTree, "root")
 		]),
 		...ChainPageReadWeightsRecords.rules,
 		...ChainPageReadEarlierRecords.rules,

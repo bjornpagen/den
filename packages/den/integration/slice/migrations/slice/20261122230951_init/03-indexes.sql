@@ -44,17 +44,13 @@ CREATE INDEX "__assign_decide_output_weighed_ix_root_step_5pk2o2aayf" ON "slice_
 
 CREATE INDEX "__assign_decide_output_weighed_ix_root_step_gncwdipl43" ON "slice_den"."assign_decide_output_weighed" USING btree ("root", "step");
 
-CREATE INDEX "__assign_decide_read_nearest_ix_root_digest_lyw5vgtwuc" ON "slice_den"."assign_decide_read_nearest" USING btree ("root", "digest");
+CREATE INDEX "__assign_decide_read_nearest_ix_digest_tm2whkfyjf" ON "slice_den"."assign_decide_read_nearest" USING btree ("digest");
 
 CREATE INDEX "__assign_decide_read_nearest_ix_root_step_6br7o7z6sz" ON "slice_den"."assign_decide_read_nearest" USING btree ("root", "step");
 
-CREATE INDEX "__assign_decide_read_nearest_row_ix_root_bgnf4xd3lb" ON "slice_den"."assign_decide_read_nearest_row" USING btree ("root");
-
-CREATE INDEX "__assign_decide_read_seen_ix_root_digest_f7oxnddmn4" ON "slice_den"."assign_decide_read_seen" USING btree ("root", "digest");
+CREATE INDEX "__assign_decide_read_seen_ix_digest_q7rgkxywvx" ON "slice_den"."assign_decide_read_seen" USING btree ("digest");
 
 CREATE INDEX "__assign_decide_read_seen_ix_root_step_d6mfz7qi6f" ON "slice_den"."assign_decide_read_seen" USING btree ("root", "step");
-
-CREATE INDEX "__assign_decide_read_seen_row_ix_root_wt2vstqtp7" ON "slice_den"."assign_decide_read_seen_row" USING btree ("root");
 
 CREATE INDEX "__assign_done_ix_root_step_edz2spjbbn" ON "slice_den"."assign_done" USING btree ("root", "step");
 
@@ -148,27 +144,17 @@ CREATE INDEX "__chain_page_output_ix_root_g3alpbog4o" ON "slice_den"."chain_page
 
 CREATE INDEX "__chain_page_output_next_ix_root_r662e4fglp" ON "slice_den"."chain_page_output_next" USING btree ("root");
 
-CREATE INDEX "__chain_page_read_earlier_ix_root_digest_gojfmd3bma" ON "slice_den"."chain_page_read_earlier" USING btree ("root", "digest");
+CREATE INDEX "__chain_page_read_earlier_ix_digest_p7rrxdx4kq" ON "slice_den"."chain_page_read_earlier" USING btree ("digest");
 
 CREATE INDEX "__chain_page_read_earlier_ix_root_step_x3sjcqoydn" ON "slice_den"."chain_page_read_earlier" USING btree ("root", "step");
 
-CREATE INDEX "__chain_page_read_earlier_row_ix_root_32kkfs3j5x" ON "slice_den"."chain_page_read_earlier_row" USING btree ("root");
-
-CREATE INDEX "__chain_page_read_tree_ix_root_digest_mcyjtam44d" ON "slice_den"."chain_page_read_tree" USING btree ("root", "digest");
+CREATE INDEX "__chain_page_read_tree_ix_digest_qz4flptsbe" ON "slice_den"."chain_page_read_tree" USING btree ("digest");
 
 CREATE INDEX "__chain_page_read_tree_ix_root_step_dahkztzxnh" ON "slice_den"."chain_page_read_tree" USING btree ("root", "step");
 
-CREATE INDEX "__chain_page_read_tree_first_ix_root_hlrd2ekev5" ON "slice_den"."chain_page_read_tree_first" USING btree ("root");
-
-CREATE INDEX "__chain_page_read_tree_items_ix_root_d6klicrgbz" ON "slice_den"."chain_page_read_tree_items" USING btree ("root");
-
-CREATE INDEX "__chain_page_read_tree_row_ix_root_b6oxxqmide" ON "slice_den"."chain_page_read_tree_row" USING btree ("root");
-
-CREATE INDEX "__chain_page_read_weights_ix_root_digest_3wano4wdsf" ON "slice_den"."chain_page_read_weights" USING btree ("root", "digest");
+CREATE INDEX "__chain_page_read_weights_ix_digest_p6eekmx2x6" ON "slice_den"."chain_page_read_weights" USING btree ("digest");
 
 CREATE INDEX "__chain_page_read_weights_ix_root_step_ukdzwgkuna" ON "slice_den"."chain_page_read_weights" USING btree ("root", "step");
-
-CREATE INDEX "__chain_page_read_weights_row_ix_root_7eqsjiaue7" ON "slice_den"."chain_page_read_weights_row" USING btree ("root");
 
 CREATE INDEX "__chain_paused_ix_target_pred_turn_qryngij_6_c_4_azkairtri3" ON "slice_den"."chain_paused" USING btree ("target", "__pred_turn_qryngij6c4");
 
@@ -595,8 +581,6 @@ CREATE STATISTICS "slice_den"."__assign_finish_stats_scope_step_ld6jyxztu6" (ndi
 CREATE STATISTICS "slice_den"."__assign_step_stats_kind_scope_wiztsdmmtf" (ndistinct, dependencies, mcv) ON "kind", "scope" FROM "slice_den"."assign_step";
 
 CREATE STATISTICS "slice_den"."__chain_finish_stats_scope_step_z7lvm6j2l6" (ndistinct, dependencies, mcv) ON "scope", "step" FROM "slice_den"."chain_finish";
-
-CREATE STATISTICS "slice_den"."__chain_page_read_tree_items_stats_digest_root_r3h7bzft5p" (ndistinct, dependencies, mcv) ON "digest", "root" FROM "slice_den"."chain_page_read_tree_items";
 
 CREATE STATISTICS "slice_den"."__chain_step_stats_kind_scope_tc5nmidpxu" (ndistinct, dependencies, mcv) ON "kind", "scope" FROM "slice_den"."chain_step";
 

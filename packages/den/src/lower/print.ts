@@ -210,10 +210,7 @@ const lawExpr = (law: LawIR): string => {
 					return `check(${q(law.name)}, ${law.relation}, (row) => Num.isFinite(row.${law.field}))`
 			}
 		case "retirable":
-			return `retirable(${law.header}, [${commas([
-				...Arr.map(law.bodies, (b) => `on(${b}, "root")`),
-				...Arr.map(law.records, (stem) => `on(${stem}Records, "root")`)
-			])}])`
+			return `retirable(${law.header}, [${commas(Arr.map(law.bodies, (b) => `on(${b}, "root")`))}])`
 		case "ordered":
 			return `ordered(${sideExpr(law.member)}, fin(${law.owner}, ${q(law.count)}))`
 	}
@@ -501,8 +498,8 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 		),
 		"",
 		...Arr.flatMap(readsOfFlow(l), ({ step, read }) => [
-			`/** The records of the rows step ${step.name}'s read \`${read.name}\` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest and its root. */`,
-			`export const ${read.stem}Records = records(${q(read.stem)}, ${readsExport(step.name)}.named.${read.name}, { digest: sha256, root: sha256 }, ["digest", "root"])`,
+			`/** The records of the rows step ${step.name}'s read \`${read.name}\` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest alone, so every root that found a row shares it. */`,
+			`export const ${read.stem}Records = records(${q(read.stem)}, ${readsExport(step.name)}.named.${read.name}, { digest: sha256 }, ["digest"])`,
 			`export const ${read.stem}Row = ${read.stem}Records.row`,
 			""
 		]),
@@ -1742,9 +1739,9 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 
 	/**
 	 * What a step's commit records of its reads, from the rows `found` names and the turn `turn` names: each row's digest
-	 * computed first, from its text (grizzle's rowText of the read's query); then each row once per root, under its digest
-	 * and the root, into the records grizzle made of the query (recordsFacts, its attachments' rows with it); and the
-	 * step's reference to each in the order it found them.
+	 * computed first, from its text (grizzle's rowText of the read's query); then each row once, under its digest alone,
+	 * into the records grizzle made of the query (recordsFacts, its attachments' rows with it), a row already stored by
+	 * any root no change; and the step's reference to each in the order it found them, under its root.
 	 */
 	const recordingOf = (s: StepIR, found: string, turn: string): Recording => ({
 		lines: Arr.flatMap(s.reads, (rd) => [
@@ -1752,7 +1749,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			`\tconst unique${Str.capitalize(rd.name)} = Arr.dedupeWith(recorded${Str.capitalize(rd.name)}, (a, b) => Sha256.equals(a.digest, b.digest))`
 		]),
 		facts: Arr.flatMap(s.reads, (rd) => [
-			`...recordsFacts(${n.graph}, ${rd.stem}Records)(Arr.map(unique${Str.capitalize(rd.name)}, (found) => [{ digest: found.digest, root: ${turn}.root }, found.row] as const))`,
+			`...recordsFacts(${n.graph}, ${rd.stem}Records)(Arr.map(unique${Str.capitalize(rd.name)}, (found) => [{ digest: found.digest }, found.row] as const))`,
 			`${rd.record}: Arr.map(recorded${Str.capitalize(rd.name)}, (found, ordinal) => ({ step: ${turn}.step, root: ${turn}.root, ordinal: BigInt(ordinal), digest: found.digest }))`
 		])
 	})

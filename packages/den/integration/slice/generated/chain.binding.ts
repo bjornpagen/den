@@ -432,8 +432,7 @@ export const chainLedger = (h: ChainHandles) => {
 											)(
 												Arr.map(
 													uniqueWeights,
-													(found) =>
-														[{ digest: found.digest, root: done.turn.root }, found.row] as const
+													(found) => [{ digest: found.digest }, found.row] as const
 												)
 											),
 											ChainPageReadWeights: Arr.map(recordedWeights, (found, ordinal) => ({
@@ -448,8 +447,7 @@ export const chainLedger = (h: ChainHandles) => {
 											)(
 												Arr.map(
 													uniqueEarlier,
-													(found) =>
-														[{ digest: found.digest, root: done.turn.root }, found.row] as const
+													(found) => [{ digest: found.digest }, found.row] as const
 												)
 											),
 											ChainPageReadEarlier: Arr.map(recordedEarlier, (found, ordinal) => ({
@@ -464,8 +462,7 @@ export const chainLedger = (h: ChainHandles) => {
 											)(
 												Arr.map(
 													uniqueTree,
-													(found) =>
-														[{ digest: found.digest, root: done.turn.root }, found.row] as const
+													(found) => [{ digest: found.digest }, found.row] as const
 												)
 											),
 											ChainPageReadTree: Arr.map(recordedTree, (found, ordinal) => ({

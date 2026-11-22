@@ -273,21 +273,21 @@ export const AssignServed = relation(
 	["environment", "at"]
 )
 
-/** The records of the rows step Decide's read `nearest` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest and its root. */
+/** The records of the rows step Decide's read `nearest` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest alone, so every root that found a row shares it. */
 export const AssignDecideReadNearestRecords = records(
 	"AssignDecideReadNearest",
 	DecideReads.named.nearest,
-	{ digest: sha256, root: sha256 },
-	["digest", "root"]
+	{ digest: sha256 },
+	["digest"]
 )
 export const AssignDecideReadNearestRow = AssignDecideReadNearestRecords.row
 
-/** The records of the rows step Decide's read `seen` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest and its root. */
+/** The records of the rows step Decide's read `seen` found, grizzle's of its query: each column the query's own field, each attachment a relation under its owner, keyed by a row's digest alone, so every root that found a row shares it. */
 export const AssignDecideReadSeenRecords = records(
 	"AssignDecideReadSeen",
 	DecideReads.named.seen,
-	{ digest: sha256, root: sha256 },
-	["digest", "root"]
+	{ digest: sha256 },
+	["digest"]
 )
 export const AssignDecideReadSeenRow = AssignDecideReadSeenRecords.row
 
@@ -656,15 +656,9 @@ export const assignGraph = fragment(
 		contained(on(AssignAsked, "to", "root"), on(AssignDecideInput, "step", "root")),
 		key(on(AssignAsked, "to", "root")),
 		contained(on(AssignDecideReadNearest, "step", "root"), on(AssignResult, "step", "root")),
-		contained(
-			on(AssignDecideReadNearest, "digest", "root"),
-			on(AssignDecideReadNearestRow, "digest", "root")
-		),
+		contained(on(AssignDecideReadNearest, "digest"), on(AssignDecideReadNearestRow, "digest")),
 		contained(on(AssignDecideReadSeen, "step", "root"), on(AssignResult, "step", "root")),
-		contained(
-			on(AssignDecideReadSeen, "digest", "root"),
-			on(AssignDecideReadSeenRow, "digest", "root")
-		),
+		contained(on(AssignDecideReadSeen, "digest"), on(AssignDecideReadSeenRow, "digest")),
 		retirable(AssignRoot, [
 			on(AssignScope, "root"),
 			on(AssignAdmitted, "root"),
@@ -704,9 +698,7 @@ export const assignGraph = fragment(
 			on(AssignAssignmentFinishOutput, "root"),
 			on(AssignAsked, "root"),
 			on(AssignDecideReadNearest, "root"),
-			on(AssignDecideReadSeen, "root"),
-			on(AssignDecideReadNearestRecords, "root"),
-			on(AssignDecideReadSeenRecords, "root")
+			on(AssignDecideReadSeen, "root")
 		]),
 		...AssignDecideReadNearestRecords.rules,
 		...AssignDecideReadSeenRecords.rules

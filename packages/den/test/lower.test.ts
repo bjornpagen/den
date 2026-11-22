@@ -52,8 +52,9 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * Oracle (specification): the proposal's sections 5 and 6, over flows of up to three steps, chained or not, of each
  * field form, with or without a resource, a pause handle, an exclusive root, a child scope, one or two named reads and a typed
  * error. Each named read's references are a relation named by its step and read, keyed by the step and the row's
- * place, each contained in its step's result and in the root of its records, which grizzle makes of the read's query
- * when the fragment loads and which are bodies of the root's unit; a finite number is held finite by a row check.
+ * place, each contained in its step's result and, by its digest alone, in the root of its records, which grizzle makes
+ * of the read's query when the fragment loads and which no root's unit holds, so every root that found a row shares
+ * it; a finite number is held finite by a row check.
  */
 
 const Form = Schema.Literals([
@@ -496,20 +497,17 @@ it.effect(
 											Arr.join(
 												Arr.map(law.from.terms, (t) => t.field),
 												","
-											) === "digest,root"
+											) === "digest"
 									),
-									`each reference of ${read} names its row in its root`
+									`each reference of ${read} names its row by its digest alone`
 								)
-								assert.deepStrictEqual(
-									Option.flatMap(
-										Arr.findFirst(lowered.laws, (law) => law.kind === "retirable"),
+								assert.isFalse(
+									Arr.some(
+										lowered.laws,
 										(law) =>
-											law.kind === "retirable" && Arr.contains(law.records, `${P}S0Read${read}`)
-												? Option.some(true)
-												: Option.none()
+											law.kind === "retirable" && Arr.contains(law.bodies, `${P}S0Read${read}Row`)
 									),
-									Option.some(true),
-									`${read}'s records are bodies of its root's unit`
+									`${read}'s records are no body of a root's unit`
 								)
 							}
 						)
