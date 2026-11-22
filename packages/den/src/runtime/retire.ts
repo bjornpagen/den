@@ -1,5 +1,5 @@
+import { Sha256 } from "@bjornpagen/grizzle"
 import { Array as Arr, Effect } from "effect"
-import type { ScopeKey } from "#runtime/identity.ts"
 import type { Ledger } from "#runtime/ledger.ts"
 import type { Settled } from "#runtime/settled.ts"
 
@@ -23,15 +23,18 @@ import type { Settled } from "#runtime/settled.ts"
 
 /** What a retirement did with one root: retired its graph, or kept it, with the failure that ended its call. */
 export type Retirement =
-	| { readonly kind: "retired"; readonly root: ScopeKey }
-	| { readonly kind: "kept"; readonly root: ScopeKey; readonly error: Settled }
+	| { readonly kind: "retired"; readonly root: Sha256 }
+	| { readonly kind: "kept"; readonly root: Sha256; readonly error: Settled }
 
 /** Retires every ended root of one flow nothing still needs, each by a call of its own. */
 export const retire = <R>(ledger: Ledger<R>): Effect.Effect<ReadonlyArray<Retirement>, Settled> =>
 	Effect.gen(function* () {
 		const finished = yield* ledger.finishedRoots
 		const holding = yield* ledger.coordination.exclusives
-		const due = Arr.filter(finished, (root) => !Arr.some(holding, (e) => e.scope === root))
+		const due = Arr.filter(
+			finished,
+			(root) => !Arr.some(holding, (e) => Sha256.equals(e.scope, root))
+		)
 		return yield* Effect.forEach(
 			due,
 			(root) =>

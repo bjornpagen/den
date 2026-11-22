@@ -1,10 +1,11 @@
+import { Sha256 } from "@bjornpagen/grizzle"
 import { drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import { array, boolean, element, type Gen, int, oneOf, option } from "@bjornpagen/testing/gen"
 import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
-import { assert, layer } from "@effect/vitest"
+import { assert, describe, it } from "@effect/vitest"
 import {
 	Array as Arr,
 	DateTime,
@@ -16,7 +17,6 @@ import {
 	Stream,
 	String as Str
 } from "effect"
-import { Digest } from "effect/crypto"
 import {
 	always,
 	idle,
@@ -35,10 +35,8 @@ import {
 	instantOf,
 	finishStep,
 	rootScope,
-	type ScopeKey,
 	startedScope,
-	startedStep,
-	type StepKey
+	startedStep
 } from "#runtime/identity.ts"
 import type {
 	ClaimRow,
@@ -269,7 +267,8 @@ interface Built {
 	readonly now: Instant
 	readonly window: Window
 	readonly ledger: Ledger<never>
-	readonly kinds: ReadonlyMap<StepKey, string>
+	/** Each step's kind, by its key's hex (Sha256.toHex). */
+	readonly kinds: ReadonlyMap<string, string>
 	readonly seats: number
 }
 
@@ -279,136 +278,135 @@ const ordinals = (count: number): ReadonlyArray<number> =>
 
 const indexed = <A>(items: ReadonlyArray<A>) => Arr.map(items, (value, index) => ({ value, index }))
 
-const built = (w: World) =>
-	Effect.gen(function* () {
-		const day = DateTime.makeUnsafe({ year: 2026, month: 11, day: 11 })
-		const now = instantOf(DateTime.toEpochMillis(DateTime.add(day, { hours: w.hour })))
-		const at = (delta: number) => instantOf(Number(now) + delta)
-		const window = Option.match(w.window, {
-			onNone: () => always,
-			onSome: (s) => utcHours(s.opens, Math.min(24, s.opens + s.length))
+const built = (w: World): Built => {
+	const day = DateTime.makeUnsafe({ year: 2026, month: 11, day: 11 })
+	const now = instantOf(DateTime.toEpochMillis(DateTime.add(day, { hours: w.hour })))
+	const at = (delta: number) => instantOf(Number(now) + delta)
+	const window = Option.match(w.window, {
+		onNone: () => always,
+		onSome: (s) => utcHours(s.opens, Math.min(24, s.opens + s.length))
+	})
+	const runRoot = rootOf(window, unconditional)
+	const syncRoot = rootOf(always, idle("Other"))
+	const runners = runnersOf(w.seats)
+	const scopes: Array<ScopeView> = []
+	const steps: Array<Snapshot<never>["steps"][number]> = []
+	const claims: Array<Snapshot<never>["claims"][number]> = []
+	const retries: Array<RetryRow> = []
+	const fenced: Array<FencedRow> = []
+	const awaiting: Array<Sha256> = []
+	const kinds = new Map<string, string>()
+	const syncs: Array<Sha256> = []
+	const firstKey = exclusiveId(flowName, "Sync", "k0")
+	const secondKey = exclusiveId(flowName, "Sync", "k1")
+	const keyOf = (k: number) => (k === 0 ? firstKey : secondKey)
+	for (const { value: r, index: i } of indexed(w.roots)) {
+		const root = rootScope(flowName, "Run", `r${i}`)
+		scopes.push({
+			place: "root",
+			scope: root,
+			kind: "Run",
+			key: `r${i}`,
+			at: at(r.age - 10),
+			admission: r.admitted ? "admitted" : "requested",
+			exclusive: Option.none(),
+			runner: runRoot
 		})
-		const runRoot = rootOf(window, unconditional)
-		const syncRoot = rootOf(always, idle("Other"))
-		const runners = runnersOf(w.seats)
-		const scopes: Array<ScopeView> = []
-		const steps: Array<Snapshot<never>["steps"][number]> = []
-		const claims: Array<Snapshot<never>["claims"][number]> = []
-		const retries: Array<RetryRow> = []
-		const fenced: Array<FencedRow> = []
-		const awaiting: Array<StepKey> = []
-		const kinds = new Map<StepKey, string>()
-		const syncs: Array<ScopeKey> = []
-		const firstKey = yield* exclusiveId(flowName, "Sync", "k0")
-		const secondKey = yield* exclusiveId(flowName, "Sync", "k1")
-		const keyOf = (k: number) => (k === 0 ? firstKey : secondKey)
-		for (const { value: r, index: i } of indexed(w.roots)) {
-			const root = yield* rootScope(flowName, "Run", `r${i}`)
-			scopes.push({
-				place: "root",
-				scope: root,
-				kind: "Run",
-				key: `r${i}`,
-				at: at(r.age - 10),
-				admission: r.admitted ? "admitted" : "requested",
-				exclusive: Option.none(),
-				runner: runRoot
-			})
-			if (!r.admitted) {
+		if (!r.admitted) {
+			continue
+		}
+		for (const { value: s, index: j } of indexed(r.steps)) {
+			const step = startedStep(root, j)
+			kinds.set(Sha256.toHex(step), s.kind)
+			steps.push({ step, runner: runners[s.kind], scope: root, due: at(s.due) })
+			if (s.awaiting) {
+				awaiting.push(step)
+			}
+			if (Option.isNone(s.claim)) {
 				continue
 			}
-			for (const { value: s, index: j } of indexed(r.steps)) {
-				const step = yield* startedStep(root, j)
-				kinds.set(step, s.kind)
-				steps.push({ step, runner: runners[s.kind], scope: root, due: at(s.due) })
-				if (s.awaiting) {
-					awaiting.push(step)
+			const c = s.claim.value
+			claims.push({ step, attempt: BigInt(c.attempt), until: at(c.until) })
+			if (Option.isSome(c.end)) {
+				const end = c.end.value
+				if (end.kind === "retry") {
+					retries.push({ step, attempt: BigInt(c.attempt), at: at(end.at), why: end.why })
+				} else {
+					fenced.push({ step, attempt: BigInt(c.attempt) })
 				}
-				if (Option.isNone(s.claim)) {
-					continue
-				}
-				const c = s.claim.value
-				claims.push({ step, attempt: BigInt(c.attempt), until: at(c.until) })
-				if (Option.isSome(c.end)) {
-					const end = c.end.value
-					if (end.kind === "retry") {
-						retries.push({ step, attempt: BigInt(c.attempt), at: at(end.at), why: end.why })
-					} else {
-						fenced.push({ step, attempt: BigInt(c.attempt) })
-					}
-				}
-			}
-			const finish = yield* finishStep(root)
-			kinds.set(finish, "RunFinish")
-			steps.push({ step: finish, runner: runners.RunFinish, scope: root, due: at(r.age - 10) })
-			for (const j of ordinals(r.batches)) {
-				const batch = yield* startedScope(root, 100 + j)
-				scopes.push({ place: "child", scope: batch, kind: "Batch", parent: root })
-				const batchFinish = yield* finishStep(batch)
-				kinds.set(batchFinish, "BatchFinish")
-				steps.push({
-					step: batchFinish,
-					runner: runners.BatchFinish,
-					scope: batch,
-					due: at(r.age - 10)
-				})
 			}
 		}
-		for (const { value: y, index: i } of indexed(w.syncs)) {
-			const sync = yield* rootScope(flowName, "Sync", `s${i}`)
-			syncs.push(sync)
-			scopes.push({
-				place: "root",
-				scope: sync,
-				kind: "Sync",
-				key: `s${i}`,
-				at: at(y.age - 10),
-				admission: y.skipped ? "skipped" : "requested",
-				exclusive: Option.some(keyOf(y.key)),
-				runner: syncRoot
+		const finish = finishStep(root)
+		kinds.set(Sha256.toHex(finish), "RunFinish")
+		steps.push({ step: finish, runner: runners.RunFinish, scope: root, due: at(r.age - 10) })
+		for (const j of ordinals(r.batches)) {
+			const batch = startedScope(root, 100 + j)
+			scopes.push({ place: "child", scope: batch, kind: "Batch", parent: root })
+			const batchFinish = finishStep(batch)
+			kinds.set(Sha256.toHex(batchFinish), "BatchFinish")
+			steps.push({
+				step: batchFinish,
+				runner: runners.BatchFinish,
+				scope: batch,
+				due: at(r.age - 10)
 			})
 		}
-		const dead = yield* rootScope(flowName, "Sync", "finished")
-		const exclusives: ReadonlyArray<ExclusiveRow> = Arr.dedupeWith(
-			Arr.map(w.exclusives, (e) => ({
-				kind: "Sync",
-				key: keyOf(e.key),
-				turn: 0n,
-				scope: Option.getOrElse(
-					Option.flatMap(e.holder, (h) => Arr.get(syncs, h)),
-					() => dead
-				)
-			})),
-			(a, b) => a.key === b.key
-		)
-		const holdersStep = yield* startedStep(dead, 0)
-		const holds: ReadonlyArray<HoldRow> = Arr.map(w.holds, (h, seat): HoldRow => ({
-			resource: "Pool",
-			seat: BigInt(seat),
-			step: holdersStep,
-			root: dead,
-			attempt: BigInt(seat),
-			until: at(h.until)
-		}))
-		const snapshot: Snapshot<never> = {
-			steps,
-			claims,
-			retries,
-			fenced,
-			scopes,
-			holds,
-			exclusives,
-			paused: [
-				...(w.paused.pool ? ["Pool"] : []),
-				...(w.paused.run ? ["Run"] : []),
-				...(w.paused.sync ? ["Sync"] : [])
-			],
-			busy: w.otherBusy ? ["Other"] : [],
-			awaiting
-		}
-		const done: Built = { snapshot, now, window, ledger, kinds, seats: w.seats }
-		return done
-	})
+	}
+	for (const { value: y, index: i } of indexed(w.syncs)) {
+		const sync = rootScope(flowName, "Sync", `s${i}`)
+		syncs.push(sync)
+		scopes.push({
+			place: "root",
+			scope: sync,
+			kind: "Sync",
+			key: `s${i}`,
+			at: at(y.age - 10),
+			admission: y.skipped ? "skipped" : "requested",
+			exclusive: Option.some(keyOf(y.key)),
+			runner: syncRoot
+		})
+	}
+	const dead = rootScope(flowName, "Sync", "finished")
+	const exclusives: ReadonlyArray<ExclusiveRow> = Arr.dedupeWith(
+		Arr.map(w.exclusives, (e) => ({
+			kind: "Sync",
+			key: keyOf(e.key),
+			turn: 0n,
+			scope: Option.getOrElse(
+				Option.flatMap(e.holder, (h) => Arr.get(syncs, h)),
+				() => dead
+			)
+		})),
+		(a, b) => Sha256.equals(a.key, b.key)
+	)
+	const holdersStep = startedStep(dead, 0)
+	const holds: ReadonlyArray<HoldRow> = Arr.map(w.holds, (h, seat): HoldRow => ({
+		resource: "Pool",
+		seat: BigInt(seat),
+		step: holdersStep,
+		root: dead,
+		attempt: BigInt(seat),
+		until: at(h.until)
+	}))
+	const snapshot: Snapshot<never> = {
+		steps,
+		claims,
+		retries,
+		fenced,
+		scopes,
+		holds,
+		exclusives,
+		paused: [
+			...(w.paused.pool ? ["Pool"] : []),
+			...(w.paused.run ? ["Run"] : []),
+			...(w.paused.sync ? ["Sync"] : [])
+		],
+		busy: w.otherBusy ? ["Other"] : [],
+		awaiting
+	}
+	const done: Built = { snapshot, now, window, ledger, kinds, seats: w.seats }
+	return done
+}
 
 /**
  * The specification, written apart from `eligible`: which steps and admissions a snapshot makes eligible at `now`, and,
@@ -418,22 +416,23 @@ const specified = (
 	b: Built
 ): { readonly wakes: ReadonlyArray<string>; readonly fenced: ReadonlyArray<string> } => {
 	const { snapshot, now } = b
-	const viewOf = (scope: ScopeKey) => Arr.findFirst(snapshot.scopes, (s) => s.scope === scope)
-	const rootViewOf = (scope: ScopeKey): Option.Option<ScopeView> =>
+	const viewOf = (scope: Sha256) =>
+		Arr.findFirst(snapshot.scopes, (s) => Sha256.equals(s.scope, scope))
+	const rootViewOf = (scope: Sha256): Option.Option<ScopeView> =>
 		Option.flatMap(viewOf(scope), (s) =>
 			s.place === "root" ? Option.some(s) : rootViewOf(s.parent)
 		)
-	const ageOf = (scope: ScopeKey) =>
+	const ageOf = (scope: Sha256) =>
 		Option.getOrElse(
 			Option.flatMap(rootViewOf(scope), (s) =>
 				s.place === "root" ? Option.some(s.at) : Option.none()
 			),
 			() => now
 		)
-	const open = (scope: ScopeKey) =>
+	const open = (scope: Sha256) =>
 		Option.exists(rootViewOf(scope), (r) => (r.kind === "Run" ? isOpen(b.window, now) : true))
 	const paused = (target: string) => Arr.contains(snapshot.paused, target)
-	const rootPaused = (scope: ScopeKey) => Option.exists(rootViewOf(scope), (r) => paused(r.kind))
+	const rootPaused = (scope: Sha256) => Option.exists(rootViewOf(scope), (r) => paused(r.kind))
 
 	const admitted = Arr.flatMap(snapshot.scopes, (s): ReadonlyArray<string> =>
 		s.place === "root" &&
@@ -441,12 +440,12 @@ const specified = (
 		open(s.scope) &&
 		!paused(s.kind) &&
 		!(s.kind === "Sync" && Arr.contains(snapshot.busy, "Other"))
-			? [`admit ${s.scope}`]
+			? [`admit ${Sha256.toHex(s.scope)}`]
 			: []
 	)
 
 	interface Ready {
-		readonly step: StepKey
+		readonly step: Sha256
 		readonly kind: string
 		readonly attempt: number
 		readonly age: Instant
@@ -454,10 +453,10 @@ const specified = (
 		readonly fenced: boolean
 	}
 	const ready = Arr.flatMap(snapshot.steps, (p): ReadonlyArray<Ready> => {
-		if (Arr.contains(snapshot.awaiting, p.step)) {
+		if (Arr.some(snapshot.awaiting, (step) => Sha256.equals(step, p.step))) {
 			return []
 		}
-		const mine = Arr.filter(snapshot.claims, (c) => c.step === p.step)
+		const mine = Arr.filter(snapshot.claims, (c) => Sha256.equals(c.step, p.step))
 		const latest = Arr.reduce(mine, Option.none<(typeof mine)[number]>(), (best, c) =>
 			Option.match(best, {
 				onNone: () => Option.some(c),
@@ -465,9 +464,9 @@ const specified = (
 			})
 		)
 		const retryOf = (attempt: bigint) =>
-			Arr.findFirst(snapshot.retries, (r) => r.step === p.step && r.attempt === attempt)
+			Arr.findFirst(snapshot.retries, (r) => Sha256.equals(r.step, p.step) && r.attempt === attempt)
 		const fencedAt = (attempt: bigint) =>
-			Arr.some(snapshot.fenced, (f) => f.step === p.step && f.attempt === attempt)
+			Arr.some(snapshot.fenced, (f) => Sha256.equals(f.step, p.step) && f.attempt === attempt)
 		const stands = Option.exists(
 			latest,
 			(c) => c.until >= now && Option.isNone(retryOf(c.attempt)) && !fencedAt(c.attempt)
@@ -496,8 +495,10 @@ const specified = (
 		}
 		const finishes = Str.endsWith("Finish")(p.runner.kind)
 		const blocked =
-			Arr.some(snapshot.steps, (o) => o.scope === p.scope && o.step !== p.step) ||
-			Arr.some(snapshot.scopes, (s) => s.place === "child" && s.parent === p.scope)
+			Arr.some(
+				snapshot.steps,
+				(o) => Sha256.equals(o.scope, p.scope) && !Sha256.equals(o.step, p.step)
+			) || Arr.some(snapshot.scopes, (s) => s.place === "child" && Sha256.equals(s.parent, p.scope))
 		if (finishes && blocked) {
 			return []
 		}
@@ -513,11 +514,11 @@ const specified = (
 				Order.mapInput(Order.BigInt, (r: Ready) => r.age),
 				Order.mapInput(Order.BigInt, (r: Ready) => r.due)
 			),
-			Order.mapInput(Order.String, (r: Ready) => r.step)
+			Order.mapInput(Order.String, (r: Ready) => Sha256.toHex(r.step))
 		)
 	)
 	const seated = [...Arr.filter(ready, (r) => r.kind !== "Work"), ...Arr.take(contending, free)]
-	const text = (r: Ready) => `step ${r.step} ${r.attempt}`
+	const text = (r: Ready) => `step ${Sha256.toHex(r.step)} ${r.attempt}`
 	return {
 		wakes: [
 			...admitted,
@@ -536,9 +537,9 @@ const specified = (
 const textOf = (wake: Wake): string => {
 	switch (wake._tag) {
 		case "Admit":
-			return `admit ${wake.scope}`
+			return `admit ${Sha256.toHex(wake.scope)}`
 		case "Step":
-			return `step ${wake.step} ${wake.attempt}`
+			return `step ${Sha256.toHex(wake.step)} ${wake.attempt}`
 		case "Census":
 			return `census ${wake.at}`
 	}
@@ -560,13 +561,13 @@ type Feature =
 	| "a pause"
 	| "a step waiting on a fact"
 
-const ringsStep = (wakes: ReadonlyArray<Wake>, step: StepKey) =>
-	Arr.some(wakes, (wake) => wake._tag === "Step" && wake.step === step)
+const ringsStep = (wakes: ReadonlyArray<Wake>, step: Sha256) =>
+	Arr.some(wakes, (wake) => wake._tag === "Step" && Sha256.equals(wake.step, step))
 
-const ringsAdmit = (wakes: ReadonlyArray<Wake>, scope: ScopeKey) =>
-	Arr.some(wakes, (wake) => wake._tag === "Admit" && wake.scope === scope)
+const ringsAdmit = (wakes: ReadonlyArray<Wake>, scope: Sha256) =>
+	Arr.some(wakes, (wake) => wake._tag === "Admit" && Sha256.equals(wake.scope, scope))
 
-layer(Digest.layerWebCrypto)("eligibility", (it) => {
+describe("eligibility", () => {
 	it.effect(
 		"rings exactly what the specification makes eligible, oldest root first, within the free seats",
 		(ctx) =>
@@ -607,8 +608,8 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 						caseHang: caseHangMillis
 					},
 					(w, c) =>
-						Effect.gen(function* () {
-							const b = yield* built(w)
+						Effect.sync(() => {
+							const b = built(w)
 							const { snapshot, now } = b
 							const found = eligible(b.ledger, snapshot, now)
 							const spec = specified(b)
@@ -629,7 +630,7 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 							const liveHolds = Arr.filter(snapshot.holds, (h) => h.until >= now).length
 							const pool = Arr.filter(
 								every,
-								(wake) => wake._tag === "Step" && b.kinds.get(wake.step) === "Work"
+								(wake) => wake._tag === "Step" && b.kinds.get(Sha256.toHex(wake.step)) === "Work"
 							).length
 							assert.isAtMost(pool, Math.max(0, w.seats - liveHolds))
 							assert.deepStrictEqual(
@@ -637,15 +638,21 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 								Arr.map(
 									Arr.filter(
 										snapshot.exclusives,
-										(e) => !Arr.some(snapshot.scopes, (s) => s.scope === e.scope)
+										(e) => !Arr.some(snapshot.scopes, (s) => Sha256.equals(s.scope, e.scope))
 									),
 									(e) => e.scope
 								)
 							)
 
-							const retriedOf = (step: StepKey, attempt: bigint) =>
-								Arr.some(snapshot.retries, (r) => r.step === step && r.attempt === attempt) ||
-								Arr.some(snapshot.fenced, (f) => f.step === step && f.attempt === attempt)
+							const retriedOf = (step: Sha256, attempt: bigint) =>
+								Arr.some(
+									snapshot.retries,
+									(r) => Sha256.equals(r.step, step) && r.attempt === attempt
+								) ||
+								Arr.some(
+									snapshot.fenced,
+									(f) => Sha256.equals(f.step, step) && f.attempt === attempt
+								)
 							const work = Arr.filter(snapshot.steps, (p) => p.runner.kind === "Work")
 							if (
 								pool > 0 &&
@@ -689,10 +696,13 @@ layer(Digest.layerWebCrypto)("eligibility", (it) => {
 								Arr.some(
 									finishes,
 									(p) =>
-										(Arr.some(snapshot.steps, (o) => o.scope === p.scope && o.step !== p.step) ||
+										(Arr.some(
+											snapshot.steps,
+											(o) => Sha256.equals(o.scope, p.scope) && !Sha256.equals(o.step, p.step)
+										) ||
 											Arr.some(
 												snapshot.scopes,
-												(s) => s.place === "child" && s.parent === p.scope
+												(s) => s.place === "child" && Sha256.equals(s.parent, p.scope)
 											)) &&
 										!ringsStep(found.wakes, p.step)
 								)
@@ -755,7 +765,7 @@ const windowCases: Gen<WindowCase> = (source) => ({
 	minute: source.draw(int(0, 59))
 })
 
-layer(Digest.layerWebCrypto)("windows", (it) => {
+describe("windows", () => {
 	it.effect("a window's next opening is open, at or after the instant, and no earlier", (ctx) =>
 		searched(
 			ctx,
@@ -809,7 +819,7 @@ layer(Digest.layerWebCrypto)("windows", (it) => {
 
 type LadderFeature = "the first rung" | "a doubled rung" | "the last rung"
 
-layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
+describe("the retry ladder", () => {
 	it.effect(
 		"rungs start at the census's period, never shrink, and stop at the longest lease",
 		(ctx) =>
@@ -853,7 +863,7 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 						caseHang: caseHangMillis
 					},
 					(l, c) =>
-						Effect.gen(function* () {
+						Effect.sync(() => {
 							const rung = rungMillis(l.spent)
 							c.note(
 								l.spent === 1
@@ -866,8 +876,8 @@ layer(Digest.layerWebCrypto)("the retry ladder", (it) => {
 							assert.isAtLeast(rung, backoffFirstMillis)
 							assert.isAtMost(rung, backoffLastMillis)
 							assert.isAtMost(rung, rungMillis(l.spent + 1))
-							const ladder = yield* rootScope(flowName, "Run", "ladder")
-							const step = yield* startedStep(ladder, 0)
+							const ladder = rootScope(flowName, "Run", "ladder")
+							const step = startedStep(ladder, 0)
 							const claims: ReadonlyArray<ClaimRow> = Arr.map(l.claims, (_, i): ClaimRow => ({
 								step,
 								attempt: BigInt(i),

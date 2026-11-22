@@ -11,14 +11,7 @@ import {
 	spawnedOf,
 	type SpawnRows
 } from "@bjornpagen/den/runtime/bind"
-import {
-	atOnce,
-	finishStep,
-	rootScope,
-	type ScopeKey,
-	startedStep,
-	type StepKey
-} from "@bjornpagen/den/runtime/identity"
+import { atOnce, finishStep, rootScope, startedStep } from "@bjornpagen/den/runtime/identity"
 import type {
 	FlowNeeds,
 	Admission,
@@ -34,10 +27,9 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Writeback over its served programs; `den generate` writes it, and nothing edits it. */
-import type { Addition } from "@bjornpagen/grizzle"
+import { type Addition, Sha256 } from "@bjornpagen/grizzle"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, Stream } from "effect"
-import type { Digest } from "effect/crypto"
+import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
 import { writeback } from "#integration/slice/flows.ts"
 import { WritebackPausable } from "#integration/slice/generated/writeback.fragment.ts"
 import type {
@@ -117,8 +109,8 @@ export const writebackLedger = (h: WritebackHandles) => {
 		timed: [],
 		spawned: { steps: [], finishes: [] }
 	}
-	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
-		Arr.some(grown.rows.WritebackStartStep, (s) => s.scope === scope)
+	const hasChildren = (grown: Grown, scope: Sha256): boolean =>
+		Arr.some(grown.rows.WritebackStartStep, (s) => Sha256.equals(s.scope, scope))
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			WritebackScope: [...a.rows.WritebackScope, ...b.rows.WritebackScope],
@@ -135,29 +127,28 @@ export const writebackLedger = (h: WritebackHandles) => {
 		}
 	})
 	const startWriteback = (
-		root: ScopeKey,
-		scope: ScopeKey,
+		root: Sha256,
+		scope: Sha256,
 		input: Parameters<(typeof writeback.kinds)[1]["start"]>[0]
-	): Effect.Effect<Grown, never, Digest.Digest> =>
-		Effect.map(
-			Effect.forEach(
-				writeback.kinds[1].start(input),
-				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
-					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
-						rows: {
-							...noRows,
-							WritebackStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-							WritebackDeliverInput: [{ step: key, root: root, attempt: spawn.input.attempt }]
-						},
-						...spawnedOf(
-							{ step: key, kind: "Deliver", scope: scope },
-							dueOf(writeback.kinds[0].due, spawn.input)
-						)
-					}))
+	): Grown =>
+		Arr.reduce(
+			Arr.map(writeback.kinds[1].start(input), (spawn, ordinal): Grown =>
+				pipe(startedStep(scope, ordinal), (key): Grown => ({
+					rows: {
+						...noRows,
+						WritebackStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+						WritebackDeliverInput: [{ step: key, root: root, attempt: spawn.input.attempt }]
+					},
+					...spawnedOf(
+						{ step: key, kind: "Deliver", scope: scope },
+						dueOf(writeback.kinds[0].due, spawn.input)
+					)
+				}))
 			),
-			(parts) => Arr.reduce(parts, nothingGrown, joined)
+			nothingGrown,
+			joined
 		)
-	const readWritebackDeliverInput = (step: StepKey) =>
+	const readWritebackDeliverInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(
@@ -167,7 +158,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 			)
 			return Option.map(row, (found) => ({ attempt: found.attempt }))
 		})
-	const readWritebackWritebackInput = (scope: ScopeKey) =>
+	const readWritebackWritebackInput = (scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(
@@ -217,7 +208,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 	}
 	const request = {
 		Writeback: (key: string, input: Parameters<(typeof writeback.kinds)[1]["start"]>[0]) =>
-			Effect.flatMap(rootScope("Writeback", "Writeback", key), (scope) =>
+			pipe(rootScope("Writeback", "Writeback", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Writeback",
@@ -245,7 +236,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.writebackCommitDeliver.once({
 								params: { ...done.writes.params },
@@ -306,7 +297,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 				read: () => Effect.succeed([]),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.writebackCommitWritebackFinish.once({
 								params: {},
@@ -335,14 +326,14 @@ export const writebackLedger = (h: WritebackHandles) => {
 		Writeback: {
 			window: writeback.kinds[1].window,
 			precondition: writeback.kinds[1].precondition,
-			admit: (scope: ScopeKey) =>
+			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readWritebackWritebackInput(scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
-					const grown = yield* startWriteback(scope, scope, input.value)
-					const finish = yield* finishStep(scope)
+					const grown = startWriteback(scope, scope, input.value)
+					const finish = finishStep(scope)
 					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "WritebackFinish", scope, delay: atOnce }
@@ -542,9 +533,9 @@ export const writebackLedger = (h: WritebackHandles) => {
 			settled(h.den.writebackSnapshot.once({ params: {}, facts: {} })),
 			(rows) =>
 				Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof writeback>> => {
-					const view = (scope: ScopeKey, admission: Admission): ReadonlyArray<ScopeView> =>
+					const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
 						Option.match(
-							Arr.findFirst(read.roots, (o) => o.scope === scope),
+							Arr.findFirst(read.roots, (o) => Sha256.equals(o.scope, scope)),
 							{
 								onSome: (o): ReadonlyArray<ScopeView> => [
 									{

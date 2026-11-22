@@ -1,4 +1,4 @@
-import { DenInstant, DenRow, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
+import { DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Chain to; `den generate` writes it, and nothing edits it. */
 import {
 	closed,
@@ -15,7 +15,8 @@ import {
 	relation,
 	retirable,
 	retirement,
-	select
+	select,
+	sha256
 } from "@bjornpagen/grizzle"
 
 const Seq = contract("Seq", pg.bigint)
@@ -38,177 +39,162 @@ export const ChainPageEarlierRowFeed = closed.unordered("ChainPageEarlierRowFeed
 ])
 export const ChainPageTreeRowFeed = closed.unordered("ChainPageTreeRowFeed", ["news", "sport"])
 
-export const ChainScope = relation("ChainScope", { scope: DenScope, root: DenScope }, [
-	"scope",
-	"root"
-])
+export const ChainScope = relation("ChainScope", { scope: sha256, root: sha256 }, ["scope", "root"])
 export const ChainRoot = relation(
 	"ChainRoot",
-	{
-		scope: DenScope,
-		kind: closedId(ChainRootKind),
-		key: Text,
-		at: DenInstant,
-		retired: retirement
-	},
+	{ scope: sha256, kind: closedId(ChainRootKind), key: Text, at: DenInstant, retired: retirement },
 	["scope"]
 )
-export const ChainAdmitted = relation("ChainAdmitted", { scope: DenScope, root: DenScope }, [
+export const ChainAdmitted = relation("ChainAdmitted", { scope: sha256, root: sha256 }, [
 	"scope",
 	"root"
 ])
-export const ChainSkipped = relation(
-	"ChainSkipped",
-	{ scope: DenScope, by: DenScope, root: DenScope },
-	["scope", "root"]
-)
+export const ChainSkipped = relation("ChainSkipped", { scope: sha256, by: sha256, root: sha256 }, [
+	"scope",
+	"root"
+])
 export const ChainStep = relation(
 	"ChainStep",
-	{ step: DenStep, kind: closedId(ChainKind), scope: DenScope, due: DenInstant, root: DenScope },
+	{ step: sha256, kind: closedId(ChainKind), scope: sha256, due: DenInstant, root: sha256 },
 	["step", "root"]
 )
 export const ChainStartStep = relation(
 	"ChainStartStep",
-	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
+	{ scope: sha256, ordinal: natural, step: sha256, root: sha256 },
 	["scope", "ordinal", "root"]
 )
-export const ChainFinish = relation(
-	"ChainFinish",
-	{ scope: DenScope, step: DenStep, root: DenScope },
-	["scope", "root"]
-)
+export const ChainFinish = relation("ChainFinish", { scope: sha256, step: sha256, root: sha256 }, [
+	"scope",
+	"root"
+])
 export const ChainClaim = relation(
 	"ChainClaim",
-	{ step: DenStep, attempt: place, until: DenInstant, root: DenScope },
+	{ step: sha256, attempt: place, until: DenInstant, root: sha256 },
 	["step", "root", "attempt"]
 )
-export const ChainEnded = relation(
-	"ChainEnded",
-	{ step: DenStep, attempt: natural, root: DenScope },
-	["step", "attempt", "root"]
-)
+export const ChainEnded = relation("ChainEnded", { step: sha256, attempt: natural, root: sha256 }, [
+	"step",
+	"attempt",
+	"root"
+])
 export const ChainRetry = relation(
 	"ChainRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, why: closedId(ChainRetryWhy), root: DenScope },
+	{ step: sha256, attempt: natural, at: DenInstant, why: closedId(ChainRetryWhy), root: sha256 },
 	["step", "attempt", "root"]
 )
 export const ChainFenced = relation(
 	"ChainFenced",
-	{ step: DenStep, attempt: natural, root: DenScope },
+	{ step: sha256, attempt: natural, root: sha256 },
 	["step", "attempt", "root"]
 )
 export const ChainResult = relation(
 	"ChainResult",
-	{ step: DenStep, outcome: closedId(ChainOutcome), root: DenScope },
+	{ step: sha256, outcome: closedId(ChainOutcome), root: sha256 },
 	["step", "root"]
 )
-export const ChainDone = relation("ChainDone", { step: DenStep, root: DenScope }, ["step", "root"])
-export const ChainFailed = relation("ChainFailed", { step: DenStep, root: DenScope }, [
+export const ChainDone = relation("ChainDone", { step: sha256, root: sha256 }, ["step", "root"])
+export const ChainFailed = relation("ChainFailed", { step: sha256, root: sha256 }, ["step", "root"])
+export const ChainHeld = relation("ChainHeld", { step: sha256, attempt: natural, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const ChainHeld = relation(
-	"ChainHeld",
-	{ step: DenStep, attempt: natural, root: DenScope },
-	["step", "root"]
-)
-export const ChainRefusal = relation("ChainRefusal", { step: DenStep, law: Text, root: DenScope }, [
+export const ChainRefusal = relation("ChainRefusal", { step: sha256, law: Text, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const ChainExhausted = relation("ChainExhausted", { step: DenStep, root: DenScope }, [
+export const ChainExhausted = relation("ChainExhausted", { step: sha256, root: sha256 }, [
 	"step",
 	"root"
 ])
 export const ChainPageInput = relation(
 	"ChainPageInput",
-	{ step: DenStep, feed: closedId(ChainPageInputFeed), seq: Seq, pages: pg.bigint, root: DenScope },
+	{ step: sha256, feed: closedId(ChainPageInputFeed), seq: Seq, pages: pg.bigint, root: sha256 },
 	["step", "root"]
 )
 export const ChainPageInputAfter = relation(
 	"ChainPageInputAfter",
-	{ step: DenStep, value: Text, root: DenScope },
+	{ step: sha256, value: Text, root: sha256 },
 	["step", "root"]
 )
 export const ChainChainRunInput = relation(
 	"ChainChainRunInput",
-	{ scope: DenScope, feed: closedId(ChainChainRunInputFeed), pages: pg.bigint, root: DenScope },
+	{ scope: sha256, feed: closedId(ChainChainRunInputFeed), pages: pg.bigint, root: sha256 },
 	["scope", "root"]
 )
 export const ChainOrderedInput = relation(
 	"ChainOrderedInput",
-	{ scope: DenScope, feed: closedId(ChainOrderedInputFeed), pages: pg.bigint, root: DenScope },
+	{ scope: sha256, feed: closedId(ChainOrderedInputFeed), pages: pg.bigint, root: sha256 },
 	["scope", "root"]
 )
 export const ChainPageOutput = relation(
 	"ChainPageOutput",
-	{ step: DenStep, seq: Seq, items: pg.bigint, earlier: pg.bigint, root: DenScope },
+	{ step: sha256, seq: Seq, items: pg.bigint, earlier: pg.bigint, root: sha256 },
 	["step", "root"]
 )
 export const ChainPageOutputNext = relation(
 	"ChainPageOutputNext",
-	{ step: DenStep, value: Text, root: DenScope },
+	{ step: sha256, value: Text, root: sha256 },
 	["step", "root"]
 )
 export const ChainChainRunFinishOutput = relation(
 	"ChainChainRunFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const ChainOrderedFinishOutput = relation(
 	"ChainOrderedFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const ChainNext = relation(
 	"ChainNext",
-	{ from: DenStep, ordinal: natural, to: DenStep, root: DenScope },
+	{ from: sha256, ordinal: natural, to: sha256, root: sha256 },
 	["from", "ordinal", "root"]
 )
 export const ChainPageWeightsRow = relation(
 	"ChainPageWeightsRow",
-	{ digest: DenRow, feed: closedId(ChainPageWeightsRowFeed), factor: pg.bigint, root: DenScope },
+	{ digest: sha256, feed: closedId(ChainPageWeightsRowFeed), factor: pg.bigint, root: sha256 },
 	["digest", "root"]
 )
 export const ChainPageWeightsRead = relation(
 	"ChainPageWeightsRead",
-	{ step: DenStep, ordinal: natural, digest: DenRow, root: DenScope },
+	{ step: sha256, ordinal: natural, digest: sha256, root: sha256 },
 	["step", "ordinal", "root"]
 )
 export const ChainPageEarlierRow = relation(
 	"ChainPageEarlierRow",
 	{
-		digest: DenRow,
+		digest: sha256,
 		feed: closedId(ChainPageEarlierRowFeed),
 		seq: pg.bigint,
 		n: pg.bigint,
-		root: DenScope
+		root: sha256
 	},
 	["digest", "root"]
 )
 export const ChainPageEarlierRead = relation(
 	"ChainPageEarlierRead",
-	{ step: DenStep, ordinal: natural, digest: DenRow, root: DenScope },
+	{ step: sha256, ordinal: natural, digest: sha256, root: sha256 },
 	["step", "ordinal", "root"]
 )
 export const ChainPageTreeRow = relation(
 	"ChainPageTreeRow",
-	{ digest: DenRow, feed: closedId(ChainPageTreeRowFeed), factor: pg.bigint, root: DenScope },
+	{ digest: sha256, feed: closedId(ChainPageTreeRowFeed), factor: pg.bigint, root: sha256 },
 	["digest", "root"]
 )
 export const ChainPageTreeItems = relation(
 	"ChainPageTreeItems",
-	{ digest: DenRow, items: natural, seq: pg.bigint, n: pg.bigint, root: DenScope },
+	{ digest: sha256, items: natural, seq: pg.bigint, n: pg.bigint, root: sha256 },
 	["digest", "items", "root"]
 )
 export const ChainPageTreeFirst = relation(
 	"ChainPageTreeFirst",
-	{ digest: DenRow, items: natural, n: pg.bigint, root: DenScope },
+	{ digest: sha256, items: natural, n: pg.bigint, root: sha256 },
 	["digest", "items", "root"]
 )
 export const ChainPageTreeRead = relation(
 	"ChainPageTreeRead",
-	{ step: DenStep, ordinal: natural, digest: DenRow, root: DenScope },
+	{ step: sha256, ordinal: natural, digest: sha256, root: sha256 },
 	["step", "ordinal", "root"]
 )
 export const ChainPaused = relation(

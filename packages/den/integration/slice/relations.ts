@@ -1,5 +1,5 @@
-import { DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
-import { closed, closedId, natural, pg, relation, str } from "@bjornpagen/grizzle"
+import { Text } from "@bjornpagen/den/lower/keys"
+import { closed, closedId, natural, pg, relation, sha256, str } from "@bjornpagen/grizzle"
 
 /**
  * The toy app's own relations, which den's steps write and read and its finishes move forward: the items a feed's
@@ -105,4 +105,4 @@ export const Concluded = relation("Concluded", { learner: Name, served: Name, we
  * An auditor's note on a step's result, which references den's Result relation by its key, the step and its root, and
  * so keeps the step's graph from retiring while it stands.
  */
-export const Audit = relation("Audit", { step: DenStep, root: DenScope, note: Text }, ["step"])
+export const Audit = relation("Audit", { step: sha256, root: sha256, note: Text }, ["step"])

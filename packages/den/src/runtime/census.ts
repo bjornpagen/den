@@ -1,5 +1,4 @@
 import { Array as Arr, Clock, Cron, Duration, Effect } from "effect"
-import type { Digest } from "effect/crypto"
 import { censusPeriodSeconds } from "#algebra/kinds.ts"
 import { eligible } from "#runtime/eligible.ts"
 import { type Instant, instantOf } from "#runtime/identity.ts"
@@ -37,11 +36,7 @@ export interface Tick {
  */
 const dueOf = <R>(
 	ledger: Ledger<R>
-): Effect.Effect<
-	{ readonly at: Instant; readonly wakes: ReadonlyArray<Wake> },
-	Settled,
-	Digest.Digest
-> =>
+): Effect.Effect<{ readonly at: Instant; readonly wakes: ReadonlyArray<Wake> }, Settled> =>
 	Effect.gen(function* () {
 		const at = yield* ledger.now
 		yield* Effect.forEach(ledger.scheduled, (s) =>
@@ -57,9 +52,7 @@ const dueOf = <R>(
 	})
 
 /** One census tick of one flow, at a reading of the database's instant: its due wakes rung at once. */
-export const tick = <R>(
-	ledger: Ledger<R>
-): Effect.Effect<Tick, Settled, Digest.Digest | Transport> =>
+export const tick = <R>(ledger: Ledger<R>): Effect.Effect<Tick, Settled, Transport> =>
 	Effect.gen(function* () {
 		const { at, wakes } = yield* dueOf(ledger)
 		const rings = Arr.map(wakes, (wake): Ring => ({
@@ -75,7 +68,7 @@ export const tick = <R>(
 /** The census's rings of several flows, each ticked at a reading of its own, in their order. */
 export const tickAll = <R>(
 	ledgers: ReadonlyArray<Ledger<R>>
-): Effect.Effect<ReadonlyArray<Ring>, Settled, Digest.Digest | Transport> =>
+): Effect.Effect<ReadonlyArray<Ring>, Settled, Transport> =>
 	Effect.map(
 		Effect.forEach(ledgers, (ledger) => tick(ledger)),
 		(ticks) => Arr.flatMap(ticks, (t) => t.rings)
@@ -154,7 +147,7 @@ export interface Censused {
  */
 export const census = <R>(
 	ledgers: Arr.NonEmptyReadonlyArray<Ledger<R>>
-): Effect.Effect<Censused, Settled, Digest.Digest> =>
+): Effect.Effect<Censused, Settled> =>
 	Effect.gen(function* () {
 		const due = yield* Effect.forEach(ledgers, (ledger) =>
 			Effect.tap(dueOf(ledger), () => Effect.ignore(retire(ledger))).pipe(

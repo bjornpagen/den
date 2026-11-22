@@ -54,7 +54,6 @@
 	},
 	"devDependencies": {
 		"@bjornpagen/devtools": "workspace:*",
-		"@bjornpagen/grizzle-pg": "workspace:*",
 		"@den/model": "workspace:*",
 		"@bjornpagen/testing": "workspace:*",
 		"@effect/platform-node": "catalog:",

@@ -1,6 +1,7 @@
 import { retire } from "@bjornpagen/den/runtime/retire"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
+import { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { array, boolean, type Gen, int } from "@bjornpagen/testing/gen"
@@ -40,12 +41,13 @@ const runs: Gen<ReadonlyArray<Planned>> = array(
 	{ min: 1, max: 4 }
 )
 
-const byScope = Order.String
+/** Scopes in one order, their digests' hex (Sha256.toHex). */
+const byScope = Order.mapInput(Order.String, Sha256.toHex)
 
-/** A graph's rows as texts, in one order, so two reads of them compare as sets. */
-const graphTexts = (graph: ReadonlyArray<{ readonly step: string; readonly root: string }>) =>
+/** A graph's rows as texts, each key its digest's hex, in one order, so two reads of them compare as sets. */
+const graphTexts = (graph: ReadonlyArray<{ readonly step: Sha256; readonly root: Sha256 }>) =>
 	Arr.sort(
-		Arr.map(graph, (row) => `${row.root} ${row.step}`),
+		Arr.map(graph, (row) => `${Sha256.toHex(row.root)} ${Sha256.toHex(row.step)}`),
 		Order.String
 	)
 
@@ -84,7 +86,7 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 						yield* Effect.forEach(audited, (r) =>
 							Effect.forEach(
 								Arr.take(
-									Arr.filter(pages, (page) => page.scope === r.scope),
+									Arr.filter(pages, (page) => Sha256.equals(page.scope, r.scope)),
 									1
 								),
 								(page) =>
@@ -130,12 +132,15 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 						assert.equal(retirements.length, retiredScopes.length + keptScopes.length)
 
 						const left = yield* rows(app.workload.chainGraphRows.once({ params: {}, facts: {} }))
-						const rootsLeft = new Set(Arr.map(left, (row) => row.root))
-						Arr.forEach(retiredScopes, (scope) => assert.equal(rootsLeft.has(scope), false))
+						/** The roots left, by their digests' hex. */
+						const rootsLeft = new Set(Arr.map(left, (row) => Sha256.toHex(row.root)))
+						Arr.forEach(retiredScopes, (scope) =>
+							assert.equal(rootsLeft.has(Sha256.toHex(scope)), false)
+						)
 						Arr.forEach(keptScopes, (scope) =>
 							assert.equal(
-								Arr.filter(left, (row) => row.root === scope).length,
-								Arr.filter(results, (row) => row.root === scope).length
+								Arr.filter(left, (row) => Sha256.equals(row.root, scope)).length,
+								Arr.filter(results, (row) => Sha256.equals(row.root, scope)).length
 							)
 						)
 						const headers = yield* rows(app.workload.chainHeaders.once({ params: {}, facts: {} }))
@@ -163,10 +168,12 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 						assert.deepEqual(graphTexts(after), graphTexts(left))
 
 						yield* Effect.forEach(
-							Arr.filter(requested, (r) => Arr.contains(retiredScopes, r.scope)),
+							Arr.filter(requested, (r) =>
+								Arr.some(retiredScopes, (scope) => Sha256.equals(scope, r.scope))
+							),
 							(r) =>
 								Effect.gen(function* () {
-									const stale = Arr.filter(pages, (page) => page.scope === r.scope)
+									const stale = Arr.filter(pages, (page) => Sha256.equals(page.scope, r.scope))
 									const ends = yield* chain.ledger.now
 									yield* Effect.forEach(stale, (page) =>
 										Effect.map(

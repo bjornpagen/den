@@ -1,6 +1,7 @@
+import { Sha256 } from "@bjornpagen/grizzle"
 import { Array as Arr, DateTime, HashMap, Option, Order } from "effect"
 import { HOURS_IN_DAY, type Resource, seatedOf, type Use, type Window } from "#algebra/kinds.ts"
-import { type Instant, instantOf, type ScopeKey, type StepKey } from "#runtime/identity.ts"
+import { type Instant, instantOf } from "#runtime/identity.ts"
 import {
 	type ExclusiveRow,
 	type Ledger,
@@ -79,7 +80,7 @@ export interface Eligible {
  * its due instant, or `deployment`, its latest attempt fenced.
  */
 interface Candidate {
-	readonly step: StepKey
+	readonly step: Sha256
 	readonly attempt: bigint
 	readonly seated: ReadonlyArray<Resource>
 	readonly age: Instant
@@ -92,7 +93,7 @@ const BY_ORDER: Order.Order<Candidate> = Order.combine(
 		Order.mapInput(Order.BigInt, (c: Candidate) => c.age),
 		Order.mapInput(Order.BigInt, (c: Candidate) => c.due)
 	),
-	Order.mapInput(Order.String, (c: Candidate) => c.step)
+	Order.mapInput(Order.String, (c: Candidate) => Sha256.toHex(c.step))
 )
 
 /** A claim of a step's attempt, as far as its standing reads it: the attempt and its lease's end. */
@@ -170,9 +171,12 @@ export const lapsedAttempt = (
 
 /** The wakes due at `now` in a snapshot, and the exclusivity seats to give back. */
 export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Instant): Eligible => {
-	const scopes = HashMap.fromIterable(Arr.map(snapshot.scopes, (s) => [s.scope, s] as const))
-	const view = (scope: ScopeKey): Option.Option<ScopeView> => HashMap.get(scopes, scope)
-	const rootOf = (scope: ScopeKey): Option.Option<RootView> =>
+	/** Each scope's view, keyed by its key's hex (Sha256.toHex). */
+	const scopes = HashMap.fromIterable(
+		Arr.map(snapshot.scopes, (s) => [Sha256.toHex(s.scope), s] as const)
+	)
+	const view = (scope: Sha256): Option.Option<ScopeView> => HashMap.get(scopes, Sha256.toHex(scope))
+	const rootOf = (scope: Sha256): Option.Option<RootView> =>
 		Option.flatMap(view(scope), (s) => (s.place === "root" ? Option.some(s) : rootOf(s.parent)))
 	const open = (root: RootView): boolean => isOpen(root.runner.window, now)
 	const paused = (target: string): boolean => Arr.contains(snapshot.paused, target)
@@ -187,9 +191,14 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 		)
 	})
 
-	const unended = (scope: ScopeKey, except: StepKey): boolean =>
-		Arr.some(snapshot.steps, (p) => p.scope === scope && p.step !== except) ||
-		Arr.some(snapshot.scopes, (s) => Option.contains(parentOf(s), scope))
+	const unended = (scope: Sha256, except: Sha256): boolean =>
+		Arr.some(
+			snapshot.steps,
+			(p) => Sha256.equals(p.scope, scope) && !Sha256.equals(p.step, except)
+		) ||
+		Arr.some(snapshot.scopes, (s) =>
+			Option.exists(parentOf(s), (parent) => Sha256.equals(parent, scope))
+		)
 
 	const candidates = Arr.flatMap(snapshot.steps, (p): ReadonlyArray<Candidate> => {
 		const runner = p.runner
@@ -198,9 +207,9 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 			return []
 		}
 		const stands = standing(
-			Arr.filter(snapshot.claims, (c) => c.step === p.step),
-			Arr.filter(snapshot.retries, (r) => r.step === p.step),
-			Arr.filter(snapshot.fenced, (f) => f.step === p.step),
+			Arr.filter(snapshot.claims, (c) => Sha256.equals(c.step, p.step)),
+			Arr.filter(snapshot.retries, (r) => Sha256.equals(r.step, p.step)),
+			Arr.filter(snapshot.fenced, (f) => Sha256.equals(f.step, p.step)),
 			now
 		)
 		if (stands.kind === "held") {
@@ -220,7 +229,7 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 		if (Option.isSome(runner.finishes) && unended(p.scope, p.step)) {
 			return []
 		}
-		if (Arr.contains(snapshot.awaiting, p.step)) {
+		if (Arr.some(snapshot.awaiting, (step) => Sha256.equals(step, p.step))) {
 			return []
 		}
 		if (
@@ -253,7 +262,7 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 				: acc
 	)
 
-	const live = (scope: ScopeKey) => Option.isSome(view(scope))
+	const live = (scope: Sha256) => Option.isSome(view(scope))
 	const wakeOf = (c: Candidate): Wake => ({
 		_tag: "Step",
 		flow: ledger.flow,

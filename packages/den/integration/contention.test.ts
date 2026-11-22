@@ -1,9 +1,10 @@
-import { atOnce, delayOf, instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
+import { atOnce, delayOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import type { SeatAt } from "@bjornpagen/den/runtime/ledger"
 import { seatsFor, seatTaken } from "@bjornpagen/den/runtime/seats"
 import type { Settled } from "@bjornpagen/den/runtime/settled"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
+import { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { boolean, type Gen } from "@bjornpagen/testing/gen"
@@ -93,7 +94,7 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 								([[session, lapsed], square]) => [session, { step: square.step, lapsed }] as const
 							)
 						)
-						const steps: ReadonlyArray<StepKey> = Arr.map(squares, (square) => square.step)
+						const steps: ReadonlyArray<Sha256> = Arr.map(squares, (square) => square.step)
 						const root = requested.scope
 						const held = yield* Ref.make(HashMap.empty<Session, Holding>())
 						/** A claim with whether it took over a lapsed hold. */
@@ -110,11 +111,11 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 							return live
 						})
 						/** Ends a session's attempt, which gives its seats back. */
-						const end = (step: StepKey, mine: Holding) =>
+						const end = (step: Sha256, mine: Holding) =>
 							ledger.retry({ step, root, attempt: mine.attempt, delay: atOnce, why: "transient" })
 						/** Claims a session's square with a seat of the Pool, picked again from a fresh read when another takes it. */
 						const claimSeat = (
-							step: StepKey,
+							step: Sha256,
 							lapsed: boolean
 						): Effect.Effect<Option.Option<Taken>, Settled> =>
 							Effect.gen(function* () {
@@ -185,7 +186,7 @@ export const neverSeatsMoreThanTwoOfFiveEligibleSquaresAtOnce = property.explore
 												Arr.some(
 													live,
 													(row) =>
-														row.step === taker.step &&
+														Sha256.equals(row.step, taker.step) &&
 														row.attempt === mineNow.attempt &&
 														row.seat === seat.seat
 												)

@@ -1,4 +1,5 @@
 import { type Again, none as noRetry } from "@bjornpagen/den/algebra/kinds"
+import { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int, oneOf } from "@bjornpagen/testing/gen"
@@ -375,11 +376,11 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 							const pageAfters = yield* rows(w.chainPageAfters.once(none))
 							const pageNexts = yield* rows(w.chainPageNexts.once(none))
 							const optional = (
-								sidecar: ReadonlyArray<{ readonly step: string; readonly value: string }>,
-								step: string
+								sidecar: ReadonlyArray<{ readonly step: Sha256; readonly value: string }>,
+								step: Sha256
 							) =>
 								Arr.map(
-									Arr.filter(sidecar, (o) => o.step === step),
+									Arr.filter(sidecar, (o) => Sha256.equals(o.step, step)),
 									(o) => o.value
 								)
 							const nexts = yield* rows(w.chainNexts.once(none))
@@ -387,30 +388,62 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 							const squareInputs = yield* rows(w.fanSquareInputs.once(none))
 							const pageOutputs = yield* rows(w.chainPageOutputs.once(none))
 							const squareOutputs = yield* rows(w.fanSquareOutputs.once(none))
+							const startSteps = [
+								...(yield* rows(w.chainStartSteps.once(none))),
+								...(yield* rows(w.fanStartSteps.once(none)))
+							]
+							const startScopes = yield* rows(w.fanStartScopes.once(none))
+							const finishSteps = [
+								...(yield* rows(w.chainFinishSteps.once(none))),
+								...(yield* rows(w.fanFinishSteps.once(none)))
+							]
+							const steps = [
+								...(yield* rows(w.chainSteps.once(none))),
+								...(yield* rows(w.fanSteps.once(none)))
+							]
+							const results = [
+								...(yield* rows(w.chainResults.once(none))),
+								...(yield* rows(w.fanResults.once(none)))
+							]
+							/** A key as the graph holds it: its digest's hex (Sha256.toHex). */
+							const hex = Sha256.toHex
 							const graph: Graph = {
-								roots,
-								admitted: Arr.map(admitted, (a): string => a.scope),
-								withins,
-								startSteps: [
-									...(yield* rows(w.chainStartSteps.once(none))),
-									...(yield* rows(w.fanStartSteps.once(none)))
-								],
-								startScopes: yield* rows(w.fanStartScopes.once(none)),
-								edges: Arr.map(nexts, (e) => ({ edge: "Next", ...e, scope: false })),
-								finishes: [
-									...(yield* rows(w.chainFinishSteps.once(none))),
-									...(yield* rows(w.fanFinishSteps.once(none)))
-								],
-								steps: [
-									...(yield* rows(w.chainSteps.once(none))),
-									...(yield* rows(w.fanSteps.once(none)))
-								],
+								roots: Arr.map(roots, (r) => ({ ...r, scope: hex(r.scope) })),
+								admitted: Arr.map(admitted, (a): string => hex(a.scope)),
+								withins: Arr.map(withins, (s) => ({
+									...s,
+									scope: hex(s.scope),
+									parent: hex(s.parent)
+								})),
+								startSteps: Arr.map(startSteps, (s) => ({
+									...s,
+									scope: hex(s.scope),
+									step: hex(s.step)
+								})),
+								startScopes: Arr.map(startScopes, (s) => ({
+									...s,
+									scope: hex(s.scope),
+									child: hex(s.child)
+								})),
+								edges: Arr.map(nexts, (e) => ({
+									edge: "Next",
+									...e,
+									from: hex(e.from),
+									to: hex(e.to),
+									scope: false
+								})),
+								finishes: Arr.map(finishSteps, (f) => ({
+									...f,
+									scope: hex(f.scope),
+									step: hex(f.step)
+								})),
+								steps: Arr.map(steps, (s) => ({ ...s, step: hex(s.step), scope: hex(s.scope) })),
 								inputs: new Map<string, Datum>([
 									...Arr.map(
 										pageInputs,
 										(i) =>
 											[
-												i.step,
+												hex(i.step),
 												{
 													feed: i.feed,
 													seq: Number(i.seq),
@@ -421,19 +454,16 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 									),
 									...Arr.map(
 										squareInputs,
-										(i) => [i.step, { batch: i.batch, n: Number(i.n) }] as const
+										(i) => [hex(i.step), { batch: i.batch, n: Number(i.n) }] as const
 									)
 								]),
-								results: [
-									...(yield* rows(w.chainResults.once(none))),
-									...(yield* rows(w.fanResults.once(none)))
-								],
+								results: Arr.map(results, (r) => ({ ...r, step: hex(r.step) })),
 								outputs: new Map<string, Datum>([
 									...Arr.map(
 										pageOutputs,
 										(o) =>
 											[
-												o.step,
+												hex(o.step),
 												{
 													seq: Number(o.seq),
 													items: Number(o.items),
@@ -441,7 +471,10 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 												}
 											] as const
 									),
-									...Arr.map(squareOutputs, (o) => [o.step, { square: Number(o.square) }] as const)
+									...Arr.map(
+										squareOutputs,
+										(o) => [hex(o.step), { square: Number(o.square) }] as const
+									)
 								])
 							}
 							const mine = (texts: ReadonlyArray<string>) =>

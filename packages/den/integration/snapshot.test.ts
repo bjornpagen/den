@@ -1,7 +1,8 @@
 import { tick } from "@bjornpagen/den/runtime/census"
-import { instantOf, type ScopeKey } from "@bjornpagen/den/runtime/identity"
+import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
+import { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { finite, int } from "@bjornpagen/testing/gen"
@@ -76,7 +77,8 @@ export const theCensusKeepsTheSeatOfEveryRootAdmittedWhileItReads = property.exh
 							)
 							const [, scopes] = yield* readAcrossWrite(chainSteps, tick(sync.ledger), admitted)
 							const held = yield* sync.ledger.coordination.exclusives
-							const sorted = (all: ReadonlyArray<ScopeKey>) => Arr.sort(all, Order.String)
+							const sorted = (all: ReadonlyArray<Sha256>) =>
+								Arr.sort(all, Order.mapInput(Order.String, Sha256.toHex))
 							assert.deepEqual(sorted(Arr.map(held, (seat) => seat.scope)), sorted(scopes))
 						}).pipe(Effect.orDie),
 						services

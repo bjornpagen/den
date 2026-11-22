@@ -3,6 +3,7 @@ import { drain } from "@bjornpagen/den/runtime/drive"
 import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
+import { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -87,7 +88,7 @@ export const aPreconditionRootAdmitsTheGoldBuildOnlyOnceTheChainHasNothingPendin
 							assert.equal(
 								Arr.some(
 									busyTick.rings,
-									(ring) => ring.wake._tag === "Admit" && ring.wake.scope === gold.scope
+									(ring) => ring.wake._tag === "Admit" && Sha256.equals(ring.wake.scope, gold.scope)
 								),
 								false
 							)
@@ -101,7 +102,7 @@ export const aPreconditionRootAdmitsTheGoldBuildOnlyOnceTheChainHasNothingPendin
 							assert.ok(
 								Arr.some(
 									idleTick.rings,
-									(ring) => ring.wake._tag === "Admit" && ring.wake.scope === gold.scope
+									(ring) => ring.wake._tag === "Admit" && Sha256.equals(ring.wake.scope, gold.scope)
 								)
 							)
 							yield* drain(ledgers)

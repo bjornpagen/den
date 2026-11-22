@@ -1,4 +1,5 @@
 import { drain } from "@bjornpagen/den/runtime/drive"
+import { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { boolean, type Gen, int } from "@bjornpagen/testing/gen"
@@ -50,7 +51,7 @@ export const aRefusalOfAStepsChangeSetRefusesItsResultWithIt = property.explore(
 				Effect.provideContext(
 					Effect.gen(function* () {
 						c.note(run.heardBefore ? "refused" : "accepted")
-						c.note(run.brittle < 2 ? "brittle done" : "brittle exhausted")
+						c.note(run.brittle === 0 ? "brittle done" : "brittle exhausted")
 						const { retry, ledgers, loader } = yield* openLedgers
 						const app = yield* openAuditor
 						const { faults } = yield* Planted
@@ -72,7 +73,7 @@ export const aRefusalOfAStepsChangeSetRefusesItsResultWithIt = property.explore(
 						const results = yield* rows(app.workload.retryResults.once({ params: {}, facts: {} }))
 						const finish = Arr.filter(
 							results,
-							(r) => r.scope === requested.scope && r.kind === "LaddersFinish"
+							(r) => Sha256.equals(r.scope, requested.scope) && r.kind === "LaddersFinish"
 						)
 						const heard = yield* rows(app.workload.heard.once({ params: {}, facts: {} }))
 						const heardText = Arr.sort(
@@ -95,7 +96,10 @@ export const aRefusalOfAStepsChangeSetRefusesItsResultWithIt = property.explore(
 								Arr.map(finish, (r) => r.outcome),
 								["done"]
 							)
-							assert.deepEqual(heardText, [`brittle:${String(run.brittle < 2)}`, "steadfast:true"])
+							assert.deepEqual(heardText, [
+								`brittle:${String(run.brittle === 0)}`,
+								"steadfast:true"
+							])
 						}
 					}),
 					services

@@ -1,5 +1,6 @@
 import { type Ending, serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName } from "@bjornpagen/den/transport"
+import { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -87,7 +88,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 						yield* ringAndDrain(ledgers, [requested])
 						const scope = requested.scope
 						const read = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
-						const pages = Arr.filter(read, (page) => page.scope === scope)
+						const pages = Arr.filter(read, (page) => Sha256.equals(page.scope, scope))
 						assert.deepEqual(
 							Arr.sort(
 								Arr.map(pages, (page): bigint => page.seq),
@@ -98,7 +99,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 						const reads = yield* rows(app.workload.pageReads.once({ params: {}, facts: {} }))
 						const items = yield* rows(app.workload.items.once({ params: {}, facts: {} }))
 						Arr.forEach(pages, (page) => {
-							const recorded = Arr.filter(reads, (r) => r.step === page.step)
+							const recorded = Arr.filter(reads, (r) => Sha256.equals(r.step, page.step))
 							c.note(Arr.isReadonlyArrayEmpty(recorded) ? "no weight" : "a weight read")
 							assert.ok(Arr.every(recorded, (r) => r.feed === run.feed))
 							const factor = Arr.reduce(recorded, 0n, (sum, r) => sum + r.factor)
@@ -127,7 +128,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 						)
 						const stored = yield* rows(app.workload.earlierRows.once({ params: {}, facts: {} }))
 						assert.equal(
-							BigInt(Arr.filter(stored, (row) => row.root === scope).length),
+							BigInt(Arr.filter(stored, (row) => Sha256.equals(row.root, scope)).length),
 							before(BigInt(run.pages - 1)),
 							"each item a later page read is stored once in its root, however many pages read it"
 						)
@@ -135,7 +136,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 						const treeItems = yield* rows(app.workload.treeItems.once({ params: {}, facts: {} }))
 						const treeFirsts = yield* rows(app.workload.treeFirsts.once({ params: {}, facts: {} }))
 						Arr.forEach(pages, (page) => {
-							const tree = Arr.filter(trees, (t) => t.step === page.step)
+							const tree = Arr.filter(trees, (t) => Sha256.equals(t.step, page.step))
 							assert.deepEqual(
 								Arr.map(tree, (t) => [t.feed, t.factor]),
 								run.factor > 0 ? [[run.feed, BigInt(run.factor)]] : [],
@@ -143,7 +144,10 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 							)
 							Arr.forEach(tree, (t) => {
 								const held = Arr.sort(
-									Arr.filter(treeItems, (i) => i.digest === t.digest && i.root === t.root),
+									Arr.filter(
+										treeItems,
+										(i) => Sha256.equals(i.digest, t.digest) && Sha256.equals(i.root, t.root)
+									),
 									Order.mapInput(Order.BigInt, (i: (typeof treeItems)[number]) => i.items)
 								)
 								const pagesBefore = Arr.sort(
@@ -160,7 +164,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 								)
 								const firsts = Arr.filter(
 									treeFirsts,
-									(f) => f.digest === t.digest && f.root === t.root
+									(f) => Sha256.equals(f.digest, t.digest) && Sha256.equals(f.root, t.root)
 								)
 								assert.deepEqual(
 									Arr.sort(
@@ -174,7 +178,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 							})
 						})
 						const finished = yield* rows(app.workload.chainFinishes.once({ params: {}, facts: {} }))
-						const finishes = Arr.filter(finished, (finish) => finish.scope === scope)
+						const finishes = Arr.filter(finished, (finish) => Sha256.equals(finish.scope, scope))
 						assert.deepEqual(
 							Arr.map(finishes, (finish) => finish.outcome),
 							["done"]
@@ -210,7 +214,10 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 						)
 						assert.ok(Arr.every(rerung, (ending) => ending.kind === "lost"))
 						const after = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
-						assert.equal(Arr.filter(after, (page) => page.scope === scope).length, run.pages)
+						assert.equal(
+							Arr.filter(after, (page) => Sha256.equals(page.scope, scope)).length,
+							run.pages
+						)
 					}),
 					services
 				)
@@ -230,8 +237,8 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 		},
 		{
 			file: "packages/den/integration/slice/generated/chain.binding.ts",
-			original: '\t\t\t\t\t\t\t\trowDigest("earlier", [',
-			replacement: "\t\t\t\t\t\t\t\trowDigest(done.turn.step, [",
+			original: '\t\t\t\t\t\t\tdigest: rowDigest("earlier", [',
+			replacement: "\t\t\t\t\t\t\tdigest: rowDigest(Sha256.toHex(done.turn.step), [",
 			why: "Each page stores its own copy of every item it read, keyed by its own step: a chain of n pages stores the items before each page again, quadratic in the feed where it was linear."
 		},
 		{

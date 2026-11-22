@@ -1,4 +1,4 @@
-import { DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
+import { DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Review to; `den generate` writes it, and nothing edits it. */
 import {
 	check,
@@ -21,6 +21,7 @@ import {
 	retirable,
 	retirement,
 	select,
+	sha256,
 	v
 } from "@bjornpagen/grizzle"
 import { Delivered } from "#integration/slice/relations.ts"
@@ -45,194 +46,177 @@ const ReviewSeats = closed.relation(
 	[{ resource: "Anthropic", seats: 2n }]
 )
 
-export const ReviewScope = relation("ReviewScope", { scope: DenScope, root: DenScope }, [
+export const ReviewScope = relation("ReviewScope", { scope: sha256, root: sha256 }, [
 	"scope",
 	"root"
 ])
 export const ReviewRoot = relation(
 	"ReviewRoot",
-	{
-		scope: DenScope,
-		kind: closedId(ReviewRootKind),
-		key: Text,
-		at: DenInstant,
-		retired: retirement
-	},
+	{ scope: sha256, kind: closedId(ReviewRootKind), key: Text, at: DenInstant, retired: retirement },
 	["scope"]
 )
 export const ReviewWithin = relation(
 	"ReviewWithin",
-	{ scope: DenScope, parent: DenScope, kind: closedId(ReviewChildKind), root: DenScope },
+	{ scope: sha256, parent: sha256, kind: closedId(ReviewChildKind), root: sha256 },
 	["scope", "root"]
 )
-export const ReviewAdmitted = relation("ReviewAdmitted", { scope: DenScope, root: DenScope }, [
+export const ReviewAdmitted = relation("ReviewAdmitted", { scope: sha256, root: sha256 }, [
 	"scope",
 	"root"
 ])
 export const ReviewSkipped = relation(
 	"ReviewSkipped",
-	{ scope: DenScope, by: DenScope, root: DenScope },
+	{ scope: sha256, by: sha256, root: sha256 },
 	["scope", "root"]
 )
 export const ReviewStep = relation(
 	"ReviewStep",
-	{ step: DenStep, kind: closedId(ReviewKind), scope: DenScope, due: DenInstant, root: DenScope },
+	{ step: sha256, kind: closedId(ReviewKind), scope: sha256, due: DenInstant, root: sha256 },
 	["step", "root"]
 )
 export const ReviewStartStep = relation(
 	"ReviewStartStep",
-	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
+	{ scope: sha256, ordinal: natural, step: sha256, root: sha256 },
 	["scope", "ordinal", "root"]
 )
 export const ReviewStartScope = relation(
 	"ReviewStartScope",
-	{ scope: DenScope, ordinal: natural, child: DenScope, root: DenScope },
+	{ scope: sha256, ordinal: natural, child: sha256, root: sha256 },
 	["scope", "ordinal", "root"]
 )
 export const ReviewFinish = relation(
 	"ReviewFinish",
-	{ scope: DenScope, step: DenStep, root: DenScope },
+	{ scope: sha256, step: sha256, root: sha256 },
 	["scope", "root"]
 )
 export const ReviewClaim = relation(
 	"ReviewClaim",
-	{ step: DenStep, attempt: place, until: DenInstant, holds: drawn(natural), root: DenScope },
+	{ step: sha256, attempt: place, until: DenInstant, holds: drawn(natural), root: sha256 },
 	["step", "root", "attempt"]
 )
 export const ReviewEnded = relation(
 	"ReviewEnded",
-	{ step: DenStep, attempt: natural, root: DenScope },
+	{ step: sha256, attempt: natural, root: sha256 },
 	["step", "attempt", "root"]
 )
 export const ReviewRetry = relation(
 	"ReviewRetry",
-	{
-		step: DenStep,
-		attempt: natural,
-		at: DenInstant,
-		why: closedId(ReviewRetryWhy),
-		root: DenScope
-	},
+	{ step: sha256, attempt: natural, at: DenInstant, why: closedId(ReviewRetryWhy), root: sha256 },
 	["step", "attempt", "root"]
 )
 export const ReviewFenced = relation(
 	"ReviewFenced",
-	{ step: DenStep, attempt: natural, root: DenScope },
+	{ step: sha256, attempt: natural, root: sha256 },
 	["step", "attempt", "root"]
 )
 export const ReviewResult = relation(
 	"ReviewResult",
-	{ step: DenStep, outcome: closedId(ReviewOutcome), root: DenScope },
+	{ step: sha256, outcome: closedId(ReviewOutcome), root: sha256 },
 	["step", "root"]
 )
-export const ReviewDone = relation("ReviewDone", { step: DenStep, root: DenScope }, [
+export const ReviewDone = relation("ReviewDone", { step: sha256, root: sha256 }, ["step", "root"])
+export const ReviewFailed = relation("ReviewFailed", { step: sha256, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const ReviewFailed = relation("ReviewFailed", { step: DenStep, root: DenScope }, [
+export const ReviewHeld = relation("ReviewHeld", { step: sha256, attempt: natural, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const ReviewHeld = relation(
-	"ReviewHeld",
-	{ step: DenStep, attempt: natural, root: DenScope },
-	["step", "root"]
-)
-export const ReviewRefusal = relation(
-	"ReviewRefusal",
-	{ step: DenStep, law: Text, root: DenScope },
-	["step", "root"]
-)
-export const ReviewExhausted = relation("ReviewExhausted", { step: DenStep, root: DenScope }, [
+export const ReviewRefusal = relation("ReviewRefusal", { step: sha256, law: Text, root: sha256 }, [
+	"step",
+	"root"
+])
+export const ReviewExhausted = relation("ReviewExhausted", { step: sha256, root: sha256 }, [
 	"step",
 	"root"
 ])
 export const ReviewAnalyzeInput = relation(
 	"ReviewAnalyzeInput",
-	{ step: DenStep, review: Text, group: pg.bigint, question: pg.bigint, root: DenScope },
+	{ step: sha256, review: Text, group: pg.bigint, question: pg.bigint, root: sha256 },
 	["step", "root"]
 )
 export const ReviewGatherInput = relation(
 	"ReviewGatherInput",
-	{ step: DenStep, review: Delivered.fields.attempt, root: DenScope },
+	{ step: sha256, review: Delivered.fields.attempt, root: sha256 },
 	["step", "root"]
 )
 export const ReviewGatherInputSizes = relation(
 	"ReviewGatherInputSizes",
-	{ step: DenStep, ordinal: natural, value: pg.bigint, root: DenScope },
+	{ step: sha256, ordinal: natural, value: pg.bigint, root: sha256 },
 	["step", "ordinal", "root"]
 )
 export const ReviewSaveInput = relation(
 	"ReviewSaveInput",
 	{
-		step: DenStep,
+		step: sha256,
 		review: Text,
 		group: pg.bigint,
 		count: pg.bigint,
 		total: pg.bigint,
-		root: DenScope
+		root: sha256
 	},
 	["step", "root"]
 )
 export const ReviewQuestionsInput = relation(
 	"ReviewQuestionsInput",
-	{ scope: DenScope, review: Text, group: pg.bigint, size: pg.bigint, root: DenScope },
+	{ scope: sha256, review: Text, group: pg.bigint, size: pg.bigint, root: sha256 },
 	["scope", "root"]
 )
 export const ReviewReviewRunInput = relation(
 	"ReviewReviewRunInput",
-	{ scope: DenScope, review: Text, root: DenScope },
+	{ scope: sha256, review: Text, root: sha256 },
 	["scope", "root"]
 )
 export const ReviewReviewRunInputSizes = relation(
 	"ReviewReviewRunInputSizes",
-	{ scope: DenScope, ordinal: natural, value: pg.bigint, root: DenScope },
+	{ scope: sha256, ordinal: natural, value: pg.bigint, root: sha256 },
 	["scope", "ordinal", "root"]
 )
 export const ReviewAnalyzeOutput = relation(
 	"ReviewAnalyzeOutput",
-	{ step: DenStep, score: pg.bigint, root: DenScope },
+	{ step: sha256, score: pg.bigint, root: sha256 },
 	["step", "root"]
 )
 export const ReviewGatherOutput = relation(
 	"ReviewGatherOutput",
-	{ step: DenStep, groups: pg.bigint, root: DenScope },
+	{ step: sha256, groups: pg.bigint, root: sha256 },
 	["step", "root"]
 )
 export const ReviewSaveOutput = relation(
 	"ReviewSaveOutput",
-	{ step: DenStep, total: pg.bigint, root: DenScope },
+	{ step: sha256, total: pg.bigint, root: sha256 },
 	["step", "root"]
 )
 export const ReviewQuestionsFinishOutput = relation(
 	"ReviewQuestionsFinishOutput",
-	{ step: DenStep, count: pg.bigint, total: pg.bigint, root: DenScope },
+	{ step: sha256, count: pg.bigint, total: pg.bigint, root: sha256 },
 	["step", "root"]
 )
 export const ReviewReviewRunFinishOutput = relation(
 	"ReviewReviewRunFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const ReviewSplit = relation(
 	"ReviewSplit",
-	{ from: DenStep, ordinal: natural, to: DenScope, root: DenScope },
+	{ from: sha256, ordinal: natural, to: sha256, root: sha256 },
 	["from", "ordinal", "root"]
 )
 export const ReviewSaved = relation(
 	"ReviewSaved",
-	{ from: DenStep, ordinal: natural, to: DenStep, root: DenScope },
+	{ from: sha256, ordinal: natural, to: sha256, root: sha256 },
 	["from", "ordinal", "root"]
 )
 const ReviewHold = relation(
 	"ReviewHold",
 	{
-		step: DenStep,
+		step: sha256,
 		attempt: natural,
 		at: drawn(natural),
 		resource: closedId(ReviewResource),
 		seat: natural,
-		root: DenScope
+		root: sha256
 	},
 	["step", "root", "attempt", "at"]
 )

@@ -1,16 +1,8 @@
+import type { Sha256 } from "@bjornpagen/grizzle"
 import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, type Cron, Effect, Option, Order, Predicate, Stream } from "effect"
-import type { Digest } from "effect/crypto"
 import type { Due, Exclusive, Scheduled, Trigger } from "#algebra/kinds.ts"
-import {
-	atOnce,
-	type Delay,
-	delayOf,
-	exclusiveId,
-	type Instant,
-	type ScopeKey,
-	type StepKey
-} from "#runtime/identity.ts"
+import { atOnce, type Delay, delayOf, exclusiveId, type Instant } from "#runtime/identity.ts"
 import { refusedOnKey, type SpawnDue, type Spawned } from "#runtime/ledger.ts"
 import type { Settled } from "#runtime/settled.ts"
 
@@ -88,9 +80,9 @@ export const dueOf = <I>(due: Due<I>, input: I): SpawnDue => {
 
 /** A spawned step's row, as the call that spawns it names it: its key, its kind and its owning scope. */
 export interface SpawnAt<K> {
-	readonly step: StepKey
+	readonly step: Sha256
 	readonly kind: K
-	readonly scope: ScopeKey
+	readonly scope: Sha256
 }
 
 /**
@@ -127,7 +119,7 @@ export const exclusiveKey = <I>(exclusive: Exclusive<I>, input: I): Option.Optio
 }
 
 /**
- * The exclusivity key rows of a scope of kind `kind` and input `input`: its key text and the seat's uuid, none for a
+ * The exclusivity key rows of a scope of kind `kind` and input `input`: its key text and the seat's digest, none for a
  * shared scope kind.
  */
 export const exclusiveRows = <I>(
@@ -135,12 +127,13 @@ export const exclusiveRows = <I>(
 	kind: string,
 	exclusive: Exclusive<I>,
 	input: I,
-	scope: ScopeKey
-) =>
-	Option.match(exclusiveKey(exclusive, input), {
-		onNone: () => Effect.succeed([]),
-		onSome: (key) => Effect.map(exclusiveId(flow, kind, key), (id) => [{ scope, key, id }])
-	}) satisfies Effect.Effect<ReadonlyArray<unknown>, never, Digest.Digest>
+	scope: Sha256
+): ReadonlyArray<{ readonly scope: Sha256; readonly key: string; readonly id: Sha256 }> =>
+	Arr.map(Option.toArray(exclusiveKey(exclusive, input)), (key) => ({
+		scope,
+		key,
+		id: exclusiveId(flow, kind, key)
+	}))
 
 /**
  * The idempotency key of a schedule's root for `member` at the instant `at`: the instant and the member, which holds no

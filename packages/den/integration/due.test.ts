@@ -1,8 +1,9 @@
 import { tick } from "@bjornpagen/den/runtime/census"
 import { drain } from "@bjornpagen/den/runtime/drive"
-import { instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
+import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { AttemptNumber, FlowName, type Wake } from "@bjornpagen/den/transport"
+import type { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { array, boolean, type Gen, int } from "@bjornpagen/testing/gen"
@@ -99,17 +100,17 @@ export const aStepDueAtItsInputsInstantRunsAtItAndNotBefore = property.explore(s
 										: Arr.every(rung, (millis) => millis > 0 && millis <= offset * 1000),
 									"its admission rings it timed to its instant, at once for one already past"
 								)
-								const step: StepKey = Option.getOrThrow(Arr.head(spawned)).step
+								const step: Sha256 = Option.getOrThrow(Arr.head(spawned)).step
 								return { offset, deadline, step, scope: requested.scope }
 							})
 						)
-						const wakeOf = (step: StepKey): Wake => ({
+						const wakeOf = (step: Sha256): Wake => ({
 							_tag: "Step",
 							flow,
 							step,
 							attempt: AttemptNumber.make(0)
 						})
-						const ranOf = (step: StepKey) =>
+						const ranOf = (step: Sha256) =>
 							Effect.map(ledger.resultOf(step), (outcome) => Option.contains(outcome, "done"))
 						yield* tick(ledger)
 						yield* drain(ledgers)

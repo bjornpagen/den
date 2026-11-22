@@ -1,5 +1,16 @@
-import { regex } from "arkregex"
-import { Array as Arr, Clock, Context, Duration, Effect, Layer, Ref, Schema } from "effect"
+import { Sha256 } from "@bjornpagen/grizzle"
+import {
+	Array as Arr,
+	Clock,
+	Context,
+	Data,
+	Duration,
+	Effect,
+	Layer,
+	Ref,
+	Result,
+	Schema
+} from "effect"
 
 /**
  * The wake contract every transport meets. A wake is a doorbell: the ledger is the only authority, so a lost,
@@ -12,33 +23,11 @@ import { Array as Arr, Clock, Context, Duration, Effect, Layer, Ref, Schema } fr
 export const FlowName = Schema.String.pipe(Schema.brand("den/FlowName"))
 export type FlowName = typeof FlowName.Type
 
-/** A SHA-256 digest's text, 64 lowercase hex digits, as den derives a key (runtime/identity.ts) and grizzle's `sha256`
- * holds it. */
-const DigestText = Schema.String.check(Schema.isPattern(regex("^[0-9a-f]{64}$")))
-
-/** A step's key as text: the digest den derives for it, branded as the ledger's DenStep. */
-export const StepText = DigestText.pipe(Schema.brand("DenStep"))
-export type StepText = typeof StepText.Type
-
-/** A scope's key as text: the digest den derives for it, branded as the ledger's DenScope. */
-export const ScopeText = DigestText.pipe(Schema.brand("DenScope"))
-export type ScopeText = typeof ScopeText.Type
-
 /** The claim attempt a wake rings for: its place among the step's claims, from 0. */
 export const AttemptNumber = Schema.Int.check(Schema.isGreaterThanOrEqualTo(0)).pipe(
 	Schema.brand("den/Attempt")
 )
 export type AttemptNumber = typeof AttemptNumber.Type
-
-/** A wake for one attempt of a step. */
-export const StepWake = Schema.TaggedStruct("Step", {
-	flow: FlowName,
-	step: StepText,
-	attempt: AttemptNumber
-})
-
-/** A wake for a scope's admission: its exclusivity seat, its precondition, then its start. */
-export const AdmitWake = Schema.TaggedStruct("Admit", { flow: FlowName, scope: ScopeText })
 
 /** An instant a census wake is for: the start of a census period, in milliseconds since the epoch. */
 export const CensusInstant = Schema.Int.check(Schema.isGreaterThanOrEqualTo(0)).pipe(
@@ -53,20 +42,77 @@ export type CensusInstant = typeof CensusInstant.Type
  */
 export const CensusWake = Schema.TaggedStruct("Census", { at: CensusInstant })
 
-/** A wake: a step's attempt, a scope's admission, or a period's census. Decoded once, at a consumer's boundary. */
-export const WakeSchema = Schema.Union([StepWake, AdmitWake, CensusWake])
-export type Wake = typeof WakeSchema.Type
+/**
+ * A wake as the wire carries it: a step's attempt, a scope's admission, or a period's census, each key its digest's hex
+ * (Sha256.toHex).
+ * A transport that sends wakes over a wire encodes this schema (wireOf) and decodes it once at its consumer's boundary,
+ * then parses its keys (wakeOf).
+ */
+export const WireWakeSchema = Schema.Union([
+	Schema.TaggedStruct("Step", { flow: FlowName, step: Schema.String, attempt: AttemptNumber }),
+	Schema.TaggedStruct("Admit", { flow: FlowName, scope: Schema.String }),
+	CensusWake
+])
+export type WireWake = typeof WireWakeSchema.Type
+
+/** A wake: a step's attempt, a scope's admission, or a period's census, each key the digest den derived. */
+export type Wake =
+	| {
+			readonly _tag: "Step"
+			readonly flow: FlowName
+			readonly step: Sha256
+			readonly attempt: AttemptNumber
+	  }
+	| { readonly _tag: "Admit"; readonly flow: FlowName; readonly scope: Sha256 }
+	| typeof CensusWake.Type
 
 /** A wake of one flow: a step's attempt or a scope's admission, which that flow's ledger serves. */
 export type FlowWake = Extract<Wake, { readonly flow: FlowName }>
+
+/** A wake as the wire carries it, each key as its digest's hex. */
+export const wireOf = (wake: Wake): WireWake => {
+	switch (wake._tag) {
+		case "Step":
+			return { ...wake, step: Sha256.toHex(wake.step) }
+		case "Admit":
+			return { ...wake, scope: Sha256.toHex(wake.scope) }
+		case "Census":
+			return wake
+	}
+}
+
+/** A wire wake whose key is no digest's hex: the text, and why Sha256.fromHex refused it. */
+export class NotAKey extends Data.TaggedError("NotAKey")<{ readonly message: string }> {}
+
+/** A wire key's digest, parsed from its hex once. */
+const keyOf = (text: string): Result.Result<Sha256, NotAKey> => {
+	const parsed = Sha256.fromHex(text)
+	return parsed.ok
+		? Result.succeed(parsed.value)
+		: Result.fail(
+				new NotAKey({ message: `a wake's key ${text} is no digest's hex: ${parsed.error}` })
+			)
+}
+
+/** A wire wake's wake: each key parsed from its hex, once, at the consumer's boundary. */
+export const wakeOf = (wire: WireWake): Result.Result<Wake, NotAKey> => {
+	switch (wire._tag) {
+		case "Step":
+			return Result.map(keyOf(wire.step), (step) => ({ ...wire, step }))
+		case "Admit":
+			return Result.map(keyOf(wire.scope), (scope) => ({ ...wire, scope }))
+		case "Census":
+			return Result.succeed(wire)
+	}
+}
 
 /** What a wake names, as text: its flow, and the step's attempt or the scope it rings; or its census's period. */
 export const wakeText = (wake: Wake): string => {
 	switch (wake._tag) {
 		case "Step":
-			return `${wake.flow}:step:${wake.step}:${wake.attempt}`
+			return `${wake.flow}:step:${Sha256.toHex(wake.step)}:${wake.attempt}`
 		case "Admit":
-			return `${wake.flow}:admit:${wake.scope}`
+			return `${wake.flow}:admit:${Sha256.toHex(wake.scope)}`
 		case "Census":
 			return `census:${wake.at}`
 	}

@@ -1,67 +1,53 @@
-import { pin } from "@bjornpagen/grizzle-pg/pin"
 import { localCluster } from "@bjornpagen/testing/pg"
 
 /**
- * One worker's connections at most at once: its owner session, which clones each case's database from the template,
- * and its case's sessions, the slice's logins' pools a case opens, at most 7 on one case database.
+ * One busy backend's proportional share of memory at den's heaviest one-backend work, which a member's connections are
+ * the machine's memory over (`toolchain-pg settle`): the slice's whole init migration, every statement of its five
+ * files, run in one backend.
  *
  * @limitKind measured
  * @owner den's integration suites (packages/den/integration)
- * @unit connections
- * @scope one worker of the runner on the one member
- * @measurement den's network suite at the repin to grizzle 6230b6610 and toolchain d3a4a60 (TEST_SEED=1570319363, 64
- *   cores), every client backend sampled every 0.1 s by database and application over 22,119 samples
- *   (~/.cache/grizzle-release/DENSYNC2-tools/measure): one `den-resources owner` session a worker, and at most 7 on any
- *   one case database (31 of 38 case databases held 1, 6 held 2)
+ * @unit bytes
+ * @scope one backend of a member of den's test cluster, at its peak
+ * @evidence the slice's init migration at grizzle's pin stack d0a5b0a95 (migrations/slice/20261121132246_init, 01 to 05,
+ *   24,135 lines) run by psql in one backend as the bootstrap superuser on the workbench's PostgreSQL 19.0 (the
+ *   `postgres` unit, over its socket), then that backend's `SELECT pg_catalog.pg_read_file('/proc/self/smaps_rollup')`
+ *   (script ~/.cache/den/denrepin2-tools/measure.sql, log ~/.cache/den/denrepin2-logs/measure.log; the database and
+ *   its roles dropped after)
+ * @observed 2026-11-21 13:33:33 UTC
+ * @environment cassowary, Ubuntu 26.04 on arm64 in AWS, 64 cores and 247 GiB, shared with other lanes' runs
+ * @workload one backend alone, as the bootstrap superuser, running the five files in order on an empty database
+ * @result Rss 937,292 kB, Pss 96,728 kB (Pss_Anon 38,306 kB, Pss_Shmem 58,126 kB, Pss_File 294 kB): 99,049,472 bytes
+ * @decision the Pss as measured, no headroom: a member's connections are the machine's memory over it, and a member past
+ *   them refuses one (53300), a problem met where it happens. Unmeasured: a case's backends, each working less than
+ *   the whole migration at once
+ * @revalidate a slice whose migration grows past it, a case whose one backend works harder than the init migration
+ *   (a larger publish), a PostgreSQL repin, another machine
  */
-const perWorker = 8
+const backendBytes = 99_049_472
 
 /**
- * The connections no worker holds, at most at once: the template's build, a doctor's, an operator's psql and the
- * maker's own admin session.
- *
- * @limitKind measured
- * @owner den's integration suites (packages/den/integration)
- * @unit connections
- * @scope the member, outside every worker
- * @measurement the same run: at most 1 on the template database, 1 psql, 1 admin session on `postgres` and 1 unattached
- *   session at once
- */
-const outside = 4
-
-/**
- * den's local cluster, which every integration property's database is cloned on and the runner's layer makes and
- * starts the first time a need reaches it (test.config.ts): on port 5443, run by the PostgreSQL build vendor/grizzle
- * pins (grizzle's scripts/pg/pin.env, which `grizzle-pg build` makes), owned by den_dev, who may set deadlock_timeout,
- * which grizzle's installation sets, its template den_template carrying pgvector in vector_ext for the slice's nearest
- * reads, throwaway, one member, leased by the runner's workers. `pnpm pg <command>` runs its life by hand
- * (`toolchain-pg`).
- *
- * Its replication slots and walsenders: every live source's leader holds one slot and one walsender, and a worker runs
- * one case at a time, each with at most one installation whose live source a leader serves.
- *
- * @limitKind derived
- * @owner den's integration suites (packages/den/integration)
- * @unit replication slots, and walsenders
- * @scope one worker of the runner, and nothing outside a worker
- * @derivation a case's installation has one live source, which one leader serves with one slot and one walsender, and a
- *   worker runs one case at a time; the templates the runner builds serve no live source
- * @from integration/support/slice.ts, installedSliceCase and liveSliceCase: an installation of the case's own
+ * den's local cluster, which every integration property's database is cloned on (test.config.ts): one member, the
+ * workbench's unit `postgres@den-test-0`, reached over verify-full TLS at localhost:5451, since grizzle's client speaks
+ * nothing else, the port one no other repository's cluster states (the toolchain's 5441, grizzle's 5442 and 5443).
+ * Owned by den_dev, who may set deadlock_timeout, which grizzle's installation sets; its template den_template carries
+ * pgvector in vector_ext for the slice's nearest reads. Throwaway. Its connections are the machine's memory over one
+ * busy backend's, and a replication slot and a WAL sender for each, since every live source's leader holds one of each.
+ * `pnpm exec toolchain-pg settle` from this package gives the member this spec; a run only reads it.
  */
 export default localCluster({
-	port: 5443,
-	bin: { kind: "directory", directory: `${pin.GRIZZLE_PG_PREFIX}/bin` },
+	unit: "den-test",
+	network: { kind: "tls", port: 5451 },
 	owner: "den_dev",
 	template: "den_template",
 	extensions: [{ name: "vector", schema: "vector_ext" }],
-	peerLogins: [],
-	durability: "throwaway",
 	ownerParameters: ["deadlock_timeout"],
+	durability: "throwaway",
 	sizing: {
-		kind: "leased",
+		kind: "workers",
 		family: { kind: "one" },
-		connections: { perWorker, outside },
-		replication: { kind: "perWorker", perWorker: 1, outside: 0 },
+		connections: { kind: "capacity", backendBytes },
+		replication: { kind: "capacity" },
 		sharedBuffers: { kind: "default" },
 		locks: { kind: "default" }
 	}

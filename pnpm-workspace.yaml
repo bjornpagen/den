@@ -5,7 +5,6 @@ packages:
   - "vendor/grizzle/packages/grizzle"
   - "vendor/grizzle/packages/openapi"
   - "vendor/grizzle/packages/text"
-  - "vendor/grizzle/packages/pg"
   # The toolchain, the submodule pinned at its commit: its dev tools and testing library run from source, with gates of
   # their own, none of den's.
   - "vendor/toolchain/packages/devtools"

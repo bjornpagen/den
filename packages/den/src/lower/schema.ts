@@ -29,11 +29,7 @@ export type Base = "text" | "bigint" | "double" | "boolean"
  * contract, so a step's input that holds an instant (`instant`) holds den's DenInstant, which the app's queries cast into.
  */
 export const denContracts = {
-	DenStep: "text",
-	DenScope: "text",
-	DenExclusive: "text",
-	DenInstant: "bigint",
-	DenRow: "text"
+	DenInstant: "bigint"
 } as const satisfies Record<string, Base>
 
 /** One of den's own contracts, every flow's alike. */

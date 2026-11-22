@@ -1,4 +1,4 @@
-import { DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
+import { DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Retry to; `den generate` writes it, and nothing edits it. */
 import {
 	closed,
@@ -13,7 +13,8 @@ import {
 	relation,
 	retirable,
 	retirement,
-	select
+	select,
+	sha256
 } from "@bjornpagen/grizzle"
 
 export const RetryKind = closed.unordered("RetryKind", [
@@ -38,156 +39,141 @@ export const RetryPausable = closed.unordered("RetryPausable", [
 	"Unhurried"
 ])
 
-export const RetryScope = relation("RetryScope", { scope: DenScope, root: DenScope }, [
-	"scope",
-	"root"
-])
+export const RetryScope = relation("RetryScope", { scope: sha256, root: sha256 }, ["scope", "root"])
 export const RetryRoot = relation(
 	"RetryRoot",
-	{
-		scope: DenScope,
-		kind: closedId(RetryRootKind),
-		key: Text,
-		at: DenInstant,
-		retired: retirement
-	},
+	{ scope: sha256, kind: closedId(RetryRootKind), key: Text, at: DenInstant, retired: retirement },
 	["scope"]
 )
-export const RetryAdmitted = relation("RetryAdmitted", { scope: DenScope, root: DenScope }, [
+export const RetryAdmitted = relation("RetryAdmitted", { scope: sha256, root: sha256 }, [
 	"scope",
 	"root"
 ])
-export const RetrySkipped = relation(
-	"RetrySkipped",
-	{ scope: DenScope, by: DenScope, root: DenScope },
-	["scope", "root"]
-)
+export const RetrySkipped = relation("RetrySkipped", { scope: sha256, by: sha256, root: sha256 }, [
+	"scope",
+	"root"
+])
 export const RetryStep = relation(
 	"RetryStep",
-	{ step: DenStep, kind: closedId(RetryKind), scope: DenScope, due: DenInstant, root: DenScope },
+	{ step: sha256, kind: closedId(RetryKind), scope: sha256, due: DenInstant, root: sha256 },
 	["step", "root"]
 )
 export const RetryStartStep = relation(
 	"RetryStartStep",
-	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
+	{ scope: sha256, ordinal: natural, step: sha256, root: sha256 },
 	["scope", "ordinal", "root"]
 )
-export const RetryFinish = relation(
-	"RetryFinish",
-	{ scope: DenScope, step: DenStep, root: DenScope },
-	["scope", "root"]
-)
+export const RetryFinish = relation("RetryFinish", { scope: sha256, step: sha256, root: sha256 }, [
+	"scope",
+	"root"
+])
 export const RetryClaim = relation(
 	"RetryClaim",
-	{ step: DenStep, attempt: place, until: DenInstant, root: DenScope },
+	{ step: sha256, attempt: place, until: DenInstant, root: sha256 },
 	["step", "root", "attempt"]
 )
-export const RetryEnded = relation(
-	"RetryEnded",
-	{ step: DenStep, attempt: natural, root: DenScope },
-	["step", "attempt", "root"]
-)
+export const RetryEnded = relation("RetryEnded", { step: sha256, attempt: natural, root: sha256 }, [
+	"step",
+	"attempt",
+	"root"
+])
 export const RetryRetry = relation(
 	"RetryRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, why: closedId(RetryRetryWhy), root: DenScope },
+	{ step: sha256, attempt: natural, at: DenInstant, why: closedId(RetryRetryWhy), root: sha256 },
 	["step", "attempt", "root"]
 )
 export const RetryFenced = relation(
 	"RetryFenced",
-	{ step: DenStep, attempt: natural, root: DenScope },
+	{ step: sha256, attempt: natural, root: sha256 },
 	["step", "attempt", "root"]
 )
 export const RetryResult = relation(
 	"RetryResult",
-	{ step: DenStep, outcome: closedId(RetryOutcome), root: DenScope },
+	{ step: sha256, outcome: closedId(RetryOutcome), root: sha256 },
 	["step", "root"]
 )
-export const RetryDone = relation("RetryDone", { step: DenStep, root: DenScope }, ["step", "root"])
-export const RetryFailed = relation("RetryFailed", { step: DenStep, root: DenScope }, [
+export const RetryDone = relation("RetryDone", { step: sha256, root: sha256 }, ["step", "root"])
+export const RetryFailed = relation("RetryFailed", { step: sha256, root: sha256 }, ["step", "root"])
+export const RetryHeld = relation("RetryHeld", { step: sha256, attempt: natural, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const RetryHeld = relation(
-	"RetryHeld",
-	{ step: DenStep, attempt: natural, root: DenScope },
-	["step", "root"]
-)
-export const RetryRefusal = relation("RetryRefusal", { step: DenStep, law: Text, root: DenScope }, [
+export const RetryRefusal = relation("RetryRefusal", { step: sha256, law: Text, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const RetryExhausted = relation("RetryExhausted", { step: DenStep, root: DenScope }, [
+export const RetryExhausted = relation("RetryExhausted", { step: sha256, root: sha256 }, [
 	"step",
 	"root"
 ])
 export const RetrySteadfastInput = relation(
 	"RetrySteadfastInput",
-	{ step: DenStep, key: Text, root: DenScope },
+	{ step: sha256, key: Text, root: sha256 },
 	["step", "root"]
 )
 export const RetryBrittleInput = relation(
 	"RetryBrittleInput",
-	{ step: DenStep, key: Text, root: DenScope },
+	{ step: sha256, key: Text, root: sha256 },
 	["step", "root"]
 )
 export const RetryPoliteInput = relation(
 	"RetryPoliteInput",
-	{ step: DenStep, key: Text, root: DenScope },
+	{ step: sha256, key: Text, root: sha256 },
 	["step", "root"]
 )
 export const RetryPatientInput = relation(
 	"RetryPatientInput",
-	{ step: DenStep, key: Text, root: DenScope },
+	{ step: sha256, key: Text, root: sha256 },
 	["step", "root"]
 )
 export const RetryLaddersInput = relation(
 	"RetryLaddersInput",
-	{ scope: DenScope, steadfast: Text, brittle: Text, root: DenScope },
+	{ scope: sha256, steadfast: Text, brittle: Text, root: sha256 },
 	["scope", "root"]
 )
 export const RetryThrottledInput = relation(
 	"RetryThrottledInput",
-	{ scope: DenScope, key: Text, root: DenScope },
+	{ scope: sha256, key: Text, root: sha256 },
 	["scope", "root"]
 )
 export const RetryUnhurriedInput = relation(
 	"RetryUnhurriedInput",
-	{ scope: DenScope, key: Text, root: DenScope },
+	{ scope: sha256, key: Text, root: sha256 },
 	["scope", "root"]
 )
 export const RetrySteadfastOutput = relation(
 	"RetrySteadfastOutput",
-	{ step: DenStep, key: Text, root: DenScope },
+	{ step: sha256, key: Text, root: sha256 },
 	["step", "root"]
 )
 export const RetryBrittleOutput = relation(
 	"RetryBrittleOutput",
-	{ step: DenStep, key: Text, root: DenScope },
+	{ step: sha256, key: Text, root: sha256 },
 	["step", "root"]
 )
 export const RetryPoliteOutput = relation(
 	"RetryPoliteOutput",
-	{ step: DenStep, key: Text, root: DenScope },
+	{ step: sha256, key: Text, root: sha256 },
 	["step", "root"]
 )
 export const RetryPatientOutput = relation(
 	"RetryPatientOutput",
-	{ step: DenStep, key: Text, root: DenScope },
+	{ step: sha256, key: Text, root: sha256 },
 	["step", "root"]
 )
 export const RetryLaddersFinishOutput = relation(
 	"RetryLaddersFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const RetryThrottledFinishOutput = relation(
 	"RetryThrottledFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const RetryUnhurriedFinishOutput = relation(
 	"RetryUnhurriedFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const RetryPaused = relation(

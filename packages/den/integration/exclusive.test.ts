@@ -1,6 +1,7 @@
 import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
+import { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { type Gen, int } from "@bjornpagen/testing/gen"
@@ -82,7 +83,7 @@ export const exclusivityAdmitsOneLiveSyncPerRelation = property.explore(runs, {
 						const skipped = yield* rows(app.workload.syncSkipped.once({ params: {}, facts: {} }))
 						assert.deepEqual(
 							Arr.map(
-								Arr.filter(skipped, (s) => Arr.some(rest, (r) => r.scope === s.scope)),
+								Arr.filter(skipped, (s) => Arr.some(rest, (r) => Sha256.equals(r.scope, s.scope))),
 								(s) => s.by
 							),
 							Arr.map(rest, () => first.scope)
@@ -96,7 +97,7 @@ export const exclusivityAdmitsOneLiveSyncPerRelation = property.explore(runs, {
 						})
 						yield* ringAndDrain(ledgers, [later])
 						const admitted = yield* rows(app.workload.syncAdmitted.once({ params: {}, facts: {} }))
-						assert.ok(Arr.some(admitted, (a) => a.scope === later.scope))
+						assert.ok(Arr.some(admitted, (a) => Sha256.equals(a.scope, later.scope)))
 						c.note("admitted after the seat was given back")
 						const copied = yield* rows(app.workload.copied.once({ params: {}, facts: {} }))
 						assert.deepEqual(

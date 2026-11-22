@@ -66,7 +66,7 @@ export const aStepJoinedOnTwoFactsRunsOnceBothExist = property.explore(joined, {
 						yield* ringAndDrain(ledgers, [first])
 						const second = yield* run.order === "the fact first" ? requestReview : requestDelivery
 						const root = run.order === "the fact first" ? second.scope : first.scope
-						const gather = yield* startedStep(root, 0)
+						const gather = startedStep(root, 0)
 						if (run.order === "the step first") {
 							const early = yield* review.ledger.claimsOf(gather)
 							assert.deepEqual(early, [], "Gather claims nothing while it waits on its fact")

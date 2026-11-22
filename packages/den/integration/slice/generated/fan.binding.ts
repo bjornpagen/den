@@ -16,10 +16,8 @@ import {
 	atOnce,
 	finishStep,
 	rootScope,
-	type ScopeKey,
 	startedScope,
-	startedStep,
-	type StepKey
+	startedStep
 } from "@bjornpagen/den/runtime/identity"
 import type {
 	FlowNeeds,
@@ -37,10 +35,9 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Fan over its served programs; `den generate` writes it, and nothing edits it. */
-import type { Addition } from "@bjornpagen/grizzle"
+import { type Addition, Sha256 } from "@bjornpagen/grizzle"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, Stream } from "effect"
-import type { Digest } from "effect/crypto"
+import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
 import { fan } from "#integration/slice/flows.ts"
 import { FanPausable, FanResource } from "#integration/slice/generated/fan.fragment.ts"
 import type {
@@ -137,9 +134,9 @@ export const fanLedger = (h: FanHandles) => {
 		timed: [],
 		spawned: { steps: [], finishes: [] }
 	}
-	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
-		Arr.some(grown.rows.FanStartStep, (s) => s.scope === scope) ||
-		Arr.some(grown.rows.FanStartScope, (s) => s.scope === scope)
+	const hasChildren = (grown: Grown, scope: Sha256): boolean =>
+		Arr.some(grown.rows.FanStartStep, (s) => Sha256.equals(s.scope, scope)) ||
+		Arr.some(grown.rows.FanStartScope, (s) => Sha256.equals(s.scope, scope))
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			FanScope: [...a.rows.FanScope, ...b.rows.FanScope],
@@ -161,105 +158,98 @@ export const fanLedger = (h: FanHandles) => {
 		}
 	})
 	const startBatch = (
-		root: ScopeKey,
-		scope: ScopeKey,
+		root: Sha256,
+		scope: Sha256,
 		input: Parameters<(typeof fan.kinds)[1]["start"]>[0]
-	): Effect.Effect<Grown, never, Digest.Digest> =>
-		Effect.map(
-			Effect.forEach(
-				fan.kinds[1].start(input),
-				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
-					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
-						rows: {
-							...noRows,
-							FanStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-							FanSquareInput: [
-								{ step: key, root: root, batch: spawn.input.batch, n: spawn.input.n }
-							]
-						},
-						...spawnedOf(
-							{ step: key, kind: "Square", scope: scope },
-							dueOf(fan.kinds[0].due, spawn.input)
-						)
-					}))
+	): Grown =>
+		Arr.reduce(
+			Arr.map(fan.kinds[1].start(input), (spawn, ordinal): Grown =>
+				pipe(startedStep(scope, ordinal), (key): Grown => ({
+					rows: {
+						...noRows,
+						FanStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+						FanSquareInput: [{ step: key, root: root, batch: spawn.input.batch, n: spawn.input.n }]
+					},
+					...spawnedOf(
+						{ step: key, kind: "Square", scope: scope },
+						dueOf(fan.kinds[0].due, spawn.input)
+					)
+				}))
 			),
-			(parts) => Arr.reduce(parts, nothingGrown, joined)
+			nothingGrown,
+			joined
 		)
 	const startFanRun = (
-		root: ScopeKey,
-		scope: ScopeKey,
+		root: Sha256,
+		scope: Sha256,
 		input: Parameters<(typeof fan.kinds)[2]["start"]>[0]
-	): Effect.Effect<Grown, never, Digest.Digest> =>
-		Effect.map(
-			Effect.forEach(
-				fan.kinds[2].start(input),
-				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
-					Effect.flatMap(startedScope(scope, ordinal), (key) =>
-						Effect.zipWith(
-							finishStep(key),
-							startBatch(root, key, spawn.input),
-							(finish, inner): Grown =>
-								joined(inner, {
-									rows: {
-										...noRows,
-										FanScope: [{ scope: key, root: root }],
-										FanWithin: [{ scope: key, parent: scope, kind: "Batch", root: root }],
-										FanAdmitted: [{ scope: key, root: root }],
-										FanFinish: [{ scope: key, step: finish, root: root }],
-										FanStartScope: [{ scope, ordinal: BigInt(ordinal), child: key, root }],
-										FanBatchInput: [
-											{ scope: key, root: root, batch: spawn.input.batch, size: spawn.input.size }
-										]
-									},
-									steps: [{ step: finish, kind: "BatchFinish", scope: key, delay: atOnce }],
-									timed: [],
-									spawned: { steps: [], finishes: hasChildren(inner, key) ? [] : [finish] }
-								})
+	): Grown =>
+		Arr.reduce(
+			Arr.map(fan.kinds[2].start(input), (spawn, ordinal): Grown =>
+				pipe(startedScope(scope, ordinal), (key): Grown =>
+					pipe(startBatch(root, key, spawn.input), (inner): Grown =>
+						pipe(finishStep(key), (finish): Grown =>
+							joined(inner, {
+								rows: {
+									...noRows,
+									FanScope: [{ scope: key, root: root }],
+									FanWithin: [{ scope: key, parent: scope, kind: "Batch", root: root }],
+									FanAdmitted: [{ scope: key, root: root }],
+									FanFinish: [{ scope: key, step: finish, root: root }],
+									FanStartScope: [{ scope, ordinal: BigInt(ordinal), child: key, root }],
+									FanBatchInput: [
+										{ scope: key, root: root, batch: spawn.input.batch, size: spawn.input.size }
+									]
+								},
+								steps: [{ step: finish, kind: "BatchFinish", scope: key, delay: atOnce }],
+								timed: [],
+								spawned: { steps: [], finishes: hasChildren(inner, key) ? [] : [finish] }
+							})
 						)
 					)
+				)
 			),
-			(parts) => Arr.reduce(parts, nothingGrown, joined)
+			nothingGrown,
+			joined
 		)
 	const startSweep = (
-		root: ScopeKey,
-		scope: ScopeKey,
+		root: Sha256,
+		scope: Sha256,
 		input: Parameters<(typeof fan.kinds)[5]["start"]>[0]
-	): Effect.Effect<Grown, never, Digest.Digest> =>
-		Effect.map(
-			Effect.forEach(
-				fan.kinds[5].start(input),
-				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> => {
-					switch (spawn.kind) {
-						case "Dust":
-							return Effect.map(startedStep(scope, ordinal), (key): Grown => ({
-								rows: {
-									...noRows,
-									FanStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-									FanDustInput: [{ step: key, root: root, sweep: spawn.input.sweep }]
-								},
-								...spawnedOf(
-									{ step: key, kind: "Dust", scope: scope },
-									dueOf(fan.kinds[3].due, spawn.input)
-								)
-							}))
-						case "Mop":
-							return Effect.map(startedStep(scope, ordinal), (key): Grown => ({
-								rows: {
-									...noRows,
-									FanStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-									FanMopInput: [{ step: key, root: root, sweep: spawn.input.sweep }]
-								},
-								...spawnedOf(
-									{ step: key, kind: "Mop", scope: scope },
-									dueOf(fan.kinds[4].due, spawn.input)
-								)
-							}))
-					}
+	): Grown =>
+		Arr.reduce(
+			Arr.map(fan.kinds[5].start(input), (spawn, ordinal): Grown => {
+				switch (spawn.kind) {
+					case "Dust":
+						return pipe(startedStep(scope, ordinal), (key): Grown => ({
+							rows: {
+								...noRows,
+								FanStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+								FanDustInput: [{ step: key, root: root, sweep: spawn.input.sweep }]
+							},
+							...spawnedOf(
+								{ step: key, kind: "Dust", scope: scope },
+								dueOf(fan.kinds[3].due, spawn.input)
+							)
+						}))
+					case "Mop":
+						return pipe(startedStep(scope, ordinal), (key): Grown => ({
+							rows: {
+								...noRows,
+								FanStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+								FanMopInput: [{ step: key, root: root, sweep: spawn.input.sweep }]
+							},
+							...spawnedOf(
+								{ step: key, kind: "Mop", scope: scope },
+								dueOf(fan.kinds[4].due, spawn.input)
+							)
+						}))
 				}
-			),
-			(parts) => Arr.reduce(parts, nothingGrown, joined)
+			}),
+			nothingGrown,
+			joined
 		)
-	const readFanSquareInput = (step: StepKey) =>
+	const readFanSquareInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.fanReadFanSquareInput.once({ params: { step: step }, facts: {} })),
@@ -267,7 +257,7 @@ export const fanLedger = (h: FanHandles) => {
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, n: found.n }))
 		})
-	const readFanDustInput = (step: StepKey) =>
+	const readFanDustInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.fanReadFanDustInput.once({ params: { step: step }, facts: {} })),
@@ -275,7 +265,7 @@ export const fanLedger = (h: FanHandles) => {
 			)
 			return Option.map(row, (found) => ({ sweep: found.sweep }))
 		})
-	const readFanMopInput = (step: StepKey) =>
+	const readFanMopInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.fanReadFanMopInput.once({ params: { step: step }, facts: {} })),
@@ -283,7 +273,7 @@ export const fanLedger = (h: FanHandles) => {
 			)
 			return Option.map(row, (found) => ({ sweep: found.sweep }))
 		})
-	const readFanBatchInput = (scope: ScopeKey) =>
+	const readFanBatchInput = (scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.fanReadFanBatchInput.once({ params: { scope: scope }, facts: {} })),
@@ -291,7 +281,7 @@ export const fanLedger = (h: FanHandles) => {
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, size: found.size }))
 		})
-	const readFanFanRunInput = (scope: ScopeKey) =>
+	const readFanFanRunInput = (scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.fanReadFanFanRunInput.once({ params: { scope: scope }, facts: {} })),
@@ -299,7 +289,7 @@ export const fanLedger = (h: FanHandles) => {
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, size: found.size }))
 		})
-	const readFanSweepInput = (scope: ScopeKey) =>
+	const readFanSweepInput = (scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.fanReadFanSweepInput.once({ params: { scope: scope }, facts: {} })),
@@ -340,7 +330,7 @@ export const fanLedger = (h: FanHandles) => {
 	}
 	const request = {
 		FanRun: (key: string, input: Parameters<(typeof fan.kinds)[2]["start"]>[0]) =>
-			Effect.flatMap(rootScope("Fan", "FanRun", key), (scope) =>
+			pipe(rootScope("Fan", "FanRun", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Fan",
@@ -362,7 +352,7 @@ export const fanLedger = (h: FanHandles) => {
 				)
 			),
 		Sweep: (key: string, input: Parameters<(typeof fan.kinds)[5]["start"]>[0]) =>
-			Effect.flatMap(rootScope("Fan", "Sweep", key), (scope) =>
+			pipe(rootScope("Fan", "Sweep", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Fan",
@@ -390,7 +380,7 @@ export const fanLedger = (h: FanHandles) => {
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.fanCommitSquare.once({
 								params: {},
@@ -421,7 +411,7 @@ export const fanLedger = (h: FanHandles) => {
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.fanCommitDust.once({
 								params: {},
@@ -452,7 +442,7 @@ export const fanLedger = (h: FanHandles) => {
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.fanCommitMop.once({
 								params: {},
@@ -518,7 +508,7 @@ export const fanLedger = (h: FanHandles) => {
 						const inputSquare = (child: (typeof inputSquareRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputSquareRows, (row) => row.step === child),
+									Arr.findFirst(inputSquareRows, (row) => Sha256.equals(row.step, child)),
 									(row) => ({ batch: row.batch, n: row.n })
 								)
 							)
@@ -544,7 +534,7 @@ export const fanLedger = (h: FanHandles) => {
 				read: () => Effect.succeed([]),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.fanCommitBatchFinish.once({
 								params: { ...done.writes.params },
@@ -611,7 +601,7 @@ export const fanLedger = (h: FanHandles) => {
 						const inputBatch = (child: (typeof inputBatchRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputBatchRows, (row) => row.step === child),
+									Arr.findFirst(inputBatchRows, (row) => Sha256.equals(row.step, child)),
 									(row) => ({ batch: row.batch, size: row.size })
 								)
 							)
@@ -634,7 +624,7 @@ export const fanLedger = (h: FanHandles) => {
 				read: () => Effect.succeed([]),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.fanCommitFanRunFinish.once({
 								params: { ...done.writes.params },
@@ -691,7 +681,7 @@ export const fanLedger = (h: FanHandles) => {
 				read: () => Effect.succeed([]),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.fanCommitSweepFinish.once({
 								params: {},
@@ -718,14 +708,14 @@ export const fanLedger = (h: FanHandles) => {
 		FanRun: {
 			window: fan.kinds[2].window,
 			precondition: fan.kinds[2].precondition,
-			admit: (scope: ScopeKey) =>
+			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readFanFanRunInput(scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
-					const grown = yield* startFanRun(scope, scope, input.value)
-					const finish = yield* finishStep(scope)
+					const grown = startFanRun(scope, scope, input.value)
+					const finish = finishStep(scope)
 					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "FanRunFinish", scope, delay: atOnce }
@@ -769,14 +759,14 @@ export const fanLedger = (h: FanHandles) => {
 		Sweep: {
 			window: fan.kinds[5].window,
 			precondition: fan.kinds[5].precondition,
-			admit: (scope: ScopeKey) =>
+			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readFanSweepInput(scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
-					const grown = yield* startSweep(scope, scope, input.value)
-					const finish = yield* finishStep(scope)
+					const grown = startSweep(scope, scope, input.value)
+					const finish = finishStep(scope)
 					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "SweepFinish", scope, delay: atOnce }
@@ -991,9 +981,9 @@ export const fanLedger = (h: FanHandles) => {
 			),
 		snapshot: Effect.flatMap(settled(h.den.fanSnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof fan>> => {
-				const view = (scope: ScopeKey, admission: Admission): ReadonlyArray<ScopeView> =>
+				const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
 					Option.match(
-						Arr.findFirst(read.roots, (o) => o.scope === scope),
+						Arr.findFirst(read.roots, (o) => Sha256.equals(o.scope, scope)),
 						{
 							onSome: (o): ReadonlyArray<ScopeView> => [
 								{
@@ -1009,7 +999,7 @@ export const fanLedger = (h: FanHandles) => {
 							],
 							onNone: () =>
 								Arr.map(
-									Option.toArray(Arr.findFirst(read.withins, (w) => w.scope === scope)),
+									Option.toArray(Arr.findFirst(read.withins, (w) => Sha256.equals(w.scope, scope))),
 									(w): ScopeView => ({ place: "child", scope, kind: w.kind, parent: w.parent })
 								)
 						}

@@ -1,286 +1,301 @@
 CREATE TABLE "slice"."assign_admitted" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_admitted_pk_gj2obtfaxk" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."assign_asked" (
-  "from" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "from" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "to" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "to" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_asked_pk_5hpdamg2sv" PRIMARY KEY ("from", "ordinal", "root"),
   CONSTRAINT "__assign_asked_key_to_root_7prfl6pubf" UNIQUE NULLS DISTINCT ("to", "root")
 );
 
 CREATE TABLE "slice"."assign_assignment_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_assignment_finish_output_pk_djholiuras" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."assign_assignment_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "learner" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "topic" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "mode" "slice"."assign_assignment_input_mode" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_assignment_input_pk_rhoa22jovt" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."assign_assignment_input_exclude" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "value" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__scope_u6ypqf2r2z" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "scope" END) STORED,
+  "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__assign_assignment_input_exclude_pk_53cp6tgi7q" PRIMARY KEY ("scope", "ordinal", "root")
 );
 
 CREATE TABLE "slice"."assign_assignment_input_mode_nearest" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_assignment_input_mode_nearest_pk_fztb2eqo2a" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."assign_assignment_input_mode_within" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "radius" double precision NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_assignment_input_mode_within_pk_udozvnjxuq" PRIMARY KEY ("scope", "root"),
   CONSTRAINT "assign_assignment_input_mode_within_radius_finite" CHECK (("radius" > '-Infinity'::double precision AND "radius" < 'Infinity'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_assignment_input_near" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "value" double precision NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__scope_u6ypqf2r2z" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "scope" END) STORED,
+  "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__assign_assignment_input_near_pk_yr4pki7m7t" PRIMARY KEY ("scope", "ordinal", "root"),
   CONSTRAINT "assign_assignment_input_near_value_finite" CHECK (("value" > '-Infinity'::double precision AND "value" < 'Infinity'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_claim" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "until" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__step_ouvkclqzzd" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
+  "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__assign_claim_pk_gy4yhzk2me" PRIMARY KEY ("step", "root", "attempt")
 );
 
 CREATE TABLE "slice"."assign_decide_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "learner" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "topic" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "vector" "vector_ext"."vector"(4) NOT NULL,
   "mode" "slice"."assign_decide_input_mode" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_decide_input_pk_phi7dovwvq" PRIMARY KEY ("step", "root"),
   CONSTRAINT "__assign_decide_input_norm_vector_it3heqzuab" CHECK (("vector_ext"."vector_norm"("vector") BETWEEN '3.3881317890172014e-21'::double precision AND '9223372036854776000'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_decide_input_exclude" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "value" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__step_mjpuijzth4" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "step" END) STORED,
+  "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__assign_decide_input_exclude_pk_emksiazulk" PRIMARY KEY ("step", "ordinal", "root")
 );
 
 CREATE TABLE "slice"."assign_decide_input_mode_nearest" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_decide_input_mode_nearest_pk_ajsecg3xwl" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."assign_decide_input_mode_within" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "radius" double precision NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_decide_input_mode_within_pk_5ir7rapaar" PRIMARY KEY ("step", "root"),
   CONSTRAINT "assign_decide_input_mode_within_radius_finite" CHECK (("radius" > '-Infinity'::double precision AND "radius" < 'Infinity'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_decide_nearest_read" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "digest" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_decide_nearest_read_pk_jc4zqvfwss" PRIMARY KEY ("step", "ordinal", "root")
 );
 
 CREATE TABLE "slice"."assign_decide_nearest_row" (
-  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "digest" "slice"."__sha256" NOT NULL,
   "passage" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "topic" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "distance" double precision NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_decide_nearest_row_pk_6muanewnph" PRIMARY KEY ("digest", "root"),
   CONSTRAINT "assign_decide_nearest_row_distance_finite" CHECK (("distance" > '-Infinity'::double precision AND "distance" < 'Infinity'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_decide_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "confidence" double precision NOT NULL,
   "stage" "slice"."assign_decide_output_stage" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_decide_output_pk_tf6r7wtfse" PRIMARY KEY ("step", "root"),
   CONSTRAINT "assign_decide_output_confidence_finite" CHECK (("confidence" > '-Infinity'::double precision AND "confidence" < 'Infinity'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_decide_output_stage_rest" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_decide_output_stage_rest_pk_6ufjdcdzhx" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."assign_decide_output_stage_serve" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "passage" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "distance" double precision NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_decide_output_stage_serve_pk_g54atpshow" PRIMARY KEY ("step", "root"),
   CONSTRAINT "assign_decide_output_stage_serve_distance_finite" CHECK (("distance" > '-Infinity'::double precision AND "distance" < 'Infinity'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_decide_output_weighed" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "passage" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "distance" double precision NOT NULL,
   "passed" boolean NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__step_mjpuijzth4" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "step" END) STORED,
+  "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__assign_decide_output_weighed_pk_gf74rfsfbw" PRIMARY KEY ("step", "ordinal", "root"),
   CONSTRAINT "assign_decide_output_weighed_distance_finite" CHECK (("distance" > '-Infinity'::double precision AND "distance" < 'Infinity'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_decide_seen_read" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "digest" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_decide_seen_read_pk_sczf2f7gz7" PRIMARY KEY ("step", "ordinal", "root")
 );
 
 CREATE TABLE "slice"."assign_decide_seen_row" (
-  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "digest" "slice"."__sha256" NOT NULL,
   "learner" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "passage" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_decide_seen_row_pk_lwsmcq6igk" PRIMARY KEY ("digest", "root")
 );
 
 CREATE TABLE "slice"."assign_done" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_done_pk_gzil7jvxpz" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."assign_embed_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "learner" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "topic" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "mode" "slice"."assign_embed_input_mode" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_embed_input_pk_q4ezcfvwia" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."assign_embed_input_exclude" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "value" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__step_mjpuijzth4" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "step" END) STORED,
+  "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__assign_embed_input_exclude_pk_5bklowmkgt" PRIMARY KEY ("step", "ordinal", "root")
 );
 
 CREATE TABLE "slice"."assign_embed_input_mode_nearest" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_embed_input_mode_nearest_pk_wiskd5j54m" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."assign_embed_input_mode_within" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "radius" double precision NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_embed_input_mode_within_pk_zldmxccjlo" PRIMARY KEY ("step", "root"),
   CONSTRAINT "assign_embed_input_mode_within_radius_finite" CHECK (("radius" > '-Infinity'::double precision AND "radius" < 'Infinity'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_embed_input_near" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "value" double precision NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__step_mjpuijzth4" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "step" END) STORED,
+  "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__assign_embed_input_near_pk_bkusmda72a" PRIMARY KEY ("step", "ordinal", "root"),
   CONSTRAINT "assign_embed_input_near_value_finite" CHECK (("value" > '-Infinity'::double precision AND "value" < 'Infinity'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_embed_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "vector" "vector_ext"."vector"(4) NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_embed_output_pk_noiv3qgtry" PRIMARY KEY ("step", "root"),
   CONSTRAINT "__assign_embed_output_norm_vector_yuy6gaplly" CHECK (("vector_ext"."vector_norm"("vector") BETWEEN '3.3881317890172014e-21'::double precision AND '9223372036854776000'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice"."assign_ended" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_ended_pk_nriwwbcneu" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."assign_exhausted" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_exhausted_pk_utz6lwqgv6" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."assign_failed" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_failed_pk_ygxslcya4o" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."assign_fenced" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_fenced_pk_y6jyfviepa" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."assign_finish" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_finish_pk_kfe2ztwv2z" PRIMARY KEY ("scope", "root"),
   CONSTRAINT "__assign_finish_key_step_root_4woj5zibbd" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."assign_held" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_held_pk_by245z7t45" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."assign_paused" (
   "target" "slice"."assign_pausable" NOT NULL,
   "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__assign_paused_pk_ulo4grv4e2" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."assign_refusal" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_refusal_pk_xs5e4ryh4k" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."assign_result" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice"."assign_outcome" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_result_pk_i2yxmpkyzr" PRIMARY KEY ("step", "root")
 );
 
@@ -291,51 +306,53 @@ CREATE TABLE "slice"."assign_resumed" (
 );
 
 CREATE TABLE "slice"."assign_retry" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "why" "slice"."assign_retry_why" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_retry_pk_4dcm5yzzhe" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."assign_root" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "kind" "slice"."assign_root_kind" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "retired" boolean DEFAULT false NOT NULL,
-  CONSTRAINT "__assign_root_pk_b23qqyryx4" PRIMARY KEY ("scope")
+  "__scope_jdl7uajdrr" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
+  CONSTRAINT "__assign_root_pk_b23qqyryx4" PRIMARY KEY ("scope"),
+  CONSTRAINT "__assign_root_key_scope_77r36z7vhn" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr")
 );
 
 CREATE TABLE "slice"."assign_scope" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_scope_pk_xytntbncid" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."assign_skipped" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "by" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "by" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_skipped_pk_5qhgbueof7" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."assign_start_step" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_start_step_pk_jjcfkvptmp" PRIMARY KEY ("scope", "ordinal", "root"),
   CONSTRAINT "__assign_start_step_key_step_root_k27j2tutjj" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."assign_step" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "kind" "slice"."assign_kind" NOT NULL,
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__assign_step_pk_2oc4ehvfzd" PRIMARY KEY ("step", "root")
 );
 
@@ -346,8 +363,8 @@ CREATE TABLE "slice"."assigned" (
 );
 
 CREATE TABLE "slice"."audit" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   "note" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   CONSTRAINT "__audit_pk_dcvpvv5cjz" PRIMARY KEY ("step")
 );
@@ -358,218 +375,223 @@ CREATE TABLE "slice"."built" (
 );
 
 CREATE TABLE "slice"."chain_admitted" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_admitted_pk_iexc6ruxuv" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."chain_chain_run_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_chain_run_finish_output_pk_hj22ebjnf7" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."chain_chain_run_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "feed" "slice"."chain_chain_run_input_feed" NOT NULL,
   "pages" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_chain_run_input_pk_ezbgzw4jha" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."chain_claim" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "until" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__step_ouvkclqzzd" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
+  "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__chain_claim_pk_nrr2rn3gui" PRIMARY KEY ("step", "root", "attempt")
 );
 
 CREATE TABLE "slice"."chain_done" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_done_pk_tyyx2hmu3r" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."chain_ended" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_ended_pk_wusc7vjjx6" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."chain_exhausted" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_exhausted_pk_nc4gvildnw" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."chain_failed" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_failed_pk_m7o5m3xzrr" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."chain_fenced" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_fenced_pk_wwbie4qq5k" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."chain_finish" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_finish_pk_ebe75jmnzy" PRIMARY KEY ("scope", "root"),
   CONSTRAINT "__chain_finish_key_step_root_5aj26igjty" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."chain_held" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_held_pk_73idl7oo5c" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."chain_next" (
-  "from" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "from" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "to" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "to" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_next_pk_qeumlilvtk" PRIMARY KEY ("from", "ordinal", "root"),
   CONSTRAINT "__chain_next_key_to_root_qxqaughmvp" UNIQUE NULLS DISTINCT ("to", "root")
 );
 
 CREATE TABLE "slice"."chain_ordered_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_ordered_finish_output_pk_t5k5pqxfdo" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."chain_ordered_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "feed" "slice"."chain_ordered_input_feed" NOT NULL,
   "pages" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_ordered_input_pk_iv2357obqh" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."chain_page_earlier_read" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "digest" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_page_earlier_read_pk_y5utsccddc" PRIMARY KEY ("step", "ordinal", "root")
 );
 
 CREATE TABLE "slice"."chain_page_earlier_row" (
-  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "digest" "slice"."__sha256" NOT NULL,
   "feed" "slice"."chain_page_earlier_row_feed" NOT NULL,
   "seq" bigint NOT NULL,
   "n" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_page_earlier_row_pk_itz6dseape" PRIMARY KEY ("digest", "root")
 );
 
 CREATE TABLE "slice"."chain_page_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "feed" "slice"."chain_page_input_feed" NOT NULL,
   "seq" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "pages" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_page_input_pk_xuafsbu5vz" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."chain_page_input_after" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "value" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_page_input_after_pk_zsdylv6pam" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."chain_page_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "seq" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "items" bigint NOT NULL,
   "earlier" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_page_output_pk_whwnpdfgmi" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."chain_page_output_next" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "value" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_page_output_next_pk_h55uzx4bbq" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."chain_page_tree_first" (
-  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "digest" "slice"."__sha256" NOT NULL,
   "items" "slice"."__domain_gfw43vigph" NOT NULL,
   "n" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_page_tree_first_pk_zmjcrvbs5g" PRIMARY KEY ("digest", "items", "root")
 );
 
 CREATE TABLE "slice"."chain_page_tree_items" (
-  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "digest" "slice"."__sha256" NOT NULL,
   "items" "slice"."__domain_gfw43vigph" NOT NULL,
   "seq" bigint NOT NULL,
   "n" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__digest_eiwkcq6olq" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "items" >= 1::bigint THEN "digest" END) STORED,
+  "__pred_items_3qltx5cx27" bigint GENERATED ALWAYS AS (CASE WHEN "items" > 0::bigint THEN "items"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__chain_page_tree_items_pk_nexmib4mim" PRIMARY KEY ("digest", "items", "root")
 );
 
 CREATE TABLE "slice"."chain_page_tree_read" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "digest" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_page_tree_read_pk_mwu5hv6p26" PRIMARY KEY ("step", "ordinal", "root")
 );
 
 CREATE TABLE "slice"."chain_page_tree_row" (
-  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "digest" "slice"."__sha256" NOT NULL,
   "feed" "slice"."chain_page_tree_row_feed" NOT NULL,
   "factor" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_page_tree_row_pk_zydwodr3pp" PRIMARY KEY ("digest", "root")
 );
 
 CREATE TABLE "slice"."chain_page_weights_read" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "digest" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_page_weights_read_pk_mvr5jc4gry" PRIMARY KEY ("step", "ordinal", "root")
 );
 
 CREATE TABLE "slice"."chain_page_weights_row" (
-  "digest" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "digest" "slice"."__sha256" NOT NULL,
   "feed" "slice"."chain_page_weights_row_feed" NOT NULL,
   "factor" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_page_weights_row_pk_qxdvvigywk" PRIMARY KEY ("digest", "root")
 );
 
 CREATE TABLE "slice"."chain_paused" (
   "target" "slice"."chain_pausable" NOT NULL,
   "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__chain_paused_pk_oorovhvyps" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."chain_refusal" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_refusal_pk_4j4yw3qc6m" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."chain_result" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice"."chain_outcome" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_result_pk_btw3jzlkgl" PRIMARY KEY ("step", "root")
 );
 
@@ -580,51 +602,53 @@ CREATE TABLE "slice"."chain_resumed" (
 );
 
 CREATE TABLE "slice"."chain_retry" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "why" "slice"."chain_retry_why" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_retry_pk_522nodru3s" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."chain_root" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "kind" "slice"."chain_root_kind" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "retired" boolean DEFAULT false NOT NULL,
-  CONSTRAINT "__chain_root_pk_wqfycdg3x5" PRIMARY KEY ("scope")
+  "__scope_jdl7uajdrr" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
+  CONSTRAINT "__chain_root_pk_wqfycdg3x5" PRIMARY KEY ("scope"),
+  CONSTRAINT "__chain_root_key_scope_prbadyie6j" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr")
 );
 
 CREATE TABLE "slice"."chain_scope" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_scope_pk_fxzt444lf6" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."chain_skipped" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "by" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "by" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_skipped_pk_cjdtdttlyx" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."chain_start_step" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_start_step_pk_dgda7shxb4" PRIMARY KEY ("scope", "ordinal", "root"),
   CONSTRAINT "__chain_start_step_key_step_root_sgonmabfyw" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."chain_step" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "kind" "slice"."chain_kind" NOT NULL,
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__chain_step_pk_u6x5wnvfbv" PRIMARY KEY ("step", "root")
 );
 
@@ -635,129 +659,132 @@ CREATE TABLE "slice"."chimed" (
 );
 
 CREATE TABLE "slice"."clock_admitted" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_admitted_pk_a7wwsyakra" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."clock_chime_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "hour" bigint NOT NULL,
   "bell" "slice"."clock_chime_input_bell" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_chime_input_pk_rx6722hrpy" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."clock_chime_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "hour" bigint NOT NULL,
   "bell" "slice"."clock_chime_output_bell" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_chime_output_pk_aqm3k5vyxa" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."clock_claim" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "until" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__step_ouvkclqzzd" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
+  "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__clock_claim_pk_ihqmnokjqm" PRIMARY KEY ("step", "root", "attempt")
 );
 
 CREATE TABLE "slice"."clock_close_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "sitting" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "deadline" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_close_input_pk_kzcush3qdx" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."clock_close_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "sitting" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "deadline" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_close_output_pk_ckrp5oabyy" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."clock_done" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_done_pk_f4vl6frrax" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."clock_ended" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_ended_pk_pqp6yh3qgg" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."clock_exhausted" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_exhausted_pk_4m2tieyrky" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."clock_failed" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_failed_pk_6twuzcs6kf" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."clock_fenced" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_fenced_pk_mzppv2rrab" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."clock_finish" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_finish_pk_eqj7fcnrnq" PRIMARY KEY ("scope", "root"),
   CONSTRAINT "__clock_finish_key_step_root_qqome46md2" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."clock_held" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_held_pk_qqxrvee2gy" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."clock_hourly_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_hourly_finish_output_pk_6bcdc5q3dt" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."clock_hourly_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "hour" bigint NOT NULL,
   "bell" "slice"."clock_hourly_input_bell" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_hourly_input_pk_s536mhvux3" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."clock_paused" (
   "target" "slice"."clock_pausable" NOT NULL,
   "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__clock_paused_pk_fsld2lekav" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."clock_refusal" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_refusal_pk_dslb6cgxa3" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."clock_result" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice"."clock_outcome" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_result_pk_yptcdjm6pu" PRIMARY KEY ("step", "root")
 );
 
@@ -768,65 +795,67 @@ CREATE TABLE "slice"."clock_resumed" (
 );
 
 CREATE TABLE "slice"."clock_retry" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "why" "slice"."clock_retry_why" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_retry_pk_4kyiqeoeqd" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."clock_root" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "kind" "slice"."clock_root_kind" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "retired" boolean DEFAULT false NOT NULL,
-  CONSTRAINT "__clock_root_pk_rnmiw3efr2" PRIMARY KEY ("scope")
+  "__scope_jdl7uajdrr" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
+  CONSTRAINT "__clock_root_pk_rnmiw3efr2" PRIMARY KEY ("scope"),
+  CONSTRAINT "__clock_root_key_scope_cpqrcv6qzu" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr")
 );
 
 CREATE TABLE "slice"."clock_scope" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_scope_pk_dux445xz6c" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."clock_sitting_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_sitting_finish_output_pk_pejmuwtji5" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."clock_sitting_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "sitting" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "deadline" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_sitting_input_pk_le4qxvpabo" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."clock_skipped" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "by" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "by" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_skipped_pk_2whj2jo6zo" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."clock_start_step" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_start_step_pk_qgw6bnuo54" PRIMARY KEY ("scope", "ordinal", "root"),
   CONSTRAINT "__clock_start_step_key_step_root_oseon2uqng" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."clock_step" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "kind" "slice"."clock_kind" NOT NULL,
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__clock_step_pk_jjmk3diqpl" PRIMARY KEY ("step", "root")
 );
 
@@ -855,151 +884,159 @@ CREATE TABLE "slice"."delivered" (
 );
 
 CREATE TABLE "slice"."fan_admitted" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_admitted_pk_jzt7rtrzny" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."fan_batch_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_batch_finish_output_pk_mq5omzswqd" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_batch_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "size" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_batch_input_pk_bmhyfuy2bw" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."fan_claim" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "until" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "holds" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__step_ouvkclqzzd" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
+  "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED,
+  "__pred_holds_lq7itfruzz" bigint GENERATED ALWAYS AS (CASE WHEN "holds" > 0::bigint THEN "holds"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__fan_claim_pk_e7zimqppco" PRIMARY KEY ("step", "root", "attempt"),
   CONSTRAINT "__fan_claim_key_step_root_attempt_holds_iqkydblyix" UNIQUE NULLS DISTINCT ("step", "root", "attempt", "holds")
 );
 
 CREATE TABLE "slice"."fan_done" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_done_pk_5u65252q52" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_dust_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "sweep" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_dust_input_pk_xyleoykgmc" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_dust_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "sweep" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_dust_output_pk_3ve4gi5x6b" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_ended" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_ended_pk_23aeteyyv7" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."fan_exhausted" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_exhausted_pk_4t3sxjskvd" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_failed" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_failed_pk_z4etp5dmax" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_fan_run_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_fan_run_finish_output_pk_rhhjregxru" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_fan_run_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "size" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_fan_run_input_pk_tbzpgbwe7g" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."fan_fenced" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_fenced_pk_6tkvirerez" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."fan_finish" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_finish_pk_6mb33urjra" PRIMARY KEY ("scope", "root"),
   CONSTRAINT "__fan_finish_key_step_root_xshxj2rwb2" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_held" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_held_pk_4ic6tjvac4" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_hold" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_gfw43vigph" NOT NULL,
   "resource" "slice"."fan_resource" NOT NULL,
   "seat" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
-  CONSTRAINT "__fan_hold_pk_avuqdkljvb" PRIMARY KEY ("step", "root", "attempt", "at")
+  "root" "slice"."__sha256" NOT NULL,
+  "__copy_holds_c6hi2i2kfb" bigint NOT NULL,
+  "__pred_at_xktcobhsti" bigint GENERATED ALWAYS AS (CASE WHEN "at" > 0::bigint THEN "at"::numeric - (1::bigint)::numeric END) STORED,
+  CONSTRAINT "__fan_hold_pk_avuqdkljvb" PRIMARY KEY ("step", "root", "attempt", "at"),
+  CONSTRAINT "__fan_hold_key_step_root_attempt_pred_at_kgbxki2ddu" UNIQUE NULLS DISTINCT ("step", "root", "attempt", "__pred_at_xktcobhsti"),
+  CONSTRAINT "__fan_hold_check_fan_hold_ordered_fan_claim_holds_bb3ww7vxet" CHECK (("at" < "__copy_holds_c6hi2i2kfb") IS TRUE)
 );
 
 CREATE TABLE "slice"."fan_mop_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "sweep" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_mop_input_pk_jwnqekad76" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_mop_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "sweep" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_mop_output_pk_rcebyoc32v" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_paused" (
   "target" "slice"."fan_pausable" NOT NULL,
   "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__fan_paused_pk_3eaz2xb4qg" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."fan_refusal" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_refusal_pk_7va55wo2wj" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_result" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice"."fan_outcome" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_result_pk_yeear352sx" PRIMARY KEY ("step", "root")
 );
 
@@ -1010,96 +1047,98 @@ CREATE TABLE "slice"."fan_resumed" (
 );
 
 CREATE TABLE "slice"."fan_retry" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "why" "slice"."fan_retry_why" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_retry_pk_7xubce4v66" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."fan_root" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "kind" "slice"."fan_root_kind" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "retired" boolean DEFAULT false NOT NULL,
-  CONSTRAINT "__fan_root_pk_jesu7xtefn" PRIMARY KEY ("scope")
+  "__scope_jdl7uajdrr" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
+  CONSTRAINT "__fan_root_pk_jesu7xtefn" PRIMARY KEY ("scope"),
+  CONSTRAINT "__fan_root_key_scope_i3qel4nyj5" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr")
 );
 
 CREATE TABLE "slice"."fan_scope" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_scope_pk_7bvjfihnef" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."fan_skipped" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "by" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "by" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_skipped_pk_22erbmfzer" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."fan_square_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "n" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_square_input_pk_uzumoizv53" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_square_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "square" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_square_output_pk_wcgarjqvhr" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_start_scope" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "child" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "child" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_start_scope_pk_nnms2gjwyi" PRIMARY KEY ("scope", "ordinal", "root"),
   CONSTRAINT "__fan_start_scope_key_child_root_twylnvawre" UNIQUE NULLS DISTINCT ("child", "root")
 );
 
 CREATE TABLE "slice"."fan_start_step" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_start_step_pk_7e247xk4mz" PRIMARY KEY ("scope", "ordinal", "root"),
   CONSTRAINT "__fan_start_step_key_step_root_h32wwrpq3c" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_step" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "kind" "slice"."fan_kind" NOT NULL,
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_step_pk_2f4tcxnofk" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_sweep_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_sweep_finish_output_pk_7dvx2ngckn" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."fan_sweep_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "sweep" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_sweep_input_pk_zzlgjjqr6f" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."fan_within" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "parent" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "parent" "slice"."__sha256" NOT NULL,
   "kind" "slice"."fan_child_kind" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__fan_within_pk_g5tswgjfa6" PRIMARY KEY ("scope", "root")
 );
 
@@ -1131,139 +1170,142 @@ CREATE TABLE "slice"."passage" (
 );
 
 CREATE TABLE "slice"."retry_admitted" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_admitted_pk_qyp7cminjx" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."retry_brittle_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_brittle_input_pk_tlqssexohy" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_brittle_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_brittle_output_pk_oecjcng2s4" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_claim" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "until" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__step_ouvkclqzzd" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
+  "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__retry_claim_pk_aayzt5ni6z" PRIMARY KEY ("step", "root", "attempt")
 );
 
 CREATE TABLE "slice"."retry_done" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_done_pk_vtkpce7rkq" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_ended" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_ended_pk_hq35r7u2t2" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."retry_exhausted" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_exhausted_pk_v56c23krid" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_failed" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_failed_pk_mygc4onczp" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_fenced" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_fenced_pk_umzicmiruo" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."retry_finish" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_finish_pk_yhwp5uk5cg" PRIMARY KEY ("scope", "root"),
   CONSTRAINT "__retry_finish_key_step_root_a7vhiwagne" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_held" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_held_pk_nvgeylmjp2" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_ladders_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_ladders_finish_output_pk_5352zkn7xu" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_ladders_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "steadfast" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "brittle" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_ladders_input_pk_5cdnkfgg3x" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."retry_patient_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_patient_input_pk_74247zb7wo" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_patient_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_patient_output_pk_whtgus732k" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_paused" (
   "target" "slice"."retry_pausable" NOT NULL,
   "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__retry_paused_pk_umm2nscqny" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."retry_polite_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_polite_input_pk_ptzd72dxff" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_polite_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_polite_output_pk_2kuwfluplv" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_refusal" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_refusal_pk_nifndsd6pp" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_result" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice"."retry_outcome" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_result_pk_5fegihvmml" PRIMARY KEY ("step", "root")
 );
 
@@ -1274,239 +1316,251 @@ CREATE TABLE "slice"."retry_resumed" (
 );
 
 CREATE TABLE "slice"."retry_retry" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "why" "slice"."retry_retry_why" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_retry_pk_slrwn4rt5d" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."retry_root" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "kind" "slice"."retry_root_kind" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "retired" boolean DEFAULT false NOT NULL,
-  CONSTRAINT "__retry_root_pk_qi2iw36jky" PRIMARY KEY ("scope")
+  "__scope_jdl7uajdrr" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
+  CONSTRAINT "__retry_root_pk_qi2iw36jky" PRIMARY KEY ("scope"),
+  CONSTRAINT "__retry_root_key_scope_yc7em5k35u" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr")
 );
 
 CREATE TABLE "slice"."retry_scope" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_scope_pk_fgji2phvxy" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."retry_skipped" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "by" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "by" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_skipped_pk_au5z33ql7a" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."retry_start_step" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_start_step_pk_mp77csmi26" PRIMARY KEY ("scope", "ordinal", "root"),
   CONSTRAINT "__retry_start_step_key_step_root_fudt2vk7zs" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_steadfast_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_steadfast_input_pk_omubooh2k3" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_steadfast_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_steadfast_output_pk_xyvfgnpd5w" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_step" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "kind" "slice"."retry_kind" NOT NULL,
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_step_pk_opjqidwhzg" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_throttled_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_throttled_finish_output_pk_o6epepnuox" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_throttled_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_throttled_input_pk_zv264azw4s" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."retry_unhurried_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_unhurried_finish_output_pk_d5mmuqfkuq" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."retry_unhurried_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__retry_unhurried_input_pk_g5dkiedexm" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."review_admitted" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_admitted_pk_woy7ee4y4p" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."review_analyze_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "review" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "group" bigint NOT NULL,
   "question" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_analyze_input_pk_jr7qmhqwgi" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."review_analyze_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "score" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_analyze_output_pk_35aclxnkmb" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."review_claim" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "until" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "holds" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__step_ouvkclqzzd" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
+  "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED,
+  "__pred_holds_lq7itfruzz" bigint GENERATED ALWAYS AS (CASE WHEN "holds" > 0::bigint THEN "holds"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__review_claim_pk_twa72qaol7" PRIMARY KEY ("step", "root", "attempt"),
   CONSTRAINT "__review_claim_key_step_root_attempt_holds_25ppgtp6nm" UNIQUE NULLS DISTINCT ("step", "root", "attempt", "holds")
 );
 
 CREATE TABLE "slice"."review_done" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_done_pk_ve6inioidy" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."review_ended" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_ended_pk_2hihcuxln2" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."review_exhausted" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_exhausted_pk_5bmktauwd3" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."review_failed" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_failed_pk_7iszsjaybr" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."review_fenced" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_fenced_pk_chaexdbnzu" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."review_finish" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_finish_pk_ovczbakxjz" PRIMARY KEY ("scope", "root"),
   CONSTRAINT "__review_finish_key_step_root_tcsouam46b" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."review_gather_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "review" "slice"."__text_t4rwovzmqj" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_gather_input_pk_rllaxtocmq" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."review_gather_input_sizes" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "value" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__step_mjpuijzth4" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "step" END) STORED,
+  "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__review_gather_input_sizes_pk_w5cgw65wpx" PRIMARY KEY ("step", "ordinal", "root")
 );
 
 CREATE TABLE "slice"."review_gather_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "groups" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_gather_output_pk_fecesmjazj" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."review_held" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_held_pk_cwyo7jovuu" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."review_hold" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_gfw43vigph" NOT NULL,
   "resource" "slice"."review_resource" NOT NULL,
   "seat" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
-  CONSTRAINT "__review_hold_pk_uhb6w3fp5v" PRIMARY KEY ("step", "root", "attempt", "at")
+  "root" "slice"."__sha256" NOT NULL,
+  "__copy_holds_j7qe5qdydj" bigint NOT NULL,
+  "__pred_at_xktcobhsti" bigint GENERATED ALWAYS AS (CASE WHEN "at" > 0::bigint THEN "at"::numeric - (1::bigint)::numeric END) STORED,
+  CONSTRAINT "__review_hold_pk_uhb6w3fp5v" PRIMARY KEY ("step", "root", "attempt", "at"),
+  CONSTRAINT "__review_hold_key_step_root_attempt_pred_at_kuzm5unl2b" UNIQUE NULLS DISTINCT ("step", "root", "attempt", "__pred_at_xktcobhsti"),
+  CONSTRAINT "__review_hold_check_review_hold_ordered_review_claim_2wbcergshn" CHECK (("at" < "__copy_holds_j7qe5qdydj") IS TRUE)
 );
 
 CREATE TABLE "slice"."review_paused" (
   "target" "slice"."review_pausable" NOT NULL,
   "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__review_paused_pk_eamccblv6g" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."review_questions_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "count" bigint NOT NULL,
   "total" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_questions_finish_output_pk_36plo53gmb" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."review_questions_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "review" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "group" bigint NOT NULL,
   "size" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_questions_input_pk_4d27veaz4g" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."review_refusal" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_refusal_pk_ajyglinn6r" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."review_result" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice"."review_outcome" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_result_pk_o5x5griurk" PRIMARY KEY ("step", "root")
 );
 
@@ -1517,124 +1571,128 @@ CREATE TABLE "slice"."review_resumed" (
 );
 
 CREATE TABLE "slice"."review_retry" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "why" "slice"."review_retry_why" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_retry_pk_is3m5sa5tx" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."review_review_run_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_review_run_finish_output_pk_qwfb4ycp7r" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."review_review_run_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "review" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_review_run_input_pk_7ommryhd6b" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."review_review_run_input_sizes" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
   "value" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__scope_u6ypqf2r2z" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "scope" END) STORED,
+  "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__review_review_run_input_sizes_pk_bguaae726h" PRIMARY KEY ("scope", "ordinal", "root")
 );
 
 CREATE TABLE "slice"."review_root" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "kind" "slice"."review_root_kind" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "retired" boolean DEFAULT false NOT NULL,
-  CONSTRAINT "__review_root_pk_btvrw2kxvs" PRIMARY KEY ("scope")
+  "__scope_jdl7uajdrr" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
+  CONSTRAINT "__review_root_pk_btvrw2kxvs" PRIMARY KEY ("scope"),
+  CONSTRAINT "__review_root_key_scope_db6eo7ifjm" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr")
 );
 
 CREATE TABLE "slice"."review_save_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "review" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "group" bigint NOT NULL,
   "count" bigint NOT NULL,
   "total" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_save_input_pk_iaqr5cg2c2" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."review_save_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "total" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_save_output_pk_usbddkytv7" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."review_saved" (
-  "from" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "from" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "to" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "to" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_saved_pk_mrkz2ovxcx" PRIMARY KEY ("from", "ordinal", "root"),
   CONSTRAINT "__review_saved_key_to_root_ah3zbczbbn" UNIQUE NULLS DISTINCT ("to", "root")
 );
 
 CREATE TABLE "slice"."review_scope" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_scope_pk_grsivyyp7b" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."review_skipped" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "by" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "by" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_skipped_pk_ymsn25w74u" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."review_split" (
-  "from" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "from" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "to" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "to" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_split_pk_im65kbvnho" PRIMARY KEY ("from", "ordinal", "root"),
   CONSTRAINT "__review_split_key_to_root_d3l6kwiq3j" UNIQUE NULLS DISTINCT ("to", "root")
 );
 
 CREATE TABLE "slice"."review_start_scope" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "child" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "child" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_start_scope_pk_qlm2r5uhqp" PRIMARY KEY ("scope", "ordinal", "root"),
   CONSTRAINT "__review_start_scope_key_child_root_vwlxhagth3" UNIQUE NULLS DISTINCT ("child", "root")
 );
 
 CREATE TABLE "slice"."review_start_step" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_start_step_pk_w5suwqqg4p" PRIMARY KEY ("scope", "ordinal", "root"),
   CONSTRAINT "__review_start_step_key_step_root_lnw5ylpuoc" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."review_step" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "kind" "slice"."review_kind" NOT NULL,
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_step_pk_gfbmnzqbc3" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."review_within" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "parent" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "parent" "slice"."__sha256" NOT NULL,
   "kind" "slice"."review_child_kind" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__review_within_pk_ohgogpkz4s" PRIMARY KEY ("scope", "root")
 );
 
@@ -1665,148 +1723,152 @@ CREATE TABLE "slice"."summary" (
 );
 
 CREATE TABLE "slice"."sync_admitted" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_admitted_pk_ral53o3fpi" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."sync_build_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "build" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_build_input_pk_wtjr2xzecg" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_build_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "build" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_build_output_pk_rhnco3epch" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_claim" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "until" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__step_ouvkclqzzd" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
+  "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__sync_claim_pk_s2tqnziq4u" PRIMARY KEY ("step", "root", "attempt")
 );
 
 CREATE TABLE "slice"."sync_copy_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "relation" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "run" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_copy_input_pk_nzsbbbp6o5" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_copy_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "run" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_copy_output_pk_x6s2tcx7ot" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_done" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_done_pk_nllomjb7og" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_ended" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_ended_pk_uxijjz7koz" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."sync_exclusive" (
   "kind" "slice"."sync_root_kind" NOT NULL,
-  "key" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "key" "slice"."__sha256" NOT NULL,
   "turn" "slice"."__domain_gfw43vigph" NOT NULL,
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__sync_exclusive_pk_joiibnjuvf" PRIMARY KEY ("kind", "key", "turn")
 );
 
 CREATE TABLE "slice"."sync_exclusive_key" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "id" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "id" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_exclusive_key_pk_dba4nxbky5" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."sync_exhausted" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_exhausted_pk_ek6zxvo6it" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_failed" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_failed_pk_gqykngewxb" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_fenced" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_fenced_pk_tszx4qm2gz" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."sync_finish" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_finish_pk_hn7tmx25xc" PRIMARY KEY ("scope", "root"),
   CONSTRAINT "__sync_finish_key_step_root_kpt2idultt" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_gold_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_gold_finish_output_pk_3z5gemduto" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_gold_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "build" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_gold_input_pk_wp7hfx6n2e" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."sync_held" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_held_pk_wsme4moka4" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_paused" (
   "target" "slice"."sync_pausable" NOT NULL,
   "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__sync_paused_pk_tstk2okngj" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."sync_refusal" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_refusal_pk_mbmfornc5c" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_released" (
   "kind" "slice"."sync_root_kind" NOT NULL,
-  "key" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "key" "slice"."__sha256" NOT NULL,
   "turn" "slice"."__domain_gfw43vigph" NOT NULL,
   CONSTRAINT "__sync_released_pk_k7qaw2iram" PRIMARY KEY ("kind", "key", "turn")
 );
 
 CREATE TABLE "slice"."sync_result" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice"."sync_outcome" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_result_pk_jmwy2p3mqf" PRIMARY KEY ("step", "root")
 );
 
@@ -1817,65 +1879,67 @@ CREATE TABLE "slice"."sync_resumed" (
 );
 
 CREATE TABLE "slice"."sync_retry" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "why" "slice"."sync_retry_why" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_retry_pk_6q52red7iw" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."sync_root" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "kind" "slice"."sync_root_kind" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "retired" boolean DEFAULT false NOT NULL,
-  CONSTRAINT "__sync_root_pk_daktpubfe2" PRIMARY KEY ("scope")
+  "__scope_jdl7uajdrr" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
+  CONSTRAINT "__sync_root_pk_daktpubfe2" PRIMARY KEY ("scope"),
+  CONSTRAINT "__sync_root_key_scope_lxj4sb3mcx" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr")
 );
 
 CREATE TABLE "slice"."sync_scope" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_scope_pk_bg72sm6p4z" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."sync_skipped" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "by" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "by" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_skipped_pk_yutjqacvws" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."sync_start_step" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_start_step_pk_4dv7h6kuu3" PRIMARY KEY ("scope", "ordinal", "root"),
   CONSTRAINT "__sync_start_step_key_step_root_rkceslwobo" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_step" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "kind" "slice"."sync_kind" NOT NULL,
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_step_pk_wfgcxdvbwo" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_sync_run_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_sync_run_finish_output_pk_n74f63qvg6" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."sync_sync_run_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "relation" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "run" bigint NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__sync_sync_run_input_pk_cpbaujyjwv" PRIMARY KEY ("scope", "root")
 );
 
@@ -1893,97 +1957,100 @@ CREATE TABLE "slice"."weight" (
 );
 
 CREATE TABLE "slice"."writeback_admitted" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_admitted_pk_eplj3gsbzy" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."writeback_claim" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "until" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
+  "__step_ouvkclqzzd" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
+  "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__writeback_claim_pk_j7bglnjq7b" PRIMARY KEY ("step", "root", "attempt")
 );
 
 CREATE TABLE "slice"."writeback_deliver_input" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_deliver_input_pk_i7vk7dq3eb" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."writeback_deliver_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_deliver_output_pk_jkhggp3cer" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."writeback_done" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_done_pk_x32l3wxb3c" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."writeback_ended" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_ended_pk_atnezxtfz6" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."writeback_exhausted" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_exhausted_pk_sqddw6eedo" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."writeback_failed" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_failed_pk_g4uud6r5kb" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."writeback_fenced" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_fenced_pk_exblcoemag" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."writeback_finish" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_finish_pk_htcvidwpy6" PRIMARY KEY ("scope", "root"),
   CONSTRAINT "__writeback_finish_key_step_root_cz7xuvvbbm" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."writeback_held" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_held_pk_5tktjcet5w" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."writeback_paused" (
   "target" "slice"."writeback_pausable" NOT NULL,
   "turn" "slice"."__domain_gfw43vigph" NOT NULL,
+  "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED,
   CONSTRAINT "__writeback_paused_pk_ncs2aff76t" PRIMARY KEY ("target", "turn")
 );
 
 CREATE TABLE "slice"."writeback_refusal" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_refusal_pk_lqictdn67w" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."writeback_result" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice"."writeback_outcome" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_result_pk_lygppaax77" PRIMARY KEY ("step", "root")
 );
 
@@ -1994,64 +2061,66 @@ CREATE TABLE "slice"."writeback_resumed" (
 );
 
 CREATE TABLE "slice"."writeback_retry" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "attempt" "slice"."__domain_gfw43vigph" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "why" "slice"."writeback_retry_why" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_retry_pk_j2ien3obty" PRIMARY KEY ("step", "attempt", "root")
 );
 
 CREATE TABLE "slice"."writeback_root" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "kind" "slice"."writeback_root_kind" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "at" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "retired" boolean DEFAULT false NOT NULL,
-  CONSTRAINT "__writeback_root_pk_a5puwyrem6" PRIMARY KEY ("scope")
+  "__scope_jdl7uajdrr" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
+  CONSTRAINT "__writeback_root_pk_a5puwyrem6" PRIMARY KEY ("scope"),
+  CONSTRAINT "__writeback_root_key_scope_epb6awnxkj" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr")
 );
 
 CREATE TABLE "slice"."writeback_scope" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_scope_pk_aywjorzcsy" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."writeback_skipped" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "by" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
+  "by" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_skipped_pk_3pijvusl26" PRIMARY KEY ("scope", "root")
 );
 
 CREATE TABLE "slice"."writeback_start_step" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "ordinal" "slice"."__domain_gfw43vigph" NOT NULL,
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_start_step_pk_sp7hkcjz7m" PRIMARY KEY ("scope", "ordinal", "root"),
   CONSTRAINT "__writeback_start_step_key_step_root_dqjb67a3dj" UNIQUE NULLS DISTINCT ("step", "root")
 );
 
 CREATE TABLE "slice"."writeback_step" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
   "kind" "slice"."writeback_kind" NOT NULL,
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_step_pk_xsrl5j4mlf" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."writeback_writeback_finish_output" (
-  "step" "slice"."__domain_jevqauzmw6" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "step" "slice"."__sha256" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_writeback_finish_output_pk_payvcqalt7" PRIMARY KEY ("step", "root")
 );
 
 CREATE TABLE "slice"."writeback_writeback_input" (
-  "scope" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "scope" "slice"."__sha256" NOT NULL,
   "attempt" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "root" "slice"."__domain_jevqauzmw6" NOT NULL,
+  "root" "slice"."__sha256" NOT NULL,
   CONSTRAINT "__writeback_writeback_input_pk_ejs235aju2" PRIMARY KEY ("scope", "root")
 );
 
@@ -2059,161 +2128,9 @@ CREATE TABLE "slice"."__live_secret" ("secret") AS SELECT "pg_catalog"."sha256"(
 
 REVOKE ALL ON TABLE "slice"."__live_secret" FROM PUBLIC;
 
-ALTER TABLE "slice"."assign_step" REPLICA IDENTITY FULL;
-
-ALTER TABLE "slice"."chain_step" REPLICA IDENTITY FULL;
-
-ALTER TABLE "slice"."clock_step" REPLICA IDENTITY FULL;
-
-ALTER TABLE "slice"."fan_step" REPLICA IDENTITY FULL;
-
-ALTER TABLE "slice"."fan_within" REPLICA IDENTITY FULL;
-
 ALTER TABLE "slice"."passage" REPLICA IDENTITY FULL;
 
-ALTER TABLE "slice"."retry_step" REPLICA IDENTITY FULL;
-
-ALTER TABLE "slice"."review_step" REPLICA IDENTITY FULL;
-
-ALTER TABLE "slice"."review_within" REPLICA IDENTITY FULL;
-
-ALTER TABLE "slice"."sync_step" REPLICA IDENTITY FULL;
-
-ALTER TABLE "slice"."writeback_step" REPLICA IDENTITY FULL;
-
-ALTER TABLE "slice"."assign_assignment_input_exclude"
-  ADD COLUMN "__scope_u6ypqf2r2z" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "scope" END) STORED,
-  ADD COLUMN "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."assign_assignment_input_near"
-  ADD COLUMN "__scope_u6ypqf2r2z" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "scope" END) STORED,
-  ADD COLUMN "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."assign_claim"
-  ADD COLUMN "__step_ouvkclqzzd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
-  ADD COLUMN "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."assign_decide_input_exclude"
-  ADD COLUMN "__step_mjpuijzth4" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "step" END) STORED,
-  ADD COLUMN "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."assign_decide_output_weighed"
-  ADD COLUMN "__step_mjpuijzth4" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "step" END) STORED,
-  ADD COLUMN "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."assign_embed_input_exclude"
-  ADD COLUMN "__step_mjpuijzth4" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "step" END) STORED,
-  ADD COLUMN "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."assign_embed_input_near"
-  ADD COLUMN "__step_mjpuijzth4" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "step" END) STORED,
-  ADD COLUMN "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."assign_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."assign_root"
-  ADD COLUMN "__scope_jdl7uajdrr" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
-  ADD CONSTRAINT "__assign_root_key_scope_77r36z7vhn" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr");
-
-ALTER TABLE "slice"."chain_claim"
-  ADD COLUMN "__step_ouvkclqzzd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
-  ADD COLUMN "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."chain_page_tree_items"
-  ADD COLUMN "__digest_eiwkcq6olq" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "items" >= 1::bigint THEN "digest" END) STORED,
-  ADD COLUMN "__pred_items_3qltx5cx27" bigint GENERATED ALWAYS AS (CASE WHEN "items" > 0::bigint THEN "items"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."chain_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."chain_root"
-  ADD COLUMN "__scope_jdl7uajdrr" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
-  ADD CONSTRAINT "__chain_root_key_scope_prbadyie6j" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr");
-
-ALTER TABLE "slice"."clock_claim"
-  ADD COLUMN "__step_ouvkclqzzd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
-  ADD COLUMN "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."clock_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."clock_root"
-  ADD COLUMN "__scope_jdl7uajdrr" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
-  ADD CONSTRAINT "__clock_root_key_scope_cpqrcv6qzu" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr");
-
-ALTER TABLE "slice"."fan_claim"
-  ADD COLUMN "__step_ouvkclqzzd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
-  ADD COLUMN "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED,
-  ADD COLUMN "__pred_holds_lq7itfruzz" bigint GENERATED ALWAYS AS (CASE WHEN "holds" > 0::bigint THEN "holds"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."fan_hold"
-  ADD COLUMN "__copy_holds_c6hi2i2kfb" bigint NOT NULL,
-  ADD COLUMN "__pred_at_xktcobhsti" bigint GENERATED ALWAYS AS (CASE WHEN "at" > 0::bigint THEN "at"::numeric - (1::bigint)::numeric END) STORED,
-  ADD CONSTRAINT "__fan_hold_key_step_root_attempt_pred_at_kgbxki2ddu" UNIQUE NULLS DISTINCT ("step", "root", "attempt", "__pred_at_xktcobhsti"),
-  ADD CONSTRAINT "__fan_hold_check_fan_hold_ordered_fan_claim_holds_bb3ww7vxet" CHECK (("at" < "__copy_holds_c6hi2i2kfb") IS TRUE);
-
-ALTER TABLE "slice"."fan_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."fan_root"
-  ADD COLUMN "__scope_jdl7uajdrr" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
-  ADD CONSTRAINT "__fan_root_key_scope_i3qel4nyj5" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr");
-
-ALTER TABLE "slice"."retry_claim"
-  ADD COLUMN "__step_ouvkclqzzd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
-  ADD COLUMN "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."retry_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."retry_root"
-  ADD COLUMN "__scope_jdl7uajdrr" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
-  ADD CONSTRAINT "__retry_root_key_scope_yc7em5k35u" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr");
-
-ALTER TABLE "slice"."review_claim"
-  ADD COLUMN "__step_ouvkclqzzd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
-  ADD COLUMN "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED,
-  ADD COLUMN "__pred_holds_lq7itfruzz" bigint GENERATED ALWAYS AS (CASE WHEN "holds" > 0::bigint THEN "holds"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."review_gather_input_sizes"
-  ADD COLUMN "__step_mjpuijzth4" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "step" END) STORED,
-  ADD COLUMN "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."review_hold"
-  ADD COLUMN "__copy_holds_j7qe5qdydj" bigint NOT NULL,
-  ADD COLUMN "__pred_at_xktcobhsti" bigint GENERATED ALWAYS AS (CASE WHEN "at" > 0::bigint THEN "at"::numeric - (1::bigint)::numeric END) STORED,
-  ADD CONSTRAINT "__review_hold_key_step_root_attempt_pred_at_kuzm5unl2b" UNIQUE NULLS DISTINCT ("step", "root", "attempt", "__pred_at_xktcobhsti"),
-  ADD CONSTRAINT "__review_hold_check_review_hold_ordered_review_claim_2wbcergshn" CHECK (("at" < "__copy_holds_j7qe5qdydj") IS TRUE);
-
-ALTER TABLE "slice"."review_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."review_review_run_input_sizes"
-  ADD COLUMN "__scope_u6ypqf2r2z" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "ordinal" >= 1::bigint THEN "scope" END) STORED,
-  ADD COLUMN "__pred_ordinal_e545zctcav" bigint GENERATED ALWAYS AS (CASE WHEN "ordinal" > 0::bigint THEN "ordinal"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."review_root"
-  ADD COLUMN "__scope_jdl7uajdrr" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
-  ADD CONSTRAINT "__review_root_key_scope_db6eo7ifjm" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr");
-
-ALTER TABLE "slice"."sync_claim"
-  ADD COLUMN "__step_ouvkclqzzd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
-  ADD COLUMN "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."sync_exclusive" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."sync_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."sync_root"
-  ADD COLUMN "__scope_jdl7uajdrr" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
-  ADD CONSTRAINT "__sync_root_key_scope_lxj4sb3mcx" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr");
-
-ALTER TABLE "slice"."writeback_claim"
-  ADD COLUMN "__step_ouvkclqzzd" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "attempt" >= 1::bigint THEN "step" END) STORED,
-  ADD COLUMN "__pred_attempt_oey4tm5xyl" bigint GENERATED ALWAYS AS (CASE WHEN "attempt" > 0::bigint THEN "attempt"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."writeback_paused" ADD COLUMN "__pred_turn_qryngij6c4" bigint GENERATED ALWAYS AS (CASE WHEN "turn" > 0::bigint THEN "turn"::numeric - (1::bigint)::numeric END) STORED;
-
-ALTER TABLE "slice"."writeback_root"
-  ADD COLUMN "__scope_jdl7uajdrr" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" GENERATED ALWAYS AS (CASE WHEN "retired" = false THEN "scope" END) STORED,
-  ADD CONSTRAINT "__writeback_root_key_scope_epb6awnxkj" UNIQUE NULLS DISTINCT ("__scope_jdl7uajdrr");
-
-CREATE OR REPLACE FUNCTION "slice"."__hold_assign_root_rwboli77cc"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__hold_assign_root_rwboli77cc"("keys_1" "slice"."__sha256"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2222,9 +2139,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__hold_assign_root_rwboli77cc"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__hold_assign_root_rwboli77cc"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__hold_chain_root_wgndggnfwf"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__hold_chain_root_wgndggnfwf"("keys_1" "slice"."__sha256"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2233,9 +2150,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__hold_chain_root_wgndggnfwf"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__hold_chain_root_wgndggnfwf"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__hold_clock_root_bawnkhmkww"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__hold_clock_root_bawnkhmkww"("keys_1" "slice"."__sha256"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2244,9 +2161,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__hold_clock_root_bawnkhmkww"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__hold_clock_root_bawnkhmkww"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__hold_fan_root_4vwfxofrxw"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__hold_fan_root_4vwfxofrxw"("keys_1" "slice"."__sha256"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2255,9 +2172,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__hold_fan_root_4vwfxofrxw"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__hold_fan_root_4vwfxofrxw"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__hold_retry_root_54bybhkxg6"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__hold_retry_root_54bybhkxg6"("keys_1" "slice"."__sha256"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2266,9 +2183,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__hold_retry_root_54bybhkxg6"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__hold_retry_root_54bybhkxg6"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__hold_review_root_j3blgclwnl"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__hold_review_root_j3blgclwnl"("keys_1" "slice"."__sha256"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2277,9 +2194,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__hold_review_root_j3blgclwnl"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__hold_review_root_j3blgclwnl"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__hold_sync_root_6ita6q5wxi"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__hold_sync_root_6ita6q5wxi"("keys_1" "slice"."__sha256"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2288,9 +2205,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__hold_sync_root_6ita6q5wxi"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__hold_sync_root_6ita6q5wxi"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__hold_writeback_root_msmvpm3j7g"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS "pg_catalog"."void"
+CREATE OR REPLACE FUNCTION "slice"."__hold_writeback_root_msmvpm3j7g"("keys_1" "slice"."__sha256"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2299,9 +2216,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__hold_writeback_root_msmvpm3j7g"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__hold_writeback_root_msmvpm3j7g"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__retire_assign_root_hwbj4sewrx"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS SETOF bigint[]
+CREATE OR REPLACE FUNCTION "slice"."__retire_assign_root_hwbj4sewrx"("keys_1" "slice"."__sha256"[]) RETURNS SETOF bigint[]
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2310,9 +2227,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__retire_assign_root_hwbj4sewrx"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__retire_assign_root_hwbj4sewrx"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__retire_chain_root_ji6nmac7of"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS SETOF bigint[]
+CREATE OR REPLACE FUNCTION "slice"."__retire_chain_root_ji6nmac7of"("keys_1" "slice"."__sha256"[]) RETURNS SETOF bigint[]
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2321,9 +2238,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__retire_chain_root_ji6nmac7of"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__retire_chain_root_ji6nmac7of"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__retire_clock_root_6pfo6eeroe"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS SETOF bigint[]
+CREATE OR REPLACE FUNCTION "slice"."__retire_clock_root_6pfo6eeroe"("keys_1" "slice"."__sha256"[]) RETURNS SETOF bigint[]
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2332,9 +2249,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__retire_clock_root_6pfo6eeroe"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__retire_clock_root_6pfo6eeroe"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__retire_fan_root_niesya7vcd"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS SETOF bigint[]
+CREATE OR REPLACE FUNCTION "slice"."__retire_fan_root_niesya7vcd"("keys_1" "slice"."__sha256"[]) RETURNS SETOF bigint[]
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2343,9 +2260,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__retire_fan_root_niesya7vcd"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__retire_fan_root_niesya7vcd"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__retire_retry_root_kays5vv5ic"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS SETOF bigint[]
+CREATE OR REPLACE FUNCTION "slice"."__retire_retry_root_kays5vv5ic"("keys_1" "slice"."__sha256"[]) RETURNS SETOF bigint[]
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2354,9 +2271,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__retire_retry_root_kays5vv5ic"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__retire_retry_root_kays5vv5ic"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__retire_review_root_itykotyltd"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS SETOF bigint[]
+CREATE OR REPLACE FUNCTION "slice"."__retire_review_root_itykotyltd"("keys_1" "slice"."__sha256"[]) RETURNS SETOF bigint[]
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2365,9 +2282,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__retire_review_root_itykotyltd"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__retire_review_root_itykotyltd"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__retire_sync_root_ygktrpeohu"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS SETOF bigint[]
+CREATE OR REPLACE FUNCTION "slice"."__retire_sync_root_ygktrpeohu"("keys_1" "slice"."__sha256"[]) RETURNS SETOF bigint[]
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2376,9 +2293,9 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__retire_sync_root_ygktrpeohu"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__retire_sync_root_ygktrpeohu"("slice"."__sha256"[]) FROM PUBLIC;
 
-CREATE OR REPLACE FUNCTION "slice"."__retire_writeback_root_oprw3k6une"("keys_1" "slice"."__domain_jevqauzmw6"[]) RETURNS SETOF bigint[]
+CREATE OR REPLACE FUNCTION "slice"."__retire_writeback_root_oprw3k6une"("keys_1" "slice"."__sha256"[]) RETURNS SETOF bigint[]
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
 BEGIN
@@ -2387,7 +2304,7 @@ BEGIN
 END
 $$;
 
-REVOKE EXECUTE ON FUNCTION "slice"."__retire_writeback_root_oprw3k6une"("slice"."__domain_jevqauzmw6"[]) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION "slice"."__retire_writeback_root_oprw3k6une"("slice"."__sha256"[]) FROM PUBLIC;
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice"."assign_admitted"

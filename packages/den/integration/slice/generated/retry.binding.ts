@@ -12,14 +12,7 @@ import {
 	spawnedOf,
 	type SpawnRows
 } from "@bjornpagen/den/runtime/bind"
-import {
-	atOnce,
-	finishStep,
-	rootScope,
-	type ScopeKey,
-	startedStep,
-	type StepKey
-} from "@bjornpagen/den/runtime/identity"
+import { atOnce, finishStep, rootScope, startedStep } from "@bjornpagen/den/runtime/identity"
 import type {
 	FlowNeeds,
 	Admission,
@@ -35,10 +28,9 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Retry over its served programs; `den generate` writes it, and nothing edits it. */
-import type { Addition } from "@bjornpagen/grizzle"
+import { type Addition, Sha256 } from "@bjornpagen/grizzle"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, Stream } from "effect"
-import type { Digest } from "effect/crypto"
+import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
 import { retry } from "#integration/slice/flows.ts"
 import { RetryPausable } from "#integration/slice/generated/retry.fragment.ts"
 import type {
@@ -123,8 +115,8 @@ export const retryLedger = (h: RetryHandles) => {
 		timed: [],
 		spawned: { steps: [], finishes: [] }
 	}
-	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
-		Arr.some(grown.rows.RetryStartStep, (s) => s.scope === scope)
+	const hasChildren = (grown: Grown, scope: Sha256): boolean =>
+		Arr.some(grown.rows.RetryStartStep, (s) => Sha256.equals(s.scope, scope))
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			RetryScope: [...a.rows.RetryScope, ...b.rows.RetryScope],
@@ -144,91 +136,87 @@ export const retryLedger = (h: RetryHandles) => {
 		}
 	})
 	const startLadders = (
-		root: ScopeKey,
-		scope: ScopeKey,
+		root: Sha256,
+		scope: Sha256,
 		input: Parameters<(typeof retry.kinds)[2]["start"]>[0]
-	): Effect.Effect<Grown, never, Digest.Digest> =>
-		Effect.map(
-			Effect.forEach(
-				retry.kinds[2].start(input),
-				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> => {
-					switch (spawn.kind) {
-						case "Steadfast":
-							return Effect.map(startedStep(scope, ordinal), (key): Grown => ({
-								rows: {
-									...noRows,
-									RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-									RetrySteadfastInput: [{ step: key, root: root, key: spawn.input.key }]
-								},
-								...spawnedOf(
-									{ step: key, kind: "Steadfast", scope: scope },
-									dueOf(retry.kinds[0].due, spawn.input)
-								)
-							}))
-						case "Brittle":
-							return Effect.map(startedStep(scope, ordinal), (key): Grown => ({
-								rows: {
-									...noRows,
-									RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-									RetryBrittleInput: [{ step: key, root: root, key: spawn.input.key }]
-								},
-								...spawnedOf(
-									{ step: key, kind: "Brittle", scope: scope },
-									dueOf(retry.kinds[1].due, spawn.input)
-								)
-							}))
-					}
+	): Grown =>
+		Arr.reduce(
+			Arr.map(retry.kinds[2].start(input), (spawn, ordinal): Grown => {
+				switch (spawn.kind) {
+					case "Steadfast":
+						return pipe(startedStep(scope, ordinal), (key): Grown => ({
+							rows: {
+								...noRows,
+								RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+								RetrySteadfastInput: [{ step: key, root: root, key: spawn.input.key }]
+							},
+							...spawnedOf(
+								{ step: key, kind: "Steadfast", scope: scope },
+								dueOf(retry.kinds[0].due, spawn.input)
+							)
+						}))
+					case "Brittle":
+						return pipe(startedStep(scope, ordinal), (key): Grown => ({
+							rows: {
+								...noRows,
+								RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+								RetryBrittleInput: [{ step: key, root: root, key: spawn.input.key }]
+							},
+							...spawnedOf(
+								{ step: key, kind: "Brittle", scope: scope },
+								dueOf(retry.kinds[1].due, spawn.input)
+							)
+						}))
 				}
-			),
-			(parts) => Arr.reduce(parts, nothingGrown, joined)
+			}),
+			nothingGrown,
+			joined
 		)
 	const startThrottled = (
-		root: ScopeKey,
-		scope: ScopeKey,
+		root: Sha256,
+		scope: Sha256,
 		input: Parameters<(typeof retry.kinds)[4]["start"]>[0]
-	): Effect.Effect<Grown, never, Digest.Digest> =>
-		Effect.map(
-			Effect.forEach(
-				retry.kinds[4].start(input),
-				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
-					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
-						rows: {
-							...noRows,
-							RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-							RetryPoliteInput: [{ step: key, root: root, key: spawn.input.key }]
-						},
-						...spawnedOf(
-							{ step: key, kind: "Polite", scope: scope },
-							dueOf(retry.kinds[3].due, spawn.input)
-						)
-					}))
+	): Grown =>
+		Arr.reduce(
+			Arr.map(retry.kinds[4].start(input), (spawn, ordinal): Grown =>
+				pipe(startedStep(scope, ordinal), (key): Grown => ({
+					rows: {
+						...noRows,
+						RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+						RetryPoliteInput: [{ step: key, root: root, key: spawn.input.key }]
+					},
+					...spawnedOf(
+						{ step: key, kind: "Polite", scope: scope },
+						dueOf(retry.kinds[3].due, spawn.input)
+					)
+				}))
 			),
-			(parts) => Arr.reduce(parts, nothingGrown, joined)
+			nothingGrown,
+			joined
 		)
 	const startUnhurried = (
-		root: ScopeKey,
-		scope: ScopeKey,
+		root: Sha256,
+		scope: Sha256,
 		input: Parameters<(typeof retry.kinds)[6]["start"]>[0]
-	): Effect.Effect<Grown, never, Digest.Digest> =>
-		Effect.map(
-			Effect.forEach(
-				retry.kinds[6].start(input),
-				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
-					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
-						rows: {
-							...noRows,
-							RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-							RetryPatientInput: [{ step: key, root: root, key: spawn.input.key }]
-						},
-						...spawnedOf(
-							{ step: key, kind: "Patient", scope: scope },
-							dueOf(retry.kinds[5].due, spawn.input)
-						)
-					}))
+	): Grown =>
+		Arr.reduce(
+			Arr.map(retry.kinds[6].start(input), (spawn, ordinal): Grown =>
+				pipe(startedStep(scope, ordinal), (key): Grown => ({
+					rows: {
+						...noRows,
+						RetryStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+						RetryPatientInput: [{ step: key, root: root, key: spawn.input.key }]
+					},
+					...spawnedOf(
+						{ step: key, kind: "Patient", scope: scope },
+						dueOf(retry.kinds[5].due, spawn.input)
+					)
+				}))
 			),
-			(parts) => Arr.reduce(parts, nothingGrown, joined)
+			nothingGrown,
+			joined
 		)
-	const readRetrySteadfastInput = (step: StepKey) =>
+	const readRetrySteadfastInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.retryReadRetrySteadfastInput.once({ params: { step: step }, facts: {} })),
@@ -236,7 +224,7 @@ export const retryLedger = (h: RetryHandles) => {
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readRetryBrittleInput = (step: StepKey) =>
+	const readRetryBrittleInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.retryReadRetryBrittleInput.once({ params: { step: step }, facts: {} })),
@@ -244,7 +232,7 @@ export const retryLedger = (h: RetryHandles) => {
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readRetryPoliteInput = (step: StepKey) =>
+	const readRetryPoliteInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.retryReadRetryPoliteInput.once({ params: { step: step }, facts: {} })),
@@ -252,7 +240,7 @@ export const retryLedger = (h: RetryHandles) => {
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readRetryPatientInput = (step: StepKey) =>
+	const readRetryPatientInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.retryReadRetryPatientInput.once({ params: { step: step }, facts: {} })),
@@ -260,7 +248,7 @@ export const retryLedger = (h: RetryHandles) => {
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readRetryLaddersInput = (scope: ScopeKey) =>
+	const readRetryLaddersInput = (scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.retryReadRetryLaddersInput.once({ params: { scope: scope }, facts: {} })),
@@ -268,7 +256,7 @@ export const retryLedger = (h: RetryHandles) => {
 			)
 			return Option.map(row, (found) => ({ steadfast: found.steadfast, brittle: found.brittle }))
 		})
-	const readRetryThrottledInput = (scope: ScopeKey) =>
+	const readRetryThrottledInput = (scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.retryReadRetryThrottledInput.once({ params: { scope: scope }, facts: {} })),
@@ -276,7 +264,7 @@ export const retryLedger = (h: RetryHandles) => {
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readRetryUnhurriedInput = (scope: ScopeKey) =>
+	const readRetryUnhurriedInput = (scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.retryReadRetryUnhurriedInput.once({ params: { scope: scope }, facts: {} })),
@@ -318,7 +306,7 @@ export const retryLedger = (h: RetryHandles) => {
 	}
 	const request = {
 		Ladders: (key: string, input: Parameters<(typeof retry.kinds)[2]["start"]>[0]) =>
-			Effect.flatMap(rootScope("Retry", "Ladders", key), (scope) =>
+			pipe(rootScope("Retry", "Ladders", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Retry",
@@ -345,7 +333,7 @@ export const retryLedger = (h: RetryHandles) => {
 				)
 			),
 		Throttled: (key: string, input: Parameters<(typeof retry.kinds)[4]["start"]>[0]) =>
-			Effect.flatMap(rootScope("Retry", "Throttled", key), (scope) =>
+			pipe(rootScope("Retry", "Throttled", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Retry",
@@ -365,7 +353,7 @@ export const retryLedger = (h: RetryHandles) => {
 				)
 			),
 		Unhurried: (key: string, input: Parameters<(typeof retry.kinds)[6]["start"]>[0]) =>
-			Effect.flatMap(rootScope("Retry", "Unhurried", key), (scope) =>
+			pipe(rootScope("Retry", "Unhurried", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Retry",
@@ -393,7 +381,7 @@ export const retryLedger = (h: RetryHandles) => {
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.retryCommitSteadfast.once({
 								params: {},
@@ -424,7 +412,7 @@ export const retryLedger = (h: RetryHandles) => {
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.retryCommitBrittle.once({
 								params: {},
@@ -455,7 +443,7 @@ export const retryLedger = (h: RetryHandles) => {
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.retryCommitPolite.once({
 								params: {},
@@ -486,7 +474,7 @@ export const retryLedger = (h: RetryHandles) => {
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.retryCommitPatient.once({
 								params: {},
@@ -552,7 +540,7 @@ export const retryLedger = (h: RetryHandles) => {
 						const inputSteadfast = (child: (typeof inputSteadfastRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputSteadfastRows, (row) => row.step === child),
+									Arr.findFirst(inputSteadfastRows, (row) => Sha256.equals(row.step, child)),
 									(row) => ({ key: row.key })
 								)
 							)
@@ -588,7 +576,7 @@ export const retryLedger = (h: RetryHandles) => {
 						const inputBrittle = (child: (typeof inputBrittleRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputBrittleRows, (row) => row.step === child),
+									Arr.findFirst(inputBrittleRows, (row) => Sha256.equals(row.step, child)),
 									(row) => ({ key: row.key })
 								)
 							)
@@ -614,7 +602,7 @@ export const retryLedger = (h: RetryHandles) => {
 				read: () => Effect.succeed([]),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.retryCommitLaddersFinish.once({
 								params: { ...done.writes.params },
@@ -683,7 +671,7 @@ export const retryLedger = (h: RetryHandles) => {
 						const inputPolite = (child: (typeof inputPoliteRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputPoliteRows, (row) => row.step === child),
+									Arr.findFirst(inputPoliteRows, (row) => Sha256.equals(row.step, child)),
 									(row) => ({ key: row.key })
 								)
 							)
@@ -709,7 +697,7 @@ export const retryLedger = (h: RetryHandles) => {
 				read: () => Effect.succeed([]),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.retryCommitThrottledFinish.once({
 								params: { ...done.writes.params },
@@ -778,7 +766,7 @@ export const retryLedger = (h: RetryHandles) => {
 						const inputPatient = (child: (typeof inputPatientRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputPatientRows, (row) => row.step === child),
+									Arr.findFirst(inputPatientRows, (row) => Sha256.equals(row.step, child)),
 									(row) => ({ key: row.key })
 								)
 							)
@@ -804,7 +792,7 @@ export const retryLedger = (h: RetryHandles) => {
 				read: () => Effect.succeed([]),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.retryCommitUnhurriedFinish.once({
 								params: { ...done.writes.params },
@@ -836,14 +824,14 @@ export const retryLedger = (h: RetryHandles) => {
 		Ladders: {
 			window: retry.kinds[2].window,
 			precondition: retry.kinds[2].precondition,
-			admit: (scope: ScopeKey) =>
+			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readRetryLaddersInput(scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
-					const grown = yield* startLadders(scope, scope, input.value)
-					const finish = yield* finishStep(scope)
+					const grown = startLadders(scope, scope, input.value)
+					const finish = finishStep(scope)
 					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "LaddersFinish", scope, delay: atOnce }
@@ -885,14 +873,14 @@ export const retryLedger = (h: RetryHandles) => {
 		Throttled: {
 			window: retry.kinds[4].window,
 			precondition: retry.kinds[4].precondition,
-			admit: (scope: ScopeKey) =>
+			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readRetryThrottledInput(scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
-					const grown = yield* startThrottled(scope, scope, input.value)
-					const finish = yield* finishStep(scope)
+					const grown = startThrottled(scope, scope, input.value)
+					const finish = finishStep(scope)
 					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "ThrottledFinish", scope, delay: atOnce }
@@ -934,14 +922,14 @@ export const retryLedger = (h: RetryHandles) => {
 		Unhurried: {
 			window: retry.kinds[6].window,
 			precondition: retry.kinds[6].precondition,
-			admit: (scope: ScopeKey) =>
+			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readRetryUnhurriedInput(scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
-					const grown = yield* startUnhurried(scope, scope, input.value)
-					const finish = yield* finishStep(scope)
+					const grown = startUnhurried(scope, scope, input.value)
+					const finish = finishStep(scope)
 					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "UnhurriedFinish", scope, delay: atOnce }
@@ -1139,9 +1127,9 @@ export const retryLedger = (h: RetryHandles) => {
 			),
 		snapshot: Effect.flatMap(settled(h.den.retrySnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof retry>> => {
-				const view = (scope: ScopeKey, admission: Admission): ReadonlyArray<ScopeView> =>
+				const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
 					Option.match(
-						Arr.findFirst(read.roots, (o) => o.scope === scope),
+						Arr.findFirst(read.roots, (o) => Sha256.equals(o.scope, scope)),
 						{
 							onSome: (o): ReadonlyArray<ScopeView> => [
 								{

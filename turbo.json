@@ -4,7 +4,7 @@
 	"concurrency": "100%",
 	"globalDependencies": ["tsconfig.json", "tsconfig.base.json", "oxlint.config.ts"],
 	"globalEnv": ["NODE_ENV"],
-	"globalPassThroughEnv": ["TMPDIR", "NODE_OPTIONS"],
+	"globalPassThroughEnv": ["TMPDIR", "NODE_OPTIONS", "NODE_COMPILE_CACHE"],
 	"tasks": {
 		"surface": {
 			"description": "What a dependent can read of a package: its whole source but its tests, SQL, docs and scratch, which nothing imports. A package's checks wait on its dependencies' surface, not their whole source, so a commit that changes only a dependency's tests, migration SQL or docs re-checks nothing downstream. The build waits on the whole source.",

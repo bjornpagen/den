@@ -4,7 +4,6 @@ import { Config, Effect } from "effect"
 import pgDriver from "pg"
 import { App } from "#integration/slice/app.ts"
 import { AppLogin, Worker } from "#integration/slice/logins.ts"
-import { connectTimeoutMillis } from "#integration/support/cluster.ts"
 
 /**
  * The slice's configuration. `grizzle generate` and `grizzle check` never call its connection; `grizzle migrate` and
@@ -30,7 +29,6 @@ export default defineConfig({
 		rolePrefix: Effect.runSync(Config.String("DEN_ROLE_PREFIX")),
 		password: Config.Redacted("DEN_PG_PASSWORD").pipe(
 			Effect.mapError((cause) => new CredentialError({ cause }))
-		),
-		connectTimeoutMs: connectTimeoutMillis
+		)
 	})
 })

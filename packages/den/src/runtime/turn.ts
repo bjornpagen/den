@@ -1,6 +1,6 @@
+import { Sha256 } from "@bjornpagen/grizzle"
 import type { WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, Cause, Duration, Effect, Exit, Option } from "effect"
-import type { Digest } from "effect/crypto"
 import type { Again, Resource, Use } from "#algebra/kinds.ts"
 import { censusPeriodSeconds, goesAgain, seatedOf } from "#algebra/kinds.ts"
 import { Later } from "#algebra/later.ts"
@@ -12,9 +12,7 @@ import {
 	delayOf,
 	finishStep,
 	type Instant,
-	instantOf,
-	type ScopeKey,
-	type StepKey
+	instantOf
 } from "#runtime/identity.ts"
 import type {
 	ClaimOf,
@@ -32,7 +30,7 @@ import type {
 	StepRunner,
 	Turn
 } from "#runtime/ledger.ts"
-import { parentOf, refusedOnKey } from "#runtime/ledger.ts"
+import { parentOf, refusedLaws, refusedOnKey } from "#runtime/ledger.ts"
 import {
 	exclusiveOf,
 	holdExclusive,
@@ -208,7 +206,7 @@ export type Wait =
 export type Ending =
 	| { readonly kind: "done"; readonly wake: Wake; readonly spawned: Spawned }
 	| { readonly kind: "admitted"; readonly wake: Wake; readonly spawned: Spawned }
-	| { readonly kind: "skipped"; readonly wake: Wake; readonly by: ScopeKey }
+	| { readonly kind: "skipped"; readonly wake: Wake; readonly by: Sha256 }
 	| {
 			readonly kind: "failed"
 			readonly wake: Wake
@@ -259,7 +257,7 @@ const delayTo = (at: Instant, until: Instant): Duration.Duration =>
 	Duration.millis(Math.max(0, Number(until) - Number(at)))
 
 /** A step's wake at an attempt. */
-const stepWake = (flow: FlowName, step: StepKey, attempt: bigint): Wake => ({
+const stepWake = (flow: FlowName, step: Sha256, attempt: bigint): Wake => ({
 	_tag: "Step",
 	flow,
 	step,
@@ -315,13 +313,13 @@ export const lostRace = (flow: string, error: Settled): boolean =>
 	]) ||
 	(error.kind === "refused" &&
 		Arr.some(
-			error.refused.laws,
+			refusedLaws(error.refused),
 			({ law }) => law.kind === "contained" && law.from.relation === `${flow}Claim`
 		))
 
 /** The law a refusal names first, by its identity, as a Refusal row records it. */
 const lawOf = (error: Extract<Settled, { readonly kind: "refused" }>): string =>
-	String(error.refused.laws[0].id)
+	String(refusedLaws(error.refused)[0].id)
 
 /**
  * A write within `deadline`, judged at a reading of the database's instant `clock` takes: none where it was still
@@ -339,11 +337,11 @@ export const written = <A, R>(
  * for a step that commits through a ChangeSet, that ChangeSet's input, and its typed failure.
  */
 export interface StepPort<I, Rows, D, E> {
-	readonly input: (step: StepKey) => Effect.Effect<Option.Option<I>, Settled>
+	readonly input: (step: Sha256) => Effect.Effect<Option.Option<I>, Settled>
 	readonly read: (input: I) => Effect.Effect<Rows, Settled>
 	readonly commit: (
 		done: { readonly turn: Turn; readonly input: I; readonly rows: Rows } & D
-	) => Effect.Effect<Committed, Settled, Digest.Digest>
+	) => Effect.Effect<Committed, Settled>
 	readonly fail: (failed: {
 		readonly turn: Turn
 		readonly input: I
@@ -459,7 +457,7 @@ const unwritten = (flow: string, error: Settled, wake: Wake): Ending =>
 /** The root of `scope`'s graph, read upward through its parents: none once a scope on the way is gone. */
 const rootOf = <R>(
 	ledger: Ledger<R>,
-	scope: ScopeKey
+	scope: Sha256
 ): Effect.Effect<Option.Option<RootView>, Settled> =>
 	Effect.flatMap(ledger.scopeOf(scope), (found) =>
 		Option.match(found, {
@@ -508,7 +506,7 @@ const gate = <R>(
 /** The wake for a step's next attempt, as its claims, retries and fences stand (Standing): none while a claim holds it. */
 const nextWake = <R>(
 	ledger: Ledger<R>,
-	step: StepKey
+	step: Sha256
 ): Effect.Effect<Option.Option<Onward>, Settled> =>
 	Effect.gen(function* () {
 		const at = yield* ledger.now
@@ -579,16 +577,14 @@ const spawnedRings = <R>(
 const settled = <R>(
 	ledger: Ledger<R>,
 	runner: StepRunner<R>,
-	scope: ScopeKey,
+	scope: Sha256,
 	spawned: Spawned
-): Effect.Effect<ReadonlyArray<Onward>, never, Digest.Digest> =>
+): Effect.Effect<ReadonlyArray<Onward>> =>
 	Effect.gen(function* () {
 		const children = yield* spawnedRings(ledger, spawned)
-		const ready = (s: ScopeKey) =>
+		const ready = (s: Sha256) =>
 			Effect.flatMap(ledger.unended(s), (busy) =>
-				busy
-					? Effect.succeedNone
-					: Effect.flatMap(finishStep(s), (finish) => nextWake(ledger, finish))
+				busy ? Effect.succeedNone : nextWake(ledger, finishStep(s))
 			)
 		if (Option.isNone(runner.finishes)) {
 			const finish =
@@ -831,7 +827,7 @@ const serveStep = <R>(
 	ledger: Ledger<R>,
 	wake: Extract<Wake, { readonly _tag: "Step" }>,
 	ends: Instant
-): Effect.Effect<Served, Ending, R | Digest.Digest> =>
+): Effect.Effect<Served, Ending, R> =>
 	Effect.gen(function* () {
 		const step = wake.step
 		const at = yield* readOr(ledger.now, wake)
@@ -982,7 +978,7 @@ const waitersOf = <R>(
 					Arr.some(
 						snapshot.steps,
 						(p) =>
-							p.step === wake.step &&
+							Sha256.equals(p.step, wake.step) &&
 							Arr.some(seatedOf(p.runner.uses), (r) =>
 								Arr.some(freed, (seat) => seat.resource === r.name)
 							)
@@ -1000,16 +996,16 @@ const waitersOf = <R>(
 const settledOn = <R>(
 	ledger: Ledger<R>,
 	runner: StepRunner<R>,
-	scope: ScopeKey,
+	scope: Sha256,
 	ending: Ending,
 	freed: ReadonlyArray<SeatAt>
-): Effect.Effect<ReadonlyArray<Onward>, never, Digest.Digest> => {
+): Effect.Effect<ReadonlyArray<Onward>> => {
 	const ringAt = (wake: Wake, until: Instant): Effect.Effect<ReadonlyArray<Onward>> =>
 		Effect.match(ledger.now, {
 			onFailure: (): ReadonlyArray<Onward> => [],
 			onSuccess: (at) => [{ wake, delay: delayTo(at, until) }]
 		})
-	const own = ((): Effect.Effect<ReadonlyArray<Onward>, never, Digest.Digest> => {
+	const own = ((): Effect.Effect<ReadonlyArray<Onward>> => {
 		switch (ending.kind) {
 			case "done":
 				return settled(ledger, runner, scope, ending.spawned)
@@ -1042,7 +1038,7 @@ const settledOn = <R>(
 const serveAdmit = <R>(
 	ledger: Ledger<R>,
 	wake: Extract<Wake, { readonly _tag: "Admit" }>
-): Effect.Effect<Served, Ending, Digest.Digest> =>
+): Effect.Effect<Served, Ending> =>
 	Effect.gen(function* () {
 		const scope = wake.scope
 		const at = yield* readOr(ledger.now, wake)
@@ -1078,7 +1074,7 @@ const serveAdmit = <R>(
 			const held = yield* readOr(holdExclusive(ledger, { kind: view.kind, key, scope }), wake)
 			if (!held) {
 				const holders = yield* readOr(ledger.coordination.exclusives, wake)
-				const by = Arr.findFirst(holders, (e) => e.kind === view.kind && e.key === key)
+				const by = Arr.findFirst(holders, (e) => e.kind === view.kind && Sha256.equals(e.key, key))
 				if (Option.isNone(by)) {
 					return served({ kind: "waiting", wake, why: "exclusive", until: Option.none() })
 				}
@@ -1121,7 +1117,7 @@ const ledgerOf = <R>(ledgers: Ledgers<R>, flow: FlowName): Option.Option<Ledger<
 const serveCensus = <R>(
 	ledgers: Ledgers<R>,
 	wake: Extract<Wake, { readonly _tag: "Census" }>
-): Effect.Effect<Served, never, Digest.Digest> =>
+): Effect.Effect<Served> =>
 	census(ledgers).pipe(
 		Effect.match({
 			onFailure: (): Served => ({ ending: { kind: "censused", wake, rung: 0 }, onward: [] }),
@@ -1143,7 +1139,7 @@ export const serve = <R>(
 	ledgers: Ledgers<R>,
 	wake: Wake,
 	ends: Instant
-): Effect.Effect<Served, never, R | Digest.Digest> => {
+): Effect.Effect<Served, never, R> => {
 	switch (wake._tag) {
 		case "Census":
 			return serveCensus(ledgers, wake)
@@ -1170,7 +1166,7 @@ export const invoke = <R>(
 	ledgers: Ledgers<R>,
 	wake: Wake,
 	budget: Duration.Duration
-): Effect.Effect<ReadonlyArray<Ending>, never, R | Digest.Digest | Transport> =>
+): Effect.Effect<ReadonlyArray<Ending>, never, R | Transport> =>
 	Effect.gen(function* () {
 		const transport = yield* Transport
 		/**
@@ -1194,7 +1190,7 @@ export const invoke = <R>(
 			at: Instant,
 			end: Instant,
 			endings: ReadonlyArray<Ending>
-		): Effect.Effect<ReadonlyArray<Ending>, never, R | Digest.Digest | Transport> =>
+		): Effect.Effect<ReadonlyArray<Ending>, never, R | Transport> =>
 			Effect.gen(function* () {
 				const cause = { _tag: "Turn", by: serving, at: Number(at) } as const
 				if (Number(at) + leaseMarginMillis >= Number(end)) {

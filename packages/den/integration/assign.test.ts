@@ -1,4 +1,4 @@
-import { Vector } from "@bjornpagen/grizzle"
+import { Sha256, Vector } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { array, element, type Gen, int, subset } from "@bjornpagen/testing/gen"
@@ -161,7 +161,7 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 						yield* ringAndDrain(ledgers, [requested])
 
 						const results = yield* rows(app.workload.assignResults.once({ params: {}, facts: {} }))
-						const mine = Arr.filter(results, (r) => r.scope === requested.scope)
+						const mine = Arr.filter(results, (r) => Sha256.equals(r.scope, requested.scope))
 						const decided = Arr.filter(mine, (r) => r.kind === "Decide")
 						assert.deepEqual(
 							Arr.map(decided, (r) => r.outcome),
@@ -192,7 +192,7 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 								: "no more passages of the topic than are found"
 						)
 						const nearest = Arr.sort(
-							Arr.filter(recordedNearest, (r) => r.step === step),
+							Arr.filter(recordedNearest, (r) => Sha256.equals(r.step, step)),
 							byOrdinal
 						)
 						assert.deepEqual<ReadonlyArray<bigint>>(
@@ -220,7 +220,7 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 						assert.deepEqual(
 							Arr.sort(
 								Arr.map(
-									Arr.filter(recordedSeen, (r) => r.step === step),
+									Arr.filter(recordedSeen, (r) => Sha256.equals(r.step, step)),
 									(r) => r.passage
 								),
 								Order.String
@@ -247,7 +247,7 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 						)
 						c.note(Option.isSome(chosen) ? "served" : "rest")
 						const family = Arr.sort(
-							Arr.filter(weighed, (r) => r.step === step),
+							Arr.filter(weighed, (r) => Sha256.equals(r.step, step)),
 							byOrdinal
 						)
 						assert.deepEqual<ReadonlyArray<bigint>>(
@@ -264,7 +264,7 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 						)
 						assert.deepEqual(
 							Arr.map(
-								Arr.filter(decisions, (r) => r.step === step),
+								Arr.filter(decisions, (r) => Sha256.equals(r.step, step)),
 								(r) => ({ stage: r.stage, confidence: r.confidence })
 							),
 							[
@@ -276,7 +276,7 @@ export const anAssignmentDecidesFromTheNearestPassagesAndRecordsItsAnswer = prop
 						)
 						assert.deepEqual(
 							Arr.map(
-								Arr.filter(served, (r) => r.step === step),
+								Arr.filter(served, (r) => Sha256.equals(r.step, step)),
 								(r) => ({ passage: r.passage, distance: r.distance })
 							),
 							Option.toArray(

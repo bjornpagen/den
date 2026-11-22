@@ -19,9 +19,7 @@ import {
 	atOnce,
 	finishStep,
 	rootScope,
-	type ScopeKey,
-	startedStep,
-	type StepKey
+	startedStep
 } from "@bjornpagen/den/runtime/identity"
 import type {
 	FlowNeeds,
@@ -39,10 +37,9 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Review over its served programs; `den generate` writes it, and nothing edits it. */
-import type { Addition } from "@bjornpagen/grizzle"
+import { type Addition, Sha256 } from "@bjornpagen/grizzle"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, Stream } from "effect"
-import type { Digest } from "effect/crypto"
+import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
 import { review } from "#integration/slice/flows.ts"
 import { ReviewPausable, ReviewResource } from "#integration/slice/generated/review.fragment.ts"
 import type {
@@ -152,9 +149,9 @@ export const reviewLedger = (h: ReviewHandles) => {
 		timed: [],
 		spawned: { steps: [], finishes: [] }
 	}
-	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
-		Arr.some(grown.rows.ReviewStartStep, (s) => s.scope === scope) ||
-		Arr.some(grown.rows.ReviewStartScope, (s) => s.scope === scope)
+	const hasChildren = (grown: Grown, scope: Sha256): boolean =>
+		Arr.some(grown.rows.ReviewStartStep, (s) => Sha256.equals(s.scope, scope)) ||
+		Arr.some(grown.rows.ReviewStartScope, (s) => Sha256.equals(s.scope, scope))
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			ReviewScope: [...a.rows.ReviewScope, ...b.rows.ReviewScope],
@@ -179,66 +176,64 @@ export const reviewLedger = (h: ReviewHandles) => {
 		}
 	})
 	const startQuestions = (
-		root: ScopeKey,
-		scope: ScopeKey,
+		root: Sha256,
+		scope: Sha256,
 		input: Parameters<(typeof review.kinds)[1]["start"]>[0]
-	): Effect.Effect<Grown, never, Digest.Digest> =>
-		Effect.map(
-			Effect.forEach(
-				review.kinds[1].start(input),
-				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
-					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
-						rows: {
-							...noRows,
-							ReviewStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-							ReviewAnalyzeInput: [
-								{
-									step: key,
-									root: root,
-									review: spawn.input.review,
-									group: spawn.input.group,
-									question: spawn.input.question
-								}
-							]
-						},
-						...spawnedOf(
-							{ step: key, kind: "Analyze", scope: scope },
-							dueOf(review.kinds[0].due, spawn.input)
-						)
-					}))
-			),
-			(parts) => Arr.reduce(parts, nothingGrown, joined)
-		)
-	const startReviewRun = (
-		root: ScopeKey,
-		scope: ScopeKey,
-		input: Parameters<(typeof review.kinds)[4]["start"]>[0]
-	): Effect.Effect<Grown, never, Digest.Digest> =>
-		Effect.map(
-			Effect.forEach(
-				review.kinds[4].start(input),
-				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
-					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
-						rows: {
-							...noRows,
-							ReviewStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-							ReviewGatherInput: [{ step: key, root: root, review: spawn.input.review }],
-							ReviewGatherInputSizes: Arr.map(spawn.input.sizes, (element, index) => ({
+	): Grown =>
+		Arr.reduce(
+			Arr.map(review.kinds[1].start(input), (spawn, ordinal): Grown =>
+				pipe(startedStep(scope, ordinal), (key): Grown => ({
+					rows: {
+						...noRows,
+						ReviewStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+						ReviewAnalyzeInput: [
+							{
 								step: key,
 								root: root,
-								ordinal: BigInt(index),
-								value: element
-							}))
-						},
-						...spawnedOf(
-							{ step: key, kind: "Gather", scope: scope },
-							dueOf(review.kinds[2].due, spawn.input)
-						)
-					}))
+								review: spawn.input.review,
+								group: spawn.input.group,
+								question: spawn.input.question
+							}
+						]
+					},
+					...spawnedOf(
+						{ step: key, kind: "Analyze", scope: scope },
+						dueOf(review.kinds[0].due, spawn.input)
+					)
+				}))
 			),
-			(parts) => Arr.reduce(parts, nothingGrown, joined)
+			nothingGrown,
+			joined
 		)
-	const readReviewAnalyzeInput = (step: StepKey) =>
+	const startReviewRun = (
+		root: Sha256,
+		scope: Sha256,
+		input: Parameters<(typeof review.kinds)[4]["start"]>[0]
+	): Grown =>
+		Arr.reduce(
+			Arr.map(review.kinds[4].start(input), (spawn, ordinal): Grown =>
+				pipe(startedStep(scope, ordinal), (key): Grown => ({
+					rows: {
+						...noRows,
+						ReviewStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+						ReviewGatherInput: [{ step: key, root: root, review: spawn.input.review }],
+						ReviewGatherInputSizes: Arr.map(spawn.input.sizes, (element, index) => ({
+							step: key,
+							root: root,
+							ordinal: BigInt(index),
+							value: element
+						}))
+					},
+					...spawnedOf(
+						{ step: key, kind: "Gather", scope: scope },
+						dueOf(review.kinds[2].due, spawn.input)
+					)
+				}))
+			),
+			nothingGrown,
+			joined
+		)
+	const readReviewAnalyzeInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.reviewReadReviewAnalyzeInput.once({ params: { step: step }, facts: {} })),
@@ -250,7 +245,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				question: found.question
 			}))
 		})
-	const readReviewGatherInput = (step: StepKey) =>
+	const readReviewGatherInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.reviewReadReviewGatherInput.once({ params: { step: step }, facts: {} })),
@@ -265,7 +260,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				sizes: Arr.map(ordered(family0), (e) => e.value)
 			}))
 		})
-	const readReviewSaveInput = (step: StepKey) =>
+	const readReviewSaveInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.reviewReadReviewSaveInput.once({ params: { step: step }, facts: {} })),
@@ -278,7 +273,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				total: found.total
 			}))
 		})
-	const readReviewQuestionsInput = (scope: ScopeKey) =>
+	const readReviewQuestionsInput = (scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.reviewReadReviewQuestionsInput.once({ params: { scope: scope }, facts: {} })),
@@ -290,7 +285,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				size: found.size
 			}))
 		})
-	const readReviewReviewRunInput = (scope: ScopeKey) =>
+	const readReviewReviewRunInput = (scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.reviewReadReviewReviewRunInput.once({ params: { scope: scope }, facts: {} })),
@@ -342,7 +337,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 	}
 	const request = {
 		ReviewRun: (key: string, input: Parameters<(typeof review.kinds)[4]["start"]>[0]) =>
-			Effect.flatMap(rootScope("Review", "ReviewRun", key), (scope) =>
+			pipe(rootScope("Review", "ReviewRun", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Review",
@@ -376,7 +371,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.reviewCommitAnalyze.once({
 								params: {},
@@ -407,65 +402,64 @@ export const reviewLedger = (h: ReviewHandles) => {
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.map(
-							Effect.all([
-								Effect.map(
-									Effect.forEach(
-										review.edges[0].next(done.input, done.output),
-										(input, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
-											Effect.flatMap(edgeScope(done.turn.step, "Split", ordinal), (key) =>
-												Effect.zipWith(
-													finishStep(key),
-													startQuestions(done.turn.root, key, input),
-													(finish, inner): Grown =>
-														joined(inner, {
-															rows: {
-																...noRows,
-																ReviewScope: [{ scope: key, root: done.turn.root }],
-																ReviewWithin: [
-																	{
-																		scope: key,
-																		parent: done.turn.scope,
-																		kind: "Questions",
-																		root: done.turn.root
-																	}
-																],
-																ReviewAdmitted: [{ scope: key, root: done.turn.root }],
-																ReviewFinish: [{ scope: key, step: finish, root: done.turn.root }],
-																ReviewSplit: [
-																	{
-																		from: done.turn.step,
-																		ordinal: BigInt(ordinal),
-																		to: key,
-																		root: done.turn.root
-																	}
-																],
-																ReviewQuestionsInput: [
-																	{
-																		scope: key,
-																		root: done.turn.root,
-																		review: input.review,
-																		group: input.group,
-																		size: input.size
-																	}
-																]
-															},
-															steps: [
-																{ step: finish, kind: "QuestionsFinish", scope: key, delay: atOnce }
+						const grown = Arr.reduce(
+							[
+								Arr.reduce(
+									Arr.map(review.edges[0].next(done.input, done.output), (input, ordinal): Grown =>
+										pipe(edgeScope(done.turn.step, "Split", ordinal), (key): Grown =>
+											pipe(startQuestions(done.turn.root, key, input), (inner): Grown =>
+												pipe(finishStep(key), (finish): Grown =>
+													joined(inner, {
+														rows: {
+															...noRows,
+															ReviewScope: [{ scope: key, root: done.turn.root }],
+															ReviewWithin: [
+																{
+																	scope: key,
+																	parent: done.turn.scope,
+																	kind: "Questions",
+																	root: done.turn.root
+																}
 															],
-															timed: [],
-															spawned: {
-																steps: [],
-																finishes: hasChildren(inner, key) ? [] : [finish]
-															}
-														})
+															ReviewAdmitted: [{ scope: key, root: done.turn.root }],
+															ReviewFinish: [{ scope: key, step: finish, root: done.turn.root }],
+															ReviewSplit: [
+																{
+																	from: done.turn.step,
+																	ordinal: BigInt(ordinal),
+																	to: key,
+																	root: done.turn.root
+																}
+															],
+															ReviewQuestionsInput: [
+																{
+																	scope: key,
+																	root: done.turn.root,
+																	review: input.review,
+																	group: input.group,
+																	size: input.size
+																}
+															]
+														},
+														steps: [
+															{ step: finish, kind: "QuestionsFinish", scope: key, delay: atOnce }
+														],
+														timed: [],
+														spawned: {
+															steps: [],
+															finishes: hasChildren(inner, key) ? [] : [finish]
+														}
+													})
 												)
 											)
+										)
 									),
-									(parts) => Arr.reduce(parts, nothingGrown, joined)
+									nothingGrown,
+									joined
 								)
-							]),
-							(parts) => Arr.reduce(parts, nothingGrown, joined)
+							],
+							nothingGrown,
+							joined
 						)
 						const outcome = yield* settled(
 							h.commits.reviewCommitGather.once({
@@ -498,7 +492,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.reviewCommitSave.once({
 								params: { ...done.writes.params },
@@ -537,7 +531,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				body: (read: {
 					readonly input: Parameters<(typeof review.kinds)[1]["start"]>[0]
 					readonly endings: Parameters<(typeof review.kinds)[1]["finish"]["body"]>[1]
-					readonly parent: ScopeKey
+					readonly parent: Sha256
 				}) => review.kinds[1].finish.body(read.input, read.endings)
 			},
 			{
@@ -577,7 +571,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 						const inputAnalyze = (child: (typeof inputAnalyzeRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputAnalyzeRows, (row) => row.step === child),
+									Arr.findFirst(inputAnalyzeRows, (row) => Sha256.equals(row.step, child)),
 									(row) => ({ review: row.review, group: row.group, question: row.question })
 								)
 							)
@@ -607,13 +601,13 @@ export const reviewLedger = (h: ReviewHandles) => {
 				read: () => Effect.succeed([]),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.map(
-							Effect.all([
-								Effect.map(
-									Effect.forEach(
+						const grown = Arr.reduce(
+							[
+								Arr.reduce(
+									Arr.map(
 										review.edges[1].next(done.input.input, done.output),
-										(input, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
-											Effect.map(edgeStep(done.turn.step, "Saved", ordinal), (key): Grown => ({
+										(input, ordinal): Grown =>
+											pipe(edgeStep(done.turn.step, "Saved", ordinal), (key): Grown => ({
 												rows: {
 													...noRows,
 													ReviewSaved: [
@@ -641,10 +635,12 @@ export const reviewLedger = (h: ReviewHandles) => {
 												)
 											}))
 									),
-									(parts) => Arr.reduce(parts, nothingGrown, joined)
+									nothingGrown,
+									joined
 								)
-							]),
-							(parts) => Arr.reduce(parts, nothingGrown, joined)
+							],
+							nothingGrown,
+							joined
 						)
 						const outcome = yield* settled(
 							h.commits.reviewCommitQuestionsFinish.once({
@@ -719,7 +715,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 						const inputQuestions = (child: (typeof inputQuestionsRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputQuestionsRows, (row) => row.step === child),
+									Arr.findFirst(inputQuestionsRows, (row) => Sha256.equals(row.step, child)),
 									(row) => ({ review: row.review, group: row.group, size: row.size })
 								)
 							)
@@ -755,7 +751,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 						const inputSave = (child: (typeof inputSaveRows)[number]["step"]) =>
 							held(
 								Option.map(
-									Arr.findFirst(inputSaveRows, (row) => row.step === child),
+									Arr.findFirst(inputSaveRows, (row) => Sha256.equals(row.step, child)),
 									(row) => ({
 										review: row.review,
 										group: row.group,
@@ -786,7 +782,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 				read: () => Effect.succeed([]),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.reviewCommitReviewRunFinish.once({
 								params: { ...done.writes.params },
@@ -818,14 +814,14 @@ export const reviewLedger = (h: ReviewHandles) => {
 		ReviewRun: {
 			window: review.kinds[4].window,
 			precondition: review.kinds[4].precondition,
-			admit: (scope: ScopeKey) =>
+			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readReviewReviewRunInput(scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
-					const grown = yield* startReviewRun(scope, scope, input.value)
-					const finish = yield* finishStep(scope)
+					const grown = startReviewRun(scope, scope, input.value)
+					const finish = finishStep(scope)
 					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "ReviewRunFinish", scope, delay: atOnce }
@@ -1049,9 +1045,9 @@ export const reviewLedger = (h: ReviewHandles) => {
 			settled(h.den.reviewSnapshot.once({ params: {}, facts: {} })),
 			(rows) =>
 				Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof review>> => {
-					const view = (scope: ScopeKey, admission: Admission): ReadonlyArray<ScopeView> =>
+					const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
 						Option.match(
-							Arr.findFirst(read.roots, (o) => o.scope === scope),
+							Arr.findFirst(read.roots, (o) => Sha256.equals(o.scope, scope)),
 							{
 								onSome: (o): ReadonlyArray<ScopeView> => [
 									{
@@ -1067,7 +1063,9 @@ export const reviewLedger = (h: ReviewHandles) => {
 								],
 								onNone: () =>
 									Arr.map(
-										Option.toArray(Arr.findFirst(read.withins, (w) => w.scope === scope)),
+										Option.toArray(
+											Arr.findFirst(read.withins, (w) => Sha256.equals(w.scope, scope))
+										),
 										(w): ScopeView => ({ place: "child", scope, kind: w.kind, parent: w.parent })
 									)
 							}

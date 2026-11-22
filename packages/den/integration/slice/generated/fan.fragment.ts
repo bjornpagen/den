@@ -1,4 +1,4 @@
-import { DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
+import { DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Fan to; `den generate` writes it, and nothing edits it. */
 import {
 	check,
@@ -21,6 +21,7 @@ import {
 	retirable,
 	retirement,
 	select,
+	sha256,
 	v
 } from "@bjornpagen/grizzle"
 
@@ -45,152 +46,149 @@ const FanSeats = closed.relation(
 	[{ resource: "Pool", seats: 2n }]
 )
 
-export const FanScope = relation("FanScope", { scope: DenScope, root: DenScope }, ["scope", "root"])
+export const FanScope = relation("FanScope", { scope: sha256, root: sha256 }, ["scope", "root"])
 export const FanRoot = relation(
 	"FanRoot",
-	{ scope: DenScope, kind: closedId(FanRootKind), key: Text, at: DenInstant, retired: retirement },
+	{ scope: sha256, kind: closedId(FanRootKind), key: Text, at: DenInstant, retired: retirement },
 	["scope"]
 )
 export const FanWithin = relation(
 	"FanWithin",
-	{ scope: DenScope, parent: DenScope, kind: closedId(FanChildKind), root: DenScope },
+	{ scope: sha256, parent: sha256, kind: closedId(FanChildKind), root: sha256 },
 	["scope", "root"]
 )
-export const FanAdmitted = relation("FanAdmitted", { scope: DenScope, root: DenScope }, [
+export const FanAdmitted = relation("FanAdmitted", { scope: sha256, root: sha256 }, [
 	"scope",
 	"root"
 ])
-export const FanSkipped = relation(
-	"FanSkipped",
-	{ scope: DenScope, by: DenScope, root: DenScope },
-	["scope", "root"]
-)
+export const FanSkipped = relation("FanSkipped", { scope: sha256, by: sha256, root: sha256 }, [
+	"scope",
+	"root"
+])
 export const FanStep = relation(
 	"FanStep",
-	{ step: DenStep, kind: closedId(FanKind), scope: DenScope, due: DenInstant, root: DenScope },
+	{ step: sha256, kind: closedId(FanKind), scope: sha256, due: DenInstant, root: sha256 },
 	["step", "root"]
 )
 export const FanStartStep = relation(
 	"FanStartStep",
-	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
+	{ scope: sha256, ordinal: natural, step: sha256, root: sha256 },
 	["scope", "ordinal", "root"]
 )
 export const FanStartScope = relation(
 	"FanStartScope",
-	{ scope: DenScope, ordinal: natural, child: DenScope, root: DenScope },
+	{ scope: sha256, ordinal: natural, child: sha256, root: sha256 },
 	["scope", "ordinal", "root"]
 )
-export const FanFinish = relation("FanFinish", { scope: DenScope, step: DenStep, root: DenScope }, [
+export const FanFinish = relation("FanFinish", { scope: sha256, step: sha256, root: sha256 }, [
 	"scope",
 	"root"
 ])
 export const FanClaim = relation(
 	"FanClaim",
-	{ step: DenStep, attempt: place, until: DenInstant, holds: drawn(natural), root: DenScope },
+	{ step: sha256, attempt: place, until: DenInstant, holds: drawn(natural), root: sha256 },
 	["step", "root", "attempt"]
 )
-export const FanEnded = relation("FanEnded", { step: DenStep, attempt: natural, root: DenScope }, [
+export const FanEnded = relation("FanEnded", { step: sha256, attempt: natural, root: sha256 }, [
 	"step",
 	"attempt",
 	"root"
 ])
 export const FanRetry = relation(
 	"FanRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, why: closedId(FanRetryWhy), root: DenScope },
+	{ step: sha256, attempt: natural, at: DenInstant, why: closedId(FanRetryWhy), root: sha256 },
 	["step", "attempt", "root"]
 )
-export const FanFenced = relation(
-	"FanFenced",
-	{ step: DenStep, attempt: natural, root: DenScope },
-	["step", "attempt", "root"]
-)
+export const FanFenced = relation("FanFenced", { step: sha256, attempt: natural, root: sha256 }, [
+	"step",
+	"attempt",
+	"root"
+])
 export const FanResult = relation(
 	"FanResult",
-	{ step: DenStep, outcome: closedId(FanOutcome), root: DenScope },
+	{ step: sha256, outcome: closedId(FanOutcome), root: sha256 },
 	["step", "root"]
 )
-export const FanDone = relation("FanDone", { step: DenStep, root: DenScope }, ["step", "root"])
-export const FanFailed = relation("FanFailed", { step: DenStep, root: DenScope }, ["step", "root"])
-export const FanHeld = relation("FanHeld", { step: DenStep, attempt: natural, root: DenScope }, [
+export const FanDone = relation("FanDone", { step: sha256, root: sha256 }, ["step", "root"])
+export const FanFailed = relation("FanFailed", { step: sha256, root: sha256 }, ["step", "root"])
+export const FanHeld = relation("FanHeld", { step: sha256, attempt: natural, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const FanRefusal = relation("FanRefusal", { step: DenStep, law: Text, root: DenScope }, [
+export const FanRefusal = relation("FanRefusal", { step: sha256, law: Text, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const FanExhausted = relation("FanExhausted", { step: DenStep, root: DenScope }, [
+export const FanExhausted = relation("FanExhausted", { step: sha256, root: sha256 }, [
 	"step",
 	"root"
 ])
 export const FanSquareInput = relation(
 	"FanSquareInput",
-	{ step: DenStep, batch: Text, n: pg.bigint, root: DenScope },
+	{ step: sha256, batch: Text, n: pg.bigint, root: sha256 },
 	["step", "root"]
 )
-export const FanDustInput = relation(
-	"FanDustInput",
-	{ step: DenStep, sweep: Text, root: DenScope },
-	["step", "root"]
-)
-export const FanMopInput = relation("FanMopInput", { step: DenStep, sweep: Text, root: DenScope }, [
+export const FanDustInput = relation("FanDustInput", { step: sha256, sweep: Text, root: sha256 }, [
+	"step",
+	"root"
+])
+export const FanMopInput = relation("FanMopInput", { step: sha256, sweep: Text, root: sha256 }, [
 	"step",
 	"root"
 ])
 export const FanBatchInput = relation(
 	"FanBatchInput",
-	{ scope: DenScope, batch: Text, size: pg.bigint, root: DenScope },
+	{ scope: sha256, batch: Text, size: pg.bigint, root: sha256 },
 	["scope", "root"]
 )
 export const FanFanRunInput = relation(
 	"FanFanRunInput",
-	{ scope: DenScope, batch: Text, size: pg.bigint, root: DenScope },
+	{ scope: sha256, batch: Text, size: pg.bigint, root: sha256 },
 	["scope", "root"]
 )
 export const FanSweepInput = relation(
 	"FanSweepInput",
-	{ scope: DenScope, sweep: Text, root: DenScope },
+	{ scope: sha256, sweep: Text, root: sha256 },
 	["scope", "root"]
 )
 export const FanSquareOutput = relation(
 	"FanSquareOutput",
-	{ step: DenStep, square: pg.bigint, root: DenScope },
+	{ step: sha256, square: pg.bigint, root: sha256 },
 	["step", "root"]
 )
 export const FanDustOutput = relation(
 	"FanDustOutput",
-	{ step: DenStep, sweep: Text, root: DenScope },
+	{ step: sha256, sweep: Text, root: sha256 },
 	["step", "root"]
 )
-export const FanMopOutput = relation(
-	"FanMopOutput",
-	{ step: DenStep, sweep: Text, root: DenScope },
-	["step", "root"]
-)
+export const FanMopOutput = relation("FanMopOutput", { step: sha256, sweep: Text, root: sha256 }, [
+	"step",
+	"root"
+])
 export const FanBatchFinishOutput = relation(
 	"FanBatchFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const FanFanRunFinishOutput = relation(
 	"FanFanRunFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const FanSweepFinishOutput = relation(
 	"FanSweepFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 const FanHold = relation(
 	"FanHold",
 	{
-		step: DenStep,
+		step: sha256,
 		attempt: natural,
 		at: drawn(natural),
 		resource: closedId(FanResource),
 		seat: natural,
-		root: DenScope
+		root: sha256
 	},
 	["step", "root", "attempt", "at"]
 )

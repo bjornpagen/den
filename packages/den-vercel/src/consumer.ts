@@ -1,4 +1,4 @@
-import type { Wake } from "@bjornpagen/den/transport"
+import { type Wake, wakeOf } from "@bjornpagen/den/transport"
 import type { MessageMetadata, RetryHandler } from "@vercel/queue"
 import { Effect, Schema } from "effect"
 import { VercelQueue, WakeJson } from "#queue.ts"
@@ -23,6 +23,7 @@ const delivered = <A, R>(
 	metadata: MessageMetadata
 ): Effect.Effect<void, never, R> =>
 	Schema.decodeEffect(WakeJson)(payload).pipe(
+		Effect.flatMap((wire) => Effect.fromResult(wakeOf(wire))),
 		Effect.matchEffect({
 			onFailure: (issue) =>
 				Effect.logWarning("a delivery that is no den wake, acknowledged", {

@@ -2,6 +2,7 @@ import { tick } from "@bjornpagen/den/runtime/census"
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { UnknownPauseTarget } from "@bjornpagen/den/runtime/ledger"
 import { FlowName } from "@bjornpagen/den/transport"
+import { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { array, boolean, finite, type Gen, int } from "@bjornpagen/testing/gen"
@@ -288,15 +289,19 @@ export const aPauseHandleHoldsTheStepsThatUseItAndNoSeat = property.exhaust(paus
 							const holds = yield* rows(app.workload.fanHolds.once({ params: {}, facts: {} }))
 							const ofKind = (kind: UsingKind) => Arr.filter(steps, (s) => s.kind === kind)
 							const claimed = (kind: UsingKind) =>
-								Arr.filter(claims, (claim) => Arr.some(ofKind(kind), (s) => s.step === claim.step))
+								Arr.filter(claims, (claim) =>
+									Arr.some(ofKind(kind), (s) => Sha256.equals(s.step, claim.step))
+								)
 							const done = (kind: UsingKind) =>
 								Arr.every(ofKind(kind), (s) =>
-									Arr.some(results, (r) => r.step === s.step && r.outcome === "done")
+									Arr.some(results, (r) => Sha256.equals(r.step, s.step) && r.outcome === "done")
 								)
 							const seatsOf = (kind: UsingKind) =>
 								Arr.sort(
 									Arr.map(
-										Arr.filter(holds, (h) => Arr.some(ofKind(kind), (s) => s.step === h.step)),
+										Arr.filter(holds, (h) =>
+											Arr.some(ofKind(kind), (s) => Sha256.equals(s.step, h.step))
+										),
 										(h) => h.resource
 									),
 									Order.String
@@ -364,7 +369,7 @@ export const aPauseHandleHoldsTheStepsThatUseItAndNoSeat = property.exhaust(paus
 						assert.deepEqual(
 							Arr.map([sweep.scope, run.scope], (scope) =>
 								Arr.map(
-									Arr.filter(finishes, (f) => f.scope === scope),
+									Arr.filter(finishes, (f) => Sha256.equals(f.scope, scope)),
 									(f) => f.outcome
 								)
 							),

@@ -1,6 +1,7 @@
 import { drain } from "@bjornpagen/den/runtime/drive"
 import { relay } from "@bjornpagen/den/runtime/relay"
 import { type Ring, Transport } from "@bjornpagen/den/transport"
+import { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
@@ -65,7 +66,7 @@ export const theRelayRingsARootTheAppRequestedInItsOwnTransaction = property.exp
 							)
 						)
 						const order = "order"
-						const request = yield* chain.requestFacts.Ordered(order, {
+						const request = chain.requestFacts.Ordered(order, {
 							feed: run.feed,
 							pages: BigInt(run.pages)
 						})
@@ -76,7 +77,8 @@ export const theRelayRingsARootTheAppRequestedInItsOwnTransaction = property.exp
 						const admission = yield* Effect.raceFirst(
 							Stream.fromQueue(rung).pipe(
 								Stream.filter(
-									(ring) => ring.wake._tag === "Admit" && ring.wake.scope === request.scope
+									(ring) =>
+										ring.wake._tag === "Admit" && Sha256.equals(ring.wake.scope, request.scope)
 								),
 								Stream.runHead
 							),
@@ -96,7 +98,12 @@ export const theRelayRingsARootTheAppRequestedInItsOwnTransaction = property.exp
 						}
 						yield* drain(ledgers)
 						const finishes = yield* rows(app.workload.chainFinishes.once({ params: {}, facts: {} }))
-						assert.ok(Arr.some(finishes, (f) => f.scope === request.scope && f.outcome === "done"))
+						assert.ok(
+							Arr.some(
+								finishes,
+								(f) => Sha256.equals(f.scope, request.scope) && f.outcome === "done"
+							)
+						)
 					}),
 					services
 				)

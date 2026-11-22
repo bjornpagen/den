@@ -1,3 +1,4 @@
+import { Sha256 } from "@bjornpagen/grizzle"
 import type { CallError } from "@bjornpagen/grizzle/runtime"
 import {
 	Array as Arr,
@@ -10,7 +11,6 @@ import {
 	Ref,
 	Stream
 } from "effect"
-import { Digest } from "effect/crypto"
 import { eligible } from "#runtime/eligible.ts"
 import type { Ledger, Snapshot } from "#runtime/ledger.ts"
 import { type Ring, Transport, wakeText } from "#transport.ts"
@@ -88,18 +88,15 @@ const textOf = <R>(snapshot: Snapshot<R>): string => {
  * falls out of eligibility and back in is rung again. A step whose latest attempt was fenced waits on the deployment,
  * which the census asks after, never the relay.
  */
-export const relay = <R>(
-	ledger: Ledger<R>
-): Effect.Effect<RelayEnd, never, Transport | Digest.Digest> =>
+export const relay = <R>(ledger: Ledger<R>): Effect.Effect<RelayEnd, never, Transport> =>
 	Effect.gen(function* () {
 		const transport = yield* Transport
-		const digest = yield* Digest.Digest
 		const rung = yield* Ref.make(HashSet.empty<string>())
 		const pass = Effect.gen(function* () {
 			const snapshot = yield* ledger.snapshot
 			const at = yield* ledger.now
 			const found = eligible(ledger, snapshot, at)
-			const position = yield* digest.digestHex(Digest.sha256, encoder.encode(textOf(snapshot)))
+			const position = Sha256.toHex(Sha256.ofBytes(encoder.encode(textOf(snapshot))))
 			const before = yield* Ref.get(rung)
 			const fresh = Arr.filter(found.wakes, (wake) => !HashSet.has(before, wakeText(wake)))
 			yield* transport.send(

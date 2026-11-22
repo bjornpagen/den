@@ -70,13 +70,13 @@ for the coordination group, and DBCLOCK:
 
 - **RETIRE (c70cbed8, 1f935498, f14a46da, and RETIRE3's c782217b2).** Each flow's graph is one retirable unit:
   `retirable(<P>Root, [on(<Rel>, "root"), …])`, the header `<P>Root` with its `retired: retirement` field, every other
-  graph relation a body carrying `root: DenScope` in every key it holds and on both sides of every containment between
+  graph relation a body carrying `root: sha256` in every key it holds and on both sides of every containment between
   bodies. `<p>_retirer`, a role of its own whose option `retire` names the header, serves
   `ChangeSet.empty(<p>Graph).retire(<P>Root, [])`; `runtime/retire.ts` retires every ended root nothing still needs, a
   call each. Each role certifies as **Certificates** below says. Two laws moved: the header is no longer
   contained in `<P>Scope`, since a header that references a body would block its own retirement, and a skipped root's
   `by` names the holder's header, not its `Admitted` row, a fact of another unit that may retire first. The grizzle
-  session's rulings on den's use (2026-11-18): every graph relation carries its root's key as a column, `root: DenScope`, contained in `<P>Root`, so a
+  session's rulings on den's use (2026-11-18): every graph relation carries its root's key as a column, `root: sha256`, contained in `<P>Root`, so a
   retired unit's fence refuses an insert by that key row by row (a unit reached through `Within`'s tree would make
   every insert's check recursive); a stale holder's insert and a root requested again under a retired key are both
   refused (since an operator's or the app's root is written at its request's own instant, its request again under any
@@ -134,5 +134,28 @@ for the coordination group, and DBCLOCK:
   Logic.le(d, longestDelayMillis))`, and the slice's nearest-row distance is `Distance.cosine`. The slice's `App` is
   `schema.extend([Listed], "SliceSeats", …)`. grizzle's packages include `packages/openapi`, which
   `@bjornpagen/grizzle` depends on, so den's workspace lists it beside the others.
+
+- **A digest is its 32 bytes (grizzle DIGESTBYTES c4c004300, e147303d2).** grizzle's `sha256` is a bytea under the
+  installation's digest domain, its host value `Sha256`, and no contract is over a digest (its one predicate is its
+  length, which the domain holds), so `DenStep`, `DenScope`, `DenExclusive` and `DenRow` are gone: every key den lowers
+  is a `sha256` column (`lower/fragment.ts` FieldType `digest`, printed `sha256`), and an app's relation that references
+  den's facts types its column `sha256` (the slice's `Audit`). A key is `Sha256.ofBytes` of its parts' UTF-8, NUL
+  between them, a parent key a part by its hex (`Sha256.toHex`), so each key's 32 bytes are those whose hex den's text
+  keys were; the derivations are pure, so den needs no `Digest` service and the relay's position is
+  `Sha256.toHex(Sha256.ofBytes(...))`. A digest is compared by `Sha256.equals`, never `===`, which compares array
+  references, in den's runtime, its printed bindings and its suites, and a JS `Map` or `Set` over keys is keyed by
+  `Sha256.toHex`. A wake crosses the wire as `WireWakeSchema`, each key its hex, which `wireOf` writes and `wakeOf`
+  parses once at the consumer's boundary (`Sha256.fromHex`, a `NotAKey` where the text is no digest's hex), so the
+  runtime's `Wake` carries `Sha256` and den-vercel's consumer acknowledges a delivery whose key it cannot parse. An app
+  root's `requestFacts.<Root>(key, input)` is the facts themselves, no Effect.
+
+- **A refusal names its laws above apart (grizzle REDFIX2 453e6e0c6).** An `above` refusal's laws of the levels above
+  are `refused.above`, and its own `refused.laws` only where `own` is `every`: `runtime/ledger.ts` `refusedLaws` reads
+  every law a refusal names, above first, as the one list `refusedOnKey`, `seatTaken`, `lostRace` and a Refusal row's
+  law read.
+
+- **A connection waits for its server's answer (grizzle CONNECTTIMEOUT afc83ecdb).** `DbConnection.connectTimeoutMs` is
+  deleted, and with it the suites' `connectTimeoutMillis`; a suite login's pool closes an idle session after
+  `authenticationTimeoutSeconds`, the longest a connection attempt can take on a server at its default.
 
 Still to come from the grizzle session: GUARD and SCHEMAMAP.

@@ -1,8 +1,8 @@
 import { tickAll } from "@bjornpagen/den/runtime/census"
 import { drain } from "@bjornpagen/den/runtime/drive"
-import type { StepKey } from "@bjornpagen/den/runtime/identity"
 import type { Ledger } from "@bjornpagen/den/runtime/ledger"
 import type { Ending, Ledgers } from "@bjornpagen/den/runtime/turn"
+import { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { finite, type Gen, int } from "@bjornpagen/testing/gen"
@@ -68,10 +68,10 @@ const round = (all: ReadonlyArray<Ledger<Faults>>, ledgers: Ledgers<Faults>) =>
 const byAttempt = Order.mapInput(Order.BigInt, (row: { readonly attempt: bigint }) => row.attempt)
 
 /** Whether an ending is a fence of `step`'s on a refused credential. */
-const refusedAt = (step: StepKey, ending: Ending): boolean =>
+const refusedAt = (step: Sha256, ending: Ending): boolean =>
 	ending.kind === "fenced" &&
 	ending.wake._tag === "Step" &&
-	ending.wake.step === step &&
+	Sha256.equals(ending.wake.step, step) &&
 	ending.fault.kind === "credentialRefused" &&
 	ending.fault.reason === "passwordRefused"
 
@@ -140,7 +140,7 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 							const endings = [...first, ...Arr.flatten(dying)]
 							yield* round(all, ledgers)
 							const results = yield* rows(app.workload.retryResults.once({ params: {}, facts: {} }))
-							const mine = Arr.filter(results, (r) => r.scope === requested.scope)
+							const mine = Arr.filter(results, (r) => Sha256.equals(r.scope, requested.scope))
 							const of = (kind: string) => Arr.filter(mine, (r) => r.kind === kind)
 							const settled = (planned: Planned) =>
 								Effect.gen(function* () {

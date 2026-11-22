@@ -1,5 +1,5 @@
 import { functionLifetimeSeconds } from "@bjornpagen/den/runtime/turn"
-import { idempotencyKey, type Ring, Transport } from "@bjornpagen/den/transport"
+import { idempotencyKey, type Ring, Transport, wireOf } from "@bjornpagen/den/transport"
 import type { BatchSendMessage } from "@vercel/queue"
 import { Array as Arr, Duration, Effect, Layer, Option, Schema } from "effect"
 import { type Queue, TOPIC, VercelQueue, WakeJson } from "#queue.ts"
@@ -113,7 +113,7 @@ class SendFailed extends Schema.TaggedError<SendFailed, { readonly brand: unique
  * step once it is due.
  */
 export const messageOf = (ring: Ring): Effect.Effect<Option.Option<BatchSendMessage<string>>> =>
-	Effect.map(Effect.orDie(Schema.encodeEffect(WakeJson)(ring.wake)), (payload) => {
+	Effect.map(Effect.orDie(Schema.encodeEffect(WakeJson)(wireOf(ring.wake))), (payload) => {
 		const key = idempotencyKey(ring)
 		const delaySeconds = Math.ceil(Duration.toSeconds(ring.delay))
 		if (delaySeconds > maxDelaySeconds) {

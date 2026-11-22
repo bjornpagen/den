@@ -1,4 +1,4 @@
-import { DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
+import { DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Writeback to; `den generate` writes it, and nothing edits it. */
 import {
 	closed,
@@ -13,7 +13,8 @@ import {
 	relation,
 	retirable,
 	retirement,
-	select
+	select,
+	sha256
 } from "@bjornpagen/grizzle"
 
 export const WritebackKind = closed.unordered("WritebackKind", ["Deliver", "WritebackFinish"])
@@ -26,14 +27,14 @@ export const WritebackRetryWhy = closed.unordered("WritebackRetryWhy", [
 ])
 export const WritebackPausable = closed.unordered("WritebackPausable", ["Writeback"])
 
-export const WritebackScope = relation("WritebackScope", { scope: DenScope, root: DenScope }, [
+export const WritebackScope = relation("WritebackScope", { scope: sha256, root: sha256 }, [
 	"scope",
 	"root"
 ])
 export const WritebackRoot = relation(
 	"WritebackRoot",
 	{
-		scope: DenScope,
+		scope: sha256,
 		kind: closedId(WritebackRootKind),
 		key: Text,
 		at: DenInstant,
@@ -41,109 +42,101 @@ export const WritebackRoot = relation(
 	},
 	["scope"]
 )
-export const WritebackAdmitted = relation(
-	"WritebackAdmitted",
-	{ scope: DenScope, root: DenScope },
-	["scope", "root"]
-)
+export const WritebackAdmitted = relation("WritebackAdmitted", { scope: sha256, root: sha256 }, [
+	"scope",
+	"root"
+])
 export const WritebackSkipped = relation(
 	"WritebackSkipped",
-	{ scope: DenScope, by: DenScope, root: DenScope },
+	{ scope: sha256, by: sha256, root: sha256 },
 	["scope", "root"]
 )
 export const WritebackStep = relation(
 	"WritebackStep",
-	{
-		step: DenStep,
-		kind: closedId(WritebackKind),
-		scope: DenScope,
-		due: DenInstant,
-		root: DenScope
-	},
+	{ step: sha256, kind: closedId(WritebackKind), scope: sha256, due: DenInstant, root: sha256 },
 	["step", "root"]
 )
 export const WritebackStartStep = relation(
 	"WritebackStartStep",
-	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
+	{ scope: sha256, ordinal: natural, step: sha256, root: sha256 },
 	["scope", "ordinal", "root"]
 )
 export const WritebackFinish = relation(
 	"WritebackFinish",
-	{ scope: DenScope, step: DenStep, root: DenScope },
+	{ scope: sha256, step: sha256, root: sha256 },
 	["scope", "root"]
 )
 export const WritebackClaim = relation(
 	"WritebackClaim",
-	{ step: DenStep, attempt: place, until: DenInstant, root: DenScope },
+	{ step: sha256, attempt: place, until: DenInstant, root: sha256 },
 	["step", "root", "attempt"]
 )
 export const WritebackEnded = relation(
 	"WritebackEnded",
-	{ step: DenStep, attempt: natural, root: DenScope },
+	{ step: sha256, attempt: natural, root: sha256 },
 	["step", "attempt", "root"]
 )
 export const WritebackRetry = relation(
 	"WritebackRetry",
 	{
-		step: DenStep,
+		step: sha256,
 		attempt: natural,
 		at: DenInstant,
 		why: closedId(WritebackRetryWhy),
-		root: DenScope
+		root: sha256
 	},
 	["step", "attempt", "root"]
 )
 export const WritebackFenced = relation(
 	"WritebackFenced",
-	{ step: DenStep, attempt: natural, root: DenScope },
+	{ step: sha256, attempt: natural, root: sha256 },
 	["step", "attempt", "root"]
 )
 export const WritebackResult = relation(
 	"WritebackResult",
-	{ step: DenStep, outcome: closedId(WritebackOutcome), root: DenScope },
+	{ step: sha256, outcome: closedId(WritebackOutcome), root: sha256 },
 	["step", "root"]
 )
-export const WritebackDone = relation("WritebackDone", { step: DenStep, root: DenScope }, [
+export const WritebackDone = relation("WritebackDone", { step: sha256, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const WritebackFailed = relation("WritebackFailed", { step: DenStep, root: DenScope }, [
+export const WritebackFailed = relation("WritebackFailed", { step: sha256, root: sha256 }, [
 	"step",
 	"root"
 ])
 export const WritebackHeld = relation(
 	"WritebackHeld",
-	{ step: DenStep, attempt: natural, root: DenScope },
+	{ step: sha256, attempt: natural, root: sha256 },
 	["step", "root"]
 )
 export const WritebackRefusal = relation(
 	"WritebackRefusal",
-	{ step: DenStep, law: Text, root: DenScope },
+	{ step: sha256, law: Text, root: sha256 },
 	["step", "root"]
 )
-export const WritebackExhausted = relation(
-	"WritebackExhausted",
-	{ step: DenStep, root: DenScope },
-	["step", "root"]
-)
+export const WritebackExhausted = relation("WritebackExhausted", { step: sha256, root: sha256 }, [
+	"step",
+	"root"
+])
 export const WritebackDeliverInput = relation(
 	"WritebackDeliverInput",
-	{ step: DenStep, attempt: Text, root: DenScope },
+	{ step: sha256, attempt: Text, root: sha256 },
 	["step", "root"]
 )
 export const WritebackWritebackInput = relation(
 	"WritebackWritebackInput",
-	{ scope: DenScope, attempt: Text, root: DenScope },
+	{ scope: sha256, attempt: Text, root: sha256 },
 	["scope", "root"]
 )
 export const WritebackDeliverOutput = relation(
 	"WritebackDeliverOutput",
-	{ step: DenStep, attempt: Text, root: DenScope },
+	{ step: sha256, attempt: Text, root: sha256 },
 	["step", "root"]
 )
 export const WritebackWritebackFinishOutput = relation(
 	"WritebackWritebackFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const WritebackPaused = relation(

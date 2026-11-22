@@ -1,4 +1,4 @@
-import { DenExclusive, DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
+import { DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Sync to; `den generate` writes it, and nothing edits it. */
 import {
 	closed,
@@ -14,7 +14,8 @@ import {
 	relation,
 	retirable,
 	retirement,
-	select
+	select,
+	sha256
 } from "@bjornpagen/grizzle"
 
 export const SyncKind = closed.unordered("SyncKind", [
@@ -28,134 +29,126 @@ export const SyncOutcome = closed.unordered("SyncOutcome", ["done", "failed"])
 export const SyncRetryWhy = closed.unordered("SyncRetryWhy", ["spent", "transient", "later"])
 export const SyncPausable = closed.unordered("SyncPausable", ["SyncRun", "Gold"])
 
-export const SyncScope = relation("SyncScope", { scope: DenScope, root: DenScope }, [
-	"scope",
-	"root"
-])
+export const SyncScope = relation("SyncScope", { scope: sha256, root: sha256 }, ["scope", "root"])
 export const SyncRoot = relation(
 	"SyncRoot",
-	{ scope: DenScope, kind: closedId(SyncRootKind), key: Text, at: DenInstant, retired: retirement },
+	{ scope: sha256, kind: closedId(SyncRootKind), key: Text, at: DenInstant, retired: retirement },
 	["scope"]
 )
 export const SyncExclusiveKey = relation(
 	"SyncExclusiveKey",
-	{ scope: DenScope, key: Text, id: DenExclusive, root: DenScope },
+	{ scope: sha256, key: Text, id: sha256, root: sha256 },
 	["scope", "root"]
 )
-export const SyncAdmitted = relation("SyncAdmitted", { scope: DenScope, root: DenScope }, [
+export const SyncAdmitted = relation("SyncAdmitted", { scope: sha256, root: sha256 }, [
 	"scope",
 	"root"
 ])
-export const SyncSkipped = relation(
-	"SyncSkipped",
-	{ scope: DenScope, by: DenScope, root: DenScope },
-	["scope", "root"]
-)
+export const SyncSkipped = relation("SyncSkipped", { scope: sha256, by: sha256, root: sha256 }, [
+	"scope",
+	"root"
+])
 export const SyncStep = relation(
 	"SyncStep",
-	{ step: DenStep, kind: closedId(SyncKind), scope: DenScope, due: DenInstant, root: DenScope },
+	{ step: sha256, kind: closedId(SyncKind), scope: sha256, due: DenInstant, root: sha256 },
 	["step", "root"]
 )
 export const SyncStartStep = relation(
 	"SyncStartStep",
-	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
+	{ scope: sha256, ordinal: natural, step: sha256, root: sha256 },
 	["scope", "ordinal", "root"]
 )
-export const SyncFinish = relation(
-	"SyncFinish",
-	{ scope: DenScope, step: DenStep, root: DenScope },
-	["scope", "root"]
-)
+export const SyncFinish = relation("SyncFinish", { scope: sha256, step: sha256, root: sha256 }, [
+	"scope",
+	"root"
+])
 export const SyncClaim = relation(
 	"SyncClaim",
-	{ step: DenStep, attempt: place, until: DenInstant, root: DenScope },
+	{ step: sha256, attempt: place, until: DenInstant, root: sha256 },
 	["step", "root", "attempt"]
 )
-export const SyncEnded = relation(
-	"SyncEnded",
-	{ step: DenStep, attempt: natural, root: DenScope },
-	["step", "attempt", "root"]
-)
+export const SyncEnded = relation("SyncEnded", { step: sha256, attempt: natural, root: sha256 }, [
+	"step",
+	"attempt",
+	"root"
+])
 export const SyncRetry = relation(
 	"SyncRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, why: closedId(SyncRetryWhy), root: DenScope },
+	{ step: sha256, attempt: natural, at: DenInstant, why: closedId(SyncRetryWhy), root: sha256 },
 	["step", "attempt", "root"]
 )
-export const SyncFenced = relation(
-	"SyncFenced",
-	{ step: DenStep, attempt: natural, root: DenScope },
-	["step", "attempt", "root"]
-)
+export const SyncFenced = relation("SyncFenced", { step: sha256, attempt: natural, root: sha256 }, [
+	"step",
+	"attempt",
+	"root"
+])
 export const SyncResult = relation(
 	"SyncResult",
-	{ step: DenStep, outcome: closedId(SyncOutcome), root: DenScope },
+	{ step: sha256, outcome: closedId(SyncOutcome), root: sha256 },
 	["step", "root"]
 )
-export const SyncDone = relation("SyncDone", { step: DenStep, root: DenScope }, ["step", "root"])
-export const SyncFailed = relation("SyncFailed", { step: DenStep, root: DenScope }, [
+export const SyncDone = relation("SyncDone", { step: sha256, root: sha256 }, ["step", "root"])
+export const SyncFailed = relation("SyncFailed", { step: sha256, root: sha256 }, ["step", "root"])
+export const SyncHeld = relation("SyncHeld", { step: sha256, attempt: natural, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const SyncHeld = relation("SyncHeld", { step: DenStep, attempt: natural, root: DenScope }, [
+export const SyncRefusal = relation("SyncRefusal", { step: sha256, law: Text, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const SyncRefusal = relation("SyncRefusal", { step: DenStep, law: Text, root: DenScope }, [
-	"step",
-	"root"
-])
-export const SyncExhausted = relation("SyncExhausted", { step: DenStep, root: DenScope }, [
+export const SyncExhausted = relation("SyncExhausted", { step: sha256, root: sha256 }, [
 	"step",
 	"root"
 ])
 export const SyncCopyInput = relation(
 	"SyncCopyInput",
-	{ step: DenStep, relation: Text, run: pg.bigint, root: DenScope },
+	{ step: sha256, relation: Text, run: pg.bigint, root: sha256 },
 	["step", "root"]
 )
 export const SyncBuildInput = relation(
 	"SyncBuildInput",
-	{ step: DenStep, build: pg.bigint, root: DenScope },
+	{ step: sha256, build: pg.bigint, root: sha256 },
 	["step", "root"]
 )
 export const SyncSyncRunInput = relation(
 	"SyncSyncRunInput",
-	{ scope: DenScope, relation: Text, run: pg.bigint, root: DenScope },
+	{ scope: sha256, relation: Text, run: pg.bigint, root: sha256 },
 	["scope", "root"]
 )
 export const SyncGoldInput = relation(
 	"SyncGoldInput",
-	{ scope: DenScope, build: pg.bigint, root: DenScope },
+	{ scope: sha256, build: pg.bigint, root: sha256 },
 	["scope", "root"]
 )
 export const SyncCopyOutput = relation(
 	"SyncCopyOutput",
-	{ step: DenStep, run: pg.bigint, root: DenScope },
+	{ step: sha256, run: pg.bigint, root: sha256 },
 	["step", "root"]
 )
 export const SyncBuildOutput = relation(
 	"SyncBuildOutput",
-	{ step: DenStep, build: pg.bigint, root: DenScope },
+	{ step: sha256, build: pg.bigint, root: sha256 },
 	["step", "root"]
 )
 export const SyncSyncRunFinishOutput = relation(
 	"SyncSyncRunFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const SyncGoldFinishOutput = relation(
 	"SyncGoldFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const SyncExclusive = relation(
 	"SyncExclusive",
-	{ kind: closedId(SyncRootKind), key: DenExclusive, turn: natural, scope: DenScope },
+	{ kind: closedId(SyncRootKind), key: sha256, turn: natural, scope: sha256 },
 	["kind", "key", "turn"]
 )
 export const SyncReleased = relation(
 	"SyncReleased",
-	{ kind: closedId(SyncRootKind), key: DenExclusive, turn: natural },
+	{ kind: closedId(SyncRootKind), key: sha256, turn: natural },
 	["kind", "key", "turn"]
 )
 export const SyncPaused = relation(

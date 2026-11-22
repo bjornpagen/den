@@ -19,9 +19,7 @@ import {
 	finishStep,
 	rootScope,
 	rowDigest,
-	type ScopeKey,
-	startedStep,
-	type StepKey
+	startedStep
 } from "@bjornpagen/den/runtime/identity"
 import type {
 	FlowNeeds,
@@ -38,10 +36,9 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Assign over its served programs; `den generate` writes it, and nothing edits it. */
-import type { Addition } from "@bjornpagen/grizzle"
+import { type Addition, Sha256 } from "@bjornpagen/grizzle"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, Stream } from "effect"
-import type { Digest } from "effect/crypto"
+import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
 import { assign } from "#integration/slice/flows.ts"
 import { AssignPausable } from "#integration/slice/generated/assign.fragment.ts"
 import type {
@@ -148,8 +145,8 @@ export const assignLedger = (h: AssignHandles) => {
 		timed: [],
 		spawned: { steps: [], finishes: [] }
 	}
-	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
-		Arr.some(grown.rows.AssignStartStep, (s) => s.scope === scope)
+	const hasChildren = (grown: Grown, scope: Sha256): boolean =>
+		Arr.some(grown.rows.AssignStartStep, (s) => Sha256.equals(s.scope, scope))
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			AssignScope: [...a.rows.AssignScope, ...b.rows.AssignScope],
@@ -193,55 +190,54 @@ export const assignLedger = (h: AssignHandles) => {
 		}
 	})
 	const startAssignment = (
-		root: ScopeKey,
-		scope: ScopeKey,
+		root: Sha256,
+		scope: Sha256,
 		input: Parameters<(typeof assign.kinds)[2]["start"]>[0]
-	): Effect.Effect<Grown, never, Digest.Digest> =>
-		Effect.map(
-			Effect.forEach(
-				assign.kinds[2].start(input),
-				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
-					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
-						rows: {
-							...noRows,
-							AssignStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-							AssignEmbedInput: [
-								{
-									step: key,
-									root: root,
-									learner: spawn.input.learner,
-									topic: spawn.input.topic,
-									mode: spawn.input.mode._tag
-								}
-							],
-							AssignEmbedInputNear: Arr.map(spawn.input.near, (element, index) => ({
+	): Grown =>
+		Arr.reduce(
+			Arr.map(assign.kinds[2].start(input), (spawn, ordinal): Grown =>
+				pipe(startedStep(scope, ordinal), (key): Grown => ({
+					rows: {
+						...noRows,
+						AssignStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+						AssignEmbedInput: [
+							{
 								step: key,
 								root: root,
-								ordinal: BigInt(index),
-								value: element
-							})),
-							AssignEmbedInputExclude: Arr.map(spawn.input.exclude, (element, index) => ({
-								step: key,
-								root: root,
-								ordinal: BigInt(index),
-								value: element
-							})),
-							AssignEmbedInputModeNearest: Arr.flatMap([spawn.input.mode], (variant) =>
-								variant._tag === "Nearest" ? [{ step: key, root: root }] : []
-							),
-							AssignEmbedInputModeWithin: Arr.flatMap([spawn.input.mode], (variant) =>
-								variant._tag === "Within" ? [{ step: key, root: root, radius: variant.radius }] : []
-							)
-						},
-						...spawnedOf(
-							{ step: key, kind: "Embed", scope: scope },
-							dueOf(assign.kinds[0].due, spawn.input)
+								learner: spawn.input.learner,
+								topic: spawn.input.topic,
+								mode: spawn.input.mode._tag
+							}
+						],
+						AssignEmbedInputNear: Arr.map(spawn.input.near, (element, index) => ({
+							step: key,
+							root: root,
+							ordinal: BigInt(index),
+							value: element
+						})),
+						AssignEmbedInputExclude: Arr.map(spawn.input.exclude, (element, index) => ({
+							step: key,
+							root: root,
+							ordinal: BigInt(index),
+							value: element
+						})),
+						AssignEmbedInputModeNearest: Arr.flatMap([spawn.input.mode], (variant) =>
+							variant._tag === "Nearest" ? [{ step: key, root: root }] : []
+						),
+						AssignEmbedInputModeWithin: Arr.flatMap([spawn.input.mode], (variant) =>
+							variant._tag === "Within" ? [{ step: key, root: root, radius: variant.radius }] : []
 						)
-					}))
+					},
+					...spawnedOf(
+						{ step: key, kind: "Embed", scope: scope },
+						dueOf(assign.kinds[0].due, spawn.input)
+					)
+				}))
 			),
-			(parts) => Arr.reduce(parts, nothingGrown, joined)
+			nothingGrown,
+			joined
 		)
-	const readAssignEmbedInput = (step: StepKey) =>
+	const readAssignEmbedInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.assignReadAssignEmbedInput.once({ params: { step: step }, facts: {} })),
@@ -288,7 +284,7 @@ export const assignLedger = (h: AssignHandles) => {
 				)
 			)
 		})
-	const readAssignDecideInput = (step: StepKey) =>
+	const readAssignDecideInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.assignReadAssignDecideInput.once({ params: { step: step }, facts: {} })),
@@ -331,7 +327,7 @@ export const assignLedger = (h: AssignHandles) => {
 				)
 			)
 		})
-	const readAssignAssignmentInput = (scope: ScopeKey) =>
+	const readAssignAssignmentInput = (scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(
@@ -425,7 +421,7 @@ export const assignLedger = (h: AssignHandles) => {
 	}
 	const request = {
 		Assignment: (key: string, input: Parameters<(typeof assign.kinds)[2]["start"]>[0]) =>
-			Effect.flatMap(rootScope("Assign", "Assignment", key), (scope) =>
+			pipe(rootScope("Assign", "Assignment", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Assign",
@@ -481,58 +477,58 @@ export const assignLedger = (h: AssignHandles) => {
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.map(
-							Effect.all([
-								Effect.map(
-									Effect.forEach(
-										assign.edges[0].next(done.input, done.output),
-										(input, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
-											Effect.map(edgeStep(done.turn.step, "Asked", ordinal), (key): Grown => ({
-												rows: {
-													...noRows,
-													AssignAsked: [
-														{
-															from: done.turn.step,
-															ordinal: BigInt(ordinal),
-															to: key,
-															root: done.turn.root
-														}
-													],
-													AssignDecideInput: [
-														{
-															step: key,
-															root: done.turn.root,
-															learner: input.learner,
-															topic: input.topic,
-															vector: input.vector,
-															mode: input.mode._tag
-														}
-													],
-													AssignDecideInputExclude: Arr.map(input.exclude, (element, index) => ({
+						const grown = Arr.reduce(
+							[
+								Arr.reduce(
+									Arr.map(assign.edges[0].next(done.input, done.output), (input, ordinal): Grown =>
+										pipe(edgeStep(done.turn.step, "Asked", ordinal), (key): Grown => ({
+											rows: {
+												...noRows,
+												AssignAsked: [
+													{
+														from: done.turn.step,
+														ordinal: BigInt(ordinal),
+														to: key,
+														root: done.turn.root
+													}
+												],
+												AssignDecideInput: [
+													{
 														step: key,
 														root: done.turn.root,
-														ordinal: BigInt(index),
-														value: element
-													})),
-													AssignDecideInputModeNearest: Arr.flatMap([input.mode], (variant) =>
-														variant._tag === "Nearest" ? [{ step: key, root: done.turn.root }] : []
-													),
-													AssignDecideInputModeWithin: Arr.flatMap([input.mode], (variant) =>
-														variant._tag === "Within"
-															? [{ step: key, root: done.turn.root, radius: variant.radius }]
-															: []
-													)
-												},
-												...spawnedOf(
-													{ step: key, kind: "Decide", scope: done.turn.scope },
-													dueOf(assign.kinds[1].due, input)
+														learner: input.learner,
+														topic: input.topic,
+														vector: input.vector,
+														mode: input.mode._tag
+													}
+												],
+												AssignDecideInputExclude: Arr.map(input.exclude, (element, index) => ({
+													step: key,
+													root: done.turn.root,
+													ordinal: BigInt(index),
+													value: element
+												})),
+												AssignDecideInputModeNearest: Arr.flatMap([input.mode], (variant) =>
+													variant._tag === "Nearest" ? [{ step: key, root: done.turn.root }] : []
+												),
+												AssignDecideInputModeWithin: Arr.flatMap([input.mode], (variant) =>
+													variant._tag === "Within"
+														? [{ step: key, root: done.turn.root, radius: variant.radius }]
+														: []
 												)
-											}))
+											},
+											...spawnedOf(
+												{ step: key, kind: "Decide", scope: done.turn.scope },
+												dueOf(assign.kinds[1].due, input)
+											)
+										}))
 									),
-									(parts) => Arr.reduce(parts, nothingGrown, joined)
+									nothingGrown,
+									joined
 								)
-							]),
-							(parts) => Arr.reduce(parts, nothingGrown, joined)
+							],
+							nothingGrown,
+							joined
 						)
 						const outcome = yield* settled(
 							h.commits.assignCommitEmbed.once({
@@ -585,28 +581,28 @@ export const assignLedger = (h: AssignHandles) => {
 					),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
-						const recordedNearest = yield* Effect.forEach(done.rows.nearest, (row) =>
-							Effect.map(
-								rowDigest("nearest", [
-									["passage", row.passage],
-									["topic", row.topic],
-									["distance", row.distance]
-								]),
-								(digest) => ({ ...row, digest })
-							)
+						const grown = nothingGrown
+						const recordedNearest = Arr.map(done.rows.nearest, (row) => ({
+							...row,
+							digest: rowDigest("nearest", [
+								["passage", row.passage],
+								["topic", row.topic],
+								["distance", row.distance]
+							])
+						}))
+						const uniqueNearest = Arr.dedupeWith(recordedNearest, (a, b) =>
+							Sha256.equals(a.digest, b.digest)
 						)
-						const uniqueNearest = Arr.dedupeWith(recordedNearest, (a, b) => a.digest === b.digest)
-						const recordedSeen = yield* Effect.forEach(done.rows.seen, (row) =>
-							Effect.map(
-								rowDigest("seen", [
-									["learner", row.learner],
-									["passage", row.passage]
-								]),
-								(digest) => ({ ...row, digest })
-							)
+						const recordedSeen = Arr.map(done.rows.seen, (row) => ({
+							...row,
+							digest: rowDigest("seen", [
+								["learner", row.learner],
+								["passage", row.passage]
+							])
+						}))
+						const uniqueSeen = Arr.dedupeWith(recordedSeen, (a, b) =>
+							Sha256.equals(a.digest, b.digest)
 						)
-						const uniqueSeen = Arr.dedupeWith(recordedSeen, (a, b) => a.digest === b.digest)
 						const outcome = yield* settled(
 							h.commits.assignCommitDecide.once({
 								params: { ...done.writes.params },
@@ -768,18 +764,22 @@ export const assignLedger = (h: AssignHandles) => {
 						const inputDecide = (child: (typeof inputDecideRows)[number]["step"]) =>
 							held(
 								Option.flatMap(
-									Arr.findFirst(inputDecideRows, (row) => row.step === child),
+									Arr.findFirst(inputDecideRows, (row) => Sha256.equals(row.step, child)),
 									(row) =>
 										Option.map(
 											Option.all({
 												mode:
 													row.mode === "Nearest"
 														? Option.map(
-																Arr.findFirst(inputDecideVariant0_0, (o) => o.step === row.step),
+																Arr.findFirst(inputDecideVariant0_0, (o) =>
+																	Sha256.equals(o.step, row.step)
+																),
 																() => ({ _tag: "Nearest" as const })
 															)
 														: Option.map(
-																Arr.findFirst(inputDecideVariant0_1, (o) => o.step === row.step),
+																Arr.findFirst(inputDecideVariant0_1, (o) =>
+																	Sha256.equals(o.step, row.step)
+																),
 																(part) => ({ _tag: "Within" as const, radius: part.radius })
 															)
 											}),
@@ -788,7 +788,9 @@ export const assignLedger = (h: AssignHandles) => {
 												topic: row.topic,
 												vector: row.vector,
 												exclude: Arr.map(
-													ordered(Arr.filter(inputDecideFamily0, (o) => o.step === row.step)),
+													ordered(
+														Arr.filter(inputDecideFamily0, (o) => Sha256.equals(o.step, row.step))
+													),
 													(e) => e.value
 												),
 												mode: unions.mode
@@ -807,7 +809,9 @@ export const assignLedger = (h: AssignHandles) => {
 													stage:
 														row.stage === "Serve"
 															? Option.map(
-																	Arr.findFirst(outputDecideVariant0_0, (o) => o.step === row.step),
+																	Arr.findFirst(outputDecideVariant0_0, (o) =>
+																		Sha256.equals(o.step, row.step)
+																	),
 																	(part) => ({
 																		_tag: "Serve" as const,
 																		passage: part.passage,
@@ -815,14 +819,20 @@ export const assignLedger = (h: AssignHandles) => {
 																	})
 																)
 															: Option.map(
-																	Arr.findFirst(outputDecideVariant0_1, (o) => o.step === row.step),
+																	Arr.findFirst(outputDecideVariant0_1, (o) =>
+																		Sha256.equals(o.step, row.step)
+																	),
 																	() => ({ _tag: "Rest" as const })
 																)
 												}),
 												(unions) => ({
 													confidence: row.confidence,
 													weighed: Arr.map(
-														ordered(Arr.filter(outputDecideFamily0, (o) => o.step === row.step)),
+														ordered(
+															Arr.filter(outputDecideFamily0, (o) =>
+																Sha256.equals(o.step, row.step)
+															)
+														),
 														(e) => ({ passage: e.passage, distance: e.distance, passed: e.passed })
 													),
 													stage: unions.stage
@@ -845,7 +855,7 @@ export const assignLedger = (h: AssignHandles) => {
 				read: () => Effect.succeed([]),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.assignCommitAssignmentFinish.once({
 								params: { ...done.writes.params },
@@ -877,14 +887,14 @@ export const assignLedger = (h: AssignHandles) => {
 		Assignment: {
 			window: assign.kinds[2].window,
 			precondition: assign.kinds[2].precondition,
-			admit: (scope: ScopeKey) =>
+			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readAssignAssignmentInput(scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
-					const grown = yield* startAssignment(scope, scope, input.value)
-					const finish = yield* finishStep(scope)
+					const grown = startAssignment(scope, scope, input.value)
+					const finish = finishStep(scope)
 					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "AssignmentFinish", scope, delay: atOnce }
@@ -1089,9 +1099,9 @@ export const assignLedger = (h: AssignHandles) => {
 			settled(h.den.assignSnapshot.once({ params: {}, facts: {} })),
 			(rows) =>
 				Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof assign>> => {
-					const view = (scope: ScopeKey, admission: Admission): ReadonlyArray<ScopeView> =>
+					const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
 						Option.match(
-							Arr.findFirst(read.roots, (o) => o.scope === scope),
+							Arr.findFirst(read.roots, (o) => Sha256.equals(o.scope, scope)),
 							{
 								onSome: (o): ReadonlyArray<ScopeView> => [
 									{

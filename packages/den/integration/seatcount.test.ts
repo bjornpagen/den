@@ -92,11 +92,37 @@ const lowered = Effect.gen(function* () {
 })
 
 /**
+ * The CPU the lowered copy's open may spend on a worker (loweredSlice's `budget`): the fragment printed again for one
+ * Pool seat into a copy of the slice, and `grizzle generate` over it, a child process the worker awaits as a declared wait
+ * (support/slice.ts `grizzle`).
+ *
+ * @limitKind measured
+ * @owner den's integration suites (packages/den/integration)
+ * @unit milliseconds of CPU
+ * @scope one open of loweredSlice on one worker, the worker process's own CPU
+ * @evidence seatcount.test's `readyingCpu` in ~/.cache/toolchain-test/runs/739101362-3164387.json (`toolchain-test run
+ *   integration/claim.test.ts integration/relay.test.ts integration/seatcount.test.ts`, TEST_SEED=739101362), its two
+ *   needs (liveSliceCase and loweredSlice) opened together, which bounds loweredSlice's open from above
+ * @observed 2026-11-21 15:40 to 15:51 UTC
+ * @environment cassowary, Ubuntu 26.04 on arm64 in AWS, 64 cores and 247 GiB, 1-minute load 410 to 430 from other
+ *   lanes' runs; Node 26.13.1, toolchain 46e6e52e43dd, grizzle d81ee19dc (the pin), den-test-0 on the workbench's
+ *   PostgreSQL 19.0
+ * @workload one run of the property on one worker: its needs opened once, three cases
+ * @result readyingCpu 3,021.6 ms for both needs; no open failed
+ * @decision about ten times the readying that holds it, rounded up, as support/slice.ts's template budget: a worker's
+ *   CPU for one open moves with the load and with a cold compile cache. Unmeasured: the open alone, on a quiet machine
+ * @revalidate a lowering that prints more, a toolchain that counts a need's children in its budget, another machine
+ */
+const loweredBudgetMillis = 30_000
+
+/**
  * The lowered copy of the slice, once per worker (a need opened in the worker's scope, so the copy is removed when the
  * worker ends): every case of a worker migrates its own database to it, and reads it only.
  */
 const loweredSlice: Need<string> = {
 	key: "den seat counts: the slice lowered to one Pool seat",
+	budget: loweredBudgetMillis,
+	runNeeds: [],
 	open: Effect.mapBoth(lowered, {
 		onSuccess: Effect.succeed,
 		onFailure: (cause) =>

@@ -1,4 +1,4 @@
-import { DenInstant, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
+import { DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Clock to; `den generate` writes it, and nothing edits it. */
 import {
 	closed,
@@ -14,7 +14,8 @@ import {
 	relation,
 	retirable,
 	retirement,
-	select
+	select,
+	sha256
 } from "@bjornpagen/grizzle"
 
 export const ClockKind = closed.unordered("ClockKind", [
@@ -31,126 +32,111 @@ export const ClockChimeInputBell = closed.unordered("ClockChimeInputBell", ["eas
 export const ClockHourlyInputBell = closed.unordered("ClockHourlyInputBell", ["east", "west"])
 export const ClockChimeOutputBell = closed.unordered("ClockChimeOutputBell", ["east", "west"])
 
-export const ClockScope = relation("ClockScope", { scope: DenScope, root: DenScope }, [
-	"scope",
-	"root"
-])
+export const ClockScope = relation("ClockScope", { scope: sha256, root: sha256 }, ["scope", "root"])
 export const ClockRoot = relation(
 	"ClockRoot",
-	{
-		scope: DenScope,
-		kind: closedId(ClockRootKind),
-		key: Text,
-		at: DenInstant,
-		retired: retirement
-	},
+	{ scope: sha256, kind: closedId(ClockRootKind), key: Text, at: DenInstant, retired: retirement },
 	["scope"]
 )
-export const ClockAdmitted = relation("ClockAdmitted", { scope: DenScope, root: DenScope }, [
+export const ClockAdmitted = relation("ClockAdmitted", { scope: sha256, root: sha256 }, [
 	"scope",
 	"root"
 ])
-export const ClockSkipped = relation(
-	"ClockSkipped",
-	{ scope: DenScope, by: DenScope, root: DenScope },
-	["scope", "root"]
-)
+export const ClockSkipped = relation("ClockSkipped", { scope: sha256, by: sha256, root: sha256 }, [
+	"scope",
+	"root"
+])
 export const ClockStep = relation(
 	"ClockStep",
-	{ step: DenStep, kind: closedId(ClockKind), scope: DenScope, due: DenInstant, root: DenScope },
+	{ step: sha256, kind: closedId(ClockKind), scope: sha256, due: DenInstant, root: sha256 },
 	["step", "root"]
 )
 export const ClockStartStep = relation(
 	"ClockStartStep",
-	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
+	{ scope: sha256, ordinal: natural, step: sha256, root: sha256 },
 	["scope", "ordinal", "root"]
 )
-export const ClockFinish = relation(
-	"ClockFinish",
-	{ scope: DenScope, step: DenStep, root: DenScope },
-	["scope", "root"]
-)
+export const ClockFinish = relation("ClockFinish", { scope: sha256, step: sha256, root: sha256 }, [
+	"scope",
+	"root"
+])
 export const ClockClaim = relation(
 	"ClockClaim",
-	{ step: DenStep, attempt: place, until: DenInstant, root: DenScope },
+	{ step: sha256, attempt: place, until: DenInstant, root: sha256 },
 	["step", "root", "attempt"]
 )
-export const ClockEnded = relation(
-	"ClockEnded",
-	{ step: DenStep, attempt: natural, root: DenScope },
-	["step", "attempt", "root"]
-)
+export const ClockEnded = relation("ClockEnded", { step: sha256, attempt: natural, root: sha256 }, [
+	"step",
+	"attempt",
+	"root"
+])
 export const ClockRetry = relation(
 	"ClockRetry",
-	{ step: DenStep, attempt: natural, at: DenInstant, why: closedId(ClockRetryWhy), root: DenScope },
+	{ step: sha256, attempt: natural, at: DenInstant, why: closedId(ClockRetryWhy), root: sha256 },
 	["step", "attempt", "root"]
 )
 export const ClockFenced = relation(
 	"ClockFenced",
-	{ step: DenStep, attempt: natural, root: DenScope },
+	{ step: sha256, attempt: natural, root: sha256 },
 	["step", "attempt", "root"]
 )
 export const ClockResult = relation(
 	"ClockResult",
-	{ step: DenStep, outcome: closedId(ClockOutcome), root: DenScope },
+	{ step: sha256, outcome: closedId(ClockOutcome), root: sha256 },
 	["step", "root"]
 )
-export const ClockDone = relation("ClockDone", { step: DenStep, root: DenScope }, ["step", "root"])
-export const ClockFailed = relation("ClockFailed", { step: DenStep, root: DenScope }, [
+export const ClockDone = relation("ClockDone", { step: sha256, root: sha256 }, ["step", "root"])
+export const ClockFailed = relation("ClockFailed", { step: sha256, root: sha256 }, ["step", "root"])
+export const ClockHeld = relation("ClockHeld", { step: sha256, attempt: natural, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const ClockHeld = relation(
-	"ClockHeld",
-	{ step: DenStep, attempt: natural, root: DenScope },
-	["step", "root"]
-)
-export const ClockRefusal = relation("ClockRefusal", { step: DenStep, law: Text, root: DenScope }, [
+export const ClockRefusal = relation("ClockRefusal", { step: sha256, law: Text, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const ClockExhausted = relation("ClockExhausted", { step: DenStep, root: DenScope }, [
+export const ClockExhausted = relation("ClockExhausted", { step: sha256, root: sha256 }, [
 	"step",
 	"root"
 ])
 export const ClockChimeInput = relation(
 	"ClockChimeInput",
-	{ step: DenStep, hour: pg.bigint, bell: closedId(ClockChimeInputBell), root: DenScope },
+	{ step: sha256, hour: pg.bigint, bell: closedId(ClockChimeInputBell), root: sha256 },
 	["step", "root"]
 )
 export const ClockCloseInput = relation(
 	"ClockCloseInput",
-	{ step: DenStep, sitting: Text, deadline: DenInstant, root: DenScope },
+	{ step: sha256, sitting: Text, deadline: DenInstant, root: sha256 },
 	["step", "root"]
 )
 export const ClockHourlyInput = relation(
 	"ClockHourlyInput",
-	{ scope: DenScope, hour: pg.bigint, bell: closedId(ClockHourlyInputBell), root: DenScope },
+	{ scope: sha256, hour: pg.bigint, bell: closedId(ClockHourlyInputBell), root: sha256 },
 	["scope", "root"]
 )
 export const ClockSittingInput = relation(
 	"ClockSittingInput",
-	{ scope: DenScope, sitting: Text, deadline: DenInstant, root: DenScope },
+	{ scope: sha256, sitting: Text, deadline: DenInstant, root: sha256 },
 	["scope", "root"]
 )
 export const ClockChimeOutput = relation(
 	"ClockChimeOutput",
-	{ step: DenStep, hour: pg.bigint, bell: closedId(ClockChimeOutputBell), root: DenScope },
+	{ step: sha256, hour: pg.bigint, bell: closedId(ClockChimeOutputBell), root: sha256 },
 	["step", "root"]
 )
 export const ClockCloseOutput = relation(
 	"ClockCloseOutput",
-	{ step: DenStep, sitting: Text, deadline: DenInstant, root: DenScope },
+	{ step: sha256, sitting: Text, deadline: DenInstant, root: sha256 },
 	["step", "root"]
 )
 export const ClockHourlyFinishOutput = relation(
 	"ClockHourlyFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const ClockSittingFinishOutput = relation(
 	"ClockSittingFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const ClockPaused = relation(

@@ -9,20 +9,20 @@ where the proposal leaves a decision open, the spine makes the simplest one cons
 
 `packages/den` (`@bjornpagen/den`, private), each module its own subpath export (`@bjornpagen/den/runtime/turn`, …).
 Its limits (Vercel's function lifetime, the lease, the invocation budget and the retry ladder derived from it,
-PostgreSQL's `authentication_timeout` and the connect timeout derived from it, the suites' case hang guard) are
+PostgreSQL's `authentication_timeout`, the suites' case hang guard) are
 constants with their evidence beside the code they bound (`src/runtime/turn.ts`, the suites' `test/support/suites.ts`).
 
 | module | what it holds |
 |---|---|
-| `src/transport.ts` | the wake contract: `Wake` `{ lane, step, attempt }`, each field branded (`den/LaneName`, `DenStep`, `den/Attempt` ≥ 1), decoded by `WakeSchema`; `idempotencyKey` (`${lane}:${step}:${attempt}`); `Transport`, a `Context.Service` whose `send` never fails; the in-process transport over an unbounded `Queue` |
+| `src/transport.ts` | the wake contract: `Wake`, a step's attempt, a scope's admission or a period's census, its keys grizzle's `Sha256`; on a wire `WireWakeSchema`, each key its hex, written by `wireOf` and parsed once by `wakeOf`; `idempotencyKey` (the wake's text and its cause's); `Transport`, a `Context.Service` whose `send` never fails; the in-process transport over an unbounded `Queue` |
 | `src/algebra/kinds.ts` | `lane` (width, window, pause, ceiling of attempts), `step`, `awaiting`, `scope`, `root`, `edge`, `writes`; a step's reads, `reads(query, records, params)`, one grizzle query of the app role, a record of named queries, its parameters from the step's input, each name's rows recorded by its record, taken in one statement; the facts a step awaits (`awaitFact`); what it uses, each a `resource`, a seat of which it holds while it runs, or a `pauseHandle`, a target of the flow's pauses with no seats; whether it is tried again after a spent attempt and waits on its source (`untilSettled` or `none`); spawns typed by their kind (`Page.of(input)`); bodies `(input, found) → Effect<{ output, writes }, E, R>`, `found` each read's rows by its name; `Refused` |
 | `src/algebra/flow.ts` | `flow(name, { lanes, kinds, edges })` and its declaration-time checks (below) |
 | `src/lower/schema.ts` | Effect Schema to relations: columns of `String`, `BigInt`, `Finite` (double precision, held finite by a row check), `Boolean`, a literal union of texts (a roster) or a brand of one (a contract); an `Option` of a column (a relation of its own); an `Array` of columns or of structs of them (an ordered family keyed by owner and a gap-free ordinal from 0); a `TaggedUnion` of structs of columns (its tag a roster column of the owner's row, a relation per variant holding a row exactly where the tag names it); anything else, a refinement by a check included, `Refused` |
 | `src/lower/fragment.ts` | a flow to its fragment as data (`Lowered`): rosters, contracts, relations, laws, and the kinds, joins and edges the printer reads |
 | `src/lower/print.ts`, `generate.ts` | the fragment, the programs and the binding printed as three TypeScript modules the app commits (`den generate`) |
 | `src/lower/merge.ts` | den's clash check: the app's relations and a fragment merged, a shared name refused |
-| `src/lower/keys.ts` | den's contracts (`DenStep`, `DenScope`, `DenExclusive`, `DenInstant`) and `Text`, which an app's relation referencing den's facts types its column by |
-| `src/runtime/identity.ts` | derived identity: the SHA-256 of a key's parts (Effect's `Digest`), grizzle's `sha256` |
+| `src/lower/keys.ts` | den's contracts (`DenInstant`, `DenDelay`) and `Text`; den's keys are grizzle's `sha256` columns, which an app's relation referencing den's facts types its column by |
+| `src/runtime/identity.ts` | derived identity: the SHA-256 of a key's parts (`Sha256.ofBytes`), grizzle's `sha256`, its 32 bytes |
 | `src/runtime/ledger.ts` | the ledger port, in den's own types, that a flow's generated binding fills |
 | `src/runtime/settled.ts` | `settled`, a grizzle call run again at once past its transient refusals, with no count, and `Settled`, what it ends with |
 | `src/runtime/turn.ts` | one turn (`serve`), the claim (`claimed`), a kind's runner, endings from `CallError`, settling a scope (`settle`), a start's wakes (`begin`), one invocation under a budget (`invoke`) |
@@ -117,9 +117,9 @@ output into `select(PResult, outcome = done)`) certifies.
 3. **Every login that serves a read needs a live source**, even one that only calls `once`
    (`packages/grizzle/src/adapter/types/layer.ts:222`): the suites build `LiveSource.layer` for the installation with a
    credential that never connects.
-4. **Contracts of one definition share one domain**: `DenStep`, `DenScope` and `DenExclusive` are one PostgreSQL domain
-   over `sha256`'s text, told apart only by TypeScript's brands. As documented, not a defect; recorded because the database cannot
-   tell a scope from a step.
+4. **A digest is no contract's base**: den's step, scope, exclusivity and row keys are all grizzle's `sha256`, one
+   PostgreSQL domain of 32 bytes, told apart by nothing but their columns. As documented, not a defect; recorded because
+   neither the database nor TypeScript tells a scope from a step.
 5. **A role prefix is converted** (`m1` installs as `m_1__…`): take every name from `roleNameOf`, as the harness does.
 
 **Effect 4.1.4**
@@ -263,7 +263,7 @@ PostgreSQL (`pnpm test:network`, six files, each its own database):
 - **HTTP surface**: den's operator verbs (start a root, complete an await, stop, pause, watch) as served programs in roles
   the app lists, through grizzle's `httpHandler`.
 - **Vercel transport** (`packages/den-vercel`): a `Transport` over Vercel Queues, one topic per lane,
-  `idempotencyKey` per send, `WakeSchema` at the consumer's boundary, every delivery acknowledged, `invoke` with the
+  `idempotencyKey` per send, `WireWakeSchema` and `wakeOf` at the consumer's boundary, every delivery acknowledged, `invoke` with the
   invocation's budget.
 - **edullm's first use**: QTI as a chain in a scope, Timeback's growth as a fan-out, on the same generator.
 

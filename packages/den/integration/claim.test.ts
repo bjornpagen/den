@@ -1,13 +1,13 @@
-import { delayOf, instantOf, type StepKey } from "@bjornpagen/den/runtime/identity"
+import { delayOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import { lostRace, serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
+import type { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { finite, int } from "@bjornpagen/testing/gen"
 import { interleave, type Interleaving } from "@bjornpagen/testing/interleave"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Option, Ref } from "effect"
-import type { Digest } from "effect/crypto"
 import { openLedgers, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
 
@@ -45,7 +45,7 @@ export const admitsOneClaimerOfAnAttemptInEveryInterleaving = property.exhaust(f
 						c.note(pages === 1 ? "one page" : "two pages")
 						const { chain, ledgers } = yield* openLedgers
 						const runs = yield* Ref.make(0)
-						const current = yield* Ref.make(Option.none<StepKey>())
+						const current = yield* Ref.make(Option.none<Sha256>())
 						const reset = Effect.gen(function* () {
 							const n = yield* Ref.getAndUpdate(runs, (k) => k + 1)
 							const at = yield* chain.ledger.now
@@ -67,7 +67,7 @@ export const admitsOneClaimerOfAnAttemptInEveryInterleaving = property.exhaust(f
 								Option.map(first, (s) => s.step)
 							)
 						}).pipe(Effect.orDie)
-						const claim = (_session: Session): Effect.Effect<Outcome, never, Digest.Digest> =>
+						const claim = (_session: Session): Effect.Effect<Outcome> =>
 							Effect.gen(function* () {
 								const held = yield* Ref.get(current)
 								const step = Option.getOrThrow(held)

@@ -5,7 +5,6 @@ import type { Ledgers, Served } from "@bjornpagen/den/runtime/turn"
 import { Transport } from "@bjornpagen/den/transport"
 import type { InProcess } from "@bjornpagen/den/transport"
 import { Array as Arr, Effect } from "effect"
-import type { Digest } from "effect/crypto"
 
 /**
  * How a suite runs what it requested: it rings the roots' admissions as the write that requested them does once it has
@@ -16,7 +15,7 @@ export const ringAndDrain = <R>(ledgers: Ledgers<R>, requested: ReadonlyArray<Re
 	Effect.andThen(
 		Effect.flatMap(Transport, (transport) => transport.send(Arr.map(requested, admissionOf))),
 		drain(ledgers)
-	) satisfies Effect.Effect<unknown, never, R | Digest.Digest | Transport | InProcess>
+	) satisfies Effect.Effect<unknown, never, R | Transport | InProcess>
 
 /** Rings what a turn served by hand would have rung on, as its own continuation would, then drains. */
 export const ringOnAndDrain = <R>(ledgers: Ledgers<R>, served: Served) =>
@@ -30,4 +29,4 @@ export const ringOnAndDrain = <R>(ledgers: Ledgers<R>, served: Served) =>
 			}))
 		)
 		return yield* drain(ledgers)
-	}) satisfies Effect.Effect<unknown, never, R | Digest.Digest | Transport | InProcess>
+	}) satisfies Effect.Effect<unknown, never, R | Transport | InProcess>

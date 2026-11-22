@@ -1,9 +1,10 @@
-import type { Ledgers } from "@bjornpagen/den/runtime/turn"
+import { authenticationTimeoutSeconds, type Ledgers } from "@bjornpagen/den/runtime/turn"
 import { inProcess } from "@bjornpagen/den/transport"
 import { compileServedMoved } from "@bjornpagen/grizzle/compile"
 import { Db, DbLayer, LiveSource, roleNameOf, served } from "@bjornpagen/grizzle/runtime"
+import { waitingOn } from "@bjornpagen/testing/live"
 import { NeedFailed } from "@bjornpagen/testing/property"
-import { Database, type DatabaseNeed, type PgMember, Template } from "@bjornpagen/testing/resources"
+import { Database, type DatabaseNeed, Template } from "@bjornpagen/testing/resources"
 import * as NodeServices from "@effect/platform-node/NodeServices"
 import { regex } from "arkregex"
 import {
@@ -26,7 +27,6 @@ import {
 	Stream,
 	String as Str
 } from "effect"
-import { Digest } from "effect/crypto"
 import { ChildProcess } from "effect/process"
 import { TestClock } from "effect/testing"
 import pg from "pg"
@@ -40,11 +40,18 @@ import { reviewLedger } from "#integration/slice/generated/review.binding.ts"
 import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
 import { writebackLedger } from "#integration/slice/generated/writeback.binding.ts"
 import { AppLogin, Worker } from "#integration/slice/logins.ts"
-import initMigration from "#integration/slice/migrations/slice/20261121113037_init/meta.json" with { type: "json" }
+import initMigration from "#integration/slice/migrations/slice/20261122201427_init/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
-import { connectTimeoutMillis, connectionTo } from "#integration/support/cluster.ts"
+import {
+	awaitingPostgres,
+	backendOf,
+	connectionTo,
+	overTls,
+	signingIn,
+	type TlsMember
+} from "#integration/support/cluster.ts"
 
 /**
  * The vertical slice installed on den's cluster, as the needs of the integration properties: a template of the slice
@@ -104,7 +111,7 @@ const grizzleBin = `${import.meta.dirname}/../../node_modules/.bin/grizzle`
  * record lacks, or lacks one it holds (committedFolders).
  */
 const committed = Object.freeze({
-	"20261121113037_init": initMigration
+	"20261122201427_init": initMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
@@ -141,52 +148,69 @@ const committedFolders = Effect.gen(function* () {
 /** A failure of the suite's setup: a command or statement that did not do what the suite needs. */
 class SetupFailed extends Data.TaggedError("SetupFailed")<{ readonly message: string }> {}
 
+/**
+ * A session of the cluster's owner: its client, its backend recorded as it signed in (signingIn), and the member it
+ * runs on, which its statements' waits ask whether that backend works on them (awaitingPostgres).
+ */
+interface OwnerSession {
+	readonly client: pg.Client
+	readonly member: TlsMember
+}
+
 /** A session of the cluster's owner in `database`, connected, and ended once its scope closes. */
-const ownerSession = (member: PgMember, database: string) =>
+const ownerSession = (member: TlsMember, database: string) =>
 	Effect.acquireRelease(
 		Effect.tap(
-			Effect.sync(
-				() =>
+			Effect.sync((): OwnerSession => ({
+				client: signingIn(
 					new pg.Client({
 						host: "localhost",
 						port: member.port,
 						user: member.owner,
 						password: Redacted.value(member.password),
 						database,
-						ssl: { ca: member.ca, servername: "localhost" }
+						ssl: { ca: member.tls.ca, servername: "localhost" }
 					})
-			),
-			(client) =>
-				Effect.tryPromise({
-					try: () => client.connect(),
-					catch: (cause) =>
-						new SetupFailed({ message: `connecting as ${member.owner}: ${String(cause)}` })
-				})
+				),
+				member
+			})),
+			(owner) =>
+				awaitingPostgres(member, Option.none())(`connect as ${member.owner} to ${database}`)(
+					Effect.tryPromise({
+						try: () => owner.client.connect(),
+						catch: (cause) =>
+							new SetupFailed({ message: `connecting as ${member.owner}: ${String(cause)}` })
+					})
+				)
 		),
-		(client) => Effect.promise(() => client.end())
+		(owner) =>
+			awaitingPostgres(member, Option.none())(`end of the owner's session in ${database}`)(
+				Effect.promise(() => owner.client.end())
+			)
 	)
 
 /** Runs one statement on an owner's session, and returns its rows' first column. */
-const runOn = (client: pg.Client, statement: string) =>
+const runOn = (owner: OwnerSession, statement: string) =>
 	Effect.map(
-		Effect.tryPromise({
-			try: () => client.query<{ readonly name: string }>(statement),
-			catch: (cause) => new SetupFailed({ message: `${statement}: ${String(cause)}` })
-		}),
+		awaitingPostgres(owner.member, backendOf(owner.client.connection))(statement)(
+			Effect.tryPromise({
+				try: () => owner.client.query<{ readonly name: string }>(statement),
+				catch: (cause) => new SetupFailed({ message: `${statement}: ${String(cause)}` })
+			})
+		),
 		(result) => Arr.map(result.rows, (row) => row.name)
 	)
 
 /** Runs one statement as the cluster's owner, in `database`, and returns its rows' first column. */
-const asOwner = (member: PgMember, database: string, statement: string) =>
-	Effect.scoped(
-		Effect.flatMap(ownerSession(member, database), (client) => runOn(client, statement))
-	)
+const asOwner = (member: TlsMember, database: string, statement: string) =>
+	Effect.scoped(Effect.flatMap(ownerSession(member, database), (owner) => runOn(owner, statement)))
 
 /**
  * Runs a grizzle command over the configuration in `directory` (the slice's own, or a copy of it), for the database and
  * role prefix `env` names. The command inherits the test process's environment, and with it the compile cache the
  * testing library's setup hands to every process a test starts, so it loads grizzle's modules from the V8 code the
- * run's processes already compiled.
+ * run's processes already compiled. Its exit is awaited as a declared wait (waitingOn), named by the command: its
+ * statements are PostgreSQL's work and its own a child's, which the case's guard does not read as the worker's.
  */
 export const grizzle = (
 	command: string,
@@ -201,13 +225,15 @@ export const grizzle = (
 				extendEnv: true,
 				stdin: "ignore"
 			})
-			const [stdout, stderr, code] = yield* Effect.all(
-				[
-					Stream.mkString(Stream.decodeText(handle.stdout)),
-					Stream.mkString(Stream.decodeText(handle.stderr)),
-					handle.exitCode
-				],
-				{ concurrency: "unbounded" }
+			const [stdout, stderr, code] = yield* waitingOn(`grizzle ${command} in ${directory}`)(
+				Effect.all(
+					[
+						Stream.mkString(Stream.decodeText(handle.stdout)),
+						Stream.mkString(Stream.decodeText(handle.stderr)),
+						handle.exitCode
+					],
+					{ concurrency: "unbounded" }
+				)
 			)
 			if (code !== 0) {
 				return yield* new SetupFailed({ message: `grizzle ${command}: ${stdout}${stderr}` })
@@ -221,7 +247,7 @@ export const grizzle = (
  * and its logins' passwords.
  */
 interface Installed {
-	readonly member: PgMember
+	readonly member: TlsMember
 	readonly database: string
 	readonly rolePrefix: string
 	readonly env: Readonly<Record<string, string>>
@@ -235,9 +261,9 @@ class Installation extends Context.Service<Installation, Installed>()(
 ) {}
 
 /** The environment a grizzle command over `database` under `rolePrefix` reads (grizzle.config.ts). */
-const envOf = (member: PgMember, database: string, rolePrefix: string) => ({
+const envOf = (member: TlsMember, database: string, rolePrefix: string) => ({
 	DEN_PG_PORT: String(member.port),
-	DEN_PG_CA: member.ca,
+	DEN_PG_CA: member.tls.ca,
 	DEN_PG_ROLE: member.owner,
 	DEN_PG_PASSWORD: Redacted.value(member.password),
 	DEN_DATABASE: database,
@@ -256,7 +282,7 @@ const loginsOf = (rolePrefix: string) => ({
  * slice's committed migrations, then each login given its password.
  */
 const install = (
-	member: PgMember,
+	member: TlsMember,
 	database: string,
 	rolePrefix: string,
 	passwords: Readonly<{
@@ -291,11 +317,11 @@ const templatePrefixOf = (template: string): string => `t${Str.slice(-32, -20)(t
  * as the misconfigured loader is), and every worker that clones the template logs in without the template keeping a
  * credential.
  */
-const templatePassword = (member: PgMember, role: string): Redacted.Redacted =>
+const templatePassword = (member: TlsMember, role: string): Redacted.Redacted =>
 	Redacted.make(`${Redacted.value(member.password)}:${role}`)
 
 /** The passwords of the template under `rolePrefix`'s three logins (templatePassword). */
-const templatePasswords = (member: PgMember, rolePrefix: string) => {
+const templatePasswords = (member: TlsMember, rolePrefix: string) => {
 	const roles = loginsOf(rolePrefix)
 	return {
 		worker: templatePassword(member, roles.worker),
@@ -311,7 +337,7 @@ const templatePasswords = (member: PgMember, rolePrefix: string) => {
  * there and its migration refused them (42710). They own nothing once the database they were made in is gone; a role
  * that still owns something, in a clone another run holds, fails its drop and so the build.
  */
-const dropLeftRoles = (member: PgMember, rolePrefix: string) =>
+const dropLeftRoles = (member: TlsMember, rolePrefix: string) =>
 	Effect.flatMap(
 		asOwner(
 			member,
@@ -329,6 +355,37 @@ const setupNeedFailed = (need: string) => (cause: SetupFailed | PlatformError.Pl
 	NeedFailed.make({ need, message: cause.message })
 
 /**
+ * The CPU one open of a slice template's need may spend on a worker (Template.database's `budget`, which the needs that
+ * take its clones state too): its build, a migration a child process runs that the worker awaits as a declared wait
+ * (`grizzle`), or the wait on another worker's build, and the clone a case takes.
+ *
+ * @limitKind measured
+ * @owner den's integration suites (packages/den/integration)
+ * @unit milliseconds of CPU
+ * @scope one open of the den slice or den empty template's need on one worker, the worker process's own CPU
+ * @evidence each property's `readyingCpu` in ~/.cache/toolchain-test/runs/739101362-3164387.json (`toolchain-test run
+ *   integration/claim.test.ts integration/relay.test.ts integration/seatcount.test.ts`, TEST_SEED=739101362), which
+ *   bounds any one open of its needs from above (every need of a property opens in its readying); the same properties'
+ *   at toolchain a6172d0 and 541d327 in 1854769185-1748472.json and 3087850660-3443342.json
+ * @observed 2026-11-21 15:40 to 15:51 UTC (739101362); 13:46 to 13:55 UTC and 14:20 to 14:25 UTC (the others)
+ * @environment cassowary, Ubuntu 26.04 on arm64 in AWS, 64 cores and 247 GiB, 1-minute load 410 to 430 from other
+ *   lanes' runs; Node 26.13.1, toolchain 46e6e52e43dd, grizzle d81ee19dc (the pin), den-test-0 on the workbench's
+ *   PostgreSQL 19.0
+ * @workload one run of three properties on three workers, each opening its needs once: claim.test's sliceCase (the den
+ *   slice template, built by `grizzle migrate` of the slice's 24,135-line init migration), relay.test's
+ *   installedSliceCase (the den empty template), seatcount.test's liveSliceCase beside its lowered copy
+ * @result readyingCpu claim 2,824.9 ms, relay 2,814.8 ms, seatcount 3,021.6 ms (its two needs together); at a6172d0
+ *   claim 2,624.4 ms and relay 2,609.7 ms; at 541d327 relay 2,675.0 ms. No open failed
+ * @decision about ten times the largest readying, 3,021.6 ms, rounded up: a worker's CPU for one open moves with the
+ *   load and with a cold compile cache, which the runs met at load 410 to 430, and a guard that kills a building
+ *   template fails every case that clones it. Unmeasured: a template built on a quiet machine, and a slice whose
+ *   migration grows
+ * @revalidate a slice migration grown well past 24,135 lines, a template build that does more in the worker, a toolchain
+ *   that counts a need's children in its budget, another machine
+ */
+const templateBudgetMillis = 30_000
+
+/**
  * The slice installed, as a template: built once on the cluster from den_template by `grizzle migrate` under the
  * template's own role prefix (templatePrefixOf), its logins given the passwords the template derives
  * (templatePassword). Its identity is this module's import closure, which holds the slice's committed migrations
@@ -341,20 +398,18 @@ const sliceTemplate = Template.database({
 	declaredIn: import.meta,
 	name: "den slice",
 	content: { migrations: Rec.keys(committed), snapshot: snapshotFile.fingerprint },
+	budget: templateBudgetMillis,
 	from: Template.cluster,
 	build: (target) =>
-		Effect.mapError(
-			Effect.gen(function* () {
-				const rolePrefix = templatePrefixOf(target.name)
-				yield* dropLeftRoles(target.member, rolePrefix)
-				yield* install(
-					target.member,
-					target.name,
-					rolePrefix,
-					templatePasswords(target.member, rolePrefix)
-				)
-			}),
-			setupNeedFailed("den slice template")
+		Effect.flatMap(overTls(target.member), (member) =>
+			Effect.mapError(
+				Effect.gen(function* () {
+					const rolePrefix = templatePrefixOf(target.name)
+					yield* dropLeftRoles(member, rolePrefix)
+					yield* install(member, target.name, rolePrefix, templatePasswords(member, rolePrefix))
+				}),
+				setupNeedFailed("den slice template")
+			)
 		)
 })
 
@@ -363,15 +418,17 @@ const emptyTemplate = Template.database({
 	declaredIn: import.meta,
 	name: "den empty",
 	content: {},
+	budget: templateBudgetMillis,
 	from: Template.cluster,
 	build: () => Effect.void
 })
 
 /**
  * A login's pool: four sessions, the most one case holds at once (a relay's watches beside a claim and a read), each
- * closed once idle as long as a connection attempt may take, so no session outlives the cases that opened it for long.
+ * closed once idle as long as a connection attempt may take, the server's authentication_timeout, past which it closes
+ * an unauthenticated connection itself, so no session outlives the cases that opened it for long.
  */
-const pool = Object.freeze({ max: 4, min: 0, idleTimeoutMs: connectTimeoutMillis })
+const pool = Object.freeze({ max: 4, min: 0, idleTimeoutMs: authenticationTimeoutSeconds * 1000 })
 
 /** The app's loader, which den's commits run under, over the case's moved clock. */
 const openLoader = Effect.flatMap(Offset, (offset) =>
@@ -486,9 +543,7 @@ const offsetLayer = (clock: CaseClock) =>
 const caseLayer = (installed: Installed, clock: CaseClock) =>
 	loginsLayer(installed).pipe(
 		Layer.provideMerge(Layer.succeed(Installation, installed)),
-		Layer.provideMerge(
-			Layer.mergeAll(inProcess, Digest.layerWebCrypto, faultsLayer, offsetLayer(clock))
-		),
+		Layer.provideMerge(Layer.mergeAll(inProcess, faultsLayer, offsetLayer(clock))),
 		Layer.provideMerge(NodeServices.layer)
 	)
 
@@ -508,7 +563,7 @@ const caseOf = (installed: Installed, clock: CaseClock) =>
 export type SliceCase = Layer.Success<ReturnType<typeof caseLayer>>
 
 /** The installation a case over a clone of the slice template has: the clone, under the template's prefix. */
-const clonedInstallation = (member: PgMember, database: string, template: string): Installed => {
+const clonedInstallation = (member: TlsMember, database: string, template: string): Installed => {
 	const rolePrefix = templatePrefixOf(template)
 	return {
 		member,
@@ -533,14 +588,18 @@ const clonedCase = (clock: CaseClock): DatabaseNeed<Context.Context<SliceCase>> 
 	const key = `den slice clone, ${clock} clock`
 	return {
 		key,
+		budget: sliceTemplate.budget,
+		runNeeds: [],
 		template: sliceTemplate,
 		open: Effect.andThen(
 			committedFolders,
 			Effect.map(fresh.open, (take) =>
 				Effect.flatMap(take, (db) =>
-					Effect.mapError(
-						caseOf(clonedInstallation(db.member, db.name, db.template), clock),
-						builtAs(key)
+					Effect.flatMap(overTls(db.member), (member) =>
+						Effect.mapError(
+							caseOf(clonedInstallation(member, db.name, db.template), clock),
+							builtAs(key)
+						)
 					)
 				)
 			)
@@ -562,14 +621,14 @@ const freshName = Effect.map(Random.nextInt, (n) => Math.abs(n).toString(36))
  * passwords, and uninstalled (its roles and its live source's replication slot dropped) once the case ends, before the
  * clone is: so the case's live source claims a slot no other case names.
  */
-const ownInstallation = (database: Database) =>
+const ownInstallation = (member: TlsMember, database: string) =>
 	Effect.acquireRelease(
 		Effect.gen(function* () {
 			const suffix = yield* freshName
 			const password = Effect.map(Effect.all([freshName, freshName]), ([a, b]) =>
 				Redacted.make(`p${a}${b}`)
 			)
-			return yield* install(database.member, database.name, `t${suffix}`, {
+			return yield* install(member, database, `t${suffix}`, {
 				worker: yield* password,
 				app: yield* password,
 				decoder: yield* password
@@ -585,6 +644,8 @@ const ownInstallation = (database: Database) =>
  */
 export const installedSliceCase: DatabaseNeed<Context.Context<SliceCase>> = {
 	key: "den slice installed, live clock",
+	budget: emptyTemplate.budget,
+	runNeeds: [],
 	template: emptyTemplate,
 	open: Effect.zipWith(
 		Effect.context<NodeServices.NodeServices>(),
@@ -592,8 +653,11 @@ export const installedSliceCase: DatabaseNeed<Context.Context<SliceCase>> = {
 		(platform, take) =>
 			Effect.flatMap(take, (db) =>
 				Effect.mapError(
-					Effect.flatMap(Effect.provideContext(ownInstallation(db), platform), (installed) =>
-						caseOf(installed, "live")
+					Effect.flatMap(
+						Effect.flatMap(overTls(db.member), (member) =>
+							Effect.provideContext(ownInstallation(member, db.name), platform)
+						),
+						(installed) => caseOf(installed, "live")
 					),
 					builtAs("den slice installed, live clock")
 				)

@@ -51,6 +51,7 @@ import {
 /** What a lowered field holds. */
 export type FieldType =
 	| { readonly kind: "key"; readonly contract: DenKey }
+	| { readonly kind: "digest" }
 	| { readonly kind: "natural" }
 	| { readonly kind: "place" }
 	| { readonly kind: "drawn" }
@@ -436,10 +437,11 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const steps = stepsOf(kinds)
 	const joins = joinsOf(kinds)
 	const roots = Arr.filter(joins, (j): j is AnyRootKind => j._tag === "Root")
-	const stepKey: FieldType = { kind: "key", contract: "DenStep" }
-	const scopeKey: FieldType = { kind: "key", contract: "DenScope" }
+	const digest: FieldType = { kind: "digest" }
+	const stepKey = digest
+	const scopeKey = digest
 	const instant: FieldType = { kind: "key", contract: "DenInstant" }
-	const rowKey: FieldType = { kind: "key", contract: "DenRow" }
+	const rowKey = digest
 	const text: FieldType = { kind: "base", base: "text" }
 	const natural: FieldType = { kind: "natural" }
 	const place: FieldType = { kind: "place" }
@@ -518,7 +520,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 					fields: [
 						{ name: "scope", type: scopeKey },
 						{ name: "key", type: text },
-						{ name: "id", type: { kind: "key", contract: "DenExclusive" } }
+						{ name: "id", type: digest }
 					],
 					key: ["scope"]
 				})
@@ -1271,7 +1273,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 				name("Released"),
 				[
 					{ name: "kind", type: { kind: "closed", roster: name("RootKind") } },
-					{ name: "key", type: { kind: "key", contract: "DenExclusive" } }
+					{ name: "key", type: digest }
 				],
 				[{ name: "scope", type: scopeKey }]
 			)

@@ -1,4 +1,4 @@
-import { WakeSchema } from "@bjornpagen/den/transport"
+import { WireWakeSchema } from "@bjornpagen/den/transport"
 import type {
 	BatchSendMessage,
 	BatchSendResult,
@@ -16,8 +16,11 @@ import { Context, Schema } from "effect"
 /** The topic every wake is sent to, and the one queue trigger consumes. */
 export const TOPIC = "den-wakes"
 
-/** A wake as a message's payload: its JSON text, encoded and decoded by the contract's own schema, once. */
-export const WakeJson = Schema.fromJsonString(WakeSchema)
+/**
+ * A wake as a message's payload: its wire form's JSON text (den's wireOf), encoded and decoded by the contract's own
+ * schema, once; the consumer then parses its keys (den's wakeOf).
+ */
+export const WakeJson = Schema.fromJsonString(WireWakeSchema)
 
 /**
  * The client's serializer for den's payloads: JSON text sent as its UTF-8 bytes, and read back as text, so the

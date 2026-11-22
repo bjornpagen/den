@@ -1,4 +1,4 @@
-import { DenInstant, DenRow, DenScope, DenStep, Text } from "@bjornpagen/den/lower/keys"
+import { DenInstant, Text } from "@bjornpagen/den/lower/keys"
 /** The fragment den lowered the flow Assign to; `den generate` writes it, and nothing edits it. */
 import {
 	check,
@@ -16,7 +16,8 @@ import {
 	relation,
 	retirable,
 	retirement,
-	select
+	select,
+	sha256
 } from "@bjornpagen/grizzle"
 
 export const AssignKind = closed.unordered("AssignKind", ["Embed", "Decide", "AssignmentFinish"])
@@ -38,252 +39,229 @@ export const AssignDecideOutputStage = closed.unordered("AssignDecideOutputStage
 	"Rest"
 ])
 
-export const AssignScope = relation("AssignScope", { scope: DenScope, root: DenScope }, [
+export const AssignScope = relation("AssignScope", { scope: sha256, root: sha256 }, [
 	"scope",
 	"root"
 ])
 export const AssignRoot = relation(
 	"AssignRoot",
-	{
-		scope: DenScope,
-		kind: closedId(AssignRootKind),
-		key: Text,
-		at: DenInstant,
-		retired: retirement
-	},
+	{ scope: sha256, kind: closedId(AssignRootKind), key: Text, at: DenInstant, retired: retirement },
 	["scope"]
 )
-export const AssignAdmitted = relation("AssignAdmitted", { scope: DenScope, root: DenScope }, [
+export const AssignAdmitted = relation("AssignAdmitted", { scope: sha256, root: sha256 }, [
 	"scope",
 	"root"
 ])
 export const AssignSkipped = relation(
 	"AssignSkipped",
-	{ scope: DenScope, by: DenScope, root: DenScope },
+	{ scope: sha256, by: sha256, root: sha256 },
 	["scope", "root"]
 )
 export const AssignStep = relation(
 	"AssignStep",
-	{ step: DenStep, kind: closedId(AssignKind), scope: DenScope, due: DenInstant, root: DenScope },
+	{ step: sha256, kind: closedId(AssignKind), scope: sha256, due: DenInstant, root: sha256 },
 	["step", "root"]
 )
 export const AssignStartStep = relation(
 	"AssignStartStep",
-	{ scope: DenScope, ordinal: natural, step: DenStep, root: DenScope },
+	{ scope: sha256, ordinal: natural, step: sha256, root: sha256 },
 	["scope", "ordinal", "root"]
 )
 export const AssignFinish = relation(
 	"AssignFinish",
-	{ scope: DenScope, step: DenStep, root: DenScope },
+	{ scope: sha256, step: sha256, root: sha256 },
 	["scope", "root"]
 )
 export const AssignClaim = relation(
 	"AssignClaim",
-	{ step: DenStep, attempt: place, until: DenInstant, root: DenScope },
+	{ step: sha256, attempt: place, until: DenInstant, root: sha256 },
 	["step", "root", "attempt"]
 )
 export const AssignEnded = relation(
 	"AssignEnded",
-	{ step: DenStep, attempt: natural, root: DenScope },
+	{ step: sha256, attempt: natural, root: sha256 },
 	["step", "attempt", "root"]
 )
 export const AssignRetry = relation(
 	"AssignRetry",
-	{
-		step: DenStep,
-		attempt: natural,
-		at: DenInstant,
-		why: closedId(AssignRetryWhy),
-		root: DenScope
-	},
+	{ step: sha256, attempt: natural, at: DenInstant, why: closedId(AssignRetryWhy), root: sha256 },
 	["step", "attempt", "root"]
 )
 export const AssignFenced = relation(
 	"AssignFenced",
-	{ step: DenStep, attempt: natural, root: DenScope },
+	{ step: sha256, attempt: natural, root: sha256 },
 	["step", "attempt", "root"]
 )
 export const AssignResult = relation(
 	"AssignResult",
-	{ step: DenStep, outcome: closedId(AssignOutcome), root: DenScope },
+	{ step: sha256, outcome: closedId(AssignOutcome), root: sha256 },
 	["step", "root"]
 )
-export const AssignDone = relation("AssignDone", { step: DenStep, root: DenScope }, [
+export const AssignDone = relation("AssignDone", { step: sha256, root: sha256 }, ["step", "root"])
+export const AssignFailed = relation("AssignFailed", { step: sha256, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const AssignFailed = relation("AssignFailed", { step: DenStep, root: DenScope }, [
+export const AssignHeld = relation("AssignHeld", { step: sha256, attempt: natural, root: sha256 }, [
 	"step",
 	"root"
 ])
-export const AssignHeld = relation(
-	"AssignHeld",
-	{ step: DenStep, attempt: natural, root: DenScope },
-	["step", "root"]
-)
-export const AssignRefusal = relation(
-	"AssignRefusal",
-	{ step: DenStep, law: Text, root: DenScope },
-	["step", "root"]
-)
-export const AssignExhausted = relation("AssignExhausted", { step: DenStep, root: DenScope }, [
+export const AssignRefusal = relation("AssignRefusal", { step: sha256, law: Text, root: sha256 }, [
+	"step",
+	"root"
+])
+export const AssignExhausted = relation("AssignExhausted", { step: sha256, root: sha256 }, [
 	"step",
 	"root"
 ])
 export const AssignEmbedInput = relation(
 	"AssignEmbedInput",
-	{
-		step: DenStep,
-		learner: Text,
-		topic: Text,
-		mode: closedId(AssignEmbedInputMode),
-		root: DenScope
-	},
+	{ step: sha256, learner: Text, topic: Text, mode: closedId(AssignEmbedInputMode), root: sha256 },
 	["step", "root"]
 )
 export const AssignEmbedInputNear = relation(
 	"AssignEmbedInputNear",
-	{ step: DenStep, ordinal: natural, value: pg["double precision"], root: DenScope },
+	{ step: sha256, ordinal: natural, value: pg["double precision"], root: sha256 },
 	["step", "ordinal", "root"]
 )
 export const AssignEmbedInputExclude = relation(
 	"AssignEmbedInputExclude",
-	{ step: DenStep, ordinal: natural, value: Text, root: DenScope },
+	{ step: sha256, ordinal: natural, value: Text, root: sha256 },
 	["step", "ordinal", "root"]
 )
 export const AssignEmbedInputModeNearest = relation(
 	"AssignEmbedInputModeNearest",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const AssignEmbedInputModeWithin = relation(
 	"AssignEmbedInputModeWithin",
-	{ step: DenStep, radius: pg["double precision"], root: DenScope },
+	{ step: sha256, radius: pg["double precision"], root: sha256 },
 	["step", "root"]
 )
 export const AssignDecideInput = relation(
 	"AssignDecideInput",
 	{
-		step: DenStep,
+		step: sha256,
 		learner: Text,
 		topic: Text,
 		vector: pg.vector(4),
 		mode: closedId(AssignDecideInputMode),
-		root: DenScope
+		root: sha256
 	},
 	["step", "root"]
 )
 export const AssignDecideInputExclude = relation(
 	"AssignDecideInputExclude",
-	{ step: DenStep, ordinal: natural, value: Text, root: DenScope },
+	{ step: sha256, ordinal: natural, value: Text, root: sha256 },
 	["step", "ordinal", "root"]
 )
 export const AssignDecideInputModeNearest = relation(
 	"AssignDecideInputModeNearest",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const AssignDecideInputModeWithin = relation(
 	"AssignDecideInputModeWithin",
-	{ step: DenStep, radius: pg["double precision"], root: DenScope },
+	{ step: sha256, radius: pg["double precision"], root: sha256 },
 	["step", "root"]
 )
 export const AssignAssignmentInput = relation(
 	"AssignAssignmentInput",
 	{
-		scope: DenScope,
+		scope: sha256,
 		learner: Text,
 		topic: Text,
 		mode: closedId(AssignAssignmentInputMode),
-		root: DenScope
+		root: sha256
 	},
 	["scope", "root"]
 )
 export const AssignAssignmentInputNear = relation(
 	"AssignAssignmentInputNear",
-	{ scope: DenScope, ordinal: natural, value: pg["double precision"], root: DenScope },
+	{ scope: sha256, ordinal: natural, value: pg["double precision"], root: sha256 },
 	["scope", "ordinal", "root"]
 )
 export const AssignAssignmentInputExclude = relation(
 	"AssignAssignmentInputExclude",
-	{ scope: DenScope, ordinal: natural, value: Text, root: DenScope },
+	{ scope: sha256, ordinal: natural, value: Text, root: sha256 },
 	["scope", "ordinal", "root"]
 )
 export const AssignAssignmentInputModeNearest = relation(
 	"AssignAssignmentInputModeNearest",
-	{ scope: DenScope, root: DenScope },
+	{ scope: sha256, root: sha256 },
 	["scope", "root"]
 )
 export const AssignAssignmentInputModeWithin = relation(
 	"AssignAssignmentInputModeWithin",
-	{ scope: DenScope, radius: pg["double precision"], root: DenScope },
+	{ scope: sha256, radius: pg["double precision"], root: sha256 },
 	["scope", "root"]
 )
 export const AssignEmbedOutput = relation(
 	"AssignEmbedOutput",
-	{ step: DenStep, vector: pg.vector(4), root: DenScope },
+	{ step: sha256, vector: pg.vector(4), root: sha256 },
 	["step", "root"]
 )
 export const AssignDecideOutput = relation(
 	"AssignDecideOutput",
 	{
-		step: DenStep,
+		step: sha256,
 		confidence: pg["double precision"],
 		stage: closedId(AssignDecideOutputStage),
-		root: DenScope
+		root: sha256
 	},
 	["step", "root"]
 )
 export const AssignDecideOutputWeighed = relation(
 	"AssignDecideOutputWeighed",
 	{
-		step: DenStep,
+		step: sha256,
 		ordinal: natural,
 		passage: Text,
 		distance: pg["double precision"],
 		passed: pg.boolean,
-		root: DenScope
+		root: sha256
 	},
 	["step", "ordinal", "root"]
 )
 export const AssignDecideOutputStageServe = relation(
 	"AssignDecideOutputStageServe",
-	{ step: DenStep, passage: Text, distance: pg["double precision"], root: DenScope },
+	{ step: sha256, passage: Text, distance: pg["double precision"], root: sha256 },
 	["step", "root"]
 )
 export const AssignDecideOutputStageRest = relation(
 	"AssignDecideOutputStageRest",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const AssignAssignmentFinishOutput = relation(
 	"AssignAssignmentFinishOutput",
-	{ step: DenStep, root: DenScope },
+	{ step: sha256, root: sha256 },
 	["step", "root"]
 )
 export const AssignAsked = relation(
 	"AssignAsked",
-	{ from: DenStep, ordinal: natural, to: DenStep, root: DenScope },
+	{ from: sha256, ordinal: natural, to: sha256, root: sha256 },
 	["from", "ordinal", "root"]
 )
 export const AssignDecideNearestRow = relation(
 	"AssignDecideNearestRow",
-	{ digest: DenRow, passage: Text, topic: Text, distance: pg["double precision"], root: DenScope },
+	{ digest: sha256, passage: Text, topic: Text, distance: pg["double precision"], root: sha256 },
 	["digest", "root"]
 )
 export const AssignDecideNearestRead = relation(
 	"AssignDecideNearestRead",
-	{ step: DenStep, ordinal: natural, digest: DenRow, root: DenScope },
+	{ step: sha256, ordinal: natural, digest: sha256, root: sha256 },
 	["step", "ordinal", "root"]
 )
 export const AssignDecideSeenRow = relation(
 	"AssignDecideSeenRow",
-	{ digest: DenRow, learner: Text, passage: Text, root: DenScope },
+	{ digest: sha256, learner: Text, passage: Text, root: sha256 },
 	["digest", "root"]
 )
 export const AssignDecideSeenRead = relation(
 	"AssignDecideSeenRead",
-	{ step: DenStep, ordinal: natural, digest: DenRow, root: DenScope },
+	{ step: sha256, ordinal: natural, digest: sha256, root: sha256 },
 	["step", "ordinal", "root"]
 )
 export const AssignPaused = relation(

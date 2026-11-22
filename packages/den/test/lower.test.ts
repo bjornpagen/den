@@ -513,19 +513,19 @@ it.effect(
 							assert.deepStrictEqual(
 								fieldsOf(`${P}S0PassagesRow`),
 								Option.some([
-									["digest", "key"],
+									["digest", "digest"],
 									["passage", "base"],
 									["distance", "base"],
-									["root", "key"]
+									["root", "digest"]
 								])
 							)
 							assert.deepStrictEqual(
 								fieldsOf(`${P}S0PassagesRead`),
 								Option.some([
-									["step", "key"],
+									["step", "digest"],
 									["ordinal", "natural"],
-									["digest", "key"],
-									["root", "key"]
+									["digest", "digest"],
+									["root", "digest"]
 								])
 							)
 							assert.isTrue(

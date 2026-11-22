@@ -60,13 +60,13 @@ export const aCommittedRequestRingsItsRootsAdmission = property.explore(runs, {
 						const order = "order"
 						const input = { feed: run.feed, pages: BigInt(run.pages) }
 						if (run.refused) {
-							const earlier = yield* chain.requestFacts.Ordered("earlier", input)
+							const earlier = chain.requestFacts.Ordered("earlier", input)
 							yield* loader.workload.order.once({
 								params: earlier.params,
 								facts: { insert: { Order: [{ order, feed: run.feed }], ...earlier.facts } }
 							})
 						}
-						const request = yield* chain.requestFacts.Ordered("later", input)
+						const request = chain.requestFacts.Ordered("later", input)
 						const written = yield* Effect.result(
 							afterCommit(
 								loader.workload.order.once({

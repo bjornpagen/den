@@ -6,8 +6,10 @@ import {
 	idempotencyKey,
 	type Ring,
 	type Wake,
-	WakeSchema,
-	wakeText
+	WireWakeSchema,
+	wakeOf,
+	wakeText,
+	wireOf
 } from "@bjornpagen/den/transport"
 import { type Case, drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
@@ -46,13 +48,22 @@ import {
  * cause sends again, while a wake two causes ring is sent for each; a timer is held for its delay and never less.
  */
 
-const wakeOf = (encoded: Encoded): Effect.Effect<Wake> =>
-	Effect.orDie(Schema.decodeEffect(WakeSchema)(encoded))
+/** A drawn wake as a consumer decodes it: its wire form, then its keys parsed from their hex. */
+const decodedWake = (encoded: Encoded): Effect.Effect<Wake> =>
+	Effect.orDie(
+		Effect.flatMap(Schema.decodeEffect(WireWakeSchema)(encoded), (wire) =>
+			Effect.fromResult(wakeOf(wire))
+		)
+	)
 
 const causeOf = (encoded: EncodedCause): Effect.Effect<Cause> => {
 	switch (encoded._tag) {
 		case "Turn":
-			return Effect.map(wakeOf(encoded.by), (by): Cause => ({ _tag: "Turn", by, at: encoded.at }))
+			return Effect.map(decodedWake(encoded.by), (by): Cause => ({
+				_tag: "Turn",
+				by,
+				at: encoded.at
+			}))
 		case "Relay":
 		case "Census":
 		case "Request":
@@ -62,7 +73,7 @@ const causeOf = (encoded: EncodedCause): Effect.Effect<Cause> => {
 
 /** A drawn ring as the core rings it, held back for `delay`. */
 const ringFrom = (encoded: EncodedRing, delay: Duration.Duration): Effect.Effect<Ring> =>
-	Effect.zipWith(wakeOf(encoded.wake), causeOf(encoded.cause), (wake, cause) => ({
+	Effect.zipWith(decodedWake(encoded.wake), causeOf(encoded.cause), (wake, cause) => ({
 		wake,
 		delay,
 		cause
@@ -356,7 +367,7 @@ it.effect(
 						)
 						assert.deepStrictEqual(
 							payloads,
-							Arr.map(sent, (ring) => ring.wake)
+							Arr.map(sent, (ring) => wireOf(ring.wake))
 						)
 						assert.deepStrictEqual(
 							Arr.map(submitted, (s) => Option.getOrUndefined(s.key)),

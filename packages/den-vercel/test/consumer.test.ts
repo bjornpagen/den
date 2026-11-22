@@ -1,5 +1,5 @@
 import { caseHangMillis } from "@bjornpagen/den/test/support/suites"
-import { type Wake, WakeSchema, wakeText } from "@bjornpagen/den/transport"
+import { type Wake, WireWakeSchema, wakeOf, wakeText, wireOf } from "@bjornpagen/den/transport"
 import { type Case, drawn, explore } from "@bjornpagen/testing/explore"
 import { required } from "@bjornpagen/testing/features"
 import {
@@ -146,10 +146,17 @@ it.effect("the consumer acknowledges every delivery, a stale ending included", (
 					)
 					const bodies = yield* Effect.forEach(drawnDeliveries.bodies, (b) =>
 						b.kind === "wake"
-							? Effect.map(Effect.orDie(Schema.decodeEffect(WakeSchema)(b.wake)), (wake) => ({
-									wake: Option.some({ wake, outcome: b.outcome }),
-									payload: Effect.orDie(Schema.encodeEffect(WakeJson)(wake))
-								}))
+							? Effect.map(
+									Effect.orDie(
+										Effect.flatMap(Schema.decodeEffect(WireWakeSchema)(b.wake), (wire) =>
+											Effect.fromResult(wakeOf(wire))
+										)
+									),
+									(wake) => ({
+										wake: Option.some({ wake, outcome: b.outcome }),
+										payload: Effect.orDie(Schema.encodeEffect(WakeJson)(wireOf(wake)))
+									})
+								)
 							: Effect.succeed({ wake: Option.none(), payload: Effect.succeed(b.text) })
 					)
 					const outcomes = new Map(

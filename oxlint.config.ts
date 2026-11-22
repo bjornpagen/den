@@ -9,7 +9,7 @@ import {
 import { defineConfig } from "oxlint"
 import toolchain from "#toolchain.config.ts"
 
-const { lintConfig } = standard(toolchain)
+const { active, lintConfig } = standard(toolchain)
 
 /** den's lists for the shared standard; everything else comes from the dev tools' preset. */
 export default defineConfig(
@@ -81,11 +81,18 @@ export default defineConfig(
 		},
 		overrides: [
 			{
-				/** The slice's ledgers read the database's instant moved on by the time the suite's TestClock has travelled
-				 * (travelling, openLedgers): reading Effect's Clock is this support module's job, and under a test it is the
-				 * TestClock the case moves, never the machine's. */
 				files: ["packages/den/integration/support/slice.ts"],
-				rules: { "testing/no-wall-clock-verdict": "off" }
+				rules: active({
+					/** A case moves the database's clock by the time its TestClock has travelled (Offset, offsetLayer): reading Effect's Clock is this support module's job, and under a test it is the TestClock the case moves, never the machine's. */
+					"testing/no-wall-clock-verdict": "off"
+				})
+			},
+			{
+				files: ["packages/edullm/src/fingerprint.ts"],
+				rules: active({
+					/** Timeback's key digest is an MD5 Timeback's replica computes (PostgreSQL's md5 over concat_ws('|', …) in its daily print), an outside system's definition the bucketed fingerprint must match byte for byte, so digestOf computes the same MD5. */
+					"devtools/sha256-digests": "off"
+				})
 			}
 		]
 	})

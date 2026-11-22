@@ -64,6 +64,8 @@ const fieldExpr = (type: FieldType): string => {
 	switch (type.kind) {
 		case "key":
 			return type.contract
+		case "digest":
+			return "sha256"
 		case "natural":
 			return "natural"
 		case "place":
@@ -183,6 +185,7 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		...(Arr.some(l.laws, (law) => law.kind === "retirable") ? ["retirable"] : []),
 		...(used("retirement") ? ["retirement"] : []),
 		...(Arr.some(sides, (sd) => sd.selection.kind !== "all") ? ["select"] : []),
+		...(used("digest") ? ["sha256"] : []),
 		...(seated ? ["v"] : [])
 	]
 }
@@ -1486,7 +1489,6 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`Effect.map(settled(h.den.${handle}.once({ params: { ${owner}: ${key} }, facts: {} })), one)`
 	const readerOf = (v: ValueIR): string => `read${v.relation}`
 	const readerDef = (v: ValueIR): string => {
-		const keyType = v.owner === "step" ? "StepKey" : "ScopeKey"
 		const body = lines([
 			"Effect.gen(function* () {",
 			`\tconst row = yield* ${keyRead(n.program(`Read${v.relation}`), v.owner, v.owner)}`,
@@ -1514,7 +1516,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			})})`,
 			"})"
 		])
-		return `const ${readerOf(v)} = (${v.owner}: ${keyType}) => ${indented("\t")(body)}`
+		return `const ${readerOf(v)} = (${v.owner}: Sha256) => ${indented("\t")(body)}`
 	}
 	/**
 	 * A child scope opened under `owner` with key `key` and input `input`, admitted in the same call: its Scope, Within,
@@ -1529,7 +1531,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		extra: string,
 		root: string
 	): string =>
-		`Effect.zipWith(finishStep(${key}), start${j.name}(${root}, ${key}, ${input}), (finish, inner): Grown => joined(inner, { rows: { ...noRows, ${commas(
+		`pipe(start${j.name}(${root}, ${key}, ${input}), (inner): Grown => pipe(finishStep(${key}), (finish): Grown => joined(inner, { rows: { ...noRows, ${commas(
 			[
 				`${r("Scope")}: [{ scope: ${key}, root: ${root} }]`,
 				`${r("Within")}: [{ scope: ${key}, parent: ${owner}, kind: ${q(j.name)}, root: ${root} }]`,
@@ -1538,7 +1540,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				extra,
 				...factsOf(j.input, key, input, root)
 			]
-		)} }, steps: [{ step: finish, kind: ${q(j.finish)}, scope: ${key}, delay: atOnce }], timed: [], spawned: { steps: [], finishes: hasChildren(inner, ${key}) ? [] : [finish] } }))`
+		)} }, steps: [{ step: finish, kind: ${q(j.finish)}, scope: ${key}, delay: atOnce }], timed: [], spawned: { steps: [], finishes: hasChildren(inner, ${key}) ? [] : [finish] } })))`
 
 	/** A step spawned under `owner` with key `key` and input `input`: its Step, first due by its kind, its input, and `extra`. */
 	const spawnedStep = (
@@ -1554,8 +1556,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const startOf = (j: JoinIR): string => {
 		const cases = Arr.map(j.children, (child) =>
 			child.kind === "step"
-				? `return Effect.map(startedStep(scope, ordinal), (key): Grown => ${spawnedStep(child, "key", "spawn.input", "scope", `${r("StartStep")}: [{ scope, ordinal: BigInt(ordinal), step: key, root }]`, "root")})`
-				: `return Effect.flatMap(startedScope(scope, ordinal), (key) => ${openedScope(child, "key", "spawn.input", "scope", `${r("StartScope")}: [{ scope, ordinal: BigInt(ordinal), child: key, root }]`, "root")})`
+				? `return pipe(startedStep(scope, ordinal), (key): Grown => ${spawnedStep(child, "key", "spawn.input", "scope", `${r("StartStep")}: [{ scope, ordinal: BigInt(ordinal), step: key, root }]`, "root")})`
+				: `return pipe(startedScope(scope, ordinal), (key): Grown => ${openedScope(child, "key", "spawn.input", "scope", `${r("StartScope")}: [{ scope, ordinal: BigInt(ordinal), child: key, root }]`, "root")})`
 		)
 		const labelled = Arr.zip(
 			Arr.map(j.children, (child) => child.name),
@@ -1570,10 +1572,10 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 					"\t\t}"
 				]
 		return lines([
-			`const start${j.name} = (root: ScopeKey, scope: ScopeKey, input: Parameters<(typeof ${kindAt(j.index)})["start"]>[0]): Effect.Effect<Grown, never, Digest.Digest> =>`,
-			`\tEffect.map(Effect.forEach(${kindAt(j.index)}.start(input), (spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> => ${single ? "" : "{"}`,
+			`const start${j.name} = (root: Sha256, scope: Sha256, input: Parameters<(typeof ${kindAt(j.index)})["start"]>[0]): Grown =>`,
+			`\tArr.reduce(Arr.map(${kindAt(j.index)}.start(input), (spawn, ordinal): Grown => ${single ? "" : "{"}`,
 			...body,
-			`\t${single ? "" : "}"}), (parts) => Arr.reduce(parts, nothingGrown, joined))`
+			`\t${single ? "" : "}"}), nothingGrown, joined)`
 		])
 	}
 
@@ -1594,9 +1596,9 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		const fact = `${e.relation}: [{ from: ${from.step}, ordinal: BigInt(ordinal), to: key, root: ${from.root} }]`
 		const each =
 			e.to.kind === "step"
-				? `Effect.map(edgeStep(${from.step}, ${q(e.name)}, ordinal), (key): Grown => ${spawnedStep(e.to, "key", "input", from.owner, fact, from.root)})`
-				: `Effect.flatMap(edgeScope(${from.step}, ${q(e.name)}, ordinal), (key) => ${openedScope(e.to, "key", "input", from.owner, fact, from.root)})`
-		return `Effect.map(Effect.forEach(${edgeAt(e.index)}.next(${from.input}, ${from.output}), (input, ordinal): Effect.Effect<Grown, never, Digest.Digest> => ${each}), (parts) => Arr.reduce(parts, nothingGrown, joined))`
+				? `pipe(edgeStep(${from.step}, ${q(e.name)}, ordinal), (key): Grown => ${spawnedStep(e.to, "key", "input", from.owner, fact, from.root)})`
+				: `pipe(edgeScope(${from.step}, ${q(e.name)}, ordinal), (key): Grown => ${openedScope(e.to, "key", "input", from.owner, fact, from.root)})`
+		return `Arr.reduce(Arr.map(${edgeAt(e.index)}.next(${from.input}, ${from.output}), (input, ordinal): Grown => ${each}), nothingGrown, joined)`
 	}
 
 	/**
@@ -1612,11 +1614,11 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		from: Node
 	): string => {
 		const grow = Arr.isReadonlyArrayNonEmpty(edges)
-			? `Effect.map(Effect.all([${commas(Arr.map(edges, (e) => edgeGrowth(e, from)))}]), (parts) => Arr.reduce(parts, nothingGrown, joined))`
-			: "Effect.succeed(nothingGrown)"
+			? `Arr.reduce([${commas(Arr.map(edges, (e) => edgeGrowth(e, from)))}], nothingGrown, joined)`
+			: "nothingGrown"
 		return lines([
 			"commit: (done) => Effect.gen(function* () {",
-			`\tconst grown = yield* ${grow}`,
+			`\tconst grown = ${grow}`,
 			...records.lines,
 			`\tconst outcome = yield* settled(h.commits.${n.program(`Commit${name}`)}.once({ params: ${commitParamsOf(edges, commit)}, facts: ${commitFactsOf(
 				[
@@ -1661,8 +1663,8 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	 */
 	const recordingOf = (s: StepIR, found: string, turn: string): Recording => ({
 		lines: Arr.flatMap(s.reads, (rd) => [
-			`\tconst recorded${Str.capitalize(rd.name)} = yield* Effect.forEach(${found}.${rd.name}, (row) => Effect.map(rowDigest(${q(rd.name)}, ${recordedOf(rd.row, "row", 0)}), (digest) => ({ ...row, digest })))`,
-			`\tconst unique${Str.capitalize(rd.name)} = Arr.dedupeWith(recorded${Str.capitalize(rd.name)}, (a, b) => a.digest === b.digest)`
+			`\tconst recorded${Str.capitalize(rd.name)} = Arr.map(${found}.${rd.name}, (row) => ({ ...row, digest: rowDigest(${q(rd.name)}, ${recordedOf(rd.row, "row", 0)}) }))`,
+			`\tconst unique${Str.capitalize(rd.name)} = Arr.dedupeWith(recorded${Str.capitalize(rd.name)}, (a, b) => Sha256.equals(a.digest, b.digest))`
 		]),
 		facts: Arr.flatMap(s.reads, (rd) => [
 			...Arr.map(
@@ -1737,9 +1739,10 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			/** The value of the child whose step `row` names, from the set reads `loaded` named from `at`. */
 			const valueAt = (value: ValueIR, at: string): string =>
 				valueOf(value, "row", {
-					side: (i) => `Arr.findFirst(${at}Side${i}, (o) => o.step === row.step)`,
-					family: (i) => `Arr.filter(${at}Family${i}, (o) => o.step === row.step)`,
-					variant: (i, k) => `Arr.findFirst(${at}Variant${i}_${k}, (o) => o.step === row.step)`
+					side: (i) => `Arr.findFirst(${at}Side${i}, (o) => Sha256.equals(o.step, row.step))`,
+					family: (i) => `Arr.filter(${at}Family${i}, (o) => Sha256.equals(o.step, row.step))`,
+					variant: (i, k) =>
+						`Arr.findFirst(${at}Variant${i}_${k}, (o) => Sha256.equals(o.step, row.step))`
 				})
 			/** A row of `value`, named only where its value reads it: a value of no field reads none. */
 			const rowOf = (value: ValueIR): string =>
@@ -1760,7 +1763,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				...loaded(output, `Outputs${j.name}${read.name}`, out),
 				...loaded(input, `Inputs${j.name}${read.name}`, inp),
 				all(`failures${read.name}`, `Failures${j.name}${read.name}`),
-				`\t\tconst ${inp} = (child: (typeof ${inp}Rows)[number]["step"]) => held(Option.${unioned(input) ? "flatMap" : "map"}(Arr.findFirst(${inp}Rows, (row) => row.step === child), (${rowOf(input)}) => ${valueAt(input, inp)}))`,
+				`\t\tconst ${inp} = (child: (typeof ${inp}Rows)[number]["step"]) => held(Option.${unioned(input) ? "flatMap" : "map"}(Arr.findFirst(${inp}Rows, (row) => Sha256.equals(row.step, child)), (${rowOf(input)}) => ${valueAt(input, inp)}))`,
 				`\t\tconst ${read.name} = [`,
 				`\t\t\t...(yield* Effect.forEach(${out}Rows, (row) => Effect.map(Effect.all({ input: ${inp}(row.step), output: ${outputValue} }), (ended) => ({ _tag: "Done" as const, ...ended })))),`,
 				`\t\t\t...(yield* Effect.forEach(failures${read.name}, (failed) => Effect.map(${inp}(failed.step), (given) => ({ _tag: "Failed" as const, input: given }))))`,
@@ -1778,7 +1781,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			`\t\tretry: ${kind}.finish.retry,`,
 			`\t\twaits: ${kind}.finish.waits,`,
 			"\t\tawaits: [],",
-			`\t\tbody: (read: { readonly input: Parameters<(typeof ${kind})["start"]>[0]; readonly endings: Parameters<(typeof ${kind})["finish"]["body"]>[1]${spawns ? "; readonly parent: ScopeKey" : ""} }) => ${kind}.finish.body(read.input, read.endings)`,
+			`\t\tbody: (read: { readonly input: Parameters<(typeof ${kind})["start"]>[0]; readonly endings: Parameters<(typeof ${kind})["finish"]["body"]>[1]${spawns ? "; readonly parent: Sha256" : ""} }) => ${kind}.finish.body(read.input, read.endings)`,
 			"\t},",
 			"\t{",
 			"\t\tinput: (step) => Effect.gen(function* () {",
@@ -1821,13 +1824,13 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 
 	const admitOf = (j: JoinIR): string =>
 		lines([
-			"(scope: ScopeKey) => Effect.gen(function* () {",
+			"(scope: Sha256) => Effect.gen(function* () {",
 			`\tconst input = yield* ${readerOf(j.input)}(scope)`,
 			"\tif (Option.isNone(input)) {",
 			"\t\treturn Option.none()",
 			"\t}",
-			`\tconst grown = yield* start${j.name}(scope, scope, input.value)`,
-			"\tconst finish = yield* finishStep(scope)",
+			`\tconst grown = start${j.name}(scope, scope, input.value)`,
+			"\tconst finish = finishStep(scope)",
 			`\tconst steps: Grown["steps"] = [...grown.steps, { step: finish, kind: ${q(j.finish.name)}, scope, delay: atOnce }]`,
 			`\tconst admitted: ReadonlyArray<Addition<typeof ${r("Admitted")}>> = [...grown.rows.${r("Admitted")}, { scope, root: scope }]`,
 			`\tconst finishes: ReadonlyArray<Addition<typeof ${r("Finish")}>> = [...grown.rows.${r("Finish")}, { scope, step: finish, root: scope }]`,
@@ -1861,7 +1864,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const requestOf = (j: JoinIR): string => {
 		const keys = (body: string) =>
 			isExclusive(j)
-				? `Effect.flatMap(exclusiveRows(${q(P)}, ${q(j.name)}, ${kindAt(j.index)}.exclusive, input, scope), (keys) => ${body})`
+				? `pipe(exclusiveRows(${q(P)}, ${q(j.name)}, ${kindAt(j.index)}.exclusive, input, scope), (keys) => ${body})`
 				: body
 		const input = `input: Parameters<(typeof ${kindAt(j.index)})["start"]>[0]`
 		const signature = `(key: string, ${input})`
@@ -1870,9 +1873,9 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		const facts = `({ flow: FlowName.make(${q(P)}), scope, params: ${params}, facts: { ${commas(requestFacts(j))} } })`
 		return isApp(j)
 			? isExclusive(j)
-				? `${j.name}: ${signature} => Effect.flatMap(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => Effect.map(exclusiveRows(${q(P)}, ${q(j.name)}, ${kindAt(j.index)}.exclusive, input, scope), (keys) => ${facts}))`
-				: `${j.name}: ${signature} => Effect.map(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${facts})`
-			: `${j.name}: ${signature} => Effect.flatMap(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${keys(`Effect.map(fresh(${q(P)}, settled(h.den.${n.program(`Request${j.name}`)}.once({ params: ${params}, facts: { insert: { ${commas(requestFacts(j))} } } }))), (accepted) => ({ flow: FlowName.make(${q(P)}), scope, fresh: accepted }))`)})`
+				? `${j.name}: ${signature} => pipe(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => pipe(exclusiveRows(${q(P)}, ${q(j.name)}, ${kindAt(j.index)}.exclusive, input, scope), (keys) => ${facts}))`
+				: `${j.name}: ${signature} => pipe(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${facts})`
+			: `${j.name}: ${signature} => pipe(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${keys(`Effect.map(fresh(${q(P)}, settled(h.den.${n.program(`Request${j.name}`)}.once({ params: ${params}, facts: { insert: { ${commas(requestFacts(j))} } } }))), (accepted) => ({ flow: FlowName.make(${q(P)}), scope, fresh: accepted }))`)})`
 	}
 	const denRoots = Arr.filter(roots, (j) => !isApp(j))
 	const appRoots = Arr.filter(roots, isApp)
@@ -1920,11 +1923,11 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	])
 	const snapshot = lines([
 		`Effect.flatMap(settled(h.den.${n.program("Snapshot")}.once({ params: {}, facts: {} })), (rows) => Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof ${F}>> => {`,
-		"\tconst view = (scope: ScopeKey, admission: Admission): ReadonlyArray<ScopeView> =>",
-		"\t\tOption.match(Arr.findFirst(read.roots, (o) => o.scope === scope), {",
-		`\t\t\tonSome: (o): ReadonlyArray<ScopeView> => [{ place: "root", scope, kind: o.kind, key: o.key, at: o.at, admission, exclusive: ${exclusiveKeys ? "Option.map(Arr.findFirst(read.keys, (k) => k.scope === scope), (k) => k.id)" : "Option.none()"}, runner: roots[o.kind] }],`,
+		"\tconst view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>",
+		"\t\tOption.match(Arr.findFirst(read.roots, (o) => Sha256.equals(o.scope, scope)), {",
+		`\t\t\tonSome: (o): ReadonlyArray<ScopeView> => [{ place: "root", scope, kind: o.kind, key: o.key, at: o.at, admission, exclusive: ${exclusiveKeys ? "Option.map(Arr.findFirst(read.keys, (k) => Sha256.equals(k.scope, scope)), (k) => k.id)" : "Option.none()"}, runner: roots[o.kind] }],`,
 		children
-			? '\t\t\tonNone: () => Arr.map(Option.toArray(Arr.findFirst(read.withins, (w) => w.scope === scope)), (w): ScopeView => ({ place: "child", scope, kind: w.kind, parent: w.parent }))'
+			? '\t\t\tonNone: () => Arr.map(Option.toArray(Arr.findFirst(read.withins, (w) => Sha256.equals(w.scope, scope))), (w): ScopeView => ({ place: "child", scope, kind: w.kind, parent: w.parent }))'
 			: "\t\t\tonNone: (): ReadonlyArray<ScopeView> => []",
 		"\t\t})",
 		"\treturn {",
@@ -1991,18 +1994,16 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			? ["attached", "type RecordedRow"]
 			: []),
 		...(Arr.some(l.steps, (st) => Arr.isReadonlyArrayNonEmpty(st.reads)) ? ["rowDigest"] : []),
-		"type ScopeKey",
 		...(Arr.some(l.joins, (j) => Arr.some(j.children, (c) => c.kind === "scope"))
 			? ["startedScope"]
 			: []),
 		...(Arr.some(l.joins, (j) => Arr.some(j.children, (c) => c.kind === "step"))
 			? ["startedStep"]
-			: []),
-		"type StepKey"
+			: [])
 	])
 	return `${lines([
 		`/** The ledger port of the flow ${P} over its served programs; \`den generate\` writes it, and nothing edits it. */`,
-		`import type { Addition } from "@bjornpagen/grizzle"`,
+		`import { type Addition, Sha256 } from "@bjornpagen/grizzle"`,
 		`import type { MemberHandle } from "@bjornpagen/grizzle/runtime"`,
 		`import { ${commas(["any", ...(throughs ? ["committedFacts"] : []), "dueOf", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishReads ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", "rowsOf", ...(Arr.some(denRoots, isScheduled) ? ["scheduledKey", "scheduleOf"] : []), "signals", "spawnedOf", "type SpawnRows"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
@@ -2012,8 +2013,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`import { settled } from "@bjornpagen/den/runtime/settled"`,
 		`import { runnerOf } from "@bjornpagen/den/runtime/turn"`,
 		`import { FlowName } from "@bjornpagen/den/transport"`,
-		`import { Array as Arr, Effect, Option, Stream } from "effect"`,
-		`import type { Digest } from "effect/crypto"`,
+		`import { Array as Arr, Effect, Option, pipe, Stream } from "effect"`,
 		`import { ${F} } from ${q(place.flow.from)}`,
 		`import { ${commas(fragmentValues)} } from ${q(place.fragment)}`,
 		`import type { ${commas(fragmentTypes)} } from ${q(place.fragment)}`,
@@ -2053,10 +2053,10 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`export const ${n.ledger} = (h: ${n.handles}) => {`,
 		`\t${noRows}`,
 		"\tconst nothingGrown: Grown = { rows: noRows, steps: [], timed: [], spawned: { steps: [], finishes: [] } }",
-		`\tconst hasChildren = (grown: Grown, scope: ScopeKey): boolean => ${Arr.join(
+		`\tconst hasChildren = (grown: Grown, scope: Sha256): boolean => ${Arr.join(
 			Arr.map(
 				[r("StartStep"), ...(children ? [r("StartScope")] : [])],
-				(started) => `Arr.some(grown.rows.${started}, (s) => s.scope === scope)`
+				(started) => `Arr.some(grown.rows.${started}, (s) => Sha256.equals(s.scope, scope))`
 			),
 			" || "
 		)}`,

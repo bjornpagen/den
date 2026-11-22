@@ -18,9 +18,7 @@ import {
 	finishStep,
 	type Instant,
 	rootScope,
-	type ScopeKey,
-	startedStep,
-	type StepKey
+	startedStep
 } from "@bjornpagen/den/runtime/identity"
 import type {
 	FlowNeeds,
@@ -37,10 +35,9 @@ import { settled } from "@bjornpagen/den/runtime/settled"
 import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Clock over its served programs; `den generate` writes it, and nothing edits it. */
-import type { Addition } from "@bjornpagen/grizzle"
+import { type Addition, Sha256 } from "@bjornpagen/grizzle"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, Stream } from "effect"
-import type { Digest } from "effect/crypto"
+import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
 import { clock } from "#integration/slice/flows.ts"
 import { ClockPausable } from "#integration/slice/generated/clock.fragment.ts"
 import type {
@@ -119,8 +116,8 @@ export const clockLedger = (h: ClockHandles) => {
 		timed: [],
 		spawned: { steps: [], finishes: [] }
 	}
-	const hasChildren = (grown: Grown, scope: ScopeKey): boolean =>
-		Arr.some(grown.rows.ClockStartStep, (s) => s.scope === scope)
+	const hasChildren = (grown: Grown, scope: Sha256): boolean =>
+		Arr.some(grown.rows.ClockStartStep, (s) => Sha256.equals(s.scope, scope))
 	const joined = (a: Grown, b: Grown): Grown => ({
 		rows: {
 			ClockScope: [...a.rows.ClockScope, ...b.rows.ClockScope],
@@ -138,61 +135,59 @@ export const clockLedger = (h: ClockHandles) => {
 		}
 	})
 	const startHourly = (
-		root: ScopeKey,
-		scope: ScopeKey,
+		root: Sha256,
+		scope: Sha256,
 		input: Parameters<(typeof clock.kinds)[1]["start"]>[0]
-	): Effect.Effect<Grown, never, Digest.Digest> =>
-		Effect.map(
-			Effect.forEach(
-				clock.kinds[1].start(input),
-				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
-					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
-						rows: {
-							...noRows,
-							ClockStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-							ClockChimeInput: [
-								{ step: key, root: root, hour: spawn.input.hour, bell: spawn.input.bell }
-							]
-						},
-						...spawnedOf(
-							{ step: key, kind: "Chime", scope: scope },
-							dueOf(clock.kinds[0].due, spawn.input)
-						)
-					}))
+	): Grown =>
+		Arr.reduce(
+			Arr.map(clock.kinds[1].start(input), (spawn, ordinal): Grown =>
+				pipe(startedStep(scope, ordinal), (key): Grown => ({
+					rows: {
+						...noRows,
+						ClockStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+						ClockChimeInput: [
+							{ step: key, root: root, hour: spawn.input.hour, bell: spawn.input.bell }
+						]
+					},
+					...spawnedOf(
+						{ step: key, kind: "Chime", scope: scope },
+						dueOf(clock.kinds[0].due, spawn.input)
+					)
+				}))
 			),
-			(parts) => Arr.reduce(parts, nothingGrown, joined)
+			nothingGrown,
+			joined
 		)
 	const startSitting = (
-		root: ScopeKey,
-		scope: ScopeKey,
+		root: Sha256,
+		scope: Sha256,
 		input: Parameters<(typeof clock.kinds)[3]["start"]>[0]
-	): Effect.Effect<Grown, never, Digest.Digest> =>
-		Effect.map(
-			Effect.forEach(
-				clock.kinds[3].start(input),
-				(spawn, ordinal): Effect.Effect<Grown, never, Digest.Digest> =>
-					Effect.map(startedStep(scope, ordinal), (key): Grown => ({
-						rows: {
-							...noRows,
-							ClockStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
-							ClockCloseInput: [
-								{
-									step: key,
-									root: root,
-									sitting: spawn.input.sitting,
-									deadline: spawn.input.deadline
-								}
-							]
-						},
-						...spawnedOf(
-							{ step: key, kind: "Close", scope: scope },
-							dueOf(clock.kinds[2].due, spawn.input)
-						)
-					}))
+	): Grown =>
+		Arr.reduce(
+			Arr.map(clock.kinds[3].start(input), (spawn, ordinal): Grown =>
+				pipe(startedStep(scope, ordinal), (key): Grown => ({
+					rows: {
+						...noRows,
+						ClockStartStep: [{ scope, ordinal: BigInt(ordinal), step: key, root }],
+						ClockCloseInput: [
+							{
+								step: key,
+								root: root,
+								sitting: spawn.input.sitting,
+								deadline: spawn.input.deadline
+							}
+						]
+					},
+					...spawnedOf(
+						{ step: key, kind: "Close", scope: scope },
+						dueOf(clock.kinds[2].due, spawn.input)
+					)
+				}))
 			),
-			(parts) => Arr.reduce(parts, nothingGrown, joined)
+			nothingGrown,
+			joined
 		)
-	const readClockChimeInput = (step: StepKey) =>
+	const readClockChimeInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.clockReadClockChimeInput.once({ params: { step: step }, facts: {} })),
@@ -200,7 +195,7 @@ export const clockLedger = (h: ClockHandles) => {
 			)
 			return Option.map(row, (found) => ({ hour: found.hour, bell: found.bell }))
 		})
-	const readClockCloseInput = (step: StepKey) =>
+	const readClockCloseInput = (step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.clockReadClockCloseInput.once({ params: { step: step }, facts: {} })),
@@ -208,7 +203,7 @@ export const clockLedger = (h: ClockHandles) => {
 			)
 			return Option.map(row, (found) => ({ sitting: found.sitting, deadline: found.deadline }))
 		})
-	const readClockHourlyInput = (scope: ScopeKey) =>
+	const readClockHourlyInput = (scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.clockReadClockHourlyInput.once({ params: { scope: scope }, facts: {} })),
@@ -216,7 +211,7 @@ export const clockLedger = (h: ClockHandles) => {
 			)
 			return Option.map(row, (found) => ({ hour: found.hour, bell: found.bell }))
 		})
-	const readClockSittingInput = (scope: ScopeKey) =>
+	const readClockSittingInput = (scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(h.den.clockReadClockSittingInput.once({ params: { scope: scope }, facts: {} })),
@@ -258,7 +253,7 @@ export const clockLedger = (h: ClockHandles) => {
 	}
 	const request = {
 		Hourly: (key: string, input: Parameters<(typeof clock.kinds)[1]["start"]>[0]) =>
-			Effect.flatMap(rootScope("Clock", "Hourly", key), (scope) =>
+			pipe(rootScope("Clock", "Hourly", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Clock",
@@ -280,7 +275,7 @@ export const clockLedger = (h: ClockHandles) => {
 				)
 			),
 		Sitting: (key: string, input: Parameters<(typeof clock.kinds)[3]["start"]>[0]) =>
-			Effect.flatMap(rootScope("Clock", "Sitting", key), (scope) =>
+			pipe(rootScope("Clock", "Sitting", key), (scope) =>
 				Effect.map(
 					fresh(
 						"Clock",
@@ -315,7 +310,7 @@ export const clockLedger = (h: ClockHandles) => {
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.clockCommitChime.once({
 								params: { ...done.writes.params },
@@ -356,7 +351,7 @@ export const clockLedger = (h: ClockHandles) => {
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.clockCommitClose.once({
 								params: {},
@@ -417,7 +412,7 @@ export const clockLedger = (h: ClockHandles) => {
 				read: () => Effect.succeed([]),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.clockCommitHourlyFinish.once({
 								params: {},
@@ -471,7 +466,7 @@ export const clockLedger = (h: ClockHandles) => {
 				read: () => Effect.succeed([]),
 				commit: (done) =>
 					Effect.gen(function* () {
-						const grown = yield* Effect.succeed(nothingGrown)
+						const grown = nothingGrown
 						const outcome = yield* settled(
 							h.commits.clockCommitSittingFinish.once({
 								params: {},
@@ -498,14 +493,14 @@ export const clockLedger = (h: ClockHandles) => {
 		Hourly: {
 			window: clock.kinds[1].window,
 			precondition: clock.kinds[1].precondition,
-			admit: (scope: ScopeKey) =>
+			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readClockHourlyInput(scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
-					const grown = yield* startHourly(scope, scope, input.value)
-					const finish = yield* finishStep(scope)
+					const grown = startHourly(scope, scope, input.value)
+					const finish = finishStep(scope)
 					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "HourlyFinish", scope, delay: atOnce }
@@ -545,14 +540,14 @@ export const clockLedger = (h: ClockHandles) => {
 		Sitting: {
 			window: clock.kinds[3].window,
 			precondition: clock.kinds[3].precondition,
-			admit: (scope: ScopeKey) =>
+			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
 					const input = yield* readClockSittingInput(scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
-					const grown = yield* startSitting(scope, scope, input.value)
-					const finish = yield* finishStep(scope)
+					const grown = startSitting(scope, scope, input.value)
+					const finish = finishStep(scope)
 					const steps: Grown["steps"] = [
 						...grown.steps,
 						{ step: finish, kind: "SittingFinish", scope, delay: atOnce }
@@ -748,9 +743,9 @@ export const clockLedger = (h: ClockHandles) => {
 			),
 		snapshot: Effect.flatMap(settled(h.den.clockSnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof clock>> => {
-				const view = (scope: ScopeKey, admission: Admission): ReadonlyArray<ScopeView> =>
+				const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
 					Option.match(
-						Arr.findFirst(read.roots, (o) => o.scope === scope),
+						Arr.findFirst(read.roots, (o) => Sha256.equals(o.scope, scope)),
 						{
 							onSome: (o): ReadonlyArray<ScopeView> => [
 								{

@@ -1,5 +1,5 @@
 CREATE PUBLICATION "__live_wzkq6p2yii"
-  FOR TABLE "slice"."assign_admitted" ("scope", "root"), "slice"."assign_assignment_input" ("scope", "root"), "slice"."assign_assignment_input_exclude" ("scope", "ordinal", "root"), "slice"."assign_assignment_input_mode_nearest" ("scope", "root"), "slice"."assign_assignment_input_mode_within" ("scope", "root"), "slice"."assign_assignment_input_near" ("scope", "ordinal", "root"), "slice"."assign_claim" ("step", "root", "attempt"), "slice"."assign_decide_input" ("step", "root"), "slice"."assign_decide_input_exclude" ("step", "ordinal", "root"), "slice"."assign_decide_input_mode_nearest" ("step", "root"), "slice"."assign_decide_input_mode_within" ("step", "root"), "slice"."assign_decide_nearest_read" ("step", "ordinal", "root"), "slice"."assign_decide_nearest_row" ("digest", "root"), "slice"."assign_decide_output" ("step", "root"), "slice"."assign_decide_output_stage_rest" ("step", "root"), "slice"."assign_decide_output_stage_serve" ("step", "root"), "slice"."assign_decide_output_weighed" ("step", "ordinal", "root"), "slice"."assign_decide_seen_read" ("step", "ordinal", "root"), "slice"."assign_decide_seen_row" ("digest", "root"), "slice"."assign_embed_input" ("step", "root"), "slice"."assign_embed_input_exclude" ("step", "ordinal", "root"), "slice"."assign_embed_input_mode_nearest" ("step", "root"), "slice"."assign_embed_input_mode_within" ("step", "root"), "slice"."assign_embed_input_near" ("step", "ordinal", "root"), "slice"."assign_fenced" ("step", "attempt", "root"), "slice"."assign_finish" ("scope", "root"), "slice"."assign_held" ("step", "root"), "slice"."assign_paused" ("target", "turn"), "slice"."assign_result" ("step", "root"), "slice"."assign_resumed" ("target", "turn"), "slice"."assign_retry" ("step", "attempt", "root"), "slice"."assign_root" ("scope"), "slice"."assign_scope" ("scope", "root"), "slice"."assign_skipped" ("scope", "root"), "slice"."assign_step", "slice"."assigned" ("learner"), "slice"."audit" ("step"), "slice"."built" ("build"), "slice"."chain_admitted" ("scope", "root"), "slice"."chain_chain_run_input" ("scope", "root"), "slice"."chain_claim" ("step", "root", "attempt"), "slice"."chain_fenced" ("step", "attempt", "root"), "slice"."chain_finish" ("scope", "root"), "slice"."chain_held" ("step", "root"), "slice"."chain_next" ("from", "ordinal", "root"), "slice"."chain_ordered_input" ("scope", "root"), "slice"."chain_page_earlier_row" ("digest", "root"), "slice"."chain_page_input" ("step", "root"), "slice"."chain_page_input_after" ("step", "root"), "slice"."chain_page_output" ("step", "root"), "slice"."chain_page_output_next" ("step", "root"), "slice"."chain_page_tree_first" ("digest", "items", "root"), "slice"."chain_page_tree_items" ("digest", "items", "root"), "slice"."chain_page_tree_read" ("step", "ordinal", "root"), "slice"."chain_page_tree_row" ("digest", "root"), "slice"."chain_page_weights_read" ("step", "ordinal", "root"), "slice"."chain_page_weights_row" ("digest", "root"), "slice"."chain_paused" ("target", "turn"), "slice"."chain_result" ("step", "root"), "slice"."chain_resumed" ("target", "turn"), "slice"."chain_retry" ("step", "attempt", "root"), "slice"."chain_root" ("scope"), "slice"."chain_scope" ("scope", "root"), "slice"."chain_skipped" ("scope", "root"), "slice"."chain_start_step" ("scope", "ordinal", "root"), "slice"."chain_step", "slice"."chimed" ("hour", "bell"), "slice"."clock_admitted" ("scope", "root"), "slice"."clock_chime_input" ("step", "root"), "slice"."clock_claim" ("step", "root", "attempt"), "slice"."clock_close_input" ("step", "root"), "slice"."clock_fenced" ("step", "attempt", "root"), "slice"."clock_finish" ("scope", "root"), "slice"."clock_held" ("step", "root"), "slice"."clock_hourly_input" ("scope", "root"), "slice"."clock_paused" ("target", "turn"), "slice"."clock_result" ("step", "root"), "slice"."clock_resumed" ("target", "turn"), "slice"."clock_retry" ("step", "attempt", "root"), "slice"."clock_root" ("scope"), "slice"."clock_scope" ("scope", "root"), "slice"."clock_sitting_input" ("scope", "root"), "slice"."clock_skipped" ("scope", "root"), "slice"."clock_step", "slice"."concluded" ("learner"), "slice"."copied" ("relation", "run"), "slice"."cursor" ("feed", "position"), "slice"."delivered" ("attempt"), "slice"."fan_admitted" ("scope", "root"), "slice"."fan_batch_finish_output" ("step", "root"), "slice"."fan_batch_input" ("scope", "root"), "slice"."fan_claim" ("step", "root", "attempt"), "slice"."fan_dust_input" ("step", "root"), "slice"."fan_ended" ("step", "attempt", "root"), "slice"."fan_fan_run_input" ("scope", "root"), "slice"."fan_fenced" ("step", "attempt", "root"), "slice"."fan_finish" ("scope", "root"), "slice"."fan_held" ("step", "root"), "slice"."fan_hold" ("step", "root", "attempt", "at"), "slice"."fan_mop_input" ("step", "root"), "slice"."fan_paused" ("target", "turn"), "slice"."fan_result" ("step", "root"), "slice"."fan_resumed" ("target", "turn"), "slice"."fan_retry" ("step", "attempt", "root"), "slice"."fan_root" ("scope"), "slice"."fan_scope" ("scope", "root"), "slice"."fan_skipped" ("scope", "root"), "slice"."fan_square_input" ("step", "root"), "slice"."fan_square_output" ("step", "root"), "slice"."fan_start_scope" ("scope", "ordinal", "root"), "slice"."fan_start_step" ("scope", "ordinal", "root"), "slice"."fan_step", "slice"."fan_sweep_input" ("scope", "root"), "slice"."fan_within", "slice"."heard" ("key"), "slice"."item" ("feed", "seq", "n"), "slice"."passage", "slice"."retry_admitted" ("scope", "root"), "slice"."retry_brittle_input" ("step", "root"), "slice"."retry_brittle_output" ("step", "root"), "slice"."retry_claim" ("step", "root", "attempt"), "slice"."retry_exhausted" ("step", "root"), "slice"."retry_fenced" ("step", "attempt", "root"), "slice"."retry_finish" ("scope", "root"), "slice"."retry_held" ("step", "root"), "slice"."retry_ladders_input" ("scope", "root"), "slice"."retry_patient_input" ("step", "root"), "slice"."retry_patient_output" ("step", "root"), "slice"."retry_paused" ("target", "turn"), "slice"."retry_polite_input" ("step", "root"), "slice"."retry_polite_output" ("step", "root"), "slice"."retry_result" ("step", "root"), "slice"."retry_resumed" ("target", "turn"), "slice"."retry_retry" ("step", "attempt", "root"), "slice"."retry_root" ("scope"), "slice"."retry_scope" ("scope", "root"), "slice"."retry_skipped" ("scope", "root"), "slice"."retry_steadfast_input" ("step", "root"), "slice"."retry_steadfast_output" ("step", "root"), "slice"."retry_step", "slice"."retry_throttled_input" ("scope", "root"), "slice"."retry_unhurried_input" ("scope", "root"), "slice"."review_admitted" ("scope", "root"), "slice"."review_analyze_input" ("step", "root"), "slice"."review_analyze_output" ("step", "root"), "slice"."review_claim" ("step", "root", "attempt"), "slice"."review_ended" ("step", "attempt", "root"), "slice"."review_fenced" ("step", "attempt", "root"), "slice"."review_finish" ("scope", "root"), "slice"."review_gather_input" ("step", "root"), "slice"."review_gather_input_sizes" ("step", "ordinal", "root"), "slice"."review_held" ("step", "root"), "slice"."review_hold" ("step", "root", "attempt", "at"), "slice"."review_paused" ("target", "turn"), "slice"."review_questions_finish_output" ("step", "root"), "slice"."review_questions_input" ("scope", "root"), "slice"."review_result" ("step", "root"), "slice"."review_resumed" ("target", "turn"), "slice"."review_retry" ("step", "attempt", "root"), "slice"."review_review_run_input" ("scope", "root"), "slice"."review_review_run_input_sizes" ("scope", "ordinal", "root"), "slice"."review_root" ("scope"), "slice"."review_save_input" ("step", "root"), "slice"."review_save_output" ("step", "root"), "slice"."review_scope" ("scope", "root"), "slice"."review_skipped" ("scope", "root"), "slice"."review_step", "slice"."review_within", "slice"."reviewed" ("review", "group"), "slice"."seen" ("learner", "passage"), "slice"."settled" ("batch"), "slice"."summary" ("review"), "slice"."sync_admitted" ("scope", "root"), "slice"."sync_build_input" ("step", "root"), "slice"."sync_claim" ("step", "root", "attempt"), "slice"."sync_copy_input" ("step", "root"), "slice"."sync_exclusive" ("kind", "key", "turn"), "slice"."sync_exclusive_key" ("scope", "root"), "slice"."sync_fenced" ("step", "attempt", "root"), "slice"."sync_finish" ("scope", "root"), "slice"."sync_gold_input" ("scope", "root"), "slice"."sync_held" ("step", "root"), "slice"."sync_paused" ("target", "turn"), "slice"."sync_released" ("kind", "key", "turn"), "slice"."sync_result" ("step", "root"), "slice"."sync_resumed" ("target", "turn"), "slice"."sync_retry" ("step", "attempt", "root"), "slice"."sync_root" ("scope"), "slice"."sync_scope" ("scope", "root"), "slice"."sync_skipped" ("scope", "root"), "slice"."sync_step", "slice"."sync_sync_run_input" ("scope", "root"), "slice"."tally" ("batch"), "slice"."weight" ("feed", "factor"), "slice"."writeback_admitted" ("scope", "root"), "slice"."writeback_claim" ("step", "root", "attempt"), "slice"."writeback_deliver_input" ("step", "root"), "slice"."writeback_fenced" ("step", "attempt", "root"), "slice"."writeback_finish" ("scope", "root"), "slice"."writeback_held" ("step", "root"), "slice"."writeback_paused" ("target", "turn"), "slice"."writeback_result" ("step", "root"), "slice"."writeback_resumed" ("target", "turn"), "slice"."writeback_retry" ("step", "attempt", "root"), "slice"."writeback_root" ("scope"), "slice"."writeback_scope" ("scope", "root"), "slice"."writeback_skipped" ("scope", "root"), "slice"."writeback_step", "slice"."writeback_writeback_input" ("scope", "root"), "slice"."__ledger"
+  FOR TABLE "slice"."assign_admitted" ("scope", "root"), "slice"."assign_assignment_input" ("scope", "root"), "slice"."assign_assignment_input_exclude" ("scope", "ordinal", "root"), "slice"."assign_assignment_input_mode_nearest" ("scope", "root"), "slice"."assign_assignment_input_mode_within" ("scope", "root"), "slice"."assign_assignment_input_near" ("scope", "ordinal", "root"), "slice"."assign_claim" ("step", "root", "attempt"), "slice"."assign_decide_input" ("step", "root"), "slice"."assign_decide_input_exclude" ("step", "ordinal", "root"), "slice"."assign_decide_input_mode_nearest" ("step", "root"), "slice"."assign_decide_input_mode_within" ("step", "root"), "slice"."assign_decide_nearest_read" ("step", "ordinal", "root"), "slice"."assign_decide_nearest_row" ("digest", "root"), "slice"."assign_decide_output" ("step", "root"), "slice"."assign_decide_output_stage_rest" ("step", "root"), "slice"."assign_decide_output_stage_serve" ("step", "root"), "slice"."assign_decide_output_weighed" ("step", "ordinal", "root"), "slice"."assign_decide_seen_read" ("step", "ordinal", "root"), "slice"."assign_decide_seen_row" ("digest", "root"), "slice"."assign_embed_input" ("step", "root"), "slice"."assign_embed_input_exclude" ("step", "ordinal", "root"), "slice"."assign_embed_input_mode_nearest" ("step", "root"), "slice"."assign_embed_input_mode_within" ("step", "root"), "slice"."assign_embed_input_near" ("step", "ordinal", "root"), "slice"."assign_fenced" ("step", "attempt", "root"), "slice"."assign_finish" ("scope", "root"), "slice"."assign_held" ("step", "root"), "slice"."assign_paused" ("target", "turn"), "slice"."assign_result" ("step", "root"), "slice"."assign_resumed" ("target", "turn"), "slice"."assign_retry" ("step", "attempt", "root"), "slice"."assign_root" ("scope"), "slice"."assign_scope" ("scope", "root"), "slice"."assign_skipped" ("scope", "root"), "slice"."assign_step" ("step", "root"), "slice"."assigned" ("learner"), "slice"."audit" ("step"), "slice"."built" ("build"), "slice"."chain_admitted" ("scope", "root"), "slice"."chain_chain_run_input" ("scope", "root"), "slice"."chain_claim" ("step", "root", "attempt"), "slice"."chain_fenced" ("step", "attempt", "root"), "slice"."chain_finish" ("scope", "root"), "slice"."chain_held" ("step", "root"), "slice"."chain_next" ("from", "ordinal", "root"), "slice"."chain_ordered_input" ("scope", "root"), "slice"."chain_page_earlier_row" ("digest", "root"), "slice"."chain_page_input" ("step", "root"), "slice"."chain_page_input_after" ("step", "root"), "slice"."chain_page_output" ("step", "root"), "slice"."chain_page_output_next" ("step", "root"), "slice"."chain_page_tree_first" ("digest", "items", "root"), "slice"."chain_page_tree_items" ("digest", "items", "root"), "slice"."chain_page_tree_read" ("step", "ordinal", "root"), "slice"."chain_page_tree_row" ("digest", "root"), "slice"."chain_page_weights_read" ("step", "ordinal", "root"), "slice"."chain_page_weights_row" ("digest", "root"), "slice"."chain_paused" ("target", "turn"), "slice"."chain_result" ("step", "root"), "slice"."chain_resumed" ("target", "turn"), "slice"."chain_retry" ("step", "attempt", "root"), "slice"."chain_root" ("scope"), "slice"."chain_scope" ("scope", "root"), "slice"."chain_skipped" ("scope", "root"), "slice"."chain_start_step" ("scope", "ordinal", "root"), "slice"."chain_step" ("step", "root"), "slice"."chimed" ("hour", "bell"), "slice"."clock_admitted" ("scope", "root"), "slice"."clock_chime_input" ("step", "root"), "slice"."clock_claim" ("step", "root", "attempt"), "slice"."clock_close_input" ("step", "root"), "slice"."clock_fenced" ("step", "attempt", "root"), "slice"."clock_finish" ("scope", "root"), "slice"."clock_held" ("step", "root"), "slice"."clock_hourly_input" ("scope", "root"), "slice"."clock_paused" ("target", "turn"), "slice"."clock_result" ("step", "root"), "slice"."clock_resumed" ("target", "turn"), "slice"."clock_retry" ("step", "attempt", "root"), "slice"."clock_root" ("scope"), "slice"."clock_scope" ("scope", "root"), "slice"."clock_sitting_input" ("scope", "root"), "slice"."clock_skipped" ("scope", "root"), "slice"."clock_step" ("step", "root"), "slice"."concluded" ("learner"), "slice"."copied" ("relation", "run"), "slice"."cursor" ("feed", "position"), "slice"."delivered" ("attempt"), "slice"."fan_admitted" ("scope", "root"), "slice"."fan_batch_finish_output" ("step", "root"), "slice"."fan_batch_input" ("scope", "root"), "slice"."fan_claim" ("step", "root", "attempt"), "slice"."fan_dust_input" ("step", "root"), "slice"."fan_ended" ("step", "attempt", "root"), "slice"."fan_fan_run_input" ("scope", "root"), "slice"."fan_fenced" ("step", "attempt", "root"), "slice"."fan_finish" ("scope", "root"), "slice"."fan_held" ("step", "root"), "slice"."fan_hold" ("step", "root", "attempt", "at"), "slice"."fan_mop_input" ("step", "root"), "slice"."fan_paused" ("target", "turn"), "slice"."fan_result" ("step", "root"), "slice"."fan_resumed" ("target", "turn"), "slice"."fan_retry" ("step", "attempt", "root"), "slice"."fan_root" ("scope"), "slice"."fan_scope" ("scope", "root"), "slice"."fan_skipped" ("scope", "root"), "slice"."fan_square_input" ("step", "root"), "slice"."fan_square_output" ("step", "root"), "slice"."fan_start_scope" ("scope", "ordinal", "root"), "slice"."fan_start_step" ("scope", "ordinal", "root"), "slice"."fan_step" ("step", "root"), "slice"."fan_sweep_input" ("scope", "root"), "slice"."fan_within" ("scope", "root"), "slice"."heard" ("key"), "slice"."item" ("feed", "seq", "n"), "slice"."passage", "slice"."retry_admitted" ("scope", "root"), "slice"."retry_brittle_input" ("step", "root"), "slice"."retry_brittle_output" ("step", "root"), "slice"."retry_claim" ("step", "root", "attempt"), "slice"."retry_exhausted" ("step", "root"), "slice"."retry_fenced" ("step", "attempt", "root"), "slice"."retry_finish" ("scope", "root"), "slice"."retry_held" ("step", "root"), "slice"."retry_ladders_input" ("scope", "root"), "slice"."retry_patient_input" ("step", "root"), "slice"."retry_patient_output" ("step", "root"), "slice"."retry_paused" ("target", "turn"), "slice"."retry_polite_input" ("step", "root"), "slice"."retry_polite_output" ("step", "root"), "slice"."retry_result" ("step", "root"), "slice"."retry_resumed" ("target", "turn"), "slice"."retry_retry" ("step", "attempt", "root"), "slice"."retry_root" ("scope"), "slice"."retry_scope" ("scope", "root"), "slice"."retry_skipped" ("scope", "root"), "slice"."retry_steadfast_input" ("step", "root"), "slice"."retry_steadfast_output" ("step", "root"), "slice"."retry_step" ("step", "root"), "slice"."retry_throttled_input" ("scope", "root"), "slice"."retry_unhurried_input" ("scope", "root"), "slice"."review_admitted" ("scope", "root"), "slice"."review_analyze_input" ("step", "root"), "slice"."review_analyze_output" ("step", "root"), "slice"."review_claim" ("step", "root", "attempt"), "slice"."review_ended" ("step", "attempt", "root"), "slice"."review_fenced" ("step", "attempt", "root"), "slice"."review_finish" ("scope", "root"), "slice"."review_gather_input" ("step", "root"), "slice"."review_gather_input_sizes" ("step", "ordinal", "root"), "slice"."review_held" ("step", "root"), "slice"."review_hold" ("step", "root", "attempt", "at"), "slice"."review_paused" ("target", "turn"), "slice"."review_questions_finish_output" ("step", "root"), "slice"."review_questions_input" ("scope", "root"), "slice"."review_result" ("step", "root"), "slice"."review_resumed" ("target", "turn"), "slice"."review_retry" ("step", "attempt", "root"), "slice"."review_review_run_input" ("scope", "root"), "slice"."review_review_run_input_sizes" ("scope", "ordinal", "root"), "slice"."review_root" ("scope"), "slice"."review_save_input" ("step", "root"), "slice"."review_save_output" ("step", "root"), "slice"."review_scope" ("scope", "root"), "slice"."review_skipped" ("scope", "root"), "slice"."review_step" ("step", "root"), "slice"."review_within" ("scope", "root"), "slice"."reviewed" ("review", "group"), "slice"."seen" ("learner", "passage"), "slice"."settled" ("batch"), "slice"."summary" ("review"), "slice"."sync_admitted" ("scope", "root"), "slice"."sync_build_input" ("step", "root"), "slice"."sync_claim" ("step", "root", "attempt"), "slice"."sync_copy_input" ("step", "root"), "slice"."sync_exclusive" ("kind", "key", "turn"), "slice"."sync_exclusive_key" ("scope", "root"), "slice"."sync_fenced" ("step", "attempt", "root"), "slice"."sync_finish" ("scope", "root"), "slice"."sync_gold_input" ("scope", "root"), "slice"."sync_held" ("step", "root"), "slice"."sync_paused" ("target", "turn"), "slice"."sync_released" ("kind", "key", "turn"), "slice"."sync_result" ("step", "root"), "slice"."sync_resumed" ("target", "turn"), "slice"."sync_retry" ("step", "attempt", "root"), "slice"."sync_root" ("scope"), "slice"."sync_scope" ("scope", "root"), "slice"."sync_skipped" ("scope", "root"), "slice"."sync_step" ("step", "root"), "slice"."sync_sync_run_input" ("scope", "root"), "slice"."tally" ("batch"), "slice"."weight" ("feed", "factor"), "slice"."writeback_admitted" ("scope", "root"), "slice"."writeback_claim" ("step", "root", "attempt"), "slice"."writeback_deliver_input" ("step", "root"), "slice"."writeback_fenced" ("step", "attempt", "root"), "slice"."writeback_finish" ("scope", "root"), "slice"."writeback_held" ("step", "root"), "slice"."writeback_paused" ("target", "turn"), "slice"."writeback_result" ("step", "root"), "slice"."writeback_resumed" ("target", "turn"), "slice"."writeback_retry" ("step", "attempt", "root"), "slice"."writeback_root" ("scope"), "slice"."writeback_scope" ("scope", "root"), "slice"."writeback_skipped" ("scope", "root"), "slice"."writeback_step" ("step", "root"), "slice"."writeback_writeback_input" ("scope", "root"), "slice"."__ledger"
   WITH (publish_generated_columns = stored);
 
 SELECT "r1"."c1"::"slice"."__domain_gfw43vigph" AS "value"
@@ -3667,7 +3667,7 @@ GRANT SELECT, INSERT ON TABLE "slice"."assign_resumed" TO :"slice_seats__assign_
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__assign_coordinator";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"() TO :"slice_seats__assign_coordinator";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"() TO :"slice_seats__assign_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__assign_den" TO :"slice_seats__assign_den";
@@ -3675,7 +3675,7 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__assign_den" TO :"sli
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "vector_ext" TO :"slice_seats__assign_den";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_embed_input_mode", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_retry_why", "slice"."assign_root_kind" TO :"slice_seats__assign_den";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_embed_input_mode", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_retry_why", "slice"."assign_root_kind" TO :"slice_seats__assign_den";
 
 GRANT SELECT ON TABLE "slice_seats__assign_den"."assign_admitted", "slice_seats__assign_den"."assign_asked", "slice_seats__assign_den"."assign_assignment_finish_output", "slice_seats__assign_den"."assign_assignment_input", "slice_seats__assign_den"."assign_assignment_input_exclude", "slice_seats__assign_den"."assign_assignment_input_mode_nearest", "slice_seats__assign_den"."assign_assignment_input_mode_within", "slice_seats__assign_den"."assign_assignment_input_near", "slice_seats__assign_den"."assign_claim", "slice_seats__assign_den"."assign_decide_input", "slice_seats__assign_den"."assign_decide_input_exclude", "slice_seats__assign_den"."assign_decide_input_mode_nearest", "slice_seats__assign_den"."assign_decide_input_mode_within", "slice_seats__assign_den"."assign_decide_nearest_read", "slice_seats__assign_den"."assign_decide_nearest_row", "slice_seats__assign_den"."assign_decide_output", "slice_seats__assign_den"."assign_decide_output_stage_rest", "slice_seats__assign_den"."assign_decide_output_stage_serve", "slice_seats__assign_den"."assign_decide_output_weighed", "slice_seats__assign_den"."assign_decide_seen_read", "slice_seats__assign_den"."assign_decide_seen_row", "slice_seats__assign_den"."assign_done", "slice_seats__assign_den"."assign_embed_input", "slice_seats__assign_den"."assign_embed_input_exclude", "slice_seats__assign_den"."assign_embed_input_mode_nearest", "slice_seats__assign_den"."assign_embed_input_mode_within", "slice_seats__assign_den"."assign_embed_input_near", "slice_seats__assign_den"."assign_embed_output", "slice_seats__assign_den"."assign_ended", "slice_seats__assign_den"."assign_exhausted", "slice_seats__assign_den"."assign_failed", "slice_seats__assign_den"."assign_fenced", "slice_seats__assign_den"."assign_finish", "slice_seats__assign_den"."assign_held", "slice_seats__assign_den"."assign_paused", "slice_seats__assign_den"."assign_refusal", "slice_seats__assign_den"."assign_result", "slice_seats__assign_den"."assign_resumed", "slice_seats__assign_den"."assign_retry", "slice_seats__assign_den"."assign_root", "slice_seats__assign_den"."assign_scope", "slice_seats__assign_den"."assign_skipped", "slice_seats__assign_den"."assign_start_step", "slice_seats__assign_den"."assign_step" TO :"slice_seats__assign_den";
 
@@ -3753,12 +3753,12 @@ GRANT SELECT, INSERT ON TABLE "slice"."assign_step" TO :"slice_seats__assign_den
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__assign_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"() TO :"slice_seats__assign_den";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"() TO :"slice_seats__assign_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__assign_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__hold_assign_root_rwboli77cc"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__assign_den";
+GRANT EXECUTE ON FUNCTION "slice"."__hold_assign_root_rwboli77cc"("slice"."__sha256"[]) TO :"slice_seats__assign_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__assign_retirer" TO :"slice_seats__assign_retirer";
@@ -3766,20 +3766,20 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__assign_retirer" TO :
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "vector_ext" TO :"slice_seats__assign_retirer";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_embed_input_mode", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_retry_why", "slice"."assign_root_kind" TO :"slice_seats__assign_retirer";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_embed_input_mode", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_retry_why", "slice"."assign_root_kind" TO :"slice_seats__assign_retirer";
 
 GRANT SELECT ON TABLE "slice_seats__assign_retirer"."assign_admitted", "slice_seats__assign_retirer"."assign_asked", "slice_seats__assign_retirer"."assign_assignment_finish_output", "slice_seats__assign_retirer"."assign_assignment_input", "slice_seats__assign_retirer"."assign_assignment_input_exclude", "slice_seats__assign_retirer"."assign_assignment_input_mode_nearest", "slice_seats__assign_retirer"."assign_assignment_input_mode_within", "slice_seats__assign_retirer"."assign_assignment_input_near", "slice_seats__assign_retirer"."assign_claim", "slice_seats__assign_retirer"."assign_decide_input", "slice_seats__assign_retirer"."assign_decide_input_exclude", "slice_seats__assign_retirer"."assign_decide_input_mode_nearest", "slice_seats__assign_retirer"."assign_decide_input_mode_within", "slice_seats__assign_retirer"."assign_decide_nearest_read", "slice_seats__assign_retirer"."assign_decide_nearest_row", "slice_seats__assign_retirer"."assign_decide_output", "slice_seats__assign_retirer"."assign_decide_output_stage_rest", "slice_seats__assign_retirer"."assign_decide_output_stage_serve", "slice_seats__assign_retirer"."assign_decide_output_weighed", "slice_seats__assign_retirer"."assign_decide_seen_read", "slice_seats__assign_retirer"."assign_decide_seen_row", "slice_seats__assign_retirer"."assign_done", "slice_seats__assign_retirer"."assign_embed_input", "slice_seats__assign_retirer"."assign_embed_input_exclude", "slice_seats__assign_retirer"."assign_embed_input_mode_nearest", "slice_seats__assign_retirer"."assign_embed_input_mode_within", "slice_seats__assign_retirer"."assign_embed_input_near", "slice_seats__assign_retirer"."assign_embed_output", "slice_seats__assign_retirer"."assign_ended", "slice_seats__assign_retirer"."assign_exhausted", "slice_seats__assign_retirer"."assign_failed", "slice_seats__assign_retirer"."assign_fenced", "slice_seats__assign_retirer"."assign_finish", "slice_seats__assign_retirer"."assign_held", "slice_seats__assign_retirer"."assign_refusal", "slice_seats__assign_retirer"."assign_result", "slice_seats__assign_retirer"."assign_retry", "slice_seats__assign_retirer"."assign_root", "slice_seats__assign_retirer"."assign_scope", "slice_seats__assign_retirer"."assign_skipped", "slice_seats__assign_retirer"."assign_start_step", "slice_seats__assign_retirer"."assign_step" TO :"slice_seats__assign_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__assign_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"() TO :"slice_seats__assign_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"() TO :"slice_seats__assign_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__retire_assign_root_hwbj4sewrx"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__assign_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__retire_assign_root_hwbj4sewrx"("slice"."__sha256"[]) TO :"slice_seats__assign_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__auditor" TO :"slice_seats__auditor";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."bell", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_earlier_row_feed", "slice"."chain_page_input_feed", "slice"."chain_page_tree_row_feed", "slice"."chain_page_weights_row_feed", "slice"."chain_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_resource", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_resource", "slice"."sync_outcome", "slice"."__text_t4rwovzmqj" TO :"slice_seats__auditor";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."assign_decide_output_stage", "slice"."assign_kind", "slice"."assign_outcome", "slice"."bell", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_earlier_row_feed", "slice"."chain_page_input_feed", "slice"."chain_page_tree_row_feed", "slice"."chain_page_weights_row_feed", "slice"."chain_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_resource", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_resource", "slice"."sync_outcome", "slice"."__text_t4rwovzmqj" TO :"slice_seats__auditor";
 
 GRANT SELECT ON TABLE "slice_seats__auditor"."assign_decide_nearest_read", "slice_seats__auditor"."assign_decide_nearest_row", "slice_seats__auditor"."assign_decide_output", "slice_seats__auditor"."assign_decide_output_stage_serve", "slice_seats__auditor"."assign_decide_output_weighed", "slice_seats__auditor"."assign_decide_seen_read", "slice_seats__auditor"."assign_decide_seen_row", "slice_seats__auditor"."assign_result", "slice_seats__auditor"."assign_step", "slice_seats__auditor"."assigned", "slice_seats__auditor"."audit", "slice_seats__auditor"."built", "slice_seats__auditor"."chain_admitted", "slice_seats__auditor"."chain_chain_run_input", "slice_seats__auditor"."chain_claim", "slice_seats__auditor"."chain_finish", "slice_seats__auditor"."chain_next", "slice_seats__auditor"."chain_ordered_input", "slice_seats__auditor"."chain_page_earlier_row", "slice_seats__auditor"."chain_page_input", "slice_seats__auditor"."chain_page_input_after", "slice_seats__auditor"."chain_page_output", "slice_seats__auditor"."chain_page_output_next", "slice_seats__auditor"."chain_page_tree_first", "slice_seats__auditor"."chain_page_tree_items", "slice_seats__auditor"."chain_page_tree_read", "slice_seats__auditor"."chain_page_tree_row", "slice_seats__auditor"."chain_page_weights_read", "slice_seats__auditor"."chain_page_weights_row", "slice_seats__auditor"."chain_result", "slice_seats__auditor"."chain_root", "slice_seats__auditor"."chain_scope", "slice_seats__auditor"."chain_start_step", "slice_seats__auditor"."chain_step", "slice_seats__auditor"."chimed", "slice_seats__auditor"."concluded", "slice_seats__auditor"."copied", "slice_seats__auditor"."cursor", "slice_seats__auditor"."fan_admitted", "slice_seats__auditor"."fan_batch_input", "slice_seats__auditor"."fan_claim", "slice_seats__auditor"."fan_fan_run_input", "slice_seats__auditor"."fan_finish", "slice_seats__auditor"."fan_hold", "slice_seats__auditor"."fan_result", "slice_seats__auditor"."fan_root", "slice_seats__auditor"."fan_scope", "slice_seats__auditor"."fan_square_input", "slice_seats__auditor"."fan_square_output", "slice_seats__auditor"."fan_start_scope", "slice_seats__auditor"."fan_start_step", "slice_seats__auditor"."fan_step", "slice_seats__auditor"."fan_within", "slice_seats__auditor"."heard", "slice_seats__auditor"."item", "slice_seats__auditor"."order", "slice_seats__auditor"."retry_claim", "slice_seats__auditor"."retry_exhausted", "slice_seats__auditor"."retry_result", "slice_seats__auditor"."retry_step", "slice_seats__auditor"."review_finish", "slice_seats__auditor"."review_hold", "slice_seats__auditor"."review_result", "slice_seats__auditor"."review_step", "slice_seats__auditor"."review_within", "slice_seats__auditor"."reviewed", "slice_seats__auditor"."settled", "slice_seats__auditor"."summary", "slice_seats__auditor"."sync_admitted", "slice_seats__auditor"."sync_finish", "slice_seats__auditor"."sync_result", "slice_seats__auditor"."sync_scope", "slice_seats__auditor"."sync_skipped", "slice_seats__auditor"."tally", "slice_seats__auditor"."weight" TO :"slice_seats__auditor";
 
@@ -3787,7 +3787,7 @@ GRANT SELECT, INSERT ON TABLE "slice"."audit" TO :"slice_seats__auditor";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__auditor";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__bell_names_aiqi4uostx"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_earlier_row_feed_names_tmqqz3lel4"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_page_tree_row_feed_names_w5f7gjcjkc"(), "slice"."__chain_page_weights_row_feed_names_awtorq4cfe"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_root_kind_names_nagupzc3sq"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__sync_outcome_names_xzb4y4xgki"() TO :"slice_seats__auditor";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__bell_names_aiqi4uostx"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_earlier_row_feed_names_tmqqz3lel4"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_page_tree_row_feed_names_w5f7gjcjkc"(), "slice"."__chain_page_weights_row_feed_names_awtorq4cfe"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_root_kind_names_nagupzc3sq"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__bell_live_bk7zau3khi"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_earlier_row_feed_live_orkazo3lov"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_page_tree_row_feed_live_m3isrn2bwm"(), "slice"."__chain_page_weights_row_feed_live_fueegj5g3p"(), "slice"."__chain_root_kind_live_mnlnztwbz2"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_mosnikz3yn"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_root_kind_live_sx7vmfeklj"(), "slice"."__feed_live_pfwkvulieq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__sync_outcome_live_7gndrvrenw"() TO :"slice_seats__auditor";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__chain_coordinator" TO :"slice_seats__chain_coordinator";
@@ -3802,12 +3802,12 @@ GRANT SELECT, INSERT ON TABLE "slice"."chain_resumed" TO :"slice_seats__chain_co
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__chain_coordinator";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_earlier_row_feed_names_tmqqz3lel4"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_page_tree_row_feed_names_w5f7gjcjkc"(), "slice"."__chain_page_weights_row_feed_names_awtorq4cfe"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"() TO :"slice_seats__chain_coordinator";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_earlier_row_feed_live_orkazo3lov"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_page_tree_row_feed_live_m3isrn2bwm"(), "slice"."__chain_page_weights_row_feed_live_fueegj5g3p"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"() TO :"slice_seats__chain_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__chain_den" TO :"slice_seats__chain_den";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_earlier_row_feed", "slice"."chain_page_input_feed", "slice"."chain_page_tree_row_feed", "slice"."chain_page_weights_row_feed", "slice"."chain_pausable", "slice"."chain_retry_why", "slice"."chain_root_kind" TO :"slice_seats__chain_den";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_earlier_row_feed", "slice"."chain_page_input_feed", "slice"."chain_page_tree_row_feed", "slice"."chain_page_weights_row_feed", "slice"."chain_pausable", "slice"."chain_retry_why", "slice"."chain_root_kind" TO :"slice_seats__chain_den";
 
 GRANT SELECT ON TABLE "slice_seats__chain_den"."chain_admitted", "slice_seats__chain_den"."chain_chain_run_finish_output", "slice_seats__chain_den"."chain_chain_run_input", "slice_seats__chain_den"."chain_claim", "slice_seats__chain_den"."chain_done", "slice_seats__chain_den"."chain_ended", "slice_seats__chain_den"."chain_exhausted", "slice_seats__chain_den"."chain_failed", "slice_seats__chain_den"."chain_fenced", "slice_seats__chain_den"."chain_finish", "slice_seats__chain_den"."chain_held", "slice_seats__chain_den"."chain_next", "slice_seats__chain_den"."chain_ordered_finish_output", "slice_seats__chain_den"."chain_ordered_input", "slice_seats__chain_den"."chain_page_earlier_read", "slice_seats__chain_den"."chain_page_earlier_row", "slice_seats__chain_den"."chain_page_input", "slice_seats__chain_den"."chain_page_input_after", "slice_seats__chain_den"."chain_page_output", "slice_seats__chain_den"."chain_page_output_next", "slice_seats__chain_den"."chain_page_tree_first", "slice_seats__chain_den"."chain_page_tree_items", "slice_seats__chain_den"."chain_page_tree_read", "slice_seats__chain_den"."chain_page_tree_row", "slice_seats__chain_den"."chain_page_weights_read", "slice_seats__chain_den"."chain_page_weights_row", "slice_seats__chain_den"."chain_paused", "slice_seats__chain_den"."chain_refusal", "slice_seats__chain_den"."chain_result", "slice_seats__chain_den"."chain_resumed", "slice_seats__chain_den"."chain_retry", "slice_seats__chain_den"."chain_root", "slice_seats__chain_den"."chain_scope", "slice_seats__chain_den"."chain_skipped", "slice_seats__chain_den"."chain_start_step", "slice_seats__chain_den"."chain_step" TO :"slice_seats__chain_den";
 
@@ -3875,25 +3875,25 @@ GRANT SELECT, INSERT ON TABLE "slice"."chain_step" TO :"slice_seats__chain_den";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__chain_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_earlier_row_feed_names_tmqqz3lel4"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_page_tree_row_feed_names_w5f7gjcjkc"(), "slice"."__chain_page_weights_row_feed_names_awtorq4cfe"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"() TO :"slice_seats__chain_den";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_earlier_row_feed_names_tmqqz3lel4"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_page_tree_row_feed_names_w5f7gjcjkc"(), "slice"."__chain_page_weights_row_feed_names_awtorq4cfe"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_earlier_row_feed_live_orkazo3lov"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_page_tree_row_feed_live_m3isrn2bwm"(), "slice"."__chain_page_weights_row_feed_live_fueegj5g3p"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"() TO :"slice_seats__chain_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__chain_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__hold_chain_root_wgndggnfwf"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__chain_den";
+GRANT EXECUTE ON FUNCTION "slice"."__hold_chain_root_wgndggnfwf"("slice"."__sha256"[]) TO :"slice_seats__chain_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__chain_retirer" TO :"slice_seats__chain_retirer";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_earlier_row_feed", "slice"."chain_page_input_feed", "slice"."chain_page_tree_row_feed", "slice"."chain_page_weights_row_feed", "slice"."chain_pausable", "slice"."chain_retry_why", "slice"."chain_root_kind" TO :"slice_seats__chain_retirer";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_earlier_row_feed", "slice"."chain_page_input_feed", "slice"."chain_page_tree_row_feed", "slice"."chain_page_weights_row_feed", "slice"."chain_pausable", "slice"."chain_retry_why", "slice"."chain_root_kind" TO :"slice_seats__chain_retirer";
 
 GRANT SELECT ON TABLE "slice_seats__chain_retirer"."chain_admitted", "slice_seats__chain_retirer"."chain_chain_run_finish_output", "slice_seats__chain_retirer"."chain_chain_run_input", "slice_seats__chain_retirer"."chain_claim", "slice_seats__chain_retirer"."chain_done", "slice_seats__chain_retirer"."chain_ended", "slice_seats__chain_retirer"."chain_exhausted", "slice_seats__chain_retirer"."chain_failed", "slice_seats__chain_retirer"."chain_fenced", "slice_seats__chain_retirer"."chain_finish", "slice_seats__chain_retirer"."chain_held", "slice_seats__chain_retirer"."chain_next", "slice_seats__chain_retirer"."chain_ordered_finish_output", "slice_seats__chain_retirer"."chain_ordered_input", "slice_seats__chain_retirer"."chain_page_earlier_read", "slice_seats__chain_retirer"."chain_page_earlier_row", "slice_seats__chain_retirer"."chain_page_input", "slice_seats__chain_retirer"."chain_page_input_after", "slice_seats__chain_retirer"."chain_page_output", "slice_seats__chain_retirer"."chain_page_output_next", "slice_seats__chain_retirer"."chain_page_tree_first", "slice_seats__chain_retirer"."chain_page_tree_items", "slice_seats__chain_retirer"."chain_page_tree_read", "slice_seats__chain_retirer"."chain_page_tree_row", "slice_seats__chain_retirer"."chain_page_weights_read", "slice_seats__chain_retirer"."chain_page_weights_row", "slice_seats__chain_retirer"."chain_refusal", "slice_seats__chain_retirer"."chain_result", "slice_seats__chain_retirer"."chain_retry", "slice_seats__chain_retirer"."chain_root", "slice_seats__chain_retirer"."chain_scope", "slice_seats__chain_retirer"."chain_skipped", "slice_seats__chain_retirer"."chain_start_step", "slice_seats__chain_retirer"."chain_step" TO :"slice_seats__chain_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__chain_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_earlier_row_feed_names_tmqqz3lel4"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_page_tree_row_feed_names_w5f7gjcjkc"(), "slice"."__chain_page_weights_row_feed_names_awtorq4cfe"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"() TO :"slice_seats__chain_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_earlier_row_feed_names_tmqqz3lel4"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_page_tree_row_feed_names_w5f7gjcjkc"(), "slice"."__chain_page_weights_row_feed_names_awtorq4cfe"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_earlier_row_feed_live_orkazo3lov"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_page_tree_row_feed_live_m3isrn2bwm"(), "slice"."__chain_page_weights_row_feed_live_fueegj5g3p"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"() TO :"slice_seats__chain_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__retire_chain_root_ji6nmac7of"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__chain_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__retire_chain_root_ji6nmac7of"("slice"."__sha256"[]) TO :"slice_seats__chain_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__clock_coordinator" TO :"slice_seats__clock_coordinator";
@@ -3908,12 +3908,12 @@ GRANT SELECT, INSERT ON TABLE "slice"."clock_resumed" TO :"slice_seats__clock_co
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__clock_coordinator";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__clock_chime_input_bell_names_nkzi4dgaig"(), "slice"."__clock_chime_output_bell_names_tzmx63kpb4"(), "slice"."__clock_hourly_input_bell_names_vugtqsvsug"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_pausable_names_phjbr2fipl"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"() TO :"slice_seats__clock_coordinator";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__clock_pausable_names_phjbr2fipl"(), "slice"."__clock_chime_input_bell_live_vs2eypgl4v"(), "slice"."__clock_chime_output_bell_live_ikpwkv25mh"(), "slice"."__clock_hourly_input_bell_live_yfdtebn7na"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"() TO :"slice_seats__clock_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__clock_den" TO :"slice_seats__clock_den";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."clock_chime_input_bell", "slice"."clock_chime_output_bell", "slice"."clock_hourly_input_bell", "slice"."clock_kind", "slice"."clock_outcome", "slice"."clock_pausable", "slice"."clock_retry_why", "slice"."clock_root_kind" TO :"slice_seats__clock_den";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."clock_chime_input_bell", "slice"."clock_chime_output_bell", "slice"."clock_hourly_input_bell", "slice"."clock_kind", "slice"."clock_outcome", "slice"."clock_pausable", "slice"."clock_retry_why", "slice"."clock_root_kind" TO :"slice_seats__clock_den";
 
 GRANT SELECT ON TABLE "slice_seats__clock_den"."clock_admitted", "slice_seats__clock_den"."clock_chime_input", "slice_seats__clock_den"."clock_chime_output", "slice_seats__clock_den"."clock_claim", "slice_seats__clock_den"."clock_close_input", "slice_seats__clock_den"."clock_close_output", "slice_seats__clock_den"."clock_done", "slice_seats__clock_den"."clock_ended", "slice_seats__clock_den"."clock_exhausted", "slice_seats__clock_den"."clock_failed", "slice_seats__clock_den"."clock_fenced", "slice_seats__clock_den"."clock_finish", "slice_seats__clock_den"."clock_held", "slice_seats__clock_den"."clock_hourly_finish_output", "slice_seats__clock_den"."clock_hourly_input", "slice_seats__clock_den"."clock_paused", "slice_seats__clock_den"."clock_refusal", "slice_seats__clock_den"."clock_result", "slice_seats__clock_den"."clock_resumed", "slice_seats__clock_den"."clock_retry", "slice_seats__clock_den"."clock_root", "slice_seats__clock_den"."clock_scope", "slice_seats__clock_den"."clock_sitting_finish_output", "slice_seats__clock_den"."clock_sitting_input", "slice_seats__clock_den"."clock_skipped", "slice_seats__clock_den"."clock_start_step", "slice_seats__clock_den"."clock_step" TO :"slice_seats__clock_den";
 
@@ -3965,30 +3965,30 @@ GRANT SELECT, INSERT ON TABLE "slice"."clock_step" TO :"slice_seats__clock_den";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__clock_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__clock_chime_input_bell_names_nkzi4dgaig"(), "slice"."__clock_chime_output_bell_names_tzmx63kpb4"(), "slice"."__clock_hourly_input_bell_names_vugtqsvsug"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_pausable_names_phjbr2fipl"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"() TO :"slice_seats__clock_den";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__clock_chime_input_bell_names_nkzi4dgaig"(), "slice"."__clock_chime_output_bell_names_tzmx63kpb4"(), "slice"."__clock_hourly_input_bell_names_vugtqsvsug"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_pausable_names_phjbr2fipl"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"(), "slice"."__clock_chime_input_bell_live_vs2eypgl4v"(), "slice"."__clock_chime_output_bell_live_ikpwkv25mh"(), "slice"."__clock_hourly_input_bell_live_yfdtebn7na"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"() TO :"slice_seats__clock_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__clock_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__hold_clock_root_bawnkhmkww"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__clock_den";
+GRANT EXECUTE ON FUNCTION "slice"."__hold_clock_root_bawnkhmkww"("slice"."__sha256"[]) TO :"slice_seats__clock_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__clock_retirer" TO :"slice_seats__clock_retirer";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."clock_chime_input_bell", "slice"."clock_chime_output_bell", "slice"."clock_hourly_input_bell", "slice"."clock_kind", "slice"."clock_outcome", "slice"."clock_pausable", "slice"."clock_retry_why", "slice"."clock_root_kind" TO :"slice_seats__clock_retirer";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."clock_chime_input_bell", "slice"."clock_chime_output_bell", "slice"."clock_hourly_input_bell", "slice"."clock_kind", "slice"."clock_outcome", "slice"."clock_pausable", "slice"."clock_retry_why", "slice"."clock_root_kind" TO :"slice_seats__clock_retirer";
 
 GRANT SELECT ON TABLE "slice_seats__clock_retirer"."clock_admitted", "slice_seats__clock_retirer"."clock_chime_input", "slice_seats__clock_retirer"."clock_chime_output", "slice_seats__clock_retirer"."clock_claim", "slice_seats__clock_retirer"."clock_close_input", "slice_seats__clock_retirer"."clock_close_output", "slice_seats__clock_retirer"."clock_done", "slice_seats__clock_retirer"."clock_ended", "slice_seats__clock_retirer"."clock_exhausted", "slice_seats__clock_retirer"."clock_failed", "slice_seats__clock_retirer"."clock_fenced", "slice_seats__clock_retirer"."clock_finish", "slice_seats__clock_retirer"."clock_held", "slice_seats__clock_retirer"."clock_hourly_finish_output", "slice_seats__clock_retirer"."clock_hourly_input", "slice_seats__clock_retirer"."clock_refusal", "slice_seats__clock_retirer"."clock_result", "slice_seats__clock_retirer"."clock_retry", "slice_seats__clock_retirer"."clock_root", "slice_seats__clock_retirer"."clock_scope", "slice_seats__clock_retirer"."clock_sitting_finish_output", "slice_seats__clock_retirer"."clock_sitting_input", "slice_seats__clock_retirer"."clock_skipped", "slice_seats__clock_retirer"."clock_start_step", "slice_seats__clock_retirer"."clock_step" TO :"slice_seats__clock_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__clock_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__clock_chime_input_bell_names_nkzi4dgaig"(), "slice"."__clock_chime_output_bell_names_tzmx63kpb4"(), "slice"."__clock_hourly_input_bell_names_vugtqsvsug"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_pausable_names_phjbr2fipl"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"() TO :"slice_seats__clock_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__clock_chime_input_bell_names_nkzi4dgaig"(), "slice"."__clock_chime_output_bell_names_tzmx63kpb4"(), "slice"."__clock_hourly_input_bell_names_vugtqsvsug"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"(), "slice"."__clock_chime_input_bell_live_vs2eypgl4v"(), "slice"."__clock_chime_output_bell_live_ikpwkv25mh"(), "slice"."__clock_hourly_input_bell_live_yfdtebn7na"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"() TO :"slice_seats__clock_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__retire_clock_root_6pfo6eeroe"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__clock_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__retire_clock_root_6pfo6eeroe"("slice"."__sha256"[]) TO :"slice_seats__clock_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__fan_coordinator" TO :"slice_seats__fan_coordinator";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_retry_why", "slice"."fan_root_kind" TO :"slice_seats__fan_coordinator";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_retry_why", "slice"."fan_root_kind" TO :"slice_seats__fan_coordinator";
 
 GRANT SELECT ON TABLE "slice_seats__fan_coordinator"."fan_live", "slice_seats__fan_coordinator"."fan_paused", "slice_seats__fan_coordinator"."fan_resumed" TO :"slice_seats__fan_coordinator";
 
@@ -3998,12 +3998,12 @@ GRANT SELECT, INSERT ON TABLE "slice"."fan_resumed" TO :"slice_seats__fan_coordi
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__fan_coordinator";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_7t2samsp7b"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_nagupzc3sq"() TO :"slice_seats__fan_coordinator";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_pausable_names_7t2samsp7b"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_mosnikz3yn"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_uymd2oabeh"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_sx7vmfeklj"() TO :"slice_seats__fan_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__fan_den" TO :"slice_seats__fan_den";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_retry_why", "slice"."fan_root_kind" TO :"slice_seats__fan_den";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_retry_why", "slice"."fan_root_kind" TO :"slice_seats__fan_den";
 
 GRANT SELECT ON TABLE "slice_seats__fan_den"."fan_admitted", "slice_seats__fan_den"."fan_batch_finish_output", "slice_seats__fan_den"."fan_batch_input", "slice_seats__fan_den"."fan_claim", "slice_seats__fan_den"."fan_done", "slice_seats__fan_den"."fan_dust_input", "slice_seats__fan_den"."fan_dust_output", "slice_seats__fan_den"."fan_ended", "slice_seats__fan_den"."fan_exhausted", "slice_seats__fan_den"."fan_failed", "slice_seats__fan_den"."fan_fan_run_finish_output", "slice_seats__fan_den"."fan_fan_run_input", "slice_seats__fan_den"."fan_fenced", "slice_seats__fan_den"."fan_finish", "slice_seats__fan_den"."fan_held", "slice_seats__fan_den"."fan_hold", "slice_seats__fan_den"."fan_live", "slice_seats__fan_den"."fan_mop_input", "slice_seats__fan_den"."fan_mop_output", "slice_seats__fan_den"."fan_paused", "slice_seats__fan_den"."fan_refusal", "slice_seats__fan_den"."fan_result", "slice_seats__fan_den"."fan_resumed", "slice_seats__fan_den"."fan_retry", "slice_seats__fan_den"."fan_root", "slice_seats__fan_den"."fan_scope", "slice_seats__fan_den"."fan_skipped", "slice_seats__fan_den"."fan_square_input", "slice_seats__fan_den"."fan_square_output", "slice_seats__fan_den"."fan_start_scope", "slice_seats__fan_den"."fan_start_step", "slice_seats__fan_den"."fan_step", "slice_seats__fan_den"."fan_sweep_finish_output", "slice_seats__fan_den"."fan_sweep_input", "slice_seats__fan_den"."fan_within" TO :"slice_seats__fan_den";
 
@@ -4067,25 +4067,25 @@ GRANT SELECT, INSERT ON TABLE "slice"."fan_within" TO :"slice_seats__fan_den";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__fan_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_7t2samsp7b"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_nagupzc3sq"() TO :"slice_seats__fan_den";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_7t2samsp7b"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_nagupzc3sq"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_mosnikz3yn"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_uymd2oabeh"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_sx7vmfeklj"() TO :"slice_seats__fan_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__fan_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__hold_fan_root_4vwfxofrxw"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__fan_den";
+GRANT EXECUTE ON FUNCTION "slice"."__hold_fan_root_4vwfxofrxw"("slice"."__sha256"[]) TO :"slice_seats__fan_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__fan_retirer" TO :"slice_seats__fan_retirer";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_retry_why", "slice"."fan_root_kind" TO :"slice_seats__fan_retirer";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_retry_why", "slice"."fan_root_kind" TO :"slice_seats__fan_retirer";
 
 GRANT SELECT ON TABLE "slice_seats__fan_retirer"."fan_admitted", "slice_seats__fan_retirer"."fan_batch_finish_output", "slice_seats__fan_retirer"."fan_batch_input", "slice_seats__fan_retirer"."fan_claim", "slice_seats__fan_retirer"."fan_done", "slice_seats__fan_retirer"."fan_dust_input", "slice_seats__fan_retirer"."fan_dust_output", "slice_seats__fan_retirer"."fan_ended", "slice_seats__fan_retirer"."fan_exhausted", "slice_seats__fan_retirer"."fan_failed", "slice_seats__fan_retirer"."fan_fan_run_finish_output", "slice_seats__fan_retirer"."fan_fan_run_input", "slice_seats__fan_retirer"."fan_fenced", "slice_seats__fan_retirer"."fan_finish", "slice_seats__fan_retirer"."fan_held", "slice_seats__fan_retirer"."fan_hold", "slice_seats__fan_retirer"."fan_mop_input", "slice_seats__fan_retirer"."fan_mop_output", "slice_seats__fan_retirer"."fan_refusal", "slice_seats__fan_retirer"."fan_result", "slice_seats__fan_retirer"."fan_retry", "slice_seats__fan_retirer"."fan_root", "slice_seats__fan_retirer"."fan_scope", "slice_seats__fan_retirer"."fan_skipped", "slice_seats__fan_retirer"."fan_square_input", "slice_seats__fan_retirer"."fan_square_output", "slice_seats__fan_retirer"."fan_start_scope", "slice_seats__fan_retirer"."fan_start_step", "slice_seats__fan_retirer"."fan_step", "slice_seats__fan_retirer"."fan_sweep_finish_output", "slice_seats__fan_retirer"."fan_sweep_input", "slice_seats__fan_retirer"."fan_within" TO :"slice_seats__fan_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__fan_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_7t2samsp7b"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_nagupzc3sq"() TO :"slice_seats__fan_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_nagupzc3sq"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_mosnikz3yn"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_uymd2oabeh"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_sx7vmfeklj"() TO :"slice_seats__fan_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__retire_fan_root_niesya7vcd"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__fan_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__retire_fan_root_niesya7vcd"("slice"."__sha256"[]) TO :"slice_seats__fan_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__loader" TO :"slice_seats__loader";
@@ -4093,7 +4093,7 @@ GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__loader" TO :"slice_s
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "vector_ext" TO :"slice_seats__loader";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_embed_input_mode", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_retry_why", "slice"."assign_root_kind", "slice"."bell", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_earlier_row_feed", "slice"."chain_page_input_feed", "slice"."chain_page_tree_row_feed", "slice"."chain_page_weights_row_feed", "slice"."chain_pausable", "slice"."chain_retry_why", "slice"."chain_root_kind", "slice"."clock_chime_input_bell", "slice"."clock_chime_output_bell", "slice"."clock_hourly_input_bell", "slice"."clock_kind", "slice"."clock_outcome", "slice"."clock_pausable", "slice"."clock_retry_why", "slice"."clock_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_retry_why", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_retry_why", "slice"."retry_root_kind", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_resource", "slice"."review_retry_why", "slice"."review_root_kind", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_retry_why", "slice"."sync_root_kind", "slice"."writeback_kind", "slice"."writeback_outcome", "slice"."writeback_pausable", "slice"."writeback_retry_why", "slice"."writeback_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__loader";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_embed_input_mode", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_retry_why", "slice"."assign_root_kind", "slice"."bell", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_earlier_row_feed", "slice"."chain_page_input_feed", "slice"."chain_page_tree_row_feed", "slice"."chain_page_weights_row_feed", "slice"."chain_pausable", "slice"."chain_retry_why", "slice"."chain_root_kind", "slice"."clock_chime_input_bell", "slice"."clock_chime_output_bell", "slice"."clock_hourly_input_bell", "slice"."clock_kind", "slice"."clock_outcome", "slice"."clock_pausable", "slice"."clock_retry_why", "slice"."clock_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_retry_why", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_retry_why", "slice"."retry_root_kind", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_resource", "slice"."review_retry_why", "slice"."review_root_kind", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_retry_why", "slice"."sync_root_kind", "slice"."writeback_kind", "slice"."writeback_outcome", "slice"."writeback_pausable", "slice"."writeback_retry_why", "slice"."writeback_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__loader";
 
 GRANT SELECT ON TABLE "slice_seats__loader"."assign_admitted", "slice_seats__loader"."assign_asked", "slice_seats__loader"."assign_assignment_finish_output", "slice_seats__loader"."assign_assignment_input", "slice_seats__loader"."assign_assignment_input_exclude", "slice_seats__loader"."assign_assignment_input_mode_nearest", "slice_seats__loader"."assign_assignment_input_mode_within", "slice_seats__loader"."assign_assignment_input_near", "slice_seats__loader"."assign_claim", "slice_seats__loader"."assign_decide_input", "slice_seats__loader"."assign_decide_input_exclude", "slice_seats__loader"."assign_decide_input_mode_nearest", "slice_seats__loader"."assign_decide_input_mode_within", "slice_seats__loader"."assign_decide_nearest_read", "slice_seats__loader"."assign_decide_nearest_row", "slice_seats__loader"."assign_decide_output", "slice_seats__loader"."assign_decide_output_stage_rest", "slice_seats__loader"."assign_decide_output_stage_serve", "slice_seats__loader"."assign_decide_output_weighed", "slice_seats__loader"."assign_decide_seen_read", "slice_seats__loader"."assign_decide_seen_row", "slice_seats__loader"."assign_done", "slice_seats__loader"."assign_embed_input", "slice_seats__loader"."assign_embed_input_exclude", "slice_seats__loader"."assign_embed_input_mode_nearest", "slice_seats__loader"."assign_embed_input_mode_within", "slice_seats__loader"."assign_embed_input_near", "slice_seats__loader"."assign_embed_output", "slice_seats__loader"."assign_ended", "slice_seats__loader"."assign_exhausted", "slice_seats__loader"."assign_failed", "slice_seats__loader"."assign_fenced", "slice_seats__loader"."assign_finish", "slice_seats__loader"."assign_held", "slice_seats__loader"."assign_refusal", "slice_seats__loader"."assign_result", "slice_seats__loader"."assign_retry", "slice_seats__loader"."assign_root", "slice_seats__loader"."assign_scope", "slice_seats__loader"."assign_skipped", "slice_seats__loader"."assign_start_step", "slice_seats__loader"."assign_step", "slice_seats__loader"."assigned", "slice_seats__loader"."built", "slice_seats__loader"."chain_admitted", "slice_seats__loader"."chain_chain_run_finish_output", "slice_seats__loader"."chain_chain_run_input", "slice_seats__loader"."chain_claim", "slice_seats__loader"."chain_done", "slice_seats__loader"."chain_ended", "slice_seats__loader"."chain_exhausted", "slice_seats__loader"."chain_failed", "slice_seats__loader"."chain_fenced", "slice_seats__loader"."chain_finish", "slice_seats__loader"."chain_held", "slice_seats__loader"."chain_next", "slice_seats__loader"."chain_ordered_finish_output", "slice_seats__loader"."chain_ordered_input", "slice_seats__loader"."chain_page_earlier_read", "slice_seats__loader"."chain_page_earlier_row", "slice_seats__loader"."chain_page_input", "slice_seats__loader"."chain_page_input_after", "slice_seats__loader"."chain_page_output", "slice_seats__loader"."chain_page_output_next", "slice_seats__loader"."chain_page_tree_first", "slice_seats__loader"."chain_page_tree_items", "slice_seats__loader"."chain_page_tree_read", "slice_seats__loader"."chain_page_tree_row", "slice_seats__loader"."chain_page_weights_read", "slice_seats__loader"."chain_page_weights_row", "slice_seats__loader"."chain_refusal", "slice_seats__loader"."chain_result", "slice_seats__loader"."chain_retry", "slice_seats__loader"."chain_root", "slice_seats__loader"."chain_scope", "slice_seats__loader"."chain_skipped", "slice_seats__loader"."chain_start_step", "slice_seats__loader"."chain_step", "slice_seats__loader"."chimed", "slice_seats__loader"."clock_admitted", "slice_seats__loader"."clock_chime_input", "slice_seats__loader"."clock_chime_output", "slice_seats__loader"."clock_claim", "slice_seats__loader"."clock_close_input", "slice_seats__loader"."clock_close_output", "slice_seats__loader"."clock_done", "slice_seats__loader"."clock_ended", "slice_seats__loader"."clock_exhausted", "slice_seats__loader"."clock_failed", "slice_seats__loader"."clock_fenced", "slice_seats__loader"."clock_finish", "slice_seats__loader"."clock_held", "slice_seats__loader"."clock_hourly_finish_output", "slice_seats__loader"."clock_hourly_input", "slice_seats__loader"."clock_refusal", "slice_seats__loader"."clock_result", "slice_seats__loader"."clock_retry", "slice_seats__loader"."clock_root", "slice_seats__loader"."clock_scope", "slice_seats__loader"."clock_sitting_finish_output", "slice_seats__loader"."clock_sitting_input", "slice_seats__loader"."clock_skipped", "slice_seats__loader"."clock_start_step", "slice_seats__loader"."clock_step", "slice_seats__loader"."concluded", "slice_seats__loader"."copied", "slice_seats__loader"."cursor", "slice_seats__loader"."delivered", "slice_seats__loader"."fan_admitted", "slice_seats__loader"."fan_batch_finish_output", "slice_seats__loader"."fan_batch_input", "slice_seats__loader"."fan_claim", "slice_seats__loader"."fan_done", "slice_seats__loader"."fan_dust_input", "slice_seats__loader"."fan_dust_output", "slice_seats__loader"."fan_ended", "slice_seats__loader"."fan_exhausted", "slice_seats__loader"."fan_failed", "slice_seats__loader"."fan_fan_run_finish_output", "slice_seats__loader"."fan_fan_run_input", "slice_seats__loader"."fan_fenced", "slice_seats__loader"."fan_finish", "slice_seats__loader"."fan_held", "slice_seats__loader"."fan_hold", "slice_seats__loader"."fan_mop_input", "slice_seats__loader"."fan_mop_output", "slice_seats__loader"."fan_refusal", "slice_seats__loader"."fan_result", "slice_seats__loader"."fan_retry", "slice_seats__loader"."fan_root", "slice_seats__loader"."fan_scope", "slice_seats__loader"."fan_skipped", "slice_seats__loader"."fan_square_input", "slice_seats__loader"."fan_square_output", "slice_seats__loader"."fan_start_scope", "slice_seats__loader"."fan_start_step", "slice_seats__loader"."fan_step", "slice_seats__loader"."fan_sweep_finish_output", "slice_seats__loader"."fan_sweep_input", "slice_seats__loader"."fan_within", "slice_seats__loader"."heard", "slice_seats__loader"."item", "slice_seats__loader"."order", "slice_seats__loader"."passage", "slice_seats__loader"."retry_admitted", "slice_seats__loader"."retry_brittle_input", "slice_seats__loader"."retry_brittle_output", "slice_seats__loader"."retry_claim", "slice_seats__loader"."retry_done", "slice_seats__loader"."retry_ended", "slice_seats__loader"."retry_exhausted", "slice_seats__loader"."retry_failed", "slice_seats__loader"."retry_fenced", "slice_seats__loader"."retry_finish", "slice_seats__loader"."retry_held", "slice_seats__loader"."retry_ladders_finish_output", "slice_seats__loader"."retry_ladders_input", "slice_seats__loader"."retry_patient_input", "slice_seats__loader"."retry_patient_output", "slice_seats__loader"."retry_polite_input", "slice_seats__loader"."retry_polite_output", "slice_seats__loader"."retry_refusal", "slice_seats__loader"."retry_result", "slice_seats__loader"."retry_retry", "slice_seats__loader"."retry_root", "slice_seats__loader"."retry_scope", "slice_seats__loader"."retry_skipped", "slice_seats__loader"."retry_start_step", "slice_seats__loader"."retry_steadfast_input", "slice_seats__loader"."retry_steadfast_output", "slice_seats__loader"."retry_step", "slice_seats__loader"."retry_throttled_finish_output", "slice_seats__loader"."retry_throttled_input", "slice_seats__loader"."retry_unhurried_finish_output", "slice_seats__loader"."retry_unhurried_input", "slice_seats__loader"."review_admitted", "slice_seats__loader"."review_analyze_input", "slice_seats__loader"."review_analyze_output", "slice_seats__loader"."review_claim", "slice_seats__loader"."review_done", "slice_seats__loader"."review_ended", "slice_seats__loader"."review_exhausted", "slice_seats__loader"."review_failed", "slice_seats__loader"."review_fenced", "slice_seats__loader"."review_finish", "slice_seats__loader"."review_gather_input", "slice_seats__loader"."review_gather_input_sizes", "slice_seats__loader"."review_gather_output", "slice_seats__loader"."review_held", "slice_seats__loader"."review_hold", "slice_seats__loader"."review_questions_finish_output", "slice_seats__loader"."review_questions_input", "slice_seats__loader"."review_refusal", "slice_seats__loader"."review_result", "slice_seats__loader"."review_retry", "slice_seats__loader"."review_review_run_finish_output", "slice_seats__loader"."review_review_run_input", "slice_seats__loader"."review_review_run_input_sizes", "slice_seats__loader"."review_root", "slice_seats__loader"."review_save_input", "slice_seats__loader"."review_save_output", "slice_seats__loader"."review_saved", "slice_seats__loader"."review_scope", "slice_seats__loader"."review_skipped", "slice_seats__loader"."review_split", "slice_seats__loader"."review_start_scope", "slice_seats__loader"."review_start_step", "slice_seats__loader"."review_step", "slice_seats__loader"."review_within", "slice_seats__loader"."reviewed", "slice_seats__loader"."seen", "slice_seats__loader"."settled", "slice_seats__loader"."summary", "slice_seats__loader"."sync_admitted", "slice_seats__loader"."sync_build_input", "slice_seats__loader"."sync_build_output", "slice_seats__loader"."sync_claim", "slice_seats__loader"."sync_copy_input", "slice_seats__loader"."sync_copy_output", "slice_seats__loader"."sync_done", "slice_seats__loader"."sync_ended", "slice_seats__loader"."sync_exclusive_key", "slice_seats__loader"."sync_exhausted", "slice_seats__loader"."sync_failed", "slice_seats__loader"."sync_fenced", "slice_seats__loader"."sync_finish", "slice_seats__loader"."sync_gold_finish_output", "slice_seats__loader"."sync_gold_input", "slice_seats__loader"."sync_held", "slice_seats__loader"."sync_refusal", "slice_seats__loader"."sync_result", "slice_seats__loader"."sync_retry", "slice_seats__loader"."sync_root", "slice_seats__loader"."sync_scope", "slice_seats__loader"."sync_skipped", "slice_seats__loader"."sync_start_step", "slice_seats__loader"."sync_step", "slice_seats__loader"."sync_sync_run_finish_output", "slice_seats__loader"."sync_sync_run_input", "slice_seats__loader"."tally", "slice_seats__loader"."weight", "slice_seats__loader"."writeback_admitted", "slice_seats__loader"."writeback_claim", "slice_seats__loader"."writeback_deliver_input", "slice_seats__loader"."writeback_deliver_output", "slice_seats__loader"."writeback_done", "slice_seats__loader"."writeback_ended", "slice_seats__loader"."writeback_exhausted", "slice_seats__loader"."writeback_failed", "slice_seats__loader"."writeback_fenced", "slice_seats__loader"."writeback_finish", "slice_seats__loader"."writeback_held", "slice_seats__loader"."writeback_refusal", "slice_seats__loader"."writeback_result", "slice_seats__loader"."writeback_retry", "slice_seats__loader"."writeback_root", "slice_seats__loader"."writeback_scope", "slice_seats__loader"."writeback_skipped", "slice_seats__loader"."writeback_start_step", "slice_seats__loader"."writeback_step", "slice_seats__loader"."writeback_writeback_finish_output", "slice_seats__loader"."writeback_writeback_input" TO :"slice_seats__loader";
 
@@ -4359,12 +4359,12 @@ GRANT SELECT, INSERT ON TABLE "slice"."writeback_writeback_finish_output" TO :"s
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__loader";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__bell_names_aiqi4uostx"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_earlier_row_feed_names_tmqqz3lel4"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_page_tree_row_feed_names_w5f7gjcjkc"(), "slice"."__chain_page_weights_row_feed_names_awtorq4cfe"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__clock_chime_input_bell_names_nkzi4dgaig"(), "slice"."__clock_chime_output_bell_names_tzmx63kpb4"(), "slice"."__clock_hourly_input_bell_names_vugtqsvsug"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_pausable_names_phjbr2fipl"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_7t2samsp7b"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_nagupzc3sq"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_hen5ycf77m"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_pausable_names_uhujnxcsz6"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_pausable_names_mqzeerbulh"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"() TO :"slice_seats__loader";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__bell_names_aiqi4uostx"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_earlier_row_feed_names_tmqqz3lel4"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_page_tree_row_feed_names_w5f7gjcjkc"(), "slice"."__chain_page_weights_row_feed_names_awtorq4cfe"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__clock_chime_input_bell_names_nkzi4dgaig"(), "slice"."__clock_chime_output_bell_names_tzmx63kpb4"(), "slice"."__clock_hourly_input_bell_names_vugtqsvsug"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_nagupzc3sq"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"(), "slice"."__bell_live_bk7zau3khi"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_earlier_row_feed_live_orkazo3lov"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_page_tree_row_feed_live_m3isrn2bwm"(), "slice"."__chain_page_weights_row_feed_live_fueegj5g3p"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"(), "slice"."__clock_chime_input_bell_live_vs2eypgl4v"(), "slice"."__clock_chime_output_bell_live_ikpwkv25mh"(), "slice"."__clock_hourly_input_bell_live_yfdtebn7na"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_mosnikz3yn"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_uymd2oabeh"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_sx7vmfeklj"(), "slice"."__feed_live_pfwkvulieq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__loader";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__loader";
 
-GRANT EXECUTE ON FUNCTION "slice"."__hold_assign_root_rwboli77cc"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_chain_root_wgndggnfwf"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_clock_root_bawnkhmkww"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_fan_root_4vwfxofrxw"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_retry_root_54bybhkxg6"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_review_root_j3blgclwnl"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_sync_root_6ita6q5wxi"("slice"."__domain_jevqauzmw6"[]), "slice"."__hold_writeback_root_msmvpm3j7g"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__loader";
+GRANT EXECUTE ON FUNCTION "slice"."__hold_assign_root_rwboli77cc"("slice"."__sha256"[]), "slice"."__hold_chain_root_wgndggnfwf"("slice"."__sha256"[]), "slice"."__hold_clock_root_bawnkhmkww"("slice"."__sha256"[]), "slice"."__hold_fan_root_4vwfxofrxw"("slice"."__sha256"[]), "slice"."__hold_retry_root_54bybhkxg6"("slice"."__sha256"[]), "slice"."__hold_review_root_j3blgclwnl"("slice"."__sha256"[]), "slice"."__hold_sync_root_6ita6q5wxi"("slice"."__sha256"[]), "slice"."__hold_writeback_root_msmvpm3j7g"("slice"."__sha256"[]) TO :"slice_seats__loader";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__retry_coordinator" TO :"slice_seats__retry_coordinator";
@@ -4379,12 +4379,12 @@ GRANT SELECT, INSERT ON TABLE "slice"."retry_resumed" TO :"slice_seats__retry_co
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__retry_coordinator";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_hen5ycf77m"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"() TO :"slice_seats__retry_coordinator";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_pausable_names_hen5ycf77m"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"() TO :"slice_seats__retry_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__retry_den" TO :"slice_seats__retry_den";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_retry_why", "slice"."retry_root_kind" TO :"slice_seats__retry_den";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_retry_why", "slice"."retry_root_kind" TO :"slice_seats__retry_den";
 
 GRANT SELECT ON TABLE "slice_seats__retry_den"."retry_admitted", "slice_seats__retry_den"."retry_brittle_input", "slice_seats__retry_den"."retry_brittle_output", "slice_seats__retry_den"."retry_claim", "slice_seats__retry_den"."retry_done", "slice_seats__retry_den"."retry_ended", "slice_seats__retry_den"."retry_exhausted", "slice_seats__retry_den"."retry_failed", "slice_seats__retry_den"."retry_fenced", "slice_seats__retry_den"."retry_finish", "slice_seats__retry_den"."retry_held", "slice_seats__retry_den"."retry_ladders_finish_output", "slice_seats__retry_den"."retry_ladders_input", "slice_seats__retry_den"."retry_patient_input", "slice_seats__retry_den"."retry_patient_output", "slice_seats__retry_den"."retry_paused", "slice_seats__retry_den"."retry_polite_input", "slice_seats__retry_den"."retry_polite_output", "slice_seats__retry_den"."retry_refusal", "slice_seats__retry_den"."retry_result", "slice_seats__retry_den"."retry_resumed", "slice_seats__retry_den"."retry_retry", "slice_seats__retry_den"."retry_root", "slice_seats__retry_den"."retry_scope", "slice_seats__retry_den"."retry_skipped", "slice_seats__retry_den"."retry_start_step", "slice_seats__retry_den"."retry_steadfast_input", "slice_seats__retry_den"."retry_steadfast_output", "slice_seats__retry_den"."retry_step", "slice_seats__retry_den"."retry_throttled_finish_output", "slice_seats__retry_den"."retry_throttled_input", "slice_seats__retry_den"."retry_unhurried_finish_output", "slice_seats__retry_den"."retry_unhurried_input" TO :"slice_seats__retry_den";
 
@@ -4444,30 +4444,30 @@ GRANT SELECT, INSERT ON TABLE "slice"."retry_unhurried_input" TO :"slice_seats__
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__retry_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_hen5ycf77m"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"() TO :"slice_seats__retry_den";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_hen5ycf77m"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"() TO :"slice_seats__retry_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__retry_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__hold_retry_root_54bybhkxg6"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__retry_den";
+GRANT EXECUTE ON FUNCTION "slice"."__hold_retry_root_54bybhkxg6"("slice"."__sha256"[]) TO :"slice_seats__retry_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__retry_retirer" TO :"slice_seats__retry_retirer";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_retry_why", "slice"."retry_root_kind" TO :"slice_seats__retry_retirer";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_retry_why", "slice"."retry_root_kind" TO :"slice_seats__retry_retirer";
 
 GRANT SELECT ON TABLE "slice_seats__retry_retirer"."retry_admitted", "slice_seats__retry_retirer"."retry_brittle_input", "slice_seats__retry_retirer"."retry_brittle_output", "slice_seats__retry_retirer"."retry_claim", "slice_seats__retry_retirer"."retry_done", "slice_seats__retry_retirer"."retry_ended", "slice_seats__retry_retirer"."retry_exhausted", "slice_seats__retry_retirer"."retry_failed", "slice_seats__retry_retirer"."retry_fenced", "slice_seats__retry_retirer"."retry_finish", "slice_seats__retry_retirer"."retry_held", "slice_seats__retry_retirer"."retry_ladders_finish_output", "slice_seats__retry_retirer"."retry_ladders_input", "slice_seats__retry_retirer"."retry_patient_input", "slice_seats__retry_retirer"."retry_patient_output", "slice_seats__retry_retirer"."retry_polite_input", "slice_seats__retry_retirer"."retry_polite_output", "slice_seats__retry_retirer"."retry_refusal", "slice_seats__retry_retirer"."retry_result", "slice_seats__retry_retirer"."retry_retry", "slice_seats__retry_retirer"."retry_root", "slice_seats__retry_retirer"."retry_scope", "slice_seats__retry_retirer"."retry_skipped", "slice_seats__retry_retirer"."retry_start_step", "slice_seats__retry_retirer"."retry_steadfast_input", "slice_seats__retry_retirer"."retry_steadfast_output", "slice_seats__retry_retirer"."retry_step", "slice_seats__retry_retirer"."retry_throttled_finish_output", "slice_seats__retry_retirer"."retry_throttled_input", "slice_seats__retry_retirer"."retry_unhurried_finish_output", "slice_seats__retry_retirer"."retry_unhurried_input" TO :"slice_seats__retry_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__retry_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_hen5ycf77m"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"() TO :"slice_seats__retry_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"() TO :"slice_seats__retry_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__retire_retry_root_kays5vv5ic"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__retry_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__retire_retry_root_kays5vv5ic"("slice"."__sha256"[]) TO :"slice_seats__retry_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__review_coordinator" TO :"slice_seats__review_coordinator";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_resource", "slice"."review_retry_why", "slice"."review_root_kind" TO :"slice_seats__review_coordinator";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_resource", "slice"."review_retry_why", "slice"."review_root_kind" TO :"slice_seats__review_coordinator";
 
 GRANT SELECT ON TABLE "slice_seats__review_coordinator"."review_live", "slice_seats__review_coordinator"."review_paused", "slice_seats__review_coordinator"."review_resumed" TO :"slice_seats__review_coordinator";
 
@@ -4477,12 +4477,12 @@ GRANT SELECT, INSERT ON TABLE "slice"."review_resumed" TO :"slice_seats__review_
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__review_coordinator";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_pausable_names_uhujnxcsz6"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"() TO :"slice_seats__review_coordinator";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__review_pausable_names_uhujnxcsz6"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"() TO :"slice_seats__review_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__review_den" TO :"slice_seats__review_den";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_resource", "slice"."review_retry_why", "slice"."review_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__review_den";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_resource", "slice"."review_retry_why", "slice"."review_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__review_den";
 
 GRANT SELECT ON TABLE "slice_seats__review_den"."delivered", "slice_seats__review_den"."review_admitted", "slice_seats__review_den"."review_analyze_input", "slice_seats__review_den"."review_analyze_output", "slice_seats__review_den"."review_claim", "slice_seats__review_den"."review_done", "slice_seats__review_den"."review_ended", "slice_seats__review_den"."review_exhausted", "slice_seats__review_den"."review_failed", "slice_seats__review_den"."review_fenced", "slice_seats__review_den"."review_finish", "slice_seats__review_den"."review_gather_input", "slice_seats__review_den"."review_gather_input_sizes", "slice_seats__review_den"."review_gather_output", "slice_seats__review_den"."review_held", "slice_seats__review_den"."review_hold", "slice_seats__review_den"."review_live", "slice_seats__review_den"."review_paused", "slice_seats__review_den"."review_questions_finish_output", "slice_seats__review_den"."review_questions_input", "slice_seats__review_den"."review_refusal", "slice_seats__review_den"."review_result", "slice_seats__review_den"."review_resumed", "slice_seats__review_den"."review_retry", "slice_seats__review_den"."review_review_run_finish_output", "slice_seats__review_den"."review_review_run_input", "slice_seats__review_den"."review_review_run_input_sizes", "slice_seats__review_den"."review_root", "slice_seats__review_den"."review_save_input", "slice_seats__review_den"."review_save_output", "slice_seats__review_den"."review_saved", "slice_seats__review_den"."review_scope", "slice_seats__review_den"."review_skipped", "slice_seats__review_den"."review_split", "slice_seats__review_den"."review_start_scope", "slice_seats__review_den"."review_start_step", "slice_seats__review_den"."review_step", "slice_seats__review_den"."review_within" TO :"slice_seats__review_den";
 
@@ -4546,30 +4546,30 @@ GRANT SELECT, INSERT ON TABLE "slice"."review_within" TO :"slice_seats__review_d
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__review_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_pausable_names_uhujnxcsz6"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"() TO :"slice_seats__review_den";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_pausable_names_uhujnxcsz6"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"() TO :"slice_seats__review_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__review_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__hold_review_root_j3blgclwnl"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__review_den";
+GRANT EXECUTE ON FUNCTION "slice"."__hold_review_root_j3blgclwnl"("slice"."__sha256"[]) TO :"slice_seats__review_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__review_retirer" TO :"slice_seats__review_retirer";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_resource", "slice"."review_retry_why", "slice"."review_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__review_retirer";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_resource", "slice"."review_retry_why", "slice"."review_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__review_retirer";
 
 GRANT SELECT ON TABLE "slice_seats__review_retirer"."review_admitted", "slice_seats__review_retirer"."review_analyze_input", "slice_seats__review_retirer"."review_analyze_output", "slice_seats__review_retirer"."review_claim", "slice_seats__review_retirer"."review_done", "slice_seats__review_retirer"."review_ended", "slice_seats__review_retirer"."review_exhausted", "slice_seats__review_retirer"."review_failed", "slice_seats__review_retirer"."review_fenced", "slice_seats__review_retirer"."review_finish", "slice_seats__review_retirer"."review_gather_input", "slice_seats__review_retirer"."review_gather_input_sizes", "slice_seats__review_retirer"."review_gather_output", "slice_seats__review_retirer"."review_held", "slice_seats__review_retirer"."review_hold", "slice_seats__review_retirer"."review_questions_finish_output", "slice_seats__review_retirer"."review_questions_input", "slice_seats__review_retirer"."review_refusal", "slice_seats__review_retirer"."review_result", "slice_seats__review_retirer"."review_retry", "slice_seats__review_retirer"."review_review_run_finish_output", "slice_seats__review_retirer"."review_review_run_input", "slice_seats__review_retirer"."review_review_run_input_sizes", "slice_seats__review_retirer"."review_root", "slice_seats__review_retirer"."review_save_input", "slice_seats__review_retirer"."review_save_output", "slice_seats__review_retirer"."review_saved", "slice_seats__review_retirer"."review_scope", "slice_seats__review_retirer"."review_skipped", "slice_seats__review_retirer"."review_split", "slice_seats__review_retirer"."review_start_scope", "slice_seats__review_retirer"."review_start_step", "slice_seats__review_retirer"."review_step", "slice_seats__review_retirer"."review_within" TO :"slice_seats__review_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__review_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_pausable_names_uhujnxcsz6"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"() TO :"slice_seats__review_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"() TO :"slice_seats__review_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__retire_review_root_itykotyltd"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__review_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__retire_review_root_itykotyltd"("slice"."__sha256"[]) TO :"slice_seats__review_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__sync_coordinator" TO :"slice_seats__sync_coordinator";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_retry_why", "slice"."sync_root_kind" TO :"slice_seats__sync_coordinator";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__sha256", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_retry_why", "slice"."sync_root_kind" TO :"slice_seats__sync_coordinator";
 
 GRANT SELECT ON TABLE "slice_seats__sync_coordinator"."sync_exclusive", "slice_seats__sync_coordinator"."sync_paused", "slice_seats__sync_coordinator"."sync_released", "slice_seats__sync_coordinator"."sync_resumed" TO :"slice_seats__sync_coordinator";
 
@@ -4583,12 +4583,12 @@ GRANT SELECT, INSERT ON TABLE "slice"."sync_resumed" TO :"slice_seats__sync_coor
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__sync_coordinator";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"() TO :"slice_seats__sync_coordinator";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"() TO :"slice_seats__sync_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__sync_den" TO :"slice_seats__sync_den";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."chain_kind", "slice"."chain_outcome", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_retry_why", "slice"."sync_root_kind" TO :"slice_seats__sync_den";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."chain_kind", "slice"."chain_outcome", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_retry_why", "slice"."sync_root_kind" TO :"slice_seats__sync_den";
 
 GRANT SELECT ON TABLE "slice_seats__sync_den"."chain_result", "slice_seats__sync_den"."chain_step", "slice_seats__sync_den"."sync_admitted", "slice_seats__sync_den"."sync_build_input", "slice_seats__sync_den"."sync_build_output", "slice_seats__sync_den"."sync_claim", "slice_seats__sync_den"."sync_copy_input", "slice_seats__sync_den"."sync_copy_output", "slice_seats__sync_den"."sync_done", "slice_seats__sync_den"."sync_ended", "slice_seats__sync_den"."sync_exclusive", "slice_seats__sync_den"."sync_exclusive_key", "slice_seats__sync_den"."sync_exhausted", "slice_seats__sync_den"."sync_failed", "slice_seats__sync_den"."sync_fenced", "slice_seats__sync_den"."sync_finish", "slice_seats__sync_den"."sync_gold_finish_output", "slice_seats__sync_den"."sync_gold_input", "slice_seats__sync_den"."sync_held", "slice_seats__sync_den"."sync_paused", "slice_seats__sync_den"."sync_refusal", "slice_seats__sync_den"."sync_released", "slice_seats__sync_den"."sync_result", "slice_seats__sync_den"."sync_resumed", "slice_seats__sync_den"."sync_retry", "slice_seats__sync_den"."sync_root", "slice_seats__sync_den"."sync_scope", "slice_seats__sync_den"."sync_skipped", "slice_seats__sync_den"."sync_start_step", "slice_seats__sync_den"."sync_step", "slice_seats__sync_den"."sync_sync_run_finish_output", "slice_seats__sync_den"."sync_sync_run_input" TO :"slice_seats__sync_den";
 
@@ -4642,25 +4642,25 @@ GRANT SELECT, INSERT ON TABLE "slice"."sync_sync_run_input" TO :"slice_seats__sy
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__sync_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"() TO :"slice_seats__sync_den";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"() TO :"slice_seats__sync_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__sync_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__hold_sync_root_6ita6q5wxi"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__sync_den";
+GRANT EXECUTE ON FUNCTION "slice"."__hold_sync_root_6ita6q5wxi"("slice"."__sha256"[]) TO :"slice_seats__sync_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__sync_retirer" TO :"slice_seats__sync_retirer";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_retry_why", "slice"."sync_root_kind" TO :"slice_seats__sync_retirer";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_retry_why", "slice"."sync_root_kind" TO :"slice_seats__sync_retirer";
 
 GRANT SELECT ON TABLE "slice_seats__sync_retirer"."sync_admitted", "slice_seats__sync_retirer"."sync_build_input", "slice_seats__sync_retirer"."sync_build_output", "slice_seats__sync_retirer"."sync_claim", "slice_seats__sync_retirer"."sync_copy_input", "slice_seats__sync_retirer"."sync_copy_output", "slice_seats__sync_retirer"."sync_done", "slice_seats__sync_retirer"."sync_ended", "slice_seats__sync_retirer"."sync_exclusive_key", "slice_seats__sync_retirer"."sync_exhausted", "slice_seats__sync_retirer"."sync_failed", "slice_seats__sync_retirer"."sync_fenced", "slice_seats__sync_retirer"."sync_finish", "slice_seats__sync_retirer"."sync_gold_finish_output", "slice_seats__sync_retirer"."sync_gold_input", "slice_seats__sync_retirer"."sync_held", "slice_seats__sync_retirer"."sync_refusal", "slice_seats__sync_retirer"."sync_result", "slice_seats__sync_retirer"."sync_retry", "slice_seats__sync_retirer"."sync_root", "slice_seats__sync_retirer"."sync_scope", "slice_seats__sync_retirer"."sync_skipped", "slice_seats__sync_retirer"."sync_start_step", "slice_seats__sync_retirer"."sync_step", "slice_seats__sync_retirer"."sync_sync_run_finish_output", "slice_seats__sync_retirer"."sync_sync_run_input" TO :"slice_seats__sync_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__sync_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"() TO :"slice_seats__sync_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"() TO :"slice_seats__sync_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__retire_sync_root_ygktrpeohu"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__sync_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__retire_sync_root_ygktrpeohu"("slice"."__sha256"[]) TO :"slice_seats__sync_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice" TO :"slice_seats__worker";
@@ -4682,12 +4682,12 @@ GRANT SELECT, INSERT ON TABLE "slice"."writeback_resumed" TO :"slice_seats__writ
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__writeback_coordinator";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_pausable_names_mqzeerbulh"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"() TO :"slice_seats__writeback_coordinator";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__writeback_pausable_names_mqzeerbulh"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__writeback_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__writeback_den" TO :"slice_seats__writeback_den";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."writeback_kind", "slice"."writeback_outcome", "slice"."writeback_pausable", "slice"."writeback_retry_why", "slice"."writeback_root_kind" TO :"slice_seats__writeback_den";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."writeback_kind", "slice"."writeback_outcome", "slice"."writeback_pausable", "slice"."writeback_retry_why", "slice"."writeback_root_kind" TO :"slice_seats__writeback_den";
 
 GRANT SELECT ON TABLE "slice_seats__writeback_den"."writeback_admitted", "slice_seats__writeback_den"."writeback_claim", "slice_seats__writeback_den"."writeback_deliver_input", "slice_seats__writeback_den"."writeback_deliver_output", "slice_seats__writeback_den"."writeback_done", "slice_seats__writeback_den"."writeback_ended", "slice_seats__writeback_den"."writeback_exhausted", "slice_seats__writeback_den"."writeback_failed", "slice_seats__writeback_den"."writeback_fenced", "slice_seats__writeback_den"."writeback_finish", "slice_seats__writeback_den"."writeback_held", "slice_seats__writeback_den"."writeback_paused", "slice_seats__writeback_den"."writeback_refusal", "slice_seats__writeback_den"."writeback_result", "slice_seats__writeback_den"."writeback_resumed", "slice_seats__writeback_den"."writeback_retry", "slice_seats__writeback_den"."writeback_root", "slice_seats__writeback_den"."writeback_scope", "slice_seats__writeback_den"."writeback_skipped", "slice_seats__writeback_den"."writeback_start_step", "slice_seats__writeback_den"."writeback_step", "slice_seats__writeback_den"."writeback_writeback_finish_output", "slice_seats__writeback_den"."writeback_writeback_input" TO :"slice_seats__writeback_den";
 
@@ -4733,25 +4733,25 @@ GRANT SELECT, INSERT ON TABLE "slice"."writeback_writeback_input" TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__writeback_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_pausable_names_mqzeerbulh"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"() TO :"slice_seats__writeback_den";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_pausable_names_mqzeerbulh"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__writeback_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__writeback_den";
 
-GRANT EXECUTE ON FUNCTION "slice"."__hold_writeback_root_msmvpm3j7g"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__writeback_den";
+GRANT EXECUTE ON FUNCTION "slice"."__hold_writeback_root_msmvpm3j7g"("slice"."__sha256"[]) TO :"slice_seats__writeback_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_seats", "slice_seats__writeback_retirer" TO :"slice_seats__writeback_retirer";
 
-GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."writeback_kind", "slice"."writeback_outcome", "slice"."writeback_pausable", "slice"."writeback_retry_why", "slice"."writeback_root_kind" TO :"slice_seats__writeback_retirer";
+GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice"."writeback_kind", "slice"."writeback_outcome", "slice"."writeback_pausable", "slice"."writeback_retry_why", "slice"."writeback_root_kind" TO :"slice_seats__writeback_retirer";
 
 GRANT SELECT ON TABLE "slice_seats__writeback_retirer"."writeback_admitted", "slice_seats__writeback_retirer"."writeback_claim", "slice_seats__writeback_retirer"."writeback_deliver_input", "slice_seats__writeback_retirer"."writeback_deliver_output", "slice_seats__writeback_retirer"."writeback_done", "slice_seats__writeback_retirer"."writeback_ended", "slice_seats__writeback_retirer"."writeback_exhausted", "slice_seats__writeback_retirer"."writeback_failed", "slice_seats__writeback_retirer"."writeback_fenced", "slice_seats__writeback_retirer"."writeback_finish", "slice_seats__writeback_retirer"."writeback_held", "slice_seats__writeback_retirer"."writeback_refusal", "slice_seats__writeback_retirer"."writeback_result", "slice_seats__writeback_retirer"."writeback_retry", "slice_seats__writeback_retirer"."writeback_root", "slice_seats__writeback_retirer"."writeback_scope", "slice_seats__writeback_retirer"."writeback_skipped", "slice_seats__writeback_retirer"."writeback_start_step", "slice_seats__writeback_retirer"."writeback_step", "slice_seats__writeback_retirer"."writeback_writeback_finish_output", "slice_seats__writeback_retirer"."writeback_writeback_input" TO :"slice_seats__writeback_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__writeback_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_pausable_names_mqzeerbulh"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"() TO :"slice_seats__writeback_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__writeback_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice"."__retire_writeback_root_oprw3k6une"("slice"."__domain_jevqauzmw6"[]) TO :"slice_seats__writeback_retirer";
+GRANT EXECUTE ON FUNCTION "slice"."__retire_writeback_root_oprw3k6une"("slice"."__sha256"[]) TO :"slice_seats__writeback_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice" TO :"__live_wzkq6p2yii";
@@ -4799,7 +4799,7 @@ REVOKE ALL ON SCHEMA "slice", "slice_seats", "slice_seats__auditor", "slice_seat
 
 REVOKE ALL ON TABLE "slice"."assign_admitted", "slice"."assign_asked", "slice"."assign_assignment_finish_output", "slice"."assign_assignment_input", "slice"."assign_assignment_input_exclude", "slice"."assign_assignment_input_mode_nearest", "slice"."assign_assignment_input_mode_within", "slice"."assign_assignment_input_near", "slice"."assign_claim", "slice"."assign_decide_input", "slice"."assign_decide_input_exclude", "slice"."assign_decide_input_mode_nearest", "slice"."assign_decide_input_mode_within", "slice"."assign_decide_nearest_read", "slice"."assign_decide_nearest_row", "slice"."assign_decide_output", "slice"."assign_decide_output_stage_rest", "slice"."assign_decide_output_stage_serve", "slice"."assign_decide_output_weighed", "slice"."assign_decide_seen_read", "slice"."assign_decide_seen_row", "slice"."assign_done", "slice"."assign_embed_input", "slice"."assign_embed_input_exclude", "slice"."assign_embed_input_mode_nearest", "slice"."assign_embed_input_mode_within", "slice"."assign_embed_input_near", "slice"."assign_embed_output", "slice"."assign_ended", "slice"."assign_exhausted", "slice"."assign_failed", "slice"."assign_fenced", "slice"."assign_finish", "slice"."assign_held", "slice"."assign_paused", "slice"."assign_refusal", "slice"."assign_result", "slice"."assign_resumed", "slice"."assign_retry", "slice"."assign_root", "slice"."assign_scope", "slice"."assign_skipped", "slice"."assign_start_step", "slice"."assign_step", "slice"."assigned", "slice"."audit", "slice"."built", "slice"."chain_admitted", "slice"."chain_chain_run_finish_output", "slice"."chain_chain_run_input", "slice"."chain_claim", "slice"."chain_done", "slice"."chain_ended", "slice"."chain_exhausted", "slice"."chain_failed", "slice"."chain_fenced", "slice"."chain_finish", "slice"."chain_held", "slice"."chain_next", "slice"."chain_ordered_finish_output", "slice"."chain_ordered_input", "slice"."chain_page_earlier_read", "slice"."chain_page_earlier_row", "slice"."chain_page_input", "slice"."chain_page_input_after", "slice"."chain_page_output", "slice"."chain_page_output_next", "slice"."chain_page_tree_first", "slice"."chain_page_tree_items", "slice"."chain_page_tree_read", "slice"."chain_page_tree_row", "slice"."chain_page_weights_read", "slice"."chain_page_weights_row", "slice"."chain_paused", "slice"."chain_refusal", "slice"."chain_result", "slice"."chain_resumed", "slice"."chain_retry", "slice"."chain_root", "slice"."chain_scope", "slice"."chain_skipped", "slice"."chain_start_step", "slice"."chain_step", "slice"."chimed", "slice"."clock_admitted", "slice"."clock_chime_input", "slice"."clock_chime_output", "slice"."clock_claim", "slice"."clock_close_input", "slice"."clock_close_output", "slice"."clock_done", "slice"."clock_ended", "slice"."clock_exhausted", "slice"."clock_failed", "slice"."clock_fenced", "slice"."clock_finish", "slice"."clock_held", "slice"."clock_hourly_finish_output", "slice"."clock_hourly_input", "slice"."clock_paused", "slice"."clock_refusal", "slice"."clock_result", "slice"."clock_resumed", "slice"."clock_retry", "slice"."clock_root", "slice"."clock_scope", "slice"."clock_sitting_finish_output", "slice"."clock_sitting_input", "slice"."clock_skipped", "slice"."clock_start_step", "slice"."clock_step", "slice"."concluded", "slice"."copied", "slice"."cursor", "slice"."delivered", "slice"."fan_admitted", "slice"."fan_batch_finish_output", "slice"."fan_batch_input", "slice"."fan_claim", "slice"."fan_done", "slice"."fan_dust_input", "slice"."fan_dust_output", "slice"."fan_ended", "slice"."fan_exhausted", "slice"."fan_failed", "slice"."fan_fan_run_finish_output", "slice"."fan_fan_run_input", "slice"."fan_fenced", "slice"."fan_finish", "slice"."fan_held", "slice"."fan_hold", "slice"."fan_mop_input", "slice"."fan_mop_output", "slice"."fan_paused", "slice"."fan_refusal", "slice"."fan_result", "slice"."fan_resumed", "slice"."fan_retry", "slice"."fan_root", "slice"."fan_scope", "slice"."fan_skipped", "slice"."fan_square_input", "slice"."fan_square_output", "slice"."fan_start_scope", "slice"."fan_start_step", "slice"."fan_step", "slice"."fan_sweep_finish_output", "slice"."fan_sweep_input", "slice"."fan_within", "slice"."heard", "slice"."item", "slice"."order", "slice"."passage", "slice"."retry_admitted", "slice"."retry_brittle_input", "slice"."retry_brittle_output", "slice"."retry_claim", "slice"."retry_done", "slice"."retry_ended", "slice"."retry_exhausted", "slice"."retry_failed", "slice"."retry_fenced", "slice"."retry_finish", "slice"."retry_held", "slice"."retry_ladders_finish_output", "slice"."retry_ladders_input", "slice"."retry_patient_input", "slice"."retry_patient_output", "slice"."retry_paused", "slice"."retry_polite_input", "slice"."retry_polite_output", "slice"."retry_refusal", "slice"."retry_result", "slice"."retry_resumed", "slice"."retry_retry", "slice"."retry_root", "slice"."retry_scope", "slice"."retry_skipped", "slice"."retry_start_step", "slice"."retry_steadfast_input", "slice"."retry_steadfast_output", "slice"."retry_step", "slice"."retry_throttled_finish_output", "slice"."retry_throttled_input", "slice"."retry_unhurried_finish_output", "slice"."retry_unhurried_input", "slice"."review_admitted", "slice"."review_analyze_input", "slice"."review_analyze_output", "slice"."review_claim", "slice"."review_done", "slice"."review_ended", "slice"."review_exhausted", "slice"."review_failed", "slice"."review_fenced", "slice"."review_finish", "slice"."review_gather_input", "slice"."review_gather_input_sizes", "slice"."review_gather_output", "slice"."review_held", "slice"."review_hold", "slice"."review_paused", "slice"."review_questions_finish_output", "slice"."review_questions_input", "slice"."review_refusal", "slice"."review_result", "slice"."review_resumed", "slice"."review_retry", "slice"."review_review_run_finish_output", "slice"."review_review_run_input", "slice"."review_review_run_input_sizes", "slice"."review_root", "slice"."review_save_input", "slice"."review_save_output", "slice"."review_saved", "slice"."review_scope", "slice"."review_skipped", "slice"."review_split", "slice"."review_start_scope", "slice"."review_start_step", "slice"."review_step", "slice"."review_within", "slice"."reviewed", "slice"."seen", "slice"."settled", "slice"."summary", "slice"."sync_admitted", "slice"."sync_build_input", "slice"."sync_build_output", "slice"."sync_claim", "slice"."sync_copy_input", "slice"."sync_copy_output", "slice"."sync_done", "slice"."sync_ended", "slice"."sync_exclusive", "slice"."sync_exclusive_key", "slice"."sync_exhausted", "slice"."sync_failed", "slice"."sync_fenced", "slice"."sync_finish", "slice"."sync_gold_finish_output", "slice"."sync_gold_input", "slice"."sync_held", "slice"."sync_paused", "slice"."sync_refusal", "slice"."sync_released", "slice"."sync_result", "slice"."sync_resumed", "slice"."sync_retry", "slice"."sync_root", "slice"."sync_scope", "slice"."sync_skipped", "slice"."sync_start_step", "slice"."sync_step", "slice"."sync_sync_run_finish_output", "slice"."sync_sync_run_input", "slice"."tally", "slice"."weight", "slice"."writeback_admitted", "slice"."writeback_claim", "slice"."writeback_deliver_input", "slice"."writeback_deliver_output", "slice"."writeback_done", "slice"."writeback_ended", "slice"."writeback_exhausted", "slice"."writeback_failed", "slice"."writeback_fenced", "slice"."writeback_finish", "slice"."writeback_held", "slice"."writeback_paused", "slice"."writeback_refusal", "slice"."writeback_result", "slice"."writeback_resumed", "slice"."writeback_retry", "slice"."writeback_root", "slice"."writeback_scope", "slice"."writeback_skipped", "slice"."writeback_start_step", "slice"."writeback_step", "slice"."writeback_writeback_finish_output", "slice"."writeback_writeback_input", "slice_seats__auditor"."assign_decide_nearest_read", "slice_seats__auditor"."assign_decide_nearest_row", "slice_seats__auditor"."assign_decide_output", "slice_seats__auditor"."assign_decide_output_stage_serve", "slice_seats__auditor"."assign_decide_output_weighed", "slice_seats__auditor"."assign_decide_seen_read", "slice_seats__auditor"."assign_decide_seen_row", "slice_seats__auditor"."assign_result", "slice_seats__auditor"."assign_step", "slice_seats__auditor"."assigned", "slice_seats__auditor"."audit", "slice_seats__auditor"."built", "slice_seats__auditor"."chain_admitted", "slice_seats__auditor"."chain_chain_run_input", "slice_seats__auditor"."chain_claim", "slice_seats__auditor"."chain_finish", "slice_seats__auditor"."chain_next", "slice_seats__auditor"."chain_ordered_input", "slice_seats__auditor"."chain_page_earlier_row", "slice_seats__auditor"."chain_page_input", "slice_seats__auditor"."chain_page_input_after", "slice_seats__auditor"."chain_page_output", "slice_seats__auditor"."chain_page_output_next", "slice_seats__auditor"."chain_page_tree_first", "slice_seats__auditor"."chain_page_tree_items", "slice_seats__auditor"."chain_page_tree_read", "slice_seats__auditor"."chain_page_tree_row", "slice_seats__auditor"."chain_page_weights_read", "slice_seats__auditor"."chain_page_weights_row", "slice_seats__auditor"."chain_result", "slice_seats__auditor"."chain_root", "slice_seats__auditor"."chain_scope", "slice_seats__auditor"."chain_start_step", "slice_seats__auditor"."chain_step", "slice_seats__auditor"."chimed", "slice_seats__auditor"."concluded", "slice_seats__auditor"."copied", "slice_seats__auditor"."cursor", "slice_seats__auditor"."fan_admitted", "slice_seats__auditor"."fan_batch_input", "slice_seats__auditor"."fan_claim", "slice_seats__auditor"."fan_fan_run_input", "slice_seats__auditor"."fan_finish", "slice_seats__auditor"."fan_hold", "slice_seats__auditor"."fan_result", "slice_seats__auditor"."fan_root", "slice_seats__auditor"."fan_scope", "slice_seats__auditor"."fan_square_input", "slice_seats__auditor"."fan_square_output", "slice_seats__auditor"."fan_start_scope", "slice_seats__auditor"."fan_start_step", "slice_seats__auditor"."fan_step", "slice_seats__auditor"."fan_within", "slice_seats__auditor"."heard", "slice_seats__auditor"."item", "slice_seats__auditor"."order", "slice_seats__auditor"."retry_claim", "slice_seats__auditor"."retry_exhausted", "slice_seats__auditor"."retry_result", "slice_seats__auditor"."retry_step", "slice_seats__auditor"."review_finish", "slice_seats__auditor"."review_hold", "slice_seats__auditor"."review_result", "slice_seats__auditor"."review_step", "slice_seats__auditor"."review_within", "slice_seats__auditor"."reviewed", "slice_seats__auditor"."settled", "slice_seats__auditor"."summary", "slice_seats__auditor"."sync_admitted", "slice_seats__auditor"."sync_finish", "slice_seats__auditor"."sync_result", "slice_seats__auditor"."sync_scope", "slice_seats__auditor"."sync_skipped", "slice_seats__auditor"."tally", "slice_seats__auditor"."weight", "slice_seats__loader"."assign_admitted", "slice_seats__loader"."assign_asked", "slice_seats__loader"."assign_assignment_finish_output", "slice_seats__loader"."assign_assignment_input", "slice_seats__loader"."assign_assignment_input_exclude", "slice_seats__loader"."assign_assignment_input_mode_nearest", "slice_seats__loader"."assign_assignment_input_mode_within", "slice_seats__loader"."assign_assignment_input_near", "slice_seats__loader"."assign_claim", "slice_seats__loader"."assign_decide_input", "slice_seats__loader"."assign_decide_input_exclude", "slice_seats__loader"."assign_decide_input_mode_nearest", "slice_seats__loader"."assign_decide_input_mode_within", "slice_seats__loader"."assign_decide_nearest_read", "slice_seats__loader"."assign_decide_nearest_row", "slice_seats__loader"."assign_decide_output", "slice_seats__loader"."assign_decide_output_stage_rest", "slice_seats__loader"."assign_decide_output_stage_serve", "slice_seats__loader"."assign_decide_output_weighed", "slice_seats__loader"."assign_decide_seen_read", "slice_seats__loader"."assign_decide_seen_row", "slice_seats__loader"."assign_done", "slice_seats__loader"."assign_embed_input", "slice_seats__loader"."assign_embed_input_exclude", "slice_seats__loader"."assign_embed_input_mode_nearest", "slice_seats__loader"."assign_embed_input_mode_within", "slice_seats__loader"."assign_embed_input_near", "slice_seats__loader"."assign_embed_output", "slice_seats__loader"."assign_ended", "slice_seats__loader"."assign_exhausted", "slice_seats__loader"."assign_failed", "slice_seats__loader"."assign_fenced", "slice_seats__loader"."assign_finish", "slice_seats__loader"."assign_held", "slice_seats__loader"."assign_refusal", "slice_seats__loader"."assign_result", "slice_seats__loader"."assign_retry", "slice_seats__loader"."assign_root", "slice_seats__loader"."assign_scope", "slice_seats__loader"."assign_skipped", "slice_seats__loader"."assign_start_step", "slice_seats__loader"."assign_step", "slice_seats__loader"."assigned", "slice_seats__loader"."built", "slice_seats__loader"."chain_admitted", "slice_seats__loader"."chain_chain_run_finish_output", "slice_seats__loader"."chain_chain_run_input", "slice_seats__loader"."chain_claim", "slice_seats__loader"."chain_done", "slice_seats__loader"."chain_ended", "slice_seats__loader"."chain_exhausted", "slice_seats__loader"."chain_failed", "slice_seats__loader"."chain_fenced", "slice_seats__loader"."chain_finish", "slice_seats__loader"."chain_held", "slice_seats__loader"."chain_next", "slice_seats__loader"."chain_ordered_finish_output", "slice_seats__loader"."chain_ordered_input", "slice_seats__loader"."chain_page_earlier_read", "slice_seats__loader"."chain_page_earlier_row", "slice_seats__loader"."chain_page_input", "slice_seats__loader"."chain_page_input_after", "slice_seats__loader"."chain_page_output", "slice_seats__loader"."chain_page_output_next", "slice_seats__loader"."chain_page_tree_first", "slice_seats__loader"."chain_page_tree_items", "slice_seats__loader"."chain_page_tree_read", "slice_seats__loader"."chain_page_tree_row", "slice_seats__loader"."chain_page_weights_read", "slice_seats__loader"."chain_page_weights_row", "slice_seats__loader"."chain_refusal", "slice_seats__loader"."chain_result", "slice_seats__loader"."chain_retry", "slice_seats__loader"."chain_root", "slice_seats__loader"."chain_scope", "slice_seats__loader"."chain_skipped", "slice_seats__loader"."chain_start_step", "slice_seats__loader"."chain_step", "slice_seats__loader"."chimed", "slice_seats__loader"."clock_admitted", "slice_seats__loader"."clock_chime_input", "slice_seats__loader"."clock_chime_output", "slice_seats__loader"."clock_claim", "slice_seats__loader"."clock_close_input", "slice_seats__loader"."clock_close_output", "slice_seats__loader"."clock_done", "slice_seats__loader"."clock_ended", "slice_seats__loader"."clock_exhausted", "slice_seats__loader"."clock_failed", "slice_seats__loader"."clock_fenced", "slice_seats__loader"."clock_finish", "slice_seats__loader"."clock_held", "slice_seats__loader"."clock_hourly_finish_output", "slice_seats__loader"."clock_hourly_input", "slice_seats__loader"."clock_refusal", "slice_seats__loader"."clock_result", "slice_seats__loader"."clock_retry", "slice_seats__loader"."clock_root", "slice_seats__loader"."clock_scope", "slice_seats__loader"."clock_sitting_finish_output", "slice_seats__loader"."clock_sitting_input", "slice_seats__loader"."clock_skipped", "slice_seats__loader"."clock_start_step", "slice_seats__loader"."clock_step", "slice_seats__loader"."concluded", "slice_seats__loader"."copied", "slice_seats__loader"."cursor", "slice_seats__loader"."delivered", "slice_seats__loader"."fan_admitted", "slice_seats__loader"."fan_batch_finish_output", "slice_seats__loader"."fan_batch_input", "slice_seats__loader"."fan_claim", "slice_seats__loader"."fan_done", "slice_seats__loader"."fan_dust_input", "slice_seats__loader"."fan_dust_output", "slice_seats__loader"."fan_ended", "slice_seats__loader"."fan_exhausted", "slice_seats__loader"."fan_failed", "slice_seats__loader"."fan_fan_run_finish_output", "slice_seats__loader"."fan_fan_run_input", "slice_seats__loader"."fan_fenced", "slice_seats__loader"."fan_finish", "slice_seats__loader"."fan_held", "slice_seats__loader"."fan_hold", "slice_seats__loader"."fan_mop_input", "slice_seats__loader"."fan_mop_output", "slice_seats__loader"."fan_refusal", "slice_seats__loader"."fan_result", "slice_seats__loader"."fan_retry", "slice_seats__loader"."fan_root", "slice_seats__loader"."fan_scope", "slice_seats__loader"."fan_skipped", "slice_seats__loader"."fan_square_input", "slice_seats__loader"."fan_square_output", "slice_seats__loader"."fan_start_scope", "slice_seats__loader"."fan_start_step", "slice_seats__loader"."fan_step", "slice_seats__loader"."fan_sweep_finish_output", "slice_seats__loader"."fan_sweep_input", "slice_seats__loader"."fan_within", "slice_seats__loader"."heard", "slice_seats__loader"."item", "slice_seats__loader"."order", "slice_seats__loader"."passage", "slice_seats__loader"."retry_admitted", "slice_seats__loader"."retry_brittle_input", "slice_seats__loader"."retry_brittle_output", "slice_seats__loader"."retry_claim", "slice_seats__loader"."retry_done", "slice_seats__loader"."retry_ended", "slice_seats__loader"."retry_exhausted", "slice_seats__loader"."retry_failed", "slice_seats__loader"."retry_fenced", "slice_seats__loader"."retry_finish", "slice_seats__loader"."retry_held", "slice_seats__loader"."retry_ladders_finish_output", "slice_seats__loader"."retry_ladders_input", "slice_seats__loader"."retry_patient_input", "slice_seats__loader"."retry_patient_output", "slice_seats__loader"."retry_polite_input", "slice_seats__loader"."retry_polite_output", "slice_seats__loader"."retry_refusal", "slice_seats__loader"."retry_result", "slice_seats__loader"."retry_retry", "slice_seats__loader"."retry_root", "slice_seats__loader"."retry_scope", "slice_seats__loader"."retry_skipped", "slice_seats__loader"."retry_start_step", "slice_seats__loader"."retry_steadfast_input", "slice_seats__loader"."retry_steadfast_output", "slice_seats__loader"."retry_step", "slice_seats__loader"."retry_throttled_finish_output", "slice_seats__loader"."retry_throttled_input", "slice_seats__loader"."retry_unhurried_finish_output", "slice_seats__loader"."retry_unhurried_input", "slice_seats__loader"."review_admitted", "slice_seats__loader"."review_analyze_input", "slice_seats__loader"."review_analyze_output", "slice_seats__loader"."review_claim", "slice_seats__loader"."review_done", "slice_seats__loader"."review_ended", "slice_seats__loader"."review_exhausted", "slice_seats__loader"."review_failed", "slice_seats__loader"."review_fenced", "slice_seats__loader"."review_finish", "slice_seats__loader"."review_gather_input", "slice_seats__loader"."review_gather_input_sizes", "slice_seats__loader"."review_gather_output", "slice_seats__loader"."review_held", "slice_seats__loader"."review_hold", "slice_seats__loader"."review_questions_finish_output", "slice_seats__loader"."review_questions_input", "slice_seats__loader"."review_refusal", "slice_seats__loader"."review_result", "slice_seats__loader"."review_retry", "slice_seats__loader"."review_review_run_finish_output", "slice_seats__loader"."review_review_run_input", "slice_seats__loader"."review_review_run_input_sizes", "slice_seats__loader"."review_root", "slice_seats__loader"."review_save_input", "slice_seats__loader"."review_save_output", "slice_seats__loader"."review_saved", "slice_seats__loader"."review_scope", "slice_seats__loader"."review_skipped", "slice_seats__loader"."review_split", "slice_seats__loader"."review_start_scope", "slice_seats__loader"."review_start_step", "slice_seats__loader"."review_step", "slice_seats__loader"."review_within", "slice_seats__loader"."reviewed", "slice_seats__loader"."seen", "slice_seats__loader"."settled", "slice_seats__loader"."summary", "slice_seats__loader"."sync_admitted", "slice_seats__loader"."sync_build_input", "slice_seats__loader"."sync_build_output", "slice_seats__loader"."sync_claim", "slice_seats__loader"."sync_copy_input", "slice_seats__loader"."sync_copy_output", "slice_seats__loader"."sync_done", "slice_seats__loader"."sync_ended", "slice_seats__loader"."sync_exclusive_key", "slice_seats__loader"."sync_exhausted", "slice_seats__loader"."sync_failed", "slice_seats__loader"."sync_fenced", "slice_seats__loader"."sync_finish", "slice_seats__loader"."sync_gold_finish_output", "slice_seats__loader"."sync_gold_input", "slice_seats__loader"."sync_held", "slice_seats__loader"."sync_refusal", "slice_seats__loader"."sync_result", "slice_seats__loader"."sync_retry", "slice_seats__loader"."sync_root", "slice_seats__loader"."sync_scope", "slice_seats__loader"."sync_skipped", "slice_seats__loader"."sync_start_step", "slice_seats__loader"."sync_step", "slice_seats__loader"."sync_sync_run_finish_output", "slice_seats__loader"."sync_sync_run_input", "slice_seats__loader"."tally", "slice_seats__loader"."weight", "slice_seats__loader"."writeback_admitted", "slice_seats__loader"."writeback_claim", "slice_seats__loader"."writeback_deliver_input", "slice_seats__loader"."writeback_deliver_output", "slice_seats__loader"."writeback_done", "slice_seats__loader"."writeback_ended", "slice_seats__loader"."writeback_exhausted", "slice_seats__loader"."writeback_failed", "slice_seats__loader"."writeback_fenced", "slice_seats__loader"."writeback_finish", "slice_seats__loader"."writeback_held", "slice_seats__loader"."writeback_refusal", "slice_seats__loader"."writeback_result", "slice_seats__loader"."writeback_retry", "slice_seats__loader"."writeback_root", "slice_seats__loader"."writeback_scope", "slice_seats__loader"."writeback_skipped", "slice_seats__loader"."writeback_start_step", "slice_seats__loader"."writeback_step", "slice_seats__loader"."writeback_writeback_finish_output", "slice_seats__loader"."writeback_writeback_input", "slice_seats__assign_coordinator"."assign_paused", "slice_seats__assign_coordinator"."assign_resumed", "slice_seats__assign_den"."assign_admitted", "slice_seats__assign_den"."assign_asked", "slice_seats__assign_den"."assign_assignment_finish_output", "slice_seats__assign_den"."assign_assignment_input", "slice_seats__assign_den"."assign_assignment_input_exclude", "slice_seats__assign_den"."assign_assignment_input_mode_nearest", "slice_seats__assign_den"."assign_assignment_input_mode_within", "slice_seats__assign_den"."assign_assignment_input_near", "slice_seats__assign_den"."assign_claim", "slice_seats__assign_den"."assign_decide_input", "slice_seats__assign_den"."assign_decide_input_exclude", "slice_seats__assign_den"."assign_decide_input_mode_nearest", "slice_seats__assign_den"."assign_decide_input_mode_within", "slice_seats__assign_den"."assign_decide_nearest_read", "slice_seats__assign_den"."assign_decide_nearest_row", "slice_seats__assign_den"."assign_decide_output", "slice_seats__assign_den"."assign_decide_output_stage_rest", "slice_seats__assign_den"."assign_decide_output_stage_serve", "slice_seats__assign_den"."assign_decide_output_weighed", "slice_seats__assign_den"."assign_decide_seen_read", "slice_seats__assign_den"."assign_decide_seen_row", "slice_seats__assign_den"."assign_done", "slice_seats__assign_den"."assign_embed_input", "slice_seats__assign_den"."assign_embed_input_exclude", "slice_seats__assign_den"."assign_embed_input_mode_nearest", "slice_seats__assign_den"."assign_embed_input_mode_within", "slice_seats__assign_den"."assign_embed_input_near", "slice_seats__assign_den"."assign_embed_output", "slice_seats__assign_den"."assign_ended", "slice_seats__assign_den"."assign_exhausted", "slice_seats__assign_den"."assign_failed", "slice_seats__assign_den"."assign_fenced", "slice_seats__assign_den"."assign_finish", "slice_seats__assign_den"."assign_held", "slice_seats__assign_den"."assign_paused", "slice_seats__assign_den"."assign_refusal", "slice_seats__assign_den"."assign_result", "slice_seats__assign_den"."assign_resumed", "slice_seats__assign_den"."assign_retry", "slice_seats__assign_den"."assign_root", "slice_seats__assign_den"."assign_scope", "slice_seats__assign_den"."assign_skipped", "slice_seats__assign_den"."assign_start_step", "slice_seats__assign_den"."assign_step", "slice_seats__assign_retirer"."assign_admitted", "slice_seats__assign_retirer"."assign_asked", "slice_seats__assign_retirer"."assign_assignment_finish_output", "slice_seats__assign_retirer"."assign_assignment_input", "slice_seats__assign_retirer"."assign_assignment_input_exclude", "slice_seats__assign_retirer"."assign_assignment_input_mode_nearest", "slice_seats__assign_retirer"."assign_assignment_input_mode_within", "slice_seats__assign_retirer"."assign_assignment_input_near", "slice_seats__assign_retirer"."assign_claim", "slice_seats__assign_retirer"."assign_decide_input", "slice_seats__assign_retirer"."assign_decide_input_exclude", "slice_seats__assign_retirer"."assign_decide_input_mode_nearest", "slice_seats__assign_retirer"."assign_decide_input_mode_within", "slice_seats__assign_retirer"."assign_decide_nearest_read", "slice_seats__assign_retirer"."assign_decide_nearest_row", "slice_seats__assign_retirer"."assign_decide_output", "slice_seats__assign_retirer"."assign_decide_output_stage_rest", "slice_seats__assign_retirer"."assign_decide_output_stage_serve", "slice_seats__assign_retirer"."assign_decide_output_weighed", "slice_seats__assign_retirer"."assign_decide_seen_read", "slice_seats__assign_retirer"."assign_decide_seen_row", "slice_seats__assign_retirer"."assign_done", "slice_seats__assign_retirer"."assign_embed_input", "slice_seats__assign_retirer"."assign_embed_input_exclude", "slice_seats__assign_retirer"."assign_embed_input_mode_nearest", "slice_seats__assign_retirer"."assign_embed_input_mode_within", "slice_seats__assign_retirer"."assign_embed_input_near", "slice_seats__assign_retirer"."assign_embed_output", "slice_seats__assign_retirer"."assign_ended", "slice_seats__assign_retirer"."assign_exhausted", "slice_seats__assign_retirer"."assign_failed", "slice_seats__assign_retirer"."assign_fenced", "slice_seats__assign_retirer"."assign_finish", "slice_seats__assign_retirer"."assign_held", "slice_seats__assign_retirer"."assign_refusal", "slice_seats__assign_retirer"."assign_result", "slice_seats__assign_retirer"."assign_retry", "slice_seats__assign_retirer"."assign_root", "slice_seats__assign_retirer"."assign_scope", "slice_seats__assign_retirer"."assign_skipped", "slice_seats__assign_retirer"."assign_start_step", "slice_seats__assign_retirer"."assign_step", "slice_seats__chain_coordinator"."chain_paused", "slice_seats__chain_coordinator"."chain_resumed", "slice_seats__chain_den"."chain_admitted", "slice_seats__chain_den"."chain_chain_run_finish_output", "slice_seats__chain_den"."chain_chain_run_input", "slice_seats__chain_den"."chain_claim", "slice_seats__chain_den"."chain_done", "slice_seats__chain_den"."chain_ended", "slice_seats__chain_den"."chain_exhausted", "slice_seats__chain_den"."chain_failed", "slice_seats__chain_den"."chain_fenced", "slice_seats__chain_den"."chain_finish", "slice_seats__chain_den"."chain_held", "slice_seats__chain_den"."chain_next", "slice_seats__chain_den"."chain_ordered_finish_output", "slice_seats__chain_den"."chain_ordered_input", "slice_seats__chain_den"."chain_page_earlier_read", "slice_seats__chain_den"."chain_page_earlier_row", "slice_seats__chain_den"."chain_page_input", "slice_seats__chain_den"."chain_page_input_after", "slice_seats__chain_den"."chain_page_output", "slice_seats__chain_den"."chain_page_output_next", "slice_seats__chain_den"."chain_page_tree_first", "slice_seats__chain_den"."chain_page_tree_items", "slice_seats__chain_den"."chain_page_tree_read", "slice_seats__chain_den"."chain_page_tree_row", "slice_seats__chain_den"."chain_page_weights_read", "slice_seats__chain_den"."chain_page_weights_row", "slice_seats__chain_den"."chain_paused", "slice_seats__chain_den"."chain_refusal", "slice_seats__chain_den"."chain_result", "slice_seats__chain_den"."chain_resumed", "slice_seats__chain_den"."chain_retry", "slice_seats__chain_den"."chain_root", "slice_seats__chain_den"."chain_scope", "slice_seats__chain_den"."chain_skipped", "slice_seats__chain_den"."chain_start_step", "slice_seats__chain_den"."chain_step", "slice_seats__chain_retirer"."chain_admitted", "slice_seats__chain_retirer"."chain_chain_run_finish_output", "slice_seats__chain_retirer"."chain_chain_run_input", "slice_seats__chain_retirer"."chain_claim", "slice_seats__chain_retirer"."chain_done", "slice_seats__chain_retirer"."chain_ended", "slice_seats__chain_retirer"."chain_exhausted", "slice_seats__chain_retirer"."chain_failed", "slice_seats__chain_retirer"."chain_fenced", "slice_seats__chain_retirer"."chain_finish", "slice_seats__chain_retirer"."chain_held", "slice_seats__chain_retirer"."chain_next", "slice_seats__chain_retirer"."chain_ordered_finish_output", "slice_seats__chain_retirer"."chain_ordered_input", "slice_seats__chain_retirer"."chain_page_earlier_read", "slice_seats__chain_retirer"."chain_page_earlier_row", "slice_seats__chain_retirer"."chain_page_input", "slice_seats__chain_retirer"."chain_page_input_after", "slice_seats__chain_retirer"."chain_page_output", "slice_seats__chain_retirer"."chain_page_output_next", "slice_seats__chain_retirer"."chain_page_tree_first", "slice_seats__chain_retirer"."chain_page_tree_items", "slice_seats__chain_retirer"."chain_page_tree_read", "slice_seats__chain_retirer"."chain_page_tree_row", "slice_seats__chain_retirer"."chain_page_weights_read", "slice_seats__chain_retirer"."chain_page_weights_row", "slice_seats__chain_retirer"."chain_refusal", "slice_seats__chain_retirer"."chain_result", "slice_seats__chain_retirer"."chain_retry", "slice_seats__chain_retirer"."chain_root", "slice_seats__chain_retirer"."chain_scope", "slice_seats__chain_retirer"."chain_skipped", "slice_seats__chain_retirer"."chain_start_step", "slice_seats__chain_retirer"."chain_step", "slice_seats__clock_coordinator"."clock_paused", "slice_seats__clock_coordinator"."clock_resumed", "slice_seats__clock_den"."clock_admitted", "slice_seats__clock_den"."clock_chime_input", "slice_seats__clock_den"."clock_chime_output", "slice_seats__clock_den"."clock_claim", "slice_seats__clock_den"."clock_close_input", "slice_seats__clock_den"."clock_close_output", "slice_seats__clock_den"."clock_done", "slice_seats__clock_den"."clock_ended", "slice_seats__clock_den"."clock_exhausted", "slice_seats__clock_den"."clock_failed", "slice_seats__clock_den"."clock_fenced", "slice_seats__clock_den"."clock_finish", "slice_seats__clock_den"."clock_held", "slice_seats__clock_den"."clock_hourly_finish_output", "slice_seats__clock_den"."clock_hourly_input", "slice_seats__clock_den"."clock_paused", "slice_seats__clock_den"."clock_refusal", "slice_seats__clock_den"."clock_result", "slice_seats__clock_den"."clock_resumed", "slice_seats__clock_den"."clock_retry", "slice_seats__clock_den"."clock_root", "slice_seats__clock_den"."clock_scope", "slice_seats__clock_den"."clock_sitting_finish_output", "slice_seats__clock_den"."clock_sitting_input", "slice_seats__clock_den"."clock_skipped", "slice_seats__clock_den"."clock_start_step", "slice_seats__clock_den"."clock_step", "slice_seats__clock_retirer"."clock_admitted", "slice_seats__clock_retirer"."clock_chime_input", "slice_seats__clock_retirer"."clock_chime_output", "slice_seats__clock_retirer"."clock_claim", "slice_seats__clock_retirer"."clock_close_input", "slice_seats__clock_retirer"."clock_close_output", "slice_seats__clock_retirer"."clock_done", "slice_seats__clock_retirer"."clock_ended", "slice_seats__clock_retirer"."clock_exhausted", "slice_seats__clock_retirer"."clock_failed", "slice_seats__clock_retirer"."clock_fenced", "slice_seats__clock_retirer"."clock_finish", "slice_seats__clock_retirer"."clock_held", "slice_seats__clock_retirer"."clock_hourly_finish_output", "slice_seats__clock_retirer"."clock_hourly_input", "slice_seats__clock_retirer"."clock_refusal", "slice_seats__clock_retirer"."clock_result", "slice_seats__clock_retirer"."clock_retry", "slice_seats__clock_retirer"."clock_root", "slice_seats__clock_retirer"."clock_scope", "slice_seats__clock_retirer"."clock_sitting_finish_output", "slice_seats__clock_retirer"."clock_sitting_input", "slice_seats__clock_retirer"."clock_skipped", "slice_seats__clock_retirer"."clock_start_step", "slice_seats__clock_retirer"."clock_step", "slice_seats__fan_coordinator"."fan_live", "slice_seats__fan_coordinator"."fan_paused", "slice_seats__fan_coordinator"."fan_resumed", "slice_seats__fan_den"."fan_admitted", "slice_seats__fan_den"."fan_batch_finish_output", "slice_seats__fan_den"."fan_batch_input", "slice_seats__fan_den"."fan_claim", "slice_seats__fan_den"."fan_done", "slice_seats__fan_den"."fan_dust_input", "slice_seats__fan_den"."fan_dust_output", "slice_seats__fan_den"."fan_ended", "slice_seats__fan_den"."fan_exhausted", "slice_seats__fan_den"."fan_failed", "slice_seats__fan_den"."fan_fan_run_finish_output", "slice_seats__fan_den"."fan_fan_run_input", "slice_seats__fan_den"."fan_fenced", "slice_seats__fan_den"."fan_finish", "slice_seats__fan_den"."fan_held", "slice_seats__fan_den"."fan_hold", "slice_seats__fan_den"."fan_live", "slice_seats__fan_den"."fan_mop_input", "slice_seats__fan_den"."fan_mop_output", "slice_seats__fan_den"."fan_paused", "slice_seats__fan_den"."fan_refusal", "slice_seats__fan_den"."fan_result", "slice_seats__fan_den"."fan_resumed", "slice_seats__fan_den"."fan_retry", "slice_seats__fan_den"."fan_root", "slice_seats__fan_den"."fan_scope", "slice_seats__fan_den"."fan_skipped", "slice_seats__fan_den"."fan_square_input", "slice_seats__fan_den"."fan_square_output", "slice_seats__fan_den"."fan_start_scope", "slice_seats__fan_den"."fan_start_step", "slice_seats__fan_den"."fan_step", "slice_seats__fan_den"."fan_sweep_finish_output", "slice_seats__fan_den"."fan_sweep_input", "slice_seats__fan_den"."fan_within", "slice_seats__fan_retirer"."fan_admitted", "slice_seats__fan_retirer"."fan_batch_finish_output", "slice_seats__fan_retirer"."fan_batch_input", "slice_seats__fan_retirer"."fan_claim", "slice_seats__fan_retirer"."fan_done", "slice_seats__fan_retirer"."fan_dust_input", "slice_seats__fan_retirer"."fan_dust_output", "slice_seats__fan_retirer"."fan_ended", "slice_seats__fan_retirer"."fan_exhausted", "slice_seats__fan_retirer"."fan_failed", "slice_seats__fan_retirer"."fan_fan_run_finish_output", "slice_seats__fan_retirer"."fan_fan_run_input", "slice_seats__fan_retirer"."fan_fenced", "slice_seats__fan_retirer"."fan_finish", "slice_seats__fan_retirer"."fan_held", "slice_seats__fan_retirer"."fan_hold", "slice_seats__fan_retirer"."fan_mop_input", "slice_seats__fan_retirer"."fan_mop_output", "slice_seats__fan_retirer"."fan_refusal", "slice_seats__fan_retirer"."fan_result", "slice_seats__fan_retirer"."fan_retry", "slice_seats__fan_retirer"."fan_root", "slice_seats__fan_retirer"."fan_scope", "slice_seats__fan_retirer"."fan_skipped", "slice_seats__fan_retirer"."fan_square_input", "slice_seats__fan_retirer"."fan_square_output", "slice_seats__fan_retirer"."fan_start_scope", "slice_seats__fan_retirer"."fan_start_step", "slice_seats__fan_retirer"."fan_step", "slice_seats__fan_retirer"."fan_sweep_finish_output", "slice_seats__fan_retirer"."fan_sweep_input", "slice_seats__fan_retirer"."fan_within", "slice_seats__retry_coordinator"."retry_paused", "slice_seats__retry_coordinator"."retry_resumed", "slice_seats__retry_den"."retry_admitted", "slice_seats__retry_den"."retry_brittle_input", "slice_seats__retry_den"."retry_brittle_output", "slice_seats__retry_den"."retry_claim", "slice_seats__retry_den"."retry_done", "slice_seats__retry_den"."retry_ended", "slice_seats__retry_den"."retry_exhausted", "slice_seats__retry_den"."retry_failed", "slice_seats__retry_den"."retry_fenced", "slice_seats__retry_den"."retry_finish", "slice_seats__retry_den"."retry_held", "slice_seats__retry_den"."retry_ladders_finish_output", "slice_seats__retry_den"."retry_ladders_input", "slice_seats__retry_den"."retry_patient_input", "slice_seats__retry_den"."retry_patient_output", "slice_seats__retry_den"."retry_paused", "slice_seats__retry_den"."retry_polite_input", "slice_seats__retry_den"."retry_polite_output", "slice_seats__retry_den"."retry_refusal", "slice_seats__retry_den"."retry_result", "slice_seats__retry_den"."retry_resumed", "slice_seats__retry_den"."retry_retry", "slice_seats__retry_den"."retry_root", "slice_seats__retry_den"."retry_scope", "slice_seats__retry_den"."retry_skipped", "slice_seats__retry_den"."retry_start_step", "slice_seats__retry_den"."retry_steadfast_input", "slice_seats__retry_den"."retry_steadfast_output", "slice_seats__retry_den"."retry_step", "slice_seats__retry_den"."retry_throttled_finish_output", "slice_seats__retry_den"."retry_throttled_input", "slice_seats__retry_den"."retry_unhurried_finish_output", "slice_seats__retry_den"."retry_unhurried_input", "slice_seats__retry_retirer"."retry_admitted", "slice_seats__retry_retirer"."retry_brittle_input", "slice_seats__retry_retirer"."retry_brittle_output", "slice_seats__retry_retirer"."retry_claim", "slice_seats__retry_retirer"."retry_done", "slice_seats__retry_retirer"."retry_ended", "slice_seats__retry_retirer"."retry_exhausted", "slice_seats__retry_retirer"."retry_failed", "slice_seats__retry_retirer"."retry_fenced", "slice_seats__retry_retirer"."retry_finish", "slice_seats__retry_retirer"."retry_held", "slice_seats__retry_retirer"."retry_ladders_finish_output", "slice_seats__retry_retirer"."retry_ladders_input", "slice_seats__retry_retirer"."retry_patient_input", "slice_seats__retry_retirer"."retry_patient_output", "slice_seats__retry_retirer"."retry_polite_input", "slice_seats__retry_retirer"."retry_polite_output", "slice_seats__retry_retirer"."retry_refusal", "slice_seats__retry_retirer"."retry_result", "slice_seats__retry_retirer"."retry_retry", "slice_seats__retry_retirer"."retry_root", "slice_seats__retry_retirer"."retry_scope", "slice_seats__retry_retirer"."retry_skipped", "slice_seats__retry_retirer"."retry_start_step", "slice_seats__retry_retirer"."retry_steadfast_input", "slice_seats__retry_retirer"."retry_steadfast_output", "slice_seats__retry_retirer"."retry_step", "slice_seats__retry_retirer"."retry_throttled_finish_output", "slice_seats__retry_retirer"."retry_throttled_input", "slice_seats__retry_retirer"."retry_unhurried_finish_output", "slice_seats__retry_retirer"."retry_unhurried_input", "slice_seats__review_coordinator"."review_live", "slice_seats__review_coordinator"."review_paused", "slice_seats__review_coordinator"."review_resumed", "slice_seats__review_den"."delivered", "slice_seats__review_den"."review_admitted", "slice_seats__review_den"."review_analyze_input", "slice_seats__review_den"."review_analyze_output", "slice_seats__review_den"."review_claim", "slice_seats__review_den"."review_done", "slice_seats__review_den"."review_ended", "slice_seats__review_den"."review_exhausted", "slice_seats__review_den"."review_failed", "slice_seats__review_den"."review_fenced", "slice_seats__review_den"."review_finish", "slice_seats__review_den"."review_gather_input", "slice_seats__review_den"."review_gather_input_sizes", "slice_seats__review_den"."review_gather_output", "slice_seats__review_den"."review_held", "slice_seats__review_den"."review_hold", "slice_seats__review_den"."review_live", "slice_seats__review_den"."review_paused", "slice_seats__review_den"."review_questions_finish_output", "slice_seats__review_den"."review_questions_input", "slice_seats__review_den"."review_refusal", "slice_seats__review_den"."review_result", "slice_seats__review_den"."review_resumed", "slice_seats__review_den"."review_retry", "slice_seats__review_den"."review_review_run_finish_output", "slice_seats__review_den"."review_review_run_input", "slice_seats__review_den"."review_review_run_input_sizes", "slice_seats__review_den"."review_root", "slice_seats__review_den"."review_save_input", "slice_seats__review_den"."review_save_output", "slice_seats__review_den"."review_saved", "slice_seats__review_den"."review_scope", "slice_seats__review_den"."review_skipped", "slice_seats__review_den"."review_split", "slice_seats__review_den"."review_start_scope", "slice_seats__review_den"."review_start_step", "slice_seats__review_den"."review_step", "slice_seats__review_den"."review_within", "slice_seats__review_retirer"."review_admitted", "slice_seats__review_retirer"."review_analyze_input", "slice_seats__review_retirer"."review_analyze_output", "slice_seats__review_retirer"."review_claim", "slice_seats__review_retirer"."review_done", "slice_seats__review_retirer"."review_ended", "slice_seats__review_retirer"."review_exhausted", "slice_seats__review_retirer"."review_failed", "slice_seats__review_retirer"."review_fenced", "slice_seats__review_retirer"."review_finish", "slice_seats__review_retirer"."review_gather_input", "slice_seats__review_retirer"."review_gather_input_sizes", "slice_seats__review_retirer"."review_gather_output", "slice_seats__review_retirer"."review_held", "slice_seats__review_retirer"."review_hold", "slice_seats__review_retirer"."review_questions_finish_output", "slice_seats__review_retirer"."review_questions_input", "slice_seats__review_retirer"."review_refusal", "slice_seats__review_retirer"."review_result", "slice_seats__review_retirer"."review_retry", "slice_seats__review_retirer"."review_review_run_finish_output", "slice_seats__review_retirer"."review_review_run_input", "slice_seats__review_retirer"."review_review_run_input_sizes", "slice_seats__review_retirer"."review_root", "slice_seats__review_retirer"."review_save_input", "slice_seats__review_retirer"."review_save_output", "slice_seats__review_retirer"."review_saved", "slice_seats__review_retirer"."review_scope", "slice_seats__review_retirer"."review_skipped", "slice_seats__review_retirer"."review_split", "slice_seats__review_retirer"."review_start_scope", "slice_seats__review_retirer"."review_start_step", "slice_seats__review_retirer"."review_step", "slice_seats__review_retirer"."review_within", "slice_seats__sync_coordinator"."sync_exclusive", "slice_seats__sync_coordinator"."sync_paused", "slice_seats__sync_coordinator"."sync_released", "slice_seats__sync_coordinator"."sync_resumed", "slice_seats__sync_den"."chain_result", "slice_seats__sync_den"."chain_step", "slice_seats__sync_den"."sync_admitted", "slice_seats__sync_den"."sync_build_input", "slice_seats__sync_den"."sync_build_output", "slice_seats__sync_den"."sync_claim", "slice_seats__sync_den"."sync_copy_input", "slice_seats__sync_den"."sync_copy_output", "slice_seats__sync_den"."sync_done", "slice_seats__sync_den"."sync_ended", "slice_seats__sync_den"."sync_exclusive", "slice_seats__sync_den"."sync_exclusive_key", "slice_seats__sync_den"."sync_exhausted", "slice_seats__sync_den"."sync_failed", "slice_seats__sync_den"."sync_fenced", "slice_seats__sync_den"."sync_finish", "slice_seats__sync_den"."sync_gold_finish_output", "slice_seats__sync_den"."sync_gold_input", "slice_seats__sync_den"."sync_held", "slice_seats__sync_den"."sync_paused", "slice_seats__sync_den"."sync_refusal", "slice_seats__sync_den"."sync_released", "slice_seats__sync_den"."sync_result", "slice_seats__sync_den"."sync_resumed", "slice_seats__sync_den"."sync_retry", "slice_seats__sync_den"."sync_root", "slice_seats__sync_den"."sync_scope", "slice_seats__sync_den"."sync_skipped", "slice_seats__sync_den"."sync_start_step", "slice_seats__sync_den"."sync_step", "slice_seats__sync_den"."sync_sync_run_finish_output", "slice_seats__sync_den"."sync_sync_run_input", "slice_seats__sync_retirer"."sync_admitted", "slice_seats__sync_retirer"."sync_build_input", "slice_seats__sync_retirer"."sync_build_output", "slice_seats__sync_retirer"."sync_claim", "slice_seats__sync_retirer"."sync_copy_input", "slice_seats__sync_retirer"."sync_copy_output", "slice_seats__sync_retirer"."sync_done", "slice_seats__sync_retirer"."sync_ended", "slice_seats__sync_retirer"."sync_exclusive_key", "slice_seats__sync_retirer"."sync_exhausted", "slice_seats__sync_retirer"."sync_failed", "slice_seats__sync_retirer"."sync_fenced", "slice_seats__sync_retirer"."sync_finish", "slice_seats__sync_retirer"."sync_gold_finish_output", "slice_seats__sync_retirer"."sync_gold_input", "slice_seats__sync_retirer"."sync_held", "slice_seats__sync_retirer"."sync_refusal", "slice_seats__sync_retirer"."sync_result", "slice_seats__sync_retirer"."sync_retry", "slice_seats__sync_retirer"."sync_root", "slice_seats__sync_retirer"."sync_scope", "slice_seats__sync_retirer"."sync_skipped", "slice_seats__sync_retirer"."sync_start_step", "slice_seats__sync_retirer"."sync_step", "slice_seats__sync_retirer"."sync_sync_run_finish_output", "slice_seats__sync_retirer"."sync_sync_run_input", "slice_seats__writeback_coordinator"."writeback_paused", "slice_seats__writeback_coordinator"."writeback_resumed", "slice_seats__writeback_den"."writeback_admitted", "slice_seats__writeback_den"."writeback_claim", "slice_seats__writeback_den"."writeback_deliver_input", "slice_seats__writeback_den"."writeback_deliver_output", "slice_seats__writeback_den"."writeback_done", "slice_seats__writeback_den"."writeback_ended", "slice_seats__writeback_den"."writeback_exhausted", "slice_seats__writeback_den"."writeback_failed", "slice_seats__writeback_den"."writeback_fenced", "slice_seats__writeback_den"."writeback_finish", "slice_seats__writeback_den"."writeback_held", "slice_seats__writeback_den"."writeback_paused", "slice_seats__writeback_den"."writeback_refusal", "slice_seats__writeback_den"."writeback_result", "slice_seats__writeback_den"."writeback_resumed", "slice_seats__writeback_den"."writeback_retry", "slice_seats__writeback_den"."writeback_root", "slice_seats__writeback_den"."writeback_scope", "slice_seats__writeback_den"."writeback_skipped", "slice_seats__writeback_den"."writeback_start_step", "slice_seats__writeback_den"."writeback_step", "slice_seats__writeback_den"."writeback_writeback_finish_output", "slice_seats__writeback_den"."writeback_writeback_input", "slice_seats__writeback_retirer"."writeback_admitted", "slice_seats__writeback_retirer"."writeback_claim", "slice_seats__writeback_retirer"."writeback_deliver_input", "slice_seats__writeback_retirer"."writeback_deliver_output", "slice_seats__writeback_retirer"."writeback_done", "slice_seats__writeback_retirer"."writeback_ended", "slice_seats__writeback_retirer"."writeback_exhausted", "slice_seats__writeback_retirer"."writeback_failed", "slice_seats__writeback_retirer"."writeback_fenced", "slice_seats__writeback_retirer"."writeback_finish", "slice_seats__writeback_retirer"."writeback_held", "slice_seats__writeback_retirer"."writeback_refusal", "slice_seats__writeback_retirer"."writeback_result", "slice_seats__writeback_retirer"."writeback_retry", "slice_seats__writeback_retirer"."writeback_root", "slice_seats__writeback_retirer"."writeback_scope", "slice_seats__writeback_retirer"."writeback_skipped", "slice_seats__writeback_retirer"."writeback_start_step", "slice_seats__writeback_retirer"."writeback_step", "slice_seats__writeback_retirer"."writeback_writeback_finish_output", "slice_seats__writeback_retirer"."writeback_writeback_input" FROM PUBLIC;
 
-REVOKE ALL ON DOMAIN "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_embed_input_mode", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_retry_why", "slice"."assign_root_kind", "slice"."bell", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_earlier_row_feed", "slice"."chain_page_input_feed", "slice"."chain_page_tree_row_feed", "slice"."chain_page_weights_row_feed", "slice"."chain_pausable", "slice"."chain_retry_why", "slice"."chain_root_kind", "slice"."clock_chime_input_bell", "slice"."clock_chime_output_bell", "slice"."clock_hourly_input_bell", "slice"."clock_kind", "slice"."clock_outcome", "slice"."clock_pausable", "slice"."clock_retry_why", "slice"."clock_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_retry_why", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_retry_why", "slice"."retry_root_kind", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_resource", "slice"."review_retry_why", "slice"."review_root_kind", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_retry_why", "slice"."sync_root_kind", "slice"."writeback_kind", "slice"."writeback_outcome", "slice"."writeback_pausable", "slice"."writeback_retry_why", "slice"."writeback_root_kind", "slice"."__text_t4rwovzmqj", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."__domain_jevqauzmw6", "slice"."__domain_jevqauzmw6", "slice"."__domain_jevqauzmw6", "slice"."__domain_mxhao3k6ss", "slice"."__domain_gfw43vigph", "slice"."__domain_p7dj7oebtz", "slice"."__param_nearest_topic_4eruqlfauv", "slice"."__param_seen_learner_exdgowkpja" FROM PUBLIC;
+REVOKE ALL ON DOMAIN "slice"."__sha256", "slice"."assign_assignment_input_mode", "slice"."assign_decide_input_mode", "slice"."assign_decide_output_stage", "slice"."assign_embed_input_mode", "slice"."assign_kind", "slice"."assign_outcome", "slice"."assign_pausable", "slice"."assign_retry_why", "slice"."assign_root_kind", "slice"."bell", "slice"."chain_chain_run_input_feed", "slice"."chain_kind", "slice"."chain_ordered_input_feed", "slice"."chain_outcome", "slice"."chain_page_earlier_row_feed", "slice"."chain_page_input_feed", "slice"."chain_page_tree_row_feed", "slice"."chain_page_weights_row_feed", "slice"."chain_pausable", "slice"."chain_retry_why", "slice"."chain_root_kind", "slice"."clock_chime_input_bell", "slice"."clock_chime_output_bell", "slice"."clock_hourly_input_bell", "slice"."clock_kind", "slice"."clock_outcome", "slice"."clock_pausable", "slice"."clock_retry_why", "slice"."clock_root_kind", "slice"."fan_child_kind", "slice"."fan_kind", "slice"."fan_outcome", "slice"."fan_pausable", "slice"."fan_resource", "slice"."fan_retry_why", "slice"."fan_root_kind", "slice"."feed", "slice"."retry_kind", "slice"."retry_outcome", "slice"."retry_pausable", "slice"."retry_retry_why", "slice"."retry_root_kind", "slice"."review_child_kind", "slice"."review_kind", "slice"."review_outcome", "slice"."review_pausable", "slice"."review_resource", "slice"."review_retry_why", "slice"."review_root_kind", "slice"."sync_kind", "slice"."sync_outcome", "slice"."sync_pausable", "slice"."sync_retry_why", "slice"."sync_root_kind", "slice"."writeback_kind", "slice"."writeback_outcome", "slice"."writeback_pausable", "slice"."writeback_retry_why", "slice"."writeback_root_kind", "slice"."__text_t4rwovzmqj", "slice"."__domain_mxhao3k6ss", "slice"."__domain_mxhao3k6ss", "slice"."__domain_gfw43vigph", "slice"."__domain_p7dj7oebtz", "slice"."__param_nearest_topic_4eruqlfauv", "slice"."__param_seen_learner_exdgowkpja" FROM PUBLIC;
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 ALTER DEFAULT PRIVILEGES IN SCHEMA "slice" REVOKE ALL ON TABLES FROM PUBLIC;
@@ -4941,9 +4941,125 @@ COMMENT ON FUNCTION "slice"."__writeback_retry_why_names_7a7eowjbic"() IS 'names
 
 COMMENT ON FUNCTION "slice"."__writeback_root_kind_names_bz7cmi256x"() IS 'names of roster WritebackRootKind (f92156d78e6d6b3d8acddabc8c25f812877811ffa6d2b4a84de1d6ef10fc80c2)';
 
-COMMENT ON DOMAIN "slice"."__domain_gfw43vigph" IS 'domain of definition 39922592cedecf769d6df372d6df99e0b82206b0bf6dacd9722d0490f83cc782';
+COMMENT ON FUNCTION "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"() IS 'live codes of roster AssignAssignmentInputMode (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
 
-COMMENT ON DOMAIN "slice"."__domain_jevqauzmw6" IS 'domain of definition 9ee012fb79fcb52e1281f9b222071737e340dc146c2082aa3a4646fcd0f11d41';
+COMMENT ON FUNCTION "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"() IS 'live codes of roster AssignDecideInputMode (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__assign_decide_output_stage_live_j54g2pdkhy"() IS 'live codes of roster AssignDecideOutputStage (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__assign_embed_input_mode_live_r26iyj4yp6"() IS 'live codes of roster AssignEmbedInputMode (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__assign_kind_live_epoonlekfm"() IS 'live codes of roster AssignKind (172efd8b2eef24193d3dce248edca3d8416daad89c20bd6348c3a5d0e86d4d5b)';
+
+COMMENT ON FUNCTION "slice"."__assign_outcome_live_3t7oirgwzl"() IS 'live codes of roster AssignOutcome (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__assign_pausable_live_spku342qp6"() IS 'live codes of roster AssignPausable (d7a5edc3955cc1a7992fa761c9cc9bd7d80a48366065a6306e8b39e1ca3932ab)';
+
+COMMENT ON FUNCTION "slice"."__assign_retry_why_live_qfzksuyq3m"() IS 'live codes of roster AssignRetryWhy (172efd8b2eef24193d3dce248edca3d8416daad89c20bd6348c3a5d0e86d4d5b)';
+
+COMMENT ON FUNCTION "slice"."__assign_root_kind_live_nccqmed4lq"() IS 'live codes of roster AssignRootKind (d7a5edc3955cc1a7992fa761c9cc9bd7d80a48366065a6306e8b39e1ca3932ab)';
+
+COMMENT ON FUNCTION "slice"."__bell_live_bk7zau3khi"() IS 'live codes of roster Bell (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__chain_chain_run_input_feed_live_iopwed3csj"() IS 'live codes of roster ChainChainRunInputFeed (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__chain_kind_live_4t2tj7pchx"() IS 'live codes of roster ChainKind (172efd8b2eef24193d3dce248edca3d8416daad89c20bd6348c3a5d0e86d4d5b)';
+
+COMMENT ON FUNCTION "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"() IS 'live codes of roster ChainOrderedInputFeed (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__chain_outcome_live_azc7nb42gy"() IS 'live codes of roster ChainOutcome (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__chain_page_earlier_row_feed_live_orkazo3lov"() IS 'live codes of roster ChainPageEarlierRowFeed (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__chain_page_input_feed_live_zxgp5dub6j"() IS 'live codes of roster ChainPageInputFeed (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__chain_page_tree_row_feed_live_m3isrn2bwm"() IS 'live codes of roster ChainPageTreeRowFeed (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__chain_page_weights_row_feed_live_fueegj5g3p"() IS 'live codes of roster ChainPageWeightsRowFeed (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__chain_pausable_live_ozpbw3gnsu"() IS 'live codes of roster ChainPausable (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__chain_retry_why_live_m5qnitynhz"() IS 'live codes of roster ChainRetryWhy (172efd8b2eef24193d3dce248edca3d8416daad89c20bd6348c3a5d0e86d4d5b)';
+
+COMMENT ON FUNCTION "slice"."__chain_root_kind_live_mnlnztwbz2"() IS 'live codes of roster ChainRootKind (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__clock_chime_input_bell_live_vs2eypgl4v"() IS 'live codes of roster ClockChimeInputBell (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__clock_chime_output_bell_live_ikpwkv25mh"() IS 'live codes of roster ClockChimeOutputBell (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__clock_hourly_input_bell_live_yfdtebn7na"() IS 'live codes of roster ClockHourlyInputBell (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__clock_kind_live_kem5uxahz7"() IS 'live codes of roster ClockKind (b74579d3b64ecff081cab2731adb2464f839e99b2eed45d65b3c1547c74f2de1)';
+
+COMMENT ON FUNCTION "slice"."__clock_outcome_live_q7vjmi72sr"() IS 'live codes of roster ClockOutcome (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__clock_pausable_live_waldzggn7s"() IS 'live codes of roster ClockPausable (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__clock_retry_why_live_auqnukeed5"() IS 'live codes of roster ClockRetryWhy (172efd8b2eef24193d3dce248edca3d8416daad89c20bd6348c3a5d0e86d4d5b)';
+
+COMMENT ON FUNCTION "slice"."__clock_root_kind_live_dkya2k5nqw"() IS 'live codes of roster ClockRootKind (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__fan_child_kind_live_lzght2aqpn"() IS 'live codes of roster FanChildKind (d7a5edc3955cc1a7992fa761c9cc9bd7d80a48366065a6306e8b39e1ca3932ab)';
+
+COMMENT ON FUNCTION "slice"."__fan_kind_live_mosnikz3yn"() IS 'live codes of roster FanKind (ff25cb7ef936c9a259d64952fb881db2ec478880c026b52a90e1c8d8fa961147)';
+
+COMMENT ON FUNCTION "slice"."__fan_outcome_live_nos3iqln54"() IS 'live codes of roster FanOutcome (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__fan_pausable_live_uymd2oabeh"() IS 'live codes of roster FanPausable (b74579d3b64ecff081cab2731adb2464f839e99b2eed45d65b3c1547c74f2de1)';
+
+COMMENT ON FUNCTION "slice"."__fan_resource_live_yqyw4ee5fp"() IS 'live codes of roster FanResource (d7a5edc3955cc1a7992fa761c9cc9bd7d80a48366065a6306e8b39e1ca3932ab)';
+
+COMMENT ON FUNCTION "slice"."__fan_retry_why_live_yom5egfb4x"() IS 'live codes of roster FanRetryWhy (172efd8b2eef24193d3dce248edca3d8416daad89c20bd6348c3a5d0e86d4d5b)';
+
+COMMENT ON FUNCTION "slice"."__fan_root_kind_live_sx7vmfeklj"() IS 'live codes of roster FanRootKind (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__feed_live_pfwkvulieq"() IS 'live codes of roster Feed (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__retry_kind_live_lujs5xc25d"() IS 'live codes of roster RetryKind (81c5f5fc8ba40698944d57540929dee29893d3bf66a84aacfe8dc2be09d996e3)';
+
+COMMENT ON FUNCTION "slice"."__retry_outcome_live_fdo5qezp4f"() IS 'live codes of roster RetryOutcome (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__retry_pausable_live_buioe34fit"() IS 'live codes of roster RetryPausable (172efd8b2eef24193d3dce248edca3d8416daad89c20bd6348c3a5d0e86d4d5b)';
+
+COMMENT ON FUNCTION "slice"."__retry_retry_why_live_p4et7ysqjo"() IS 'live codes of roster RetryRetryWhy (172efd8b2eef24193d3dce248edca3d8416daad89c20bd6348c3a5d0e86d4d5b)';
+
+COMMENT ON FUNCTION "slice"."__retry_root_kind_live_euautuyuhd"() IS 'live codes of roster RetryRootKind (172efd8b2eef24193d3dce248edca3d8416daad89c20bd6348c3a5d0e86d4d5b)';
+
+COMMENT ON FUNCTION "slice"."__review_child_kind_live_xb5v52t6gq"() IS 'live codes of roster ReviewChildKind (d7a5edc3955cc1a7992fa761c9cc9bd7d80a48366065a6306e8b39e1ca3932ab)';
+
+COMMENT ON FUNCTION "slice"."__review_kind_live_3egbkjww5a"() IS 'live codes of roster ReviewKind (591ae590686ec68aa03e699030fe62fdeae06b893d263428aab7d66397d0f1fe)';
+
+COMMENT ON FUNCTION "slice"."__review_outcome_live_svq4irpcsp"() IS 'live codes of roster ReviewOutcome (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__review_pausable_live_at7bdrj2is"() IS 'live codes of roster ReviewPausable (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__review_resource_live_bbskolaran"() IS 'live codes of roster ReviewResource (d7a5edc3955cc1a7992fa761c9cc9bd7d80a48366065a6306e8b39e1ca3932ab)';
+
+COMMENT ON FUNCTION "slice"."__review_retry_why_live_sp7od4pwim"() IS 'live codes of roster ReviewRetryWhy (172efd8b2eef24193d3dce248edca3d8416daad89c20bd6348c3a5d0e86d4d5b)';
+
+COMMENT ON FUNCTION "slice"."__review_root_kind_live_vkjzjpusnp"() IS 'live codes of roster ReviewRootKind (d7a5edc3955cc1a7992fa761c9cc9bd7d80a48366065a6306e8b39e1ca3932ab)';
+
+COMMENT ON FUNCTION "slice"."__sync_kind_live_mrzzgu2rqf"() IS 'live codes of roster SyncKind (b74579d3b64ecff081cab2731adb2464f839e99b2eed45d65b3c1547c74f2de1)';
+
+COMMENT ON FUNCTION "slice"."__sync_outcome_live_7gndrvrenw"() IS 'live codes of roster SyncOutcome (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__sync_pausable_live_7gx4kdgs6e"() IS 'live codes of roster SyncPausable (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__sync_retry_why_live_t6r5ysh2pa"() IS 'live codes of roster SyncRetryWhy (172efd8b2eef24193d3dce248edca3d8416daad89c20bd6348c3a5d0e86d4d5b)';
+
+COMMENT ON FUNCTION "slice"."__sync_root_kind_live_vi4cdymudd"() IS 'live codes of roster SyncRootKind (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__writeback_kind_live_gxqp25qbem"() IS 'live codes of roster WritebackKind (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__writeback_outcome_live_haxkgy2wa4"() IS 'live codes of roster WritebackOutcome (f80b6953419f9aa8ea93323a6d5e3f06182c57018d537842383ceca681622491)';
+
+COMMENT ON FUNCTION "slice"."__writeback_pausable_live_rwjxemvunq"() IS 'live codes of roster WritebackPausable (d7a5edc3955cc1a7992fa761c9cc9bd7d80a48366065a6306e8b39e1ca3932ab)';
+
+COMMENT ON FUNCTION "slice"."__writeback_retry_why_live_6vffrr6k2o"() IS 'live codes of roster WritebackRetryWhy (172efd8b2eef24193d3dce248edca3d8416daad89c20bd6348c3a5d0e86d4d5b)';
+
+COMMENT ON FUNCTION "slice"."__writeback_root_kind_live_ifibfl2f7i"() IS 'live codes of roster WritebackRootKind (d7a5edc3955cc1a7992fa761c9cc9bd7d80a48366065a6306e8b39e1ca3932ab)';
+
+COMMENT ON DOMAIN "slice"."__domain_gfw43vigph" IS 'domain of definition 39922592cedecf769d6df372d6df99e0b82206b0bf6dacd9722d0490f83cc782';
 
 COMMENT ON DOMAIN "slice"."__domain_mxhao3k6ss" IS 'domain of definition be4e1f34160619e14c4a8009e96d1ced7b683a1e169a9e4d0e9e10640701b8aa';
 
@@ -4954,6 +5070,220 @@ COMMENT ON DOMAIN "slice"."__text_t4rwovzmqj" IS 'text domain of definition 6f5b
 COMMENT ON DOMAIN "slice"."__param_nearest_topic_4eruqlfauv" IS 'pattern domain of parameter nearest.topic of definition c83059a9a99ede4f852cdadf3bb2a8e07b8271fc5f9a41b0fb682d35dc8f9547';
 
 COMMENT ON DOMAIN "slice"."__param_seen_learner_exdgowkpja" IS 'pattern domain of parameter seen.learner of definition c83059a9a99ede4f852cdadf3bb2a8e07b8271fc5f9a41b0fb682d35dc8f9547';
+
+COMMENT ON TYPE "slice"."__row_news_assign_assignment_input_lznek7z3du" IS 'the row type of the delta of news of AssignAssignmentInput';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_assignment_input_wdttr53scw" IS 'the row type of the delta of olds of AssignAssignmentInput';
+
+COMMENT ON TYPE "slice"."__row_news_assign_assignment_input_mode_nearest_pyupadvtv2" IS 'the row type of the delta of news of AssignAssignmentInputModeNearest';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_assignment_input_mode_nearest_b5quid2s5d" IS 'the row type of the delta of olds of AssignAssignmentInputModeNearest';
+
+COMMENT ON TYPE "slice"."__row_news_assign_assignment_input_mode_within_oeznxymcws" IS 'the row type of the delta of news of AssignAssignmentInputModeWithin';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_assignment_input_mode_within_36u3nuqbae" IS 'the row type of the delta of olds of AssignAssignmentInputModeWithin';
+
+COMMENT ON TYPE "slice"."__row_news_assign_decide_input_5m3wrrmet4" IS 'the row type of the delta of news of AssignDecideInput';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_decide_input_f2jcgvtjac" IS 'the row type of the delta of olds of AssignDecideInput';
+
+COMMENT ON TYPE "slice"."__row_news_assign_decide_input_mode_nearest_cprjb2hbu2" IS 'the row type of the delta of news of AssignDecideInputModeNearest';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_decide_input_mode_nearest_ec6iwlipow" IS 'the row type of the delta of olds of AssignDecideInputModeNearest';
+
+COMMENT ON TYPE "slice"."__row_news_assign_decide_input_mode_within_ihopx5v773" IS 'the row type of the delta of news of AssignDecideInputModeWithin';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_decide_input_mode_within_hr4hmenptp" IS 'the row type of the delta of olds of AssignDecideInputModeWithin';
+
+COMMENT ON TYPE "slice"."__row_news_assign_decide_output_oxbktxq2qm" IS 'the row type of the delta of news of AssignDecideOutput';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_decide_output_h4e5chlp62" IS 'the row type of the delta of olds of AssignDecideOutput';
+
+COMMENT ON TYPE "slice"."__row_news_assign_decide_output_stage_rest_gygfjwjnji" IS 'the row type of the delta of news of AssignDecideOutputStageRest';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_decide_output_stage_rest_tqv3wuzdwv" IS 'the row type of the delta of olds of AssignDecideOutputStageRest';
+
+COMMENT ON TYPE "slice"."__row_news_assign_decide_output_stage_serve_kbo2spylsa" IS 'the row type of the delta of news of AssignDecideOutputStageServe';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_decide_output_stage_serve_rsiololngr" IS 'the row type of the delta of olds of AssignDecideOutputStageServe';
+
+COMMENT ON TYPE "slice"."__row_news_assign_done_ccijo7hiah" IS 'the row type of the delta of news of AssignDone';
+
+COMMENT ON TYPE "slice"."__row_news_assign_embed_input_dwxj6bdcbx" IS 'the row type of the delta of news of AssignEmbedInput';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_embed_input_sxmwptaczg" IS 'the row type of the delta of olds of AssignEmbedInput';
+
+COMMENT ON TYPE "slice"."__row_news_assign_embed_input_mode_nearest_ux5e4fp7sl" IS 'the row type of the delta of news of AssignEmbedInputModeNearest';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_embed_input_mode_nearest_vvtc3n4nsg" IS 'the row type of the delta of olds of AssignEmbedInputModeNearest';
+
+COMMENT ON TYPE "slice"."__row_news_assign_embed_input_mode_within_7gysq5v2nb" IS 'the row type of the delta of news of AssignEmbedInputModeWithin';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_embed_input_mode_within_2ubf7bqv7n" IS 'the row type of the delta of olds of AssignEmbedInputModeWithin';
+
+COMMENT ON TYPE "slice"."__row_news_assign_failed_lpxnyexx73" IS 'the row type of the delta of news of AssignFailed';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_result_y6xdg27a27" IS 'the row type of the delta of olds of AssignResult';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_root_bs3pmmub6n" IS 'the row type of the delta of olds of AssignRoot';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_step_zrm5kjcsbb" IS 'the row type of the delta of olds of AssignStep';
+
+COMMENT ON TYPE "slice"."__row_news_chain_chain_run_input_gaq6aeskef" IS 'the row type of the delta of news of ChainChainRunInput';
+
+COMMENT ON TYPE "slice"."__row_news_chain_done_ipbxekr3jk" IS 'the row type of the delta of news of ChainDone';
+
+COMMENT ON TYPE "slice"."__row_news_chain_failed_4o3dxe5oq4" IS 'the row type of the delta of news of ChainFailed';
+
+COMMENT ON TYPE "slice"."__row_news_chain_ordered_input_ihrfqowbow" IS 'the row type of the delta of news of ChainOrderedInput';
+
+COMMENT ON TYPE "slice"."__row_news_chain_page_input_5vfsi4iuxb" IS 'the row type of the delta of news of ChainPageInput';
+
+COMMENT ON TYPE "slice"."__row_olds_chain_result_zhxr3n3y5v" IS 'the row type of the delta of olds of ChainResult';
+
+COMMENT ON TYPE "slice"."__row_olds_chain_root_hdm2pkmf3e" IS 'the row type of the delta of olds of ChainRoot';
+
+COMMENT ON TYPE "slice"."__row_olds_chain_step_a4auuc4j32" IS 'the row type of the delta of olds of ChainStep';
+
+COMMENT ON TYPE "slice"."__row_news_clock_chime_input_rfzc5ysow2" IS 'the row type of the delta of news of ClockChimeInput';
+
+COMMENT ON TYPE "slice"."__row_news_clock_close_input_f7grz5pq5d" IS 'the row type of the delta of news of ClockCloseInput';
+
+COMMENT ON TYPE "slice"."__row_news_clock_done_f4gq5vnwiu" IS 'the row type of the delta of news of ClockDone';
+
+COMMENT ON TYPE "slice"."__row_news_clock_failed_banad75ik7" IS 'the row type of the delta of news of ClockFailed';
+
+COMMENT ON TYPE "slice"."__row_news_clock_hourly_input_gg3t7s65fx" IS 'the row type of the delta of news of ClockHourlyInput';
+
+COMMENT ON TYPE "slice"."__row_olds_clock_result_xmvy6bruki" IS 'the row type of the delta of olds of ClockResult';
+
+COMMENT ON TYPE "slice"."__row_olds_clock_root_2y5wmdqlqn" IS 'the row type of the delta of olds of ClockRoot';
+
+COMMENT ON TYPE "slice"."__row_news_clock_sitting_input_y2n5djkoat" IS 'the row type of the delta of news of ClockSittingInput';
+
+COMMENT ON TYPE "slice"."__row_olds_clock_step_ro3hcnnd7q" IS 'the row type of the delta of olds of ClockStep';
+
+COMMENT ON TYPE "slice"."__row_news_fan_batch_input_zpegwpv2iw" IS 'the row type of the delta of news of FanBatchInput';
+
+COMMENT ON TYPE "slice"."__row_news_fan_claim_7nx4hyfgum" IS 'the row type of the delta of news of FanClaim';
+
+COMMENT ON TYPE "slice"."__row_olds_fan_claim_ftpuskh4xp" IS 'the row type of the delta of olds of FanClaim';
+
+COMMENT ON TYPE "slice"."__row_news_fan_done_bm2pdkfeew" IS 'the row type of the delta of news of FanDone';
+
+COMMENT ON TYPE "slice"."__row_news_fan_dust_input_eirsjaffsy" IS 'the row type of the delta of news of FanDustInput';
+
+COMMENT ON TYPE "slice"."__row_olds_fan_ended_fjp3muqjpi" IS 'the row type of the delta of olds of FanEnded';
+
+COMMENT ON TYPE "slice"."__row_news_fan_failed_wcom3bevi4" IS 'the row type of the delta of news of FanFailed';
+
+COMMENT ON TYPE "slice"."__row_news_fan_fan_run_input_kgkgksef6k" IS 'the row type of the delta of news of FanFanRunInput';
+
+COMMENT ON TYPE "slice"."__row_olds_fan_held_6pxeeuxzx5" IS 'the row type of the delta of olds of FanHeld';
+
+COMMENT ON TYPE "slice"."__row_news_fan_hold_fiz7xnswto" IS 'the row type of the delta of news of FanHold';
+
+COMMENT ON TYPE "slice"."__row_news_fan_mop_input_vkauufcv3s" IS 'the row type of the delta of news of FanMopInput';
+
+COMMENT ON TYPE "slice"."__row_olds_fan_result_cfwjurochh" IS 'the row type of the delta of olds of FanResult';
+
+COMMENT ON TYPE "slice"."__row_olds_fan_root_o4syajqynp" IS 'the row type of the delta of olds of FanRoot';
+
+COMMENT ON TYPE "slice"."__row_news_fan_square_input_oooc5jrvqp" IS 'the row type of the delta of news of FanSquareInput';
+
+COMMENT ON TYPE "slice"."__row_olds_fan_step_e5cdd74oi6" IS 'the row type of the delta of olds of FanStep';
+
+COMMENT ON TYPE "slice"."__row_news_fan_sweep_input_pbkw5exdue" IS 'the row type of the delta of news of FanSweepInput';
+
+COMMENT ON TYPE "slice"."__row_olds_fan_within_igrko3tlla" IS 'the row type of the delta of olds of FanWithin';
+
+COMMENT ON TYPE "slice"."__row_news_retry_brittle_input_gi4pw323hl" IS 'the row type of the delta of news of RetryBrittleInput';
+
+COMMENT ON TYPE "slice"."__row_news_retry_done_3xnhmplocl" IS 'the row type of the delta of news of RetryDone';
+
+COMMENT ON TYPE "slice"."__row_news_retry_failed_ht6i2dxi6i" IS 'the row type of the delta of news of RetryFailed';
+
+COMMENT ON TYPE "slice"."__row_news_retry_ladders_input_asdxns2se7" IS 'the row type of the delta of news of RetryLaddersInput';
+
+COMMENT ON TYPE "slice"."__row_news_retry_patient_input_ujn3j6okjm" IS 'the row type of the delta of news of RetryPatientInput';
+
+COMMENT ON TYPE "slice"."__row_news_retry_polite_input_6z54vs4crc" IS 'the row type of the delta of news of RetryPoliteInput';
+
+COMMENT ON TYPE "slice"."__row_olds_retry_result_sawexe6rws" IS 'the row type of the delta of olds of RetryResult';
+
+COMMENT ON TYPE "slice"."__row_olds_retry_root_c2bpor5b2w" IS 'the row type of the delta of olds of RetryRoot';
+
+COMMENT ON TYPE "slice"."__row_news_retry_steadfast_input_6gk4r2it4l" IS 'the row type of the delta of news of RetrySteadfastInput';
+
+COMMENT ON TYPE "slice"."__row_olds_retry_step_7e2dops6yg" IS 'the row type of the delta of olds of RetryStep';
+
+COMMENT ON TYPE "slice"."__row_news_retry_throttled_input_oeoagh4tv7" IS 'the row type of the delta of news of RetryThrottledInput';
+
+COMMENT ON TYPE "slice"."__row_news_retry_unhurried_input_eu2xrrfwwr" IS 'the row type of the delta of news of RetryUnhurriedInput';
+
+COMMENT ON TYPE "slice"."__row_news_review_analyze_input_ahzjb4juuh" IS 'the row type of the delta of news of ReviewAnalyzeInput';
+
+COMMENT ON TYPE "slice"."__row_news_review_claim_ku2calk2a4" IS 'the row type of the delta of news of ReviewClaim';
+
+COMMENT ON TYPE "slice"."__row_olds_review_claim_ykpmev3w36" IS 'the row type of the delta of olds of ReviewClaim';
+
+COMMENT ON TYPE "slice"."__row_news_review_done_i5yrctmmrt" IS 'the row type of the delta of news of ReviewDone';
+
+COMMENT ON TYPE "slice"."__row_olds_review_ended_3vbje7ziry" IS 'the row type of the delta of olds of ReviewEnded';
+
+COMMENT ON TYPE "slice"."__row_news_review_failed_o2i2xvx3ox" IS 'the row type of the delta of news of ReviewFailed';
+
+COMMENT ON TYPE "slice"."__row_news_review_gather_input_3xhqgy4d4y" IS 'the row type of the delta of news of ReviewGatherInput';
+
+COMMENT ON TYPE "slice"."__row_olds_review_held_aio2rgomle" IS 'the row type of the delta of olds of ReviewHeld';
+
+COMMENT ON TYPE "slice"."__row_news_review_hold_s3lo4pqs6u" IS 'the row type of the delta of news of ReviewHold';
+
+COMMENT ON TYPE "slice"."__row_news_review_questions_input_xqapos33bv" IS 'the row type of the delta of news of ReviewQuestionsInput';
+
+COMMENT ON TYPE "slice"."__row_olds_review_result_4edqg37cfx" IS 'the row type of the delta of olds of ReviewResult';
+
+COMMENT ON TYPE "slice"."__row_news_review_review_run_input_ystzoy7vhk" IS 'the row type of the delta of news of ReviewReviewRunInput';
+
+COMMENT ON TYPE "slice"."__row_olds_review_root_2cfb5ddcap" IS 'the row type of the delta of olds of ReviewRoot';
+
+COMMENT ON TYPE "slice"."__row_news_review_save_input_g4felfy764" IS 'the row type of the delta of news of ReviewSaveInput';
+
+COMMENT ON TYPE "slice"."__row_olds_review_step_5ly7sn3crk" IS 'the row type of the delta of olds of ReviewStep';
+
+COMMENT ON TYPE "slice"."__row_olds_review_within_7w5djnlfoo" IS 'the row type of the delta of olds of ReviewWithin';
+
+COMMENT ON TYPE "slice"."__row_news_sync_build_input_7gtarvuzgd" IS 'the row type of the delta of news of SyncBuildInput';
+
+COMMENT ON TYPE "slice"."__row_news_sync_copy_input_cmgovnrtbu" IS 'the row type of the delta of news of SyncCopyInput';
+
+COMMENT ON TYPE "slice"."__row_news_sync_done_srwysx2oys" IS 'the row type of the delta of news of SyncDone';
+
+COMMENT ON TYPE "slice"."__row_news_sync_failed_uo7agxnsp7" IS 'the row type of the delta of news of SyncFailed';
+
+COMMENT ON TYPE "slice"."__row_news_sync_gold_input_pvguclsxml" IS 'the row type of the delta of news of SyncGoldInput';
+
+COMMENT ON TYPE "slice"."__row_olds_sync_result_5yd36qoig4" IS 'the row type of the delta of olds of SyncResult';
+
+COMMENT ON TYPE "slice"."__row_olds_sync_root_da6za4qe6v" IS 'the row type of the delta of olds of SyncRoot';
+
+COMMENT ON TYPE "slice"."__row_olds_sync_step_24id3jri34" IS 'the row type of the delta of olds of SyncStep';
+
+COMMENT ON TYPE "slice"."__row_news_sync_sync_run_input_kpz3kpsmil" IS 'the row type of the delta of news of SyncSyncRunInput';
+
+COMMENT ON TYPE "slice"."__row_news_writeback_deliver_input_fl5m4s5p77" IS 'the row type of the delta of news of WritebackDeliverInput';
+
+COMMENT ON TYPE "slice"."__row_news_writeback_done_l54jw73tg7" IS 'the row type of the delta of news of WritebackDone';
+
+COMMENT ON TYPE "slice"."__row_news_writeback_failed_o2vuzrgz2y" IS 'the row type of the delta of news of WritebackFailed';
+
+COMMENT ON TYPE "slice"."__row_olds_writeback_result_ctqblben4u" IS 'the row type of the delta of olds of WritebackResult';
+
+COMMENT ON TYPE "slice"."__row_olds_writeback_root_a437my7lv6" IS 'the row type of the delta of olds of WritebackRoot';
+
+COMMENT ON TYPE "slice"."__row_olds_writeback_step_rvrwqy67gp" IS 'the row type of the delta of olds of WritebackStep';
+
+COMMENT ON TYPE "slice"."__row_news_writeback_writeback_input_wqkezoqusc" IS 'the row type of the delta of news of WritebackWritebackInput';
 
 COMMENT ON CONSTRAINT "__assign_admitted_pk_gj2obtfaxk" ON "slice"."assign_admitted" IS 'primary key of AssignAdmitted';
 
@@ -5571,59 +5901,59 @@ COMMENT ON CONSTRAINT "__writeback_writeback_finish_output_pk_payvcqalt7" ON "sl
 
 COMMENT ON CONSTRAINT "__writeback_writeback_input_pk_ejs235aju2" ON "slice"."writeback_writeback_input" IS 'primary key of WritebackWritebackInput';
 
-COMMENT ON COLUMN "slice"."assign_assignment_input_exclude"."__scope_u6ypqf2r2z" IS 'scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."assign_assignment_input_exclude"."__scope_u6ypqf2r2z" IS 'scope where Logic.ge(ordinal, 1n)';
 
 COMMENT ON COLUMN "slice"."assign_assignment_input_exclude"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
-COMMENT ON COLUMN "slice"."assign_assignment_input_near"."__scope_u6ypqf2r2z" IS 'scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."assign_assignment_input_near"."__scope_u6ypqf2r2z" IS 'scope where Logic.ge(ordinal, 1n)';
 
 COMMENT ON COLUMN "slice"."assign_assignment_input_near"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
-COMMENT ON COLUMN "slice"."assign_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."assign_claim"."__step_ouvkclqzzd" IS 'step where Logic.ge(attempt, 1n)';
 
 COMMENT ON COLUMN "slice"."assign_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
-COMMENT ON COLUMN "slice"."assign_decide_input_exclude"."__step_mjpuijzth4" IS 'step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."assign_decide_input_exclude"."__step_mjpuijzth4" IS 'step where Logic.ge(ordinal, 1n)';
 
 COMMENT ON COLUMN "slice"."assign_decide_input_exclude"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
-COMMENT ON COLUMN "slice"."assign_decide_output_weighed"."__step_mjpuijzth4" IS 'step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."assign_decide_output_weighed"."__step_mjpuijzth4" IS 'step where Logic.ge(ordinal, 1n)';
 
 COMMENT ON COLUMN "slice"."assign_decide_output_weighed"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
-COMMENT ON COLUMN "slice"."assign_embed_input_exclude"."__step_mjpuijzth4" IS 'step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."assign_embed_input_exclude"."__step_mjpuijzth4" IS 'step where Logic.ge(ordinal, 1n)';
 
 COMMENT ON COLUMN "slice"."assign_embed_input_exclude"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
-COMMENT ON COLUMN "slice"."assign_embed_input_near"."__step_mjpuijzth4" IS 'step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."assign_embed_input_near"."__step_mjpuijzth4" IS 'step where Logic.ge(ordinal, 1n)';
 
 COMMENT ON COLUMN "slice"."assign_embed_input_near"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
 COMMENT ON COLUMN "slice"."assign_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
-COMMENT ON COLUMN "slice"."assign_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
+COMMENT ON COLUMN "slice"."assign_root"."__scope_jdl7uajdrr" IS 'scope where Logic.eq(retired, false)';
 
-COMMENT ON COLUMN "slice"."chain_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."chain_claim"."__step_ouvkclqzzd" IS 'step where Logic.ge(attempt, 1n)';
 
 COMMENT ON COLUMN "slice"."chain_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
-COMMENT ON COLUMN "slice"."chain_page_tree_items"."__digest_eiwkcq6olq" IS 'digest where {"kind":"compare","left":{"field":"items","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."chain_page_tree_items"."__digest_eiwkcq6olq" IS 'digest where Logic.ge(items, 1n)';
 
 COMMENT ON COLUMN "slice"."chain_page_tree_items"."__pred_items_3qltx5cx27" IS 'pred(items)';
 
 COMMENT ON COLUMN "slice"."chain_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
-COMMENT ON COLUMN "slice"."chain_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
+COMMENT ON COLUMN "slice"."chain_root"."__scope_jdl7uajdrr" IS 'scope where Logic.eq(retired, false)';
 
-COMMENT ON COLUMN "slice"."clock_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."clock_claim"."__step_ouvkclqzzd" IS 'step where Logic.ge(attempt, 1n)';
 
 COMMENT ON COLUMN "slice"."clock_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice"."clock_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
-COMMENT ON COLUMN "slice"."clock_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
+COMMENT ON COLUMN "slice"."clock_root"."__scope_jdl7uajdrr" IS 'scope where Logic.eq(retired, false)';
 
-COMMENT ON COLUMN "slice"."fan_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."fan_claim"."__step_ouvkclqzzd" IS 'step where Logic.ge(attempt, 1n)';
 
 COMMENT ON COLUMN "slice"."fan_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
@@ -5635,23 +5965,23 @@ COMMENT ON COLUMN "slice"."fan_hold"."__pred_at_xktcobhsti" IS 'pred(at)';
 
 COMMENT ON COLUMN "slice"."fan_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
-COMMENT ON COLUMN "slice"."fan_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
+COMMENT ON COLUMN "slice"."fan_root"."__scope_jdl7uajdrr" IS 'scope where Logic.eq(retired, false)';
 
-COMMENT ON COLUMN "slice"."retry_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."retry_claim"."__step_ouvkclqzzd" IS 'step where Logic.ge(attempt, 1n)';
 
 COMMENT ON COLUMN "slice"."retry_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice"."retry_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
-COMMENT ON COLUMN "slice"."retry_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
+COMMENT ON COLUMN "slice"."retry_root"."__scope_jdl7uajdrr" IS 'scope where Logic.eq(retired, false)';
 
-COMMENT ON COLUMN "slice"."review_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."review_claim"."__step_ouvkclqzzd" IS 'step where Logic.ge(attempt, 1n)';
 
 COMMENT ON COLUMN "slice"."review_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice"."review_claim"."__pred_holds_lq7itfruzz" IS 'pred(holds)';
 
-COMMENT ON COLUMN "slice"."review_gather_input_sizes"."__step_mjpuijzth4" IS 'step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."review_gather_input_sizes"."__step_mjpuijzth4" IS 'step where Logic.ge(ordinal, 1n)';
 
 COMMENT ON COLUMN "slice"."review_gather_input_sizes"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
@@ -5661,13 +5991,13 @@ COMMENT ON COLUMN "slice"."review_hold"."__pred_at_xktcobhsti" IS 'pred(at)';
 
 COMMENT ON COLUMN "slice"."review_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
-COMMENT ON COLUMN "slice"."review_review_run_input_sizes"."__scope_u6ypqf2r2z" IS 'scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."review_review_run_input_sizes"."__scope_u6ypqf2r2z" IS 'scope where Logic.ge(ordinal, 1n)';
 
 COMMENT ON COLUMN "slice"."review_review_run_input_sizes"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
-COMMENT ON COLUMN "slice"."review_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
+COMMENT ON COLUMN "slice"."review_root"."__scope_jdl7uajdrr" IS 'scope where Logic.eq(retired, false)';
 
-COMMENT ON COLUMN "slice"."sync_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."sync_claim"."__step_ouvkclqzzd" IS 'step where Logic.ge(attempt, 1n)';
 
 COMMENT ON COLUMN "slice"."sync_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
@@ -5675,169 +6005,169 @@ COMMENT ON COLUMN "slice"."sync_exclusive"."__pred_turn_qryngij6c4" IS 'pred(tur
 
 COMMENT ON COLUMN "slice"."sync_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
-COMMENT ON COLUMN "slice"."sync_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
+COMMENT ON COLUMN "slice"."sync_root"."__scope_jdl7uajdrr" IS 'scope where Logic.eq(retired, false)';
 
-COMMENT ON COLUMN "slice"."writeback_claim"."__step_ouvkclqzzd" IS 'step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}';
+COMMENT ON COLUMN "slice"."writeback_claim"."__step_ouvkclqzzd" IS 'step where Logic.ge(attempt, 1n)';
 
 COMMENT ON COLUMN "slice"."writeback_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice"."writeback_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
-COMMENT ON COLUMN "slice"."writeback_root"."__scope_jdl7uajdrr" IS 'scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}';
+COMMENT ON COLUMN "slice"."writeback_root"."__scope_jdl7uajdrr" IS 'scope where Logic.eq(retired, false)';
 
-COMMENT ON CONSTRAINT "__assign_root_key_scope_77r36z7vhn" ON "slice"."assign_root" IS 'key AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_root_key_scope_77r36z7vhn" ON "slice"."assign_root" IS 'key AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__chain_root_key_scope_prbadyie6j" ON "slice"."chain_root" IS 'key ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_root_key_scope_prbadyie6j" ON "slice"."chain_root" IS 'key ChainRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__clock_root_key_scope_cpqrcv6qzu" ON "slice"."clock_root" IS 'key ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_root_key_scope_cpqrcv6qzu" ON "slice"."clock_root" IS 'key ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_hold_key_step_root_attempt_pred_at_kgbxki2ddu" ON "slice"."fan_hold" IS 'key FanHold(step, root, attempt, pred(at))';
 
-COMMENT ON CONSTRAINT "__fan_root_key_scope_i3qel4nyj5" ON "slice"."fan_root" IS 'key FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_root_key_scope_i3qel4nyj5" ON "slice"."fan_root" IS 'key FanRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__retry_root_key_scope_yc7em5k35u" ON "slice"."retry_root" IS 'key RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_root_key_scope_yc7em5k35u" ON "slice"."retry_root" IS 'key RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_hold_key_step_root_attempt_pred_at_kuzm5unl2b" ON "slice"."review_hold" IS 'key ReviewHold(step, root, attempt, pred(at))';
 
-COMMENT ON CONSTRAINT "__review_root_key_scope_db6eo7ifjm" ON "slice"."review_root" IS 'key ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_root_key_scope_db6eo7ifjm" ON "slice"."review_root" IS 'key ReviewRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__sync_root_key_scope_lxj4sb3mcx" ON "slice"."sync_root" IS 'key SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_root_key_scope_lxj4sb3mcx" ON "slice"."sync_root" IS 'key SyncRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__writeback_root_key_scope_epb6awnxkj" ON "slice"."writeback_root" IS 'key WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_root_key_scope_epb6awnxkj" ON "slice"."writeback_root" IS 'key WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_hold_check_fan_hold_ordered_fan_claim_holds_bb3ww7vxet" ON "slice"."fan_hold" IS 'check of FanHold for law ordered FanHold(step, root, attempt, at) in fin(FanClaim, holds)';
 
 COMMENT ON CONSTRAINT "__review_hold_check_review_hold_ordered_review_claim_2wbcergshn" ON "slice"."review_hold" IS 'check of ReviewHold for law ordered ReviewHold(step, root, attempt, at) in fin(ReviewClaim, holds)';
 
-COMMENT ON CONSTRAINT "__assign_admitted_fk_root_a4ab52rbpf" ON "slice"."assign_admitted" IS 'foreign key AssignAdmitted(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_admitted_fk_root_a4ab52rbpf" ON "slice"."assign_admitted" IS 'foreign key AssignAdmitted(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_admitted_fk_scope_root_axpol5zgcd" ON "slice"."assign_admitted" IS 'foreign key AssignAdmitted(scope, root) to AssignScope(scope, root)';
 
 COMMENT ON CONSTRAINT "__assign_asked_fk_from_root_jbwoju3nkb" ON "slice"."assign_asked" IS 'foreign key AssignAsked(from, root) to AssignEmbedOutput(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_asked_fk_root_zheeongpsu" ON "slice"."assign_asked" IS 'foreign key AssignAsked(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_asked_fk_root_zheeongpsu" ON "slice"."assign_asked" IS 'foreign key AssignAsked(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_asked_fk_to_root_kg4yqbs5ps" ON "slice"."assign_asked" IS 'foreign key AssignAsked(to, root) to AssignDecideInput(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_finish_output_fk_root_cxywb372kl" ON "slice"."assign_assignment_finish_output" IS 'foreign key AssignAssignmentFinishOutput(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_assignment_finish_output_fk_root_cxywb372kl" ON "slice"."assign_assignment_finish_output" IS 'foreign key AssignAssignmentFinishOutput(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_assignment_finish_output_fk_step_root_btb6cwfo73" ON "slice"."assign_assignment_finish_output" IS 'foreign key AssignAssignmentFinishOutput(step, root) to AssignDone(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_fk_root_7vcxtkof42" ON "slice"."assign_assignment_input" IS 'foreign key AssignAssignmentInput(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_assignment_input_fk_root_7vcxtkof42" ON "slice"."assign_assignment_input" IS 'foreign key AssignAssignmentInput(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_root_kuvjl3s6t5" ON "slice"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_root_kuvjl3s6t5" ON "slice"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_scope_root_z5moccsgvx" ON "slice"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(scope, root) to AssignAssignmentInput(scope, root)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_scope_pred_yyclsqsijg" ON "slice"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to AssignAssignmentInputExclude(scope, ordinal, root)';
+COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_scope_pred_yyclsqsijg" ON "slice"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(scope where Logic.ge(ordinal, 1n), pred(ordinal), root) to AssignAssignmentInputExclude(scope, ordinal, root)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_mode_nearest_fk_root_t23ef5vjhv" ON "slice"."assign_assignment_input_mode_nearest" IS 'foreign key AssignAssignmentInputModeNearest(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_assignment_input_mode_nearest_fk_root_t23ef5vjhv" ON "slice"."assign_assignment_input_mode_nearest" IS 'foreign key AssignAssignmentInputModeNearest(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_mode_within_fk_root_jimtsl3pcm" ON "slice"."assign_assignment_input_mode_within" IS 'foreign key AssignAssignmentInputModeWithin(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_assignment_input_mode_within_fk_root_jimtsl3pcm" ON "slice"."assign_assignment_input_mode_within" IS 'foreign key AssignAssignmentInputModeWithin(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_root_6cdqioe6mu" ON "slice"."assign_assignment_input_near" IS 'foreign key AssignAssignmentInputNear(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_root_6cdqioe6mu" ON "slice"."assign_assignment_input_near" IS 'foreign key AssignAssignmentInputNear(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_scope_root_lyuzgkqxtu" ON "slice"."assign_assignment_input_near" IS 'foreign key AssignAssignmentInputNear(scope, root) to AssignAssignmentInput(scope, root)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_scope_pred_ordinal_m5mnmsqnzk" ON "slice"."assign_assignment_input_near" IS 'foreign key AssignAssignmentInputNear(scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to AssignAssignmentInputNear(scope, ordinal, root)';
+COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_scope_pred_ordinal_m5mnmsqnzk" ON "slice"."assign_assignment_input_near" IS 'foreign key AssignAssignmentInputNear(scope where Logic.ge(ordinal, 1n), pred(ordinal), root) to AssignAssignmentInputNear(scope, ordinal, root)';
 
-COMMENT ON CONSTRAINT "__assign_claim_fk_root_tccogfd3gj" ON "slice"."assign_claim" IS 'foreign key AssignClaim(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_claim_fk_root_tccogfd3gj" ON "slice"."assign_claim" IS 'foreign key AssignClaim(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_claim_fk_step_root_i4wvemd6lc" ON "slice"."assign_claim" IS 'foreign key AssignClaim(step, root) to AssignStep(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_claim_fk_step_pred_attempt_root_qq7m4vgq5c" ON "slice"."assign_claim" IS 'foreign key AssignClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to AssignEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__assign_claim_fk_step_pred_attempt_root_qq7m4vgq5c" ON "slice"."assign_claim" IS 'foreign key AssignClaim(step where Logic.ge(attempt, 1n), pred(attempt), root) to AssignEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__assign_decide_input_fk_root_2ru7zbrfcg" ON "slice"."assign_decide_input" IS 'foreign key AssignDecideInput(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_decide_input_fk_root_2ru7zbrfcg" ON "slice"."assign_decide_input" IS 'foreign key AssignDecideInput(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_root_ms4jvh65c5" ON "slice"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_root_ms4jvh65c5" ON "slice"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_step_root_in6yyrl43w" ON "slice"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(step, root) to AssignDecideInput(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_step_pred_ordinal_ud7okz5qbt" ON "slice"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to AssignDecideInputExclude(step, ordinal, root)';
+COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_step_pred_ordinal_ud7okz5qbt" ON "slice"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(step where Logic.ge(ordinal, 1n), pred(ordinal), root) to AssignDecideInputExclude(step, ordinal, root)';
 
-COMMENT ON CONSTRAINT "__assign_decide_input_mode_nearest_fk_root_vgxth6ulqd" ON "slice"."assign_decide_input_mode_nearest" IS 'foreign key AssignDecideInputModeNearest(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_decide_input_mode_nearest_fk_root_vgxth6ulqd" ON "slice"."assign_decide_input_mode_nearest" IS 'foreign key AssignDecideInputModeNearest(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__assign_decide_input_mode_within_fk_root_5fhvbm7o2j" ON "slice"."assign_decide_input_mode_within" IS 'foreign key AssignDecideInputModeWithin(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_decide_input_mode_within_fk_root_5fhvbm7o2j" ON "slice"."assign_decide_input_mode_within" IS 'foreign key AssignDecideInputModeWithin(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_decide_nearest_read_fk_digest_root_nabgfbbfiv" ON "slice"."assign_decide_nearest_read" IS 'foreign key AssignDecideNearestRead(digest, root) to AssignDecideNearestRow(digest, root)';
 
-COMMENT ON CONSTRAINT "__assign_decide_nearest_read_fk_root_bofoevlhaq" ON "slice"."assign_decide_nearest_read" IS 'foreign key AssignDecideNearestRead(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_decide_nearest_read_fk_root_bofoevlhaq" ON "slice"."assign_decide_nearest_read" IS 'foreign key AssignDecideNearestRead(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_decide_nearest_read_fk_step_root_bdcjrgm56g" ON "slice"."assign_decide_nearest_read" IS 'foreign key AssignDecideNearestRead(step, root) to AssignResult(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_decide_nearest_row_fk_root_uvtvvcuvan" ON "slice"."assign_decide_nearest_row" IS 'foreign key AssignDecideNearestRow(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_decide_nearest_row_fk_root_uvtvvcuvan" ON "slice"."assign_decide_nearest_row" IS 'foreign key AssignDecideNearestRow(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__assign_decide_output_fk_root_keez6pmczm" ON "slice"."assign_decide_output" IS 'foreign key AssignDecideOutput(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_decide_output_fk_root_keez6pmczm" ON "slice"."assign_decide_output" IS 'foreign key AssignDecideOutput(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_decide_output_fk_step_root_oxey3s55bw" ON "slice"."assign_decide_output" IS 'foreign key AssignDecideOutput(step, root) to AssignDecideInput(step, root)';
 
 COMMENT ON CONSTRAINT "__assign_decide_output_fk_step_root_b4qrx4ukam" ON "slice"."assign_decide_output" IS 'foreign key AssignDecideOutput(step, root) to AssignDone(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_decide_output_stage_rest_fk_root_emwjzdjgvs" ON "slice"."assign_decide_output_stage_rest" IS 'foreign key AssignDecideOutputStageRest(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_decide_output_stage_rest_fk_root_emwjzdjgvs" ON "slice"."assign_decide_output_stage_rest" IS 'foreign key AssignDecideOutputStageRest(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__assign_decide_output_stage_serve_fk_root_nv2zgv5hrt" ON "slice"."assign_decide_output_stage_serve" IS 'foreign key AssignDecideOutputStageServe(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_decide_output_stage_serve_fk_root_nv2zgv5hrt" ON "slice"."assign_decide_output_stage_serve" IS 'foreign key AssignDecideOutputStageServe(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_root_tymno4wjr4" ON "slice"."assign_decide_output_weighed" IS 'foreign key AssignDecideOutputWeighed(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_root_tymno4wjr4" ON "slice"."assign_decide_output_weighed" IS 'foreign key AssignDecideOutputWeighed(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_step_root_nkudthcgg2" ON "slice"."assign_decide_output_weighed" IS 'foreign key AssignDecideOutputWeighed(step, root) to AssignDecideOutput(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_step_pred_ordinal_6nj2mzauma" ON "slice"."assign_decide_output_weighed" IS 'foreign key AssignDecideOutputWeighed(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to AssignDecideOutputWeighed(step, ordinal, root)';
+COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_step_pred_ordinal_6nj2mzauma" ON "slice"."assign_decide_output_weighed" IS 'foreign key AssignDecideOutputWeighed(step where Logic.ge(ordinal, 1n), pred(ordinal), root) to AssignDecideOutputWeighed(step, ordinal, root)';
 
 COMMENT ON CONSTRAINT "__assign_decide_seen_read_fk_digest_root_wdcopjmkbl" ON "slice"."assign_decide_seen_read" IS 'foreign key AssignDecideSeenRead(digest, root) to AssignDecideSeenRow(digest, root)';
 
-COMMENT ON CONSTRAINT "__assign_decide_seen_read_fk_root_padlqqdvnt" ON "slice"."assign_decide_seen_read" IS 'foreign key AssignDecideSeenRead(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_decide_seen_read_fk_root_padlqqdvnt" ON "slice"."assign_decide_seen_read" IS 'foreign key AssignDecideSeenRead(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_decide_seen_read_fk_step_root_lfxhtzprjs" ON "slice"."assign_decide_seen_read" IS 'foreign key AssignDecideSeenRead(step, root) to AssignResult(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_decide_seen_row_fk_root_3mnfet3qme" ON "slice"."assign_decide_seen_row" IS 'foreign key AssignDecideSeenRow(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_decide_seen_row_fk_root_3mnfet3qme" ON "slice"."assign_decide_seen_row" IS 'foreign key AssignDecideSeenRow(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__assign_done_fk_root_bm6oxygwbu" ON "slice"."assign_done" IS 'foreign key AssignDone(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_done_fk_root_bm6oxygwbu" ON "slice"."assign_done" IS 'foreign key AssignDone(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_fk_root_cwfcfjex6q" ON "slice"."assign_embed_input" IS 'foreign key AssignEmbedInput(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_embed_input_fk_root_cwfcfjex6q" ON "slice"."assign_embed_input" IS 'foreign key AssignEmbedInput(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_root_ukjqxbt7ap" ON "slice"."assign_embed_input_exclude" IS 'foreign key AssignEmbedInputExclude(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_root_ukjqxbt7ap" ON "slice"."assign_embed_input_exclude" IS 'foreign key AssignEmbedInputExclude(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_step_root_wl7z42ozbz" ON "slice"."assign_embed_input_exclude" IS 'foreign key AssignEmbedInputExclude(step, root) to AssignEmbedInput(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_step_pred_ordinal_uyhiasutyq" ON "slice"."assign_embed_input_exclude" IS 'foreign key AssignEmbedInputExclude(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to AssignEmbedInputExclude(step, ordinal, root)';
+COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_step_pred_ordinal_uyhiasutyq" ON "slice"."assign_embed_input_exclude" IS 'foreign key AssignEmbedInputExclude(step where Logic.ge(ordinal, 1n), pred(ordinal), root) to AssignEmbedInputExclude(step, ordinal, root)';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_mode_nearest_fk_root_4znytbmmeu" ON "slice"."assign_embed_input_mode_nearest" IS 'foreign key AssignEmbedInputModeNearest(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_embed_input_mode_nearest_fk_root_4znytbmmeu" ON "slice"."assign_embed_input_mode_nearest" IS 'foreign key AssignEmbedInputModeNearest(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_mode_within_fk_root_sntsbzyy4j" ON "slice"."assign_embed_input_mode_within" IS 'foreign key AssignEmbedInputModeWithin(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_embed_input_mode_within_fk_root_sntsbzyy4j" ON "slice"."assign_embed_input_mode_within" IS 'foreign key AssignEmbedInputModeWithin(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_root_tre2sdwjfz" ON "slice"."assign_embed_input_near" IS 'foreign key AssignEmbedInputNear(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_root_tre2sdwjfz" ON "slice"."assign_embed_input_near" IS 'foreign key AssignEmbedInputNear(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_step_root_rjswhmogx2" ON "slice"."assign_embed_input_near" IS 'foreign key AssignEmbedInputNear(step, root) to AssignEmbedInput(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_step_pred_ordinal_root_4z756q6ieo" ON "slice"."assign_embed_input_near" IS 'foreign key AssignEmbedInputNear(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to AssignEmbedInputNear(step, ordinal, root)';
+COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_step_pred_ordinal_root_4z756q6ieo" ON "slice"."assign_embed_input_near" IS 'foreign key AssignEmbedInputNear(step where Logic.ge(ordinal, 1n), pred(ordinal), root) to AssignEmbedInputNear(step, ordinal, root)';
 
-COMMENT ON CONSTRAINT "__assign_embed_output_fk_root_2s3kxqf4fq" ON "slice"."assign_embed_output" IS 'foreign key AssignEmbedOutput(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_embed_output_fk_root_2s3kxqf4fq" ON "slice"."assign_embed_output" IS 'foreign key AssignEmbedOutput(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_embed_output_fk_step_root_amg3l6sdib" ON "slice"."assign_embed_output" IS 'foreign key AssignEmbedOutput(step, root) to AssignDone(step, root)';
 
 COMMENT ON CONSTRAINT "__assign_embed_output_fk_step_root_yoz2l6kzsz" ON "slice"."assign_embed_output" IS 'foreign key AssignEmbedOutput(step, root) to AssignEmbedInput(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_ended_fk_root_snn64so4y5" ON "slice"."assign_ended" IS 'foreign key AssignEnded(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_ended_fk_root_snn64so4y5" ON "slice"."assign_ended" IS 'foreign key AssignEnded(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_ended_fk_step_attempt_root_6glu7zitw6" ON "slice"."assign_ended" IS 'foreign key AssignEnded(step, attempt, root) to AssignClaim(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__assign_exhausted_fk_root_vljhubi73b" ON "slice"."assign_exhausted" IS 'foreign key AssignExhausted(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_exhausted_fk_root_vljhubi73b" ON "slice"."assign_exhausted" IS 'foreign key AssignExhausted(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_exhausted_fk_step_root_juabgscovy" ON "slice"."assign_exhausted" IS 'foreign key AssignExhausted(step, root) to AssignFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_failed_fk_root_oyplqvhznf" ON "slice"."assign_failed" IS 'foreign key AssignFailed(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_failed_fk_root_oyplqvhznf" ON "slice"."assign_failed" IS 'foreign key AssignFailed(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__assign_fenced_fk_root_53vovdvcd2" ON "slice"."assign_fenced" IS 'foreign key AssignFenced(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_fenced_fk_root_53vovdvcd2" ON "slice"."assign_fenced" IS 'foreign key AssignFenced(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_fenced_fk_step_attempt_root_ibfrwtujam" ON "slice"."assign_fenced" IS 'foreign key AssignFenced(step, attempt, root) to AssignEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__assign_finish_fk_root_6bbfqqziln" ON "slice"."assign_finish" IS 'foreign key AssignFinish(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_finish_fk_root_6bbfqqziln" ON "slice"."assign_finish" IS 'foreign key AssignFinish(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_finish_fk_scope_root_fasrssafod" ON "slice"."assign_finish" IS 'foreign key AssignFinish(scope, root) to AssignAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__assign_finish_fk_step_root_uqhlnaqgqc" ON "slice"."assign_finish" IS 'foreign key AssignFinish(step, root) to AssignStep(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_held_fk_root_ugjqx6ie3f" ON "slice"."assign_held" IS 'foreign key AssignHeld(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_held_fk_root_ugjqx6ie3f" ON "slice"."assign_held" IS 'foreign key AssignHeld(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_held_fk_step_attempt_root_5ffh4ch5vo" ON "slice"."assign_held" IS 'foreign key AssignHeld(step, attempt, root) to AssignClaim(step, attempt, root)';
 
@@ -5845,79 +6175,79 @@ COMMENT ON CONSTRAINT "__assign_held_fk_step_root_yvbigkwvhi" ON "slice"."assign
 
 COMMENT ON CONSTRAINT "__assign_paused_fk_target_pred_turn_xgirbknudp" ON "slice"."assign_paused" IS 'foreign key AssignPaused(target, pred(turn)) to AssignResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__assign_refusal_fk_root_ikkkxnypbg" ON "slice"."assign_refusal" IS 'foreign key AssignRefusal(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_refusal_fk_root_ikkkxnypbg" ON "slice"."assign_refusal" IS 'foreign key AssignRefusal(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_refusal_fk_step_root_4pwostl6w4" ON "slice"."assign_refusal" IS 'foreign key AssignRefusal(step, root) to AssignFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_result_fk_root_mbig2yym5s" ON "slice"."assign_result" IS 'foreign key AssignResult(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_result_fk_root_mbig2yym5s" ON "slice"."assign_result" IS 'foreign key AssignResult(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_result_fk_step_root_ie57r22uco" ON "slice"."assign_result" IS 'foreign key AssignResult(step, root) to AssignStep(step, root)';
 
 COMMENT ON CONSTRAINT "__assign_resumed_fk_target_turn_3xan3ax2be" ON "slice"."assign_resumed" IS 'foreign key AssignResumed(target, turn) to AssignPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__assign_retry_fk_root_g7cxz6uouh" ON "slice"."assign_retry" IS 'foreign key AssignRetry(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_retry_fk_root_g7cxz6uouh" ON "slice"."assign_retry" IS 'foreign key AssignRetry(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_retry_fk_step_attempt_root_gsye2j667t" ON "slice"."assign_retry" IS 'foreign key AssignRetry(step, attempt, root) to AssignEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__assign_scope_fk_root_aqbd5fs63t" ON "slice"."assign_scope" IS 'foreign key AssignScope(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_scope_fk_root_aqbd5fs63t" ON "slice"."assign_scope" IS 'foreign key AssignScope(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_skipped_fk_by_yi4ixsfumz" ON "slice"."assign_skipped" IS 'foreign key AssignSkipped(by) to AssignRoot(scope)';
 
-COMMENT ON CONSTRAINT "__assign_skipped_fk_root_uyud3yb6zy" ON "slice"."assign_skipped" IS 'foreign key AssignSkipped(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_skipped_fk_root_uyud3yb6zy" ON "slice"."assign_skipped" IS 'foreign key AssignSkipped(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_skipped_fk_scope_6ks53lak4r" ON "slice"."assign_skipped" IS 'foreign key AssignSkipped(scope) to AssignRoot(scope)';
 
-COMMENT ON CONSTRAINT "__assign_start_step_fk_root_me4zj64243" ON "slice"."assign_start_step" IS 'foreign key AssignStartStep(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_start_step_fk_root_me4zj64243" ON "slice"."assign_start_step" IS 'foreign key AssignStartStep(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_start_step_fk_scope_root_grairzt42v" ON "slice"."assign_start_step" IS 'foreign key AssignStartStep(scope, root) to AssignAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__assign_start_step_fk_step_root_2bw3dd6v6d" ON "slice"."assign_start_step" IS 'foreign key AssignStartStep(step, root) to AssignStep(step, root)';
 
-COMMENT ON CONSTRAINT "__assign_step_fk_root_qky3m5h2ys" ON "slice"."assign_step" IS 'foreign key AssignStep(root) to AssignRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__assign_step_fk_root_qky3m5h2ys" ON "slice"."assign_step" IS 'foreign key AssignStep(root) to AssignRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__assign_step_fk_scope_root_rr5jplc2ua" ON "slice"."assign_step" IS 'foreign key AssignStep(scope, root) to AssignAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__audit_fk_step_root_eb7inhsrbm" ON "slice"."audit" IS 'foreign key Audit(step, root) to ChainResult(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_admitted_fk_root_abvywhprzd" ON "slice"."chain_admitted" IS 'foreign key ChainAdmitted(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_admitted_fk_root_abvywhprzd" ON "slice"."chain_admitted" IS 'foreign key ChainAdmitted(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_admitted_fk_scope_root_ee5yuzxero" ON "slice"."chain_admitted" IS 'foreign key ChainAdmitted(scope, root) to ChainScope(scope, root)';
 
-COMMENT ON CONSTRAINT "__chain_chain_run_finish_output_fk_root_4rmekbji4d" ON "slice"."chain_chain_run_finish_output" IS 'foreign key ChainChainRunFinishOutput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_chain_run_finish_output_fk_root_4rmekbji4d" ON "slice"."chain_chain_run_finish_output" IS 'foreign key ChainChainRunFinishOutput(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_chain_run_finish_output_fk_step_root_xr4ypwejog" ON "slice"."chain_chain_run_finish_output" IS 'foreign key ChainChainRunFinishOutput(step, root) to ChainDone(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_chain_run_input_fk_root_eyhkir2ten" ON "slice"."chain_chain_run_input" IS 'foreign key ChainChainRunInput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_chain_run_input_fk_root_eyhkir2ten" ON "slice"."chain_chain_run_input" IS 'foreign key ChainChainRunInput(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__chain_claim_fk_root_e4z56epu62" ON "slice"."chain_claim" IS 'foreign key ChainClaim(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_claim_fk_root_e4z56epu62" ON "slice"."chain_claim" IS 'foreign key ChainClaim(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_claim_fk_step_root_dz35k5kajb" ON "slice"."chain_claim" IS 'foreign key ChainClaim(step, root) to ChainStep(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_claim_fk_step_pred_attempt_root_mekmccmxkt" ON "slice"."chain_claim" IS 'foreign key ChainClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to ChainEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__chain_claim_fk_step_pred_attempt_root_mekmccmxkt" ON "slice"."chain_claim" IS 'foreign key ChainClaim(step where Logic.ge(attempt, 1n), pred(attempt), root) to ChainEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__chain_done_fk_root_p5unbx53ay" ON "slice"."chain_done" IS 'foreign key ChainDone(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_done_fk_root_p5unbx53ay" ON "slice"."chain_done" IS 'foreign key ChainDone(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__chain_ended_fk_root_mzyjkgh7kn" ON "slice"."chain_ended" IS 'foreign key ChainEnded(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_ended_fk_root_mzyjkgh7kn" ON "slice"."chain_ended" IS 'foreign key ChainEnded(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_ended_fk_step_attempt_root_hqs5hboik5" ON "slice"."chain_ended" IS 'foreign key ChainEnded(step, attempt, root) to ChainClaim(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__chain_exhausted_fk_root_az7it7tady" ON "slice"."chain_exhausted" IS 'foreign key ChainExhausted(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_exhausted_fk_root_az7it7tady" ON "slice"."chain_exhausted" IS 'foreign key ChainExhausted(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_exhausted_fk_step_root_x7otp3oe7t" ON "slice"."chain_exhausted" IS 'foreign key ChainExhausted(step, root) to ChainFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_failed_fk_root_ku7hd36hr4" ON "slice"."chain_failed" IS 'foreign key ChainFailed(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_failed_fk_root_ku7hd36hr4" ON "slice"."chain_failed" IS 'foreign key ChainFailed(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__chain_fenced_fk_root_dpd2zsy45p" ON "slice"."chain_fenced" IS 'foreign key ChainFenced(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_fenced_fk_root_dpd2zsy45p" ON "slice"."chain_fenced" IS 'foreign key ChainFenced(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_fenced_fk_step_attempt_root_wtvf2kpo3y" ON "slice"."chain_fenced" IS 'foreign key ChainFenced(step, attempt, root) to ChainEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__chain_finish_fk_root_b4s3b6gb4a" ON "slice"."chain_finish" IS 'foreign key ChainFinish(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_finish_fk_root_b4s3b6gb4a" ON "slice"."chain_finish" IS 'foreign key ChainFinish(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_finish_fk_scope_root_bm7lzlvp35" ON "slice"."chain_finish" IS 'foreign key ChainFinish(scope, root) to ChainAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__chain_finish_fk_step_root_7gwsgngr6z" ON "slice"."chain_finish" IS 'foreign key ChainFinish(step, root) to ChainStep(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_held_fk_root_7gjoucbs6t" ON "slice"."chain_held" IS 'foreign key ChainHeld(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_held_fk_root_7gjoucbs6t" ON "slice"."chain_held" IS 'foreign key ChainHeld(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_held_fk_step_attempt_root_aqmobtk3xc" ON "slice"."chain_held" IS 'foreign key ChainHeld(step, attempt, root) to ChainClaim(step, attempt, root)';
 
@@ -5925,269 +6255,269 @@ COMMENT ON CONSTRAINT "__chain_held_fk_step_root_mrcpyhmlko" ON "slice"."chain_h
 
 COMMENT ON CONSTRAINT "__chain_next_fk_from_root_fp74n4ao6b" ON "slice"."chain_next" IS 'foreign key ChainNext(from, root) to ChainPageOutput(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_next_fk_root_ymhq5qkp7g" ON "slice"."chain_next" IS 'foreign key ChainNext(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_next_fk_root_ymhq5qkp7g" ON "slice"."chain_next" IS 'foreign key ChainNext(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_next_fk_to_root_juwf5tsgbs" ON "slice"."chain_next" IS 'foreign key ChainNext(to, root) to ChainPageInput(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_ordered_finish_output_fk_root_dbbcetmlpl" ON "slice"."chain_ordered_finish_output" IS 'foreign key ChainOrderedFinishOutput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_ordered_finish_output_fk_root_dbbcetmlpl" ON "slice"."chain_ordered_finish_output" IS 'foreign key ChainOrderedFinishOutput(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_ordered_finish_output_fk_step_root_jvdqnoziiv" ON "slice"."chain_ordered_finish_output" IS 'foreign key ChainOrderedFinishOutput(step, root) to ChainDone(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_ordered_input_fk_root_yo2fvi6v6v" ON "slice"."chain_ordered_input" IS 'foreign key ChainOrderedInput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_ordered_input_fk_root_yo2fvi6v6v" ON "slice"."chain_ordered_input" IS 'foreign key ChainOrderedInput(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_page_earlier_read_fk_digest_root_rdy323u3bs" ON "slice"."chain_page_earlier_read" IS 'foreign key ChainPageEarlierRead(digest, root) to ChainPageEarlierRow(digest, root)';
 
-COMMENT ON CONSTRAINT "__chain_page_earlier_read_fk_root_dfn3birdd5" ON "slice"."chain_page_earlier_read" IS 'foreign key ChainPageEarlierRead(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_page_earlier_read_fk_root_dfn3birdd5" ON "slice"."chain_page_earlier_read" IS 'foreign key ChainPageEarlierRead(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_page_earlier_read_fk_step_root_qfjrh5spdl" ON "slice"."chain_page_earlier_read" IS 'foreign key ChainPageEarlierRead(step, root) to ChainResult(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_page_earlier_row_fk_root_zlddkw7rkf" ON "slice"."chain_page_earlier_row" IS 'foreign key ChainPageEarlierRow(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_page_earlier_row_fk_root_zlddkw7rkf" ON "slice"."chain_page_earlier_row" IS 'foreign key ChainPageEarlierRow(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__chain_page_input_fk_root_s74r6jkeai" ON "slice"."chain_page_input" IS 'foreign key ChainPageInput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_page_input_fk_root_s74r6jkeai" ON "slice"."chain_page_input" IS 'foreign key ChainPageInput(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__chain_page_input_after_fk_root_uksq5ttkd4" ON "slice"."chain_page_input_after" IS 'foreign key ChainPageInputAfter(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_page_input_after_fk_root_uksq5ttkd4" ON "slice"."chain_page_input_after" IS 'foreign key ChainPageInputAfter(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_page_input_after_fk_step_root_pqhheaahab" ON "slice"."chain_page_input_after" IS 'foreign key ChainPageInputAfter(step, root) to ChainPageInput(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_page_output_fk_root_ez5wgbipj5" ON "slice"."chain_page_output" IS 'foreign key ChainPageOutput(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_page_output_fk_root_ez5wgbipj5" ON "slice"."chain_page_output" IS 'foreign key ChainPageOutput(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_page_output_fk_step_root_nesuhzkml5" ON "slice"."chain_page_output" IS 'foreign key ChainPageOutput(step, root) to ChainDone(step, root)';
 
 COMMENT ON CONSTRAINT "__chain_page_output_fk_step_root_gyxfrq7ubp" ON "slice"."chain_page_output" IS 'foreign key ChainPageOutput(step, root) to ChainPageInput(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_page_output_next_fk_root_x6esxudkux" ON "slice"."chain_page_output_next" IS 'foreign key ChainPageOutputNext(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_page_output_next_fk_root_x6esxudkux" ON "slice"."chain_page_output_next" IS 'foreign key ChainPageOutputNext(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_page_output_next_fk_step_root_srapg45mao" ON "slice"."chain_page_output_next" IS 'foreign key ChainPageOutputNext(step, root) to ChainPageOutput(step, root)';
 
 COMMENT ON CONSTRAINT "__chain_page_tree_first_fk_digest_items_root_7aqgs54zox" ON "slice"."chain_page_tree_first" IS 'foreign key ChainPageTreeFirst(digest, items, root) to ChainPageTreeItems(digest, items, root)';
 
-COMMENT ON CONSTRAINT "__chain_page_tree_first_fk_root_gjfr2xpivs" ON "slice"."chain_page_tree_first" IS 'foreign key ChainPageTreeFirst(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_page_tree_first_fk_root_gjfr2xpivs" ON "slice"."chain_page_tree_first" IS 'foreign key ChainPageTreeFirst(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_page_tree_items_fk_digest_root_m6wzp3qjum" ON "slice"."chain_page_tree_items" IS 'foreign key ChainPageTreeItems(digest, root) to ChainPageTreeRow(digest, root)';
 
-COMMENT ON CONSTRAINT "__chain_page_tree_items_fk_root_dtaaizvian" ON "slice"."chain_page_tree_items" IS 'foreign key ChainPageTreeItems(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_page_tree_items_fk_root_dtaaizvian" ON "slice"."chain_page_tree_items" IS 'foreign key ChainPageTreeItems(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__chain_page_tree_items_fk_digest_pred_items_root_cygr4alwsu" ON "slice"."chain_page_tree_items" IS 'foreign key ChainPageTreeItems(digest where {"kind":"compare","left":{"field":"items","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(items), root) to ChainPageTreeItems(digest, items, root)';
+COMMENT ON CONSTRAINT "__chain_page_tree_items_fk_digest_pred_items_root_cygr4alwsu" ON "slice"."chain_page_tree_items" IS 'foreign key ChainPageTreeItems(digest where Logic.ge(items, 1n), pred(items), root) to ChainPageTreeItems(digest, items, root)';
 
 COMMENT ON CONSTRAINT "__chain_page_tree_read_fk_digest_root_resd5qnln7" ON "slice"."chain_page_tree_read" IS 'foreign key ChainPageTreeRead(digest, root) to ChainPageTreeRow(digest, root)';
 
-COMMENT ON CONSTRAINT "__chain_page_tree_read_fk_root_jcl7nqjdau" ON "slice"."chain_page_tree_read" IS 'foreign key ChainPageTreeRead(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_page_tree_read_fk_root_jcl7nqjdau" ON "slice"."chain_page_tree_read" IS 'foreign key ChainPageTreeRead(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_page_tree_read_fk_step_root_xbggf6dgaw" ON "slice"."chain_page_tree_read" IS 'foreign key ChainPageTreeRead(step, root) to ChainResult(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_page_tree_row_fk_root_bo7lxrqlak" ON "slice"."chain_page_tree_row" IS 'foreign key ChainPageTreeRow(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_page_tree_row_fk_root_bo7lxrqlak" ON "slice"."chain_page_tree_row" IS 'foreign key ChainPageTreeRow(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_page_weights_read_fk_digest_root_uhg6hn6q56" ON "slice"."chain_page_weights_read" IS 'foreign key ChainPageWeightsRead(digest, root) to ChainPageWeightsRow(digest, root)';
 
-COMMENT ON CONSTRAINT "__chain_page_weights_read_fk_root_jeksctdxbs" ON "slice"."chain_page_weights_read" IS 'foreign key ChainPageWeightsRead(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_page_weights_read_fk_root_jeksctdxbs" ON "slice"."chain_page_weights_read" IS 'foreign key ChainPageWeightsRead(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_page_weights_read_fk_step_root_cs5oeb2hng" ON "slice"."chain_page_weights_read" IS 'foreign key ChainPageWeightsRead(step, root) to ChainResult(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_page_weights_row_fk_root_jfbrlyb33o" ON "slice"."chain_page_weights_row" IS 'foreign key ChainPageWeightsRow(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_page_weights_row_fk_root_jfbrlyb33o" ON "slice"."chain_page_weights_row" IS 'foreign key ChainPageWeightsRow(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_paused_fk_target_pred_turn_mokmv27wuy" ON "slice"."chain_paused" IS 'foreign key ChainPaused(target, pred(turn)) to ChainResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__chain_refusal_fk_root_np3fiq6hlf" ON "slice"."chain_refusal" IS 'foreign key ChainRefusal(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_refusal_fk_root_np3fiq6hlf" ON "slice"."chain_refusal" IS 'foreign key ChainRefusal(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_refusal_fk_step_root_2xohwjf6ov" ON "slice"."chain_refusal" IS 'foreign key ChainRefusal(step, root) to ChainFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_result_fk_root_cqy7fgz6gd" ON "slice"."chain_result" IS 'foreign key ChainResult(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_result_fk_root_cqy7fgz6gd" ON "slice"."chain_result" IS 'foreign key ChainResult(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_result_fk_step_root_rytllwqxot" ON "slice"."chain_result" IS 'foreign key ChainResult(step, root) to ChainStep(step, root)';
 
 COMMENT ON CONSTRAINT "__chain_resumed_fk_target_turn_qdtxs3euay" ON "slice"."chain_resumed" IS 'foreign key ChainResumed(target, turn) to ChainPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__chain_retry_fk_root_mrtnq2ndso" ON "slice"."chain_retry" IS 'foreign key ChainRetry(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_retry_fk_root_mrtnq2ndso" ON "slice"."chain_retry" IS 'foreign key ChainRetry(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_retry_fk_step_attempt_root_mwa5szmjq5" ON "slice"."chain_retry" IS 'foreign key ChainRetry(step, attempt, root) to ChainEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__chain_scope_fk_root_5dnilqnmua" ON "slice"."chain_scope" IS 'foreign key ChainScope(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_scope_fk_root_5dnilqnmua" ON "slice"."chain_scope" IS 'foreign key ChainScope(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_skipped_fk_by_zwz72yquyv" ON "slice"."chain_skipped" IS 'foreign key ChainSkipped(by) to ChainRoot(scope)';
 
-COMMENT ON CONSTRAINT "__chain_skipped_fk_root_yi73nwhhy4" ON "slice"."chain_skipped" IS 'foreign key ChainSkipped(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_skipped_fk_root_yi73nwhhy4" ON "slice"."chain_skipped" IS 'foreign key ChainSkipped(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_skipped_fk_scope_ozicxyda6o" ON "slice"."chain_skipped" IS 'foreign key ChainSkipped(scope) to ChainRoot(scope)';
 
-COMMENT ON CONSTRAINT "__chain_start_step_fk_root_gh44bcwmwg" ON "slice"."chain_start_step" IS 'foreign key ChainStartStep(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_start_step_fk_root_gh44bcwmwg" ON "slice"."chain_start_step" IS 'foreign key ChainStartStep(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_start_step_fk_scope_root_eab47owgce" ON "slice"."chain_start_step" IS 'foreign key ChainStartStep(scope, root) to ChainAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__chain_start_step_fk_step_root_llhvckjbu2" ON "slice"."chain_start_step" IS 'foreign key ChainStartStep(step, root) to ChainStep(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_step_fk_root_n4wedmpzhn" ON "slice"."chain_step" IS 'foreign key ChainStep(root) to ChainRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__chain_step_fk_root_n4wedmpzhn" ON "slice"."chain_step" IS 'foreign key ChainStep(root) to ChainRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__chain_step_fk_scope_root_jmx7nw7i4f" ON "slice"."chain_step" IS 'foreign key ChainStep(scope, root) to ChainAdmitted(scope, root)';
 
-COMMENT ON CONSTRAINT "__clock_admitted_fk_root_7dydra2fa6" ON "slice"."clock_admitted" IS 'foreign key ClockAdmitted(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_admitted_fk_root_7dydra2fa6" ON "slice"."clock_admitted" IS 'foreign key ClockAdmitted(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_admitted_fk_scope_root_iq667y6auq" ON "slice"."clock_admitted" IS 'foreign key ClockAdmitted(scope, root) to ClockScope(scope, root)';
 
-COMMENT ON CONSTRAINT "__clock_chime_input_fk_root_plvhx4qyi5" ON "slice"."clock_chime_input" IS 'foreign key ClockChimeInput(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_chime_input_fk_root_plvhx4qyi5" ON "slice"."clock_chime_input" IS 'foreign key ClockChimeInput(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__clock_chime_output_fk_root_75doh4g3jb" ON "slice"."clock_chime_output" IS 'foreign key ClockChimeOutput(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_chime_output_fk_root_75doh4g3jb" ON "slice"."clock_chime_output" IS 'foreign key ClockChimeOutput(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_chime_output_fk_step_root_x3amhltgq6" ON "slice"."clock_chime_output" IS 'foreign key ClockChimeOutput(step, root) to ClockChimeInput(step, root)';
 
 COMMENT ON CONSTRAINT "__clock_chime_output_fk_step_root_3wm3i6ov6f" ON "slice"."clock_chime_output" IS 'foreign key ClockChimeOutput(step, root) to ClockDone(step, root)';
 
-COMMENT ON CONSTRAINT "__clock_claim_fk_root_hmpra5qlcp" ON "slice"."clock_claim" IS 'foreign key ClockClaim(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_claim_fk_root_hmpra5qlcp" ON "slice"."clock_claim" IS 'foreign key ClockClaim(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_claim_fk_step_root_vptogyiqam" ON "slice"."clock_claim" IS 'foreign key ClockClaim(step, root) to ClockStep(step, root)';
 
-COMMENT ON CONSTRAINT "__clock_claim_fk_step_pred_attempt_root_qvfbouzl5p" ON "slice"."clock_claim" IS 'foreign key ClockClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to ClockEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__clock_claim_fk_step_pred_attempt_root_qvfbouzl5p" ON "slice"."clock_claim" IS 'foreign key ClockClaim(step where Logic.ge(attempt, 1n), pred(attempt), root) to ClockEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__clock_close_input_fk_root_txagvl3rnl" ON "slice"."clock_close_input" IS 'foreign key ClockCloseInput(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_close_input_fk_root_txagvl3rnl" ON "slice"."clock_close_input" IS 'foreign key ClockCloseInput(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__clock_close_output_fk_root_5jk2orzbti" ON "slice"."clock_close_output" IS 'foreign key ClockCloseOutput(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_close_output_fk_root_5jk2orzbti" ON "slice"."clock_close_output" IS 'foreign key ClockCloseOutput(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_close_output_fk_step_root_fooxwxkcx3" ON "slice"."clock_close_output" IS 'foreign key ClockCloseOutput(step, root) to ClockCloseInput(step, root)';
 
 COMMENT ON CONSTRAINT "__clock_close_output_fk_step_root_accrzxyiql" ON "slice"."clock_close_output" IS 'foreign key ClockCloseOutput(step, root) to ClockDone(step, root)';
 
-COMMENT ON CONSTRAINT "__clock_done_fk_root_soqskjsjao" ON "slice"."clock_done" IS 'foreign key ClockDone(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_done_fk_root_soqskjsjao" ON "slice"."clock_done" IS 'foreign key ClockDone(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__clock_ended_fk_root_g3cnl7xafr" ON "slice"."clock_ended" IS 'foreign key ClockEnded(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_ended_fk_root_g3cnl7xafr" ON "slice"."clock_ended" IS 'foreign key ClockEnded(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_ended_fk_step_attempt_root_dimjqmfaqh" ON "slice"."clock_ended" IS 'foreign key ClockEnded(step, attempt, root) to ClockClaim(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__clock_exhausted_fk_root_xskm7prc74" ON "slice"."clock_exhausted" IS 'foreign key ClockExhausted(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_exhausted_fk_root_xskm7prc74" ON "slice"."clock_exhausted" IS 'foreign key ClockExhausted(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_exhausted_fk_step_root_ydvibsvd3a" ON "slice"."clock_exhausted" IS 'foreign key ClockExhausted(step, root) to ClockFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__clock_failed_fk_root_tkhs7qqr4z" ON "slice"."clock_failed" IS 'foreign key ClockFailed(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_failed_fk_root_tkhs7qqr4z" ON "slice"."clock_failed" IS 'foreign key ClockFailed(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__clock_fenced_fk_root_t4ntcqjpyp" ON "slice"."clock_fenced" IS 'foreign key ClockFenced(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_fenced_fk_root_t4ntcqjpyp" ON "slice"."clock_fenced" IS 'foreign key ClockFenced(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_fenced_fk_step_attempt_root_6wai42b7gk" ON "slice"."clock_fenced" IS 'foreign key ClockFenced(step, attempt, root) to ClockEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__clock_finish_fk_root_pmnnbogxf6" ON "slice"."clock_finish" IS 'foreign key ClockFinish(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_finish_fk_root_pmnnbogxf6" ON "slice"."clock_finish" IS 'foreign key ClockFinish(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_finish_fk_scope_root_ncra3pc2vm" ON "slice"."clock_finish" IS 'foreign key ClockFinish(scope, root) to ClockAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__clock_finish_fk_step_root_kr2hfecrdl" ON "slice"."clock_finish" IS 'foreign key ClockFinish(step, root) to ClockStep(step, root)';
 
-COMMENT ON CONSTRAINT "__clock_held_fk_root_u3vxrlyseh" ON "slice"."clock_held" IS 'foreign key ClockHeld(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_held_fk_root_u3vxrlyseh" ON "slice"."clock_held" IS 'foreign key ClockHeld(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_held_fk_step_attempt_root_rggju54zr5" ON "slice"."clock_held" IS 'foreign key ClockHeld(step, attempt, root) to ClockClaim(step, attempt, root)';
 
 COMMENT ON CONSTRAINT "__clock_held_fk_step_root_oboys6ct6s" ON "slice"."clock_held" IS 'foreign key ClockHeld(step, root) to ClockResult(step, root)';
 
-COMMENT ON CONSTRAINT "__clock_hourly_finish_output_fk_root_wn7gvu3f26" ON "slice"."clock_hourly_finish_output" IS 'foreign key ClockHourlyFinishOutput(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_hourly_finish_output_fk_root_wn7gvu3f26" ON "slice"."clock_hourly_finish_output" IS 'foreign key ClockHourlyFinishOutput(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_hourly_finish_output_fk_step_root_xwntxefqc6" ON "slice"."clock_hourly_finish_output" IS 'foreign key ClockHourlyFinishOutput(step, root) to ClockDone(step, root)';
 
-COMMENT ON CONSTRAINT "__clock_hourly_input_fk_root_ixovd5y6h4" ON "slice"."clock_hourly_input" IS 'foreign key ClockHourlyInput(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_hourly_input_fk_root_ixovd5y6h4" ON "slice"."clock_hourly_input" IS 'foreign key ClockHourlyInput(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_paused_fk_target_pred_turn_7tgjovpr6x" ON "slice"."clock_paused" IS 'foreign key ClockPaused(target, pred(turn)) to ClockResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__clock_refusal_fk_root_ekomnyuzgo" ON "slice"."clock_refusal" IS 'foreign key ClockRefusal(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_refusal_fk_root_ekomnyuzgo" ON "slice"."clock_refusal" IS 'foreign key ClockRefusal(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_refusal_fk_step_root_cwz55xrfvz" ON "slice"."clock_refusal" IS 'foreign key ClockRefusal(step, root) to ClockFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__clock_result_fk_root_mlw7uyvsd5" ON "slice"."clock_result" IS 'foreign key ClockResult(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_result_fk_root_mlw7uyvsd5" ON "slice"."clock_result" IS 'foreign key ClockResult(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_result_fk_step_root_ywzn6yx56v" ON "slice"."clock_result" IS 'foreign key ClockResult(step, root) to ClockStep(step, root)';
 
 COMMENT ON CONSTRAINT "__clock_resumed_fk_target_turn_45dwn4cwo5" ON "slice"."clock_resumed" IS 'foreign key ClockResumed(target, turn) to ClockPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__clock_retry_fk_root_zrptzgm66d" ON "slice"."clock_retry" IS 'foreign key ClockRetry(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_retry_fk_root_zrptzgm66d" ON "slice"."clock_retry" IS 'foreign key ClockRetry(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_retry_fk_step_attempt_root_rbqzkwnwmy" ON "slice"."clock_retry" IS 'foreign key ClockRetry(step, attempt, root) to ClockEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__clock_scope_fk_root_2os4agb6vo" ON "slice"."clock_scope" IS 'foreign key ClockScope(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_scope_fk_root_2os4agb6vo" ON "slice"."clock_scope" IS 'foreign key ClockScope(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__clock_sitting_finish_output_fk_root_5s5nbif4nr" ON "slice"."clock_sitting_finish_output" IS 'foreign key ClockSittingFinishOutput(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_sitting_finish_output_fk_root_5s5nbif4nr" ON "slice"."clock_sitting_finish_output" IS 'foreign key ClockSittingFinishOutput(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_sitting_finish_output_fk_step_root_mkypttatse" ON "slice"."clock_sitting_finish_output" IS 'foreign key ClockSittingFinishOutput(step, root) to ClockDone(step, root)';
 
-COMMENT ON CONSTRAINT "__clock_sitting_input_fk_root_pedoscj3vp" ON "slice"."clock_sitting_input" IS 'foreign key ClockSittingInput(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_sitting_input_fk_root_pedoscj3vp" ON "slice"."clock_sitting_input" IS 'foreign key ClockSittingInput(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_skipped_fk_by_joxrltqt4a" ON "slice"."clock_skipped" IS 'foreign key ClockSkipped(by) to ClockRoot(scope)';
 
-COMMENT ON CONSTRAINT "__clock_skipped_fk_root_w4ixxvhwt2" ON "slice"."clock_skipped" IS 'foreign key ClockSkipped(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_skipped_fk_root_w4ixxvhwt2" ON "slice"."clock_skipped" IS 'foreign key ClockSkipped(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_skipped_fk_scope_e5ndey7rqw" ON "slice"."clock_skipped" IS 'foreign key ClockSkipped(scope) to ClockRoot(scope)';
 
-COMMENT ON CONSTRAINT "__clock_start_step_fk_root_s7u7hg3lzj" ON "slice"."clock_start_step" IS 'foreign key ClockStartStep(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_start_step_fk_root_s7u7hg3lzj" ON "slice"."clock_start_step" IS 'foreign key ClockStartStep(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_start_step_fk_scope_root_oqopxtg4cc" ON "slice"."clock_start_step" IS 'foreign key ClockStartStep(scope, root) to ClockAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__clock_start_step_fk_step_root_7tv5nylxvh" ON "slice"."clock_start_step" IS 'foreign key ClockStartStep(step, root) to ClockStep(step, root)';
 
-COMMENT ON CONSTRAINT "__clock_step_fk_root_pi7kop6duk" ON "slice"."clock_step" IS 'foreign key ClockStep(root) to ClockRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__clock_step_fk_root_pi7kop6duk" ON "slice"."clock_step" IS 'foreign key ClockStep(root) to ClockRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__clock_step_fk_scope_root_ivit5j6zqd" ON "slice"."clock_step" IS 'foreign key ClockStep(scope, root) to ClockAdmitted(scope, root)';
 
-COMMENT ON CONSTRAINT "__fan_admitted_fk_root_ui6p5vdrhk" ON "slice"."fan_admitted" IS 'foreign key FanAdmitted(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_admitted_fk_root_ui6p5vdrhk" ON "slice"."fan_admitted" IS 'foreign key FanAdmitted(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_admitted_fk_scope_root_zj52ntgcx6" ON "slice"."fan_admitted" IS 'foreign key FanAdmitted(scope, root) to FanScope(scope, root)';
 
-COMMENT ON CONSTRAINT "__fan_batch_finish_output_fk_root_dpzlswayvb" ON "slice"."fan_batch_finish_output" IS 'foreign key FanBatchFinishOutput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_batch_finish_output_fk_root_dpzlswayvb" ON "slice"."fan_batch_finish_output" IS 'foreign key FanBatchFinishOutput(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_batch_finish_output_fk_step_root_hhniyvx63e" ON "slice"."fan_batch_finish_output" IS 'foreign key FanBatchFinishOutput(step, root) to FanDone(step, root)';
 
-COMMENT ON CONSTRAINT "__fan_batch_input_fk_root_d4g2u2spvl" ON "slice"."fan_batch_input" IS 'foreign key FanBatchInput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_batch_input_fk_root_d4g2u2spvl" ON "slice"."fan_batch_input" IS 'foreign key FanBatchInput(root) to FanRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__fan_claim_fk_root_t3hwth6mh7" ON "slice"."fan_claim" IS 'foreign key FanClaim(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_claim_fk_root_t3hwth6mh7" ON "slice"."fan_claim" IS 'foreign key FanClaim(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_claim_fk_step_root_6jsjsejmab" ON "slice"."fan_claim" IS 'foreign key FanClaim(step, root) to FanStep(step, root)';
 
 COMMENT ON CONSTRAINT "__fan_claim_fk_step_root_attempt_pred_holds_jqx7ma7cam" ON "slice"."fan_claim" IS 'foreign key FanClaim(step, root, attempt, pred(holds)) to FanHold(step, root, attempt, at)';
 
-COMMENT ON CONSTRAINT "__fan_claim_fk_step_pred_attempt_root_lvu6wwhaq3" ON "slice"."fan_claim" IS 'foreign key FanClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to FanEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__fan_claim_fk_step_pred_attempt_root_lvu6wwhaq3" ON "slice"."fan_claim" IS 'foreign key FanClaim(step where Logic.ge(attempt, 1n), pred(attempt), root) to FanEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__fan_done_fk_root_cfizuozacw" ON "slice"."fan_done" IS 'foreign key FanDone(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_done_fk_root_cfizuozacw" ON "slice"."fan_done" IS 'foreign key FanDone(root) to FanRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__fan_dust_input_fk_root_3733wzdt23" ON "slice"."fan_dust_input" IS 'foreign key FanDustInput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_dust_input_fk_root_3733wzdt23" ON "slice"."fan_dust_input" IS 'foreign key FanDustInput(root) to FanRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__fan_dust_output_fk_root_6dquh32eog" ON "slice"."fan_dust_output" IS 'foreign key FanDustOutput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_dust_output_fk_root_6dquh32eog" ON "slice"."fan_dust_output" IS 'foreign key FanDustOutput(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_dust_output_fk_step_root_qzoffoc32g" ON "slice"."fan_dust_output" IS 'foreign key FanDustOutput(step, root) to FanDone(step, root)';
 
 COMMENT ON CONSTRAINT "__fan_dust_output_fk_step_root_nxpsu4ielv" ON "slice"."fan_dust_output" IS 'foreign key FanDustOutput(step, root) to FanDustInput(step, root)';
 
-COMMENT ON CONSTRAINT "__fan_ended_fk_root_uaaz527dex" ON "slice"."fan_ended" IS 'foreign key FanEnded(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_ended_fk_root_uaaz527dex" ON "slice"."fan_ended" IS 'foreign key FanEnded(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_ended_fk_step_attempt_root_guai42fujd" ON "slice"."fan_ended" IS 'foreign key FanEnded(step, attempt, root) to FanClaim(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__fan_exhausted_fk_root_mlbxyrjdjk" ON "slice"."fan_exhausted" IS 'foreign key FanExhausted(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_exhausted_fk_root_mlbxyrjdjk" ON "slice"."fan_exhausted" IS 'foreign key FanExhausted(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_exhausted_fk_step_root_jyggt4fgpd" ON "slice"."fan_exhausted" IS 'foreign key FanExhausted(step, root) to FanFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__fan_failed_fk_root_3gq7ifprza" ON "slice"."fan_failed" IS 'foreign key FanFailed(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_failed_fk_root_3gq7ifprza" ON "slice"."fan_failed" IS 'foreign key FanFailed(root) to FanRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__fan_fan_run_finish_output_fk_root_ttt7pw4dnn" ON "slice"."fan_fan_run_finish_output" IS 'foreign key FanFanRunFinishOutput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_fan_run_finish_output_fk_root_ttt7pw4dnn" ON "slice"."fan_fan_run_finish_output" IS 'foreign key FanFanRunFinishOutput(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_fan_run_finish_output_fk_step_root_yjy4xmcplw" ON "slice"."fan_fan_run_finish_output" IS 'foreign key FanFanRunFinishOutput(step, root) to FanDone(step, root)';
 
-COMMENT ON CONSTRAINT "__fan_fan_run_input_fk_root_oztqak3s27" ON "slice"."fan_fan_run_input" IS 'foreign key FanFanRunInput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_fan_run_input_fk_root_oztqak3s27" ON "slice"."fan_fan_run_input" IS 'foreign key FanFanRunInput(root) to FanRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__fan_fenced_fk_root_2vu32qtss5" ON "slice"."fan_fenced" IS 'foreign key FanFenced(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_fenced_fk_root_2vu32qtss5" ON "slice"."fan_fenced" IS 'foreign key FanFenced(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_fenced_fk_step_attempt_root_resahyn2ym" ON "slice"."fan_fenced" IS 'foreign key FanFenced(step, attempt, root) to FanEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__fan_finish_fk_root_evgrt3slao" ON "slice"."fan_finish" IS 'foreign key FanFinish(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_finish_fk_root_evgrt3slao" ON "slice"."fan_finish" IS 'foreign key FanFinish(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_finish_fk_scope_root_xpvycdjjiy" ON "slice"."fan_finish" IS 'foreign key FanFinish(scope, root) to FanAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__fan_finish_fk_step_root_bpqxxtu4ab" ON "slice"."fan_finish" IS 'foreign key FanFinish(step, root) to FanStep(step, root)';
 
-COMMENT ON CONSTRAINT "__fan_held_fk_root_cnpqjrp534" ON "slice"."fan_held" IS 'foreign key FanHeld(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_held_fk_root_cnpqjrp534" ON "slice"."fan_held" IS 'foreign key FanHeld(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_held_fk_step_attempt_root_c33imj7zo6" ON "slice"."fan_held" IS 'foreign key FanHeld(step, attempt, root) to FanClaim(step, attempt, root)';
 
 COMMENT ON CONSTRAINT "__fan_held_fk_step_root_ob2yj5i5h3" ON "slice"."fan_held" IS 'foreign key FanHeld(step, root) to FanResult(step, root)';
 
-COMMENT ON CONSTRAINT "__fan_hold_fk_root_4at7ny23la" ON "slice"."fan_hold" IS 'foreign key FanHold(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_hold_fk_root_4at7ny23la" ON "slice"."fan_hold" IS 'foreign key FanHold(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_hold_fk_step_root_attempt_copy_holds_jzk5g7klso" ON "slice"."fan_hold" IS 'foreign key FanHold(step, root, attempt, the owner''s count of the family FanClaim.holds) to FanClaim(step, root, attempt, holds)';
 
 COMMENT ON CONSTRAINT "__fan_hold_fk_step_root_attempt_pred_at_p4adu554h3" ON "slice"."fan_hold" IS 'foreign key FanHold(step, root, attempt, pred(at)) to FanHold(step, root, attempt, at)';
 
-COMMENT ON CONSTRAINT "__fan_mop_input_fk_root_iflswncgct" ON "slice"."fan_mop_input" IS 'foreign key FanMopInput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_mop_input_fk_root_iflswncgct" ON "slice"."fan_mop_input" IS 'foreign key FanMopInput(root) to FanRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__fan_mop_output_fk_root_2oyshrk7i2" ON "slice"."fan_mop_output" IS 'foreign key FanMopOutput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_mop_output_fk_root_2oyshrk7i2" ON "slice"."fan_mop_output" IS 'foreign key FanMopOutput(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_mop_output_fk_step_root_dsgqll32vr" ON "slice"."fan_mop_output" IS 'foreign key FanMopOutput(step, root) to FanDone(step, root)';
 
@@ -6195,31 +6525,31 @@ COMMENT ON CONSTRAINT "__fan_mop_output_fk_step_root_j2cwqnpbda" ON "slice"."fan
 
 COMMENT ON CONSTRAINT "__fan_paused_fk_target_pred_turn_flvtnhgqoq" ON "slice"."fan_paused" IS 'foreign key FanPaused(target, pred(turn)) to FanResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__fan_refusal_fk_root_zep5evjd2e" ON "slice"."fan_refusal" IS 'foreign key FanRefusal(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_refusal_fk_root_zep5evjd2e" ON "slice"."fan_refusal" IS 'foreign key FanRefusal(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_refusal_fk_step_root_5qjei2ie7w" ON "slice"."fan_refusal" IS 'foreign key FanRefusal(step, root) to FanFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__fan_result_fk_root_m233bhejob" ON "slice"."fan_result" IS 'foreign key FanResult(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_result_fk_root_m233bhejob" ON "slice"."fan_result" IS 'foreign key FanResult(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_result_fk_step_root_kkph4igmst" ON "slice"."fan_result" IS 'foreign key FanResult(step, root) to FanStep(step, root)';
 
 COMMENT ON CONSTRAINT "__fan_resumed_fk_target_turn_c5d76zka2w" ON "slice"."fan_resumed" IS 'foreign key FanResumed(target, turn) to FanPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__fan_retry_fk_root_hoqgudhhyh" ON "slice"."fan_retry" IS 'foreign key FanRetry(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_retry_fk_root_hoqgudhhyh" ON "slice"."fan_retry" IS 'foreign key FanRetry(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_retry_fk_step_attempt_root_jw7ijf5nre" ON "slice"."fan_retry" IS 'foreign key FanRetry(step, attempt, root) to FanEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__fan_scope_fk_root_3c5fvemkr6" ON "slice"."fan_scope" IS 'foreign key FanScope(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_scope_fk_root_3c5fvemkr6" ON "slice"."fan_scope" IS 'foreign key FanScope(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_skipped_fk_by_o76cwxye2w" ON "slice"."fan_skipped" IS 'foreign key FanSkipped(by) to FanRoot(scope)';
 
-COMMENT ON CONSTRAINT "__fan_skipped_fk_root_j6gpqvvx57" ON "slice"."fan_skipped" IS 'foreign key FanSkipped(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_skipped_fk_root_j6gpqvvx57" ON "slice"."fan_skipped" IS 'foreign key FanSkipped(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_skipped_fk_scope_eomkgfbxwj" ON "slice"."fan_skipped" IS 'foreign key FanSkipped(scope) to FanRoot(scope)';
 
-COMMENT ON CONSTRAINT "__fan_square_input_fk_root_gpj7rrapja" ON "slice"."fan_square_input" IS 'foreign key FanSquareInput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_square_input_fk_root_gpj7rrapja" ON "slice"."fan_square_input" IS 'foreign key FanSquareInput(root) to FanRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__fan_square_output_fk_root_dpyr2dahw3" ON "slice"."fan_square_output" IS 'foreign key FanSquareOutput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_square_output_fk_root_dpyr2dahw3" ON "slice"."fan_square_output" IS 'foreign key FanSquareOutput(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_square_output_fk_step_root_ibp6l2tkc5" ON "slice"."fan_square_output" IS 'foreign key FanSquareOutput(step, root) to FanDone(step, root)';
 
@@ -6227,87 +6557,87 @@ COMMENT ON CONSTRAINT "__fan_square_output_fk_step_root_kilcbg5jn4" ON "slice"."
 
 COMMENT ON CONSTRAINT "__fan_start_scope_fk_child_root_dn65r3vwqt" ON "slice"."fan_start_scope" IS 'foreign key FanStartScope(child, root) to FanScope(scope, root)';
 
-COMMENT ON CONSTRAINT "__fan_start_scope_fk_root_24pfkxnibn" ON "slice"."fan_start_scope" IS 'foreign key FanStartScope(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_start_scope_fk_root_24pfkxnibn" ON "slice"."fan_start_scope" IS 'foreign key FanStartScope(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_start_scope_fk_scope_root_clsa2be3m7" ON "slice"."fan_start_scope" IS 'foreign key FanStartScope(scope, root) to FanAdmitted(scope, root)';
 
-COMMENT ON CONSTRAINT "__fan_start_step_fk_root_4rwp7q56wg" ON "slice"."fan_start_step" IS 'foreign key FanStartStep(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_start_step_fk_root_4rwp7q56wg" ON "slice"."fan_start_step" IS 'foreign key FanStartStep(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_start_step_fk_scope_root_vh2ut5ssmk" ON "slice"."fan_start_step" IS 'foreign key FanStartStep(scope, root) to FanAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__fan_start_step_fk_step_root_din6bp4kp3" ON "slice"."fan_start_step" IS 'foreign key FanStartStep(step, root) to FanStep(step, root)';
 
-COMMENT ON CONSTRAINT "__fan_step_fk_root_eueisdyp32" ON "slice"."fan_step" IS 'foreign key FanStep(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_step_fk_root_eueisdyp32" ON "slice"."fan_step" IS 'foreign key FanStep(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_step_fk_scope_root_dyjpxhnjhz" ON "slice"."fan_step" IS 'foreign key FanStep(scope, root) to FanAdmitted(scope, root)';
 
-COMMENT ON CONSTRAINT "__fan_sweep_finish_output_fk_root_wuiuxdlyfz" ON "slice"."fan_sweep_finish_output" IS 'foreign key FanSweepFinishOutput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_sweep_finish_output_fk_root_wuiuxdlyfz" ON "slice"."fan_sweep_finish_output" IS 'foreign key FanSweepFinishOutput(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_sweep_finish_output_fk_step_root_hvu6m73esm" ON "slice"."fan_sweep_finish_output" IS 'foreign key FanSweepFinishOutput(step, root) to FanDone(step, root)';
 
-COMMENT ON CONSTRAINT "__fan_sweep_input_fk_root_uobuoei5yy" ON "slice"."fan_sweep_input" IS 'foreign key FanSweepInput(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_sweep_input_fk_root_uobuoei5yy" ON "slice"."fan_sweep_input" IS 'foreign key FanSweepInput(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_within_fk_parent_root_uep5w6udoh" ON "slice"."fan_within" IS 'foreign key FanWithin(parent, root) to FanScope(scope, root)';
 
-COMMENT ON CONSTRAINT "__fan_within_fk_root_k7476egnhf" ON "slice"."fan_within" IS 'foreign key FanWithin(root) to FanRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__fan_within_fk_root_k7476egnhf" ON "slice"."fan_within" IS 'foreign key FanWithin(root) to FanRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__fan_within_fk_scope_root_ej3crstjip" ON "slice"."fan_within" IS 'foreign key FanWithin(scope, root) to FanScope(scope, root)';
 
-COMMENT ON CONSTRAINT "__retry_admitted_fk_root_n65ucxnw7g" ON "slice"."retry_admitted" IS 'foreign key RetryAdmitted(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_admitted_fk_root_n65ucxnw7g" ON "slice"."retry_admitted" IS 'foreign key RetryAdmitted(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_admitted_fk_scope_root_kufu5v4g3v" ON "slice"."retry_admitted" IS 'foreign key RetryAdmitted(scope, root) to RetryScope(scope, root)';
 
-COMMENT ON CONSTRAINT "__retry_brittle_input_fk_root_3kdpo5sepg" ON "slice"."retry_brittle_input" IS 'foreign key RetryBrittleInput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_brittle_input_fk_root_3kdpo5sepg" ON "slice"."retry_brittle_input" IS 'foreign key RetryBrittleInput(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__retry_brittle_output_fk_root_baznemh4df" ON "slice"."retry_brittle_output" IS 'foreign key RetryBrittleOutput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_brittle_output_fk_root_baznemh4df" ON "slice"."retry_brittle_output" IS 'foreign key RetryBrittleOutput(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_brittle_output_fk_step_root_o5pt3hukix" ON "slice"."retry_brittle_output" IS 'foreign key RetryBrittleOutput(step, root) to RetryBrittleInput(step, root)';
 
 COMMENT ON CONSTRAINT "__retry_brittle_output_fk_step_root_jnbgyogqxn" ON "slice"."retry_brittle_output" IS 'foreign key RetryBrittleOutput(step, root) to RetryDone(step, root)';
 
-COMMENT ON CONSTRAINT "__retry_claim_fk_root_ilxn6ulsuq" ON "slice"."retry_claim" IS 'foreign key RetryClaim(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_claim_fk_root_ilxn6ulsuq" ON "slice"."retry_claim" IS 'foreign key RetryClaim(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_claim_fk_step_root_zffmzj357l" ON "slice"."retry_claim" IS 'foreign key RetryClaim(step, root) to RetryStep(step, root)';
 
-COMMENT ON CONSTRAINT "__retry_claim_fk_step_pred_attempt_root_pnatu7db5m" ON "slice"."retry_claim" IS 'foreign key RetryClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to RetryEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__retry_claim_fk_step_pred_attempt_root_pnatu7db5m" ON "slice"."retry_claim" IS 'foreign key RetryClaim(step where Logic.ge(attempt, 1n), pred(attempt), root) to RetryEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__retry_done_fk_root_eegigvha5p" ON "slice"."retry_done" IS 'foreign key RetryDone(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_done_fk_root_eegigvha5p" ON "slice"."retry_done" IS 'foreign key RetryDone(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__retry_ended_fk_root_h23o2xvf4e" ON "slice"."retry_ended" IS 'foreign key RetryEnded(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_ended_fk_root_h23o2xvf4e" ON "slice"."retry_ended" IS 'foreign key RetryEnded(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_ended_fk_step_attempt_root_25duapnk22" ON "slice"."retry_ended" IS 'foreign key RetryEnded(step, attempt, root) to RetryClaim(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__retry_exhausted_fk_root_fetyfw4rhv" ON "slice"."retry_exhausted" IS 'foreign key RetryExhausted(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_exhausted_fk_root_fetyfw4rhv" ON "slice"."retry_exhausted" IS 'foreign key RetryExhausted(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_exhausted_fk_step_root_pj2owyq2rw" ON "slice"."retry_exhausted" IS 'foreign key RetryExhausted(step, root) to RetryFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__retry_failed_fk_root_uy6ypbkhl7" ON "slice"."retry_failed" IS 'foreign key RetryFailed(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_failed_fk_root_uy6ypbkhl7" ON "slice"."retry_failed" IS 'foreign key RetryFailed(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__retry_fenced_fk_root_q2hes57bil" ON "slice"."retry_fenced" IS 'foreign key RetryFenced(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_fenced_fk_root_q2hes57bil" ON "slice"."retry_fenced" IS 'foreign key RetryFenced(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_fenced_fk_step_attempt_root_laqomvgkpu" ON "slice"."retry_fenced" IS 'foreign key RetryFenced(step, attempt, root) to RetryEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__retry_finish_fk_root_iv6szs7lco" ON "slice"."retry_finish" IS 'foreign key RetryFinish(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_finish_fk_root_iv6szs7lco" ON "slice"."retry_finish" IS 'foreign key RetryFinish(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_finish_fk_scope_root_odh4hpe5hc" ON "slice"."retry_finish" IS 'foreign key RetryFinish(scope, root) to RetryAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__retry_finish_fk_step_root_o54jpsxlmy" ON "slice"."retry_finish" IS 'foreign key RetryFinish(step, root) to RetryStep(step, root)';
 
-COMMENT ON CONSTRAINT "__retry_held_fk_root_3v46rzikqg" ON "slice"."retry_held" IS 'foreign key RetryHeld(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_held_fk_root_3v46rzikqg" ON "slice"."retry_held" IS 'foreign key RetryHeld(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_held_fk_step_attempt_root_cnveo6n2ex" ON "slice"."retry_held" IS 'foreign key RetryHeld(step, attempt, root) to RetryClaim(step, attempt, root)';
 
 COMMENT ON CONSTRAINT "__retry_held_fk_step_root_m5b3t566ya" ON "slice"."retry_held" IS 'foreign key RetryHeld(step, root) to RetryResult(step, root)';
 
-COMMENT ON CONSTRAINT "__retry_ladders_finish_output_fk_root_gmq3iutwdv" ON "slice"."retry_ladders_finish_output" IS 'foreign key RetryLaddersFinishOutput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_ladders_finish_output_fk_root_gmq3iutwdv" ON "slice"."retry_ladders_finish_output" IS 'foreign key RetryLaddersFinishOutput(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_ladders_finish_output_fk_step_root_l5sosf3h23" ON "slice"."retry_ladders_finish_output" IS 'foreign key RetryLaddersFinishOutput(step, root) to RetryDone(step, root)';
 
-COMMENT ON CONSTRAINT "__retry_ladders_input_fk_root_cnlwmpha3w" ON "slice"."retry_ladders_input" IS 'foreign key RetryLaddersInput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_ladders_input_fk_root_cnlwmpha3w" ON "slice"."retry_ladders_input" IS 'foreign key RetryLaddersInput(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__retry_patient_input_fk_root_x4fak4nifc" ON "slice"."retry_patient_input" IS 'foreign key RetryPatientInput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_patient_input_fk_root_x4fak4nifc" ON "slice"."retry_patient_input" IS 'foreign key RetryPatientInput(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__retry_patient_output_fk_root_36wgu5rnaa" ON "slice"."retry_patient_output" IS 'foreign key RetryPatientOutput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_patient_output_fk_root_36wgu5rnaa" ON "slice"."retry_patient_output" IS 'foreign key RetryPatientOutput(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_patient_output_fk_step_root_waswby3piq" ON "slice"."retry_patient_output" IS 'foreign key RetryPatientOutput(step, root) to RetryDone(step, root)';
 
@@ -6315,129 +6645,129 @@ COMMENT ON CONSTRAINT "__retry_patient_output_fk_step_root_buctg5fpry" ON "slice
 
 COMMENT ON CONSTRAINT "__retry_paused_fk_target_pred_turn_i33p2skdd4" ON "slice"."retry_paused" IS 'foreign key RetryPaused(target, pred(turn)) to RetryResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__retry_polite_input_fk_root_5mkc2d4wg5" ON "slice"."retry_polite_input" IS 'foreign key RetryPoliteInput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_polite_input_fk_root_5mkc2d4wg5" ON "slice"."retry_polite_input" IS 'foreign key RetryPoliteInput(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__retry_polite_output_fk_root_hgdssuqq43" ON "slice"."retry_polite_output" IS 'foreign key RetryPoliteOutput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_polite_output_fk_root_hgdssuqq43" ON "slice"."retry_polite_output" IS 'foreign key RetryPoliteOutput(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_polite_output_fk_step_root_n3pnixozej" ON "slice"."retry_polite_output" IS 'foreign key RetryPoliteOutput(step, root) to RetryDone(step, root)';
 
 COMMENT ON CONSTRAINT "__retry_polite_output_fk_step_root_dzlpbomecj" ON "slice"."retry_polite_output" IS 'foreign key RetryPoliteOutput(step, root) to RetryPoliteInput(step, root)';
 
-COMMENT ON CONSTRAINT "__retry_refusal_fk_root_jr53wy3j5v" ON "slice"."retry_refusal" IS 'foreign key RetryRefusal(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_refusal_fk_root_jr53wy3j5v" ON "slice"."retry_refusal" IS 'foreign key RetryRefusal(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_refusal_fk_step_root_sqt67v76ib" ON "slice"."retry_refusal" IS 'foreign key RetryRefusal(step, root) to RetryFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__retry_result_fk_root_zoskj252jz" ON "slice"."retry_result" IS 'foreign key RetryResult(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_result_fk_root_zoskj252jz" ON "slice"."retry_result" IS 'foreign key RetryResult(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_result_fk_step_root_ulmjckkvmq" ON "slice"."retry_result" IS 'foreign key RetryResult(step, root) to RetryStep(step, root)';
 
 COMMENT ON CONSTRAINT "__retry_resumed_fk_target_turn_x2e4jllxuy" ON "slice"."retry_resumed" IS 'foreign key RetryResumed(target, turn) to RetryPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__retry_retry_fk_root_gfdc3bi7a3" ON "slice"."retry_retry" IS 'foreign key RetryRetry(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_retry_fk_root_gfdc3bi7a3" ON "slice"."retry_retry" IS 'foreign key RetryRetry(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_retry_fk_step_attempt_root_xrpolbmg32" ON "slice"."retry_retry" IS 'foreign key RetryRetry(step, attempt, root) to RetryEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__retry_scope_fk_root_veata66enh" ON "slice"."retry_scope" IS 'foreign key RetryScope(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_scope_fk_root_veata66enh" ON "slice"."retry_scope" IS 'foreign key RetryScope(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_skipped_fk_by_iokgypc6cl" ON "slice"."retry_skipped" IS 'foreign key RetrySkipped(by) to RetryRoot(scope)';
 
-COMMENT ON CONSTRAINT "__retry_skipped_fk_root_rfxaxqegr7" ON "slice"."retry_skipped" IS 'foreign key RetrySkipped(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_skipped_fk_root_rfxaxqegr7" ON "slice"."retry_skipped" IS 'foreign key RetrySkipped(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_skipped_fk_scope_q4224gzqrl" ON "slice"."retry_skipped" IS 'foreign key RetrySkipped(scope) to RetryRoot(scope)';
 
-COMMENT ON CONSTRAINT "__retry_start_step_fk_root_lgh6lskept" ON "slice"."retry_start_step" IS 'foreign key RetryStartStep(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_start_step_fk_root_lgh6lskept" ON "slice"."retry_start_step" IS 'foreign key RetryStartStep(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_start_step_fk_scope_root_va3ypig5rc" ON "slice"."retry_start_step" IS 'foreign key RetryStartStep(scope, root) to RetryAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__retry_start_step_fk_step_root_wftarsumzh" ON "slice"."retry_start_step" IS 'foreign key RetryStartStep(step, root) to RetryStep(step, root)';
 
-COMMENT ON CONSTRAINT "__retry_steadfast_input_fk_root_4xkwhc353t" ON "slice"."retry_steadfast_input" IS 'foreign key RetrySteadfastInput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_steadfast_input_fk_root_4xkwhc353t" ON "slice"."retry_steadfast_input" IS 'foreign key RetrySteadfastInput(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__retry_steadfast_output_fk_root_ypuiq33fkv" ON "slice"."retry_steadfast_output" IS 'foreign key RetrySteadfastOutput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_steadfast_output_fk_root_ypuiq33fkv" ON "slice"."retry_steadfast_output" IS 'foreign key RetrySteadfastOutput(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_steadfast_output_fk_step_root_3x6tbszpyw" ON "slice"."retry_steadfast_output" IS 'foreign key RetrySteadfastOutput(step, root) to RetryDone(step, root)';
 
 COMMENT ON CONSTRAINT "__retry_steadfast_output_fk_step_root_y3we3qusrs" ON "slice"."retry_steadfast_output" IS 'foreign key RetrySteadfastOutput(step, root) to RetrySteadfastInput(step, root)';
 
-COMMENT ON CONSTRAINT "__retry_step_fk_root_zww4hkltkz" ON "slice"."retry_step" IS 'foreign key RetryStep(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_step_fk_root_zww4hkltkz" ON "slice"."retry_step" IS 'foreign key RetryStep(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_step_fk_scope_root_xl7rht6tyq" ON "slice"."retry_step" IS 'foreign key RetryStep(scope, root) to RetryAdmitted(scope, root)';
 
-COMMENT ON CONSTRAINT "__retry_throttled_finish_output_fk_root_aoghadcbu7" ON "slice"."retry_throttled_finish_output" IS 'foreign key RetryThrottledFinishOutput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_throttled_finish_output_fk_root_aoghadcbu7" ON "slice"."retry_throttled_finish_output" IS 'foreign key RetryThrottledFinishOutput(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_throttled_finish_output_fk_step_root_7s3twuagha" ON "slice"."retry_throttled_finish_output" IS 'foreign key RetryThrottledFinishOutput(step, root) to RetryDone(step, root)';
 
-COMMENT ON CONSTRAINT "__retry_throttled_input_fk_root_gx2jscz4sq" ON "slice"."retry_throttled_input" IS 'foreign key RetryThrottledInput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_throttled_input_fk_root_gx2jscz4sq" ON "slice"."retry_throttled_input" IS 'foreign key RetryThrottledInput(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__retry_unhurried_finish_output_fk_root_jiiefymglf" ON "slice"."retry_unhurried_finish_output" IS 'foreign key RetryUnhurriedFinishOutput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_unhurried_finish_output_fk_root_jiiefymglf" ON "slice"."retry_unhurried_finish_output" IS 'foreign key RetryUnhurriedFinishOutput(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__retry_unhurried_finish_output_fk_step_root_65bjp55xj7" ON "slice"."retry_unhurried_finish_output" IS 'foreign key RetryUnhurriedFinishOutput(step, root) to RetryDone(step, root)';
 
-COMMENT ON CONSTRAINT "__retry_unhurried_input_fk_root_eff4ilou6c" ON "slice"."retry_unhurried_input" IS 'foreign key RetryUnhurriedInput(root) to RetryRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__retry_unhurried_input_fk_root_eff4ilou6c" ON "slice"."retry_unhurried_input" IS 'foreign key RetryUnhurriedInput(root) to RetryRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__review_admitted_fk_root_5a2j3m7nju" ON "slice"."review_admitted" IS 'foreign key ReviewAdmitted(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_admitted_fk_root_5a2j3m7nju" ON "slice"."review_admitted" IS 'foreign key ReviewAdmitted(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_admitted_fk_scope_root_bzpl734wrx" ON "slice"."review_admitted" IS 'foreign key ReviewAdmitted(scope, root) to ReviewScope(scope, root)';
 
-COMMENT ON CONSTRAINT "__review_analyze_input_fk_root_73upzaj4eg" ON "slice"."review_analyze_input" IS 'foreign key ReviewAnalyzeInput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_analyze_input_fk_root_73upzaj4eg" ON "slice"."review_analyze_input" IS 'foreign key ReviewAnalyzeInput(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__review_analyze_output_fk_root_qlfzwtt6d2" ON "slice"."review_analyze_output" IS 'foreign key ReviewAnalyzeOutput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_analyze_output_fk_root_qlfzwtt6d2" ON "slice"."review_analyze_output" IS 'foreign key ReviewAnalyzeOutput(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_analyze_output_fk_step_root_axdif7cyxp" ON "slice"."review_analyze_output" IS 'foreign key ReviewAnalyzeOutput(step, root) to ReviewAnalyzeInput(step, root)';
 
 COMMENT ON CONSTRAINT "__review_analyze_output_fk_step_root_arcu4coozk" ON "slice"."review_analyze_output" IS 'foreign key ReviewAnalyzeOutput(step, root) to ReviewDone(step, root)';
 
-COMMENT ON CONSTRAINT "__review_claim_fk_root_z2utn3xauo" ON "slice"."review_claim" IS 'foreign key ReviewClaim(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_claim_fk_root_z2utn3xauo" ON "slice"."review_claim" IS 'foreign key ReviewClaim(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_claim_fk_step_root_yqgzabonm6" ON "slice"."review_claim" IS 'foreign key ReviewClaim(step, root) to ReviewStep(step, root)';
 
 COMMENT ON CONSTRAINT "__review_claim_fk_step_root_attempt_pred_holds_arudmqwanl" ON "slice"."review_claim" IS 'foreign key ReviewClaim(step, root, attempt, pred(holds)) to ReviewHold(step, root, attempt, at)';
 
-COMMENT ON CONSTRAINT "__review_claim_fk_step_pred_attempt_root_jwqvbkxdcf" ON "slice"."review_claim" IS 'foreign key ReviewClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to ReviewEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__review_claim_fk_step_pred_attempt_root_jwqvbkxdcf" ON "slice"."review_claim" IS 'foreign key ReviewClaim(step where Logic.ge(attempt, 1n), pred(attempt), root) to ReviewEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__review_done_fk_root_f374tjslpg" ON "slice"."review_done" IS 'foreign key ReviewDone(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_done_fk_root_f374tjslpg" ON "slice"."review_done" IS 'foreign key ReviewDone(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__review_ended_fk_root_o6manlpvtk" ON "slice"."review_ended" IS 'foreign key ReviewEnded(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_ended_fk_root_o6manlpvtk" ON "slice"."review_ended" IS 'foreign key ReviewEnded(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_ended_fk_step_attempt_root_a7ck6js3qb" ON "slice"."review_ended" IS 'foreign key ReviewEnded(step, attempt, root) to ReviewClaim(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__review_exhausted_fk_root_odke37pg7n" ON "slice"."review_exhausted" IS 'foreign key ReviewExhausted(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_exhausted_fk_root_odke37pg7n" ON "slice"."review_exhausted" IS 'foreign key ReviewExhausted(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_exhausted_fk_step_root_74mlwghlwh" ON "slice"."review_exhausted" IS 'foreign key ReviewExhausted(step, root) to ReviewFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__review_failed_fk_root_vohwwobyj7" ON "slice"."review_failed" IS 'foreign key ReviewFailed(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_failed_fk_root_vohwwobyj7" ON "slice"."review_failed" IS 'foreign key ReviewFailed(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__review_fenced_fk_root_clolofwycr" ON "slice"."review_fenced" IS 'foreign key ReviewFenced(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_fenced_fk_root_clolofwycr" ON "slice"."review_fenced" IS 'foreign key ReviewFenced(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_fenced_fk_step_attempt_root_zpc4oiatc2" ON "slice"."review_fenced" IS 'foreign key ReviewFenced(step, attempt, root) to ReviewEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__review_finish_fk_root_yivqae7o2r" ON "slice"."review_finish" IS 'foreign key ReviewFinish(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_finish_fk_root_yivqae7o2r" ON "slice"."review_finish" IS 'foreign key ReviewFinish(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_finish_fk_scope_root_wjpg56iirx" ON "slice"."review_finish" IS 'foreign key ReviewFinish(scope, root) to ReviewAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__review_finish_fk_step_root_assajgbrsg" ON "slice"."review_finish" IS 'foreign key ReviewFinish(step, root) to ReviewStep(step, root)';
 
-COMMENT ON CONSTRAINT "__review_gather_input_fk_root_m5n5ulcugs" ON "slice"."review_gather_input" IS 'foreign key ReviewGatherInput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_gather_input_fk_root_m5n5ulcugs" ON "slice"."review_gather_input" IS 'foreign key ReviewGatherInput(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_root_4jycj2gg73" ON "slice"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_root_4jycj2gg73" ON "slice"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_step_root_xkxj3c72dv" ON "slice"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(step, root) to ReviewGatherInput(step, root)';
 
-COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_step_pred_ordinal_h3lguuktus" ON "slice"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(step where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to ReviewGatherInputSizes(step, ordinal, root)';
+COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_step_pred_ordinal_h3lguuktus" ON "slice"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(step where Logic.ge(ordinal, 1n), pred(ordinal), root) to ReviewGatherInputSizes(step, ordinal, root)';
 
-COMMENT ON CONSTRAINT "__review_gather_output_fk_root_pfl7uynvxk" ON "slice"."review_gather_output" IS 'foreign key ReviewGatherOutput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_gather_output_fk_root_pfl7uynvxk" ON "slice"."review_gather_output" IS 'foreign key ReviewGatherOutput(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_gather_output_fk_step_root_kfxlxydhp2" ON "slice"."review_gather_output" IS 'foreign key ReviewGatherOutput(step, root) to ReviewDone(step, root)';
 
 COMMENT ON CONSTRAINT "__review_gather_output_fk_step_root_sijekb5wr7" ON "slice"."review_gather_output" IS 'foreign key ReviewGatherOutput(step, root) to ReviewGatherInput(step, root)';
 
-COMMENT ON CONSTRAINT "__review_held_fk_root_cq4jfaijwu" ON "slice"."review_held" IS 'foreign key ReviewHeld(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_held_fk_root_cq4jfaijwu" ON "slice"."review_held" IS 'foreign key ReviewHeld(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_held_fk_step_attempt_root_63jdmcjpmk" ON "slice"."review_held" IS 'foreign key ReviewHeld(step, attempt, root) to ReviewClaim(step, attempt, root)';
 
 COMMENT ON CONSTRAINT "__review_held_fk_step_root_463posmneo" ON "slice"."review_held" IS 'foreign key ReviewHeld(step, root) to ReviewResult(step, root)';
 
-COMMENT ON CONSTRAINT "__review_hold_fk_root_smobn52snr" ON "slice"."review_hold" IS 'foreign key ReviewHold(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_hold_fk_root_smobn52snr" ON "slice"."review_hold" IS 'foreign key ReviewHold(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_hold_fk_step_root_attempt_copy_holds_syccyd3g3d" ON "slice"."review_hold" IS 'foreign key ReviewHold(step, root, attempt, the owner''s count of the family ReviewClaim.holds) to ReviewClaim(step, root, attempt, holds)';
 
@@ -6445,41 +6775,41 @@ COMMENT ON CONSTRAINT "__review_hold_fk_step_root_attempt_pred_at_6m6hmj5lir" ON
 
 COMMENT ON CONSTRAINT "__review_paused_fk_target_pred_turn_rig5fmgcvc" ON "slice"."review_paused" IS 'foreign key ReviewPaused(target, pred(turn)) to ReviewResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__review_questions_finish_output_fk_root_lhkngtysmk" ON "slice"."review_questions_finish_output" IS 'foreign key ReviewQuestionsFinishOutput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_questions_finish_output_fk_root_lhkngtysmk" ON "slice"."review_questions_finish_output" IS 'foreign key ReviewQuestionsFinishOutput(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_questions_finish_output_fk_step_root_hw7trgc4tp" ON "slice"."review_questions_finish_output" IS 'foreign key ReviewQuestionsFinishOutput(step, root) to ReviewDone(step, root)';
 
-COMMENT ON CONSTRAINT "__review_questions_input_fk_root_smgug66jwc" ON "slice"."review_questions_input" IS 'foreign key ReviewQuestionsInput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_questions_input_fk_root_smgug66jwc" ON "slice"."review_questions_input" IS 'foreign key ReviewQuestionsInput(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__review_refusal_fk_root_qvufijkx4k" ON "slice"."review_refusal" IS 'foreign key ReviewRefusal(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_refusal_fk_root_qvufijkx4k" ON "slice"."review_refusal" IS 'foreign key ReviewRefusal(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_refusal_fk_step_root_dhnaknctqw" ON "slice"."review_refusal" IS 'foreign key ReviewRefusal(step, root) to ReviewFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__review_result_fk_root_go4w3a44a2" ON "slice"."review_result" IS 'foreign key ReviewResult(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_result_fk_root_go4w3a44a2" ON "slice"."review_result" IS 'foreign key ReviewResult(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_result_fk_step_root_nfnufhm5fh" ON "slice"."review_result" IS 'foreign key ReviewResult(step, root) to ReviewStep(step, root)';
 
 COMMENT ON CONSTRAINT "__review_resumed_fk_target_turn_nvm252hscc" ON "slice"."review_resumed" IS 'foreign key ReviewResumed(target, turn) to ReviewPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__review_retry_fk_root_szjiq4sdny" ON "slice"."review_retry" IS 'foreign key ReviewRetry(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_retry_fk_root_szjiq4sdny" ON "slice"."review_retry" IS 'foreign key ReviewRetry(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_retry_fk_step_attempt_root_fuuiurkjt7" ON "slice"."review_retry" IS 'foreign key ReviewRetry(step, attempt, root) to ReviewEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__review_review_run_finish_output_fk_root_ttnfn2lndg" ON "slice"."review_review_run_finish_output" IS 'foreign key ReviewReviewRunFinishOutput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_review_run_finish_output_fk_root_ttnfn2lndg" ON "slice"."review_review_run_finish_output" IS 'foreign key ReviewReviewRunFinishOutput(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_review_run_finish_output_fk_step_root_2c63nc4bm4" ON "slice"."review_review_run_finish_output" IS 'foreign key ReviewReviewRunFinishOutput(step, root) to ReviewDone(step, root)';
 
-COMMENT ON CONSTRAINT "__review_review_run_input_fk_root_nkwzzml3bh" ON "slice"."review_review_run_input" IS 'foreign key ReviewReviewRunInput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_review_run_input_fk_root_nkwzzml3bh" ON "slice"."review_review_run_input" IS 'foreign key ReviewReviewRunInput(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_root_otll5lik2n" ON "slice"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_root_otll5lik2n" ON "slice"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_scope_root_qld3u5js7a" ON "slice"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(scope, root) to ReviewReviewRunInput(scope, root)';
 
-COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_scope_pred_2ecx6mfelf" ON "slice"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(scope where {"kind":"compare","left":{"field":"ordinal","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(ordinal), root) to ReviewReviewRunInputSizes(scope, ordinal, root)';
+COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_scope_pred_2ecx6mfelf" ON "slice"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(scope where Logic.ge(ordinal, 1n), pred(ordinal), root) to ReviewReviewRunInputSizes(scope, ordinal, root)';
 
-COMMENT ON CONSTRAINT "__review_save_input_fk_root_75g3g3e6l3" ON "slice"."review_save_input" IS 'foreign key ReviewSaveInput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_save_input_fk_root_75g3g3e6l3" ON "slice"."review_save_input" IS 'foreign key ReviewSaveInput(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__review_save_output_fk_root_v6vey436ah" ON "slice"."review_save_output" IS 'foreign key ReviewSaveOutput(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_save_output_fk_root_v6vey436ah" ON "slice"."review_save_output" IS 'foreign key ReviewSaveOutput(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_save_output_fk_step_root_5hdksxptvu" ON "slice"."review_save_output" IS 'foreign key ReviewSaveOutput(step, root) to ReviewDone(step, root)';
 
@@ -6487,107 +6817,107 @@ COMMENT ON CONSTRAINT "__review_save_output_fk_step_root_jzs34zo56u" ON "slice".
 
 COMMENT ON CONSTRAINT "__review_saved_fk_from_root_sm7hkqib23" ON "slice"."review_saved" IS 'foreign key ReviewSaved(from, root) to ReviewQuestionsFinishOutput(step, root)';
 
-COMMENT ON CONSTRAINT "__review_saved_fk_root_4xrfr45gdd" ON "slice"."review_saved" IS 'foreign key ReviewSaved(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_saved_fk_root_4xrfr45gdd" ON "slice"."review_saved" IS 'foreign key ReviewSaved(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_saved_fk_to_root_owp4kjzfm6" ON "slice"."review_saved" IS 'foreign key ReviewSaved(to, root) to ReviewSaveInput(step, root)';
 
-COMMENT ON CONSTRAINT "__review_scope_fk_root_xio6pw6voh" ON "slice"."review_scope" IS 'foreign key ReviewScope(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_scope_fk_root_xio6pw6voh" ON "slice"."review_scope" IS 'foreign key ReviewScope(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_skipped_fk_by_ry2tc7ng2c" ON "slice"."review_skipped" IS 'foreign key ReviewSkipped(by) to ReviewRoot(scope)';
 
-COMMENT ON CONSTRAINT "__review_skipped_fk_root_pp4l3yk33h" ON "slice"."review_skipped" IS 'foreign key ReviewSkipped(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_skipped_fk_root_pp4l3yk33h" ON "slice"."review_skipped" IS 'foreign key ReviewSkipped(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_skipped_fk_scope_fduacpn4ws" ON "slice"."review_skipped" IS 'foreign key ReviewSkipped(scope) to ReviewRoot(scope)';
 
 COMMENT ON CONSTRAINT "__review_split_fk_from_root_ep5f5t573x" ON "slice"."review_split" IS 'foreign key ReviewSplit(from, root) to ReviewGatherOutput(step, root)';
 
-COMMENT ON CONSTRAINT "__review_split_fk_root_7vz6jy3jnt" ON "slice"."review_split" IS 'foreign key ReviewSplit(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_split_fk_root_7vz6jy3jnt" ON "slice"."review_split" IS 'foreign key ReviewSplit(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_split_fk_to_root_ilwolhg4sy" ON "slice"."review_split" IS 'foreign key ReviewSplit(to, root) to ReviewQuestionsInput(scope, root)';
 
 COMMENT ON CONSTRAINT "__review_start_scope_fk_child_root_ntci6w5prg" ON "slice"."review_start_scope" IS 'foreign key ReviewStartScope(child, root) to ReviewScope(scope, root)';
 
-COMMENT ON CONSTRAINT "__review_start_scope_fk_root_ijnygpifkq" ON "slice"."review_start_scope" IS 'foreign key ReviewStartScope(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_start_scope_fk_root_ijnygpifkq" ON "slice"."review_start_scope" IS 'foreign key ReviewStartScope(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_start_scope_fk_scope_root_4dnwn3qe7t" ON "slice"."review_start_scope" IS 'foreign key ReviewStartScope(scope, root) to ReviewAdmitted(scope, root)';
 
-COMMENT ON CONSTRAINT "__review_start_step_fk_root_qixpuodpgi" ON "slice"."review_start_step" IS 'foreign key ReviewStartStep(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_start_step_fk_root_qixpuodpgi" ON "slice"."review_start_step" IS 'foreign key ReviewStartStep(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_start_step_fk_scope_root_ex5wrmacrb" ON "slice"."review_start_step" IS 'foreign key ReviewStartStep(scope, root) to ReviewAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__review_start_step_fk_step_root_e5z3u72syf" ON "slice"."review_start_step" IS 'foreign key ReviewStartStep(step, root) to ReviewStep(step, root)';
 
-COMMENT ON CONSTRAINT "__review_step_fk_root_s325zhfm22" ON "slice"."review_step" IS 'foreign key ReviewStep(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_step_fk_root_s325zhfm22" ON "slice"."review_step" IS 'foreign key ReviewStep(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_step_fk_scope_root_eb2a3dvk6c" ON "slice"."review_step" IS 'foreign key ReviewStep(scope, root) to ReviewAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__review_within_fk_parent_root_4wk35gfdq4" ON "slice"."review_within" IS 'foreign key ReviewWithin(parent, root) to ReviewScope(scope, root)';
 
-COMMENT ON CONSTRAINT "__review_within_fk_root_ksa5lhbp2j" ON "slice"."review_within" IS 'foreign key ReviewWithin(root) to ReviewRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__review_within_fk_root_ksa5lhbp2j" ON "slice"."review_within" IS 'foreign key ReviewWithin(root) to ReviewRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__review_within_fk_scope_root_e63iwx6wm2" ON "slice"."review_within" IS 'foreign key ReviewWithin(scope, root) to ReviewScope(scope, root)';
 
-COMMENT ON CONSTRAINT "__sync_admitted_fk_root_pazobscutb" ON "slice"."sync_admitted" IS 'foreign key SyncAdmitted(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_admitted_fk_root_pazobscutb" ON "slice"."sync_admitted" IS 'foreign key SyncAdmitted(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_admitted_fk_scope_root_ieiyxemub7" ON "slice"."sync_admitted" IS 'foreign key SyncAdmitted(scope, root) to SyncScope(scope, root)';
 
-COMMENT ON CONSTRAINT "__sync_build_input_fk_root_qlycqp6gk2" ON "slice"."sync_build_input" IS 'foreign key SyncBuildInput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_build_input_fk_root_qlycqp6gk2" ON "slice"."sync_build_input" IS 'foreign key SyncBuildInput(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__sync_build_output_fk_root_grwezm3fcr" ON "slice"."sync_build_output" IS 'foreign key SyncBuildOutput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_build_output_fk_root_grwezm3fcr" ON "slice"."sync_build_output" IS 'foreign key SyncBuildOutput(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_build_output_fk_step_root_o3zx5hom3t" ON "slice"."sync_build_output" IS 'foreign key SyncBuildOutput(step, root) to SyncBuildInput(step, root)';
 
 COMMENT ON CONSTRAINT "__sync_build_output_fk_step_root_aksn6onpma" ON "slice"."sync_build_output" IS 'foreign key SyncBuildOutput(step, root) to SyncDone(step, root)';
 
-COMMENT ON CONSTRAINT "__sync_claim_fk_root_4qbs7pxn2t" ON "slice"."sync_claim" IS 'foreign key SyncClaim(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_claim_fk_root_4qbs7pxn2t" ON "slice"."sync_claim" IS 'foreign key SyncClaim(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_claim_fk_step_root_gvtcn764xc" ON "slice"."sync_claim" IS 'foreign key SyncClaim(step, root) to SyncStep(step, root)';
 
-COMMENT ON CONSTRAINT "__sync_claim_fk_step_pred_attempt_root_aeg32ogl5b" ON "slice"."sync_claim" IS 'foreign key SyncClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to SyncEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__sync_claim_fk_step_pred_attempt_root_aeg32ogl5b" ON "slice"."sync_claim" IS 'foreign key SyncClaim(step where Logic.ge(attempt, 1n), pred(attempt), root) to SyncEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__sync_copy_input_fk_root_d7u63yuxxs" ON "slice"."sync_copy_input" IS 'foreign key SyncCopyInput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_copy_input_fk_root_d7u63yuxxs" ON "slice"."sync_copy_input" IS 'foreign key SyncCopyInput(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__sync_copy_output_fk_root_x2xt2l75vg" ON "slice"."sync_copy_output" IS 'foreign key SyncCopyOutput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_copy_output_fk_root_x2xt2l75vg" ON "slice"."sync_copy_output" IS 'foreign key SyncCopyOutput(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_copy_output_fk_step_root_65fyg7xb6t" ON "slice"."sync_copy_output" IS 'foreign key SyncCopyOutput(step, root) to SyncCopyInput(step, root)';
 
 COMMENT ON CONSTRAINT "__sync_copy_output_fk_step_root_gfjlcri22w" ON "slice"."sync_copy_output" IS 'foreign key SyncCopyOutput(step, root) to SyncDone(step, root)';
 
-COMMENT ON CONSTRAINT "__sync_done_fk_root_kbt6t66k7r" ON "slice"."sync_done" IS 'foreign key SyncDone(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_done_fk_root_kbt6t66k7r" ON "slice"."sync_done" IS 'foreign key SyncDone(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__sync_ended_fk_root_6yfa76vqgo" ON "slice"."sync_ended" IS 'foreign key SyncEnded(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_ended_fk_root_6yfa76vqgo" ON "slice"."sync_ended" IS 'foreign key SyncEnded(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_ended_fk_step_attempt_root_43aj3jw3bk" ON "slice"."sync_ended" IS 'foreign key SyncEnded(step, attempt, root) to SyncClaim(step, attempt, root)';
 
 COMMENT ON CONSTRAINT "__sync_exclusive_fk_kind_key_pred_turn_opo5gkimc4" ON "slice"."sync_exclusive" IS 'foreign key SyncExclusive(kind, key, pred(turn)) to SyncReleased(kind, key, turn)';
 
-COMMENT ON CONSTRAINT "__sync_exclusive_key_fk_root_jfvgxfgxk7" ON "slice"."sync_exclusive_key" IS 'foreign key SyncExclusiveKey(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_exclusive_key_fk_root_jfvgxfgxk7" ON "slice"."sync_exclusive_key" IS 'foreign key SyncExclusiveKey(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_exclusive_key_fk_scope_root_cl36evoxyb" ON "slice"."sync_exclusive_key" IS 'foreign key SyncExclusiveKey(scope, root) to SyncScope(scope, root)';
 
-COMMENT ON CONSTRAINT "__sync_exhausted_fk_root_w5rujdfs5u" ON "slice"."sync_exhausted" IS 'foreign key SyncExhausted(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_exhausted_fk_root_w5rujdfs5u" ON "slice"."sync_exhausted" IS 'foreign key SyncExhausted(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_exhausted_fk_step_root_vd7jhdnvet" ON "slice"."sync_exhausted" IS 'foreign key SyncExhausted(step, root) to SyncFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__sync_failed_fk_root_utdobwjqln" ON "slice"."sync_failed" IS 'foreign key SyncFailed(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_failed_fk_root_utdobwjqln" ON "slice"."sync_failed" IS 'foreign key SyncFailed(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__sync_fenced_fk_root_pft7kt3u6c" ON "slice"."sync_fenced" IS 'foreign key SyncFenced(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_fenced_fk_root_pft7kt3u6c" ON "slice"."sync_fenced" IS 'foreign key SyncFenced(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_fenced_fk_step_attempt_root_ddezsoici7" ON "slice"."sync_fenced" IS 'foreign key SyncFenced(step, attempt, root) to SyncEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__sync_finish_fk_root_jesvnqpmqt" ON "slice"."sync_finish" IS 'foreign key SyncFinish(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_finish_fk_root_jesvnqpmqt" ON "slice"."sync_finish" IS 'foreign key SyncFinish(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_finish_fk_scope_root_bjgk4nxo7e" ON "slice"."sync_finish" IS 'foreign key SyncFinish(scope, root) to SyncAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__sync_finish_fk_step_root_mmscezhzyq" ON "slice"."sync_finish" IS 'foreign key SyncFinish(step, root) to SyncStep(step, root)';
 
-COMMENT ON CONSTRAINT "__sync_gold_finish_output_fk_root_w6bne6fmx4" ON "slice"."sync_gold_finish_output" IS 'foreign key SyncGoldFinishOutput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_gold_finish_output_fk_root_w6bne6fmx4" ON "slice"."sync_gold_finish_output" IS 'foreign key SyncGoldFinishOutput(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_gold_finish_output_fk_step_root_2qkffyqtvq" ON "slice"."sync_gold_finish_output" IS 'foreign key SyncGoldFinishOutput(step, root) to SyncDone(step, root)';
 
-COMMENT ON CONSTRAINT "__sync_gold_input_fk_root_dearji3wtq" ON "slice"."sync_gold_input" IS 'foreign key SyncGoldInput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_gold_input_fk_root_dearji3wtq" ON "slice"."sync_gold_input" IS 'foreign key SyncGoldInput(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__sync_held_fk_root_62s5pmsoqa" ON "slice"."sync_held" IS 'foreign key SyncHeld(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_held_fk_root_62s5pmsoqa" ON "slice"."sync_held" IS 'foreign key SyncHeld(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_held_fk_step_attempt_root_46zydmfnyy" ON "slice"."sync_held" IS 'foreign key SyncHeld(step, attempt, root) to SyncClaim(step, attempt, root)';
 
@@ -6595,87 +6925,87 @@ COMMENT ON CONSTRAINT "__sync_held_fk_step_root_waydyqivsc" ON "slice"."sync_hel
 
 COMMENT ON CONSTRAINT "__sync_paused_fk_target_pred_turn_ovy6ezc3ey" ON "slice"."sync_paused" IS 'foreign key SyncPaused(target, pred(turn)) to SyncResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__sync_refusal_fk_root_3f2zmczqcu" ON "slice"."sync_refusal" IS 'foreign key SyncRefusal(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_refusal_fk_root_3f2zmczqcu" ON "slice"."sync_refusal" IS 'foreign key SyncRefusal(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_refusal_fk_step_root_igzyfxl4o3" ON "slice"."sync_refusal" IS 'foreign key SyncRefusal(step, root) to SyncFailed(step, root)';
 
 COMMENT ON CONSTRAINT "__sync_released_fk_kind_key_turn_e54e5at4ya" ON "slice"."sync_released" IS 'foreign key SyncReleased(kind, key, turn) to SyncExclusive(kind, key, turn)';
 
-COMMENT ON CONSTRAINT "__sync_result_fk_root_vnymla3qhz" ON "slice"."sync_result" IS 'foreign key SyncResult(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_result_fk_root_vnymla3qhz" ON "slice"."sync_result" IS 'foreign key SyncResult(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_result_fk_step_root_x2umddyh22" ON "slice"."sync_result" IS 'foreign key SyncResult(step, root) to SyncStep(step, root)';
 
 COMMENT ON CONSTRAINT "__sync_resumed_fk_target_turn_x3nw56h4tx" ON "slice"."sync_resumed" IS 'foreign key SyncResumed(target, turn) to SyncPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__sync_retry_fk_root_wl34w4vs2m" ON "slice"."sync_retry" IS 'foreign key SyncRetry(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_retry_fk_root_wl34w4vs2m" ON "slice"."sync_retry" IS 'foreign key SyncRetry(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_retry_fk_step_attempt_root_wr6wrg43i4" ON "slice"."sync_retry" IS 'foreign key SyncRetry(step, attempt, root) to SyncEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__sync_scope_fk_root_whqzszw2jj" ON "slice"."sync_scope" IS 'foreign key SyncScope(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_scope_fk_root_whqzszw2jj" ON "slice"."sync_scope" IS 'foreign key SyncScope(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_skipped_fk_by_zsxc5osgwh" ON "slice"."sync_skipped" IS 'foreign key SyncSkipped(by) to SyncRoot(scope)';
 
-COMMENT ON CONSTRAINT "__sync_skipped_fk_root_33hfwafoud" ON "slice"."sync_skipped" IS 'foreign key SyncSkipped(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_skipped_fk_root_33hfwafoud" ON "slice"."sync_skipped" IS 'foreign key SyncSkipped(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_skipped_fk_scope_33qsksdlcc" ON "slice"."sync_skipped" IS 'foreign key SyncSkipped(scope) to SyncRoot(scope)';
 
-COMMENT ON CONSTRAINT "__sync_start_step_fk_root_2jg4xkdldt" ON "slice"."sync_start_step" IS 'foreign key SyncStartStep(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_start_step_fk_root_2jg4xkdldt" ON "slice"."sync_start_step" IS 'foreign key SyncStartStep(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_start_step_fk_scope_root_vedcbu54xe" ON "slice"."sync_start_step" IS 'foreign key SyncStartStep(scope, root) to SyncAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__sync_start_step_fk_step_root_jas4o3xkqs" ON "slice"."sync_start_step" IS 'foreign key SyncStartStep(step, root) to SyncStep(step, root)';
 
-COMMENT ON CONSTRAINT "__sync_step_fk_root_rmc4nivt3i" ON "slice"."sync_step" IS 'foreign key SyncStep(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_step_fk_root_rmc4nivt3i" ON "slice"."sync_step" IS 'foreign key SyncStep(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_step_fk_scope_root_sfdyvsar2y" ON "slice"."sync_step" IS 'foreign key SyncStep(scope, root) to SyncAdmitted(scope, root)';
 
-COMMENT ON CONSTRAINT "__sync_sync_run_finish_output_fk_root_khqmodw54k" ON "slice"."sync_sync_run_finish_output" IS 'foreign key SyncSyncRunFinishOutput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_sync_run_finish_output_fk_root_khqmodw54k" ON "slice"."sync_sync_run_finish_output" IS 'foreign key SyncSyncRunFinishOutput(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__sync_sync_run_finish_output_fk_step_root_n3vgglnveu" ON "slice"."sync_sync_run_finish_output" IS 'foreign key SyncSyncRunFinishOutput(step, root) to SyncDone(step, root)';
 
-COMMENT ON CONSTRAINT "__sync_sync_run_input_fk_root_ifd4bfberz" ON "slice"."sync_sync_run_input" IS 'foreign key SyncSyncRunInput(root) to SyncRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__sync_sync_run_input_fk_root_ifd4bfberz" ON "slice"."sync_sync_run_input" IS 'foreign key SyncSyncRunInput(root) to SyncRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__writeback_admitted_fk_root_zzhx3ymsmx" ON "slice"."writeback_admitted" IS 'foreign key WritebackAdmitted(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_admitted_fk_root_zzhx3ymsmx" ON "slice"."writeback_admitted" IS 'foreign key WritebackAdmitted(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_admitted_fk_scope_root_bgkzavlmet" ON "slice"."writeback_admitted" IS 'foreign key WritebackAdmitted(scope, root) to WritebackScope(scope, root)';
 
-COMMENT ON CONSTRAINT "__writeback_claim_fk_root_7agc267qm7" ON "slice"."writeback_claim" IS 'foreign key WritebackClaim(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_claim_fk_root_7agc267qm7" ON "slice"."writeback_claim" IS 'foreign key WritebackClaim(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_claim_fk_step_root_vh7k4u5nuz" ON "slice"."writeback_claim" IS 'foreign key WritebackClaim(step, root) to WritebackStep(step, root)';
 
-COMMENT ON CONSTRAINT "__writeback_claim_fk_step_pred_attempt_root_qpbpmxuik3" ON "slice"."writeback_claim" IS 'foreign key WritebackClaim(step where {"kind":"compare","left":{"field":"attempt","kind":"field"},"op":"ge","right":{"kind":"literal","value":"~n:1"}}, pred(attempt), root) to WritebackEnded(step, attempt, root)';
+COMMENT ON CONSTRAINT "__writeback_claim_fk_step_pred_attempt_root_qpbpmxuik3" ON "slice"."writeback_claim" IS 'foreign key WritebackClaim(step where Logic.ge(attempt, 1n), pred(attempt), root) to WritebackEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__writeback_deliver_input_fk_root_khq2esrmmb" ON "slice"."writeback_deliver_input" IS 'foreign key WritebackDeliverInput(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_deliver_input_fk_root_khq2esrmmb" ON "slice"."writeback_deliver_input" IS 'foreign key WritebackDeliverInput(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__writeback_deliver_output_fk_root_e4xa5oep52" ON "slice"."writeback_deliver_output" IS 'foreign key WritebackDeliverOutput(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_deliver_output_fk_root_e4xa5oep52" ON "slice"."writeback_deliver_output" IS 'foreign key WritebackDeliverOutput(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_deliver_output_fk_step_root_3p47hjlrfd" ON "slice"."writeback_deliver_output" IS 'foreign key WritebackDeliverOutput(step, root) to WritebackDeliverInput(step, root)';
 
 COMMENT ON CONSTRAINT "__writeback_deliver_output_fk_step_root_trjdigghf7" ON "slice"."writeback_deliver_output" IS 'foreign key WritebackDeliverOutput(step, root) to WritebackDone(step, root)';
 
-COMMENT ON CONSTRAINT "__writeback_done_fk_root_3lnpe5h2ex" ON "slice"."writeback_done" IS 'foreign key WritebackDone(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_done_fk_root_3lnpe5h2ex" ON "slice"."writeback_done" IS 'foreign key WritebackDone(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__writeback_ended_fk_root_h7zxc3wrem" ON "slice"."writeback_ended" IS 'foreign key WritebackEnded(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_ended_fk_root_h7zxc3wrem" ON "slice"."writeback_ended" IS 'foreign key WritebackEnded(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_ended_fk_step_attempt_root_laqrk2e3dt" ON "slice"."writeback_ended" IS 'foreign key WritebackEnded(step, attempt, root) to WritebackClaim(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__writeback_exhausted_fk_root_m3qvioeeek" ON "slice"."writeback_exhausted" IS 'foreign key WritebackExhausted(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_exhausted_fk_root_m3qvioeeek" ON "slice"."writeback_exhausted" IS 'foreign key WritebackExhausted(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_exhausted_fk_step_root_cwhwzf2upp" ON "slice"."writeback_exhausted" IS 'foreign key WritebackExhausted(step, root) to WritebackFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__writeback_failed_fk_root_ddkqjmy3le" ON "slice"."writeback_failed" IS 'foreign key WritebackFailed(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_failed_fk_root_ddkqjmy3le" ON "slice"."writeback_failed" IS 'foreign key WritebackFailed(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON CONSTRAINT "__writeback_fenced_fk_root_cishzkxig6" ON "slice"."writeback_fenced" IS 'foreign key WritebackFenced(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_fenced_fk_root_cishzkxig6" ON "slice"."writeback_fenced" IS 'foreign key WritebackFenced(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_fenced_fk_step_attempt_root_7uikhcfpkf" ON "slice"."writeback_fenced" IS 'foreign key WritebackFenced(step, attempt, root) to WritebackEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__writeback_finish_fk_root_4suiathayz" ON "slice"."writeback_finish" IS 'foreign key WritebackFinish(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_finish_fk_root_4suiathayz" ON "slice"."writeback_finish" IS 'foreign key WritebackFinish(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_finish_fk_scope_root_rp7v2vj6l6" ON "slice"."writeback_finish" IS 'foreign key WritebackFinish(scope, root) to WritebackAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__writeback_finish_fk_step_root_7ny2yumuvy" ON "slice"."writeback_finish" IS 'foreign key WritebackFinish(step, root) to WritebackStep(step, root)';
 
-COMMENT ON CONSTRAINT "__writeback_held_fk_root_dady3frmfj" ON "slice"."writeback_held" IS 'foreign key WritebackHeld(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_held_fk_root_dady3frmfj" ON "slice"."writeback_held" IS 'foreign key WritebackHeld(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_held_fk_step_attempt_root_2i7p4i2alp" ON "slice"."writeback_held" IS 'foreign key WritebackHeld(step, attempt, root) to WritebackClaim(step, attempt, root)';
 
@@ -6683,75 +7013,75 @@ COMMENT ON CONSTRAINT "__writeback_held_fk_step_root_7yahu5vvit" ON "slice"."wri
 
 COMMENT ON CONSTRAINT "__writeback_paused_fk_target_pred_turn_rvsgo6wgpe" ON "slice"."writeback_paused" IS 'foreign key WritebackPaused(target, pred(turn)) to WritebackResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__writeback_refusal_fk_root_hbzez4kebv" ON "slice"."writeback_refusal" IS 'foreign key WritebackRefusal(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_refusal_fk_root_hbzez4kebv" ON "slice"."writeback_refusal" IS 'foreign key WritebackRefusal(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_refusal_fk_step_root_xf2b5o76fl" ON "slice"."writeback_refusal" IS 'foreign key WritebackRefusal(step, root) to WritebackFailed(step, root)';
 
-COMMENT ON CONSTRAINT "__writeback_result_fk_root_2ds3etg4pt" ON "slice"."writeback_result" IS 'foreign key WritebackResult(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_result_fk_root_2ds3etg4pt" ON "slice"."writeback_result" IS 'foreign key WritebackResult(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_result_fk_step_root_52vlcqzy4o" ON "slice"."writeback_result" IS 'foreign key WritebackResult(step, root) to WritebackStep(step, root)';
 
 COMMENT ON CONSTRAINT "__writeback_resumed_fk_target_turn_vfx6l6vk75" ON "slice"."writeback_resumed" IS 'foreign key WritebackResumed(target, turn) to WritebackPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__writeback_retry_fk_root_7expqnzkek" ON "slice"."writeback_retry" IS 'foreign key WritebackRetry(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_retry_fk_root_7expqnzkek" ON "slice"."writeback_retry" IS 'foreign key WritebackRetry(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_retry_fk_step_attempt_root_5cwcgqo5s7" ON "slice"."writeback_retry" IS 'foreign key WritebackRetry(step, attempt, root) to WritebackEnded(step, attempt, root)';
 
-COMMENT ON CONSTRAINT "__writeback_scope_fk_root_7hgmsmhohr" ON "slice"."writeback_scope" IS 'foreign key WritebackScope(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_scope_fk_root_7hgmsmhohr" ON "slice"."writeback_scope" IS 'foreign key WritebackScope(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_skipped_fk_by_dm2bpfflyw" ON "slice"."writeback_skipped" IS 'foreign key WritebackSkipped(by) to WritebackRoot(scope)';
 
-COMMENT ON CONSTRAINT "__writeback_skipped_fk_root_a3d7uviq7u" ON "slice"."writeback_skipped" IS 'foreign key WritebackSkipped(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_skipped_fk_root_a3d7uviq7u" ON "slice"."writeback_skipped" IS 'foreign key WritebackSkipped(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_skipped_fk_scope_veikkumie6" ON "slice"."writeback_skipped" IS 'foreign key WritebackSkipped(scope) to WritebackRoot(scope)';
 
-COMMENT ON CONSTRAINT "__writeback_start_step_fk_root_r7w5ogs6pb" ON "slice"."writeback_start_step" IS 'foreign key WritebackStartStep(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_start_step_fk_root_r7w5ogs6pb" ON "slice"."writeback_start_step" IS 'foreign key WritebackStartStep(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_start_step_fk_scope_root_dnvan4vxav" ON "slice"."writeback_start_step" IS 'foreign key WritebackStartStep(scope, root) to WritebackAdmitted(scope, root)';
 
 COMMENT ON CONSTRAINT "__writeback_start_step_fk_step_root_zuw7g6khi3" ON "slice"."writeback_start_step" IS 'foreign key WritebackStartStep(step, root) to WritebackStep(step, root)';
 
-COMMENT ON CONSTRAINT "__writeback_step_fk_root_ikezfkedwk" ON "slice"."writeback_step" IS 'foreign key WritebackStep(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_step_fk_root_ikezfkedwk" ON "slice"."writeback_step" IS 'foreign key WritebackStep(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_step_fk_scope_root_htnuvc75ao" ON "slice"."writeback_step" IS 'foreign key WritebackStep(scope, root) to WritebackAdmitted(scope, root)';
 
-COMMENT ON CONSTRAINT "__writeback_writeback_finish_output_fk_root_jvtr4eenzd" ON "slice"."writeback_writeback_finish_output" IS 'foreign key WritebackWritebackFinishOutput(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_writeback_finish_output_fk_root_jvtr4eenzd" ON "slice"."writeback_writeback_finish_output" IS 'foreign key WritebackWritebackFinishOutput(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
 COMMENT ON CONSTRAINT "__writeback_writeback_finish_output_fk_step_root_fygai72drs" ON "slice"."writeback_writeback_finish_output" IS 'foreign key WritebackWritebackFinishOutput(step, root) to WritebackDone(step, root)';
 
-COMMENT ON CONSTRAINT "__writeback_writeback_input_fk_root_mwnbphwqvk" ON "slice"."writeback_writeback_input" IS 'foreign key WritebackWritebackInput(root) to WritebackRoot(scope where {"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}})';
+COMMENT ON CONSTRAINT "__writeback_writeback_input_fk_root_mwnbphwqvk" ON "slice"."writeback_writeback_input" IS 'foreign key WritebackWritebackInput(root) to WritebackRoot(scope where Logic.eq(retired, false))';
 
-COMMENT ON FUNCTION "slice"."__hold_assign_root_rwboli77cc"("slice"."__domain_jevqauzmw6"[]) IS 'hold function of the groups of AssignRoot';
+COMMENT ON FUNCTION "slice"."__hold_assign_root_rwboli77cc"("slice"."__sha256"[]) IS 'hold function of the groups of AssignRoot';
 
-COMMENT ON FUNCTION "slice"."__hold_chain_root_wgndggnfwf"("slice"."__domain_jevqauzmw6"[]) IS 'hold function of the groups of ChainRoot';
+COMMENT ON FUNCTION "slice"."__hold_chain_root_wgndggnfwf"("slice"."__sha256"[]) IS 'hold function of the groups of ChainRoot';
 
-COMMENT ON FUNCTION "slice"."__hold_clock_root_bawnkhmkww"("slice"."__domain_jevqauzmw6"[]) IS 'hold function of the groups of ClockRoot';
+COMMENT ON FUNCTION "slice"."__hold_clock_root_bawnkhmkww"("slice"."__sha256"[]) IS 'hold function of the groups of ClockRoot';
 
-COMMENT ON FUNCTION "slice"."__hold_fan_root_4vwfxofrxw"("slice"."__domain_jevqauzmw6"[]) IS 'hold function of the groups of FanRoot';
+COMMENT ON FUNCTION "slice"."__hold_fan_root_4vwfxofrxw"("slice"."__sha256"[]) IS 'hold function of the groups of FanRoot';
 
-COMMENT ON FUNCTION "slice"."__hold_retry_root_54bybhkxg6"("slice"."__domain_jevqauzmw6"[]) IS 'hold function of the groups of RetryRoot';
+COMMENT ON FUNCTION "slice"."__hold_retry_root_54bybhkxg6"("slice"."__sha256"[]) IS 'hold function of the groups of RetryRoot';
 
-COMMENT ON FUNCTION "slice"."__hold_review_root_j3blgclwnl"("slice"."__domain_jevqauzmw6"[]) IS 'hold function of the groups of ReviewRoot';
+COMMENT ON FUNCTION "slice"."__hold_review_root_j3blgclwnl"("slice"."__sha256"[]) IS 'hold function of the groups of ReviewRoot';
 
-COMMENT ON FUNCTION "slice"."__hold_sync_root_6ita6q5wxi"("slice"."__domain_jevqauzmw6"[]) IS 'hold function of the groups of SyncRoot';
+COMMENT ON FUNCTION "slice"."__hold_sync_root_6ita6q5wxi"("slice"."__sha256"[]) IS 'hold function of the groups of SyncRoot';
 
-COMMENT ON FUNCTION "slice"."__hold_writeback_root_msmvpm3j7g"("slice"."__domain_jevqauzmw6"[]) IS 'hold function of the groups of WritebackRoot';
+COMMENT ON FUNCTION "slice"."__hold_writeback_root_msmvpm3j7g"("slice"."__sha256"[]) IS 'hold function of the groups of WritebackRoot';
 
-COMMENT ON FUNCTION "slice"."__retire_assign_root_hwbj4sewrx"("slice"."__domain_jevqauzmw6"[]) IS 'retire function of the groups of AssignRoot';
+COMMENT ON FUNCTION "slice"."__retire_assign_root_hwbj4sewrx"("slice"."__sha256"[]) IS 'retire function of the groups of AssignRoot';
 
-COMMENT ON FUNCTION "slice"."__retire_chain_root_ji6nmac7of"("slice"."__domain_jevqauzmw6"[]) IS 'retire function of the groups of ChainRoot';
+COMMENT ON FUNCTION "slice"."__retire_chain_root_ji6nmac7of"("slice"."__sha256"[]) IS 'retire function of the groups of ChainRoot';
 
-COMMENT ON FUNCTION "slice"."__retire_clock_root_6pfo6eeroe"("slice"."__domain_jevqauzmw6"[]) IS 'retire function of the groups of ClockRoot';
+COMMENT ON FUNCTION "slice"."__retire_clock_root_6pfo6eeroe"("slice"."__sha256"[]) IS 'retire function of the groups of ClockRoot';
 
-COMMENT ON FUNCTION "slice"."__retire_fan_root_niesya7vcd"("slice"."__domain_jevqauzmw6"[]) IS 'retire function of the groups of FanRoot';
+COMMENT ON FUNCTION "slice"."__retire_fan_root_niesya7vcd"("slice"."__sha256"[]) IS 'retire function of the groups of FanRoot';
 
-COMMENT ON FUNCTION "slice"."__retire_retry_root_kays5vv5ic"("slice"."__domain_jevqauzmw6"[]) IS 'retire function of the groups of RetryRoot';
+COMMENT ON FUNCTION "slice"."__retire_retry_root_kays5vv5ic"("slice"."__sha256"[]) IS 'retire function of the groups of RetryRoot';
 
-COMMENT ON FUNCTION "slice"."__retire_review_root_itykotyltd"("slice"."__domain_jevqauzmw6"[]) IS 'retire function of the groups of ReviewRoot';
+COMMENT ON FUNCTION "slice"."__retire_review_root_itykotyltd"("slice"."__sha256"[]) IS 'retire function of the groups of ReviewRoot';
 
-COMMENT ON FUNCTION "slice"."__retire_sync_root_ygktrpeohu"("slice"."__domain_jevqauzmw6"[]) IS 'retire function of the groups of SyncRoot';
+COMMENT ON FUNCTION "slice"."__retire_sync_root_ygktrpeohu"("slice"."__sha256"[]) IS 'retire function of the groups of SyncRoot';
 
-COMMENT ON FUNCTION "slice"."__retire_writeback_root_oprw3k6une"("slice"."__domain_jevqauzmw6"[]) IS 'retire function of the groups of WritebackRoot';
+COMMENT ON FUNCTION "slice"."__retire_writeback_root_oprw3k6une"("slice"."__sha256"[]) IS 'retire function of the groups of WritebackRoot';
 
 COMMENT ON INDEX "slice"."__assign_admitted_ix_root_pot3vpqjrt" IS 'btree index AssignAdmitted(root)';
 
@@ -7379,71 +7709,285 @@ COMMENT ON STATISTICS "slice"."__sync_finish_stats_scope_step_xiaq6np7mf" IS 'st
 
 COMMENT ON STATISTICS "slice"."__writeback_finish_stats_scope_step_3knpjnabow" IS 'statistics WritebackFinish(scope, step)';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_ll6b7ywsze"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_assign_assignment_input_veyxb2wi4k"() IS 'the reader of the delta of news of AssignAssignmentInput';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_nearest_wpkroo4gqt"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInputModeNearest and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_assignment_input_ueoz7uj2et"() IS 'the reader of the delta of olds of AssignAssignmentInput';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_i7zu2o4rtk"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_assign_assignment_input_mode_nearest_6th6cbuqwb"() IS 'the reader of the delta of news of AssignAssignmentInputModeNearest';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_nearest_gtyvqnsvt6"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInputModeNearest and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_assignment_input_mode_nearest_ykzrrv4ft7"() IS 'the reader of the delta of olds of AssignAssignmentInputModeNearest';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_iez77fjrkx"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideOutput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_assign_assignment_input_mode_within_7kcj4smusi"() IS 'the reader of the delta of news of AssignAssignmentInputModeWithin';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_rest_dl4rc34gos"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideOutputStageRest and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_assignment_input_mode_within_dyusbik3ul"() IS 'the reader of the delta of olds of AssignAssignmentInputModeWithin';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_done_4pcl2f7b3b"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDone and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_input_fg3qammcok"() IS 'the reader of the delta of news of AssignDecideInput';
 
-COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_nearest_r33s4dgzjf"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignEmbedInputModeNearest and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_input_5h5ccyocm7"() IS 'the reader of the delta of olds of AssignDecideInput';
 
-COMMENT ON FUNCTION "slice"."__judge_chain_chain_run_input_uxohggxxkj"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainChainRunInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_input_mode_nearest_gb4gtm3ryn"() IS 'the reader of the delta of news of AssignDecideInputModeNearest';
 
-COMMENT ON FUNCTION "slice"."__judge_chain_done_bny4tyogt6"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainDone and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_input_mode_nearest_aimvhdfleo"() IS 'the reader of the delta of olds of AssignDecideInputModeNearest';
 
-COMMENT ON FUNCTION "slice"."__judge_chain_page_input_q2evszpml3"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainPageInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_input_mode_within_7tva4i3iph"() IS 'the reader of the delta of news of AssignDecideInputModeWithin';
 
-COMMENT ON FUNCTION "slice"."__judge_clock_chime_input_fzumyjkjso"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ClockChimeInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_input_mode_within_2weywdd2zq"() IS 'the reader of the delta of olds of AssignDecideInputModeWithin';
 
-COMMENT ON FUNCTION "slice"."__judge_clock_done_6guyjh3v2y"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ClockDone and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_output_xaj2vprd4q"() IS 'the reader of the delta of news of AssignDecideOutput';
 
-COMMENT ON FUNCTION "slice"."__judge_clock_hourly_input_fn6672r6mx"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ClockHourlyInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_output_efvbruv34o"() IS 'the reader of the delta of olds of AssignDecideOutput';
 
-COMMENT ON FUNCTION "slice"."__judge_fan_batch_input_ahcbwfepfq"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanBatchInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_output_stage_rest_y7e6zv4m2m"() IS 'the reader of the delta of news of AssignDecideOutputStageRest';
 
-COMMENT ON FUNCTION "slice"."__judge_fan_claim_5zhncu7tmh"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanClaim and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_output_stage_rest_wmwxfaf2qm"() IS 'the reader of the delta of olds of AssignDecideOutputStageRest';
 
-COMMENT ON FUNCTION "slice"."__judge_fan_done_l6g3p6tb2e"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanDone and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_output_stage_serve_27litht4tq"() IS 'the reader of the delta of news of AssignDecideOutputStageServe';
 
-COMMENT ON FUNCTION "slice"."__judge_fan_dust_input_stc6d3drdc"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanDustInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_output_stage_serve_kjkxthc47t"() IS 'the reader of the delta of olds of AssignDecideOutputStageServe';
 
-COMMENT ON FUNCTION "slice"."__judge_fan_fan_run_input_votrm724i7"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanFanRunInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_assign_done_t6zgmbnf5g"() IS 'the reader of the delta of news of AssignDone';
 
-COMMENT ON FUNCTION "slice"."__judge_retry_brittle_input_cbulcazgwq"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryBrittleInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_assign_embed_input_h7m4bpt2hd"() IS 'the reader of the delta of news of AssignEmbedInput';
 
-COMMENT ON FUNCTION "slice"."__judge_retry_done_exdy4mgpv7"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryDone and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_embed_input_6i7aqfbvee"() IS 'the reader of the delta of olds of AssignEmbedInput';
 
-COMMENT ON FUNCTION "slice"."__judge_retry_ladders_input_qd7ko7rsgf"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryLaddersInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_assign_embed_input_mode_nearest_grselmywxw"() IS 'the reader of the delta of news of AssignEmbedInputModeNearest';
 
-COMMENT ON FUNCTION "slice"."__judge_review_analyze_input_ggjatlxopu"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewAnalyzeInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_embed_input_mode_nearest_5lwnu4ih5d"() IS 'the reader of the delta of olds of AssignEmbedInputModeNearest';
 
-COMMENT ON FUNCTION "slice"."__judge_review_claim_u72bg4dlcj"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewClaim and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_assign_embed_input_mode_within_zjtexkggl6"() IS 'the reader of the delta of news of AssignEmbedInputModeWithin';
 
-COMMENT ON FUNCTION "slice"."__judge_review_done_ip44ulamia"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewDone and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_embed_input_mode_within_o6gzsx6tic"() IS 'the reader of the delta of olds of AssignEmbedInputModeWithin';
 
-COMMENT ON FUNCTION "slice"."__judge_review_questions_input_gxroktbpm3"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewQuestionsInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_assign_failed_3fwuzoo5wq"() IS 'the reader of the delta of news of AssignFailed';
 
-COMMENT ON FUNCTION "slice"."__judge_review_review_run_input_25ydhlu2pi"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewReviewRunInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_result_jkusfe56os"() IS 'the reader of the delta of olds of AssignResult';
 
-COMMENT ON FUNCTION "slice"."__judge_sync_build_input_f7w2cjex5n"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncBuildInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_root_bo6iae5w4l"() IS 'the reader of the delta of olds of AssignRoot';
 
-COMMENT ON FUNCTION "slice"."__judge_sync_done_e44hnpqjcl"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncDone and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_step_zgkm42uz2f"() IS 'the reader of the delta of olds of AssignStep';
 
-COMMENT ON FUNCTION "slice"."__judge_sync_gold_input_gc453e6dwy"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncGoldInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_chain_chain_run_input_ayshrrgjp7"() IS 'the reader of the delta of news of ChainChainRunInput';
 
-COMMENT ON FUNCTION "slice"."__judge_writeback_deliver_input_em5yf5j4by"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of WritebackDeliverInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_chain_done_spjx62oij2"() IS 'the reader of the delta of news of ChainDone';
 
-COMMENT ON FUNCTION "slice"."__judge_writeback_done_xjs6icnj3y"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of WritebackDone and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_chain_failed_slqqazjxe5"() IS 'the reader of the delta of news of ChainFailed';
 
-COMMENT ON FUNCTION "slice"."__judge_writeback_writeback_input_q562k5cdao"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of WritebackWritebackInput and the relations its rules join it to';
+COMMENT ON FUNCTION "slice"."__reader_news_chain_ordered_input_2a5i7dk7zu"() IS 'the reader of the delta of news of ChainOrderedInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_chain_page_input_obmb52egoq"() IS 'the reader of the delta of news of ChainPageInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_chain_result_nva6clqovh"() IS 'the reader of the delta of olds of ChainResult';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_chain_root_ni4mqcrglt"() IS 'the reader of the delta of olds of ChainRoot';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_chain_step_yztqk3nrsj"() IS 'the reader of the delta of olds of ChainStep';
+
+COMMENT ON FUNCTION "slice"."__reader_news_clock_chime_input_bdjnydebk4"() IS 'the reader of the delta of news of ClockChimeInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_clock_close_input_ew3vn6itfg"() IS 'the reader of the delta of news of ClockCloseInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_clock_done_wdid4fihtt"() IS 'the reader of the delta of news of ClockDone';
+
+COMMENT ON FUNCTION "slice"."__reader_news_clock_failed_valmjzds6g"() IS 'the reader of the delta of news of ClockFailed';
+
+COMMENT ON FUNCTION "slice"."__reader_news_clock_hourly_input_egxn7iaxe3"() IS 'the reader of the delta of news of ClockHourlyInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_clock_result_j3aouqlor5"() IS 'the reader of the delta of olds of ClockResult';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_clock_root_c4qx533oyq"() IS 'the reader of the delta of olds of ClockRoot';
+
+COMMENT ON FUNCTION "slice"."__reader_news_clock_sitting_input_4lbgwsxqze"() IS 'the reader of the delta of news of ClockSittingInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_clock_step_pgxck5ertr"() IS 'the reader of the delta of olds of ClockStep';
+
+COMMENT ON FUNCTION "slice"."__reader_news_fan_batch_input_zlj2bvajxq"() IS 'the reader of the delta of news of FanBatchInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_fan_claim_c3x5lsopvv"() IS 'the reader of the delta of news of FanClaim';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_fan_claim_ay7krkpmts"() IS 'the reader of the delta of olds of FanClaim';
+
+COMMENT ON FUNCTION "slice"."__reader_news_fan_done_qikk2ro7ie"() IS 'the reader of the delta of news of FanDone';
+
+COMMENT ON FUNCTION "slice"."__reader_news_fan_dust_input_jfwjtz36au"() IS 'the reader of the delta of news of FanDustInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_fan_ended_gs4jd5beu6"() IS 'the reader of the delta of olds of FanEnded';
+
+COMMENT ON FUNCTION "slice"."__reader_news_fan_failed_dhjopwnfpe"() IS 'the reader of the delta of news of FanFailed';
+
+COMMENT ON FUNCTION "slice"."__reader_news_fan_fan_run_input_d3a2vsmwx6"() IS 'the reader of the delta of news of FanFanRunInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_fan_held_nqvfb5gffm"() IS 'the reader of the delta of olds of FanHeld';
+
+COMMENT ON FUNCTION "slice"."__reader_news_fan_hold_2iorpqkqi2"() IS 'the reader of the delta of news of FanHold';
+
+COMMENT ON FUNCTION "slice"."__reader_news_fan_mop_input_y2wt46ygp5"() IS 'the reader of the delta of news of FanMopInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_fan_result_5zw7ij7lso"() IS 'the reader of the delta of olds of FanResult';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_fan_root_abpcubdn64"() IS 'the reader of the delta of olds of FanRoot';
+
+COMMENT ON FUNCTION "slice"."__reader_news_fan_square_input_p7ron44s5l"() IS 'the reader of the delta of news of FanSquareInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_fan_step_aw2226k2ta"() IS 'the reader of the delta of olds of FanStep';
+
+COMMENT ON FUNCTION "slice"."__reader_news_fan_sweep_input_c5ive5rbnx"() IS 'the reader of the delta of news of FanSweepInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_fan_within_aj2imfabum"() IS 'the reader of the delta of olds of FanWithin';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_brittle_input_cpjzfvx4th"() IS 'the reader of the delta of news of RetryBrittleInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_done_37ae4vspu2"() IS 'the reader of the delta of news of RetryDone';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_failed_axjpxxtyqh"() IS 'the reader of the delta of news of RetryFailed';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_ladders_input_kiwkqvgdlb"() IS 'the reader of the delta of news of RetryLaddersInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_patient_input_gmjeirl4oe"() IS 'the reader of the delta of news of RetryPatientInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_polite_input_ldefi4pvmz"() IS 'the reader of the delta of news of RetryPoliteInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_retry_result_uld336hsbx"() IS 'the reader of the delta of olds of RetryResult';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_retry_root_zt6nf2bapk"() IS 'the reader of the delta of olds of RetryRoot';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_steadfast_input_vfnxzktspv"() IS 'the reader of the delta of news of RetrySteadfastInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_retry_step_amtt4wxs2b"() IS 'the reader of the delta of olds of RetryStep';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_throttled_input_kpr6dfwzt7"() IS 'the reader of the delta of news of RetryThrottledInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_unhurried_input_l62mxbi2cf"() IS 'the reader of the delta of news of RetryUnhurriedInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_review_analyze_input_rsdjisdchq"() IS 'the reader of the delta of news of ReviewAnalyzeInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_review_claim_xp5d4drk2z"() IS 'the reader of the delta of news of ReviewClaim';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_review_claim_z5cfjlvxqp"() IS 'the reader of the delta of olds of ReviewClaim';
+
+COMMENT ON FUNCTION "slice"."__reader_news_review_done_p46zdvulgf"() IS 'the reader of the delta of news of ReviewDone';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_review_ended_ghabg3qvka"() IS 'the reader of the delta of olds of ReviewEnded';
+
+COMMENT ON FUNCTION "slice"."__reader_news_review_failed_7yyyyl5zn7"() IS 'the reader of the delta of news of ReviewFailed';
+
+COMMENT ON FUNCTION "slice"."__reader_news_review_gather_input_u5td2p2bbb"() IS 'the reader of the delta of news of ReviewGatherInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_review_held_xy53svgi5w"() IS 'the reader of the delta of olds of ReviewHeld';
+
+COMMENT ON FUNCTION "slice"."__reader_news_review_hold_6wykfhuqkv"() IS 'the reader of the delta of news of ReviewHold';
+
+COMMENT ON FUNCTION "slice"."__reader_news_review_questions_input_ds6zex53wd"() IS 'the reader of the delta of news of ReviewQuestionsInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_review_result_kqmhnbcsva"() IS 'the reader of the delta of olds of ReviewResult';
+
+COMMENT ON FUNCTION "slice"."__reader_news_review_review_run_input_3kyxfgfsa6"() IS 'the reader of the delta of news of ReviewReviewRunInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_review_root_l2ui7dc3mf"() IS 'the reader of the delta of olds of ReviewRoot';
+
+COMMENT ON FUNCTION "slice"."__reader_news_review_save_input_wwipjutxrs"() IS 'the reader of the delta of news of ReviewSaveInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_review_step_e6ycahnwqn"() IS 'the reader of the delta of olds of ReviewStep';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_review_within_pymnrslua3"() IS 'the reader of the delta of olds of ReviewWithin';
+
+COMMENT ON FUNCTION "slice"."__reader_news_sync_build_input_eom6nwox2q"() IS 'the reader of the delta of news of SyncBuildInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_sync_copy_input_vsrhmkgpx4"() IS 'the reader of the delta of news of SyncCopyInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_sync_done_ug7pesikef"() IS 'the reader of the delta of news of SyncDone';
+
+COMMENT ON FUNCTION "slice"."__reader_news_sync_failed_2ecpcuza2e"() IS 'the reader of the delta of news of SyncFailed';
+
+COMMENT ON FUNCTION "slice"."__reader_news_sync_gold_input_n3swhlud7k"() IS 'the reader of the delta of news of SyncGoldInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_sync_result_zh6zs3n256"() IS 'the reader of the delta of olds of SyncResult';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_sync_root_4bbgymjint"() IS 'the reader of the delta of olds of SyncRoot';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_sync_step_tfxcx6pquc"() IS 'the reader of the delta of olds of SyncStep';
+
+COMMENT ON FUNCTION "slice"."__reader_news_sync_sync_run_input_rw5sv56z2f"() IS 'the reader of the delta of news of SyncSyncRunInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_writeback_deliver_input_3mejicjxtj"() IS 'the reader of the delta of news of WritebackDeliverInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_writeback_done_np4xezy62h"() IS 'the reader of the delta of news of WritebackDone';
+
+COMMENT ON FUNCTION "slice"."__reader_news_writeback_failed_66tuuxudwu"() IS 'the reader of the delta of news of WritebackFailed';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_writeback_result_pcbgqjqnz3"() IS 'the reader of the delta of olds of WritebackResult';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_writeback_root_g37ojsvjj2"() IS 'the reader of the delta of olds of WritebackRoot';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_writeback_step_5z6akmweto"() IS 'the reader of the delta of olds of WritebackStep';
+
+COMMENT ON FUNCTION "slice"."__reader_news_writeback_writeback_input_jtjqqvb2rh"() IS 'the reader of the delta of news of WritebackWritebackInput';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_cfpudo5xt3"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_nearest_jiz464vxuo"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInputModeNearest and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_ryk4kznrmg"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_nearest_hc5ilv4sea"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInputModeNearest and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_uprvea4no6"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideOutput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_rest_irdavmdqjh"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideOutputStageRest and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_done_hjsux6cb6r"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_nearest_3xhwbfkrlv"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignEmbedInputModeNearest and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_chain_chain_run_input_4tynr34uo4"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainChainRunInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_chain_done_7blz2jjczl"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_chain_page_input_22qgggq3id"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainPageInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_chime_input_qujlwtonhn"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ClockChimeInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_done_nw5m6y7otq"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ClockDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_hourly_input_bhn32ylnog"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ClockHourlyInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_batch_input_zonhzu34ui"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanBatchInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_claim_rhdccyzbft"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanClaim and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_done_2nmscmmvlu"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_dust_input_6snexwuzoz"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanDustInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_fan_run_input_nkqfphwq7l"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanFanRunInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_brittle_input_ltwi3gczlm"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryBrittleInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_done_us2mduacrm"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_ladders_input_qztbyqmgj4"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryLaddersInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_review_analyze_input_cfqtz7uc7g"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewAnalyzeInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_review_claim_mpwuwsjlyd"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewClaim and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_review_done_xzuqwzrsjm"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_review_questions_input_bu3kdyq5g3"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewQuestionsInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_review_review_run_input_wzvehym5wt"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewReviewRunInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_build_input_eaxvc2njxf"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncBuildInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_done_psjgmjlxp6"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_gold_input_fizcntmwej"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncGoldInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_writeback_deliver_input_fun3xqfq7u"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of WritebackDeliverInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_writeback_done_c7valompmz"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of WritebackDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_writeback_writeback_input_thz656irsp"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of WritebackWritebackInput and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__capture_assign_assignment_input_v4dsbpafdp"() IS 'rule capture of AssignAssignmentInput';
 

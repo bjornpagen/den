@@ -1,4 +1,4 @@
-import { pgOwnerSession } from "@bjornpagen/testing/pg-session"
+import { pgOwnerSession, pgSuperuserSession } from "@bjornpagen/testing/pg-session"
 import { DatabasePrefix, PgCluster } from "@bjornpagen/testing/resources"
 import { defineRunner, noMutation } from "@bjornpagen/testing/runner"
 import denCluster from "#pg.config.ts"
@@ -11,9 +11,10 @@ declare module "@bjornpagen/testing/property" {
 
 /**
  * den's runner config: its integration properties (integration/), each case over its own database on den's local
- * cluster (pg.config.ts), which the layer provides as the PgCluster their needs clone from, every database named after
- * den's test prefix `den_t_`, every session the owner's over node-postgres; the testing library makes and starts the
- * cluster the first time a need reaches it.
+ * cluster (pg.config.ts), which the layer provides as the PgCluster their needs clone from, worker i on member i mod
+ * the members' count, every database named after den's test prefix `den_t_`, every session the owner's over
+ * node-postgres but the bootstrap superuser's, the account's over the member's socket, which makes a clone's role
+ * settings again. A run only reads the cluster: `toolchain-pg settle` gives it pg.config.ts's spec.
  */
 export default defineRunner({
 	include: ["integration/**/*.test.ts"],
@@ -22,7 +23,8 @@ export default defineRunner({
 	layer: PgCluster.layer({
 		prefix: DatabasePrefix("den_t_"),
 		cluster: denCluster,
-		connect: pgOwnerSession("den-resources owner")
+		connect: pgOwnerSession("den-resources owner"),
+		superuser: pgSuperuserSession("den-resources superuser")
 	}),
 	mutation: noMutation
 })
