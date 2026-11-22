@@ -66,6 +66,81 @@ const lines = (parts: ReadonlyArray<string>): string => Arr.join(parts, "\n")
 const commas = (parts: ReadonlyArray<string>): string => Arr.join(parts, ", ")
 const lower1 = (text: string): string => Str.uncapitalize(text)
 
+/**
+ * The names a printed rule cannot bind a variable to: the words ECMAScript reserves in a module, whose code is strict
+ * (its keywords, `enum`, the words strict code reserves, `await`, and the literals `null`, `true` and `false`), `eval`
+ * and `arguments`, which strict code may not bind, and the two names every printed rule binds itself, its builder `r`
+ * and the variables' maker `v`: a field so named would redeclare the one, or reach the other before its declaration.
+ */
+const unbindable: ReadonlyArray<string> = [
+	"await",
+	"break",
+	"case",
+	"catch",
+	"class",
+	"const",
+	"continue",
+	"debugger",
+	"default",
+	"delete",
+	"do",
+	"else",
+	"enum",
+	"export",
+	"extends",
+	"false",
+	"finally",
+	"for",
+	"function",
+	"if",
+	"import",
+	"in",
+	"instanceof",
+	"new",
+	"null",
+	"return",
+	"super",
+	"switch",
+	"this",
+	"throw",
+	"true",
+	"try",
+	"typeof",
+	"var",
+	"void",
+	"while",
+	"with",
+	"yield",
+	"implements",
+	"interface",
+	"let",
+	"package",
+	"private",
+	"protected",
+	"public",
+	"static",
+	"arguments",
+	"eval",
+	"r",
+	"v"
+]
+
+/**
+ * The variable a printed rule binds a relation's field to, the one spelling of a field as a variable: the field's own
+ * name, or, for a name no rule can bind (`unbindable`), the name after an underscore, which no declared name starts
+ * with (grizzle's declared-name rule), so it is no author's field and no name den prints of its own.
+ */
+const bound = (field: string): string => (Arr.contains(unbindable, field) ? `_${field}` : field)
+
+/** A field as an entry of a printed destructuring or object literal: its name, or `name: variable` where they differ. */
+const entry = (field: string): string => {
+	const variable = bound(field)
+	return variable === field ? field : `${field}: ${variable}`
+}
+
+/** Fields as the entries of a printed destructuring or object literal, each its `entry`. */
+const entries = (fields: ReadonlyArray<string>): string => commas(Arr.map(fields, entry))
+
 const fieldExpr = (type: FieldType): string => {
 	switch (type.kind) {
 		case "key":
@@ -490,8 +565,8 @@ const members = (inserts: ReadonlyArray<string>): string =>
 /** A query over `role` of every row of `relation`, by its fields. */
 const allOf = (role: string, relation: string, fields: ReadonlyArray<string>): string =>
 	`query(${role}).rule((r) => {
-	const { ${commas(fields)} } = v(${relation}, ${q(lower1(relation))})
-	return r.match(${relation}, { ${commas(fields)} }).find({ ${commas(fields)} })
+	const { ${entries(fields)} } = v(${relation}, ${q(lower1(relation))})
+	return r.match(${relation}, { ${entries(fields)} }).find({ ${entries(fields)} })
 })`
 
 /**
@@ -512,16 +587,16 @@ const ownedBy = (l: Lowered, role: string, relation: string, owner: string): str
 		}
 	)
 	return `query(${role}).rule((r) => {
-	const { ${commas(fields)} } = v(${relation}, ${q(lower1(relation))})
-	return r.match(${relation}, { ${commas(fields)} }).where(r.eq(${owner}, r.param(${q(owner)}, ${relation}.fields.${owner}))).find({ ${commas(fields)} })
+	const { ${entries(fields)} } = v(${relation}, ${q(lower1(relation))})
+	return r.match(${relation}, { ${entries(fields)} }).where(r.eq(${bound(owner)}, r.param(${q(owner)}, ${relation}.fields.${owner}))).find({ ${entries(fields)} })
 })`
 }
 
 /** A query over `role` of each chain's latest turn in `held`: `r.max(turn)`, grouped by its coordinates. */
 const latestOf = (role: string, held: string, coordinates: ReadonlyArray<string>): string =>
 	`query(${role}).rule((r) => {
-	const { ${commas([...coordinates, "turn"])} } = v(${held}, ${q(lower1(held))})
-	return r.match(${held}, { ${commas([...coordinates, "turn"])} }).find({ ${commas([...coordinates, "turn: r.max(turn)"])} })
+	const { ${entries([...coordinates, "turn"])} } = v(${held}, ${q(lower1(held))})
+	return r.match(${held}, { ${entries([...coordinates, "turn"])} }).find({ ${commas([...Arr.map(coordinates, entry), "turn: r.max(turn)"])} })
 })`
 
 /** A live hold's fields: its seat, the claim that holds it and its claim's lease. */
@@ -570,10 +645,10 @@ const liveOf = (
 	coordinates: ReadonlyArray<string>,
 	payload: ReadonlyArray<string>
 ): string => {
-	const fields = commas([...coordinates, "turn", ...payload])
+	const fields = entries([...coordinates, "turn", ...payload])
 	return `query(${role}).rule((r) => {
 	const { ${fields} } = v(${held}, ${q(lower1(held))})
-	return r.match(${held}, { ${fields} }).where(r.not(${ended}, { ${commas([...coordinates, "turn"])} })).find({ ${fields} })
+	return r.match(${held}, { ${fields} }).where(r.not(${ended}, { ${entries([...coordinates, "turn"])} })).find({ ${fields} })
 })`
 }
 
@@ -692,7 +767,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const keyColumns = (awaits: ReadonlyArray<AwaitIR>): ReadonlyArray<string> =>
 		Arr.dedupe(Arr.flatMap(awaits, (a) => Arr.map(a.key, (k) => k.input)))
 	const keyOf = (a: AwaitIR): string =>
-		`{ ${commas(Arr.map(a.key, (k) => `${k.field}: ${k.input}`))} }`
+		`{ ${commas(Arr.map(a.key, (k) => `${k.field}: ${bound(k.input)}`))} }`
 	/**
 	 * The steps that wait on a fact, one arm per fact a kind awaits: a step of the kind with no result whose awaited row
 	 * does not exist, each `where` term beside it.
@@ -704,9 +779,9 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 					s.awaits,
 					(a) => `
 	.rule((r) => {
-		const { ${commas(["step", ...keyColumns([a])])} } = v(${s.input.relation}, "input")
+		const { ${entries(["step", ...keyColumns([a])])} } = v(${s.input.relation}, "input")
 		return r
-			.match(${s.input.relation}, { ${commas(["step", ...keyColumns([a])])} })
+			.match(${s.input.relation}, { ${entries(["step", ...keyColumns([a])])} })
 			.where(${commas([`r.not(${r("Result")}, { step })`, `r.not(${app}.relations.${a.relation}, ${keyOf(a)})`, ...also])})
 			.find({ step })
 	})`
@@ -723,9 +798,9 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			awaiting,
 			(s) => `
 	.rule((r) => {
-		const { ${commas(["step", ...keyColumns(s.awaits)])} } = v(${s.input.relation}, "input")
+		const { ${entries(["step", ...keyColumns(s.awaits)])} } = v(${s.input.relation}, "input")
 		return r
-			.match(${s.input.relation}, { ${commas(["step", ...keyColumns(s.awaits)])} })${Arr.join(
+			.match(${s.input.relation}, { ${entries(["step", ...keyColumns(s.awaits)])} })${Arr.join(
 				Arr.map(
 					s.awaits,
 					(a) => `
@@ -1091,14 +1166,14 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	${ofKind.bind}${
 		Arr.isReadonlyArrayNonEmpty(fields)
 			? `
-	const { ${commas(fields)} } = v(${relation}, ${q(label)})`
+	const { ${entries(fields)} } = v(${relation}, ${q(label)})`
 			: ""
 	}
 	return r
 		${ofKind.match}
-		.match(${relation}, { ${commas([by, ...fields])} })
+		.match(${relation}, { ${entries([by, ...fields])} })
 		.where(r.eq(${ofKind.owner}, ${scopeParam}))
-		.find({ ${commas(["step", ...fields])} })
+		.find({ ${entries(["step", ...fields])} })
 })`
 			/**
 			 * The set reads of every relation of `value`, the children's outputs or their inputs, under `stem`, its own
@@ -1455,8 +1530,8 @@ const ownedOf = (
 ): string => {
 	const all = [v.owner, ...fields]
 	return `query(${graph}).rule((r) => {
-	const { ${commas(all)} } = v(${relation}, "part")
-	return r.match(${relation}, { ${commas(all)} }).where(r.eq(${v.owner}, r.param(${q(v.owner)}, ${relation}.fields.${v.owner}))).find({ ${commas(all)} })
+	const { ${entries(all)} } = v(${relation}, "part")
+	return r.match(${relation}, { ${entries(all)} }).where(r.eq(${bound(v.owner)}, r.param(${q(v.owner)}, ${relation}.fields.${v.owner}))).find({ ${entries(all)} })
 })`
 }
 
