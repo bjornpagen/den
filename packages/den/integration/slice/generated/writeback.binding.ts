@@ -544,13 +544,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 			settled(h.den.writebackFinishedRoots.once({ params: {}, facts: {} })),
 			(rows) => Arr.map(rowsOf(rows), (row) => row.scope)
 		),
-		retire: (root) =>
-			settled(
-				h.retirer.writebackRetire.once({
-					params: {},
-					facts: { retire: { WritebackRoot: [{ scope: root }] } }
-				})
-			),
+		retire: (root) => settled(h.retirer.writebackRetire.once({ params: { root }, facts: {} })),
 		snapshot: Effect.flatMap(
 			settled(h.den.writebackSnapshot.once({ params: {}, facts: {} })),
 			(rows) =>

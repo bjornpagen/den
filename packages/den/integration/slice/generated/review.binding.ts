@@ -1056,13 +1056,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 			settled(h.den.reviewFinishedRoots.once({ params: {}, facts: {} })),
 			(rows) => Arr.map(rowsOf(rows), (row) => row.scope)
 		),
-		retire: (root) =>
-			settled(
-				h.retirer.reviewRetire.once({
-					params: {},
-					facts: { retire: { ReviewRoot: [{ scope: root }] } }
-				})
-			),
+		retire: (root) => settled(h.retirer.reviewRetire.once({ params: { root }, facts: {} })),
 		snapshot: Effect.flatMap(
 			settled(h.den.reviewSnapshot.once({ params: {}, facts: {} })),
 			(rows) =>

@@ -1112,13 +1112,7 @@ export const assignLedger = (h: AssignHandles) => {
 			settled(h.den.assignFinishedRoots.once({ params: {}, facts: {} })),
 			(rows) => Arr.map(rowsOf(rows), (row) => row.scope)
 		),
-		retire: (root) =>
-			settled(
-				h.retirer.assignRetire.once({
-					params: {},
-					facts: { retire: { AssignRoot: [{ scope: root }] } }
-				})
-			),
+		retire: (root) => settled(h.retirer.assignRetire.once({ params: { root }, facts: {} })),
 		snapshot: Effect.flatMap(
 			settled(h.den.assignSnapshot.once({ params: {}, facts: {} })),
 			(rows) =>

@@ -37,8 +37,8 @@ for the coordination group, and DBCLOCK:
   `attempt: place`, stamped by the database from 0, so concurrent claimants serialize on the step's head and none
   chooses an attempt; a turn learns its attempt from the claim's read-back of `delta.added(<P>Claim)`, which rides the
   claim's one statement, and a claim is its turn's identity, with no holder and no nonce beside it (den-model's holder
-  was always `Claim{step, attempt}`). A claim's seats are members of its ordered family, `ordered(on(<P>Hold, "step",
-  "root", "attempt", "at"), fin(<P>Claim, "holds"))`, written in the claim's one write and carrying its step, root and
+  was always `Claim{step, attempt}`). A claim's seats are members of its ordered family, `ordered(on(<P>Hold, "root",
+  "step", "attempt", "at"), fin(<P>Claim, "holds"))`, written in the claim's one write and carrying its root, step and
   attempt, so a lost claim holds no seat and nothing gives seats back after one. An attempt's end is `<P>Ended(step,
   attempt)`, written beside its `<P>Retry` and its `<P>Fenced` (each contained in it), or by the next claim of its step
   or of one of its seats once its lease has passed at that turn's reading, as the call's own rows, since a call holds
@@ -48,8 +48,8 @@ for the coordination group, and DBCLOCK:
   that ends its claim's attempt. Seats were turn chains in the coordination group, which outlive the graphs whose steps
   took them, and a chain's turn is proved from its predecessor's end, so a hold could be no claim's member while it was a
   turn: retiring a graph would delete turns later turns are proved from. So the chain law goes with the turns, the
-  holds join the graph and retire with it (a retirable graph's attempts have all ended, so its holds are never live),
-  and a seat holds at most one live hold by the live holds' key.
+  holds are their claims' and are cleared with them (a finished graph's attempts have all ended, so its holds are never
+  live), and a seat holds at most one live hold by the live holds' key.
 
 - **DBCLOCK (44cade74, 6172e92c, 8081e6ce).** `clocked(program, { now: unit })` binds `now` to
   `transaction_timestamp()`, one reading per call. Each flow's den role serves a clocked read of the database's instant
@@ -68,33 +68,34 @@ for the coordination group, and DBCLOCK:
   the relay's watch reads what commits made eligible, without time, and the census reads what time made eligible. The
   suites move the database's clock itself as they move their TestClock (**The moved clock** below).
 
-- **RETIRE (c70cbed8, 1f935498, f14a46da, and RETIRE3's c782217b2).** Each flow's graph is one retirable unit:
-  `retirable(<P>Root, [on(<Rel>, "root"), …])`, the header `<P>Root` with its `retired: retirement` field, every other
-  graph relation a body carrying `root: sha256` in every key it holds and on both sides of every containment between
-  bodies. `<p>_retirer`, a role of its own whose option `retire` names the header, serves
-  `ChangeSet.empty(<p>Graph).retire(<P>Root, [])`; `runtime/retire.ts` retires every ended root nothing still needs, a
-  call each. Each role certifies as **Certificates** below says. Two laws moved: the header is no longer
-  contained in `<P>Scope`, since a header that references a body would block its own retirement, and a skipped root's
-  `by` names the holder's header, not its `Admitted` row, a fact of another unit that may retire first. The grizzle
-  session's rulings on den's use (2026-11-18): every graph relation carries its root's key as a column, `root: sha256`, contained in `<P>Root`, so a
-  retired unit's fence refuses an insert by that key row by row (a unit reached through `Within`'s tree would make
-  every insert's check recursive); a stale holder's insert and a root requested again under a retired key are both
-  refused (since an operator's or the app's root is written at its request's own instant, its request again under any
-  key already requested, a retired one's included, is refused on the header's key, which the request answers as
-  already requested: it starts nothing, and the retired key never starts a graph again); the retire call is a role of
-  its own; an app row that references a
-  body row refuses the retirement (NO ACTION) unless the app declares its relation among the unit's bodies; and
-  grizzle retires whole units only, never a chain's prefix, so the coordination group's chains of turns, each turn
-  proved from its predecessor's end, must be restated before they can be retired: one current row per exclusivity seat
-  or pause, or each turn a unit whose containment reads only its live predecessor. A step's seats are no chain since
-  stamped claims: they retire with their graph. The restatement of the exclusivity and pause chains waits on the owner.
+- **Units and clearing (grizzle 2be58c8a2's `unit`, f07b59f14's whole-group delete; the read-committed cutover).**
+  Every flow's graph sits under one unit of grizzle's, `unit("DenRoot", { root: sha256 })`, which each graph fragment
+  states alike and so one unit, the roots being digests no two flows share (grizzle forbids a contract over a digest, so
+  no flow names a domain of its own for its root): every graph relation but the root's record, `<P>Root`, carries its
+  root as `root`, first in its primary key and on both sides of every containment and key between them, so every write
+  of a graph's rows holds its root exclusively, and each is contained in `<P>Root` by its root. `<P>Root` is keyed by
+  `root`, closed: the fact that the root was requested, never updated or deleted. A claim's seats sit under the flow's
+  seat unit, `unit("<P>Seat", { resource: closedId(<P>Resource) })`: `<P>Hold` is keyed `(resource, root, step,
+  attempt)`, the claim's ordered family written nested in the claim's one write, which supplies the attempt the database
+  stamps, so every write of a resource's holds holds the resource, and the live holds' laws, at most one a seat and each
+  below its resource's count, are judged inside it (never a lock derived from a law). Every graph relation and the holds
+  are `mutable`, inside their units: a finished root's graph is cleared by `<p>_retirer`, a role of its own writing them,
+  which serves `ChangeSet.empty(<p>Graph).deleteWhere({ <Rel>: { root: param("root", <P>Root.fields.root) }, … })` over
+  every graph relation but `<P>Root`; a claim's holds go with their claim, and the claims' place stamps' heads with them
+  (a delete of a place's whole groups, grizzle f07b59f14); `runtime/retire.ts` clears every ended root nothing still
+  needs, a call each. A stale holder's insert after its root is cleared is refused by the foreign keys into the rows the
+  clearing deleted, and a root requested again meets `<P>Root`'s key, which the request answers as already requested:
+  it starts nothing, and the retired key never starts a graph again. An app row that references a graph row refuses the
+  clearing (NO ACTION). A read's records rows are closed, outside every unit, never removed (grizzle main's ruling on
+  metis's MR-CATALOG). The census's reads of roots read only roots whose graph stands, a root's record matched with its
+  own Scope row, which the clearing deletes. The coordination group's chains of turns sit under no unit and stay.
 
 - **Certificates, and every call settled (grizzle's SELECTWHOLE, bb62f0fa1; Bjorn's ruling of 2026-11-19).** A
   containment with a selected side is judged whole, as a rule over a query, where the relations it reads are immutable
   and its two sides join within one unit: each step's and scope's input in its Step or Scope of its kind
   (`select(<P>Step, kind = …)`), each Done and Failed in its Result of its outcome, and the Assign flow's tagged
   unions' variant pairs, both ways. A plain containment into a declared key stays a foreign key, and so does each
-  retirement fence. A write can break such a rule through a row another role writes, so every role that writes one
+  graph relation's containment in its root's record. A write can break such a rule through a row another role writes, so every role that writes one
   certifies SERIALIZABLE (`laws`): each flow's `<p>_den` and `<p>_retirer`, and the app's `loader`, which commits the
   steps. Each flow's `<p>_coordinator` and the app's `auditor` certify READ COMMITTED; the app's and the worker's
   logins fence ChainResult, each of their writes of it locking it in exclusive mode before its snapshot, for the

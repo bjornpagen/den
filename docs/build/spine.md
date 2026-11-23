@@ -188,12 +188,13 @@ output into `select(PResult, outcome = done)`) certifies.
    scope's: its parent's finish reads a child scope's ending with it, and an edge from the scope kind spawns the next
    stage in the scope's parent from the scope's input and that output, in the finish's own commit, so the parent never
    sees the scope ended without its successors (`review.test.ts`).
-10. **Retirement.** Built on grizzle's RETIRE (`docs/build/repin.md`): `runtime/retire.ts` retires each ended root's
-    graph whole once its exclusivity seat is given back; an app row that references it keeps it. The app's census runs
-    it beside its tick. Every root is requested at its request's own instant, a schedule's too (one root per member of
-    its roster at each instant its cron names, keyed by the instant and the member, which its input reads too; a
-    schedule of one root is a roster of one), so a request of any key again, retired or not, meets its header's key and answers that
-    it was already requested, and a schedule's key the census still requests retires like any other
+10. **Retirement.** Built on grizzle's units (`docs/build/repin.md`): `runtime/retire.ts` clears each ended root's
+    graph once its exclusivity seat is given back, every row of it deleted at its root but its record; an app row that
+    references it keeps it. The app's census runs it beside its tick. Every root is requested at its request's own
+    instant, a schedule's too (one root per member of its roster at each instant its cron names, keyed by the instant
+    and the member, which its input reads too; a schedule of one root is a roster of one), so a request of any key
+    again, retired or not, meets its record's key and answers that it was already requested, and a schedule's key the
+    census still requests retires like any other
     (`schedule.test.ts`); a root is requested while its graph is open, its Scope standing, so a retired one is never
     rung again.
 11. **Stopping.** Not built.
@@ -217,7 +218,7 @@ output into `select(PResult, outcome = done)`) certifies.
 |---|---|---|
 | POROUS | `src/lower/print.ts` (`printPrograms`, `printBinding`), the generated `*.programs.ts` and `*.binding.ts` | programs built once over the fragment, and a binding written over their handles, in place of printed modules |
 | LEASE | `src/runtime/turn.ts` `claimed`, the `PClaim` relation and the census's lapsed-claim read | grizzle's certified lease race |
-| RETIRE | taken: `src/runtime/retire.ts`, the fragment's retirable unit and each flow's retiring role | a retirement of a finished root's graph whole |
+| RETIRE | taken: `src/runtime/retire.ts`, the fragment's units (DenRoot, `<P>Seat`) and each flow's retiring role | a finished root's graph cleared under its root, its record kept |
 | DBCLOCK | `Clock.currentTimeMillis` in `runtime/turn.ts` (`serve`, `claimed`, the runner's deadline) and `runtime/census.ts` (`tick`) | the database's instant, as a query term |
 | CLASH | `src/lower/merge.ts` | grizzle refusing a fragment's clashes itself |
 | DELTAMET | `concluded`'s read-back of `PHeld` after `commitUnknown` | the winner's row in the same call |

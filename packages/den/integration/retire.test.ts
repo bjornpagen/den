@@ -214,9 +214,11 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 	kills: [
 		{
 			file: "packages/den/integration/slice/generated/chain.binding.ts",
-			original: "retire: { ChainRoot: [{ scope: root }] }",
-			replacement: "retire: { ChainRoot: [] }",
-			why: "the binding retires no group, so a finished graph's rows stay"
+			original:
+				"retire: (root) => settled(h.retirer.chainRetire.once({ params: { root }, facts: {} })),",
+			replacement:
+				'retire: () => settled(h.retirer.chainRetire.once({ params: { root: Sha256.ofText("") }, facts: {} })),',
+			why: "the binding clears a root no graph stands under, so a finished graph's rows stay"
 		},
 		{
 			file: "packages/den/src/runtime/bind.ts",

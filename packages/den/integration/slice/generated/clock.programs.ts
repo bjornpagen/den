@@ -108,10 +108,10 @@ const clockPendingRead = query(ClockDen).rule((r) => {
 })
 
 const clockRequestedRead = query(ClockDen).rule((r) => {
-	const { scope } = v(ClockRoot, "root")
+	const { scope } = v(ClockScope, "scope")
 	return r
-		.match(ClockRoot, { scope })
-		.match(ClockScope, { scope })
+		.match(ClockRoot, { root: scope })
+		.match(ClockScope, { root: scope, scope })
 		.where(r.not(ClockAdmitted, { scope }), r.not(ClockSkipped, { scope }))
 		.find({ scope })
 })
@@ -249,60 +249,60 @@ export const clockDenPrograms = Object.freeze({
 	),
 	clockSkip: ChangeSet.empty(clockGraph).insert(ClockSkipped, []),
 	clockSkippedOf: query(clockGraph).rule((r) => {
-		const { scope, by, root } = v(ClockSkipped, "clockSkipped")
+		const { root, scope, by } = v(ClockSkipped, "clockSkipped")
 		return r
-			.match(ClockSkipped, { scope, by, root })
+			.match(ClockSkipped, { root, scope, by })
 			.where(r.eq(scope, r.param("scope", ClockSkipped.fields.scope)))
-			.find({ scope, by, root })
+			.find({ root, scope, by })
 	}),
 	clockStepOf: query(clockGraph).rule((r) => {
-		const { step, kind, scope, due, root } = v(ClockStep, "clockStep")
+		const { root, step, kind, scope, due } = v(ClockStep, "clockStep")
 		return r
-			.match(ClockStep, { step, kind, scope, due, root })
+			.match(ClockStep, { root, step, kind, scope, due })
 			.where(r.eq(step, r.param("step", ClockStep.fields.step)))
-			.find({ step, kind, scope, due, root })
+			.find({ root, step, kind, scope, due })
 	}),
 	clockResultOf: query(clockGraph).rule((r) => {
-		const { step, outcome, root } = v(ClockResult, "clockResult")
+		const { root, step, outcome } = v(ClockResult, "clockResult")
 		return r
-			.match(ClockResult, { step, outcome, root })
+			.match(ClockResult, { root, step, outcome })
 			.where(r.eq(step, r.param("step", ClockResult.fields.step)))
-			.find({ step, outcome, root })
+			.find({ root, step, outcome })
 	}),
 	clockHeldOf: query(clockGraph).rule((r) => {
-		const { step, attempt, root } = v(ClockHeld, "clockHeld")
+		const { root, step, attempt } = v(ClockHeld, "clockHeld")
 		return r
-			.match(ClockHeld, { step, attempt, root })
+			.match(ClockHeld, { root, step, attempt })
 			.where(r.eq(step, r.param("step", ClockHeld.fields.step)))
-			.find({ step, attempt, root })
+			.find({ root, step, attempt })
 	}),
 	clockAdmittedOf: query(clockGraph).rule((r) => {
-		const { scope, root } = v(ClockAdmitted, "clockAdmitted")
+		const { root, scope } = v(ClockAdmitted, "clockAdmitted")
 		return r
-			.match(ClockAdmitted, { scope, root })
+			.match(ClockAdmitted, { root, scope })
 			.where(r.eq(scope, r.param("scope", ClockAdmitted.fields.scope)))
-			.find({ scope, root })
+			.find({ root, scope })
 	}),
 	clockRootOf: query(clockGraph).rule((r) => {
-		const { scope, kind, key, at } = v(ClockRoot, "clockRoot")
+		const { kind, key, at } = v(ClockRoot, "root")
+		const { scope } = v(ClockScope, "scope")
 		return r
-			.match(ClockRoot, { scope, kind, key, at })
-			.where(r.eq(scope, r.param("scope", ClockRoot.fields.scope)))
+			.match(ClockRoot, { root: scope, kind, key, at })
+			.match(ClockScope, { root: scope, scope })
+			.where(r.eq(scope, r.param("scope", ClockRoot.fields.root)))
 			.find({ scope, kind, key, at })
 	}),
 	clockFinishedRoots: query(clockGraph)
 		.rule((r) => {
-			const { scope } = v(ClockRoot, "root")
-			const { step } = v(ClockFinish, "finish")
+			const { scope, step } = v(ClockFinish, "finish")
 			return r
-				.match(ClockRoot, { scope })
-				.match(ClockFinish, { scope, step })
-				.match(ClockResult, { step })
+				.match(ClockFinish, { root: scope, scope, step })
+				.match(ClockResult, { root: scope, step })
 				.find({ scope })
 		})
 		.rule((r) => {
-			const { scope } = v(ClockRoot, "root")
-			return r.match(ClockRoot, { scope }).match(ClockSkipped, { scope }).find({ scope })
+			const { scope } = v(ClockSkipped, "skipped")
+			return r.match(ClockSkipped, { root: scope, scope }).find({ scope })
 		}),
 	clockClaimsOf: query(clockGraph).rule((r) => {
 		const { step, attempt, until } = v(ClockClaim, "claim")
@@ -373,8 +373,12 @@ export const clockDenPrograms = Object.freeze({
 		requested: clockRequestedRead,
 		running: clockRunningRead,
 		roots: query(ClockDen).rule((r) => {
-			const { scope, kind, key, at } = v(ClockRoot, "clockRoot")
-			return r.match(ClockRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
+			const { kind, key, at } = v(ClockRoot, "root")
+			const { scope } = v(ClockScope, "scope")
+			return r
+				.match(ClockRoot, { root: scope, kind, key, at })
+				.match(ClockScope, { root: scope, scope })
+				.find({ scope, kind, key, at })
 		}),
 		paused: query(ClockDen).rule((r) => {
 			const { target, turn } = v(ClockPaused, "clockPaused")
@@ -385,25 +389,25 @@ export const clockDenPrograms = Object.freeze({
 		})
 	}),
 	clockReadClockChimeInput: query(clockGraph).rule((r) => {
-		const { step, hour, bell, root } = v(ClockChimeInput, "clockChimeInput")
+		const { root, step, hour, bell } = v(ClockChimeInput, "clockChimeInput")
 		return r
-			.match(ClockChimeInput, { step, hour, bell, root })
+			.match(ClockChimeInput, { root, step, hour, bell })
 			.where(r.eq(step, r.param("step", ClockChimeInput.fields.step)))
-			.find({ step, hour, bell, root })
+			.find({ root, step, hour, bell })
 	}),
 	clockReadClockCloseInput: query(clockGraph).rule((r) => {
-		const { step, sitting, deadline, root } = v(ClockCloseInput, "clockCloseInput")
+		const { root, step, sitting, deadline } = v(ClockCloseInput, "clockCloseInput")
 		return r
-			.match(ClockCloseInput, { step, sitting, deadline, root })
+			.match(ClockCloseInput, { root, step, sitting, deadline })
 			.where(r.eq(step, r.param("step", ClockCloseInput.fields.step)))
-			.find({ step, sitting, deadline, root })
+			.find({ root, step, sitting, deadline })
 	}),
 	clockReadClockHourlyInput: query(clockGraph).rule((r) => {
-		const { scope, hour, bell, root } = v(ClockHourlyInput, "clockHourlyInput")
+		const { root, scope, hour, bell } = v(ClockHourlyInput, "clockHourlyInput")
 		return r
-			.match(ClockHourlyInput, { scope, hour, bell, root })
+			.match(ClockHourlyInput, { root, scope, hour, bell })
 			.where(r.eq(scope, r.param("scope", ClockHourlyInput.fields.scope)))
-			.find({ scope, hour, bell, root })
+			.find({ root, scope, hour, bell })
 	}),
 	clockRequestHourly: clocked(
 		ChangeSet.empty(clockGraph)
@@ -413,7 +417,7 @@ export const clockDenPrograms = Object.freeze({
 				ClockRoot,
 				query(clockGraph).rule((r) =>
 					r.find({
-						scope: r.param("clockHourlyScope", ClockRoot.fields.scope),
+						root: r.param("clockHourlyScope", ClockRoot.fields.root),
 						kind: ClockRootKind.handle("Hourly"),
 						key: r.param("clockHourlyKey", ClockRoot.fields.key),
 						at: r.param("now", ClockRoot.fields.at)
@@ -423,11 +427,11 @@ export const clockDenPrograms = Object.freeze({
 		{ now: "millis" }
 	),
 	clockReadClockSittingInput: query(clockGraph).rule((r) => {
-		const { scope, sitting, deadline, root } = v(ClockSittingInput, "clockSittingInput")
+		const { root, scope, sitting, deadline } = v(ClockSittingInput, "clockSittingInput")
 		return r
-			.match(ClockSittingInput, { scope, sitting, deadline, root })
+			.match(ClockSittingInput, { root, scope, sitting, deadline })
 			.where(r.eq(scope, r.param("scope", ClockSittingInput.fields.scope)))
-			.find({ scope, sitting, deadline, root })
+			.find({ root, scope, sitting, deadline })
 	}),
 	clockRequestSitting: clocked(
 		ChangeSet.empty(clockGraph)
@@ -437,7 +441,7 @@ export const clockDenPrograms = Object.freeze({
 				ClockRoot,
 				query(clockGraph).rule((r) =>
 					r.find({
-						scope: r.param("clockSittingScope", ClockRoot.fields.scope),
+						root: r.param("clockSittingScope", ClockRoot.fields.root),
 						kind: ClockRootKind.handle("Sitting"),
 						key: r.param("clockSittingKey", ClockRoot.fields.key),
 						at: r.param("now", ClockRoot.fields.at)
@@ -481,16 +485,68 @@ export const clockCoordinatorPrograms = Object.freeze({
 
 export const clockCoordinatorWorkload = workload(ClockCoordinator, clockCoordinatorPrograms)
 
-/** den's retiring role for the flow Clock: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else: a role of its own, as grizzle's retirement asks. */
+/** den's retiring role for the flow Clock: it clears finished roots' graphs, deleting every row of a root's graph but its record, under its root, and writes nothing else. */
 export const ClockRetirer = role(
 	App,
 	"clock_retirer",
 	{ ...clockGraph.relations },
-	{ retire: ["ClockRoot"] }
+	{
+		write: [
+			"ClockScope",
+			"ClockAdmitted",
+			"ClockSkipped",
+			"ClockStep",
+			"ClockStartStep",
+			"ClockFinish",
+			"ClockClaim",
+			"ClockEnded",
+			"ClockRetry",
+			"ClockFenced",
+			"ClockResult",
+			"ClockDone",
+			"ClockFailed",
+			"ClockHeld",
+			"ClockRefusal",
+			"ClockExhausted",
+			"ClockChimeInput",
+			"ClockCloseInput",
+			"ClockHourlyInput",
+			"ClockSittingInput",
+			"ClockChimeOutput",
+			"ClockCloseOutput",
+			"ClockHourlyFinishOutput",
+			"ClockSittingFinishOutput"
+		]
+	}
 )
 
 export const clockRetirerPrograms = Object.freeze({
-	clockRetire: ChangeSet.empty(clockGraph).retire(ClockRoot, [])
+	clockRetire: ChangeSet.empty(clockGraph).deleteWhere({
+		ClockScope: { root: param("root", ClockRoot.fields.root) },
+		ClockAdmitted: { root: param("root", ClockRoot.fields.root) },
+		ClockSkipped: { root: param("root", ClockRoot.fields.root) },
+		ClockStep: { root: param("root", ClockRoot.fields.root) },
+		ClockStartStep: { root: param("root", ClockRoot.fields.root) },
+		ClockFinish: { root: param("root", ClockRoot.fields.root) },
+		ClockClaim: { root: param("root", ClockRoot.fields.root) },
+		ClockEnded: { root: param("root", ClockRoot.fields.root) },
+		ClockRetry: { root: param("root", ClockRoot.fields.root) },
+		ClockFenced: { root: param("root", ClockRoot.fields.root) },
+		ClockResult: { root: param("root", ClockRoot.fields.root) },
+		ClockDone: { root: param("root", ClockRoot.fields.root) },
+		ClockFailed: { root: param("root", ClockRoot.fields.root) },
+		ClockHeld: { root: param("root", ClockRoot.fields.root) },
+		ClockRefusal: { root: param("root", ClockRoot.fields.root) },
+		ClockExhausted: { root: param("root", ClockRoot.fields.root) },
+		ClockChimeInput: { root: param("root", ClockRoot.fields.root) },
+		ClockCloseInput: { root: param("root", ClockRoot.fields.root) },
+		ClockHourlyInput: { root: param("root", ClockRoot.fields.root) },
+		ClockSittingInput: { root: param("root", ClockRoot.fields.root) },
+		ClockChimeOutput: { root: param("root", ClockRoot.fields.root) },
+		ClockCloseOutput: { root: param("root", ClockRoot.fields.root) },
+		ClockHourlyFinishOutput: { root: param("root", ClockRoot.fields.root) },
+		ClockSittingFinishOutput: { root: param("root", ClockRoot.fields.root) }
+	})
 })
 
 export const clockRetirerWorkload = workload(ClockRetirer, clockRetirerPrograms)

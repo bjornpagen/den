@@ -4,16 +4,16 @@ import type { Ledger } from "#runtime/ledger.ts"
 import type { Settled } from "#runtime/settled.ts"
 
 /**
- * Retirement: a root's graph is retired whole once it has ended (its root's finish has its result, or it was recorded
- * skipped), as one group of grizzle's retirable unit whose header is the flow's Root: every scope, step, claim, retry,
- * result, value, read and edge row of the graph goes in one transaction, the header stays retired, and its key never
- * starts a graph again: an operator's or the app's request of it again starts nothing and answers that the root was
- * already requested, as a request of any key already requested does, a schedule's included, since every root is
- * requested at its request's own instant and the header's key refuses another, and a stale holder's write into the
- * graph is refused by the unit's fence. den's
+ * Retirement: a root's graph is cleared once it has ended (its root's finish has its result, or it was recorded skipped),
+ * under its root, the key of grizzle's unit DenRoot every graph relation leads with: one call deletes every scope, step,
+ * claim and its holds, retry, result, value, read reference and edge row of the graph, each relation's rows at the root,
+ * and keeps the root's record, the closed fact that it was requested, so its key never starts a graph again: an
+ * operator's or the app's request of it again starts nothing and answers that the root was already requested, as a
+ * request of any key already requested does, a schedule's included, since every root is requested at its request's own
+ * instant and the record's key refuses another; and a stale holder's write into the graph is refused by the foreign
+ * keys into the rows its clearing deleted. The records' rows a read found stay, closed facts outside every unit. den's
  * retiring role does nothing else, and its retirements of several roots run at once, each a call of its own that runs
- * again on a transient refusal (Settled), so two retirements that meet each other both retire. The coordination group's
- * chains of turns are no part of any unit and stay.
+ * again on a transient refusal (Settled). The coordination group's chains of turns are no part of any unit and stay.
  *
  * A root is retired only once nothing still needs its graph: its exclusivity seat given back, which the census's tick
  * does by reading the graph. A schedule's key the census still requests is retired like any other: the tick's request

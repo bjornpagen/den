@@ -45,7 +45,7 @@ export const refusedOnKey = (error: Settled, relations: ReadonlyArray<string>): 
 export type Outcome = "done" | "failed"
 
 /**
- * Where a step is: its kind's runner, its owning scope, its root, the retirable unit its graph is a group of, and the
+ * Where a step is: its kind's runner, its owning scope, its root, the key of the unit its graph sits under, and the
  * instant its first attempt is due.
  */
 export interface Located<R> {
@@ -56,8 +56,8 @@ export interface Located<R> {
 }
 
 /**
- * A row as written: every row of a root's graph carries its root's scope, the group of grizzle's retirable unit it
- * belongs to, which every write holds and a retirement removes whole.
+ * A row as written: every row of a root's graph carries its root's scope, the key of grizzle's unit DenRoot it sits
+ * under, which every write of it holds and a retirement clears.
  */
 export type Rooted<A> = A & { readonly root: Sha256 }
 
@@ -427,9 +427,9 @@ export interface Ledger<R> {
 	 */
 	readonly finishedRoots: Effect.Effect<ReadonlyArray<Sha256>, Settled>
 	/**
-	 * Retires a root's graph whole, grizzle's retirement of the flow's unit under den's retiring role: every row its
-	 * graph holds goes, its header stays retired, and its key never starts a graph again. An app row that references
-	 * one of its rows refuses it, naming the relation.
+	 * Retires a root's graph, under den's retiring role: every row its graph holds is deleted at its root, its record
+	 * stays, and its key never starts a graph again. An app row that references one of its rows refuses it, naming the
+	 * relation.
 	 */
 	readonly retire: (root: Sha256) => Effect.Effect<WriteOutcome<unknown>, Settled>
 	readonly snapshot: Effect.Effect<Snapshot<R>, Settled>

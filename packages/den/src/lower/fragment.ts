@@ -31,18 +31,20 @@ import {
 
 /**
  * A flow lowered to a fragment, as data: the rosters, contracts, relations and laws the app lists in its own
- * `schema(...)` as the flow's graph and coordination fragments, every name under the flow's prefix, and the kinds, joins and edges the programs and the binding are
- * printed from. The fragment's relations are an ordered list, the form grizzle's `schema()` takes, which refuses two
+ * `schema(...)` as the flow's graph and coordination fragments, every name under the flow's prefix, and the kinds, joins
+ * and edges the programs and the binding are printed from. The fragment's relations are an ordered list, the form grizzle's `schema()` takes, which refuses two
  * declarations of one name that differ as `DuplicateIdentity`.
  *
- * Two groups of relations, by who writes them, each insert-only for every role, its every law a key, a containment or
- * a row check; each role certifies at the level grizzle's generate gives its writes (docs/build/repin.md), and every
- * call of each runs again on a transient refusal (runtime/ledger.ts Settled). The graph (scopes, steps, claims,
- * results, values, edges) is written by den's role and the app's writer role. The coordination group is written by
- * den's coordinator role alone: each seat, exclusivity seat and pause is a chain of turns, a turn held and then ended
- * (`Hold`/`Freed`, `Exclusive`/`Released`, `Paused`/`Resumed`), each turn after the first contained in its
- * predecessor's end, so a chain holds at most one live turn, its latest, and nothing is ever deleted. A resource's seat
- * count is a closed relation, which every live hold's seat is checked below on the seat level (SeatsIR).
+ * Two groups of relations, by who writes them, their every law a key, a containment or a row check; each role certifies
+ * at the level grizzle's generate gives its writes (docs/build/repin.md), and every call of each runs again on a
+ * transient refusal (runtime/ledger.ts Settled). The graph (scopes, steps, claims, results, values, edges) is written by
+ * den's role and the app's writer role, inserted and never updated, and sits under grizzle's units: every relation of a
+ * root's graph under DenRoot, at the root, which a finished root's clearing deletes the rows of under its den retiring
+ * role, its root's record kept; a claim's seats under the flow's seat unit, at their resource. The coordination group is
+ * written by den's coordinator role alone, insert-only: each exclusivity seat and pause is a chain of turns, a turn held
+ * and then ended (`Exclusive`/`Released`, `Paused`/`Resumed`), each turn after the first contained in its predecessor's
+ * end, so a chain holds at most one live turn, its latest, and nothing is ever deleted. A resource's seat count is a
+ * closed relation, which every live hold's seat is checked below on the seat level (SeatsIR).
  */
 
 /** What a lowered field holds. */
@@ -55,7 +57,6 @@ export type FieldType =
 	| { readonly kind: "closed"; readonly roster: string }
 	| { readonly kind: "brand"; readonly brand: string }
 	| { readonly kind: "base"; readonly base: Base }
-	| { readonly kind: "retirement" }
 	| { readonly kind: "app"; readonly relation: string; readonly field: string }
 	| { readonly kind: "vector"; readonly dimensions: number }
 
@@ -91,7 +92,10 @@ export interface SideIR {
 	readonly terms: ReadonlyArray<{ readonly field: string; readonly pred: boolean }>
 }
 
-/** A law of the fragment: a containment, a key, a race, or a row check holding a natural field to at least a constant. */
+/**
+ * A law of the fragment: a containment, a key, a race, a row check holding a natural field to at least a constant, a
+ * unit, a relation's rows mutable inside their unit, or an ordered family of an owner's members.
+ */
 export type LawIR =
 	| { readonly kind: "contained"; readonly from: SideIR; readonly to: SideIR }
 	| { readonly kind: "key"; readonly side: SideIR }
@@ -104,10 +108,16 @@ export type LawIR =
 			readonly holds: Holds
 	  }
 	| {
-			readonly kind: "retirable"
-			readonly header: string
-			readonly bodies: ReadonlyArray<string>
+			readonly kind: "unit"
+			/** The unit's name, its lock's: one value of its heading is one lock. */
+			readonly name: string
+			/** The unit's key, which every relation under it leads its primary key with. */
+			readonly heading: readonly [
+				{ readonly name: string; readonly type: FieldType },
+				...Array<{ readonly name: string; readonly type: FieldType }>
+			]
 	  }
+	| { readonly kind: "mutable"; readonly relation: string }
 	| {
 			readonly kind: "ordered"
 			readonly member: SideIR
@@ -327,6 +337,13 @@ export interface Lowered {
 	readonly requesting: ReadonlyArray<string>
 	/** The relations den's coordinator role inserts into: each chain's turns and their ends. */
 	readonly coordination: ReadonlyArray<string>
+	/**
+	 * The relations a finished root's clearing deletes the rows of, at its root: every graph relation but the root's own
+	 * record and its claims' holds, which go with their claims.
+	 */
+	readonly cleared: ReadonlyArray<string>
+	/** The claims' holds, each a member of its claim's ordered family under the flow's seat unit. */
+	readonly held: ReadonlyArray<string>
 	/** The flows its scopes' preconditions read, each once. */
 	readonly idle: ReadonlyArray<string>
 	/** The app's relations its steps await a fact of, each once. */
@@ -471,15 +488,20 @@ export const lower = (flow: AnyFlow): Lowered => {
 		fields: [{ name: "scope", type: scopeKey }],
 		key: ["scope"]
 	})
+	/**
+	 * A root as its request recorded it: its scope, the root of every row of its graph, its kind, its trigger's key and the
+	 * instant it was requested. A closed fact, never updated or deleted: its key refuses the root requested again, and
+	 * once its graph is cleared it holds what was requested and nothing more.
+	 */
 	const Root = relation({
 		name: name("Root"),
 		fields: [
-			{ name: "scope", type: scopeKey },
+			{ name: "root", type: scopeKey },
 			{ name: "kind", type: { kind: "closed", roster: name("RootKind") } },
 			{ name: "key", type: text },
 			{ name: "at", type: instant }
 		],
-		key: ["scope"]
+		key: ["root"]
 	})
 	const withins: ReadonlyArray<string> = Arr.isReadonlyArrayNonEmpty(childNames)
 		? [
@@ -671,8 +693,8 @@ export const lower = (flow: AnyFlow): Lowered => {
 	)
 	laws.push(
 		into(side(Admitted, ["scope"]), side(Scope, ["scope"])),
-		into(side(Skipped, ["scope"]), side(Root, ["scope"])),
-		into(side(Skipped, ["by"]), side(Root, ["scope"])),
+		into(side(Skipped, ["scope"]), side(Root, ["root"])),
+		into(side(Skipped, ["by"]), side(Root, ["root"])),
 		into(side(Step, ["scope"]), side(Admitted, ["scope"])),
 		into(side(StartStep, ["scope"]), side(Admitted, ["scope"])),
 		into(side(StartStep, ["step"]), side(Step, ["step"])),
@@ -881,7 +903,11 @@ export const lower = (flow: AnyFlow): Lowered => {
 				"scope",
 				j.input,
 				`${j._tag === "Root" ? "root" : "scope"} ${j.name}`,
-				[sideOf(j._tag === "Root" ? Root : name("Within"), ["scope"], ofKind(j.name))],
+				[
+					j._tag === "Root"
+						? sideOf(Root, ["root"], ofKind(j.name))
+						: sideOf(name("Within"), ["scope"], ofKind(j.name))
+				],
 				unkeyed
 			)
 		)
@@ -1136,28 +1162,40 @@ export const lower = (flow: AnyFlow): Lowered => {
 			})
 		: Option.none()
 	/**
-	 * A seat a claim holds, a member of its claim's ordered family: the claim's step, root and attempt, its place among the
-	 * claim's holds, and the resource's seat. It is written in the claim's own write and lapses with its claim, so it
-	 * carries no lease of its own and names no holder but its claim.
+	 * A seat a claim holds, a member of its claim's ordered family, one a resource: the resource, the claim's root, step
+	 * and attempt, its place among the claim's holds, and the resource's seat. It is written nested under its claim in the
+	 * claim's own write, which supplies the attempt the database stamps, and lapses with its claim, so it carries no lease
+	 * of its own and names no holder but its claim; a clearing of its claim's root deletes it with its claim. Keyed by its
+	 * resource first, it sits under the flow's seat unit, `<P>Seat`, so every write of a resource's holds holds that
+	 * resource, and the live holds' laws, at most one a seat and each below its resource's count, are judged inside it.
 	 */
 	const seats = Option.map(counts, (seatCounts): SeatsIR => {
+		const resource = {
+			name: seatCounts.key.field,
+			type: { kind: "closed", roster: seatCounts.key.roster } satisfies FieldType
+		}
 		const Hold = relation({
 			name: name("Hold"),
 			fields: [
+				resource,
+				{ name: "root", type: scopeKey },
 				{ name: "step", type: stepKey },
 				{ name: "attempt", type: natural },
 				{ name: "at", type: drawnCount },
-				{ name: "resource", type: { kind: "closed", roster: seatCounts.key.roster } },
 				{ name: "seat", type: natural }
 			],
-			key: ["step", "root", "attempt", "at"]
+			key: ["resource", "root", "step", "attempt"]
 		})
-		laws.push({
-			kind: "ordered",
-			member: side(Hold, ["step", "root", "attempt", "at"]),
-			owner: Claim,
-			count: "holds"
-		})
+		laws.push(
+			{ kind: "unit", name: name("Seat"), heading: [resource] },
+			{
+				kind: "ordered",
+				member: side(Hold, ["root", "step", "attempt", "at"]),
+				owner: Claim,
+				count: "holds"
+			},
+			{ kind: "mutable", relation: Hold }
+		)
 		return {
 			counts: seatCounts,
 			hold: Hold,
@@ -1228,33 +1266,36 @@ export const lower = (flow: AnyFlow): Lowered => {
 	]
 
 	/**
-	 * Every root's graph is one retirable unit of grizzle's: its header the root, every other graph relation a body
-	 * carrying its root's scope as `root`, in every key it holds and on both sides of every containment between bodies,
-	 * which every row of one graph shares, and the header holding its group's retirement. The coordination group is no
-	 * part of any unit: its chains of turns outlive the graphs whose steps took them.
+	 * Every root's graph sits under one unit of grizzle's, `DenRoot`, keyed by the root's scope, `root`, which every flow's
+	 * fragment states alike and so one unit, the roots being digests that no two flows share: every graph relation but the
+	 * root's own record carries its root as `root`, first in its key and on both sides of every containment and key
+	 * between them, so every write of a graph's rows holds its root, and each is contained in its root's record. A root's
+	 * record is closed, the fact that it was requested; every other graph relation is mutable inside the unit, since a
+	 * finished root's graph is cleared under its root, every row of it deleted but its record. A claim's holds sit under
+	 * the flow's seat unit and are cleared with their claims. The coordination group is no part of any unit: its chains of
+	 * turns outlive the graphs whose steps took them.
 	 */
+	const held = Arr.map(Option.toArray(seats), (st) => st.hold)
 	const bodies = new Set(
 		Arr.filter(
 			Arr.map(relations, (r) => r.name),
-			(r) => r !== Root && !Arr.contains(coordination, r)
+			(r) => r !== Root && !Arr.contains(coordination, r) && !Arr.contains(held, r)
 		)
 	)
 	const rootField = { name: "root", type: scopeKey }
-	const rooted = Arr.map(relations, (r): RelationIR => {
-		if (bodies.has(r.name)) {
-			return {
-				...r,
-				fields: [...r.fields, rootField],
-				key: Arr.contains(r.key, "root") ? r.key : [...r.key, "root"]
-			}
-		}
-		return r.name === Root
-			? { ...r, fields: [...r.fields, { name: "retired", type: { kind: "retirement" } }] }
+	const rooted = Arr.map(relations, (r): RelationIR =>
+		bodies.has(r.name)
+			? {
+					...r,
+					fields: [rootField, ...Arr.filter(r.fields, (f) => f.name !== "root")],
+					key: ["root", ...Arr.filter(r.key, (f) => f !== "root")]
+				}
 			: r
-	})
+	)
 	const rootTerm = { field: "root", pred: false }
-	const onRoot = (on: SideIR): SideIR => ({ ...on, terms: [...on.terms, rootTerm] })
+	const onRoot = (on: SideIR): SideIR => ({ ...on, terms: [rootTerm, ...on.terms] })
 	const rootedLaws: ReadonlyArray<LawIR> = [
+		{ kind: "unit", name: "DenRoot", heading: [rootField] },
 		...Arr.map(laws, (law): LawIR => {
 			switch (law.kind) {
 				case "contained":
@@ -1265,12 +1306,16 @@ export const lower = (flow: AnyFlow): Lowered => {
 					return bodies.has(law.side.relation) ? { ...law, side: onRoot(law.side) } : law
 				case "race":
 				case "check":
-				case "retirable":
+				case "unit":
+				case "mutable":
 				case "ordered":
 					return law
 			}
 		}),
-		{ kind: "retirable", header: Root, bodies: Array.from(bodies) }
+		...Arr.flatMap(Array.from(bodies), (body): ReadonlyArray<LawIR> => [
+			into(side(body, ["root"]), side(Root, ["root"])),
+			{ kind: "mutable", relation: body }
+		])
 	]
 
 	const names = [
@@ -1296,6 +1341,8 @@ export const lower = (flow: AnyFlow): Lowered => {
 		seats,
 		relations: rooted,
 		laws: rootedLaws,
+		cleared: Array.from(bodies),
+		held,
 		steps: stepsIR,
 		joins: joinsIR,
 		edges: edgesIR,

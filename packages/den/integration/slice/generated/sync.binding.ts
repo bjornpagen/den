@@ -776,13 +776,7 @@ export const syncLedger = (h: SyncHandles) => {
 			settled(h.den.syncFinishedRoots.once({ params: {}, facts: {} })),
 			(rows) => Arr.map(rowsOf(rows), (row) => row.scope)
 		),
-		retire: (root) =>
-			settled(
-				h.retirer.syncRetire.once({
-					params: {},
-					facts: { retire: { SyncRoot: [{ scope: root }] } }
-				})
-			),
+		retire: (root) => settled(h.retirer.syncRetire.once({ params: { root }, facts: {} })),
 		snapshot: Effect.flatMap(settled(h.den.syncSnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof sync>> => {
 				const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>

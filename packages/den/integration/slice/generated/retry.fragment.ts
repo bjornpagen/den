@@ -6,15 +6,15 @@ import {
 	contained,
 	fragment,
 	key,
+	mutable,
 	natural,
 	on,
 	place,
 	pred,
 	relation,
-	retirable,
-	retirement,
 	select,
-	sha256
+	sha256,
+	unit
 } from "@bjornpagen/grizzle"
 
 export const RetryKind = closed.unordered("RetryKind", [
@@ -39,142 +39,142 @@ export const RetryPausable = closed.unordered("RetryPausable", [
 	"Unhurried"
 ])
 
-export const RetryScope = relation("RetryScope", { scope: sha256, root: sha256 }, ["scope", "root"])
+export const RetryScope = relation("RetryScope", { root: sha256, scope: sha256 }, ["root", "scope"])
 export const RetryRoot = relation(
 	"RetryRoot",
-	{ scope: sha256, kind: closedId(RetryRootKind), key: Text, at: DenInstant, retired: retirement },
-	["scope"]
+	{ root: sha256, kind: closedId(RetryRootKind), key: Text, at: DenInstant },
+	["root"]
 )
-export const RetryAdmitted = relation("RetryAdmitted", { scope: sha256, root: sha256 }, [
-	"scope",
-	"root"
+export const RetryAdmitted = relation("RetryAdmitted", { root: sha256, scope: sha256 }, [
+	"root",
+	"scope"
 ])
-export const RetrySkipped = relation("RetrySkipped", { scope: sha256, by: sha256, root: sha256 }, [
-	"scope",
-	"root"
+export const RetrySkipped = relation("RetrySkipped", { root: sha256, scope: sha256, by: sha256 }, [
+	"root",
+	"scope"
 ])
 export const RetryStep = relation(
 	"RetryStep",
-	{ step: sha256, kind: closedId(RetryKind), scope: sha256, due: DenInstant, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, kind: closedId(RetryKind), scope: sha256, due: DenInstant },
+	["root", "step"]
 )
 export const RetryStartStep = relation(
 	"RetryStartStep",
-	{ scope: sha256, ordinal: natural, step: sha256, root: sha256 },
-	["scope", "ordinal", "root"]
+	{ root: sha256, scope: sha256, ordinal: natural, step: sha256 },
+	["root", "scope", "ordinal"]
 )
-export const RetryFinish = relation("RetryFinish", { scope: sha256, step: sha256, root: sha256 }, [
-	"scope",
-	"root"
+export const RetryFinish = relation("RetryFinish", { root: sha256, scope: sha256, step: sha256 }, [
+	"root",
+	"scope"
 ])
 export const RetryClaim = relation(
 	"RetryClaim",
-	{ step: sha256, attempt: place, until: DenInstant, root: sha256 },
-	["step", "root", "attempt"]
+	{ root: sha256, step: sha256, attempt: place, until: DenInstant },
+	["root", "step", "attempt"]
 )
-export const RetryEnded = relation("RetryEnded", { step: sha256, attempt: natural, root: sha256 }, [
+export const RetryEnded = relation("RetryEnded", { root: sha256, step: sha256, attempt: natural }, [
+	"root",
 	"step",
-	"attempt",
-	"root"
+	"attempt"
 ])
 export const RetryRetry = relation(
 	"RetryRetry",
-	{ step: sha256, attempt: natural, at: DenInstant, why: closedId(RetryRetryWhy), root: sha256 },
-	["step", "attempt", "root"]
+	{ root: sha256, step: sha256, attempt: natural, at: DenInstant, why: closedId(RetryRetryWhy) },
+	["root", "step", "attempt"]
 )
 export const RetryFenced = relation(
 	"RetryFenced",
-	{ step: sha256, attempt: natural, root: sha256 },
-	["step", "attempt", "root"]
+	{ root: sha256, step: sha256, attempt: natural },
+	["root", "step", "attempt"]
 )
 export const RetryResult = relation(
 	"RetryResult",
-	{ step: sha256, outcome: closedId(RetryOutcome), root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, outcome: closedId(RetryOutcome) },
+	["root", "step"]
 )
-export const RetryDone = relation("RetryDone", { step: sha256, root: sha256 }, ["step", "root"])
-export const RetryFailed = relation("RetryFailed", { step: sha256, root: sha256 }, ["step", "root"])
-export const RetryHeld = relation("RetryHeld", { step: sha256, attempt: natural, root: sha256 }, [
-	"step",
-	"root"
+export const RetryDone = relation("RetryDone", { root: sha256, step: sha256 }, ["root", "step"])
+export const RetryFailed = relation("RetryFailed", { root: sha256, step: sha256 }, ["root", "step"])
+export const RetryHeld = relation("RetryHeld", { root: sha256, step: sha256, attempt: natural }, [
+	"root",
+	"step"
 ])
-export const RetryRefusal = relation("RetryRefusal", { step: sha256, law: Text, root: sha256 }, [
-	"step",
-	"root"
+export const RetryRefusal = relation("RetryRefusal", { root: sha256, step: sha256, law: Text }, [
+	"root",
+	"step"
 ])
-export const RetryExhausted = relation("RetryExhausted", { step: sha256, root: sha256 }, [
-	"step",
-	"root"
+export const RetryExhausted = relation("RetryExhausted", { root: sha256, step: sha256 }, [
+	"root",
+	"step"
 ])
 export const RetrySteadfastInput = relation(
 	"RetrySteadfastInput",
-	{ step: sha256, key: Text, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, key: Text },
+	["root", "step"]
 )
 export const RetryBrittleInput = relation(
 	"RetryBrittleInput",
-	{ step: sha256, key: Text, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, key: Text },
+	["root", "step"]
 )
 export const RetryPoliteInput = relation(
 	"RetryPoliteInput",
-	{ step: sha256, key: Text, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, key: Text },
+	["root", "step"]
 )
 export const RetryPatientInput = relation(
 	"RetryPatientInput",
-	{ step: sha256, key: Text, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, key: Text },
+	["root", "step"]
 )
 export const RetryLaddersInput = relation(
 	"RetryLaddersInput",
-	{ scope: sha256, steadfast: Text, brittle: Text, root: sha256 },
-	["scope", "root"]
+	{ root: sha256, scope: sha256, steadfast: Text, brittle: Text },
+	["root", "scope"]
 )
 export const RetryThrottledInput = relation(
 	"RetryThrottledInput",
-	{ scope: sha256, key: Text, root: sha256 },
-	["scope", "root"]
+	{ root: sha256, scope: sha256, key: Text },
+	["root", "scope"]
 )
 export const RetryUnhurriedInput = relation(
 	"RetryUnhurriedInput",
-	{ scope: sha256, key: Text, root: sha256 },
-	["scope", "root"]
+	{ root: sha256, scope: sha256, key: Text },
+	["root", "scope"]
 )
 export const RetrySteadfastOutput = relation(
 	"RetrySteadfastOutput",
-	{ step: sha256, key: Text, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, key: Text },
+	["root", "step"]
 )
 export const RetryBrittleOutput = relation(
 	"RetryBrittleOutput",
-	{ step: sha256, key: Text, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, key: Text },
+	["root", "step"]
 )
 export const RetryPoliteOutput = relation(
 	"RetryPoliteOutput",
-	{ step: sha256, key: Text, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, key: Text },
+	["root", "step"]
 )
 export const RetryPatientOutput = relation(
 	"RetryPatientOutput",
-	{ step: sha256, key: Text, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, key: Text },
+	["root", "step"]
 )
 export const RetryLaddersFinishOutput = relation(
 	"RetryLaddersFinishOutput",
-	{ step: sha256, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256 },
+	["root", "step"]
 )
 export const RetryThrottledFinishOutput = relation(
 	"RetryThrottledFinishOutput",
-	{ step: sha256, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256 },
+	["root", "step"]
 )
 export const RetryUnhurriedFinishOutput = relation(
 	"RetryUnhurriedFinishOutput",
-	{ step: sha256, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256 },
+	["root", "step"]
 )
 export const RetryPaused = relation(
 	"RetryPaused",
@@ -233,149 +233,178 @@ export const retryGraph = fragment(
 		RetryUnhurriedFinishOutput
 	],
 	[
-		contained(on(RetryAdmitted, "scope", "root"), on(RetryScope, "scope", "root")),
-		contained(on(RetrySkipped, "scope"), on(RetryRoot, "scope")),
-		contained(on(RetrySkipped, "by"), on(RetryRoot, "scope")),
-		contained(on(RetryStep, "scope", "root"), on(RetryAdmitted, "scope", "root")),
-		contained(on(RetryStartStep, "scope", "root"), on(RetryAdmitted, "scope", "root")),
-		contained(on(RetryStartStep, "step", "root"), on(RetryStep, "step", "root")),
-		key(on(RetryStartStep, "step", "root")),
-		contained(on(RetryFinish, "scope", "root"), on(RetryAdmitted, "scope", "root")),
-		contained(on(RetryFinish, "step", "root"), on(RetryStep, "step", "root")),
-		key(on(RetryFinish, "step", "root")),
-		contained(on(RetryClaim, "step", "root"), on(RetryStep, "step", "root")),
-		contained(on(RetryEnded, "step", "attempt", "root"), on(RetryClaim, "step", "attempt", "root")),
+		unit("DenRoot", { root: sha256 }),
+		contained(on(RetryAdmitted, "root", "scope"), on(RetryScope, "root", "scope")),
+		contained(on(RetrySkipped, "scope"), on(RetryRoot, "root")),
+		contained(on(RetrySkipped, "by"), on(RetryRoot, "root")),
+		contained(on(RetryStep, "root", "scope"), on(RetryAdmitted, "root", "scope")),
+		contained(on(RetryStartStep, "root", "scope"), on(RetryAdmitted, "root", "scope")),
+		contained(on(RetryStartStep, "root", "step"), on(RetryStep, "root", "step")),
+		key(on(RetryStartStep, "root", "step")),
+		contained(on(RetryFinish, "root", "scope"), on(RetryAdmitted, "root", "scope")),
+		contained(on(RetryFinish, "root", "step"), on(RetryStep, "root", "step")),
+		key(on(RetryFinish, "root", "step")),
+		contained(on(RetryClaim, "root", "step"), on(RetryStep, "root", "step")),
+		contained(on(RetryEnded, "root", "step", "attempt"), on(RetryClaim, "root", "step", "attempt")),
 		contained(
 			on(
 				select(RetryClaim, (row) => row.ge(row.attempt, 1n)),
+				"root",
 				"step",
-				pred("attempt"),
-				"root"
+				pred("attempt")
 			),
-			on(RetryEnded, "step", "attempt", "root")
+			on(RetryEnded, "root", "step", "attempt")
 		),
-		contained(on(RetryRetry, "step", "attempt", "root"), on(RetryEnded, "step", "attempt", "root")),
+		contained(on(RetryRetry, "root", "step", "attempt"), on(RetryEnded, "root", "step", "attempt")),
 		contained(
-			on(RetryFenced, "step", "attempt", "root"),
-			on(RetryEnded, "step", "attempt", "root")
+			on(RetryFenced, "root", "step", "attempt"),
+			on(RetryEnded, "root", "step", "attempt")
 		),
-		contained(on(RetryResult, "step", "root"), on(RetryStep, "step", "root")),
-		contained(on(RetryHeld, "step", "attempt", "root"), on(RetryClaim, "step", "attempt", "root")),
-		contained(on(RetryHeld, "step", "root"), on(RetryResult, "step", "root")),
+		contained(on(RetryResult, "root", "step"), on(RetryStep, "root", "step")),
+		contained(on(RetryHeld, "root", "step", "attempt"), on(RetryClaim, "root", "step", "attempt")),
+		contained(on(RetryHeld, "root", "step"), on(RetryResult, "root", "step")),
 		contained(
-			on(RetryDone, "step", "root"),
+			on(RetryDone, "root", "step"),
 			on(
 				select(RetryResult, (row) => row.eq(row.outcome, "done")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
 		contained(
-			on(RetryFailed, "step", "root"),
+			on(RetryFailed, "root", "step"),
 			on(
 				select(RetryResult, (row) => row.eq(row.outcome, "failed")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
-		contained(on(RetryRefusal, "step", "root"), on(RetryFailed, "step", "root")),
-		contained(on(RetryExhausted, "step", "root"), on(RetryFailed, "step", "root")),
+		contained(on(RetryRefusal, "root", "step"), on(RetryFailed, "root", "step")),
+		contained(on(RetryExhausted, "root", "step"), on(RetryFailed, "root", "step")),
 		contained(
-			on(RetrySteadfastInput, "step", "root"),
+			on(RetrySteadfastInput, "root", "step"),
 			on(
 				select(RetryStep, (row) => row.eq(row.kind, "Steadfast")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
 		contained(
-			on(RetryBrittleInput, "step", "root"),
+			on(RetryBrittleInput, "root", "step"),
 			on(
 				select(RetryStep, (row) => row.eq(row.kind, "Brittle")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
 		contained(
-			on(RetryPoliteInput, "step", "root"),
+			on(RetryPoliteInput, "root", "step"),
 			on(
 				select(RetryStep, (row) => row.eq(row.kind, "Polite")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
 		contained(
-			on(RetryPatientInput, "step", "root"),
+			on(RetryPatientInput, "root", "step"),
 			on(
 				select(RetryStep, (row) => row.eq(row.kind, "Patient")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
 		contained(
 			on(RetryLaddersInput, "scope"),
 			on(
 				select(RetryRoot, (row) => row.eq(row.kind, "Ladders")),
-				"scope"
+				"root"
 			)
 		),
 		contained(
 			on(RetryThrottledInput, "scope"),
 			on(
 				select(RetryRoot, (row) => row.eq(row.kind, "Throttled")),
-				"scope"
+				"root"
 			)
 		),
 		contained(
 			on(RetryUnhurriedInput, "scope"),
 			on(
 				select(RetryRoot, (row) => row.eq(row.kind, "Unhurried")),
-				"scope"
+				"root"
 			)
 		),
-		contained(on(RetrySteadfastOutput, "step", "root"), on(RetrySteadfastInput, "step", "root")),
-		contained(on(RetrySteadfastOutput, "step", "root"), on(RetryDone, "step", "root")),
-		contained(on(RetryBrittleOutput, "step", "root"), on(RetryBrittleInput, "step", "root")),
-		contained(on(RetryBrittleOutput, "step", "root"), on(RetryDone, "step", "root")),
-		contained(on(RetryPoliteOutput, "step", "root"), on(RetryPoliteInput, "step", "root")),
-		contained(on(RetryPoliteOutput, "step", "root"), on(RetryDone, "step", "root")),
-		contained(on(RetryPatientOutput, "step", "root"), on(RetryPatientInput, "step", "root")),
-		contained(on(RetryPatientOutput, "step", "root"), on(RetryDone, "step", "root")),
-		contained(on(RetryLaddersFinishOutput, "step", "root"), on(RetryDone, "step", "root")),
-		contained(on(RetryThrottledFinishOutput, "step", "root"), on(RetryDone, "step", "root")),
-		contained(on(RetryUnhurriedFinishOutput, "step", "root"), on(RetryDone, "step", "root")),
-		retirable(RetryRoot, [
-			on(RetryScope, "root"),
-			on(RetryAdmitted, "root"),
-			on(RetrySkipped, "root"),
-			on(RetryStep, "root"),
-			on(RetryStartStep, "root"),
-			on(RetryFinish, "root"),
-			on(RetryClaim, "root"),
-			on(RetryEnded, "root"),
-			on(RetryRetry, "root"),
-			on(RetryFenced, "root"),
-			on(RetryResult, "root"),
-			on(RetryDone, "root"),
-			on(RetryFailed, "root"),
-			on(RetryHeld, "root"),
-			on(RetryRefusal, "root"),
-			on(RetryExhausted, "root"),
-			on(RetrySteadfastInput, "root"),
-			on(RetryBrittleInput, "root"),
-			on(RetryPoliteInput, "root"),
-			on(RetryPatientInput, "root"),
-			on(RetryLaddersInput, "root"),
-			on(RetryThrottledInput, "root"),
-			on(RetryUnhurriedInput, "root"),
-			on(RetrySteadfastOutput, "root"),
-			on(RetryBrittleOutput, "root"),
-			on(RetryPoliteOutput, "root"),
-			on(RetryPatientOutput, "root"),
-			on(RetryLaddersFinishOutput, "root"),
-			on(RetryThrottledFinishOutput, "root"),
-			on(RetryUnhurriedFinishOutput, "root")
-		])
+		contained(on(RetrySteadfastOutput, "root", "step"), on(RetrySteadfastInput, "root", "step")),
+		contained(on(RetrySteadfastOutput, "root", "step"), on(RetryDone, "root", "step")),
+		contained(on(RetryBrittleOutput, "root", "step"), on(RetryBrittleInput, "root", "step")),
+		contained(on(RetryBrittleOutput, "root", "step"), on(RetryDone, "root", "step")),
+		contained(on(RetryPoliteOutput, "root", "step"), on(RetryPoliteInput, "root", "step")),
+		contained(on(RetryPoliteOutput, "root", "step"), on(RetryDone, "root", "step")),
+		contained(on(RetryPatientOutput, "root", "step"), on(RetryPatientInput, "root", "step")),
+		contained(on(RetryPatientOutput, "root", "step"), on(RetryDone, "root", "step")),
+		contained(on(RetryLaddersFinishOutput, "root", "step"), on(RetryDone, "root", "step")),
+		contained(on(RetryThrottledFinishOutput, "root", "step"), on(RetryDone, "root", "step")),
+		contained(on(RetryUnhurriedFinishOutput, "root", "step"), on(RetryDone, "root", "step")),
+		contained(on(RetryScope, "root"), on(RetryRoot, "root")),
+		mutable(RetryScope),
+		contained(on(RetryAdmitted, "root"), on(RetryRoot, "root")),
+		mutable(RetryAdmitted),
+		contained(on(RetrySkipped, "root"), on(RetryRoot, "root")),
+		mutable(RetrySkipped),
+		contained(on(RetryStep, "root"), on(RetryRoot, "root")),
+		mutable(RetryStep),
+		contained(on(RetryStartStep, "root"), on(RetryRoot, "root")),
+		mutable(RetryStartStep),
+		contained(on(RetryFinish, "root"), on(RetryRoot, "root")),
+		mutable(RetryFinish),
+		contained(on(RetryClaim, "root"), on(RetryRoot, "root")),
+		mutable(RetryClaim),
+		contained(on(RetryEnded, "root"), on(RetryRoot, "root")),
+		mutable(RetryEnded),
+		contained(on(RetryRetry, "root"), on(RetryRoot, "root")),
+		mutable(RetryRetry),
+		contained(on(RetryFenced, "root"), on(RetryRoot, "root")),
+		mutable(RetryFenced),
+		contained(on(RetryResult, "root"), on(RetryRoot, "root")),
+		mutable(RetryResult),
+		contained(on(RetryDone, "root"), on(RetryRoot, "root")),
+		mutable(RetryDone),
+		contained(on(RetryFailed, "root"), on(RetryRoot, "root")),
+		mutable(RetryFailed),
+		contained(on(RetryHeld, "root"), on(RetryRoot, "root")),
+		mutable(RetryHeld),
+		contained(on(RetryRefusal, "root"), on(RetryRoot, "root")),
+		mutable(RetryRefusal),
+		contained(on(RetryExhausted, "root"), on(RetryRoot, "root")),
+		mutable(RetryExhausted),
+		contained(on(RetrySteadfastInput, "root"), on(RetryRoot, "root")),
+		mutable(RetrySteadfastInput),
+		contained(on(RetryBrittleInput, "root"), on(RetryRoot, "root")),
+		mutable(RetryBrittleInput),
+		contained(on(RetryPoliteInput, "root"), on(RetryRoot, "root")),
+		mutable(RetryPoliteInput),
+		contained(on(RetryPatientInput, "root"), on(RetryRoot, "root")),
+		mutable(RetryPatientInput),
+		contained(on(RetryLaddersInput, "root"), on(RetryRoot, "root")),
+		mutable(RetryLaddersInput),
+		contained(on(RetryThrottledInput, "root"), on(RetryRoot, "root")),
+		mutable(RetryThrottledInput),
+		contained(on(RetryUnhurriedInput, "root"), on(RetryRoot, "root")),
+		mutable(RetryUnhurriedInput),
+		contained(on(RetrySteadfastOutput, "root"), on(RetryRoot, "root")),
+		mutable(RetrySteadfastOutput),
+		contained(on(RetryBrittleOutput, "root"), on(RetryRoot, "root")),
+		mutable(RetryBrittleOutput),
+		contained(on(RetryPoliteOutput, "root"), on(RetryRoot, "root")),
+		mutable(RetryPoliteOutput),
+		contained(on(RetryPatientOutput, "root"), on(RetryRoot, "root")),
+		mutable(RetryPatientOutput),
+		contained(on(RetryLaddersFinishOutput, "root"), on(RetryRoot, "root")),
+		mutable(RetryLaddersFinishOutput),
+		contained(on(RetryThrottledFinishOutput, "root"), on(RetryRoot, "root")),
+		mutable(RetryThrottledFinishOutput),
+		contained(on(RetryUnhurriedFinishOutput, "root"), on(RetryRoot, "root")),
+		mutable(RetryUnhurriedFinishOutput)
 	]
 )
 

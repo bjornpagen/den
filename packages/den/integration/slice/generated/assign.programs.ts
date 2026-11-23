@@ -152,10 +152,10 @@ const assignPendingRead = query(AssignDen).rule((r) => {
 })
 
 const assignRequestedRead = query(AssignDen).rule((r) => {
-	const { scope } = v(AssignRoot, "root")
+	const { scope } = v(AssignScope, "scope")
 	return r
-		.match(AssignRoot, { scope })
-		.match(AssignScope, { scope })
+		.match(AssignRoot, { root: scope })
+		.match(AssignScope, { root: scope, scope })
 		.where(r.not(AssignAdmitted, { scope }), r.not(AssignSkipped, { scope }))
 		.find({ scope })
 })
@@ -287,60 +287,60 @@ export const assignDenPrograms = Object.freeze({
 	),
 	assignSkip: ChangeSet.empty(assignGraph).insert(AssignSkipped, []),
 	assignSkippedOf: query(assignGraph).rule((r) => {
-		const { scope, by, root } = v(AssignSkipped, "assignSkipped")
+		const { root, scope, by } = v(AssignSkipped, "assignSkipped")
 		return r
-			.match(AssignSkipped, { scope, by, root })
+			.match(AssignSkipped, { root, scope, by })
 			.where(r.eq(scope, r.param("scope", AssignSkipped.fields.scope)))
-			.find({ scope, by, root })
+			.find({ root, scope, by })
 	}),
 	assignStepOf: query(assignGraph).rule((r) => {
-		const { step, kind, scope, due, root } = v(AssignStep, "assignStep")
+		const { root, step, kind, scope, due } = v(AssignStep, "assignStep")
 		return r
-			.match(AssignStep, { step, kind, scope, due, root })
+			.match(AssignStep, { root, step, kind, scope, due })
 			.where(r.eq(step, r.param("step", AssignStep.fields.step)))
-			.find({ step, kind, scope, due, root })
+			.find({ root, step, kind, scope, due })
 	}),
 	assignResultOf: query(assignGraph).rule((r) => {
-		const { step, outcome, root } = v(AssignResult, "assignResult")
+		const { root, step, outcome } = v(AssignResult, "assignResult")
 		return r
-			.match(AssignResult, { step, outcome, root })
+			.match(AssignResult, { root, step, outcome })
 			.where(r.eq(step, r.param("step", AssignResult.fields.step)))
-			.find({ step, outcome, root })
+			.find({ root, step, outcome })
 	}),
 	assignHeldOf: query(assignGraph).rule((r) => {
-		const { step, attempt, root } = v(AssignHeld, "assignHeld")
+		const { root, step, attempt } = v(AssignHeld, "assignHeld")
 		return r
-			.match(AssignHeld, { step, attempt, root })
+			.match(AssignHeld, { root, step, attempt })
 			.where(r.eq(step, r.param("step", AssignHeld.fields.step)))
-			.find({ step, attempt, root })
+			.find({ root, step, attempt })
 	}),
 	assignAdmittedOf: query(assignGraph).rule((r) => {
-		const { scope, root } = v(AssignAdmitted, "assignAdmitted")
+		const { root, scope } = v(AssignAdmitted, "assignAdmitted")
 		return r
-			.match(AssignAdmitted, { scope, root })
+			.match(AssignAdmitted, { root, scope })
 			.where(r.eq(scope, r.param("scope", AssignAdmitted.fields.scope)))
-			.find({ scope, root })
+			.find({ root, scope })
 	}),
 	assignRootOf: query(assignGraph).rule((r) => {
-		const { scope, kind, key, at } = v(AssignRoot, "assignRoot")
+		const { kind, key, at } = v(AssignRoot, "root")
+		const { scope } = v(AssignScope, "scope")
 		return r
-			.match(AssignRoot, { scope, kind, key, at })
-			.where(r.eq(scope, r.param("scope", AssignRoot.fields.scope)))
+			.match(AssignRoot, { root: scope, kind, key, at })
+			.match(AssignScope, { root: scope, scope })
+			.where(r.eq(scope, r.param("scope", AssignRoot.fields.root)))
 			.find({ scope, kind, key, at })
 	}),
 	assignFinishedRoots: query(assignGraph)
 		.rule((r) => {
-			const { scope } = v(AssignRoot, "root")
-			const { step } = v(AssignFinish, "finish")
+			const { scope, step } = v(AssignFinish, "finish")
 			return r
-				.match(AssignRoot, { scope })
-				.match(AssignFinish, { scope, step })
-				.match(AssignResult, { step })
+				.match(AssignFinish, { root: scope, scope, step })
+				.match(AssignResult, { root: scope, step })
 				.find({ scope })
 		})
 		.rule((r) => {
-			const { scope } = v(AssignRoot, "root")
-			return r.match(AssignRoot, { scope }).match(AssignSkipped, { scope }).find({ scope })
+			const { scope } = v(AssignSkipped, "skipped")
+			return r.match(AssignSkipped, { root: scope, scope }).find({ scope })
 		}),
 	assignClaimsOf: query(assignGraph).rule((r) => {
 		const { step, attempt, until } = v(AssignClaim, "claim")
@@ -411,8 +411,12 @@ export const assignDenPrograms = Object.freeze({
 		requested: assignRequestedRead,
 		running: assignRunningRead,
 		roots: query(AssignDen).rule((r) => {
-			const { scope, kind, key, at } = v(AssignRoot, "assignRoot")
-			return r.match(AssignRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
+			const { kind, key, at } = v(AssignRoot, "root")
+			const { scope } = v(AssignScope, "scope")
+			return r
+				.match(AssignRoot, { root: scope, kind, key, at })
+				.match(AssignScope, { root: scope, scope })
+				.find({ scope, kind, key, at })
 		}),
 		paused: query(AssignDen).rule((r) => {
 			const { target, turn } = v(AssignPaused, "assignPaused")
@@ -423,25 +427,25 @@ export const assignDenPrograms = Object.freeze({
 		})
 	}),
 	assignReadAssignEmbedInput: query(assignGraph).rule((r) => {
-		const { step, learner, topic, mode, root } = v(AssignEmbedInput, "assignEmbedInput")
+		const { root, step, learner, topic, mode } = v(AssignEmbedInput, "assignEmbedInput")
 		return r
-			.match(AssignEmbedInput, { step, learner, topic, mode, root })
+			.match(AssignEmbedInput, { root, step, learner, topic, mode })
 			.where(r.eq(step, r.param("step", AssignEmbedInput.fields.step)))
-			.find({ step, learner, topic, mode, root })
+			.find({ root, step, learner, topic, mode })
 	}),
 	assignReadAssignEmbedInputModeNearest: query(assignGraph).rule((r) => {
-		const { step, root } = v(AssignEmbedInputModeNearest, "assignEmbedInputModeNearest")
+		const { root, step } = v(AssignEmbedInputModeNearest, "assignEmbedInputModeNearest")
 		return r
-			.match(AssignEmbedInputModeNearest, { step, root })
+			.match(AssignEmbedInputModeNearest, { root, step })
 			.where(r.eq(step, r.param("step", AssignEmbedInputModeNearest.fields.step)))
-			.find({ step, root })
+			.find({ root, step })
 	}),
 	assignReadAssignEmbedInputModeWithin: query(assignGraph).rule((r) => {
-		const { step, radius, root } = v(AssignEmbedInputModeWithin, "assignEmbedInputModeWithin")
+		const { root, step, radius } = v(AssignEmbedInputModeWithin, "assignEmbedInputModeWithin")
 		return r
-			.match(AssignEmbedInputModeWithin, { step, radius, root })
+			.match(AssignEmbedInputModeWithin, { root, step, radius })
 			.where(r.eq(step, r.param("step", AssignEmbedInputModeWithin.fields.step)))
-			.find({ step, radius, root })
+			.find({ root, step, radius })
 	}),
 	assignReadAssignEmbedInputNear: query(assignGraph).rule((r) => {
 		const { step, ordinal, value } = v(AssignEmbedInputNear, "part")
@@ -458,25 +462,25 @@ export const assignDenPrograms = Object.freeze({
 			.find({ step, ordinal, value })
 	}),
 	assignReadAssignDecideInput: query(assignGraph).rule((r) => {
-		const { step, learner, topic, vector, mode, root } = v(AssignDecideInput, "assignDecideInput")
+		const { root, step, learner, topic, vector, mode } = v(AssignDecideInput, "assignDecideInput")
 		return r
-			.match(AssignDecideInput, { step, learner, topic, vector, mode, root })
+			.match(AssignDecideInput, { root, step, learner, topic, vector, mode })
 			.where(r.eq(step, r.param("step", AssignDecideInput.fields.step)))
-			.find({ step, learner, topic, vector, mode, root })
+			.find({ root, step, learner, topic, vector, mode })
 	}),
 	assignReadAssignDecideInputModeNearest: query(assignGraph).rule((r) => {
-		const { step, root } = v(AssignDecideInputModeNearest, "assignDecideInputModeNearest")
+		const { root, step } = v(AssignDecideInputModeNearest, "assignDecideInputModeNearest")
 		return r
-			.match(AssignDecideInputModeNearest, { step, root })
+			.match(AssignDecideInputModeNearest, { root, step })
 			.where(r.eq(step, r.param("step", AssignDecideInputModeNearest.fields.step)))
-			.find({ step, root })
+			.find({ root, step })
 	}),
 	assignReadAssignDecideInputModeWithin: query(assignGraph).rule((r) => {
-		const { step, radius, root } = v(AssignDecideInputModeWithin, "assignDecideInputModeWithin")
+		const { root, step, radius } = v(AssignDecideInputModeWithin, "assignDecideInputModeWithin")
 		return r
-			.match(AssignDecideInputModeWithin, { step, radius, root })
+			.match(AssignDecideInputModeWithin, { root, step, radius })
 			.where(r.eq(step, r.param("step", AssignDecideInputModeWithin.fields.step)))
-			.find({ step, radius, root })
+			.find({ root, step, radius })
 	}),
 	assignReadAssignDecideInputExclude: query(assignGraph).rule((r) => {
 		const { step, ordinal, value } = v(AssignDecideInputExclude, "part")
@@ -486,28 +490,28 @@ export const assignDenPrograms = Object.freeze({
 			.find({ step, ordinal, value })
 	}),
 	assignReadAssignAssignmentInput: query(assignGraph).rule((r) => {
-		const { scope, learner, topic, mode, root } = v(AssignAssignmentInput, "assignAssignmentInput")
+		const { root, scope, learner, topic, mode } = v(AssignAssignmentInput, "assignAssignmentInput")
 		return r
-			.match(AssignAssignmentInput, { scope, learner, topic, mode, root })
+			.match(AssignAssignmentInput, { root, scope, learner, topic, mode })
 			.where(r.eq(scope, r.param("scope", AssignAssignmentInput.fields.scope)))
-			.find({ scope, learner, topic, mode, root })
+			.find({ root, scope, learner, topic, mode })
 	}),
 	assignReadAssignAssignmentInputModeNearest: query(assignGraph).rule((r) => {
-		const { scope, root } = v(AssignAssignmentInputModeNearest, "assignAssignmentInputModeNearest")
+		const { root, scope } = v(AssignAssignmentInputModeNearest, "assignAssignmentInputModeNearest")
 		return r
-			.match(AssignAssignmentInputModeNearest, { scope, root })
+			.match(AssignAssignmentInputModeNearest, { root, scope })
 			.where(r.eq(scope, r.param("scope", AssignAssignmentInputModeNearest.fields.scope)))
-			.find({ scope, root })
+			.find({ root, scope })
 	}),
 	assignReadAssignAssignmentInputModeWithin: query(assignGraph).rule((r) => {
-		const { scope, radius, root } = v(
+		const { root, scope, radius } = v(
 			AssignAssignmentInputModeWithin,
 			"assignAssignmentInputModeWithin"
 		)
 		return r
-			.match(AssignAssignmentInputModeWithin, { scope, radius, root })
+			.match(AssignAssignmentInputModeWithin, { root, scope, radius })
 			.where(r.eq(scope, r.param("scope", AssignAssignmentInputModeWithin.fields.scope)))
-			.find({ scope, radius, root })
+			.find({ root, scope, radius })
 	}),
 	assignReadAssignAssignmentInputNear: query(assignGraph).rule((r) => {
 		const { scope, ordinal, value } = v(AssignAssignmentInputNear, "part")
@@ -535,7 +539,7 @@ export const assignDenPrograms = Object.freeze({
 				AssignRoot,
 				query(assignGraph).rule((r) =>
 					r.find({
-						scope: r.param("assignAssignmentScope", AssignRoot.fields.scope),
+						root: r.param("assignAssignmentScope", AssignRoot.fields.root),
 						kind: AssignRootKind.handle("Assignment"),
 						key: r.param("assignAssignmentKey", AssignRoot.fields.key),
 						at: r.param("now", AssignRoot.fields.at)
@@ -657,16 +661,98 @@ export const assignCoordinatorPrograms = Object.freeze({
 
 export const assignCoordinatorWorkload = workload(AssignCoordinator, assignCoordinatorPrograms)
 
-/** den's retiring role for the flow Assign: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else: a role of its own, as grizzle's retirement asks. */
+/** den's retiring role for the flow Assign: it clears finished roots' graphs, deleting every row of a root's graph but its record, under its root, and writes nothing else. */
 export const AssignRetirer = role(
 	App,
 	"assign_retirer",
 	{ ...assignGraph.relations },
-	{ retire: ["AssignRoot"] }
+	{
+		write: [
+			"AssignScope",
+			"AssignAdmitted",
+			"AssignSkipped",
+			"AssignStep",
+			"AssignStartStep",
+			"AssignFinish",
+			"AssignClaim",
+			"AssignEnded",
+			"AssignRetry",
+			"AssignFenced",
+			"AssignResult",
+			"AssignDone",
+			"AssignFailed",
+			"AssignHeld",
+			"AssignRefusal",
+			"AssignExhausted",
+			"AssignEmbedInput",
+			"AssignEmbedInputNear",
+			"AssignEmbedInputExclude",
+			"AssignEmbedInputModeNearest",
+			"AssignEmbedInputModeWithin",
+			"AssignDecideInput",
+			"AssignDecideInputExclude",
+			"AssignDecideInputModeNearest",
+			"AssignDecideInputModeWithin",
+			"AssignAssignmentInput",
+			"AssignAssignmentInputNear",
+			"AssignAssignmentInputExclude",
+			"AssignAssignmentInputModeNearest",
+			"AssignAssignmentInputModeWithin",
+			"AssignEmbedOutput",
+			"AssignDecideOutput",
+			"AssignDecideOutputWeighed",
+			"AssignDecideOutputStageServe",
+			"AssignDecideOutputStageRest",
+			"AssignAssignmentFinishOutput",
+			"AssignAsked",
+			"AssignDecideReadNearest",
+			"AssignDecideReadSeen"
+		]
+	}
 )
 
 export const assignRetirerPrograms = Object.freeze({
-	assignRetire: ChangeSet.empty(assignGraph).retire(AssignRoot, [])
+	assignRetire: ChangeSet.empty(assignGraph).deleteWhere({
+		AssignScope: { root: param("root", AssignRoot.fields.root) },
+		AssignAdmitted: { root: param("root", AssignRoot.fields.root) },
+		AssignSkipped: { root: param("root", AssignRoot.fields.root) },
+		AssignStep: { root: param("root", AssignRoot.fields.root) },
+		AssignStartStep: { root: param("root", AssignRoot.fields.root) },
+		AssignFinish: { root: param("root", AssignRoot.fields.root) },
+		AssignClaim: { root: param("root", AssignRoot.fields.root) },
+		AssignEnded: { root: param("root", AssignRoot.fields.root) },
+		AssignRetry: { root: param("root", AssignRoot.fields.root) },
+		AssignFenced: { root: param("root", AssignRoot.fields.root) },
+		AssignResult: { root: param("root", AssignRoot.fields.root) },
+		AssignDone: { root: param("root", AssignRoot.fields.root) },
+		AssignFailed: { root: param("root", AssignRoot.fields.root) },
+		AssignHeld: { root: param("root", AssignRoot.fields.root) },
+		AssignRefusal: { root: param("root", AssignRoot.fields.root) },
+		AssignExhausted: { root: param("root", AssignRoot.fields.root) },
+		AssignEmbedInput: { root: param("root", AssignRoot.fields.root) },
+		AssignEmbedInputNear: { root: param("root", AssignRoot.fields.root) },
+		AssignEmbedInputExclude: { root: param("root", AssignRoot.fields.root) },
+		AssignEmbedInputModeNearest: { root: param("root", AssignRoot.fields.root) },
+		AssignEmbedInputModeWithin: { root: param("root", AssignRoot.fields.root) },
+		AssignDecideInput: { root: param("root", AssignRoot.fields.root) },
+		AssignDecideInputExclude: { root: param("root", AssignRoot.fields.root) },
+		AssignDecideInputModeNearest: { root: param("root", AssignRoot.fields.root) },
+		AssignDecideInputModeWithin: { root: param("root", AssignRoot.fields.root) },
+		AssignAssignmentInput: { root: param("root", AssignRoot.fields.root) },
+		AssignAssignmentInputNear: { root: param("root", AssignRoot.fields.root) },
+		AssignAssignmentInputExclude: { root: param("root", AssignRoot.fields.root) },
+		AssignAssignmentInputModeNearest: { root: param("root", AssignRoot.fields.root) },
+		AssignAssignmentInputModeWithin: { root: param("root", AssignRoot.fields.root) },
+		AssignEmbedOutput: { root: param("root", AssignRoot.fields.root) },
+		AssignDecideOutput: { root: param("root", AssignRoot.fields.root) },
+		AssignDecideOutputWeighed: { root: param("root", AssignRoot.fields.root) },
+		AssignDecideOutputStageServe: { root: param("root", AssignRoot.fields.root) },
+		AssignDecideOutputStageRest: { root: param("root", AssignRoot.fields.root) },
+		AssignAssignmentFinishOutput: { root: param("root", AssignRoot.fields.root) },
+		AssignAsked: { root: param("root", AssignRoot.fields.root) },
+		AssignDecideReadNearest: { root: param("root", AssignRoot.fields.root) },
+		AssignDecideReadSeen: { root: param("root", AssignRoot.fields.root) }
+	})
 })
 
 export const assignRetirerWorkload = workload(AssignRetirer, assignRetirerPrograms)

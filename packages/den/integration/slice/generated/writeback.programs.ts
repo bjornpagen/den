@@ -95,10 +95,10 @@ const writebackPendingRead = query(WritebackDen).rule((r) => {
 })
 
 const writebackRequestedRead = query(WritebackDen).rule((r) => {
-	const { scope } = v(WritebackRoot, "root")
+	const { scope } = v(WritebackScope, "scope")
 	return r
-		.match(WritebackRoot, { scope })
-		.match(WritebackScope, { scope })
+		.match(WritebackRoot, { root: scope })
+		.match(WritebackScope, { root: scope, scope })
 		.where(r.not(WritebackAdmitted, { scope }), r.not(WritebackSkipped, { scope }))
 		.find({ scope })
 })
@@ -227,60 +227,60 @@ export const writebackDenPrograms = Object.freeze({
 	),
 	writebackSkip: ChangeSet.empty(writebackGraph).insert(WritebackSkipped, []),
 	writebackSkippedOf: query(writebackGraph).rule((r) => {
-		const { scope, by, root } = v(WritebackSkipped, "writebackSkipped")
+		const { root, scope, by } = v(WritebackSkipped, "writebackSkipped")
 		return r
-			.match(WritebackSkipped, { scope, by, root })
+			.match(WritebackSkipped, { root, scope, by })
 			.where(r.eq(scope, r.param("scope", WritebackSkipped.fields.scope)))
-			.find({ scope, by, root })
+			.find({ root, scope, by })
 	}),
 	writebackStepOf: query(writebackGraph).rule((r) => {
-		const { step, kind, scope, due, root } = v(WritebackStep, "writebackStep")
+		const { root, step, kind, scope, due } = v(WritebackStep, "writebackStep")
 		return r
-			.match(WritebackStep, { step, kind, scope, due, root })
+			.match(WritebackStep, { root, step, kind, scope, due })
 			.where(r.eq(step, r.param("step", WritebackStep.fields.step)))
-			.find({ step, kind, scope, due, root })
+			.find({ root, step, kind, scope, due })
 	}),
 	writebackResultOf: query(writebackGraph).rule((r) => {
-		const { step, outcome, root } = v(WritebackResult, "writebackResult")
+		const { root, step, outcome } = v(WritebackResult, "writebackResult")
 		return r
-			.match(WritebackResult, { step, outcome, root })
+			.match(WritebackResult, { root, step, outcome })
 			.where(r.eq(step, r.param("step", WritebackResult.fields.step)))
-			.find({ step, outcome, root })
+			.find({ root, step, outcome })
 	}),
 	writebackHeldOf: query(writebackGraph).rule((r) => {
-		const { step, attempt, root } = v(WritebackHeld, "writebackHeld")
+		const { root, step, attempt } = v(WritebackHeld, "writebackHeld")
 		return r
-			.match(WritebackHeld, { step, attempt, root })
+			.match(WritebackHeld, { root, step, attempt })
 			.where(r.eq(step, r.param("step", WritebackHeld.fields.step)))
-			.find({ step, attempt, root })
+			.find({ root, step, attempt })
 	}),
 	writebackAdmittedOf: query(writebackGraph).rule((r) => {
-		const { scope, root } = v(WritebackAdmitted, "writebackAdmitted")
+		const { root, scope } = v(WritebackAdmitted, "writebackAdmitted")
 		return r
-			.match(WritebackAdmitted, { scope, root })
+			.match(WritebackAdmitted, { root, scope })
 			.where(r.eq(scope, r.param("scope", WritebackAdmitted.fields.scope)))
-			.find({ scope, root })
+			.find({ root, scope })
 	}),
 	writebackRootOf: query(writebackGraph).rule((r) => {
-		const { scope, kind, key, at } = v(WritebackRoot, "writebackRoot")
+		const { kind, key, at } = v(WritebackRoot, "root")
+		const { scope } = v(WritebackScope, "scope")
 		return r
-			.match(WritebackRoot, { scope, kind, key, at })
-			.where(r.eq(scope, r.param("scope", WritebackRoot.fields.scope)))
+			.match(WritebackRoot, { root: scope, kind, key, at })
+			.match(WritebackScope, { root: scope, scope })
+			.where(r.eq(scope, r.param("scope", WritebackRoot.fields.root)))
 			.find({ scope, kind, key, at })
 	}),
 	writebackFinishedRoots: query(writebackGraph)
 		.rule((r) => {
-			const { scope } = v(WritebackRoot, "root")
-			const { step } = v(WritebackFinish, "finish")
+			const { scope, step } = v(WritebackFinish, "finish")
 			return r
-				.match(WritebackRoot, { scope })
-				.match(WritebackFinish, { scope, step })
-				.match(WritebackResult, { step })
+				.match(WritebackFinish, { root: scope, scope, step })
+				.match(WritebackResult, { root: scope, step })
 				.find({ scope })
 		})
 		.rule((r) => {
-			const { scope } = v(WritebackRoot, "root")
-			return r.match(WritebackRoot, { scope }).match(WritebackSkipped, { scope }).find({ scope })
+			const { scope } = v(WritebackSkipped, "skipped")
+			return r.match(WritebackSkipped, { root: scope, scope }).find({ scope })
 		}),
 	writebackClaimsOf: query(writebackGraph).rule((r) => {
 		const { step, attempt, until } = v(WritebackClaim, "claim")
@@ -351,8 +351,12 @@ export const writebackDenPrograms = Object.freeze({
 		requested: writebackRequestedRead,
 		running: writebackRunningRead,
 		roots: query(WritebackDen).rule((r) => {
-			const { scope, kind, key, at } = v(WritebackRoot, "writebackRoot")
-			return r.match(WritebackRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
+			const { kind, key, at } = v(WritebackRoot, "root")
+			const { scope } = v(WritebackScope, "scope")
+			return r
+				.match(WritebackRoot, { root: scope, kind, key, at })
+				.match(WritebackScope, { root: scope, scope })
+				.find({ scope, kind, key, at })
 		}),
 		paused: query(WritebackDen).rule((r) => {
 			const { target, turn } = v(WritebackPaused, "writebackPaused")
@@ -363,18 +367,18 @@ export const writebackDenPrograms = Object.freeze({
 		})
 	}),
 	writebackReadWritebackDeliverInput: query(writebackGraph).rule((r) => {
-		const { step, attempt, root } = v(WritebackDeliverInput, "writebackDeliverInput")
+		const { root, step, attempt } = v(WritebackDeliverInput, "writebackDeliverInput")
 		return r
-			.match(WritebackDeliverInput, { step, attempt, root })
+			.match(WritebackDeliverInput, { root, step, attempt })
 			.where(r.eq(step, r.param("step", WritebackDeliverInput.fields.step)))
-			.find({ step, attempt, root })
+			.find({ root, step, attempt })
 	}),
 	writebackReadWritebackWritebackInput: query(writebackGraph).rule((r) => {
-		const { scope, attempt, root } = v(WritebackWritebackInput, "writebackWritebackInput")
+		const { root, scope, attempt } = v(WritebackWritebackInput, "writebackWritebackInput")
 		return r
-			.match(WritebackWritebackInput, { scope, attempt, root })
+			.match(WritebackWritebackInput, { root, scope, attempt })
 			.where(r.eq(scope, r.param("scope", WritebackWritebackInput.fields.scope)))
-			.find({ scope, attempt, root })
+			.find({ root, scope, attempt })
 	}),
 	writebackRequestWriteback: clocked(
 		ChangeSet.empty(writebackGraph)
@@ -384,7 +388,7 @@ export const writebackDenPrograms = Object.freeze({
 				WritebackRoot,
 				query(writebackGraph).rule((r) =>
 					r.find({
-						scope: r.param("writebackWritebackScope", WritebackRoot.fields.scope),
+						root: r.param("writebackWritebackScope", WritebackRoot.fields.root),
 						kind: WritebackRootKind.handle("Writeback"),
 						key: r.param("writebackWritebackKey", WritebackRoot.fields.key),
 						at: r.param("now", WritebackRoot.fields.at)
@@ -431,16 +435,60 @@ export const writebackCoordinatorWorkload = workload(
 	writebackCoordinatorPrograms
 )
 
-/** den's retiring role for the flow Writeback: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else: a role of its own, as grizzle's retirement asks. */
+/** den's retiring role for the flow Writeback: it clears finished roots' graphs, deleting every row of a root's graph but its record, under its root, and writes nothing else. */
 export const WritebackRetirer = role(
 	App,
 	"writeback_retirer",
 	{ ...writebackGraph.relations },
-	{ retire: ["WritebackRoot"] }
+	{
+		write: [
+			"WritebackScope",
+			"WritebackAdmitted",
+			"WritebackSkipped",
+			"WritebackStep",
+			"WritebackStartStep",
+			"WritebackFinish",
+			"WritebackClaim",
+			"WritebackEnded",
+			"WritebackRetry",
+			"WritebackFenced",
+			"WritebackResult",
+			"WritebackDone",
+			"WritebackFailed",
+			"WritebackHeld",
+			"WritebackRefusal",
+			"WritebackExhausted",
+			"WritebackDeliverInput",
+			"WritebackWritebackInput",
+			"WritebackDeliverOutput",
+			"WritebackWritebackFinishOutput"
+		]
+	}
 )
 
 export const writebackRetirerPrograms = Object.freeze({
-	writebackRetire: ChangeSet.empty(writebackGraph).retire(WritebackRoot, [])
+	writebackRetire: ChangeSet.empty(writebackGraph).deleteWhere({
+		WritebackScope: { root: param("root", WritebackRoot.fields.root) },
+		WritebackAdmitted: { root: param("root", WritebackRoot.fields.root) },
+		WritebackSkipped: { root: param("root", WritebackRoot.fields.root) },
+		WritebackStep: { root: param("root", WritebackRoot.fields.root) },
+		WritebackStartStep: { root: param("root", WritebackRoot.fields.root) },
+		WritebackFinish: { root: param("root", WritebackRoot.fields.root) },
+		WritebackClaim: { root: param("root", WritebackRoot.fields.root) },
+		WritebackEnded: { root: param("root", WritebackRoot.fields.root) },
+		WritebackRetry: { root: param("root", WritebackRoot.fields.root) },
+		WritebackFenced: { root: param("root", WritebackRoot.fields.root) },
+		WritebackResult: { root: param("root", WritebackRoot.fields.root) },
+		WritebackDone: { root: param("root", WritebackRoot.fields.root) },
+		WritebackFailed: { root: param("root", WritebackRoot.fields.root) },
+		WritebackHeld: { root: param("root", WritebackRoot.fields.root) },
+		WritebackRefusal: { root: param("root", WritebackRoot.fields.root) },
+		WritebackExhausted: { root: param("root", WritebackRoot.fields.root) },
+		WritebackDeliverInput: { root: param("root", WritebackRoot.fields.root) },
+		WritebackWritebackInput: { root: param("root", WritebackRoot.fields.root) },
+		WritebackDeliverOutput: { root: param("root", WritebackRoot.fields.root) },
+		WritebackWritebackFinishOutput: { root: param("root", WritebackRoot.fields.root) }
+	})
 })
 
 export const writebackRetirerWorkload = workload(WritebackRetirer, writebackRetirerPrograms)

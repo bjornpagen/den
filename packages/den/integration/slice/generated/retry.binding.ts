@@ -1140,13 +1140,7 @@ export const retryLedger = (h: RetryHandles) => {
 			settled(h.den.retryFinishedRoots.once({ params: {}, facts: {} })),
 			(rows) => Arr.map(rowsOf(rows), (row) => row.scope)
 		),
-		retire: (root) =>
-			settled(
-				h.retirer.retryRetire.once({
-					params: {},
-					facts: { retire: { RetryRoot: [{ scope: root }] } }
-				})
-			),
+		retire: (root) => settled(h.retirer.retryRetire.once({ params: { root }, facts: {} })),
 		snapshot: Effect.flatMap(settled(h.den.retrySnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof retry>> => {
 				const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>

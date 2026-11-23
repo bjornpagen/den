@@ -997,10 +997,7 @@ export const fanLedger = (h: FanHandles) => {
 			settled(h.den.fanFinishedRoots.once({ params: {}, facts: {} })),
 			(rows) => Arr.map(rowsOf(rows), (row) => row.scope)
 		),
-		retire: (root) =>
-			settled(
-				h.retirer.fanRetire.once({ params: {}, facts: { retire: { FanRoot: [{ scope: root }] } } })
-			),
+		retire: (root) => settled(h.retirer.fanRetire.once({ params: { root }, facts: {} })),
 		snapshot: Effect.flatMap(settled(h.den.fanSnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof fan>> => {
 				const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>

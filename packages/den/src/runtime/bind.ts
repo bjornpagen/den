@@ -194,7 +194,7 @@ export const signals = <E extends { readonly kind: string; readonly error?: Call
 /**
  * Whether a root's request started it: accepted, or no change or a refusal on the root's key, another request's under
  * the same key with its own instant, either of which means the root was already requested, whatever became of its graph
- * since: its header keeps the key once its graph is retired, so a retired root's request again is answered so too.
+ * since: its record keeps the key once its graph is cleared, so a retired root's request again is answered so too.
  */
 export const fresh = (
 	flow: string,

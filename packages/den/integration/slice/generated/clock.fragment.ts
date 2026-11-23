@@ -6,16 +6,16 @@ import {
 	contained,
 	fragment,
 	key,
+	mutable,
 	natural,
 	on,
 	place,
 	pg,
 	pred,
 	relation,
-	retirable,
-	retirement,
 	select,
-	sha256
+	sha256,
+	unit
 } from "@bjornpagen/grizzle"
 
 export const ClockKind = closed.unordered("ClockKind", [
@@ -32,112 +32,112 @@ export const ClockChimeInputBell = closed.unordered("ClockChimeInputBell", ["eas
 export const ClockHourlyInputBell = closed.unordered("ClockHourlyInputBell", ["east", "west"])
 export const ClockChimeOutputBell = closed.unordered("ClockChimeOutputBell", ["east", "west"])
 
-export const ClockScope = relation("ClockScope", { scope: sha256, root: sha256 }, ["scope", "root"])
+export const ClockScope = relation("ClockScope", { root: sha256, scope: sha256 }, ["root", "scope"])
 export const ClockRoot = relation(
 	"ClockRoot",
-	{ scope: sha256, kind: closedId(ClockRootKind), key: Text, at: DenInstant, retired: retirement },
-	["scope"]
+	{ root: sha256, kind: closedId(ClockRootKind), key: Text, at: DenInstant },
+	["root"]
 )
-export const ClockAdmitted = relation("ClockAdmitted", { scope: sha256, root: sha256 }, [
-	"scope",
-	"root"
+export const ClockAdmitted = relation("ClockAdmitted", { root: sha256, scope: sha256 }, [
+	"root",
+	"scope"
 ])
-export const ClockSkipped = relation("ClockSkipped", { scope: sha256, by: sha256, root: sha256 }, [
-	"scope",
-	"root"
+export const ClockSkipped = relation("ClockSkipped", { root: sha256, scope: sha256, by: sha256 }, [
+	"root",
+	"scope"
 ])
 export const ClockStep = relation(
 	"ClockStep",
-	{ step: sha256, kind: closedId(ClockKind), scope: sha256, due: DenInstant, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, kind: closedId(ClockKind), scope: sha256, due: DenInstant },
+	["root", "step"]
 )
 export const ClockStartStep = relation(
 	"ClockStartStep",
-	{ scope: sha256, ordinal: natural, step: sha256, root: sha256 },
-	["scope", "ordinal", "root"]
+	{ root: sha256, scope: sha256, ordinal: natural, step: sha256 },
+	["root", "scope", "ordinal"]
 )
-export const ClockFinish = relation("ClockFinish", { scope: sha256, step: sha256, root: sha256 }, [
-	"scope",
-	"root"
+export const ClockFinish = relation("ClockFinish", { root: sha256, scope: sha256, step: sha256 }, [
+	"root",
+	"scope"
 ])
 export const ClockClaim = relation(
 	"ClockClaim",
-	{ step: sha256, attempt: place, until: DenInstant, root: sha256 },
-	["step", "root", "attempt"]
+	{ root: sha256, step: sha256, attempt: place, until: DenInstant },
+	["root", "step", "attempt"]
 )
-export const ClockEnded = relation("ClockEnded", { step: sha256, attempt: natural, root: sha256 }, [
+export const ClockEnded = relation("ClockEnded", { root: sha256, step: sha256, attempt: natural }, [
+	"root",
 	"step",
-	"attempt",
-	"root"
+	"attempt"
 ])
 export const ClockRetry = relation(
 	"ClockRetry",
-	{ step: sha256, attempt: natural, at: DenInstant, why: closedId(ClockRetryWhy), root: sha256 },
-	["step", "attempt", "root"]
+	{ root: sha256, step: sha256, attempt: natural, at: DenInstant, why: closedId(ClockRetryWhy) },
+	["root", "step", "attempt"]
 )
 export const ClockFenced = relation(
 	"ClockFenced",
-	{ step: sha256, attempt: natural, root: sha256 },
-	["step", "attempt", "root"]
+	{ root: sha256, step: sha256, attempt: natural },
+	["root", "step", "attempt"]
 )
 export const ClockResult = relation(
 	"ClockResult",
-	{ step: sha256, outcome: closedId(ClockOutcome), root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, outcome: closedId(ClockOutcome) },
+	["root", "step"]
 )
-export const ClockDone = relation("ClockDone", { step: sha256, root: sha256 }, ["step", "root"])
-export const ClockFailed = relation("ClockFailed", { step: sha256, root: sha256 }, ["step", "root"])
-export const ClockHeld = relation("ClockHeld", { step: sha256, attempt: natural, root: sha256 }, [
-	"step",
-	"root"
+export const ClockDone = relation("ClockDone", { root: sha256, step: sha256 }, ["root", "step"])
+export const ClockFailed = relation("ClockFailed", { root: sha256, step: sha256 }, ["root", "step"])
+export const ClockHeld = relation("ClockHeld", { root: sha256, step: sha256, attempt: natural }, [
+	"root",
+	"step"
 ])
-export const ClockRefusal = relation("ClockRefusal", { step: sha256, law: Text, root: sha256 }, [
-	"step",
-	"root"
+export const ClockRefusal = relation("ClockRefusal", { root: sha256, step: sha256, law: Text }, [
+	"root",
+	"step"
 ])
-export const ClockExhausted = relation("ClockExhausted", { step: sha256, root: sha256 }, [
-	"step",
-	"root"
+export const ClockExhausted = relation("ClockExhausted", { root: sha256, step: sha256 }, [
+	"root",
+	"step"
 ])
 export const ClockChimeInput = relation(
 	"ClockChimeInput",
-	{ step: sha256, hour: pg.bigint, bell: closedId(ClockChimeInputBell), root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, hour: pg.bigint, bell: closedId(ClockChimeInputBell) },
+	["root", "step"]
 )
 export const ClockCloseInput = relation(
 	"ClockCloseInput",
-	{ step: sha256, sitting: Text, deadline: DenInstant, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, sitting: Text, deadline: DenInstant },
+	["root", "step"]
 )
 export const ClockHourlyInput = relation(
 	"ClockHourlyInput",
-	{ scope: sha256, hour: pg.bigint, bell: closedId(ClockHourlyInputBell), root: sha256 },
-	["scope", "root"]
+	{ root: sha256, scope: sha256, hour: pg.bigint, bell: closedId(ClockHourlyInputBell) },
+	["root", "scope"]
 )
 export const ClockSittingInput = relation(
 	"ClockSittingInput",
-	{ scope: sha256, sitting: Text, deadline: DenInstant, root: sha256 },
-	["scope", "root"]
+	{ root: sha256, scope: sha256, sitting: Text, deadline: DenInstant },
+	["root", "scope"]
 )
 export const ClockChimeOutput = relation(
 	"ClockChimeOutput",
-	{ step: sha256, hour: pg.bigint, bell: closedId(ClockChimeOutputBell), root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, hour: pg.bigint, bell: closedId(ClockChimeOutputBell) },
+	["root", "step"]
 )
 export const ClockCloseOutput = relation(
 	"ClockCloseOutput",
-	{ step: sha256, sitting: Text, deadline: DenInstant, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, sitting: Text, deadline: DenInstant },
+	["root", "step"]
 )
 export const ClockHourlyFinishOutput = relation(
 	"ClockHourlyFinishOutput",
-	{ step: sha256, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256 },
+	["root", "step"]
 )
 export const ClockSittingFinishOutput = relation(
 	"ClockSittingFinishOutput",
-	{ step: sha256, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256 },
+	["root", "step"]
 )
 export const ClockPaused = relation(
 	"ClockPaused",
@@ -193,115 +193,138 @@ export const clockGraph = fragment(
 		ClockSittingFinishOutput
 	],
 	[
-		contained(on(ClockAdmitted, "scope", "root"), on(ClockScope, "scope", "root")),
-		contained(on(ClockSkipped, "scope"), on(ClockRoot, "scope")),
-		contained(on(ClockSkipped, "by"), on(ClockRoot, "scope")),
-		contained(on(ClockStep, "scope", "root"), on(ClockAdmitted, "scope", "root")),
-		contained(on(ClockStartStep, "scope", "root"), on(ClockAdmitted, "scope", "root")),
-		contained(on(ClockStartStep, "step", "root"), on(ClockStep, "step", "root")),
-		key(on(ClockStartStep, "step", "root")),
-		contained(on(ClockFinish, "scope", "root"), on(ClockAdmitted, "scope", "root")),
-		contained(on(ClockFinish, "step", "root"), on(ClockStep, "step", "root")),
-		key(on(ClockFinish, "step", "root")),
-		contained(on(ClockClaim, "step", "root"), on(ClockStep, "step", "root")),
-		contained(on(ClockEnded, "step", "attempt", "root"), on(ClockClaim, "step", "attempt", "root")),
+		unit("DenRoot", { root: sha256 }),
+		contained(on(ClockAdmitted, "root", "scope"), on(ClockScope, "root", "scope")),
+		contained(on(ClockSkipped, "scope"), on(ClockRoot, "root")),
+		contained(on(ClockSkipped, "by"), on(ClockRoot, "root")),
+		contained(on(ClockStep, "root", "scope"), on(ClockAdmitted, "root", "scope")),
+		contained(on(ClockStartStep, "root", "scope"), on(ClockAdmitted, "root", "scope")),
+		contained(on(ClockStartStep, "root", "step"), on(ClockStep, "root", "step")),
+		key(on(ClockStartStep, "root", "step")),
+		contained(on(ClockFinish, "root", "scope"), on(ClockAdmitted, "root", "scope")),
+		contained(on(ClockFinish, "root", "step"), on(ClockStep, "root", "step")),
+		key(on(ClockFinish, "root", "step")),
+		contained(on(ClockClaim, "root", "step"), on(ClockStep, "root", "step")),
+		contained(on(ClockEnded, "root", "step", "attempt"), on(ClockClaim, "root", "step", "attempt")),
 		contained(
 			on(
 				select(ClockClaim, (row) => row.ge(row.attempt, 1n)),
+				"root",
 				"step",
-				pred("attempt"),
-				"root"
+				pred("attempt")
 			),
-			on(ClockEnded, "step", "attempt", "root")
+			on(ClockEnded, "root", "step", "attempt")
 		),
-		contained(on(ClockRetry, "step", "attempt", "root"), on(ClockEnded, "step", "attempt", "root")),
+		contained(on(ClockRetry, "root", "step", "attempt"), on(ClockEnded, "root", "step", "attempt")),
 		contained(
-			on(ClockFenced, "step", "attempt", "root"),
-			on(ClockEnded, "step", "attempt", "root")
+			on(ClockFenced, "root", "step", "attempt"),
+			on(ClockEnded, "root", "step", "attempt")
 		),
-		contained(on(ClockResult, "step", "root"), on(ClockStep, "step", "root")),
-		contained(on(ClockHeld, "step", "attempt", "root"), on(ClockClaim, "step", "attempt", "root")),
-		contained(on(ClockHeld, "step", "root"), on(ClockResult, "step", "root")),
+		contained(on(ClockResult, "root", "step"), on(ClockStep, "root", "step")),
+		contained(on(ClockHeld, "root", "step", "attempt"), on(ClockClaim, "root", "step", "attempt")),
+		contained(on(ClockHeld, "root", "step"), on(ClockResult, "root", "step")),
 		contained(
-			on(ClockDone, "step", "root"),
+			on(ClockDone, "root", "step"),
 			on(
 				select(ClockResult, (row) => row.eq(row.outcome, "done")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
 		contained(
-			on(ClockFailed, "step", "root"),
+			on(ClockFailed, "root", "step"),
 			on(
 				select(ClockResult, (row) => row.eq(row.outcome, "failed")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
-		contained(on(ClockRefusal, "step", "root"), on(ClockFailed, "step", "root")),
-		contained(on(ClockExhausted, "step", "root"), on(ClockFailed, "step", "root")),
+		contained(on(ClockRefusal, "root", "step"), on(ClockFailed, "root", "step")),
+		contained(on(ClockExhausted, "root", "step"), on(ClockFailed, "root", "step")),
 		contained(
-			on(ClockChimeInput, "step", "root"),
+			on(ClockChimeInput, "root", "step"),
 			on(
 				select(ClockStep, (row) => row.eq(row.kind, "Chime")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
 		contained(
-			on(ClockCloseInput, "step", "root"),
+			on(ClockCloseInput, "root", "step"),
 			on(
 				select(ClockStep, (row) => row.eq(row.kind, "Close")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
 		contained(
 			on(ClockHourlyInput, "scope"),
 			on(
 				select(ClockRoot, (row) => row.eq(row.kind, "Hourly")),
-				"scope"
+				"root"
 			)
 		),
 		contained(
 			on(ClockSittingInput, "scope"),
 			on(
 				select(ClockRoot, (row) => row.eq(row.kind, "Sitting")),
-				"scope"
+				"root"
 			)
 		),
-		contained(on(ClockChimeOutput, "step", "root"), on(ClockChimeInput, "step", "root")),
-		contained(on(ClockChimeOutput, "step", "root"), on(ClockDone, "step", "root")),
-		contained(on(ClockCloseOutput, "step", "root"), on(ClockCloseInput, "step", "root")),
-		contained(on(ClockCloseOutput, "step", "root"), on(ClockDone, "step", "root")),
-		contained(on(ClockHourlyFinishOutput, "step", "root"), on(ClockDone, "step", "root")),
-		contained(on(ClockSittingFinishOutput, "step", "root"), on(ClockDone, "step", "root")),
-		retirable(ClockRoot, [
-			on(ClockScope, "root"),
-			on(ClockAdmitted, "root"),
-			on(ClockSkipped, "root"),
-			on(ClockStep, "root"),
-			on(ClockStartStep, "root"),
-			on(ClockFinish, "root"),
-			on(ClockClaim, "root"),
-			on(ClockEnded, "root"),
-			on(ClockRetry, "root"),
-			on(ClockFenced, "root"),
-			on(ClockResult, "root"),
-			on(ClockDone, "root"),
-			on(ClockFailed, "root"),
-			on(ClockHeld, "root"),
-			on(ClockRefusal, "root"),
-			on(ClockExhausted, "root"),
-			on(ClockChimeInput, "root"),
-			on(ClockCloseInput, "root"),
-			on(ClockHourlyInput, "root"),
-			on(ClockSittingInput, "root"),
-			on(ClockChimeOutput, "root"),
-			on(ClockCloseOutput, "root"),
-			on(ClockHourlyFinishOutput, "root"),
-			on(ClockSittingFinishOutput, "root")
-		])
+		contained(on(ClockChimeOutput, "root", "step"), on(ClockChimeInput, "root", "step")),
+		contained(on(ClockChimeOutput, "root", "step"), on(ClockDone, "root", "step")),
+		contained(on(ClockCloseOutput, "root", "step"), on(ClockCloseInput, "root", "step")),
+		contained(on(ClockCloseOutput, "root", "step"), on(ClockDone, "root", "step")),
+		contained(on(ClockHourlyFinishOutput, "root", "step"), on(ClockDone, "root", "step")),
+		contained(on(ClockSittingFinishOutput, "root", "step"), on(ClockDone, "root", "step")),
+		contained(on(ClockScope, "root"), on(ClockRoot, "root")),
+		mutable(ClockScope),
+		contained(on(ClockAdmitted, "root"), on(ClockRoot, "root")),
+		mutable(ClockAdmitted),
+		contained(on(ClockSkipped, "root"), on(ClockRoot, "root")),
+		mutable(ClockSkipped),
+		contained(on(ClockStep, "root"), on(ClockRoot, "root")),
+		mutable(ClockStep),
+		contained(on(ClockStartStep, "root"), on(ClockRoot, "root")),
+		mutable(ClockStartStep),
+		contained(on(ClockFinish, "root"), on(ClockRoot, "root")),
+		mutable(ClockFinish),
+		contained(on(ClockClaim, "root"), on(ClockRoot, "root")),
+		mutable(ClockClaim),
+		contained(on(ClockEnded, "root"), on(ClockRoot, "root")),
+		mutable(ClockEnded),
+		contained(on(ClockRetry, "root"), on(ClockRoot, "root")),
+		mutable(ClockRetry),
+		contained(on(ClockFenced, "root"), on(ClockRoot, "root")),
+		mutable(ClockFenced),
+		contained(on(ClockResult, "root"), on(ClockRoot, "root")),
+		mutable(ClockResult),
+		contained(on(ClockDone, "root"), on(ClockRoot, "root")),
+		mutable(ClockDone),
+		contained(on(ClockFailed, "root"), on(ClockRoot, "root")),
+		mutable(ClockFailed),
+		contained(on(ClockHeld, "root"), on(ClockRoot, "root")),
+		mutable(ClockHeld),
+		contained(on(ClockRefusal, "root"), on(ClockRoot, "root")),
+		mutable(ClockRefusal),
+		contained(on(ClockExhausted, "root"), on(ClockRoot, "root")),
+		mutable(ClockExhausted),
+		contained(on(ClockChimeInput, "root"), on(ClockRoot, "root")),
+		mutable(ClockChimeInput),
+		contained(on(ClockCloseInput, "root"), on(ClockRoot, "root")),
+		mutable(ClockCloseInput),
+		contained(on(ClockHourlyInput, "root"), on(ClockRoot, "root")),
+		mutable(ClockHourlyInput),
+		contained(on(ClockSittingInput, "root"), on(ClockRoot, "root")),
+		mutable(ClockSittingInput),
+		contained(on(ClockChimeOutput, "root"), on(ClockRoot, "root")),
+		mutable(ClockChimeOutput),
+		contained(on(ClockCloseOutput, "root"), on(ClockRoot, "root")),
+		mutable(ClockCloseOutput),
+		contained(on(ClockHourlyFinishOutput, "root"), on(ClockRoot, "root")),
+		mutable(ClockHourlyFinishOutput),
+		contained(on(ClockSittingFinishOutput, "root"), on(ClockRoot, "root")),
+		mutable(ClockSittingFinishOutput)
 	]
 )
 

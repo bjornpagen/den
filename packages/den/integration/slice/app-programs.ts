@@ -473,10 +473,10 @@ const chainGraphRows = query(Auditor)
 		return r.match(ChainPageInput, { step, root }).find({ step, root })
 	})
 
-/** Every chain root's scope, its header, which a retirement keeps. */
+/** Every chain root's scope, its record, which a clearing of its graph keeps. */
 const chainHeaders = query(Auditor).rule((r) => {
-	const { scope, key } = v(ChainRoot, "root")
-	return r.match(ChainRoot, { scope, key }).find({ scope, key })
+	const { root: scope, key } = v(ChainRoot, "root")
+	return r.match(ChainRoot, { root: scope, key }).find({ scope, key })
 })
 
 /** An audited result: the app joining den's facts with its own. */
@@ -499,8 +499,8 @@ const every = Object.freeze({
 		return r.match(FanAdmitted, { scope }).find({ scope })
 	}),
 	chainRoots: query(Auditor).rule((r) => {
-		const { scope, kind, key } = v(ChainRoot, "s")
-		return r.match(ChainRoot, { scope, kind, key }).find({ scope, kind, key })
+		const { root: scope, kind, key } = v(ChainRoot, "s")
+		return r.match(ChainRoot, { root: scope, kind, key }).find({ scope, kind, key })
 	}),
 	chainStartSteps: query(Auditor).rule((r) => {
 		const { scope, ordinal, step } = v(ChainStartStep, "s")
@@ -547,8 +547,8 @@ const every = Object.freeze({
 			.find({ scope, feed, pages: count })
 	}),
 	fanRoots: query(Auditor).rule((r) => {
-		const { scope, kind, key } = v(FanRoot, "s")
-		return r.match(FanRoot, { scope, kind, key }).find({ scope, kind, key })
+		const { root: scope, kind, key } = v(FanRoot, "s")
+		return r.match(FanRoot, { root: scope, kind, key }).find({ scope, kind, key })
 	}),
 	fanWithins: query(Auditor).rule((r) => {
 		const { scope, parent, kind } = v(FanWithin, "s")

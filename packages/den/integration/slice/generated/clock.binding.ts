@@ -756,13 +756,7 @@ export const clockLedger = (h: ClockHandles) => {
 			settled(h.den.clockFinishedRoots.once({ params: {}, facts: {} })),
 			(rows) => Arr.map(rowsOf(rows), (row) => row.scope)
 		),
-		retire: (root) =>
-			settled(
-				h.retirer.clockRetire.once({
-					params: {},
-					facts: { retire: { ClockRoot: [{ scope: root }] } }
-				})
-			),
+		retire: (root) => settled(h.retirer.clockRetire.once({ params: { root }, facts: {} })),
 		snapshot: Effect.flatMap(settled(h.den.clockSnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof clock>> => {
 				const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>

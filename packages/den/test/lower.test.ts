@@ -5,7 +5,7 @@ import { notesOnly } from "@bjornpagen/testing/sense"
 import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
 import { assert, it } from "@effect/vitest"
-import { Array as Arr, Effect, Formatter, Option, Schema, String as Str } from "effect"
+import { Array as Arr, Effect, Formatter, Option, Order, Schema, String as Str } from "effect"
 import { type AnyFlow, flow } from "#algebra/flow.ts"
 import {
 	type AnyEdge,
@@ -46,8 +46,10 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * never for a pause handle, which only the flow's pausable targets name, beside its resources and its roots.
  * A scope's kind is its place's: a root's on its Root row, among the flow's roots, and a child scope's on its Within
  * row, among its child scope kinds, whose relations (Within, StartScope) exist exactly when the flow declares one.
- * Every graph relation but the root is a body of one retirable unit headed by the root: its root in every key and on
- * both sides of every containment between bodies, and no coordination relation carries one.
+ * Every graph relation but the root's record sits under one unit, DenRoot, keyed by the root: its root first in every
+ * key and on both sides of every containment between them, each contained in the root's record and mutable, cleared under
+ * its root; a claim's holds lead with their resource, under the flow's seat unit; and no coordination relation carries a
+ * root.
  *
  * Oracle (specification): the proposal's sections 5 and 6, over flows of up to three steps, chained or not, of each
  * field form, with or without a resource, a pause handle, an exclusive root, a child scope, one or two named reads and a typed
@@ -360,12 +362,13 @@ it.effect(
 									return [law.from.relation, law.to.relation]
 								case "key":
 									return [law.side.relation]
-								case "retirable":
-									return [law.header, ...law.bodies]
+								case "unit":
+									return []
 								case "ordered":
 									return [law.member.relation, law.owner]
 								case "race":
 								case "check":
+								case "mutable":
 									return [law.relation]
 							}
 						})
@@ -384,7 +387,7 @@ it.effect(
 						if (sketch.form === "array" || sketch.form === "structs") {
 							assert.deepStrictEqual(
 								keyed(`${P}S0InputValue`),
-								Option.some(["step", "ordinal", "root"])
+								Option.some(["root", "step", "ordinal"])
 							)
 							assert.deepStrictEqual(
 								Arr.map(lawsFrom(`${P}S0InputValue`), (law) => [
@@ -392,8 +395,9 @@ it.effect(
 									Arr.map(law.from.terms, (t) => `${t.pred ? "pred:" : ""}${t.field}`)
 								]),
 								[
-									[`${P}S0Input`, ["step", "root"]],
-									[`${P}S0InputValue`, ["step", "pred:ordinal", "root"]]
+									[`${P}S0Input`, ["root", "step"]],
+									[`${P}S0InputValue`, ["root", "step", "pred:ordinal"]],
+									[`${P}Root`, ["root"]]
 								]
 							)
 						}
@@ -479,10 +483,10 @@ it.effect(
 							assert.deepStrictEqual(
 								fieldsOf(`${P}S0ReadPassages`),
 								Option.some([
+									["root", "digest"],
 									["step", "digest"],
 									["ordinal", "natural"],
-									["digest", "digest"],
-									["root", "digest"]
+									["digest", "digest"]
 								])
 							)
 						}
@@ -505,10 +509,9 @@ it.effect(
 								assert.isFalse(
 									Arr.some(
 										lowered.laws,
-										(law) =>
-											law.kind === "retirable" && Arr.contains(law.bodies, `${P}S0Read${read}Row`)
+										(law) => law.kind === "mutable" && law.relation === `${P}S0Read${read}Row`
 									),
-									`${read}'s records are no body of a root's unit`
+									`${read}'s records are closed, under no root`
 								)
 							}
 						)
@@ -635,29 +638,66 @@ it.effect(
 								? Option.some({ kind: "closed", roster: `${P}ChildKind` })
 								: Option.none()
 						)
+						const held = Arr.filter(relations, (name) => name === `${P}Hold`)
 						const bodies = Arr.filter(
 							relations,
-							(name) => name !== `${P}Root` && !Arr.contains(lowered.coordination, name)
+							(name) =>
+								name !== `${P}Root` &&
+								!Arr.contains(lowered.coordination, name) &&
+								!Arr.contains(held, name)
 						)
 						assert.deepStrictEqual(
 							Arr.flatMap(lowered.laws, (law) =>
-								law.kind === "retirable" ? [[law.header, ...law.bodies]] : []
+								law.kind === "unit"
+									? [[law.name, ...Arr.map(law.heading, (field) => field.name)]]
+									: []
 							),
-							[[`${P}Root`, ...bodies]]
+							[["DenRoot", "root"], ...Arr.map(held, () => [`${P}Seat`, "resource"])],
+							"one root unit, and a seat unit exactly where the flow seats"
+						)
+						assert.deepStrictEqual(
+							Arr.sort(
+								Arr.flatMap(lowered.laws, (law) => (law.kind === "mutable" ? [law.relation] : [])),
+								Order.String
+							),
+							Arr.sort([...bodies, ...held], Order.String),
+							"every graph relation but the root's record is mutable, cleared under its root"
+						)
+						assert.deepStrictEqual(
+							Arr.sort(lowered.cleared, Order.String),
+							Arr.sort(bodies, Order.String)
+						)
+						assert.isTrue(
+							Arr.every(bodies, (body) =>
+								Arr.some(
+									containmentsOf(lowered.laws),
+									(law) =>
+										law.from.relation === body &&
+										law.to.relation === `${P}Root` &&
+										Arr.join(
+											Arr.map(law.from.terms, (t) => t.field),
+											","
+										) === "root"
+								)
+							),
+							"every body is contained in its root's record"
 						)
 						assert.isTrue(
 							Arr.every(lowered.relations, (rel) =>
 								Arr.contains(bodies, rel.name)
-									? Arr.contains(rel.key, "root") &&
-										Arr.some(rel.fields, (field) => field.name === "root")
-									: !Arr.some(rel.fields, (field) => field.name === "root")
+									? rel.key[0] === "root" && Arr.some(rel.fields, (field) => field.name === "root")
+									: Arr.contains(held, rel.name)
+										? rel.key[0] === "resource"
+										: rel.name === `${P}Root`
+											? rel.key[0] === "root"
+											: !Arr.some(rel.fields, (field) => field.name === "root")
 							)
 						)
 						assert.isTrue(
 							Arr.every(containmentsOf(lowered.laws), (law) =>
 								Arr.contains(bodies, law.from.relation) && Arr.contains(bodies, law.to.relation)
-									? Arr.some(law.from.terms, (t) => t.field === "root") &&
-										Arr.some(law.to.terms, (t) => t.field === "root")
+									? Arr.head(law.from.terms).pipe(Option.exists((t) => t.field === "root")) &&
+										Arr.head(law.to.terms).pipe(Option.exists((t) => t.field === "root"))
 									: true
 							)
 						)

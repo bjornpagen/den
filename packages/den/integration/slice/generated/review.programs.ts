@@ -138,10 +138,10 @@ const reviewPendingRead = query(ReviewDen).rule((r) => {
 })
 
 const reviewRequestedRead = query(ReviewDen).rule((r) => {
-	const { scope } = v(ReviewRoot, "root")
+	const { scope } = v(ReviewScope, "scope")
 	return r
-		.match(ReviewRoot, { scope })
-		.match(ReviewScope, { scope })
+		.match(ReviewRoot, { root: scope })
+		.match(ReviewScope, { root: scope, scope })
 		.where(r.not(ReviewAdmitted, { scope }), r.not(ReviewSkipped, { scope }))
 		.find({ scope })
 })
@@ -277,67 +277,67 @@ export const reviewDenPrograms = Object.freeze({
 	),
 	reviewSkip: ChangeSet.empty(reviewGraph).insert(ReviewSkipped, []),
 	reviewSkippedOf: query(reviewGraph).rule((r) => {
-		const { scope, by, root } = v(ReviewSkipped, "reviewSkipped")
+		const { root, scope, by } = v(ReviewSkipped, "reviewSkipped")
 		return r
-			.match(ReviewSkipped, { scope, by, root })
+			.match(ReviewSkipped, { root, scope, by })
 			.where(r.eq(scope, r.param("scope", ReviewSkipped.fields.scope)))
-			.find({ scope, by, root })
+			.find({ root, scope, by })
 	}),
 	reviewStepOf: query(reviewGraph).rule((r) => {
-		const { step, kind, scope, due, root } = v(ReviewStep, "reviewStep")
+		const { root, step, kind, scope, due } = v(ReviewStep, "reviewStep")
 		return r
-			.match(ReviewStep, { step, kind, scope, due, root })
+			.match(ReviewStep, { root, step, kind, scope, due })
 			.where(r.eq(step, r.param("step", ReviewStep.fields.step)))
-			.find({ step, kind, scope, due, root })
+			.find({ root, step, kind, scope, due })
 	}),
 	reviewResultOf: query(reviewGraph).rule((r) => {
-		const { step, outcome, root } = v(ReviewResult, "reviewResult")
+		const { root, step, outcome } = v(ReviewResult, "reviewResult")
 		return r
-			.match(ReviewResult, { step, outcome, root })
+			.match(ReviewResult, { root, step, outcome })
 			.where(r.eq(step, r.param("step", ReviewResult.fields.step)))
-			.find({ step, outcome, root })
+			.find({ root, step, outcome })
 	}),
 	reviewHeldOf: query(reviewGraph).rule((r) => {
-		const { step, attempt, root } = v(ReviewHeld, "reviewHeld")
+		const { root, step, attempt } = v(ReviewHeld, "reviewHeld")
 		return r
-			.match(ReviewHeld, { step, attempt, root })
+			.match(ReviewHeld, { root, step, attempt })
 			.where(r.eq(step, r.param("step", ReviewHeld.fields.step)))
-			.find({ step, attempt, root })
+			.find({ root, step, attempt })
 	}),
 	reviewWithinOf: query(reviewGraph).rule((r) => {
-		const { scope, parent, kind, root } = v(ReviewWithin, "reviewWithin")
+		const { root, scope, parent, kind } = v(ReviewWithin, "reviewWithin")
 		return r
-			.match(ReviewWithin, { scope, parent, kind, root })
+			.match(ReviewWithin, { root, scope, parent, kind })
 			.where(r.eq(scope, r.param("scope", ReviewWithin.fields.scope)))
-			.find({ scope, parent, kind, root })
+			.find({ root, scope, parent, kind })
 	}),
 	reviewAdmittedOf: query(reviewGraph).rule((r) => {
-		const { scope, root } = v(ReviewAdmitted, "reviewAdmitted")
+		const { root, scope } = v(ReviewAdmitted, "reviewAdmitted")
 		return r
-			.match(ReviewAdmitted, { scope, root })
+			.match(ReviewAdmitted, { root, scope })
 			.where(r.eq(scope, r.param("scope", ReviewAdmitted.fields.scope)))
-			.find({ scope, root })
+			.find({ root, scope })
 	}),
 	reviewRootOf: query(reviewGraph).rule((r) => {
-		const { scope, kind, key, at } = v(ReviewRoot, "reviewRoot")
+		const { kind, key, at } = v(ReviewRoot, "root")
+		const { scope } = v(ReviewScope, "scope")
 		return r
-			.match(ReviewRoot, { scope, kind, key, at })
-			.where(r.eq(scope, r.param("scope", ReviewRoot.fields.scope)))
+			.match(ReviewRoot, { root: scope, kind, key, at })
+			.match(ReviewScope, { root: scope, scope })
+			.where(r.eq(scope, r.param("scope", ReviewRoot.fields.root)))
 			.find({ scope, kind, key, at })
 	}),
 	reviewFinishedRoots: query(reviewGraph)
 		.rule((r) => {
-			const { scope } = v(ReviewRoot, "root")
-			const { step } = v(ReviewFinish, "finish")
+			const { scope, step } = v(ReviewFinish, "finish")
 			return r
-				.match(ReviewRoot, { scope })
-				.match(ReviewFinish, { scope, step })
-				.match(ReviewResult, { step })
+				.match(ReviewFinish, { root: scope, scope, step })
+				.match(ReviewResult, { root: scope, step })
 				.find({ scope })
 		})
 		.rule((r) => {
-			const { scope } = v(ReviewRoot, "root")
-			return r.match(ReviewRoot, { scope }).match(ReviewSkipped, { scope }).find({ scope })
+			const { scope } = v(ReviewSkipped, "skipped")
+			return r.match(ReviewSkipped, { root: scope, scope }).find({ scope })
 		}),
 	reviewClaimsOf: query(reviewGraph).rule((r) => {
 		const { step, attempt, until } = v(ReviewClaim, "claim")
@@ -424,8 +424,12 @@ export const reviewDenPrograms = Object.freeze({
 			return r.match(ReviewWithin, { scope, parent, kind }).find({ scope, parent, kind })
 		}),
 		roots: query(ReviewDen).rule((r) => {
-			const { scope, kind, key, at } = v(ReviewRoot, "reviewRoot")
-			return r.match(ReviewRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
+			const { kind, key, at } = v(ReviewRoot, "root")
+			const { scope } = v(ReviewScope, "scope")
+			return r
+				.match(ReviewRoot, { root: scope, kind, key, at })
+				.match(ReviewScope, { root: scope, scope })
+				.find({ scope, kind, key, at })
 		}),
 		holds: query(ReviewDen).rule((r) => {
 			const { resource, seat, step, root, attempt, until } = v(
@@ -471,18 +475,18 @@ export const reviewDenPrograms = Object.freeze({
 			.find({ step })
 	}),
 	reviewReadReviewAnalyzeInput: query(reviewGraph).rule((r) => {
-		const { step, review, group, question, root } = v(ReviewAnalyzeInput, "reviewAnalyzeInput")
+		const { root, step, review, group, question } = v(ReviewAnalyzeInput, "reviewAnalyzeInput")
 		return r
-			.match(ReviewAnalyzeInput, { step, review, group, question, root })
+			.match(ReviewAnalyzeInput, { root, step, review, group, question })
 			.where(r.eq(step, r.param("step", ReviewAnalyzeInput.fields.step)))
-			.find({ step, review, group, question, root })
+			.find({ root, step, review, group, question })
 	}),
 	reviewReadReviewGatherInput: query(reviewGraph).rule((r) => {
-		const { step, review, root } = v(ReviewGatherInput, "reviewGatherInput")
+		const { root, step, review } = v(ReviewGatherInput, "reviewGatherInput")
 		return r
-			.match(ReviewGatherInput, { step, review, root })
+			.match(ReviewGatherInput, { root, step, review })
 			.where(r.eq(step, r.param("step", ReviewGatherInput.fields.step)))
-			.find({ step, review, root })
+			.find({ root, step, review })
 	}),
 	reviewReadReviewGatherInputSizes: query(reviewGraph).rule((r) => {
 		const { step, ordinal, value } = v(ReviewGatherInputSizes, "part")
@@ -492,18 +496,18 @@ export const reviewDenPrograms = Object.freeze({
 			.find({ step, ordinal, value })
 	}),
 	reviewReadReviewSaveInput: query(reviewGraph).rule((r) => {
-		const { step, review, group, count, total, root } = v(ReviewSaveInput, "reviewSaveInput")
+		const { root, step, review, group, count, total } = v(ReviewSaveInput, "reviewSaveInput")
 		return r
-			.match(ReviewSaveInput, { step, review, group, count, total, root })
+			.match(ReviewSaveInput, { root, step, review, group, count, total })
 			.where(r.eq(step, r.param("step", ReviewSaveInput.fields.step)))
-			.find({ step, review, group, count, total, root })
+			.find({ root, step, review, group, count, total })
 	}),
 	reviewReadReviewQuestionsInput: query(reviewGraph).rule((r) => {
-		const { scope, review, group, size, root } = v(ReviewQuestionsInput, "reviewQuestionsInput")
+		const { root, scope, review, group, size } = v(ReviewQuestionsInput, "reviewQuestionsInput")
 		return r
-			.match(ReviewQuestionsInput, { scope, review, group, size, root })
+			.match(ReviewQuestionsInput, { root, scope, review, group, size })
 			.where(r.eq(scope, r.param("scope", ReviewQuestionsInput.fields.scope)))
-			.find({ scope, review, group, size, root })
+			.find({ root, scope, review, group, size })
 	}),
 	reviewOutputsQuestionsAnalyze: query(reviewGraph).rule((r) => {
 		const { step, scope } = v(ReviewStep, "step")
@@ -532,11 +536,11 @@ export const reviewDenPrograms = Object.freeze({
 			.find({ step })
 	}),
 	reviewReadReviewReviewRunInput: query(reviewGraph).rule((r) => {
-		const { scope, review, root } = v(ReviewReviewRunInput, "reviewReviewRunInput")
+		const { root, scope, review } = v(ReviewReviewRunInput, "reviewReviewRunInput")
 		return r
-			.match(ReviewReviewRunInput, { scope, review, root })
+			.match(ReviewReviewRunInput, { root, scope, review })
 			.where(r.eq(scope, r.param("scope", ReviewReviewRunInput.fields.scope)))
-			.find({ scope, review, root })
+			.find({ root, scope, review })
 	}),
 	reviewReadReviewReviewRunInputSizes: query(reviewGraph).rule((r) => {
 		const { scope, ordinal, value } = v(ReviewReviewRunInputSizes, "part")
@@ -554,7 +558,7 @@ export const reviewDenPrograms = Object.freeze({
 				ReviewRoot,
 				query(reviewGraph).rule((r) =>
 					r.find({
-						scope: r.param("reviewReviewRunScope", ReviewRoot.fields.scope),
+						root: r.param("reviewReviewRunScope", ReviewRoot.fields.root),
 						kind: ReviewRootKind.handle("ReviewRun"),
 						key: r.param("reviewReviewRunKey", ReviewRoot.fields.key),
 						at: r.param("now", ReviewRoot.fields.at)
@@ -656,16 +660,85 @@ export const reviewCoordinatorPrograms = Object.freeze({
 
 export const reviewCoordinatorWorkload = workload(ReviewCoordinator, reviewCoordinatorPrograms)
 
-/** den's retiring role for the flow Review: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else: a role of its own, as grizzle's retirement asks. */
+/** den's retiring role for the flow Review: it clears finished roots' graphs, deleting every row of a root's graph but its record, under its root, and writes nothing else. */
 export const ReviewRetirer = role(
 	App,
 	"review_retirer",
 	{ ...reviewGraph.relations },
-	{ retire: ["ReviewRoot"] }
+	{
+		write: [
+			"ReviewScope",
+			"ReviewWithin",
+			"ReviewAdmitted",
+			"ReviewSkipped",
+			"ReviewStep",
+			"ReviewStartStep",
+			"ReviewStartScope",
+			"ReviewFinish",
+			"ReviewClaim",
+			"ReviewEnded",
+			"ReviewRetry",
+			"ReviewFenced",
+			"ReviewResult",
+			"ReviewDone",
+			"ReviewFailed",
+			"ReviewHeld",
+			"ReviewRefusal",
+			"ReviewExhausted",
+			"ReviewAnalyzeInput",
+			"ReviewGatherInput",
+			"ReviewGatherInputSizes",
+			"ReviewSaveInput",
+			"ReviewQuestionsInput",
+			"ReviewReviewRunInput",
+			"ReviewReviewRunInputSizes",
+			"ReviewAnalyzeOutput",
+			"ReviewGatherOutput",
+			"ReviewSaveOutput",
+			"ReviewQuestionsFinishOutput",
+			"ReviewReviewRunFinishOutput",
+			"ReviewSplit",
+			"ReviewSaved",
+			"ReviewHold"
+		]
+	}
 )
 
 export const reviewRetirerPrograms = Object.freeze({
-	reviewRetire: ChangeSet.empty(reviewGraph).retire(ReviewRoot, [])
+	reviewRetire: ChangeSet.empty(reviewGraph).deleteWhere({
+		ReviewScope: { root: param("root", ReviewRoot.fields.root) },
+		ReviewWithin: { root: param("root", ReviewRoot.fields.root) },
+		ReviewAdmitted: { root: param("root", ReviewRoot.fields.root) },
+		ReviewSkipped: { root: param("root", ReviewRoot.fields.root) },
+		ReviewStep: { root: param("root", ReviewRoot.fields.root) },
+		ReviewStartStep: { root: param("root", ReviewRoot.fields.root) },
+		ReviewStartScope: { root: param("root", ReviewRoot.fields.root) },
+		ReviewFinish: { root: param("root", ReviewRoot.fields.root) },
+		ReviewClaim: { root: param("root", ReviewRoot.fields.root) },
+		ReviewEnded: { root: param("root", ReviewRoot.fields.root) },
+		ReviewRetry: { root: param("root", ReviewRoot.fields.root) },
+		ReviewFenced: { root: param("root", ReviewRoot.fields.root) },
+		ReviewResult: { root: param("root", ReviewRoot.fields.root) },
+		ReviewDone: { root: param("root", ReviewRoot.fields.root) },
+		ReviewFailed: { root: param("root", ReviewRoot.fields.root) },
+		ReviewHeld: { root: param("root", ReviewRoot.fields.root) },
+		ReviewRefusal: { root: param("root", ReviewRoot.fields.root) },
+		ReviewExhausted: { root: param("root", ReviewRoot.fields.root) },
+		ReviewAnalyzeInput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewGatherInput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewGatherInputSizes: { root: param("root", ReviewRoot.fields.root) },
+		ReviewSaveInput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewQuestionsInput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewReviewRunInput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewReviewRunInputSizes: { root: param("root", ReviewRoot.fields.root) },
+		ReviewAnalyzeOutput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewGatherOutput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewSaveOutput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewQuestionsFinishOutput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewReviewRunFinishOutput: { root: param("root", ReviewRoot.fields.root) },
+		ReviewSplit: { root: param("root", ReviewRoot.fields.root) },
+		ReviewSaved: { root: param("root", ReviewRoot.fields.root) }
+	})
 })
 
 export const reviewRetirerWorkload = workload(ReviewRetirer, reviewRetirerPrograms)

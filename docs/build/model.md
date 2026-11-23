@@ -207,8 +207,9 @@ Each is a `toolchain-test` property (`pnpm test` in the package):
 ## Retirement closes the fence
 
 The claim's key `(step, attempt)` fences its commit, with no token beside it, because retired keys never recur
-(grizzle's RETIRE): a step key names one step for ever, so its claim `attempt` is one claim, one holder. grizzle's
-RETIRE remembers retired keys; in the model, tombstones of the retired root keys stand for it, and an admission under
+(each root's record, which a retirement's clearing keeps): a step key names one step for ever, so its claim `attempt`
+is one claim, one holder. The root's record remembers retired keys; in the model, tombstones of the retired root keys
+stand for it, and an admission under
 one is answered `retired`. If retired keys recurred, a re-admission
 would rederive the same step keys with claims counting from 0 again, and a holder of the retired graph would pass for
 the new graph's claim of the same number. The kill that forgets retired keys is exactly that: the laws fail
@@ -240,7 +241,7 @@ The model follows the rulings in `decisions.md`: the committing worker continues
 rest, and the relay rings everything each commit made eligible, harmlessly twice; exclusivity and windows belong to
 root kinds only, and a root whose exclusivity seat is held is recorded `Held` and not run; a step's declared reads,
 taken by its claim, are recorded with its result in the commit; a reclaim counts as an attempt and a wait does not;
-grizzle's RETIRE remembers retired keys, for which the model's tombstones stand; W4 has no window.
+Each root's record remembers retired keys, for which the model's tombstones stand; W4 has no window.
 
 ## Provisional decisions, for the owner
 

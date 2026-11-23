@@ -112,10 +112,10 @@ const retryPendingRead = query(RetryDen).rule((r) => {
 })
 
 const retryRequestedRead = query(RetryDen).rule((r) => {
-	const { scope } = v(RetryRoot, "root")
+	const { scope } = v(RetryScope, "scope")
 	return r
-		.match(RetryRoot, { scope })
-		.match(RetryScope, { scope })
+		.match(RetryRoot, { root: scope })
+		.match(RetryScope, { root: scope, scope })
 		.where(r.not(RetryAdmitted, { scope }), r.not(RetrySkipped, { scope }))
 		.find({ scope })
 })
@@ -242,60 +242,60 @@ export const retryDenPrograms = Object.freeze({
 	),
 	retrySkip: ChangeSet.empty(retryGraph).insert(RetrySkipped, []),
 	retrySkippedOf: query(retryGraph).rule((r) => {
-		const { scope, by, root } = v(RetrySkipped, "retrySkipped")
+		const { root, scope, by } = v(RetrySkipped, "retrySkipped")
 		return r
-			.match(RetrySkipped, { scope, by, root })
+			.match(RetrySkipped, { root, scope, by })
 			.where(r.eq(scope, r.param("scope", RetrySkipped.fields.scope)))
-			.find({ scope, by, root })
+			.find({ root, scope, by })
 	}),
 	retryStepOf: query(retryGraph).rule((r) => {
-		const { step, kind, scope, due, root } = v(RetryStep, "retryStep")
+		const { root, step, kind, scope, due } = v(RetryStep, "retryStep")
 		return r
-			.match(RetryStep, { step, kind, scope, due, root })
+			.match(RetryStep, { root, step, kind, scope, due })
 			.where(r.eq(step, r.param("step", RetryStep.fields.step)))
-			.find({ step, kind, scope, due, root })
+			.find({ root, step, kind, scope, due })
 	}),
 	retryResultOf: query(retryGraph).rule((r) => {
-		const { step, outcome, root } = v(RetryResult, "retryResult")
+		const { root, step, outcome } = v(RetryResult, "retryResult")
 		return r
-			.match(RetryResult, { step, outcome, root })
+			.match(RetryResult, { root, step, outcome })
 			.where(r.eq(step, r.param("step", RetryResult.fields.step)))
-			.find({ step, outcome, root })
+			.find({ root, step, outcome })
 	}),
 	retryHeldOf: query(retryGraph).rule((r) => {
-		const { step, attempt, root } = v(RetryHeld, "retryHeld")
+		const { root, step, attempt } = v(RetryHeld, "retryHeld")
 		return r
-			.match(RetryHeld, { step, attempt, root })
+			.match(RetryHeld, { root, step, attempt })
 			.where(r.eq(step, r.param("step", RetryHeld.fields.step)))
-			.find({ step, attempt, root })
+			.find({ root, step, attempt })
 	}),
 	retryAdmittedOf: query(retryGraph).rule((r) => {
-		const { scope, root } = v(RetryAdmitted, "retryAdmitted")
+		const { root, scope } = v(RetryAdmitted, "retryAdmitted")
 		return r
-			.match(RetryAdmitted, { scope, root })
+			.match(RetryAdmitted, { root, scope })
 			.where(r.eq(scope, r.param("scope", RetryAdmitted.fields.scope)))
-			.find({ scope, root })
+			.find({ root, scope })
 	}),
 	retryRootOf: query(retryGraph).rule((r) => {
-		const { scope, kind, key, at } = v(RetryRoot, "retryRoot")
+		const { kind, key, at } = v(RetryRoot, "root")
+		const { scope } = v(RetryScope, "scope")
 		return r
-			.match(RetryRoot, { scope, kind, key, at })
-			.where(r.eq(scope, r.param("scope", RetryRoot.fields.scope)))
+			.match(RetryRoot, { root: scope, kind, key, at })
+			.match(RetryScope, { root: scope, scope })
+			.where(r.eq(scope, r.param("scope", RetryRoot.fields.root)))
 			.find({ scope, kind, key, at })
 	}),
 	retryFinishedRoots: query(retryGraph)
 		.rule((r) => {
-			const { scope } = v(RetryRoot, "root")
-			const { step } = v(RetryFinish, "finish")
+			const { scope, step } = v(RetryFinish, "finish")
 			return r
-				.match(RetryRoot, { scope })
-				.match(RetryFinish, { scope, step })
-				.match(RetryResult, { step })
+				.match(RetryFinish, { root: scope, scope, step })
+				.match(RetryResult, { root: scope, step })
 				.find({ scope })
 		})
 		.rule((r) => {
-			const { scope } = v(RetryRoot, "root")
-			return r.match(RetryRoot, { scope }).match(RetrySkipped, { scope }).find({ scope })
+			const { scope } = v(RetrySkipped, "skipped")
+			return r.match(RetrySkipped, { root: scope, scope }).find({ scope })
 		}),
 	retryClaimsOf: query(retryGraph).rule((r) => {
 		const { step, attempt, until } = v(RetryClaim, "claim")
@@ -366,8 +366,12 @@ export const retryDenPrograms = Object.freeze({
 		requested: retryRequestedRead,
 		running: retryRunningRead,
 		roots: query(RetryDen).rule((r) => {
-			const { scope, kind, key, at } = v(RetryRoot, "retryRoot")
-			return r.match(RetryRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
+			const { kind, key, at } = v(RetryRoot, "root")
+			const { scope } = v(RetryScope, "scope")
+			return r
+				.match(RetryRoot, { root: scope, kind, key, at })
+				.match(RetryScope, { root: scope, scope })
+				.find({ scope, kind, key, at })
 		}),
 		paused: query(RetryDen).rule((r) => {
 			const { target, turn } = v(RetryPaused, "retryPaused")
@@ -378,39 +382,39 @@ export const retryDenPrograms = Object.freeze({
 		})
 	}),
 	retryReadRetrySteadfastInput: query(retryGraph).rule((r) => {
-		const { step, key, root } = v(RetrySteadfastInput, "retrySteadfastInput")
+		const { root, step, key } = v(RetrySteadfastInput, "retrySteadfastInput")
 		return r
-			.match(RetrySteadfastInput, { step, key, root })
+			.match(RetrySteadfastInput, { root, step, key })
 			.where(r.eq(step, r.param("step", RetrySteadfastInput.fields.step)))
-			.find({ step, key, root })
+			.find({ root, step, key })
 	}),
 	retryReadRetryBrittleInput: query(retryGraph).rule((r) => {
-		const { step, key, root } = v(RetryBrittleInput, "retryBrittleInput")
+		const { root, step, key } = v(RetryBrittleInput, "retryBrittleInput")
 		return r
-			.match(RetryBrittleInput, { step, key, root })
+			.match(RetryBrittleInput, { root, step, key })
 			.where(r.eq(step, r.param("step", RetryBrittleInput.fields.step)))
-			.find({ step, key, root })
+			.find({ root, step, key })
 	}),
 	retryReadRetryPoliteInput: query(retryGraph).rule((r) => {
-		const { step, key, root } = v(RetryPoliteInput, "retryPoliteInput")
+		const { root, step, key } = v(RetryPoliteInput, "retryPoliteInput")
 		return r
-			.match(RetryPoliteInput, { step, key, root })
+			.match(RetryPoliteInput, { root, step, key })
 			.where(r.eq(step, r.param("step", RetryPoliteInput.fields.step)))
-			.find({ step, key, root })
+			.find({ root, step, key })
 	}),
 	retryReadRetryPatientInput: query(retryGraph).rule((r) => {
-		const { step, key, root } = v(RetryPatientInput, "retryPatientInput")
+		const { root, step, key } = v(RetryPatientInput, "retryPatientInput")
 		return r
-			.match(RetryPatientInput, { step, key, root })
+			.match(RetryPatientInput, { root, step, key })
 			.where(r.eq(step, r.param("step", RetryPatientInput.fields.step)))
-			.find({ step, key, root })
+			.find({ root, step, key })
 	}),
 	retryReadRetryLaddersInput: query(retryGraph).rule((r) => {
-		const { scope, steadfast, brittle, root } = v(RetryLaddersInput, "retryLaddersInput")
+		const { root, scope, steadfast, brittle } = v(RetryLaddersInput, "retryLaddersInput")
 		return r
-			.match(RetryLaddersInput, { scope, steadfast, brittle, root })
+			.match(RetryLaddersInput, { root, scope, steadfast, brittle })
 			.where(r.eq(scope, r.param("scope", RetryLaddersInput.fields.scope)))
-			.find({ scope, steadfast, brittle, root })
+			.find({ root, scope, steadfast, brittle })
 	}),
 	retryRequestLadders: clocked(
 		ChangeSet.empty(retryGraph)
@@ -420,7 +424,7 @@ export const retryDenPrograms = Object.freeze({
 				RetryRoot,
 				query(retryGraph).rule((r) =>
 					r.find({
-						scope: r.param("retryLaddersScope", RetryRoot.fields.scope),
+						root: r.param("retryLaddersScope", RetryRoot.fields.root),
 						kind: RetryRootKind.handle("Ladders"),
 						key: r.param("retryLaddersKey", RetryRoot.fields.key),
 						at: r.param("now", RetryRoot.fields.at)
@@ -482,11 +486,11 @@ export const retryDenPrograms = Object.freeze({
 			.find({ step })
 	}),
 	retryReadRetryThrottledInput: query(retryGraph).rule((r) => {
-		const { scope, key, root } = v(RetryThrottledInput, "retryThrottledInput")
+		const { root, scope, key } = v(RetryThrottledInput, "retryThrottledInput")
 		return r
-			.match(RetryThrottledInput, { scope, key, root })
+			.match(RetryThrottledInput, { root, scope, key })
 			.where(r.eq(scope, r.param("scope", RetryThrottledInput.fields.scope)))
-			.find({ scope, key, root })
+			.find({ root, scope, key })
 	}),
 	retryRequestThrottled: clocked(
 		ChangeSet.empty(retryGraph)
@@ -496,7 +500,7 @@ export const retryDenPrograms = Object.freeze({
 				RetryRoot,
 				query(retryGraph).rule((r) =>
 					r.find({
-						scope: r.param("retryThrottledScope", RetryRoot.fields.scope),
+						root: r.param("retryThrottledScope", RetryRoot.fields.root),
 						kind: RetryRootKind.handle("Throttled"),
 						key: r.param("retryThrottledKey", RetryRoot.fields.key),
 						at: r.param("now", RetryRoot.fields.at)
@@ -532,11 +536,11 @@ export const retryDenPrograms = Object.freeze({
 			.find({ step })
 	}),
 	retryReadRetryUnhurriedInput: query(retryGraph).rule((r) => {
-		const { scope, key, root } = v(RetryUnhurriedInput, "retryUnhurriedInput")
+		const { root, scope, key } = v(RetryUnhurriedInput, "retryUnhurriedInput")
 		return r
-			.match(RetryUnhurriedInput, { scope, key, root })
+			.match(RetryUnhurriedInput, { root, scope, key })
 			.where(r.eq(scope, r.param("scope", RetryUnhurriedInput.fields.scope)))
-			.find({ scope, key, root })
+			.find({ root, scope, key })
 	}),
 	retryRequestUnhurried: clocked(
 		ChangeSet.empty(retryGraph)
@@ -546,7 +550,7 @@ export const retryDenPrograms = Object.freeze({
 				RetryRoot,
 				query(retryGraph).rule((r) =>
 					r.find({
-						scope: r.param("retryUnhurriedScope", RetryRoot.fields.scope),
+						root: r.param("retryUnhurriedScope", RetryRoot.fields.root),
 						kind: RetryRootKind.handle("Unhurried"),
 						key: r.param("retryUnhurriedKey", RetryRoot.fields.key),
 						at: r.param("now", RetryRoot.fields.at)
@@ -616,16 +620,80 @@ export const retryCoordinatorPrograms = Object.freeze({
 
 export const retryCoordinatorWorkload = workload(RetryCoordinator, retryCoordinatorPrograms)
 
-/** den's retiring role for the flow Retry: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else: a role of its own, as grizzle's retirement asks. */
+/** den's retiring role for the flow Retry: it clears finished roots' graphs, deleting every row of a root's graph but its record, under its root, and writes nothing else. */
 export const RetryRetirer = role(
 	App,
 	"retry_retirer",
 	{ ...retryGraph.relations },
-	{ retire: ["RetryRoot"] }
+	{
+		write: [
+			"RetryScope",
+			"RetryAdmitted",
+			"RetrySkipped",
+			"RetryStep",
+			"RetryStartStep",
+			"RetryFinish",
+			"RetryClaim",
+			"RetryEnded",
+			"RetryRetry",
+			"RetryFenced",
+			"RetryResult",
+			"RetryDone",
+			"RetryFailed",
+			"RetryHeld",
+			"RetryRefusal",
+			"RetryExhausted",
+			"RetrySteadfastInput",
+			"RetryBrittleInput",
+			"RetryPoliteInput",
+			"RetryPatientInput",
+			"RetryLaddersInput",
+			"RetryThrottledInput",
+			"RetryUnhurriedInput",
+			"RetrySteadfastOutput",
+			"RetryBrittleOutput",
+			"RetryPoliteOutput",
+			"RetryPatientOutput",
+			"RetryLaddersFinishOutput",
+			"RetryThrottledFinishOutput",
+			"RetryUnhurriedFinishOutput"
+		]
+	}
 )
 
 export const retryRetirerPrograms = Object.freeze({
-	retryRetire: ChangeSet.empty(retryGraph).retire(RetryRoot, [])
+	retryRetire: ChangeSet.empty(retryGraph).deleteWhere({
+		RetryScope: { root: param("root", RetryRoot.fields.root) },
+		RetryAdmitted: { root: param("root", RetryRoot.fields.root) },
+		RetrySkipped: { root: param("root", RetryRoot.fields.root) },
+		RetryStep: { root: param("root", RetryRoot.fields.root) },
+		RetryStartStep: { root: param("root", RetryRoot.fields.root) },
+		RetryFinish: { root: param("root", RetryRoot.fields.root) },
+		RetryClaim: { root: param("root", RetryRoot.fields.root) },
+		RetryEnded: { root: param("root", RetryRoot.fields.root) },
+		RetryRetry: { root: param("root", RetryRoot.fields.root) },
+		RetryFenced: { root: param("root", RetryRoot.fields.root) },
+		RetryResult: { root: param("root", RetryRoot.fields.root) },
+		RetryDone: { root: param("root", RetryRoot.fields.root) },
+		RetryFailed: { root: param("root", RetryRoot.fields.root) },
+		RetryHeld: { root: param("root", RetryRoot.fields.root) },
+		RetryRefusal: { root: param("root", RetryRoot.fields.root) },
+		RetryExhausted: { root: param("root", RetryRoot.fields.root) },
+		RetrySteadfastInput: { root: param("root", RetryRoot.fields.root) },
+		RetryBrittleInput: { root: param("root", RetryRoot.fields.root) },
+		RetryPoliteInput: { root: param("root", RetryRoot.fields.root) },
+		RetryPatientInput: { root: param("root", RetryRoot.fields.root) },
+		RetryLaddersInput: { root: param("root", RetryRoot.fields.root) },
+		RetryThrottledInput: { root: param("root", RetryRoot.fields.root) },
+		RetryUnhurriedInput: { root: param("root", RetryRoot.fields.root) },
+		RetrySteadfastOutput: { root: param("root", RetryRoot.fields.root) },
+		RetryBrittleOutput: { root: param("root", RetryRoot.fields.root) },
+		RetryPoliteOutput: { root: param("root", RetryRoot.fields.root) },
+		RetryPatientOutput: { root: param("root", RetryRoot.fields.root) },
+		RetryLaddersFinishOutput: { root: param("root", RetryRoot.fields.root) },
+		RetryThrottledFinishOutput: { root: param("root", RetryRoot.fields.root) },
+		RetryUnhurriedFinishOutput: { root: param("root", RetryRoot.fields.root) }
+	})
 })
 
 export const retryRetirerWorkload = workload(RetryRetirer, retryRetirerPrograms)

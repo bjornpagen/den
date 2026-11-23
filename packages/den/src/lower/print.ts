@@ -161,8 +161,6 @@ const fieldExpr = (type: FieldType): string => {
 			return `${type.relation}.fields.${type.field}`
 		case "vector":
 			return `pg.vector(${type.dimensions})`
-		case "retirement":
-			return "retirement"
 		case "base":
 			switch (type.base) {
 				case "text":
@@ -209,8 +207,10 @@ const lawExpr = (law: LawIR): string => {
 				case "finite":
 					return `check(${q(law.name)}, ${law.relation}, (row) => Num.isFinite(row.${law.field}))`
 			}
-		case "retirable":
-			return `retirable(${law.header}, [${commas(Arr.map(law.bodies, (b) => `on(${b}, "root")`))}])`
+		case "unit":
+			return `unit(${q(law.name)}, { ${commas(Arr.map(law.heading, (f) => `${f.name}: ${fieldExpr(f.type)}`))} })`
+		case "mutable":
+			return `mutable(${law.relation})`
 		case "ordered":
 			return `ordered(${sideExpr(law.member)}, fin(${law.owner}, ${q(law.count)}))`
 	}
@@ -251,6 +251,7 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		...(Arr.some(l.laws, (law) => law.kind === "ordered") ? ["fin"] : []),
 		"fragment",
 		"key",
+		"mutable",
 		...(used("natural") || used("drawn") ? ["natural"] : []),
 		...(Arr.some(l.laws, (law) => law.kind === "check" && law.holds.kind === "finite")
 			? ["Num"]
@@ -264,10 +265,9 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		...(Arr.some(l.laws, (law) => law.kind === "race") ? ["race"] : []),
 		...(Arr.some(l.steps, (st) => Arr.isReadonlyArrayNonEmpty(st.reads)) ? ["records"] : []),
 		"relation",
-		...(Arr.some(l.laws, (law) => law.kind === "retirable") ? ["retirable"] : []),
-		...(used("retirement") ? ["retirement"] : []),
 		...(Arr.some(sides, (sd) => sd.selection.kind !== "all") ? ["select"] : []),
-		...(used("digest") ? ["sha256"] : []),
+		"sha256",
+		"unit",
 		...(seated ? ["v"] : [])
 	]
 }
@@ -337,7 +337,7 @@ const requestedRootOf = (
 	kinds: string
 ): string => {
 	const params = requestParams(P, j)
-	return `.insert(${root}, query(${graph}).rule((r) => r.find({ scope: r.param(${q(params.scope)}, ${root}.fields.scope), kind: ${kinds}.handle(${q(j.name)}), key: r.param(${q(params.key)}, ${root}.fields.key), at: r.param("now", ${root}.fields.at) })))`
+	return `.insert(${root}, query(${graph}).rule((r) => r.find({ root: r.param(${q(params.scope)}, ${root}.fields.root), kind: ${kinds}.handle(${q(j.name)}), key: r.param(${q(params.key)}, ${root}.fields.key), at: r.param("now", ${root}.fields.at) })))`
 }
 
 /** Whether a flow has a step kind due at its input's instant, whose spawns name their due instants (`timed`). */
@@ -412,8 +412,10 @@ const lawRelations = (law: LawIR): ReadonlyArray<string> => {
 			return [law.relation]
 		case "check":
 			return [law.relation]
-		case "retirable":
-			return [law.header, ...law.bodies]
+		case "unit":
+			return []
+		case "mutable":
+			return [law.relation]
 		case "ordered":
 			return [law.member.relation, law.owner]
 	}
@@ -465,7 +467,11 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 		Arr.map(l.relations, (r) => r.name),
 		(r) => !coordination.has(r)
 	)
-	const coordinating = (law: LawIR) => Arr.every(lawRelations(law), (r) => coordination.has(r))
+	/** A law of the coordination group names its relations alone; a unit names none, and is the graph's. */
+	const coordinating = (law: LawIR) => {
+		const named = lawRelations(law)
+		return Arr.isReadonlyArrayNonEmpty(named) && Arr.every(named, (r) => coordination.has(r))
+	}
 	return `${lines([
 		`/** The fragment den lowered the flow ${l.prefix} to; \`den generate\` writes it, and nothing edits it. */`,
 		`import { ${commas(fragmentImportsOf(l))} } from "@bjornpagen/grizzle"`,
@@ -567,20 +573,16 @@ const allOf = (role: string, relation: string, fields: ReadonlyArray<string>): s
 })`
 
 /**
- * A query over `role` of the rows of `relation` whose field `owner` the parameter of its name holds, every field but a
- * root's retirement, which only grizzle's hold and retirement read: a body's key holds its root beside its owner, so
- * a read by its owner alone is a query, served by the key's index, whose leading field it is.
+ * A query over `role` of the rows of `relation` whose field `owner` the parameter of its name holds, every field: a
+ * body's key holds its root before its owner, so a read by its owner alone is a query served by an index generate derives
+ * for it.
  */
 const ownedBy = (l: Lowered, role: string, relation: string, owner: string): string => {
 	const fields = Option.match(
 		Arr.findFirst(l.relations, (rel) => rel.name === relation),
 		{
 			onNone: (): ReadonlyArray<string> => [],
-			onSome: (rel) =>
-				Arr.filter(
-					Arr.map(rel.fields, (f) => f.name),
-					(f) => f !== "retired"
-				)
+			onSome: (rel) => Arr.map(rel.fields, (f) => f.name)
 		}
 	)
 	return `query(${role}).rule((r) => {
@@ -588,6 +590,21 @@ const ownedBy = (l: Lowered, role: string, relation: string, owner: string): str
 	return r.match(${relation}, { ${entries(fields)} }).where(r.eq(${bound(owner)}, r.param(${q(owner)}, ${relation}.fields.${owner}))).find({ ${entries(fields)} })
 })`
 }
+
+/**
+ * A query over `role` of the roots whose graph stands, each by its scope, kind, key and instant, where `where` holds: a
+ * root's record and its own scope's, which a clearing deletes, so a cleared root, its record kept, is no root a read of
+ * the graph finds.
+ */
+const standingRootsOf = (
+	role: string,
+	r: (s: string) => string,
+	where: ReadonlyArray<string>
+): string => `query(${role}).rule((r) => {
+	const { kind, key, at } = v(${r("Root")}, "root")
+	const { scope } = v(${r("Scope")}, "scope")
+	return r.match(${r("Root")}, { root: scope, kind, key, at }).match(${r("Scope")}, { root: scope, scope })${Arr.isReadonlyArrayNonEmpty(where) ? `.where(${commas(where)})` : ""}.find({ scope, kind, key, at })
+})`
 
 /** A query over `role` of each chain's latest turn in `held`: `r.max(turn)`, grouped by its coordinates. */
 const latestOf = (role: string, held: string, coordinates: ReadonlyArray<string>): string =>
@@ -820,7 +837,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	/**
 	 * The reads the relay watches and the scheduler's snapshot reads too, each one query over den's role, declared once
 	 * in the programs module and named there: the pending steps, the requested scopes (a root whose graph is open, its
-	 * Scope standing, and that is neither admitted nor skipped: a retired root's graph is gone, so it is no longer requested),
+	 * Scope standing, and that is neither admitted nor skipped: a retired root's graph is cleared, so it is no longer
+	 * requested),
 	 * the running scopes, and each idle
 	 * flow's pending steps.
 	 */
@@ -835,8 +853,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		requested: [
 			n.program("RequestedRead"),
 			`query(${n.den}).rule((r) => {
-	const { scope } = v(${r("Root")}, "root")
-	return r.match(${r("Root")}, { scope }).match(${r("Scope")}, { scope }).where(r.not(${r("Admitted")}, { scope }), r.not(${r("Skipped")}, { scope })).find({ scope })
+	const { scope } = v(${r("Scope")}, "scope")
+	return r.match(${r("Root")}, { root: scope }).match(${r("Scope")}, { root: scope, scope }).where(r.not(${r("Admitted")}, { scope }), r.not(${r("Skipped")}, { scope })).find({ scope })
 })`
 		],
 		running: [
@@ -901,7 +919,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		`requested: ${shared.requested}`,
 		`running: ${shared.running}`,
 		...(children ? [`withins: ${allOf(n.den, r("Within"), ["scope", "parent", "kind"])}`] : []),
-		`roots: ${allOf(n.den, r("Root"), ["scope", "kind", "key", "at"])}`,
+		`roots: ${standingRootsOf(n.den, r, [])}`,
 		...(exclusiveKeys ? [`keys: ${allOf(n.den, r("ExclusiveKey"), ["scope", "key", "id"])}`] : []),
 		...Arr.map(Option.toArray(l.seats), (st) => `holds: ${liveHoldsOf(n.den, st)}`),
 		...(has(r("Exclusive"))
@@ -984,7 +1002,10 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			? [[n.program("WithinOf"), ownedBy(l, n.graph, r("Within"), "scope")] as const]
 			: []),
 		[n.program("AdmittedOf"), ownedBy(l, n.graph, r("Admitted"), "scope")],
-		[n.program("RootOf"), ownedBy(l, n.graph, r("Root"), "scope")],
+		[
+			n.program("RootOf"),
+			standingRootsOf(n.graph, r, [`r.eq(scope, r.param("scope", ${r("Root")}.fields.root))`])
+		],
 		...(exclusiveKeys
 			? [[n.program("ExclusiveKeyOf"), ownedBy(l, n.graph, r("ExclusiveKey"), "scope")] as const]
 			: []),
@@ -992,13 +1013,12 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			n.program("FinishedRoots"),
 			`query(${n.graph})
 	.rule((r) => {
-		const { scope } = v(${r("Root")}, "root")
-		const { step } = v(${r("Finish")}, "finish")
-		return r.match(${r("Root")}, { scope }).match(${r("Finish")}, { scope, step }).match(${r("Result")}, { step }).find({ scope })
+		const { scope, step } = v(${r("Finish")}, "finish")
+		return r.match(${r("Finish")}, { root: scope, scope, step }).match(${r("Result")}, { root: scope, step }).find({ scope })
 	})
 	.rule((r) => {
-		const { scope } = v(${r("Root")}, "root")
-		return r.match(${r("Root")}, { scope }).match(${r("Skipped")}, { scope }).find({ scope })
+		const { scope } = v(${r("Skipped")}, "skipped")
+		return r.match(${r("Skipped")}, { root: scope, scope }).find({ scope })
 	})`
 		],
 		[
@@ -1363,10 +1383,10 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		"",
 		`export const ${n.coordinatorWorkload} = workload(${n.coordinator}, ${n.coordinatorPrograms})`,
 		"",
-		`/** den's retiring role for the flow ${P}: it retires finished roots' graphs whole, grizzle's retirement of the flow's unit, and writes nothing else: a role of its own, as grizzle's retirement asks. */`,
-		`export const ${n.retirer} = role(${app}, ${q(n.retirerName)}, { ...${n.graph}.relations }, { retire: [${q(r("Root"))}] })`,
+		`/** den's retiring role for the flow ${P}: it clears finished roots' graphs, deleting every row of a root's graph but its record, under its root, and writes nothing else. */`,
+		`export const ${n.retirer} = role(${app}, ${q(n.retirerName)}, { ...${n.graph}.relations }, { write: [${commas(Arr.map([...l.cleared, ...l.held], q))}] })`,
 		"",
-		`export const ${n.retirerPrograms} = Object.freeze({ ${n.program("Retire")}: ChangeSet.empty(${n.graph}).retire(${r("Root")}, []) })`,
+		`export const ${n.retirerPrograms} = Object.freeze({ ${n.program("Retire")}: ChangeSet.empty(${n.graph}).deleteWhere({ ${commas(Arr.map(l.cleared, (rel) => `${rel}: { root: param("root", ${r("Root")}.fields.root) }`))} }) })`,
 		"",
 		`export const ${n.retirerWorkload} = workload(${n.retirer}, ${n.retirerPrograms})`,
 		"",
@@ -2200,7 +2220,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`\t\tskip: (scope, by) => settled(h.den.${n.program("Skip")}.once({ params: {}, facts: { insert: { ${r("Skipped")}: [{ scope, by, root: scope }] } } })),`,
 		`\t\texhaust: ({ step, root, attempt }) => settled(h.den.${n.program("Exhaust")}.once({ params: {}, facts: { insert: { ${r("Result")}: [{ step, root, outcome: "failed" }], ${r("Failed")}: [{ step, root }], ${r("Held")}: [{ step, root, attempt }], ${r("Exhausted")}: [{ step, root }] } } })),`,
 		`\t\tfinishedRoots: Effect.map(settled(h.den.${n.program("FinishedRoots")}.once({ params: {}, facts: {} })), (rows) => Arr.map(rowsOf(rows), (row) => row.scope)),`,
-		`\t\tretire: (root) => settled(h.retirer.${n.program("Retire")}.once({ params: {}, facts: { retire: { ${r("Root")}: [{ scope: root }] } } })),`,
+		`\t\tretire: (root) => settled(h.retirer.${n.program("Retire")}.once({ params: { root }, facts: {} })),`,
 		`\t\tsnapshot: ${indented("\t\t")(snapshot)},`,
 		`\t\tchanges: Stream.mergeAll([${commas(watched)}], { concurrency: "unbounded" }),`,
 		"\t\tcoordination,",

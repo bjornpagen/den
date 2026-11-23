@@ -10,6 +10,7 @@ import {
 	fin,
 	fragment,
 	key,
+	mutable,
 	natural,
 	on,
 	ordered,
@@ -18,10 +19,9 @@ import {
 	pred,
 	query,
 	relation,
-	retirable,
-	retirement,
 	select,
 	sha256,
+	unit,
 	v
 } from "@bjornpagen/grizzle"
 import { Delivered } from "#integration/slice/relations.ts"
@@ -46,179 +46,179 @@ const ReviewSeats = closed.relation(
 	[{ resource: "Anthropic", seats: 2n }]
 )
 
-export const ReviewScope = relation("ReviewScope", { scope: sha256, root: sha256 }, [
-	"scope",
-	"root"
+export const ReviewScope = relation("ReviewScope", { root: sha256, scope: sha256 }, [
+	"root",
+	"scope"
 ])
 export const ReviewRoot = relation(
 	"ReviewRoot",
-	{ scope: sha256, kind: closedId(ReviewRootKind), key: Text, at: DenInstant, retired: retirement },
-	["scope"]
+	{ root: sha256, kind: closedId(ReviewRootKind), key: Text, at: DenInstant },
+	["root"]
 )
 export const ReviewWithin = relation(
 	"ReviewWithin",
-	{ scope: sha256, parent: sha256, kind: closedId(ReviewChildKind), root: sha256 },
-	["scope", "root"]
+	{ root: sha256, scope: sha256, parent: sha256, kind: closedId(ReviewChildKind) },
+	["root", "scope"]
 )
-export const ReviewAdmitted = relation("ReviewAdmitted", { scope: sha256, root: sha256 }, [
-	"scope",
-	"root"
+export const ReviewAdmitted = relation("ReviewAdmitted", { root: sha256, scope: sha256 }, [
+	"root",
+	"scope"
 ])
 export const ReviewSkipped = relation(
 	"ReviewSkipped",
-	{ scope: sha256, by: sha256, root: sha256 },
-	["scope", "root"]
+	{ root: sha256, scope: sha256, by: sha256 },
+	["root", "scope"]
 )
 export const ReviewStep = relation(
 	"ReviewStep",
-	{ step: sha256, kind: closedId(ReviewKind), scope: sha256, due: DenInstant, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, kind: closedId(ReviewKind), scope: sha256, due: DenInstant },
+	["root", "step"]
 )
 export const ReviewStartStep = relation(
 	"ReviewStartStep",
-	{ scope: sha256, ordinal: natural, step: sha256, root: sha256 },
-	["scope", "ordinal", "root"]
+	{ root: sha256, scope: sha256, ordinal: natural, step: sha256 },
+	["root", "scope", "ordinal"]
 )
 export const ReviewStartScope = relation(
 	"ReviewStartScope",
-	{ scope: sha256, ordinal: natural, child: sha256, root: sha256 },
-	["scope", "ordinal", "root"]
+	{ root: sha256, scope: sha256, ordinal: natural, child: sha256 },
+	["root", "scope", "ordinal"]
 )
 export const ReviewFinish = relation(
 	"ReviewFinish",
-	{ scope: sha256, step: sha256, root: sha256 },
-	["scope", "root"]
+	{ root: sha256, scope: sha256, step: sha256 },
+	["root", "scope"]
 )
 export const ReviewClaim = relation(
 	"ReviewClaim",
-	{ step: sha256, attempt: place, until: DenInstant, holds: drawn(natural), root: sha256 },
-	["step", "root", "attempt"]
+	{ root: sha256, step: sha256, attempt: place, until: DenInstant, holds: drawn(natural) },
+	["root", "step", "attempt"]
 )
 export const ReviewEnded = relation(
 	"ReviewEnded",
-	{ step: sha256, attempt: natural, root: sha256 },
-	["step", "attempt", "root"]
+	{ root: sha256, step: sha256, attempt: natural },
+	["root", "step", "attempt"]
 )
 export const ReviewRetry = relation(
 	"ReviewRetry",
-	{ step: sha256, attempt: natural, at: DenInstant, why: closedId(ReviewRetryWhy), root: sha256 },
-	["step", "attempt", "root"]
+	{ root: sha256, step: sha256, attempt: natural, at: DenInstant, why: closedId(ReviewRetryWhy) },
+	["root", "step", "attempt"]
 )
 export const ReviewFenced = relation(
 	"ReviewFenced",
-	{ step: sha256, attempt: natural, root: sha256 },
-	["step", "attempt", "root"]
+	{ root: sha256, step: sha256, attempt: natural },
+	["root", "step", "attempt"]
 )
 export const ReviewResult = relation(
 	"ReviewResult",
-	{ step: sha256, outcome: closedId(ReviewOutcome), root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, outcome: closedId(ReviewOutcome) },
+	["root", "step"]
 )
-export const ReviewDone = relation("ReviewDone", { step: sha256, root: sha256 }, ["step", "root"])
-export const ReviewFailed = relation("ReviewFailed", { step: sha256, root: sha256 }, [
-	"step",
-	"root"
+export const ReviewDone = relation("ReviewDone", { root: sha256, step: sha256 }, ["root", "step"])
+export const ReviewFailed = relation("ReviewFailed", { root: sha256, step: sha256 }, [
+	"root",
+	"step"
 ])
-export const ReviewHeld = relation("ReviewHeld", { step: sha256, attempt: natural, root: sha256 }, [
-	"step",
-	"root"
+export const ReviewHeld = relation("ReviewHeld", { root: sha256, step: sha256, attempt: natural }, [
+	"root",
+	"step"
 ])
-export const ReviewRefusal = relation("ReviewRefusal", { step: sha256, law: Text, root: sha256 }, [
-	"step",
-	"root"
+export const ReviewRefusal = relation("ReviewRefusal", { root: sha256, step: sha256, law: Text }, [
+	"root",
+	"step"
 ])
-export const ReviewExhausted = relation("ReviewExhausted", { step: sha256, root: sha256 }, [
-	"step",
-	"root"
+export const ReviewExhausted = relation("ReviewExhausted", { root: sha256, step: sha256 }, [
+	"root",
+	"step"
 ])
 export const ReviewAnalyzeInput = relation(
 	"ReviewAnalyzeInput",
-	{ step: sha256, review: Text, group: pg.bigint, question: pg.bigint, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, review: Text, group: pg.bigint, question: pg.bigint },
+	["root", "step"]
 )
 export const ReviewGatherInput = relation(
 	"ReviewGatherInput",
-	{ step: sha256, review: Delivered.fields.attempt, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, review: Delivered.fields.attempt },
+	["root", "step"]
 )
 export const ReviewGatherInputSizes = relation(
 	"ReviewGatherInputSizes",
-	{ step: sha256, ordinal: natural, value: pg.bigint, root: sha256 },
-	["step", "ordinal", "root"]
+	{ root: sha256, step: sha256, ordinal: natural, value: pg.bigint },
+	["root", "step", "ordinal"]
 )
 export const ReviewSaveInput = relation(
 	"ReviewSaveInput",
 	{
+		root: sha256,
 		step: sha256,
 		review: Text,
 		group: pg.bigint,
 		count: pg.bigint,
-		total: pg.bigint,
-		root: sha256
+		total: pg.bigint
 	},
-	["step", "root"]
+	["root", "step"]
 )
 export const ReviewQuestionsInput = relation(
 	"ReviewQuestionsInput",
-	{ scope: sha256, review: Text, group: pg.bigint, size: pg.bigint, root: sha256 },
-	["scope", "root"]
+	{ root: sha256, scope: sha256, review: Text, group: pg.bigint, size: pg.bigint },
+	["root", "scope"]
 )
 export const ReviewReviewRunInput = relation(
 	"ReviewReviewRunInput",
-	{ scope: sha256, review: Text, root: sha256 },
-	["scope", "root"]
+	{ root: sha256, scope: sha256, review: Text },
+	["root", "scope"]
 )
 export const ReviewReviewRunInputSizes = relation(
 	"ReviewReviewRunInputSizes",
-	{ scope: sha256, ordinal: natural, value: pg.bigint, root: sha256 },
-	["scope", "ordinal", "root"]
+	{ root: sha256, scope: sha256, ordinal: natural, value: pg.bigint },
+	["root", "scope", "ordinal"]
 )
 export const ReviewAnalyzeOutput = relation(
 	"ReviewAnalyzeOutput",
-	{ step: sha256, score: pg.bigint, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, score: pg.bigint },
+	["root", "step"]
 )
 export const ReviewGatherOutput = relation(
 	"ReviewGatherOutput",
-	{ step: sha256, groups: pg.bigint, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, groups: pg.bigint },
+	["root", "step"]
 )
 export const ReviewSaveOutput = relation(
 	"ReviewSaveOutput",
-	{ step: sha256, total: pg.bigint, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, total: pg.bigint },
+	["root", "step"]
 )
 export const ReviewQuestionsFinishOutput = relation(
 	"ReviewQuestionsFinishOutput",
-	{ step: sha256, count: pg.bigint, total: pg.bigint, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256, count: pg.bigint, total: pg.bigint },
+	["root", "step"]
 )
 export const ReviewReviewRunFinishOutput = relation(
 	"ReviewReviewRunFinishOutput",
-	{ step: sha256, root: sha256 },
-	["step", "root"]
+	{ root: sha256, step: sha256 },
+	["root", "step"]
 )
 export const ReviewSplit = relation(
 	"ReviewSplit",
-	{ from: sha256, ordinal: natural, to: sha256, root: sha256 },
-	["from", "ordinal", "root"]
+	{ root: sha256, from: sha256, ordinal: natural, to: sha256 },
+	["root", "from", "ordinal"]
 )
 export const ReviewSaved = relation(
 	"ReviewSaved",
-	{ from: sha256, ordinal: natural, to: sha256, root: sha256 },
-	["from", "ordinal", "root"]
+	{ root: sha256, from: sha256, ordinal: natural, to: sha256 },
+	["root", "from", "ordinal"]
 )
 const ReviewHold = relation(
 	"ReviewHold",
 	{
+		resource: closedId(ReviewResource),
+		root: sha256,
 		step: sha256,
 		attempt: natural,
 		at: drawn(natural),
-		resource: closedId(ReviewResource),
-		seat: natural,
-		root: sha256
+		seat: natural
 	},
-	["step", "root", "attempt", "at"]
+	["resource", "root", "step", "attempt"]
 )
 export const ReviewPaused = relation(
 	"ReviewPaused",
@@ -282,179 +282,211 @@ export const reviewGraph = fragment(
 		ReviewHold
 	],
 	[
-		contained(on(ReviewWithin, "scope", "root"), on(ReviewScope, "scope", "root")),
-		contained(on(ReviewWithin, "parent", "root"), on(ReviewScope, "scope", "root")),
-		contained(on(ReviewStartScope, "scope", "root"), on(ReviewAdmitted, "scope", "root")),
-		contained(on(ReviewStartScope, "child", "root"), on(ReviewScope, "scope", "root")),
-		key(on(ReviewStartScope, "child", "root")),
-		contained(on(ReviewAdmitted, "scope", "root"), on(ReviewScope, "scope", "root")),
-		contained(on(ReviewSkipped, "scope"), on(ReviewRoot, "scope")),
-		contained(on(ReviewSkipped, "by"), on(ReviewRoot, "scope")),
-		contained(on(ReviewStep, "scope", "root"), on(ReviewAdmitted, "scope", "root")),
-		contained(on(ReviewStartStep, "scope", "root"), on(ReviewAdmitted, "scope", "root")),
-		contained(on(ReviewStartStep, "step", "root"), on(ReviewStep, "step", "root")),
-		key(on(ReviewStartStep, "step", "root")),
-		contained(on(ReviewFinish, "scope", "root"), on(ReviewAdmitted, "scope", "root")),
-		contained(on(ReviewFinish, "step", "root"), on(ReviewStep, "step", "root")),
-		key(on(ReviewFinish, "step", "root")),
-		contained(on(ReviewClaim, "step", "root"), on(ReviewStep, "step", "root")),
+		unit("DenRoot", { root: sha256 }),
+		contained(on(ReviewWithin, "root", "scope"), on(ReviewScope, "root", "scope")),
+		contained(on(ReviewWithin, "root", "parent"), on(ReviewScope, "root", "scope")),
+		contained(on(ReviewStartScope, "root", "scope"), on(ReviewAdmitted, "root", "scope")),
+		contained(on(ReviewStartScope, "root", "child"), on(ReviewScope, "root", "scope")),
+		key(on(ReviewStartScope, "root", "child")),
+		contained(on(ReviewAdmitted, "root", "scope"), on(ReviewScope, "root", "scope")),
+		contained(on(ReviewSkipped, "scope"), on(ReviewRoot, "root")),
+		contained(on(ReviewSkipped, "by"), on(ReviewRoot, "root")),
+		contained(on(ReviewStep, "root", "scope"), on(ReviewAdmitted, "root", "scope")),
+		contained(on(ReviewStartStep, "root", "scope"), on(ReviewAdmitted, "root", "scope")),
+		contained(on(ReviewStartStep, "root", "step"), on(ReviewStep, "root", "step")),
+		key(on(ReviewStartStep, "root", "step")),
+		contained(on(ReviewFinish, "root", "scope"), on(ReviewAdmitted, "root", "scope")),
+		contained(on(ReviewFinish, "root", "step"), on(ReviewStep, "root", "step")),
+		key(on(ReviewFinish, "root", "step")),
+		contained(on(ReviewClaim, "root", "step"), on(ReviewStep, "root", "step")),
 		contained(
-			on(ReviewEnded, "step", "attempt", "root"),
-			on(ReviewClaim, "step", "attempt", "root")
+			on(ReviewEnded, "root", "step", "attempt"),
+			on(ReviewClaim, "root", "step", "attempt")
 		),
 		contained(
 			on(
 				select(ReviewClaim, (row) => row.ge(row.attempt, 1n)),
+				"root",
 				"step",
-				pred("attempt"),
-				"root"
+				pred("attempt")
 			),
-			on(ReviewEnded, "step", "attempt", "root")
+			on(ReviewEnded, "root", "step", "attempt")
 		),
 		contained(
-			on(ReviewRetry, "step", "attempt", "root"),
-			on(ReviewEnded, "step", "attempt", "root")
+			on(ReviewRetry, "root", "step", "attempt"),
+			on(ReviewEnded, "root", "step", "attempt")
 		),
 		contained(
-			on(ReviewFenced, "step", "attempt", "root"),
-			on(ReviewEnded, "step", "attempt", "root")
+			on(ReviewFenced, "root", "step", "attempt"),
+			on(ReviewEnded, "root", "step", "attempt")
 		),
-		contained(on(ReviewResult, "step", "root"), on(ReviewStep, "step", "root")),
+		contained(on(ReviewResult, "root", "step"), on(ReviewStep, "root", "step")),
 		contained(
-			on(ReviewHeld, "step", "attempt", "root"),
-			on(ReviewClaim, "step", "attempt", "root")
+			on(ReviewHeld, "root", "step", "attempt"),
+			on(ReviewClaim, "root", "step", "attempt")
 		),
-		contained(on(ReviewHeld, "step", "root"), on(ReviewResult, "step", "root")),
+		contained(on(ReviewHeld, "root", "step"), on(ReviewResult, "root", "step")),
 		contained(
-			on(ReviewDone, "step", "root"),
+			on(ReviewDone, "root", "step"),
 			on(
 				select(ReviewResult, (row) => row.eq(row.outcome, "done")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
 		contained(
-			on(ReviewFailed, "step", "root"),
+			on(ReviewFailed, "root", "step"),
 			on(
 				select(ReviewResult, (row) => row.eq(row.outcome, "failed")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
-		contained(on(ReviewRefusal, "step", "root"), on(ReviewFailed, "step", "root")),
-		contained(on(ReviewExhausted, "step", "root"), on(ReviewFailed, "step", "root")),
+		contained(on(ReviewRefusal, "root", "step"), on(ReviewFailed, "root", "step")),
+		contained(on(ReviewExhausted, "root", "step"), on(ReviewFailed, "root", "step")),
 		contained(
-			on(ReviewAnalyzeInput, "step", "root"),
+			on(ReviewAnalyzeInput, "root", "step"),
 			on(
 				select(ReviewStep, (row) => row.eq(row.kind, "Analyze")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
 		contained(
-			on(ReviewGatherInput, "step", "root"),
+			on(ReviewGatherInput, "root", "step"),
 			on(
 				select(ReviewStep, (row) => row.eq(row.kind, "Gather")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
-		contained(on(ReviewGatherInputSizes, "step", "root"), on(ReviewGatherInput, "step", "root")),
+		contained(on(ReviewGatherInputSizes, "root", "step"), on(ReviewGatherInput, "root", "step")),
 		contained(
 			on(
 				select(ReviewGatherInputSizes, (row) => row.ge(row.ordinal, 1n)),
+				"root",
 				"step",
-				pred("ordinal"),
-				"root"
+				pred("ordinal")
 			),
-			on(ReviewGatherInputSizes, "step", "ordinal", "root")
+			on(ReviewGatherInputSizes, "root", "step", "ordinal")
 		),
 		contained(
-			on(ReviewSaveInput, "step", "root"),
+			on(ReviewSaveInput, "root", "step"),
 			on(
 				select(ReviewStep, (row) => row.eq(row.kind, "Save")),
-				"step",
-				"root"
+				"root",
+				"step"
 			)
 		),
 		contained(
-			on(ReviewQuestionsInput, "scope", "root"),
+			on(ReviewQuestionsInput, "root", "scope"),
 			on(
 				select(ReviewWithin, (row) => row.eq(row.kind, "Questions")),
-				"scope",
-				"root"
+				"root",
+				"scope"
 			)
 		),
 		contained(
 			on(ReviewReviewRunInput, "scope"),
 			on(
 				select(ReviewRoot, (row) => row.eq(row.kind, "ReviewRun")),
-				"scope"
+				"root"
 			)
 		),
 		contained(
-			on(ReviewReviewRunInputSizes, "scope", "root"),
-			on(ReviewReviewRunInput, "scope", "root")
+			on(ReviewReviewRunInputSizes, "root", "scope"),
+			on(ReviewReviewRunInput, "root", "scope")
 		),
 		contained(
 			on(
 				select(ReviewReviewRunInputSizes, (row) => row.ge(row.ordinal, 1n)),
+				"root",
 				"scope",
-				pred("ordinal"),
-				"root"
+				pred("ordinal")
 			),
-			on(ReviewReviewRunInputSizes, "scope", "ordinal", "root")
+			on(ReviewReviewRunInputSizes, "root", "scope", "ordinal")
 		),
-		contained(on(ReviewAnalyzeOutput, "step", "root"), on(ReviewAnalyzeInput, "step", "root")),
-		contained(on(ReviewAnalyzeOutput, "step", "root"), on(ReviewDone, "step", "root")),
-		contained(on(ReviewGatherOutput, "step", "root"), on(ReviewGatherInput, "step", "root")),
-		contained(on(ReviewGatherOutput, "step", "root"), on(ReviewDone, "step", "root")),
-		contained(on(ReviewSaveOutput, "step", "root"), on(ReviewSaveInput, "step", "root")),
-		contained(on(ReviewSaveOutput, "step", "root"), on(ReviewDone, "step", "root")),
-		contained(on(ReviewQuestionsFinishOutput, "step", "root"), on(ReviewDone, "step", "root")),
-		contained(on(ReviewReviewRunFinishOutput, "step", "root"), on(ReviewDone, "step", "root")),
-		contained(on(ReviewSplit, "from", "root"), on(ReviewGatherOutput, "step", "root")),
-		contained(on(ReviewSplit, "to", "root"), on(ReviewQuestionsInput, "scope", "root")),
-		key(on(ReviewSplit, "to", "root")),
-		contained(on(ReviewSaved, "from", "root"), on(ReviewQuestionsFinishOutput, "step", "root")),
-		contained(on(ReviewSaved, "to", "root"), on(ReviewSaveInput, "step", "root")),
-		key(on(ReviewSaved, "to", "root")),
-		ordered(on(ReviewHold, "step", "root", "attempt", "at"), fin(ReviewClaim, "holds")),
-		retirable(ReviewRoot, [
-			on(ReviewScope, "root"),
-			on(ReviewWithin, "root"),
-			on(ReviewAdmitted, "root"),
-			on(ReviewSkipped, "root"),
-			on(ReviewStep, "root"),
-			on(ReviewStartStep, "root"),
-			on(ReviewStartScope, "root"),
-			on(ReviewFinish, "root"),
-			on(ReviewClaim, "root"),
-			on(ReviewEnded, "root"),
-			on(ReviewRetry, "root"),
-			on(ReviewFenced, "root"),
-			on(ReviewResult, "root"),
-			on(ReviewDone, "root"),
-			on(ReviewFailed, "root"),
-			on(ReviewHeld, "root"),
-			on(ReviewRefusal, "root"),
-			on(ReviewExhausted, "root"),
-			on(ReviewAnalyzeInput, "root"),
-			on(ReviewGatherInput, "root"),
-			on(ReviewGatherInputSizes, "root"),
-			on(ReviewSaveInput, "root"),
-			on(ReviewQuestionsInput, "root"),
-			on(ReviewReviewRunInput, "root"),
-			on(ReviewReviewRunInputSizes, "root"),
-			on(ReviewAnalyzeOutput, "root"),
-			on(ReviewGatherOutput, "root"),
-			on(ReviewSaveOutput, "root"),
-			on(ReviewQuestionsFinishOutput, "root"),
-			on(ReviewReviewRunFinishOutput, "root"),
-			on(ReviewSplit, "root"),
-			on(ReviewSaved, "root"),
-			on(ReviewHold, "root")
-		])
+		contained(on(ReviewAnalyzeOutput, "root", "step"), on(ReviewAnalyzeInput, "root", "step")),
+		contained(on(ReviewAnalyzeOutput, "root", "step"), on(ReviewDone, "root", "step")),
+		contained(on(ReviewGatherOutput, "root", "step"), on(ReviewGatherInput, "root", "step")),
+		contained(on(ReviewGatherOutput, "root", "step"), on(ReviewDone, "root", "step")),
+		contained(on(ReviewSaveOutput, "root", "step"), on(ReviewSaveInput, "root", "step")),
+		contained(on(ReviewSaveOutput, "root", "step"), on(ReviewDone, "root", "step")),
+		contained(on(ReviewQuestionsFinishOutput, "root", "step"), on(ReviewDone, "root", "step")),
+		contained(on(ReviewReviewRunFinishOutput, "root", "step"), on(ReviewDone, "root", "step")),
+		contained(on(ReviewSplit, "root", "from"), on(ReviewGatherOutput, "root", "step")),
+		contained(on(ReviewSplit, "root", "to"), on(ReviewQuestionsInput, "root", "scope")),
+		key(on(ReviewSplit, "root", "to")),
+		contained(on(ReviewSaved, "root", "from"), on(ReviewQuestionsFinishOutput, "root", "step")),
+		contained(on(ReviewSaved, "root", "to"), on(ReviewSaveInput, "root", "step")),
+		key(on(ReviewSaved, "root", "to")),
+		unit("ReviewSeat", { resource: closedId(ReviewResource) }),
+		ordered(on(ReviewHold, "root", "step", "attempt", "at"), fin(ReviewClaim, "holds")),
+		mutable(ReviewHold),
+		contained(on(ReviewScope, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewScope),
+		contained(on(ReviewWithin, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewWithin),
+		contained(on(ReviewAdmitted, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewAdmitted),
+		contained(on(ReviewSkipped, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewSkipped),
+		contained(on(ReviewStep, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewStep),
+		contained(on(ReviewStartStep, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewStartStep),
+		contained(on(ReviewStartScope, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewStartScope),
+		contained(on(ReviewFinish, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewFinish),
+		contained(on(ReviewClaim, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewClaim),
+		contained(on(ReviewEnded, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewEnded),
+		contained(on(ReviewRetry, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewRetry),
+		contained(on(ReviewFenced, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewFenced),
+		contained(on(ReviewResult, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewResult),
+		contained(on(ReviewDone, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewDone),
+		contained(on(ReviewFailed, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewFailed),
+		contained(on(ReviewHeld, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewHeld),
+		contained(on(ReviewRefusal, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewRefusal),
+		contained(on(ReviewExhausted, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewExhausted),
+		contained(on(ReviewAnalyzeInput, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewAnalyzeInput),
+		contained(on(ReviewGatherInput, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewGatherInput),
+		contained(on(ReviewGatherInputSizes, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewGatherInputSizes),
+		contained(on(ReviewSaveInput, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewSaveInput),
+		contained(on(ReviewQuestionsInput, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewQuestionsInput),
+		contained(on(ReviewReviewRunInput, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewReviewRunInput),
+		contained(on(ReviewReviewRunInputSizes, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewReviewRunInputSizes),
+		contained(on(ReviewAnalyzeOutput, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewAnalyzeOutput),
+		contained(on(ReviewGatherOutput, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewGatherOutput),
+		contained(on(ReviewSaveOutput, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewSaveOutput),
+		contained(on(ReviewQuestionsFinishOutput, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewQuestionsFinishOutput),
+		contained(on(ReviewReviewRunFinishOutput, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewReviewRunFinishOutput),
+		contained(on(ReviewSplit, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewSplit),
+		contained(on(ReviewSaved, "root"), on(ReviewRoot, "root")),
+		mutable(ReviewSaved)
 	]
 )
 

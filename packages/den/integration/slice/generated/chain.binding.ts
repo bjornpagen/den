@@ -989,13 +989,7 @@ export const chainLedger = (h: ChainHandles) => {
 			settled(h.den.chainFinishedRoots.once({ params: {}, facts: {} })),
 			(rows) => Arr.map(rowsOf(rows), (row) => row.scope)
 		),
-		retire: (root) =>
-			settled(
-				h.retirer.chainRetire.once({
-					params: {},
-					facts: { retire: { ChainRoot: [{ scope: root }] } }
-				})
-			),
+		retire: (root) => settled(h.retirer.chainRetire.once({ params: { root }, facts: {} })),
 		snapshot: Effect.flatMap(settled(h.den.chainSnapshot.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), (read): Snapshot<FlowNeeds<typeof chain>> => {
 				const view = (scope: Sha256, admission: Admission): ReadonlyArray<ScopeView> =>
