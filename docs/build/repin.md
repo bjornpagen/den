@@ -190,7 +190,20 @@ for the coordination group, and DBCLOCK:
   the instant the offset gave, its transaction's start read on the host. Each call stands at an instant of its own, as
   den's facts keyed by an instant need: two promotions of one environment are two `Served(environment, at)` rows, a
   millisecond of den's clock apart at least, which a case whose calls all stood at the instant its TestClock last
-  travelled to stamped at one (serving.test.ts, refused by Served's key; retire.test.ts and schedule.test.ts failed under it too). A moved served file declares `clock:instant`.
+  travelled to stamped at one (serving.test.ts, refused by Served's key; retire.test.ts and schedule.test.ts failed
+  under it too). A moved served file declares `clock:instant`.
+
+  **Open: the hour-boundary flake, and the bug the wall clock hides.** Because a case's instant follows the machine's
+  clock between its travels, `schedule.test.ts` fails when a case runs across the top of a UTC hour: its ticks after
+  the retirement read the next hour, request keys no root holds, and ring their admissions (seen at den 981793688, the
+  census at 22:00:11, its first tick in the hour before), as the offset over each transaction's start would have read
+  too. The wall clock also hides a den bug: an instant that sits in a key, `<P>Served.at` and its kin, is the call's
+  reading, so two promotions of one environment in one millisecond are refused by the key in production, as the frozen
+  clock showed. The fix waits on the read-committed stack (grizzle main, 2026-11-23): every den instant that sits in a
+  key becomes grizzle's per-key stamp (STAMPRC's D6 fold), `greatest(clock, last + 1)` over the key's rows, rising
+  strictly per environment whatever the clock reads; then the harness's instant is the database's clock as the case's
+  services are built, moved by its TestClock's travel alone and frozen between travels, under which serving, retire,
+  schedule and due pass deterministically and no hour the machine crosses reaches them.
 
 - **One whole view a relation (grizzle 0773fc01c), declared statistics (e2abf18f2, 49e64c312, d76a61066), and
   `r.series` (777475e38).** No den source moves. The slice's init migration is drafted anew: every role that holds a
