@@ -1,17 +1,6 @@
 import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Clock to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
-import {
-	ChangeSet,
-	Num,
-	Type,
-	clocked,
-	deferrable,
-	param,
-	query,
-	role,
-	v,
-	workload
-} from "@bjornpagen/grizzle"
+import { ChangeSet, Num, Type, clocked, param, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import { clock as declaredFlow } from "#integration/slice/flows.ts"
 import {
@@ -301,22 +290,20 @@ export const clockDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", ClockRoot.fields.scope)))
 			.find({ scope, kind, key, at })
 	}),
-	clockFinishedRoots: deferrable(
-		query(clockGraph)
-			.rule((r) => {
-				const { scope } = v(ClockRoot, "root")
-				const { step } = v(ClockFinish, "finish")
-				return r
-					.match(ClockRoot, { scope })
-					.match(ClockFinish, { scope, step })
-					.match(ClockResult, { step })
-					.find({ scope })
-			})
-			.rule((r) => {
-				const { scope } = v(ClockRoot, "root")
-				return r.match(ClockRoot, { scope }).match(ClockSkipped, { scope }).find({ scope })
-			})
-	),
+	clockFinishedRoots: query(clockGraph)
+		.rule((r) => {
+			const { scope } = v(ClockRoot, "root")
+			const { step } = v(ClockFinish, "finish")
+			return r
+				.match(ClockRoot, { scope })
+				.match(ClockFinish, { scope, step })
+				.match(ClockResult, { step })
+				.find({ scope })
+		})
+		.rule((r) => {
+			const { scope } = v(ClockRoot, "root")
+			return r.match(ClockRoot, { scope }).match(ClockSkipped, { scope }).find({ scope })
+		}),
 	clockClaimsOf: query(clockGraph).rule((r) => {
 		const { step, attempt, until } = v(ClockClaim, "claim")
 		return r
@@ -357,48 +344,46 @@ export const clockDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", ClockScope.fields.scope)))
 			.find({ step })
 	}),
-	clockPending: deferrable(clockPendingRead),
-	clockRequested: deferrable(clockRequestedRead),
-	clockRunning: deferrable(clockRunningRead),
-	clockSnapshot: deferrable(
-		query(ClockDen).reads({
-			steps: clockPendingRead,
-			claims: query(ClockDen).rule((r) => {
-				const { step, attempt, until } = v(ClockClaim, "claim")
-				return r
-					.match(ClockClaim, { step, attempt, until })
-					.where(r.not(ClockResult, { step }))
-					.find({ step, attempt, until })
-			}),
-			retries: query(ClockDen).rule((r) => {
-				const { step, attempt, at, why } = v(ClockRetry, "retry")
-				return r
-					.match(ClockRetry, { step, attempt, at, why })
-					.where(r.not(ClockResult, { step }))
-					.find({ step, attempt, at, why })
-			}),
-			fenced: query(ClockDen).rule((r) => {
-				const { step, attempt } = v(ClockFenced, "fenced")
-				return r
-					.match(ClockFenced, { step, attempt })
-					.where(r.not(ClockResult, { step }))
-					.find({ step, attempt })
-			}),
-			requested: clockRequestedRead,
-			running: clockRunningRead,
-			roots: query(ClockDen).rule((r) => {
-				const { scope, kind, key, at } = v(ClockRoot, "clockRoot")
-				return r.match(ClockRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
-			}),
-			paused: query(ClockDen).rule((r) => {
-				const { target, turn } = v(ClockPaused, "clockPaused")
-				return r
-					.match(ClockPaused, { target, turn })
-					.where(r.not(ClockResumed, { target, turn }))
-					.find({ target, turn })
-			})
+	clockPending: clockPendingRead,
+	clockRequested: clockRequestedRead,
+	clockRunning: clockRunningRead,
+	clockSnapshot: query(ClockDen).reads({
+		steps: clockPendingRead,
+		claims: query(ClockDen).rule((r) => {
+			const { step, attempt, until } = v(ClockClaim, "claim")
+			return r
+				.match(ClockClaim, { step, attempt, until })
+				.where(r.not(ClockResult, { step }))
+				.find({ step, attempt, until })
+		}),
+		retries: query(ClockDen).rule((r) => {
+			const { step, attempt, at, why } = v(ClockRetry, "retry")
+			return r
+				.match(ClockRetry, { step, attempt, at, why })
+				.where(r.not(ClockResult, { step }))
+				.find({ step, attempt, at, why })
+		}),
+		fenced: query(ClockDen).rule((r) => {
+			const { step, attempt } = v(ClockFenced, "fenced")
+			return r
+				.match(ClockFenced, { step, attempt })
+				.where(r.not(ClockResult, { step }))
+				.find({ step, attempt })
+		}),
+		requested: clockRequestedRead,
+		running: clockRunningRead,
+		roots: query(ClockDen).rule((r) => {
+			const { scope, kind, key, at } = v(ClockRoot, "clockRoot")
+			return r.match(ClockRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
+		}),
+		paused: query(ClockDen).rule((r) => {
+			const { target, turn } = v(ClockPaused, "clockPaused")
+			return r
+				.match(ClockPaused, { target, turn })
+				.where(r.not(ClockResumed, { target, turn }))
+				.find({ target, turn })
 		})
-	),
+	}),
 	clockReadClockChimeInput: query(clockGraph).rule((r) => {
 		const { step, hour, bell, root } = v(ClockChimeInput, "clockChimeInput")
 		return r
@@ -481,21 +466,17 @@ export const clockCoordinatorPrograms = Object.freeze({
 	),
 	clockPause: ChangeSet.empty(clockCoordination).insert(ClockPaused, []),
 	clockResume: ChangeSet.empty(clockCoordination).insert(ClockResumed, []),
-	clockPauseTurns: deferrable(
-		query(clockCoordination).rule((r) => {
-			const { target, turn } = v(ClockPaused, "clockPaused")
-			return r.match(ClockPaused, { target, turn }).find({ target, turn: r.max(turn) })
-		})
-	),
-	clockPausedAll: deferrable(
-		query(clockCoordination).rule((r) => {
-			const { target, turn } = v(ClockPaused, "clockPaused")
-			return r
-				.match(ClockPaused, { target, turn })
-				.where(r.not(ClockResumed, { target, turn }))
-				.find({ target, turn })
-		})
-	)
+	clockPauseTurns: query(clockCoordination).rule((r) => {
+		const { target, turn } = v(ClockPaused, "clockPaused")
+		return r.match(ClockPaused, { target, turn }).find({ target, turn: r.max(turn) })
+	}),
+	clockPausedAll: query(clockCoordination).rule((r) => {
+		const { target, turn } = v(ClockPaused, "clockPaused")
+		return r
+			.match(ClockPaused, { target, turn })
+			.where(r.not(ClockResumed, { target, turn }))
+			.find({ target, turn })
+	})
 })
 
 export const clockCoordinatorWorkload = workload(ClockCoordinator, clockCoordinatorPrograms)

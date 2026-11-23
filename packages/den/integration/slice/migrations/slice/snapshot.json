@@ -21200,7 +21200,7 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "1a0d3ea87f5033218e1277bf2fb7f062adc3fb1f786900c1660446f225c39e78",
+	"fingerprint": "febfa1dc60795dacabe2a1c43ffa847752c9ada63cbef6825e4a4cd137c3f913",
 	"format": 7,
 	"levels": [
 		{
@@ -21229,7 +21229,7 @@
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "fa11586772699935a4ab6da247de951733253c02bf5207979251b30866609b13",
+			"fingerprint": "3e36bd4638142006720909f4a252042fcf520e969bac06abe0e1ad797dc38b67",
 			"laws": [
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"retired","kind":"field"},"op":"eq","right":{"kind":"literal","value":false}}]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_root_56frawwv2n"},
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"},{"field":"root","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_s3xk3phh7y"},
@@ -22101,7 +22101,7 @@
 			"schema": "slice_den"
 		},
 		{
-			"fingerprint": "fa753388e939259a73a71ac631bc55a363840521a4691de55ce46310b1b67b3c",
+			"fingerprint": "cd88eca689c8fd2f3874de34ddc037f06303ce8b0faf06acce6c1cb14b720471",
 			"laws": [
 				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"},
 				{"described":{"kind":"key","side":{"relation":"FanLive","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"}]}},"law":"__fan_live_key_resource_seat_wqkc2jfkpw"},

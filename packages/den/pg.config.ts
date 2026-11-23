@@ -27,17 +27,19 @@ import { localCluster } from "@bjornpagen/testing/pg"
 const backendBytes = 99_049_472
 
 /**
- * den's local cluster, which every integration property's database is cloned on (test.config.ts): one member, the
- * workbench's unit `postgres@den-test-0`, reached over verify-full TLS at localhost:5451, since grizzle's client speaks
- * nothing else, the port one no other repository's cluster states (the toolchain's 5441, grizzle's 5442 and 5443).
+ * den's local cluster, which every integration property's database is cloned on (test.config.ts): at each checkout a
+ * family of its own of one member, the workbench's unit `postgres@den-test-<key>-0` (@bjornpagen/testing/pg family.ts),
+ * reached over verify-full TLS at localhost at a port it claims from 20,000, since grizzle's client speaks nothing else.
  * Owned by den_dev, who may set deadlock_timeout, which grizzle's installation sets; its template den_template carries
  * pgvector in vector_ext for the slice's nearest reads. Throwaway. Its connections are the machine's memory over one
- * busy backend's, and a replication slot and a WAL sender for each, since every live source's leader holds one of each.
- * `pnpm exec toolchain-pg settle` from this package gives the member this spec; a run only reads it.
+ * busy backend's, and a replication slot and a WAL sender for each, since every live source's leader holds one of each;
+ * its predicate lock table PostgreSQL's room for every backend at grizzle's recommendation to production, since den
+ * states no measured room of its own. `pnpm exec toolchain-pg settle` from this package gives the member this spec; a
+ * run only reads it.
  */
 export default localCluster({
 	unit: "den-test",
-	network: { kind: "tls", port: 5451 },
+	network: { kind: "tls", from: 20_000 },
 	owner: "den_dev",
 	template: "den_template",
 	extensions: [{ name: "vector", schema: "vector_ext" }],
@@ -49,6 +51,7 @@ export default localCluster({
 		connections: { kind: "capacity", backendBytes },
 		replication: { kind: "capacity" },
 		sharedBuffers: { kind: "default" },
-		locks: { kind: "default" }
+		locks: { kind: "default" },
+		predicateLocks: { kind: "perBackend" }
 	}
 })

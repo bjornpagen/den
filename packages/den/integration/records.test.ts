@@ -27,17 +27,13 @@ import {
  * root's references, joined to the rows they name, are exactly the rows its decision found at its batch (the exact
  * cosine search over the passages as they stood then, the learner's seen passages then); a root's records read the same
  * after every later edit and every later root as they read when it ended; every row is stored once, under one digest
- * for one content and one content for one digest, however many roots found it; and once some of the roots are
- * retired, the rows left are exactly those a root not retired names (grizzle's `reachable`): retiring every root that
- * found a row releases it, and a row a retired root shared with a kept one stays.
+ * for one content and one content for one digest, however many roots found it.
  */
 
 type Feature =
 	| "a row two roots found, stored once"
 	| "an edit between two roots' reads"
 	| "an edit after every read"
-	| "a row only retired roots named, released"
-	| "a row a retired root shared with a kept root, kept"
 
 /** The ratio a distance pgvector computes in binary32 may lie from the exact one, well above its rounding. */
 const tolerance = 1e-5
@@ -68,8 +64,6 @@ interface Run {
 	readonly seen: ReadonlyArray<ReadonlyArray<number>>
 	readonly between: Edit
 	readonly after: Edit
-	/** The roots retired once every check of their records is done, by their places. */
-	readonly retired: ReadonlyArray<number>
 }
 
 /** Four small whole components, never all zero, so every vector has a cosine distance. */
@@ -121,13 +115,7 @@ const runs: Gen<Run> = (source) => {
 			source.draw(subset(ats, { min: 0, max: passages.length }))
 		),
 		between: source.draw(edits(passages.length, first.length)),
-		after: source.draw(edits(passages.length, first.length + second.length)),
-		retired: source.draw(
-			subset(
-				Arr.map([...first, ...second], (_, at) => at),
-				{ min: 0, max: first.length + second.length }
-			)
-		)
+		after: source.draw(edits(passages.length, first.length + second.length))
 	}
 }
 
@@ -193,9 +181,7 @@ export const aReadsRowsAreStoredOnceAndEachRootReadsBackWhatItFound = property.e
 	situations: [
 		"a row two roots found, stored once",
 		"an edit between two roots' reads",
-		"an edit after every read",
-		"a row only retired roots named, released",
-		"a row a retired root shared with a kept root, kept"
+		"an edit after every read"
 	] satisfies ReadonlyArray<Reached<Feature>>,
 	check:
 		({ slice }, c: Case<Feature>) =>
@@ -440,52 +426,6 @@ export const aReadsRowsAreStoredOnceAndEachRootReadsBackWhatItFound = property.e
 								Sha256.equals
 							).length,
 							"every seen row any root read is stored once"
-						)
-
-						yield* Effect.forEach(run.retired, (at) =>
-							assign.ledger.retire(Arr.getUnsafe(roots, at).scope)
-						)
-						const keptRoots = Arr.filter(roots, (_, at) => !Arr.contains(run.retired, at))
-						const retiredRoots = Arr.filter(roots, (_, at) => Arr.contains(run.retired, at))
-						const digestsOf = (
-							of: ReadonlyArray<{ readonly scope: Sha256 }>,
-							read: (scope: Sha256) => ReadonlyArray<{ readonly digest: Sha256 }>
-						): ReadonlyArray<string> =>
-							Arr.sort(
-								Arr.dedupe(
-									Arr.flatMap(of, ({ scope }) =>
-										Arr.map(read(scope), (r) => Sha256.toHex(r.digest))
-									)
-								),
-								Order.String
-							)
-						const keptNearest = digestsOf(keptRoots, (scope) => late(scope).nearest)
-						const retiredNearest = digestsOf(retiredRoots, (scope) => late(scope).nearest)
-						if (Arr.some(retiredNearest, (digest) => !Arr.contains(keptNearest, digest))) {
-							c.note("a row only retired roots named, released")
-						}
-						if (Arr.some(retiredNearest, (digest) => Arr.contains(keptNearest, digest))) {
-							c.note("a row a retired root shared with a kept root, kept")
-						}
-						const nearestLeft = yield* rows(
-							app.workload.nearestRows.once({ params: {}, facts: {} })
-						)
-						assert.deepEqual<ReadonlyArray<string>>(
-							Arr.sort(
-								Arr.map(nearestLeft, (r) => Sha256.toHex(r.digest)),
-								Order.String
-							),
-							keptNearest,
-							"a row lives exactly while a root not retired names it: retiring every root that found it releases it"
-						)
-						const seenLeft = yield* rows(app.workload.seenRows.once({ params: {}, facts: {} }))
-						assert.deepEqual<ReadonlyArray<string>>(
-							Arr.sort(
-								Arr.map(seenLeft, (r) => Sha256.toHex(r.digest)),
-								Order.String
-							),
-							digestsOf(keptRoots, (scope) => late(scope).seen),
-							"a seen row lives exactly while a root not retired names it"
 						)
 					}),
 					services

@@ -3886,7 +3886,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__assign_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__hold_assign_root_rwboli77cc"("slice"."__sha256"[]) TO :"slice_seats__assign_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__hold_assign_root_rwboli77cc"("slice"."__sha256"[]), "slice_den"."__stamp_assign_claim_attempt_wafvnidpqp"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__assign_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__assign_retirer" TO :"slice_seats__assign_retirer";
@@ -4010,7 +4010,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__chain_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__hold_chain_root_wgndggnfwf"("slice"."__sha256"[]) TO :"slice_seats__chain_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__hold_chain_root_wgndggnfwf"("slice"."__sha256"[]), "slice_den"."__stamp_chain_claim_attempt_fn4w5elo4b"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__chain_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__chain_retirer" TO :"slice_seats__chain_retirer";
@@ -4102,7 +4102,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__clock_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__hold_clock_root_bawnkhmkww"("slice"."__sha256"[]) TO :"slice_seats__clock_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__hold_clock_root_bawnkhmkww"("slice"."__sha256"[]), "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__clock_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__clock_retirer" TO :"slice_seats__clock_retirer";
@@ -4227,7 +4227,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__fan_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__hold_fan_root_4vwfxofrxw"("slice"."__sha256"[]) TO :"slice_seats__fan_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__hold_fan_root_4vwfxofrxw"("slice"."__sha256"[]), "slice_den"."__stamp_fan_claim_attempt_chhiwa5h36"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__fan_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__fan_retirer" TO :"slice_seats__fan_retirer";
@@ -4606,7 +4606,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__retry_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__hold_retry_root_54bybhkxg6"("slice"."__sha256"[]) TO :"slice_seats__retry_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__hold_retry_root_54bybhkxg6"("slice"."__sha256"[]), "slice_den"."__stamp_retry_claim_attempt_djs2c6uume"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__retry_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__retry_retirer" TO :"slice_seats__retry_retirer";
@@ -4710,7 +4710,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__review_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__hold_review_root_j3blgclwnl"("slice"."__sha256"[]) TO :"slice_seats__review_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__hold_review_root_j3blgclwnl"("slice"."__sha256"[]), "slice_den"."__stamp_review_claim_attempt_xxo4vl3amg"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__review_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__review_retirer" TO :"slice_seats__review_retirer";
@@ -4808,7 +4808,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__sync_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__hold_sync_root_6ita6q5wxi"("slice"."__sha256"[]) TO :"slice_seats__sync_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__hold_sync_root_6ita6q5wxi"("slice"."__sha256"[]), "slice_den"."__stamp_sync_claim_attempt_26b5li3j4v"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__sync_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__sync_retirer" TO :"slice_seats__sync_retirer";
@@ -4901,7 +4901,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__writeback_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__hold_writeback_root_msmvpm3j7g"("slice"."__sha256"[]) TO :"slice_seats__writeback_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__hold_writeback_root_msmvpm3j7g"("slice"."__sha256"[]), "slice_den"."__stamp_writeback_claim_attempt_iasyjokmx7"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__writeback_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__writeback_retirer" TO :"slice_seats__writeback_retirer";
@@ -7254,6 +7254,54 @@ COMMENT ON FUNCTION "slice_den"."__retire_sync_root_ygktrpeohu"("slice"."__sha25
 
 COMMENT ON FUNCTION "slice_den"."__retire_writeback_root_oprw3k6une"("slice"."__sha256"[]) IS 'retire function of the groups of WritebackRoot';
 
+COMMENT ON TABLE "slice_den"."__head_assign_claim_attempt_h744pvqs3v" IS 'head table of AssignClaim.attempt';
+
+COMMENT ON CONSTRAINT "__head_assign_claim_attempt_pk_ukplhioyap" ON "slice_den"."__head_assign_claim_attempt_h744pvqs3v" IS 'primary key of the head table of AssignClaim.attempt';
+
+COMMENT ON FUNCTION "slice_den"."__stamp_assign_claim_attempt_wafvnidpqp"("slice"."__sha256"[], "slice"."__sha256"[]) IS 'stamp function of AssignClaim.attempt';
+
+COMMENT ON TABLE "slice_den"."__head_chain_claim_attempt_n5yg3h2b6a" IS 'head table of ChainClaim.attempt';
+
+COMMENT ON CONSTRAINT "__head_chain_claim_attempt_pk_uil6dupsak" ON "slice_den"."__head_chain_claim_attempt_n5yg3h2b6a" IS 'primary key of the head table of ChainClaim.attempt';
+
+COMMENT ON FUNCTION "slice_den"."__stamp_chain_claim_attempt_fn4w5elo4b"("slice"."__sha256"[], "slice"."__sha256"[]) IS 'stamp function of ChainClaim.attempt';
+
+COMMENT ON TABLE "slice_den"."__head_clock_claim_attempt_ddh5rjlfkk" IS 'head table of ClockClaim.attempt';
+
+COMMENT ON CONSTRAINT "__head_clock_claim_attempt_pk_qk5yhk2dpe" ON "slice_den"."__head_clock_claim_attempt_ddh5rjlfkk" IS 'primary key of the head table of ClockClaim.attempt';
+
+COMMENT ON FUNCTION "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("slice"."__sha256"[], "slice"."__sha256"[]) IS 'stamp function of ClockClaim.attempt';
+
+COMMENT ON TABLE "slice_den"."__head_fan_claim_attempt_u34lm72lgr" IS 'head table of FanClaim.attempt';
+
+COMMENT ON CONSTRAINT "__head_fan_claim_attempt_pk_fxxlbksulz" ON "slice_den"."__head_fan_claim_attempt_u34lm72lgr" IS 'primary key of the head table of FanClaim.attempt';
+
+COMMENT ON FUNCTION "slice_den"."__stamp_fan_claim_attempt_chhiwa5h36"("slice"."__sha256"[], "slice"."__sha256"[]) IS 'stamp function of FanClaim.attempt';
+
+COMMENT ON TABLE "slice_den"."__head_retry_claim_attempt_exbl6vgycp" IS 'head table of RetryClaim.attempt';
+
+COMMENT ON CONSTRAINT "__head_retry_claim_attempt_pk_ejhdquayr7" ON "slice_den"."__head_retry_claim_attempt_exbl6vgycp" IS 'primary key of the head table of RetryClaim.attempt';
+
+COMMENT ON FUNCTION "slice_den"."__stamp_retry_claim_attempt_djs2c6uume"("slice"."__sha256"[], "slice"."__sha256"[]) IS 'stamp function of RetryClaim.attempt';
+
+COMMENT ON TABLE "slice_den"."__head_review_claim_attempt_lsmvyy7ajm" IS 'head table of ReviewClaim.attempt';
+
+COMMENT ON CONSTRAINT "__head_review_claim_attempt_pk_zws5xp3jki" ON "slice_den"."__head_review_claim_attempt_lsmvyy7ajm" IS 'primary key of the head table of ReviewClaim.attempt';
+
+COMMENT ON FUNCTION "slice_den"."__stamp_review_claim_attempt_xxo4vl3amg"("slice"."__sha256"[], "slice"."__sha256"[]) IS 'stamp function of ReviewClaim.attempt';
+
+COMMENT ON TABLE "slice_den"."__head_sync_claim_attempt_dtv5nw4b3m" IS 'head table of SyncClaim.attempt';
+
+COMMENT ON CONSTRAINT "__head_sync_claim_attempt_pk_xgyze7x7sx" ON "slice_den"."__head_sync_claim_attempt_dtv5nw4b3m" IS 'primary key of the head table of SyncClaim.attempt';
+
+COMMENT ON FUNCTION "slice_den"."__stamp_sync_claim_attempt_26b5li3j4v"("slice"."__sha256"[], "slice"."__sha256"[]) IS 'stamp function of SyncClaim.attempt';
+
+COMMENT ON TABLE "slice_den"."__head_writeback_claim_attempt_pk673p2jar" IS 'head table of WritebackClaim.attempt';
+
+COMMENT ON CONSTRAINT "__head_writeback_claim_attempt_pk_iervt3geuj" ON "slice_den"."__head_writeback_claim_attempt_pk673p2jar" IS 'primary key of the head table of WritebackClaim.attempt';
+
+COMMENT ON FUNCTION "slice_den"."__stamp_writeback_claim_attempt_iasyjokmx7"("slice"."__sha256"[], "slice"."__sha256"[]) IS 'stamp function of WritebackClaim.attempt';
+
 COMMENT ON INDEX "slice"."__passage_ix_topic_lzh6djzwn4" IS 'btree index Passage(topic)';
 
 COMMENT ON INDEX "slice"."__passage_ix_embedding_ujugi77ft2" IS 'hnsw index Passage(embedding vectorCosine)';
@@ -8077,6 +8125,158 @@ COMMENT ON FUNCTION "slice"."__reader_olds_writeback_root_g37ojsvjj2"() IS 'the 
 COMMENT ON FUNCTION "slice"."__reader_olds_writeback_step_5z6akmweto"() IS 'the reader of the delta of olds of WritebackStep';
 
 COMMENT ON FUNCTION "slice"."__reader_news_writeback_writeback_input_jtjqqvb2rh"() IS 'the reader of the delta of news of WritebackWritebackInput';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_live_check_fan_seat_below_count_6e3nlau6nz"() IS 'the rule judge''s block of rule check FanSeatBelowCount of FanLive over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_review_live_check_review_seat_below_count_y62xbwmnnf"() IS 'the rule judge''s block of rule check ReviewSeatBelowCount of ReviewLive over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_in_assign_root_fucur5xtc2"() IS 'the rule judge''s block of rule AssignAssignmentInput(scope) in AssignRoot(scope) where Logic.eq(kind, "Assignment") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_in_assign_jyp7e2lrzq"() IS 'the rule judge''s block of rule AssignAssignmentInput(scope, root) where Logic.eq(mode, "Nearest") in AssignAssignmentInputModeNearest(scope, root) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_in_assign_tgr3baerv7"() IS 'the rule judge''s block of rule AssignAssignmentInput(scope, root) where Logic.eq(mode, "Within") in AssignAssignmentInputModeWithin(scope, root) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_nearest_in_mo3j6uqsnf"() IS 'the rule judge''s block of rule AssignAssignmentInputModeNearest(scope, root) in AssignAssignmentInput(scope, root) where Logic.eq(mode, "Nearest") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_within_in_il2qvjj37u"() IS 'the rule judge''s block of rule AssignAssignmentInputModeWithin(scope, root) in AssignAssignmentInput(scope, root) where Logic.eq(mode, "Within") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_in_assign_step_hfbi43oizs"() IS 'the rule judge''s block of rule AssignDecideInput(step, root) in AssignStep(step, root) where Logic.eq(kind, "Decide") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_in_assign_decide_clfryockug"() IS 'the rule judge''s block of rule AssignDecideInput(step, root) where Logic.eq(mode, "Nearest") in AssignDecideInputModeNearest(step, root) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_in_assign_decide_ojsup375nb"() IS 'the rule judge''s block of rule AssignDecideInput(step, root) where Logic.eq(mode, "Within") in AssignDecideInputModeWithin(step, root) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_nearest_in_assign_y2w6nsotun"() IS 'the rule judge''s block of rule AssignDecideInputModeNearest(step, root) in AssignDecideInput(step, root) where Logic.eq(mode, "Nearest") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_within_in_assign_2oydvottnt"() IS 'the rule judge''s block of rule AssignDecideInputModeWithin(step, root) in AssignDecideInput(step, root) where Logic.eq(mode, "Within") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_in_assign_decide_hzvhvy4pkp"() IS 'the rule judge''s block of rule AssignDecideOutput(step, root) where Logic.eq(stage, "Rest") in AssignDecideOutputStageRest(step, root) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_in_assign_decide_zaxniaogzl"() IS 'the rule judge''s block of rule AssignDecideOutput(step, root) where Logic.eq(stage, "Serve") in AssignDecideOutputStageServe(step, root) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_rest_in_assign_4ubf2lemaj"() IS 'the rule judge''s block of rule AssignDecideOutputStageRest(step, root) in AssignDecideOutput(step, root) where Logic.eq(stage, "Rest") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_serve_in_assign_2jnl3lwnmh"() IS 'the rule judge''s block of rule AssignDecideOutputStageServe(step, root) in AssignDecideOutput(step, root) where Logic.eq(stage, "Serve") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_done_in_assign_result_j6c4uiros5"() IS 'the rule judge''s block of rule AssignDone(step, root) in AssignResult(step, root) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_in_assign_step_wrsrhwzyst"() IS 'the rule judge''s block of rule AssignEmbedInput(step, root) in AssignStep(step, root) where Logic.eq(kind, "Embed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_in_assign_embed_2rth3nslo2"() IS 'the rule judge''s block of rule AssignEmbedInput(step, root) where Logic.eq(mode, "Nearest") in AssignEmbedInputModeNearest(step, root) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_in_assign_embed_pm4oczf3sa"() IS 'the rule judge''s block of rule AssignEmbedInput(step, root) where Logic.eq(mode, "Within") in AssignEmbedInputModeWithin(step, root) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_nearest_in_assign_acwx4vbq35"() IS 'the rule judge''s block of rule AssignEmbedInputModeNearest(step, root) in AssignEmbedInput(step, root) where Logic.eq(mode, "Nearest") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_within_in_assign_aijacij5el"() IS 'the rule judge''s block of rule AssignEmbedInputModeWithin(step, root) in AssignEmbedInput(step, root) where Logic.eq(mode, "Within") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_failed_in_assign_result_ticeu2j7t2"() IS 'the rule judge''s block of rule AssignFailed(step, root) in AssignResult(step, root) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_chain_chain_run_input_in_chain_root_ux4ikrdsgt"() IS 'the rule judge''s block of rule ChainChainRunInput(scope) in ChainRoot(scope) where Logic.eq(kind, "ChainRun") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_chain_done_in_chain_result_wnhaqzyijh"() IS 'the rule judge''s block of rule ChainDone(step, root) in ChainResult(step, root) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_chain_failed_in_chain_result_tfttqv3aiv"() IS 'the rule judge''s block of rule ChainFailed(step, root) in ChainResult(step, root) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_chain_ordered_input_in_chain_root_rvnnqex5ml"() IS 'the rule judge''s block of rule ChainOrderedInput(scope) in ChainRoot(scope) where Logic.eq(kind, "Ordered") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_chain_page_input_in_chain_step_jate5ppivp"() IS 'the rule judge''s block of rule ChainPageInput(step, root) in ChainStep(step, root) where Logic.eq(kind, "Page") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_chime_input_in_clock_step_spbf5y4jrm"() IS 'the rule judge''s block of rule ClockChimeInput(step, root) in ClockStep(step, root) where Logic.eq(kind, "Chime") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_close_input_in_clock_step_6ly2bkkca6"() IS 'the rule judge''s block of rule ClockCloseInput(step, root) in ClockStep(step, root) where Logic.eq(kind, "Close") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_done_in_clock_result_33mmpntm6t"() IS 'the rule judge''s block of rule ClockDone(step, root) in ClockResult(step, root) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_failed_in_clock_result_pg3e6echho"() IS 'the rule judge''s block of rule ClockFailed(step, root) in ClockResult(step, root) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_hourly_input_in_clock_root_xgdkpdjg3e"() IS 'the rule judge''s block of rule ClockHourlyInput(scope) in ClockRoot(scope) where Logic.eq(kind, "Hourly") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_sitting_input_in_clock_root_7t3nbt3t7m"() IS 'the rule judge''s block of rule ClockSittingInput(scope) in ClockRoot(scope) where Logic.eq(kind, "Sitting") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_batch_input_in_fan_within_ppdif25y44"() IS 'the rule judge''s block of rule FanBatchInput(scope, root) in FanWithin(scope, root) where Logic.eq(kind, "Batch") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_done_in_fan_result_wushxyarzm"() IS 'the rule judge''s block of rule FanDone(step, root) in FanResult(step, root) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_dust_input_in_fan_step_izcmwrsl4s"() IS 'the rule judge''s block of rule FanDustInput(step, root) in FanStep(step, root) where Logic.eq(kind, "Dust") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_failed_in_fan_result_kktt5kynos"() IS 'the rule judge''s block of rule FanFailed(step, root) in FanResult(step, root) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_fan_run_input_in_fan_root_ossndrkclk"() IS 'the rule judge''s block of rule FanFanRunInput(scope) in FanRoot(scope) where Logic.eq(kind, "FanRun") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_mop_input_in_fan_step_j6abycd64c"() IS 'the rule judge''s block of rule FanMopInput(step, root) in FanStep(step, root) where Logic.eq(kind, "Mop") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_square_input_in_fan_step_4e6tv7sdz5"() IS 'the rule judge''s block of rule FanSquareInput(step, root) in FanStep(step, root) where Logic.eq(kind, "Square") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_sweep_input_in_fan_root_uzzo4js56i"() IS 'the rule judge''s block of rule FanSweepInput(scope) in FanRoot(scope) where Logic.eq(kind, "Sweep") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_brittle_input_in_retry_step_23i7vhzkia"() IS 'the rule judge''s block of rule RetryBrittleInput(step, root) in RetryStep(step, root) where Logic.eq(kind, "Brittle") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_done_in_retry_result_5brvxprgnj"() IS 'the rule judge''s block of rule RetryDone(step, root) in RetryResult(step, root) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_failed_in_retry_result_n5bywcag6u"() IS 'the rule judge''s block of rule RetryFailed(step, root) in RetryResult(step, root) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_ladders_input_in_retry_root_xv6getxuuy"() IS 'the rule judge''s block of rule RetryLaddersInput(scope) in RetryRoot(scope) where Logic.eq(kind, "Ladders") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_patient_input_in_retry_step_xywdowirct"() IS 'the rule judge''s block of rule RetryPatientInput(step, root) in RetryStep(step, root) where Logic.eq(kind, "Patient") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_polite_input_in_retry_step_nbcuyd2ijc"() IS 'the rule judge''s block of rule RetryPoliteInput(step, root) in RetryStep(step, root) where Logic.eq(kind, "Polite") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_steadfast_input_in_retry_step_vryivumwcc"() IS 'the rule judge''s block of rule RetrySteadfastInput(step, root) in RetryStep(step, root) where Logic.eq(kind, "Steadfast") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_throttled_input_in_retry_root_rhnudvt2p2"() IS 'the rule judge''s block of rule RetryThrottledInput(scope) in RetryRoot(scope) where Logic.eq(kind, "Throttled") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_unhurried_input_in_retry_root_tqbunf4bhq"() IS 'the rule judge''s block of rule RetryUnhurriedInput(scope) in RetryRoot(scope) where Logic.eq(kind, "Unhurried") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_review_analyze_input_in_review_step_oobtlr3tcd"() IS 'the rule judge''s block of rule ReviewAnalyzeInput(step, root) in ReviewStep(step, root) where Logic.eq(kind, "Analyze") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_review_done_in_review_result_hxvg2w4cbf"() IS 'the rule judge''s block of rule ReviewDone(step, root) in ReviewResult(step, root) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_review_failed_in_review_result_chl4yi5pgr"() IS 'the rule judge''s block of rule ReviewFailed(step, root) in ReviewResult(step, root) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_review_gather_input_in_review_step_4ipeynhyjw"() IS 'the rule judge''s block of rule ReviewGatherInput(step, root) in ReviewStep(step, root) where Logic.eq(kind, "Gather") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_review_questions_input_in_review_within_t3stnfku6a"() IS 'the rule judge''s block of rule ReviewQuestionsInput(scope, root) in ReviewWithin(scope, root) where Logic.eq(kind, "Questions") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_review_review_run_input_in_review_root_b6hoarpitr"() IS 'the rule judge''s block of rule ReviewReviewRunInput(scope) in ReviewRoot(scope) where Logic.eq(kind, "ReviewRun") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_review_save_input_in_review_step_kbxiktw5le"() IS 'the rule judge''s block of rule ReviewSaveInput(step, root) in ReviewStep(step, root) where Logic.eq(kind, "Save") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_build_input_in_sync_step_5hb3b2qr4g"() IS 'the rule judge''s block of rule SyncBuildInput(step, root) in SyncStep(step, root) where Logic.eq(kind, "Build") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_copy_input_in_sync_step_mtfbq5j4zz"() IS 'the rule judge''s block of rule SyncCopyInput(step, root) in SyncStep(step, root) where Logic.eq(kind, "Copy") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_done_in_sync_result_2xloi3e4ph"() IS 'the rule judge''s block of rule SyncDone(step, root) in SyncResult(step, root) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_failed_in_sync_result_mgqtpflxyw"() IS 'the rule judge''s block of rule SyncFailed(step, root) in SyncResult(step, root) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_gold_input_in_sync_root_tpcbxewzp5"() IS 'the rule judge''s block of rule SyncGoldInput(scope) in SyncRoot(scope) where Logic.eq(kind, "Gold") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_sync_run_input_in_sync_root_gfkias4ih5"() IS 'the rule judge''s block of rule SyncSyncRunInput(scope) in SyncRoot(scope) where Logic.eq(kind, "SyncRun") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_writeback_deliver_input_in_writeback_step_joegaqav3s"() IS 'the rule judge''s block of rule WritebackDeliverInput(step, root) in WritebackStep(step, root) where Logic.eq(kind, "Deliver") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_writeback_done_in_writeback_result_uv6qtolmg7"() IS 'the rule judge''s block of rule WritebackDone(step, root) in WritebackResult(step, root) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_writeback_failed_in_writeback_result_byweufumph"() IS 'the rule judge''s block of rule WritebackFailed(step, root) in WritebackResult(step, root) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_writeback_writeback_input_in_writeback_root_ok6yqclv73"() IS 'the rule judge''s block of rule WritebackWritebackInput(scope) in WritebackRoot(scope) where Logic.eq(kind, "Writeback") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_live_key_resource_seat_tml3jzipqt"() IS 'the rule judge''s block of rule key FanLive(resource, seat) over the rows a write adds to FanClaim';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_live_key_resource_seat_rsvzhfp6ug"() IS 'the rule judge''s block of rule key FanLive(resource, seat) over the rows a write removes from FanEnded';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_live_key_resource_seat_5pedmcfadq"() IS 'the rule judge''s block of rule key FanLive(resource, seat) over the rows a write removes from FanHeld';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_live_key_resource_seat_nru5iz6quv"() IS 'the rule judge''s block of rule key FanLive(resource, seat) over the rows a write adds to FanHold';
+
+COMMENT ON FUNCTION "slice"."__judge_review_live_key_resource_seat_546bvon4yy"() IS 'the rule judge''s block of rule key ReviewLive(resource, seat) over the rows a write adds to ReviewClaim';
+
+COMMENT ON FUNCTION "slice"."__judge_review_live_key_resource_seat_ogqous6mhr"() IS 'the rule judge''s block of rule key ReviewLive(resource, seat) over the rows a write removes from ReviewEnded';
+
+COMMENT ON FUNCTION "slice"."__judge_review_live_key_resource_seat_btbkuztx56"() IS 'the rule judge''s block of rule key ReviewLive(resource, seat) over the rows a write removes from ReviewHeld';
+
+COMMENT ON FUNCTION "slice"."__judge_review_live_key_resource_seat_ahhaxk5zwx"() IS 'the rule judge''s block of rule key ReviewLive(resource, seat) over the rows a write adds to ReviewHold';
 
 COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_cfpudo5xt3"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInput and the relations its rules join it to';
 

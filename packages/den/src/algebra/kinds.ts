@@ -320,9 +320,8 @@ const READ = regex("^[a-z][A-Za-z0-9]*$")
  * hybrid of searches, attachments to any depth: an essay's item and its stimuli, each document's scan of nodes), whose
  * parameters `params` takes from the step's input, `<name>.<parameter>`, a vector a body before it computed among them.
  * den takes them as one query over the flow's app role, `query(W).reads(named)`, which holds `over` whole, in one
- * statement after the claim and before the body,
- * deferrable, so they read one snapshot and what they record describes one moment of the database (W1's fingerprint,
- * DCAN's catalog search and its thread); and each named query's rows are recorded with the step's result in the
+ * statement after the claim and before the body, so they read one snapshot and what they record describes one moment of
+ * the database (W1's fingerprint, DCAN's catalog search and its thread); and each named query's rows are recorded with the step's result in the
  * relations grizzle's `records` makes of that query, each column the query's own field and each attachment a relation
  * under its owner, so every input a step saw is a typed fact of the graph, stated once, by the query itself. A row is
  * recorded once, by the digest of its text (grizzle's `rowText`), however many steps of however many roots found it,

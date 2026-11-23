@@ -1,17 +1,6 @@
 import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Review to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
-import {
-	ChangeSet,
-	Num,
-	Type,
-	clocked,
-	deferrable,
-	param,
-	query,
-	role,
-	v,
-	workload
-} from "@bjornpagen/grizzle"
+import { ChangeSet, Num, Type, clocked, param, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import { review as declaredFlow } from "#integration/slice/flows.ts"
 import {
@@ -233,17 +222,12 @@ export const reviewDenPrograms = Object.freeze({
 		{ now: "millis" }
 	),
 	reviewFence: ChangeSet.empty(reviewGraph).insert(ReviewEnded, []).insert(ReviewFenced, []),
-	reviewHolds: deferrable(
-		query(ReviewDen).rule((r) => {
-			const { resource, seat, step, root, attempt, until } = v(
-				ReviewDen.relations.ReviewLive,
-				"live"
-			)
-			return r
-				.match(ReviewDen.relations.ReviewLive, { resource, seat, step, root, attempt, until })
-				.find({ resource, seat, step, root, attempt, until })
-		})
-	),
+	reviewHolds: query(ReviewDen).rule((r) => {
+		const { resource, seat, step, root, attempt, until } = v(ReviewDen.relations.ReviewLive, "live")
+		return r
+			.match(ReviewDen.relations.ReviewLive, { resource, seat, step, root, attempt, until })
+			.find({ resource, seat, step, root, attempt, until })
+	}),
 	reviewRefuse: ChangeSet.empty(reviewGraph)
 		.insert(ReviewResult, [])
 		.insert(ReviewFailed, [])
@@ -341,22 +325,20 @@ export const reviewDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", ReviewRoot.fields.scope)))
 			.find({ scope, kind, key, at })
 	}),
-	reviewFinishedRoots: deferrable(
-		query(reviewGraph)
-			.rule((r) => {
-				const { scope } = v(ReviewRoot, "root")
-				const { step } = v(ReviewFinish, "finish")
-				return r
-					.match(ReviewRoot, { scope })
-					.match(ReviewFinish, { scope, step })
-					.match(ReviewResult, { step })
-					.find({ scope })
-			})
-			.rule((r) => {
-				const { scope } = v(ReviewRoot, "root")
-				return r.match(ReviewRoot, { scope }).match(ReviewSkipped, { scope }).find({ scope })
-			})
-	),
+	reviewFinishedRoots: query(reviewGraph)
+		.rule((r) => {
+			const { scope } = v(ReviewRoot, "root")
+			const { step } = v(ReviewFinish, "finish")
+			return r
+				.match(ReviewRoot, { scope })
+				.match(ReviewFinish, { scope, step })
+				.match(ReviewResult, { step })
+				.find({ scope })
+		})
+		.rule((r) => {
+			const { scope } = v(ReviewRoot, "root")
+			return r.match(ReviewRoot, { scope }).match(ReviewSkipped, { scope }).find({ scope })
+		}),
 	reviewClaimsOf: query(reviewGraph).rule((r) => {
 		const { step, attempt, until } = v(ReviewClaim, "claim")
 		return r
@@ -409,68 +391,66 @@ export const reviewDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", ReviewScope.fields.scope)))
 			.find({ step })
 	}),
-	reviewPending: deferrable(reviewPendingRead),
-	reviewRequested: deferrable(reviewRequestedRead),
-	reviewRunning: deferrable(reviewRunningRead),
-	reviewSnapshot: deferrable(
-		query(ReviewDen).reads({
-			steps: reviewPendingRead,
-			claims: query(ReviewDen).rule((r) => {
-				const { step, attempt, until } = v(ReviewClaim, "claim")
-				return r
-					.match(ReviewClaim, { step, attempt, until })
-					.where(r.not(ReviewResult, { step }))
-					.find({ step, attempt, until })
-			}),
-			retries: query(ReviewDen).rule((r) => {
-				const { step, attempt, at, why } = v(ReviewRetry, "retry")
-				return r
-					.match(ReviewRetry, { step, attempt, at, why })
-					.where(r.not(ReviewResult, { step }))
-					.find({ step, attempt, at, why })
-			}),
-			fenced: query(ReviewDen).rule((r) => {
-				const { step, attempt } = v(ReviewFenced, "fenced")
-				return r
-					.match(ReviewFenced, { step, attempt })
-					.where(r.not(ReviewResult, { step }))
-					.find({ step, attempt })
-			}),
-			requested: reviewRequestedRead,
-			running: reviewRunningRead,
-			withins: query(ReviewDen).rule((r) => {
-				const { scope, parent, kind } = v(ReviewWithin, "reviewWithin")
-				return r.match(ReviewWithin, { scope, parent, kind }).find({ scope, parent, kind })
-			}),
-			roots: query(ReviewDen).rule((r) => {
-				const { scope, kind, key, at } = v(ReviewRoot, "reviewRoot")
-				return r.match(ReviewRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
-			}),
-			holds: query(ReviewDen).rule((r) => {
-				const { resource, seat, step, root, attempt, until } = v(
-					ReviewDen.relations.ReviewLive,
-					"live"
-				)
-				return r
-					.match(ReviewDen.relations.ReviewLive, { resource, seat, step, root, attempt, until })
-					.find({ resource, seat, step, root, attempt, until })
-			}),
-			paused: query(ReviewDen).rule((r) => {
-				const { target, turn } = v(ReviewPaused, "reviewPaused")
-				return r
-					.match(ReviewPaused, { target, turn })
-					.where(r.not(ReviewResumed, { target, turn }))
-					.find({ target, turn })
-			}),
-			awaiting: query(ReviewDen).rule((r) => {
-				const { step, review } = v(ReviewGatherInput, "input")
-				return r
-					.match(ReviewGatherInput, { step, review })
-					.where(r.not(ReviewResult, { step }), r.not(App.relations.Delivered, { attempt: review }))
-					.find({ step })
-			})
+	reviewPending: reviewPendingRead,
+	reviewRequested: reviewRequestedRead,
+	reviewRunning: reviewRunningRead,
+	reviewSnapshot: query(ReviewDen).reads({
+		steps: reviewPendingRead,
+		claims: query(ReviewDen).rule((r) => {
+			const { step, attempt, until } = v(ReviewClaim, "claim")
+			return r
+				.match(ReviewClaim, { step, attempt, until })
+				.where(r.not(ReviewResult, { step }))
+				.find({ step, attempt, until })
+		}),
+		retries: query(ReviewDen).rule((r) => {
+			const { step, attempt, at, why } = v(ReviewRetry, "retry")
+			return r
+				.match(ReviewRetry, { step, attempt, at, why })
+				.where(r.not(ReviewResult, { step }))
+				.find({ step, attempt, at, why })
+		}),
+		fenced: query(ReviewDen).rule((r) => {
+			const { step, attempt } = v(ReviewFenced, "fenced")
+			return r
+				.match(ReviewFenced, { step, attempt })
+				.where(r.not(ReviewResult, { step }))
+				.find({ step, attempt })
+		}),
+		requested: reviewRequestedRead,
+		running: reviewRunningRead,
+		withins: query(ReviewDen).rule((r) => {
+			const { scope, parent, kind } = v(ReviewWithin, "reviewWithin")
+			return r.match(ReviewWithin, { scope, parent, kind }).find({ scope, parent, kind })
+		}),
+		roots: query(ReviewDen).rule((r) => {
+			const { scope, kind, key, at } = v(ReviewRoot, "reviewRoot")
+			return r.match(ReviewRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
+		}),
+		holds: query(ReviewDen).rule((r) => {
+			const { resource, seat, step, root, attempt, until } = v(
+				ReviewDen.relations.ReviewLive,
+				"live"
+			)
+			return r
+				.match(ReviewDen.relations.ReviewLive, { resource, seat, step, root, attempt, until })
+				.find({ resource, seat, step, root, attempt, until })
+		}),
+		paused: query(ReviewDen).rule((r) => {
+			const { target, turn } = v(ReviewPaused, "reviewPaused")
+			return r
+				.match(ReviewPaused, { target, turn })
+				.where(r.not(ReviewResumed, { target, turn }))
+				.find({ target, turn })
+		}),
+		awaiting: query(ReviewDen).rule((r) => {
+			const { step, review } = v(ReviewGatherInput, "input")
+			return r
+				.match(ReviewGatherInput, { step, review })
+				.where(r.not(ReviewResult, { step }), r.not(App.relations.Delivered, { attempt: review }))
+				.find({ step })
 		})
-	),
+	}),
 	reviewAwaitingOf: query(ReviewDen).rule((r) => {
 		const { step, review } = v(ReviewGatherInput, "input")
 		return r
@@ -482,16 +462,14 @@ export const reviewDenPrograms = Object.freeze({
 			)
 			.find({ step })
 	}),
-	reviewReady: deferrable(
-		query(ReviewDen).rule((r) => {
-			const { step, review } = v(ReviewGatherInput, "input")
-			return r
-				.match(ReviewGatherInput, { step, review })
-				.match(App.relations.Delivered, { attempt: review })
-				.where(r.not(ReviewResult, { step }), r.not(ReviewClaim, { step }))
-				.find({ step })
-		})
-	),
+	reviewReady: query(ReviewDen).rule((r) => {
+		const { step, review } = v(ReviewGatherInput, "input")
+		return r
+			.match(ReviewGatherInput, { step, review })
+			.match(App.relations.Delivered, { attempt: review })
+			.where(r.not(ReviewResult, { step }), r.not(ReviewClaim, { step }))
+			.find({ step })
+	}),
 	reviewReadReviewAnalyzeInput: query(reviewGraph).rule((r) => {
 		const { step, review, group, question, root } = v(ReviewAnalyzeInput, "reviewAnalyzeInput")
 		return r
@@ -663,21 +641,17 @@ export const reviewCoordinatorPrograms = Object.freeze({
 	),
 	reviewPause: ChangeSet.empty(reviewCoordination).insert(ReviewPaused, []),
 	reviewResume: ChangeSet.empty(reviewCoordination).insert(ReviewResumed, []),
-	reviewPauseTurns: deferrable(
-		query(reviewCoordination).rule((r) => {
-			const { target, turn } = v(ReviewPaused, "reviewPaused")
-			return r.match(ReviewPaused, { target, turn }).find({ target, turn: r.max(turn) })
-		})
-	),
-	reviewPausedAll: deferrable(
-		query(reviewCoordination).rule((r) => {
-			const { target, turn } = v(ReviewPaused, "reviewPaused")
-			return r
-				.match(ReviewPaused, { target, turn })
-				.where(r.not(ReviewResumed, { target, turn }))
-				.find({ target, turn })
-		})
-	)
+	reviewPauseTurns: query(reviewCoordination).rule((r) => {
+		const { target, turn } = v(ReviewPaused, "reviewPaused")
+		return r.match(ReviewPaused, { target, turn }).find({ target, turn: r.max(turn) })
+	}),
+	reviewPausedAll: query(reviewCoordination).rule((r) => {
+		const { target, turn } = v(ReviewPaused, "reviewPaused")
+		return r
+			.match(ReviewPaused, { target, turn })
+			.where(r.not(ReviewResumed, { target, turn }))
+			.find({ target, turn })
+	})
 })
 
 export const reviewCoordinatorWorkload = workload(ReviewCoordinator, reviewCoordinatorPrograms)

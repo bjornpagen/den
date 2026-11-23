@@ -213,8 +213,6 @@ const lawExpr = (law: LawIR): string => {
 			return `retirable(${law.header}, [${commas(Arr.map(law.bodies, (b) => `on(${b}, "root")`))}])`
 		case "ordered":
 			return `ordered(${sideExpr(law.member)}, fin(${law.owner}, ${q(law.count)}))`
-		case "reachable":
-			return `reachable(on(${law.records}Records, "digest"), [${commas(Arr.map(law.holders, sideExpr))}])`
 	}
 }
 
@@ -239,13 +237,7 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		Arr.some(fields, (t) => t.kind === "base" && t.base === b) ||
 		Arr.some(l.brands, (br) => br.base === b)
 	const sides = Arr.flatMap(l.laws, (law) =>
-		law.kind === "contained"
-			? [law.from, law.to]
-			: law.kind === "key"
-				? [law.side]
-				: law.kind === "reachable"
-					? law.holders
-					: []
+		law.kind === "contained" ? [law.from, law.to] : law.kind === "key" ? [law.side] : []
 	)
 	const seated = Option.isSome(l.seats)
 	return [
@@ -270,7 +262,6 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		...(Arr.some(sides, (sd) => Arr.some(sd.terms, (t) => t.pred)) ? ["pred"] : []),
 		...(seated ? ["query"] : []),
 		...(Arr.some(l.laws, (law) => law.kind === "race") ? ["race"] : []),
-		...(Arr.some(l.laws, (law) => law.kind === "reachable") ? ["reachable"] : []),
 		...(Arr.some(l.steps, (st) => Arr.isReadonlyArrayNonEmpty(st.reads)) ? ["records"] : []),
 		"relation",
 		...(Arr.some(l.laws, (law) => law.kind === "retirable") ? ["retirable"] : []),
@@ -425,8 +416,6 @@ const lawRelations = (law: LawIR): ReadonlyArray<string> => {
 			return [law.header, ...law.bodies]
 		case "ordered":
 			return [law.member.relation, law.owner]
-		case "reachable":
-			return [`${law.records}Row`, ...Arr.map(law.holders, (holder) => holder.relation)]
 	}
 }
 
@@ -659,12 +648,6 @@ const liveOf = (
 	return r.match(${held}, { ${fields} }).where(r.not(${ended}, { ${entries([...coordinates, "turn"])} })).find({ ${fields} })
 })`
 }
-
-/**
- * A status read, run deferrable: it waits for a safe snapshot and then never fails with a serialization failure, the
- * census's and the relay's reads, the seat module's and each step's declared read.
- */
-const deferred = (program: string): string => `deferrable(${program})`
 
 /** The relations den's own role inserts into: every graph relation but those only a commit writes. */
 const denRelationsOf = (l: Lowered): ReadonlyArray<string> => {
@@ -976,7 +959,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		],
 		...Arr.map(
 			Option.toArray(l.seats),
-			(st) => [n.program("Holds"), deferred(liveHoldsOf(n.den, st))] as const
+			(st) => [n.program("Holds"), liveHoldsOf(n.den, st)] as const
 		),
 		[
 			n.program("Refuse"),
@@ -1007,7 +990,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			: []),
 		[
 			n.program("FinishedRoots"),
-			deferred(`query(${n.graph})
+			`query(${n.graph})
 	.rule((r) => {
 		const { scope } = v(${r("Root")}, "root")
 		const { step } = v(${r("Finish")}, "finish")
@@ -1016,7 +999,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	.rule((r) => {
 		const { scope } = v(${r("Root")}, "root")
 		return r.match(${r("Root")}, { scope }).match(${r("Skipped")}, { scope }).find({ scope })
-	})`)
+	})`
 		],
 		[
 			n.program("ClaimsOf"),
@@ -1072,28 +1055,26 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	return r.match(${r("Finish")}, { scope, step }).match(${r("Result")}, { step }).where(r.eq(scope, ${scopeParam})).find({ step })
 })`
 		],
-		[n.program("Pending"), deferred(shared.pending)],
-		[n.program("Requested"), deferred(shared.requested)],
-		[n.program("Running"), deferred(shared.running)],
-		...Arr.map(l.idle, (f) => [n.program(`Busy${f}`), deferred(shared.busy(f))] as const),
+		[n.program("Pending"), shared.pending],
+		[n.program("Requested"), shared.requested],
+		[n.program("Running"), shared.running],
+		...Arr.map(l.idle, (f) => [n.program(`Busy${f}`), shared.busy(f)] as const),
 		...(Arr.isReadonlyArrayNonEmpty(l.idle)
 			? [
 					[
 						n.program("Busy"),
-						deferred(
-							`query(${n.den}).reads({ ${commas(Arr.map(l.idle, (f) => `${busyName(f)}: ${shared.busy(f)}`))} })`
-						)
+						`query(${n.den}).reads({ ${commas(Arr.map(l.idle, (f) => `${busyName(f)}: ${shared.busy(f)}`))} })`
 					] as const
 				]
 			: []),
-		[n.program("Snapshot"), deferred(snapshotOf)],
+		[n.program("Snapshot"), snapshotOf],
 		...(Arr.isReadonlyArrayNonEmpty(awaiting)
 			? [
 					[
 						n.program("AwaitingOf"),
 						awaitingOf([`r.eq(step, r.param("step", ${r("Step")}.fields.step))`])
 					] as const,
-					[n.program("Ready"), deferred(readyOf)] as const
+					[n.program("Ready"), readyOf] as const
 				]
 			: [])
 	]
@@ -1262,13 +1243,10 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		coordinatorPrograms.push(
 			[n.program("HoldExclusive"), insertInto(r("Exclusive"))],
 			[n.program("ReleaseExclusive"), insertInto(r("Released"))],
-			[
-				n.program("ExclusiveTurns"),
-				deferred(latestOf(n.coordination, r("Exclusive"), ["kind", "key"]))
-			],
+			[n.program("ExclusiveTurns"), latestOf(n.coordination, r("Exclusive"), ["kind", "key"])],
 			[
 				n.program("Exclusives"),
-				deferred(liveOf(n.coordination, r("Exclusive"), r("Released"), ["kind", "key"], ["scope"]))
+				liveOf(n.coordination, r("Exclusive"), r("Released"), ["kind", "key"], ["scope"])
 			]
 		)
 	}
@@ -1279,11 +1257,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		],
 		[n.program("Pause"), insertInto(r("Paused"))],
 		[n.program("Resume"), insertInto(r("Resumed"))],
-		[n.program("PauseTurns"), deferred(latestOf(n.coordination, r("Paused"), ["target"]))],
-		[
-			n.program("PausedAll"),
-			deferred(liveOf(n.coordination, r("Paused"), r("Resumed"), ["target"], []))
-		]
+		[n.program("PauseTurns"), latestOf(n.coordination, r("Paused"), ["target"])],
+		[n.program("PausedAll"), liveOf(n.coordination, r("Paused"), r("Resumed"), ["target"], [])]
 	)
 
 	const commitPrograms: Array<readonly [string, string]> = [
@@ -1341,7 +1316,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		if (Arr.isReadonlyArrayNonEmpty(s.reads)) {
 			commitPrograms.push([
 				n.program(`Read${s.name}`),
-				deferred(`query(${W}).reads(declaredFlow.kinds[${s.index}].reads.named)`)
+				`query(${W}).reads(declaredFlow.kinds[${s.index}].reads.named)`
 			])
 		}
 	})
@@ -1415,7 +1390,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	)
 	return `${lines([
 		`/** The programs den lowered the flow ${P} to, over its fragments, and its roles over the schema ${app}; \`den generate\` writes them, and nothing edits them. */`,
-		`import { ${commas(Arr.filter(["ChangeSet", "Num", "Type", "clocked", "deferrable", "param", "query", "recordsFacts", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
+		`import { ${commas(Arr.filter(["ChangeSet", "Num", "Type", "clocked", "param", "query", "recordsFacts", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
 		`import { ${commas(Arr.filter(["DenDelay", "DenInstant"], (name) => tokens.has(name)))} } from "@bjornpagen/den/lower/keys"`,
 		...(tokens.has("Arr") ? [`import { Array as Arr } from "effect"`] : []),
 		`import { ${app} } from ${q(place.schema.from)}`,

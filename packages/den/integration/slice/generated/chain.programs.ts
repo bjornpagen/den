@@ -5,7 +5,6 @@ import {
 	Num,
 	Type,
 	clocked,
-	deferrable,
 	param,
 	query,
 	recordsFacts,
@@ -303,22 +302,20 @@ export const chainDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", ChainRoot.fields.scope)))
 			.find({ scope, kind, key, at })
 	}),
-	chainFinishedRoots: deferrable(
-		query(chainGraph)
-			.rule((r) => {
-				const { scope } = v(ChainRoot, "root")
-				const { step } = v(ChainFinish, "finish")
-				return r
-					.match(ChainRoot, { scope })
-					.match(ChainFinish, { scope, step })
-					.match(ChainResult, { step })
-					.find({ scope })
-			})
-			.rule((r) => {
-				const { scope } = v(ChainRoot, "root")
-				return r.match(ChainRoot, { scope }).match(ChainSkipped, { scope }).find({ scope })
-			})
-	),
+	chainFinishedRoots: query(chainGraph)
+		.rule((r) => {
+			const { scope } = v(ChainRoot, "root")
+			const { step } = v(ChainFinish, "finish")
+			return r
+				.match(ChainRoot, { scope })
+				.match(ChainFinish, { scope, step })
+				.match(ChainResult, { step })
+				.find({ scope })
+		})
+		.rule((r) => {
+			const { scope } = v(ChainRoot, "root")
+			return r.match(ChainRoot, { scope }).match(ChainSkipped, { scope }).find({ scope })
+		}),
 	chainClaimsOf: query(chainGraph).rule((r) => {
 		const { step, attempt, until } = v(ChainClaim, "claim")
 		return r
@@ -359,48 +356,46 @@ export const chainDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
 			.find({ step })
 	}),
-	chainPending: deferrable(chainPendingRead),
-	chainRequested: deferrable(chainRequestedRead),
-	chainRunning: deferrable(chainRunningRead),
-	chainSnapshot: deferrable(
-		query(ChainDen).reads({
-			steps: chainPendingRead,
-			claims: query(ChainDen).rule((r) => {
-				const { step, attempt, until } = v(ChainClaim, "claim")
-				return r
-					.match(ChainClaim, { step, attempt, until })
-					.where(r.not(ChainResult, { step }))
-					.find({ step, attempt, until })
-			}),
-			retries: query(ChainDen).rule((r) => {
-				const { step, attempt, at, why } = v(ChainRetry, "retry")
-				return r
-					.match(ChainRetry, { step, attempt, at, why })
-					.where(r.not(ChainResult, { step }))
-					.find({ step, attempt, at, why })
-			}),
-			fenced: query(ChainDen).rule((r) => {
-				const { step, attempt } = v(ChainFenced, "fenced")
-				return r
-					.match(ChainFenced, { step, attempt })
-					.where(r.not(ChainResult, { step }))
-					.find({ step, attempt })
-			}),
-			requested: chainRequestedRead,
-			running: chainRunningRead,
-			roots: query(ChainDen).rule((r) => {
-				const { scope, kind, key, at } = v(ChainRoot, "chainRoot")
-				return r.match(ChainRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
-			}),
-			paused: query(ChainDen).rule((r) => {
-				const { target, turn } = v(ChainPaused, "chainPaused")
-				return r
-					.match(ChainPaused, { target, turn })
-					.where(r.not(ChainResumed, { target, turn }))
-					.find({ target, turn })
-			})
+	chainPending: chainPendingRead,
+	chainRequested: chainRequestedRead,
+	chainRunning: chainRunningRead,
+	chainSnapshot: query(ChainDen).reads({
+		steps: chainPendingRead,
+		claims: query(ChainDen).rule((r) => {
+			const { step, attempt, until } = v(ChainClaim, "claim")
+			return r
+				.match(ChainClaim, { step, attempt, until })
+				.where(r.not(ChainResult, { step }))
+				.find({ step, attempt, until })
+		}),
+		retries: query(ChainDen).rule((r) => {
+			const { step, attempt, at, why } = v(ChainRetry, "retry")
+			return r
+				.match(ChainRetry, { step, attempt, at, why })
+				.where(r.not(ChainResult, { step }))
+				.find({ step, attempt, at, why })
+		}),
+		fenced: query(ChainDen).rule((r) => {
+			const { step, attempt } = v(ChainFenced, "fenced")
+			return r
+				.match(ChainFenced, { step, attempt })
+				.where(r.not(ChainResult, { step }))
+				.find({ step, attempt })
+		}),
+		requested: chainRequestedRead,
+		running: chainRunningRead,
+		roots: query(ChainDen).rule((r) => {
+			const { scope, kind, key, at } = v(ChainRoot, "chainRoot")
+			return r.match(ChainRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
+		}),
+		paused: query(ChainDen).rule((r) => {
+			const { target, turn } = v(ChainPaused, "chainPaused")
+			return r
+				.match(ChainPaused, { target, turn })
+				.where(r.not(ChainResumed, { target, turn }))
+				.find({ target, turn })
 		})
-	),
+	}),
 	chainReadChainPageInput: query(chainGraph).rule((r) => {
 		const { step, feed, seq, pages, root } = v(ChainPageInput, "chainPageInput")
 		return r
@@ -554,21 +549,17 @@ export const chainCoordinatorPrograms = Object.freeze({
 	),
 	chainPause: ChangeSet.empty(chainCoordination).insert(ChainPaused, []),
 	chainResume: ChangeSet.empty(chainCoordination).insert(ChainResumed, []),
-	chainPauseTurns: deferrable(
-		query(chainCoordination).rule((r) => {
-			const { target, turn } = v(ChainPaused, "chainPaused")
-			return r.match(ChainPaused, { target, turn }).find({ target, turn: r.max(turn) })
-		})
-	),
-	chainPausedAll: deferrable(
-		query(chainCoordination).rule((r) => {
-			const { target, turn } = v(ChainPaused, "chainPaused")
-			return r
-				.match(ChainPaused, { target, turn })
-				.where(r.not(ChainResumed, { target, turn }))
-				.find({ target, turn })
-		})
-	)
+	chainPauseTurns: query(chainCoordination).rule((r) => {
+		const { target, turn } = v(ChainPaused, "chainPaused")
+		return r.match(ChainPaused, { target, turn }).find({ target, turn: r.max(turn) })
+	}),
+	chainPausedAll: query(chainCoordination).rule((r) => {
+		const { target, turn } = v(ChainPaused, "chainPaused")
+		return r
+			.match(ChainPaused, { target, turn })
+			.where(r.not(ChainResumed, { target, turn }))
+			.find({ target, turn })
+	})
 })
 
 export const chainCoordinatorWorkload = workload(ChainCoordinator, chainCoordinatorPrograms)
@@ -640,7 +631,7 @@ export const chainCommitPrograms = Object.freeze({
 		),
 		{ now: "millis" }
 	),
-	chainReadPage: deferrable(query(Loader).reads(declaredFlow.kinds[0].reads.named)),
+	chainReadPage: query(Loader).reads(declaredFlow.kinds[0].reads.named),
 	chainCommitChainRunFinish: ChangeSet.union(
 		ChangeSet.empty(chainGraph)
 			.insert(ChainResult, [])

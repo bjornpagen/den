@@ -1,17 +1,6 @@
 import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Retry to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
-import {
-	ChangeSet,
-	Num,
-	Type,
-	clocked,
-	deferrable,
-	param,
-	query,
-	role,
-	v,
-	workload
-} from "@bjornpagen/grizzle"
+import { ChangeSet, Num, Type, clocked, param, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import { retry as declaredFlow } from "#integration/slice/flows.ts"
 import {
@@ -294,22 +283,20 @@ export const retryDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", RetryRoot.fields.scope)))
 			.find({ scope, kind, key, at })
 	}),
-	retryFinishedRoots: deferrable(
-		query(retryGraph)
-			.rule((r) => {
-				const { scope } = v(RetryRoot, "root")
-				const { step } = v(RetryFinish, "finish")
-				return r
-					.match(RetryRoot, { scope })
-					.match(RetryFinish, { scope, step })
-					.match(RetryResult, { step })
-					.find({ scope })
-			})
-			.rule((r) => {
-				const { scope } = v(RetryRoot, "root")
-				return r.match(RetryRoot, { scope }).match(RetrySkipped, { scope }).find({ scope })
-			})
-	),
+	retryFinishedRoots: query(retryGraph)
+		.rule((r) => {
+			const { scope } = v(RetryRoot, "root")
+			const { step } = v(RetryFinish, "finish")
+			return r
+				.match(RetryRoot, { scope })
+				.match(RetryFinish, { scope, step })
+				.match(RetryResult, { step })
+				.find({ scope })
+		})
+		.rule((r) => {
+			const { scope } = v(RetryRoot, "root")
+			return r.match(RetryRoot, { scope }).match(RetrySkipped, { scope }).find({ scope })
+		}),
 	retryClaimsOf: query(retryGraph).rule((r) => {
 		const { step, attempt, until } = v(RetryClaim, "claim")
 		return r
@@ -350,48 +337,46 @@ export const retryDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", RetryScope.fields.scope)))
 			.find({ step })
 	}),
-	retryPending: deferrable(retryPendingRead),
-	retryRequested: deferrable(retryRequestedRead),
-	retryRunning: deferrable(retryRunningRead),
-	retrySnapshot: deferrable(
-		query(RetryDen).reads({
-			steps: retryPendingRead,
-			claims: query(RetryDen).rule((r) => {
-				const { step, attempt, until } = v(RetryClaim, "claim")
-				return r
-					.match(RetryClaim, { step, attempt, until })
-					.where(r.not(RetryResult, { step }))
-					.find({ step, attempt, until })
-			}),
-			retries: query(RetryDen).rule((r) => {
-				const { step, attempt, at, why } = v(RetryRetry, "retry")
-				return r
-					.match(RetryRetry, { step, attempt, at, why })
-					.where(r.not(RetryResult, { step }))
-					.find({ step, attempt, at, why })
-			}),
-			fenced: query(RetryDen).rule((r) => {
-				const { step, attempt } = v(RetryFenced, "fenced")
-				return r
-					.match(RetryFenced, { step, attempt })
-					.where(r.not(RetryResult, { step }))
-					.find({ step, attempt })
-			}),
-			requested: retryRequestedRead,
-			running: retryRunningRead,
-			roots: query(RetryDen).rule((r) => {
-				const { scope, kind, key, at } = v(RetryRoot, "retryRoot")
-				return r.match(RetryRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
-			}),
-			paused: query(RetryDen).rule((r) => {
-				const { target, turn } = v(RetryPaused, "retryPaused")
-				return r
-					.match(RetryPaused, { target, turn })
-					.where(r.not(RetryResumed, { target, turn }))
-					.find({ target, turn })
-			})
+	retryPending: retryPendingRead,
+	retryRequested: retryRequestedRead,
+	retryRunning: retryRunningRead,
+	retrySnapshot: query(RetryDen).reads({
+		steps: retryPendingRead,
+		claims: query(RetryDen).rule((r) => {
+			const { step, attempt, until } = v(RetryClaim, "claim")
+			return r
+				.match(RetryClaim, { step, attempt, until })
+				.where(r.not(RetryResult, { step }))
+				.find({ step, attempt, until })
+		}),
+		retries: query(RetryDen).rule((r) => {
+			const { step, attempt, at, why } = v(RetryRetry, "retry")
+			return r
+				.match(RetryRetry, { step, attempt, at, why })
+				.where(r.not(RetryResult, { step }))
+				.find({ step, attempt, at, why })
+		}),
+		fenced: query(RetryDen).rule((r) => {
+			const { step, attempt } = v(RetryFenced, "fenced")
+			return r
+				.match(RetryFenced, { step, attempt })
+				.where(r.not(RetryResult, { step }))
+				.find({ step, attempt })
+		}),
+		requested: retryRequestedRead,
+		running: retryRunningRead,
+		roots: query(RetryDen).rule((r) => {
+			const { scope, kind, key, at } = v(RetryRoot, "retryRoot")
+			return r.match(RetryRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
+		}),
+		paused: query(RetryDen).rule((r) => {
+			const { target, turn } = v(RetryPaused, "retryPaused")
+			return r
+				.match(RetryPaused, { target, turn })
+				.where(r.not(RetryResumed, { target, turn }))
+				.find({ target, turn })
 		})
-	),
+	}),
 	retryReadRetrySteadfastInput: query(retryGraph).rule((r) => {
 		const { step, key, root } = v(RetrySteadfastInput, "retrySteadfastInput")
 		return r
@@ -616,21 +601,17 @@ export const retryCoordinatorPrograms = Object.freeze({
 	),
 	retryPause: ChangeSet.empty(retryCoordination).insert(RetryPaused, []),
 	retryResume: ChangeSet.empty(retryCoordination).insert(RetryResumed, []),
-	retryPauseTurns: deferrable(
-		query(retryCoordination).rule((r) => {
-			const { target, turn } = v(RetryPaused, "retryPaused")
-			return r.match(RetryPaused, { target, turn }).find({ target, turn: r.max(turn) })
-		})
-	),
-	retryPausedAll: deferrable(
-		query(retryCoordination).rule((r) => {
-			const { target, turn } = v(RetryPaused, "retryPaused")
-			return r
-				.match(RetryPaused, { target, turn })
-				.where(r.not(RetryResumed, { target, turn }))
-				.find({ target, turn })
-		})
-	)
+	retryPauseTurns: query(retryCoordination).rule((r) => {
+		const { target, turn } = v(RetryPaused, "retryPaused")
+		return r.match(RetryPaused, { target, turn }).find({ target, turn: r.max(turn) })
+	}),
+	retryPausedAll: query(retryCoordination).rule((r) => {
+		const { target, turn } = v(RetryPaused, "retryPaused")
+		return r
+			.match(RetryPaused, { target, turn })
+			.where(r.not(RetryResumed, { target, turn }))
+			.find({ target, turn })
+	})
 })
 
 export const retryCoordinatorWorkload = workload(RetryCoordinator, retryCoordinatorPrograms)

@@ -1,8 +1,8 @@
 # The seams grizzle's main replaces
 
 den is pinned on grizzle's `main`, into which `live` merged, so every commit below is in its pin. Taken: CLASH
-(`schema()` takes a list, `lower/merge.ts` deleted), LIVE-SOURCE (the suites' decoder grant deleted), DEFERRABLE (the
-status and declared reads deferrable), LEASE and DELTAMET for claims (each flow's Claim races its key, and a claim reads
+(`schema()` takes a list, `lower/merge.ts` deleted), LIVE-SOURCE (the suites' decoder grant deleted), DEFERRABLE (no
+read declares its isolation: each is a snapshot), LEASE and DELTAMET for claims (each flow's Claim races its key, and a claim reads
 back the holder it added or met), CARRIER (that read-back rides the claim's one statement, which generate compiles; den
 has no other read-back), POROUS (each flow is two grizzle fragments the app lists, its graph and its coordination
 group; den's programs are written over them, and each commit is a union of den's facts with the app's writes), LEASE

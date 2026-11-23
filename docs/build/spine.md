@@ -221,7 +221,7 @@ output into `select(PResult, outcome = done)`) certifies.
 | DBCLOCK | `Clock.currentTimeMillis` in `runtime/turn.ts` (`serve`, `claimed`, the runner's deadline) and `runtime/census.ts` (`tick`) | the database's instant, as a query term |
 | CLASH | `src/lower/merge.ts` | grizzle refusing a fragment's clashes itself |
 | DELTAMET | `concluded`'s read-back of `PHeld` after `commitUnknown` | the winner's row in the same call |
-| DEFERRABLE | the scheduler's snapshot (`PSnapshot`, one statement of den's role) and the relay's watches (`PPending`, `PRequested`, `PRunning`) | deferrable read-only reads |
+| DEFERRABLE | the scheduler's snapshot (`PSnapshot`, one statement of den's role) and the relay's watches (`PPending`, `PRequested`, `PRunning`) | read-only reads, each a snapshot, no declaration |
 | SCHEMAMAP | `src/lower/schema.ts` | grizzle's own Effect Schema mapping |
 
 ## The suites
@@ -259,7 +259,7 @@ PostgreSQL (`pnpm test:network`, six files, each its own database):
   and resume as facts, a lane's window in the census, stopping a scope, the ceiling on reclaims, `Retry`
   facts for waits that must outlive a turn.
 - **relay and census** (`src/runtime/census.ts`, a new relay module): the relay over a served live read of due steps
-  (grizzle's `watch`), the census as Vercel Cron, its reads as DEFERRABLE once they exist.
+  (grizzle's `watch`), the census as Vercel Cron, its reads snapshots.
 - **HTTP surface**: den's operator verbs (start a root, complete an await, stop, pause, watch) as served programs in roles
   the app lists, through grizzle's `httpHandler`.
 - **Vercel transport** (`packages/den-vercel`): a `Transport` over Vercel Queues, one topic per lane,

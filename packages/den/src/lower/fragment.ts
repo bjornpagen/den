@@ -94,13 +94,6 @@ export interface SideIR {
 /** A law of the fragment: a containment, a key, a race, or a row check holding a natural field to at least a constant. */
 export type LawIR =
 	| { readonly kind: "contained"; readonly from: SideIR; readonly to: SideIR }
-	| {
-			readonly kind: "reachable"
-			/** The stem of the records it keeps, whose root is `${records}Row`, owned by a row's digest. */
-			readonly records: string
-			/** The sides whose facts hold a record live, each by the digest it names, every one a body of a root's unit. */
-			readonly holders: readonly [SideIR, ...Array<SideIR>]
-	  }
 	| { readonly kind: "key"; readonly side: SideIR }
 	| { readonly kind: "race"; readonly relation: string }
 	| {
@@ -980,11 +973,10 @@ export const lower = (flow: AnyFlow): Lowered => {
 				],
 				key: ["step", "ordinal"]
 			})
-			laws.push(into(side(record, ["step"]), side(Result, ["step"])), {
-				kind: "reachable",
-				records: stem,
-				holders: [side(record, ["digest"])]
-			})
+			laws.push(
+				into(side(record, ["step"]), side(Result, ["step"])),
+				into(side(record, ["digest"]), side(`${stem}Row`, ["digest"]))
+			)
 			return { name: readName, stem, record, statesNames: Arr.contains(stated, readName) }
 		})
 	}
@@ -1275,7 +1267,6 @@ export const lower = (flow: AnyFlow): Lowered => {
 				case "check":
 				case "retirable":
 				case "ordered":
-				case "reachable":
 					return law
 			}
 		}),

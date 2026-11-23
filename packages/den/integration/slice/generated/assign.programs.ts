@@ -5,7 +5,6 @@ import {
 	Num,
 	Type,
 	clocked,
-	deferrable,
 	param,
 	query,
 	recordsFacts,
@@ -329,22 +328,20 @@ export const assignDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", AssignRoot.fields.scope)))
 			.find({ scope, kind, key, at })
 	}),
-	assignFinishedRoots: deferrable(
-		query(assignGraph)
-			.rule((r) => {
-				const { scope } = v(AssignRoot, "root")
-				const { step } = v(AssignFinish, "finish")
-				return r
-					.match(AssignRoot, { scope })
-					.match(AssignFinish, { scope, step })
-					.match(AssignResult, { step })
-					.find({ scope })
-			})
-			.rule((r) => {
-				const { scope } = v(AssignRoot, "root")
-				return r.match(AssignRoot, { scope }).match(AssignSkipped, { scope }).find({ scope })
-			})
-	),
+	assignFinishedRoots: query(assignGraph)
+		.rule((r) => {
+			const { scope } = v(AssignRoot, "root")
+			const { step } = v(AssignFinish, "finish")
+			return r
+				.match(AssignRoot, { scope })
+				.match(AssignFinish, { scope, step })
+				.match(AssignResult, { step })
+				.find({ scope })
+		})
+		.rule((r) => {
+			const { scope } = v(AssignRoot, "root")
+			return r.match(AssignRoot, { scope }).match(AssignSkipped, { scope }).find({ scope })
+		}),
 	assignClaimsOf: query(assignGraph).rule((r) => {
 		const { step, attempt, until } = v(AssignClaim, "claim")
 		return r
@@ -385,48 +382,46 @@ export const assignDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
 			.find({ step })
 	}),
-	assignPending: deferrable(assignPendingRead),
-	assignRequested: deferrable(assignRequestedRead),
-	assignRunning: deferrable(assignRunningRead),
-	assignSnapshot: deferrable(
-		query(AssignDen).reads({
-			steps: assignPendingRead,
-			claims: query(AssignDen).rule((r) => {
-				const { step, attempt, until } = v(AssignClaim, "claim")
-				return r
-					.match(AssignClaim, { step, attempt, until })
-					.where(r.not(AssignResult, { step }))
-					.find({ step, attempt, until })
-			}),
-			retries: query(AssignDen).rule((r) => {
-				const { step, attempt, at, why } = v(AssignRetry, "retry")
-				return r
-					.match(AssignRetry, { step, attempt, at, why })
-					.where(r.not(AssignResult, { step }))
-					.find({ step, attempt, at, why })
-			}),
-			fenced: query(AssignDen).rule((r) => {
-				const { step, attempt } = v(AssignFenced, "fenced")
-				return r
-					.match(AssignFenced, { step, attempt })
-					.where(r.not(AssignResult, { step }))
-					.find({ step, attempt })
-			}),
-			requested: assignRequestedRead,
-			running: assignRunningRead,
-			roots: query(AssignDen).rule((r) => {
-				const { scope, kind, key, at } = v(AssignRoot, "assignRoot")
-				return r.match(AssignRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
-			}),
-			paused: query(AssignDen).rule((r) => {
-				const { target, turn } = v(AssignPaused, "assignPaused")
-				return r
-					.match(AssignPaused, { target, turn })
-					.where(r.not(AssignResumed, { target, turn }))
-					.find({ target, turn })
-			})
+	assignPending: assignPendingRead,
+	assignRequested: assignRequestedRead,
+	assignRunning: assignRunningRead,
+	assignSnapshot: query(AssignDen).reads({
+		steps: assignPendingRead,
+		claims: query(AssignDen).rule((r) => {
+			const { step, attempt, until } = v(AssignClaim, "claim")
+			return r
+				.match(AssignClaim, { step, attempt, until })
+				.where(r.not(AssignResult, { step }))
+				.find({ step, attempt, until })
+		}),
+		retries: query(AssignDen).rule((r) => {
+			const { step, attempt, at, why } = v(AssignRetry, "retry")
+			return r
+				.match(AssignRetry, { step, attempt, at, why })
+				.where(r.not(AssignResult, { step }))
+				.find({ step, attempt, at, why })
+		}),
+		fenced: query(AssignDen).rule((r) => {
+			const { step, attempt } = v(AssignFenced, "fenced")
+			return r
+				.match(AssignFenced, { step, attempt })
+				.where(r.not(AssignResult, { step }))
+				.find({ step, attempt })
+		}),
+		requested: assignRequestedRead,
+		running: assignRunningRead,
+		roots: query(AssignDen).rule((r) => {
+			const { scope, kind, key, at } = v(AssignRoot, "assignRoot")
+			return r.match(AssignRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
+		}),
+		paused: query(AssignDen).rule((r) => {
+			const { target, turn } = v(AssignPaused, "assignPaused")
+			return r
+				.match(AssignPaused, { target, turn })
+				.where(r.not(AssignResumed, { target, turn }))
+				.find({ target, turn })
 		})
-	),
+	}),
 	assignReadAssignEmbedInput: query(assignGraph).rule((r) => {
 		const { step, learner, topic, mode, root } = v(AssignEmbedInput, "assignEmbedInput")
 		return r
@@ -647,21 +642,17 @@ export const assignCoordinatorPrograms = Object.freeze({
 	),
 	assignPause: ChangeSet.empty(assignCoordination).insert(AssignPaused, []),
 	assignResume: ChangeSet.empty(assignCoordination).insert(AssignResumed, []),
-	assignPauseTurns: deferrable(
-		query(assignCoordination).rule((r) => {
-			const { target, turn } = v(AssignPaused, "assignPaused")
-			return r.match(AssignPaused, { target, turn }).find({ target, turn: r.max(turn) })
-		})
-	),
-	assignPausedAll: deferrable(
-		query(assignCoordination).rule((r) => {
-			const { target, turn } = v(AssignPaused, "assignPaused")
-			return r
-				.match(AssignPaused, { target, turn })
-				.where(r.not(AssignResumed, { target, turn }))
-				.find({ target, turn })
-		})
-	)
+	assignPauseTurns: query(assignCoordination).rule((r) => {
+		const { target, turn } = v(AssignPaused, "assignPaused")
+		return r.match(AssignPaused, { target, turn }).find({ target, turn: r.max(turn) })
+	}),
+	assignPausedAll: query(assignCoordination).rule((r) => {
+		const { target, turn } = v(AssignPaused, "assignPaused")
+		return r
+			.match(AssignPaused, { target, turn })
+			.where(r.not(AssignResumed, { target, turn }))
+			.find({ target, turn })
+	})
 })
 
 export const assignCoordinatorWorkload = workload(AssignCoordinator, assignCoordinatorPrograms)
@@ -745,7 +736,7 @@ export const assignCommitPrograms = Object.freeze({
 			.insertAll(recordsFacts(assignGraph, AssignDecideReadSeenRecords)([])),
 		declaredFlow.kinds[1].writes.changes(Loader)
 	),
-	assignReadDecide: deferrable(query(Loader).reads(declaredFlow.kinds[1].reads.named)),
+	assignReadDecide: query(Loader).reads(declaredFlow.kinds[1].reads.named),
 	assignCommitAssignmentFinish: ChangeSet.union(
 		ChangeSet.empty(assignGraph)
 			.insert(AssignResult, [])

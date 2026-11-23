@@ -52,9 +52,9 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * Oracle (specification): the proposal's sections 5 and 6, over flows of up to three steps, chained or not, of each
  * field form, with or without a resource, a pause handle, an exclusive root, a child scope, one or two named reads and a typed
  * error. Each named read's references are a relation named by its step and read, keyed by the step and the row's
- * place, each contained in its step's result and the one holder of its records, which grizzle makes of the read's query
- * when the fragment loads and which no root's unit holds, by its digest alone (reachable: a record lives while a
- * reference names it), so every root that found a row shares it; a finite number is held finite by a row check.
+ * place, each contained in its step's result and, by its digest alone, in the root of its records, which grizzle makes
+ * of the read's query when the fragment loads and which no root's unit holds, so every root that found a row shares
+ * it; a finite number is held finite by a row check.
  */
 
 const Form = Schema.Literals([
@@ -367,8 +367,6 @@ it.effect(
 								case "race":
 								case "check":
 									return [law.relation]
-								case "reachable":
-									return [`${law.records}Row`, ...Arr.map(law.holders, (holder) => holder.relation)]
 							}
 						})
 						assert.isTrue(Arr.every(sides, (side) => Arr.contains(names, side)))
@@ -491,29 +489,18 @@ it.effect(
 						Arr.forEach(
 							[...(reading.weights ? ["Weights"] : []), ...(reading.passages ? ["Passages"] : [])],
 							(read) => {
-								assert.deepStrictEqual(
-									Arr.flatMap(lowered.laws, (law) =>
-										law.kind === "reachable" && law.records === `${P}S0Read${read}`
-											? Arr.map(law.holders, (holder) => [
-													holder.relation,
-													Arr.join(
-														Arr.map(holder.terms, (t) => t.field),
-														","
-													)
-												])
-											: []
+								assert.isTrue(
+									Arr.some(
+										containments,
+										(law) =>
+											law.from.relation === `${P}S0Read${read}` &&
+											law.to.relation === `${P}S0Read${read}Row` &&
+											Arr.join(
+												Arr.map(law.from.terms, (t) => t.field),
+												","
+											) === "digest"
 									),
-									[[`${P}S0Read${read}`, "digest"]],
-									`each reference of ${read} holds its record live by its digest alone, its records' one holder`
-								)
-								assert.include(
-									printFragment(lowered, placement),
-									`reachable(on(${P}S0Read${read}Records, "digest"), [on(${P}S0Read${read}, "digest")])`,
-									`the fragment states ${read}'s records reachable from its references`
-								)
-								assert.isFalse(
-									Arr.some(containments, (law) => law.to.relation === `${P}S0Read${read}Row`),
-									`no containment into ${read}'s records but the one its reachability states`
+									`each reference of ${read} names its row by its digest alone`
 								)
 								assert.isFalse(
 									Arr.some(

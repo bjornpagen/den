@@ -1,17 +1,6 @@
 import { DenDelay, DenInstant } from "@bjornpagen/den/lower/keys"
 /** The programs den lowered the flow Sync to, over its fragments, and its roles over the schema App; `den generate` writes them, and nothing edits them. */
-import {
-	ChangeSet,
-	Num,
-	Type,
-	clocked,
-	deferrable,
-	param,
-	query,
-	role,
-	v,
-	workload
-} from "@bjornpagen/grizzle"
+import { ChangeSet, Num, Type, clocked, param, query, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import { sync as declaredFlow } from "#integration/slice/flows.ts"
 import {
@@ -312,22 +301,20 @@ export const syncDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", SyncExclusiveKey.fields.scope)))
 			.find({ scope, key, id, root })
 	}),
-	syncFinishedRoots: deferrable(
-		query(syncGraph)
-			.rule((r) => {
-				const { scope } = v(SyncRoot, "root")
-				const { step } = v(SyncFinish, "finish")
-				return r
-					.match(SyncRoot, { scope })
-					.match(SyncFinish, { scope, step })
-					.match(SyncResult, { step })
-					.find({ scope })
-			})
-			.rule((r) => {
-				const { scope } = v(SyncRoot, "root")
-				return r.match(SyncRoot, { scope }).match(SyncSkipped, { scope }).find({ scope })
-			})
-	),
+	syncFinishedRoots: query(syncGraph)
+		.rule((r) => {
+			const { scope } = v(SyncRoot, "root")
+			const { step } = v(SyncFinish, "finish")
+			return r
+				.match(SyncRoot, { scope })
+				.match(SyncFinish, { scope, step })
+				.match(SyncResult, { step })
+				.find({ scope })
+		})
+		.rule((r) => {
+			const { scope } = v(SyncRoot, "root")
+			return r.match(SyncRoot, { scope }).match(SyncSkipped, { scope }).find({ scope })
+		}),
 	syncClaimsOf: query(syncGraph).rule((r) => {
 		const { step, attempt, until } = v(SyncClaim, "claim")
 		return r
@@ -368,62 +355,60 @@ export const syncDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", SyncScope.fields.scope)))
 			.find({ step })
 	}),
-	syncPending: deferrable(syncPendingRead),
-	syncRequested: deferrable(syncRequestedRead),
-	syncRunning: deferrable(syncRunningRead),
-	syncBusyChain: deferrable(syncBusyChainRead),
-	syncBusy: deferrable(query(SyncDen).reads({ busyChain: syncBusyChainRead })),
-	syncSnapshot: deferrable(
-		query(SyncDen).reads({
-			steps: syncPendingRead,
-			claims: query(SyncDen).rule((r) => {
-				const { step, attempt, until } = v(SyncClaim, "claim")
-				return r
-					.match(SyncClaim, { step, attempt, until })
-					.where(r.not(SyncResult, { step }))
-					.find({ step, attempt, until })
-			}),
-			retries: query(SyncDen).rule((r) => {
-				const { step, attempt, at, why } = v(SyncRetry, "retry")
-				return r
-					.match(SyncRetry, { step, attempt, at, why })
-					.where(r.not(SyncResult, { step }))
-					.find({ step, attempt, at, why })
-			}),
-			fenced: query(SyncDen).rule((r) => {
-				const { step, attempt } = v(SyncFenced, "fenced")
-				return r
-					.match(SyncFenced, { step, attempt })
-					.where(r.not(SyncResult, { step }))
-					.find({ step, attempt })
-			}),
-			requested: syncRequestedRead,
-			running: syncRunningRead,
-			roots: query(SyncDen).rule((r) => {
-				const { scope, kind, key, at } = v(SyncRoot, "syncRoot")
-				return r.match(SyncRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
-			}),
-			keys: query(SyncDen).rule((r) => {
-				const { scope, key, id } = v(SyncExclusiveKey, "syncExclusiveKey")
-				return r.match(SyncExclusiveKey, { scope, key, id }).find({ scope, key, id })
-			}),
-			exclusives: query(SyncDen).rule((r) => {
-				const { kind, key, turn, scope } = v(SyncExclusive, "syncExclusive")
-				return r
-					.match(SyncExclusive, { kind, key, turn, scope })
-					.where(r.not(SyncReleased, { kind, key, turn }))
-					.find({ kind, key, turn, scope })
-			}),
-			paused: query(SyncDen).rule((r) => {
-				const { target, turn } = v(SyncPaused, "syncPaused")
-				return r
-					.match(SyncPaused, { target, turn })
-					.where(r.not(SyncResumed, { target, turn }))
-					.find({ target, turn })
-			}),
-			busyChain: syncBusyChainRead
-		})
-	),
+	syncPending: syncPendingRead,
+	syncRequested: syncRequestedRead,
+	syncRunning: syncRunningRead,
+	syncBusyChain: syncBusyChainRead,
+	syncBusy: query(SyncDen).reads({ busyChain: syncBusyChainRead }),
+	syncSnapshot: query(SyncDen).reads({
+		steps: syncPendingRead,
+		claims: query(SyncDen).rule((r) => {
+			const { step, attempt, until } = v(SyncClaim, "claim")
+			return r
+				.match(SyncClaim, { step, attempt, until })
+				.where(r.not(SyncResult, { step }))
+				.find({ step, attempt, until })
+		}),
+		retries: query(SyncDen).rule((r) => {
+			const { step, attempt, at, why } = v(SyncRetry, "retry")
+			return r
+				.match(SyncRetry, { step, attempt, at, why })
+				.where(r.not(SyncResult, { step }))
+				.find({ step, attempt, at, why })
+		}),
+		fenced: query(SyncDen).rule((r) => {
+			const { step, attempt } = v(SyncFenced, "fenced")
+			return r
+				.match(SyncFenced, { step, attempt })
+				.where(r.not(SyncResult, { step }))
+				.find({ step, attempt })
+		}),
+		requested: syncRequestedRead,
+		running: syncRunningRead,
+		roots: query(SyncDen).rule((r) => {
+			const { scope, kind, key, at } = v(SyncRoot, "syncRoot")
+			return r.match(SyncRoot, { scope, kind, key, at }).find({ scope, kind, key, at })
+		}),
+		keys: query(SyncDen).rule((r) => {
+			const { scope, key, id } = v(SyncExclusiveKey, "syncExclusiveKey")
+			return r.match(SyncExclusiveKey, { scope, key, id }).find({ scope, key, id })
+		}),
+		exclusives: query(SyncDen).rule((r) => {
+			const { kind, key, turn, scope } = v(SyncExclusive, "syncExclusive")
+			return r
+				.match(SyncExclusive, { kind, key, turn, scope })
+				.where(r.not(SyncReleased, { kind, key, turn }))
+				.find({ kind, key, turn, scope })
+		}),
+		paused: query(SyncDen).rule((r) => {
+			const { target, turn } = v(SyncPaused, "syncPaused")
+			return r
+				.match(SyncPaused, { target, turn })
+				.where(r.not(SyncResumed, { target, turn }))
+				.find({ target, turn })
+		}),
+		busyChain: syncBusyChainRead
+	}),
 	syncReadSyncCopyInput: query(syncGraph).rule((r) => {
 		const { step, relation, run, root } = v(SyncCopyInput, "syncCopyInput")
 		return r
@@ -494,21 +479,17 @@ export const syncDenWorkload = workload(SyncDen, syncDenPrograms)
 export const syncCoordinatorPrograms = Object.freeze({
 	syncHoldExclusive: ChangeSet.empty(syncCoordination).insert(SyncExclusive, []),
 	syncReleaseExclusive: ChangeSet.empty(syncCoordination).insert(SyncReleased, []),
-	syncExclusiveTurns: deferrable(
-		query(syncCoordination).rule((r) => {
-			const { kind, key, turn } = v(SyncExclusive, "syncExclusive")
-			return r.match(SyncExclusive, { kind, key, turn }).find({ kind, key, turn: r.max(turn) })
-		})
-	),
-	syncExclusives: deferrable(
-		query(syncCoordination).rule((r) => {
-			const { kind, key, turn, scope } = v(SyncExclusive, "syncExclusive")
-			return r
-				.match(SyncExclusive, { kind, key, turn, scope })
-				.where(r.not(SyncReleased, { kind, key, turn }))
-				.find({ kind, key, turn, scope })
-		})
-	),
+	syncExclusiveTurns: query(syncCoordination).rule((r) => {
+		const { kind, key, turn } = v(SyncExclusive, "syncExclusive")
+		return r.match(SyncExclusive, { kind, key, turn }).find({ kind, key, turn: r.max(turn) })
+	}),
+	syncExclusives: query(syncCoordination).rule((r) => {
+		const { kind, key, turn, scope } = v(SyncExclusive, "syncExclusive")
+		return r
+			.match(SyncExclusive, { kind, key, turn, scope })
+			.where(r.not(SyncReleased, { kind, key, turn }))
+			.find({ kind, key, turn, scope })
+	}),
 	syncPromote: clocked(
 		ChangeSet.empty(syncCoordination).insert(
 			SyncServed,
@@ -524,21 +505,17 @@ export const syncCoordinatorPrograms = Object.freeze({
 	),
 	syncPause: ChangeSet.empty(syncCoordination).insert(SyncPaused, []),
 	syncResume: ChangeSet.empty(syncCoordination).insert(SyncResumed, []),
-	syncPauseTurns: deferrable(
-		query(syncCoordination).rule((r) => {
-			const { target, turn } = v(SyncPaused, "syncPaused")
-			return r.match(SyncPaused, { target, turn }).find({ target, turn: r.max(turn) })
-		})
-	),
-	syncPausedAll: deferrable(
-		query(syncCoordination).rule((r) => {
-			const { target, turn } = v(SyncPaused, "syncPaused")
-			return r
-				.match(SyncPaused, { target, turn })
-				.where(r.not(SyncResumed, { target, turn }))
-				.find({ target, turn })
-		})
-	)
+	syncPauseTurns: query(syncCoordination).rule((r) => {
+		const { target, turn } = v(SyncPaused, "syncPaused")
+		return r.match(SyncPaused, { target, turn }).find({ target, turn: r.max(turn) })
+	}),
+	syncPausedAll: query(syncCoordination).rule((r) => {
+		const { target, turn } = v(SyncPaused, "syncPaused")
+		return r
+			.match(SyncPaused, { target, turn })
+			.where(r.not(SyncResumed, { target, turn }))
+			.find({ target, turn })
+	})
 })
 
 export const syncCoordinatorWorkload = workload(SyncCoordinator, syncCoordinatorPrograms)
