@@ -154,12 +154,15 @@ export const clockDenPrograms = Object.freeze({
 	),
 	clockClaim: clocked(
 		ChangeSet.empty(clockGraph)
-			.insertComputed(ClockClaim, [], {
-				until: Type.cast(
-					Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
-					DenInstant
-				)
-			})
+			.insertAllComputed(
+				{ ClockClaim: [] },
+				{
+					until: Type.cast(
+						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						DenInstant
+					)
+				}
+			)
 			.insert(ClockEnded, [])
 			.read("held", (delta) =>
 				query(clockGraph).rule((r) => {

@@ -171,12 +171,15 @@ export const syncDenPrograms = Object.freeze({
 	),
 	syncClaim: clocked(
 		ChangeSet.empty(syncGraph)
-			.insertComputed(SyncClaim, [], {
-				until: Type.cast(
-					Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
-					DenInstant
-				)
-			})
+			.insertAllComputed(
+				{ SyncClaim: [] },
+				{
+					until: Type.cast(
+						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						DenInstant
+					)
+				}
+			)
 			.insert(SyncEnded, [])
 			.read("held", (delta) =>
 				query(syncGraph).rule((r) => {

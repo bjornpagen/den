@@ -158,12 +158,15 @@ export const retryDenPrograms = Object.freeze({
 	),
 	retryClaim: clocked(
 		ChangeSet.empty(retryGraph)
-			.insertComputed(RetryClaim, [], {
-				until: Type.cast(
-					Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
-					DenInstant
-				)
-			})
+			.insertAllComputed(
+				{ RetryClaim: [] },
+				{
+					until: Type.cast(
+						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						DenInstant
+					)
+				}
+			)
 			.insert(RetryEnded, [])
 			.read("held", (delta) =>
 				query(retryGraph).rule((r) => {

@@ -184,12 +184,15 @@ export const reviewDenPrograms = Object.freeze({
 	),
 	reviewClaim: clocked(
 		ChangeSet.empty(reviewGraph)
-			.insertComputed(ReviewClaim, [], {
-				until: Type.cast(
-					Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
-					DenInstant
-				)
-			})
+			.insertAllComputed(
+				{ ReviewClaim: [] },
+				{
+					until: Type.cast(
+						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						DenInstant
+					)
+				}
+			)
 			.insert(ReviewEnded, [])
 			.read("held", (delta) =>
 				query(reviewGraph).rule((r) => {

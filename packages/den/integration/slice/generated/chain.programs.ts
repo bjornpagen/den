@@ -179,12 +179,15 @@ export const chainDenPrograms = Object.freeze({
 	),
 	chainClaim: clocked(
 		ChangeSet.empty(chainGraph)
-			.insertComputed(ChainClaim, [], {
-				until: Type.cast(
-					Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
-					DenInstant
-				)
-			})
+			.insertAllComputed(
+				{ ChainClaim: [] },
+				{
+					until: Type.cast(
+						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						DenInstant
+					)
+				}
+			)
 			.insert(ChainEnded, [])
 			.read("held", (delta) =>
 				query(chainGraph).rule((r) => {

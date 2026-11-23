@@ -62,7 +62,7 @@ for the coordination group, and DBCLOCK:
   grizzle types with no guard since a reading lies in the clock's range and a delay in its contract's (79874ab5f), so no
   host names an instant a write stores (DECISIONS 43(a)). An invocation's end is its first reading plus its budget, and
   a claim's lease is computed in the claim's own statement, its reading plus the time the invocation has left at the
-  turn's reading, `insertComputed(<P>Claim, [], { until })` with its holds nested as before, so no host names when a
+  turn's reading, `insertAllComputed({ <P>Claim: [] }, { until })` with its holds nested as before, so no host names when a
   lease ends and no host's clock judges anything. `runtime/clock.ts` keeps only the in-process transport's clock, at which the in-process driver
   delivers a held wake once its delay has passed. Clocked reads serve `once` and no `watch`, which matches den's split:
   the relay's watch reads what commits made eligible, without time, and the census reads what time made eligible. The

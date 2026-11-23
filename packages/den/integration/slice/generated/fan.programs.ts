@@ -181,12 +181,15 @@ export const fanDenPrograms = Object.freeze({
 	),
 	fanClaim: clocked(
 		ChangeSet.empty(fanGraph)
-			.insertComputed(FanClaim, [], {
-				until: Type.cast(
-					Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
-					DenInstant
-				)
-			})
+			.insertAllComputed(
+				{ FanClaim: [] },
+				{
+					until: Type.cast(
+						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						DenInstant
+					)
+				}
+			)
 			.insert(FanEnded, [])
 			.read("held", (delta) =>
 				query(fanGraph).rule((r) => {

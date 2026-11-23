@@ -198,12 +198,15 @@ export const assignDenPrograms = Object.freeze({
 	),
 	assignClaim: clocked(
 		ChangeSet.empty(assignGraph)
-			.insertComputed(AssignClaim, [], {
-				until: Type.cast(
-					Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
-					DenInstant
-				)
-			})
+			.insertAllComputed(
+				{ AssignClaim: [] },
+				{
+					until: Type.cast(
+						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						DenInstant
+					)
+				}
+			)
 			.insert(AssignEnded, [])
 			.read("held", (delta) =>
 				query(assignGraph).rule((r) => {

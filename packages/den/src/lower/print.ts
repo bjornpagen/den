@@ -638,7 +638,7 @@ const liveHoldsOf = (role: string, st: SeatsIR): string => {
  */
 const claimOf = (graph: string, r: (s: string) => string): string => `clocked(
 	ChangeSet.empty(${graph})
-		.insertComputed(${r("Claim")}, [], {
+		.insertAllComputed({ ${r("Claim")}: [] }, {
 			until: Type.cast(Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))), DenInstant)
 		})
 		.insert(${r("Ended")}, [])

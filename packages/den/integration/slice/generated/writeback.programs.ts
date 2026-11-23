@@ -144,12 +144,15 @@ export const writebackDenPrograms = Object.freeze({
 	),
 	writebackClaim: clocked(
 		ChangeSet.empty(writebackGraph)
-			.insertComputed(WritebackClaim, [], {
-				until: Type.cast(
-					Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
-					DenInstant
-				)
-			})
+			.insertAllComputed(
+				{ WritebackClaim: [] },
+				{
+					until: Type.cast(
+						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						DenInstant
+					)
+				}
+			)
 			.insert(WritebackEnded, [])
 			.read("held", (delta) =>
 				query(writebackGraph).rule((r) => {
