@@ -83451,7 +83451,7 @@
 			},
 			{
 				"ddl": [
-					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_fan_claim_ctcrhycatd","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"07ce158ceeb8c70ee00288cee772e314ebbd5a9269e9db4ecadf36bcabf42e8a"},
+					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_fan_claim_ctcrhycatd","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"3f9a684f0fdbd0e10dd9ce47c92808bb6cb44bbb62aec12bcc07c1cd65380e68"},
 					{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"FUNCTION","names":[{"args":[],"name":"__capture_fan_claim_ctcrhycatd","schema":"slice"}]},"privileges":["EXECUTE"]}
 				],
 				"ident": "function:slice.__capture_fan_claim_ctcrhycatd",
@@ -83459,7 +83459,7 @@
 			},
 			{
 				"ddl": [
-					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_fan_ended_gzzovkkada","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"d70185e3eafe36d451d5a2b3675b713dbc902e99b10654c3be9e6a13f8d8821f"},
+					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_fan_ended_gzzovkkada","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"da352788ab826cf756fb7ac2a2de667cc90e345b32f0766902cc0d51a72e7ce2"},
 					{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"FUNCTION","names":[{"args":[],"name":"__capture_fan_ended_gzzovkkada","schema":"slice"}]},"privileges":["EXECUTE"]}
 				],
 				"ident": "function:slice.__capture_fan_ended_gzzovkkada",
@@ -83467,7 +83467,7 @@
 			},
 			{
 				"ddl": [
-					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_fan_held_ekrigwpm7j","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"3356aefd9ee8f7f07be1fca02b0a5c11d5d4f8b02e86754f23516b42b4713550"},
+					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_fan_held_ekrigwpm7j","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"c2d5ed75bba233ec4dfe4df0b7c46699d7f1569dac4c9db802670f1800b7a874"},
 					{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"FUNCTION","names":[{"args":[],"name":"__capture_fan_held_ekrigwpm7j","schema":"slice"}]},"privileges":["EXECUTE"]}
 				],
 				"ident": "function:slice.__capture_fan_held_ekrigwpm7j",
@@ -83475,7 +83475,7 @@
 			},
 			{
 				"ddl": [
-					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_fan_hold_ddvc7a2pzn","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"3d1f76d95a5a4819b701639b25595e736a61f40ac7686b6e511f792238e72599"},
+					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_fan_hold_ddvc7a2pzn","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"1c19a6e9605f47e0f86ae28aeaf0c3ec5c204d85d47f8400666180840a9a179d"},
 					{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"FUNCTION","names":[{"args":[],"name":"__capture_fan_hold_ddvc7a2pzn","schema":"slice"}]},"privileges":["EXECUTE"]}
 				],
 				"ident": "function:slice.__capture_fan_hold_ddvc7a2pzn",
@@ -83483,7 +83483,7 @@
 			},
 			{
 				"ddl": [
-					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_review_claim_qyslgqsqs7","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"55297d7812fff1a5400bbe7869abbbec5f9386dda7f955fa8f392740d9a47117"},
+					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_review_claim_qyslgqsqs7","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"ef4ad766712794fa4762b5c5f9bd4940d76cb0d50efcb0d1fc3c524c46b6c49f"},
 					{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"FUNCTION","names":[{"args":[],"name":"__capture_review_claim_qyslgqsqs7","schema":"slice"}]},"privileges":["EXECUTE"]}
 				],
 				"ident": "function:slice.__capture_review_claim_qyslgqsqs7",
@@ -83491,7 +83491,7 @@
 			},
 			{
 				"ddl": [
-					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_review_ended_3o7fwr7f2y","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"325a65b20f10c4338bb70e5dfee9e26fcfc1103e321a0c78fd30106f547af4de"},
+					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_review_ended_3o7fwr7f2y","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"b5e17bcfdcb1be2c1b543dd0e13b3c304bfb67ef6f9bc2e02f21c20c29a6417c"},
 					{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"FUNCTION","names":[{"args":[],"name":"__capture_review_ended_3o7fwr7f2y","schema":"slice"}]},"privileges":["EXECUTE"]}
 				],
 				"ident": "function:slice.__capture_review_ended_3o7fwr7f2y",
@@ -83499,7 +83499,7 @@
 			},
 			{
 				"ddl": [
-					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_review_held_p4ye73l7sh","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"5d2bf4902c6c9b09d2904c5c84623d1036c4afce87d40c3cae8093ad80fcf612"},
+					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_review_held_p4ye73l7sh","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"ded013754d4fadd951a830d05d652e812f8436e2e5667ccad7caba859ba45532"},
 					{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"FUNCTION","names":[{"args":[],"name":"__capture_review_held_p4ye73l7sh","schema":"slice"}]},"privileges":["EXECUTE"]}
 				],
 				"ident": "function:slice.__capture_review_held_p4ye73l7sh",
@@ -83507,7 +83507,7 @@
 			},
 			{
 				"ddl": [
-					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_review_hold_3d64vgpezl","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"85dadf417285e6de68c7567606c9336f666f71a693c2fb691368ebe38cf45f32"},
+					{"header":{"kind":"createFunction","language":"plpgsql","name":{"name":"__capture_review_hold_3d64vgpezl","schema":"slice"},"parallel":"UNSAFE","params":[],"returns":"trigger","security":"DEFINER","volatility":"VOLATILE"},"kind":"recordedFunction","source":"7e9fd71a9edc0faa030158f4ff82d244572785773b091a599ca8e64fd8f1a3fc"},
 					{"from":[{"kind":"PUBLIC"}],"kind":"revoke","on":{"kind":"FUNCTION","names":[{"args":[],"name":"__capture_review_hold_3d64vgpezl","schema":"slice"}]},"privileges":["EXECUTE"]}
 				],
 				"ident": "function:slice.__capture_review_hold_3d64vgpezl",
@@ -92473,7 +92473,7 @@
 	},
 	"schema": "slice",
 	"schemaName": "Slice",
-	"seal": "b18d00539e682fb1097bfb1d19a25c1644d841e9db308ecd1b6cfd5d53ec7bd6",
+	"seal": "13ddad20a1daa712550437094fda852a39d19c40f012f6fb564aae6f804c85a5",
 	"theory": {
 		"laws": {
 			"__assign_admitted_in_assign_root_b54nrak4bo": {

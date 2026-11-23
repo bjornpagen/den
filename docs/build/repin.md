@@ -159,4 +159,10 @@ for the coordination group, and DBCLOCK:
   deleted, and with it the suites' `connectTimeoutMillis`; a suite login's pool closes an idle session after
   `authenticationTimeoutSeconds`, the longest a connection attempt can take on a server at its default.
 
+- **A read declares no level (grizzle 95126ce5a), a judge's sites stand their session tables up in one read of the
+  catalog (cf1d7a499), and a workload's candidate key member is matched by its key's kind and side (0194f0805).** den's
+  reads declare no level already (DEFERRABLE above) and its programs name no candidate key member, so no den source
+  moves; the slice's capture functions read their session tables once, so its init migration is drafted again
+  (`04-validate.sql`, the snapshot, the manifest and the served files).
+
 Still to come from the grizzle session: GUARD and SCHEMAMAP.
