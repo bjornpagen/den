@@ -133,11 +133,7 @@ CREATE TABLE "slice_den"."assign_assignment_input" (
   "topic" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "mode" "slice_den"."assign_assignment_input_mode" NOT NULL,
   "__tag_kind_assignment_q5nqvzv6jc" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
-  "__root_h2ohpjyioe" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "mode" = 0::smallint THEN "root" END) STORED,
-  "__root_i3j5qytpxw" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "mode" = 1::smallint THEN "root" END) STORED,
-  CONSTRAINT "__assign_assignment_input_pk_rhoa22jovt" PRIMARY KEY ("root", "scope"),
-  CONSTRAINT "__assign_assignment_input_key_root_scope_7nedy2qbk6" UNIQUE NULLS DISTINCT ("__root_h2ohpjyioe", "scope"),
-  CONSTRAINT "__assign_assignment_input_key_root_scope_qfmygkrjhs" UNIQUE NULLS DISTINCT ("__root_i3j5qytpxw", "scope")
+  CONSTRAINT "__assign_assignment_input_pk_rhoa22jovt" PRIMARY KEY ("root", "scope")
 );
 
 CREATE TABLE "slice_den"."assign_assignment_input_exclude" (
@@ -192,13 +188,8 @@ CREATE TABLE "slice_den"."assign_decide_input" (
   "topic" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "vector" "vector_ext"."vector"(4) NOT NULL,
   "mode" "slice_den"."assign_decide_input_mode" NOT NULL,
-  "__tag_kind_decide_ggginylxcj" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL,
-  "__root_h2ohpjyioe" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "mode" = 0::smallint THEN "root" END) STORED,
-  "__root_i3j5qytpxw" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "mode" = 1::smallint THEN "root" END) STORED,
   CONSTRAINT "__assign_decide_input_pk_phi7dovwvq" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__assign_decide_input_norm_vector_it3heqzuab" CHECK (("vector_ext"."vector_norm"("vector") BETWEEN '3.3881317890172014e-21'::double precision AND '9223372036854776000'::double precision) IS TRUE),
-  CONSTRAINT "__assign_decide_input_key_root_step_d3uks3rj2n" UNIQUE NULLS DISTINCT ("__root_h2ohpjyioe", "step"),
-  CONSTRAINT "__assign_decide_input_key_root_step_6zm3itpfsl" UNIQUE NULLS DISTINCT ("__root_i3j5qytpxw", "step")
+  CONSTRAINT "__assign_decide_input_norm_vector_it3heqzuab" CHECK (("vector_ext"."vector_norm"("vector") BETWEEN '3.3881317890172014e-21'::double precision AND '9223372036854776000'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice_den"."assign_decide_input_exclude" (
@@ -230,12 +221,8 @@ CREATE TABLE "slice_den"."assign_decide_output" (
   "step" "slice"."__sha256" NOT NULL,
   "confidence" double precision NOT NULL,
   "stage" "slice_den"."assign_decide_output_stage" NOT NULL,
-  "__root_safjiw7jol" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "stage" = 0::smallint THEN "root" END) STORED,
-  "__root_dp4c6pzr4n" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "stage" = 1::smallint THEN "root" END) STORED,
   CONSTRAINT "__assign_decide_output_pk_tf6r7wtfse" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "assign_decide_output_confidence_finite" CHECK (("confidence" > '-Infinity'::double precision AND "confidence" < 'Infinity'::double precision) IS TRUE),
-  CONSTRAINT "__assign_decide_output_key_root_step_kkrwqp4hal" UNIQUE NULLS DISTINCT ("__root_safjiw7jol", "step"),
-  CONSTRAINT "__assign_decide_output_key_root_step_b4t6tvdg54" UNIQUE NULLS DISTINCT ("__root_dp4c6pzr4n", "step")
+  CONSTRAINT "assign_decide_output_confidence_finite" CHECK (("confidence" > '-Infinity'::double precision AND "confidence" < 'Infinity'::double precision) IS TRUE)
 );
 
 CREATE TABLE "slice_den"."assign_decide_output_stage_rest" (
@@ -300,7 +287,6 @@ CREATE TABLE "slice_den"."assign_decide_read_seen_row" (
 CREATE TABLE "slice_den"."assign_done" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_done_3n46zakkk3" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__assign_done_pk_gzil7jvxpz" PRIMARY KEY ("root", "step")
 );
 
@@ -310,12 +296,7 @@ CREATE TABLE "slice_den"."assign_embed_input" (
   "learner" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "topic" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "mode" "slice_den"."assign_embed_input_mode" NOT NULL,
-  "__tag_kind_embed_auqj2s5hps" smallint GENERATED ALWAYS AS (2::smallint) STORED NOT NULL,
-  "__root_h2ohpjyioe" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "mode" = 0::smallint THEN "root" END) STORED,
-  "__root_i3j5qytpxw" "pg_catalog"."bytea" GENERATED ALWAYS AS (CASE WHEN "mode" = 1::smallint THEN "root" END) STORED,
-  CONSTRAINT "__assign_embed_input_pk_q4ezcfvwia" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__assign_embed_input_key_root_step_om25gwnmgm" UNIQUE NULLS DISTINCT ("__root_h2ohpjyioe", "step"),
-  CONSTRAINT "__assign_embed_input_key_root_step_bdexw3n23j" UNIQUE NULLS DISTINCT ("__root_i3j5qytpxw", "step")
+  CONSTRAINT "__assign_embed_input_pk_q4ezcfvwia" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."assign_embed_input_exclude" (
@@ -377,7 +358,6 @@ CREATE TABLE "slice_den"."assign_exhausted" (
 CREATE TABLE "slice_den"."assign_failed" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_failed_bxttnpdkga" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL,
   CONSTRAINT "__assign_failed_pk_ygxslcya4o" PRIMARY KEY ("root", "step")
 );
 
@@ -421,8 +401,7 @@ CREATE TABLE "slice_den"."assign_result" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice_den"."assign_outcome" NOT NULL,
-  CONSTRAINT "__assign_result_pk_i2yxmpkyzr" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__assign_result_key_root_step_outcome_6lfb655hkk" UNIQUE NULLS DISTINCT ("root", "step", "outcome")
+  CONSTRAINT "__assign_result_pk_i2yxmpkyzr" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."assign_resumed" (
@@ -484,8 +463,7 @@ CREATE TABLE "slice_den"."assign_step" (
   "kind" "slice_den"."assign_kind" NOT NULL,
   "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  CONSTRAINT "__assign_step_pk_2oc4ehvfzd" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__assign_step_key_root_step_kind_y4zg6bnmvb" UNIQUE NULLS DISTINCT ("root", "step", "kind")
+  CONSTRAINT "__assign_step_pk_2oc4ehvfzd" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."audit" (
@@ -529,7 +507,6 @@ CREATE TABLE "slice_den"."chain_claim" (
 CREATE TABLE "slice_den"."chain_done" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_done_uhpvxcbhg2" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__chain_done_pk_tyyx2hmu3r" PRIMARY KEY ("root", "step")
 );
 
@@ -549,7 +526,6 @@ CREATE TABLE "slice_den"."chain_exhausted" (
 CREATE TABLE "slice_den"."chain_failed" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_failed_lrxbpw73ih" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL,
   CONSTRAINT "__chain_failed_pk_m7o5m3xzrr" PRIMARY KEY ("root", "step")
 );
 
@@ -605,7 +581,6 @@ CREATE TABLE "slice_den"."chain_page_input" (
   "feed" "slice_den"."chain_page_input_feed" NOT NULL,
   "seq" "slice"."__domain_mxhao3k6ss" NOT NULL,
   "pages" bigint NOT NULL,
-  "__tag_kind_page_wmj4dlxrkf" smallint GENERATED ALWAYS AS (2::smallint) STORED NOT NULL,
   CONSTRAINT "__chain_page_input_pk_xuafsbu5vz" PRIMARY KEY ("root", "step")
 );
 
@@ -718,8 +693,7 @@ CREATE TABLE "slice_den"."chain_result" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice_den"."chain_outcome" NOT NULL,
-  CONSTRAINT "__chain_result_pk_btw3jzlkgl" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__chain_result_key_root_step_outcome_nd4y5s2adr" UNIQUE NULLS DISTINCT ("root", "step", "outcome")
+  CONSTRAINT "__chain_result_pk_btw3jzlkgl" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."chain_resumed" (
@@ -781,8 +755,7 @@ CREATE TABLE "slice_den"."chain_step" (
   "kind" "slice_den"."chain_kind" NOT NULL,
   "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  CONSTRAINT "__chain_step_pk_u6x5wnvfbv" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__chain_step_key_root_step_kind_2tp7uwbfgm" UNIQUE NULLS DISTINCT ("root", "step", "kind")
+  CONSTRAINT "__chain_step_pk_u6x5wnvfbv" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."clock_admitted" (
@@ -796,7 +769,6 @@ CREATE TABLE "slice_den"."clock_chime_input" (
   "step" "slice"."__sha256" NOT NULL,
   "hour" bigint NOT NULL,
   "bell" "slice_den"."clock_chime_input_bell" NOT NULL,
-  "__tag_kind_chime_7beznll3bg" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__clock_chime_input_pk_rx6722hrpy" PRIMARY KEY ("root", "step")
 );
 
@@ -823,7 +795,6 @@ CREATE TABLE "slice_den"."clock_close_input" (
   "step" "slice"."__sha256" NOT NULL,
   "sitting" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "deadline" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  "__tag_kind_close_f2ovjex5ey" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL,
   CONSTRAINT "__clock_close_input_pk_kzcush3qdx" PRIMARY KEY ("root", "step")
 );
 
@@ -838,7 +809,6 @@ CREATE TABLE "slice_den"."clock_close_output" (
 CREATE TABLE "slice_den"."clock_done" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_done_23mrxmndcr" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__clock_done_pk_f4vl6frrax" PRIMARY KEY ("root", "step")
 );
 
@@ -858,7 +828,6 @@ CREATE TABLE "slice_den"."clock_exhausted" (
 CREATE TABLE "slice_den"."clock_failed" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_failed_2to56fqild" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL,
   CONSTRAINT "__clock_failed_pk_6twuzcs6kf" PRIMARY KEY ("root", "step")
 );
 
@@ -917,8 +886,7 @@ CREATE TABLE "slice_den"."clock_result" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice_den"."clock_outcome" NOT NULL,
-  CONSTRAINT "__clock_result_pk_yptcdjm6pu" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__clock_result_key_root_step_outcome_setnvqmg3m" UNIQUE NULLS DISTINCT ("root", "step", "outcome")
+  CONSTRAINT "__clock_result_pk_yptcdjm6pu" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."clock_resumed" (
@@ -995,8 +963,7 @@ CREATE TABLE "slice_den"."clock_step" (
   "kind" "slice_den"."clock_kind" NOT NULL,
   "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  CONSTRAINT "__clock_step_pk_jjmk3diqpl" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__clock_step_key_root_step_kind_6tl2q53mgp" UNIQUE NULLS DISTINCT ("root", "step", "kind")
+  CONSTRAINT "__clock_step_pk_jjmk3diqpl" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."fan_admitted" (
@@ -1016,7 +983,6 @@ CREATE TABLE "slice_den"."fan_batch_input" (
   "scope" "slice"."__sha256" NOT NULL,
   "batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "size" bigint NOT NULL,
-  "__tag_kind_batch_cylbxlshb2" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__fan_batch_input_pk_bmhyfuy2bw" PRIMARY KEY ("root", "scope")
 );
 
@@ -1036,7 +1002,6 @@ CREATE TABLE "slice_den"."fan_claim" (
 CREATE TABLE "slice_den"."fan_done" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_done_tulqbccryg" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__fan_done_pk_5u65252q52" PRIMARY KEY ("root", "step")
 );
 
@@ -1044,7 +1009,6 @@ CREATE TABLE "slice_den"."fan_dust_input" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "sweep" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "__tag_kind_dust_p24m5lzoa4" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL,
   CONSTRAINT "__fan_dust_input_pk_xyleoykgmc" PRIMARY KEY ("root", "step")
 );
 
@@ -1071,7 +1035,6 @@ CREATE TABLE "slice_den"."fan_exhausted" (
 CREATE TABLE "slice_den"."fan_failed" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_failed_3kga3qw77n" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL,
   CONSTRAINT "__fan_failed_pk_z4etp5dmax" PRIMARY KEY ("root", "step")
 );
 
@@ -1131,7 +1094,6 @@ CREATE TABLE "slice_den"."fan_mop_input" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "sweep" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "__tag_kind_mop_sawjeyk4ob" smallint GENERATED ALWAYS AS (3::smallint) STORED NOT NULL,
   CONSTRAINT "__fan_mop_input_pk_jwnqekad76" PRIMARY KEY ("root", "step")
 );
 
@@ -1160,8 +1122,7 @@ CREATE TABLE "slice_den"."fan_result" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice_den"."fan_outcome" NOT NULL,
-  CONSTRAINT "__fan_result_pk_yeear352sx" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__fan_result_key_root_step_outcome_r3kspuzsnn" UNIQUE NULLS DISTINCT ("root", "step", "outcome")
+  CONSTRAINT "__fan_result_pk_yeear352sx" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."fan_resumed" (
@@ -1213,7 +1174,6 @@ CREATE TABLE "slice_den"."fan_square_input" (
   "step" "slice"."__sha256" NOT NULL,
   "batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "n" bigint NOT NULL,
-  "__tag_kind_square_q3stoybx3v" smallint GENERATED ALWAYS AS (4::smallint) STORED NOT NULL,
   CONSTRAINT "__fan_square_input_pk_uzumoizv53" PRIMARY KEY ("root", "step")
 );
 
@@ -1248,8 +1208,7 @@ CREATE TABLE "slice_den"."fan_step" (
   "kind" "slice_den"."fan_kind" NOT NULL,
   "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  CONSTRAINT "__fan_step_pk_2f4tcxnofk" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__fan_step_key_root_step_kind_k7omzme7ok" UNIQUE NULLS DISTINCT ("root", "step", "kind")
+  CONSTRAINT "__fan_step_pk_2f4tcxnofk" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."fan_sweep_finish_output" (
@@ -1271,8 +1230,7 @@ CREATE TABLE "slice_den"."fan_within" (
   "scope" "slice"."__sha256" NOT NULL,
   "parent" "slice"."__sha256" NOT NULL,
   "kind" "slice_den"."fan_child_kind" NOT NULL,
-  CONSTRAINT "__fan_within_pk_g5tswgjfa6" PRIMARY KEY ("root", "scope"),
-  CONSTRAINT "__fan_within_key_root_scope_kind_vrmac5adc7" UNIQUE NULLS DISTINCT ("root", "scope", "kind")
+  CONSTRAINT "__fan_within_pk_g5tswgjfa6" PRIMARY KEY ("root", "scope")
 );
 
 CREATE TABLE "slice_den"."retry_admitted" (
@@ -1285,7 +1243,6 @@ CREATE TABLE "slice_den"."retry_brittle_input" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "__tag_kind_brittle_wzfwqdkbkg" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__retry_brittle_input_pk_tlqssexohy" PRIMARY KEY ("root", "step")
 );
 
@@ -1309,7 +1266,6 @@ CREATE TABLE "slice_den"."retry_claim" (
 CREATE TABLE "slice_den"."retry_done" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_done_k5wikz4kly" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__retry_done_pk_vtkpce7rkq" PRIMARY KEY ("root", "step")
 );
 
@@ -1329,7 +1285,6 @@ CREATE TABLE "slice_den"."retry_exhausted" (
 CREATE TABLE "slice_den"."retry_failed" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_failed_446fx3eezg" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL,
   CONSTRAINT "__retry_failed_pk_mygc4onczp" PRIMARY KEY ("root", "step")
 );
 
@@ -1374,7 +1329,6 @@ CREATE TABLE "slice_den"."retry_patient_input" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "__tag_kind_patient_qohxuqrewz" smallint GENERATED ALWAYS AS (2::smallint) STORED NOT NULL,
   CONSTRAINT "__retry_patient_input_pk_74247zb7wo" PRIMARY KEY ("root", "step")
 );
 
@@ -1396,7 +1350,6 @@ CREATE TABLE "slice_den"."retry_polite_input" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "__tag_kind_polite_s3g4jx73ij" smallint GENERATED ALWAYS AS (3::smallint) STORED NOT NULL,
   CONSTRAINT "__retry_polite_input_pk_ptzd72dxff" PRIMARY KEY ("root", "step")
 );
 
@@ -1418,8 +1371,7 @@ CREATE TABLE "slice_den"."retry_result" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice_den"."retry_outcome" NOT NULL,
-  CONSTRAINT "__retry_result_pk_5fegihvmml" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__retry_result_key_root_step_outcome_2wc43adlgu" UNIQUE NULLS DISTINCT ("root", "step", "outcome")
+  CONSTRAINT "__retry_result_pk_5fegihvmml" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."retry_resumed" (
@@ -1479,7 +1431,6 @@ CREATE TABLE "slice_den"."retry_steadfast_input" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "__tag_kind_steadfast_4rudtmco65" smallint GENERATED ALWAYS AS (4::smallint) STORED NOT NULL,
   CONSTRAINT "__retry_steadfast_input_pk_omubooh2k3" PRIMARY KEY ("root", "step")
 );
 
@@ -1496,8 +1447,7 @@ CREATE TABLE "slice_den"."retry_step" (
   "kind" "slice_den"."retry_kind" NOT NULL,
   "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  CONSTRAINT "__retry_step_pk_opjqidwhzg" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__retry_step_key_root_step_kind_urtap3ndb3" UNIQUE NULLS DISTINCT ("root", "step", "kind")
+  CONSTRAINT "__retry_step_pk_opjqidwhzg" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."retry_throttled_finish_output" (
@@ -1540,7 +1490,6 @@ CREATE TABLE "slice_den"."review_analyze_input" (
   "review" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "group" bigint NOT NULL,
   "question" bigint NOT NULL,
-  "__tag_kind_analyze_q6ry667fpd" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__review_analyze_input_pk_jr7qmhqwgi" PRIMARY KEY ("root", "step")
 );
 
@@ -1567,7 +1516,6 @@ CREATE TABLE "slice_den"."review_claim" (
 CREATE TABLE "slice_den"."review_done" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_done_clhrawk5mj" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__review_done_pk_ve6inioidy" PRIMARY KEY ("root", "step")
 );
 
@@ -1587,7 +1535,6 @@ CREATE TABLE "slice_den"."review_exhausted" (
 CREATE TABLE "slice_den"."review_failed" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_failed_set6imbczu" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL,
   CONSTRAINT "__review_failed_pk_7iszsjaybr" PRIMARY KEY ("root", "step")
 );
 
@@ -1610,7 +1557,6 @@ CREATE TABLE "slice_den"."review_gather_input" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "review" "slice"."__text_t4rwovzmqj" NOT NULL,
-  "__tag_kind_gather_xyjwruhpuh" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL,
   CONSTRAINT "__review_gather_input_pk_rllaxtocmq" PRIMARY KEY ("root", "step")
 );
 
@@ -1674,7 +1620,6 @@ CREATE TABLE "slice_den"."review_questions_input" (
   "review" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "group" bigint NOT NULL,
   "size" bigint NOT NULL,
-  "__tag_kind_questions_mtcmjgn4fu" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__review_questions_input_pk_4d27veaz4g" PRIMARY KEY ("root", "scope")
 );
 
@@ -1689,8 +1634,7 @@ CREATE TABLE "slice_den"."review_result" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice_den"."review_outcome" NOT NULL,
-  CONSTRAINT "__review_result_pk_o5x5griurk" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__review_result_key_root_step_outcome_dhk7wpexgf" UNIQUE NULLS DISTINCT ("root", "step", "outcome")
+  CONSTRAINT "__review_result_pk_o5x5griurk" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."review_resumed" (
@@ -1748,7 +1692,6 @@ CREATE TABLE "slice_den"."review_save_input" (
   "group" bigint NOT NULL,
   "count" bigint NOT NULL,
   "total" bigint NOT NULL,
-  "__tag_kind_save_qnkiffm2eg" smallint GENERATED ALWAYS AS (4::smallint) STORED NOT NULL,
   CONSTRAINT "__review_save_input_pk_iaqr5cg2c2" PRIMARY KEY ("root", "step")
 );
 
@@ -1821,8 +1764,7 @@ CREATE TABLE "slice_den"."review_step" (
   "kind" "slice_den"."review_kind" NOT NULL,
   "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  CONSTRAINT "__review_step_pk_gfbmnzqbc3" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__review_step_key_root_step_kind_nhbyhyviw3" UNIQUE NULLS DISTINCT ("root", "step", "kind")
+  CONSTRAINT "__review_step_pk_gfbmnzqbc3" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."review_within" (
@@ -1830,8 +1772,7 @@ CREATE TABLE "slice_den"."review_within" (
   "scope" "slice"."__sha256" NOT NULL,
   "parent" "slice"."__sha256" NOT NULL,
   "kind" "slice_den"."review_child_kind" NOT NULL,
-  CONSTRAINT "__review_within_pk_ohgogpkz4s" PRIMARY KEY ("root", "scope"),
-  CONSTRAINT "__review_within_key_root_scope_kind_4j3ppeba3m" UNIQUE NULLS DISTINCT ("root", "scope", "kind")
+  CONSTRAINT "__review_within_pk_ohgogpkz4s" PRIMARY KEY ("root", "scope")
 );
 
 CREATE TABLE "slice_den"."sync_admitted" (
@@ -1844,7 +1785,6 @@ CREATE TABLE "slice_den"."sync_build_input" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "build" bigint NOT NULL,
-  "__tag_kind_build_pslevsssox" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__sync_build_input_pk_wtjr2xzecg" PRIMARY KEY ("root", "step")
 );
 
@@ -1870,7 +1810,6 @@ CREATE TABLE "slice_den"."sync_copy_input" (
   "step" "slice"."__sha256" NOT NULL,
   "relation" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   "run" bigint NOT NULL,
-  "__tag_kind_copy_wfaj52nfh7" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL,
   CONSTRAINT "__sync_copy_input_pk_nzsbbbp6o5" PRIMARY KEY ("root", "step")
 );
 
@@ -1884,7 +1823,6 @@ CREATE TABLE "slice_den"."sync_copy_output" (
 CREATE TABLE "slice_den"."sync_done" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_done_pkvv6jrgpq" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__sync_done_pk_nllomjb7og" PRIMARY KEY ("root", "step")
 );
 
@@ -1921,7 +1859,6 @@ CREATE TABLE "slice_den"."sync_exhausted" (
 CREATE TABLE "slice_den"."sync_failed" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_failed_26do6twsnf" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL,
   CONSTRAINT "__sync_failed_pk_gqykngewxb" PRIMARY KEY ("root", "step")
 );
 
@@ -1986,8 +1923,7 @@ CREATE TABLE "slice_den"."sync_result" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice_den"."sync_outcome" NOT NULL,
-  CONSTRAINT "__sync_result_pk_jmwy2p3mqf" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__sync_result_key_root_step_outcome_6mi4koicfo" UNIQUE NULLS DISTINCT ("root", "step", "outcome")
+  CONSTRAINT "__sync_result_pk_jmwy2p3mqf" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."sync_resumed" (
@@ -2049,8 +1985,7 @@ CREATE TABLE "slice_den"."sync_step" (
   "kind" "slice_den"."sync_kind" NOT NULL,
   "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  CONSTRAINT "__sync_step_pk_wfgcxdvbwo" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__sync_step_key_root_step_kind_qnrzp7wad2" UNIQUE NULLS DISTINCT ("root", "step", "kind")
+  CONSTRAINT "__sync_step_pk_wfgcxdvbwo" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."sync_sync_run_finish_output" (
@@ -2088,7 +2023,6 @@ CREATE TABLE "slice_den"."writeback_deliver_input" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "attempt" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  "__tag_kind_deliver_bksclfa7xd" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__writeback_deliver_input_pk_i7vk7dq3eb" PRIMARY KEY ("root", "step")
 );
 
@@ -2102,7 +2036,6 @@ CREATE TABLE "slice_den"."writeback_deliver_output" (
 CREATE TABLE "slice_den"."writeback_done" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_done_fmfi3z4vd7" smallint GENERATED ALWAYS AS (0::smallint) STORED NOT NULL,
   CONSTRAINT "__writeback_done_pk_x32l3wxb3c" PRIMARY KEY ("root", "step")
 );
 
@@ -2122,7 +2055,6 @@ CREATE TABLE "slice_den"."writeback_exhausted" (
 CREATE TABLE "slice_den"."writeback_failed" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
-  "__tag_outcome_failed_vaancyadzi" smallint GENERATED ALWAYS AS (1::smallint) STORED NOT NULL,
   CONSTRAINT "__writeback_failed_pk_g4uud6r5kb" PRIMARY KEY ("root", "step")
 );
 
@@ -2166,8 +2098,7 @@ CREATE TABLE "slice_den"."writeback_result" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
   "outcome" "slice_den"."writeback_outcome" NOT NULL,
-  CONSTRAINT "__writeback_result_pk_lygppaax77" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__writeback_result_key_root_step_outcome_ejpkkz5umg" UNIQUE NULLS DISTINCT ("root", "step", "outcome")
+  CONSTRAINT "__writeback_result_pk_lygppaax77" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."writeback_resumed" (
@@ -2229,8 +2160,7 @@ CREATE TABLE "slice_den"."writeback_step" (
   "kind" "slice_den"."writeback_kind" NOT NULL,
   "scope" "slice"."__sha256" NOT NULL,
   "due" "slice"."__domain_mxhao3k6ss" NOT NULL,
-  CONSTRAINT "__writeback_step_pk_xsrl5j4mlf" PRIMARY KEY ("root", "step"),
-  CONSTRAINT "__writeback_step_key_root_step_kind_e3ojhyyb5d" UNIQUE NULLS DISTINCT ("root", "step", "kind")
+  CONSTRAINT "__writeback_step_pk_xsrl5j4mlf" PRIMARY KEY ("root", "step")
 );
 
 CREATE TABLE "slice_den"."writeback_writeback_finish_output" (
@@ -3472,22 +3402,16 @@ ALTER TABLE "slice_den"."assign_assignment_finish_output"
 
 ALTER TABLE "slice_den"."assign_assignment_input"
   ADD CONSTRAINT "__assign_assignment_input_fk_root_kvtoeqjbqa" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_assignment_input_fk_scope_tag_kind_646lzaw56q" FOREIGN KEY ("scope", "__tag_kind_assignment_q5nqvzv6jc") REFERENCES "slice_den"."assign_root" ("root", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_assignment_input_fk_root_scope_zhasqfl2p6" FOREIGN KEY ("__root_h2ohpjyioe", "scope") REFERENCES "slice_den"."assign_assignment_input_mode_nearest" ("root", "scope") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_assignment_input_fk_root_scope_llkivifuad" FOREIGN KEY ("__root_i3j5qytpxw", "scope") REFERENCES "slice_den"."assign_assignment_input_mode_within" ("root", "scope") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+  ADD CONSTRAINT "__assign_assignment_input_fk_scope_tag_kind_646lzaw56q" FOREIGN KEY ("scope", "__tag_kind_assignment_q5nqvzv6jc") REFERENCES "slice_den"."assign_root" ("root", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."assign_assignment_input_exclude"
   ADD CONSTRAINT "__assign_assignment_input_exclude_fk_root_iovtlis5om" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_assignment_input_exclude_fk_root_scope_qsm54cc645" FOREIGN KEY ("root", "scope") REFERENCES "slice_den"."assign_assignment_input" ("root", "scope") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_assignment_input_exclude_fk_root_scope_pred_xyfmadmy2x" FOREIGN KEY ("__root_yjobx7uyrd", "scope", "__pred_ordinal_e545zctcav") REFERENCES "slice_den"."assign_assignment_input_exclude" ("root", "scope", "ordinal") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."assign_assignment_input_mode_nearest"
-  ADD CONSTRAINT "__assign_assignment_input_mode_nearest_fk_root_6yvi7prxiu" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_assignment_input_mode_nearest_fk_root_scope_zntw5s47au" FOREIGN KEY ("root", "scope") REFERENCES "slice_den"."assign_assignment_input" ("__root_h2ohpjyioe", "scope") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."assign_assignment_input_mode_nearest" ADD CONSTRAINT "__assign_assignment_input_mode_nearest_fk_root_6yvi7prxiu" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."assign_assignment_input_mode_within"
-  ADD CONSTRAINT "__assign_assignment_input_mode_within_fk_root_g45wawxglu" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_assignment_input_mode_within_fk_root_scope_wy26uam6nz" FOREIGN KEY ("root", "scope") REFERENCES "slice_den"."assign_assignment_input" ("__root_i3j5qytpxw", "scope") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."assign_assignment_input_mode_within" ADD CONSTRAINT "__assign_assignment_input_mode_within_fk_root_g45wawxglu" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."assign_assignment_input_near"
   ADD CONSTRAINT "__assign_assignment_input_near_fk_root_2cmn5si5rq" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3499,39 +3423,25 @@ ALTER TABLE "slice_den"."assign_claim"
   ADD CONSTRAINT "__assign_claim_fk_root_step_z35ulxscvt" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_claim_fk_root_step_pred_attempt_bt5m6xhi43" FOREIGN KEY ("__root_yewsvvtcyz", "step", "__pred_attempt_oey4tm5xyl") REFERENCES "slice_den"."assign_ended" ("root", "step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."assign_decide_input"
-  ADD CONSTRAINT "__assign_decide_input_fk_root_57yk3w5qjz" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_decide_input_fk_root_step_tag_kind_decide_fosl3a5onv" FOREIGN KEY ("root", "step", "__tag_kind_decide_ggginylxcj") REFERENCES "slice_den"."assign_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_decide_input_fk_root_step_5tkvvw2gev" FOREIGN KEY ("__root_h2ohpjyioe", "step") REFERENCES "slice_den"."assign_decide_input_mode_nearest" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_decide_input_fk_root_step_6mrlamao6q" FOREIGN KEY ("__root_i3j5qytpxw", "step") REFERENCES "slice_den"."assign_decide_input_mode_within" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."assign_decide_input" ADD CONSTRAINT "__assign_decide_input_fk_root_57yk3w5qjz" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."assign_decide_input_exclude"
   ADD CONSTRAINT "__assign_decide_input_exclude_fk_root_yz5voylpmu" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_input_exclude_fk_root_step_62s7y3zxzv" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_decide_input" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_input_exclude_fk_root_step_pred_vc4il3cgp6" FOREIGN KEY ("__root_yjobx7uyrd", "step", "__pred_ordinal_e545zctcav") REFERENCES "slice_den"."assign_decide_input_exclude" ("root", "step", "ordinal") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."assign_decide_input_mode_nearest"
-  ADD CONSTRAINT "__assign_decide_input_mode_nearest_fk_root_vrbpbkw55f" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_decide_input_mode_nearest_fk_root_step_x2xqt6jqpp" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_decide_input" ("__root_h2ohpjyioe", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."assign_decide_input_mode_nearest" ADD CONSTRAINT "__assign_decide_input_mode_nearest_fk_root_vrbpbkw55f" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."assign_decide_input_mode_within"
-  ADD CONSTRAINT "__assign_decide_input_mode_within_fk_root_pn7qnxf5da" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_decide_input_mode_within_fk_root_step_ud25kyxk3h" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_decide_input" ("__root_i3j5qytpxw", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."assign_decide_input_mode_within" ADD CONSTRAINT "__assign_decide_input_mode_within_fk_root_pn7qnxf5da" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."assign_decide_output"
   ADD CONSTRAINT "__assign_decide_output_fk_root_cdp7lsnba5" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_output_fk_root_step_pwsuruf3ul" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_decide_input" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_decide_output_fk_root_step_reczzzxtv7" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_done" ("root", "step") MATCH SIMPLE,
-  ADD CONSTRAINT "__assign_decide_output_fk_root_step_cwcr4bt3vo" FOREIGN KEY ("__root_safjiw7jol", "step") REFERENCES "slice_den"."assign_decide_output_stage_rest" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_decide_output_fk_root_step_not4tcuhrj" FOREIGN KEY ("__root_dp4c6pzr4n", "step") REFERENCES "slice_den"."assign_decide_output_stage_serve" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+  ADD CONSTRAINT "__assign_decide_output_fk_root_step_reczzzxtv7" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_done" ("root", "step") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."assign_decide_output_stage_rest"
-  ADD CONSTRAINT "__assign_decide_output_stage_rest_fk_root_v7p5cdtxtz" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_decide_output_stage_rest_fk_root_step_vx4nsxmdwx" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_decide_output" ("__root_safjiw7jol", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."assign_decide_output_stage_rest" ADD CONSTRAINT "__assign_decide_output_stage_rest_fk_root_v7p5cdtxtz" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."assign_decide_output_stage_serve"
-  ADD CONSTRAINT "__assign_decide_output_stage_serve_fk_root_dnolem6ncd" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_decide_output_stage_serve_fk_root_step_ngjidqu3cx" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_decide_output" ("__root_dp4c6pzr4n", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."assign_decide_output_stage_serve" ADD CONSTRAINT "__assign_decide_output_stage_serve_fk_root_dnolem6ncd" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."assign_decide_output_weighed"
   ADD CONSTRAINT "__assign_decide_output_weighed_fk_root_tfufuj3nqk" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3548,28 +3458,18 @@ ALTER TABLE "slice_den"."assign_decide_read_seen"
   ADD CONSTRAINT "__assign_decide_read_seen_fk_root_qryoazvyva" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_decide_read_seen_fk_root_step_agvsf5drbl" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_result" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."assign_done"
-  ADD CONSTRAINT "__assign_done_fk_root_klcl2ojfbu" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_done_fk_root_step_tag_outcome_done_q7c3zyfeot" FOREIGN KEY ("root", "step", "__tag_outcome_done_3n46zakkk3") REFERENCES "slice_den"."assign_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."assign_done" ADD CONSTRAINT "__assign_done_fk_root_klcl2ojfbu" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."assign_embed_input"
-  ADD CONSTRAINT "__assign_embed_input_fk_root_d5blm5pm2a" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_embed_input_fk_root_step_tag_kind_embed_vupaxjcjqq" FOREIGN KEY ("root", "step", "__tag_kind_embed_auqj2s5hps") REFERENCES "slice_den"."assign_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_embed_input_fk_root_step_zmtzxi3uzy" FOREIGN KEY ("__root_h2ohpjyioe", "step") REFERENCES "slice_den"."assign_embed_input_mode_nearest" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_embed_input_fk_root_step_ys4nxqddop" FOREIGN KEY ("__root_i3j5qytpxw", "step") REFERENCES "slice_den"."assign_embed_input_mode_within" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."assign_embed_input" ADD CONSTRAINT "__assign_embed_input_fk_root_d5blm5pm2a" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."assign_embed_input_exclude"
   ADD CONSTRAINT "__assign_embed_input_exclude_fk_root_yxhvh4acej" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_embed_input_exclude_fk_root_step_5kxjdsp4if" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_embed_input" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_embed_input_exclude_fk_root_step_pred_pcwizkmay4" FOREIGN KEY ("__root_yjobx7uyrd", "step", "__pred_ordinal_e545zctcav") REFERENCES "slice_den"."assign_embed_input_exclude" ("root", "step", "ordinal") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."assign_embed_input_mode_nearest"
-  ADD CONSTRAINT "__assign_embed_input_mode_nearest_fk_root_jnyguegnta" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_embed_input_mode_nearest_fk_root_step_qgtqnt4gmy" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_embed_input" ("__root_h2ohpjyioe", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."assign_embed_input_mode_nearest" ADD CONSTRAINT "__assign_embed_input_mode_nearest_fk_root_jnyguegnta" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."assign_embed_input_mode_within"
-  ADD CONSTRAINT "__assign_embed_input_mode_within_fk_root_fn43ckwpfx" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_embed_input_mode_within_fk_root_step_vapgocabae" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_embed_input" ("__root_i3j5qytpxw", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."assign_embed_input_mode_within" ADD CONSTRAINT "__assign_embed_input_mode_within_fk_root_fn43ckwpfx" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."assign_embed_input_near"
   ADD CONSTRAINT "__assign_embed_input_near_fk_root_ez7btmcfis" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3589,9 +3489,7 @@ ALTER TABLE "slice_den"."assign_exhausted"
   ADD CONSTRAINT "__assign_exhausted_fk_root_s3mbwj4i66" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__assign_exhausted_fk_root_step_cspvc4i2pv" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_failed" ("root", "step") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."assign_failed"
-  ADD CONSTRAINT "__assign_failed_fk_root_ug7m4hfg26" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__assign_failed_fk_root_step_tag_outcome_failed_v54xqecjoo" FOREIGN KEY ("root", "step", "__tag_outcome_failed_bxttnpdkga") REFERENCES "slice_den"."assign_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."assign_failed" ADD CONSTRAINT "__assign_failed_fk_root_ug7m4hfg26" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."assign_fenced"
   ADD CONSTRAINT "__assign_fenced_fk_root_pzert3n2ix" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3658,9 +3556,7 @@ ALTER TABLE "slice_den"."chain_claim"
   ADD CONSTRAINT "__chain_claim_fk_root_step_7edppg4aqs" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."chain_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_claim_fk_root_step_pred_attempt_fmwmco64ak" FOREIGN KEY ("__root_yewsvvtcyz", "step", "__pred_attempt_oey4tm5xyl") REFERENCES "slice_den"."chain_ended" ("root", "step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."chain_done"
-  ADD CONSTRAINT "__chain_done_fk_root_h5y3lmghf3" FOREIGN KEY ("root") REFERENCES "slice_den"."chain_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__chain_done_fk_root_step_tag_outcome_done_qw2sxejxyb" FOREIGN KEY ("root", "step", "__tag_outcome_done_uhpvxcbhg2") REFERENCES "slice_den"."chain_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."chain_done" ADD CONSTRAINT "__chain_done_fk_root_h5y3lmghf3" FOREIGN KEY ("root") REFERENCES "slice_den"."chain_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."chain_ended"
   ADD CONSTRAINT "__chain_ended_fk_root_yonuzkytaq" FOREIGN KEY ("root") REFERENCES "slice_den"."chain_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3670,9 +3566,7 @@ ALTER TABLE "slice_den"."chain_exhausted"
   ADD CONSTRAINT "__chain_exhausted_fk_root_5235djdbik" FOREIGN KEY ("root") REFERENCES "slice_den"."chain_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_exhausted_fk_root_step_4l7lqt7ji4" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."chain_failed" ("root", "step") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."chain_failed"
-  ADD CONSTRAINT "__chain_failed_fk_root_zdy2bxxwqo" FOREIGN KEY ("root") REFERENCES "slice_den"."chain_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__chain_failed_fk_root_step_tag_outcome_failed_arorvmozov" FOREIGN KEY ("root", "step", "__tag_outcome_failed_lrxbpw73ih") REFERENCES "slice_den"."chain_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."chain_failed" ADD CONSTRAINT "__chain_failed_fk_root_zdy2bxxwqo" FOREIGN KEY ("root") REFERENCES "slice_den"."chain_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."chain_fenced"
   ADD CONSTRAINT "__chain_fenced_fk_root_oq37i4ofgu" FOREIGN KEY ("root") REFERENCES "slice_den"."chain_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3701,9 +3595,7 @@ ALTER TABLE "slice_den"."chain_ordered_input"
   ADD CONSTRAINT "__chain_ordered_input_fk_root_fzez5zrqop" FOREIGN KEY ("root") REFERENCES "slice_den"."chain_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__chain_ordered_input_fk_scope_tag_kind_ordered_3oj5bnc73t" FOREIGN KEY ("scope", "__tag_kind_ordered_ms3hwzrkhl") REFERENCES "slice_den"."chain_root" ("root", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."chain_page_input"
-  ADD CONSTRAINT "__chain_page_input_fk_root_o44giizz5e" FOREIGN KEY ("root") REFERENCES "slice_den"."chain_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__chain_page_input_fk_root_step_tag_kind_page_lqcgnivn7i" FOREIGN KEY ("root", "step", "__tag_kind_page_wmj4dlxrkf") REFERENCES "slice_den"."chain_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."chain_page_input" ADD CONSTRAINT "__chain_page_input_fk_root_o44giizz5e" FOREIGN KEY ("root") REFERENCES "slice_den"."chain_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."chain_page_input_after"
   ADD CONSTRAINT "__chain_page_input_after_fk_root_akclgel5y2" FOREIGN KEY ("root") REFERENCES "slice_den"."chain_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3777,9 +3669,7 @@ ALTER TABLE "slice_den"."clock_admitted"
   ADD CONSTRAINT "__clock_admitted_fk_root_k24hh76oel" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__clock_admitted_fk_root_scope_qiiqqqcffn" FOREIGN KEY ("root", "scope") REFERENCES "slice_den"."clock_scope" ("root", "scope") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."clock_chime_input"
-  ADD CONSTRAINT "__clock_chime_input_fk_root_c375laujun" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__clock_chime_input_fk_root_step_tag_kind_chime_u32sji5jlv" FOREIGN KEY ("root", "step", "__tag_kind_chime_7beznll3bg") REFERENCES "slice_den"."clock_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."clock_chime_input" ADD CONSTRAINT "__clock_chime_input_fk_root_c375laujun" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."clock_chime_output"
   ADD CONSTRAINT "__clock_chime_output_fk_root_tcbxpayvzg" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3791,18 +3681,14 @@ ALTER TABLE "slice_den"."clock_claim"
   ADD CONSTRAINT "__clock_claim_fk_root_step_hnkgjikniq" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."clock_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__clock_claim_fk_root_step_pred_attempt_s6bkkwaqnz" FOREIGN KEY ("__root_yewsvvtcyz", "step", "__pred_attempt_oey4tm5xyl") REFERENCES "slice_den"."clock_ended" ("root", "step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."clock_close_input"
-  ADD CONSTRAINT "__clock_close_input_fk_root_6fzi6ks77d" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__clock_close_input_fk_root_step_tag_kind_close_vj4mikpido" FOREIGN KEY ("root", "step", "__tag_kind_close_f2ovjex5ey") REFERENCES "slice_den"."clock_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."clock_close_input" ADD CONSTRAINT "__clock_close_input_fk_root_6fzi6ks77d" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."clock_close_output"
   ADD CONSTRAINT "__clock_close_output_fk_root_6liop2t5nl" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__clock_close_output_fk_root_step_f7egr5rego" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."clock_close_input" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__clock_close_output_fk_root_step_waaqexpeeq" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."clock_done" ("root", "step") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."clock_done"
-  ADD CONSTRAINT "__clock_done_fk_root_4y5qrlc3tq" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__clock_done_fk_root_step_tag_outcome_done_e2syqunidg" FOREIGN KEY ("root", "step", "__tag_outcome_done_23mrxmndcr") REFERENCES "slice_den"."clock_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."clock_done" ADD CONSTRAINT "__clock_done_fk_root_4y5qrlc3tq" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."clock_ended"
   ADD CONSTRAINT "__clock_ended_fk_root_5tof7ozuaz" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3812,9 +3698,7 @@ ALTER TABLE "slice_den"."clock_exhausted"
   ADD CONSTRAINT "__clock_exhausted_fk_root_d7efrcc2fe" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__clock_exhausted_fk_root_step_ifbdfsiptr" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."clock_failed" ("root", "step") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."clock_failed"
-  ADD CONSTRAINT "__clock_failed_fk_root_qg2llqnev7" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__clock_failed_fk_root_step_tag_outcome_failed_pwlflkkq24" FOREIGN KEY ("root", "step", "__tag_outcome_failed_2to56fqild") REFERENCES "slice_den"."clock_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."clock_failed" ADD CONSTRAINT "__clock_failed_fk_root_qg2llqnev7" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."clock_fenced"
   ADD CONSTRAINT "__clock_fenced_fk_root_ly2rcwmtiz" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3886,9 +3770,7 @@ ALTER TABLE "slice_den"."fan_batch_finish_output"
   ADD CONSTRAINT "__fan_batch_finish_output_fk_root_4gjmd7n23q" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_batch_finish_output_fk_root_step_lvbwqkrzya" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."fan_done" ("root", "step") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."fan_batch_input"
-  ADD CONSTRAINT "__fan_batch_input_fk_root_6mrrtm2cth" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__fan_batch_input_fk_root_scope_tag_kind_batch_3em3kstjdo" FOREIGN KEY ("root", "scope", "__tag_kind_batch_cylbxlshb2") REFERENCES "slice_den"."fan_within" ("root", "scope", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."fan_batch_input" ADD CONSTRAINT "__fan_batch_input_fk_root_6mrrtm2cth" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."fan_claim"
   ADD CONSTRAINT "__fan_claim_fk_root_vemdcaxtlr" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3896,13 +3778,9 @@ ALTER TABLE "slice_den"."fan_claim"
   ADD CONSTRAINT "__fan_claim_fk_root_step_attempt_pred_holds_6ej2el2klx" FOREIGN KEY ("root", "step", "attempt", "__pred_holds_lq7itfruzz") REFERENCES "slice_den"."fan_hold" ("root", "step", "attempt", "at") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_claim_fk_root_step_pred_attempt_thlj3gkwmg" FOREIGN KEY ("__root_yewsvvtcyz", "step", "__pred_attempt_oey4tm5xyl") REFERENCES "slice_den"."fan_ended" ("root", "step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."fan_done"
-  ADD CONSTRAINT "__fan_done_fk_root_ojbxyih4lw" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__fan_done_fk_root_step_tag_outcome_done_l6y3a4jyn5" FOREIGN KEY ("root", "step", "__tag_outcome_done_tulqbccryg") REFERENCES "slice_den"."fan_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."fan_done" ADD CONSTRAINT "__fan_done_fk_root_ojbxyih4lw" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."fan_dust_input"
-  ADD CONSTRAINT "__fan_dust_input_fk_root_illh2kcoec" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__fan_dust_input_fk_root_step_tag_kind_dust_qa5c3ncmj3" FOREIGN KEY ("root", "step", "__tag_kind_dust_p24m5lzoa4") REFERENCES "slice_den"."fan_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."fan_dust_input" ADD CONSTRAINT "__fan_dust_input_fk_root_illh2kcoec" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."fan_dust_output"
   ADD CONSTRAINT "__fan_dust_output_fk_root_7u44muld7v" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3917,9 +3795,7 @@ ALTER TABLE "slice_den"."fan_exhausted"
   ADD CONSTRAINT "__fan_exhausted_fk_root_xx6capfmv3" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_exhausted_fk_root_step_lfol3zhscm" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."fan_failed" ("root", "step") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."fan_failed"
-  ADD CONSTRAINT "__fan_failed_fk_root_4ocrijtubm" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__fan_failed_fk_root_step_tag_outcome_failed_iq5phwvujj" FOREIGN KEY ("root", "step", "__tag_outcome_failed_3kga3qw77n") REFERENCES "slice_den"."fan_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."fan_failed" ADD CONSTRAINT "__fan_failed_fk_root_4ocrijtubm" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."fan_fan_run_finish_output"
   ADD CONSTRAINT "__fan_fan_run_finish_output_fk_root_qol7iw4yrz" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3947,9 +3823,7 @@ ALTER TABLE "slice_den"."fan_hold"
   ADD CONSTRAINT "__fan_hold_fk_root_step_attempt_copy_holds_hnnbabpski" FOREIGN KEY ("root", "step", "attempt", "__copy_holds_hfzvk7t2xc") REFERENCES "slice_den"."fan_claim" ("root", "step", "attempt", "holds") MATCH SIMPLE ON UPDATE CASCADE,
   ADD CONSTRAINT "__fan_hold_fk_root_step_attempt_pred_at_lene3l2wo7" FOREIGN KEY ("root", "step", "attempt", "__pred_at_xktcobhsti") REFERENCES "slice_den"."fan_hold" ("root", "step", "attempt", "at") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."fan_mop_input"
-  ADD CONSTRAINT "__fan_mop_input_fk_root_ns3xpijkql" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__fan_mop_input_fk_root_step_tag_kind_mop_perugzhemk" FOREIGN KEY ("root", "step", "__tag_kind_mop_sawjeyk4ob") REFERENCES "slice_den"."fan_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."fan_mop_input" ADD CONSTRAINT "__fan_mop_input_fk_root_ns3xpijkql" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."fan_mop_output"
   ADD CONSTRAINT "__fan_mop_output_fk_root_npn3ws5u4k" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -3979,9 +3853,7 @@ ALTER TABLE "slice_den"."fan_skipped"
   ADD CONSTRAINT "__fan_skipped_fk_root_b5irmgajk5" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__fan_skipped_fk_scope_5rsfnka2al" FOREIGN KEY ("scope") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."fan_square_input"
-  ADD CONSTRAINT "__fan_square_input_fk_root_2nvvofo7fx" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__fan_square_input_fk_root_step_tag_kind_square_4paugkmj6j" FOREIGN KEY ("root", "step", "__tag_kind_square_q3stoybx3v") REFERENCES "slice_den"."fan_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."fan_square_input" ADD CONSTRAINT "__fan_square_input_fk_root_2nvvofo7fx" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."fan_square_output"
   ADD CONSTRAINT "__fan_square_output_fk_root_raxsz2wnfz" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4019,9 +3891,7 @@ ALTER TABLE "slice_den"."retry_admitted"
   ADD CONSTRAINT "__retry_admitted_fk_root_5xhbiwikln" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__retry_admitted_fk_root_scope_4whpx2yoko" FOREIGN KEY ("root", "scope") REFERENCES "slice_den"."retry_scope" ("root", "scope") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."retry_brittle_input"
-  ADD CONSTRAINT "__retry_brittle_input_fk_root_ovfrkuyu2s" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__retry_brittle_input_fk_root_step_tag_kind_brittle_any5dmdk6a" FOREIGN KEY ("root", "step", "__tag_kind_brittle_wzfwqdkbkg") REFERENCES "slice_den"."retry_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."retry_brittle_input" ADD CONSTRAINT "__retry_brittle_input_fk_root_ovfrkuyu2s" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."retry_brittle_output"
   ADD CONSTRAINT "__retry_brittle_output_fk_root_tdraxk2ss2" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4033,9 +3903,7 @@ ALTER TABLE "slice_den"."retry_claim"
   ADD CONSTRAINT "__retry_claim_fk_root_step_y3nttmzxe7" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."retry_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__retry_claim_fk_root_step_pred_attempt_ygcziesx4q" FOREIGN KEY ("__root_yewsvvtcyz", "step", "__pred_attempt_oey4tm5xyl") REFERENCES "slice_den"."retry_ended" ("root", "step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."retry_done"
-  ADD CONSTRAINT "__retry_done_fk_root_wer2aem4qv" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__retry_done_fk_root_step_tag_outcome_done_cqlyzoz7jm" FOREIGN KEY ("root", "step", "__tag_outcome_done_k5wikz4kly") REFERENCES "slice_den"."retry_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."retry_done" ADD CONSTRAINT "__retry_done_fk_root_wer2aem4qv" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."retry_ended"
   ADD CONSTRAINT "__retry_ended_fk_root_5fnejqpzud" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4045,9 +3913,7 @@ ALTER TABLE "slice_den"."retry_exhausted"
   ADD CONSTRAINT "__retry_exhausted_fk_root_jbthfuhrlh" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__retry_exhausted_fk_root_step_ysmlpu2xyq" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."retry_failed" ("root", "step") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."retry_failed"
-  ADD CONSTRAINT "__retry_failed_fk_root_z6iudxitdd" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__retry_failed_fk_root_step_tag_outcome_failed_swwcwjyafx" FOREIGN KEY ("root", "step", "__tag_outcome_failed_446fx3eezg") REFERENCES "slice_den"."retry_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."retry_failed" ADD CONSTRAINT "__retry_failed_fk_root_z6iudxitdd" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."retry_fenced"
   ADD CONSTRAINT "__retry_fenced_fk_root_iv3bmsuh2g" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4071,9 +3937,7 @@ ALTER TABLE "slice_den"."retry_ladders_input"
   ADD CONSTRAINT "__retry_ladders_input_fk_root_onjlohn2jr" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__retry_ladders_input_fk_scope_tag_kind_ladders_erl4knm7ui" FOREIGN KEY ("scope", "__tag_kind_ladders_amjml3bobr") REFERENCES "slice_den"."retry_root" ("root", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."retry_patient_input"
-  ADD CONSTRAINT "__retry_patient_input_fk_root_ye6tucziiu" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__retry_patient_input_fk_root_step_tag_kind_patient_2rk3lzypzn" FOREIGN KEY ("root", "step", "__tag_kind_patient_qohxuqrewz") REFERENCES "slice_den"."retry_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."retry_patient_input" ADD CONSTRAINT "__retry_patient_input_fk_root_ye6tucziiu" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."retry_patient_output"
   ADD CONSTRAINT "__retry_patient_output_fk_root_zicrxry2hs" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4082,9 +3946,7 @@ ALTER TABLE "slice_den"."retry_patient_output"
 
 ALTER TABLE "slice_den"."retry_paused" ADD CONSTRAINT "__retry_paused_fk_target_pred_turn_i33p2skdd4" FOREIGN KEY ("target", "__pred_turn_qryngij6c4") REFERENCES "slice_den"."retry_resumed" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."retry_polite_input"
-  ADD CONSTRAINT "__retry_polite_input_fk_root_utaxoyy6ep" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__retry_polite_input_fk_root_step_tag_kind_polite_dhgymw2ijv" FOREIGN KEY ("root", "step", "__tag_kind_polite_s3g4jx73ij") REFERENCES "slice_den"."retry_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."retry_polite_input" ADD CONSTRAINT "__retry_polite_input_fk_root_utaxoyy6ep" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."retry_polite_output"
   ADD CONSTRAINT "__retry_polite_output_fk_root_4uohlhyopl" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4117,9 +3979,7 @@ ALTER TABLE "slice_den"."retry_start_step"
   ADD CONSTRAINT "__retry_start_step_fk_root_scope_phyy3twhmr" FOREIGN KEY ("root", "scope") REFERENCES "slice_den"."retry_admitted" ("root", "scope") MATCH SIMPLE,
   ADD CONSTRAINT "__retry_start_step_fk_root_step_tjvsrtkfqg" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."retry_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."retry_steadfast_input"
-  ADD CONSTRAINT "__retry_steadfast_input_fk_root_23b7aa6ndw" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__retry_steadfast_input_fk_root_step_tag_kind_b5j6sfi4nd" FOREIGN KEY ("root", "step", "__tag_kind_steadfast_4rudtmco65") REFERENCES "slice_den"."retry_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."retry_steadfast_input" ADD CONSTRAINT "__retry_steadfast_input_fk_root_23b7aa6ndw" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."retry_steadfast_output"
   ADD CONSTRAINT "__retry_steadfast_output_fk_root_w6kqatfjqs" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4150,9 +4010,7 @@ ALTER TABLE "slice_den"."review_admitted"
   ADD CONSTRAINT "__review_admitted_fk_root_au5nhgo5mx" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__review_admitted_fk_root_scope_wpazxz5qvc" FOREIGN KEY ("root", "scope") REFERENCES "slice_den"."review_scope" ("root", "scope") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."review_analyze_input"
-  ADD CONSTRAINT "__review_analyze_input_fk_root_gqgyyeei6s" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__review_analyze_input_fk_root_step_tag_kind_analyze_ydmqsxscnq" FOREIGN KEY ("root", "step", "__tag_kind_analyze_q6ry667fpd") REFERENCES "slice_den"."review_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."review_analyze_input" ADD CONSTRAINT "__review_analyze_input_fk_root_gqgyyeei6s" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."review_analyze_output"
   ADD CONSTRAINT "__review_analyze_output_fk_root_hf5o3phpsb" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4165,9 +4023,7 @@ ALTER TABLE "slice_den"."review_claim"
   ADD CONSTRAINT "__review_claim_fk_root_step_attempt_pred_holds_4fz52sncza" FOREIGN KEY ("root", "step", "attempt", "__pred_holds_lq7itfruzz") REFERENCES "slice_den"."review_hold" ("root", "step", "attempt", "at") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__review_claim_fk_root_step_pred_attempt_77xjl3onsd" FOREIGN KEY ("__root_yewsvvtcyz", "step", "__pred_attempt_oey4tm5xyl") REFERENCES "slice_den"."review_ended" ("root", "step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."review_done"
-  ADD CONSTRAINT "__review_done_fk_root_soej6st3lg" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__review_done_fk_root_step_tag_outcome_done_3ijxofcm6i" FOREIGN KEY ("root", "step", "__tag_outcome_done_clhrawk5mj") REFERENCES "slice_den"."review_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."review_done" ADD CONSTRAINT "__review_done_fk_root_soej6st3lg" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."review_ended"
   ADD CONSTRAINT "__review_ended_fk_root_3czmjgel6e" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4177,9 +4033,7 @@ ALTER TABLE "slice_den"."review_exhausted"
   ADD CONSTRAINT "__review_exhausted_fk_root_x6nlpney3u" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__review_exhausted_fk_root_step_7u7yvsyo3u" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."review_failed" ("root", "step") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."review_failed"
-  ADD CONSTRAINT "__review_failed_fk_root_kwv2eowiqu" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__review_failed_fk_root_step_tag_outcome_failed_r26efxriu7" FOREIGN KEY ("root", "step", "__tag_outcome_failed_set6imbczu") REFERENCES "slice_den"."review_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."review_failed" ADD CONSTRAINT "__review_failed_fk_root_kwv2eowiqu" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."review_fenced"
   ADD CONSTRAINT "__review_fenced_fk_root_zo2nzc2gen" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4190,9 +4044,7 @@ ALTER TABLE "slice_den"."review_finish"
   ADD CONSTRAINT "__review_finish_fk_root_scope_gmmfvaopci" FOREIGN KEY ("root", "scope") REFERENCES "slice_den"."review_admitted" ("root", "scope") MATCH SIMPLE,
   ADD CONSTRAINT "__review_finish_fk_root_step_ev6ctqell2" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."review_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."review_gather_input"
-  ADD CONSTRAINT "__review_gather_input_fk_root_aatej4c4qe" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__review_gather_input_fk_root_step_tag_kind_gather_2q4twld7fr" FOREIGN KEY ("root", "step", "__tag_kind_gather_xyjwruhpuh") REFERENCES "slice_den"."review_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."review_gather_input" ADD CONSTRAINT "__review_gather_input_fk_root_aatej4c4qe" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."review_gather_input_sizes"
   ADD CONSTRAINT "__review_gather_input_sizes_fk_root_gtzy54rpjy" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4219,9 +4071,7 @@ ALTER TABLE "slice_den"."review_questions_finish_output"
   ADD CONSTRAINT "__review_questions_finish_output_fk_root_2jrpl46746" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__review_questions_finish_output_fk_root_step_flxzyo2ooj" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."review_done" ("root", "step") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."review_questions_input"
-  ADD CONSTRAINT "__review_questions_input_fk_root_ysfek2wixo" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__review_questions_input_fk_root_scope_tag_kind_xjpewdq4zm" FOREIGN KEY ("root", "scope", "__tag_kind_questions_mtcmjgn4fu") REFERENCES "slice_den"."review_within" ("root", "scope", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."review_questions_input" ADD CONSTRAINT "__review_questions_input_fk_root_ysfek2wixo" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."review_refusal"
   ADD CONSTRAINT "__review_refusal_fk_root_gp4d5lwiig" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4250,9 +4100,7 @@ ALTER TABLE "slice_den"."review_review_run_input_sizes"
   ADD CONSTRAINT "__review_review_run_input_sizes_fk_root_scope_qoiz22wckm" FOREIGN KEY ("root", "scope") REFERENCES "slice_den"."review_review_run_input" ("root", "scope") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__review_review_run_input_sizes_fk_root_scope_pred_72aqqzv6rv" FOREIGN KEY ("__root_yjobx7uyrd", "scope", "__pred_ordinal_e545zctcav") REFERENCES "slice_den"."review_review_run_input_sizes" ("root", "scope", "ordinal") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."review_save_input"
-  ADD CONSTRAINT "__review_save_input_fk_root_sjf3h5qc3a" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__review_save_input_fk_root_step_tag_kind_save_exibmykqbl" FOREIGN KEY ("root", "step", "__tag_kind_save_qnkiffm2eg") REFERENCES "slice_den"."review_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."review_save_input" ADD CONSTRAINT "__review_save_input_fk_root_sjf3h5qc3a" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."review_save_output"
   ADD CONSTRAINT "__review_save_output_fk_root_oirx3ekjvp" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4299,9 +4147,7 @@ ALTER TABLE "slice_den"."sync_admitted"
   ADD CONSTRAINT "__sync_admitted_fk_root_vjue6n3y7o" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__sync_admitted_fk_root_scope_qm32lzefa4" FOREIGN KEY ("root", "scope") REFERENCES "slice_den"."sync_scope" ("root", "scope") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."sync_build_input"
-  ADD CONSTRAINT "__sync_build_input_fk_root_gipbudtoeu" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__sync_build_input_fk_root_step_tag_kind_build_h27fxwflej" FOREIGN KEY ("root", "step", "__tag_kind_build_pslevsssox") REFERENCES "slice_den"."sync_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."sync_build_input" ADD CONSTRAINT "__sync_build_input_fk_root_gipbudtoeu" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."sync_build_output"
   ADD CONSTRAINT "__sync_build_output_fk_root_23goyrum2n" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4313,18 +4159,14 @@ ALTER TABLE "slice_den"."sync_claim"
   ADD CONSTRAINT "__sync_claim_fk_root_step_quvtx5ttao" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."sync_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__sync_claim_fk_root_step_pred_attempt_bol6pjm3eo" FOREIGN KEY ("__root_yewsvvtcyz", "step", "__pred_attempt_oey4tm5xyl") REFERENCES "slice_den"."sync_ended" ("root", "step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."sync_copy_input"
-  ADD CONSTRAINT "__sync_copy_input_fk_root_5b344cu54y" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__sync_copy_input_fk_root_step_tag_kind_copy_lc3nlvnjtn" FOREIGN KEY ("root", "step", "__tag_kind_copy_wfaj52nfh7") REFERENCES "slice_den"."sync_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."sync_copy_input" ADD CONSTRAINT "__sync_copy_input_fk_root_5b344cu54y" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."sync_copy_output"
   ADD CONSTRAINT "__sync_copy_output_fk_root_ux2mtgkj5a" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__sync_copy_output_fk_root_step_si7qys3qgo" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."sync_copy_input" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__sync_copy_output_fk_root_step_szcmye7j7w" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."sync_done" ("root", "step") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."sync_done"
-  ADD CONSTRAINT "__sync_done_fk_root_uyb2bhzaad" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__sync_done_fk_root_step_tag_outcome_done_xe4lsjdbld" FOREIGN KEY ("root", "step", "__tag_outcome_done_pkvv6jrgpq") REFERENCES "slice_den"."sync_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."sync_done" ADD CONSTRAINT "__sync_done_fk_root_uyb2bhzaad" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."sync_ended"
   ADD CONSTRAINT "__sync_ended_fk_root_7rgqazkh4x" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4340,9 +4182,7 @@ ALTER TABLE "slice_den"."sync_exhausted"
   ADD CONSTRAINT "__sync_exhausted_fk_root_wzt4yzl5i3" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__sync_exhausted_fk_root_step_22ldo45blt" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."sync_failed" ("root", "step") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."sync_failed"
-  ADD CONSTRAINT "__sync_failed_fk_root_gzx4vab76y" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__sync_failed_fk_root_step_tag_outcome_failed_hdl3dzordu" FOREIGN KEY ("root", "step", "__tag_outcome_failed_26do6twsnf") REFERENCES "slice_den"."sync_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."sync_failed" ADD CONSTRAINT "__sync_failed_fk_root_gzx4vab76y" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."sync_fenced"
   ADD CONSTRAINT "__sync_fenced_fk_root_yvz4qwnipt" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4417,18 +4257,14 @@ ALTER TABLE "slice_den"."writeback_claim"
   ADD CONSTRAINT "__writeback_claim_fk_root_step_zg75zksbji" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."writeback_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__writeback_claim_fk_root_step_pred_attempt_4zvl2uw25a" FOREIGN KEY ("__root_yewsvvtcyz", "step", "__pred_attempt_oey4tm5xyl") REFERENCES "slice_den"."writeback_ended" ("root", "step", "attempt") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE "slice_den"."writeback_deliver_input"
-  ADD CONSTRAINT "__writeback_deliver_input_fk_root_fzl4wgyinc" FOREIGN KEY ("root") REFERENCES "slice_den"."writeback_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__writeback_deliver_input_fk_root_step_tag_kind_lefrtjmb3h" FOREIGN KEY ("root", "step", "__tag_kind_deliver_bksclfa7xd") REFERENCES "slice_den"."writeback_step" ("root", "step", "kind") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "slice_den"."writeback_deliver_input" ADD CONSTRAINT "__writeback_deliver_input_fk_root_fzl4wgyinc" FOREIGN KEY ("root") REFERENCES "slice_den"."writeback_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."writeback_deliver_output"
   ADD CONSTRAINT "__writeback_deliver_output_fk_root_tju66l373v" FOREIGN KEY ("root") REFERENCES "slice_den"."writeback_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__writeback_deliver_output_fk_root_step_oqndhmdkte" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."writeback_deliver_input" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__writeback_deliver_output_fk_root_step_fcccly2svu" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."writeback_done" ("root", "step") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."writeback_done"
-  ADD CONSTRAINT "__writeback_done_fk_root_qxxfxxjt2a" FOREIGN KEY ("root") REFERENCES "slice_den"."writeback_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__writeback_done_fk_root_step_tag_outcome_done_dsxw233pjk" FOREIGN KEY ("root", "step", "__tag_outcome_done_fmfi3z4vd7") REFERENCES "slice_den"."writeback_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."writeback_done" ADD CONSTRAINT "__writeback_done_fk_root_qxxfxxjt2a" FOREIGN KEY ("root") REFERENCES "slice_den"."writeback_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."writeback_ended"
   ADD CONSTRAINT "__writeback_ended_fk_root_5w55u5dwo4" FOREIGN KEY ("root") REFERENCES "slice_den"."writeback_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
@@ -4438,9 +4274,7 @@ ALTER TABLE "slice_den"."writeback_exhausted"
   ADD CONSTRAINT "__writeback_exhausted_fk_root_42qcqjcao3" FOREIGN KEY ("root") REFERENCES "slice_den"."writeback_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
   ADD CONSTRAINT "__writeback_exhausted_fk_root_step_gfmcwvfpwb" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."writeback_failed" ("root", "step") MATCH SIMPLE;
 
-ALTER TABLE "slice_den"."writeback_failed"
-  ADD CONSTRAINT "__writeback_failed_fk_root_bs7oqx2awz" FOREIGN KEY ("root") REFERENCES "slice_den"."writeback_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,
-  ADD CONSTRAINT "__writeback_failed_fk_root_step_tag_outcome_failed_qjhyo4zli2" FOREIGN KEY ("root", "step", "__tag_outcome_failed_vaancyadzi") REFERENCES "slice_den"."writeback_result" ("root", "step", "outcome") MATCH SIMPLE;
+ALTER TABLE "slice_den"."writeback_failed" ADD CONSTRAINT "__writeback_failed_fk_root_bs7oqx2awz" FOREIGN KEY ("root") REFERENCES "slice_den"."writeback_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."writeback_fenced"
   ADD CONSTRAINT "__writeback_fenced_fk_root_34etxfxqnc" FOREIGN KEY ("root") REFERENCES "slice_den"."writeback_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED,

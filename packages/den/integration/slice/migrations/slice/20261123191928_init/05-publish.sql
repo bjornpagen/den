@@ -5740,21 +5740,173 @@ COMMENT ON DOMAIN "slice"."__param_nearest_topic_4eruqlfauv" IS 'pattern domain 
 
 COMMENT ON DOMAIN "slice"."__param_seen_learner_exdgowkpja" IS 'pattern domain of parameter seen.learner of definition c83059a9a99ede4f852cdadf3bb2a8e07b8271fc5f9a41b0fb682d35dc8f9547';
 
+COMMENT ON TYPE "slice"."__row_news_assign_assignment_input_lznek7z3du" IS 'the row type of the delta of news of AssignAssignmentInput';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_assignment_input_wdttr53scw" IS 'the row type of the delta of olds of AssignAssignmentInput';
+
+COMMENT ON TYPE "slice"."__row_news_assign_assignment_input_mode_nearest_pyupadvtv2" IS 'the row type of the delta of news of AssignAssignmentInputModeNearest';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_assignment_input_mode_nearest_b5quid2s5d" IS 'the row type of the delta of olds of AssignAssignmentInputModeNearest';
+
+COMMENT ON TYPE "slice"."__row_news_assign_assignment_input_mode_within_oeznxymcws" IS 'the row type of the delta of news of AssignAssignmentInputModeWithin';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_assignment_input_mode_within_36u3nuqbae" IS 'the row type of the delta of olds of AssignAssignmentInputModeWithin';
+
+COMMENT ON TYPE "slice"."__row_news_assign_decide_input_5m3wrrmet4" IS 'the row type of the delta of news of AssignDecideInput';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_decide_input_f2jcgvtjac" IS 'the row type of the delta of olds of AssignDecideInput';
+
+COMMENT ON TYPE "slice"."__row_news_assign_decide_input_mode_nearest_cprjb2hbu2" IS 'the row type of the delta of news of AssignDecideInputModeNearest';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_decide_input_mode_nearest_ec6iwlipow" IS 'the row type of the delta of olds of AssignDecideInputModeNearest';
+
+COMMENT ON TYPE "slice"."__row_news_assign_decide_input_mode_within_ihopx5v773" IS 'the row type of the delta of news of AssignDecideInputModeWithin';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_decide_input_mode_within_hr4hmenptp" IS 'the row type of the delta of olds of AssignDecideInputModeWithin';
+
+COMMENT ON TYPE "slice"."__row_news_assign_decide_output_oxbktxq2qm" IS 'the row type of the delta of news of AssignDecideOutput';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_decide_output_h4e5chlp62" IS 'the row type of the delta of olds of AssignDecideOutput';
+
+COMMENT ON TYPE "slice"."__row_news_assign_decide_output_stage_rest_gygfjwjnji" IS 'the row type of the delta of news of AssignDecideOutputStageRest';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_decide_output_stage_rest_tqv3wuzdwv" IS 'the row type of the delta of olds of AssignDecideOutputStageRest';
+
+COMMENT ON TYPE "slice"."__row_news_assign_decide_output_stage_serve_kbo2spylsa" IS 'the row type of the delta of news of AssignDecideOutputStageServe';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_decide_output_stage_serve_rsiololngr" IS 'the row type of the delta of olds of AssignDecideOutputStageServe';
+
+COMMENT ON TYPE "slice"."__row_news_assign_done_ccijo7hiah" IS 'the row type of the delta of news of AssignDone';
+
+COMMENT ON TYPE "slice"."__row_news_assign_embed_input_dwxj6bdcbx" IS 'the row type of the delta of news of AssignEmbedInput';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_embed_input_sxmwptaczg" IS 'the row type of the delta of olds of AssignEmbedInput';
+
+COMMENT ON TYPE "slice"."__row_news_assign_embed_input_mode_nearest_ux5e4fp7sl" IS 'the row type of the delta of news of AssignEmbedInputModeNearest';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_embed_input_mode_nearest_vvtc3n4nsg" IS 'the row type of the delta of olds of AssignEmbedInputModeNearest';
+
+COMMENT ON TYPE "slice"."__row_news_assign_embed_input_mode_within_7gysq5v2nb" IS 'the row type of the delta of news of AssignEmbedInputModeWithin';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_embed_input_mode_within_2ubf7bqv7n" IS 'the row type of the delta of olds of AssignEmbedInputModeWithin';
+
+COMMENT ON TYPE "slice"."__row_news_assign_failed_lpxnyexx73" IS 'the row type of the delta of news of AssignFailed';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_result_y6xdg27a27" IS 'the row type of the delta of olds of AssignResult';
+
+COMMENT ON TYPE "slice"."__row_olds_assign_step_zrm5kjcsbb" IS 'the row type of the delta of olds of AssignStep';
+
+COMMENT ON TYPE "slice"."__row_news_chain_done_ipbxekr3jk" IS 'the row type of the delta of news of ChainDone';
+
+COMMENT ON TYPE "slice"."__row_news_chain_failed_4o3dxe5oq4" IS 'the row type of the delta of news of ChainFailed';
+
+COMMENT ON TYPE "slice"."__row_news_chain_page_input_5vfsi4iuxb" IS 'the row type of the delta of news of ChainPageInput';
+
+COMMENT ON TYPE "slice"."__row_olds_chain_result_zhxr3n3y5v" IS 'the row type of the delta of olds of ChainResult';
+
+COMMENT ON TYPE "slice"."__row_olds_chain_step_a4auuc4j32" IS 'the row type of the delta of olds of ChainStep';
+
+COMMENT ON TYPE "slice"."__row_news_clock_chime_input_rfzc5ysow2" IS 'the row type of the delta of news of ClockChimeInput';
+
+COMMENT ON TYPE "slice"."__row_news_clock_close_input_f7grz5pq5d" IS 'the row type of the delta of news of ClockCloseInput';
+
+COMMENT ON TYPE "slice"."__row_news_clock_done_f4gq5vnwiu" IS 'the row type of the delta of news of ClockDone';
+
+COMMENT ON TYPE "slice"."__row_news_clock_failed_banad75ik7" IS 'the row type of the delta of news of ClockFailed';
+
+COMMENT ON TYPE "slice"."__row_olds_clock_result_xmvy6bruki" IS 'the row type of the delta of olds of ClockResult';
+
+COMMENT ON TYPE "slice"."__row_olds_clock_step_ro3hcnnd7q" IS 'the row type of the delta of olds of ClockStep';
+
+COMMENT ON TYPE "slice"."__row_news_fan_batch_input_zpegwpv2iw" IS 'the row type of the delta of news of FanBatchInput';
+
 COMMENT ON TYPE "slice"."__row_news_fan_claim_7nx4hyfgum" IS 'the row type of the delta of news of FanClaim';
 
+COMMENT ON TYPE "slice"."__row_news_fan_done_bm2pdkfeew" IS 'the row type of the delta of news of FanDone';
+
+COMMENT ON TYPE "slice"."__row_news_fan_dust_input_eirsjaffsy" IS 'the row type of the delta of news of FanDustInput';
+
 COMMENT ON TYPE "slice"."__row_olds_fan_ended_fjp3muqjpi" IS 'the row type of the delta of olds of FanEnded';
+
+COMMENT ON TYPE "slice"."__row_news_fan_failed_wcom3bevi4" IS 'the row type of the delta of news of FanFailed';
 
 COMMENT ON TYPE "slice"."__row_olds_fan_held_6pxeeuxzx5" IS 'the row type of the delta of olds of FanHeld';
 
 COMMENT ON TYPE "slice"."__row_news_fan_hold_fiz7xnswto" IS 'the row type of the delta of news of FanHold';
 
+COMMENT ON TYPE "slice"."__row_news_fan_mop_input_vkauufcv3s" IS 'the row type of the delta of news of FanMopInput';
+
+COMMENT ON TYPE "slice"."__row_olds_fan_result_cfwjurochh" IS 'the row type of the delta of olds of FanResult';
+
+COMMENT ON TYPE "slice"."__row_news_fan_square_input_oooc5jrvqp" IS 'the row type of the delta of news of FanSquareInput';
+
+COMMENT ON TYPE "slice"."__row_olds_fan_step_e5cdd74oi6" IS 'the row type of the delta of olds of FanStep';
+
+COMMENT ON TYPE "slice"."__row_olds_fan_within_igrko3tlla" IS 'the row type of the delta of olds of FanWithin';
+
+COMMENT ON TYPE "slice"."__row_news_retry_brittle_input_gi4pw323hl" IS 'the row type of the delta of news of RetryBrittleInput';
+
+COMMENT ON TYPE "slice"."__row_news_retry_done_3xnhmplocl" IS 'the row type of the delta of news of RetryDone';
+
+COMMENT ON TYPE "slice"."__row_news_retry_failed_ht6i2dxi6i" IS 'the row type of the delta of news of RetryFailed';
+
+COMMENT ON TYPE "slice"."__row_news_retry_patient_input_ujn3j6okjm" IS 'the row type of the delta of news of RetryPatientInput';
+
+COMMENT ON TYPE "slice"."__row_news_retry_polite_input_6z54vs4crc" IS 'the row type of the delta of news of RetryPoliteInput';
+
+COMMENT ON TYPE "slice"."__row_olds_retry_result_sawexe6rws" IS 'the row type of the delta of olds of RetryResult';
+
+COMMENT ON TYPE "slice"."__row_news_retry_steadfast_input_6gk4r2it4l" IS 'the row type of the delta of news of RetrySteadfastInput';
+
+COMMENT ON TYPE "slice"."__row_olds_retry_step_7e2dops6yg" IS 'the row type of the delta of olds of RetryStep';
+
+COMMENT ON TYPE "slice"."__row_news_review_analyze_input_ahzjb4juuh" IS 'the row type of the delta of news of ReviewAnalyzeInput';
+
 COMMENT ON TYPE "slice"."__row_news_review_claim_ku2calk2a4" IS 'the row type of the delta of news of ReviewClaim';
 
+COMMENT ON TYPE "slice"."__row_news_review_done_i5yrctmmrt" IS 'the row type of the delta of news of ReviewDone';
+
 COMMENT ON TYPE "slice"."__row_olds_review_ended_3vbje7ziry" IS 'the row type of the delta of olds of ReviewEnded';
+
+COMMENT ON TYPE "slice"."__row_news_review_failed_o2i2xvx3ox" IS 'the row type of the delta of news of ReviewFailed';
+
+COMMENT ON TYPE "slice"."__row_news_review_gather_input_3xhqgy4d4y" IS 'the row type of the delta of news of ReviewGatherInput';
 
 COMMENT ON TYPE "slice"."__row_olds_review_held_aio2rgomle" IS 'the row type of the delta of olds of ReviewHeld';
 
 COMMENT ON TYPE "slice"."__row_news_review_hold_s3lo4pqs6u" IS 'the row type of the delta of news of ReviewHold';
+
+COMMENT ON TYPE "slice"."__row_news_review_questions_input_xqapos33bv" IS 'the row type of the delta of news of ReviewQuestionsInput';
+
+COMMENT ON TYPE "slice"."__row_olds_review_result_4edqg37cfx" IS 'the row type of the delta of olds of ReviewResult';
+
+COMMENT ON TYPE "slice"."__row_news_review_save_input_g4felfy764" IS 'the row type of the delta of news of ReviewSaveInput';
+
+COMMENT ON TYPE "slice"."__row_olds_review_step_5ly7sn3crk" IS 'the row type of the delta of olds of ReviewStep';
+
+COMMENT ON TYPE "slice"."__row_olds_review_within_7w5djnlfoo" IS 'the row type of the delta of olds of ReviewWithin';
+
+COMMENT ON TYPE "slice"."__row_news_sync_build_input_7gtarvuzgd" IS 'the row type of the delta of news of SyncBuildInput';
+
+COMMENT ON TYPE "slice"."__row_news_sync_copy_input_cmgovnrtbu" IS 'the row type of the delta of news of SyncCopyInput';
+
+COMMENT ON TYPE "slice"."__row_news_sync_done_srwysx2oys" IS 'the row type of the delta of news of SyncDone';
+
+COMMENT ON TYPE "slice"."__row_news_sync_failed_uo7agxnsp7" IS 'the row type of the delta of news of SyncFailed';
+
+COMMENT ON TYPE "slice"."__row_olds_sync_result_5yd36qoig4" IS 'the row type of the delta of olds of SyncResult';
+
+COMMENT ON TYPE "slice"."__row_olds_sync_step_24id3jri34" IS 'the row type of the delta of olds of SyncStep';
+
+COMMENT ON TYPE "slice"."__row_news_writeback_deliver_input_fl5m4s5p77" IS 'the row type of the delta of news of WritebackDeliverInput';
+
+COMMENT ON TYPE "slice"."__row_news_writeback_done_l54jw73tg7" IS 'the row type of the delta of news of WritebackDone';
+
+COMMENT ON TYPE "slice"."__row_news_writeback_failed_o2vuzrgz2y" IS 'the row type of the delta of news of WritebackFailed';
+
+COMMENT ON TYPE "slice"."__row_olds_writeback_result_ctqblben4u" IS 'the row type of the delta of olds of WritebackResult';
+
+COMMENT ON TYPE "slice"."__row_olds_writeback_step_rvrwqy67gp" IS 'the row type of the delta of olds of WritebackStep';
 
 COMMENT ON CONSTRAINT "__assigned_pk_72xowecbf7" ON "slice"."assigned" IS 'primary key of Assigned';
 
@@ -5874,8 +6026,6 @@ COMMENT ON CONSTRAINT "__assign_refusal_pk_xs5e4ryh4k" ON "slice_den"."assign_re
 
 COMMENT ON CONSTRAINT "__assign_result_pk_i2yxmpkyzr" ON "slice_den"."assign_result" IS 'primary key of AssignResult';
 
-COMMENT ON CONSTRAINT "__assign_result_key_root_step_outcome_6lfb655hkk" ON "slice_den"."assign_result" IS 'key AssignResult(root, step, outcome)';
-
 COMMENT ON CONSTRAINT "__assign_resumed_pk_vy5pj6hbez" ON "slice_den"."assign_resumed" IS 'primary key of AssignResumed';
 
 COMMENT ON CONSTRAINT "__assign_retry_pk_4dcm5yzzhe" ON "slice_den"."assign_retry" IS 'primary key of AssignRetry';
@@ -5895,8 +6045,6 @@ COMMENT ON CONSTRAINT "__assign_start_step_pk_jjcfkvptmp" ON "slice_den"."assign
 COMMENT ON CONSTRAINT "__assign_start_step_key_root_step_n7nc3rlewh" ON "slice_den"."assign_start_step" IS 'key AssignStartStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_step_pk_2oc4ehvfzd" ON "slice_den"."assign_step" IS 'primary key of AssignStep';
-
-COMMENT ON CONSTRAINT "__assign_step_key_root_step_kind_y4zg6bnmvb" ON "slice_den"."assign_step" IS 'key AssignStep(root, step, kind)';
 
 COMMENT ON CONSTRAINT "__audit_pk_dcvpvv5cjz" ON "slice_den"."audit" IS 'primary key of Audit';
 
@@ -5964,8 +6112,6 @@ COMMENT ON CONSTRAINT "__chain_refusal_pk_4j4yw3qc6m" ON "slice_den"."chain_refu
 
 COMMENT ON CONSTRAINT "__chain_result_pk_btw3jzlkgl" ON "slice_den"."chain_result" IS 'primary key of ChainResult';
 
-COMMENT ON CONSTRAINT "__chain_result_key_root_step_outcome_nd4y5s2adr" ON "slice_den"."chain_result" IS 'key ChainResult(root, step, outcome)';
-
 COMMENT ON CONSTRAINT "__chain_resumed_pk_smdbyqzxn2" ON "slice_den"."chain_resumed" IS 'primary key of ChainResumed';
 
 COMMENT ON CONSTRAINT "__chain_retry_pk_522nodru3s" ON "slice_den"."chain_retry" IS 'primary key of ChainRetry';
@@ -5985,8 +6131,6 @@ COMMENT ON CONSTRAINT "__chain_start_step_pk_dgda7shxb4" ON "slice_den"."chain_s
 COMMENT ON CONSTRAINT "__chain_start_step_key_root_step_ncsd5g5nar" ON "slice_den"."chain_start_step" IS 'key ChainStartStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_step_pk_u6x5wnvfbv" ON "slice_den"."chain_step" IS 'primary key of ChainStep';
-
-COMMENT ON CONSTRAINT "__chain_step_key_root_step_kind_2tp7uwbfgm" ON "slice_den"."chain_step" IS 'key ChainStep(root, step, kind)';
 
 COMMENT ON CONSTRAINT "__clock_admitted_pk_a7wwsyakra" ON "slice_den"."clock_admitted" IS 'primary key of ClockAdmitted';
 
@@ -6026,8 +6170,6 @@ COMMENT ON CONSTRAINT "__clock_refusal_pk_dslb6cgxa3" ON "slice_den"."clock_refu
 
 COMMENT ON CONSTRAINT "__clock_result_pk_yptcdjm6pu" ON "slice_den"."clock_result" IS 'primary key of ClockResult';
 
-COMMENT ON CONSTRAINT "__clock_result_key_root_step_outcome_setnvqmg3m" ON "slice_den"."clock_result" IS 'key ClockResult(root, step, outcome)';
-
 COMMENT ON CONSTRAINT "__clock_resumed_pk_iqjwv5tioc" ON "slice_den"."clock_resumed" IS 'primary key of ClockResumed';
 
 COMMENT ON CONSTRAINT "__clock_retry_pk_4kyiqeoeqd" ON "slice_den"."clock_retry" IS 'primary key of ClockRetry';
@@ -6051,8 +6193,6 @@ COMMENT ON CONSTRAINT "__clock_start_step_pk_qgw6bnuo54" ON "slice_den"."clock_s
 COMMENT ON CONSTRAINT "__clock_start_step_key_root_step_pknqcsg3yv" ON "slice_den"."clock_start_step" IS 'key ClockStartStep(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_step_pk_jjmk3diqpl" ON "slice_den"."clock_step" IS 'primary key of ClockStep';
-
-COMMENT ON CONSTRAINT "__clock_step_key_root_step_kind_6tl2q53mgp" ON "slice_den"."clock_step" IS 'key ClockStep(root, step, kind)';
 
 COMMENT ON CONSTRAINT "__fan_admitted_pk_jzt7rtrzny" ON "slice_den"."fan_admitted" IS 'primary key of FanAdmitted';
 
@@ -6102,8 +6242,6 @@ COMMENT ON CONSTRAINT "__fan_refusal_pk_7va55wo2wj" ON "slice_den"."fan_refusal"
 
 COMMENT ON CONSTRAINT "__fan_result_pk_yeear352sx" ON "slice_den"."fan_result" IS 'primary key of FanResult';
 
-COMMENT ON CONSTRAINT "__fan_result_key_root_step_outcome_r3kspuzsnn" ON "slice_den"."fan_result" IS 'key FanResult(root, step, outcome)';
-
 COMMENT ON CONSTRAINT "__fan_resumed_pk_w6ao5h3tp7" ON "slice_den"."fan_resumed" IS 'primary key of FanResumed';
 
 COMMENT ON CONSTRAINT "__fan_retry_pk_7xubce4v66" ON "slice_den"."fan_retry" IS 'primary key of FanRetry';
@@ -6132,15 +6270,11 @@ COMMENT ON CONSTRAINT "__fan_start_step_key_root_step_edhkhzfqxw" ON "slice_den"
 
 COMMENT ON CONSTRAINT "__fan_step_pk_2f4tcxnofk" ON "slice_den"."fan_step" IS 'primary key of FanStep';
 
-COMMENT ON CONSTRAINT "__fan_step_key_root_step_kind_k7omzme7ok" ON "slice_den"."fan_step" IS 'key FanStep(root, step, kind)';
-
 COMMENT ON CONSTRAINT "__fan_sweep_finish_output_pk_7dvx2ngckn" ON "slice_den"."fan_sweep_finish_output" IS 'primary key of FanSweepFinishOutput';
 
 COMMENT ON CONSTRAINT "__fan_sweep_input_pk_zzlgjjqr6f" ON "slice_den"."fan_sweep_input" IS 'primary key of FanSweepInput';
 
 COMMENT ON CONSTRAINT "__fan_within_pk_g5tswgjfa6" ON "slice_den"."fan_within" IS 'primary key of FanWithin';
-
-COMMENT ON CONSTRAINT "__fan_within_key_root_scope_kind_vrmac5adc7" ON "slice_den"."fan_within" IS 'key FanWithin(root, scope, kind)';
 
 COMMENT ON CONSTRAINT "__retry_admitted_pk_qyp7cminjx" ON "slice_den"."retry_admitted" IS 'primary key of RetryAdmitted';
 
@@ -6184,8 +6318,6 @@ COMMENT ON CONSTRAINT "__retry_refusal_pk_nifndsd6pp" ON "slice_den"."retry_refu
 
 COMMENT ON CONSTRAINT "__retry_result_pk_5fegihvmml" ON "slice_den"."retry_result" IS 'primary key of RetryResult';
 
-COMMENT ON CONSTRAINT "__retry_result_key_root_step_outcome_2wc43adlgu" ON "slice_den"."retry_result" IS 'key RetryResult(root, step, outcome)';
-
 COMMENT ON CONSTRAINT "__retry_resumed_pk_jdtjm5vy5r" ON "slice_den"."retry_resumed" IS 'primary key of RetryResumed';
 
 COMMENT ON CONSTRAINT "__retry_retry_pk_slrwn4rt5d" ON "slice_den"."retry_retry" IS 'primary key of RetryRetry';
@@ -6209,8 +6341,6 @@ COMMENT ON CONSTRAINT "__retry_steadfast_input_pk_omubooh2k3" ON "slice_den"."re
 COMMENT ON CONSTRAINT "__retry_steadfast_output_pk_xyvfgnpd5w" ON "slice_den"."retry_steadfast_output" IS 'primary key of RetrySteadfastOutput';
 
 COMMENT ON CONSTRAINT "__retry_step_pk_opjqidwhzg" ON "slice_den"."retry_step" IS 'primary key of RetryStep';
-
-COMMENT ON CONSTRAINT "__retry_step_key_root_step_kind_urtap3ndb3" ON "slice_den"."retry_step" IS 'key RetryStep(root, step, kind)';
 
 COMMENT ON CONSTRAINT "__retry_throttled_finish_output_pk_o6epepnuox" ON "slice_den"."retry_throttled_finish_output" IS 'primary key of RetryThrottledFinishOutput';
 
@@ -6266,8 +6396,6 @@ COMMENT ON CONSTRAINT "__review_refusal_pk_ajyglinn6r" ON "slice_den"."review_re
 
 COMMENT ON CONSTRAINT "__review_result_pk_o5x5griurk" ON "slice_den"."review_result" IS 'primary key of ReviewResult';
 
-COMMENT ON CONSTRAINT "__review_result_key_root_step_outcome_dhk7wpexgf" ON "slice_den"."review_result" IS 'key ReviewResult(root, step, outcome)';
-
 COMMENT ON CONSTRAINT "__review_resumed_pk_jqgqbkvl65" ON "slice_den"."review_resumed" IS 'primary key of ReviewResumed';
 
 COMMENT ON CONSTRAINT "__review_retry_pk_is3m5sa5tx" ON "slice_den"."review_retry" IS 'primary key of ReviewRetry';
@@ -6310,11 +6438,7 @@ COMMENT ON CONSTRAINT "__review_start_step_key_root_step_sgv2fu4bpg" ON "slice_d
 
 COMMENT ON CONSTRAINT "__review_step_pk_gfbmnzqbc3" ON "slice_den"."review_step" IS 'primary key of ReviewStep';
 
-COMMENT ON CONSTRAINT "__review_step_key_root_step_kind_nhbyhyviw3" ON "slice_den"."review_step" IS 'key ReviewStep(root, step, kind)';
-
 COMMENT ON CONSTRAINT "__review_within_pk_ohgogpkz4s" ON "slice_den"."review_within" IS 'primary key of ReviewWithin';
-
-COMMENT ON CONSTRAINT "__review_within_key_root_scope_kind_4j3ppeba3m" ON "slice_den"."review_within" IS 'key ReviewWithin(root, scope, kind)';
 
 COMMENT ON CONSTRAINT "__sync_admitted_pk_ral53o3fpi" ON "slice_den"."sync_admitted" IS 'primary key of SyncAdmitted';
 
@@ -6360,8 +6484,6 @@ COMMENT ON CONSTRAINT "__sync_released_pk_k7qaw2iram" ON "slice_den"."sync_relea
 
 COMMENT ON CONSTRAINT "__sync_result_pk_jmwy2p3mqf" ON "slice_den"."sync_result" IS 'primary key of SyncResult';
 
-COMMENT ON CONSTRAINT "__sync_result_key_root_step_outcome_6mi4koicfo" ON "slice_den"."sync_result" IS 'key SyncResult(root, step, outcome)';
-
 COMMENT ON CONSTRAINT "__sync_resumed_pk_3xc5n2yvjk" ON "slice_den"."sync_resumed" IS 'primary key of SyncResumed';
 
 COMMENT ON CONSTRAINT "__sync_retry_pk_6q52red7iw" ON "slice_den"."sync_retry" IS 'primary key of SyncRetry';
@@ -6381,8 +6503,6 @@ COMMENT ON CONSTRAINT "__sync_start_step_pk_4dv7h6kuu3" ON "slice_den"."sync_sta
 COMMENT ON CONSTRAINT "__sync_start_step_key_root_step_otrdmdbrol" ON "slice_den"."sync_start_step" IS 'key SyncStartStep(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_step_pk_wfgcxdvbwo" ON "slice_den"."sync_step" IS 'primary key of SyncStep';
-
-COMMENT ON CONSTRAINT "__sync_step_key_root_step_kind_qnrzp7wad2" ON "slice_den"."sync_step" IS 'key SyncStep(root, step, kind)';
 
 COMMENT ON CONSTRAINT "__sync_sync_run_finish_output_pk_n74f63qvg6" ON "slice_den"."sync_sync_run_finish_output" IS 'primary key of SyncSyncRunFinishOutput';
 
@@ -6418,8 +6538,6 @@ COMMENT ON CONSTRAINT "__writeback_refusal_pk_lqictdn67w" ON "slice_den"."writeb
 
 COMMENT ON CONSTRAINT "__writeback_result_pk_lygppaax77" ON "slice_den"."writeback_result" IS 'primary key of WritebackResult';
 
-COMMENT ON CONSTRAINT "__writeback_result_key_root_step_outcome_ejpkkz5umg" ON "slice_den"."writeback_result" IS 'key WritebackResult(root, step, outcome)';
-
 COMMENT ON CONSTRAINT "__writeback_resumed_pk_qrrua45xou" ON "slice_den"."writeback_resumed" IS 'primary key of WritebackResumed';
 
 COMMENT ON CONSTRAINT "__writeback_retry_pk_j2ien3obty" ON "slice_den"."writeback_retry" IS 'primary key of WritebackRetry';
@@ -6440,17 +6558,11 @@ COMMENT ON CONSTRAINT "__writeback_start_step_key_root_step_td6hftw5pk" ON "slic
 
 COMMENT ON CONSTRAINT "__writeback_step_pk_xsrl5j4mlf" ON "slice_den"."writeback_step" IS 'primary key of WritebackStep';
 
-COMMENT ON CONSTRAINT "__writeback_step_key_root_step_kind_e3ojhyyb5d" ON "slice_den"."writeback_step" IS 'key WritebackStep(root, step, kind)';
-
 COMMENT ON CONSTRAINT "__writeback_writeback_finish_output_pk_payvcqalt7" ON "slice_den"."writeback_writeback_finish_output" IS 'primary key of WritebackWritebackFinishOutput';
 
 COMMENT ON CONSTRAINT "__writeback_writeback_input_pk_ejs235aju2" ON "slice_den"."writeback_writeback_input" IS 'primary key of WritebackWritebackInput';
 
 COMMENT ON COLUMN "slice_den"."assign_assignment_input"."__tag_kind_assignment_q5nqvzv6jc" IS 'tag AssignRoot.kind = Assignment';
-
-COMMENT ON COLUMN "slice_den"."assign_assignment_input"."__root_h2ohpjyioe" IS 'root where Logic.eq(mode, "Nearest")';
-
-COMMENT ON COLUMN "slice_den"."assign_assignment_input"."__root_i3j5qytpxw" IS 'root where Logic.eq(mode, "Within")';
 
 COMMENT ON COLUMN "slice_den"."assign_assignment_input_exclude"."__root_yjobx7uyrd" IS 'root where Logic.ge(ordinal, 1n)';
 
@@ -6464,31 +6576,13 @@ COMMENT ON COLUMN "slice_den"."assign_claim"."__root_yewsvvtcyz" IS 'root where 
 
 COMMENT ON COLUMN "slice_den"."assign_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
-COMMENT ON COLUMN "slice_den"."assign_decide_input"."__tag_kind_decide_ggginylxcj" IS 'tag AssignStep.kind = Decide';
-
-COMMENT ON COLUMN "slice_den"."assign_decide_input"."__root_h2ohpjyioe" IS 'root where Logic.eq(mode, "Nearest")';
-
-COMMENT ON COLUMN "slice_den"."assign_decide_input"."__root_i3j5qytpxw" IS 'root where Logic.eq(mode, "Within")';
-
 COMMENT ON COLUMN "slice_den"."assign_decide_input_exclude"."__root_yjobx7uyrd" IS 'root where Logic.ge(ordinal, 1n)';
 
 COMMENT ON COLUMN "slice_den"."assign_decide_input_exclude"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
-COMMENT ON COLUMN "slice_den"."assign_decide_output"."__root_safjiw7jol" IS 'root where Logic.eq(stage, "Rest")';
-
-COMMENT ON COLUMN "slice_den"."assign_decide_output"."__root_dp4c6pzr4n" IS 'root where Logic.eq(stage, "Serve")';
-
 COMMENT ON COLUMN "slice_den"."assign_decide_output_weighed"."__root_yjobx7uyrd" IS 'root where Logic.ge(ordinal, 1n)';
 
 COMMENT ON COLUMN "slice_den"."assign_decide_output_weighed"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
-
-COMMENT ON COLUMN "slice_den"."assign_done"."__tag_outcome_done_3n46zakkk3" IS 'tag AssignResult.outcome = done';
-
-COMMENT ON COLUMN "slice_den"."assign_embed_input"."__tag_kind_embed_auqj2s5hps" IS 'tag AssignStep.kind = Embed';
-
-COMMENT ON COLUMN "slice_den"."assign_embed_input"."__root_h2ohpjyioe" IS 'root where Logic.eq(mode, "Nearest")';
-
-COMMENT ON COLUMN "slice_den"."assign_embed_input"."__root_i3j5qytpxw" IS 'root where Logic.eq(mode, "Within")';
 
 COMMENT ON COLUMN "slice_den"."assign_embed_input_exclude"."__root_yjobx7uyrd" IS 'root where Logic.ge(ordinal, 1n)';
 
@@ -6498,8 +6592,6 @@ COMMENT ON COLUMN "slice_den"."assign_embed_input_near"."__root_yjobx7uyrd" IS '
 
 COMMENT ON COLUMN "slice_den"."assign_embed_input_near"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
-COMMENT ON COLUMN "slice_den"."assign_failed"."__tag_outcome_failed_bxttnpdkga" IS 'tag AssignResult.outcome = failed';
-
 COMMENT ON COLUMN "slice_den"."assign_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
 COMMENT ON COLUMN "slice_den"."chain_chain_run_input"."__tag_kind_chain_run_ccthhdybqw" IS 'tag ChainRoot.kind = ChainRun';
@@ -6508,13 +6600,7 @@ COMMENT ON COLUMN "slice_den"."chain_claim"."__root_yewsvvtcyz" IS 'root where L
 
 COMMENT ON COLUMN "slice_den"."chain_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
-COMMENT ON COLUMN "slice_den"."chain_done"."__tag_outcome_done_uhpvxcbhg2" IS 'tag ChainResult.outcome = done';
-
-COMMENT ON COLUMN "slice_den"."chain_failed"."__tag_outcome_failed_lrxbpw73ih" IS 'tag ChainResult.outcome = failed';
-
 COMMENT ON COLUMN "slice_den"."chain_ordered_input"."__tag_kind_ordered_ms3hwzrkhl" IS 'tag ChainRoot.kind = Ordered';
-
-COMMENT ON COLUMN "slice_den"."chain_page_input"."__tag_kind_page_wmj4dlxrkf" IS 'tag ChainStep.kind = Page';
 
 COMMENT ON COLUMN "slice_den"."chain_page_read_tree_items"."__copy_items_jii5wy7azg" IS 'the owner''s count of the family ChainPageReadTreeRow.items';
 
@@ -6524,17 +6610,9 @@ COMMENT ON COLUMN "slice_den"."chain_page_read_tree_row"."__pred_items_3qltx5cx2
 
 COMMENT ON COLUMN "slice_den"."chain_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
-COMMENT ON COLUMN "slice_den"."clock_chime_input"."__tag_kind_chime_7beznll3bg" IS 'tag ClockStep.kind = Chime';
-
 COMMENT ON COLUMN "slice_den"."clock_claim"."__root_yewsvvtcyz" IS 'root where Logic.ge(attempt, 1n)';
 
 COMMENT ON COLUMN "slice_den"."clock_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
-
-COMMENT ON COLUMN "slice_den"."clock_close_input"."__tag_kind_close_f2ovjex5ey" IS 'tag ClockStep.kind = Close';
-
-COMMENT ON COLUMN "slice_den"."clock_done"."__tag_outcome_done_23mrxmndcr" IS 'tag ClockResult.outcome = done';
-
-COMMENT ON COLUMN "slice_den"."clock_failed"."__tag_outcome_failed_2to56fqild" IS 'tag ClockResult.outcome = failed';
 
 COMMENT ON COLUMN "slice_den"."clock_hourly_input"."__tag_kind_hourly_axvj7zlyzy" IS 'tag ClockRoot.kind = Hourly';
 
@@ -6542,19 +6620,11 @@ COMMENT ON COLUMN "slice_den"."clock_paused"."__pred_turn_qryngij6c4" IS 'pred(t
 
 COMMENT ON COLUMN "slice_den"."clock_sitting_input"."__tag_kind_sitting_zbhu3onph5" IS 'tag ClockRoot.kind = Sitting';
 
-COMMENT ON COLUMN "slice_den"."fan_batch_input"."__tag_kind_batch_cylbxlshb2" IS 'tag FanWithin.kind = Batch';
-
 COMMENT ON COLUMN "slice_den"."fan_claim"."__root_yewsvvtcyz" IS 'root where Logic.ge(attempt, 1n)';
 
 COMMENT ON COLUMN "slice_den"."fan_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice_den"."fan_claim"."__pred_holds_lq7itfruzz" IS 'pred(holds)';
-
-COMMENT ON COLUMN "slice_den"."fan_done"."__tag_outcome_done_tulqbccryg" IS 'tag FanResult.outcome = done';
-
-COMMENT ON COLUMN "slice_den"."fan_dust_input"."__tag_kind_dust_p24m5lzoa4" IS 'tag FanStep.kind = Dust';
-
-COMMENT ON COLUMN "slice_den"."fan_failed"."__tag_outcome_failed_3kga3qw77n" IS 'tag FanResult.outcome = failed';
 
 COMMENT ON COLUMN "slice_den"."fan_fan_run_input"."__tag_kind_fan_run_2liqlumqkj" IS 'tag FanRoot.kind = FanRun';
 
@@ -6562,51 +6632,27 @@ COMMENT ON COLUMN "slice_den"."fan_hold"."__copy_holds_hfzvk7t2xc" IS 'the owner
 
 COMMENT ON COLUMN "slice_den"."fan_hold"."__pred_at_xktcobhsti" IS 'pred(at)';
 
-COMMENT ON COLUMN "slice_den"."fan_mop_input"."__tag_kind_mop_sawjeyk4ob" IS 'tag FanStep.kind = Mop';
-
 COMMENT ON COLUMN "slice_den"."fan_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
-COMMENT ON COLUMN "slice_den"."fan_square_input"."__tag_kind_square_q3stoybx3v" IS 'tag FanStep.kind = Square';
-
 COMMENT ON COLUMN "slice_den"."fan_sweep_input"."__tag_kind_sweep_4lmrlblufr" IS 'tag FanRoot.kind = Sweep';
-
-COMMENT ON COLUMN "slice_den"."retry_brittle_input"."__tag_kind_brittle_wzfwqdkbkg" IS 'tag RetryStep.kind = Brittle';
 
 COMMENT ON COLUMN "slice_den"."retry_claim"."__root_yewsvvtcyz" IS 'root where Logic.ge(attempt, 1n)';
 
 COMMENT ON COLUMN "slice_den"."retry_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
-COMMENT ON COLUMN "slice_den"."retry_done"."__tag_outcome_done_k5wikz4kly" IS 'tag RetryResult.outcome = done';
-
-COMMENT ON COLUMN "slice_den"."retry_failed"."__tag_outcome_failed_446fx3eezg" IS 'tag RetryResult.outcome = failed';
-
 COMMENT ON COLUMN "slice_den"."retry_ladders_input"."__tag_kind_ladders_amjml3bobr" IS 'tag RetryRoot.kind = Ladders';
 
-COMMENT ON COLUMN "slice_den"."retry_patient_input"."__tag_kind_patient_qohxuqrewz" IS 'tag RetryStep.kind = Patient';
-
 COMMENT ON COLUMN "slice_den"."retry_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
-
-COMMENT ON COLUMN "slice_den"."retry_polite_input"."__tag_kind_polite_s3g4jx73ij" IS 'tag RetryStep.kind = Polite';
-
-COMMENT ON COLUMN "slice_den"."retry_steadfast_input"."__tag_kind_steadfast_4rudtmco65" IS 'tag RetryStep.kind = Steadfast';
 
 COMMENT ON COLUMN "slice_den"."retry_throttled_input"."__tag_kind_throttled_uy63hl6qg7" IS 'tag RetryRoot.kind = Throttled';
 
 COMMENT ON COLUMN "slice_den"."retry_unhurried_input"."__tag_kind_unhurried_yf3vrtngno" IS 'tag RetryRoot.kind = Unhurried';
-
-COMMENT ON COLUMN "slice_den"."review_analyze_input"."__tag_kind_analyze_q6ry667fpd" IS 'tag ReviewStep.kind = Analyze';
 
 COMMENT ON COLUMN "slice_den"."review_claim"."__root_yewsvvtcyz" IS 'root where Logic.ge(attempt, 1n)';
 
 COMMENT ON COLUMN "slice_den"."review_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
 COMMENT ON COLUMN "slice_den"."review_claim"."__pred_holds_lq7itfruzz" IS 'pred(holds)';
-
-COMMENT ON COLUMN "slice_den"."review_done"."__tag_outcome_done_clhrawk5mj" IS 'tag ReviewResult.outcome = done';
-
-COMMENT ON COLUMN "slice_den"."review_failed"."__tag_outcome_failed_set6imbczu" IS 'tag ReviewResult.outcome = failed';
-
-COMMENT ON COLUMN "slice_den"."review_gather_input"."__tag_kind_gather_xyjwruhpuh" IS 'tag ReviewStep.kind = Gather';
 
 COMMENT ON COLUMN "slice_den"."review_gather_input_sizes"."__root_yjobx7uyrd" IS 'root where Logic.ge(ordinal, 1n)';
 
@@ -6618,29 +6664,17 @@ COMMENT ON COLUMN "slice_den"."review_hold"."__pred_at_xktcobhsti" IS 'pred(at)'
 
 COMMENT ON COLUMN "slice_den"."review_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
-COMMENT ON COLUMN "slice_den"."review_questions_input"."__tag_kind_questions_mtcmjgn4fu" IS 'tag ReviewWithin.kind = Questions';
-
 COMMENT ON COLUMN "slice_den"."review_review_run_input"."__tag_kind_review_run_npquoqpyk4" IS 'tag ReviewRoot.kind = ReviewRun';
 
 COMMENT ON COLUMN "slice_den"."review_review_run_input_sizes"."__root_yjobx7uyrd" IS 'root where Logic.ge(ordinal, 1n)';
 
 COMMENT ON COLUMN "slice_den"."review_review_run_input_sizes"."__pred_ordinal_e545zctcav" IS 'pred(ordinal)';
 
-COMMENT ON COLUMN "slice_den"."review_save_input"."__tag_kind_save_qnkiffm2eg" IS 'tag ReviewStep.kind = Save';
-
-COMMENT ON COLUMN "slice_den"."sync_build_input"."__tag_kind_build_pslevsssox" IS 'tag SyncStep.kind = Build';
-
 COMMENT ON COLUMN "slice_den"."sync_claim"."__root_yewsvvtcyz" IS 'root where Logic.ge(attempt, 1n)';
 
 COMMENT ON COLUMN "slice_den"."sync_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
-COMMENT ON COLUMN "slice_den"."sync_copy_input"."__tag_kind_copy_wfaj52nfh7" IS 'tag SyncStep.kind = Copy';
-
-COMMENT ON COLUMN "slice_den"."sync_done"."__tag_outcome_done_pkvv6jrgpq" IS 'tag SyncResult.outcome = done';
-
 COMMENT ON COLUMN "slice_den"."sync_exclusive"."__pred_turn_qryngij6c4" IS 'pred(turn)';
-
-COMMENT ON COLUMN "slice_den"."sync_failed"."__tag_outcome_failed_26do6twsnf" IS 'tag SyncResult.outcome = failed';
 
 COMMENT ON COLUMN "slice_den"."sync_gold_input"."__tag_kind_gold_phmoz6zyym" IS 'tag SyncRoot.kind = Gold';
 
@@ -6652,31 +6686,9 @@ COMMENT ON COLUMN "slice_den"."writeback_claim"."__root_yewsvvtcyz" IS 'root whe
 
 COMMENT ON COLUMN "slice_den"."writeback_claim"."__pred_attempt_oey4tm5xyl" IS 'pred(attempt)';
 
-COMMENT ON COLUMN "slice_den"."writeback_deliver_input"."__tag_kind_deliver_bksclfa7xd" IS 'tag WritebackStep.kind = Deliver';
-
-COMMENT ON COLUMN "slice_den"."writeback_done"."__tag_outcome_done_fmfi3z4vd7" IS 'tag WritebackResult.outcome = done';
-
-COMMENT ON COLUMN "slice_den"."writeback_failed"."__tag_outcome_failed_vaancyadzi" IS 'tag WritebackResult.outcome = failed';
-
 COMMENT ON COLUMN "slice_den"."writeback_paused"."__pred_turn_qryngij6c4" IS 'pred(turn)';
 
 COMMENT ON COLUMN "slice_den"."writeback_writeback_input"."__tag_kind_writeback_7zc6o24iqm" IS 'tag WritebackRoot.kind = Writeback';
-
-COMMENT ON CONSTRAINT "__assign_assignment_input_key_root_scope_7nedy2qbk6" ON "slice_den"."assign_assignment_input" IS 'key AssignAssignmentInput(root where Logic.eq(mode, "Nearest"), scope)';
-
-COMMENT ON CONSTRAINT "__assign_assignment_input_key_root_scope_qfmygkrjhs" ON "slice_den"."assign_assignment_input" IS 'key AssignAssignmentInput(root where Logic.eq(mode, "Within"), scope)';
-
-COMMENT ON CONSTRAINT "__assign_decide_input_key_root_step_d3uks3rj2n" ON "slice_den"."assign_decide_input" IS 'key AssignDecideInput(root where Logic.eq(mode, "Nearest"), step)';
-
-COMMENT ON CONSTRAINT "__assign_decide_input_key_root_step_6zm3itpfsl" ON "slice_den"."assign_decide_input" IS 'key AssignDecideInput(root where Logic.eq(mode, "Within"), step)';
-
-COMMENT ON CONSTRAINT "__assign_decide_output_key_root_step_kkrwqp4hal" ON "slice_den"."assign_decide_output" IS 'key AssignDecideOutput(root where Logic.eq(stage, "Rest"), step)';
-
-COMMENT ON CONSTRAINT "__assign_decide_output_key_root_step_b4t6tvdg54" ON "slice_den"."assign_decide_output" IS 'key AssignDecideOutput(root where Logic.eq(stage, "Serve"), step)';
-
-COMMENT ON CONSTRAINT "__assign_embed_input_key_root_step_om25gwnmgm" ON "slice_den"."assign_embed_input" IS 'key AssignEmbedInput(root where Logic.eq(mode, "Nearest"), step)';
-
-COMMENT ON CONSTRAINT "__assign_embed_input_key_root_step_bdexw3n23j" ON "slice_den"."assign_embed_input" IS 'key AssignEmbedInput(root where Logic.eq(mode, "Within"), step)';
 
 COMMENT ON CONSTRAINT "__chain_page_read_tree_items_key_digest_pred_at_ipnjzk4wne" ON "slice_den"."chain_page_read_tree_items" IS 'key ChainPageReadTreeItems(digest, pred(at))';
 
@@ -6708,10 +6720,6 @@ COMMENT ON CONSTRAINT "__assign_assignment_input_fk_root_kvtoeqjbqa" ON "slice_d
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_fk_scope_tag_kind_646lzaw56q" ON "slice_den"."assign_assignment_input" IS 'foreign key AssignAssignmentInput(scope, tag AssignRoot.kind = Assignment) to AssignRoot(root, kind)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_fk_root_scope_zhasqfl2p6" ON "slice_den"."assign_assignment_input" IS 'foreign key AssignAssignmentInput(root where Logic.eq(mode, "Nearest"), scope) to AssignAssignmentInputModeNearest(root, scope)';
-
-COMMENT ON CONSTRAINT "__assign_assignment_input_fk_root_scope_llkivifuad" ON "slice_den"."assign_assignment_input" IS 'foreign key AssignAssignmentInput(root where Logic.eq(mode, "Within"), scope) to AssignAssignmentInputModeWithin(root, scope)';
-
 COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_root_iovtlis5om" ON "slice_den"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(root) to AssignRoot(root)';
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_root_scope_qsm54cc645" ON "slice_den"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(root, scope) to AssignAssignmentInput(root, scope)';
@@ -6720,11 +6728,7 @@ COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_root_scope_pred_xyfm
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_mode_nearest_fk_root_6yvi7prxiu" ON "slice_den"."assign_assignment_input_mode_nearest" IS 'foreign key AssignAssignmentInputModeNearest(root) to AssignRoot(root)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_mode_nearest_fk_root_scope_zntw5s47au" ON "slice_den"."assign_assignment_input_mode_nearest" IS 'foreign key AssignAssignmentInputModeNearest(root, scope) to AssignAssignmentInput(root where Logic.eq(mode, "Nearest"), scope)';
-
 COMMENT ON CONSTRAINT "__assign_assignment_input_mode_within_fk_root_g45wawxglu" ON "slice_den"."assign_assignment_input_mode_within" IS 'foreign key AssignAssignmentInputModeWithin(root) to AssignRoot(root)';
-
-COMMENT ON CONSTRAINT "__assign_assignment_input_mode_within_fk_root_scope_wy26uam6nz" ON "slice_den"."assign_assignment_input_mode_within" IS 'foreign key AssignAssignmentInputModeWithin(root, scope) to AssignAssignmentInput(root where Logic.eq(mode, "Within"), scope)';
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_root_2cmn5si5rq" ON "slice_den"."assign_assignment_input_near" IS 'foreign key AssignAssignmentInputNear(root) to AssignRoot(root)';
 
@@ -6740,12 +6744,6 @@ COMMENT ON CONSTRAINT "__assign_claim_fk_root_step_pred_attempt_bt5m6xhi43" ON "
 
 COMMENT ON CONSTRAINT "__assign_decide_input_fk_root_57yk3w5qjz" ON "slice_den"."assign_decide_input" IS 'foreign key AssignDecideInput(root) to AssignRoot(root)';
 
-COMMENT ON CONSTRAINT "__assign_decide_input_fk_root_step_tag_kind_decide_fosl3a5onv" ON "slice_den"."assign_decide_input" IS 'foreign key AssignDecideInput(root, step, tag AssignStep.kind = Decide) to AssignStep(root, step, kind)';
-
-COMMENT ON CONSTRAINT "__assign_decide_input_fk_root_step_5tkvvw2gev" ON "slice_den"."assign_decide_input" IS 'foreign key AssignDecideInput(root where Logic.eq(mode, "Nearest"), step) to AssignDecideInputModeNearest(root, step)';
-
-COMMENT ON CONSTRAINT "__assign_decide_input_fk_root_step_6mrlamao6q" ON "slice_den"."assign_decide_input" IS 'foreign key AssignDecideInput(root where Logic.eq(mode, "Within"), step) to AssignDecideInputModeWithin(root, step)';
-
 COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_root_yz5voylpmu" ON "slice_den"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(root) to AssignRoot(root)';
 
 COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_root_step_62s7y3zxzv" ON "slice_den"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(root, step) to AssignDecideInput(root, step)';
@@ -6754,11 +6752,7 @@ COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_root_step_pred_vc4il3cgp
 
 COMMENT ON CONSTRAINT "__assign_decide_input_mode_nearest_fk_root_vrbpbkw55f" ON "slice_den"."assign_decide_input_mode_nearest" IS 'foreign key AssignDecideInputModeNearest(root) to AssignRoot(root)';
 
-COMMENT ON CONSTRAINT "__assign_decide_input_mode_nearest_fk_root_step_x2xqt6jqpp" ON "slice_den"."assign_decide_input_mode_nearest" IS 'foreign key AssignDecideInputModeNearest(root, step) to AssignDecideInput(root where Logic.eq(mode, "Nearest"), step)';
-
 COMMENT ON CONSTRAINT "__assign_decide_input_mode_within_fk_root_pn7qnxf5da" ON "slice_den"."assign_decide_input_mode_within" IS 'foreign key AssignDecideInputModeWithin(root) to AssignRoot(root)';
-
-COMMENT ON CONSTRAINT "__assign_decide_input_mode_within_fk_root_step_ud25kyxk3h" ON "slice_den"."assign_decide_input_mode_within" IS 'foreign key AssignDecideInputModeWithin(root, step) to AssignDecideInput(root where Logic.eq(mode, "Within"), step)';
 
 COMMENT ON CONSTRAINT "__assign_decide_output_fk_root_cdp7lsnba5" ON "slice_den"."assign_decide_output" IS 'foreign key AssignDecideOutput(root) to AssignRoot(root)';
 
@@ -6766,17 +6760,9 @@ COMMENT ON CONSTRAINT "__assign_decide_output_fk_root_step_pwsuruf3ul" ON "slice
 
 COMMENT ON CONSTRAINT "__assign_decide_output_fk_root_step_reczzzxtv7" ON "slice_den"."assign_decide_output" IS 'foreign key AssignDecideOutput(root, step) to AssignDone(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_decide_output_fk_root_step_cwcr4bt3vo" ON "slice_den"."assign_decide_output" IS 'foreign key AssignDecideOutput(root where Logic.eq(stage, "Rest"), step) to AssignDecideOutputStageRest(root, step)';
-
-COMMENT ON CONSTRAINT "__assign_decide_output_fk_root_step_not4tcuhrj" ON "slice_den"."assign_decide_output" IS 'foreign key AssignDecideOutput(root where Logic.eq(stage, "Serve"), step) to AssignDecideOutputStageServe(root, step)';
-
 COMMENT ON CONSTRAINT "__assign_decide_output_stage_rest_fk_root_v7p5cdtxtz" ON "slice_den"."assign_decide_output_stage_rest" IS 'foreign key AssignDecideOutputStageRest(root) to AssignRoot(root)';
 
-COMMENT ON CONSTRAINT "__assign_decide_output_stage_rest_fk_root_step_vx4nsxmdwx" ON "slice_den"."assign_decide_output_stage_rest" IS 'foreign key AssignDecideOutputStageRest(root, step) to AssignDecideOutput(root where Logic.eq(stage, "Rest"), step)';
-
 COMMENT ON CONSTRAINT "__assign_decide_output_stage_serve_fk_root_dnolem6ncd" ON "slice_den"."assign_decide_output_stage_serve" IS 'foreign key AssignDecideOutputStageServe(root) to AssignRoot(root)';
-
-COMMENT ON CONSTRAINT "__assign_decide_output_stage_serve_fk_root_step_ngjidqu3cx" ON "slice_den"."assign_decide_output_stage_serve" IS 'foreign key AssignDecideOutputStageServe(root, step) to AssignDecideOutput(root where Logic.eq(stage, "Serve"), step)';
 
 COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_root_tfufuj3nqk" ON "slice_den"."assign_decide_output_weighed" IS 'foreign key AssignDecideOutputWeighed(root) to AssignRoot(root)';
 
@@ -6798,15 +6784,7 @@ COMMENT ON CONSTRAINT "__assign_decide_read_seen_fk_root_step_agvsf5drbl" ON "sl
 
 COMMENT ON CONSTRAINT "__assign_done_fk_root_klcl2ojfbu" ON "slice_den"."assign_done" IS 'foreign key AssignDone(root) to AssignRoot(root)';
 
-COMMENT ON CONSTRAINT "__assign_done_fk_root_step_tag_outcome_done_q7c3zyfeot" ON "slice_den"."assign_done" IS 'foreign key AssignDone(root, step, tag AssignResult.outcome = done) to AssignResult(root, step, outcome)';
-
 COMMENT ON CONSTRAINT "__assign_embed_input_fk_root_d5blm5pm2a" ON "slice_den"."assign_embed_input" IS 'foreign key AssignEmbedInput(root) to AssignRoot(root)';
-
-COMMENT ON CONSTRAINT "__assign_embed_input_fk_root_step_tag_kind_embed_vupaxjcjqq" ON "slice_den"."assign_embed_input" IS 'foreign key AssignEmbedInput(root, step, tag AssignStep.kind = Embed) to AssignStep(root, step, kind)';
-
-COMMENT ON CONSTRAINT "__assign_embed_input_fk_root_step_zmtzxi3uzy" ON "slice_den"."assign_embed_input" IS 'foreign key AssignEmbedInput(root where Logic.eq(mode, "Nearest"), step) to AssignEmbedInputModeNearest(root, step)';
-
-COMMENT ON CONSTRAINT "__assign_embed_input_fk_root_step_ys4nxqddop" ON "slice_den"."assign_embed_input" IS 'foreign key AssignEmbedInput(root where Logic.eq(mode, "Within"), step) to AssignEmbedInputModeWithin(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_root_yxhvh4acej" ON "slice_den"."assign_embed_input_exclude" IS 'foreign key AssignEmbedInputExclude(root) to AssignRoot(root)';
 
@@ -6816,11 +6794,7 @@ COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_root_step_pred_pcwizkmay4
 
 COMMENT ON CONSTRAINT "__assign_embed_input_mode_nearest_fk_root_jnyguegnta" ON "slice_den"."assign_embed_input_mode_nearest" IS 'foreign key AssignEmbedInputModeNearest(root) to AssignRoot(root)';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_mode_nearest_fk_root_step_qgtqnt4gmy" ON "slice_den"."assign_embed_input_mode_nearest" IS 'foreign key AssignEmbedInputModeNearest(root, step) to AssignEmbedInput(root where Logic.eq(mode, "Nearest"), step)';
-
 COMMENT ON CONSTRAINT "__assign_embed_input_mode_within_fk_root_fn43ckwpfx" ON "slice_den"."assign_embed_input_mode_within" IS 'foreign key AssignEmbedInputModeWithin(root) to AssignRoot(root)';
-
-COMMENT ON CONSTRAINT "__assign_embed_input_mode_within_fk_root_step_vapgocabae" ON "slice_den"."assign_embed_input_mode_within" IS 'foreign key AssignEmbedInputModeWithin(root, step) to AssignEmbedInput(root where Logic.eq(mode, "Within"), step)';
 
 COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_root_ez7btmcfis" ON "slice_den"."assign_embed_input_near" IS 'foreign key AssignEmbedInputNear(root) to AssignRoot(root)';
 
@@ -6843,8 +6817,6 @@ COMMENT ON CONSTRAINT "__assign_exhausted_fk_root_s3mbwj4i66" ON "slice_den"."as
 COMMENT ON CONSTRAINT "__assign_exhausted_fk_root_step_cspvc4i2pv" ON "slice_den"."assign_exhausted" IS 'foreign key AssignExhausted(root, step) to AssignFailed(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_failed_fk_root_ug7m4hfg26" ON "slice_den"."assign_failed" IS 'foreign key AssignFailed(root) to AssignRoot(root)';
-
-COMMENT ON CONSTRAINT "__assign_failed_fk_root_step_tag_outcome_failed_v54xqecjoo" ON "slice_den"."assign_failed" IS 'foreign key AssignFailed(root, step, tag AssignResult.outcome = failed) to AssignResult(root, step, outcome)';
 
 COMMENT ON CONSTRAINT "__assign_fenced_fk_root_pzert3n2ix" ON "slice_den"."assign_fenced" IS 'foreign key AssignFenced(root) to AssignRoot(root)';
 
@@ -6918,8 +6890,6 @@ COMMENT ON CONSTRAINT "__chain_claim_fk_root_step_pred_attempt_fmwmco64ak" ON "s
 
 COMMENT ON CONSTRAINT "__chain_done_fk_root_h5y3lmghf3" ON "slice_den"."chain_done" IS 'foreign key ChainDone(root) to ChainRoot(root)';
 
-COMMENT ON CONSTRAINT "__chain_done_fk_root_step_tag_outcome_done_qw2sxejxyb" ON "slice_den"."chain_done" IS 'foreign key ChainDone(root, step, tag ChainResult.outcome = done) to ChainResult(root, step, outcome)';
-
 COMMENT ON CONSTRAINT "__chain_ended_fk_root_yonuzkytaq" ON "slice_den"."chain_ended" IS 'foreign key ChainEnded(root) to ChainRoot(root)';
 
 COMMENT ON CONSTRAINT "__chain_ended_fk_root_step_attempt_daxikklndi" ON "slice_den"."chain_ended" IS 'foreign key ChainEnded(root, step, attempt) to ChainClaim(root, step, attempt)';
@@ -6929,8 +6899,6 @@ COMMENT ON CONSTRAINT "__chain_exhausted_fk_root_5235djdbik" ON "slice_den"."cha
 COMMENT ON CONSTRAINT "__chain_exhausted_fk_root_step_4l7lqt7ji4" ON "slice_den"."chain_exhausted" IS 'foreign key ChainExhausted(root, step) to ChainFailed(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_failed_fk_root_zdy2bxxwqo" ON "slice_den"."chain_failed" IS 'foreign key ChainFailed(root) to ChainRoot(root)';
-
-COMMENT ON CONSTRAINT "__chain_failed_fk_root_step_tag_outcome_failed_arorvmozov" ON "slice_den"."chain_failed" IS 'foreign key ChainFailed(root, step, tag ChainResult.outcome = failed) to ChainResult(root, step, outcome)';
 
 COMMENT ON CONSTRAINT "__chain_fenced_fk_root_oq37i4ofgu" ON "slice_den"."chain_fenced" IS 'foreign key ChainFenced(root) to ChainRoot(root)';
 
@@ -6963,8 +6931,6 @@ COMMENT ON CONSTRAINT "__chain_ordered_input_fk_root_fzez5zrqop" ON "slice_den".
 COMMENT ON CONSTRAINT "__chain_ordered_input_fk_scope_tag_kind_ordered_3oj5bnc73t" ON "slice_den"."chain_ordered_input" IS 'foreign key ChainOrderedInput(scope, tag ChainRoot.kind = Ordered) to ChainRoot(root, kind)';
 
 COMMENT ON CONSTRAINT "__chain_page_input_fk_root_o44giizz5e" ON "slice_den"."chain_page_input" IS 'foreign key ChainPageInput(root) to ChainRoot(root)';
-
-COMMENT ON CONSTRAINT "__chain_page_input_fk_root_step_tag_kind_page_lqcgnivn7i" ON "slice_den"."chain_page_input" IS 'foreign key ChainPageInput(root, step, tag ChainStep.kind = Page) to ChainStep(root, step, kind)';
 
 COMMENT ON CONSTRAINT "__chain_page_input_after_fk_root_akclgel5y2" ON "slice_den"."chain_page_input_after" IS 'foreign key ChainPageInputAfter(root) to ChainRoot(root)';
 
@@ -7046,8 +7012,6 @@ COMMENT ON CONSTRAINT "__clock_admitted_fk_root_scope_qiiqqqcffn" ON "slice_den"
 
 COMMENT ON CONSTRAINT "__clock_chime_input_fk_root_c375laujun" ON "slice_den"."clock_chime_input" IS 'foreign key ClockChimeInput(root) to ClockRoot(root)';
 
-COMMENT ON CONSTRAINT "__clock_chime_input_fk_root_step_tag_kind_chime_u32sji5jlv" ON "slice_den"."clock_chime_input" IS 'foreign key ClockChimeInput(root, step, tag ClockStep.kind = Chime) to ClockStep(root, step, kind)';
-
 COMMENT ON CONSTRAINT "__clock_chime_output_fk_root_tcbxpayvzg" ON "slice_den"."clock_chime_output" IS 'foreign key ClockChimeOutput(root) to ClockRoot(root)';
 
 COMMENT ON CONSTRAINT "__clock_chime_output_fk_root_step_qixdzekdul" ON "slice_den"."clock_chime_output" IS 'foreign key ClockChimeOutput(root, step) to ClockChimeInput(root, step)';
@@ -7062,8 +7026,6 @@ COMMENT ON CONSTRAINT "__clock_claim_fk_root_step_pred_attempt_s6bkkwaqnz" ON "s
 
 COMMENT ON CONSTRAINT "__clock_close_input_fk_root_6fzi6ks77d" ON "slice_den"."clock_close_input" IS 'foreign key ClockCloseInput(root) to ClockRoot(root)';
 
-COMMENT ON CONSTRAINT "__clock_close_input_fk_root_step_tag_kind_close_vj4mikpido" ON "slice_den"."clock_close_input" IS 'foreign key ClockCloseInput(root, step, tag ClockStep.kind = Close) to ClockStep(root, step, kind)';
-
 COMMENT ON CONSTRAINT "__clock_close_output_fk_root_6liop2t5nl" ON "slice_den"."clock_close_output" IS 'foreign key ClockCloseOutput(root) to ClockRoot(root)';
 
 COMMENT ON CONSTRAINT "__clock_close_output_fk_root_step_f7egr5rego" ON "slice_den"."clock_close_output" IS 'foreign key ClockCloseOutput(root, step) to ClockCloseInput(root, step)';
@@ -7071,8 +7033,6 @@ COMMENT ON CONSTRAINT "__clock_close_output_fk_root_step_f7egr5rego" ON "slice_d
 COMMENT ON CONSTRAINT "__clock_close_output_fk_root_step_waaqexpeeq" ON "slice_den"."clock_close_output" IS 'foreign key ClockCloseOutput(root, step) to ClockDone(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_done_fk_root_4y5qrlc3tq" ON "slice_den"."clock_done" IS 'foreign key ClockDone(root) to ClockRoot(root)';
-
-COMMENT ON CONSTRAINT "__clock_done_fk_root_step_tag_outcome_done_e2syqunidg" ON "slice_den"."clock_done" IS 'foreign key ClockDone(root, step, tag ClockResult.outcome = done) to ClockResult(root, step, outcome)';
 
 COMMENT ON CONSTRAINT "__clock_ended_fk_root_5tof7ozuaz" ON "slice_den"."clock_ended" IS 'foreign key ClockEnded(root) to ClockRoot(root)';
 
@@ -7083,8 +7043,6 @@ COMMENT ON CONSTRAINT "__clock_exhausted_fk_root_d7efrcc2fe" ON "slice_den"."clo
 COMMENT ON CONSTRAINT "__clock_exhausted_fk_root_step_ifbdfsiptr" ON "slice_den"."clock_exhausted" IS 'foreign key ClockExhausted(root, step) to ClockFailed(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_failed_fk_root_qg2llqnev7" ON "slice_den"."clock_failed" IS 'foreign key ClockFailed(root) to ClockRoot(root)';
-
-COMMENT ON CONSTRAINT "__clock_failed_fk_root_step_tag_outcome_failed_pwlflkkq24" ON "slice_den"."clock_failed" IS 'foreign key ClockFailed(root, step, tag ClockResult.outcome = failed) to ClockResult(root, step, outcome)';
 
 COMMENT ON CONSTRAINT "__clock_fenced_fk_root_ly2rcwmtiz" ON "slice_den"."clock_fenced" IS 'foreign key ClockFenced(root) to ClockRoot(root)';
 
@@ -7162,8 +7120,6 @@ COMMENT ON CONSTRAINT "__fan_batch_finish_output_fk_root_step_lvbwqkrzya" ON "sl
 
 COMMENT ON CONSTRAINT "__fan_batch_input_fk_root_6mrrtm2cth" ON "slice_den"."fan_batch_input" IS 'foreign key FanBatchInput(root) to FanRoot(root)';
 
-COMMENT ON CONSTRAINT "__fan_batch_input_fk_root_scope_tag_kind_batch_3em3kstjdo" ON "slice_den"."fan_batch_input" IS 'foreign key FanBatchInput(root, scope, tag FanWithin.kind = Batch) to FanWithin(root, scope, kind)';
-
 COMMENT ON CONSTRAINT "__fan_claim_fk_root_vemdcaxtlr" ON "slice_den"."fan_claim" IS 'foreign key FanClaim(root) to FanRoot(root)';
 
 COMMENT ON CONSTRAINT "__fan_claim_fk_root_step_2xkxna4wne" ON "slice_den"."fan_claim" IS 'foreign key FanClaim(root, step) to FanStep(root, step)';
@@ -7174,11 +7130,7 @@ COMMENT ON CONSTRAINT "__fan_claim_fk_root_step_pred_attempt_thlj3gkwmg" ON "sli
 
 COMMENT ON CONSTRAINT "__fan_done_fk_root_ojbxyih4lw" ON "slice_den"."fan_done" IS 'foreign key FanDone(root) to FanRoot(root)';
 
-COMMENT ON CONSTRAINT "__fan_done_fk_root_step_tag_outcome_done_l6y3a4jyn5" ON "slice_den"."fan_done" IS 'foreign key FanDone(root, step, tag FanResult.outcome = done) to FanResult(root, step, outcome)';
-
 COMMENT ON CONSTRAINT "__fan_dust_input_fk_root_illh2kcoec" ON "slice_den"."fan_dust_input" IS 'foreign key FanDustInput(root) to FanRoot(root)';
-
-COMMENT ON CONSTRAINT "__fan_dust_input_fk_root_step_tag_kind_dust_qa5c3ncmj3" ON "slice_den"."fan_dust_input" IS 'foreign key FanDustInput(root, step, tag FanStep.kind = Dust) to FanStep(root, step, kind)';
 
 COMMENT ON CONSTRAINT "__fan_dust_output_fk_root_7u44muld7v" ON "slice_den"."fan_dust_output" IS 'foreign key FanDustOutput(root) to FanRoot(root)';
 
@@ -7195,8 +7147,6 @@ COMMENT ON CONSTRAINT "__fan_exhausted_fk_root_xx6capfmv3" ON "slice_den"."fan_e
 COMMENT ON CONSTRAINT "__fan_exhausted_fk_root_step_lfol3zhscm" ON "slice_den"."fan_exhausted" IS 'foreign key FanExhausted(root, step) to FanFailed(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_failed_fk_root_4ocrijtubm" ON "slice_den"."fan_failed" IS 'foreign key FanFailed(root) to FanRoot(root)';
-
-COMMENT ON CONSTRAINT "__fan_failed_fk_root_step_tag_outcome_failed_iq5phwvujj" ON "slice_den"."fan_failed" IS 'foreign key FanFailed(root, step, tag FanResult.outcome = failed) to FanResult(root, step, outcome)';
 
 COMMENT ON CONSTRAINT "__fan_fan_run_finish_output_fk_root_qol7iw4yrz" ON "slice_den"."fan_fan_run_finish_output" IS 'foreign key FanFanRunFinishOutput(root) to FanRoot(root)';
 
@@ -7227,8 +7177,6 @@ COMMENT ON CONSTRAINT "__fan_hold_fk_root_step_attempt_copy_holds_hnnbabpski" ON
 COMMENT ON CONSTRAINT "__fan_hold_fk_root_step_attempt_pred_at_lene3l2wo7" ON "slice_den"."fan_hold" IS 'foreign key FanHold(root, step, attempt, pred(at)) to FanHold(root, step, attempt, at)';
 
 COMMENT ON CONSTRAINT "__fan_mop_input_fk_root_ns3xpijkql" ON "slice_den"."fan_mop_input" IS 'foreign key FanMopInput(root) to FanRoot(root)';
-
-COMMENT ON CONSTRAINT "__fan_mop_input_fk_root_step_tag_kind_mop_perugzhemk" ON "slice_den"."fan_mop_input" IS 'foreign key FanMopInput(root, step, tag FanStep.kind = Mop) to FanStep(root, step, kind)';
 
 COMMENT ON CONSTRAINT "__fan_mop_output_fk_root_npn3ws5u4k" ON "slice_den"."fan_mop_output" IS 'foreign key FanMopOutput(root) to FanRoot(root)';
 
@@ -7261,8 +7209,6 @@ COMMENT ON CONSTRAINT "__fan_skipped_fk_root_b5irmgajk5" ON "slice_den"."fan_ski
 COMMENT ON CONSTRAINT "__fan_skipped_fk_scope_5rsfnka2al" ON "slice_den"."fan_skipped" IS 'foreign key FanSkipped(scope) to FanRoot(root)';
 
 COMMENT ON CONSTRAINT "__fan_square_input_fk_root_2nvvofo7fx" ON "slice_den"."fan_square_input" IS 'foreign key FanSquareInput(root) to FanRoot(root)';
-
-COMMENT ON CONSTRAINT "__fan_square_input_fk_root_step_tag_kind_square_4paugkmj6j" ON "slice_den"."fan_square_input" IS 'foreign key FanSquareInput(root, step, tag FanStep.kind = Square) to FanStep(root, step, kind)';
 
 COMMENT ON CONSTRAINT "__fan_square_output_fk_root_raxsz2wnfz" ON "slice_den"."fan_square_output" IS 'foreign key FanSquareOutput(root) to FanRoot(root)';
 
@@ -7306,8 +7252,6 @@ COMMENT ON CONSTRAINT "__retry_admitted_fk_root_scope_4whpx2yoko" ON "slice_den"
 
 COMMENT ON CONSTRAINT "__retry_brittle_input_fk_root_ovfrkuyu2s" ON "slice_den"."retry_brittle_input" IS 'foreign key RetryBrittleInput(root) to RetryRoot(root)';
 
-COMMENT ON CONSTRAINT "__retry_brittle_input_fk_root_step_tag_kind_brittle_any5dmdk6a" ON "slice_den"."retry_brittle_input" IS 'foreign key RetryBrittleInput(root, step, tag RetryStep.kind = Brittle) to RetryStep(root, step, kind)';
-
 COMMENT ON CONSTRAINT "__retry_brittle_output_fk_root_tdraxk2ss2" ON "slice_den"."retry_brittle_output" IS 'foreign key RetryBrittleOutput(root) to RetryRoot(root)';
 
 COMMENT ON CONSTRAINT "__retry_brittle_output_fk_root_step_jb4luuaii6" ON "slice_den"."retry_brittle_output" IS 'foreign key RetryBrittleOutput(root, step) to RetryBrittleInput(root, step)';
@@ -7322,8 +7266,6 @@ COMMENT ON CONSTRAINT "__retry_claim_fk_root_step_pred_attempt_ygcziesx4q" ON "s
 
 COMMENT ON CONSTRAINT "__retry_done_fk_root_wer2aem4qv" ON "slice_den"."retry_done" IS 'foreign key RetryDone(root) to RetryRoot(root)';
 
-COMMENT ON CONSTRAINT "__retry_done_fk_root_step_tag_outcome_done_cqlyzoz7jm" ON "slice_den"."retry_done" IS 'foreign key RetryDone(root, step, tag RetryResult.outcome = done) to RetryResult(root, step, outcome)';
-
 COMMENT ON CONSTRAINT "__retry_ended_fk_root_5fnejqpzud" ON "slice_den"."retry_ended" IS 'foreign key RetryEnded(root) to RetryRoot(root)';
 
 COMMENT ON CONSTRAINT "__retry_ended_fk_root_step_attempt_zmythu6lea" ON "slice_den"."retry_ended" IS 'foreign key RetryEnded(root, step, attempt) to RetryClaim(root, step, attempt)';
@@ -7333,8 +7275,6 @@ COMMENT ON CONSTRAINT "__retry_exhausted_fk_root_jbthfuhrlh" ON "slice_den"."ret
 COMMENT ON CONSTRAINT "__retry_exhausted_fk_root_step_ysmlpu2xyq" ON "slice_den"."retry_exhausted" IS 'foreign key RetryExhausted(root, step) to RetryFailed(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_failed_fk_root_z6iudxitdd" ON "slice_den"."retry_failed" IS 'foreign key RetryFailed(root) to RetryRoot(root)';
-
-COMMENT ON CONSTRAINT "__retry_failed_fk_root_step_tag_outcome_failed_swwcwjyafx" ON "slice_den"."retry_failed" IS 'foreign key RetryFailed(root, step, tag RetryResult.outcome = failed) to RetryResult(root, step, outcome)';
 
 COMMENT ON CONSTRAINT "__retry_fenced_fk_root_iv3bmsuh2g" ON "slice_den"."retry_fenced" IS 'foreign key RetryFenced(root) to RetryRoot(root)';
 
@@ -7362,8 +7302,6 @@ COMMENT ON CONSTRAINT "__retry_ladders_input_fk_scope_tag_kind_ladders_erl4knm7u
 
 COMMENT ON CONSTRAINT "__retry_patient_input_fk_root_ye6tucziiu" ON "slice_den"."retry_patient_input" IS 'foreign key RetryPatientInput(root) to RetryRoot(root)';
 
-COMMENT ON CONSTRAINT "__retry_patient_input_fk_root_step_tag_kind_patient_2rk3lzypzn" ON "slice_den"."retry_patient_input" IS 'foreign key RetryPatientInput(root, step, tag RetryStep.kind = Patient) to RetryStep(root, step, kind)';
-
 COMMENT ON CONSTRAINT "__retry_patient_output_fk_root_zicrxry2hs" ON "slice_den"."retry_patient_output" IS 'foreign key RetryPatientOutput(root) to RetryRoot(root)';
 
 COMMENT ON CONSTRAINT "__retry_patient_output_fk_root_step_fpgjlxisro" ON "slice_den"."retry_patient_output" IS 'foreign key RetryPatientOutput(root, step) to RetryDone(root, step)';
@@ -7373,8 +7311,6 @@ COMMENT ON CONSTRAINT "__retry_patient_output_fk_root_step_cpuczlpiep" ON "slice
 COMMENT ON CONSTRAINT "__retry_paused_fk_target_pred_turn_i33p2skdd4" ON "slice_den"."retry_paused" IS 'foreign key RetryPaused(target, pred(turn)) to RetryResumed(target, turn)';
 
 COMMENT ON CONSTRAINT "__retry_polite_input_fk_root_utaxoyy6ep" ON "slice_den"."retry_polite_input" IS 'foreign key RetryPoliteInput(root) to RetryRoot(root)';
-
-COMMENT ON CONSTRAINT "__retry_polite_input_fk_root_step_tag_kind_polite_dhgymw2ijv" ON "slice_den"."retry_polite_input" IS 'foreign key RetryPoliteInput(root, step, tag RetryStep.kind = Polite) to RetryStep(root, step, kind)';
 
 COMMENT ON CONSTRAINT "__retry_polite_output_fk_root_4uohlhyopl" ON "slice_den"."retry_polite_output" IS 'foreign key RetryPoliteOutput(root) to RetryRoot(root)';
 
@@ -7412,8 +7348,6 @@ COMMENT ON CONSTRAINT "__retry_start_step_fk_root_step_tjvsrtkfqg" ON "slice_den
 
 COMMENT ON CONSTRAINT "__retry_steadfast_input_fk_root_23b7aa6ndw" ON "slice_den"."retry_steadfast_input" IS 'foreign key RetrySteadfastInput(root) to RetryRoot(root)';
 
-COMMENT ON CONSTRAINT "__retry_steadfast_input_fk_root_step_tag_kind_b5j6sfi4nd" ON "slice_den"."retry_steadfast_input" IS 'foreign key RetrySteadfastInput(root, step, tag RetryStep.kind = Steadfast) to RetryStep(root, step, kind)';
-
 COMMENT ON CONSTRAINT "__retry_steadfast_output_fk_root_w6kqatfjqs" ON "slice_den"."retry_steadfast_output" IS 'foreign key RetrySteadfastOutput(root) to RetryRoot(root)';
 
 COMMENT ON CONSTRAINT "__retry_steadfast_output_fk_root_step_4f5g2y22yg" ON "slice_den"."retry_steadfast_output" IS 'foreign key RetrySteadfastOutput(root, step) to RetryDone(root, step)';
@@ -7446,8 +7380,6 @@ COMMENT ON CONSTRAINT "__review_admitted_fk_root_scope_wpazxz5qvc" ON "slice_den
 
 COMMENT ON CONSTRAINT "__review_analyze_input_fk_root_gqgyyeei6s" ON "slice_den"."review_analyze_input" IS 'foreign key ReviewAnalyzeInput(root) to ReviewRoot(root)';
 
-COMMENT ON CONSTRAINT "__review_analyze_input_fk_root_step_tag_kind_analyze_ydmqsxscnq" ON "slice_den"."review_analyze_input" IS 'foreign key ReviewAnalyzeInput(root, step, tag ReviewStep.kind = Analyze) to ReviewStep(root, step, kind)';
-
 COMMENT ON CONSTRAINT "__review_analyze_output_fk_root_hf5o3phpsb" ON "slice_den"."review_analyze_output" IS 'foreign key ReviewAnalyzeOutput(root) to ReviewRoot(root)';
 
 COMMENT ON CONSTRAINT "__review_analyze_output_fk_root_step_h2ee2dnes4" ON "slice_den"."review_analyze_output" IS 'foreign key ReviewAnalyzeOutput(root, step) to ReviewAnalyzeInput(root, step)';
@@ -7464,8 +7396,6 @@ COMMENT ON CONSTRAINT "__review_claim_fk_root_step_pred_attempt_77xjl3onsd" ON "
 
 COMMENT ON CONSTRAINT "__review_done_fk_root_soej6st3lg" ON "slice_den"."review_done" IS 'foreign key ReviewDone(root) to ReviewRoot(root)';
 
-COMMENT ON CONSTRAINT "__review_done_fk_root_step_tag_outcome_done_3ijxofcm6i" ON "slice_den"."review_done" IS 'foreign key ReviewDone(root, step, tag ReviewResult.outcome = done) to ReviewResult(root, step, outcome)';
-
 COMMENT ON CONSTRAINT "__review_ended_fk_root_3czmjgel6e" ON "slice_den"."review_ended" IS 'foreign key ReviewEnded(root) to ReviewRoot(root)';
 
 COMMENT ON CONSTRAINT "__review_ended_fk_root_step_attempt_5k7tdgg5nm" ON "slice_den"."review_ended" IS 'foreign key ReviewEnded(root, step, attempt) to ReviewClaim(root, step, attempt)';
@@ -7475,8 +7405,6 @@ COMMENT ON CONSTRAINT "__review_exhausted_fk_root_x6nlpney3u" ON "slice_den"."re
 COMMENT ON CONSTRAINT "__review_exhausted_fk_root_step_7u7yvsyo3u" ON "slice_den"."review_exhausted" IS 'foreign key ReviewExhausted(root, step) to ReviewFailed(root, step)';
 
 COMMENT ON CONSTRAINT "__review_failed_fk_root_kwv2eowiqu" ON "slice_den"."review_failed" IS 'foreign key ReviewFailed(root) to ReviewRoot(root)';
-
-COMMENT ON CONSTRAINT "__review_failed_fk_root_step_tag_outcome_failed_r26efxriu7" ON "slice_den"."review_failed" IS 'foreign key ReviewFailed(root, step, tag ReviewResult.outcome = failed) to ReviewResult(root, step, outcome)';
 
 COMMENT ON CONSTRAINT "__review_fenced_fk_root_zo2nzc2gen" ON "slice_den"."review_fenced" IS 'foreign key ReviewFenced(root) to ReviewRoot(root)';
 
@@ -7489,8 +7417,6 @@ COMMENT ON CONSTRAINT "__review_finish_fk_root_scope_gmmfvaopci" ON "slice_den".
 COMMENT ON CONSTRAINT "__review_finish_fk_root_step_ev6ctqell2" ON "slice_den"."review_finish" IS 'foreign key ReviewFinish(root, step) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_gather_input_fk_root_aatej4c4qe" ON "slice_den"."review_gather_input" IS 'foreign key ReviewGatherInput(root) to ReviewRoot(root)';
-
-COMMENT ON CONSTRAINT "__review_gather_input_fk_root_step_tag_kind_gather_2q4twld7fr" ON "slice_den"."review_gather_input" IS 'foreign key ReviewGatherInput(root, step, tag ReviewStep.kind = Gather) to ReviewStep(root, step, kind)';
 
 COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_root_gtzy54rpjy" ON "slice_den"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(root) to ReviewRoot(root)';
 
@@ -7522,8 +7448,6 @@ COMMENT ON CONSTRAINT "__review_questions_finish_output_fk_root_step_flxzyo2ooj"
 
 COMMENT ON CONSTRAINT "__review_questions_input_fk_root_ysfek2wixo" ON "slice_den"."review_questions_input" IS 'foreign key ReviewQuestionsInput(root) to ReviewRoot(root)';
 
-COMMENT ON CONSTRAINT "__review_questions_input_fk_root_scope_tag_kind_xjpewdq4zm" ON "slice_den"."review_questions_input" IS 'foreign key ReviewQuestionsInput(root, scope, tag ReviewWithin.kind = Questions) to ReviewWithin(root, scope, kind)';
-
 COMMENT ON CONSTRAINT "__review_refusal_fk_root_gp4d5lwiig" ON "slice_den"."review_refusal" IS 'foreign key ReviewRefusal(root) to ReviewRoot(root)';
 
 COMMENT ON CONSTRAINT "__review_refusal_fk_root_step_i325iogm4w" ON "slice_den"."review_refusal" IS 'foreign key ReviewRefusal(root, step) to ReviewFailed(root, step)';
@@ -7553,8 +7477,6 @@ COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_root_scope_qoiz22wckm"
 COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_root_scope_pred_72aqqzv6rv" ON "slice_den"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(root where Logic.ge(ordinal, 1n), scope, pred(ordinal)) to ReviewReviewRunInputSizes(root, scope, ordinal)';
 
 COMMENT ON CONSTRAINT "__review_save_input_fk_root_sjf3h5qc3a" ON "slice_den"."review_save_input" IS 'foreign key ReviewSaveInput(root) to ReviewRoot(root)';
-
-COMMENT ON CONSTRAINT "__review_save_input_fk_root_step_tag_kind_save_exibmykqbl" ON "slice_den"."review_save_input" IS 'foreign key ReviewSaveInput(root, step, tag ReviewStep.kind = Save) to ReviewStep(root, step, kind)';
 
 COMMENT ON CONSTRAINT "__review_save_output_fk_root_oirx3ekjvp" ON "slice_den"."review_save_output" IS 'foreign key ReviewSaveOutput(root) to ReviewRoot(root)';
 
@@ -7610,8 +7532,6 @@ COMMENT ON CONSTRAINT "__sync_admitted_fk_root_scope_qm32lzefa4" ON "slice_den".
 
 COMMENT ON CONSTRAINT "__sync_build_input_fk_root_gipbudtoeu" ON "slice_den"."sync_build_input" IS 'foreign key SyncBuildInput(root) to SyncRoot(root)';
 
-COMMENT ON CONSTRAINT "__sync_build_input_fk_root_step_tag_kind_build_h27fxwflej" ON "slice_den"."sync_build_input" IS 'foreign key SyncBuildInput(root, step, tag SyncStep.kind = Build) to SyncStep(root, step, kind)';
-
 COMMENT ON CONSTRAINT "__sync_build_output_fk_root_23goyrum2n" ON "slice_den"."sync_build_output" IS 'foreign key SyncBuildOutput(root) to SyncRoot(root)';
 
 COMMENT ON CONSTRAINT "__sync_build_output_fk_root_step_bks325utix" ON "slice_den"."sync_build_output" IS 'foreign key SyncBuildOutput(root, step) to SyncBuildInput(root, step)';
@@ -7626,8 +7546,6 @@ COMMENT ON CONSTRAINT "__sync_claim_fk_root_step_pred_attempt_bol6pjm3eo" ON "sl
 
 COMMENT ON CONSTRAINT "__sync_copy_input_fk_root_5b344cu54y" ON "slice_den"."sync_copy_input" IS 'foreign key SyncCopyInput(root) to SyncRoot(root)';
 
-COMMENT ON CONSTRAINT "__sync_copy_input_fk_root_step_tag_kind_copy_lc3nlvnjtn" ON "slice_den"."sync_copy_input" IS 'foreign key SyncCopyInput(root, step, tag SyncStep.kind = Copy) to SyncStep(root, step, kind)';
-
 COMMENT ON CONSTRAINT "__sync_copy_output_fk_root_ux2mtgkj5a" ON "slice_den"."sync_copy_output" IS 'foreign key SyncCopyOutput(root) to SyncRoot(root)';
 
 COMMENT ON CONSTRAINT "__sync_copy_output_fk_root_step_si7qys3qgo" ON "slice_den"."sync_copy_output" IS 'foreign key SyncCopyOutput(root, step) to SyncCopyInput(root, step)';
@@ -7635,8 +7553,6 @@ COMMENT ON CONSTRAINT "__sync_copy_output_fk_root_step_si7qys3qgo" ON "slice_den
 COMMENT ON CONSTRAINT "__sync_copy_output_fk_root_step_szcmye7j7w" ON "slice_den"."sync_copy_output" IS 'foreign key SyncCopyOutput(root, step) to SyncDone(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_done_fk_root_uyb2bhzaad" ON "slice_den"."sync_done" IS 'foreign key SyncDone(root) to SyncRoot(root)';
-
-COMMENT ON CONSTRAINT "__sync_done_fk_root_step_tag_outcome_done_xe4lsjdbld" ON "slice_den"."sync_done" IS 'foreign key SyncDone(root, step, tag SyncResult.outcome = done) to SyncResult(root, step, outcome)';
 
 COMMENT ON CONSTRAINT "__sync_ended_fk_root_7rgqazkh4x" ON "slice_den"."sync_ended" IS 'foreign key SyncEnded(root) to SyncRoot(root)';
 
@@ -7653,8 +7569,6 @@ COMMENT ON CONSTRAINT "__sync_exhausted_fk_root_wzt4yzl5i3" ON "slice_den"."sync
 COMMENT ON CONSTRAINT "__sync_exhausted_fk_root_step_22ldo45blt" ON "slice_den"."sync_exhausted" IS 'foreign key SyncExhausted(root, step) to SyncFailed(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_failed_fk_root_gzx4vab76y" ON "slice_den"."sync_failed" IS 'foreign key SyncFailed(root) to SyncRoot(root)';
-
-COMMENT ON CONSTRAINT "__sync_failed_fk_root_step_tag_outcome_failed_hdl3dzordu" ON "slice_den"."sync_failed" IS 'foreign key SyncFailed(root, step, tag SyncResult.outcome = failed) to SyncResult(root, step, outcome)';
 
 COMMENT ON CONSTRAINT "__sync_fenced_fk_root_yvz4qwnipt" ON "slice_den"."sync_fenced" IS 'foreign key SyncFenced(root) to SyncRoot(root)';
 
@@ -7736,8 +7650,6 @@ COMMENT ON CONSTRAINT "__writeback_claim_fk_root_step_pred_attempt_4zvl2uw25a" O
 
 COMMENT ON CONSTRAINT "__writeback_deliver_input_fk_root_fzl4wgyinc" ON "slice_den"."writeback_deliver_input" IS 'foreign key WritebackDeliverInput(root) to WritebackRoot(root)';
 
-COMMENT ON CONSTRAINT "__writeback_deliver_input_fk_root_step_tag_kind_lefrtjmb3h" ON "slice_den"."writeback_deliver_input" IS 'foreign key WritebackDeliverInput(root, step, tag WritebackStep.kind = Deliver) to WritebackStep(root, step, kind)';
-
 COMMENT ON CONSTRAINT "__writeback_deliver_output_fk_root_tju66l373v" ON "slice_den"."writeback_deliver_output" IS 'foreign key WritebackDeliverOutput(root) to WritebackRoot(root)';
 
 COMMENT ON CONSTRAINT "__writeback_deliver_output_fk_root_step_oqndhmdkte" ON "slice_den"."writeback_deliver_output" IS 'foreign key WritebackDeliverOutput(root, step) to WritebackDeliverInput(root, step)';
@@ -7745,8 +7657,6 @@ COMMENT ON CONSTRAINT "__writeback_deliver_output_fk_root_step_oqndhmdkte" ON "s
 COMMENT ON CONSTRAINT "__writeback_deliver_output_fk_root_step_fcccly2svu" ON "slice_den"."writeback_deliver_output" IS 'foreign key WritebackDeliverOutput(root, step) to WritebackDone(root, step)';
 
 COMMENT ON CONSTRAINT "__writeback_done_fk_root_qxxfxxjt2a" ON "slice_den"."writeback_done" IS 'foreign key WritebackDone(root) to WritebackRoot(root)';
-
-COMMENT ON CONSTRAINT "__writeback_done_fk_root_step_tag_outcome_done_dsxw233pjk" ON "slice_den"."writeback_done" IS 'foreign key WritebackDone(root, step, tag WritebackResult.outcome = done) to WritebackResult(root, step, outcome)';
 
 COMMENT ON CONSTRAINT "__writeback_ended_fk_root_5w55u5dwo4" ON "slice_den"."writeback_ended" IS 'foreign key WritebackEnded(root) to WritebackRoot(root)';
 
@@ -7757,8 +7667,6 @@ COMMENT ON CONSTRAINT "__writeback_exhausted_fk_root_42qcqjcao3" ON "slice_den".
 COMMENT ON CONSTRAINT "__writeback_exhausted_fk_root_step_gfmcwvfpwb" ON "slice_den"."writeback_exhausted" IS 'foreign key WritebackExhausted(root, step) to WritebackFailed(root, step)';
 
 COMMENT ON CONSTRAINT "__writeback_failed_fk_root_bs7oqx2awz" ON "slice_den"."writeback_failed" IS 'foreign key WritebackFailed(root) to WritebackRoot(root)';
-
-COMMENT ON CONSTRAINT "__writeback_failed_fk_root_step_tag_outcome_failed_qjhyo4zli2" ON "slice_den"."writeback_failed" IS 'foreign key WritebackFailed(root, step, tag WritebackResult.outcome = failed) to WritebackResult(root, step, outcome)';
 
 COMMENT ON CONSTRAINT "__writeback_fenced_fk_root_34etxfxqnc" ON "slice_den"."writeback_fenced" IS 'foreign key WritebackFenced(root) to WritebackRoot(root)';
 
@@ -7872,31 +7780,31 @@ COMMENT ON INDEX "slice"."__passage_ix_embedding_ujugi77ft2" IS 'hnsw index Pass
 
 COMMENT ON INDEX "slice_den"."__assign_admitted_ix_scope_sav4gw3eqi" IS 'btree index AssignAdmitted(scope)';
 
-COMMENT ON INDEX "slice_den"."__assign_assignment_input_ix_scope_2y6dle4van" IS 'btree index AssignAssignmentInput(scope)';
+COMMENT ON INDEX "slice_den"."__assign_assignment_input_ix_scope_root_si4jmetdvt" IS 'btree index AssignAssignmentInput(scope, root)';
 
 COMMENT ON INDEX "slice_den"."__assign_assignment_input_exclude_ix_scope_root_zqfaf4s3ix" IS 'btree index AssignAssignmentInputExclude(scope, __root_yjobx7uyrd, __pred_ordinal_e545zctcav)';
 
-COMMENT ON INDEX "slice_den"."__assign_assignment_input_mode_nearest_ix_scope_gn4q7eavbe" IS 'btree index AssignAssignmentInputModeNearest(scope)';
+COMMENT ON INDEX "slice_den"."__assign_assignment_input_mode_nearest_ix_scope_root_p7dpsia4cd" IS 'btree index AssignAssignmentInputModeNearest(scope, root)';
 
-COMMENT ON INDEX "slice_den"."__assign_assignment_input_mode_within_ix_scope_q2mjbrplex" IS 'btree index AssignAssignmentInputModeWithin(scope)';
+COMMENT ON INDEX "slice_den"."__assign_assignment_input_mode_within_ix_scope_root_bqasesgaf7" IS 'btree index AssignAssignmentInputModeWithin(scope, root)';
 
 COMMENT ON INDEX "slice_den"."__assign_assignment_input_near_ix_scope_root_yjobx_7_e5r373gcrk" IS 'btree index AssignAssignmentInputNear(scope, __root_yjobx7uyrd, __pred_ordinal_e545zctcav)';
 
 COMMENT ON INDEX "slice_den"."__assign_claim_ix_step_root_yewsvvtcyz_pred_attempt_wh3x4tgtcq" IS 'btree index AssignClaim(step, __root_yewsvvtcyz, __pred_attempt_oey4tm5xyl)';
 
-COMMENT ON INDEX "slice_den"."__assign_decide_input_ix_step_7w3huqaeqn" IS 'btree index AssignDecideInput(step)';
+COMMENT ON INDEX "slice_den"."__assign_decide_input_ix_step_root_b573uqwoo7" IS 'btree index AssignDecideInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__assign_decide_input_exclude_ix_step_root_yjobx_7_gsddib7qpt" IS 'btree index AssignDecideInputExclude(step, __root_yjobx7uyrd, __pred_ordinal_e545zctcav)';
 
-COMMENT ON INDEX "slice_den"."__assign_decide_input_mode_nearest_ix_step_itwjeiecyz" IS 'btree index AssignDecideInputModeNearest(step)';
+COMMENT ON INDEX "slice_den"."__assign_decide_input_mode_nearest_ix_step_root_3kk3dg4j53" IS 'btree index AssignDecideInputModeNearest(step, root)';
 
-COMMENT ON INDEX "slice_den"."__assign_decide_input_mode_within_ix_step_tc4cp7rclk" IS 'btree index AssignDecideInputModeWithin(step)';
+COMMENT ON INDEX "slice_den"."__assign_decide_input_mode_within_ix_step_root_txf3tbu422" IS 'btree index AssignDecideInputModeWithin(step, root)';
 
-COMMENT ON INDEX "slice_den"."__assign_decide_output_ix_step_juo2hefebc" IS 'btree index AssignDecideOutput(step)';
+COMMENT ON INDEX "slice_den"."__assign_decide_output_ix_step_root_xj4kp626lu" IS 'btree index AssignDecideOutput(step, root)';
 
-COMMENT ON INDEX "slice_den"."__assign_decide_output_stage_rest_ix_step_vakpifv3l6" IS 'btree index AssignDecideOutputStageRest(step)';
+COMMENT ON INDEX "slice_den"."__assign_decide_output_stage_rest_ix_step_root_qqyxhk427n" IS 'btree index AssignDecideOutputStageRest(step, root)';
 
-COMMENT ON INDEX "slice_den"."__assign_decide_output_stage_serve_ix_step_urdhiwnbyx" IS 'btree index AssignDecideOutputStageServe(step)';
+COMMENT ON INDEX "slice_den"."__assign_decide_output_stage_serve_ix_step_root_qyudonuazu" IS 'btree index AssignDecideOutputStageServe(step, root)';
 
 COMMENT ON INDEX "slice_den"."__assign_decide_output_weighed_ix_step_root_yjobx_7_cs5ragvjo3" IS 'btree index AssignDecideOutputWeighed(step, __root_yjobx7uyrd, __pred_ordinal_e545zctcav)';
 
@@ -7904,13 +7812,13 @@ COMMENT ON INDEX "slice_den"."__assign_decide_read_nearest_ix_digest_tm2whkfyjf"
 
 COMMENT ON INDEX "slice_den"."__assign_decide_read_seen_ix_digest_q7rgkxywvx" IS 'btree index AssignDecideReadSeen(digest)';
 
-COMMENT ON INDEX "slice_den"."__assign_embed_input_ix_step_2mqdwwie2j" IS 'btree index AssignEmbedInput(step)';
+COMMENT ON INDEX "slice_den"."__assign_embed_input_ix_step_root_bmzodxatow" IS 'btree index AssignEmbedInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__assign_embed_input_exclude_ix_step_root_yjobx_7_xcibpzqvn6" IS 'btree index AssignEmbedInputExclude(step, __root_yjobx7uyrd, __pred_ordinal_e545zctcav)';
 
-COMMENT ON INDEX "slice_den"."__assign_embed_input_mode_nearest_ix_step_evq7u7vwca" IS 'btree index AssignEmbedInputModeNearest(step)';
+COMMENT ON INDEX "slice_den"."__assign_embed_input_mode_nearest_ix_step_root_ramcyjzsmj" IS 'btree index AssignEmbedInputModeNearest(step, root)';
 
-COMMENT ON INDEX "slice_den"."__assign_embed_input_mode_within_ix_step_fj2sbjjydw" IS 'btree index AssignEmbedInputModeWithin(step)';
+COMMENT ON INDEX "slice_den"."__assign_embed_input_mode_within_ix_step_root_7b4wxziea2" IS 'btree index AssignEmbedInputModeWithin(step, root)';
 
 COMMENT ON INDEX "slice_den"."__assign_embed_input_near_ix_step_root_yjobx_7_uyrd_eh47bqlhw3" IS 'btree index AssignEmbedInputNear(step, __root_yjobx7uyrd, __pred_ordinal_e545zctcav)';
 
@@ -7922,7 +7830,7 @@ COMMENT ON INDEX "slice_den"."__assign_held_ix_step_irvbrtgz2r" IS 'btree index 
 
 COMMENT ON INDEX "slice_den"."__assign_paused_ix_target_pred_turn_qryngij_6_c_4_u3nbuiteko" IS 'btree index AssignPaused(target, __pred_turn_qryngij6c4)';
 
-COMMENT ON INDEX "slice_den"."__assign_result_ix_step_outcome_wy23amggai" IS 'btree index AssignResult(step, outcome)';
+COMMENT ON INDEX "slice_den"."__assign_result_ix_step_outcome_root_35vmqe5lxj" IS 'btree index AssignResult(step, outcome, root)';
 
 COMMENT ON INDEX "slice_den"."__assign_retry_ix_step_efjk6uhsq4" IS 'btree index AssignRetry(step)';
 
@@ -7934,7 +7842,7 @@ COMMENT ON INDEX "slice_den"."__assign_step_ix_root_scope_64vujnvoiu" IS 'btree 
 
 COMMENT ON INDEX "slice_den"."__assign_step_ix_scope_kind_step_xn2zxx73po" IS 'btree index AssignStep(scope, kind, step)';
 
-COMMENT ON INDEX "slice_den"."__assign_step_ix_step_okrxjnochy" IS 'btree index AssignStep(step)';
+COMMENT ON INDEX "slice_den"."__assign_step_ix_step_root_cy4ylv4gbw" IS 'btree index AssignStep(step, root)';
 
 COMMENT ON INDEX "slice_den"."__chain_admitted_ix_scope_v57a4nivm3" IS 'btree index ChainAdmitted(scope)';
 
@@ -7952,7 +7860,7 @@ COMMENT ON INDEX "slice_den"."__chain_held_ix_step_4lrvrd3gs5" IS 'btree index C
 
 COMMENT ON INDEX "slice_den"."__chain_ordered_input_ix_scope_lbnwnucdyj" IS 'btree index ChainOrderedInput(scope)';
 
-COMMENT ON INDEX "slice_den"."__chain_page_input_ix_step_wectxwiagg" IS 'btree index ChainPageInput(step)';
+COMMENT ON INDEX "slice_den"."__chain_page_input_ix_step_root_wr66hlqeaw" IS 'btree index ChainPageInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__chain_page_input_after_ix_step_qdsmrr4vxs" IS 'btree index ChainPageInputAfter(step)';
 
@@ -7968,7 +7876,7 @@ COMMENT ON INDEX "slice_den"."__chain_page_read_weights_ix_digest_p6eekmx2x6" IS
 
 COMMENT ON INDEX "slice_den"."__chain_paused_ix_target_pred_turn_qryngij_6_c_4_azkairtri3" IS 'btree index ChainPaused(target, __pred_turn_qryngij6c4)';
 
-COMMENT ON INDEX "slice_den"."__chain_result_ix_step_outcome_iy6vl5dwav" IS 'btree index ChainResult(step, outcome)';
+COMMENT ON INDEX "slice_den"."__chain_result_ix_step_outcome_root_ipaxj3wl7z" IS 'btree index ChainResult(step, outcome, root)';
 
 COMMENT ON INDEX "slice_den"."__chain_retry_ix_step_jpeyuc4c4h" IS 'btree index ChainRetry(step)';
 
@@ -7980,15 +7888,15 @@ COMMENT ON INDEX "slice_den"."__chain_step_ix_root_scope_srrhrbyetn" IS 'btree i
 
 COMMENT ON INDEX "slice_den"."__chain_step_ix_scope_kind_step_tsdjtgaey5" IS 'btree index ChainStep(scope, kind, step)';
 
-COMMENT ON INDEX "slice_den"."__chain_step_ix_step_kind_notdrhvcc6" IS 'btree index ChainStep(step, kind)';
+COMMENT ON INDEX "slice_den"."__chain_step_ix_step_kind_root_2pdoze4bhr" IS 'btree index ChainStep(step, kind, root)';
 
 COMMENT ON INDEX "slice_den"."__clock_admitted_ix_scope_kljsbnk7gu" IS 'btree index ClockAdmitted(scope)';
 
-COMMENT ON INDEX "slice_den"."__clock_chime_input_ix_step_m4pmphj63r" IS 'btree index ClockChimeInput(step)';
+COMMENT ON INDEX "slice_den"."__clock_chime_input_ix_step_root_vzyzntggzq" IS 'btree index ClockChimeInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__clock_claim_ix_step_root_yewsvvtcyz_pred_attempt_xukg6gzvx7" IS 'btree index ClockClaim(step, __root_yewsvvtcyz, __pred_attempt_oey4tm5xyl)';
 
-COMMENT ON INDEX "slice_den"."__clock_close_input_ix_step_4i5jwczvxc" IS 'btree index ClockCloseInput(step)';
+COMMENT ON INDEX "slice_den"."__clock_close_input_ix_step_root_iuvhjb65sf" IS 'btree index ClockCloseInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__clock_fenced_ix_step_6fkdtadk6s" IS 'btree index ClockFenced(step)';
 
@@ -8000,7 +7908,7 @@ COMMENT ON INDEX "slice_den"."__clock_hourly_input_ix_scope_hjvvwnlgos" IS 'btre
 
 COMMENT ON INDEX "slice_den"."__clock_paused_ix_target_pred_turn_qryngij_6_c_4_la4ocjtto2" IS 'btree index ClockPaused(target, __pred_turn_qryngij6c4)';
 
-COMMENT ON INDEX "slice_den"."__clock_result_ix_step_ylykgl4y6z" IS 'btree index ClockResult(step)';
+COMMENT ON INDEX "slice_den"."__clock_result_ix_step_root_v3qa4me2e6" IS 'btree index ClockResult(step, root)';
 
 COMMENT ON INDEX "slice_den"."__clock_retry_ix_step_evme3lajlk" IS 'btree index ClockRetry(step)';
 
@@ -8012,17 +7920,17 @@ COMMENT ON INDEX "slice_den"."__clock_skipped_ix_scope_vlmkgoc4qh" IS 'btree ind
 
 COMMENT ON INDEX "slice_den"."__clock_step_ix_scope_root_dr2wopxg6r" IS 'btree index ClockStep(scope, root)';
 
-COMMENT ON INDEX "slice_den"."__clock_step_ix_step_2ezw77ryfu" IS 'btree index ClockStep(step)';
+COMMENT ON INDEX "slice_den"."__clock_step_ix_step_root_snqq7fyo4q" IS 'btree index ClockStep(step, root)';
 
 COMMENT ON INDEX "slice_den"."__fan_admitted_ix_scope_6tfnemhvcg" IS 'btree index FanAdmitted(scope)';
 
 COMMENT ON INDEX "slice_den"."__fan_batch_finish_output_ix_step_ocxqquufa6" IS 'btree index FanBatchFinishOutput(step)';
 
-COMMENT ON INDEX "slice_den"."__fan_batch_input_ix_scope_uue57ib3i3" IS 'btree index FanBatchInput(scope)';
+COMMENT ON INDEX "slice_den"."__fan_batch_input_ix_scope_root_v4z44ipfis" IS 'btree index FanBatchInput(scope, root)';
 
 COMMENT ON INDEX "slice_den"."__fan_claim_ix_step_root_yewsvvtcyz_pred_attempt_oey_nttbgx6ow2" IS 'btree index FanClaim(step, __root_yewsvvtcyz, __pred_attempt_oey4tm5xyl)';
 
-COMMENT ON INDEX "slice_den"."__fan_dust_input_ix_step_wtzptjqqcf" IS 'btree index FanDustInput(step)';
+COMMENT ON INDEX "slice_den"."__fan_dust_input_ix_step_root_w75lqylbvv" IS 'btree index FanDustInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__fan_fan_run_input_ix_scope_rgmbrwdcvq" IS 'btree index FanFanRunInput(scope)';
 
@@ -8036,11 +7944,11 @@ COMMENT ON INDEX "slice_den"."__fan_held_ix_step_rtiyqqxotz" IS 'btree index Fan
 
 COMMENT ON INDEX "slice_den"."__fan_hold_ix_resource_seat_s7bnw22355" IS 'btree index FanHold(resource, seat)';
 
-COMMENT ON INDEX "slice_den"."__fan_mop_input_ix_step_3j2uuzsjb2" IS 'btree index FanMopInput(step)';
+COMMENT ON INDEX "slice_den"."__fan_mop_input_ix_step_root_m3lg7oxuam" IS 'btree index FanMopInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__fan_paused_ix_target_pred_turn_qryngij_6_c_4_526conssyj" IS 'btree index FanPaused(target, __pred_turn_qryngij6c4)';
 
-COMMENT ON INDEX "slice_den"."__fan_result_ix_step_outcome_qq4mnml3gg" IS 'btree index FanResult(step, outcome)';
+COMMENT ON INDEX "slice_den"."__fan_result_ix_step_outcome_root_udaij7stvj" IS 'btree index FanResult(step, outcome, root)';
 
 COMMENT ON INDEX "slice_den"."__fan_retry_ix_step_4v6a7logoe" IS 'btree index FanRetry(step)';
 
@@ -8048,7 +7956,7 @@ COMMENT ON INDEX "slice_den"."__fan_skipped_ix_by_3aejofkhor" IS 'btree index Fa
 
 COMMENT ON INDEX "slice_den"."__fan_skipped_ix_scope_h5pzdoa32a" IS 'btree index FanSkipped(scope)';
 
-COMMENT ON INDEX "slice_den"."__fan_square_input_ix_step_sguugobzen" IS 'btree index FanSquareInput(step)';
+COMMENT ON INDEX "slice_den"."__fan_square_input_ix_step_root_jod5ra6yqo" IS 'btree index FanSquareInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__fan_square_output_ix_step_teolwx3lfw" IS 'btree index FanSquareOutput(step)';
 
@@ -8056,7 +7964,7 @@ COMMENT ON INDEX "slice_den"."__fan_step_ix_root_scope_aw525h7gua" IS 'btree ind
 
 COMMENT ON INDEX "slice_den"."__fan_step_ix_scope_kind_step_5arz2gb4sb" IS 'btree index FanStep(scope, kind, step)';
 
-COMMENT ON INDEX "slice_den"."__fan_step_ix_step_bzs2lzxr5o" IS 'btree index FanStep(step)';
+COMMENT ON INDEX "slice_den"."__fan_step_ix_step_root_nf2nqwhde2" IS 'btree index FanStep(step, root)';
 
 COMMENT ON INDEX "slice_den"."__fan_sweep_input_ix_scope_zvab3un5km" IS 'btree index FanSweepInput(scope)';
 
@@ -8064,11 +7972,11 @@ COMMENT ON INDEX "slice_den"."__fan_within_ix_parent_kind_scope_5ywepfmzj2" IS '
 
 COMMENT ON INDEX "slice_den"."__fan_within_ix_parent_root_eiovyuswcz" IS 'btree index FanWithin(parent, root)';
 
-COMMENT ON INDEX "slice_den"."__fan_within_ix_scope_z3zzz5fzdu" IS 'btree index FanWithin(scope)';
+COMMENT ON INDEX "slice_den"."__fan_within_ix_scope_root_vht7afdsvu" IS 'btree index FanWithin(scope, root)';
 
 COMMENT ON INDEX "slice_den"."__retry_admitted_ix_scope_yqb7r5kcts" IS 'btree index RetryAdmitted(scope)';
 
-COMMENT ON INDEX "slice_den"."__retry_brittle_input_ix_step_deob5xrs4n" IS 'btree index RetryBrittleInput(step)';
+COMMENT ON INDEX "slice_den"."__retry_brittle_input_ix_step_root_6ur6u2dkec" IS 'btree index RetryBrittleInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__retry_brittle_output_ix_step_ddjioko4ap" IS 'btree index RetryBrittleOutput(step)';
 
@@ -8082,17 +7990,17 @@ COMMENT ON INDEX "slice_den"."__retry_held_ix_step_l7f7ax5pel" IS 'btree index R
 
 COMMENT ON INDEX "slice_den"."__retry_ladders_input_ix_scope_ktwahiu353" IS 'btree index RetryLaddersInput(scope)';
 
-COMMENT ON INDEX "slice_den"."__retry_patient_input_ix_step_p72liuz32m" IS 'btree index RetryPatientInput(step)';
+COMMENT ON INDEX "slice_den"."__retry_patient_input_ix_step_root_2ufb6ex62j" IS 'btree index RetryPatientInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__retry_patient_output_ix_step_4nlbxubrgc" IS 'btree index RetryPatientOutput(step)';
 
 COMMENT ON INDEX "slice_den"."__retry_paused_ix_target_pred_turn_qryngij_6_c_4_5kkljt6kwu" IS 'btree index RetryPaused(target, __pred_turn_qryngij6c4)';
 
-COMMENT ON INDEX "slice_den"."__retry_polite_input_ix_step_6kinca7vu4" IS 'btree index RetryPoliteInput(step)';
+COMMENT ON INDEX "slice_den"."__retry_polite_input_ix_step_root_yequmlbu4w" IS 'btree index RetryPoliteInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__retry_polite_output_ix_step_cagfkplnyp" IS 'btree index RetryPoliteOutput(step)';
 
-COMMENT ON INDEX "slice_den"."__retry_result_ix_step_outcome_n5dv4vpxjy" IS 'btree index RetryResult(step, outcome)';
+COMMENT ON INDEX "slice_den"."__retry_result_ix_step_outcome_root_5x6caywnin" IS 'btree index RetryResult(step, outcome, root)';
 
 COMMENT ON INDEX "slice_den"."__retry_retry_ix_step_4y7ukujr4x" IS 'btree index RetryRetry(step)';
 
@@ -8100,7 +8008,7 @@ COMMENT ON INDEX "slice_den"."__retry_skipped_ix_by_s7pekf7xtg" IS 'btree index 
 
 COMMENT ON INDEX "slice_den"."__retry_skipped_ix_scope_pj72ptncqt" IS 'btree index RetrySkipped(scope)';
 
-COMMENT ON INDEX "slice_den"."__retry_steadfast_input_ix_step_g5c4vpti3l" IS 'btree index RetrySteadfastInput(step)';
+COMMENT ON INDEX "slice_den"."__retry_steadfast_input_ix_step_root_kko5yn5mfi" IS 'btree index RetrySteadfastInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__retry_steadfast_output_ix_step_xu5p4zs52x" IS 'btree index RetrySteadfastOutput(step)';
 
@@ -8108,7 +8016,7 @@ COMMENT ON INDEX "slice_den"."__retry_step_ix_root_scope_ogbhay3han" IS 'btree i
 
 COMMENT ON INDEX "slice_den"."__retry_step_ix_scope_kind_step_m6ufaqcqmk" IS 'btree index RetryStep(scope, kind, step)';
 
-COMMENT ON INDEX "slice_den"."__retry_step_ix_step_czjfzqdiex" IS 'btree index RetryStep(step)';
+COMMENT ON INDEX "slice_den"."__retry_step_ix_step_root_v4tguvl2xo" IS 'btree index RetryStep(step, root)';
 
 COMMENT ON INDEX "slice_den"."__retry_throttled_input_ix_scope_srrsrnmwfp" IS 'btree index RetryThrottledInput(scope)';
 
@@ -8116,7 +8024,7 @@ COMMENT ON INDEX "slice_den"."__retry_unhurried_input_ix_scope_4drrri4lgl" IS 'b
 
 COMMENT ON INDEX "slice_den"."__review_admitted_ix_scope_uaz2e2unre" IS 'btree index ReviewAdmitted(scope)';
 
-COMMENT ON INDEX "slice_den"."__review_analyze_input_ix_step_ljn4v2untp" IS 'btree index ReviewAnalyzeInput(step)';
+COMMENT ON INDEX "slice_den"."__review_analyze_input_ix_step_root_s5vaywecrt" IS 'btree index ReviewAnalyzeInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__review_analyze_output_ix_step_t5p7no2i5e" IS 'btree index ReviewAnalyzeOutput(step)';
 
@@ -8130,7 +8038,7 @@ COMMENT ON INDEX "slice_den"."__review_finish_ix_step_luhj6362cj" IS 'btree inde
 
 COMMENT ON INDEX "slice_den"."__review_gather_input_ix_review_f2zafhsmtj" IS 'btree index ReviewGatherInput(review)';
 
-COMMENT ON INDEX "slice_den"."__review_gather_input_ix_step_lhfi35wvgq" IS 'btree index ReviewGatherInput(step)';
+COMMENT ON INDEX "slice_den"."__review_gather_input_ix_step_root_sq3sceot7a" IS 'btree index ReviewGatherInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__review_gather_input_sizes_ix_step_root_yjobx_7_7uihmnh7ih" IS 'btree index ReviewGatherInputSizes(step, __root_yjobx7uyrd, __pred_ordinal_e545zctcav)';
 
@@ -8144,9 +8052,9 @@ COMMENT ON INDEX "slice_den"."__review_paused_ix_target_pred_turn_qryngij_6_c_4_
 
 COMMENT ON INDEX "slice_den"."__review_questions_finish_output_ix_step_snk4x6oh75" IS 'btree index ReviewQuestionsFinishOutput(step)';
 
-COMMENT ON INDEX "slice_den"."__review_questions_input_ix_scope_di7h2fezlw" IS 'btree index ReviewQuestionsInput(scope)';
+COMMENT ON INDEX "slice_den"."__review_questions_input_ix_scope_root_4mssyhumwi" IS 'btree index ReviewQuestionsInput(scope, root)';
 
-COMMENT ON INDEX "slice_den"."__review_result_ix_step_outcome_jpbt7ff4mi" IS 'btree index ReviewResult(step, outcome)';
+COMMENT ON INDEX "slice_den"."__review_result_ix_step_outcome_root_lbrp6nyb6i" IS 'btree index ReviewResult(step, outcome, root)';
 
 COMMENT ON INDEX "slice_den"."__review_retry_ix_step_c7roln6cyz" IS 'btree index ReviewRetry(step)';
 
@@ -8154,7 +8062,7 @@ COMMENT ON INDEX "slice_den"."__review_review_run_input_ix_scope_pjiclt36mp" IS 
 
 COMMENT ON INDEX "slice_den"."__review_review_run_input_sizes_ix_scope_root_yjobx_q27b4rjhuv" IS 'btree index ReviewReviewRunInputSizes(scope, __root_yjobx7uyrd, __pred_ordinal_e545zctcav)';
 
-COMMENT ON INDEX "slice_den"."__review_save_input_ix_step_bgbjanular" IS 'btree index ReviewSaveInput(step)';
+COMMENT ON INDEX "slice_den"."__review_save_input_ix_step_root_vn5k5ydivm" IS 'btree index ReviewSaveInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__review_save_output_ix_step_uj4wo4gdyl" IS 'btree index ReviewSaveOutput(step)';
 
@@ -8166,21 +8074,21 @@ COMMENT ON INDEX "slice_den"."__review_step_ix_root_scope_jvmzqg2kjy" IS 'btree 
 
 COMMENT ON INDEX "slice_den"."__review_step_ix_scope_kind_step_udhxex4i5c" IS 'btree index ReviewStep(scope, kind, step)';
 
-COMMENT ON INDEX "slice_den"."__review_step_ix_step_oeu3hhy3ey" IS 'btree index ReviewStep(step)';
+COMMENT ON INDEX "slice_den"."__review_step_ix_step_root_eyzhr3fgx6" IS 'btree index ReviewStep(step, root)';
 
 COMMENT ON INDEX "slice_den"."__review_within_ix_parent_kind_scope_dtilr5xomp" IS 'btree index ReviewWithin(parent, kind, scope)';
 
 COMMENT ON INDEX "slice_den"."__review_within_ix_parent_root_ajpsgwldly" IS 'btree index ReviewWithin(parent, root)';
 
-COMMENT ON INDEX "slice_den"."__review_within_ix_scope_mgsn3p5nkt" IS 'btree index ReviewWithin(scope)';
+COMMENT ON INDEX "slice_den"."__review_within_ix_scope_root_de6bpnvbbw" IS 'btree index ReviewWithin(scope, root)';
 
 COMMENT ON INDEX "slice_den"."__sync_admitted_ix_scope_iqmg6cfxd7" IS 'btree index SyncAdmitted(scope)';
 
-COMMENT ON INDEX "slice_den"."__sync_build_input_ix_step_7oxdkrhcm4" IS 'btree index SyncBuildInput(step)';
+COMMENT ON INDEX "slice_den"."__sync_build_input_ix_step_root_n7cbt5ywes" IS 'btree index SyncBuildInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__sync_claim_ix_step_root_yewsvvtcyz_pred_attempt_fiq4h65yco" IS 'btree index SyncClaim(step, __root_yewsvvtcyz, __pred_attempt_oey4tm5xyl)';
 
-COMMENT ON INDEX "slice_den"."__sync_copy_input_ix_step_kl3k2wc6gt" IS 'btree index SyncCopyInput(step)';
+COMMENT ON INDEX "slice_den"."__sync_copy_input_ix_step_root_pzhfu7yan4" IS 'btree index SyncCopyInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__sync_exclusive_ix_kind_key_pred_turn_qryngij_6_c_4_xscx3i4mti" IS 'btree index SyncExclusive(kind, key, __pred_turn_qryngij6c4)';
 
@@ -8198,7 +8106,7 @@ COMMENT ON INDEX "slice_den"."__sync_held_ix_step_hqbgboxgaj" IS 'btree index Sy
 
 COMMENT ON INDEX "slice_den"."__sync_paused_ix_target_pred_turn_qryngij_6_c_4_xfnff46zel" IS 'btree index SyncPaused(target, __pred_turn_qryngij6c4)';
 
-COMMENT ON INDEX "slice_den"."__sync_result_ix_step_g4pu37wr72" IS 'btree index SyncResult(step)';
+COMMENT ON INDEX "slice_den"."__sync_result_ix_step_root_mbhvrwajkq" IS 'btree index SyncResult(step, root)';
 
 COMMENT ON INDEX "slice_den"."__sync_retry_ix_step_nqiv6tlf2k" IS 'btree index SyncRetry(step)';
 
@@ -8208,7 +8116,7 @@ COMMENT ON INDEX "slice_den"."__sync_skipped_ix_scope_d5pw2mcp56" IS 'btree inde
 
 COMMENT ON INDEX "slice_den"."__sync_step_ix_scope_root_hppxk5gi6a" IS 'btree index SyncStep(scope, root)';
 
-COMMENT ON INDEX "slice_den"."__sync_step_ix_step_27fulvjsit" IS 'btree index SyncStep(step)';
+COMMENT ON INDEX "slice_den"."__sync_step_ix_step_root_q3nsi64opx" IS 'btree index SyncStep(step, root)';
 
 COMMENT ON INDEX "slice_den"."__sync_sync_run_input_ix_scope_xmn3bafu67" IS 'btree index SyncSyncRunInput(scope)';
 
@@ -8216,7 +8124,7 @@ COMMENT ON INDEX "slice_den"."__writeback_admitted_ix_scope_54lp3ihfk7" IS 'btre
 
 COMMENT ON INDEX "slice_den"."__writeback_claim_ix_step_root_yewsvvtcyz_pred_tplitkeoq2" IS 'btree index WritebackClaim(step, __root_yewsvvtcyz, __pred_attempt_oey4tm5xyl)';
 
-COMMENT ON INDEX "slice_den"."__writeback_deliver_input_ix_step_h2fh5zkyda" IS 'btree index WritebackDeliverInput(step)';
+COMMENT ON INDEX "slice_den"."__writeback_deliver_input_ix_step_root_vaxq6pgpkm" IS 'btree index WritebackDeliverInput(step, root)';
 
 COMMENT ON INDEX "slice_den"."__writeback_fenced_ix_step_iwrqegcnk6" IS 'btree index WritebackFenced(step)';
 
@@ -8226,7 +8134,7 @@ COMMENT ON INDEX "slice_den"."__writeback_held_ix_step_itsn6ncq5e" IS 'btree ind
 
 COMMENT ON INDEX "slice_den"."__writeback_paused_ix_target_pred_turn_qryngij_6_c_4_j2yz63n2im" IS 'btree index WritebackPaused(target, __pred_turn_qryngij6c4)';
 
-COMMENT ON INDEX "slice_den"."__writeback_result_ix_step_spqbojjjoj" IS 'btree index WritebackResult(step)';
+COMMENT ON INDEX "slice_den"."__writeback_result_ix_step_root_u43itfyxzx" IS 'btree index WritebackResult(step, root)';
 
 COMMENT ON INDEX "slice_den"."__writeback_retry_ix_step_xokcsjqehk" IS 'btree index WritebackRetry(step)';
 
@@ -8236,7 +8144,7 @@ COMMENT ON INDEX "slice_den"."__writeback_skipped_ix_scope_dwesxm2rrj" IS 'btree
 
 COMMENT ON INDEX "slice_den"."__writeback_step_ix_scope_root_ft5ap6qmlh" IS 'btree index WritebackStep(scope, root)';
 
-COMMENT ON INDEX "slice_den"."__writeback_step_ix_step_al2iz5uibu" IS 'btree index WritebackStep(step)';
+COMMENT ON INDEX "slice_den"."__writeback_step_ix_step_root_q3li3ogpqx" IS 'btree index WritebackStep(step, root)';
 
 COMMENT ON INDEX "slice_den"."__writeback_writeback_input_ix_scope_72jqfcjowv" IS 'btree index WritebackWritebackInput(scope)';
 
@@ -8272,21 +8180,173 @@ COMMENT ON STATISTICS "slice_den"."__sync_finish_stats_scope_step_xiaq6np7mf" IS
 
 COMMENT ON STATISTICS "slice_den"."__writeback_finish_stats_scope_step_3knpjnabow" IS 'statistics WritebackFinish(scope, step)';
 
+COMMENT ON FUNCTION "slice"."__reader_news_assign_assignment_input_veyxb2wi4k"() IS 'the reader of the delta of news of AssignAssignmentInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_assignment_input_ueoz7uj2et"() IS 'the reader of the delta of olds of AssignAssignmentInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_assign_assignment_input_mode_nearest_6th6cbuqwb"() IS 'the reader of the delta of news of AssignAssignmentInputModeNearest';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_assignment_input_mode_nearest_ykzrrv4ft7"() IS 'the reader of the delta of olds of AssignAssignmentInputModeNearest';
+
+COMMENT ON FUNCTION "slice"."__reader_news_assign_assignment_input_mode_within_7kcj4smusi"() IS 'the reader of the delta of news of AssignAssignmentInputModeWithin';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_assignment_input_mode_within_dyusbik3ul"() IS 'the reader of the delta of olds of AssignAssignmentInputModeWithin';
+
+COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_input_fg3qammcok"() IS 'the reader of the delta of news of AssignDecideInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_input_5h5ccyocm7"() IS 'the reader of the delta of olds of AssignDecideInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_input_mode_nearest_gb4gtm3ryn"() IS 'the reader of the delta of news of AssignDecideInputModeNearest';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_input_mode_nearest_aimvhdfleo"() IS 'the reader of the delta of olds of AssignDecideInputModeNearest';
+
+COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_input_mode_within_7tva4i3iph"() IS 'the reader of the delta of news of AssignDecideInputModeWithin';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_input_mode_within_2weywdd2zq"() IS 'the reader of the delta of olds of AssignDecideInputModeWithin';
+
+COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_output_xaj2vprd4q"() IS 'the reader of the delta of news of AssignDecideOutput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_output_efvbruv34o"() IS 'the reader of the delta of olds of AssignDecideOutput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_output_stage_rest_y7e6zv4m2m"() IS 'the reader of the delta of news of AssignDecideOutputStageRest';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_output_stage_rest_wmwxfaf2qm"() IS 'the reader of the delta of olds of AssignDecideOutputStageRest';
+
+COMMENT ON FUNCTION "slice"."__reader_news_assign_decide_output_stage_serve_27litht4tq"() IS 'the reader of the delta of news of AssignDecideOutputStageServe';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_decide_output_stage_serve_kjkxthc47t"() IS 'the reader of the delta of olds of AssignDecideOutputStageServe';
+
+COMMENT ON FUNCTION "slice"."__reader_news_assign_done_t6zgmbnf5g"() IS 'the reader of the delta of news of AssignDone';
+
+COMMENT ON FUNCTION "slice"."__reader_news_assign_embed_input_h7m4bpt2hd"() IS 'the reader of the delta of news of AssignEmbedInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_embed_input_6i7aqfbvee"() IS 'the reader of the delta of olds of AssignEmbedInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_assign_embed_input_mode_nearest_grselmywxw"() IS 'the reader of the delta of news of AssignEmbedInputModeNearest';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_embed_input_mode_nearest_5lwnu4ih5d"() IS 'the reader of the delta of olds of AssignEmbedInputModeNearest';
+
+COMMENT ON FUNCTION "slice"."__reader_news_assign_embed_input_mode_within_zjtexkggl6"() IS 'the reader of the delta of news of AssignEmbedInputModeWithin';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_embed_input_mode_within_o6gzsx6tic"() IS 'the reader of the delta of olds of AssignEmbedInputModeWithin';
+
+COMMENT ON FUNCTION "slice"."__reader_news_assign_failed_3fwuzoo5wq"() IS 'the reader of the delta of news of AssignFailed';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_result_jkusfe56os"() IS 'the reader of the delta of olds of AssignResult';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_assign_step_zgkm42uz2f"() IS 'the reader of the delta of olds of AssignStep';
+
+COMMENT ON FUNCTION "slice"."__reader_news_chain_done_spjx62oij2"() IS 'the reader of the delta of news of ChainDone';
+
+COMMENT ON FUNCTION "slice"."__reader_news_chain_failed_slqqazjxe5"() IS 'the reader of the delta of news of ChainFailed';
+
+COMMENT ON FUNCTION "slice"."__reader_news_chain_page_input_obmb52egoq"() IS 'the reader of the delta of news of ChainPageInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_chain_result_nva6clqovh"() IS 'the reader of the delta of olds of ChainResult';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_chain_step_yztqk3nrsj"() IS 'the reader of the delta of olds of ChainStep';
+
+COMMENT ON FUNCTION "slice"."__reader_news_clock_chime_input_bdjnydebk4"() IS 'the reader of the delta of news of ClockChimeInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_clock_close_input_ew3vn6itfg"() IS 'the reader of the delta of news of ClockCloseInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_clock_done_wdid4fihtt"() IS 'the reader of the delta of news of ClockDone';
+
+COMMENT ON FUNCTION "slice"."__reader_news_clock_failed_valmjzds6g"() IS 'the reader of the delta of news of ClockFailed';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_clock_result_j3aouqlor5"() IS 'the reader of the delta of olds of ClockResult';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_clock_step_pgxck5ertr"() IS 'the reader of the delta of olds of ClockStep';
+
+COMMENT ON FUNCTION "slice"."__reader_news_fan_batch_input_zlj2bvajxq"() IS 'the reader of the delta of news of FanBatchInput';
+
 COMMENT ON FUNCTION "slice"."__reader_news_fan_claim_c3x5lsopvv"() IS 'the reader of the delta of news of FanClaim';
 
+COMMENT ON FUNCTION "slice"."__reader_news_fan_done_qikk2ro7ie"() IS 'the reader of the delta of news of FanDone';
+
+COMMENT ON FUNCTION "slice"."__reader_news_fan_dust_input_jfwjtz36au"() IS 'the reader of the delta of news of FanDustInput';
+
 COMMENT ON FUNCTION "slice"."__reader_olds_fan_ended_gs4jd5beu6"() IS 'the reader of the delta of olds of FanEnded';
+
+COMMENT ON FUNCTION "slice"."__reader_news_fan_failed_dhjopwnfpe"() IS 'the reader of the delta of news of FanFailed';
 
 COMMENT ON FUNCTION "slice"."__reader_olds_fan_held_nqvfb5gffm"() IS 'the reader of the delta of olds of FanHeld';
 
 COMMENT ON FUNCTION "slice"."__reader_news_fan_hold_2iorpqkqi2"() IS 'the reader of the delta of news of FanHold';
 
+COMMENT ON FUNCTION "slice"."__reader_news_fan_mop_input_y2wt46ygp5"() IS 'the reader of the delta of news of FanMopInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_fan_result_5zw7ij7lso"() IS 'the reader of the delta of olds of FanResult';
+
+COMMENT ON FUNCTION "slice"."__reader_news_fan_square_input_p7ron44s5l"() IS 'the reader of the delta of news of FanSquareInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_fan_step_aw2226k2ta"() IS 'the reader of the delta of olds of FanStep';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_fan_within_aj2imfabum"() IS 'the reader of the delta of olds of FanWithin';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_brittle_input_cpjzfvx4th"() IS 'the reader of the delta of news of RetryBrittleInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_done_37ae4vspu2"() IS 'the reader of the delta of news of RetryDone';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_failed_axjpxxtyqh"() IS 'the reader of the delta of news of RetryFailed';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_patient_input_gmjeirl4oe"() IS 'the reader of the delta of news of RetryPatientInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_polite_input_ldefi4pvmz"() IS 'the reader of the delta of news of RetryPoliteInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_retry_result_uld336hsbx"() IS 'the reader of the delta of olds of RetryResult';
+
+COMMENT ON FUNCTION "slice"."__reader_news_retry_steadfast_input_vfnxzktspv"() IS 'the reader of the delta of news of RetrySteadfastInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_retry_step_amtt4wxs2b"() IS 'the reader of the delta of olds of RetryStep';
+
+COMMENT ON FUNCTION "slice"."__reader_news_review_analyze_input_rsdjisdchq"() IS 'the reader of the delta of news of ReviewAnalyzeInput';
+
 COMMENT ON FUNCTION "slice"."__reader_news_review_claim_xp5d4drk2z"() IS 'the reader of the delta of news of ReviewClaim';
 
+COMMENT ON FUNCTION "slice"."__reader_news_review_done_p46zdvulgf"() IS 'the reader of the delta of news of ReviewDone';
+
 COMMENT ON FUNCTION "slice"."__reader_olds_review_ended_ghabg3qvka"() IS 'the reader of the delta of olds of ReviewEnded';
+
+COMMENT ON FUNCTION "slice"."__reader_news_review_failed_7yyyyl5zn7"() IS 'the reader of the delta of news of ReviewFailed';
+
+COMMENT ON FUNCTION "slice"."__reader_news_review_gather_input_u5td2p2bbb"() IS 'the reader of the delta of news of ReviewGatherInput';
 
 COMMENT ON FUNCTION "slice"."__reader_olds_review_held_xy53svgi5w"() IS 'the reader of the delta of olds of ReviewHeld';
 
 COMMENT ON FUNCTION "slice"."__reader_news_review_hold_6wykfhuqkv"() IS 'the reader of the delta of news of ReviewHold';
+
+COMMENT ON FUNCTION "slice"."__reader_news_review_questions_input_ds6zex53wd"() IS 'the reader of the delta of news of ReviewQuestionsInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_review_result_kqmhnbcsva"() IS 'the reader of the delta of olds of ReviewResult';
+
+COMMENT ON FUNCTION "slice"."__reader_news_review_save_input_wwipjutxrs"() IS 'the reader of the delta of news of ReviewSaveInput';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_review_step_e6ycahnwqn"() IS 'the reader of the delta of olds of ReviewStep';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_review_within_pymnrslua3"() IS 'the reader of the delta of olds of ReviewWithin';
+
+COMMENT ON FUNCTION "slice"."__reader_news_sync_build_input_eom6nwox2q"() IS 'the reader of the delta of news of SyncBuildInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_sync_copy_input_vsrhmkgpx4"() IS 'the reader of the delta of news of SyncCopyInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_sync_done_ug7pesikef"() IS 'the reader of the delta of news of SyncDone';
+
+COMMENT ON FUNCTION "slice"."__reader_news_sync_failed_2ecpcuza2e"() IS 'the reader of the delta of news of SyncFailed';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_sync_result_zh6zs3n256"() IS 'the reader of the delta of olds of SyncResult';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_sync_step_tfxcx6pquc"() IS 'the reader of the delta of olds of SyncStep';
+
+COMMENT ON FUNCTION "slice"."__reader_news_writeback_deliver_input_3mejicjxtj"() IS 'the reader of the delta of news of WritebackDeliverInput';
+
+COMMENT ON FUNCTION "slice"."__reader_news_writeback_done_np4xezy62h"() IS 'the reader of the delta of news of WritebackDone';
+
+COMMENT ON FUNCTION "slice"."__reader_news_writeback_failed_66tuuxudwu"() IS 'the reader of the delta of news of WritebackFailed';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_writeback_result_pcbgqjqnz3"() IS 'the reader of the delta of olds of WritebackResult';
+
+COMMENT ON FUNCTION "slice"."__reader_olds_writeback_step_5z6akmweto"() IS 'the reader of the delta of olds of WritebackStep';
 
 COMMENT ON FUNCTION "slice"."__judge_fan_live_check_fan_seat_below_count_34tzcxl26w"() IS 'the rule judge''s block of rule check FanSeatBelowCount of FanLive over the rows a write adds to FanClaim';
 
@@ -8304,6 +8364,110 @@ COMMENT ON FUNCTION "slice"."__judge_review_live_check_review_seat_below_count_g
 
 COMMENT ON FUNCTION "slice"."__judge_review_live_check_review_seat_below_count_hog4qzzuc6"() IS 'the rule judge''s block of rule check ReviewSeatBelowCount of ReviewLive over the rows a write adds to ReviewHold';
 
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_in_assign_vmdw2qq2sr"() IS 'the rule judge''s block of rule AssignAssignmentInput(root, scope) where Logic.eq(mode, "Nearest") in AssignAssignmentInputModeNearest(root, scope) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_in_assign_v5fqhrfufb"() IS 'the rule judge''s block of rule AssignAssignmentInput(root, scope) where Logic.eq(mode, "Within") in AssignAssignmentInputModeWithin(root, scope) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_nearest_in_wjni6t7vt7"() IS 'the rule judge''s block of rule AssignAssignmentInputModeNearest(root, scope) in AssignAssignmentInput(root, scope) where Logic.eq(mode, "Nearest") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_within_in_3lxxlekl62"() IS 'the rule judge''s block of rule AssignAssignmentInputModeWithin(root, scope) in AssignAssignmentInput(root, scope) where Logic.eq(mode, "Within") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_in_assign_step_fpdto3tkdl"() IS 'the rule judge''s block of rule AssignDecideInput(root, step) in AssignStep(root, step) where Logic.eq(kind, "Decide") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_in_assign_decide_sznlnpzhan"() IS 'the rule judge''s block of rule AssignDecideInput(root, step) where Logic.eq(mode, "Nearest") in AssignDecideInputModeNearest(root, step) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_in_assign_decide_kkziysyrxm"() IS 'the rule judge''s block of rule AssignDecideInput(root, step) where Logic.eq(mode, "Within") in AssignDecideInputModeWithin(root, step) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_nearest_in_assign_zwhgkvqdob"() IS 'the rule judge''s block of rule AssignDecideInputModeNearest(root, step) in AssignDecideInput(root, step) where Logic.eq(mode, "Nearest") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_within_in_assign_6cwpn7jlpl"() IS 'the rule judge''s block of rule AssignDecideInputModeWithin(root, step) in AssignDecideInput(root, step) where Logic.eq(mode, "Within") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_in_assign_decide_tex7oc524r"() IS 'the rule judge''s block of rule AssignDecideOutput(root, step) where Logic.eq(stage, "Rest") in AssignDecideOutputStageRest(root, step) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_in_assign_decide_i64e54b2wr"() IS 'the rule judge''s block of rule AssignDecideOutput(root, step) where Logic.eq(stage, "Serve") in AssignDecideOutputStageServe(root, step) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_rest_in_assign_74uxccr2b7"() IS 'the rule judge''s block of rule AssignDecideOutputStageRest(root, step) in AssignDecideOutput(root, step) where Logic.eq(stage, "Rest") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_serve_in_assign_kvsems7ik6"() IS 'the rule judge''s block of rule AssignDecideOutputStageServe(root, step) in AssignDecideOutput(root, step) where Logic.eq(stage, "Serve") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_done_in_assign_result_4mu6t5mltj"() IS 'the rule judge''s block of rule AssignDone(root, step) in AssignResult(root, step) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_in_assign_step_urhl7lo7jo"() IS 'the rule judge''s block of rule AssignEmbedInput(root, step) in AssignStep(root, step) where Logic.eq(kind, "Embed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_in_assign_embed_c7d7lksec4"() IS 'the rule judge''s block of rule AssignEmbedInput(root, step) where Logic.eq(mode, "Nearest") in AssignEmbedInputModeNearest(root, step) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_in_assign_embed_w734q3n6sw"() IS 'the rule judge''s block of rule AssignEmbedInput(root, step) where Logic.eq(mode, "Within") in AssignEmbedInputModeWithin(root, step) over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_nearest_in_assign_s4h6hbnhfw"() IS 'the rule judge''s block of rule AssignEmbedInputModeNearest(root, step) in AssignEmbedInput(root, step) where Logic.eq(mode, "Nearest") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_within_in_assign_qc5qdyar66"() IS 'the rule judge''s block of rule AssignEmbedInputModeWithin(root, step) in AssignEmbedInput(root, step) where Logic.eq(mode, "Within") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_failed_in_assign_result_rrfurnngc2"() IS 'the rule judge''s block of rule AssignFailed(root, step) in AssignResult(root, step) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_chain_done_in_chain_result_675t5ij4i2"() IS 'the rule judge''s block of rule ChainDone(root, step) in ChainResult(root, step) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_chain_failed_in_chain_result_dicz7rfd3b"() IS 'the rule judge''s block of rule ChainFailed(root, step) in ChainResult(root, step) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_chain_page_input_in_chain_step_oothsyr55y"() IS 'the rule judge''s block of rule ChainPageInput(root, step) in ChainStep(root, step) where Logic.eq(kind, "Page") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_chime_input_in_clock_step_cfgh2w5ma3"() IS 'the rule judge''s block of rule ClockChimeInput(root, step) in ClockStep(root, step) where Logic.eq(kind, "Chime") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_close_input_in_clock_step_yonchgzy4f"() IS 'the rule judge''s block of rule ClockCloseInput(root, step) in ClockStep(root, step) where Logic.eq(kind, "Close") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_done_in_clock_result_xjrqrd2b2m"() IS 'the rule judge''s block of rule ClockDone(root, step) in ClockResult(root, step) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_failed_in_clock_result_rclmfokwzo"() IS 'the rule judge''s block of rule ClockFailed(root, step) in ClockResult(root, step) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_batch_input_in_fan_within_4gfuvufclc"() IS 'the rule judge''s block of rule FanBatchInput(root, scope) in FanWithin(root, scope) where Logic.eq(kind, "Batch") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_done_in_fan_result_igvbhkk2tv"() IS 'the rule judge''s block of rule FanDone(root, step) in FanResult(root, step) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_dust_input_in_fan_step_civipqaias"() IS 'the rule judge''s block of rule FanDustInput(root, step) in FanStep(root, step) where Logic.eq(kind, "Dust") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_failed_in_fan_result_r57me4fbko"() IS 'the rule judge''s block of rule FanFailed(root, step) in FanResult(root, step) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_mop_input_in_fan_step_y343huwkfv"() IS 'the rule judge''s block of rule FanMopInput(root, step) in FanStep(root, step) where Logic.eq(kind, "Mop") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_square_input_in_fan_step_nxz74orxwd"() IS 'the rule judge''s block of rule FanSquareInput(root, step) in FanStep(root, step) where Logic.eq(kind, "Square") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_brittle_input_in_retry_step_virkohj2lo"() IS 'the rule judge''s block of rule RetryBrittleInput(root, step) in RetryStep(root, step) where Logic.eq(kind, "Brittle") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_done_in_retry_result_q344fhh2mm"() IS 'the rule judge''s block of rule RetryDone(root, step) in RetryResult(root, step) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_failed_in_retry_result_xaecmonhtp"() IS 'the rule judge''s block of rule RetryFailed(root, step) in RetryResult(root, step) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_patient_input_in_retry_step_yypoc3hj5r"() IS 'the rule judge''s block of rule RetryPatientInput(root, step) in RetryStep(root, step) where Logic.eq(kind, "Patient") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_polite_input_in_retry_step_4vl6qwfgzn"() IS 'the rule judge''s block of rule RetryPoliteInput(root, step) in RetryStep(root, step) where Logic.eq(kind, "Polite") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_steadfast_input_in_retry_step_xkylzkj4zd"() IS 'the rule judge''s block of rule RetrySteadfastInput(root, step) in RetryStep(root, step) where Logic.eq(kind, "Steadfast") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_review_analyze_input_in_review_step_rbx456ded3"() IS 'the rule judge''s block of rule ReviewAnalyzeInput(root, step) in ReviewStep(root, step) where Logic.eq(kind, "Analyze") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_review_done_in_review_result_ibz3jfbnei"() IS 'the rule judge''s block of rule ReviewDone(root, step) in ReviewResult(root, step) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_review_failed_in_review_result_whygze7zq6"() IS 'the rule judge''s block of rule ReviewFailed(root, step) in ReviewResult(root, step) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_review_gather_input_in_review_step_6dhp33xejx"() IS 'the rule judge''s block of rule ReviewGatherInput(root, step) in ReviewStep(root, step) where Logic.eq(kind, "Gather") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_review_questions_input_in_review_within_oq2i4d4qlh"() IS 'the rule judge''s block of rule ReviewQuestionsInput(root, scope) in ReviewWithin(root, scope) where Logic.eq(kind, "Questions") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_review_save_input_in_review_step_qbidwsfxvi"() IS 'the rule judge''s block of rule ReviewSaveInput(root, step) in ReviewStep(root, step) where Logic.eq(kind, "Save") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_build_input_in_sync_step_zbeiy2eub4"() IS 'the rule judge''s block of rule SyncBuildInput(root, step) in SyncStep(root, step) where Logic.eq(kind, "Build") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_copy_input_in_sync_step_274i44k3xg"() IS 'the rule judge''s block of rule SyncCopyInput(root, step) in SyncStep(root, step) where Logic.eq(kind, "Copy") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_done_in_sync_result_yjfymgp3lh"() IS 'the rule judge''s block of rule SyncDone(root, step) in SyncResult(root, step) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_failed_in_sync_result_zp7mocg4uv"() IS 'the rule judge''s block of rule SyncFailed(root, step) in SyncResult(root, step) where Logic.eq(outcome, "failed") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_writeback_deliver_input_in_writeback_step_4x5vzcjzbi"() IS 'the rule judge''s block of rule WritebackDeliverInput(root, step) in WritebackStep(root, step) where Logic.eq(kind, "Deliver") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_writeback_done_in_writeback_result_d3jnna5bbp"() IS 'the rule judge''s block of rule WritebackDone(root, step) in WritebackResult(root, step) where Logic.eq(outcome, "done") over its units';
+
+COMMENT ON FUNCTION "slice"."__judge_writeback_failed_in_writeback_result_ingi2erzkx"() IS 'the rule judge''s block of rule WritebackFailed(root, step) in WritebackResult(root, step) where Logic.eq(outcome, "failed") over its units';
+
 COMMENT ON FUNCTION "slice"."__judge_fan_live_key_resource_seat_tml3jzipqt"() IS 'the rule judge''s block of rule key FanLive(resource, seat) over the rows a write adds to FanClaim';
 
 COMMENT ON FUNCTION "slice"."__judge_fan_live_key_resource_seat_rsvzhfp6ug"() IS 'the rule judge''s block of rule key FanLive(resource, seat) over the rows a write removes from FanEnded';
@@ -8320,7 +8484,37 @@ COMMENT ON FUNCTION "slice"."__judge_review_live_key_resource_seat_btbkuztx56"()
 
 COMMENT ON FUNCTION "slice"."__judge_review_live_key_resource_seat_ahhaxk5zwx"() IS 'the rule judge''s block of rule key ReviewLive(resource, seat) over the rows a write adds to ReviewHold';
 
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_y4hmyg364y"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_assignment_input_mode_nearest_jiz464vxuo"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignAssignmentInputModeNearest and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_ryk4kznrmg"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_input_mode_nearest_hc5ilv4sea"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideInputModeNearest and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_uprvea4no6"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideOutput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_decide_output_stage_rest_irdavmdqjh"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDecideOutputStageRest and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_done_hjsux6cb6r"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_assign_embed_input_mode_nearest_3xhwbfkrlv"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of AssignEmbedInputModeNearest and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_chain_done_7blz2jjczl"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_chain_page_input_22qgggq3id"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ChainPageInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_chime_input_qujlwtonhn"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ClockChimeInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_clock_done_nw5m6y7otq"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ClockDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_batch_input_zonhzu34ui"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanBatchInput and the relations its rules join it to';
+
 COMMENT ON FUNCTION "slice"."__judge_fan_claim_s3j4rvtcvs"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanClaim and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_done_2nmscmmvlu"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_fan_dust_input_6snexwuzoz"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanDustInput and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__judge_fan_ended_6lkn5mmmar"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanEnded and the relations its rules join it to';
 
@@ -8328,7 +8522,15 @@ COMMENT ON FUNCTION "slice"."__judge_fan_held_dhl6funig6"("pg_catalog"."text"[])
 
 COMMENT ON FUNCTION "slice"."__judge_fan_hold_xpwnh3rc3e"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of FanHold and the relations its rules join it to';
 
+COMMENT ON FUNCTION "slice"."__judge_retry_brittle_input_ltwi3gczlm"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryBrittleInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_retry_done_us2mduacrm"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of RetryDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_review_analyze_input_cfqtz7uc7g"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewAnalyzeInput and the relations its rules join it to';
+
 COMMENT ON FUNCTION "slice"."__judge_review_claim_az6lkkq33b"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewClaim and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_review_done_xzuqwzrsjm"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewDone and the relations its rules join it to';
 
 COMMENT ON FUNCTION "slice"."__judge_review_ended_z2tfnoj2wi"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewEnded and the relations its rules join it to';
 
@@ -8336,21 +8538,159 @@ COMMENT ON FUNCTION "slice"."__judge_review_held_wah4syhkpo"("pg_catalog"."text"
 
 COMMENT ON FUNCTION "slice"."__judge_review_hold_mggi2ob7td"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewHold and the relations its rules join it to';
 
+COMMENT ON FUNCTION "slice"."__judge_review_questions_input_bu3kdyq5g3"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of ReviewQuestionsInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_build_input_eaxvc2njxf"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncBuildInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_sync_done_psjgmjlxp6"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of SyncDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_writeback_deliver_input_fun3xqfq7u"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of WritebackDeliverInput and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__judge_writeback_done_c7valompmz"("pg_catalog"."text"[]) IS 'the rule judge of the deltas of WritebackDone and the relations its rules join it to';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_assignment_input_v4dsbpafdp"() IS 'rule capture of AssignAssignmentInput';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_assignment_input_mode_nearest_cz7fec2bmo"() IS 'rule capture of AssignAssignmentInputModeNearest';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_assignment_input_mode_within_zcwpiu2ek3"() IS 'rule capture of AssignAssignmentInputModeWithin';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_decide_input_njdynt4fid"() IS 'rule capture of AssignDecideInput';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_decide_input_mode_nearest_wixai5r2vy"() IS 'rule capture of AssignDecideInputModeNearest';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_decide_input_mode_within_z4yiact3e2"() IS 'rule capture of AssignDecideInputModeWithin';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_decide_output_ha3hhjgf66"() IS 'rule capture of AssignDecideOutput';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_decide_output_stage_rest_6zt5hnpimr"() IS 'rule capture of AssignDecideOutputStageRest';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_decide_output_stage_serve_ksfwcs5uqr"() IS 'rule capture of AssignDecideOutputStageServe';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_done_ma3msfdp3b"() IS 'rule capture of AssignDone';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_embed_input_42cyh7nkt5"() IS 'rule capture of AssignEmbedInput';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_embed_input_mode_nearest_iersiff2v4"() IS 'rule capture of AssignEmbedInputModeNearest';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_embed_input_mode_within_nppeylhr6x"() IS 'rule capture of AssignEmbedInputModeWithin';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_failed_cqtrnqesux"() IS 'rule capture of AssignFailed';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_result_3zix6jjqic"() IS 'rule capture of AssignResult';
+
+COMMENT ON FUNCTION "slice"."__capture_assign_step_bxkkty5l67"() IS 'rule capture of AssignStep';
+
+COMMENT ON FUNCTION "slice"."__capture_chain_done_3sufn6jr7y"() IS 'rule capture of ChainDone';
+
+COMMENT ON FUNCTION "slice"."__capture_chain_failed_pmft65pzdb"() IS 'rule capture of ChainFailed';
+
+COMMENT ON FUNCTION "slice"."__capture_chain_page_input_ct4d2gjnsb"() IS 'rule capture of ChainPageInput';
+
+COMMENT ON FUNCTION "slice"."__capture_chain_result_y3xtf6otn5"() IS 'rule capture of ChainResult';
+
+COMMENT ON FUNCTION "slice"."__capture_chain_step_2uxbeo7tjg"() IS 'rule capture of ChainStep';
+
+COMMENT ON FUNCTION "slice"."__capture_clock_chime_input_lqffb4ba6u"() IS 'rule capture of ClockChimeInput';
+
+COMMENT ON FUNCTION "slice"."__capture_clock_close_input_yjeq7jdopp"() IS 'rule capture of ClockCloseInput';
+
+COMMENT ON FUNCTION "slice"."__capture_clock_done_dfh6reh5mi"() IS 'rule capture of ClockDone';
+
+COMMENT ON FUNCTION "slice"."__capture_clock_failed_6qny3r6u6y"() IS 'rule capture of ClockFailed';
+
+COMMENT ON FUNCTION "slice"."__capture_clock_result_jy4vcxcejz"() IS 'rule capture of ClockResult';
+
+COMMENT ON FUNCTION "slice"."__capture_clock_step_u5p64rffid"() IS 'rule capture of ClockStep';
+
+COMMENT ON FUNCTION "slice"."__capture_fan_batch_input_6csjqygwks"() IS 'rule capture of FanBatchInput';
+
 COMMENT ON FUNCTION "slice"."__capture_fan_claim_ctcrhycatd"() IS 'rule capture of FanClaim';
 
+COMMENT ON FUNCTION "slice"."__capture_fan_done_mvcdb3g7le"() IS 'rule capture of FanDone';
+
+COMMENT ON FUNCTION "slice"."__capture_fan_dust_input_nul3zoihk6"() IS 'rule capture of FanDustInput';
+
 COMMENT ON FUNCTION "slice"."__capture_fan_ended_gzzovkkada"() IS 'rule capture of FanEnded';
+
+COMMENT ON FUNCTION "slice"."__capture_fan_failed_ecscfsee25"() IS 'rule capture of FanFailed';
 
 COMMENT ON FUNCTION "slice"."__capture_fan_held_ekrigwpm7j"() IS 'rule capture of FanHeld';
 
 COMMENT ON FUNCTION "slice"."__capture_fan_hold_ddvc7a2pzn"() IS 'rule capture of FanHold';
 
+COMMENT ON FUNCTION "slice"."__capture_fan_mop_input_6phw2xwhnz"() IS 'rule capture of FanMopInput';
+
+COMMENT ON FUNCTION "slice"."__capture_fan_result_tevufz2c53"() IS 'rule capture of FanResult';
+
+COMMENT ON FUNCTION "slice"."__capture_fan_square_input_x66yegc6bz"() IS 'rule capture of FanSquareInput';
+
+COMMENT ON FUNCTION "slice"."__capture_fan_step_hmyykvgk4j"() IS 'rule capture of FanStep';
+
+COMMENT ON FUNCTION "slice"."__capture_fan_within_pwsrdikydc"() IS 'rule capture of FanWithin';
+
+COMMENT ON FUNCTION "slice"."__capture_retry_brittle_input_ngy5ff2dfr"() IS 'rule capture of RetryBrittleInput';
+
+COMMENT ON FUNCTION "slice"."__capture_retry_done_b7rnilmjoe"() IS 'rule capture of RetryDone';
+
+COMMENT ON FUNCTION "slice"."__capture_retry_failed_jarzybi4cd"() IS 'rule capture of RetryFailed';
+
+COMMENT ON FUNCTION "slice"."__capture_retry_patient_input_cfxejzkw67"() IS 'rule capture of RetryPatientInput';
+
+COMMENT ON FUNCTION "slice"."__capture_retry_polite_input_4s6i2erlwp"() IS 'rule capture of RetryPoliteInput';
+
+COMMENT ON FUNCTION "slice"."__capture_retry_result_oof7kiqgid"() IS 'rule capture of RetryResult';
+
+COMMENT ON FUNCTION "slice"."__capture_retry_steadfast_input_iqvn32jr3j"() IS 'rule capture of RetrySteadfastInput';
+
+COMMENT ON FUNCTION "slice"."__capture_retry_step_gox3p6ldla"() IS 'rule capture of RetryStep';
+
+COMMENT ON FUNCTION "slice"."__capture_review_analyze_input_fkzkzvqpo6"() IS 'rule capture of ReviewAnalyzeInput';
+
 COMMENT ON FUNCTION "slice"."__capture_review_claim_qyslgqsqs7"() IS 'rule capture of ReviewClaim';
 
+COMMENT ON FUNCTION "slice"."__capture_review_done_gxpax2oqid"() IS 'rule capture of ReviewDone';
+
 COMMENT ON FUNCTION "slice"."__capture_review_ended_3o7fwr7f2y"() IS 'rule capture of ReviewEnded';
+
+COMMENT ON FUNCTION "slice"."__capture_review_failed_3nd4cow637"() IS 'rule capture of ReviewFailed';
+
+COMMENT ON FUNCTION "slice"."__capture_review_gather_input_kgvjnvjsxw"() IS 'rule capture of ReviewGatherInput';
 
 COMMENT ON FUNCTION "slice"."__capture_review_held_p4ye73l7sh"() IS 'rule capture of ReviewHeld';
 
 COMMENT ON FUNCTION "slice"."__capture_review_hold_3d64vgpezl"() IS 'rule capture of ReviewHold';
+
+COMMENT ON FUNCTION "slice"."__capture_review_questions_input_yqxbkx73iq"() IS 'rule capture of ReviewQuestionsInput';
+
+COMMENT ON FUNCTION "slice"."__capture_review_result_m25jokn327"() IS 'rule capture of ReviewResult';
+
+COMMENT ON FUNCTION "slice"."__capture_review_save_input_pdrqqmy66f"() IS 'rule capture of ReviewSaveInput';
+
+COMMENT ON FUNCTION "slice"."__capture_review_step_3y2i7xqqpk"() IS 'rule capture of ReviewStep';
+
+COMMENT ON FUNCTION "slice"."__capture_review_within_aqblir65lf"() IS 'rule capture of ReviewWithin';
+
+COMMENT ON FUNCTION "slice"."__capture_sync_build_input_uauzzgsmyw"() IS 'rule capture of SyncBuildInput';
+
+COMMENT ON FUNCTION "slice"."__capture_sync_copy_input_sm343um5xv"() IS 'rule capture of SyncCopyInput';
+
+COMMENT ON FUNCTION "slice"."__capture_sync_done_ohhkaujpgx"() IS 'rule capture of SyncDone';
+
+COMMENT ON FUNCTION "slice"."__capture_sync_failed_xpbhxdlx72"() IS 'rule capture of SyncFailed';
+
+COMMENT ON FUNCTION "slice"."__capture_sync_result_led6m2o22r"() IS 'rule capture of SyncResult';
+
+COMMENT ON FUNCTION "slice"."__capture_sync_step_35gtwztkwz"() IS 'rule capture of SyncStep';
+
+COMMENT ON FUNCTION "slice"."__capture_writeback_deliver_input_zk6wjx47wq"() IS 'rule capture of WritebackDeliverInput';
+
+COMMENT ON FUNCTION "slice"."__capture_writeback_done_qfh7utr7q5"() IS 'rule capture of WritebackDone';
+
+COMMENT ON FUNCTION "slice"."__capture_writeback_failed_xewjzd2yye"() IS 'rule capture of WritebackFailed';
+
+COMMENT ON FUNCTION "slice"."__capture_writeback_result_cd63iav5l7"() IS 'rule capture of WritebackResult';
+
+COMMENT ON FUNCTION "slice"."__capture_writeback_step_dklkh3hpav"() IS 'rule capture of WritebackStep';
 
 COMMENT ON FUNCTION "slice"."__immutable_assign_decide_read_nearest_row_lab3k5wovp"() IS 'immutability guard of AssignDecideReadNearestRow';
 

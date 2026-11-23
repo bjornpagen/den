@@ -170,4 +170,11 @@ for the coordination group, and DBCLOCK:
   read off them (a2723878c).** No den source moves. The slice's migration is the same; each served role's file holds
   the diagnosis of its deferred keys (`refusals.unmatched`), and the OpenAPI files the error it reports.
 
+- **A rule over a query of a unit's relations is judged whole (grizzle JUDGECOMMIT d87f99332), a fold or a union the
+  values restrict is read as it stands (a8a48e68e), and the manifest keeps each object's edges under it, a file past
+  50 MiB written in parts (9653f3d5c).** No den source moves. The slice's init migration is drafted anew: its graph's
+  rules over queries, every relation they read inside one root's unit, are judged whole by their own constraint
+  triggers (`04-validate.sql`), the containments' law columns go (`02-structure.sql`), and its manifest is smaller; no
+  file of it nears 50 MiB, so none is in parts.
+
 Still to come from the grizzle session: GUARD and SCHEMAMAP.
