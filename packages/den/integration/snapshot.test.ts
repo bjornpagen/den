@@ -28,7 +28,7 @@ type Feature =
 	| "two roots admitted while the census reads"
 
 /** Sync's steps' and results' readers wait on this relation of Chain's while its lock is held. */
-const chainSteps = `"slice"."chain_step"`
+const chainSteps = `"slice_den"."chain_step"`
 
 /**
  * Keeps every seat a root takes while the census reads its snapshot.
