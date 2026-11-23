@@ -165,4 +165,9 @@ for the coordination group, and DBCLOCK:
   moves; the slice's capture functions read their session tables once, so its init migration is drafted again
   (`04-validate.sql`, the snapshot, the manifest and the served files).
 
+- **An existence test the statement's values restrict stays bare (grizzle a080f0837), a deferred foreign key's refusal
+  at COMMIT names the row it leaves unmatched (9bfc44e5b), and a login's roles carry its workloads, a role's programs
+  read off them (a2723878c).** No den source moves. The slice's migration is the same; each served role's file holds
+  the diagnosis of its deferred keys (`refusals.unmatched`), and the OpenAPI files the error it reports.
+
 Still to come from the grizzle session: GUARD and SCHEMAMAP.
