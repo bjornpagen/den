@@ -65,3659 +65,1189 @@ CREATE ROLE :"slice_seats__writeback_retirer" NOLOGIN;
 
 CREATE ROLE :"__live_wzkq6p2yii" LOGIN NOINHERIT;
 
-CREATE SCHEMA "slice_seats__assign_coordinator";
+CREATE SCHEMA "__slice";
 
-CREATE SCHEMA "slice_seats__assign_den";
-
-CREATE SCHEMA "slice_seats__assign_retirer";
-
-CREATE SCHEMA "slice_seats__auditor";
-
-CREATE SCHEMA "slice_seats__chain_coordinator";
-
-CREATE SCHEMA "slice_seats__chain_den";
-
-CREATE SCHEMA "slice_seats__chain_retirer";
-
-CREATE SCHEMA "slice_seats__clock_coordinator";
-
-CREATE SCHEMA "slice_seats__clock_den";
-
-CREATE SCHEMA "slice_seats__clock_retirer";
-
-CREATE SCHEMA "slice_seats__editor";
+CREATE SCHEMA "__slice_den";
 
 CREATE SCHEMA "slice_seats__fan_coordinator";
 
 CREATE SCHEMA "slice_seats__fan_den";
 
-CREATE SCHEMA "slice_seats__fan_retirer";
-
-CREATE SCHEMA "slice_seats__loader";
-
-CREATE SCHEMA "slice_seats__retry_coordinator";
-
-CREATE SCHEMA "slice_seats__retry_den";
-
-CREATE SCHEMA "slice_seats__retry_retirer";
-
 CREATE SCHEMA "slice_seats__review_coordinator";
 
 CREATE SCHEMA "slice_seats__review_den";
 
-CREATE SCHEMA "slice_seats__review_retirer";
-
-CREATE SCHEMA "slice_seats__sync_coordinator";
-
-CREATE SCHEMA "slice_seats__sync_den";
-
-CREATE SCHEMA "slice_seats__sync_retirer";
-
-CREATE SCHEMA "slice_seats__writeback_coordinator";
-
-CREATE SCHEMA "slice_seats__writeback_den";
-
-CREATE SCHEMA "slice_seats__writeback_retirer";
-
-CREATE VIEW "slice_seats__assign_coordinator"."assign_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__assign_pausable_names_r7pjdx7o42"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."assign_paused" AS "r1";
-
-CREATE VIEW "slice_seats__assign_coordinator"."assign_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__assign_pausable_names_r7pjdx7o42"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."assign_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__assign_coordinator"."assign_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."assign_served" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."assign_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_asked" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."assign_asked" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_assignment_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_assignment_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_assignment_input" ("root", "scope", "learner", "topic", "mode", "mode_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."learner", "r1"."topic", "r1"."mode", ("slice"."__assign_assignment_input_mode_names_w3ldolcqbb"())["r1"."mode" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_assignment_input" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_assignment_input_exclude" ("root", "scope", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_assignment_input_exclude" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_assignment_input_mode_nearest" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."assign_assignment_input_mode_nearest" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_assignment_input_mode_within" ("root", "scope", "radius") AS
-SELECT "r1"."root", "r1"."scope", "r1"."radius"
-FROM "slice_den"."assign_assignment_input_mode_within" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_assignment_input_near" ("root", "scope", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_assignment_input_near" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."assign_claim" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_decide_input" ("root", "step", "learner", "topic", "vector", "mode", "mode_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."learner", "r1"."topic", "r1"."vector", "r1"."mode", ("slice"."__assign_decide_input_mode_names_zoydpw665o"())["r1"."mode" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_decide_input" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_decide_input_exclude" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_decide_input_exclude" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_decide_input_mode_nearest" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_decide_input_mode_nearest" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_decide_input_mode_within" ("root", "step", "radius") AS
-SELECT "r1"."root", "r1"."step", "r1"."radius"
-FROM "slice_den"."assign_decide_input_mode_within" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_decide_output" ("root", "step", "confidence", "stage", "stage_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."confidence", "r1"."stage", ("slice"."__assign_decide_output_stage_names_ehhgk5bunv"())["r1"."stage" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_decide_output" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_decide_output_stage_rest" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_decide_output_stage_rest" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_decide_output_stage_serve" ("root", "step", "passage", "distance") AS
-SELECT "r1"."root", "r1"."step", "r1"."passage", "r1"."distance"
-FROM "slice_den"."assign_decide_output_stage_serve" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_decide_output_weighed" ("root", "step", "ordinal", "passage", "distance", "passed") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."passage", "r1"."distance", "r1"."passed"
-FROM "slice_den"."assign_decide_output_weighed" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_decide_read_nearest" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."assign_decide_read_nearest" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_decide_read_nearest_row" ("digest", "passage", "topic", "distance") AS
-SELECT "r1"."digest", "r1"."passage", "r1"."topic", "r1"."distance"
-FROM "slice_den"."assign_decide_read_nearest_row" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_decide_read_seen" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."assign_decide_read_seen" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_decide_read_seen_row" ("digest", "learner", "passage") AS
-SELECT "r1"."digest", "r1"."learner", "r1"."passage"
-FROM "slice_den"."assign_decide_read_seen_row" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_done" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_embed_input" ("root", "step", "learner", "topic", "mode", "mode_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."learner", "r1"."topic", "r1"."mode", ("slice"."__assign_embed_input_mode_names_5jkwmsqq3r"())["r1"."mode" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_embed_input" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_embed_input_exclude" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_embed_input_exclude" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_embed_input_mode_nearest" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_embed_input_mode_nearest" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_embed_input_mode_within" ("root", "step", "radius") AS
-SELECT "r1"."root", "r1"."step", "r1"."radius"
-FROM "slice_den"."assign_embed_input_mode_within" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_embed_input_near" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_embed_input_near" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_embed_output" ("root", "step", "vector") AS
-SELECT "r1"."root", "r1"."step", "r1"."vector"
-FROM "slice_den"."assign_embed_output" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."assign_ended" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_failed" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."assign_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."assign_finish" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."assign_held" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__assign_pausable_names_r7pjdx7o42"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."assign_paused" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."assign_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__assign_outcome_names_2mccfiah6k"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_result" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__assign_pausable_names_r7pjdx7o42"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."assign_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__assign_retry_why_names_5ckzenntb2"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_retry" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__assign_root_kind_names_opbaefdfbo"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."assign_root" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."assign_scope" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."assign_served" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."assign_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."assign_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__assign_den"."assign_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__assign_kind_names_rtvscvwquk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."assign_step" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."assign_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_asked" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."assign_asked" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_assignment_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_assignment_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_assignment_input" ("root", "scope", "learner", "topic", "mode", "mode_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."learner", "r1"."topic", "r1"."mode", ("slice"."__assign_assignment_input_mode_names_w3ldolcqbb"())["r1"."mode" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_assignment_input" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_assignment_input_exclude" ("root", "scope", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_assignment_input_exclude" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_assignment_input_mode_nearest" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."assign_assignment_input_mode_nearest" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_assignment_input_mode_within" ("root", "scope", "radius") AS
-SELECT "r1"."root", "r1"."scope", "r1"."radius"
-FROM "slice_den"."assign_assignment_input_mode_within" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_assignment_input_near" ("root", "scope", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_assignment_input_near" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."assign_claim" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_decide_input" ("root", "step", "learner", "topic", "vector", "mode", "mode_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."learner", "r1"."topic", "r1"."vector", "r1"."mode", ("slice"."__assign_decide_input_mode_names_zoydpw665o"())["r1"."mode" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_decide_input" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_decide_input_exclude" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_decide_input_exclude" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_decide_input_mode_nearest" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_decide_input_mode_nearest" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_decide_input_mode_within" ("root", "step", "radius") AS
-SELECT "r1"."root", "r1"."step", "r1"."radius"
-FROM "slice_den"."assign_decide_input_mode_within" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_decide_output" ("root", "step", "confidence", "stage", "stage_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."confidence", "r1"."stage", ("slice"."__assign_decide_output_stage_names_ehhgk5bunv"())["r1"."stage" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_decide_output" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_decide_output_stage_rest" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_decide_output_stage_rest" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_decide_output_stage_serve" ("root", "step", "passage", "distance") AS
-SELECT "r1"."root", "r1"."step", "r1"."passage", "r1"."distance"
-FROM "slice_den"."assign_decide_output_stage_serve" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_decide_output_weighed" ("root", "step", "ordinal", "passage", "distance", "passed") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."passage", "r1"."distance", "r1"."passed"
-FROM "slice_den"."assign_decide_output_weighed" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_decide_read_nearest" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."assign_decide_read_nearest" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_decide_read_nearest_row" ("digest", "passage", "topic", "distance") AS
-SELECT "r1"."digest", "r1"."passage", "r1"."topic", "r1"."distance"
-FROM "slice_den"."assign_decide_read_nearest_row" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_decide_read_seen" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."assign_decide_read_seen" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_decide_read_seen_row" ("digest", "learner", "passage") AS
-SELECT "r1"."digest", "r1"."learner", "r1"."passage"
-FROM "slice_den"."assign_decide_read_seen_row" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_done" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_embed_input" ("root", "step", "learner", "topic", "mode", "mode_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."learner", "r1"."topic", "r1"."mode", ("slice"."__assign_embed_input_mode_names_5jkwmsqq3r"())["r1"."mode" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_embed_input" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_embed_input_exclude" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_embed_input_exclude" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_embed_input_mode_nearest" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_embed_input_mode_nearest" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_embed_input_mode_within" ("root", "step", "radius") AS
-SELECT "r1"."root", "r1"."step", "r1"."radius"
-FROM "slice_den"."assign_embed_input_mode_within" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_embed_input_near" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_embed_input_near" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_embed_output" ("root", "step", "vector") AS
-SELECT "r1"."root", "r1"."step", "r1"."vector"
-FROM "slice_den"."assign_embed_output" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."assign_ended" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_failed" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."assign_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."assign_finish" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."assign_held" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."assign_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__assign_outcome_names_2mccfiah6k"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_result" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__assign_retry_why_names_5ckzenntb2"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_retry" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__assign_root_kind_names_opbaefdfbo"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."assign_root" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."assign_scope" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."assign_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."assign_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__assign_retirer"."assign_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__assign_kind_names_rtvscvwquk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."assign_step" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."assign_decide_output" ("root", "step", "confidence", "stage", "stage_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."confidence", "r1"."stage", ("slice"."__assign_decide_output_stage_names_ehhgk5bunv"())["r1"."stage" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_decide_output" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."assign_decide_output_stage_serve" ("root", "step", "passage", "distance") AS
-SELECT "r1"."root", "r1"."step", "r1"."passage", "r1"."distance"
-FROM "slice_den"."assign_decide_output_stage_serve" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."assign_decide_output_weighed" ("root", "step", "ordinal", "passage", "distance", "passed") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."passage", "r1"."distance", "r1"."passed"
-FROM "slice_den"."assign_decide_output_weighed" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."assign_decide_read_nearest" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."assign_decide_read_nearest" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."assign_decide_read_nearest_row" ("digest", "passage", "topic", "distance") AS
-SELECT "r1"."digest", "r1"."passage", "r1"."topic", "r1"."distance"
-FROM "slice_den"."assign_decide_read_nearest_row" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."assign_decide_read_seen" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."assign_decide_read_seen" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."assign_decide_read_seen_row" ("digest", "learner", "passage") AS
-SELECT "r1"."digest", "r1"."learner", "r1"."passage"
-FROM "slice_den"."assign_decide_read_seen_row" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."assign_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__assign_outcome_names_2mccfiah6k"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_result" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."assign_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__assign_kind_names_rtvscvwquk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."assign_step" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."assigned" ("learner", "passage") AS
+CREATE VIEW "__slice"."assigned" ("learner", "passage") AS
 SELECT "r1"."learner", "r1"."passage"
 FROM "slice"."assigned" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."audit" ("step", "root", "note") AS
-SELECT "r1"."step", "r1"."root", "r1"."note"
-FROM "slice_den"."audit" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."built" ("build") AS
+CREATE VIEW "__slice"."built" ("build") AS
 SELECT "r1"."build"
 FROM "slice"."built" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."chain_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."chain_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_chain_run_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_chain_run_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_chain_run_input" ("root", "scope", "feed", "feed_name", "pages") AS
-SELECT "r1"."root", "r1"."scope", "r1"."feed", ("slice"."__chain_chain_run_input_feed_names_byxgsvzik7"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages"
-FROM "slice_den"."chain_chain_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."chain_claim" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_done" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_ended" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_failed" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."chain_finish" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_held" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_next" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."chain_next" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_ordered_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_ordered_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_ordered_input" ("root", "scope", "feed", "feed_name", "pages") AS
-SELECT "r1"."root", "r1"."scope", "r1"."feed", ("slice"."__chain_ordered_input_feed_names_dwtixlgyrd"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages"
-FROM "slice_den"."chain_ordered_input" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_page_input" ("root", "step", "feed", "feed_name", "seq", "pages") AS
-SELECT "r1"."root", "r1"."step", "r1"."feed", ("slice"."__chain_page_input_feed_names_dxuyhzkiur"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."pages"
-FROM "slice_den"."chain_page_input" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_page_input_after" ("root", "step", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."value"
-FROM "slice_den"."chain_page_input_after" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_page_output" ("root", "step", "seq", "items", "earlier") AS
-SELECT "r1"."root", "r1"."step", "r1"."seq", "r1"."items", "r1"."earlier"
-FROM "slice_den"."chain_page_output" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_page_output_next" ("root", "step", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."value"
-FROM "slice_den"."chain_page_output_next" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_page_read_earlier" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."chain_page_read_earlier" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_page_read_earlier_row" ("digest", "feed", "feed_name", "seq", "n") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
-FROM "slice_den"."chain_page_read_earlier_row" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_page_read_tree" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."chain_page_read_tree" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_page_read_tree_items" ("digest", "at", "feed", "feed_name", "seq", "n") AS
-SELECT "r1"."digest", "r1"."at", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
-FROM "slice_den"."chain_page_read_tree_items" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_page_read_tree_row" ("digest", "feed", "feed_name", "factor", "items") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor", "r1"."items"
-FROM "slice_den"."chain_page_read_tree_row" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_page_read_weights" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."chain_page_read_weights" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_page_read_weights_row" ("digest", "feed", "feed_name", "factor") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor"
-FROM "slice_den"."chain_page_read_weights_row" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_page_tree_first" ("digest", "at") AS
-SELECT "r1"."digest", "r1"."at"
-FROM "slice_den"."chain_page_tree_first" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."chain_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__chain_outcome_names_vo4tgqx6qh"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."chain_result" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__chain_retry_why_names_zmog33hzfy"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."chain_retry" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__chain_root_kind_names_ndmuh43zki"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."chain_root" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."chain_scope" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."chain_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."chain_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chain_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__chain_kind_names_oubqrwjyau"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."chain_step" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."chimed" ("hour", "bell", "bell_name") AS
+CREATE VIEW "__slice"."chimed" ("hour", "bell", "bell_name") AS
 SELECT "r1"."hour", "r1"."bell", ("slice"."__bell_names_aiqi4uostx"())["r1"."bell" + 1]::"pg_catalog"."text"
 FROM "slice"."chimed" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."concluded" ("learner", "served", "weighed") AS
+CREATE VIEW "__slice"."concluded" ("learner", "served", "weighed") AS
 SELECT "r1"."learner", "r1"."served", "r1"."weighed"
 FROM "slice"."concluded" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."copied" ("relation", "run") AS
+CREATE VIEW "__slice"."copied" ("relation", "run") AS
 SELECT "r1"."relation", "r1"."run"
 FROM "slice"."copied" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."cursor" ("feed", "feed_name", "position") AS
+CREATE VIEW "__slice"."cursor" ("feed", "feed_name", "position") AS
 SELECT "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."position"
 FROM "slice"."cursor" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."fan_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."fan_admitted" AS "r1";
+CREATE VIEW "__slice"."delivered" ("attempt") AS
+SELECT "r1"."attempt"
+FROM "slice"."delivered" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."fan_batch_input" ("root", "scope", "batch", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."batch", "r1"."size"
-FROM "slice_den"."fan_batch_input" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."fan_claim" ("root", "step", "attempt", "until", "holds") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until", "r1"."holds"
-FROM "slice_den"."fan_claim" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."fan_fan_run_input" ("root", "scope", "batch", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."batch", "r1"."size"
-FROM "slice_den"."fan_fan_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."fan_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."fan_finish" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."fan_hold" ("resource", "resource_name", "root", "step", "attempt", "at", "seat") AS
-SELECT "r1"."resource", ("slice"."__fan_resource_names_tugc7yp6xo"())["r1"."resource" + 1]::"pg_catalog"."text", "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."seat"
-FROM "slice_den"."fan_hold" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."fan_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__fan_outcome_names_7pbhseigfj"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."fan_result" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."fan_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__fan_root_kind_names_nagupzc3sq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."fan_root" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."fan_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."fan_scope" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."fan_square_input" ("root", "step", "batch", "n") AS
-SELECT "r1"."root", "r1"."step", "r1"."batch", "r1"."n"
-FROM "slice_den"."fan_square_input" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."fan_square_output" ("root", "step", "square") AS
-SELECT "r1"."root", "r1"."step", "r1"."square"
-FROM "slice_den"."fan_square_output" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."fan_start_scope" ("root", "scope", "ordinal", "child") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."child"
-FROM "slice_den"."fan_start_scope" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."fan_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."fan_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."fan_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__fan_kind_names_rrax7ylsix"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."fan_step" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."fan_within" ("root", "scope", "parent", "kind", "kind_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__fan_child_kind_names_i6k53d3e2e"())["r1"."kind" + 1]::"pg_catalog"."text"
-FROM "slice_den"."fan_within" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."heard" ("key", "answered") AS
+CREATE VIEW "__slice"."heard" ("key", "answered") AS
 SELECT "r1"."key", "r1"."answered"
 FROM "slice"."heard" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."item" ("feed", "feed_name", "seq", "n") AS
+CREATE VIEW "__slice"."item" ("feed", "feed_name", "seq", "n") AS
 SELECT "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
 FROM "slice"."item" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."order" ("order", "feed", "feed_name") AS
+CREATE VIEW "__slice"."order" ("order", "feed", "feed_name") AS
 SELECT "r1"."order", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text"
 FROM "slice"."order" AS "r1";
 
-CREATE VIEW "slice_seats__auditor"."retry_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."retry_claim" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."retry_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."retry_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__retry_outcome_names_zzz2kawwsa"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."retry_result" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."retry_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__retry_kind_names_yg2tu5rejg"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."retry_step" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."review_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."review_finish" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."review_hold" ("resource", "resource_name", "root", "step", "attempt", "at", "seat") AS
-SELECT "r1"."resource", ("slice"."__review_resource_names_ixi3gnpcnp"())["r1"."resource" + 1]::"pg_catalog"."text", "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."seat"
-FROM "slice_den"."review_hold" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."review_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__review_outcome_names_nlfaf7zb7f"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."review_result" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."review_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__review_kind_names_j4pukr2klj"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."review_step" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."review_within" ("root", "scope", "parent", "kind", "kind_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__review_child_kind_names_jn3iwx7yal"())["r1"."kind" + 1]::"pg_catalog"."text"
-FROM "slice_den"."review_within" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."reviewed" ("review", "group", "count", "total") AS
-SELECT "r1"."review", "r1"."group", "r1"."count", "r1"."total"
-FROM "slice"."reviewed" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."settled" ("batch") AS
-SELECT "r1"."batch"
-FROM "slice"."settled" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."summary" ("review", "groups", "total") AS
-SELECT "r1"."review", "r1"."groups", "r1"."total"
-FROM "slice"."summary" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."sync_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."sync_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."sync_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."sync_finish" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."sync_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__sync_outcome_names_xzb4y4xgki"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."sync_result" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."sync_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."sync_scope" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."sync_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."sync_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."tally" ("batch", "count", "total") AS
-SELECT "r1"."batch", "r1"."count", "r1"."total"
-FROM "slice"."tally" AS "r1";
-
-CREATE VIEW "slice_seats__auditor"."weight" ("feed", "feed_name", "factor") AS
-SELECT "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor"
-FROM "slice"."weight" AS "r1";
-
-CREATE VIEW "slice_seats__chain_coordinator"."chain_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__chain_pausable_names_vjdoymenyq"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."chain_paused" AS "r1";
-
-CREATE VIEW "slice_seats__chain_coordinator"."chain_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__chain_pausable_names_vjdoymenyq"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."chain_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__chain_coordinator"."chain_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."chain_served" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."chain_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_chain_run_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_chain_run_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_chain_run_input" ("root", "scope", "feed", "feed_name", "pages") AS
-SELECT "r1"."root", "r1"."scope", "r1"."feed", ("slice"."__chain_chain_run_input_feed_names_byxgsvzik7"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages"
-FROM "slice_den"."chain_chain_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."chain_claim" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_done" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_ended" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_failed" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."chain_finish" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_held" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_next" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."chain_next" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_ordered_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_ordered_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_ordered_input" ("root", "scope", "feed", "feed_name", "pages") AS
-SELECT "r1"."root", "r1"."scope", "r1"."feed", ("slice"."__chain_ordered_input_feed_names_dwtixlgyrd"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages"
-FROM "slice_den"."chain_ordered_input" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_page_input" ("root", "step", "feed", "feed_name", "seq", "pages") AS
-SELECT "r1"."root", "r1"."step", "r1"."feed", ("slice"."__chain_page_input_feed_names_dxuyhzkiur"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."pages"
-FROM "slice_den"."chain_page_input" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_page_input_after" ("root", "step", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."value"
-FROM "slice_den"."chain_page_input_after" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_page_output" ("root", "step", "seq", "items", "earlier") AS
-SELECT "r1"."root", "r1"."step", "r1"."seq", "r1"."items", "r1"."earlier"
-FROM "slice_den"."chain_page_output" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_page_output_next" ("root", "step", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."value"
-FROM "slice_den"."chain_page_output_next" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_page_read_earlier" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."chain_page_read_earlier" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_page_read_earlier_row" ("digest", "feed", "feed_name", "seq", "n") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
-FROM "slice_den"."chain_page_read_earlier_row" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_page_read_tree" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."chain_page_read_tree" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_page_read_tree_items" ("digest", "at", "feed", "feed_name", "seq", "n") AS
-SELECT "r1"."digest", "r1"."at", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
-FROM "slice_den"."chain_page_read_tree_items" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_page_read_tree_row" ("digest", "feed", "feed_name", "factor", "items") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor", "r1"."items"
-FROM "slice_den"."chain_page_read_tree_row" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_page_read_weights" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."chain_page_read_weights" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_page_read_weights_row" ("digest", "feed", "feed_name", "factor") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor"
-FROM "slice_den"."chain_page_read_weights_row" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_page_tree_first" ("digest", "at") AS
-SELECT "r1"."digest", "r1"."at"
-FROM "slice_den"."chain_page_tree_first" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__chain_pausable_names_vjdoymenyq"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."chain_paused" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."chain_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__chain_outcome_names_vo4tgqx6qh"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."chain_result" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__chain_pausable_names_vjdoymenyq"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."chain_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__chain_retry_why_names_zmog33hzfy"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."chain_retry" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__chain_root_kind_names_ndmuh43zki"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."chain_root" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."chain_scope" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."chain_served" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."chain_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."chain_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__chain_den"."chain_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__chain_kind_names_oubqrwjyau"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."chain_step" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."chain_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_chain_run_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_chain_run_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_chain_run_input" ("root", "scope", "feed", "feed_name", "pages") AS
-SELECT "r1"."root", "r1"."scope", "r1"."feed", ("slice"."__chain_chain_run_input_feed_names_byxgsvzik7"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages"
-FROM "slice_den"."chain_chain_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."chain_claim" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_done" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_ended" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_failed" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."chain_finish" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_held" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_next" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."chain_next" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_ordered_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_ordered_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_ordered_input" ("root", "scope", "feed", "feed_name", "pages") AS
-SELECT "r1"."root", "r1"."scope", "r1"."feed", ("slice"."__chain_ordered_input_feed_names_dwtixlgyrd"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages"
-FROM "slice_den"."chain_ordered_input" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_page_input" ("root", "step", "feed", "feed_name", "seq", "pages") AS
-SELECT "r1"."root", "r1"."step", "r1"."feed", ("slice"."__chain_page_input_feed_names_dxuyhzkiur"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."pages"
-FROM "slice_den"."chain_page_input" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_page_input_after" ("root", "step", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."value"
-FROM "slice_den"."chain_page_input_after" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_page_output" ("root", "step", "seq", "items", "earlier") AS
-SELECT "r1"."root", "r1"."step", "r1"."seq", "r1"."items", "r1"."earlier"
-FROM "slice_den"."chain_page_output" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_page_output_next" ("root", "step", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."value"
-FROM "slice_den"."chain_page_output_next" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_page_read_earlier" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."chain_page_read_earlier" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_page_read_earlier_row" ("digest", "feed", "feed_name", "seq", "n") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
-FROM "slice_den"."chain_page_read_earlier_row" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_page_read_tree" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."chain_page_read_tree" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_page_read_tree_items" ("digest", "at", "feed", "feed_name", "seq", "n") AS
-SELECT "r1"."digest", "r1"."at", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
-FROM "slice_den"."chain_page_read_tree_items" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_page_read_tree_row" ("digest", "feed", "feed_name", "factor", "items") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor", "r1"."items"
-FROM "slice_den"."chain_page_read_tree_row" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_page_read_weights" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."chain_page_read_weights" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_page_read_weights_row" ("digest", "feed", "feed_name", "factor") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor"
-FROM "slice_den"."chain_page_read_weights_row" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_page_tree_first" ("digest", "at") AS
-SELECT "r1"."digest", "r1"."at"
-FROM "slice_den"."chain_page_tree_first" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."chain_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__chain_outcome_names_vo4tgqx6qh"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."chain_result" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__chain_retry_why_names_zmog33hzfy"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."chain_retry" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__chain_root_kind_names_ndmuh43zki"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."chain_root" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."chain_scope" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."chain_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."chain_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__chain_retirer"."chain_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__chain_kind_names_oubqrwjyau"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."chain_step" AS "r1";
-
-CREATE VIEW "slice_seats__clock_coordinator"."clock_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__clock_pausable_names_phjbr2fipl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."clock_paused" AS "r1";
-
-CREATE VIEW "slice_seats__clock_coordinator"."clock_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__clock_pausable_names_phjbr2fipl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."clock_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__clock_coordinator"."clock_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."clock_served" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."clock_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_chime_input" ("root", "step", "hour", "bell", "bell_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."hour", "r1"."bell", ("slice"."__clock_chime_input_bell_names_nkzi4dgaig"())["r1"."bell" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_chime_input" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_chime_output" ("root", "step", "hour", "bell", "bell_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."hour", "r1"."bell", ("slice"."__clock_chime_output_bell_names_tzmx63kpb4"())["r1"."bell" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_chime_output" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."clock_claim" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_close_input" ("root", "step", "sitting", "deadline") AS
-SELECT "r1"."root", "r1"."step", "r1"."sitting", "r1"."deadline"
-FROM "slice_den"."clock_close_input" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_close_output" ("root", "step", "sitting", "deadline") AS
-SELECT "r1"."root", "r1"."step", "r1"."sitting", "r1"."deadline"
-FROM "slice_den"."clock_close_output" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_done" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."clock_ended" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_failed" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."clock_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."clock_finish" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."clock_held" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_hourly_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_hourly_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_hourly_input" ("root", "scope", "hour", "bell", "bell_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."hour", "r1"."bell", ("slice"."__clock_hourly_input_bell_names_vugtqsvsug"())["r1"."bell" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_hourly_input" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__clock_pausable_names_phjbr2fipl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."clock_paused" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."clock_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__clock_outcome_names_rqtqczot4q"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_result" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__clock_pausable_names_phjbr2fipl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."clock_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__clock_retry_why_names_pjdgx4s6a4"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_retry" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__clock_root_kind_names_3kro23qfv4"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."clock_root" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."clock_scope" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."clock_served" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_sitting_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_sitting_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_sitting_input" ("root", "scope", "sitting", "deadline") AS
-SELECT "r1"."root", "r1"."scope", "r1"."sitting", "r1"."deadline"
-FROM "slice_den"."clock_sitting_input" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."clock_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."clock_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__clock_den"."clock_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__clock_kind_names_7yqk67pwg5"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."clock_step" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."clock_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_chime_input" ("root", "step", "hour", "bell", "bell_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."hour", "r1"."bell", ("slice"."__clock_chime_input_bell_names_nkzi4dgaig"())["r1"."bell" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_chime_input" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_chime_output" ("root", "step", "hour", "bell", "bell_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."hour", "r1"."bell", ("slice"."__clock_chime_output_bell_names_tzmx63kpb4"())["r1"."bell" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_chime_output" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."clock_claim" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_close_input" ("root", "step", "sitting", "deadline") AS
-SELECT "r1"."root", "r1"."step", "r1"."sitting", "r1"."deadline"
-FROM "slice_den"."clock_close_input" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_close_output" ("root", "step", "sitting", "deadline") AS
-SELECT "r1"."root", "r1"."step", "r1"."sitting", "r1"."deadline"
-FROM "slice_den"."clock_close_output" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_done" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."clock_ended" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_failed" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."clock_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."clock_finish" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."clock_held" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_hourly_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_hourly_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_hourly_input" ("root", "scope", "hour", "bell", "bell_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."hour", "r1"."bell", ("slice"."__clock_hourly_input_bell_names_vugtqsvsug"())["r1"."bell" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_hourly_input" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."clock_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__clock_outcome_names_rqtqczot4q"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_result" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__clock_retry_why_names_pjdgx4s6a4"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_retry" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__clock_root_kind_names_3kro23qfv4"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."clock_root" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."clock_scope" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_sitting_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_sitting_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_sitting_input" ("root", "scope", "sitting", "deadline") AS
-SELECT "r1"."root", "r1"."scope", "r1"."sitting", "r1"."deadline"
-FROM "slice_den"."clock_sitting_input" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."clock_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."clock_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__clock_retirer"."clock_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__clock_kind_names_7yqk67pwg5"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."clock_step" AS "r1";
-
-CREATE VIEW "slice_seats__editor"."passage" ("passage", "topic", "embedding") AS
+CREATE VIEW "__slice"."passage" ("passage", "topic", "embedding") AS
 SELECT "r1"."passage", "r1"."topic", "r1"."embedding"
 FROM "slice"."passage" AS "r1";
 
-CREATE VIEW "slice_seats__editor"."seen" ("learner", "passage") AS
+CREATE VIEW "__slice"."reviewed" ("review", "group", "count", "total") AS
+SELECT "r1"."review", "r1"."group", "r1"."count", "r1"."total"
+FROM "slice"."reviewed" AS "r1";
+
+CREATE VIEW "__slice"."seen" ("learner", "passage") AS
 SELECT "r1"."learner", "r1"."passage"
 FROM "slice"."seen" AS "r1";
+
+CREATE VIEW "__slice"."settled" ("batch") AS
+SELECT "r1"."batch"
+FROM "slice"."settled" AS "r1";
+
+CREATE VIEW "__slice"."summary" ("review", "groups", "total") AS
+SELECT "r1"."review", "r1"."groups", "r1"."total"
+FROM "slice"."summary" AS "r1";
+
+CREATE VIEW "__slice"."tally" ("batch", "count", "total") AS
+SELECT "r1"."batch", "r1"."count", "r1"."total"
+FROM "slice"."tally" AS "r1";
+
+CREATE VIEW "__slice"."weight" ("feed", "feed_name", "factor") AS
+SELECT "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor"
+FROM "slice"."weight" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_admitted" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."assign_admitted" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_asked" ("root", "from", "ordinal", "to") AS
+SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
+FROM "slice_den"."assign_asked" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_assignment_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."assign_assignment_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_assignment_input" ("root", "scope", "learner", "topic", "mode", "mode_name") AS
+SELECT "r1"."root", "r1"."scope", "r1"."learner", "r1"."topic", "r1"."mode", ("slice"."__assign_assignment_input_mode_names_w3ldolcqbb"())["r1"."mode" + 1]::"pg_catalog"."text"
+FROM "slice_den"."assign_assignment_input" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_assignment_input_exclude" ("root", "scope", "ordinal", "value") AS
+SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
+FROM "slice_den"."assign_assignment_input_exclude" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_assignment_input_mode_nearest" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."assign_assignment_input_mode_nearest" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_assignment_input_mode_within" ("root", "scope", "radius") AS
+SELECT "r1"."root", "r1"."scope", "r1"."radius"
+FROM "slice_den"."assign_assignment_input_mode_within" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_assignment_input_near" ("root", "scope", "ordinal", "value") AS
+SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
+FROM "slice_den"."assign_assignment_input_near" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_claim" ("root", "step", "attempt", "until") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
+FROM "slice_den"."assign_claim" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_decide_input" ("root", "step", "learner", "topic", "vector", "mode", "mode_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."learner", "r1"."topic", "r1"."vector", "r1"."mode", ("slice"."__assign_decide_input_mode_names_zoydpw665o"())["r1"."mode" + 1]::"pg_catalog"."text"
+FROM "slice_den"."assign_decide_input" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_decide_input_exclude" ("root", "step", "ordinal", "value") AS
+SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
+FROM "slice_den"."assign_decide_input_exclude" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_decide_input_mode_nearest" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."assign_decide_input_mode_nearest" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_decide_input_mode_within" ("root", "step", "radius") AS
+SELECT "r1"."root", "r1"."step", "r1"."radius"
+FROM "slice_den"."assign_decide_input_mode_within" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_decide_output" ("root", "step", "confidence", "stage", "stage_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."confidence", "r1"."stage", ("slice"."__assign_decide_output_stage_names_ehhgk5bunv"())["r1"."stage" + 1]::"pg_catalog"."text"
+FROM "slice_den"."assign_decide_output" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_decide_output_stage_rest" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."assign_decide_output_stage_rest" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_decide_output_stage_serve" ("root", "step", "passage", "distance") AS
+SELECT "r1"."root", "r1"."step", "r1"."passage", "r1"."distance"
+FROM "slice_den"."assign_decide_output_stage_serve" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_decide_output_weighed" ("root", "step", "ordinal", "passage", "distance", "passed") AS
+SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."passage", "r1"."distance", "r1"."passed"
+FROM "slice_den"."assign_decide_output_weighed" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_decide_read_nearest" ("root", "step", "ordinal", "digest") AS
+SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
+FROM "slice_den"."assign_decide_read_nearest" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_decide_read_nearest_row" ("digest", "passage", "topic", "distance") AS
+SELECT "r1"."digest", "r1"."passage", "r1"."topic", "r1"."distance"
+FROM "slice_den"."assign_decide_read_nearest_row" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_decide_read_seen" ("root", "step", "ordinal", "digest") AS
+SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
+FROM "slice_den"."assign_decide_read_seen" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_decide_read_seen_row" ("digest", "learner", "passage") AS
+SELECT "r1"."digest", "r1"."learner", "r1"."passage"
+FROM "slice_den"."assign_decide_read_seen_row" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_done" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."assign_done" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_embed_input" ("root", "step", "learner", "topic", "mode", "mode_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."learner", "r1"."topic", "r1"."mode", ("slice"."__assign_embed_input_mode_names_5jkwmsqq3r"())["r1"."mode" + 1]::"pg_catalog"."text"
+FROM "slice_den"."assign_embed_input" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_embed_input_exclude" ("root", "step", "ordinal", "value") AS
+SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
+FROM "slice_den"."assign_embed_input_exclude" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_embed_input_mode_nearest" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."assign_embed_input_mode_nearest" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_embed_input_mode_within" ("root", "step", "radius") AS
+SELECT "r1"."root", "r1"."step", "r1"."radius"
+FROM "slice_den"."assign_embed_input_mode_within" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_embed_input_near" ("root", "step", "ordinal", "value") AS
+SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
+FROM "slice_den"."assign_embed_input_near" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_embed_output" ("root", "step", "vector") AS
+SELECT "r1"."root", "r1"."step", "r1"."vector"
+FROM "slice_den"."assign_embed_output" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_ended" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."assign_ended" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_exhausted" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."assign_exhausted" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_failed" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."assign_failed" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_fenced" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."assign_fenced" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_finish" ("root", "scope", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."step"
+FROM "slice_den"."assign_finish" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_held" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."assign_held" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_paused" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__assign_pausable_names_r7pjdx7o42"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."assign_paused" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_refusal" ("root", "step", "law") AS
+SELECT "r1"."root", "r1"."step", "r1"."law"
+FROM "slice_den"."assign_refusal" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_result" ("root", "step", "outcome", "outcome_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__assign_outcome_names_2mccfiah6k"())["r1"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."assign_result" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_resumed" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__assign_pausable_names_r7pjdx7o42"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."assign_resumed" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__assign_retry_why_names_5ckzenntb2"())["r1"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."assign_retry" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_root" ("root", "kind", "kind_name", "key", "at") AS
+SELECT "r1"."root", "r1"."kind", ("slice"."__assign_root_kind_names_opbaefdfbo"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
+FROM "slice_den"."assign_root" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_scope" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."assign_scope" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_served" ("environment", "at", "deployment") AS
+SELECT "r1"."environment", "r1"."at", "r1"."deployment"
+FROM "slice_den"."assign_served" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_skipped" ("root", "scope", "by") AS
+SELECT "r1"."root", "r1"."scope", "r1"."by"
+FROM "slice_den"."assign_skipped" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_start_step" ("root", "scope", "ordinal", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
+FROM "slice_den"."assign_start_step" AS "r1";
+
+CREATE VIEW "__slice_den"."assign_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
+SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__assign_kind_names_rtvscvwquk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
+FROM "slice_den"."assign_step" AS "r1";
+
+CREATE VIEW "__slice_den"."audit" ("step", "root", "note") AS
+SELECT "r1"."step", "r1"."root", "r1"."note"
+FROM "slice_den"."audit" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_admitted" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."chain_admitted" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_chain_run_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."chain_chain_run_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_chain_run_input" ("root", "scope", "feed", "feed_name", "pages") AS
+SELECT "r1"."root", "r1"."scope", "r1"."feed", ("slice"."__chain_chain_run_input_feed_names_byxgsvzik7"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages"
+FROM "slice_den"."chain_chain_run_input" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_claim" ("root", "step", "attempt", "until") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
+FROM "slice_den"."chain_claim" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_done" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."chain_done" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_ended" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."chain_ended" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_exhausted" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."chain_exhausted" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_failed" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."chain_failed" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_fenced" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."chain_fenced" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_finish" ("root", "scope", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."step"
+FROM "slice_den"."chain_finish" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_held" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."chain_held" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_next" ("root", "from", "ordinal", "to") AS
+SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
+FROM "slice_den"."chain_next" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_ordered_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."chain_ordered_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_ordered_input" ("root", "scope", "feed", "feed_name", "pages") AS
+SELECT "r1"."root", "r1"."scope", "r1"."feed", ("slice"."__chain_ordered_input_feed_names_dwtixlgyrd"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages"
+FROM "slice_den"."chain_ordered_input" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_page_input" ("root", "step", "feed", "feed_name", "seq", "pages") AS
+SELECT "r1"."root", "r1"."step", "r1"."feed", ("slice"."__chain_page_input_feed_names_dxuyhzkiur"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."pages"
+FROM "slice_den"."chain_page_input" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_page_input_after" ("root", "step", "value") AS
+SELECT "r1"."root", "r1"."step", "r1"."value"
+FROM "slice_den"."chain_page_input_after" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_page_output" ("root", "step", "seq", "items", "earlier") AS
+SELECT "r1"."root", "r1"."step", "r1"."seq", "r1"."items", "r1"."earlier"
+FROM "slice_den"."chain_page_output" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_page_output_next" ("root", "step", "value") AS
+SELECT "r1"."root", "r1"."step", "r1"."value"
+FROM "slice_den"."chain_page_output_next" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_page_read_earlier" ("root", "step", "ordinal", "digest") AS
+SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
+FROM "slice_den"."chain_page_read_earlier" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_page_read_earlier_row" ("digest", "feed", "feed_name", "seq", "n") AS
+SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
+FROM "slice_den"."chain_page_read_earlier_row" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_page_read_tree" ("root", "step", "ordinal", "digest") AS
+SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
+FROM "slice_den"."chain_page_read_tree" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_page_read_tree_items" ("digest", "at", "feed", "feed_name", "seq", "n") AS
+SELECT "r1"."digest", "r1"."at", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
+FROM "slice_den"."chain_page_read_tree_items" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_page_read_tree_row" ("digest", "feed", "feed_name", "factor", "items") AS
+SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor", "r1"."items"
+FROM "slice_den"."chain_page_read_tree_row" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_page_read_weights" ("root", "step", "ordinal", "digest") AS
+SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
+FROM "slice_den"."chain_page_read_weights" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_page_read_weights_row" ("digest", "feed", "feed_name", "factor") AS
+SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor"
+FROM "slice_den"."chain_page_read_weights_row" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_page_tree_first" ("digest", "at") AS
+SELECT "r1"."digest", "r1"."at"
+FROM "slice_den"."chain_page_tree_first" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_paused" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__chain_pausable_names_vjdoymenyq"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."chain_paused" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_refusal" ("root", "step", "law") AS
+SELECT "r1"."root", "r1"."step", "r1"."law"
+FROM "slice_den"."chain_refusal" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_result" ("root", "step", "outcome", "outcome_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__chain_outcome_names_vo4tgqx6qh"())["r1"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."chain_result" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_resumed" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__chain_pausable_names_vjdoymenyq"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."chain_resumed" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__chain_retry_why_names_zmog33hzfy"())["r1"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."chain_retry" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_root" ("root", "kind", "kind_name", "key", "at") AS
+SELECT "r1"."root", "r1"."kind", ("slice"."__chain_root_kind_names_ndmuh43zki"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
+FROM "slice_den"."chain_root" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_scope" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."chain_scope" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_served" ("environment", "at", "deployment") AS
+SELECT "r1"."environment", "r1"."at", "r1"."deployment"
+FROM "slice_den"."chain_served" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_skipped" ("root", "scope", "by") AS
+SELECT "r1"."root", "r1"."scope", "r1"."by"
+FROM "slice_den"."chain_skipped" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_start_step" ("root", "scope", "ordinal", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
+FROM "slice_den"."chain_start_step" AS "r1";
+
+CREATE VIEW "__slice_den"."chain_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
+SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__chain_kind_names_oubqrwjyau"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
+FROM "slice_den"."chain_step" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_admitted" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."clock_admitted" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_chime_input" ("root", "step", "hour", "bell", "bell_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."hour", "r1"."bell", ("slice"."__clock_chime_input_bell_names_nkzi4dgaig"())["r1"."bell" + 1]::"pg_catalog"."text"
+FROM "slice_den"."clock_chime_input" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_chime_output" ("root", "step", "hour", "bell", "bell_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."hour", "r1"."bell", ("slice"."__clock_chime_output_bell_names_tzmx63kpb4"())["r1"."bell" + 1]::"pg_catalog"."text"
+FROM "slice_den"."clock_chime_output" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_claim" ("root", "step", "attempt", "until") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
+FROM "slice_den"."clock_claim" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_close_input" ("root", "step", "sitting", "deadline") AS
+SELECT "r1"."root", "r1"."step", "r1"."sitting", "r1"."deadline"
+FROM "slice_den"."clock_close_input" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_close_output" ("root", "step", "sitting", "deadline") AS
+SELECT "r1"."root", "r1"."step", "r1"."sitting", "r1"."deadline"
+FROM "slice_den"."clock_close_output" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_done" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."clock_done" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_ended" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."clock_ended" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_exhausted" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."clock_exhausted" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_failed" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."clock_failed" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_fenced" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."clock_fenced" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_finish" ("root", "scope", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."step"
+FROM "slice_den"."clock_finish" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_held" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."clock_held" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_hourly_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."clock_hourly_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_hourly_input" ("root", "scope", "hour", "bell", "bell_name") AS
+SELECT "r1"."root", "r1"."scope", "r1"."hour", "r1"."bell", ("slice"."__clock_hourly_input_bell_names_vugtqsvsug"())["r1"."bell" + 1]::"pg_catalog"."text"
+FROM "slice_den"."clock_hourly_input" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_paused" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__clock_pausable_names_phjbr2fipl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."clock_paused" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_refusal" ("root", "step", "law") AS
+SELECT "r1"."root", "r1"."step", "r1"."law"
+FROM "slice_den"."clock_refusal" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_result" ("root", "step", "outcome", "outcome_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__clock_outcome_names_rqtqczot4q"())["r1"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."clock_result" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_resumed" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__clock_pausable_names_phjbr2fipl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."clock_resumed" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__clock_retry_why_names_pjdgx4s6a4"())["r1"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."clock_retry" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_root" ("root", "kind", "kind_name", "key", "at") AS
+SELECT "r1"."root", "r1"."kind", ("slice"."__clock_root_kind_names_3kro23qfv4"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
+FROM "slice_den"."clock_root" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_scope" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."clock_scope" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_served" ("environment", "at", "deployment") AS
+SELECT "r1"."environment", "r1"."at", "r1"."deployment"
+FROM "slice_den"."clock_served" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_sitting_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."clock_sitting_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_sitting_input" ("root", "scope", "sitting", "deadline") AS
+SELECT "r1"."root", "r1"."scope", "r1"."sitting", "r1"."deadline"
+FROM "slice_den"."clock_sitting_input" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_skipped" ("root", "scope", "by") AS
+SELECT "r1"."root", "r1"."scope", "r1"."by"
+FROM "slice_den"."clock_skipped" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_start_step" ("root", "scope", "ordinal", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
+FROM "slice_den"."clock_start_step" AS "r1";
+
+CREATE VIEW "__slice_den"."clock_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
+SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__clock_kind_names_7yqk67pwg5"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
+FROM "slice_den"."clock_step" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_admitted" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."fan_admitted" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_batch_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."fan_batch_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_batch_input" ("root", "scope", "batch", "size") AS
+SELECT "r1"."root", "r1"."scope", "r1"."batch", "r1"."size"
+FROM "slice_den"."fan_batch_input" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_claim" ("root", "step", "attempt", "until", "holds") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until", "r1"."holds"
+FROM "slice_den"."fan_claim" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_done" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."fan_done" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_dust_input" ("root", "step", "sweep") AS
+SELECT "r1"."root", "r1"."step", "r1"."sweep"
+FROM "slice_den"."fan_dust_input" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_dust_output" ("root", "step", "sweep") AS
+SELECT "r1"."root", "r1"."step", "r1"."sweep"
+FROM "slice_den"."fan_dust_output" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_ended" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."fan_ended" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_exhausted" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."fan_exhausted" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_failed" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."fan_failed" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_fan_run_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."fan_fan_run_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_fan_run_input" ("root", "scope", "batch", "size") AS
+SELECT "r1"."root", "r1"."scope", "r1"."batch", "r1"."size"
+FROM "slice_den"."fan_fan_run_input" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_fenced" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."fan_fenced" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_finish" ("root", "scope", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."step"
+FROM "slice_den"."fan_finish" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_held" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."fan_held" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_hold" ("resource", "resource_name", "root", "step", "attempt", "at", "seat") AS
+SELECT "r1"."resource", ("slice"."__fan_resource_names_tugc7yp6xo"())["r1"."resource" + 1]::"pg_catalog"."text", "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."seat"
+FROM "slice_den"."fan_hold" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_mop_input" ("root", "step", "sweep") AS
+SELECT "r1"."root", "r1"."step", "r1"."sweep"
+FROM "slice_den"."fan_mop_input" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_mop_output" ("root", "step", "sweep") AS
+SELECT "r1"."root", "r1"."step", "r1"."sweep"
+FROM "slice_den"."fan_mop_output" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_paused" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__fan_pausable_names_7t2samsp7b"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."fan_paused" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_refusal" ("root", "step", "law") AS
+SELECT "r1"."root", "r1"."step", "r1"."law"
+FROM "slice_den"."fan_refusal" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_result" ("root", "step", "outcome", "outcome_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__fan_outcome_names_7pbhseigfj"())["r1"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."fan_result" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_resumed" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__fan_pausable_names_7t2samsp7b"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."fan_resumed" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__fan_retry_why_names_shpypqrqhk"())["r1"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."fan_retry" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_root" ("root", "kind", "kind_name", "key", "at") AS
+SELECT "r1"."root", "r1"."kind", ("slice"."__fan_root_kind_names_nagupzc3sq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
+FROM "slice_den"."fan_root" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_scope" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."fan_scope" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_served" ("environment", "at", "deployment") AS
+SELECT "r1"."environment", "r1"."at", "r1"."deployment"
+FROM "slice_den"."fan_served" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_skipped" ("root", "scope", "by") AS
+SELECT "r1"."root", "r1"."scope", "r1"."by"
+FROM "slice_den"."fan_skipped" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_square_input" ("root", "step", "batch", "n") AS
+SELECT "r1"."root", "r1"."step", "r1"."batch", "r1"."n"
+FROM "slice_den"."fan_square_input" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_square_output" ("root", "step", "square") AS
+SELECT "r1"."root", "r1"."step", "r1"."square"
+FROM "slice_den"."fan_square_output" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_start_scope" ("root", "scope", "ordinal", "child") AS
+SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."child"
+FROM "slice_den"."fan_start_scope" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_start_step" ("root", "scope", "ordinal", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
+FROM "slice_den"."fan_start_step" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
+SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__fan_kind_names_rrax7ylsix"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
+FROM "slice_den"."fan_step" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_sweep_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."fan_sweep_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_sweep_input" ("root", "scope", "sweep") AS
+SELECT "r1"."root", "r1"."scope", "r1"."sweep"
+FROM "slice_den"."fan_sweep_input" AS "r1";
+
+CREATE VIEW "__slice_den"."fan_within" ("root", "scope", "parent", "kind", "kind_name") AS
+SELECT "r1"."root", "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__fan_child_kind_names_i6k53d3e2e"())["r1"."kind" + 1]::"pg_catalog"."text"
+FROM "slice_den"."fan_within" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_admitted" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."retry_admitted" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_brittle_input" ("root", "step", "key") AS
+SELECT "r1"."root", "r1"."step", "r1"."key"
+FROM "slice_den"."retry_brittle_input" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_brittle_output" ("root", "step", "key") AS
+SELECT "r1"."root", "r1"."step", "r1"."key"
+FROM "slice_den"."retry_brittle_output" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_claim" ("root", "step", "attempt", "until") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
+FROM "slice_den"."retry_claim" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_done" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."retry_done" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_ended" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."retry_ended" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_exhausted" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."retry_exhausted" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_failed" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."retry_failed" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_fenced" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."retry_fenced" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_finish" ("root", "scope", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."step"
+FROM "slice_den"."retry_finish" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_held" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."retry_held" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_ladders_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."retry_ladders_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_ladders_input" ("root", "scope", "steadfast", "brittle") AS
+SELECT "r1"."root", "r1"."scope", "r1"."steadfast", "r1"."brittle"
+FROM "slice_den"."retry_ladders_input" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_patient_input" ("root", "step", "key") AS
+SELECT "r1"."root", "r1"."step", "r1"."key"
+FROM "slice_den"."retry_patient_input" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_patient_output" ("root", "step", "key") AS
+SELECT "r1"."root", "r1"."step", "r1"."key"
+FROM "slice_den"."retry_patient_output" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_paused" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__retry_pausable_names_hen5ycf77m"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."retry_paused" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_polite_input" ("root", "step", "key") AS
+SELECT "r1"."root", "r1"."step", "r1"."key"
+FROM "slice_den"."retry_polite_input" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_polite_output" ("root", "step", "key") AS
+SELECT "r1"."root", "r1"."step", "r1"."key"
+FROM "slice_den"."retry_polite_output" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_refusal" ("root", "step", "law") AS
+SELECT "r1"."root", "r1"."step", "r1"."law"
+FROM "slice_den"."retry_refusal" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_result" ("root", "step", "outcome", "outcome_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__retry_outcome_names_zzz2kawwsa"())["r1"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."retry_result" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_resumed" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__retry_pausable_names_hen5ycf77m"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."retry_resumed" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__retry_retry_why_names_pwmdyzqghs"())["r1"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."retry_retry" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_root" ("root", "kind", "kind_name", "key", "at") AS
+SELECT "r1"."root", "r1"."kind", ("slice"."__retry_root_kind_names_bhf4onc7wq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
+FROM "slice_den"."retry_root" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_scope" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."retry_scope" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_served" ("environment", "at", "deployment") AS
+SELECT "r1"."environment", "r1"."at", "r1"."deployment"
+FROM "slice_den"."retry_served" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_skipped" ("root", "scope", "by") AS
+SELECT "r1"."root", "r1"."scope", "r1"."by"
+FROM "slice_den"."retry_skipped" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_start_step" ("root", "scope", "ordinal", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
+FROM "slice_den"."retry_start_step" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_steadfast_input" ("root", "step", "key") AS
+SELECT "r1"."root", "r1"."step", "r1"."key"
+FROM "slice_den"."retry_steadfast_input" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_steadfast_output" ("root", "step", "key") AS
+SELECT "r1"."root", "r1"."step", "r1"."key"
+FROM "slice_den"."retry_steadfast_output" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
+SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__retry_kind_names_yg2tu5rejg"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
+FROM "slice_den"."retry_step" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_throttled_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."retry_throttled_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_throttled_input" ("root", "scope", "key") AS
+SELECT "r1"."root", "r1"."scope", "r1"."key"
+FROM "slice_den"."retry_throttled_input" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_unhurried_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."retry_unhurried_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."retry_unhurried_input" ("root", "scope", "key") AS
+SELECT "r1"."root", "r1"."scope", "r1"."key"
+FROM "slice_den"."retry_unhurried_input" AS "r1";
+
+CREATE VIEW "__slice_den"."review_admitted" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."review_admitted" AS "r1";
+
+CREATE VIEW "__slice_den"."review_analyze_input" ("root", "step", "review", "group", "question") AS
+SELECT "r1"."root", "r1"."step", "r1"."review", "r1"."group", "r1"."question"
+FROM "slice_den"."review_analyze_input" AS "r1";
+
+CREATE VIEW "__slice_den"."review_analyze_output" ("root", "step", "score") AS
+SELECT "r1"."root", "r1"."step", "r1"."score"
+FROM "slice_den"."review_analyze_output" AS "r1";
+
+CREATE VIEW "__slice_den"."review_claim" ("root", "step", "attempt", "until", "holds") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until", "r1"."holds"
+FROM "slice_den"."review_claim" AS "r1";
+
+CREATE VIEW "__slice_den"."review_done" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."review_done" AS "r1";
+
+CREATE VIEW "__slice_den"."review_ended" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."review_ended" AS "r1";
+
+CREATE VIEW "__slice_den"."review_exhausted" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."review_exhausted" AS "r1";
+
+CREATE VIEW "__slice_den"."review_failed" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."review_failed" AS "r1";
+
+CREATE VIEW "__slice_den"."review_fenced" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."review_fenced" AS "r1";
+
+CREATE VIEW "__slice_den"."review_finish" ("root", "scope", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."step"
+FROM "slice_den"."review_finish" AS "r1";
+
+CREATE VIEW "__slice_den"."review_gather_input" ("root", "step", "review") AS
+SELECT "r1"."root", "r1"."step", "r1"."review"
+FROM "slice_den"."review_gather_input" AS "r1";
+
+CREATE VIEW "__slice_den"."review_gather_input_sizes" ("root", "step", "ordinal", "value") AS
+SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
+FROM "slice_den"."review_gather_input_sizes" AS "r1";
+
+CREATE VIEW "__slice_den"."review_gather_output" ("root", "step", "groups") AS
+SELECT "r1"."root", "r1"."step", "r1"."groups"
+FROM "slice_den"."review_gather_output" AS "r1";
+
+CREATE VIEW "__slice_den"."review_held" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."review_held" AS "r1";
+
+CREATE VIEW "__slice_den"."review_hold" ("resource", "resource_name", "root", "step", "attempt", "at", "seat") AS
+SELECT "r1"."resource", ("slice"."__review_resource_names_ixi3gnpcnp"())["r1"."resource" + 1]::"pg_catalog"."text", "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."seat"
+FROM "slice_den"."review_hold" AS "r1";
+
+CREATE VIEW "__slice_den"."review_paused" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__review_pausable_names_uhujnxcsz6"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."review_paused" AS "r1";
+
+CREATE VIEW "__slice_den"."review_questions_finish_output" ("root", "step", "count", "total") AS
+SELECT "r1"."root", "r1"."step", "r1"."count", "r1"."total"
+FROM "slice_den"."review_questions_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."review_questions_input" ("root", "scope", "review", "group", "size") AS
+SELECT "r1"."root", "r1"."scope", "r1"."review", "r1"."group", "r1"."size"
+FROM "slice_den"."review_questions_input" AS "r1";
+
+CREATE VIEW "__slice_den"."review_refusal" ("root", "step", "law") AS
+SELECT "r1"."root", "r1"."step", "r1"."law"
+FROM "slice_den"."review_refusal" AS "r1";
+
+CREATE VIEW "__slice_den"."review_result" ("root", "step", "outcome", "outcome_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__review_outcome_names_nlfaf7zb7f"())["r1"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."review_result" AS "r1";
+
+CREATE VIEW "__slice_den"."review_resumed" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__review_pausable_names_uhujnxcsz6"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."review_resumed" AS "r1";
+
+CREATE VIEW "__slice_den"."review_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__review_retry_why_names_4ux5dj2mh3"())["r1"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."review_retry" AS "r1";
+
+CREATE VIEW "__slice_den"."review_review_run_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."review_review_run_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."review_review_run_input" ("root", "scope", "review") AS
+SELECT "r1"."root", "r1"."scope", "r1"."review"
+FROM "slice_den"."review_review_run_input" AS "r1";
+
+CREATE VIEW "__slice_den"."review_review_run_input_sizes" ("root", "scope", "ordinal", "value") AS
+SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
+FROM "slice_den"."review_review_run_input_sizes" AS "r1";
+
+CREATE VIEW "__slice_den"."review_root" ("root", "kind", "kind_name", "key", "at") AS
+SELECT "r1"."root", "r1"."kind", ("slice"."__review_root_kind_names_uvxmjcavxb"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
+FROM "slice_den"."review_root" AS "r1";
+
+CREATE VIEW "__slice_den"."review_save_input" ("root", "step", "review", "group", "count", "total") AS
+SELECT "r1"."root", "r1"."step", "r1"."review", "r1"."group", "r1"."count", "r1"."total"
+FROM "slice_den"."review_save_input" AS "r1";
+
+CREATE VIEW "__slice_den"."review_save_output" ("root", "step", "total") AS
+SELECT "r1"."root", "r1"."step", "r1"."total"
+FROM "slice_den"."review_save_output" AS "r1";
+
+CREATE VIEW "__slice_den"."review_saved" ("root", "from", "ordinal", "to") AS
+SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
+FROM "slice_den"."review_saved" AS "r1";
+
+CREATE VIEW "__slice_den"."review_scope" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."review_scope" AS "r1";
+
+CREATE VIEW "__slice_den"."review_served" ("environment", "at", "deployment") AS
+SELECT "r1"."environment", "r1"."at", "r1"."deployment"
+FROM "slice_den"."review_served" AS "r1";
+
+CREATE VIEW "__slice_den"."review_skipped" ("root", "scope", "by") AS
+SELECT "r1"."root", "r1"."scope", "r1"."by"
+FROM "slice_den"."review_skipped" AS "r1";
+
+CREATE VIEW "__slice_den"."review_split" ("root", "from", "ordinal", "to") AS
+SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
+FROM "slice_den"."review_split" AS "r1";
+
+CREATE VIEW "__slice_den"."review_start_scope" ("root", "scope", "ordinal", "child") AS
+SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."child"
+FROM "slice_den"."review_start_scope" AS "r1";
+
+CREATE VIEW "__slice_den"."review_start_step" ("root", "scope", "ordinal", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
+FROM "slice_den"."review_start_step" AS "r1";
+
+CREATE VIEW "__slice_den"."review_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
+SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__review_kind_names_j4pukr2klj"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
+FROM "slice_den"."review_step" AS "r1";
+
+CREATE VIEW "__slice_den"."review_within" ("root", "scope", "parent", "kind", "kind_name") AS
+SELECT "r1"."root", "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__review_child_kind_names_jn3iwx7yal"())["r1"."kind" + 1]::"pg_catalog"."text"
+FROM "slice_den"."review_within" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_admitted" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."sync_admitted" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_build_input" ("root", "step", "build") AS
+SELECT "r1"."root", "r1"."step", "r1"."build"
+FROM "slice_den"."sync_build_input" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_build_output" ("root", "step", "build") AS
+SELECT "r1"."root", "r1"."step", "r1"."build"
+FROM "slice_den"."sync_build_output" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_claim" ("root", "step", "attempt", "until") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
+FROM "slice_den"."sync_claim" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_copy_input" ("root", "step", "relation", "run") AS
+SELECT "r1"."root", "r1"."step", "r1"."relation", "r1"."run"
+FROM "slice_den"."sync_copy_input" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_copy_output" ("root", "step", "run") AS
+SELECT "r1"."root", "r1"."step", "r1"."run"
+FROM "slice_den"."sync_copy_output" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_done" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."sync_done" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_ended" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."sync_ended" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_exclusive" ("kind", "kind_name", "key", "turn", "scope") AS
+SELECT "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."turn", "r1"."scope"
+FROM "slice_den"."sync_exclusive" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_exclusive_key" ("root", "scope", "key", "id") AS
+SELECT "r1"."root", "r1"."scope", "r1"."key", "r1"."id"
+FROM "slice_den"."sync_exclusive_key" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_exhausted" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."sync_exhausted" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_failed" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."sync_failed" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_fenced" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."sync_fenced" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_finish" ("root", "scope", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."step"
+FROM "slice_den"."sync_finish" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_gold_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."sync_gold_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_gold_input" ("root", "scope", "build") AS
+SELECT "r1"."root", "r1"."scope", "r1"."build"
+FROM "slice_den"."sync_gold_input" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_held" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."sync_held" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_paused" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__sync_pausable_names_3hzpsqgfjl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."sync_paused" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_refusal" ("root", "step", "law") AS
+SELECT "r1"."root", "r1"."step", "r1"."law"
+FROM "slice_den"."sync_refusal" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_released" ("kind", "kind_name", "key", "turn") AS
+SELECT "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."turn"
+FROM "slice_den"."sync_released" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_result" ("root", "step", "outcome", "outcome_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__sync_outcome_names_xzb4y4xgki"())["r1"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."sync_result" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_resumed" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__sync_pausable_names_3hzpsqgfjl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."sync_resumed" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__sync_retry_why_names_o3uvvn3247"())["r1"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."sync_retry" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_root" ("root", "kind", "kind_name", "key", "at") AS
+SELECT "r1"."root", "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
+FROM "slice_den"."sync_root" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_scope" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."sync_scope" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_served" ("environment", "at", "deployment") AS
+SELECT "r1"."environment", "r1"."at", "r1"."deployment"
+FROM "slice_den"."sync_served" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_skipped" ("root", "scope", "by") AS
+SELECT "r1"."root", "r1"."scope", "r1"."by"
+FROM "slice_den"."sync_skipped" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_start_step" ("root", "scope", "ordinal", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
+FROM "slice_den"."sync_start_step" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
+SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__sync_kind_names_oq6b66cstu"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
+FROM "slice_den"."sync_step" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_sync_run_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."sync_sync_run_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."sync_sync_run_input" ("root", "scope", "relation", "run") AS
+SELECT "r1"."root", "r1"."scope", "r1"."relation", "r1"."run"
+FROM "slice_den"."sync_sync_run_input" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_admitted" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."writeback_admitted" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_claim" ("root", "step", "attempt", "until") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
+FROM "slice_den"."writeback_claim" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_deliver_input" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."writeback_deliver_input" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_deliver_output" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."writeback_deliver_output" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_done" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."writeback_done" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_ended" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."writeback_ended" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_exhausted" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."writeback_exhausted" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_failed" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."writeback_failed" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_fenced" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."writeback_fenced" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_finish" ("root", "scope", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."step"
+FROM "slice_den"."writeback_finish" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_held" ("root", "step", "attempt") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt"
+FROM "slice_den"."writeback_held" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_paused" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__writeback_pausable_names_mqzeerbulh"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."writeback_paused" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_refusal" ("root", "step", "law") AS
+SELECT "r1"."root", "r1"."step", "r1"."law"
+FROM "slice_den"."writeback_refusal" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_result" ("root", "step", "outcome", "outcome_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__writeback_outcome_names_oq43xsnmec"())["r1"."outcome" + 1]::"pg_catalog"."text"
+FROM "slice_den"."writeback_result" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_resumed" ("target", "target_name", "turn") AS
+SELECT "r1"."target", ("slice"."__writeback_pausable_names_mqzeerbulh"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
+FROM "slice_den"."writeback_resumed" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
+SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__writeback_retry_why_names_7a7eowjbic"())["r1"."why" + 1]::"pg_catalog"."text"
+FROM "slice_den"."writeback_retry" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_root" ("root", "kind", "kind_name", "key", "at") AS
+SELECT "r1"."root", "r1"."kind", ("slice"."__writeback_root_kind_names_bz7cmi256x"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
+FROM "slice_den"."writeback_root" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_scope" ("root", "scope") AS
+SELECT "r1"."root", "r1"."scope"
+FROM "slice_den"."writeback_scope" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_served" ("environment", "at", "deployment") AS
+SELECT "r1"."environment", "r1"."at", "r1"."deployment"
+FROM "slice_den"."writeback_served" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_skipped" ("root", "scope", "by") AS
+SELECT "r1"."root", "r1"."scope", "r1"."by"
+FROM "slice_den"."writeback_skipped" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_start_step" ("root", "scope", "ordinal", "step") AS
+SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
+FROM "slice_den"."writeback_start_step" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
+SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__writeback_kind_names_dbe6fofbjq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
+FROM "slice_den"."writeback_step" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_writeback_finish_output" ("root", "step") AS
+SELECT "r1"."root", "r1"."step"
+FROM "slice_den"."writeback_writeback_finish_output" AS "r1";
+
+CREATE VIEW "__slice_den"."writeback_writeback_input" ("root", "scope", "attempt") AS
+SELECT "r1"."root", "r1"."scope", "r1"."attempt"
+FROM "slice_den"."writeback_writeback_input" AS "r1";
 
 CREATE VIEW "slice_seats__fan_coordinator"."fan_live" ("attempt", "resource", "resource_name", "root", "seat", "step", "until") WITH (security_barrier) AS
 SELECT "r17"."c58", "r17"."c59", ("slice"."__fan_resource_names_tugc7yp6xo"())["r17"."c59" + 1]::"pg_catalog"."text", "r17"."c60", "r17"."c61", "r17"."c62", "r17"."c63"
 FROM (SELECT "r16"."c52", "r16"."c53", "r16"."c54", "r16"."c55", "r16"."c56", "r16"."c57" FROM (SELECT "r15"."c50", "r15"."c46", "r15"."c49", "r15"."c47", "r15"."c48", "r15"."c51" FROM (SELECT "r14"."c41", "r14"."c43", "r14"."c44", "r14"."c42", "r14"."c40", "r14"."c45" FROM (SELECT "r10"."c28", "r10"."c29", "r10"."c30", "r10"."c31", "r10"."c32", "r10"."c33" FROM (SELECT "r6"."c16", "r6"."c17", "r6"."c18", "r6"."c19", "r6"."c20", "r6"."c21" FROM (SELECT "r5"."c12", "r5"."c13", "r5"."c11", "r5"."c14", "r5"."c10", "r5"."c15" FROM (SELECT "r2"."c5", "r2"."c3", "r2"."c1", "r2"."c2", "r2"."c4", "r4"."c9" FROM (SELECT "r1"."attempt", "r1"."resource", "r1"."root", "r1"."seat", "r1"."step" FROM "slice_den"."fan_hold" AS "r1") AS "r2"("c1", "c2", "c3", "c4", "c5"), (SELECT "r3"."attempt", "r3"."root", "r3"."step", "r3"."until" FROM "slice_den"."fan_claim" AS "r3") AS "r4"("c6", "c7", "c8", "c9") WHERE "r2"."c1" = "r4"."c6" AND "r2"."c3" = "r4"."c7" AND "r2"."c5" = "r4"."c8") AS "r5"("c10", "c11", "c12", "c13", "c14", "c15")) AS "r6"("c16", "c17", "c18", "c19", "c20", "c21") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r8"."c22", "r8"."c23", "r8"."c24" FROM (SELECT "r7"."attempt", "r7"."root", "r7"."step" FROM "slice_den"."fan_ended" AS "r7") AS "r8"("c22", "c23", "c24")) AS "r9"("c25", "c26", "c27") WHERE "r9"."c25" = "r6"."c16" AND "r9"."c26" = "r6"."c18" AND "r9"."c27" = "r6"."c20")) AS "r10"("c28", "c29", "c30", "c31", "c32", "c33") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r12"."c34", "r12"."c35", "r12"."c36" FROM (SELECT "r11"."attempt", "r11"."root", "r11"."step" FROM "slice_den"."fan_held" AS "r11") AS "r12"("c34", "c35", "c36")) AS "r13"("c37", "c38", "c39") WHERE "r13"."c37" = "r10"."c28" AND "r13"."c38" = "r10"."c30" AND "r13"."c39" = "r10"."c32")) AS "r14"("c40", "c41", "c42", "c43", "c44", "c45")) AS "r15"("c46", "c47", "c48", "c49", "c50", "c51")) AS "r16"("c52", "c53", "c54", "c55", "c56", "c57")) AS "r17"("c58", "c59", "c60", "c61", "c62", "c63");
 
-CREATE VIEW "slice_seats__fan_coordinator"."fan_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__fan_pausable_names_7t2samsp7b"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."fan_paused" AS "r1";
-
-CREATE VIEW "slice_seats__fan_coordinator"."fan_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__fan_pausable_names_7t2samsp7b"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."fan_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__fan_coordinator"."fan_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."fan_served" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."fan_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_batch_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_batch_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_batch_input" ("root", "scope", "batch", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."batch", "r1"."size"
-FROM "slice_den"."fan_batch_input" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_claim" ("root", "step", "attempt", "until", "holds") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until", "r1"."holds"
-FROM "slice_den"."fan_claim" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_done" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_dust_input" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."fan_dust_input" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_dust_output" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."fan_dust_output" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."fan_ended" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_failed" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_fan_run_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_fan_run_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_fan_run_input" ("root", "scope", "batch", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."batch", "r1"."size"
-FROM "slice_den"."fan_fan_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."fan_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."fan_finish" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."fan_held" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_hold" ("resource", "resource_name", "root", "step", "attempt", "at", "seat") AS
-SELECT "r1"."resource", ("slice"."__fan_resource_names_tugc7yp6xo"())["r1"."resource" + 1]::"pg_catalog"."text", "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."seat"
-FROM "slice_den"."fan_hold" AS "r1";
-
 CREATE VIEW "slice_seats__fan_den"."fan_live" ("attempt", "resource", "resource_name", "root", "seat", "step", "until") WITH (security_barrier) AS
 SELECT "r17"."c58", "r17"."c59", ("slice"."__fan_resource_names_tugc7yp6xo"())["r17"."c59" + 1]::"pg_catalog"."text", "r17"."c60", "r17"."c61", "r17"."c62", "r17"."c63"
 FROM (SELECT "r16"."c52", "r16"."c53", "r16"."c54", "r16"."c55", "r16"."c56", "r16"."c57" FROM (SELECT "r15"."c50", "r15"."c46", "r15"."c49", "r15"."c47", "r15"."c48", "r15"."c51" FROM (SELECT "r14"."c41", "r14"."c43", "r14"."c44", "r14"."c42", "r14"."c40", "r14"."c45" FROM (SELECT "r10"."c28", "r10"."c29", "r10"."c30", "r10"."c31", "r10"."c32", "r10"."c33" FROM (SELECT "r6"."c16", "r6"."c17", "r6"."c18", "r6"."c19", "r6"."c20", "r6"."c21" FROM (SELECT "r5"."c12", "r5"."c13", "r5"."c11", "r5"."c14", "r5"."c10", "r5"."c15" FROM (SELECT "r2"."c5", "r2"."c3", "r2"."c1", "r2"."c2", "r2"."c4", "r4"."c9" FROM (SELECT "r1"."attempt", "r1"."resource", "r1"."root", "r1"."seat", "r1"."step" FROM "slice_den"."fan_hold" AS "r1") AS "r2"("c1", "c2", "c3", "c4", "c5"), (SELECT "r3"."attempt", "r3"."root", "r3"."step", "r3"."until" FROM "slice_den"."fan_claim" AS "r3") AS "r4"("c6", "c7", "c8", "c9") WHERE "r2"."c1" = "r4"."c6" AND "r2"."c3" = "r4"."c7" AND "r2"."c5" = "r4"."c8") AS "r5"("c10", "c11", "c12", "c13", "c14", "c15")) AS "r6"("c16", "c17", "c18", "c19", "c20", "c21") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r8"."c22", "r8"."c23", "r8"."c24" FROM (SELECT "r7"."attempt", "r7"."root", "r7"."step" FROM "slice_den"."fan_ended" AS "r7") AS "r8"("c22", "c23", "c24")) AS "r9"("c25", "c26", "c27") WHERE "r9"."c25" = "r6"."c16" AND "r9"."c26" = "r6"."c18" AND "r9"."c27" = "r6"."c20")) AS "r10"("c28", "c29", "c30", "c31", "c32", "c33") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r12"."c34", "r12"."c35", "r12"."c36" FROM (SELECT "r11"."attempt", "r11"."root", "r11"."step" FROM "slice_den"."fan_held" AS "r11") AS "r12"("c34", "c35", "c36")) AS "r13"("c37", "c38", "c39") WHERE "r13"."c37" = "r10"."c28" AND "r13"."c38" = "r10"."c30" AND "r13"."c39" = "r10"."c32")) AS "r14"("c40", "c41", "c42", "c43", "c44", "c45")) AS "r15"("c46", "c47", "c48", "c49", "c50", "c51")) AS "r16"("c52", "c53", "c54", "c55", "c56", "c57")) AS "r17"("c58", "c59", "c60", "c61", "c62", "c63");
-
-CREATE VIEW "slice_seats__fan_den"."fan_mop_input" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."fan_mop_input" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_mop_output" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."fan_mop_output" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__fan_pausable_names_7t2samsp7b"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."fan_paused" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."fan_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__fan_outcome_names_7pbhseigfj"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."fan_result" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__fan_pausable_names_7t2samsp7b"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."fan_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__fan_retry_why_names_shpypqrqhk"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."fan_retry" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__fan_root_kind_names_nagupzc3sq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."fan_root" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."fan_scope" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."fan_served" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."fan_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_square_input" ("root", "step", "batch", "n") AS
-SELECT "r1"."root", "r1"."step", "r1"."batch", "r1"."n"
-FROM "slice_den"."fan_square_input" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_square_output" ("root", "step", "square") AS
-SELECT "r1"."root", "r1"."step", "r1"."square"
-FROM "slice_den"."fan_square_output" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_start_scope" ("root", "scope", "ordinal", "child") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."child"
-FROM "slice_den"."fan_start_scope" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."fan_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__fan_kind_names_rrax7ylsix"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."fan_step" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_sweep_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_sweep_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_sweep_input" ("root", "scope", "sweep") AS
-SELECT "r1"."root", "r1"."scope", "r1"."sweep"
-FROM "slice_den"."fan_sweep_input" AS "r1";
-
-CREATE VIEW "slice_seats__fan_den"."fan_within" ("root", "scope", "parent", "kind", "kind_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__fan_child_kind_names_i6k53d3e2e"())["r1"."kind" + 1]::"pg_catalog"."text"
-FROM "slice_den"."fan_within" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."fan_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_batch_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_batch_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_batch_input" ("root", "scope", "batch", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."batch", "r1"."size"
-FROM "slice_den"."fan_batch_input" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_claim" ("root", "step", "attempt", "until", "holds") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until", "r1"."holds"
-FROM "slice_den"."fan_claim" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_done" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_dust_input" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."fan_dust_input" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_dust_output" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."fan_dust_output" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."fan_ended" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_failed" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_fan_run_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_fan_run_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_fan_run_input" ("root", "scope", "batch", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."batch", "r1"."size"
-FROM "slice_den"."fan_fan_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."fan_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."fan_finish" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."fan_held" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_hold" ("resource", "resource_name", "root", "step", "attempt", "at", "seat") AS
-SELECT "r1"."resource", ("slice"."__fan_resource_names_tugc7yp6xo"())["r1"."resource" + 1]::"pg_catalog"."text", "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."seat"
-FROM "slice_den"."fan_hold" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_mop_input" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."fan_mop_input" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_mop_output" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."fan_mop_output" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."fan_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__fan_outcome_names_7pbhseigfj"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."fan_result" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__fan_retry_why_names_shpypqrqhk"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."fan_retry" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__fan_root_kind_names_nagupzc3sq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."fan_root" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."fan_scope" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."fan_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_square_input" ("root", "step", "batch", "n") AS
-SELECT "r1"."root", "r1"."step", "r1"."batch", "r1"."n"
-FROM "slice_den"."fan_square_input" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_square_output" ("root", "step", "square") AS
-SELECT "r1"."root", "r1"."step", "r1"."square"
-FROM "slice_den"."fan_square_output" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_start_scope" ("root", "scope", "ordinal", "child") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."child"
-FROM "slice_den"."fan_start_scope" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."fan_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__fan_kind_names_rrax7ylsix"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."fan_step" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_sweep_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_sweep_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_sweep_input" ("root", "scope", "sweep") AS
-SELECT "r1"."root", "r1"."scope", "r1"."sweep"
-FROM "slice_den"."fan_sweep_input" AS "r1";
-
-CREATE VIEW "slice_seats__fan_retirer"."fan_within" ("root", "scope", "parent", "kind", "kind_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__fan_child_kind_names_i6k53d3e2e"())["r1"."kind" + 1]::"pg_catalog"."text"
-FROM "slice_den"."fan_within" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."assign_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_asked" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."assign_asked" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_assignment_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_assignment_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_assignment_input" ("root", "scope", "learner", "topic", "mode", "mode_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."learner", "r1"."topic", "r1"."mode", ("slice"."__assign_assignment_input_mode_names_w3ldolcqbb"())["r1"."mode" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_assignment_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_assignment_input_exclude" ("root", "scope", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_assignment_input_exclude" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_assignment_input_mode_nearest" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."assign_assignment_input_mode_nearest" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_assignment_input_mode_within" ("root", "scope", "radius") AS
-SELECT "r1"."root", "r1"."scope", "r1"."radius"
-FROM "slice_den"."assign_assignment_input_mode_within" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_assignment_input_near" ("root", "scope", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_assignment_input_near" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."assign_claim" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_decide_input" ("root", "step", "learner", "topic", "vector", "mode", "mode_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."learner", "r1"."topic", "r1"."vector", "r1"."mode", ("slice"."__assign_decide_input_mode_names_zoydpw665o"())["r1"."mode" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_decide_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_decide_input_exclude" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_decide_input_exclude" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_decide_input_mode_nearest" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_decide_input_mode_nearest" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_decide_input_mode_within" ("root", "step", "radius") AS
-SELECT "r1"."root", "r1"."step", "r1"."radius"
-FROM "slice_den"."assign_decide_input_mode_within" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_decide_output" ("root", "step", "confidence", "stage", "stage_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."confidence", "r1"."stage", ("slice"."__assign_decide_output_stage_names_ehhgk5bunv"())["r1"."stage" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_decide_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_decide_output_stage_rest" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_decide_output_stage_rest" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_decide_output_stage_serve" ("root", "step", "passage", "distance") AS
-SELECT "r1"."root", "r1"."step", "r1"."passage", "r1"."distance"
-FROM "slice_den"."assign_decide_output_stage_serve" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_decide_output_weighed" ("root", "step", "ordinal", "passage", "distance", "passed") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."passage", "r1"."distance", "r1"."passed"
-FROM "slice_den"."assign_decide_output_weighed" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_decide_read_nearest" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."assign_decide_read_nearest" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_decide_read_nearest_row" ("digest", "passage", "topic", "distance") AS
-SELECT "r1"."digest", "r1"."passage", "r1"."topic", "r1"."distance"
-FROM "slice_den"."assign_decide_read_nearest_row" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_decide_read_seen" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."assign_decide_read_seen" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_decide_read_seen_row" ("digest", "learner", "passage") AS
-SELECT "r1"."digest", "r1"."learner", "r1"."passage"
-FROM "slice_den"."assign_decide_read_seen_row" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_done" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_embed_input" ("root", "step", "learner", "topic", "mode", "mode_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."learner", "r1"."topic", "r1"."mode", ("slice"."__assign_embed_input_mode_names_5jkwmsqq3r"())["r1"."mode" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_embed_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_embed_input_exclude" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_embed_input_exclude" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_embed_input_mode_nearest" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_embed_input_mode_nearest" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_embed_input_mode_within" ("root", "step", "radius") AS
-SELECT "r1"."root", "r1"."step", "r1"."radius"
-FROM "slice_den"."assign_embed_input_mode_within" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_embed_input_near" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."assign_embed_input_near" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_embed_output" ("root", "step", "vector") AS
-SELECT "r1"."root", "r1"."step", "r1"."vector"
-FROM "slice_den"."assign_embed_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."assign_ended" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."assign_failed" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."assign_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."assign_finish" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."assign_held" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."assign_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__assign_outcome_names_2mccfiah6k"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_result" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__assign_retry_why_names_5ckzenntb2"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."assign_retry" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__assign_root_kind_names_opbaefdfbo"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."assign_root" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."assign_scope" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."assign_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."assign_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assign_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__assign_kind_names_rtvscvwquk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."assign_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."assigned" ("learner", "passage") AS
-SELECT "r1"."learner", "r1"."passage"
-FROM "slice"."assigned" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."built" ("build") AS
-SELECT "r1"."build"
-FROM "slice"."built" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."chain_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_chain_run_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_chain_run_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_chain_run_input" ("root", "scope", "feed", "feed_name", "pages") AS
-SELECT "r1"."root", "r1"."scope", "r1"."feed", ("slice"."__chain_chain_run_input_feed_names_byxgsvzik7"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages"
-FROM "slice_den"."chain_chain_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."chain_claim" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_done" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_ended" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_failed" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."chain_finish" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."chain_held" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_next" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."chain_next" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_ordered_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."chain_ordered_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_ordered_input" ("root", "scope", "feed", "feed_name", "pages") AS
-SELECT "r1"."root", "r1"."scope", "r1"."feed", ("slice"."__chain_ordered_input_feed_names_dwtixlgyrd"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."pages"
-FROM "slice_den"."chain_ordered_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_page_input" ("root", "step", "feed", "feed_name", "seq", "pages") AS
-SELECT "r1"."root", "r1"."step", "r1"."feed", ("slice"."__chain_page_input_feed_names_dxuyhzkiur"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."pages"
-FROM "slice_den"."chain_page_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_page_input_after" ("root", "step", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."value"
-FROM "slice_den"."chain_page_input_after" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_page_output" ("root", "step", "seq", "items", "earlier") AS
-SELECT "r1"."root", "r1"."step", "r1"."seq", "r1"."items", "r1"."earlier"
-FROM "slice_den"."chain_page_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_page_output_next" ("root", "step", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."value"
-FROM "slice_den"."chain_page_output_next" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_page_read_earlier" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."chain_page_read_earlier" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_page_read_earlier_row" ("digest", "feed", "feed_name", "seq", "n") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
-FROM "slice_den"."chain_page_read_earlier_row" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_page_read_tree" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."chain_page_read_tree" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_page_read_tree_items" ("digest", "at", "feed", "feed_name", "seq", "n") AS
-SELECT "r1"."digest", "r1"."at", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
-FROM "slice_den"."chain_page_read_tree_items" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_page_read_tree_row" ("digest", "feed", "feed_name", "factor", "items") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor", "r1"."items"
-FROM "slice_den"."chain_page_read_tree_row" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_page_read_weights" ("root", "step", "ordinal", "digest") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."digest"
-FROM "slice_den"."chain_page_read_weights" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_page_read_weights_row" ("digest", "feed", "feed_name", "factor") AS
-SELECT "r1"."digest", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor"
-FROM "slice_den"."chain_page_read_weights_row" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_page_tree_first" ("digest", "at") AS
-SELECT "r1"."digest", "r1"."at"
-FROM "slice_den"."chain_page_tree_first" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."chain_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__chain_outcome_names_vo4tgqx6qh"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."chain_result" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__chain_retry_why_names_zmog33hzfy"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."chain_retry" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__chain_root_kind_names_ndmuh43zki"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."chain_root" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."chain_scope" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."chain_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."chain_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chain_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__chain_kind_names_oubqrwjyau"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."chain_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."chimed" ("hour", "bell", "bell_name") AS
-SELECT "r1"."hour", "r1"."bell", ("slice"."__bell_names_aiqi4uostx"())["r1"."bell" + 1]::"pg_catalog"."text"
-FROM "slice"."chimed" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."clock_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_chime_input" ("root", "step", "hour", "bell", "bell_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."hour", "r1"."bell", ("slice"."__clock_chime_input_bell_names_nkzi4dgaig"())["r1"."bell" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_chime_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_chime_output" ("root", "step", "hour", "bell", "bell_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."hour", "r1"."bell", ("slice"."__clock_chime_output_bell_names_tzmx63kpb4"())["r1"."bell" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_chime_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."clock_claim" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_close_input" ("root", "step", "sitting", "deadline") AS
-SELECT "r1"."root", "r1"."step", "r1"."sitting", "r1"."deadline"
-FROM "slice_den"."clock_close_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_close_output" ("root", "step", "sitting", "deadline") AS
-SELECT "r1"."root", "r1"."step", "r1"."sitting", "r1"."deadline"
-FROM "slice_den"."clock_close_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_done" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."clock_ended" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_failed" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."clock_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."clock_finish" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."clock_held" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_hourly_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_hourly_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_hourly_input" ("root", "scope", "hour", "bell", "bell_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."hour", "r1"."bell", ("slice"."__clock_hourly_input_bell_names_vugtqsvsug"())["r1"."bell" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_hourly_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."clock_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__clock_outcome_names_rqtqczot4q"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_result" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__clock_retry_why_names_pjdgx4s6a4"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."clock_retry" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__clock_root_kind_names_3kro23qfv4"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."clock_root" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."clock_scope" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_sitting_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."clock_sitting_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_sitting_input" ("root", "scope", "sitting", "deadline") AS
-SELECT "r1"."root", "r1"."scope", "r1"."sitting", "r1"."deadline"
-FROM "slice_den"."clock_sitting_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."clock_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."clock_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."clock_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__clock_kind_names_7yqk67pwg5"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."clock_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."concluded" ("learner", "served", "weighed") AS
-SELECT "r1"."learner", "r1"."served", "r1"."weighed"
-FROM "slice"."concluded" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."copied" ("relation", "run") AS
-SELECT "r1"."relation", "r1"."run"
-FROM "slice"."copied" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."cursor" ("feed", "feed_name", "position") AS
-SELECT "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."position"
-FROM "slice"."cursor" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."delivered" ("attempt") AS
-SELECT "r1"."attempt"
-FROM "slice"."delivered" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."fan_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_batch_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_batch_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_batch_input" ("root", "scope", "batch", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."batch", "r1"."size"
-FROM "slice_den"."fan_batch_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_claim" ("root", "step", "attempt", "until", "holds") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until", "r1"."holds"
-FROM "slice_den"."fan_claim" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_done" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_dust_input" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."fan_dust_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_dust_output" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."fan_dust_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."fan_ended" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_failed" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_fan_run_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_fan_run_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_fan_run_input" ("root", "scope", "batch", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."batch", "r1"."size"
-FROM "slice_den"."fan_fan_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."fan_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."fan_finish" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."fan_held" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_hold" ("resource", "resource_name", "root", "step", "attempt", "at", "seat") AS
-SELECT "r1"."resource", ("slice"."__fan_resource_names_tugc7yp6xo"())["r1"."resource" + 1]::"pg_catalog"."text", "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."seat"
-FROM "slice_den"."fan_hold" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_mop_input" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."fan_mop_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_mop_output" ("root", "step", "sweep") AS
-SELECT "r1"."root", "r1"."step", "r1"."sweep"
-FROM "slice_den"."fan_mop_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."fan_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__fan_outcome_names_7pbhseigfj"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."fan_result" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__fan_retry_why_names_shpypqrqhk"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."fan_retry" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__fan_root_kind_names_nagupzc3sq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."fan_root" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."fan_scope" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."fan_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_square_input" ("root", "step", "batch", "n") AS
-SELECT "r1"."root", "r1"."step", "r1"."batch", "r1"."n"
-FROM "slice_den"."fan_square_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_square_output" ("root", "step", "square") AS
-SELECT "r1"."root", "r1"."step", "r1"."square"
-FROM "slice_den"."fan_square_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_start_scope" ("root", "scope", "ordinal", "child") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."child"
-FROM "slice_den"."fan_start_scope" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."fan_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__fan_kind_names_rrax7ylsix"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."fan_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_sweep_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."fan_sweep_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_sweep_input" ("root", "scope", "sweep") AS
-SELECT "r1"."root", "r1"."scope", "r1"."sweep"
-FROM "slice_den"."fan_sweep_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."fan_within" ("root", "scope", "parent", "kind", "kind_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__fan_child_kind_names_i6k53d3e2e"())["r1"."kind" + 1]::"pg_catalog"."text"
-FROM "slice_den"."fan_within" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."heard" ("key", "answered") AS
-SELECT "r1"."key", "r1"."answered"
-FROM "slice"."heard" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."item" ("feed", "feed_name", "seq", "n") AS
-SELECT "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."seq", "r1"."n"
-FROM "slice"."item" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."order" ("order", "feed", "feed_name") AS
-SELECT "r1"."order", "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text"
-FROM "slice"."order" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."passage" ("passage", "topic", "embedding") AS
-SELECT "r1"."passage", "r1"."topic", "r1"."embedding"
-FROM "slice"."passage" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."retry_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_brittle_input" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_brittle_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_brittle_output" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_brittle_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."retry_claim" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_done" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."retry_ended" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_failed" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."retry_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."retry_finish" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."retry_held" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_ladders_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_ladders_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_ladders_input" ("root", "scope", "steadfast", "brittle") AS
-SELECT "r1"."root", "r1"."scope", "r1"."steadfast", "r1"."brittle"
-FROM "slice_den"."retry_ladders_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_patient_input" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_patient_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_patient_output" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_patient_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_polite_input" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_polite_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_polite_output" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_polite_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."retry_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__retry_outcome_names_zzz2kawwsa"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."retry_result" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__retry_retry_why_names_pwmdyzqghs"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."retry_retry" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__retry_root_kind_names_bhf4onc7wq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."retry_root" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."retry_scope" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."retry_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."retry_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_steadfast_input" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_steadfast_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_steadfast_output" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_steadfast_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__retry_kind_names_yg2tu5rejg"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."retry_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_throttled_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_throttled_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_throttled_input" ("root", "scope", "key") AS
-SELECT "r1"."root", "r1"."scope", "r1"."key"
-FROM "slice_den"."retry_throttled_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_unhurried_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_unhurried_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."retry_unhurried_input" ("root", "scope", "key") AS
-SELECT "r1"."root", "r1"."scope", "r1"."key"
-FROM "slice_den"."retry_unhurried_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."review_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_analyze_input" ("root", "step", "review", "group", "question") AS
-SELECT "r1"."root", "r1"."step", "r1"."review", "r1"."group", "r1"."question"
-FROM "slice_den"."review_analyze_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_analyze_output" ("root", "step", "score") AS
-SELECT "r1"."root", "r1"."step", "r1"."score"
-FROM "slice_den"."review_analyze_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_claim" ("root", "step", "attempt", "until", "holds") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until", "r1"."holds"
-FROM "slice_den"."review_claim" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_done" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."review_ended" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_failed" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."review_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."review_finish" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_gather_input" ("root", "step", "review") AS
-SELECT "r1"."root", "r1"."step", "r1"."review"
-FROM "slice_den"."review_gather_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_gather_input_sizes" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."review_gather_input_sizes" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_gather_output" ("root", "step", "groups") AS
-SELECT "r1"."root", "r1"."step", "r1"."groups"
-FROM "slice_den"."review_gather_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."review_held" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_hold" ("resource", "resource_name", "root", "step", "attempt", "at", "seat") AS
-SELECT "r1"."resource", ("slice"."__review_resource_names_ixi3gnpcnp"())["r1"."resource" + 1]::"pg_catalog"."text", "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."seat"
-FROM "slice_den"."review_hold" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_questions_finish_output" ("root", "step", "count", "total") AS
-SELECT "r1"."root", "r1"."step", "r1"."count", "r1"."total"
-FROM "slice_den"."review_questions_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_questions_input" ("root", "scope", "review", "group", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."review", "r1"."group", "r1"."size"
-FROM "slice_den"."review_questions_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."review_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__review_outcome_names_nlfaf7zb7f"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."review_result" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__review_retry_why_names_4ux5dj2mh3"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."review_retry" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_review_run_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_review_run_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_review_run_input" ("root", "scope", "review") AS
-SELECT "r1"."root", "r1"."scope", "r1"."review"
-FROM "slice_den"."review_review_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_review_run_input_sizes" ("root", "scope", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."review_review_run_input_sizes" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__review_root_kind_names_uvxmjcavxb"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."review_root" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_save_input" ("root", "step", "review", "group", "count", "total") AS
-SELECT "r1"."root", "r1"."step", "r1"."review", "r1"."group", "r1"."count", "r1"."total"
-FROM "slice_den"."review_save_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_save_output" ("root", "step", "total") AS
-SELECT "r1"."root", "r1"."step", "r1"."total"
-FROM "slice_den"."review_save_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_saved" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."review_saved" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."review_scope" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."review_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_split" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."review_split" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_start_scope" ("root", "scope", "ordinal", "child") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."child"
-FROM "slice_den"."review_start_scope" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."review_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__review_kind_names_j4pukr2klj"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."review_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."review_within" ("root", "scope", "parent", "kind", "kind_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__review_child_kind_names_jn3iwx7yal"())["r1"."kind" + 1]::"pg_catalog"."text"
-FROM "slice_den"."review_within" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."reviewed" ("review", "group", "count", "total") AS
-SELECT "r1"."review", "r1"."group", "r1"."count", "r1"."total"
-FROM "slice"."reviewed" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."seen" ("learner", "passage") AS
-SELECT "r1"."learner", "r1"."passage"
-FROM "slice"."seen" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."settled" ("batch") AS
-SELECT "r1"."batch"
-FROM "slice"."settled" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."summary" ("review", "groups", "total") AS
-SELECT "r1"."review", "r1"."groups", "r1"."total"
-FROM "slice"."summary" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."sync_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_build_input" ("root", "step", "build") AS
-SELECT "r1"."root", "r1"."step", "r1"."build"
-FROM "slice_den"."sync_build_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_build_output" ("root", "step", "build") AS
-SELECT "r1"."root", "r1"."step", "r1"."build"
-FROM "slice_den"."sync_build_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."sync_claim" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_copy_input" ("root", "step", "relation", "run") AS
-SELECT "r1"."root", "r1"."step", "r1"."relation", "r1"."run"
-FROM "slice_den"."sync_copy_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_copy_output" ("root", "step", "run") AS
-SELECT "r1"."root", "r1"."step", "r1"."run"
-FROM "slice_den"."sync_copy_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_done" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."sync_ended" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_exclusive_key" ("root", "scope", "key", "id") AS
-SELECT "r1"."root", "r1"."scope", "r1"."key", "r1"."id"
-FROM "slice_den"."sync_exclusive_key" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_failed" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."sync_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."sync_finish" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_gold_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_gold_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_gold_input" ("root", "scope", "build") AS
-SELECT "r1"."root", "r1"."scope", "r1"."build"
-FROM "slice_den"."sync_gold_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."sync_held" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."sync_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__sync_outcome_names_xzb4y4xgki"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."sync_result" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__sync_retry_why_names_o3uvvn3247"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."sync_retry" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."sync_root" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."sync_scope" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."sync_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."sync_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__sync_kind_names_oq6b66cstu"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."sync_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_sync_run_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_sync_run_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."sync_sync_run_input" ("root", "scope", "relation", "run") AS
-SELECT "r1"."root", "r1"."scope", "r1"."relation", "r1"."run"
-FROM "slice_den"."sync_sync_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."tally" ("batch", "count", "total") AS
-SELECT "r1"."batch", "r1"."count", "r1"."total"
-FROM "slice"."tally" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."weight" ("feed", "feed_name", "factor") AS
-SELECT "r1"."feed", ("slice"."__feed_names_azjbqebc6i"())["r1"."feed" + 1]::"pg_catalog"."text", "r1"."factor"
-FROM "slice"."weight" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."writeback_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."writeback_claim" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_deliver_input" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_deliver_input" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_deliver_output" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_deliver_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_done" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_ended" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_failed" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."writeback_finish" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_held" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."writeback_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__writeback_outcome_names_oq43xsnmec"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."writeback_result" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__writeback_retry_why_names_7a7eowjbic"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."writeback_retry" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__writeback_root_kind_names_bz7cmi256x"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."writeback_root" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."writeback_scope" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."writeback_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."writeback_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__writeback_kind_names_dbe6fofbjq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."writeback_step" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_writeback_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_writeback_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__loader"."writeback_writeback_input" ("root", "scope", "attempt") AS
-SELECT "r1"."root", "r1"."scope", "r1"."attempt"
-FROM "slice_den"."writeback_writeback_input" AS "r1";
-
-CREATE VIEW "slice_seats__retry_coordinator"."retry_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__retry_pausable_names_hen5ycf77m"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."retry_paused" AS "r1";
-
-CREATE VIEW "slice_seats__retry_coordinator"."retry_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__retry_pausable_names_hen5ycf77m"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."retry_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__retry_coordinator"."retry_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."retry_served" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."retry_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_brittle_input" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_brittle_input" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_brittle_output" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_brittle_output" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."retry_claim" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_done" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."retry_ended" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_failed" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."retry_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."retry_finish" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."retry_held" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_ladders_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_ladders_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_ladders_input" ("root", "scope", "steadfast", "brittle") AS
-SELECT "r1"."root", "r1"."scope", "r1"."steadfast", "r1"."brittle"
-FROM "slice_den"."retry_ladders_input" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_patient_input" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_patient_input" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_patient_output" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_patient_output" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__retry_pausable_names_hen5ycf77m"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."retry_paused" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_polite_input" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_polite_input" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_polite_output" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_polite_output" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."retry_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__retry_outcome_names_zzz2kawwsa"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."retry_result" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__retry_pausable_names_hen5ycf77m"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."retry_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__retry_retry_why_names_pwmdyzqghs"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."retry_retry" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__retry_root_kind_names_bhf4onc7wq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."retry_root" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."retry_scope" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."retry_served" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."retry_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."retry_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_steadfast_input" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_steadfast_input" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_steadfast_output" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_steadfast_output" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__retry_kind_names_yg2tu5rejg"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."retry_step" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_throttled_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_throttled_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_throttled_input" ("root", "scope", "key") AS
-SELECT "r1"."root", "r1"."scope", "r1"."key"
-FROM "slice_den"."retry_throttled_input" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_unhurried_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_unhurried_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__retry_den"."retry_unhurried_input" ("root", "scope", "key") AS
-SELECT "r1"."root", "r1"."scope", "r1"."key"
-FROM "slice_den"."retry_unhurried_input" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."retry_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_brittle_input" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_brittle_input" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_brittle_output" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_brittle_output" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."retry_claim" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_done" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."retry_ended" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_failed" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."retry_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."retry_finish" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."retry_held" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_ladders_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_ladders_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_ladders_input" ("root", "scope", "steadfast", "brittle") AS
-SELECT "r1"."root", "r1"."scope", "r1"."steadfast", "r1"."brittle"
-FROM "slice_den"."retry_ladders_input" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_patient_input" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_patient_input" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_patient_output" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_patient_output" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_polite_input" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_polite_input" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_polite_output" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_polite_output" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."retry_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__retry_outcome_names_zzz2kawwsa"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."retry_result" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__retry_retry_why_names_pwmdyzqghs"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."retry_retry" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__retry_root_kind_names_bhf4onc7wq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."retry_root" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."retry_scope" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."retry_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."retry_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_steadfast_input" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_steadfast_input" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_steadfast_output" ("root", "step", "key") AS
-SELECT "r1"."root", "r1"."step", "r1"."key"
-FROM "slice_den"."retry_steadfast_output" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__retry_kind_names_yg2tu5rejg"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."retry_step" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_throttled_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_throttled_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_throttled_input" ("root", "scope", "key") AS
-SELECT "r1"."root", "r1"."scope", "r1"."key"
-FROM "slice_den"."retry_throttled_input" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_unhurried_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."retry_unhurried_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__retry_retirer"."retry_unhurried_input" ("root", "scope", "key") AS
-SELECT "r1"."root", "r1"."scope", "r1"."key"
-FROM "slice_den"."retry_unhurried_input" AS "r1";
 
 CREATE VIEW "slice_seats__review_coordinator"."review_live" ("attempt", "resource", "resource_name", "root", "seat", "step", "until") WITH (security_barrier) AS
 SELECT "r17"."c58", "r17"."c59", ("slice"."__review_resource_names_ixi3gnpcnp"())["r17"."c59" + 1]::"pg_catalog"."text", "r17"."c60", "r17"."c61", "r17"."c62", "r17"."c63"
 FROM (SELECT "r16"."c52", "r16"."c53", "r16"."c54", "r16"."c55", "r16"."c56", "r16"."c57" FROM (SELECT "r15"."c50", "r15"."c46", "r15"."c49", "r15"."c47", "r15"."c48", "r15"."c51" FROM (SELECT "r14"."c41", "r14"."c43", "r14"."c44", "r14"."c42", "r14"."c40", "r14"."c45" FROM (SELECT "r10"."c28", "r10"."c29", "r10"."c30", "r10"."c31", "r10"."c32", "r10"."c33" FROM (SELECT "r6"."c16", "r6"."c17", "r6"."c18", "r6"."c19", "r6"."c20", "r6"."c21" FROM (SELECT "r5"."c12", "r5"."c13", "r5"."c11", "r5"."c14", "r5"."c10", "r5"."c15" FROM (SELECT "r2"."c5", "r2"."c3", "r2"."c1", "r2"."c2", "r2"."c4", "r4"."c9" FROM (SELECT "r1"."attempt", "r1"."resource", "r1"."root", "r1"."seat", "r1"."step" FROM "slice_den"."review_hold" AS "r1") AS "r2"("c1", "c2", "c3", "c4", "c5"), (SELECT "r3"."attempt", "r3"."root", "r3"."step", "r3"."until" FROM "slice_den"."review_claim" AS "r3") AS "r4"("c6", "c7", "c8", "c9") WHERE "r2"."c1" = "r4"."c6" AND "r2"."c3" = "r4"."c7" AND "r2"."c5" = "r4"."c8") AS "r5"("c10", "c11", "c12", "c13", "c14", "c15")) AS "r6"("c16", "c17", "c18", "c19", "c20", "c21") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r8"."c22", "r8"."c23", "r8"."c24" FROM (SELECT "r7"."attempt", "r7"."root", "r7"."step" FROM "slice_den"."review_ended" AS "r7") AS "r8"("c22", "c23", "c24")) AS "r9"("c25", "c26", "c27") WHERE "r9"."c25" = "r6"."c16" AND "r9"."c26" = "r6"."c18" AND "r9"."c27" = "r6"."c20")) AS "r10"("c28", "c29", "c30", "c31", "c32", "c33") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r12"."c34", "r12"."c35", "r12"."c36" FROM (SELECT "r11"."attempt", "r11"."root", "r11"."step" FROM "slice_den"."review_held" AS "r11") AS "r12"("c34", "c35", "c36")) AS "r13"("c37", "c38", "c39") WHERE "r13"."c37" = "r10"."c28" AND "r13"."c38" = "r10"."c30" AND "r13"."c39" = "r10"."c32")) AS "r14"("c40", "c41", "c42", "c43", "c44", "c45")) AS "r15"("c46", "c47", "c48", "c49", "c50", "c51")) AS "r16"("c52", "c53", "c54", "c55", "c56", "c57")) AS "r17"("c58", "c59", "c60", "c61", "c62", "c63");
 
-CREATE VIEW "slice_seats__review_coordinator"."review_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__review_pausable_names_uhujnxcsz6"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."review_paused" AS "r1";
-
-CREATE VIEW "slice_seats__review_coordinator"."review_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__review_pausable_names_uhujnxcsz6"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."review_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__review_coordinator"."review_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."review_served" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."delivered" ("attempt") AS
-SELECT "r1"."attempt"
-FROM "slice"."delivered" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."review_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_analyze_input" ("root", "step", "review", "group", "question") AS
-SELECT "r1"."root", "r1"."step", "r1"."review", "r1"."group", "r1"."question"
-FROM "slice_den"."review_analyze_input" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_analyze_output" ("root", "step", "score") AS
-SELECT "r1"."root", "r1"."step", "r1"."score"
-FROM "slice_den"."review_analyze_output" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_claim" ("root", "step", "attempt", "until", "holds") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until", "r1"."holds"
-FROM "slice_den"."review_claim" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_done" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."review_ended" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_failed" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."review_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."review_finish" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_gather_input" ("root", "step", "review") AS
-SELECT "r1"."root", "r1"."step", "r1"."review"
-FROM "slice_den"."review_gather_input" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_gather_input_sizes" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."review_gather_input_sizes" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_gather_output" ("root", "step", "groups") AS
-SELECT "r1"."root", "r1"."step", "r1"."groups"
-FROM "slice_den"."review_gather_output" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."review_held" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_hold" ("resource", "resource_name", "root", "step", "attempt", "at", "seat") AS
-SELECT "r1"."resource", ("slice"."__review_resource_names_ixi3gnpcnp"())["r1"."resource" + 1]::"pg_catalog"."text", "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."seat"
-FROM "slice_den"."review_hold" AS "r1";
-
 CREATE VIEW "slice_seats__review_den"."review_live" ("attempt", "resource", "resource_name", "root", "seat", "step", "until") WITH (security_barrier) AS
 SELECT "r17"."c58", "r17"."c59", ("slice"."__review_resource_names_ixi3gnpcnp"())["r17"."c59" + 1]::"pg_catalog"."text", "r17"."c60", "r17"."c61", "r17"."c62", "r17"."c63"
 FROM (SELECT "r16"."c52", "r16"."c53", "r16"."c54", "r16"."c55", "r16"."c56", "r16"."c57" FROM (SELECT "r15"."c50", "r15"."c46", "r15"."c49", "r15"."c47", "r15"."c48", "r15"."c51" FROM (SELECT "r14"."c41", "r14"."c43", "r14"."c44", "r14"."c42", "r14"."c40", "r14"."c45" FROM (SELECT "r10"."c28", "r10"."c29", "r10"."c30", "r10"."c31", "r10"."c32", "r10"."c33" FROM (SELECT "r6"."c16", "r6"."c17", "r6"."c18", "r6"."c19", "r6"."c20", "r6"."c21" FROM (SELECT "r5"."c12", "r5"."c13", "r5"."c11", "r5"."c14", "r5"."c10", "r5"."c15" FROM (SELECT "r2"."c5", "r2"."c3", "r2"."c1", "r2"."c2", "r2"."c4", "r4"."c9" FROM (SELECT "r1"."attempt", "r1"."resource", "r1"."root", "r1"."seat", "r1"."step" FROM "slice_den"."review_hold" AS "r1") AS "r2"("c1", "c2", "c3", "c4", "c5"), (SELECT "r3"."attempt", "r3"."root", "r3"."step", "r3"."until" FROM "slice_den"."review_claim" AS "r3") AS "r4"("c6", "c7", "c8", "c9") WHERE "r2"."c1" = "r4"."c6" AND "r2"."c3" = "r4"."c7" AND "r2"."c5" = "r4"."c8") AS "r5"("c10", "c11", "c12", "c13", "c14", "c15")) AS "r6"("c16", "c17", "c18", "c19", "c20", "c21") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r8"."c22", "r8"."c23", "r8"."c24" FROM (SELECT "r7"."attempt", "r7"."root", "r7"."step" FROM "slice_den"."review_ended" AS "r7") AS "r8"("c22", "c23", "c24")) AS "r9"("c25", "c26", "c27") WHERE "r9"."c25" = "r6"."c16" AND "r9"."c26" = "r6"."c18" AND "r9"."c27" = "r6"."c20")) AS "r10"("c28", "c29", "c30", "c31", "c32", "c33") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r12"."c34", "r12"."c35", "r12"."c36" FROM (SELECT "r11"."attempt", "r11"."root", "r11"."step" FROM "slice_den"."review_held" AS "r11") AS "r12"("c34", "c35", "c36")) AS "r13"("c37", "c38", "c39") WHERE "r13"."c37" = "r10"."c28" AND "r13"."c38" = "r10"."c30" AND "r13"."c39" = "r10"."c32")) AS "r14"("c40", "c41", "c42", "c43", "c44", "c45")) AS "r15"("c46", "c47", "c48", "c49", "c50", "c51")) AS "r16"("c52", "c53", "c54", "c55", "c56", "c57")) AS "r17"("c58", "c59", "c60", "c61", "c62", "c63");
-
-CREATE VIEW "slice_seats__review_den"."review_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__review_pausable_names_uhujnxcsz6"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."review_paused" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_questions_finish_output" ("root", "step", "count", "total") AS
-SELECT "r1"."root", "r1"."step", "r1"."count", "r1"."total"
-FROM "slice_den"."review_questions_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_questions_input" ("root", "scope", "review", "group", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."review", "r1"."group", "r1"."size"
-FROM "slice_den"."review_questions_input" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."review_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__review_outcome_names_nlfaf7zb7f"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."review_result" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__review_pausable_names_uhujnxcsz6"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."review_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__review_retry_why_names_4ux5dj2mh3"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."review_retry" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_review_run_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_review_run_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_review_run_input" ("root", "scope", "review") AS
-SELECT "r1"."root", "r1"."scope", "r1"."review"
-FROM "slice_den"."review_review_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_review_run_input_sizes" ("root", "scope", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."review_review_run_input_sizes" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__review_root_kind_names_uvxmjcavxb"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."review_root" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_save_input" ("root", "step", "review", "group", "count", "total") AS
-SELECT "r1"."root", "r1"."step", "r1"."review", "r1"."group", "r1"."count", "r1"."total"
-FROM "slice_den"."review_save_input" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_save_output" ("root", "step", "total") AS
-SELECT "r1"."root", "r1"."step", "r1"."total"
-FROM "slice_den"."review_save_output" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_saved" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."review_saved" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."review_scope" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."review_served" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."review_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_split" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."review_split" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_start_scope" ("root", "scope", "ordinal", "child") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."child"
-FROM "slice_den"."review_start_scope" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."review_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__review_kind_names_j4pukr2klj"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."review_step" AS "r1";
-
-CREATE VIEW "slice_seats__review_den"."review_within" ("root", "scope", "parent", "kind", "kind_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__review_child_kind_names_jn3iwx7yal"())["r1"."kind" + 1]::"pg_catalog"."text"
-FROM "slice_den"."review_within" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."review_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_analyze_input" ("root", "step", "review", "group", "question") AS
-SELECT "r1"."root", "r1"."step", "r1"."review", "r1"."group", "r1"."question"
-FROM "slice_den"."review_analyze_input" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_analyze_output" ("root", "step", "score") AS
-SELECT "r1"."root", "r1"."step", "r1"."score"
-FROM "slice_den"."review_analyze_output" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_claim" ("root", "step", "attempt", "until", "holds") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until", "r1"."holds"
-FROM "slice_den"."review_claim" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_done" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."review_ended" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_failed" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."review_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."review_finish" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_gather_input" ("root", "step", "review") AS
-SELECT "r1"."root", "r1"."step", "r1"."review"
-FROM "slice_den"."review_gather_input" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_gather_input_sizes" ("root", "step", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."step", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."review_gather_input_sizes" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_gather_output" ("root", "step", "groups") AS
-SELECT "r1"."root", "r1"."step", "r1"."groups"
-FROM "slice_den"."review_gather_output" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."review_held" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_hold" ("resource", "resource_name", "root", "step", "attempt", "at", "seat") AS
-SELECT "r1"."resource", ("slice"."__review_resource_names_ixi3gnpcnp"())["r1"."resource" + 1]::"pg_catalog"."text", "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."seat"
-FROM "slice_den"."review_hold" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_questions_finish_output" ("root", "step", "count", "total") AS
-SELECT "r1"."root", "r1"."step", "r1"."count", "r1"."total"
-FROM "slice_den"."review_questions_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_questions_input" ("root", "scope", "review", "group", "size") AS
-SELECT "r1"."root", "r1"."scope", "r1"."review", "r1"."group", "r1"."size"
-FROM "slice_den"."review_questions_input" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."review_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__review_outcome_names_nlfaf7zb7f"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."review_result" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__review_retry_why_names_4ux5dj2mh3"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."review_retry" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_review_run_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."review_review_run_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_review_run_input" ("root", "scope", "review") AS
-SELECT "r1"."root", "r1"."scope", "r1"."review"
-FROM "slice_den"."review_review_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_review_run_input_sizes" ("root", "scope", "ordinal", "value") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."value"
-FROM "slice_den"."review_review_run_input_sizes" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__review_root_kind_names_uvxmjcavxb"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."review_root" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_save_input" ("root", "step", "review", "group", "count", "total") AS
-SELECT "r1"."root", "r1"."step", "r1"."review", "r1"."group", "r1"."count", "r1"."total"
-FROM "slice_den"."review_save_input" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_save_output" ("root", "step", "total") AS
-SELECT "r1"."root", "r1"."step", "r1"."total"
-FROM "slice_den"."review_save_output" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_saved" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."review_saved" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."review_scope" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."review_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_split" ("root", "from", "ordinal", "to") AS
-SELECT "r1"."root", "r1"."from", "r1"."ordinal", "r1"."to"
-FROM "slice_den"."review_split" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_start_scope" ("root", "scope", "ordinal", "child") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."child"
-FROM "slice_den"."review_start_scope" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."review_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__review_kind_names_j4pukr2klj"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."review_step" AS "r1";
-
-CREATE VIEW "slice_seats__review_retirer"."review_within" ("root", "scope", "parent", "kind", "kind_name") AS
-SELECT "r1"."root", "r1"."scope", "r1"."parent", "r1"."kind", ("slice"."__review_child_kind_names_jn3iwx7yal"())["r1"."kind" + 1]::"pg_catalog"."text"
-FROM "slice_den"."review_within" AS "r1";
-
-CREATE VIEW "slice_seats__sync_coordinator"."sync_exclusive" ("kind", "kind_name", "key", "turn", "scope") AS
-SELECT "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."turn", "r1"."scope"
-FROM "slice_den"."sync_exclusive" AS "r1";
-
-CREATE VIEW "slice_seats__sync_coordinator"."sync_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__sync_pausable_names_3hzpsqgfjl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."sync_paused" AS "r1";
-
-CREATE VIEW "slice_seats__sync_coordinator"."sync_released" ("kind", "kind_name", "key", "turn") AS
-SELECT "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."turn"
-FROM "slice_den"."sync_released" AS "r1";
-
-CREATE VIEW "slice_seats__sync_coordinator"."sync_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__sync_pausable_names_3hzpsqgfjl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."sync_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__sync_coordinator"."sync_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."sync_served" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."chain_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__chain_outcome_names_vo4tgqx6qh"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."chain_result" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."chain_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__chain_kind_names_oubqrwjyau"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."chain_step" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."sync_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_build_input" ("root", "step", "build") AS
-SELECT "r1"."root", "r1"."step", "r1"."build"
-FROM "slice_den"."sync_build_input" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_build_output" ("root", "step", "build") AS
-SELECT "r1"."root", "r1"."step", "r1"."build"
-FROM "slice_den"."sync_build_output" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."sync_claim" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_copy_input" ("root", "step", "relation", "run") AS
-SELECT "r1"."root", "r1"."step", "r1"."relation", "r1"."run"
-FROM "slice_den"."sync_copy_input" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_copy_output" ("root", "step", "run") AS
-SELECT "r1"."root", "r1"."step", "r1"."run"
-FROM "slice_den"."sync_copy_output" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_done" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."sync_ended" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_exclusive" ("kind", "kind_name", "key", "turn", "scope") AS
-SELECT "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."turn", "r1"."scope"
-FROM "slice_den"."sync_exclusive" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_exclusive_key" ("root", "scope", "key", "id") AS
-SELECT "r1"."root", "r1"."scope", "r1"."key", "r1"."id"
-FROM "slice_den"."sync_exclusive_key" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_failed" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."sync_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."sync_finish" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_gold_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_gold_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_gold_input" ("root", "scope", "build") AS
-SELECT "r1"."root", "r1"."scope", "r1"."build"
-FROM "slice_den"."sync_gold_input" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."sync_held" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__sync_pausable_names_3hzpsqgfjl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."sync_paused" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."sync_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_released" ("kind", "kind_name", "key", "turn") AS
-SELECT "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."turn"
-FROM "slice_den"."sync_released" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__sync_outcome_names_xzb4y4xgki"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."sync_result" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__sync_pausable_names_3hzpsqgfjl"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."sync_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__sync_retry_why_names_o3uvvn3247"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."sync_retry" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."sync_root" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."sync_scope" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."sync_served" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."sync_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."sync_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__sync_kind_names_oq6b66cstu"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."sync_step" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_sync_run_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_sync_run_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__sync_den"."sync_sync_run_input" ("root", "scope", "relation", "run") AS
-SELECT "r1"."root", "r1"."scope", "r1"."relation", "r1"."run"
-FROM "slice_den"."sync_sync_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."sync_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_build_input" ("root", "step", "build") AS
-SELECT "r1"."root", "r1"."step", "r1"."build"
-FROM "slice_den"."sync_build_input" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_build_output" ("root", "step", "build") AS
-SELECT "r1"."root", "r1"."step", "r1"."build"
-FROM "slice_den"."sync_build_output" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."sync_claim" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_copy_input" ("root", "step", "relation", "run") AS
-SELECT "r1"."root", "r1"."step", "r1"."relation", "r1"."run"
-FROM "slice_den"."sync_copy_input" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_copy_output" ("root", "step", "run") AS
-SELECT "r1"."root", "r1"."step", "r1"."run"
-FROM "slice_den"."sync_copy_output" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_done" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."sync_ended" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_exclusive_key" ("root", "scope", "key", "id") AS
-SELECT "r1"."root", "r1"."scope", "r1"."key", "r1"."id"
-FROM "slice_den"."sync_exclusive_key" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_failed" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."sync_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."sync_finish" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_gold_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_gold_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_gold_input" ("root", "scope", "build") AS
-SELECT "r1"."root", "r1"."scope", "r1"."build"
-FROM "slice_den"."sync_gold_input" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."sync_held" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."sync_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__sync_outcome_names_xzb4y4xgki"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."sync_result" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__sync_retry_why_names_o3uvvn3247"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."sync_retry" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__sync_root_kind_names_drp422srbk"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."sync_root" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."sync_scope" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."sync_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."sync_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__sync_kind_names_oq6b66cstu"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."sync_step" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_sync_run_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."sync_sync_run_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__sync_retirer"."sync_sync_run_input" ("root", "scope", "relation", "run") AS
-SELECT "r1"."root", "r1"."scope", "r1"."relation", "r1"."run"
-FROM "slice_den"."sync_sync_run_input" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_coordinator"."writeback_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__writeback_pausable_names_mqzeerbulh"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."writeback_paused" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_coordinator"."writeback_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__writeback_pausable_names_mqzeerbulh"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."writeback_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_coordinator"."writeback_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."writeback_served" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."writeback_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."writeback_claim" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_deliver_input" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_deliver_input" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_deliver_output" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_deliver_output" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_done" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_ended" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_failed" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."writeback_finish" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_held" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_paused" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__writeback_pausable_names_mqzeerbulh"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."writeback_paused" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."writeback_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__writeback_outcome_names_oq43xsnmec"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."writeback_result" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_resumed" ("target", "target_name", "turn") AS
-SELECT "r1"."target", ("slice"."__writeback_pausable_names_mqzeerbulh"())["r1"."target" + 1]::"pg_catalog"."text", "r1"."turn"
-FROM "slice_den"."writeback_resumed" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__writeback_retry_why_names_7a7eowjbic"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."writeback_retry" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__writeback_root_kind_names_bz7cmi256x"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."writeback_root" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."writeback_scope" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_served" ("environment", "at", "deployment") AS
-SELECT "r1"."environment", "r1"."at", "r1"."deployment"
-FROM "slice_den"."writeback_served" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."writeback_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."writeback_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__writeback_kind_names_dbe6fofbjq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."writeback_step" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_writeback_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_writeback_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_den"."writeback_writeback_input" ("root", "scope", "attempt") AS
-SELECT "r1"."root", "r1"."scope", "r1"."attempt"
-FROM "slice_den"."writeback_writeback_input" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_admitted" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."writeback_admitted" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_claim" ("root", "step", "attempt", "until") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."until"
-FROM "slice_den"."writeback_claim" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_deliver_input" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_deliver_input" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_deliver_output" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_deliver_output" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_done" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_done" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_ended" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_ended" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_exhausted" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_exhausted" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_failed" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_failed" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_fenced" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_fenced" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_finish" ("root", "scope", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."step"
-FROM "slice_den"."writeback_finish" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_held" ("root", "step", "attempt") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt"
-FROM "slice_den"."writeback_held" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_refusal" ("root", "step", "law") AS
-SELECT "r1"."root", "r1"."step", "r1"."law"
-FROM "slice_den"."writeback_refusal" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_result" ("root", "step", "outcome", "outcome_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."outcome", ("slice"."__writeback_outcome_names_oq43xsnmec"())["r1"."outcome" + 1]::"pg_catalog"."text"
-FROM "slice_den"."writeback_result" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_retry" ("root", "step", "attempt", "at", "why", "why_name") AS
-SELECT "r1"."root", "r1"."step", "r1"."attempt", "r1"."at", "r1"."why", ("slice"."__writeback_retry_why_names_7a7eowjbic"())["r1"."why" + 1]::"pg_catalog"."text"
-FROM "slice_den"."writeback_retry" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_root" ("root", "kind", "kind_name", "key", "at") AS
-SELECT "r1"."root", "r1"."kind", ("slice"."__writeback_root_kind_names_bz7cmi256x"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."key", "r1"."at"
-FROM "slice_den"."writeback_root" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_scope" ("root", "scope") AS
-SELECT "r1"."root", "r1"."scope"
-FROM "slice_den"."writeback_scope" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_skipped" ("root", "scope", "by") AS
-SELECT "r1"."root", "r1"."scope", "r1"."by"
-FROM "slice_den"."writeback_skipped" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_start_step" ("root", "scope", "ordinal", "step") AS
-SELECT "r1"."root", "r1"."scope", "r1"."ordinal", "r1"."step"
-FROM "slice_den"."writeback_start_step" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_step" ("root", "step", "kind", "kind_name", "scope", "due") AS
-SELECT "r1"."root", "r1"."step", "r1"."kind", ("slice"."__writeback_kind_names_dbe6fofbjq"())["r1"."kind" + 1]::"pg_catalog"."text", "r1"."scope", "r1"."due"
-FROM "slice_den"."writeback_step" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_writeback_finish_output" ("root", "step") AS
-SELECT "r1"."root", "r1"."step"
-FROM "slice_den"."writeback_writeback_finish_output" AS "r1";
-
-CREATE VIEW "slice_seats__writeback_retirer"."writeback_writeback_input" ("root", "scope", "attempt") AS
-SELECT "r1"."root", "r1"."scope", "r1"."attempt"
-FROM "slice_den"."writeback_writeback_input" AS "r1";
 
 GRANT :"slice_seats__assign_coordinator" TO :"slice_seats__worker" WITH INHERIT FALSE, SET TRUE;
 
@@ -3779,11 +1309,11 @@ GRANT USAGE ON SCHEMA "slice" TO :"slice_seats__app";
 GRANT EXECUTE ON FUNCTION "slice"."__snapshot_guard"("pg_catalog"."text") TO :"slice_seats__app";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__assign_coordinator" TO :"slice_seats__assign_coordinator";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__assign_coordinator";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice_den"."assign_assignment_input_mode", "slice_den"."assign_decide_input_mode", "slice_den"."assign_decide_output_stage", "slice_den"."assign_embed_input_mode", "slice_den"."assign_kind", "slice_den"."assign_outcome", "slice_den"."assign_pausable", "slice_den"."assign_retry_why", "slice_den"."assign_root_kind" TO :"slice_seats__assign_coordinator";
 
-GRANT SELECT ON TABLE "slice_seats__assign_coordinator"."assign_paused", "slice_seats__assign_coordinator"."assign_resumed", "slice_seats__assign_coordinator"."assign_served" TO :"slice_seats__assign_coordinator";
+GRANT SELECT ON TABLE "__slice_den"."assign_paused", "__slice_den"."assign_resumed", "__slice_den"."assign_served" TO :"slice_seats__assign_coordinator";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."assign_paused" TO :"slice_seats__assign_coordinator";
 
@@ -3798,14 +1328,14 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"() TO :"slice_seats__assign_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__assign_den" TO :"slice_seats__assign_den";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__assign_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "vector_ext" TO :"slice_seats__assign_den";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice"."__sha256", "slice_den"."assign_assignment_input_mode", "slice_den"."assign_decide_input_mode", "slice_den"."assign_decide_output_stage", "slice_den"."assign_embed_input_mode", "slice_den"."assign_kind", "slice_den"."assign_outcome", "slice_den"."assign_pausable", "slice_den"."assign_retry_why", "slice_den"."assign_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__assign_den";
 
-GRANT SELECT ON TABLE "slice_seats__assign_den"."assign_admitted", "slice_seats__assign_den"."assign_asked", "slice_seats__assign_den"."assign_assignment_finish_output", "slice_seats__assign_den"."assign_assignment_input", "slice_seats__assign_den"."assign_assignment_input_exclude", "slice_seats__assign_den"."assign_assignment_input_mode_nearest", "slice_seats__assign_den"."assign_assignment_input_mode_within", "slice_seats__assign_den"."assign_assignment_input_near", "slice_seats__assign_den"."assign_claim", "slice_seats__assign_den"."assign_decide_input", "slice_seats__assign_den"."assign_decide_input_exclude", "slice_seats__assign_den"."assign_decide_input_mode_nearest", "slice_seats__assign_den"."assign_decide_input_mode_within", "slice_seats__assign_den"."assign_decide_output", "slice_seats__assign_den"."assign_decide_output_stage_rest", "slice_seats__assign_den"."assign_decide_output_stage_serve", "slice_seats__assign_den"."assign_decide_output_weighed", "slice_seats__assign_den"."assign_decide_read_nearest", "slice_seats__assign_den"."assign_decide_read_nearest_row", "slice_seats__assign_den"."assign_decide_read_seen", "slice_seats__assign_den"."assign_decide_read_seen_row", "slice_seats__assign_den"."assign_done", "slice_seats__assign_den"."assign_embed_input", "slice_seats__assign_den"."assign_embed_input_exclude", "slice_seats__assign_den"."assign_embed_input_mode_nearest", "slice_seats__assign_den"."assign_embed_input_mode_within", "slice_seats__assign_den"."assign_embed_input_near", "slice_seats__assign_den"."assign_embed_output", "slice_seats__assign_den"."assign_ended", "slice_seats__assign_den"."assign_exhausted", "slice_seats__assign_den"."assign_failed", "slice_seats__assign_den"."assign_fenced", "slice_seats__assign_den"."assign_finish", "slice_seats__assign_den"."assign_held", "slice_seats__assign_den"."assign_paused", "slice_seats__assign_den"."assign_refusal", "slice_seats__assign_den"."assign_result", "slice_seats__assign_den"."assign_resumed", "slice_seats__assign_den"."assign_retry", "slice_seats__assign_den"."assign_root", "slice_seats__assign_den"."assign_scope", "slice_seats__assign_den"."assign_served", "slice_seats__assign_den"."assign_skipped", "slice_seats__assign_den"."assign_start_step", "slice_seats__assign_den"."assign_step" TO :"slice_seats__assign_den";
+GRANT SELECT ON TABLE "__slice_den"."assign_admitted", "__slice_den"."assign_asked", "__slice_den"."assign_assignment_finish_output", "__slice_den"."assign_assignment_input", "__slice_den"."assign_assignment_input_exclude", "__slice_den"."assign_assignment_input_mode_nearest", "__slice_den"."assign_assignment_input_mode_within", "__slice_den"."assign_assignment_input_near", "__slice_den"."assign_claim", "__slice_den"."assign_decide_input", "__slice_den"."assign_decide_input_exclude", "__slice_den"."assign_decide_input_mode_nearest", "__slice_den"."assign_decide_input_mode_within", "__slice_den"."assign_decide_output", "__slice_den"."assign_decide_output_stage_rest", "__slice_den"."assign_decide_output_stage_serve", "__slice_den"."assign_decide_output_weighed", "__slice_den"."assign_decide_read_nearest", "__slice_den"."assign_decide_read_nearest_row", "__slice_den"."assign_decide_read_seen", "__slice_den"."assign_decide_read_seen_row", "__slice_den"."assign_done", "__slice_den"."assign_embed_input", "__slice_den"."assign_embed_input_exclude", "__slice_den"."assign_embed_input_mode_nearest", "__slice_den"."assign_embed_input_mode_within", "__slice_den"."assign_embed_input_near", "__slice_den"."assign_embed_output", "__slice_den"."assign_ended", "__slice_den"."assign_exhausted", "__slice_den"."assign_failed", "__slice_den"."assign_fenced", "__slice_den"."assign_finish", "__slice_den"."assign_held", "__slice_den"."assign_paused", "__slice_den"."assign_refusal", "__slice_den"."assign_result", "__slice_den"."assign_resumed", "__slice_den"."assign_retry", "__slice_den"."assign_root", "__slice_den"."assign_scope", "__slice_den"."assign_served", "__slice_den"."assign_skipped", "__slice_den"."assign_start_step", "__slice_den"."assign_step" TO :"slice_seats__assign_den";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."assign_admitted" TO :"slice_seats__assign_den";
 
@@ -3888,14 +1418,14 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_assign_claim_attempt_wafvnidpqp"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__assign_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__assign_retirer" TO :"slice_seats__assign_retirer";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__assign_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "vector_ext" TO :"slice_seats__assign_retirer";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice_den"."assign_assignment_input_mode", "slice_den"."assign_decide_input_mode", "slice_den"."assign_decide_output_stage", "slice_den"."assign_embed_input_mode", "slice_den"."assign_kind", "slice_den"."assign_outcome", "slice_den"."assign_pausable", "slice_den"."assign_retry_why", "slice_den"."assign_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__assign_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__assign_retirer"."assign_admitted", "slice_seats__assign_retirer"."assign_asked", "slice_seats__assign_retirer"."assign_assignment_finish_output", "slice_seats__assign_retirer"."assign_assignment_input", "slice_seats__assign_retirer"."assign_assignment_input_exclude", "slice_seats__assign_retirer"."assign_assignment_input_mode_nearest", "slice_seats__assign_retirer"."assign_assignment_input_mode_within", "slice_seats__assign_retirer"."assign_assignment_input_near", "slice_seats__assign_retirer"."assign_claim", "slice_seats__assign_retirer"."assign_decide_input", "slice_seats__assign_retirer"."assign_decide_input_exclude", "slice_seats__assign_retirer"."assign_decide_input_mode_nearest", "slice_seats__assign_retirer"."assign_decide_input_mode_within", "slice_seats__assign_retirer"."assign_decide_output", "slice_seats__assign_retirer"."assign_decide_output_stage_rest", "slice_seats__assign_retirer"."assign_decide_output_stage_serve", "slice_seats__assign_retirer"."assign_decide_output_weighed", "slice_seats__assign_retirer"."assign_decide_read_nearest", "slice_seats__assign_retirer"."assign_decide_read_nearest_row", "slice_seats__assign_retirer"."assign_decide_read_seen", "slice_seats__assign_retirer"."assign_decide_read_seen_row", "slice_seats__assign_retirer"."assign_done", "slice_seats__assign_retirer"."assign_embed_input", "slice_seats__assign_retirer"."assign_embed_input_exclude", "slice_seats__assign_retirer"."assign_embed_input_mode_nearest", "slice_seats__assign_retirer"."assign_embed_input_mode_within", "slice_seats__assign_retirer"."assign_embed_input_near", "slice_seats__assign_retirer"."assign_embed_output", "slice_seats__assign_retirer"."assign_ended", "slice_seats__assign_retirer"."assign_exhausted", "slice_seats__assign_retirer"."assign_failed", "slice_seats__assign_retirer"."assign_fenced", "slice_seats__assign_retirer"."assign_finish", "slice_seats__assign_retirer"."assign_held", "slice_seats__assign_retirer"."assign_refusal", "slice_seats__assign_retirer"."assign_result", "slice_seats__assign_retirer"."assign_retry", "slice_seats__assign_retirer"."assign_root", "slice_seats__assign_retirer"."assign_scope", "slice_seats__assign_retirer"."assign_skipped", "slice_seats__assign_retirer"."assign_start_step", "slice_seats__assign_retirer"."assign_step" TO :"slice_seats__assign_retirer";
+GRANT SELECT ON TABLE "__slice_den"."assign_admitted", "__slice_den"."assign_asked", "__slice_den"."assign_assignment_finish_output", "__slice_den"."assign_assignment_input", "__slice_den"."assign_assignment_input_exclude", "__slice_den"."assign_assignment_input_mode_nearest", "__slice_den"."assign_assignment_input_mode_within", "__slice_den"."assign_assignment_input_near", "__slice_den"."assign_claim", "__slice_den"."assign_decide_input", "__slice_den"."assign_decide_input_exclude", "__slice_den"."assign_decide_input_mode_nearest", "__slice_den"."assign_decide_input_mode_within", "__slice_den"."assign_decide_output", "__slice_den"."assign_decide_output_stage_rest", "__slice_den"."assign_decide_output_stage_serve", "__slice_den"."assign_decide_output_weighed", "__slice_den"."assign_decide_read_nearest", "__slice_den"."assign_decide_read_nearest_row", "__slice_den"."assign_decide_read_seen", "__slice_den"."assign_decide_read_seen_row", "__slice_den"."assign_done", "__slice_den"."assign_embed_input", "__slice_den"."assign_embed_input_exclude", "__slice_den"."assign_embed_input_mode_nearest", "__slice_den"."assign_embed_input_mode_within", "__slice_den"."assign_embed_input_near", "__slice_den"."assign_embed_output", "__slice_den"."assign_ended", "__slice_den"."assign_exhausted", "__slice_den"."assign_failed", "__slice_den"."assign_fenced", "__slice_den"."assign_finish", "__slice_den"."assign_held", "__slice_den"."assign_refusal", "__slice_den"."assign_result", "__slice_den"."assign_retry", "__slice_den"."assign_root", "__slice_den"."assign_scope", "__slice_den"."assign_skipped", "__slice_den"."assign_start_step", "__slice_den"."assign_step" TO :"slice_seats__assign_retirer";
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "slice_den"."assign_admitted" TO :"slice_seats__assign_retirer";
 
@@ -3986,11 +1516,11 @@ GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_assign_claim_attempt_wafvnidpqp"(
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_assign_claim_attempt_h744pvqs3v" TO :"slice_seats__assign_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__auditor" TO :"slice_seats__auditor";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den", "__slice" TO :"slice_seats__auditor";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice_den"."assign_decide_output_stage", "slice_den"."assign_kind", "slice_den"."assign_outcome", "slice"."bell", "slice_den"."chain_chain_run_input_feed", "slice_den"."chain_kind", "slice_den"."chain_ordered_input_feed", "slice_den"."chain_outcome", "slice_den"."chain_page_input_feed", "slice_den"."chain_pausable", "slice_den"."chain_retry_why", "slice_den"."chain_root_kind", "slice_den"."fan_child_kind", "slice_den"."fan_kind", "slice_den"."fan_outcome", "slice_den"."fan_resource", "slice_den"."fan_root_kind", "slice"."feed", "slice_den"."retry_kind", "slice_den"."retry_outcome", "slice_den"."review_child_kind", "slice_den"."review_kind", "slice_den"."review_outcome", "slice_den"."review_resource", "slice_den"."sync_outcome", "slice"."__text_t4rwovzmqj" TO :"slice_seats__auditor";
 
-GRANT SELECT ON TABLE "slice_seats__auditor"."assign_decide_output", "slice_seats__auditor"."assign_decide_output_stage_serve", "slice_seats__auditor"."assign_decide_output_weighed", "slice_seats__auditor"."assign_decide_read_nearest", "slice_seats__auditor"."assign_decide_read_nearest_row", "slice_seats__auditor"."assign_decide_read_seen", "slice_seats__auditor"."assign_decide_read_seen_row", "slice_seats__auditor"."assign_result", "slice_seats__auditor"."assign_step", "slice_seats__auditor"."assigned", "slice_seats__auditor"."audit", "slice_seats__auditor"."built", "slice_seats__auditor"."chain_admitted", "slice_seats__auditor"."chain_chain_run_finish_output", "slice_seats__auditor"."chain_chain_run_input", "slice_seats__auditor"."chain_claim", "slice_seats__auditor"."chain_done", "slice_seats__auditor"."chain_ended", "slice_seats__auditor"."chain_exhausted", "slice_seats__auditor"."chain_failed", "slice_seats__auditor"."chain_fenced", "slice_seats__auditor"."chain_finish", "slice_seats__auditor"."chain_held", "slice_seats__auditor"."chain_next", "slice_seats__auditor"."chain_ordered_finish_output", "slice_seats__auditor"."chain_ordered_input", "slice_seats__auditor"."chain_page_input", "slice_seats__auditor"."chain_page_input_after", "slice_seats__auditor"."chain_page_output", "slice_seats__auditor"."chain_page_output_next", "slice_seats__auditor"."chain_page_read_earlier", "slice_seats__auditor"."chain_page_read_earlier_row", "slice_seats__auditor"."chain_page_read_tree", "slice_seats__auditor"."chain_page_read_tree_items", "slice_seats__auditor"."chain_page_read_tree_row", "slice_seats__auditor"."chain_page_read_weights", "slice_seats__auditor"."chain_page_read_weights_row", "slice_seats__auditor"."chain_page_tree_first", "slice_seats__auditor"."chain_refusal", "slice_seats__auditor"."chain_result", "slice_seats__auditor"."chain_retry", "slice_seats__auditor"."chain_root", "slice_seats__auditor"."chain_scope", "slice_seats__auditor"."chain_skipped", "slice_seats__auditor"."chain_start_step", "slice_seats__auditor"."chain_step", "slice_seats__auditor"."chimed", "slice_seats__auditor"."concluded", "slice_seats__auditor"."copied", "slice_seats__auditor"."cursor", "slice_seats__auditor"."fan_admitted", "slice_seats__auditor"."fan_batch_input", "slice_seats__auditor"."fan_claim", "slice_seats__auditor"."fan_fan_run_input", "slice_seats__auditor"."fan_finish", "slice_seats__auditor"."fan_hold", "slice_seats__auditor"."fan_result", "slice_seats__auditor"."fan_root", "slice_seats__auditor"."fan_scope", "slice_seats__auditor"."fan_square_input", "slice_seats__auditor"."fan_square_output", "slice_seats__auditor"."fan_start_scope", "slice_seats__auditor"."fan_start_step", "slice_seats__auditor"."fan_step", "slice_seats__auditor"."fan_within", "slice_seats__auditor"."heard", "slice_seats__auditor"."item", "slice_seats__auditor"."order", "slice_seats__auditor"."retry_claim", "slice_seats__auditor"."retry_exhausted", "slice_seats__auditor"."retry_result", "slice_seats__auditor"."retry_step", "slice_seats__auditor"."review_finish", "slice_seats__auditor"."review_hold", "slice_seats__auditor"."review_result", "slice_seats__auditor"."review_step", "slice_seats__auditor"."review_within", "slice_seats__auditor"."reviewed", "slice_seats__auditor"."settled", "slice_seats__auditor"."summary", "slice_seats__auditor"."sync_admitted", "slice_seats__auditor"."sync_finish", "slice_seats__auditor"."sync_result", "slice_seats__auditor"."sync_scope", "slice_seats__auditor"."sync_skipped", "slice_seats__auditor"."tally", "slice_seats__auditor"."weight" TO :"slice_seats__auditor";
+GRANT SELECT ON TABLE "__slice_den"."assign_decide_output", "__slice_den"."assign_decide_output_stage_serve", "__slice_den"."assign_decide_output_weighed", "__slice_den"."assign_decide_read_nearest", "__slice_den"."assign_decide_read_nearest_row", "__slice_den"."assign_decide_read_seen", "__slice_den"."assign_decide_read_seen_row", "__slice_den"."assign_result", "__slice_den"."assign_step", "__slice"."assigned", "__slice_den"."audit", "__slice"."built", "__slice_den"."chain_admitted", "__slice_den"."chain_chain_run_finish_output", "__slice_den"."chain_chain_run_input", "__slice_den"."chain_claim", "__slice_den"."chain_done", "__slice_den"."chain_ended", "__slice_den"."chain_exhausted", "__slice_den"."chain_failed", "__slice_den"."chain_fenced", "__slice_den"."chain_finish", "__slice_den"."chain_held", "__slice_den"."chain_next", "__slice_den"."chain_ordered_finish_output", "__slice_den"."chain_ordered_input", "__slice_den"."chain_page_input", "__slice_den"."chain_page_input_after", "__slice_den"."chain_page_output", "__slice_den"."chain_page_output_next", "__slice_den"."chain_page_read_earlier", "__slice_den"."chain_page_read_earlier_row", "__slice_den"."chain_page_read_tree", "__slice_den"."chain_page_read_tree_items", "__slice_den"."chain_page_read_tree_row", "__slice_den"."chain_page_read_weights", "__slice_den"."chain_page_read_weights_row", "__slice_den"."chain_page_tree_first", "__slice_den"."chain_refusal", "__slice_den"."chain_result", "__slice_den"."chain_retry", "__slice_den"."chain_root", "__slice_den"."chain_scope", "__slice_den"."chain_skipped", "__slice_den"."chain_start_step", "__slice_den"."chain_step", "__slice"."chimed", "__slice"."concluded", "__slice"."copied", "__slice"."cursor", "__slice_den"."fan_admitted", "__slice_den"."fan_batch_input", "__slice_den"."fan_claim", "__slice_den"."fan_fan_run_input", "__slice_den"."fan_finish", "__slice_den"."fan_hold", "__slice_den"."fan_result", "__slice_den"."fan_root", "__slice_den"."fan_scope", "__slice_den"."fan_square_input", "__slice_den"."fan_square_output", "__slice_den"."fan_start_scope", "__slice_den"."fan_start_step", "__slice_den"."fan_step", "__slice_den"."fan_within", "__slice"."heard", "__slice"."item", "__slice"."order", "__slice_den"."retry_claim", "__slice_den"."retry_exhausted", "__slice_den"."retry_result", "__slice_den"."retry_step", "__slice_den"."review_finish", "__slice_den"."review_hold", "__slice_den"."review_result", "__slice_den"."review_step", "__slice_den"."review_within", "__slice"."reviewed", "__slice"."settled", "__slice"."summary", "__slice_den"."sync_admitted", "__slice_den"."sync_finish", "__slice_den"."sync_result", "__slice_den"."sync_scope", "__slice_den"."sync_skipped", "__slice"."tally", "__slice"."weight" TO :"slice_seats__auditor";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."audit" TO :"slice_seats__auditor";
 
@@ -4001,11 +1531,11 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__bell_names_aiqi4uostx"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_root_kind_names_nagupzc3sq"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__bell_live_bk7zau3khi"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_mosnikz3yn"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_root_kind_live_sx7vmfeklj"(), "slice"."__feed_live_pfwkvulieq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__sync_outcome_live_7gndrvrenw"() TO :"slice_seats__auditor";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__chain_coordinator" TO :"slice_seats__chain_coordinator";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__chain_coordinator";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice_den"."chain_chain_run_input_feed", "slice_den"."chain_kind", "slice_den"."chain_ordered_input_feed", "slice_den"."chain_outcome", "slice_den"."chain_page_input_feed", "slice_den"."chain_pausable", "slice_den"."chain_retry_why", "slice_den"."chain_root_kind" TO :"slice_seats__chain_coordinator";
 
-GRANT SELECT ON TABLE "slice_seats__chain_coordinator"."chain_paused", "slice_seats__chain_coordinator"."chain_resumed", "slice_seats__chain_coordinator"."chain_served" TO :"slice_seats__chain_coordinator";
+GRANT SELECT ON TABLE "__slice_den"."chain_paused", "__slice_den"."chain_resumed", "__slice_den"."chain_served" TO :"slice_seats__chain_coordinator";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."chain_paused" TO :"slice_seats__chain_coordinator";
 
@@ -4020,11 +1550,11 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"() TO :"slice_seats__chain_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__chain_den" TO :"slice_seats__chain_den";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__chain_den";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice"."__sha256", "slice_den"."chain_chain_run_input_feed", "slice_den"."chain_kind", "slice_den"."chain_ordered_input_feed", "slice_den"."chain_outcome", "slice_den"."chain_page_input_feed", "slice_den"."chain_pausable", "slice_den"."chain_retry_why", "slice_den"."chain_root_kind", "slice"."feed" TO :"slice_seats__chain_den";
 
-GRANT SELECT ON TABLE "slice_seats__chain_den"."chain_admitted", "slice_seats__chain_den"."chain_chain_run_finish_output", "slice_seats__chain_den"."chain_chain_run_input", "slice_seats__chain_den"."chain_claim", "slice_seats__chain_den"."chain_done", "slice_seats__chain_den"."chain_ended", "slice_seats__chain_den"."chain_exhausted", "slice_seats__chain_den"."chain_failed", "slice_seats__chain_den"."chain_fenced", "slice_seats__chain_den"."chain_finish", "slice_seats__chain_den"."chain_held", "slice_seats__chain_den"."chain_next", "slice_seats__chain_den"."chain_ordered_finish_output", "slice_seats__chain_den"."chain_ordered_input", "slice_seats__chain_den"."chain_page_input", "slice_seats__chain_den"."chain_page_input_after", "slice_seats__chain_den"."chain_page_output", "slice_seats__chain_den"."chain_page_output_next", "slice_seats__chain_den"."chain_page_read_earlier", "slice_seats__chain_den"."chain_page_read_earlier_row", "slice_seats__chain_den"."chain_page_read_tree", "slice_seats__chain_den"."chain_page_read_tree_items", "slice_seats__chain_den"."chain_page_read_tree_row", "slice_seats__chain_den"."chain_page_read_weights", "slice_seats__chain_den"."chain_page_read_weights_row", "slice_seats__chain_den"."chain_page_tree_first", "slice_seats__chain_den"."chain_paused", "slice_seats__chain_den"."chain_refusal", "slice_seats__chain_den"."chain_result", "slice_seats__chain_den"."chain_resumed", "slice_seats__chain_den"."chain_retry", "slice_seats__chain_den"."chain_root", "slice_seats__chain_den"."chain_scope", "slice_seats__chain_den"."chain_served", "slice_seats__chain_den"."chain_skipped", "slice_seats__chain_den"."chain_start_step", "slice_seats__chain_den"."chain_step" TO :"slice_seats__chain_den";
+GRANT SELECT ON TABLE "__slice_den"."chain_admitted", "__slice_den"."chain_chain_run_finish_output", "__slice_den"."chain_chain_run_input", "__slice_den"."chain_claim", "__slice_den"."chain_done", "__slice_den"."chain_ended", "__slice_den"."chain_exhausted", "__slice_den"."chain_failed", "__slice_den"."chain_fenced", "__slice_den"."chain_finish", "__slice_den"."chain_held", "__slice_den"."chain_next", "__slice_den"."chain_ordered_finish_output", "__slice_den"."chain_ordered_input", "__slice_den"."chain_page_input", "__slice_den"."chain_page_input_after", "__slice_den"."chain_page_output", "__slice_den"."chain_page_output_next", "__slice_den"."chain_page_read_earlier", "__slice_den"."chain_page_read_earlier_row", "__slice_den"."chain_page_read_tree", "__slice_den"."chain_page_read_tree_items", "__slice_den"."chain_page_read_tree_row", "__slice_den"."chain_page_read_weights", "__slice_den"."chain_page_read_weights_row", "__slice_den"."chain_page_tree_first", "__slice_den"."chain_paused", "__slice_den"."chain_refusal", "__slice_den"."chain_result", "__slice_den"."chain_resumed", "__slice_den"."chain_retry", "__slice_den"."chain_root", "__slice_den"."chain_scope", "__slice_den"."chain_served", "__slice_den"."chain_skipped", "__slice_den"."chain_start_step", "__slice_den"."chain_step" TO :"slice_seats__chain_den";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."chain_admitted" TO :"slice_seats__chain_den";
 
@@ -4097,11 +1627,11 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_chain_claim_attempt_fn4w5elo4b"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__chain_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__chain_retirer" TO :"slice_seats__chain_retirer";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__chain_retirer";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice_den"."chain_chain_run_input_feed", "slice_den"."chain_kind", "slice_den"."chain_ordered_input_feed", "slice_den"."chain_outcome", "slice_den"."chain_page_input_feed", "slice_den"."chain_pausable", "slice_den"."chain_retry_why", "slice_den"."chain_root_kind", "slice"."feed" TO :"slice_seats__chain_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__chain_retirer"."chain_admitted", "slice_seats__chain_retirer"."chain_chain_run_finish_output", "slice_seats__chain_retirer"."chain_chain_run_input", "slice_seats__chain_retirer"."chain_claim", "slice_seats__chain_retirer"."chain_done", "slice_seats__chain_retirer"."chain_ended", "slice_seats__chain_retirer"."chain_exhausted", "slice_seats__chain_retirer"."chain_failed", "slice_seats__chain_retirer"."chain_fenced", "slice_seats__chain_retirer"."chain_finish", "slice_seats__chain_retirer"."chain_held", "slice_seats__chain_retirer"."chain_next", "slice_seats__chain_retirer"."chain_ordered_finish_output", "slice_seats__chain_retirer"."chain_ordered_input", "slice_seats__chain_retirer"."chain_page_input", "slice_seats__chain_retirer"."chain_page_input_after", "slice_seats__chain_retirer"."chain_page_output", "slice_seats__chain_retirer"."chain_page_output_next", "slice_seats__chain_retirer"."chain_page_read_earlier", "slice_seats__chain_retirer"."chain_page_read_earlier_row", "slice_seats__chain_retirer"."chain_page_read_tree", "slice_seats__chain_retirer"."chain_page_read_tree_items", "slice_seats__chain_retirer"."chain_page_read_tree_row", "slice_seats__chain_retirer"."chain_page_read_weights", "slice_seats__chain_retirer"."chain_page_read_weights_row", "slice_seats__chain_retirer"."chain_page_tree_first", "slice_seats__chain_retirer"."chain_refusal", "slice_seats__chain_retirer"."chain_result", "slice_seats__chain_retirer"."chain_retry", "slice_seats__chain_retirer"."chain_root", "slice_seats__chain_retirer"."chain_scope", "slice_seats__chain_retirer"."chain_skipped", "slice_seats__chain_retirer"."chain_start_step", "slice_seats__chain_retirer"."chain_step" TO :"slice_seats__chain_retirer";
+GRANT SELECT ON TABLE "__slice_den"."chain_admitted", "__slice_den"."chain_chain_run_finish_output", "__slice_den"."chain_chain_run_input", "__slice_den"."chain_claim", "__slice_den"."chain_done", "__slice_den"."chain_ended", "__slice_den"."chain_exhausted", "__slice_den"."chain_failed", "__slice_den"."chain_fenced", "__slice_den"."chain_finish", "__slice_den"."chain_held", "__slice_den"."chain_next", "__slice_den"."chain_ordered_finish_output", "__slice_den"."chain_ordered_input", "__slice_den"."chain_page_input", "__slice_den"."chain_page_input_after", "__slice_den"."chain_page_output", "__slice_den"."chain_page_output_next", "__slice_den"."chain_page_read_earlier", "__slice_den"."chain_page_read_earlier_row", "__slice_den"."chain_page_read_tree", "__slice_den"."chain_page_read_tree_items", "__slice_den"."chain_page_read_tree_row", "__slice_den"."chain_page_read_weights", "__slice_den"."chain_page_read_weights_row", "__slice_den"."chain_page_tree_first", "__slice_den"."chain_refusal", "__slice_den"."chain_result", "__slice_den"."chain_retry", "__slice_den"."chain_root", "__slice_den"."chain_scope", "__slice_den"."chain_skipped", "__slice_den"."chain_start_step", "__slice_den"."chain_step" TO :"slice_seats__chain_retirer";
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "slice_den"."chain_admitted" TO :"slice_seats__chain_retirer";
 
@@ -4170,11 +1700,11 @@ GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_chain_claim_attempt_fn4w5elo4b"("
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_chain_claim_attempt_n5yg3h2b6a" TO :"slice_seats__chain_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__clock_coordinator" TO :"slice_seats__clock_coordinator";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__clock_coordinator";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice_den"."clock_chime_input_bell", "slice_den"."clock_chime_output_bell", "slice_den"."clock_hourly_input_bell", "slice_den"."clock_kind", "slice_den"."clock_outcome", "slice_den"."clock_pausable", "slice_den"."clock_retry_why", "slice_den"."clock_root_kind" TO :"slice_seats__clock_coordinator";
 
-GRANT SELECT ON TABLE "slice_seats__clock_coordinator"."clock_paused", "slice_seats__clock_coordinator"."clock_resumed", "slice_seats__clock_coordinator"."clock_served" TO :"slice_seats__clock_coordinator";
+GRANT SELECT ON TABLE "__slice_den"."clock_paused", "__slice_den"."clock_resumed", "__slice_den"."clock_served" TO :"slice_seats__clock_coordinator";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."clock_paused" TO :"slice_seats__clock_coordinator";
 
@@ -4189,11 +1719,11 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__clock_pausable_names_phjbr2fipl"(), "slice"."__clock_chime_input_bell_live_vs2eypgl4v"(), "slice"."__clock_chime_output_bell_live_ikpwkv25mh"(), "slice"."__clock_hourly_input_bell_live_yfdtebn7na"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"() TO :"slice_seats__clock_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__clock_den" TO :"slice_seats__clock_den";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__clock_den";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice"."__sha256", "slice_den"."clock_chime_input_bell", "slice_den"."clock_chime_output_bell", "slice_den"."clock_hourly_input_bell", "slice_den"."clock_kind", "slice_den"."clock_outcome", "slice_den"."clock_pausable", "slice_den"."clock_retry_why", "slice_den"."clock_root_kind" TO :"slice_seats__clock_den";
 
-GRANT SELECT ON TABLE "slice_seats__clock_den"."clock_admitted", "slice_seats__clock_den"."clock_chime_input", "slice_seats__clock_den"."clock_chime_output", "slice_seats__clock_den"."clock_claim", "slice_seats__clock_den"."clock_close_input", "slice_seats__clock_den"."clock_close_output", "slice_seats__clock_den"."clock_done", "slice_seats__clock_den"."clock_ended", "slice_seats__clock_den"."clock_exhausted", "slice_seats__clock_den"."clock_failed", "slice_seats__clock_den"."clock_fenced", "slice_seats__clock_den"."clock_finish", "slice_seats__clock_den"."clock_held", "slice_seats__clock_den"."clock_hourly_finish_output", "slice_seats__clock_den"."clock_hourly_input", "slice_seats__clock_den"."clock_paused", "slice_seats__clock_den"."clock_refusal", "slice_seats__clock_den"."clock_result", "slice_seats__clock_den"."clock_resumed", "slice_seats__clock_den"."clock_retry", "slice_seats__clock_den"."clock_root", "slice_seats__clock_den"."clock_scope", "slice_seats__clock_den"."clock_served", "slice_seats__clock_den"."clock_sitting_finish_output", "slice_seats__clock_den"."clock_sitting_input", "slice_seats__clock_den"."clock_skipped", "slice_seats__clock_den"."clock_start_step", "slice_seats__clock_den"."clock_step" TO :"slice_seats__clock_den";
+GRANT SELECT ON TABLE "__slice_den"."clock_admitted", "__slice_den"."clock_chime_input", "__slice_den"."clock_chime_output", "__slice_den"."clock_claim", "__slice_den"."clock_close_input", "__slice_den"."clock_close_output", "__slice_den"."clock_done", "__slice_den"."clock_ended", "__slice_den"."clock_exhausted", "__slice_den"."clock_failed", "__slice_den"."clock_fenced", "__slice_den"."clock_finish", "__slice_den"."clock_held", "__slice_den"."clock_hourly_finish_output", "__slice_den"."clock_hourly_input", "__slice_den"."clock_paused", "__slice_den"."clock_refusal", "__slice_den"."clock_result", "__slice_den"."clock_resumed", "__slice_den"."clock_retry", "__slice_den"."clock_root", "__slice_den"."clock_scope", "__slice_den"."clock_served", "__slice_den"."clock_sitting_finish_output", "__slice_den"."clock_sitting_input", "__slice_den"."clock_skipped", "__slice_den"."clock_start_step", "__slice_den"."clock_step" TO :"slice_seats__clock_den";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."clock_admitted" TO :"slice_seats__clock_den";
 
@@ -4250,11 +1780,11 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__clock_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__clock_retirer" TO :"slice_seats__clock_retirer";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__clock_retirer";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice_den"."clock_chime_input_bell", "slice_den"."clock_chime_output_bell", "slice_den"."clock_hourly_input_bell", "slice_den"."clock_kind", "slice_den"."clock_outcome", "slice_den"."clock_pausable", "slice_den"."clock_retry_why", "slice_den"."clock_root_kind" TO :"slice_seats__clock_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__clock_retirer"."clock_admitted", "slice_seats__clock_retirer"."clock_chime_input", "slice_seats__clock_retirer"."clock_chime_output", "slice_seats__clock_retirer"."clock_claim", "slice_seats__clock_retirer"."clock_close_input", "slice_seats__clock_retirer"."clock_close_output", "slice_seats__clock_retirer"."clock_done", "slice_seats__clock_retirer"."clock_ended", "slice_seats__clock_retirer"."clock_exhausted", "slice_seats__clock_retirer"."clock_failed", "slice_seats__clock_retirer"."clock_fenced", "slice_seats__clock_retirer"."clock_finish", "slice_seats__clock_retirer"."clock_held", "slice_seats__clock_retirer"."clock_hourly_finish_output", "slice_seats__clock_retirer"."clock_hourly_input", "slice_seats__clock_retirer"."clock_refusal", "slice_seats__clock_retirer"."clock_result", "slice_seats__clock_retirer"."clock_retry", "slice_seats__clock_retirer"."clock_root", "slice_seats__clock_retirer"."clock_scope", "slice_seats__clock_retirer"."clock_sitting_finish_output", "slice_seats__clock_retirer"."clock_sitting_input", "slice_seats__clock_retirer"."clock_skipped", "slice_seats__clock_retirer"."clock_start_step", "slice_seats__clock_retirer"."clock_step" TO :"slice_seats__clock_retirer";
+GRANT SELECT ON TABLE "__slice_den"."clock_admitted", "__slice_den"."clock_chime_input", "__slice_den"."clock_chime_output", "__slice_den"."clock_claim", "__slice_den"."clock_close_input", "__slice_den"."clock_close_output", "__slice_den"."clock_done", "__slice_den"."clock_ended", "__slice_den"."clock_exhausted", "__slice_den"."clock_failed", "__slice_den"."clock_fenced", "__slice_den"."clock_finish", "__slice_den"."clock_held", "__slice_den"."clock_hourly_finish_output", "__slice_den"."clock_hourly_input", "__slice_den"."clock_refusal", "__slice_den"."clock_result", "__slice_den"."clock_retry", "__slice_den"."clock_root", "__slice_den"."clock_scope", "__slice_den"."clock_sitting_finish_output", "__slice_den"."clock_sitting_input", "__slice_den"."clock_skipped", "__slice_den"."clock_start_step", "__slice_den"."clock_step" TO :"slice_seats__clock_retirer";
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "slice_den"."clock_admitted" TO :"slice_seats__clock_retirer";
 
@@ -4315,14 +1845,14 @@ GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_clock_claim_attempt_ddh5rjlfkk" TO :"slice_seats__clock_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__editor" TO :"slice_seats__editor";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice" TO :"slice_seats__editor";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "vector_ext" TO :"slice_seats__editor";
 
 GRANT USAGE ON DOMAIN "slice"."__text_t4rwovzmqj" TO :"slice_seats__editor";
 
-GRANT SELECT ON TABLE "slice_seats__editor"."passage", "slice_seats__editor"."seen" TO :"slice_seats__editor";
+GRANT SELECT ON TABLE "__slice"."passage", "__slice"."seen" TO :"slice_seats__editor";
 
 GRANT SELECT, INSERT, DELETE ON TABLE "slice"."passage" TO :"slice_seats__editor";
 
@@ -4338,11 +1868,11 @@ SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__editor";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__fan_coordinator" TO :"slice_seats__fan_coordinator";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den", "slice_seats__fan_coordinator" TO :"slice_seats__fan_coordinator";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice"."__sha256", "slice_den"."fan_child_kind", "slice_den"."fan_kind", "slice_den"."fan_outcome", "slice_den"."fan_pausable", "slice_den"."fan_resource", "slice_den"."fan_retry_why", "slice_den"."fan_root_kind" TO :"slice_seats__fan_coordinator";
 
-GRANT SELECT ON TABLE "slice_seats__fan_coordinator"."fan_live", "slice_seats__fan_coordinator"."fan_paused", "slice_seats__fan_coordinator"."fan_resumed", "slice_seats__fan_coordinator"."fan_served" TO :"slice_seats__fan_coordinator";
+GRANT SELECT ON TABLE "__slice_den"."fan_paused", "__slice_den"."fan_resumed", "__slice_den"."fan_served", "slice_seats__fan_coordinator"."fan_live" TO :"slice_seats__fan_coordinator";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."fan_paused" TO :"slice_seats__fan_coordinator";
 
@@ -4357,11 +1887,11 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_pausable_names_7t2samsp7b"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_mosnikz3yn"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_uymd2oabeh"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_sx7vmfeklj"() TO :"slice_seats__fan_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__fan_den" TO :"slice_seats__fan_den";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den", "slice_seats__fan_den" TO :"slice_seats__fan_den";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice"."__sha256", "slice_den"."fan_child_kind", "slice_den"."fan_kind", "slice_den"."fan_outcome", "slice_den"."fan_pausable", "slice_den"."fan_resource", "slice_den"."fan_retry_why", "slice_den"."fan_root_kind" TO :"slice_seats__fan_den";
 
-GRANT SELECT ON TABLE "slice_seats__fan_den"."fan_admitted", "slice_seats__fan_den"."fan_batch_finish_output", "slice_seats__fan_den"."fan_batch_input", "slice_seats__fan_den"."fan_claim", "slice_seats__fan_den"."fan_done", "slice_seats__fan_den"."fan_dust_input", "slice_seats__fan_den"."fan_dust_output", "slice_seats__fan_den"."fan_ended", "slice_seats__fan_den"."fan_exhausted", "slice_seats__fan_den"."fan_failed", "slice_seats__fan_den"."fan_fan_run_finish_output", "slice_seats__fan_den"."fan_fan_run_input", "slice_seats__fan_den"."fan_fenced", "slice_seats__fan_den"."fan_finish", "slice_seats__fan_den"."fan_held", "slice_seats__fan_den"."fan_hold", "slice_seats__fan_den"."fan_live", "slice_seats__fan_den"."fan_mop_input", "slice_seats__fan_den"."fan_mop_output", "slice_seats__fan_den"."fan_paused", "slice_seats__fan_den"."fan_refusal", "slice_seats__fan_den"."fan_result", "slice_seats__fan_den"."fan_resumed", "slice_seats__fan_den"."fan_retry", "slice_seats__fan_den"."fan_root", "slice_seats__fan_den"."fan_scope", "slice_seats__fan_den"."fan_served", "slice_seats__fan_den"."fan_skipped", "slice_seats__fan_den"."fan_square_input", "slice_seats__fan_den"."fan_square_output", "slice_seats__fan_den"."fan_start_scope", "slice_seats__fan_den"."fan_start_step", "slice_seats__fan_den"."fan_step", "slice_seats__fan_den"."fan_sweep_finish_output", "slice_seats__fan_den"."fan_sweep_input", "slice_seats__fan_den"."fan_within" TO :"slice_seats__fan_den";
+GRANT SELECT ON TABLE "__slice_den"."fan_admitted", "__slice_den"."fan_batch_finish_output", "__slice_den"."fan_batch_input", "__slice_den"."fan_claim", "__slice_den"."fan_done", "__slice_den"."fan_dust_input", "__slice_den"."fan_dust_output", "__slice_den"."fan_ended", "__slice_den"."fan_exhausted", "__slice_den"."fan_failed", "__slice_den"."fan_fan_run_finish_output", "__slice_den"."fan_fan_run_input", "__slice_den"."fan_fenced", "__slice_den"."fan_finish", "__slice_den"."fan_held", "__slice_den"."fan_hold", "__slice_den"."fan_mop_input", "__slice_den"."fan_mop_output", "__slice_den"."fan_paused", "__slice_den"."fan_refusal", "__slice_den"."fan_result", "__slice_den"."fan_resumed", "__slice_den"."fan_retry", "__slice_den"."fan_root", "__slice_den"."fan_scope", "__slice_den"."fan_served", "__slice_den"."fan_skipped", "__slice_den"."fan_square_input", "__slice_den"."fan_square_output", "__slice_den"."fan_start_scope", "__slice_den"."fan_start_step", "__slice_den"."fan_step", "__slice_den"."fan_sweep_finish_output", "__slice_den"."fan_sweep_input", "__slice_den"."fan_within", "slice_seats__fan_den"."fan_live" TO :"slice_seats__fan_den";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."fan_admitted" TO :"slice_seats__fan_den";
 
@@ -4433,11 +1963,11 @@ GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__fan_den";
 GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_fan_claim_attempt_chhiwa5h36"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__fan_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__fan_retirer" TO :"slice_seats__fan_retirer";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__fan_retirer";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice_den"."fan_child_kind", "slice_den"."fan_kind", "slice_den"."fan_outcome", "slice_den"."fan_pausable", "slice_den"."fan_resource", "slice_den"."fan_retry_why", "slice_den"."fan_root_kind" TO :"slice_seats__fan_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__fan_retirer"."fan_admitted", "slice_seats__fan_retirer"."fan_batch_finish_output", "slice_seats__fan_retirer"."fan_batch_input", "slice_seats__fan_retirer"."fan_claim", "slice_seats__fan_retirer"."fan_done", "slice_seats__fan_retirer"."fan_dust_input", "slice_seats__fan_retirer"."fan_dust_output", "slice_seats__fan_retirer"."fan_ended", "slice_seats__fan_retirer"."fan_exhausted", "slice_seats__fan_retirer"."fan_failed", "slice_seats__fan_retirer"."fan_fan_run_finish_output", "slice_seats__fan_retirer"."fan_fan_run_input", "slice_seats__fan_retirer"."fan_fenced", "slice_seats__fan_retirer"."fan_finish", "slice_seats__fan_retirer"."fan_held", "slice_seats__fan_retirer"."fan_hold", "slice_seats__fan_retirer"."fan_mop_input", "slice_seats__fan_retirer"."fan_mop_output", "slice_seats__fan_retirer"."fan_refusal", "slice_seats__fan_retirer"."fan_result", "slice_seats__fan_retirer"."fan_retry", "slice_seats__fan_retirer"."fan_root", "slice_seats__fan_retirer"."fan_scope", "slice_seats__fan_retirer"."fan_skipped", "slice_seats__fan_retirer"."fan_square_input", "slice_seats__fan_retirer"."fan_square_output", "slice_seats__fan_retirer"."fan_start_scope", "slice_seats__fan_retirer"."fan_start_step", "slice_seats__fan_retirer"."fan_step", "slice_seats__fan_retirer"."fan_sweep_finish_output", "slice_seats__fan_retirer"."fan_sweep_input", "slice_seats__fan_retirer"."fan_within" TO :"slice_seats__fan_retirer";
+GRANT SELECT ON TABLE "__slice_den"."fan_admitted", "__slice_den"."fan_batch_finish_output", "__slice_den"."fan_batch_input", "__slice_den"."fan_claim", "__slice_den"."fan_done", "__slice_den"."fan_dust_input", "__slice_den"."fan_dust_output", "__slice_den"."fan_ended", "__slice_den"."fan_exhausted", "__slice_den"."fan_failed", "__slice_den"."fan_fan_run_finish_output", "__slice_den"."fan_fan_run_input", "__slice_den"."fan_fenced", "__slice_den"."fan_finish", "__slice_den"."fan_held", "__slice_den"."fan_hold", "__slice_den"."fan_mop_input", "__slice_den"."fan_mop_output", "__slice_den"."fan_refusal", "__slice_den"."fan_result", "__slice_den"."fan_retry", "__slice_den"."fan_root", "__slice_den"."fan_scope", "__slice_den"."fan_skipped", "__slice_den"."fan_square_input", "__slice_den"."fan_square_output", "__slice_den"."fan_start_scope", "__slice_den"."fan_start_step", "__slice_den"."fan_step", "__slice_den"."fan_sweep_finish_output", "__slice_den"."fan_sweep_input", "__slice_den"."fan_within" TO :"slice_seats__fan_retirer";
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "slice_den"."fan_admitted" TO :"slice_seats__fan_retirer";
 
@@ -4512,14 +2042,14 @@ GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_fan_claim_attempt_chhiwa5h36"("sl
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_fan_claim_attempt_u34lm72lgr" TO :"slice_seats__fan_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__loader" TO :"slice_seats__loader";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den", "__slice" TO :"slice_seats__loader";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "vector_ext" TO :"slice_seats__loader";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice_den"."assign_assignment_input_mode", "slice_den"."assign_decide_input_mode", "slice_den"."assign_decide_output_stage", "slice_den"."assign_embed_input_mode", "slice_den"."assign_kind", "slice_den"."assign_outcome", "slice_den"."assign_pausable", "slice_den"."assign_retry_why", "slice_den"."assign_root_kind", "slice"."bell", "slice_den"."chain_chain_run_input_feed", "slice_den"."chain_kind", "slice_den"."chain_ordered_input_feed", "slice_den"."chain_outcome", "slice_den"."chain_page_input_feed", "slice_den"."chain_pausable", "slice_den"."chain_retry_why", "slice_den"."chain_root_kind", "slice_den"."clock_chime_input_bell", "slice_den"."clock_chime_output_bell", "slice_den"."clock_hourly_input_bell", "slice_den"."clock_kind", "slice_den"."clock_outcome", "slice_den"."clock_pausable", "slice_den"."clock_retry_why", "slice_den"."clock_root_kind", "slice_den"."fan_child_kind", "slice_den"."fan_kind", "slice_den"."fan_outcome", "slice_den"."fan_pausable", "slice_den"."fan_resource", "slice_den"."fan_retry_why", "slice_den"."fan_root_kind", "slice"."feed", "slice_den"."retry_kind", "slice_den"."retry_outcome", "slice_den"."retry_pausable", "slice_den"."retry_retry_why", "slice_den"."retry_root_kind", "slice_den"."review_child_kind", "slice_den"."review_kind", "slice_den"."review_outcome", "slice_den"."review_pausable", "slice_den"."review_resource", "slice_den"."review_retry_why", "slice_den"."review_root_kind", "slice_den"."sync_kind", "slice_den"."sync_outcome", "slice_den"."sync_pausable", "slice_den"."sync_retry_why", "slice_den"."sync_root_kind", "slice_den"."writeback_kind", "slice_den"."writeback_outcome", "slice_den"."writeback_pausable", "slice_den"."writeback_retry_why", "slice_den"."writeback_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__loader";
 
-GRANT SELECT ON TABLE "slice_seats__loader"."assign_admitted", "slice_seats__loader"."assign_asked", "slice_seats__loader"."assign_assignment_finish_output", "slice_seats__loader"."assign_assignment_input", "slice_seats__loader"."assign_assignment_input_exclude", "slice_seats__loader"."assign_assignment_input_mode_nearest", "slice_seats__loader"."assign_assignment_input_mode_within", "slice_seats__loader"."assign_assignment_input_near", "slice_seats__loader"."assign_claim", "slice_seats__loader"."assign_decide_input", "slice_seats__loader"."assign_decide_input_exclude", "slice_seats__loader"."assign_decide_input_mode_nearest", "slice_seats__loader"."assign_decide_input_mode_within", "slice_seats__loader"."assign_decide_output", "slice_seats__loader"."assign_decide_output_stage_rest", "slice_seats__loader"."assign_decide_output_stage_serve", "slice_seats__loader"."assign_decide_output_weighed", "slice_seats__loader"."assign_decide_read_nearest", "slice_seats__loader"."assign_decide_read_nearest_row", "slice_seats__loader"."assign_decide_read_seen", "slice_seats__loader"."assign_decide_read_seen_row", "slice_seats__loader"."assign_done", "slice_seats__loader"."assign_embed_input", "slice_seats__loader"."assign_embed_input_exclude", "slice_seats__loader"."assign_embed_input_mode_nearest", "slice_seats__loader"."assign_embed_input_mode_within", "slice_seats__loader"."assign_embed_input_near", "slice_seats__loader"."assign_embed_output", "slice_seats__loader"."assign_ended", "slice_seats__loader"."assign_exhausted", "slice_seats__loader"."assign_failed", "slice_seats__loader"."assign_fenced", "slice_seats__loader"."assign_finish", "slice_seats__loader"."assign_held", "slice_seats__loader"."assign_refusal", "slice_seats__loader"."assign_result", "slice_seats__loader"."assign_retry", "slice_seats__loader"."assign_root", "slice_seats__loader"."assign_scope", "slice_seats__loader"."assign_skipped", "slice_seats__loader"."assign_start_step", "slice_seats__loader"."assign_step", "slice_seats__loader"."assigned", "slice_seats__loader"."built", "slice_seats__loader"."chain_admitted", "slice_seats__loader"."chain_chain_run_finish_output", "slice_seats__loader"."chain_chain_run_input", "slice_seats__loader"."chain_claim", "slice_seats__loader"."chain_done", "slice_seats__loader"."chain_ended", "slice_seats__loader"."chain_exhausted", "slice_seats__loader"."chain_failed", "slice_seats__loader"."chain_fenced", "slice_seats__loader"."chain_finish", "slice_seats__loader"."chain_held", "slice_seats__loader"."chain_next", "slice_seats__loader"."chain_ordered_finish_output", "slice_seats__loader"."chain_ordered_input", "slice_seats__loader"."chain_page_input", "slice_seats__loader"."chain_page_input_after", "slice_seats__loader"."chain_page_output", "slice_seats__loader"."chain_page_output_next", "slice_seats__loader"."chain_page_read_earlier", "slice_seats__loader"."chain_page_read_earlier_row", "slice_seats__loader"."chain_page_read_tree", "slice_seats__loader"."chain_page_read_tree_items", "slice_seats__loader"."chain_page_read_tree_row", "slice_seats__loader"."chain_page_read_weights", "slice_seats__loader"."chain_page_read_weights_row", "slice_seats__loader"."chain_page_tree_first", "slice_seats__loader"."chain_refusal", "slice_seats__loader"."chain_result", "slice_seats__loader"."chain_retry", "slice_seats__loader"."chain_root", "slice_seats__loader"."chain_scope", "slice_seats__loader"."chain_skipped", "slice_seats__loader"."chain_start_step", "slice_seats__loader"."chain_step", "slice_seats__loader"."chimed", "slice_seats__loader"."clock_admitted", "slice_seats__loader"."clock_chime_input", "slice_seats__loader"."clock_chime_output", "slice_seats__loader"."clock_claim", "slice_seats__loader"."clock_close_input", "slice_seats__loader"."clock_close_output", "slice_seats__loader"."clock_done", "slice_seats__loader"."clock_ended", "slice_seats__loader"."clock_exhausted", "slice_seats__loader"."clock_failed", "slice_seats__loader"."clock_fenced", "slice_seats__loader"."clock_finish", "slice_seats__loader"."clock_held", "slice_seats__loader"."clock_hourly_finish_output", "slice_seats__loader"."clock_hourly_input", "slice_seats__loader"."clock_refusal", "slice_seats__loader"."clock_result", "slice_seats__loader"."clock_retry", "slice_seats__loader"."clock_root", "slice_seats__loader"."clock_scope", "slice_seats__loader"."clock_sitting_finish_output", "slice_seats__loader"."clock_sitting_input", "slice_seats__loader"."clock_skipped", "slice_seats__loader"."clock_start_step", "slice_seats__loader"."clock_step", "slice_seats__loader"."concluded", "slice_seats__loader"."copied", "slice_seats__loader"."cursor", "slice_seats__loader"."delivered", "slice_seats__loader"."fan_admitted", "slice_seats__loader"."fan_batch_finish_output", "slice_seats__loader"."fan_batch_input", "slice_seats__loader"."fan_claim", "slice_seats__loader"."fan_done", "slice_seats__loader"."fan_dust_input", "slice_seats__loader"."fan_dust_output", "slice_seats__loader"."fan_ended", "slice_seats__loader"."fan_exhausted", "slice_seats__loader"."fan_failed", "slice_seats__loader"."fan_fan_run_finish_output", "slice_seats__loader"."fan_fan_run_input", "slice_seats__loader"."fan_fenced", "slice_seats__loader"."fan_finish", "slice_seats__loader"."fan_held", "slice_seats__loader"."fan_hold", "slice_seats__loader"."fan_mop_input", "slice_seats__loader"."fan_mop_output", "slice_seats__loader"."fan_refusal", "slice_seats__loader"."fan_result", "slice_seats__loader"."fan_retry", "slice_seats__loader"."fan_root", "slice_seats__loader"."fan_scope", "slice_seats__loader"."fan_skipped", "slice_seats__loader"."fan_square_input", "slice_seats__loader"."fan_square_output", "slice_seats__loader"."fan_start_scope", "slice_seats__loader"."fan_start_step", "slice_seats__loader"."fan_step", "slice_seats__loader"."fan_sweep_finish_output", "slice_seats__loader"."fan_sweep_input", "slice_seats__loader"."fan_within", "slice_seats__loader"."heard", "slice_seats__loader"."item", "slice_seats__loader"."order", "slice_seats__loader"."passage", "slice_seats__loader"."retry_admitted", "slice_seats__loader"."retry_brittle_input", "slice_seats__loader"."retry_brittle_output", "slice_seats__loader"."retry_claim", "slice_seats__loader"."retry_done", "slice_seats__loader"."retry_ended", "slice_seats__loader"."retry_exhausted", "slice_seats__loader"."retry_failed", "slice_seats__loader"."retry_fenced", "slice_seats__loader"."retry_finish", "slice_seats__loader"."retry_held", "slice_seats__loader"."retry_ladders_finish_output", "slice_seats__loader"."retry_ladders_input", "slice_seats__loader"."retry_patient_input", "slice_seats__loader"."retry_patient_output", "slice_seats__loader"."retry_polite_input", "slice_seats__loader"."retry_polite_output", "slice_seats__loader"."retry_refusal", "slice_seats__loader"."retry_result", "slice_seats__loader"."retry_retry", "slice_seats__loader"."retry_root", "slice_seats__loader"."retry_scope", "slice_seats__loader"."retry_skipped", "slice_seats__loader"."retry_start_step", "slice_seats__loader"."retry_steadfast_input", "slice_seats__loader"."retry_steadfast_output", "slice_seats__loader"."retry_step", "slice_seats__loader"."retry_throttled_finish_output", "slice_seats__loader"."retry_throttled_input", "slice_seats__loader"."retry_unhurried_finish_output", "slice_seats__loader"."retry_unhurried_input", "slice_seats__loader"."review_admitted", "slice_seats__loader"."review_analyze_input", "slice_seats__loader"."review_analyze_output", "slice_seats__loader"."review_claim", "slice_seats__loader"."review_done", "slice_seats__loader"."review_ended", "slice_seats__loader"."review_exhausted", "slice_seats__loader"."review_failed", "slice_seats__loader"."review_fenced", "slice_seats__loader"."review_finish", "slice_seats__loader"."review_gather_input", "slice_seats__loader"."review_gather_input_sizes", "slice_seats__loader"."review_gather_output", "slice_seats__loader"."review_held", "slice_seats__loader"."review_hold", "slice_seats__loader"."review_questions_finish_output", "slice_seats__loader"."review_questions_input", "slice_seats__loader"."review_refusal", "slice_seats__loader"."review_result", "slice_seats__loader"."review_retry", "slice_seats__loader"."review_review_run_finish_output", "slice_seats__loader"."review_review_run_input", "slice_seats__loader"."review_review_run_input_sizes", "slice_seats__loader"."review_root", "slice_seats__loader"."review_save_input", "slice_seats__loader"."review_save_output", "slice_seats__loader"."review_saved", "slice_seats__loader"."review_scope", "slice_seats__loader"."review_skipped", "slice_seats__loader"."review_split", "slice_seats__loader"."review_start_scope", "slice_seats__loader"."review_start_step", "slice_seats__loader"."review_step", "slice_seats__loader"."review_within", "slice_seats__loader"."reviewed", "slice_seats__loader"."seen", "slice_seats__loader"."settled", "slice_seats__loader"."summary", "slice_seats__loader"."sync_admitted", "slice_seats__loader"."sync_build_input", "slice_seats__loader"."sync_build_output", "slice_seats__loader"."sync_claim", "slice_seats__loader"."sync_copy_input", "slice_seats__loader"."sync_copy_output", "slice_seats__loader"."sync_done", "slice_seats__loader"."sync_ended", "slice_seats__loader"."sync_exclusive_key", "slice_seats__loader"."sync_exhausted", "slice_seats__loader"."sync_failed", "slice_seats__loader"."sync_fenced", "slice_seats__loader"."sync_finish", "slice_seats__loader"."sync_gold_finish_output", "slice_seats__loader"."sync_gold_input", "slice_seats__loader"."sync_held", "slice_seats__loader"."sync_refusal", "slice_seats__loader"."sync_result", "slice_seats__loader"."sync_retry", "slice_seats__loader"."sync_root", "slice_seats__loader"."sync_scope", "slice_seats__loader"."sync_skipped", "slice_seats__loader"."sync_start_step", "slice_seats__loader"."sync_step", "slice_seats__loader"."sync_sync_run_finish_output", "slice_seats__loader"."sync_sync_run_input", "slice_seats__loader"."tally", "slice_seats__loader"."weight", "slice_seats__loader"."writeback_admitted", "slice_seats__loader"."writeback_claim", "slice_seats__loader"."writeback_deliver_input", "slice_seats__loader"."writeback_deliver_output", "slice_seats__loader"."writeback_done", "slice_seats__loader"."writeback_ended", "slice_seats__loader"."writeback_exhausted", "slice_seats__loader"."writeback_failed", "slice_seats__loader"."writeback_fenced", "slice_seats__loader"."writeback_finish", "slice_seats__loader"."writeback_held", "slice_seats__loader"."writeback_refusal", "slice_seats__loader"."writeback_result", "slice_seats__loader"."writeback_retry", "slice_seats__loader"."writeback_root", "slice_seats__loader"."writeback_scope", "slice_seats__loader"."writeback_skipped", "slice_seats__loader"."writeback_start_step", "slice_seats__loader"."writeback_step", "slice_seats__loader"."writeback_writeback_finish_output", "slice_seats__loader"."writeback_writeback_input" TO :"slice_seats__loader";
+GRANT SELECT ON TABLE "__slice_den"."assign_admitted", "__slice_den"."assign_asked", "__slice_den"."assign_assignment_finish_output", "__slice_den"."assign_assignment_input", "__slice_den"."assign_assignment_input_exclude", "__slice_den"."assign_assignment_input_mode_nearest", "__slice_den"."assign_assignment_input_mode_within", "__slice_den"."assign_assignment_input_near", "__slice_den"."assign_claim", "__slice_den"."assign_decide_input", "__slice_den"."assign_decide_input_exclude", "__slice_den"."assign_decide_input_mode_nearest", "__slice_den"."assign_decide_input_mode_within", "__slice_den"."assign_decide_output", "__slice_den"."assign_decide_output_stage_rest", "__slice_den"."assign_decide_output_stage_serve", "__slice_den"."assign_decide_output_weighed", "__slice_den"."assign_decide_read_nearest", "__slice_den"."assign_decide_read_nearest_row", "__slice_den"."assign_decide_read_seen", "__slice_den"."assign_decide_read_seen_row", "__slice_den"."assign_done", "__slice_den"."assign_embed_input", "__slice_den"."assign_embed_input_exclude", "__slice_den"."assign_embed_input_mode_nearest", "__slice_den"."assign_embed_input_mode_within", "__slice_den"."assign_embed_input_near", "__slice_den"."assign_embed_output", "__slice_den"."assign_ended", "__slice_den"."assign_exhausted", "__slice_den"."assign_failed", "__slice_den"."assign_fenced", "__slice_den"."assign_finish", "__slice_den"."assign_held", "__slice_den"."assign_refusal", "__slice_den"."assign_result", "__slice_den"."assign_retry", "__slice_den"."assign_root", "__slice_den"."assign_scope", "__slice_den"."assign_skipped", "__slice_den"."assign_start_step", "__slice_den"."assign_step", "__slice"."assigned", "__slice"."built", "__slice_den"."chain_admitted", "__slice_den"."chain_chain_run_finish_output", "__slice_den"."chain_chain_run_input", "__slice_den"."chain_claim", "__slice_den"."chain_done", "__slice_den"."chain_ended", "__slice_den"."chain_exhausted", "__slice_den"."chain_failed", "__slice_den"."chain_fenced", "__slice_den"."chain_finish", "__slice_den"."chain_held", "__slice_den"."chain_next", "__slice_den"."chain_ordered_finish_output", "__slice_den"."chain_ordered_input", "__slice_den"."chain_page_input", "__slice_den"."chain_page_input_after", "__slice_den"."chain_page_output", "__slice_den"."chain_page_output_next", "__slice_den"."chain_page_read_earlier", "__slice_den"."chain_page_read_earlier_row", "__slice_den"."chain_page_read_tree", "__slice_den"."chain_page_read_tree_items", "__slice_den"."chain_page_read_tree_row", "__slice_den"."chain_page_read_weights", "__slice_den"."chain_page_read_weights_row", "__slice_den"."chain_page_tree_first", "__slice_den"."chain_refusal", "__slice_den"."chain_result", "__slice_den"."chain_retry", "__slice_den"."chain_root", "__slice_den"."chain_scope", "__slice_den"."chain_skipped", "__slice_den"."chain_start_step", "__slice_den"."chain_step", "__slice"."chimed", "__slice_den"."clock_admitted", "__slice_den"."clock_chime_input", "__slice_den"."clock_chime_output", "__slice_den"."clock_claim", "__slice_den"."clock_close_input", "__slice_den"."clock_close_output", "__slice_den"."clock_done", "__slice_den"."clock_ended", "__slice_den"."clock_exhausted", "__slice_den"."clock_failed", "__slice_den"."clock_fenced", "__slice_den"."clock_finish", "__slice_den"."clock_held", "__slice_den"."clock_hourly_finish_output", "__slice_den"."clock_hourly_input", "__slice_den"."clock_refusal", "__slice_den"."clock_result", "__slice_den"."clock_retry", "__slice_den"."clock_root", "__slice_den"."clock_scope", "__slice_den"."clock_sitting_finish_output", "__slice_den"."clock_sitting_input", "__slice_den"."clock_skipped", "__slice_den"."clock_start_step", "__slice_den"."clock_step", "__slice"."concluded", "__slice"."copied", "__slice"."cursor", "__slice"."delivered", "__slice_den"."fan_admitted", "__slice_den"."fan_batch_finish_output", "__slice_den"."fan_batch_input", "__slice_den"."fan_claim", "__slice_den"."fan_done", "__slice_den"."fan_dust_input", "__slice_den"."fan_dust_output", "__slice_den"."fan_ended", "__slice_den"."fan_exhausted", "__slice_den"."fan_failed", "__slice_den"."fan_fan_run_finish_output", "__slice_den"."fan_fan_run_input", "__slice_den"."fan_fenced", "__slice_den"."fan_finish", "__slice_den"."fan_held", "__slice_den"."fan_hold", "__slice_den"."fan_mop_input", "__slice_den"."fan_mop_output", "__slice_den"."fan_refusal", "__slice_den"."fan_result", "__slice_den"."fan_retry", "__slice_den"."fan_root", "__slice_den"."fan_scope", "__slice_den"."fan_skipped", "__slice_den"."fan_square_input", "__slice_den"."fan_square_output", "__slice_den"."fan_start_scope", "__slice_den"."fan_start_step", "__slice_den"."fan_step", "__slice_den"."fan_sweep_finish_output", "__slice_den"."fan_sweep_input", "__slice_den"."fan_within", "__slice"."heard", "__slice"."item", "__slice"."order", "__slice"."passage", "__slice_den"."retry_admitted", "__slice_den"."retry_brittle_input", "__slice_den"."retry_brittle_output", "__slice_den"."retry_claim", "__slice_den"."retry_done", "__slice_den"."retry_ended", "__slice_den"."retry_exhausted", "__slice_den"."retry_failed", "__slice_den"."retry_fenced", "__slice_den"."retry_finish", "__slice_den"."retry_held", "__slice_den"."retry_ladders_finish_output", "__slice_den"."retry_ladders_input", "__slice_den"."retry_patient_input", "__slice_den"."retry_patient_output", "__slice_den"."retry_polite_input", "__slice_den"."retry_polite_output", "__slice_den"."retry_refusal", "__slice_den"."retry_result", "__slice_den"."retry_retry", "__slice_den"."retry_root", "__slice_den"."retry_scope", "__slice_den"."retry_skipped", "__slice_den"."retry_start_step", "__slice_den"."retry_steadfast_input", "__slice_den"."retry_steadfast_output", "__slice_den"."retry_step", "__slice_den"."retry_throttled_finish_output", "__slice_den"."retry_throttled_input", "__slice_den"."retry_unhurried_finish_output", "__slice_den"."retry_unhurried_input", "__slice_den"."review_admitted", "__slice_den"."review_analyze_input", "__slice_den"."review_analyze_output", "__slice_den"."review_claim", "__slice_den"."review_done", "__slice_den"."review_ended", "__slice_den"."review_exhausted", "__slice_den"."review_failed", "__slice_den"."review_fenced", "__slice_den"."review_finish", "__slice_den"."review_gather_input", "__slice_den"."review_gather_input_sizes", "__slice_den"."review_gather_output", "__slice_den"."review_held", "__slice_den"."review_hold", "__slice_den"."review_questions_finish_output", "__slice_den"."review_questions_input", "__slice_den"."review_refusal", "__slice_den"."review_result", "__slice_den"."review_retry", "__slice_den"."review_review_run_finish_output", "__slice_den"."review_review_run_input", "__slice_den"."review_review_run_input_sizes", "__slice_den"."review_root", "__slice_den"."review_save_input", "__slice_den"."review_save_output", "__slice_den"."review_saved", "__slice_den"."review_scope", "__slice_den"."review_skipped", "__slice_den"."review_split", "__slice_den"."review_start_scope", "__slice_den"."review_start_step", "__slice_den"."review_step", "__slice_den"."review_within", "__slice"."reviewed", "__slice"."seen", "__slice"."settled", "__slice"."summary", "__slice_den"."sync_admitted", "__slice_den"."sync_build_input", "__slice_den"."sync_build_output", "__slice_den"."sync_claim", "__slice_den"."sync_copy_input", "__slice_den"."sync_copy_output", "__slice_den"."sync_done", "__slice_den"."sync_ended", "__slice_den"."sync_exclusive_key", "__slice_den"."sync_exhausted", "__slice_den"."sync_failed", "__slice_den"."sync_fenced", "__slice_den"."sync_finish", "__slice_den"."sync_gold_finish_output", "__slice_den"."sync_gold_input", "__slice_den"."sync_held", "__slice_den"."sync_refusal", "__slice_den"."sync_result", "__slice_den"."sync_retry", "__slice_den"."sync_root", "__slice_den"."sync_scope", "__slice_den"."sync_skipped", "__slice_den"."sync_start_step", "__slice_den"."sync_step", "__slice_den"."sync_sync_run_finish_output", "__slice_den"."sync_sync_run_input", "__slice"."tally", "__slice"."weight", "__slice_den"."writeback_admitted", "__slice_den"."writeback_claim", "__slice_den"."writeback_deliver_input", "__slice_den"."writeback_deliver_output", "__slice_den"."writeback_done", "__slice_den"."writeback_ended", "__slice_den"."writeback_exhausted", "__slice_den"."writeback_failed", "__slice_den"."writeback_fenced", "__slice_den"."writeback_finish", "__slice_den"."writeback_held", "__slice_den"."writeback_refusal", "__slice_den"."writeback_result", "__slice_den"."writeback_retry", "__slice_den"."writeback_root", "__slice_den"."writeback_scope", "__slice_den"."writeback_skipped", "__slice_den"."writeback_start_step", "__slice_den"."writeback_step", "__slice_den"."writeback_writeback_finish_output", "__slice_den"."writeback_writeback_input" TO :"slice_seats__loader";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."assign_admitted" TO :"slice_seats__loader";
 
@@ -4791,11 +2321,11 @@ SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__loader";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__retry_coordinator" TO :"slice_seats__retry_coordinator";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__retry_coordinator";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice_den"."retry_kind", "slice_den"."retry_outcome", "slice_den"."retry_pausable", "slice_den"."retry_retry_why", "slice_den"."retry_root_kind" TO :"slice_seats__retry_coordinator";
 
-GRANT SELECT ON TABLE "slice_seats__retry_coordinator"."retry_paused", "slice_seats__retry_coordinator"."retry_resumed", "slice_seats__retry_coordinator"."retry_served" TO :"slice_seats__retry_coordinator";
+GRANT SELECT ON TABLE "__slice_den"."retry_paused", "__slice_den"."retry_resumed", "__slice_den"."retry_served" TO :"slice_seats__retry_coordinator";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."retry_paused" TO :"slice_seats__retry_coordinator";
 
@@ -4810,11 +2340,11 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_pausable_names_hen5ycf77m"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"() TO :"slice_seats__retry_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__retry_den" TO :"slice_seats__retry_den";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__retry_den";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice"."__sha256", "slice_den"."retry_kind", "slice_den"."retry_outcome", "slice_den"."retry_pausable", "slice_den"."retry_retry_why", "slice_den"."retry_root_kind" TO :"slice_seats__retry_den";
 
-GRANT SELECT ON TABLE "slice_seats__retry_den"."retry_admitted", "slice_seats__retry_den"."retry_brittle_input", "slice_seats__retry_den"."retry_brittle_output", "slice_seats__retry_den"."retry_claim", "slice_seats__retry_den"."retry_done", "slice_seats__retry_den"."retry_ended", "slice_seats__retry_den"."retry_exhausted", "slice_seats__retry_den"."retry_failed", "slice_seats__retry_den"."retry_fenced", "slice_seats__retry_den"."retry_finish", "slice_seats__retry_den"."retry_held", "slice_seats__retry_den"."retry_ladders_finish_output", "slice_seats__retry_den"."retry_ladders_input", "slice_seats__retry_den"."retry_patient_input", "slice_seats__retry_den"."retry_patient_output", "slice_seats__retry_den"."retry_paused", "slice_seats__retry_den"."retry_polite_input", "slice_seats__retry_den"."retry_polite_output", "slice_seats__retry_den"."retry_refusal", "slice_seats__retry_den"."retry_result", "slice_seats__retry_den"."retry_resumed", "slice_seats__retry_den"."retry_retry", "slice_seats__retry_den"."retry_root", "slice_seats__retry_den"."retry_scope", "slice_seats__retry_den"."retry_served", "slice_seats__retry_den"."retry_skipped", "slice_seats__retry_den"."retry_start_step", "slice_seats__retry_den"."retry_steadfast_input", "slice_seats__retry_den"."retry_steadfast_output", "slice_seats__retry_den"."retry_step", "slice_seats__retry_den"."retry_throttled_finish_output", "slice_seats__retry_den"."retry_throttled_input", "slice_seats__retry_den"."retry_unhurried_finish_output", "slice_seats__retry_den"."retry_unhurried_input" TO :"slice_seats__retry_den";
+GRANT SELECT ON TABLE "__slice_den"."retry_admitted", "__slice_den"."retry_brittle_input", "__slice_den"."retry_brittle_output", "__slice_den"."retry_claim", "__slice_den"."retry_done", "__slice_den"."retry_ended", "__slice_den"."retry_exhausted", "__slice_den"."retry_failed", "__slice_den"."retry_fenced", "__slice_den"."retry_finish", "__slice_den"."retry_held", "__slice_den"."retry_ladders_finish_output", "__slice_den"."retry_ladders_input", "__slice_den"."retry_patient_input", "__slice_den"."retry_patient_output", "__slice_den"."retry_paused", "__slice_den"."retry_polite_input", "__slice_den"."retry_polite_output", "__slice_den"."retry_refusal", "__slice_den"."retry_result", "__slice_den"."retry_resumed", "__slice_den"."retry_retry", "__slice_den"."retry_root", "__slice_den"."retry_scope", "__slice_den"."retry_served", "__slice_den"."retry_skipped", "__slice_den"."retry_start_step", "__slice_den"."retry_steadfast_input", "__slice_den"."retry_steadfast_output", "__slice_den"."retry_step", "__slice_den"."retry_throttled_finish_output", "__slice_den"."retry_throttled_input", "__slice_den"."retry_unhurried_finish_output", "__slice_den"."retry_unhurried_input" TO :"slice_seats__retry_den";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."retry_admitted" TO :"slice_seats__retry_den";
 
@@ -4879,11 +2409,11 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_retry_claim_attempt_djs2c6uume"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__retry_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__retry_retirer" TO :"slice_seats__retry_retirer";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__retry_retirer";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice_den"."retry_kind", "slice_den"."retry_outcome", "slice_den"."retry_pausable", "slice_den"."retry_retry_why", "slice_den"."retry_root_kind" TO :"slice_seats__retry_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__retry_retirer"."retry_admitted", "slice_seats__retry_retirer"."retry_brittle_input", "slice_seats__retry_retirer"."retry_brittle_output", "slice_seats__retry_retirer"."retry_claim", "slice_seats__retry_retirer"."retry_done", "slice_seats__retry_retirer"."retry_ended", "slice_seats__retry_retirer"."retry_exhausted", "slice_seats__retry_retirer"."retry_failed", "slice_seats__retry_retirer"."retry_fenced", "slice_seats__retry_retirer"."retry_finish", "slice_seats__retry_retirer"."retry_held", "slice_seats__retry_retirer"."retry_ladders_finish_output", "slice_seats__retry_retirer"."retry_ladders_input", "slice_seats__retry_retirer"."retry_patient_input", "slice_seats__retry_retirer"."retry_patient_output", "slice_seats__retry_retirer"."retry_polite_input", "slice_seats__retry_retirer"."retry_polite_output", "slice_seats__retry_retirer"."retry_refusal", "slice_seats__retry_retirer"."retry_result", "slice_seats__retry_retirer"."retry_retry", "slice_seats__retry_retirer"."retry_root", "slice_seats__retry_retirer"."retry_scope", "slice_seats__retry_retirer"."retry_skipped", "slice_seats__retry_retirer"."retry_start_step", "slice_seats__retry_retirer"."retry_steadfast_input", "slice_seats__retry_retirer"."retry_steadfast_output", "slice_seats__retry_retirer"."retry_step", "slice_seats__retry_retirer"."retry_throttled_finish_output", "slice_seats__retry_retirer"."retry_throttled_input", "slice_seats__retry_retirer"."retry_unhurried_finish_output", "slice_seats__retry_retirer"."retry_unhurried_input" TO :"slice_seats__retry_retirer";
+GRANT SELECT ON TABLE "__slice_den"."retry_admitted", "__slice_den"."retry_brittle_input", "__slice_den"."retry_brittle_output", "__slice_den"."retry_claim", "__slice_den"."retry_done", "__slice_den"."retry_ended", "__slice_den"."retry_exhausted", "__slice_den"."retry_failed", "__slice_den"."retry_fenced", "__slice_den"."retry_finish", "__slice_den"."retry_held", "__slice_den"."retry_ladders_finish_output", "__slice_den"."retry_ladders_input", "__slice_den"."retry_patient_input", "__slice_den"."retry_patient_output", "__slice_den"."retry_polite_input", "__slice_den"."retry_polite_output", "__slice_den"."retry_refusal", "__slice_den"."retry_result", "__slice_den"."retry_retry", "__slice_den"."retry_root", "__slice_den"."retry_scope", "__slice_den"."retry_skipped", "__slice_den"."retry_start_step", "__slice_den"."retry_steadfast_input", "__slice_den"."retry_steadfast_output", "__slice_den"."retry_step", "__slice_den"."retry_throttled_finish_output", "__slice_den"."retry_throttled_input", "__slice_den"."retry_unhurried_finish_output", "__slice_den"."retry_unhurried_input" TO :"slice_seats__retry_retirer";
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "slice_den"."retry_admitted" TO :"slice_seats__retry_retirer";
 
@@ -4956,11 +2486,11 @@ GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_retry_claim_attempt_djs2c6uume"("
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_retry_claim_attempt_exbl6vgycp" TO :"slice_seats__retry_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__review_coordinator" TO :"slice_seats__review_coordinator";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den", "slice_seats__review_coordinator" TO :"slice_seats__review_coordinator";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice"."__sha256", "slice_den"."review_child_kind", "slice_den"."review_kind", "slice_den"."review_outcome", "slice_den"."review_pausable", "slice_den"."review_resource", "slice_den"."review_retry_why", "slice_den"."review_root_kind" TO :"slice_seats__review_coordinator";
 
-GRANT SELECT ON TABLE "slice_seats__review_coordinator"."review_live", "slice_seats__review_coordinator"."review_paused", "slice_seats__review_coordinator"."review_resumed", "slice_seats__review_coordinator"."review_served" TO :"slice_seats__review_coordinator";
+GRANT SELECT ON TABLE "__slice_den"."review_paused", "__slice_den"."review_resumed", "__slice_den"."review_served", "slice_seats__review_coordinator"."review_live" TO :"slice_seats__review_coordinator";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."review_paused" TO :"slice_seats__review_coordinator";
 
@@ -4975,11 +2505,11 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__review_pausable_names_uhujnxcsz6"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"() TO :"slice_seats__review_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__review_den" TO :"slice_seats__review_den";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice", "__slice_den", "slice_seats__review_den" TO :"slice_seats__review_den";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice"."__sha256", "slice_den"."review_child_kind", "slice_den"."review_kind", "slice_den"."review_outcome", "slice_den"."review_pausable", "slice_den"."review_resource", "slice_den"."review_retry_why", "slice_den"."review_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__review_den";
 
-GRANT SELECT ON TABLE "slice_seats__review_den"."delivered", "slice_seats__review_den"."review_admitted", "slice_seats__review_den"."review_analyze_input", "slice_seats__review_den"."review_analyze_output", "slice_seats__review_den"."review_claim", "slice_seats__review_den"."review_done", "slice_seats__review_den"."review_ended", "slice_seats__review_den"."review_exhausted", "slice_seats__review_den"."review_failed", "slice_seats__review_den"."review_fenced", "slice_seats__review_den"."review_finish", "slice_seats__review_den"."review_gather_input", "slice_seats__review_den"."review_gather_input_sizes", "slice_seats__review_den"."review_gather_output", "slice_seats__review_den"."review_held", "slice_seats__review_den"."review_hold", "slice_seats__review_den"."review_live", "slice_seats__review_den"."review_paused", "slice_seats__review_den"."review_questions_finish_output", "slice_seats__review_den"."review_questions_input", "slice_seats__review_den"."review_refusal", "slice_seats__review_den"."review_result", "slice_seats__review_den"."review_resumed", "slice_seats__review_den"."review_retry", "slice_seats__review_den"."review_review_run_finish_output", "slice_seats__review_den"."review_review_run_input", "slice_seats__review_den"."review_review_run_input_sizes", "slice_seats__review_den"."review_root", "slice_seats__review_den"."review_save_input", "slice_seats__review_den"."review_save_output", "slice_seats__review_den"."review_saved", "slice_seats__review_den"."review_scope", "slice_seats__review_den"."review_served", "slice_seats__review_den"."review_skipped", "slice_seats__review_den"."review_split", "slice_seats__review_den"."review_start_scope", "slice_seats__review_den"."review_start_step", "slice_seats__review_den"."review_step", "slice_seats__review_den"."review_within" TO :"slice_seats__review_den";
+GRANT SELECT ON TABLE "__slice"."delivered", "__slice_den"."review_admitted", "__slice_den"."review_analyze_input", "__slice_den"."review_analyze_output", "__slice_den"."review_claim", "__slice_den"."review_done", "__slice_den"."review_ended", "__slice_den"."review_exhausted", "__slice_den"."review_failed", "__slice_den"."review_fenced", "__slice_den"."review_finish", "__slice_den"."review_gather_input", "__slice_den"."review_gather_input_sizes", "__slice_den"."review_gather_output", "__slice_den"."review_held", "__slice_den"."review_hold", "__slice_den"."review_paused", "__slice_den"."review_questions_finish_output", "__slice_den"."review_questions_input", "__slice_den"."review_refusal", "__slice_den"."review_result", "__slice_den"."review_resumed", "__slice_den"."review_retry", "__slice_den"."review_review_run_finish_output", "__slice_den"."review_review_run_input", "__slice_den"."review_review_run_input_sizes", "__slice_den"."review_root", "__slice_den"."review_save_input", "__slice_den"."review_save_output", "__slice_den"."review_saved", "__slice_den"."review_scope", "__slice_den"."review_served", "__slice_den"."review_skipped", "__slice_den"."review_split", "__slice_den"."review_start_scope", "__slice_den"."review_start_step", "__slice_den"."review_step", "__slice_den"."review_within", "slice_seats__review_den"."review_live" TO :"slice_seats__review_den";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."review_admitted" TO :"slice_seats__review_den";
 
@@ -5051,11 +2581,11 @@ GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__review_den";
 GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_review_claim_attempt_xxo4vl3amg"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__review_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__review_retirer" TO :"slice_seats__review_retirer";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__review_retirer";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice_den"."review_child_kind", "slice_den"."review_kind", "slice_den"."review_outcome", "slice_den"."review_pausable", "slice_den"."review_resource", "slice_den"."review_retry_why", "slice_den"."review_root_kind", "slice"."__text_t4rwovzmqj" TO :"slice_seats__review_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__review_retirer"."review_admitted", "slice_seats__review_retirer"."review_analyze_input", "slice_seats__review_retirer"."review_analyze_output", "slice_seats__review_retirer"."review_claim", "slice_seats__review_retirer"."review_done", "slice_seats__review_retirer"."review_ended", "slice_seats__review_retirer"."review_exhausted", "slice_seats__review_retirer"."review_failed", "slice_seats__review_retirer"."review_fenced", "slice_seats__review_retirer"."review_finish", "slice_seats__review_retirer"."review_gather_input", "slice_seats__review_retirer"."review_gather_input_sizes", "slice_seats__review_retirer"."review_gather_output", "slice_seats__review_retirer"."review_held", "slice_seats__review_retirer"."review_hold", "slice_seats__review_retirer"."review_questions_finish_output", "slice_seats__review_retirer"."review_questions_input", "slice_seats__review_retirer"."review_refusal", "slice_seats__review_retirer"."review_result", "slice_seats__review_retirer"."review_retry", "slice_seats__review_retirer"."review_review_run_finish_output", "slice_seats__review_retirer"."review_review_run_input", "slice_seats__review_retirer"."review_review_run_input_sizes", "slice_seats__review_retirer"."review_root", "slice_seats__review_retirer"."review_save_input", "slice_seats__review_retirer"."review_save_output", "slice_seats__review_retirer"."review_saved", "slice_seats__review_retirer"."review_scope", "slice_seats__review_retirer"."review_skipped", "slice_seats__review_retirer"."review_split", "slice_seats__review_retirer"."review_start_scope", "slice_seats__review_retirer"."review_start_step", "slice_seats__review_retirer"."review_step", "slice_seats__review_retirer"."review_within" TO :"slice_seats__review_retirer";
+GRANT SELECT ON TABLE "__slice_den"."review_admitted", "__slice_den"."review_analyze_input", "__slice_den"."review_analyze_output", "__slice_den"."review_claim", "__slice_den"."review_done", "__slice_den"."review_ended", "__slice_den"."review_exhausted", "__slice_den"."review_failed", "__slice_den"."review_fenced", "__slice_den"."review_finish", "__slice_den"."review_gather_input", "__slice_den"."review_gather_input_sizes", "__slice_den"."review_gather_output", "__slice_den"."review_held", "__slice_den"."review_hold", "__slice_den"."review_questions_finish_output", "__slice_den"."review_questions_input", "__slice_den"."review_refusal", "__slice_den"."review_result", "__slice_den"."review_retry", "__slice_den"."review_review_run_finish_output", "__slice_den"."review_review_run_input", "__slice_den"."review_review_run_input_sizes", "__slice_den"."review_root", "__slice_den"."review_save_input", "__slice_den"."review_save_output", "__slice_den"."review_saved", "__slice_den"."review_scope", "__slice_den"."review_skipped", "__slice_den"."review_split", "__slice_den"."review_start_scope", "__slice_den"."review_start_step", "__slice_den"."review_step", "__slice_den"."review_within" TO :"slice_seats__review_retirer";
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "slice_den"."review_admitted" TO :"slice_seats__review_retirer";
 
@@ -5134,11 +2664,11 @@ GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_review_claim_attempt_xxo4vl3amg"(
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_review_claim_attempt_lsmvyy7ajm" TO :"slice_seats__review_retirer";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__sync_coordinator" TO :"slice_seats__sync_coordinator";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__sync_coordinator";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice"."__sha256", "slice_den"."sync_kind", "slice_den"."sync_outcome", "slice_den"."sync_pausable", "slice_den"."sync_retry_why", "slice_den"."sync_root_kind" TO :"slice_seats__sync_coordinator";
 
-GRANT SELECT ON TABLE "slice_seats__sync_coordinator"."sync_exclusive", "slice_seats__sync_coordinator"."sync_paused", "slice_seats__sync_coordinator"."sync_released", "slice_seats__sync_coordinator"."sync_resumed", "slice_seats__sync_coordinator"."sync_served" TO :"slice_seats__sync_coordinator";
+GRANT SELECT ON TABLE "__slice_den"."sync_exclusive", "__slice_den"."sync_paused", "__slice_den"."sync_released", "__slice_den"."sync_resumed", "__slice_den"."sync_served" TO :"slice_seats__sync_coordinator";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."sync_exclusive" TO :"slice_seats__sync_coordinator";
 
@@ -5157,11 +2687,11 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"() TO :"slice_seats__sync_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__sync_den" TO :"slice_seats__sync_den";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__sync_den";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice"."__sha256", "slice_den"."chain_kind", "slice_den"."chain_outcome", "slice_den"."sync_kind", "slice_den"."sync_outcome", "slice_den"."sync_pausable", "slice_den"."sync_retry_why", "slice_den"."sync_root_kind" TO :"slice_seats__sync_den";
 
-GRANT SELECT ON TABLE "slice_seats__sync_den"."chain_result", "slice_seats__sync_den"."chain_step", "slice_seats__sync_den"."sync_admitted", "slice_seats__sync_den"."sync_build_input", "slice_seats__sync_den"."sync_build_output", "slice_seats__sync_den"."sync_claim", "slice_seats__sync_den"."sync_copy_input", "slice_seats__sync_den"."sync_copy_output", "slice_seats__sync_den"."sync_done", "slice_seats__sync_den"."sync_ended", "slice_seats__sync_den"."sync_exclusive", "slice_seats__sync_den"."sync_exclusive_key", "slice_seats__sync_den"."sync_exhausted", "slice_seats__sync_den"."sync_failed", "slice_seats__sync_den"."sync_fenced", "slice_seats__sync_den"."sync_finish", "slice_seats__sync_den"."sync_gold_finish_output", "slice_seats__sync_den"."sync_gold_input", "slice_seats__sync_den"."sync_held", "slice_seats__sync_den"."sync_paused", "slice_seats__sync_den"."sync_refusal", "slice_seats__sync_den"."sync_released", "slice_seats__sync_den"."sync_result", "slice_seats__sync_den"."sync_resumed", "slice_seats__sync_den"."sync_retry", "slice_seats__sync_den"."sync_root", "slice_seats__sync_den"."sync_scope", "slice_seats__sync_den"."sync_served", "slice_seats__sync_den"."sync_skipped", "slice_seats__sync_den"."sync_start_step", "slice_seats__sync_den"."sync_step", "slice_seats__sync_den"."sync_sync_run_finish_output", "slice_seats__sync_den"."sync_sync_run_input" TO :"slice_seats__sync_den";
+GRANT SELECT ON TABLE "__slice_den"."chain_result", "__slice_den"."chain_step", "__slice_den"."sync_admitted", "__slice_den"."sync_build_input", "__slice_den"."sync_build_output", "__slice_den"."sync_claim", "__slice_den"."sync_copy_input", "__slice_den"."sync_copy_output", "__slice_den"."sync_done", "__slice_den"."sync_ended", "__slice_den"."sync_exclusive", "__slice_den"."sync_exclusive_key", "__slice_den"."sync_exhausted", "__slice_den"."sync_failed", "__slice_den"."sync_fenced", "__slice_den"."sync_finish", "__slice_den"."sync_gold_finish_output", "__slice_den"."sync_gold_input", "__slice_den"."sync_held", "__slice_den"."sync_paused", "__slice_den"."sync_refusal", "__slice_den"."sync_released", "__slice_den"."sync_result", "__slice_den"."sync_resumed", "__slice_den"."sync_retry", "__slice_den"."sync_root", "__slice_den"."sync_scope", "__slice_den"."sync_served", "__slice_den"."sync_skipped", "__slice_den"."sync_start_step", "__slice_den"."sync_step", "__slice_den"."sync_sync_run_finish_output", "__slice_den"."sync_sync_run_input" TO :"slice_seats__sync_den";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."sync_admitted" TO :"slice_seats__sync_den";
 
@@ -5220,11 +2750,11 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_sync_claim_attempt_26b5li3j4v"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__sync_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__sync_retirer" TO :"slice_seats__sync_retirer";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__sync_retirer";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice_den"."sync_kind", "slice_den"."sync_outcome", "slice_den"."sync_pausable", "slice_den"."sync_retry_why", "slice_den"."sync_root_kind" TO :"slice_seats__sync_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__sync_retirer"."sync_admitted", "slice_seats__sync_retirer"."sync_build_input", "slice_seats__sync_retirer"."sync_build_output", "slice_seats__sync_retirer"."sync_claim", "slice_seats__sync_retirer"."sync_copy_input", "slice_seats__sync_retirer"."sync_copy_output", "slice_seats__sync_retirer"."sync_done", "slice_seats__sync_retirer"."sync_ended", "slice_seats__sync_retirer"."sync_exclusive_key", "slice_seats__sync_retirer"."sync_exhausted", "slice_seats__sync_retirer"."sync_failed", "slice_seats__sync_retirer"."sync_fenced", "slice_seats__sync_retirer"."sync_finish", "slice_seats__sync_retirer"."sync_gold_finish_output", "slice_seats__sync_retirer"."sync_gold_input", "slice_seats__sync_retirer"."sync_held", "slice_seats__sync_retirer"."sync_refusal", "slice_seats__sync_retirer"."sync_result", "slice_seats__sync_retirer"."sync_retry", "slice_seats__sync_retirer"."sync_root", "slice_seats__sync_retirer"."sync_scope", "slice_seats__sync_retirer"."sync_skipped", "slice_seats__sync_retirer"."sync_start_step", "slice_seats__sync_retirer"."sync_step", "slice_seats__sync_retirer"."sync_sync_run_finish_output", "slice_seats__sync_retirer"."sync_sync_run_input" TO :"slice_seats__sync_retirer";
+GRANT SELECT ON TABLE "__slice_den"."sync_admitted", "__slice_den"."sync_build_input", "__slice_den"."sync_build_output", "__slice_den"."sync_claim", "__slice_den"."sync_copy_input", "__slice_den"."sync_copy_output", "__slice_den"."sync_done", "__slice_den"."sync_ended", "__slice_den"."sync_exclusive_key", "__slice_den"."sync_exhausted", "__slice_den"."sync_failed", "__slice_den"."sync_fenced", "__slice_den"."sync_finish", "__slice_den"."sync_gold_finish_output", "__slice_den"."sync_gold_input", "__slice_den"."sync_held", "__slice_den"."sync_refusal", "__slice_den"."sync_result", "__slice_den"."sync_retry", "__slice_den"."sync_root", "__slice_den"."sync_scope", "__slice_den"."sync_skipped", "__slice_den"."sync_start_step", "__slice_den"."sync_step", "__slice_den"."sync_sync_run_finish_output", "__slice_den"."sync_sync_run_input" TO :"slice_seats__sync_retirer";
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "slice_den"."sync_admitted" TO :"slice_seats__sync_retirer";
 
@@ -5292,11 +2822,11 @@ GRANT USAGE ON SCHEMA "slice" TO :"slice_seats__worker";
 GRANT EXECUTE ON FUNCTION "slice"."__snapshot_guard"("pg_catalog"."text") TO :"slice_seats__worker";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__writeback_coordinator" TO :"slice_seats__writeback_coordinator";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__writeback_coordinator";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice_den"."writeback_kind", "slice_den"."writeback_outcome", "slice_den"."writeback_pausable", "slice_den"."writeback_retry_why", "slice_den"."writeback_root_kind" TO :"slice_seats__writeback_coordinator";
 
-GRANT SELECT ON TABLE "slice_seats__writeback_coordinator"."writeback_paused", "slice_seats__writeback_coordinator"."writeback_resumed", "slice_seats__writeback_coordinator"."writeback_served" TO :"slice_seats__writeback_coordinator";
+GRANT SELECT ON TABLE "__slice_den"."writeback_paused", "__slice_den"."writeback_resumed", "__slice_den"."writeback_served" TO :"slice_seats__writeback_coordinator";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."writeback_paused" TO :"slice_seats__writeback_coordinator";
 
@@ -5311,11 +2841,11 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__writeback_pausable_names_mqzeerbulh"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__writeback_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__writeback_den" TO :"slice_seats__writeback_den";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__writeback_den";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__domain_e5fpjchj5r", "slice"."__sha256", "slice_den"."writeback_kind", "slice_den"."writeback_outcome", "slice_den"."writeback_pausable", "slice_den"."writeback_retry_why", "slice_den"."writeback_root_kind" TO :"slice_seats__writeback_den";
 
-GRANT SELECT ON TABLE "slice_seats__writeback_den"."writeback_admitted", "slice_seats__writeback_den"."writeback_claim", "slice_seats__writeback_den"."writeback_deliver_input", "slice_seats__writeback_den"."writeback_deliver_output", "slice_seats__writeback_den"."writeback_done", "slice_seats__writeback_den"."writeback_ended", "slice_seats__writeback_den"."writeback_exhausted", "slice_seats__writeback_den"."writeback_failed", "slice_seats__writeback_den"."writeback_fenced", "slice_seats__writeback_den"."writeback_finish", "slice_seats__writeback_den"."writeback_held", "slice_seats__writeback_den"."writeback_paused", "slice_seats__writeback_den"."writeback_refusal", "slice_seats__writeback_den"."writeback_result", "slice_seats__writeback_den"."writeback_resumed", "slice_seats__writeback_den"."writeback_retry", "slice_seats__writeback_den"."writeback_root", "slice_seats__writeback_den"."writeback_scope", "slice_seats__writeback_den"."writeback_served", "slice_seats__writeback_den"."writeback_skipped", "slice_seats__writeback_den"."writeback_start_step", "slice_seats__writeback_den"."writeback_step", "slice_seats__writeback_den"."writeback_writeback_finish_output", "slice_seats__writeback_den"."writeback_writeback_input" TO :"slice_seats__writeback_den";
+GRANT SELECT ON TABLE "__slice_den"."writeback_admitted", "__slice_den"."writeback_claim", "__slice_den"."writeback_deliver_input", "__slice_den"."writeback_deliver_output", "__slice_den"."writeback_done", "__slice_den"."writeback_ended", "__slice_den"."writeback_exhausted", "__slice_den"."writeback_failed", "__slice_den"."writeback_fenced", "__slice_den"."writeback_finish", "__slice_den"."writeback_held", "__slice_den"."writeback_paused", "__slice_den"."writeback_refusal", "__slice_den"."writeback_result", "__slice_den"."writeback_resumed", "__slice_den"."writeback_retry", "__slice_den"."writeback_root", "__slice_den"."writeback_scope", "__slice_den"."writeback_served", "__slice_den"."writeback_skipped", "__slice_den"."writeback_start_step", "__slice_den"."writeback_step", "__slice_den"."writeback_writeback_finish_output", "__slice_den"."writeback_writeback_input" TO :"slice_seats__writeback_den";
 
 GRANT SELECT, INSERT ON TABLE "slice_den"."writeback_admitted" TO :"slice_seats__writeback_den";
 
@@ -5366,11 +2896,11 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_writeback_claim_attempt_iasyjokmx7"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__writeback_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__writeback_retirer" TO :"slice_seats__writeback_retirer";
+GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__writeback_retirer";
 
 GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6ss", "slice"."__sha256", "slice_den"."writeback_kind", "slice_den"."writeback_outcome", "slice_den"."writeback_pausable", "slice_den"."writeback_retry_why", "slice_den"."writeback_root_kind" TO :"slice_seats__writeback_retirer";
 
-GRANT SELECT ON TABLE "slice_seats__writeback_retirer"."writeback_admitted", "slice_seats__writeback_retirer"."writeback_claim", "slice_seats__writeback_retirer"."writeback_deliver_input", "slice_seats__writeback_retirer"."writeback_deliver_output", "slice_seats__writeback_retirer"."writeback_done", "slice_seats__writeback_retirer"."writeback_ended", "slice_seats__writeback_retirer"."writeback_exhausted", "slice_seats__writeback_retirer"."writeback_failed", "slice_seats__writeback_retirer"."writeback_fenced", "slice_seats__writeback_retirer"."writeback_finish", "slice_seats__writeback_retirer"."writeback_held", "slice_seats__writeback_retirer"."writeback_refusal", "slice_seats__writeback_retirer"."writeback_result", "slice_seats__writeback_retirer"."writeback_retry", "slice_seats__writeback_retirer"."writeback_root", "slice_seats__writeback_retirer"."writeback_scope", "slice_seats__writeback_retirer"."writeback_skipped", "slice_seats__writeback_retirer"."writeback_start_step", "slice_seats__writeback_retirer"."writeback_step", "slice_seats__writeback_retirer"."writeback_writeback_finish_output", "slice_seats__writeback_retirer"."writeback_writeback_input" TO :"slice_seats__writeback_retirer";
+GRANT SELECT ON TABLE "__slice_den"."writeback_admitted", "__slice_den"."writeback_claim", "__slice_den"."writeback_deliver_input", "__slice_den"."writeback_deliver_output", "__slice_den"."writeback_done", "__slice_den"."writeback_ended", "__slice_den"."writeback_exhausted", "__slice_den"."writeback_failed", "__slice_den"."writeback_fenced", "__slice_den"."writeback_finish", "__slice_den"."writeback_held", "__slice_den"."writeback_refusal", "__slice_den"."writeback_result", "__slice_den"."writeback_retry", "__slice_den"."writeback_root", "__slice_den"."writeback_scope", "__slice_den"."writeback_skipped", "__slice_den"."writeback_start_step", "__slice_den"."writeback_step", "__slice_den"."writeback_writeback_finish_output", "__slice_den"."writeback_writeback_input" TO :"slice_seats__writeback_retirer";
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "slice_den"."writeback_admitted" TO :"slice_seats__writeback_retirer";
 
@@ -5468,9 +2998,9 @@ ALTER ROLE :"slice_seats__app" SET hnsw.iterative_scan = 'strict_order';
 ALTER ROLE :"slice_seats__worker" SET hnsw.iterative_scan = 'strict_order';
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-REVOKE ALL ON SCHEMA "slice", "slice_den", "slice_seats", "slice_seats__auditor", "slice_seats__editor", "slice_seats__loader", "slice_seats__assign_coordinator", "slice_seats__assign_den", "slice_seats__assign_retirer", "slice_seats__chain_coordinator", "slice_seats__chain_den", "slice_seats__chain_retirer", "slice_seats__clock_coordinator", "slice_seats__clock_den", "slice_seats__clock_retirer", "slice_seats__fan_coordinator", "slice_seats__fan_den", "slice_seats__fan_retirer", "slice_seats__retry_coordinator", "slice_seats__retry_den", "slice_seats__retry_retirer", "slice_seats__review_coordinator", "slice_seats__review_den", "slice_seats__review_retirer", "slice_seats__sync_coordinator", "slice_seats__sync_den", "slice_seats__sync_retirer", "slice_seats__writeback_coordinator", "slice_seats__writeback_den", "slice_seats__writeback_retirer" FROM PUBLIC;
+REVOKE ALL ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den", "__slice", "slice_seats__fan_coordinator", "slice_seats__fan_den", "slice_seats__review_coordinator", "slice_seats__review_den" FROM PUBLIC;
 
-REVOKE ALL ON TABLE "slice_den"."assign_admitted", "slice_den"."assign_asked", "slice_den"."assign_assignment_finish_output", "slice_den"."assign_assignment_input", "slice_den"."assign_assignment_input_exclude", "slice_den"."assign_assignment_input_mode_nearest", "slice_den"."assign_assignment_input_mode_within", "slice_den"."assign_assignment_input_near", "slice_den"."assign_claim", "slice_den"."assign_decide_input", "slice_den"."assign_decide_input_exclude", "slice_den"."assign_decide_input_mode_nearest", "slice_den"."assign_decide_input_mode_within", "slice_den"."assign_decide_output", "slice_den"."assign_decide_output_stage_rest", "slice_den"."assign_decide_output_stage_serve", "slice_den"."assign_decide_output_weighed", "slice_den"."assign_decide_read_nearest", "slice_den"."assign_decide_read_nearest_row", "slice_den"."assign_decide_read_seen", "slice_den"."assign_decide_read_seen_row", "slice_den"."assign_done", "slice_den"."assign_embed_input", "slice_den"."assign_embed_input_exclude", "slice_den"."assign_embed_input_mode_nearest", "slice_den"."assign_embed_input_mode_within", "slice_den"."assign_embed_input_near", "slice_den"."assign_embed_output", "slice_den"."assign_ended", "slice_den"."assign_exhausted", "slice_den"."assign_failed", "slice_den"."assign_fenced", "slice_den"."assign_finish", "slice_den"."assign_held", "slice_den"."assign_paused", "slice_den"."assign_refusal", "slice_den"."assign_result", "slice_den"."assign_resumed", "slice_den"."assign_retry", "slice_den"."assign_root", "slice_den"."assign_scope", "slice_den"."assign_served", "slice_den"."assign_skipped", "slice_den"."assign_start_step", "slice_den"."assign_step", "slice"."assigned", "slice_den"."audit", "slice"."built", "slice_den"."chain_admitted", "slice_den"."chain_chain_run_finish_output", "slice_den"."chain_chain_run_input", "slice_den"."chain_claim", "slice_den"."chain_done", "slice_den"."chain_ended", "slice_den"."chain_exhausted", "slice_den"."chain_failed", "slice_den"."chain_fenced", "slice_den"."chain_finish", "slice_den"."chain_held", "slice_den"."chain_next", "slice_den"."chain_ordered_finish_output", "slice_den"."chain_ordered_input", "slice_den"."chain_page_input", "slice_den"."chain_page_input_after", "slice_den"."chain_page_output", "slice_den"."chain_page_output_next", "slice_den"."chain_page_read_earlier", "slice_den"."chain_page_read_earlier_row", "slice_den"."chain_page_read_tree", "slice_den"."chain_page_read_tree_items", "slice_den"."chain_page_read_tree_row", "slice_den"."chain_page_read_weights", "slice_den"."chain_page_read_weights_row", "slice_den"."chain_page_tree_first", "slice_den"."chain_paused", "slice_den"."chain_refusal", "slice_den"."chain_result", "slice_den"."chain_resumed", "slice_den"."chain_retry", "slice_den"."chain_root", "slice_den"."chain_scope", "slice_den"."chain_served", "slice_den"."chain_skipped", "slice_den"."chain_start_step", "slice_den"."chain_step", "slice"."chimed", "slice_den"."clock_admitted", "slice_den"."clock_chime_input", "slice_den"."clock_chime_output", "slice_den"."clock_claim", "slice_den"."clock_close_input", "slice_den"."clock_close_output", "slice_den"."clock_done", "slice_den"."clock_ended", "slice_den"."clock_exhausted", "slice_den"."clock_failed", "slice_den"."clock_fenced", "slice_den"."clock_finish", "slice_den"."clock_held", "slice_den"."clock_hourly_finish_output", "slice_den"."clock_hourly_input", "slice_den"."clock_paused", "slice_den"."clock_refusal", "slice_den"."clock_result", "slice_den"."clock_resumed", "slice_den"."clock_retry", "slice_den"."clock_root", "slice_den"."clock_scope", "slice_den"."clock_served", "slice_den"."clock_sitting_finish_output", "slice_den"."clock_sitting_input", "slice_den"."clock_skipped", "slice_den"."clock_start_step", "slice_den"."clock_step", "slice"."concluded", "slice"."copied", "slice"."cursor", "slice"."delivered", "slice_den"."fan_admitted", "slice_den"."fan_batch_finish_output", "slice_den"."fan_batch_input", "slice_den"."fan_claim", "slice_den"."fan_done", "slice_den"."fan_dust_input", "slice_den"."fan_dust_output", "slice_den"."fan_ended", "slice_den"."fan_exhausted", "slice_den"."fan_failed", "slice_den"."fan_fan_run_finish_output", "slice_den"."fan_fan_run_input", "slice_den"."fan_fenced", "slice_den"."fan_finish", "slice_den"."fan_held", "slice_den"."fan_hold", "slice_den"."fan_mop_input", "slice_den"."fan_mop_output", "slice_den"."fan_paused", "slice_den"."fan_refusal", "slice_den"."fan_result", "slice_den"."fan_resumed", "slice_den"."fan_retry", "slice_den"."fan_root", "slice_den"."fan_scope", "slice_den"."fan_served", "slice_den"."fan_skipped", "slice_den"."fan_square_input", "slice_den"."fan_square_output", "slice_den"."fan_start_scope", "slice_den"."fan_start_step", "slice_den"."fan_step", "slice_den"."fan_sweep_finish_output", "slice_den"."fan_sweep_input", "slice_den"."fan_within", "slice"."heard", "slice"."item", "slice"."order", "slice"."passage", "slice_den"."retry_admitted", "slice_den"."retry_brittle_input", "slice_den"."retry_brittle_output", "slice_den"."retry_claim", "slice_den"."retry_done", "slice_den"."retry_ended", "slice_den"."retry_exhausted", "slice_den"."retry_failed", "slice_den"."retry_fenced", "slice_den"."retry_finish", "slice_den"."retry_held", "slice_den"."retry_ladders_finish_output", "slice_den"."retry_ladders_input", "slice_den"."retry_patient_input", "slice_den"."retry_patient_output", "slice_den"."retry_paused", "slice_den"."retry_polite_input", "slice_den"."retry_polite_output", "slice_den"."retry_refusal", "slice_den"."retry_result", "slice_den"."retry_resumed", "slice_den"."retry_retry", "slice_den"."retry_root", "slice_den"."retry_scope", "slice_den"."retry_served", "slice_den"."retry_skipped", "slice_den"."retry_start_step", "slice_den"."retry_steadfast_input", "slice_den"."retry_steadfast_output", "slice_den"."retry_step", "slice_den"."retry_throttled_finish_output", "slice_den"."retry_throttled_input", "slice_den"."retry_unhurried_finish_output", "slice_den"."retry_unhurried_input", "slice_den"."review_admitted", "slice_den"."review_analyze_input", "slice_den"."review_analyze_output", "slice_den"."review_claim", "slice_den"."review_done", "slice_den"."review_ended", "slice_den"."review_exhausted", "slice_den"."review_failed", "slice_den"."review_fenced", "slice_den"."review_finish", "slice_den"."review_gather_input", "slice_den"."review_gather_input_sizes", "slice_den"."review_gather_output", "slice_den"."review_held", "slice_den"."review_hold", "slice_den"."review_paused", "slice_den"."review_questions_finish_output", "slice_den"."review_questions_input", "slice_den"."review_refusal", "slice_den"."review_result", "slice_den"."review_resumed", "slice_den"."review_retry", "slice_den"."review_review_run_finish_output", "slice_den"."review_review_run_input", "slice_den"."review_review_run_input_sizes", "slice_den"."review_root", "slice_den"."review_save_input", "slice_den"."review_save_output", "slice_den"."review_saved", "slice_den"."review_scope", "slice_den"."review_served", "slice_den"."review_skipped", "slice_den"."review_split", "slice_den"."review_start_scope", "slice_den"."review_start_step", "slice_den"."review_step", "slice_den"."review_within", "slice"."reviewed", "slice"."seen", "slice"."settled", "slice"."summary", "slice_den"."sync_admitted", "slice_den"."sync_build_input", "slice_den"."sync_build_output", "slice_den"."sync_claim", "slice_den"."sync_copy_input", "slice_den"."sync_copy_output", "slice_den"."sync_done", "slice_den"."sync_ended", "slice_den"."sync_exclusive", "slice_den"."sync_exclusive_key", "slice_den"."sync_exhausted", "slice_den"."sync_failed", "slice_den"."sync_fenced", "slice_den"."sync_finish", "slice_den"."sync_gold_finish_output", "slice_den"."sync_gold_input", "slice_den"."sync_held", "slice_den"."sync_paused", "slice_den"."sync_refusal", "slice_den"."sync_released", "slice_den"."sync_result", "slice_den"."sync_resumed", "slice_den"."sync_retry", "slice_den"."sync_root", "slice_den"."sync_scope", "slice_den"."sync_served", "slice_den"."sync_skipped", "slice_den"."sync_start_step", "slice_den"."sync_step", "slice_den"."sync_sync_run_finish_output", "slice_den"."sync_sync_run_input", "slice"."tally", "slice"."weight", "slice_den"."writeback_admitted", "slice_den"."writeback_claim", "slice_den"."writeback_deliver_input", "slice_den"."writeback_deliver_output", "slice_den"."writeback_done", "slice_den"."writeback_ended", "slice_den"."writeback_exhausted", "slice_den"."writeback_failed", "slice_den"."writeback_fenced", "slice_den"."writeback_finish", "slice_den"."writeback_held", "slice_den"."writeback_paused", "slice_den"."writeback_refusal", "slice_den"."writeback_result", "slice_den"."writeback_resumed", "slice_den"."writeback_retry", "slice_den"."writeback_root", "slice_den"."writeback_scope", "slice_den"."writeback_served", "slice_den"."writeback_skipped", "slice_den"."writeback_start_step", "slice_den"."writeback_step", "slice_den"."writeback_writeback_finish_output", "slice_den"."writeback_writeback_input", "slice_seats__auditor"."assign_decide_output", "slice_seats__auditor"."assign_decide_output_stage_serve", "slice_seats__auditor"."assign_decide_output_weighed", "slice_seats__auditor"."assign_decide_read_nearest", "slice_seats__auditor"."assign_decide_read_nearest_row", "slice_seats__auditor"."assign_decide_read_seen", "slice_seats__auditor"."assign_decide_read_seen_row", "slice_seats__auditor"."assign_result", "slice_seats__auditor"."assign_step", "slice_seats__auditor"."assigned", "slice_seats__auditor"."audit", "slice_seats__auditor"."built", "slice_seats__auditor"."chain_admitted", "slice_seats__auditor"."chain_chain_run_finish_output", "slice_seats__auditor"."chain_chain_run_input", "slice_seats__auditor"."chain_claim", "slice_seats__auditor"."chain_done", "slice_seats__auditor"."chain_ended", "slice_seats__auditor"."chain_exhausted", "slice_seats__auditor"."chain_failed", "slice_seats__auditor"."chain_fenced", "slice_seats__auditor"."chain_finish", "slice_seats__auditor"."chain_held", "slice_seats__auditor"."chain_next", "slice_seats__auditor"."chain_ordered_finish_output", "slice_seats__auditor"."chain_ordered_input", "slice_seats__auditor"."chain_page_input", "slice_seats__auditor"."chain_page_input_after", "slice_seats__auditor"."chain_page_output", "slice_seats__auditor"."chain_page_output_next", "slice_seats__auditor"."chain_page_read_earlier", "slice_seats__auditor"."chain_page_read_earlier_row", "slice_seats__auditor"."chain_page_read_tree", "slice_seats__auditor"."chain_page_read_tree_items", "slice_seats__auditor"."chain_page_read_tree_row", "slice_seats__auditor"."chain_page_read_weights", "slice_seats__auditor"."chain_page_read_weights_row", "slice_seats__auditor"."chain_page_tree_first", "slice_seats__auditor"."chain_refusal", "slice_seats__auditor"."chain_result", "slice_seats__auditor"."chain_retry", "slice_seats__auditor"."chain_root", "slice_seats__auditor"."chain_scope", "slice_seats__auditor"."chain_skipped", "slice_seats__auditor"."chain_start_step", "slice_seats__auditor"."chain_step", "slice_seats__auditor"."chimed", "slice_seats__auditor"."concluded", "slice_seats__auditor"."copied", "slice_seats__auditor"."cursor", "slice_seats__auditor"."fan_admitted", "slice_seats__auditor"."fan_batch_input", "slice_seats__auditor"."fan_claim", "slice_seats__auditor"."fan_fan_run_input", "slice_seats__auditor"."fan_finish", "slice_seats__auditor"."fan_hold", "slice_seats__auditor"."fan_result", "slice_seats__auditor"."fan_root", "slice_seats__auditor"."fan_scope", "slice_seats__auditor"."fan_square_input", "slice_seats__auditor"."fan_square_output", "slice_seats__auditor"."fan_start_scope", "slice_seats__auditor"."fan_start_step", "slice_seats__auditor"."fan_step", "slice_seats__auditor"."fan_within", "slice_seats__auditor"."heard", "slice_seats__auditor"."item", "slice_seats__auditor"."order", "slice_seats__auditor"."retry_claim", "slice_seats__auditor"."retry_exhausted", "slice_seats__auditor"."retry_result", "slice_seats__auditor"."retry_step", "slice_seats__auditor"."review_finish", "slice_seats__auditor"."review_hold", "slice_seats__auditor"."review_result", "slice_seats__auditor"."review_step", "slice_seats__auditor"."review_within", "slice_seats__auditor"."reviewed", "slice_seats__auditor"."settled", "slice_seats__auditor"."summary", "slice_seats__auditor"."sync_admitted", "slice_seats__auditor"."sync_finish", "slice_seats__auditor"."sync_result", "slice_seats__auditor"."sync_scope", "slice_seats__auditor"."sync_skipped", "slice_seats__auditor"."tally", "slice_seats__auditor"."weight", "slice_seats__editor"."passage", "slice_seats__editor"."seen", "slice_seats__loader"."assign_admitted", "slice_seats__loader"."assign_asked", "slice_seats__loader"."assign_assignment_finish_output", "slice_seats__loader"."assign_assignment_input", "slice_seats__loader"."assign_assignment_input_exclude", "slice_seats__loader"."assign_assignment_input_mode_nearest", "slice_seats__loader"."assign_assignment_input_mode_within", "slice_seats__loader"."assign_assignment_input_near", "slice_seats__loader"."assign_claim", "slice_seats__loader"."assign_decide_input", "slice_seats__loader"."assign_decide_input_exclude", "slice_seats__loader"."assign_decide_input_mode_nearest", "slice_seats__loader"."assign_decide_input_mode_within", "slice_seats__loader"."assign_decide_output", "slice_seats__loader"."assign_decide_output_stage_rest", "slice_seats__loader"."assign_decide_output_stage_serve", "slice_seats__loader"."assign_decide_output_weighed", "slice_seats__loader"."assign_decide_read_nearest", "slice_seats__loader"."assign_decide_read_nearest_row", "slice_seats__loader"."assign_decide_read_seen", "slice_seats__loader"."assign_decide_read_seen_row", "slice_seats__loader"."assign_done", "slice_seats__loader"."assign_embed_input", "slice_seats__loader"."assign_embed_input_exclude", "slice_seats__loader"."assign_embed_input_mode_nearest", "slice_seats__loader"."assign_embed_input_mode_within", "slice_seats__loader"."assign_embed_input_near", "slice_seats__loader"."assign_embed_output", "slice_seats__loader"."assign_ended", "slice_seats__loader"."assign_exhausted", "slice_seats__loader"."assign_failed", "slice_seats__loader"."assign_fenced", "slice_seats__loader"."assign_finish", "slice_seats__loader"."assign_held", "slice_seats__loader"."assign_refusal", "slice_seats__loader"."assign_result", "slice_seats__loader"."assign_retry", "slice_seats__loader"."assign_root", "slice_seats__loader"."assign_scope", "slice_seats__loader"."assign_skipped", "slice_seats__loader"."assign_start_step", "slice_seats__loader"."assign_step", "slice_seats__loader"."assigned", "slice_seats__loader"."built", "slice_seats__loader"."chain_admitted", "slice_seats__loader"."chain_chain_run_finish_output", "slice_seats__loader"."chain_chain_run_input", "slice_seats__loader"."chain_claim", "slice_seats__loader"."chain_done", "slice_seats__loader"."chain_ended", "slice_seats__loader"."chain_exhausted", "slice_seats__loader"."chain_failed", "slice_seats__loader"."chain_fenced", "slice_seats__loader"."chain_finish", "slice_seats__loader"."chain_held", "slice_seats__loader"."chain_next", "slice_seats__loader"."chain_ordered_finish_output", "slice_seats__loader"."chain_ordered_input", "slice_seats__loader"."chain_page_input", "slice_seats__loader"."chain_page_input_after", "slice_seats__loader"."chain_page_output", "slice_seats__loader"."chain_page_output_next", "slice_seats__loader"."chain_page_read_earlier", "slice_seats__loader"."chain_page_read_earlier_row", "slice_seats__loader"."chain_page_read_tree", "slice_seats__loader"."chain_page_read_tree_items", "slice_seats__loader"."chain_page_read_tree_row", "slice_seats__loader"."chain_page_read_weights", "slice_seats__loader"."chain_page_read_weights_row", "slice_seats__loader"."chain_page_tree_first", "slice_seats__loader"."chain_refusal", "slice_seats__loader"."chain_result", "slice_seats__loader"."chain_retry", "slice_seats__loader"."chain_root", "slice_seats__loader"."chain_scope", "slice_seats__loader"."chain_skipped", "slice_seats__loader"."chain_start_step", "slice_seats__loader"."chain_step", "slice_seats__loader"."chimed", "slice_seats__loader"."clock_admitted", "slice_seats__loader"."clock_chime_input", "slice_seats__loader"."clock_chime_output", "slice_seats__loader"."clock_claim", "slice_seats__loader"."clock_close_input", "slice_seats__loader"."clock_close_output", "slice_seats__loader"."clock_done", "slice_seats__loader"."clock_ended", "slice_seats__loader"."clock_exhausted", "slice_seats__loader"."clock_failed", "slice_seats__loader"."clock_fenced", "slice_seats__loader"."clock_finish", "slice_seats__loader"."clock_held", "slice_seats__loader"."clock_hourly_finish_output", "slice_seats__loader"."clock_hourly_input", "slice_seats__loader"."clock_refusal", "slice_seats__loader"."clock_result", "slice_seats__loader"."clock_retry", "slice_seats__loader"."clock_root", "slice_seats__loader"."clock_scope", "slice_seats__loader"."clock_sitting_finish_output", "slice_seats__loader"."clock_sitting_input", "slice_seats__loader"."clock_skipped", "slice_seats__loader"."clock_start_step", "slice_seats__loader"."clock_step", "slice_seats__loader"."concluded", "slice_seats__loader"."copied", "slice_seats__loader"."cursor", "slice_seats__loader"."delivered", "slice_seats__loader"."fan_admitted", "slice_seats__loader"."fan_batch_finish_output", "slice_seats__loader"."fan_batch_input", "slice_seats__loader"."fan_claim", "slice_seats__loader"."fan_done", "slice_seats__loader"."fan_dust_input", "slice_seats__loader"."fan_dust_output", "slice_seats__loader"."fan_ended", "slice_seats__loader"."fan_exhausted", "slice_seats__loader"."fan_failed", "slice_seats__loader"."fan_fan_run_finish_output", "slice_seats__loader"."fan_fan_run_input", "slice_seats__loader"."fan_fenced", "slice_seats__loader"."fan_finish", "slice_seats__loader"."fan_held", "slice_seats__loader"."fan_hold", "slice_seats__loader"."fan_mop_input", "slice_seats__loader"."fan_mop_output", "slice_seats__loader"."fan_refusal", "slice_seats__loader"."fan_result", "slice_seats__loader"."fan_retry", "slice_seats__loader"."fan_root", "slice_seats__loader"."fan_scope", "slice_seats__loader"."fan_skipped", "slice_seats__loader"."fan_square_input", "slice_seats__loader"."fan_square_output", "slice_seats__loader"."fan_start_scope", "slice_seats__loader"."fan_start_step", "slice_seats__loader"."fan_step", "slice_seats__loader"."fan_sweep_finish_output", "slice_seats__loader"."fan_sweep_input", "slice_seats__loader"."fan_within", "slice_seats__loader"."heard", "slice_seats__loader"."item", "slice_seats__loader"."order", "slice_seats__loader"."passage", "slice_seats__loader"."retry_admitted", "slice_seats__loader"."retry_brittle_input", "slice_seats__loader"."retry_brittle_output", "slice_seats__loader"."retry_claim", "slice_seats__loader"."retry_done", "slice_seats__loader"."retry_ended", "slice_seats__loader"."retry_exhausted", "slice_seats__loader"."retry_failed", "slice_seats__loader"."retry_fenced", "slice_seats__loader"."retry_finish", "slice_seats__loader"."retry_held", "slice_seats__loader"."retry_ladders_finish_output", "slice_seats__loader"."retry_ladders_input", "slice_seats__loader"."retry_patient_input", "slice_seats__loader"."retry_patient_output", "slice_seats__loader"."retry_polite_input", "slice_seats__loader"."retry_polite_output", "slice_seats__loader"."retry_refusal", "slice_seats__loader"."retry_result", "slice_seats__loader"."retry_retry", "slice_seats__loader"."retry_root", "slice_seats__loader"."retry_scope", "slice_seats__loader"."retry_skipped", "slice_seats__loader"."retry_start_step", "slice_seats__loader"."retry_steadfast_input", "slice_seats__loader"."retry_steadfast_output", "slice_seats__loader"."retry_step", "slice_seats__loader"."retry_throttled_finish_output", "slice_seats__loader"."retry_throttled_input", "slice_seats__loader"."retry_unhurried_finish_output", "slice_seats__loader"."retry_unhurried_input", "slice_seats__loader"."review_admitted", "slice_seats__loader"."review_analyze_input", "slice_seats__loader"."review_analyze_output", "slice_seats__loader"."review_claim", "slice_seats__loader"."review_done", "slice_seats__loader"."review_ended", "slice_seats__loader"."review_exhausted", "slice_seats__loader"."review_failed", "slice_seats__loader"."review_fenced", "slice_seats__loader"."review_finish", "slice_seats__loader"."review_gather_input", "slice_seats__loader"."review_gather_input_sizes", "slice_seats__loader"."review_gather_output", "slice_seats__loader"."review_held", "slice_seats__loader"."review_hold", "slice_seats__loader"."review_questions_finish_output", "slice_seats__loader"."review_questions_input", "slice_seats__loader"."review_refusal", "slice_seats__loader"."review_result", "slice_seats__loader"."review_retry", "slice_seats__loader"."review_review_run_finish_output", "slice_seats__loader"."review_review_run_input", "slice_seats__loader"."review_review_run_input_sizes", "slice_seats__loader"."review_root", "slice_seats__loader"."review_save_input", "slice_seats__loader"."review_save_output", "slice_seats__loader"."review_saved", "slice_seats__loader"."review_scope", "slice_seats__loader"."review_skipped", "slice_seats__loader"."review_split", "slice_seats__loader"."review_start_scope", "slice_seats__loader"."review_start_step", "slice_seats__loader"."review_step", "slice_seats__loader"."review_within", "slice_seats__loader"."reviewed", "slice_seats__loader"."seen", "slice_seats__loader"."settled", "slice_seats__loader"."summary", "slice_seats__loader"."sync_admitted", "slice_seats__loader"."sync_build_input", "slice_seats__loader"."sync_build_output", "slice_seats__loader"."sync_claim", "slice_seats__loader"."sync_copy_input", "slice_seats__loader"."sync_copy_output", "slice_seats__loader"."sync_done", "slice_seats__loader"."sync_ended", "slice_seats__loader"."sync_exclusive_key", "slice_seats__loader"."sync_exhausted", "slice_seats__loader"."sync_failed", "slice_seats__loader"."sync_fenced", "slice_seats__loader"."sync_finish", "slice_seats__loader"."sync_gold_finish_output", "slice_seats__loader"."sync_gold_input", "slice_seats__loader"."sync_held", "slice_seats__loader"."sync_refusal", "slice_seats__loader"."sync_result", "slice_seats__loader"."sync_retry", "slice_seats__loader"."sync_root", "slice_seats__loader"."sync_scope", "slice_seats__loader"."sync_skipped", "slice_seats__loader"."sync_start_step", "slice_seats__loader"."sync_step", "slice_seats__loader"."sync_sync_run_finish_output", "slice_seats__loader"."sync_sync_run_input", "slice_seats__loader"."tally", "slice_seats__loader"."weight", "slice_seats__loader"."writeback_admitted", "slice_seats__loader"."writeback_claim", "slice_seats__loader"."writeback_deliver_input", "slice_seats__loader"."writeback_deliver_output", "slice_seats__loader"."writeback_done", "slice_seats__loader"."writeback_ended", "slice_seats__loader"."writeback_exhausted", "slice_seats__loader"."writeback_failed", "slice_seats__loader"."writeback_fenced", "slice_seats__loader"."writeback_finish", "slice_seats__loader"."writeback_held", "slice_seats__loader"."writeback_refusal", "slice_seats__loader"."writeback_result", "slice_seats__loader"."writeback_retry", "slice_seats__loader"."writeback_root", "slice_seats__loader"."writeback_scope", "slice_seats__loader"."writeback_skipped", "slice_seats__loader"."writeback_start_step", "slice_seats__loader"."writeback_step", "slice_seats__loader"."writeback_writeback_finish_output", "slice_seats__loader"."writeback_writeback_input", "slice_seats__assign_coordinator"."assign_paused", "slice_seats__assign_coordinator"."assign_resumed", "slice_seats__assign_coordinator"."assign_served", "slice_seats__assign_den"."assign_admitted", "slice_seats__assign_den"."assign_asked", "slice_seats__assign_den"."assign_assignment_finish_output", "slice_seats__assign_den"."assign_assignment_input", "slice_seats__assign_den"."assign_assignment_input_exclude", "slice_seats__assign_den"."assign_assignment_input_mode_nearest", "slice_seats__assign_den"."assign_assignment_input_mode_within", "slice_seats__assign_den"."assign_assignment_input_near", "slice_seats__assign_den"."assign_claim", "slice_seats__assign_den"."assign_decide_input", "slice_seats__assign_den"."assign_decide_input_exclude", "slice_seats__assign_den"."assign_decide_input_mode_nearest", "slice_seats__assign_den"."assign_decide_input_mode_within", "slice_seats__assign_den"."assign_decide_output", "slice_seats__assign_den"."assign_decide_output_stage_rest", "slice_seats__assign_den"."assign_decide_output_stage_serve", "slice_seats__assign_den"."assign_decide_output_weighed", "slice_seats__assign_den"."assign_decide_read_nearest", "slice_seats__assign_den"."assign_decide_read_nearest_row", "slice_seats__assign_den"."assign_decide_read_seen", "slice_seats__assign_den"."assign_decide_read_seen_row", "slice_seats__assign_den"."assign_done", "slice_seats__assign_den"."assign_embed_input", "slice_seats__assign_den"."assign_embed_input_exclude", "slice_seats__assign_den"."assign_embed_input_mode_nearest", "slice_seats__assign_den"."assign_embed_input_mode_within", "slice_seats__assign_den"."assign_embed_input_near", "slice_seats__assign_den"."assign_embed_output", "slice_seats__assign_den"."assign_ended", "slice_seats__assign_den"."assign_exhausted", "slice_seats__assign_den"."assign_failed", "slice_seats__assign_den"."assign_fenced", "slice_seats__assign_den"."assign_finish", "slice_seats__assign_den"."assign_held", "slice_seats__assign_den"."assign_paused", "slice_seats__assign_den"."assign_refusal", "slice_seats__assign_den"."assign_result", "slice_seats__assign_den"."assign_resumed", "slice_seats__assign_den"."assign_retry", "slice_seats__assign_den"."assign_root", "slice_seats__assign_den"."assign_scope", "slice_seats__assign_den"."assign_served", "slice_seats__assign_den"."assign_skipped", "slice_seats__assign_den"."assign_start_step", "slice_seats__assign_den"."assign_step", "slice_seats__assign_retirer"."assign_admitted", "slice_seats__assign_retirer"."assign_asked", "slice_seats__assign_retirer"."assign_assignment_finish_output", "slice_seats__assign_retirer"."assign_assignment_input", "slice_seats__assign_retirer"."assign_assignment_input_exclude", "slice_seats__assign_retirer"."assign_assignment_input_mode_nearest", "slice_seats__assign_retirer"."assign_assignment_input_mode_within", "slice_seats__assign_retirer"."assign_assignment_input_near", "slice_seats__assign_retirer"."assign_claim", "slice_seats__assign_retirer"."assign_decide_input", "slice_seats__assign_retirer"."assign_decide_input_exclude", "slice_seats__assign_retirer"."assign_decide_input_mode_nearest", "slice_seats__assign_retirer"."assign_decide_input_mode_within", "slice_seats__assign_retirer"."assign_decide_output", "slice_seats__assign_retirer"."assign_decide_output_stage_rest", "slice_seats__assign_retirer"."assign_decide_output_stage_serve", "slice_seats__assign_retirer"."assign_decide_output_weighed", "slice_seats__assign_retirer"."assign_decide_read_nearest", "slice_seats__assign_retirer"."assign_decide_read_nearest_row", "slice_seats__assign_retirer"."assign_decide_read_seen", "slice_seats__assign_retirer"."assign_decide_read_seen_row", "slice_seats__assign_retirer"."assign_done", "slice_seats__assign_retirer"."assign_embed_input", "slice_seats__assign_retirer"."assign_embed_input_exclude", "slice_seats__assign_retirer"."assign_embed_input_mode_nearest", "slice_seats__assign_retirer"."assign_embed_input_mode_within", "slice_seats__assign_retirer"."assign_embed_input_near", "slice_seats__assign_retirer"."assign_embed_output", "slice_seats__assign_retirer"."assign_ended", "slice_seats__assign_retirer"."assign_exhausted", "slice_seats__assign_retirer"."assign_failed", "slice_seats__assign_retirer"."assign_fenced", "slice_seats__assign_retirer"."assign_finish", "slice_seats__assign_retirer"."assign_held", "slice_seats__assign_retirer"."assign_refusal", "slice_seats__assign_retirer"."assign_result", "slice_seats__assign_retirer"."assign_retry", "slice_seats__assign_retirer"."assign_root", "slice_seats__assign_retirer"."assign_scope", "slice_seats__assign_retirer"."assign_skipped", "slice_seats__assign_retirer"."assign_start_step", "slice_seats__assign_retirer"."assign_step", "slice_seats__chain_coordinator"."chain_paused", "slice_seats__chain_coordinator"."chain_resumed", "slice_seats__chain_coordinator"."chain_served", "slice_seats__chain_den"."chain_admitted", "slice_seats__chain_den"."chain_chain_run_finish_output", "slice_seats__chain_den"."chain_chain_run_input", "slice_seats__chain_den"."chain_claim", "slice_seats__chain_den"."chain_done", "slice_seats__chain_den"."chain_ended", "slice_seats__chain_den"."chain_exhausted", "slice_seats__chain_den"."chain_failed", "slice_seats__chain_den"."chain_fenced", "slice_seats__chain_den"."chain_finish", "slice_seats__chain_den"."chain_held", "slice_seats__chain_den"."chain_next", "slice_seats__chain_den"."chain_ordered_finish_output", "slice_seats__chain_den"."chain_ordered_input", "slice_seats__chain_den"."chain_page_input", "slice_seats__chain_den"."chain_page_input_after", "slice_seats__chain_den"."chain_page_output", "slice_seats__chain_den"."chain_page_output_next", "slice_seats__chain_den"."chain_page_read_earlier", "slice_seats__chain_den"."chain_page_read_earlier_row", "slice_seats__chain_den"."chain_page_read_tree", "slice_seats__chain_den"."chain_page_read_tree_items", "slice_seats__chain_den"."chain_page_read_tree_row", "slice_seats__chain_den"."chain_page_read_weights", "slice_seats__chain_den"."chain_page_read_weights_row", "slice_seats__chain_den"."chain_page_tree_first", "slice_seats__chain_den"."chain_paused", "slice_seats__chain_den"."chain_refusal", "slice_seats__chain_den"."chain_result", "slice_seats__chain_den"."chain_resumed", "slice_seats__chain_den"."chain_retry", "slice_seats__chain_den"."chain_root", "slice_seats__chain_den"."chain_scope", "slice_seats__chain_den"."chain_served", "slice_seats__chain_den"."chain_skipped", "slice_seats__chain_den"."chain_start_step", "slice_seats__chain_den"."chain_step", "slice_seats__chain_retirer"."chain_admitted", "slice_seats__chain_retirer"."chain_chain_run_finish_output", "slice_seats__chain_retirer"."chain_chain_run_input", "slice_seats__chain_retirer"."chain_claim", "slice_seats__chain_retirer"."chain_done", "slice_seats__chain_retirer"."chain_ended", "slice_seats__chain_retirer"."chain_exhausted", "slice_seats__chain_retirer"."chain_failed", "slice_seats__chain_retirer"."chain_fenced", "slice_seats__chain_retirer"."chain_finish", "slice_seats__chain_retirer"."chain_held", "slice_seats__chain_retirer"."chain_next", "slice_seats__chain_retirer"."chain_ordered_finish_output", "slice_seats__chain_retirer"."chain_ordered_input", "slice_seats__chain_retirer"."chain_page_input", "slice_seats__chain_retirer"."chain_page_input_after", "slice_seats__chain_retirer"."chain_page_output", "slice_seats__chain_retirer"."chain_page_output_next", "slice_seats__chain_retirer"."chain_page_read_earlier", "slice_seats__chain_retirer"."chain_page_read_earlier_row", "slice_seats__chain_retirer"."chain_page_read_tree", "slice_seats__chain_retirer"."chain_page_read_tree_items", "slice_seats__chain_retirer"."chain_page_read_tree_row", "slice_seats__chain_retirer"."chain_page_read_weights", "slice_seats__chain_retirer"."chain_page_read_weights_row", "slice_seats__chain_retirer"."chain_page_tree_first", "slice_seats__chain_retirer"."chain_refusal", "slice_seats__chain_retirer"."chain_result", "slice_seats__chain_retirer"."chain_retry", "slice_seats__chain_retirer"."chain_root", "slice_seats__chain_retirer"."chain_scope", "slice_seats__chain_retirer"."chain_skipped", "slice_seats__chain_retirer"."chain_start_step", "slice_seats__chain_retirer"."chain_step", "slice_seats__clock_coordinator"."clock_paused", "slice_seats__clock_coordinator"."clock_resumed", "slice_seats__clock_coordinator"."clock_served", "slice_seats__clock_den"."clock_admitted", "slice_seats__clock_den"."clock_chime_input", "slice_seats__clock_den"."clock_chime_output", "slice_seats__clock_den"."clock_claim", "slice_seats__clock_den"."clock_close_input", "slice_seats__clock_den"."clock_close_output", "slice_seats__clock_den"."clock_done", "slice_seats__clock_den"."clock_ended", "slice_seats__clock_den"."clock_exhausted", "slice_seats__clock_den"."clock_failed", "slice_seats__clock_den"."clock_fenced", "slice_seats__clock_den"."clock_finish", "slice_seats__clock_den"."clock_held", "slice_seats__clock_den"."clock_hourly_finish_output", "slice_seats__clock_den"."clock_hourly_input", "slice_seats__clock_den"."clock_paused", "slice_seats__clock_den"."clock_refusal", "slice_seats__clock_den"."clock_result", "slice_seats__clock_den"."clock_resumed", "slice_seats__clock_den"."clock_retry", "slice_seats__clock_den"."clock_root", "slice_seats__clock_den"."clock_scope", "slice_seats__clock_den"."clock_served", "slice_seats__clock_den"."clock_sitting_finish_output", "slice_seats__clock_den"."clock_sitting_input", "slice_seats__clock_den"."clock_skipped", "slice_seats__clock_den"."clock_start_step", "slice_seats__clock_den"."clock_step", "slice_seats__clock_retirer"."clock_admitted", "slice_seats__clock_retirer"."clock_chime_input", "slice_seats__clock_retirer"."clock_chime_output", "slice_seats__clock_retirer"."clock_claim", "slice_seats__clock_retirer"."clock_close_input", "slice_seats__clock_retirer"."clock_close_output", "slice_seats__clock_retirer"."clock_done", "slice_seats__clock_retirer"."clock_ended", "slice_seats__clock_retirer"."clock_exhausted", "slice_seats__clock_retirer"."clock_failed", "slice_seats__clock_retirer"."clock_fenced", "slice_seats__clock_retirer"."clock_finish", "slice_seats__clock_retirer"."clock_held", "slice_seats__clock_retirer"."clock_hourly_finish_output", "slice_seats__clock_retirer"."clock_hourly_input", "slice_seats__clock_retirer"."clock_refusal", "slice_seats__clock_retirer"."clock_result", "slice_seats__clock_retirer"."clock_retry", "slice_seats__clock_retirer"."clock_root", "slice_seats__clock_retirer"."clock_scope", "slice_seats__clock_retirer"."clock_sitting_finish_output", "slice_seats__clock_retirer"."clock_sitting_input", "slice_seats__clock_retirer"."clock_skipped", "slice_seats__clock_retirer"."clock_start_step", "slice_seats__clock_retirer"."clock_step", "slice_seats__fan_coordinator"."fan_live", "slice_seats__fan_coordinator"."fan_paused", "slice_seats__fan_coordinator"."fan_resumed", "slice_seats__fan_coordinator"."fan_served", "slice_seats__fan_den"."fan_admitted", "slice_seats__fan_den"."fan_batch_finish_output", "slice_seats__fan_den"."fan_batch_input", "slice_seats__fan_den"."fan_claim", "slice_seats__fan_den"."fan_done", "slice_seats__fan_den"."fan_dust_input", "slice_seats__fan_den"."fan_dust_output", "slice_seats__fan_den"."fan_ended", "slice_seats__fan_den"."fan_exhausted", "slice_seats__fan_den"."fan_failed", "slice_seats__fan_den"."fan_fan_run_finish_output", "slice_seats__fan_den"."fan_fan_run_input", "slice_seats__fan_den"."fan_fenced", "slice_seats__fan_den"."fan_finish", "slice_seats__fan_den"."fan_held", "slice_seats__fan_den"."fan_hold", "slice_seats__fan_den"."fan_live", "slice_seats__fan_den"."fan_mop_input", "slice_seats__fan_den"."fan_mop_output", "slice_seats__fan_den"."fan_paused", "slice_seats__fan_den"."fan_refusal", "slice_seats__fan_den"."fan_result", "slice_seats__fan_den"."fan_resumed", "slice_seats__fan_den"."fan_retry", "slice_seats__fan_den"."fan_root", "slice_seats__fan_den"."fan_scope", "slice_seats__fan_den"."fan_served", "slice_seats__fan_den"."fan_skipped", "slice_seats__fan_den"."fan_square_input", "slice_seats__fan_den"."fan_square_output", "slice_seats__fan_den"."fan_start_scope", "slice_seats__fan_den"."fan_start_step", "slice_seats__fan_den"."fan_step", "slice_seats__fan_den"."fan_sweep_finish_output", "slice_seats__fan_den"."fan_sweep_input", "slice_seats__fan_den"."fan_within", "slice_seats__fan_retirer"."fan_admitted", "slice_seats__fan_retirer"."fan_batch_finish_output", "slice_seats__fan_retirer"."fan_batch_input", "slice_seats__fan_retirer"."fan_claim", "slice_seats__fan_retirer"."fan_done", "slice_seats__fan_retirer"."fan_dust_input", "slice_seats__fan_retirer"."fan_dust_output", "slice_seats__fan_retirer"."fan_ended", "slice_seats__fan_retirer"."fan_exhausted", "slice_seats__fan_retirer"."fan_failed", "slice_seats__fan_retirer"."fan_fan_run_finish_output", "slice_seats__fan_retirer"."fan_fan_run_input", "slice_seats__fan_retirer"."fan_fenced", "slice_seats__fan_retirer"."fan_finish", "slice_seats__fan_retirer"."fan_held", "slice_seats__fan_retirer"."fan_hold", "slice_seats__fan_retirer"."fan_mop_input", "slice_seats__fan_retirer"."fan_mop_output", "slice_seats__fan_retirer"."fan_refusal", "slice_seats__fan_retirer"."fan_result", "slice_seats__fan_retirer"."fan_retry", "slice_seats__fan_retirer"."fan_root", "slice_seats__fan_retirer"."fan_scope", "slice_seats__fan_retirer"."fan_skipped", "slice_seats__fan_retirer"."fan_square_input", "slice_seats__fan_retirer"."fan_square_output", "slice_seats__fan_retirer"."fan_start_scope", "slice_seats__fan_retirer"."fan_start_step", "slice_seats__fan_retirer"."fan_step", "slice_seats__fan_retirer"."fan_sweep_finish_output", "slice_seats__fan_retirer"."fan_sweep_input", "slice_seats__fan_retirer"."fan_within", "slice_seats__retry_coordinator"."retry_paused", "slice_seats__retry_coordinator"."retry_resumed", "slice_seats__retry_coordinator"."retry_served", "slice_seats__retry_den"."retry_admitted", "slice_seats__retry_den"."retry_brittle_input", "slice_seats__retry_den"."retry_brittle_output", "slice_seats__retry_den"."retry_claim", "slice_seats__retry_den"."retry_done", "slice_seats__retry_den"."retry_ended", "slice_seats__retry_den"."retry_exhausted", "slice_seats__retry_den"."retry_failed", "slice_seats__retry_den"."retry_fenced", "slice_seats__retry_den"."retry_finish", "slice_seats__retry_den"."retry_held", "slice_seats__retry_den"."retry_ladders_finish_output", "slice_seats__retry_den"."retry_ladders_input", "slice_seats__retry_den"."retry_patient_input", "slice_seats__retry_den"."retry_patient_output", "slice_seats__retry_den"."retry_paused", "slice_seats__retry_den"."retry_polite_input", "slice_seats__retry_den"."retry_polite_output", "slice_seats__retry_den"."retry_refusal", "slice_seats__retry_den"."retry_result", "slice_seats__retry_den"."retry_resumed", "slice_seats__retry_den"."retry_retry", "slice_seats__retry_den"."retry_root", "slice_seats__retry_den"."retry_scope", "slice_seats__retry_den"."retry_served", "slice_seats__retry_den"."retry_skipped", "slice_seats__retry_den"."retry_start_step", "slice_seats__retry_den"."retry_steadfast_input", "slice_seats__retry_den"."retry_steadfast_output", "slice_seats__retry_den"."retry_step", "slice_seats__retry_den"."retry_throttled_finish_output", "slice_seats__retry_den"."retry_throttled_input", "slice_seats__retry_den"."retry_unhurried_finish_output", "slice_seats__retry_den"."retry_unhurried_input", "slice_seats__retry_retirer"."retry_admitted", "slice_seats__retry_retirer"."retry_brittle_input", "slice_seats__retry_retirer"."retry_brittle_output", "slice_seats__retry_retirer"."retry_claim", "slice_seats__retry_retirer"."retry_done", "slice_seats__retry_retirer"."retry_ended", "slice_seats__retry_retirer"."retry_exhausted", "slice_seats__retry_retirer"."retry_failed", "slice_seats__retry_retirer"."retry_fenced", "slice_seats__retry_retirer"."retry_finish", "slice_seats__retry_retirer"."retry_held", "slice_seats__retry_retirer"."retry_ladders_finish_output", "slice_seats__retry_retirer"."retry_ladders_input", "slice_seats__retry_retirer"."retry_patient_input", "slice_seats__retry_retirer"."retry_patient_output", "slice_seats__retry_retirer"."retry_polite_input", "slice_seats__retry_retirer"."retry_polite_output", "slice_seats__retry_retirer"."retry_refusal", "slice_seats__retry_retirer"."retry_result", "slice_seats__retry_retirer"."retry_retry", "slice_seats__retry_retirer"."retry_root", "slice_seats__retry_retirer"."retry_scope", "slice_seats__retry_retirer"."retry_skipped", "slice_seats__retry_retirer"."retry_start_step", "slice_seats__retry_retirer"."retry_steadfast_input", "slice_seats__retry_retirer"."retry_steadfast_output", "slice_seats__retry_retirer"."retry_step", "slice_seats__retry_retirer"."retry_throttled_finish_output", "slice_seats__retry_retirer"."retry_throttled_input", "slice_seats__retry_retirer"."retry_unhurried_finish_output", "slice_seats__retry_retirer"."retry_unhurried_input", "slice_seats__review_coordinator"."review_live", "slice_seats__review_coordinator"."review_paused", "slice_seats__review_coordinator"."review_resumed", "slice_seats__review_coordinator"."review_served", "slice_seats__review_den"."delivered", "slice_seats__review_den"."review_admitted", "slice_seats__review_den"."review_analyze_input", "slice_seats__review_den"."review_analyze_output", "slice_seats__review_den"."review_claim", "slice_seats__review_den"."review_done", "slice_seats__review_den"."review_ended", "slice_seats__review_den"."review_exhausted", "slice_seats__review_den"."review_failed", "slice_seats__review_den"."review_fenced", "slice_seats__review_den"."review_finish", "slice_seats__review_den"."review_gather_input", "slice_seats__review_den"."review_gather_input_sizes", "slice_seats__review_den"."review_gather_output", "slice_seats__review_den"."review_held", "slice_seats__review_den"."review_hold", "slice_seats__review_den"."review_live", "slice_seats__review_den"."review_paused", "slice_seats__review_den"."review_questions_finish_output", "slice_seats__review_den"."review_questions_input", "slice_seats__review_den"."review_refusal", "slice_seats__review_den"."review_result", "slice_seats__review_den"."review_resumed", "slice_seats__review_den"."review_retry", "slice_seats__review_den"."review_review_run_finish_output", "slice_seats__review_den"."review_review_run_input", "slice_seats__review_den"."review_review_run_input_sizes", "slice_seats__review_den"."review_root", "slice_seats__review_den"."review_save_input", "slice_seats__review_den"."review_save_output", "slice_seats__review_den"."review_saved", "slice_seats__review_den"."review_scope", "slice_seats__review_den"."review_served", "slice_seats__review_den"."review_skipped", "slice_seats__review_den"."review_split", "slice_seats__review_den"."review_start_scope", "slice_seats__review_den"."review_start_step", "slice_seats__review_den"."review_step", "slice_seats__review_den"."review_within", "slice_seats__review_retirer"."review_admitted", "slice_seats__review_retirer"."review_analyze_input", "slice_seats__review_retirer"."review_analyze_output", "slice_seats__review_retirer"."review_claim", "slice_seats__review_retirer"."review_done", "slice_seats__review_retirer"."review_ended", "slice_seats__review_retirer"."review_exhausted", "slice_seats__review_retirer"."review_failed", "slice_seats__review_retirer"."review_fenced", "slice_seats__review_retirer"."review_finish", "slice_seats__review_retirer"."review_gather_input", "slice_seats__review_retirer"."review_gather_input_sizes", "slice_seats__review_retirer"."review_gather_output", "slice_seats__review_retirer"."review_held", "slice_seats__review_retirer"."review_hold", "slice_seats__review_retirer"."review_questions_finish_output", "slice_seats__review_retirer"."review_questions_input", "slice_seats__review_retirer"."review_refusal", "slice_seats__review_retirer"."review_result", "slice_seats__review_retirer"."review_retry", "slice_seats__review_retirer"."review_review_run_finish_output", "slice_seats__review_retirer"."review_review_run_input", "slice_seats__review_retirer"."review_review_run_input_sizes", "slice_seats__review_retirer"."review_root", "slice_seats__review_retirer"."review_save_input", "slice_seats__review_retirer"."review_save_output", "slice_seats__review_retirer"."review_saved", "slice_seats__review_retirer"."review_scope", "slice_seats__review_retirer"."review_skipped", "slice_seats__review_retirer"."review_split", "slice_seats__review_retirer"."review_start_scope", "slice_seats__review_retirer"."review_start_step", "slice_seats__review_retirer"."review_step", "slice_seats__review_retirer"."review_within", "slice_seats__sync_coordinator"."sync_exclusive", "slice_seats__sync_coordinator"."sync_paused", "slice_seats__sync_coordinator"."sync_released", "slice_seats__sync_coordinator"."sync_resumed", "slice_seats__sync_coordinator"."sync_served", "slice_seats__sync_den"."chain_result", "slice_seats__sync_den"."chain_step", "slice_seats__sync_den"."sync_admitted", "slice_seats__sync_den"."sync_build_input", "slice_seats__sync_den"."sync_build_output", "slice_seats__sync_den"."sync_claim", "slice_seats__sync_den"."sync_copy_input", "slice_seats__sync_den"."sync_copy_output", "slice_seats__sync_den"."sync_done", "slice_seats__sync_den"."sync_ended", "slice_seats__sync_den"."sync_exclusive", "slice_seats__sync_den"."sync_exclusive_key", "slice_seats__sync_den"."sync_exhausted", "slice_seats__sync_den"."sync_failed", "slice_seats__sync_den"."sync_fenced", "slice_seats__sync_den"."sync_finish", "slice_seats__sync_den"."sync_gold_finish_output", "slice_seats__sync_den"."sync_gold_input", "slice_seats__sync_den"."sync_held", "slice_seats__sync_den"."sync_paused", "slice_seats__sync_den"."sync_refusal", "slice_seats__sync_den"."sync_released", "slice_seats__sync_den"."sync_result", "slice_seats__sync_den"."sync_resumed", "slice_seats__sync_den"."sync_retry", "slice_seats__sync_den"."sync_root", "slice_seats__sync_den"."sync_scope", "slice_seats__sync_den"."sync_served", "slice_seats__sync_den"."sync_skipped", "slice_seats__sync_den"."sync_start_step", "slice_seats__sync_den"."sync_step", "slice_seats__sync_den"."sync_sync_run_finish_output", "slice_seats__sync_den"."sync_sync_run_input", "slice_seats__sync_retirer"."sync_admitted", "slice_seats__sync_retirer"."sync_build_input", "slice_seats__sync_retirer"."sync_build_output", "slice_seats__sync_retirer"."sync_claim", "slice_seats__sync_retirer"."sync_copy_input", "slice_seats__sync_retirer"."sync_copy_output", "slice_seats__sync_retirer"."sync_done", "slice_seats__sync_retirer"."sync_ended", "slice_seats__sync_retirer"."sync_exclusive_key", "slice_seats__sync_retirer"."sync_exhausted", "slice_seats__sync_retirer"."sync_failed", "slice_seats__sync_retirer"."sync_fenced", "slice_seats__sync_retirer"."sync_finish", "slice_seats__sync_retirer"."sync_gold_finish_output", "slice_seats__sync_retirer"."sync_gold_input", "slice_seats__sync_retirer"."sync_held", "slice_seats__sync_retirer"."sync_refusal", "slice_seats__sync_retirer"."sync_result", "slice_seats__sync_retirer"."sync_retry", "slice_seats__sync_retirer"."sync_root", "slice_seats__sync_retirer"."sync_scope", "slice_seats__sync_retirer"."sync_skipped", "slice_seats__sync_retirer"."sync_start_step", "slice_seats__sync_retirer"."sync_step", "slice_seats__sync_retirer"."sync_sync_run_finish_output", "slice_seats__sync_retirer"."sync_sync_run_input", "slice_seats__writeback_coordinator"."writeback_paused", "slice_seats__writeback_coordinator"."writeback_resumed", "slice_seats__writeback_coordinator"."writeback_served", "slice_seats__writeback_den"."writeback_admitted", "slice_seats__writeback_den"."writeback_claim", "slice_seats__writeback_den"."writeback_deliver_input", "slice_seats__writeback_den"."writeback_deliver_output", "slice_seats__writeback_den"."writeback_done", "slice_seats__writeback_den"."writeback_ended", "slice_seats__writeback_den"."writeback_exhausted", "slice_seats__writeback_den"."writeback_failed", "slice_seats__writeback_den"."writeback_fenced", "slice_seats__writeback_den"."writeback_finish", "slice_seats__writeback_den"."writeback_held", "slice_seats__writeback_den"."writeback_paused", "slice_seats__writeback_den"."writeback_refusal", "slice_seats__writeback_den"."writeback_result", "slice_seats__writeback_den"."writeback_resumed", "slice_seats__writeback_den"."writeback_retry", "slice_seats__writeback_den"."writeback_root", "slice_seats__writeback_den"."writeback_scope", "slice_seats__writeback_den"."writeback_served", "slice_seats__writeback_den"."writeback_skipped", "slice_seats__writeback_den"."writeback_start_step", "slice_seats__writeback_den"."writeback_step", "slice_seats__writeback_den"."writeback_writeback_finish_output", "slice_seats__writeback_den"."writeback_writeback_input", "slice_seats__writeback_retirer"."writeback_admitted", "slice_seats__writeback_retirer"."writeback_claim", "slice_seats__writeback_retirer"."writeback_deliver_input", "slice_seats__writeback_retirer"."writeback_deliver_output", "slice_seats__writeback_retirer"."writeback_done", "slice_seats__writeback_retirer"."writeback_ended", "slice_seats__writeback_retirer"."writeback_exhausted", "slice_seats__writeback_retirer"."writeback_failed", "slice_seats__writeback_retirer"."writeback_fenced", "slice_seats__writeback_retirer"."writeback_finish", "slice_seats__writeback_retirer"."writeback_held", "slice_seats__writeback_retirer"."writeback_refusal", "slice_seats__writeback_retirer"."writeback_result", "slice_seats__writeback_retirer"."writeback_retry", "slice_seats__writeback_retirer"."writeback_root", "slice_seats__writeback_retirer"."writeback_scope", "slice_seats__writeback_retirer"."writeback_skipped", "slice_seats__writeback_retirer"."writeback_start_step", "slice_seats__writeback_retirer"."writeback_step", "slice_seats__writeback_retirer"."writeback_writeback_finish_output", "slice_seats__writeback_retirer"."writeback_writeback_input" FROM PUBLIC;
+REVOKE ALL ON TABLE "slice_den"."assign_admitted", "slice_den"."assign_asked", "slice_den"."assign_assignment_finish_output", "slice_den"."assign_assignment_input", "slice_den"."assign_assignment_input_exclude", "slice_den"."assign_assignment_input_mode_nearest", "slice_den"."assign_assignment_input_mode_within", "slice_den"."assign_assignment_input_near", "slice_den"."assign_claim", "slice_den"."assign_decide_input", "slice_den"."assign_decide_input_exclude", "slice_den"."assign_decide_input_mode_nearest", "slice_den"."assign_decide_input_mode_within", "slice_den"."assign_decide_output", "slice_den"."assign_decide_output_stage_rest", "slice_den"."assign_decide_output_stage_serve", "slice_den"."assign_decide_output_weighed", "slice_den"."assign_decide_read_nearest", "slice_den"."assign_decide_read_nearest_row", "slice_den"."assign_decide_read_seen", "slice_den"."assign_decide_read_seen_row", "slice_den"."assign_done", "slice_den"."assign_embed_input", "slice_den"."assign_embed_input_exclude", "slice_den"."assign_embed_input_mode_nearest", "slice_den"."assign_embed_input_mode_within", "slice_den"."assign_embed_input_near", "slice_den"."assign_embed_output", "slice_den"."assign_ended", "slice_den"."assign_exhausted", "slice_den"."assign_failed", "slice_den"."assign_fenced", "slice_den"."assign_finish", "slice_den"."assign_held", "slice_den"."assign_paused", "slice_den"."assign_refusal", "slice_den"."assign_result", "slice_den"."assign_resumed", "slice_den"."assign_retry", "slice_den"."assign_root", "slice_den"."assign_scope", "slice_den"."assign_served", "slice_den"."assign_skipped", "slice_den"."assign_start_step", "slice_den"."assign_step", "slice"."assigned", "slice_den"."audit", "slice"."built", "slice_den"."chain_admitted", "slice_den"."chain_chain_run_finish_output", "slice_den"."chain_chain_run_input", "slice_den"."chain_claim", "slice_den"."chain_done", "slice_den"."chain_ended", "slice_den"."chain_exhausted", "slice_den"."chain_failed", "slice_den"."chain_fenced", "slice_den"."chain_finish", "slice_den"."chain_held", "slice_den"."chain_next", "slice_den"."chain_ordered_finish_output", "slice_den"."chain_ordered_input", "slice_den"."chain_page_input", "slice_den"."chain_page_input_after", "slice_den"."chain_page_output", "slice_den"."chain_page_output_next", "slice_den"."chain_page_read_earlier", "slice_den"."chain_page_read_earlier_row", "slice_den"."chain_page_read_tree", "slice_den"."chain_page_read_tree_items", "slice_den"."chain_page_read_tree_row", "slice_den"."chain_page_read_weights", "slice_den"."chain_page_read_weights_row", "slice_den"."chain_page_tree_first", "slice_den"."chain_paused", "slice_den"."chain_refusal", "slice_den"."chain_result", "slice_den"."chain_resumed", "slice_den"."chain_retry", "slice_den"."chain_root", "slice_den"."chain_scope", "slice_den"."chain_served", "slice_den"."chain_skipped", "slice_den"."chain_start_step", "slice_den"."chain_step", "slice"."chimed", "slice_den"."clock_admitted", "slice_den"."clock_chime_input", "slice_den"."clock_chime_output", "slice_den"."clock_claim", "slice_den"."clock_close_input", "slice_den"."clock_close_output", "slice_den"."clock_done", "slice_den"."clock_ended", "slice_den"."clock_exhausted", "slice_den"."clock_failed", "slice_den"."clock_fenced", "slice_den"."clock_finish", "slice_den"."clock_held", "slice_den"."clock_hourly_finish_output", "slice_den"."clock_hourly_input", "slice_den"."clock_paused", "slice_den"."clock_refusal", "slice_den"."clock_result", "slice_den"."clock_resumed", "slice_den"."clock_retry", "slice_den"."clock_root", "slice_den"."clock_scope", "slice_den"."clock_served", "slice_den"."clock_sitting_finish_output", "slice_den"."clock_sitting_input", "slice_den"."clock_skipped", "slice_den"."clock_start_step", "slice_den"."clock_step", "slice"."concluded", "slice"."copied", "slice"."cursor", "slice"."delivered", "slice_den"."fan_admitted", "slice_den"."fan_batch_finish_output", "slice_den"."fan_batch_input", "slice_den"."fan_claim", "slice_den"."fan_done", "slice_den"."fan_dust_input", "slice_den"."fan_dust_output", "slice_den"."fan_ended", "slice_den"."fan_exhausted", "slice_den"."fan_failed", "slice_den"."fan_fan_run_finish_output", "slice_den"."fan_fan_run_input", "slice_den"."fan_fenced", "slice_den"."fan_finish", "slice_den"."fan_held", "slice_den"."fan_hold", "slice_den"."fan_mop_input", "slice_den"."fan_mop_output", "slice_den"."fan_paused", "slice_den"."fan_refusal", "slice_den"."fan_result", "slice_den"."fan_resumed", "slice_den"."fan_retry", "slice_den"."fan_root", "slice_den"."fan_scope", "slice_den"."fan_served", "slice_den"."fan_skipped", "slice_den"."fan_square_input", "slice_den"."fan_square_output", "slice_den"."fan_start_scope", "slice_den"."fan_start_step", "slice_den"."fan_step", "slice_den"."fan_sweep_finish_output", "slice_den"."fan_sweep_input", "slice_den"."fan_within", "slice"."heard", "slice"."item", "slice"."order", "slice"."passage", "slice_den"."retry_admitted", "slice_den"."retry_brittle_input", "slice_den"."retry_brittle_output", "slice_den"."retry_claim", "slice_den"."retry_done", "slice_den"."retry_ended", "slice_den"."retry_exhausted", "slice_den"."retry_failed", "slice_den"."retry_fenced", "slice_den"."retry_finish", "slice_den"."retry_held", "slice_den"."retry_ladders_finish_output", "slice_den"."retry_ladders_input", "slice_den"."retry_patient_input", "slice_den"."retry_patient_output", "slice_den"."retry_paused", "slice_den"."retry_polite_input", "slice_den"."retry_polite_output", "slice_den"."retry_refusal", "slice_den"."retry_result", "slice_den"."retry_resumed", "slice_den"."retry_retry", "slice_den"."retry_root", "slice_den"."retry_scope", "slice_den"."retry_served", "slice_den"."retry_skipped", "slice_den"."retry_start_step", "slice_den"."retry_steadfast_input", "slice_den"."retry_steadfast_output", "slice_den"."retry_step", "slice_den"."retry_throttled_finish_output", "slice_den"."retry_throttled_input", "slice_den"."retry_unhurried_finish_output", "slice_den"."retry_unhurried_input", "slice_den"."review_admitted", "slice_den"."review_analyze_input", "slice_den"."review_analyze_output", "slice_den"."review_claim", "slice_den"."review_done", "slice_den"."review_ended", "slice_den"."review_exhausted", "slice_den"."review_failed", "slice_den"."review_fenced", "slice_den"."review_finish", "slice_den"."review_gather_input", "slice_den"."review_gather_input_sizes", "slice_den"."review_gather_output", "slice_den"."review_held", "slice_den"."review_hold", "slice_den"."review_paused", "slice_den"."review_questions_finish_output", "slice_den"."review_questions_input", "slice_den"."review_refusal", "slice_den"."review_result", "slice_den"."review_resumed", "slice_den"."review_retry", "slice_den"."review_review_run_finish_output", "slice_den"."review_review_run_input", "slice_den"."review_review_run_input_sizes", "slice_den"."review_root", "slice_den"."review_save_input", "slice_den"."review_save_output", "slice_den"."review_saved", "slice_den"."review_scope", "slice_den"."review_served", "slice_den"."review_skipped", "slice_den"."review_split", "slice_den"."review_start_scope", "slice_den"."review_start_step", "slice_den"."review_step", "slice_den"."review_within", "slice"."reviewed", "slice"."seen", "slice"."settled", "slice"."summary", "slice_den"."sync_admitted", "slice_den"."sync_build_input", "slice_den"."sync_build_output", "slice_den"."sync_claim", "slice_den"."sync_copy_input", "slice_den"."sync_copy_output", "slice_den"."sync_done", "slice_den"."sync_ended", "slice_den"."sync_exclusive", "slice_den"."sync_exclusive_key", "slice_den"."sync_exhausted", "slice_den"."sync_failed", "slice_den"."sync_fenced", "slice_den"."sync_finish", "slice_den"."sync_gold_finish_output", "slice_den"."sync_gold_input", "slice_den"."sync_held", "slice_den"."sync_paused", "slice_den"."sync_refusal", "slice_den"."sync_released", "slice_den"."sync_result", "slice_den"."sync_resumed", "slice_den"."sync_retry", "slice_den"."sync_root", "slice_den"."sync_scope", "slice_den"."sync_served", "slice_den"."sync_skipped", "slice_den"."sync_start_step", "slice_den"."sync_step", "slice_den"."sync_sync_run_finish_output", "slice_den"."sync_sync_run_input", "slice"."tally", "slice"."weight", "slice_den"."writeback_admitted", "slice_den"."writeback_claim", "slice_den"."writeback_deliver_input", "slice_den"."writeback_deliver_output", "slice_den"."writeback_done", "slice_den"."writeback_ended", "slice_den"."writeback_exhausted", "slice_den"."writeback_failed", "slice_den"."writeback_fenced", "slice_den"."writeback_finish", "slice_den"."writeback_held", "slice_den"."writeback_paused", "slice_den"."writeback_refusal", "slice_den"."writeback_result", "slice_den"."writeback_resumed", "slice_den"."writeback_retry", "slice_den"."writeback_root", "slice_den"."writeback_scope", "slice_den"."writeback_served", "slice_den"."writeback_skipped", "slice_den"."writeback_start_step", "slice_den"."writeback_step", "slice_den"."writeback_writeback_finish_output", "slice_den"."writeback_writeback_input", "__slice_den"."assign_admitted", "__slice_den"."assign_asked", "__slice_den"."assign_assignment_finish_output", "__slice_den"."assign_assignment_input", "__slice_den"."assign_assignment_input_exclude", "__slice_den"."assign_assignment_input_mode_nearest", "__slice_den"."assign_assignment_input_mode_within", "__slice_den"."assign_assignment_input_near", "__slice_den"."assign_claim", "__slice_den"."assign_decide_input", "__slice_den"."assign_decide_input_exclude", "__slice_den"."assign_decide_input_mode_nearest", "__slice_den"."assign_decide_input_mode_within", "__slice_den"."assign_decide_output", "__slice_den"."assign_decide_output_stage_rest", "__slice_den"."assign_decide_output_stage_serve", "__slice_den"."assign_decide_output_weighed", "__slice_den"."assign_decide_read_nearest", "__slice_den"."assign_decide_read_nearest_row", "__slice_den"."assign_decide_read_seen", "__slice_den"."assign_decide_read_seen_row", "__slice_den"."assign_done", "__slice_den"."assign_embed_input", "__slice_den"."assign_embed_input_exclude", "__slice_den"."assign_embed_input_mode_nearest", "__slice_den"."assign_embed_input_mode_within", "__slice_den"."assign_embed_input_near", "__slice_den"."assign_embed_output", "__slice_den"."assign_ended", "__slice_den"."assign_exhausted", "__slice_den"."assign_failed", "__slice_den"."assign_fenced", "__slice_den"."assign_finish", "__slice_den"."assign_held", "__slice_den"."assign_paused", "__slice_den"."assign_refusal", "__slice_den"."assign_result", "__slice_den"."assign_resumed", "__slice_den"."assign_retry", "__slice_den"."assign_root", "__slice_den"."assign_scope", "__slice_den"."assign_served", "__slice_den"."assign_skipped", "__slice_den"."assign_start_step", "__slice_den"."assign_step", "__slice"."assigned", "__slice_den"."audit", "__slice"."built", "__slice_den"."chain_admitted", "__slice_den"."chain_chain_run_finish_output", "__slice_den"."chain_chain_run_input", "__slice_den"."chain_claim", "__slice_den"."chain_done", "__slice_den"."chain_ended", "__slice_den"."chain_exhausted", "__slice_den"."chain_failed", "__slice_den"."chain_fenced", "__slice_den"."chain_finish", "__slice_den"."chain_held", "__slice_den"."chain_next", "__slice_den"."chain_ordered_finish_output", "__slice_den"."chain_ordered_input", "__slice_den"."chain_page_input", "__slice_den"."chain_page_input_after", "__slice_den"."chain_page_output", "__slice_den"."chain_page_output_next", "__slice_den"."chain_page_read_earlier", "__slice_den"."chain_page_read_earlier_row", "__slice_den"."chain_page_read_tree", "__slice_den"."chain_page_read_tree_items", "__slice_den"."chain_page_read_tree_row", "__slice_den"."chain_page_read_weights", "__slice_den"."chain_page_read_weights_row", "__slice_den"."chain_page_tree_first", "__slice_den"."chain_paused", "__slice_den"."chain_refusal", "__slice_den"."chain_result", "__slice_den"."chain_resumed", "__slice_den"."chain_retry", "__slice_den"."chain_root", "__slice_den"."chain_scope", "__slice_den"."chain_served", "__slice_den"."chain_skipped", "__slice_den"."chain_start_step", "__slice_den"."chain_step", "__slice"."chimed", "__slice_den"."clock_admitted", "__slice_den"."clock_chime_input", "__slice_den"."clock_chime_output", "__slice_den"."clock_claim", "__slice_den"."clock_close_input", "__slice_den"."clock_close_output", "__slice_den"."clock_done", "__slice_den"."clock_ended", "__slice_den"."clock_exhausted", "__slice_den"."clock_failed", "__slice_den"."clock_fenced", "__slice_den"."clock_finish", "__slice_den"."clock_held", "__slice_den"."clock_hourly_finish_output", "__slice_den"."clock_hourly_input", "__slice_den"."clock_paused", "__slice_den"."clock_refusal", "__slice_den"."clock_result", "__slice_den"."clock_resumed", "__slice_den"."clock_retry", "__slice_den"."clock_root", "__slice_den"."clock_scope", "__slice_den"."clock_served", "__slice_den"."clock_sitting_finish_output", "__slice_den"."clock_sitting_input", "__slice_den"."clock_skipped", "__slice_den"."clock_start_step", "__slice_den"."clock_step", "__slice"."concluded", "__slice"."copied", "__slice"."cursor", "__slice"."delivered", "__slice_den"."fan_admitted", "__slice_den"."fan_batch_finish_output", "__slice_den"."fan_batch_input", "__slice_den"."fan_claim", "__slice_den"."fan_done", "__slice_den"."fan_dust_input", "__slice_den"."fan_dust_output", "__slice_den"."fan_ended", "__slice_den"."fan_exhausted", "__slice_den"."fan_failed", "__slice_den"."fan_fan_run_finish_output", "__slice_den"."fan_fan_run_input", "__slice_den"."fan_fenced", "__slice_den"."fan_finish", "__slice_den"."fan_held", "__slice_den"."fan_hold", "__slice_den"."fan_mop_input", "__slice_den"."fan_mop_output", "__slice_den"."fan_paused", "__slice_den"."fan_refusal", "__slice_den"."fan_result", "__slice_den"."fan_resumed", "__slice_den"."fan_retry", "__slice_den"."fan_root", "__slice_den"."fan_scope", "__slice_den"."fan_served", "__slice_den"."fan_skipped", "__slice_den"."fan_square_input", "__slice_den"."fan_square_output", "__slice_den"."fan_start_scope", "__slice_den"."fan_start_step", "__slice_den"."fan_step", "__slice_den"."fan_sweep_finish_output", "__slice_den"."fan_sweep_input", "__slice_den"."fan_within", "__slice"."heard", "__slice"."item", "__slice"."order", "__slice"."passage", "__slice_den"."retry_admitted", "__slice_den"."retry_brittle_input", "__slice_den"."retry_brittle_output", "__slice_den"."retry_claim", "__slice_den"."retry_done", "__slice_den"."retry_ended", "__slice_den"."retry_exhausted", "__slice_den"."retry_failed", "__slice_den"."retry_fenced", "__slice_den"."retry_finish", "__slice_den"."retry_held", "__slice_den"."retry_ladders_finish_output", "__slice_den"."retry_ladders_input", "__slice_den"."retry_patient_input", "__slice_den"."retry_patient_output", "__slice_den"."retry_paused", "__slice_den"."retry_polite_input", "__slice_den"."retry_polite_output", "__slice_den"."retry_refusal", "__slice_den"."retry_result", "__slice_den"."retry_resumed", "__slice_den"."retry_retry", "__slice_den"."retry_root", "__slice_den"."retry_scope", "__slice_den"."retry_served", "__slice_den"."retry_skipped", "__slice_den"."retry_start_step", "__slice_den"."retry_steadfast_input", "__slice_den"."retry_steadfast_output", "__slice_den"."retry_step", "__slice_den"."retry_throttled_finish_output", "__slice_den"."retry_throttled_input", "__slice_den"."retry_unhurried_finish_output", "__slice_den"."retry_unhurried_input", "__slice_den"."review_admitted", "__slice_den"."review_analyze_input", "__slice_den"."review_analyze_output", "__slice_den"."review_claim", "__slice_den"."review_done", "__slice_den"."review_ended", "__slice_den"."review_exhausted", "__slice_den"."review_failed", "__slice_den"."review_fenced", "__slice_den"."review_finish", "__slice_den"."review_gather_input", "__slice_den"."review_gather_input_sizes", "__slice_den"."review_gather_output", "__slice_den"."review_held", "__slice_den"."review_hold", "__slice_den"."review_paused", "__slice_den"."review_questions_finish_output", "__slice_den"."review_questions_input", "__slice_den"."review_refusal", "__slice_den"."review_result", "__slice_den"."review_resumed", "__slice_den"."review_retry", "__slice_den"."review_review_run_finish_output", "__slice_den"."review_review_run_input", "__slice_den"."review_review_run_input_sizes", "__slice_den"."review_root", "__slice_den"."review_save_input", "__slice_den"."review_save_output", "__slice_den"."review_saved", "__slice_den"."review_scope", "__slice_den"."review_served", "__slice_den"."review_skipped", "__slice_den"."review_split", "__slice_den"."review_start_scope", "__slice_den"."review_start_step", "__slice_den"."review_step", "__slice_den"."review_within", "__slice"."reviewed", "__slice"."seen", "__slice"."settled", "__slice"."summary", "__slice_den"."sync_admitted", "__slice_den"."sync_build_input", "__slice_den"."sync_build_output", "__slice_den"."sync_claim", "__slice_den"."sync_copy_input", "__slice_den"."sync_copy_output", "__slice_den"."sync_done", "__slice_den"."sync_ended", "__slice_den"."sync_exclusive", "__slice_den"."sync_exclusive_key", "__slice_den"."sync_exhausted", "__slice_den"."sync_failed", "__slice_den"."sync_fenced", "__slice_den"."sync_finish", "__slice_den"."sync_gold_finish_output", "__slice_den"."sync_gold_input", "__slice_den"."sync_held", "__slice_den"."sync_paused", "__slice_den"."sync_refusal", "__slice_den"."sync_released", "__slice_den"."sync_result", "__slice_den"."sync_resumed", "__slice_den"."sync_retry", "__slice_den"."sync_root", "__slice_den"."sync_scope", "__slice_den"."sync_served", "__slice_den"."sync_skipped", "__slice_den"."sync_start_step", "__slice_den"."sync_step", "__slice_den"."sync_sync_run_finish_output", "__slice_den"."sync_sync_run_input", "__slice"."tally", "__slice"."weight", "__slice_den"."writeback_admitted", "__slice_den"."writeback_claim", "__slice_den"."writeback_deliver_input", "__slice_den"."writeback_deliver_output", "__slice_den"."writeback_done", "__slice_den"."writeback_ended", "__slice_den"."writeback_exhausted", "__slice_den"."writeback_failed", "__slice_den"."writeback_fenced", "__slice_den"."writeback_finish", "__slice_den"."writeback_held", "__slice_den"."writeback_paused", "__slice_den"."writeback_refusal", "__slice_den"."writeback_result", "__slice_den"."writeback_resumed", "__slice_den"."writeback_retry", "__slice_den"."writeback_root", "__slice_den"."writeback_scope", "__slice_den"."writeback_served", "__slice_den"."writeback_skipped", "__slice_den"."writeback_start_step", "__slice_den"."writeback_step", "__slice_den"."writeback_writeback_finish_output", "__slice_den"."writeback_writeback_input", "slice_seats__fan_coordinator"."fan_live", "slice_seats__fan_den"."fan_live", "slice_seats__review_coordinator"."review_live", "slice_seats__review_den"."review_live" FROM PUBLIC;
 
 REVOKE ALL ON DOMAIN "slice"."__sha256", "slice_den"."assign_assignment_input_mode", "slice_den"."assign_decide_input_mode", "slice_den"."assign_decide_output_stage", "slice_den"."assign_embed_input_mode", "slice_den"."assign_kind", "slice_den"."assign_outcome", "slice_den"."assign_pausable", "slice_den"."assign_retry_why", "slice_den"."assign_root_kind", "slice"."bell", "slice_den"."chain_chain_run_input_feed", "slice_den"."chain_kind", "slice_den"."chain_ordered_input_feed", "slice_den"."chain_outcome", "slice_den"."chain_page_input_feed", "slice_den"."chain_pausable", "slice_den"."chain_retry_why", "slice_den"."chain_root_kind", "slice_den"."clock_chime_input_bell", "slice_den"."clock_chime_output_bell", "slice_den"."clock_hourly_input_bell", "slice_den"."clock_kind", "slice_den"."clock_outcome", "slice_den"."clock_pausable", "slice_den"."clock_retry_why", "slice_den"."clock_root_kind", "slice_den"."fan_child_kind", "slice_den"."fan_kind", "slice_den"."fan_outcome", "slice_den"."fan_pausable", "slice_den"."fan_resource", "slice_den"."fan_retry_why", "slice_den"."fan_root_kind", "slice"."feed", "slice_den"."retry_kind", "slice_den"."retry_outcome", "slice_den"."retry_pausable", "slice_den"."retry_retry_why", "slice_den"."retry_root_kind", "slice_den"."review_child_kind", "slice_den"."review_kind", "slice_den"."review_outcome", "slice_den"."review_pausable", "slice_den"."review_resource", "slice_den"."review_retry_why", "slice_den"."review_root_kind", "slice_den"."sync_kind", "slice_den"."sync_outcome", "slice_den"."sync_pausable", "slice_den"."sync_retry_why", "slice_den"."sync_root_kind", "slice_den"."writeback_kind", "slice_den"."writeback_outcome", "slice_den"."writeback_pausable", "slice_den"."writeback_retry_why", "slice_den"."writeback_root_kind", "slice"."__text_t4rwovzmqj", "slice"."__domain_e5fpjchj5r", "slice"."__domain_mxhao3k6ss", "slice"."__domain_mxhao3k6ss", "slice"."__domain_gfw43vigph", "slice"."__domain_p7dj7oebtz", "slice"."__param_nearest_topic_4eruqlfauv", "slice"."__param_seen_learner_exdgowkpja" FROM PUBLIC;
 
@@ -8147,38 +5677,6 @@ COMMENT ON INDEX "slice_den"."__writeback_step_ix_scope_root_ft5ap6qmlh" IS 'btr
 COMMENT ON INDEX "slice_den"."__writeback_step_ix_step_root_q3li3ogpqx" IS 'btree index WritebackStep(step, root)';
 
 COMMENT ON INDEX "slice_den"."__writeback_writeback_input_ix_scope_72jqfcjowv" IS 'btree index WritebackWritebackInput(scope)';
-
-COMMENT ON STATISTICS "slice_den"."__assign_finish_stats_scope_step_ld6jyxztu6" IS 'statistics AssignFinish(scope, step)';
-
-COMMENT ON STATISTICS "slice_den"."__assign_step_stats_kind_scope_wiztsdmmtf" IS 'statistics AssignStep(kind, scope)';
-
-COMMENT ON STATISTICS "slice_den"."__chain_finish_stats_scope_step_z7lvm6j2l6" IS 'statistics ChainFinish(scope, step)';
-
-COMMENT ON STATISTICS "slice_den"."__chain_step_stats_kind_scope_tc5nmidpxu" IS 'statistics ChainStep(kind, scope)';
-
-COMMENT ON STATISTICS "slice_den"."__clock_finish_stats_scope_step_ejqaucw3q4" IS 'statistics ClockFinish(scope, step)';
-
-COMMENT ON STATISTICS "slice_den"."__fan_finish_stats_scope_step_4mm4p6zm66" IS 'statistics FanFinish(scope, step)';
-
-COMMENT ON STATISTICS "slice_den"."__fan_step_stats_kind_scope_xmuvugpu6n" IS 'statistics FanStep(kind, scope)';
-
-COMMENT ON STATISTICS "slice_den"."__fan_within_stats_kind_parent_3vvpgco4da" IS 'statistics FanWithin(kind, parent)';
-
-COMMENT ON STATISTICS "slice_den"."__retry_finish_stats_scope_step_2nxi4d7tdj" IS 'statistics RetryFinish(scope, step)';
-
-COMMENT ON STATISTICS "slice_den"."__retry_step_stats_kind_scope_osnqmvpfhd" IS 'statistics RetryStep(kind, scope)';
-
-COMMENT ON STATISTICS "slice_den"."__review_finish_stats_scope_step_ac6ft3yr6e" IS 'statistics ReviewFinish(scope, step)';
-
-COMMENT ON STATISTICS "slice_den"."__review_step_stats_kind_scope_kgaij4jpus" IS 'statistics ReviewStep(kind, scope)';
-
-COMMENT ON STATISTICS "slice_den"."__review_within_stats_kind_parent_w3ajh3gekc" IS 'statistics ReviewWithin(kind, parent)';
-
-COMMENT ON STATISTICS "slice_den"."__sync_exclusive_stats_key_kind_smed76p3zh" IS 'statistics SyncExclusive(key, kind)';
-
-COMMENT ON STATISTICS "slice_den"."__sync_finish_stats_scope_step_xiaq6np7mf" IS 'statistics SyncFinish(scope, step)';
-
-COMMENT ON STATISTICS "slice_den"."__writeback_finish_stats_scope_step_3knpjnabow" IS 'statistics WritebackFinish(scope, step)';
 
 COMMENT ON FUNCTION "slice"."__reader_news_assign_assignment_input_veyxb2wi4k"() IS 'the reader of the delta of news of AssignAssignmentInput';
 

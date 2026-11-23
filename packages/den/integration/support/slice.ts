@@ -40,7 +40,7 @@ import { reviewLedger } from "#integration/slice/generated/review.binding.ts"
 import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
 import { writebackLedger } from "#integration/slice/generated/writeback.binding.ts"
 import { AppLogin, Worker } from "#integration/slice/logins.ts"
-import initMigration from "#integration/slice/migrations/slice/20261123191928_init/meta.json" with { type: "json" }
+import initMigration from "#integration/slice/migrations/slice/20261123213610_init/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -66,7 +66,7 @@ const AppServed = served<typeof AppLogin>(appFile, "app")
 
 /**
  * The slice's two logins served for a moved clock (compileServedMoved), from the committed snapshot: every clocked read
- * and every ChangeSet of theirs reads the database's clock moved by the case's offset (Offset), so a case moves the
+ * and every ChangeSet of theirs reads the database's clock as the case's instant (Instant), so a case moves the
  * database's clock as it moves its TestClock, and nothing a case judges reads two clocks. The committed served files
  * are their roles' addresses (WorkerServed, AppServed): a role opens on the layer of its login's name, whose roles these
  * files share. Compiled once a process.
@@ -85,22 +85,25 @@ const movedLogins = Effect.runSync(
 )
 
 /**
- * How far a case moves the database's clock past the instant each call's transaction began, in microseconds
- * (Db.openMoved's offset): the time the case's TestClock has travelled since its services were built, or nothing under
- * the machine's clock, which the database's already reads.
+ * The instant every reading of the database's clock in a case's call is, in microseconds since the Unix epoch
+ * (Db.openMoved's instant), read once at each call: the machine's clock at the call, moved by the time the case's
+ * TestClock has travelled since its services were built, or by nothing under the machine's clock. So a lease lapses
+ * and a retry comes due when the case travels past it, and each call stands at an instant of its own, as den's facts
+ * keyed by an instant need: two promotions of one environment are two `Served` rows, a millisecond of den's clock apart
+ * at least, which a case whose calls stood at the instant its TestClock last travelled to stamped at one.
  */
-class Offset extends Context.Service<Offset, Effect.Effect<bigint>>()(
-	"@bjornpagen/den/integration/support/slice/Offset"
+class Instant extends Context.Service<Instant, Effect.Effect<bigint>>()(
+	"@bjornpagen/den/integration/support/slice/Instant"
 ) {}
 
-/** The app's auditor, opened as every Db of a case is, over the case's moved clock (Offset). */
-export const openAuditor = Effect.flatMap(Offset, (offset) =>
-	Db.openMoved(AppServed.roles.auditor, {}, offset)
+/** The app's auditor, opened as every Db of a case is, over the case's moved clock (Instant). */
+export const openAuditor = Effect.flatMap(Instant, (instant) =>
+	Db.openMoved(AppServed.roles.auditor, {}, instant)
 )
 
 /** The app's editor, which rewrites the passages and seen passages a decision read (app-programs.ts Editor). */
-export const openEditor = Effect.flatMap(Offset, (offset) =>
-	Db.openMoved(AppServed.roles.editor, {}, offset)
+export const openEditor = Effect.flatMap(Instant, (instant) =>
+	Db.openMoved(AppServed.roles.editor, {}, instant)
 )
 
 /** The slice's directory, where its migrations and a suite's configuration lie. */
@@ -116,7 +119,7 @@ const grizzleBin = `${import.meta.dirname}/../../node_modules/.bin/grizzle`
  * record lacks, or lacks one it holds (committedFolders).
  */
 const committed = Object.freeze({
-	"20261123191928_init": initMigration
+	"20261123213610_init": initMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
@@ -436,8 +439,8 @@ const emptyTemplate = Template.database({
 const pool = Object.freeze({ max: 4, min: 0, idleTimeoutMs: authenticationTimeoutSeconds * 1000 })
 
 /** The app's loader, which den's commits run under, over the case's moved clock. */
-const openLoader = Effect.flatMap(Offset, (offset) =>
-	Db.openMoved(AppServed.roles.loader, {}, offset)
+const openLoader = Effect.flatMap(Instant, (instant) =>
+	Db.openMoved(AppServed.roles.loader, {}, instant)
 )
 
 /**
@@ -527,19 +530,23 @@ const faultsLayer = Layer.effectContext(
  */
 type CaseClock = "test" | "live"
 
+/** The machine's clock, as the process reads it before any case's TestClock stands in for it. */
+const machineClock = Effect.runSync(Clock.clockWith(Effect.succeed))
+
 /**
- * The case's offset of the database's clock under `clock` (Offset): under the TestClock, the time it has travelled
- * since the case's services were built, read at each call; under the machine's clock, none.
+ * The case's instant under `clock` (Instant): at each call, the machine's clock moved by the time the case's TestClock
+ * has travelled since the services were built, or the machine's clock alone under the machine's clock.
  */
-const offsetLayer = (clock: CaseClock) =>
-	clock === "test"
-		? Layer.effect(
-				Offset,
-				Effect.map(Clock.currentTimeMillis, (built) =>
-					Effect.map(Clock.currentTimeMillis, (at) => BigInt(at - built) * 1000n)
-				)
+const instantLayer = (clock: CaseClock) =>
+	Layer.effect(
+		Instant,
+		Effect.map(Clock.currentTimeNanos, (built) =>
+			Effect.map(
+				Effect.all([machineClock.currentTimeNanos, Clock.currentTimeNanos]),
+				([now, at]) => (clock === "test" ? now + at - built : now) / 1000n
 			)
-		: Layer.succeed(Offset, Effect.succeed(0n))
+		)
+	)
 
 /**
  * Everything a slice case runs on, over its installation, under `clock`: its database, both logins, the in-process
@@ -549,14 +556,14 @@ const caseLayer = (installed: Installed, clock: CaseClock) =>
 	loginsLayer(installed).pipe(
 		Layer.provideMerge(Layer.succeed(Installation, installed)),
 		Layer.provideMerge(
-			Layer.mergeAll(inProcess, faultsLayer, offsetLayer(clock), Layer.succeed(Host, sliceHost))
+			Layer.mergeAll(inProcess, faultsLayer, instantLayer(clock), Layer.succeed(Host, sliceHost))
 		),
 		Layer.provideMerge(NodeServices.layer)
 	)
 
 /**
  * The services of a slice case, built in the case's scope under the case's clock, so its transport's delays, its
- * logins' pools and its offset of the database's clock read the clock the case moves, as @effect/vitest built a suite's
+ * logins' pools and its instant of the database's clock read the clock the case moves, as @effect/vitest built a suite's
  * layer over its TestClock.
  */
 const caseOf = (installed: Installed, clock: CaseClock) =>
@@ -746,53 +753,56 @@ export const sliceHost = Object.freeze({
  * tick of every flow ticks, since each of its ticks requests a root of its own; its suite ticks it alone.
  */
 export const openLedgers = Effect.gen(function* () {
-	const offset = yield* Offset
+	const instant = yield* Instant
 	const loader = yield* openLoader
 	const refusing = (yield* Misconfigured).loader.workload
 	const commits = loader.workload
 	const roles = {
 		chain: {
-			den: (yield* Db.openMoved(WorkerServed.roles.chain_den, {}, offset)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.chain_coordinator, {}, offset)).workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.chain_retirer, {}, offset)).workload
+			den: (yield* Db.openMoved(WorkerServed.roles.chain_den, {}, instant)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.chain_coordinator, {}, instant))
+				.workload,
+			retirer: (yield* Db.openMoved(WorkerServed.roles.chain_retirer, {}, instant)).workload
 		},
 		fan: {
-			den: (yield* Db.openMoved(WorkerServed.roles.fan_den, {}, offset)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.fan_coordinator, {}, offset)).workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.fan_retirer, {}, offset)).workload
+			den: (yield* Db.openMoved(WorkerServed.roles.fan_den, {}, instant)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.fan_coordinator, {}, instant)).workload,
+			retirer: (yield* Db.openMoved(WorkerServed.roles.fan_retirer, {}, instant)).workload
 		},
 		sync: {
-			den: (yield* Db.openMoved(WorkerServed.roles.sync_den, {}, offset)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.sync_coordinator, {}, offset)).workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.sync_retirer, {}, offset)).workload
+			den: (yield* Db.openMoved(WorkerServed.roles.sync_den, {}, instant)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.sync_coordinator, {}, instant)).workload,
+			retirer: (yield* Db.openMoved(WorkerServed.roles.sync_retirer, {}, instant)).workload
 		},
 		retry: {
-			den: (yield* Db.openMoved(WorkerServed.roles.retry_den, {}, offset)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.retry_coordinator, {}, offset)).workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.retry_retirer, {}, offset)).workload
+			den: (yield* Db.openMoved(WorkerServed.roles.retry_den, {}, instant)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.retry_coordinator, {}, instant))
+				.workload,
+			retirer: (yield* Db.openMoved(WorkerServed.roles.retry_retirer, {}, instant)).workload
 		},
 		assign: {
-			den: (yield* Db.openMoved(WorkerServed.roles.assign_den, {}, offset)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.assign_coordinator, {}, offset))
+			den: (yield* Db.openMoved(WorkerServed.roles.assign_den, {}, instant)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.assign_coordinator, {}, instant))
 				.workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.assign_retirer, {}, offset)).workload
+			retirer: (yield* Db.openMoved(WorkerServed.roles.assign_retirer, {}, instant)).workload
 		},
 		review: {
-			den: (yield* Db.openMoved(WorkerServed.roles.review_den, {}, offset)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.review_coordinator, {}, offset))
+			den: (yield* Db.openMoved(WorkerServed.roles.review_den, {}, instant)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.review_coordinator, {}, instant))
 				.workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.review_retirer, {}, offset)).workload
+			retirer: (yield* Db.openMoved(WorkerServed.roles.review_retirer, {}, instant)).workload
 		},
 		writeback: {
-			den: (yield* Db.openMoved(WorkerServed.roles.writeback_den, {}, offset)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.writeback_coordinator, {}, offset))
+			den: (yield* Db.openMoved(WorkerServed.roles.writeback_den, {}, instant)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.writeback_coordinator, {}, instant))
 				.workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.writeback_retirer, {}, offset)).workload
+			retirer: (yield* Db.openMoved(WorkerServed.roles.writeback_retirer, {}, instant)).workload
 		},
 		clock: {
-			den: (yield* Db.openMoved(WorkerServed.roles.clock_den, {}, offset)).workload,
-			coordinator: (yield* Db.openMoved(WorkerServed.roles.clock_coordinator, {}, offset)).workload,
-			retirer: (yield* Db.openMoved(WorkerServed.roles.clock_retirer, {}, offset)).workload
+			den: (yield* Db.openMoved(WorkerServed.roles.clock_den, {}, instant)).workload,
+			coordinator: (yield* Db.openMoved(WorkerServed.roles.clock_coordinator, {}, instant))
+				.workload,
+			retirer: (yield* Db.openMoved(WorkerServed.roles.clock_retirer, {}, instant)).workload
 		}
 	}
 	const chain = chainLedger({ ...roles.chain, commits })

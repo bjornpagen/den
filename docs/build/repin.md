@@ -115,19 +115,18 @@ for the coordination group, and DBCLOCK:
   keeps the root). The combinator is den's, not grizzle's: den is the one place anything goes again (Bjorn,
   2026-11-21), so grizzle keeps none, and an app runs its own calls to its served programs through den's too.
 
-- **The moved clock (grizzle d37c40141).** A suite reads the database's clock at the instant its TestClock stands at,
-  through the statements the served files run: `integration/support/slice.ts` serves each login from its file compiled
-  for a moved clock (`compileServedMoved(login, snapshot, login.workload)`, from the committed snapshot, once a
-  process), and every Db of a case is opened by `Db.openMoved(role, {}, offset)`, the offset the case's `Offset`: under
-  the TestClock, the time it travelled since the case's services were built, in microseconds, read at each call; under
-  the machine's clock, none. So a clocked read's reading, a ChangeSet's `now` and every instant an insert stamps are all
+- **The moved clock (grizzle d37c40141, 8831b13b7).** A suite reads the database's clock at the instant its TestClock
+  stands at, through the statements the served files run: `integration/support/slice.ts` serves each login from its
+  file compiled for a moved clock (`compileServedMoved(login, snapshot, login.workload)`, from the committed snapshot,
+  once a process), and every Db of a case is opened by `Db.openMoved(role, {}, instant)`, the case's `Instant`, read
+  at each call (**A moved clock is stated as an instant** below). So a clocked read's reading, a ChangeSet's `now` and every instant an insert stamps are all
   the one moved instant of their call, a lease lapses and a retry comes due when the TestClock travels past it, and no
   suite reads two clocks. The ledgers' `travelling`, which shifted den's `now` reads alone by the TestClock's travel while
   clocked writes stamped the database's own instant, is deleted, and with it its double count under the machine's
   clock, where it added real time the database had already read. The committed served files stay the roles'
   addresses (`WorkerServed`, `AppServed`): a role opens on the layer of its login's name. The tests open the app's
   auditor through `openAuditor`, a moved Db like the ledgers', since a moved file refuses a ChangeSet call that states
-  no offset.
+  no instant.
 
 - **The scalar namespaces (grizzle 51dff4bc0)** and **a level's bases as a list (ca3c91ee3).** `Compute` is gone: den's
   printed programs compute a due instant or a lease's end as `Type.cast(Num.add(Type.base(now), Type.base(delay)),
@@ -176,5 +175,29 @@ for the coordination group, and DBCLOCK:
   rules over queries, every relation they read inside one root's unit, are judged whole by their own constraint
   triggers (`04-validate.sql`), the containments' law columns go (`02-structure.sql`), and its manifest is smaller; no
   file of it nears 50 MiB, so none is in parts.
+
+- **A config states its longest role prefix (grizzle 25a45ac0c, 3e47c8f8a).** `rolePrefixBytes` is required in every
+  grizzle.config.ts, and every command refuses a login or role whose `<prefix>__<stem>` would pass PostgreSQL's 63
+  bytes under it. The slice's config is a harness's: every installation of it is a suite's, under its template's prefix,
+  `t` and twelve characters of the template's name (`support/slice.ts` templatePrefixOf), so it states 13; den's roles
+  fit under it, and nothing else moves.
+
+- **A moved clock is stated as an instant (grizzle 8831b13b7).** `Db.openMoved(role, options, instant)` reads `instant`,
+  microseconds since the epoch, once a call, and every reading of the database's clock in the call is exactly it, where
+  it read the call's transaction's start moved by an offset. `support/slice.ts`'s `Offset` is the case's `Instant`: the
+  machine's clock at each call (read through the process's own Clock, which no case's TestClock stands in for) moved by
+  the time the case's TestClock has travelled since its services were built, or by nothing under the machine's clock:
+  the instant the offset gave, its transaction's start read on the host. Each call stands at an instant of its own, as
+  den's facts keyed by an instant need: two promotions of one environment are two `Served(environment, at)` rows, a
+  millisecond of den's clock apart at least, which a case whose calls all stood at the instant its TestClock last
+  travelled to stamped at one (serving.test.ts, refused by Served's key; retire.test.ts and schedule.test.ts failed under it too). A moved served file declares `clock:instant`.
+
+- **One whole view a relation (grizzle 0773fc01c), declared statistics (e2abf18f2, 49e64c312, d76a61066), and
+  `r.series` (777475e38).** No den source moves. The slice's init migration is drafted anew: every role that holds a
+  relation whole reads its level's one whole view, `__slice.<relation>` or `__slice_den.<relation>`, where each held a
+  copy in its own schema (`05-publish.sql`: 900 views to 293, 27 schemas to 6, a role's own schema standing only for
+  its query entries' views), and every served statement reads through it; every table's planner statistics are
+  declared from the schema's facts, never sampled, a declaration per table in `03-indexes.sql` (291), its 16 extended
+  statistics gone; `01-setup.sql`, `02-structure.sql` and `04-validate.sql` are unchanged.
 
 Still to come from the grizzle session: GUARD and SCHEMAMAP.
