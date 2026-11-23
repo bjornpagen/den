@@ -5,7 +5,6 @@ import type {
 	Clocked,
 	Fact,
 	HeadOf,
-	InputOf,
 	ParamArg,
 	ParamsOf,
 	ReadsChildren,
@@ -13,6 +12,7 @@ import type {
 	RecordNames,
 	Vector
 } from "@bjornpagen/grizzle"
+import type { InputOf } from "@bjornpagen/grizzle/runtime"
 import { regex } from "arkregex"
 import {
 	Array as Arr,

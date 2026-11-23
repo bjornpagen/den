@@ -3795,6 +3795,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."assign_served" TO :"slice_seats__assi
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__assign_coordinator";
 
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__assign_coordinator";
+
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"() TO :"slice_seats__assign_coordinator";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
@@ -3881,6 +3883,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."assign_step" TO :"slice_seats__assign
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__assign_den";
 
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__assign_den";
+
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"() TO :"slice_seats__assign_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
@@ -3900,6 +3904,8 @@ GRANT SELECT ON TABLE "slice_seats__assign_retirer"."assign_admitted", "slice_se
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__assign_retirer";
 
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__assign_retirer";
+
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"() TO :"slice_seats__assign_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice_den"."__retire_assign_root_hwbj4sewrx"("slice"."__sha256"[]) TO :"slice_seats__assign_retirer";
@@ -3914,6 +3920,8 @@ GRANT SELECT ON TABLE "slice_seats__auditor"."assign_decide_output", "slice_seat
 GRANT SELECT, INSERT ON TABLE "slice_den"."audit" TO :"slice_seats__auditor";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__auditor";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__auditor";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__bell_names_aiqi4uostx"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_root_kind_names_nagupzc3sq"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__bell_live_bk7zau3khi"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_mosnikz3yn"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_root_kind_live_sx7vmfeklj"(), "slice"."__feed_live_pfwkvulieq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__sync_outcome_live_7gndrvrenw"() TO :"slice_seats__auditor";
 
@@ -3931,6 +3939,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."chain_resumed" TO :"slice_seats__chai
 GRANT SELECT, INSERT ON TABLE "slice_den"."chain_served" TO :"slice_seats__chain_coordinator";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__chain_coordinator";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__chain_coordinator";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"() TO :"slice_seats__chain_coordinator";
 
@@ -4005,6 +4015,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."chain_step" TO :"slice_seats__chain_d
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__chain_den";
 
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__chain_den";
+
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"(), "slice"."__feed_live_pfwkvulieq"() TO :"slice_seats__chain_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
@@ -4020,6 +4032,8 @@ GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6s
 GRANT SELECT ON TABLE "slice_seats__chain_retirer"."chain_admitted", "slice_seats__chain_retirer"."chain_chain_run_finish_output", "slice_seats__chain_retirer"."chain_chain_run_input", "slice_seats__chain_retirer"."chain_claim", "slice_seats__chain_retirer"."chain_done", "slice_seats__chain_retirer"."chain_ended", "slice_seats__chain_retirer"."chain_exhausted", "slice_seats__chain_retirer"."chain_failed", "slice_seats__chain_retirer"."chain_fenced", "slice_seats__chain_retirer"."chain_finish", "slice_seats__chain_retirer"."chain_held", "slice_seats__chain_retirer"."chain_next", "slice_seats__chain_retirer"."chain_ordered_finish_output", "slice_seats__chain_retirer"."chain_ordered_input", "slice_seats__chain_retirer"."chain_page_input", "slice_seats__chain_retirer"."chain_page_input_after", "slice_seats__chain_retirer"."chain_page_output", "slice_seats__chain_retirer"."chain_page_output_next", "slice_seats__chain_retirer"."chain_page_read_earlier", "slice_seats__chain_retirer"."chain_page_read_earlier_row", "slice_seats__chain_retirer"."chain_page_read_tree", "slice_seats__chain_retirer"."chain_page_read_tree_items", "slice_seats__chain_retirer"."chain_page_read_tree_row", "slice_seats__chain_retirer"."chain_page_read_weights", "slice_seats__chain_retirer"."chain_page_read_weights_row", "slice_seats__chain_retirer"."chain_page_tree_first", "slice_seats__chain_retirer"."chain_refusal", "slice_seats__chain_retirer"."chain_result", "slice_seats__chain_retirer"."chain_retry", "slice_seats__chain_retirer"."chain_root", "slice_seats__chain_retirer"."chain_scope", "slice_seats__chain_retirer"."chain_skipped", "slice_seats__chain_retirer"."chain_start_step", "slice_seats__chain_retirer"."chain_step" TO :"slice_seats__chain_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__chain_retirer";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__chain_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"(), "slice"."__feed_live_pfwkvulieq"() TO :"slice_seats__chain_retirer";
 
@@ -4039,6 +4053,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."clock_resumed" TO :"slice_seats__cloc
 GRANT SELECT, INSERT ON TABLE "slice_den"."clock_served" TO :"slice_seats__clock_coordinator";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__clock_coordinator";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__clock_coordinator";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__clock_pausable_names_phjbr2fipl"(), "slice"."__clock_chime_input_bell_live_vs2eypgl4v"(), "slice"."__clock_chime_output_bell_live_ikpwkv25mh"(), "slice"."__clock_hourly_input_bell_live_yfdtebn7na"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"() TO :"slice_seats__clock_coordinator";
 
@@ -4097,6 +4113,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."clock_step" TO :"slice_seats__clock_d
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__clock_den";
 
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__clock_den";
+
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__clock_chime_input_bell_names_nkzi4dgaig"(), "slice"."__clock_chime_output_bell_names_tzmx63kpb4"(), "slice"."__clock_hourly_input_bell_names_vugtqsvsug"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_pausable_names_phjbr2fipl"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"(), "slice"."__clock_chime_input_bell_live_vs2eypgl4v"(), "slice"."__clock_chime_output_bell_live_ikpwkv25mh"(), "slice"."__clock_hourly_input_bell_live_yfdtebn7na"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"() TO :"slice_seats__clock_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
@@ -4112,6 +4130,8 @@ GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6s
 GRANT SELECT ON TABLE "slice_seats__clock_retirer"."clock_admitted", "slice_seats__clock_retirer"."clock_chime_input", "slice_seats__clock_retirer"."clock_chime_output", "slice_seats__clock_retirer"."clock_claim", "slice_seats__clock_retirer"."clock_close_input", "slice_seats__clock_retirer"."clock_close_output", "slice_seats__clock_retirer"."clock_done", "slice_seats__clock_retirer"."clock_ended", "slice_seats__clock_retirer"."clock_exhausted", "slice_seats__clock_retirer"."clock_failed", "slice_seats__clock_retirer"."clock_fenced", "slice_seats__clock_retirer"."clock_finish", "slice_seats__clock_retirer"."clock_held", "slice_seats__clock_retirer"."clock_hourly_finish_output", "slice_seats__clock_retirer"."clock_hourly_input", "slice_seats__clock_retirer"."clock_refusal", "slice_seats__clock_retirer"."clock_result", "slice_seats__clock_retirer"."clock_retry", "slice_seats__clock_retirer"."clock_root", "slice_seats__clock_retirer"."clock_scope", "slice_seats__clock_retirer"."clock_sitting_finish_output", "slice_seats__clock_retirer"."clock_sitting_input", "slice_seats__clock_retirer"."clock_skipped", "slice_seats__clock_retirer"."clock_start_step", "slice_seats__clock_retirer"."clock_step" TO :"slice_seats__clock_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__clock_retirer";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__clock_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__clock_chime_input_bell_names_nkzi4dgaig"(), "slice"."__clock_chime_output_bell_names_tzmx63kpb4"(), "slice"."__clock_hourly_input_bell_names_vugtqsvsug"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"(), "slice"."__clock_chime_input_bell_live_vs2eypgl4v"(), "slice"."__clock_chime_output_bell_live_ikpwkv25mh"(), "slice"."__clock_hourly_input_bell_live_yfdtebn7na"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"() TO :"slice_seats__clock_retirer";
 
@@ -4133,6 +4153,8 @@ GRANT SELECT, INSERT, DELETE ON TABLE "slice"."seen" TO :"slice_seats__editor";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__editor";
 
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__editor";
+
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"() TO :"slice_seats__editor";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
@@ -4152,6 +4174,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."fan_resumed" TO :"slice_seats__fan_co
 GRANT SELECT, INSERT ON TABLE "slice_den"."fan_served" TO :"slice_seats__fan_coordinator";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__fan_coordinator";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__fan_coordinator";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_pausable_names_7t2samsp7b"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_mosnikz3yn"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_uymd2oabeh"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_sx7vmfeklj"() TO :"slice_seats__fan_coordinator";
 
@@ -4222,6 +4246,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."fan_within" TO :"slice_seats__fan_den
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__fan_den";
 
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__fan_den";
+
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_pausable_names_7t2samsp7b"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_nagupzc3sq"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_mosnikz3yn"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_uymd2oabeh"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_sx7vmfeklj"() TO :"slice_seats__fan_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
@@ -4237,6 +4263,8 @@ GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6s
 GRANT SELECT ON TABLE "slice_seats__fan_retirer"."fan_admitted", "slice_seats__fan_retirer"."fan_batch_finish_output", "slice_seats__fan_retirer"."fan_batch_input", "slice_seats__fan_retirer"."fan_claim", "slice_seats__fan_retirer"."fan_done", "slice_seats__fan_retirer"."fan_dust_input", "slice_seats__fan_retirer"."fan_dust_output", "slice_seats__fan_retirer"."fan_ended", "slice_seats__fan_retirer"."fan_exhausted", "slice_seats__fan_retirer"."fan_failed", "slice_seats__fan_retirer"."fan_fan_run_finish_output", "slice_seats__fan_retirer"."fan_fan_run_input", "slice_seats__fan_retirer"."fan_fenced", "slice_seats__fan_retirer"."fan_finish", "slice_seats__fan_retirer"."fan_held", "slice_seats__fan_retirer"."fan_hold", "slice_seats__fan_retirer"."fan_mop_input", "slice_seats__fan_retirer"."fan_mop_output", "slice_seats__fan_retirer"."fan_refusal", "slice_seats__fan_retirer"."fan_result", "slice_seats__fan_retirer"."fan_retry", "slice_seats__fan_retirer"."fan_root", "slice_seats__fan_retirer"."fan_scope", "slice_seats__fan_retirer"."fan_skipped", "slice_seats__fan_retirer"."fan_square_input", "slice_seats__fan_retirer"."fan_square_output", "slice_seats__fan_retirer"."fan_start_scope", "slice_seats__fan_retirer"."fan_start_step", "slice_seats__fan_retirer"."fan_step", "slice_seats__fan_retirer"."fan_sweep_finish_output", "slice_seats__fan_retirer"."fan_sweep_input", "slice_seats__fan_retirer"."fan_within" TO :"slice_seats__fan_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__fan_retirer";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__fan_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_nagupzc3sq"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_mosnikz3yn"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_uymd2oabeh"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_sx7vmfeklj"() TO :"slice_seats__fan_retirer";
 
@@ -4514,6 +4542,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."writeback_writeback_finish_output" TO
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__loader";
 
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__loader";
+
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__bell_names_aiqi4uostx"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__clock_chime_input_bell_names_nkzi4dgaig"(), "slice"."__clock_chime_output_bell_names_tzmx63kpb4"(), "slice"."__clock_hourly_input_bell_names_vugtqsvsug"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_nagupzc3sq"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"(), "slice"."__bell_live_bk7zau3khi"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"(), "slice"."__clock_chime_input_bell_live_vs2eypgl4v"(), "slice"."__clock_chime_output_bell_live_ikpwkv25mh"(), "slice"."__clock_hourly_input_bell_live_yfdtebn7na"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_mosnikz3yn"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_uymd2oabeh"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_sx7vmfeklj"(), "slice"."__feed_live_pfwkvulieq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__loader";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
@@ -4535,6 +4565,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."retry_resumed" TO :"slice_seats__retr
 GRANT SELECT, INSERT ON TABLE "slice_den"."retry_served" TO :"slice_seats__retry_coordinator";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__retry_coordinator";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__retry_coordinator";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_pausable_names_hen5ycf77m"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"() TO :"slice_seats__retry_coordinator";
 
@@ -4601,6 +4633,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."retry_unhurried_input" TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__retry_den";
 
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__retry_den";
+
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_hen5ycf77m"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"() TO :"slice_seats__retry_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
@@ -4616,6 +4650,8 @@ GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6s
 GRANT SELECT ON TABLE "slice_seats__retry_retirer"."retry_admitted", "slice_seats__retry_retirer"."retry_brittle_input", "slice_seats__retry_retirer"."retry_brittle_output", "slice_seats__retry_retirer"."retry_claim", "slice_seats__retry_retirer"."retry_done", "slice_seats__retry_retirer"."retry_ended", "slice_seats__retry_retirer"."retry_exhausted", "slice_seats__retry_retirer"."retry_failed", "slice_seats__retry_retirer"."retry_fenced", "slice_seats__retry_retirer"."retry_finish", "slice_seats__retry_retirer"."retry_held", "slice_seats__retry_retirer"."retry_ladders_finish_output", "slice_seats__retry_retirer"."retry_ladders_input", "slice_seats__retry_retirer"."retry_patient_input", "slice_seats__retry_retirer"."retry_patient_output", "slice_seats__retry_retirer"."retry_polite_input", "slice_seats__retry_retirer"."retry_polite_output", "slice_seats__retry_retirer"."retry_refusal", "slice_seats__retry_retirer"."retry_result", "slice_seats__retry_retirer"."retry_retry", "slice_seats__retry_retirer"."retry_root", "slice_seats__retry_retirer"."retry_scope", "slice_seats__retry_retirer"."retry_skipped", "slice_seats__retry_retirer"."retry_start_step", "slice_seats__retry_retirer"."retry_steadfast_input", "slice_seats__retry_retirer"."retry_steadfast_output", "slice_seats__retry_retirer"."retry_step", "slice_seats__retry_retirer"."retry_throttled_finish_output", "slice_seats__retry_retirer"."retry_throttled_input", "slice_seats__retry_retirer"."retry_unhurried_finish_output", "slice_seats__retry_retirer"."retry_unhurried_input" TO :"slice_seats__retry_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__retry_retirer";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__retry_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"() TO :"slice_seats__retry_retirer";
 
@@ -4635,6 +4671,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."review_resumed" TO :"slice_seats__rev
 GRANT SELECT, INSERT ON TABLE "slice_den"."review_served" TO :"slice_seats__review_coordinator";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__review_coordinator";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__review_coordinator";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__review_pausable_names_uhujnxcsz6"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"() TO :"slice_seats__review_coordinator";
 
@@ -4705,6 +4743,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."review_within" TO :"slice_seats__revi
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__review_den";
 
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__review_den";
+
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_pausable_names_uhujnxcsz6"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"() TO :"slice_seats__review_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
@@ -4720,6 +4760,8 @@ GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6s
 GRANT SELECT ON TABLE "slice_seats__review_retirer"."review_admitted", "slice_seats__review_retirer"."review_analyze_input", "slice_seats__review_retirer"."review_analyze_output", "slice_seats__review_retirer"."review_claim", "slice_seats__review_retirer"."review_done", "slice_seats__review_retirer"."review_ended", "slice_seats__review_retirer"."review_exhausted", "slice_seats__review_retirer"."review_failed", "slice_seats__review_retirer"."review_fenced", "slice_seats__review_retirer"."review_finish", "slice_seats__review_retirer"."review_gather_input", "slice_seats__review_retirer"."review_gather_input_sizes", "slice_seats__review_retirer"."review_gather_output", "slice_seats__review_retirer"."review_held", "slice_seats__review_retirer"."review_hold", "slice_seats__review_retirer"."review_questions_finish_output", "slice_seats__review_retirer"."review_questions_input", "slice_seats__review_retirer"."review_refusal", "slice_seats__review_retirer"."review_result", "slice_seats__review_retirer"."review_retry", "slice_seats__review_retirer"."review_review_run_finish_output", "slice_seats__review_retirer"."review_review_run_input", "slice_seats__review_retirer"."review_review_run_input_sizes", "slice_seats__review_retirer"."review_root", "slice_seats__review_retirer"."review_save_input", "slice_seats__review_retirer"."review_save_output", "slice_seats__review_retirer"."review_saved", "slice_seats__review_retirer"."review_scope", "slice_seats__review_retirer"."review_skipped", "slice_seats__review_retirer"."review_split", "slice_seats__review_retirer"."review_start_scope", "slice_seats__review_retirer"."review_start_step", "slice_seats__review_retirer"."review_step", "slice_seats__review_retirer"."review_within" TO :"slice_seats__review_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__review_retirer";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__review_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"() TO :"slice_seats__review_retirer";
 
@@ -4743,6 +4785,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."sync_resumed" TO :"slice_seats__sync_
 GRANT SELECT, INSERT ON TABLE "slice_den"."sync_served" TO :"slice_seats__sync_coordinator";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__sync_coordinator";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__sync_coordinator";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"() TO :"slice_seats__sync_coordinator";
 
@@ -4803,6 +4847,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."sync_sync_run_input" TO :"slice_seats
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__sync_den";
 
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__sync_den";
+
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"() TO :"slice_seats__sync_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
@@ -4818,6 +4864,8 @@ GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6s
 GRANT SELECT ON TABLE "slice_seats__sync_retirer"."sync_admitted", "slice_seats__sync_retirer"."sync_build_input", "slice_seats__sync_retirer"."sync_build_output", "slice_seats__sync_retirer"."sync_claim", "slice_seats__sync_retirer"."sync_copy_input", "slice_seats__sync_retirer"."sync_copy_output", "slice_seats__sync_retirer"."sync_done", "slice_seats__sync_retirer"."sync_ended", "slice_seats__sync_retirer"."sync_exclusive_key", "slice_seats__sync_retirer"."sync_exhausted", "slice_seats__sync_retirer"."sync_failed", "slice_seats__sync_retirer"."sync_fenced", "slice_seats__sync_retirer"."sync_finish", "slice_seats__sync_retirer"."sync_gold_finish_output", "slice_seats__sync_retirer"."sync_gold_input", "slice_seats__sync_retirer"."sync_held", "slice_seats__sync_retirer"."sync_refusal", "slice_seats__sync_retirer"."sync_result", "slice_seats__sync_retirer"."sync_retry", "slice_seats__sync_retirer"."sync_root", "slice_seats__sync_retirer"."sync_scope", "slice_seats__sync_retirer"."sync_skipped", "slice_seats__sync_retirer"."sync_start_step", "slice_seats__sync_retirer"."sync_step", "slice_seats__sync_retirer"."sync_sync_run_finish_output", "slice_seats__sync_retirer"."sync_sync_run_input" TO :"slice_seats__sync_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__sync_retirer";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__sync_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"() TO :"slice_seats__sync_retirer";
 
@@ -4844,6 +4892,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."writeback_resumed" TO :"slice_seats__
 GRANT SELECT, INSERT ON TABLE "slice_den"."writeback_served" TO :"slice_seats__writeback_coordinator";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__writeback_coordinator";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__writeback_coordinator";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__writeback_pausable_names_mqzeerbulh"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__writeback_coordinator";
 
@@ -4896,6 +4946,8 @@ GRANT SELECT, INSERT ON TABLE "slice_den"."writeback_writeback_input" TO :"slice
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__writeback_den";
 
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__writeback_den";
+
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_pausable_names_mqzeerbulh"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__writeback_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
@@ -4911,6 +4963,8 @@ GRANT USAGE ON DOMAIN "slice"."__domain_gfw43vigph", "slice"."__domain_mxhao3k6s
 GRANT SELECT ON TABLE "slice_seats__writeback_retirer"."writeback_admitted", "slice_seats__writeback_retirer"."writeback_claim", "slice_seats__writeback_retirer"."writeback_deliver_input", "slice_seats__writeback_retirer"."writeback_deliver_output", "slice_seats__writeback_retirer"."writeback_done", "slice_seats__writeback_retirer"."writeback_ended", "slice_seats__writeback_retirer"."writeback_exhausted", "slice_seats__writeback_retirer"."writeback_failed", "slice_seats__writeback_retirer"."writeback_fenced", "slice_seats__writeback_retirer"."writeback_finish", "slice_seats__writeback_retirer"."writeback_held", "slice_seats__writeback_retirer"."writeback_refusal", "slice_seats__writeback_retirer"."writeback_result", "slice_seats__writeback_retirer"."writeback_retry", "slice_seats__writeback_retirer"."writeback_root", "slice_seats__writeback_retirer"."writeback_scope", "slice_seats__writeback_retirer"."writeback_skipped", "slice_seats__writeback_retirer"."writeback_start_step", "slice_seats__writeback_retirer"."writeback_step", "slice_seats__writeback_retirer"."writeback_writeback_finish_output", "slice_seats__writeback_retirer"."writeback_writeback_input" TO :"slice_seats__writeback_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__writeback_retirer";
+
+GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__writeback_retirer";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__writeback_retirer";
 
@@ -4937,6 +4991,8 @@ ALTER ROLE :"slice_seats__app" SET lc_numeric = 'C.UTF-8';
 
 ALTER ROLE :"slice_seats__app" SET lc_time = 'C.UTF-8';
 
+ALTER ROLE :"slice_seats__app" SET plan_cache_mode = 'force_generic_plan';
+
 ALTER ROLE :"slice_seats__worker" SET search_path = "pg_catalog", "pg_temp";
 
 ALTER ROLE :"slice_seats__worker" SET extra_float_digits = '1';
@@ -4950,6 +5006,8 @@ ALTER ROLE :"slice_seats__worker" SET lc_monetary = 'C.UTF-8';
 ALTER ROLE :"slice_seats__worker" SET lc_numeric = 'C.UTF-8';
 
 ALTER ROLE :"slice_seats__worker" SET lc_time = 'C.UTF-8';
+
+ALTER ROLE :"slice_seats__worker" SET plan_cache_mode = 'force_generic_plan';
 
 SELECT "vector_ext"."vector_dims"('[1]'::"vector_ext"."vector");
 

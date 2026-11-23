@@ -1,4 +1,5 @@
-import { type HeadOf, type RecordedQuery, rowText, type Sha256 } from "@bjornpagen/grizzle"
+import type { HeadOf, RecordedQuery, Sha256 } from "@bjornpagen/grizzle"
+import { rowText } from "@bjornpagen/grizzle/compile"
 import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, type Cron, Effect, Option, Order, Predicate, Result, Stream } from "effect"
 import type { Due, Exclusive, Scheduled, Trigger } from "#algebra/kinds.ts"
