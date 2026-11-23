@@ -14,6 +14,7 @@ import { element } from "@bjornpagen/testing/gen"
 import { searched } from "@bjornpagen/testing/vitest"
 import { testWorkers } from "@bjornpagen/testing/workers"
 import { assert, it } from "@effect/vitest"
+import { regex } from "arkregex"
 import { Array as Arr, Effect, Formatter, Option, Schema, String as Str } from "effect"
 import { flow } from "#algebra/flow.ts"
 import {
@@ -49,8 +50,9 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * without them.
  */
 
-type Stating = "states the path above the overlong one" | "states none"
-const Statings = ["states the path above the overlong one", "states none"] as const
+/** Whether the read states a name for the path above the overlong one, or none. */
+const Stating = Schema.Literals(["states the path above the overlong one", "states none"])
+type Stating = typeof Stating.Type
 
 const Document = relation("Document", { package: Text, path: Text }, ["package", "path"])
 const Node = relation("Node", { package: Text, path: Text, start: natural, chars: Text }, [
@@ -315,14 +317,17 @@ const refusalOf = (thrown: unknown): { readonly tag: string; readonly path: stri
 				tag: thrown.reason._tag,
 				path: thrown.reason._tag === "RecordNameTooLong" ? Arr.join(thrown.reason.path, ".") : ""
 			}
-		: { tag: "another refusal", path: `${thrown}` }
+		: { tag: "another refusal", path: String(thrown) }
 
 /** PostgreSQL's identifiers, in bytes: what no relation name's conversion may pass. */
 const identifierBytes = 63
 
+/** A lowercase letter or a digit and the capital after it, where grizzle's conversion puts an underscore. */
+const WORD_BOUNDARY = regex("([a-z0-9])([A-Z])", "g")
+
 /** A relation's name as PostgreSQL holds it, grizzle's conversion: its words lowercased, joined by underscores. */
 const conversion = (name: string): string =>
-	Str.toLowerCase(Str.replaceAll(/([a-z0-9])([A-Z])/g, "$1_$2")(name))
+	Str.toLowerCase(Str.replaceAll(WORD_BOUNDARY, "$1_$2")(name))
 
 it.effect(
 	"forwards a read's stated record names, which fit a deep read's names grizzle refuses without them",
@@ -332,9 +337,9 @@ it.effect(
 			exhaust(
 				{
 					suite: "record names",
-					generator: element(Statings),
+					generator: element(Stating.literals),
 					literal: Formatter.format,
-					coverage: requiredInSpace<Stating>(Statings),
+					coverage: requiredInSpace<Stating>(Stating.literals),
 					caseHang: caseHangMillis,
 					box: "metis's item read, a document with its scan, each node's document row, declaration and standalone",
 					oracle: {

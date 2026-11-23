@@ -387,16 +387,16 @@ export type AnyReads =
 export const noReads: { readonly kind: "none" } = { kind: "none" }
 
 /**
- * A step's reads: the named queries `named` over the level `over`, their parameters from the step's input, each
+ * A step's reads: the named queries `queries` over the level `over`, their parameters from the step's input, each
  * `<name>.<parameter>`, and its options, none or `{ names }`, the relation names their records state by named query
  * (ReadsNames), each forwarded to grizzle's records(...) of that query.
  */
 export const reads = <L, const N extends ReadsChildren, I, const O extends ReadsOptions<N>>(
 	over: L,
-	named: N,
+	queries: N,
 	params: (input: I) => NoInfer<ParamArg<ParamsOf<ReadsQuery<L, N>>>>,
 	...options: O
-): Reads<L, N, I, O> => ({ kind: "query", over, named, params, options })
+): Reads<L, N, I, O> => ({ kind: "query", over, named: queries, params, options })
 
 /** What a body sees of its declared reads: each named query's rows, exactly as the query delivers them. */
 export type Found<D> = D extends {

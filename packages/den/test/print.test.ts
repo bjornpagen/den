@@ -166,7 +166,7 @@ const refusalOf = (source: string) =>
 	Effect.gen(function* () {
 		const code = yield* Effect.try({
 			try: () => stripTypeScriptTypes(source),
-			catch: (thrown) => `${thrown}`
+			catch: (thrown) => String(thrown)
 		})
 		const checking = yield* ChildProcess.make(
 			process.execPath,
@@ -183,7 +183,7 @@ const refusalOf = (source: string) =>
 		return exit === 0 ? Option.none<string>() : Option.some(report)
 	}).pipe(
 		Effect.scoped,
-		Effect.catch((why) => Effect.succeedSome(`${why}`))
+		Effect.catch((why) => Effect.succeedSome(String(why)))
 	)
 
 layer(NodeServices.layer)((it) =>

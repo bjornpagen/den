@@ -343,8 +343,8 @@ it.effect(
 							seats.counts.name,
 							seats.live
 						])
-						const recordRoots = Arr.flatMap(lowered.steps, (step) =>
-							Arr.map(step.reads, (read) => `${read.stem}Row`)
+						const recordRoots = Arr.flatMap(lowered.steps, (s) =>
+							Arr.map(s.reads, (read) => `${read.stem}Row`)
 						)
 						const names = [
 							...relations,

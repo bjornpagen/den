@@ -163,14 +163,14 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 								)
 								yield* Effect.forEach(tree, (t) =>
 									Effect.gen(function* () {
-										const stored = yield* rows(
+										const recorded = yield* rows(
 											app.workload.treeRecords.once({
 												params: { digest: t.digest },
 												facts: {}
 											})
 										)
 										assert.deepEqual(
-											stored,
+											recorded,
 											[bareRecord({ feed: run.feed, factor: BigInt(run.factor), items: expected })],
 											"a recorded tree reads back as the page found it: the items before its page in order, each with its page's first item"
 										)
