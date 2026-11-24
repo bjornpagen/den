@@ -31,7 +31,8 @@ const backendBytes = 99_049_472
  * family of its own of one member, the workbench's unit `postgres@den-test-<key>-0` (@bjornpagen/testing/pg family.ts),
  * reached over verify-full TLS at localhost at a port it claims from 20,000, since grizzle's client speaks nothing else.
  * Owned by den_dev, who may set deadlock_timeout, which grizzle's installation sets; its template den_template carries
- * pgvector in vector_ext for the slice's nearest reads. Throwaway. Its connections are the machine's memory over one
+ * pgvector in vector_ext for the slice's nearest reads; it preloads no library, since no den test reads what a backend
+ * plans. Throwaway. Its connections are the machine's memory over one
  * busy backend's, and a replication slot and a WAL sender for each, since every live source's leader holds one of each;
  * its predicate lock table PostgreSQL's room for every backend at grizzle's recommendation to production, since den
  * states no measured room of its own. `pnpm exec toolchain-pg settle` from this package gives the member this spec; a
@@ -43,6 +44,7 @@ export default localCluster({
 	owner: "den_dev",
 	template: "den_template",
 	extensions: [{ name: "vector", schema: "vector_ext" }],
+	preload: [],
 	ownerParameters: ["deadlock_timeout"],
 	durability: "throwaway",
 	sizing: {

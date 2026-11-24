@@ -19123,11 +19123,11 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "2d8ed007772f1870ec4fc6ebe8155368636101eccd2bbdb25ebb4cea21db8e4e",
+	"fingerprint": "52302cda3fe25dc66bf7a774e185006483a950c63069a465081486cb0373e71d",
 	"format": 8,
 	"levels": [
 		{
-			"fingerprint": "5e169f2bd7514ec18a6b40811eb9e902dff52958ca27c215a22e5d1092b68cc5",
+			"fingerprint": "9a0e28864de1001de07449250f627ab92de1e719ee6d6bd7c205ba4082565255",
 			"laws": [
 				{"described":{"fields":["learner"],"kind":"primaryKey","relation":"Assigned"},"law":"__assigned_pk_learner_ogs732lrn5"},
 				{"described":{"fields":["build"],"kind":"primaryKey","relation":"Built"},"law":"__built_pk_build_iy4nih3fhq"},
@@ -19152,7 +19152,7 @@
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "a15cc44a1c095e32a8dff60ca904a65de4be7c90e97fbbf775af1eb7191fd291",
+			"fingerprint": "767c0f463edc5e556d975140e2fcb4efab9ce4958624b0686f2a1ce2c4009ea4",
 			"laws": [
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"AssignRoot","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]}},"law":"__assign_admitted_in_assign_root_b54nrak4bo"},
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_k674zmpvkp"},
@@ -20022,7 +20022,7 @@
 			"schema": "slice_den"
 		},
 		{
-			"fingerprint": "08c8f5a8d046444b1d1579e5f21691ee843d1fb00d64403594f0912a8ac2a79e",
+			"fingerprint": "216a396a1891eebc0d742887b50eddf9e5fba0cf2fbe3d70e47a87132c514db1",
 			"laws": [
 				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"},
 				{"described":{"kind":"key","side":{"relation":"FanLive","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"}]}},"law":"__fan_live_key_resource_seat_wqkc2jfkpw"},

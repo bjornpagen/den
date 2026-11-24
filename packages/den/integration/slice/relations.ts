@@ -1,5 +1,5 @@
 import { Text } from "@bjornpagen/den/lower/keys"
-import { closed, closedId, natural, pg, relation, sha256, str } from "@bjornpagen/grizzle"
+import { closed, closedId, natural, pg, relation, sha256, str, unit } from "@bjornpagen/grizzle"
 
 /**
  * The toy app's own relations, which den's steps write and read and its finishes move forward: the items a feed's
@@ -9,7 +9,9 @@ import { closed, closedId, natural, pg, relation, sha256, str } from "@bjornpage
  * Gold step made, the attempts the gradebook delivered, each review's saved groups and its summary, what each throttled call heard, the hours the clock chimed, an auditor's notes on den's results, and the assignment
  * engine's shape in miniature: passages and their
  * embeddings, the passages a learner has seen, the passage each assignment gave a learner, and each assignment's
- * conclusion.
+ * conclusion. Every relation is closed, its facts inserted and never changed, but a passage and a seen passage, which
+ * the app's editor rewrites and takes back (app-programs.ts Editor), each open inside its unit (PassageUnit,
+ * LearnerUnit; base.ts).
  */
 export const Feed = closed.unordered("Feed", ["news", "sport"])
 
@@ -92,6 +94,19 @@ export const Passage = relation(
 
 /** A passage a learner has seen. */
 export const Seen = relation("Seen", { learner: Name, passage: Name }, ["learner", "passage"])
+
+/**
+ * A passage's unit, its key: the editor rewrites a passage in place under its exclusive borrow, and nothing else is
+ * keyed by a passage.
+ */
+export const PassageUnit = unit("Passage", { passage: Name })
+
+/**
+ * A learner's unit, its key: the passages it has seen, its assignment and its assignment's conclusion, each keyed by
+ * the learner first, so the editor's taking back of a seen passage and an assignment's commit of its learner's rows
+ * hold one lock.
+ */
+export const LearnerUnit = unit("Learner", { learner: Name })
 
 /** The passage an assignment gave a learner. */
 export const Assigned = relation("Assigned", { learner: Name, passage: Name }, ["learner"])

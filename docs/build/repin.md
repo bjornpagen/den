@@ -213,4 +213,22 @@ for the coordination group, and DBCLOCK:
   declared from the schema's facts, never sampled, a declaration per table in `03-indexes.sql` (291), its 16 extended
   statistics gone; `01-setup.sql`, `02-structure.sql` and `04-validate.sql` are unchanged.
 
+- **A relation is closed or open (grizzle CO-GEN 93317f799, Bjorn's hard rule).** A relation is closed by default, its
+  facts inserted, never changed or deleted: a put or a delete of one is refused when its ChangeSet compiles and in the
+  types, `mutable(R)` is admitted only where R's primary key leads with a declared unit's heading, and a role's write of
+  a closed relation holds SELECT and INSERT alone. den's generated fragments already state it: every graph relation but
+  `<P>Root` is mutable inside `DenRoot`, whose `root` leads its key, and `<P>Hold` inside `<P>Seat`; the coordination
+  group and `<P>Root` are closed. The slice's app relations are closed but the two its editor changes (`Editor`, the
+  records suite's edits of a decision's sources after it read them): `Passage`, rewritten in place, and `Seen`, taken
+  back, each open inside a unit of its key, `unit("Passage", { passage })` and `unit("Learner", { learner })`
+  (`relations.ts`, `base.ts`), the latter holding `Assigned` and `Concluded` too, every relation keyed by its learner
+  first, so the editor's take-back and an assignment's commit of its learner's rows hold one lock. Their immutability
+  triggers go, and the editor holds UPDATE on both.
+
+- **A session stands a write up once (grizzle 8ab32a3bb), every delta reader declares one row (37a2169d3), a shared
+  node is computed at the keys its reads read it at (ea343ed96), and a cluster states its preloaded libraries
+  (toolchain 5e1ca3be3).** No den source moves but `pg.config.ts`, which states `preload: []`, since no den test reads
+  what a backend plans. The slice's init migration is drafted anew: 72 stand-up functions (`__stand_…`) and the delta
+  readers' `ROWS 1` in `04-validate.sql` and `05-publish.sql`.
+
 Still to come from the grizzle session: GUARD and SCHEMAMAP.

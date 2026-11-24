@@ -1235,19 +1235,19 @@ FROM "slice_den"."writeback_writeback_input" AS "r1";
 
 CREATE VIEW "slice_seats__fan_coordinator"."fan_live" ("attempt", "resource", "resource_name", "root", "seat", "step", "until") WITH (security_barrier) AS
 SELECT "r17"."c58", "r17"."c59", ("slice"."__fan_resource_names_tugc7yp6xo"())["r17"."c59" + 1]::"pg_catalog"."text", "r17"."c60", "r17"."c61", "r17"."c62", "r17"."c63"
-FROM (SELECT "r16"."c52", "r16"."c53", "r16"."c54", "r16"."c55", "r16"."c56", "r16"."c57" FROM (SELECT "r15"."c50", "r15"."c46", "r15"."c49", "r15"."c47", "r15"."c48", "r15"."c51" FROM (SELECT "r14"."c41", "r14"."c43", "r14"."c44", "r14"."c42", "r14"."c40", "r14"."c45" FROM (SELECT "r10"."c28", "r10"."c29", "r10"."c30", "r10"."c31", "r10"."c32", "r10"."c33" FROM (SELECT "r6"."c16", "r6"."c17", "r6"."c18", "r6"."c19", "r6"."c20", "r6"."c21" FROM (SELECT "r5"."c12", "r5"."c13", "r5"."c11", "r5"."c14", "r5"."c10", "r5"."c15" FROM (SELECT "r2"."c5", "r2"."c3", "r2"."c1", "r2"."c2", "r2"."c4", "r4"."c9" FROM (SELECT "r1"."attempt", "r1"."resource", "r1"."root", "r1"."seat", "r1"."step" FROM "slice_den"."fan_hold" AS "r1") AS "r2"("c1", "c2", "c3", "c4", "c5"), (SELECT "r3"."attempt", "r3"."root", "r3"."step", "r3"."until" FROM "slice_den"."fan_claim" AS "r3") AS "r4"("c6", "c7", "c8", "c9") WHERE "r2"."c1" = "r4"."c6" AND "r2"."c3" = "r4"."c7" AND "r2"."c5" = "r4"."c8") AS "r5"("c10", "c11", "c12", "c13", "c14", "c15")) AS "r6"("c16", "c17", "c18", "c19", "c20", "c21") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r8"."c22", "r8"."c23", "r8"."c24" FROM (SELECT "r7"."attempt", "r7"."root", "r7"."step" FROM "slice_den"."fan_ended" AS "r7") AS "r8"("c22", "c23", "c24")) AS "r9"("c25", "c26", "c27") WHERE "r9"."c25" = "r6"."c16" AND "r9"."c26" = "r6"."c18" AND "r9"."c27" = "r6"."c20")) AS "r10"("c28", "c29", "c30", "c31", "c32", "c33") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r12"."c34", "r12"."c35", "r12"."c36" FROM (SELECT "r11"."attempt", "r11"."root", "r11"."step" FROM "slice_den"."fan_held" AS "r11") AS "r12"("c34", "c35", "c36")) AS "r13"("c37", "c38", "c39") WHERE "r13"."c37" = "r10"."c28" AND "r13"."c38" = "r10"."c30" AND "r13"."c39" = "r10"."c32")) AS "r14"("c40", "c41", "c42", "c43", "c44", "c45")) AS "r15"("c46", "c47", "c48", "c49", "c50", "c51")) AS "r16"("c52", "c53", "c54", "c55", "c56", "c57")) AS "r17"("c58", "c59", "c60", "c61", "c62", "c63");
+FROM (SELECT "r10"."c28", "r10"."c29", "r10"."c30", "r10"."c31", "r10"."c32", "r10"."c33" FROM (SELECT "r6"."c16", "r6"."c17", "r6"."c18", "r6"."c19", "r6"."c20", "r6"."c21" FROM (SELECT "r2"."c1", "r2"."c2", "r2"."c3", "r2"."c4", "r2"."c5", "r4"."c9" FROM (SELECT "r1"."attempt", "r1"."resource", "r1"."root", "r1"."seat", "r1"."step" FROM "slice_den"."fan_hold" AS "r1") AS "r2"("c1", "c2", "c3", "c4", "c5"), (SELECT "r3"."attempt", "r3"."root", "r3"."step", "r3"."until" FROM "slice_den"."fan_claim" AS "r3") AS "r4"("c6", "c7", "c8", "c9") WHERE "r2"."c1" = "r4"."c6" AND "r2"."c3" = "r4"."c7" AND "r2"."c5" = "r4"."c8") AS "r6"("c16", "c17", "c18", "c19", "c20", "c21") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r7"."attempt", "r7"."root", "r7"."step" FROM "slice_den"."fan_ended" AS "r7") AS "r9"("c25", "c26", "c27") WHERE "r9"."c25" = "r6"."c16" AND "r9"."c26" = "r6"."c18" AND "r9"."c27" = "r6"."c20")) AS "r10"("c28", "c29", "c30", "c31", "c32", "c33") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r11"."attempt", "r11"."root", "r11"."step" FROM "slice_den"."fan_held" AS "r11") AS "r13"("c37", "c38", "c39") WHERE "r13"."c37" = "r10"."c28" AND "r13"."c38" = "r10"."c30" AND "r13"."c39" = "r10"."c32")) AS "r17"("c58", "c59", "c60", "c61", "c62", "c63");
 
 CREATE VIEW "slice_seats__fan_den"."fan_live" ("attempt", "resource", "resource_name", "root", "seat", "step", "until") WITH (security_barrier) AS
 SELECT "r17"."c58", "r17"."c59", ("slice"."__fan_resource_names_tugc7yp6xo"())["r17"."c59" + 1]::"pg_catalog"."text", "r17"."c60", "r17"."c61", "r17"."c62", "r17"."c63"
-FROM (SELECT "r16"."c52", "r16"."c53", "r16"."c54", "r16"."c55", "r16"."c56", "r16"."c57" FROM (SELECT "r15"."c50", "r15"."c46", "r15"."c49", "r15"."c47", "r15"."c48", "r15"."c51" FROM (SELECT "r14"."c41", "r14"."c43", "r14"."c44", "r14"."c42", "r14"."c40", "r14"."c45" FROM (SELECT "r10"."c28", "r10"."c29", "r10"."c30", "r10"."c31", "r10"."c32", "r10"."c33" FROM (SELECT "r6"."c16", "r6"."c17", "r6"."c18", "r6"."c19", "r6"."c20", "r6"."c21" FROM (SELECT "r5"."c12", "r5"."c13", "r5"."c11", "r5"."c14", "r5"."c10", "r5"."c15" FROM (SELECT "r2"."c5", "r2"."c3", "r2"."c1", "r2"."c2", "r2"."c4", "r4"."c9" FROM (SELECT "r1"."attempt", "r1"."resource", "r1"."root", "r1"."seat", "r1"."step" FROM "slice_den"."fan_hold" AS "r1") AS "r2"("c1", "c2", "c3", "c4", "c5"), (SELECT "r3"."attempt", "r3"."root", "r3"."step", "r3"."until" FROM "slice_den"."fan_claim" AS "r3") AS "r4"("c6", "c7", "c8", "c9") WHERE "r2"."c1" = "r4"."c6" AND "r2"."c3" = "r4"."c7" AND "r2"."c5" = "r4"."c8") AS "r5"("c10", "c11", "c12", "c13", "c14", "c15")) AS "r6"("c16", "c17", "c18", "c19", "c20", "c21") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r8"."c22", "r8"."c23", "r8"."c24" FROM (SELECT "r7"."attempt", "r7"."root", "r7"."step" FROM "slice_den"."fan_ended" AS "r7") AS "r8"("c22", "c23", "c24")) AS "r9"("c25", "c26", "c27") WHERE "r9"."c25" = "r6"."c16" AND "r9"."c26" = "r6"."c18" AND "r9"."c27" = "r6"."c20")) AS "r10"("c28", "c29", "c30", "c31", "c32", "c33") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r12"."c34", "r12"."c35", "r12"."c36" FROM (SELECT "r11"."attempt", "r11"."root", "r11"."step" FROM "slice_den"."fan_held" AS "r11") AS "r12"("c34", "c35", "c36")) AS "r13"("c37", "c38", "c39") WHERE "r13"."c37" = "r10"."c28" AND "r13"."c38" = "r10"."c30" AND "r13"."c39" = "r10"."c32")) AS "r14"("c40", "c41", "c42", "c43", "c44", "c45")) AS "r15"("c46", "c47", "c48", "c49", "c50", "c51")) AS "r16"("c52", "c53", "c54", "c55", "c56", "c57")) AS "r17"("c58", "c59", "c60", "c61", "c62", "c63");
+FROM (SELECT "r10"."c28", "r10"."c29", "r10"."c30", "r10"."c31", "r10"."c32", "r10"."c33" FROM (SELECT "r6"."c16", "r6"."c17", "r6"."c18", "r6"."c19", "r6"."c20", "r6"."c21" FROM (SELECT "r2"."c1", "r2"."c2", "r2"."c3", "r2"."c4", "r2"."c5", "r4"."c9" FROM (SELECT "r1"."attempt", "r1"."resource", "r1"."root", "r1"."seat", "r1"."step" FROM "slice_den"."fan_hold" AS "r1") AS "r2"("c1", "c2", "c3", "c4", "c5"), (SELECT "r3"."attempt", "r3"."root", "r3"."step", "r3"."until" FROM "slice_den"."fan_claim" AS "r3") AS "r4"("c6", "c7", "c8", "c9") WHERE "r2"."c1" = "r4"."c6" AND "r2"."c3" = "r4"."c7" AND "r2"."c5" = "r4"."c8") AS "r6"("c16", "c17", "c18", "c19", "c20", "c21") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r7"."attempt", "r7"."root", "r7"."step" FROM "slice_den"."fan_ended" AS "r7") AS "r9"("c25", "c26", "c27") WHERE "r9"."c25" = "r6"."c16" AND "r9"."c26" = "r6"."c18" AND "r9"."c27" = "r6"."c20")) AS "r10"("c28", "c29", "c30", "c31", "c32", "c33") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r11"."attempt", "r11"."root", "r11"."step" FROM "slice_den"."fan_held" AS "r11") AS "r13"("c37", "c38", "c39") WHERE "r13"."c37" = "r10"."c28" AND "r13"."c38" = "r10"."c30" AND "r13"."c39" = "r10"."c32")) AS "r17"("c58", "c59", "c60", "c61", "c62", "c63");
 
 CREATE VIEW "slice_seats__review_coordinator"."review_live" ("attempt", "resource", "resource_name", "root", "seat", "step", "until") WITH (security_barrier) AS
 SELECT "r17"."c58", "r17"."c59", ("slice"."__review_resource_names_ixi3gnpcnp"())["r17"."c59" + 1]::"pg_catalog"."text", "r17"."c60", "r17"."c61", "r17"."c62", "r17"."c63"
-FROM (SELECT "r16"."c52", "r16"."c53", "r16"."c54", "r16"."c55", "r16"."c56", "r16"."c57" FROM (SELECT "r15"."c50", "r15"."c46", "r15"."c49", "r15"."c47", "r15"."c48", "r15"."c51" FROM (SELECT "r14"."c41", "r14"."c43", "r14"."c44", "r14"."c42", "r14"."c40", "r14"."c45" FROM (SELECT "r10"."c28", "r10"."c29", "r10"."c30", "r10"."c31", "r10"."c32", "r10"."c33" FROM (SELECT "r6"."c16", "r6"."c17", "r6"."c18", "r6"."c19", "r6"."c20", "r6"."c21" FROM (SELECT "r5"."c12", "r5"."c13", "r5"."c11", "r5"."c14", "r5"."c10", "r5"."c15" FROM (SELECT "r2"."c5", "r2"."c3", "r2"."c1", "r2"."c2", "r2"."c4", "r4"."c9" FROM (SELECT "r1"."attempt", "r1"."resource", "r1"."root", "r1"."seat", "r1"."step" FROM "slice_den"."review_hold" AS "r1") AS "r2"("c1", "c2", "c3", "c4", "c5"), (SELECT "r3"."attempt", "r3"."root", "r3"."step", "r3"."until" FROM "slice_den"."review_claim" AS "r3") AS "r4"("c6", "c7", "c8", "c9") WHERE "r2"."c1" = "r4"."c6" AND "r2"."c3" = "r4"."c7" AND "r2"."c5" = "r4"."c8") AS "r5"("c10", "c11", "c12", "c13", "c14", "c15")) AS "r6"("c16", "c17", "c18", "c19", "c20", "c21") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r8"."c22", "r8"."c23", "r8"."c24" FROM (SELECT "r7"."attempt", "r7"."root", "r7"."step" FROM "slice_den"."review_ended" AS "r7") AS "r8"("c22", "c23", "c24")) AS "r9"("c25", "c26", "c27") WHERE "r9"."c25" = "r6"."c16" AND "r9"."c26" = "r6"."c18" AND "r9"."c27" = "r6"."c20")) AS "r10"("c28", "c29", "c30", "c31", "c32", "c33") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r12"."c34", "r12"."c35", "r12"."c36" FROM (SELECT "r11"."attempt", "r11"."root", "r11"."step" FROM "slice_den"."review_held" AS "r11") AS "r12"("c34", "c35", "c36")) AS "r13"("c37", "c38", "c39") WHERE "r13"."c37" = "r10"."c28" AND "r13"."c38" = "r10"."c30" AND "r13"."c39" = "r10"."c32")) AS "r14"("c40", "c41", "c42", "c43", "c44", "c45")) AS "r15"("c46", "c47", "c48", "c49", "c50", "c51")) AS "r16"("c52", "c53", "c54", "c55", "c56", "c57")) AS "r17"("c58", "c59", "c60", "c61", "c62", "c63");
+FROM (SELECT "r10"."c28", "r10"."c29", "r10"."c30", "r10"."c31", "r10"."c32", "r10"."c33" FROM (SELECT "r6"."c16", "r6"."c17", "r6"."c18", "r6"."c19", "r6"."c20", "r6"."c21" FROM (SELECT "r2"."c1", "r2"."c2", "r2"."c3", "r2"."c4", "r2"."c5", "r4"."c9" FROM (SELECT "r1"."attempt", "r1"."resource", "r1"."root", "r1"."seat", "r1"."step" FROM "slice_den"."review_hold" AS "r1") AS "r2"("c1", "c2", "c3", "c4", "c5"), (SELECT "r3"."attempt", "r3"."root", "r3"."step", "r3"."until" FROM "slice_den"."review_claim" AS "r3") AS "r4"("c6", "c7", "c8", "c9") WHERE "r2"."c1" = "r4"."c6" AND "r2"."c3" = "r4"."c7" AND "r2"."c5" = "r4"."c8") AS "r6"("c16", "c17", "c18", "c19", "c20", "c21") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r7"."attempt", "r7"."root", "r7"."step" FROM "slice_den"."review_ended" AS "r7") AS "r9"("c25", "c26", "c27") WHERE "r9"."c25" = "r6"."c16" AND "r9"."c26" = "r6"."c18" AND "r9"."c27" = "r6"."c20")) AS "r10"("c28", "c29", "c30", "c31", "c32", "c33") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r11"."attempt", "r11"."root", "r11"."step" FROM "slice_den"."review_held" AS "r11") AS "r13"("c37", "c38", "c39") WHERE "r13"."c37" = "r10"."c28" AND "r13"."c38" = "r10"."c30" AND "r13"."c39" = "r10"."c32")) AS "r17"("c58", "c59", "c60", "c61", "c62", "c63");
 
 CREATE VIEW "slice_seats__review_den"."review_live" ("attempt", "resource", "resource_name", "root", "seat", "step", "until") WITH (security_barrier) AS
 SELECT "r17"."c58", "r17"."c59", ("slice"."__review_resource_names_ixi3gnpcnp"())["r17"."c59" + 1]::"pg_catalog"."text", "r17"."c60", "r17"."c61", "r17"."c62", "r17"."c63"
-FROM (SELECT "r16"."c52", "r16"."c53", "r16"."c54", "r16"."c55", "r16"."c56", "r16"."c57" FROM (SELECT "r15"."c50", "r15"."c46", "r15"."c49", "r15"."c47", "r15"."c48", "r15"."c51" FROM (SELECT "r14"."c41", "r14"."c43", "r14"."c44", "r14"."c42", "r14"."c40", "r14"."c45" FROM (SELECT "r10"."c28", "r10"."c29", "r10"."c30", "r10"."c31", "r10"."c32", "r10"."c33" FROM (SELECT "r6"."c16", "r6"."c17", "r6"."c18", "r6"."c19", "r6"."c20", "r6"."c21" FROM (SELECT "r5"."c12", "r5"."c13", "r5"."c11", "r5"."c14", "r5"."c10", "r5"."c15" FROM (SELECT "r2"."c5", "r2"."c3", "r2"."c1", "r2"."c2", "r2"."c4", "r4"."c9" FROM (SELECT "r1"."attempt", "r1"."resource", "r1"."root", "r1"."seat", "r1"."step" FROM "slice_den"."review_hold" AS "r1") AS "r2"("c1", "c2", "c3", "c4", "c5"), (SELECT "r3"."attempt", "r3"."root", "r3"."step", "r3"."until" FROM "slice_den"."review_claim" AS "r3") AS "r4"("c6", "c7", "c8", "c9") WHERE "r2"."c1" = "r4"."c6" AND "r2"."c3" = "r4"."c7" AND "r2"."c5" = "r4"."c8") AS "r5"("c10", "c11", "c12", "c13", "c14", "c15")) AS "r6"("c16", "c17", "c18", "c19", "c20", "c21") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r8"."c22", "r8"."c23", "r8"."c24" FROM (SELECT "r7"."attempt", "r7"."root", "r7"."step" FROM "slice_den"."review_ended" AS "r7") AS "r8"("c22", "c23", "c24")) AS "r9"("c25", "c26", "c27") WHERE "r9"."c25" = "r6"."c16" AND "r9"."c26" = "r6"."c18" AND "r9"."c27" = "r6"."c20")) AS "r10"("c28", "c29", "c30", "c31", "c32", "c33") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r12"."c34", "r12"."c35", "r12"."c36" FROM (SELECT "r11"."attempt", "r11"."root", "r11"."step" FROM "slice_den"."review_held" AS "r11") AS "r12"("c34", "c35", "c36")) AS "r13"("c37", "c38", "c39") WHERE "r13"."c37" = "r10"."c28" AND "r13"."c38" = "r10"."c30" AND "r13"."c39" = "r10"."c32")) AS "r14"("c40", "c41", "c42", "c43", "c44", "c45")) AS "r15"("c46", "c47", "c48", "c49", "c50", "c51")) AS "r16"("c52", "c53", "c54", "c55", "c56", "c57")) AS "r17"("c58", "c59", "c60", "c61", "c62", "c63");
+FROM (SELECT "r10"."c28", "r10"."c29", "r10"."c30", "r10"."c31", "r10"."c32", "r10"."c33" FROM (SELECT "r6"."c16", "r6"."c17", "r6"."c18", "r6"."c19", "r6"."c20", "r6"."c21" FROM (SELECT "r2"."c1", "r2"."c2", "r2"."c3", "r2"."c4", "r2"."c5", "r4"."c9" FROM (SELECT "r1"."attempt", "r1"."resource", "r1"."root", "r1"."seat", "r1"."step" FROM "slice_den"."review_hold" AS "r1") AS "r2"("c1", "c2", "c3", "c4", "c5"), (SELECT "r3"."attempt", "r3"."root", "r3"."step", "r3"."until" FROM "slice_den"."review_claim" AS "r3") AS "r4"("c6", "c7", "c8", "c9") WHERE "r2"."c1" = "r4"."c6" AND "r2"."c3" = "r4"."c7" AND "r2"."c5" = "r4"."c8") AS "r6"("c16", "c17", "c18", "c19", "c20", "c21") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r7"."attempt", "r7"."root", "r7"."step" FROM "slice_den"."review_ended" AS "r7") AS "r9"("c25", "c26", "c27") WHERE "r9"."c25" = "r6"."c16" AND "r9"."c26" = "r6"."c18" AND "r9"."c27" = "r6"."c20")) AS "r10"("c28", "c29", "c30", "c31", "c32", "c33") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r11"."attempt", "r11"."root", "r11"."step" FROM "slice_den"."review_held" AS "r11") AS "r13"("c37", "c38", "c39") WHERE "r13"."c37" = "r10"."c28" AND "r13"."c38" = "r10"."c30" AND "r13"."c39" = "r10"."c32")) AS "r17"("c58", "c59", "c60", "c61", "c62", "c63");
 
 GRANT :"slice_seats__assign_coordinator" TO :"slice_seats__worker" WITH INHERIT FALSE, SET TRUE;
 
@@ -1415,7 +1415,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_pausable_names_r7pjdx7o42"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"() TO :"slice_seats__assign_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_assign_claim_attempt_wafvnidpqp"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__assign_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_assign_claim_attempt_wafvnidpqp"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_assign_assignment_input_k2sfkqif6i"(), "slice"."__stand_assign_assignment_input_mode_nearest_lxb77ivg4j"(), "slice"."__stand_assign_assignment_input_mode_within_37wojsnl3c"(), "slice"."__stand_assign_decide_input_vrvu36pkwz"(), "slice"."__stand_assign_decide_input_mode_nearest_7kdvsnzqg6"(), "slice"."__stand_assign_decide_input_mode_within_ldx2lhq5ey"(), "slice"."__stand_assign_done_zpmhn6mrnc"(), "slice"."__stand_assign_embed_input_zvwywuktne"(), "slice"."__stand_assign_embed_input_mode_nearest_qag7rwsicw"(), "slice"."__stand_assign_embed_input_mode_within_mw2mn45ii2"(), "slice"."__stand_assign_failed_pmuglprcww"(), "slice"."__stand_assign_result_3dwqbs6psk"(), "slice"."__stand_assign_step_qwjijdgx6j"() TO :"slice_seats__assign_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__assign_retirer";
@@ -1511,7 +1511,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"(), "slice"."__assign_decide_input_mode_names_zoydpw665o"(), "slice"."__assign_decide_output_stage_names_ehhgk5bunv"(), "slice"."__assign_embed_input_mode_names_5jkwmsqq3r"(), "slice"."__assign_kind_names_rtvscvwquk"(), "slice"."__assign_outcome_names_2mccfiah6k"(), "slice"."__assign_retry_why_names_5ckzenntb2"(), "slice"."__assign_root_kind_names_opbaefdfbo"(), "slice"."__assign_assignment_input_mode_live_nvlduwhvfs"(), "slice"."__assign_decide_input_mode_live_bpk4ps2tf3"(), "slice"."__assign_decide_output_stage_live_j54g2pdkhy"(), "slice"."__assign_embed_input_mode_live_r26iyj4yp6"(), "slice"."__assign_kind_live_epoonlekfm"(), "slice"."__assign_outcome_live_3t7oirgwzl"(), "slice"."__assign_pausable_live_spku342qp6"(), "slice"."__assign_retry_why_live_qfzksuyq3m"(), "slice"."__assign_root_kind_live_nccqmed4lq"() TO :"slice_seats__assign_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_assign_claim_attempt_wafvnidpqp"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__assign_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_assign_claim_attempt_wafvnidpqp"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_assign_assignment_input_k2sfkqif6i"(), "slice"."__stand_assign_assignment_input_mode_nearest_lxb77ivg4j"(), "slice"."__stand_assign_assignment_input_mode_within_37wojsnl3c"(), "slice"."__stand_assign_decide_input_vrvu36pkwz"(), "slice"."__stand_assign_decide_input_mode_nearest_7kdvsnzqg6"(), "slice"."__stand_assign_decide_input_mode_within_ldx2lhq5ey"(), "slice"."__stand_assign_decide_output_ir3hc6poyj"(), "slice"."__stand_assign_decide_output_stage_rest_lduodwwdlk"(), "slice"."__stand_assign_decide_output_stage_serve_z6kennoghm"(), "slice"."__stand_assign_done_zpmhn6mrnc"(), "slice"."__stand_assign_embed_input_zvwywuktne"(), "slice"."__stand_assign_embed_input_mode_nearest_qag7rwsicw"(), "slice"."__stand_assign_embed_input_mode_within_mw2mn45ii2"(), "slice"."__stand_assign_failed_pmuglprcww"(), "slice"."__stand_assign_result_3dwqbs6psk"(), "slice"."__stand_assign_step_qwjijdgx6j"() TO :"slice_seats__assign_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_assign_claim_attempt_h744pvqs3v" TO :"slice_seats__assign_retirer";
 
@@ -1624,7 +1624,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_pausable_names_vjdoymenyq"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"(), "slice"."__feed_live_pfwkvulieq"() TO :"slice_seats__chain_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_chain_claim_attempt_fn4w5elo4b"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__chain_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_chain_claim_attempt_fn4w5elo4b"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_chain_done_fhcl4vvjiw"(), "slice"."__stand_chain_failed_nocd74knki"(), "slice"."__stand_chain_page_input_akkjfmkwih"(), "slice"."__stand_chain_result_2qc7m4brl3"(), "slice"."__stand_chain_step_3hsz3lyxy2"() TO :"slice_seats__chain_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__chain_retirer";
@@ -1695,7 +1695,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_ordered_input_feed_names_dwtixlgyrd"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__chain_page_input_feed_names_dxuyhzkiur"(), "slice"."__chain_retry_why_names_zmog33hzfy"(), "slice"."__chain_root_kind_names_ndmuh43zki"(), "slice"."__feed_names_azjbqebc6i"(), "slice"."__chain_chain_run_input_feed_live_iopwed3csj"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_ordered_input_feed_live_4rmnc5y7hz"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__chain_page_input_feed_live_zxgp5dub6j"(), "slice"."__chain_pausable_live_ozpbw3gnsu"(), "slice"."__chain_retry_why_live_m5qnitynhz"(), "slice"."__chain_root_kind_live_mnlnztwbz2"(), "slice"."__feed_live_pfwkvulieq"() TO :"slice_seats__chain_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_chain_claim_attempt_fn4w5elo4b"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__chain_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_chain_claim_attempt_fn4w5elo4b"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_chain_done_fhcl4vvjiw"(), "slice"."__stand_chain_failed_nocd74knki"(), "slice"."__stand_chain_page_input_akkjfmkwih"(), "slice"."__stand_chain_result_2qc7m4brl3"(), "slice"."__stand_chain_step_3hsz3lyxy2"() TO :"slice_seats__chain_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_chain_claim_attempt_n5yg3h2b6a" TO :"slice_seats__chain_retirer";
 
@@ -1777,7 +1777,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__clock_chime_input_bell_names_nkzi4dgaig"(), "slice"."__clock_chime_output_bell_names_tzmx63kpb4"(), "slice"."__clock_hourly_input_bell_names_vugtqsvsug"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_pausable_names_phjbr2fipl"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"(), "slice"."__clock_chime_input_bell_live_vs2eypgl4v"(), "slice"."__clock_chime_output_bell_live_ikpwkv25mh"(), "slice"."__clock_hourly_input_bell_live_yfdtebn7na"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"() TO :"slice_seats__clock_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__clock_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_clock_chime_input_w4tkdsqfah"(), "slice"."__stand_clock_close_input_nbsmlpykk5"(), "slice"."__stand_clock_done_dja4biaxge"(), "slice"."__stand_clock_failed_zsyt2n5qx3"(), "slice"."__stand_clock_result_dk5lfugcd5"(), "slice"."__stand_clock_step_cbbapr6dla"() TO :"slice_seats__clock_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__clock_retirer";
@@ -1840,7 +1840,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__clock_chime_input_bell_names_nkzi4dgaig"(), "slice"."__clock_chime_output_bell_names_tzmx63kpb4"(), "slice"."__clock_hourly_input_bell_names_vugtqsvsug"(), "slice"."__clock_kind_names_7yqk67pwg5"(), "slice"."__clock_outcome_names_rqtqczot4q"(), "slice"."__clock_retry_why_names_pjdgx4s6a4"(), "slice"."__clock_root_kind_names_3kro23qfv4"(), "slice"."__clock_chime_input_bell_live_vs2eypgl4v"(), "slice"."__clock_chime_output_bell_live_ikpwkv25mh"(), "slice"."__clock_hourly_input_bell_live_yfdtebn7na"(), "slice"."__clock_kind_live_kem5uxahz7"(), "slice"."__clock_outcome_live_q7vjmi72sr"(), "slice"."__clock_pausable_live_waldzggn7s"(), "slice"."__clock_retry_why_live_auqnukeed5"(), "slice"."__clock_root_kind_live_dkya2k5nqw"() TO :"slice_seats__clock_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__clock_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_clock_claim_attempt_ofrgvxuwnp"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_clock_chime_input_w4tkdsqfah"(), "slice"."__stand_clock_close_input_nbsmlpykk5"(), "slice"."__stand_clock_done_dja4biaxge"(), "slice"."__stand_clock_failed_zsyt2n5qx3"(), "slice"."__stand_clock_result_dk5lfugcd5"(), "slice"."__stand_clock_step_cbbapr6dla"() TO :"slice_seats__clock_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_clock_claim_attempt_ddh5rjlfkk" TO :"slice_seats__clock_retirer";
 
@@ -1854,18 +1854,15 @@ GRANT USAGE ON DOMAIN "slice"."__text_t4rwovzmqj" TO :"slice_seats__editor";
 
 GRANT SELECT ON TABLE "__slice"."passage", "__slice"."seen" TO :"slice_seats__editor";
 
-GRANT SELECT, INSERT, DELETE ON TABLE "slice"."passage" TO :"slice_seats__editor";
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "slice"."passage" TO :"slice_seats__editor";
 
-GRANT SELECT, INSERT, DELETE ON TABLE "slice"."seen" TO :"slice_seats__editor";
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "slice"."seen" TO :"slice_seats__editor";
 
 GRANT EXECUTE ON FUNCTION "slice"."__refuse"("pg_catalog"."text", "pg_catalog"."text", "pg_catalog"."text") TO :"slice_seats__editor";
 
 GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_seats__editor";
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"() TO :"slice_seats__editor";
-
-SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
-GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__editor";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den", "slice_seats__fan_coordinator" TO :"slice_seats__fan_coordinator";
@@ -1960,7 +1957,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__fan_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_fan_claim_attempt_chhiwa5h36"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__fan_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_fan_claim_attempt_chhiwa5h36"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_fan_batch_input_fkd6u4c3i3"(), "slice"."__stand_fan_claim_chk6cawes6"(), "slice"."__stand_fan_done_e4qldz2xtt"(), "slice"."__stand_fan_dust_input_rigexdymgk"(), "slice"."__stand_fan_ended_l35bnatdrx"(), "slice"."__stand_fan_failed_ok5ebljdmh"(), "slice"."__stand_fan_held_jx6ijuwgvx"(), "slice"."__stand_fan_hold_lndmiy4fqw"(), "slice"."__stand_fan_mop_input_i5g5pk2lsj"(), "slice"."__stand_fan_result_4bsplumotk"(), "slice"."__stand_fan_square_input_ag5nlkdpuv"(), "slice"."__stand_fan_step_cwlbx3l7hf"(), "slice"."__stand_fan_within_oo5pwmjabl"() TO :"slice_seats__fan_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__fan_retirer";
@@ -2037,7 +2034,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__fan_child_kind_names_i6k53d3e2e"(), "slice"."__fan_kind_names_rrax7ylsix"(), "slice"."__fan_outcome_names_7pbhseigfj"(), "slice"."__fan_resource_names_tugc7yp6xo"(), "slice"."__fan_retry_why_names_shpypqrqhk"(), "slice"."__fan_root_kind_names_nagupzc3sq"(), "slice"."__fan_child_kind_live_lzght2aqpn"(), "slice"."__fan_kind_live_mosnikz3yn"(), "slice"."__fan_outcome_live_nos3iqln54"(), "slice"."__fan_pausable_live_uymd2oabeh"(), "slice"."__fan_resource_live_yqyw4ee5fp"(), "slice"."__fan_retry_why_live_yom5egfb4x"(), "slice"."__fan_root_kind_live_sx7vmfeklj"() TO :"slice_seats__fan_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_fan_claim_attempt_chhiwa5h36"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__fan_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_fan_claim_attempt_chhiwa5h36"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_fan_batch_input_fkd6u4c3i3"(), "slice"."__stand_fan_claim_chk6cawes6"(), "slice"."__stand_fan_done_e4qldz2xtt"(), "slice"."__stand_fan_dust_input_rigexdymgk"(), "slice"."__stand_fan_ended_l35bnatdrx"(), "slice"."__stand_fan_failed_ok5ebljdmh"(), "slice"."__stand_fan_held_jx6ijuwgvx"(), "slice"."__stand_fan_hold_lndmiy4fqw"(), "slice"."__stand_fan_mop_input_i5g5pk2lsj"(), "slice"."__stand_fan_result_4bsplumotk"(), "slice"."__stand_fan_square_input_ag5nlkdpuv"(), "slice"."__stand_fan_step_cwlbx3l7hf"(), "slice"."__stand_fan_within_oo5pwmjabl"() TO :"slice_seats__fan_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_fan_claim_attempt_u34lm72lgr" TO :"slice_seats__fan_retirer";
 
@@ -2320,6 +2317,8 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__loader";
 
+GRANT EXECUTE ON FUNCTION "slice"."__stand_assign_decide_input_vrvu36pkwz"(), "slice"."__stand_assign_decide_input_mode_nearest_7kdvsnzqg6"(), "slice"."__stand_assign_decide_input_mode_within_ldx2lhq5ey"(), "slice"."__stand_assign_decide_output_ir3hc6poyj"(), "slice"."__stand_assign_decide_output_stage_rest_lduodwwdlk"(), "slice"."__stand_assign_decide_output_stage_serve_z6kennoghm"(), "slice"."__stand_assign_done_zpmhn6mrnc"(), "slice"."__stand_assign_embed_input_zvwywuktne"(), "slice"."__stand_assign_embed_input_mode_nearest_qag7rwsicw"(), "slice"."__stand_assign_embed_input_mode_within_mw2mn45ii2"(), "slice"."__stand_assign_result_3dwqbs6psk"(), "slice"."__stand_assign_step_qwjijdgx6j"(), "slice"."__stand_chain_done_fhcl4vvjiw"(), "slice"."__stand_chain_page_input_akkjfmkwih"(), "slice"."__stand_chain_result_2qc7m4brl3"(), "slice"."__stand_chain_step_3hsz3lyxy2"(), "slice"."__stand_clock_done_dja4biaxge"(), "slice"."__stand_clock_result_dk5lfugcd5"(), "slice"."__stand_fan_done_e4qldz2xtt"(), "slice"."__stand_fan_held_jx6ijuwgvx"(), "slice"."__stand_fan_result_4bsplumotk"(), "slice"."__stand_retry_done_ll42rjotis"(), "slice"."__stand_retry_result_mpvrsnerne"(), "slice"."__stand_review_analyze_input_pspszgkzox"(), "slice"."__stand_review_done_ujerlpx2vl"(), "slice"."__stand_review_gather_input_jx633zhg4g"(), "slice"."__stand_review_held_kz6nzl3mw3"(), "slice"."__stand_review_questions_input_c55nnxszay"(), "slice"."__stand_review_result_7berxkzbzb"(), "slice"."__stand_review_save_input_nwulronicu"(), "slice"."__stand_review_step_aidfiao2mn"(), "slice"."__stand_review_within_bqv44gzoli"(), "slice"."__stand_sync_done_4ihvwniwqp"(), "slice"."__stand_sync_result_fkuahqxxbc"(), "slice"."__stand_writeback_done_ra7zoinlni"(), "slice"."__stand_writeback_result_owlolckns5"() TO :"slice_seats__loader";
+
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__retry_coordinator";
 
@@ -2406,7 +2405,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_pausable_names_hen5ycf77m"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"() TO :"slice_seats__retry_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_retry_claim_attempt_djs2c6uume"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__retry_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_retry_claim_attempt_djs2c6uume"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_retry_brittle_input_3pbycrawjg"(), "slice"."__stand_retry_done_ll42rjotis"(), "slice"."__stand_retry_failed_wyonvn6i5o"(), "slice"."__stand_retry_patient_input_jxb7jnsja6"(), "slice"."__stand_retry_polite_input_uiwzzm343r"(), "slice"."__stand_retry_result_mpvrsnerne"(), "slice"."__stand_retry_steadfast_input_chyldmp7fv"(), "slice"."__stand_retry_step_7csxwmutn2"() TO :"slice_seats__retry_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__retry_retirer";
@@ -2481,7 +2480,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__retry_kind_names_yg2tu5rejg"(), "slice"."__retry_outcome_names_zzz2kawwsa"(), "slice"."__retry_retry_why_names_pwmdyzqghs"(), "slice"."__retry_root_kind_names_bhf4onc7wq"(), "slice"."__retry_kind_live_lujs5xc25d"(), "slice"."__retry_outcome_live_fdo5qezp4f"(), "slice"."__retry_pausable_live_buioe34fit"(), "slice"."__retry_retry_why_live_p4et7ysqjo"(), "slice"."__retry_root_kind_live_euautuyuhd"() TO :"slice_seats__retry_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_retry_claim_attempt_djs2c6uume"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__retry_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_retry_claim_attempt_djs2c6uume"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_retry_brittle_input_3pbycrawjg"(), "slice"."__stand_retry_done_ll42rjotis"(), "slice"."__stand_retry_failed_wyonvn6i5o"(), "slice"."__stand_retry_patient_input_jxb7jnsja6"(), "slice"."__stand_retry_polite_input_uiwzzm343r"(), "slice"."__stand_retry_result_mpvrsnerne"(), "slice"."__stand_retry_steadfast_input_chyldmp7fv"(), "slice"."__stand_retry_step_7csxwmutn2"() TO :"slice_seats__retry_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_retry_claim_attempt_exbl6vgycp" TO :"slice_seats__retry_retirer";
 
@@ -2578,7 +2577,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT TEMPORARY ON DATABASE :"DBNAME" TO :"slice_seats__review_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_review_claim_attempt_xxo4vl3amg"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__review_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_review_claim_attempt_xxo4vl3amg"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_review_analyze_input_pspszgkzox"(), "slice"."__stand_review_claim_hkt7qw7mpi"(), "slice"."__stand_review_done_ujerlpx2vl"(), "slice"."__stand_review_ended_h3z5bew2vq"(), "slice"."__stand_review_failed_a5vyjorx3e"(), "slice"."__stand_review_gather_input_jx633zhg4g"(), "slice"."__stand_review_held_kz6nzl3mw3"(), "slice"."__stand_review_hold_nhd6ml2ptp"(), "slice"."__stand_review_questions_input_c55nnxszay"(), "slice"."__stand_review_result_7berxkzbzb"(), "slice"."__stand_review_save_input_nwulronicu"(), "slice"."__stand_review_step_aidfiao2mn"(), "slice"."__stand_review_within_bqv44gzoli"() TO :"slice_seats__review_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__review_retirer";
@@ -2659,7 +2658,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__review_child_kind_names_jn3iwx7yal"(), "slice"."__review_kind_names_j4pukr2klj"(), "slice"."__review_outcome_names_nlfaf7zb7f"(), "slice"."__review_resource_names_ixi3gnpcnp"(), "slice"."__review_retry_why_names_4ux5dj2mh3"(), "slice"."__review_root_kind_names_uvxmjcavxb"(), "slice"."__review_child_kind_live_xb5v52t6gq"(), "slice"."__review_kind_live_3egbkjww5a"(), "slice"."__review_outcome_live_svq4irpcsp"(), "slice"."__review_pausable_live_at7bdrj2is"(), "slice"."__review_resource_live_bbskolaran"(), "slice"."__review_retry_why_live_sp7od4pwim"(), "slice"."__review_root_kind_live_vkjzjpusnp"() TO :"slice_seats__review_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_review_claim_attempt_xxo4vl3amg"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__review_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_review_claim_attempt_xxo4vl3amg"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_review_analyze_input_pspszgkzox"(), "slice"."__stand_review_claim_hkt7qw7mpi"(), "slice"."__stand_review_done_ujerlpx2vl"(), "slice"."__stand_review_ended_h3z5bew2vq"(), "slice"."__stand_review_failed_a5vyjorx3e"(), "slice"."__stand_review_gather_input_jx633zhg4g"(), "slice"."__stand_review_held_kz6nzl3mw3"(), "slice"."__stand_review_hold_nhd6ml2ptp"(), "slice"."__stand_review_questions_input_c55nnxszay"(), "slice"."__stand_review_result_7berxkzbzb"(), "slice"."__stand_review_save_input_nwulronicu"(), "slice"."__stand_review_step_aidfiao2mn"(), "slice"."__stand_review_within_bqv44gzoli"() TO :"slice_seats__review_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_review_claim_attempt_lsmvyy7ajm" TO :"slice_seats__review_retirer";
 
@@ -2747,7 +2746,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__chain_kind_names_oubqrwjyau"(), "slice"."__chain_outcome_names_vo4tgqx6qh"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_pausable_names_3hzpsqgfjl"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__chain_kind_live_4t2tj7pchx"(), "slice"."__chain_outcome_live_azc7nb42gy"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"() TO :"slice_seats__sync_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_sync_claim_attempt_26b5li3j4v"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__sync_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_sync_claim_attempt_26b5li3j4v"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_sync_build_input_le3amndvci"(), "slice"."__stand_sync_copy_input_wr7g5cohy6"(), "slice"."__stand_sync_done_4ihvwniwqp"(), "slice"."__stand_sync_failed_uzrsh7vxay"(), "slice"."__stand_sync_result_fkuahqxxbc"(), "slice"."__stand_sync_step_mljbwcbsm5"() TO :"slice_seats__sync_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__sync_retirer";
@@ -2812,7 +2811,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__sync_kind_names_oq6b66cstu"(), "slice"."__sync_outcome_names_xzb4y4xgki"(), "slice"."__sync_retry_why_names_o3uvvn3247"(), "slice"."__sync_root_kind_names_drp422srbk"(), "slice"."__sync_kind_live_mrzzgu2rqf"(), "slice"."__sync_outcome_live_7gndrvrenw"(), "slice"."__sync_pausable_live_7gx4kdgs6e"(), "slice"."__sync_retry_why_live_t6r5ysh2pa"(), "slice"."__sync_root_kind_live_vi4cdymudd"() TO :"slice_seats__sync_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_sync_claim_attempt_26b5li3j4v"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__sync_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_sync_claim_attempt_26b5li3j4v"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_sync_build_input_le3amndvci"(), "slice"."__stand_sync_copy_input_wr7g5cohy6"(), "slice"."__stand_sync_done_4ihvwniwqp"(), "slice"."__stand_sync_failed_uzrsh7vxay"(), "slice"."__stand_sync_result_fkuahqxxbc"(), "slice"."__stand_sync_step_mljbwcbsm5"() TO :"slice_seats__sync_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_sync_claim_attempt_dtv5nw4b3m" TO :"slice_seats__sync_retirer";
 
@@ -2893,7 +2892,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_pausable_names_mqzeerbulh"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__writeback_den";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_writeback_claim_attempt_iasyjokmx7"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__writeback_den";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_writeback_claim_attempt_iasyjokmx7"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_writeback_deliver_input_qibs4x7ys4"(), "slice"."__stand_writeback_done_ra7zoinlni"(), "slice"."__stand_writeback_failed_tv4kbeol35"(), "slice"."__stand_writeback_result_owlolckns5"(), "slice"."__stand_writeback_step_dhhgvpedc7"() TO :"slice_seats__writeback_den";
 
 SELECT "pg_catalog"."pg_advisory_xact_lock"(5448515225636816524::bigint);
 GRANT USAGE ON SCHEMA "slice", "slice_den", "slice_seats", "__slice_den" TO :"slice_seats__writeback_retirer";
@@ -2948,7 +2947,7 @@ GRANT EXECUTE ON FUNCTION "slice"."__borrow"(bigint[], boolean[]) TO :"slice_sea
 
 GRANT EXECUTE ON FUNCTION "slice"."__constant_ejkw66w2je"(), "slice"."__constant_ib5zplua3f"(), "slice"."__writeback_kind_names_dbe6fofbjq"(), "slice"."__writeback_outcome_names_oq43xsnmec"(), "slice"."__writeback_retry_why_names_7a7eowjbic"(), "slice"."__writeback_root_kind_names_bz7cmi256x"(), "slice"."__writeback_kind_live_gxqp25qbem"(), "slice"."__writeback_outcome_live_haxkgy2wa4"(), "slice"."__writeback_pausable_live_rwjxemvunq"(), "slice"."__writeback_retry_why_live_6vffrr6k2o"(), "slice"."__writeback_root_kind_live_ifibfl2f7i"() TO :"slice_seats__writeback_retirer";
 
-GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_writeback_claim_attempt_iasyjokmx7"("slice"."__sha256"[], "slice"."__sha256"[]) TO :"slice_seats__writeback_retirer";
+GRANT EXECUTE ON FUNCTION "slice_den"."__stamp_writeback_claim_attempt_iasyjokmx7"("slice"."__sha256"[], "slice"."__sha256"[]), "slice"."__stand_writeback_deliver_input_qibs4x7ys4"(), "slice"."__stand_writeback_done_ra7zoinlni"(), "slice"."__stand_writeback_failed_tv4kbeol35"(), "slice"."__stand_writeback_result_owlolckns5"(), "slice"."__stand_writeback_step_dhhgvpedc7"() TO :"slice_seats__writeback_retirer";
 
 GRANT SELECT, DELETE ON TABLE "slice_den"."__head_writeback_claim_attempt_pk673p2jar" TO :"slice_seats__writeback_retirer";
 
@@ -6190,6 +6189,150 @@ COMMENT ON FUNCTION "slice"."__capture_writeback_result_cd63iav5l7"() IS 'rule c
 
 COMMENT ON FUNCTION "slice"."__capture_writeback_step_dklkh3hpav"() IS 'rule capture of WritebackStep';
 
+COMMENT ON FUNCTION "slice"."__stand_assign_assignment_input_k2sfkqif6i"() IS 'the stand-up of the rule judge''s session tables a write of AssignAssignmentInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_assignment_input_mode_nearest_lxb77ivg4j"() IS 'the stand-up of the rule judge''s session tables a write of AssignAssignmentInputModeNearest needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_assignment_input_mode_within_37wojsnl3c"() IS 'the stand-up of the rule judge''s session tables a write of AssignAssignmentInputModeWithin needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_decide_input_vrvu36pkwz"() IS 'the stand-up of the rule judge''s session tables a write of AssignDecideInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_decide_input_mode_nearest_7kdvsnzqg6"() IS 'the stand-up of the rule judge''s session tables a write of AssignDecideInputModeNearest needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_decide_input_mode_within_ldx2lhq5ey"() IS 'the stand-up of the rule judge''s session tables a write of AssignDecideInputModeWithin needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_decide_output_ir3hc6poyj"() IS 'the stand-up of the rule judge''s session tables a write of AssignDecideOutput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_decide_output_stage_rest_lduodwwdlk"() IS 'the stand-up of the rule judge''s session tables a write of AssignDecideOutputStageRest needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_decide_output_stage_serve_z6kennoghm"() IS 'the stand-up of the rule judge''s session tables a write of AssignDecideOutputStageServe needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_done_zpmhn6mrnc"() IS 'the stand-up of the rule judge''s session tables a write of AssignDone needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_embed_input_zvwywuktne"() IS 'the stand-up of the rule judge''s session tables a write of AssignEmbedInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_embed_input_mode_nearest_qag7rwsicw"() IS 'the stand-up of the rule judge''s session tables a write of AssignEmbedInputModeNearest needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_embed_input_mode_within_mw2mn45ii2"() IS 'the stand-up of the rule judge''s session tables a write of AssignEmbedInputModeWithin needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_failed_pmuglprcww"() IS 'the stand-up of the rule judge''s session tables a write of AssignFailed needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_result_3dwqbs6psk"() IS 'the stand-up of the rule judge''s session tables a write of AssignResult needs';
+
+COMMENT ON FUNCTION "slice"."__stand_assign_step_qwjijdgx6j"() IS 'the stand-up of the rule judge''s session tables a write of AssignStep needs';
+
+COMMENT ON FUNCTION "slice"."__stand_chain_done_fhcl4vvjiw"() IS 'the stand-up of the rule judge''s session tables a write of ChainDone needs';
+
+COMMENT ON FUNCTION "slice"."__stand_chain_failed_nocd74knki"() IS 'the stand-up of the rule judge''s session tables a write of ChainFailed needs';
+
+COMMENT ON FUNCTION "slice"."__stand_chain_page_input_akkjfmkwih"() IS 'the stand-up of the rule judge''s session tables a write of ChainPageInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_chain_result_2qc7m4brl3"() IS 'the stand-up of the rule judge''s session tables a write of ChainResult needs';
+
+COMMENT ON FUNCTION "slice"."__stand_chain_step_3hsz3lyxy2"() IS 'the stand-up of the rule judge''s session tables a write of ChainStep needs';
+
+COMMENT ON FUNCTION "slice"."__stand_clock_chime_input_w4tkdsqfah"() IS 'the stand-up of the rule judge''s session tables a write of ClockChimeInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_clock_close_input_nbsmlpykk5"() IS 'the stand-up of the rule judge''s session tables a write of ClockCloseInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_clock_done_dja4biaxge"() IS 'the stand-up of the rule judge''s session tables a write of ClockDone needs';
+
+COMMENT ON FUNCTION "slice"."__stand_clock_failed_zsyt2n5qx3"() IS 'the stand-up of the rule judge''s session tables a write of ClockFailed needs';
+
+COMMENT ON FUNCTION "slice"."__stand_clock_result_dk5lfugcd5"() IS 'the stand-up of the rule judge''s session tables a write of ClockResult needs';
+
+COMMENT ON FUNCTION "slice"."__stand_clock_step_cbbapr6dla"() IS 'the stand-up of the rule judge''s session tables a write of ClockStep needs';
+
+COMMENT ON FUNCTION "slice"."__stand_fan_batch_input_fkd6u4c3i3"() IS 'the stand-up of the rule judge''s session tables a write of FanBatchInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_fan_claim_chk6cawes6"() IS 'the stand-up of the rule judge''s session tables a write of FanClaim needs';
+
+COMMENT ON FUNCTION "slice"."__stand_fan_done_e4qldz2xtt"() IS 'the stand-up of the rule judge''s session tables a write of FanDone needs';
+
+COMMENT ON FUNCTION "slice"."__stand_fan_dust_input_rigexdymgk"() IS 'the stand-up of the rule judge''s session tables a write of FanDustInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_fan_ended_l35bnatdrx"() IS 'the stand-up of the rule judge''s session tables a write of FanEnded needs';
+
+COMMENT ON FUNCTION "slice"."__stand_fan_failed_ok5ebljdmh"() IS 'the stand-up of the rule judge''s session tables a write of FanFailed needs';
+
+COMMENT ON FUNCTION "slice"."__stand_fan_held_jx6ijuwgvx"() IS 'the stand-up of the rule judge''s session tables a write of FanHeld needs';
+
+COMMENT ON FUNCTION "slice"."__stand_fan_hold_lndmiy4fqw"() IS 'the stand-up of the rule judge''s session tables a write of FanHold needs';
+
+COMMENT ON FUNCTION "slice"."__stand_fan_mop_input_i5g5pk2lsj"() IS 'the stand-up of the rule judge''s session tables a write of FanMopInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_fan_result_4bsplumotk"() IS 'the stand-up of the rule judge''s session tables a write of FanResult needs';
+
+COMMENT ON FUNCTION "slice"."__stand_fan_square_input_ag5nlkdpuv"() IS 'the stand-up of the rule judge''s session tables a write of FanSquareInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_fan_step_cwlbx3l7hf"() IS 'the stand-up of the rule judge''s session tables a write of FanStep needs';
+
+COMMENT ON FUNCTION "slice"."__stand_fan_within_oo5pwmjabl"() IS 'the stand-up of the rule judge''s session tables a write of FanWithin needs';
+
+COMMENT ON FUNCTION "slice"."__stand_retry_brittle_input_3pbycrawjg"() IS 'the stand-up of the rule judge''s session tables a write of RetryBrittleInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_retry_done_ll42rjotis"() IS 'the stand-up of the rule judge''s session tables a write of RetryDone needs';
+
+COMMENT ON FUNCTION "slice"."__stand_retry_failed_wyonvn6i5o"() IS 'the stand-up of the rule judge''s session tables a write of RetryFailed needs';
+
+COMMENT ON FUNCTION "slice"."__stand_retry_patient_input_jxb7jnsja6"() IS 'the stand-up of the rule judge''s session tables a write of RetryPatientInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_retry_polite_input_uiwzzm343r"() IS 'the stand-up of the rule judge''s session tables a write of RetryPoliteInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_retry_result_mpvrsnerne"() IS 'the stand-up of the rule judge''s session tables a write of RetryResult needs';
+
+COMMENT ON FUNCTION "slice"."__stand_retry_steadfast_input_chyldmp7fv"() IS 'the stand-up of the rule judge''s session tables a write of RetrySteadfastInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_retry_step_7csxwmutn2"() IS 'the stand-up of the rule judge''s session tables a write of RetryStep needs';
+
+COMMENT ON FUNCTION "slice"."__stand_review_analyze_input_pspszgkzox"() IS 'the stand-up of the rule judge''s session tables a write of ReviewAnalyzeInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_review_claim_hkt7qw7mpi"() IS 'the stand-up of the rule judge''s session tables a write of ReviewClaim needs';
+
+COMMENT ON FUNCTION "slice"."__stand_review_done_ujerlpx2vl"() IS 'the stand-up of the rule judge''s session tables a write of ReviewDone needs';
+
+COMMENT ON FUNCTION "slice"."__stand_review_ended_h3z5bew2vq"() IS 'the stand-up of the rule judge''s session tables a write of ReviewEnded needs';
+
+COMMENT ON FUNCTION "slice"."__stand_review_failed_a5vyjorx3e"() IS 'the stand-up of the rule judge''s session tables a write of ReviewFailed needs';
+
+COMMENT ON FUNCTION "slice"."__stand_review_gather_input_jx633zhg4g"() IS 'the stand-up of the rule judge''s session tables a write of ReviewGatherInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_review_held_kz6nzl3mw3"() IS 'the stand-up of the rule judge''s session tables a write of ReviewHeld needs';
+
+COMMENT ON FUNCTION "slice"."__stand_review_hold_nhd6ml2ptp"() IS 'the stand-up of the rule judge''s session tables a write of ReviewHold needs';
+
+COMMENT ON FUNCTION "slice"."__stand_review_questions_input_c55nnxszay"() IS 'the stand-up of the rule judge''s session tables a write of ReviewQuestionsInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_review_result_7berxkzbzb"() IS 'the stand-up of the rule judge''s session tables a write of ReviewResult needs';
+
+COMMENT ON FUNCTION "slice"."__stand_review_save_input_nwulronicu"() IS 'the stand-up of the rule judge''s session tables a write of ReviewSaveInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_review_step_aidfiao2mn"() IS 'the stand-up of the rule judge''s session tables a write of ReviewStep needs';
+
+COMMENT ON FUNCTION "slice"."__stand_review_within_bqv44gzoli"() IS 'the stand-up of the rule judge''s session tables a write of ReviewWithin needs';
+
+COMMENT ON FUNCTION "slice"."__stand_sync_build_input_le3amndvci"() IS 'the stand-up of the rule judge''s session tables a write of SyncBuildInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_sync_copy_input_wr7g5cohy6"() IS 'the stand-up of the rule judge''s session tables a write of SyncCopyInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_sync_done_4ihvwniwqp"() IS 'the stand-up of the rule judge''s session tables a write of SyncDone needs';
+
+COMMENT ON FUNCTION "slice"."__stand_sync_failed_uzrsh7vxay"() IS 'the stand-up of the rule judge''s session tables a write of SyncFailed needs';
+
+COMMENT ON FUNCTION "slice"."__stand_sync_result_fkuahqxxbc"() IS 'the stand-up of the rule judge''s session tables a write of SyncResult needs';
+
+COMMENT ON FUNCTION "slice"."__stand_sync_step_mljbwcbsm5"() IS 'the stand-up of the rule judge''s session tables a write of SyncStep needs';
+
+COMMENT ON FUNCTION "slice"."__stand_writeback_deliver_input_qibs4x7ys4"() IS 'the stand-up of the rule judge''s session tables a write of WritebackDeliverInput needs';
+
+COMMENT ON FUNCTION "slice"."__stand_writeback_done_ra7zoinlni"() IS 'the stand-up of the rule judge''s session tables a write of WritebackDone needs';
+
+COMMENT ON FUNCTION "slice"."__stand_writeback_failed_tv4kbeol35"() IS 'the stand-up of the rule judge''s session tables a write of WritebackFailed needs';
+
+COMMENT ON FUNCTION "slice"."__stand_writeback_result_owlolckns5"() IS 'the stand-up of the rule judge''s session tables a write of WritebackResult needs';
+
+COMMENT ON FUNCTION "slice"."__stand_writeback_step_dhhgvpedc7"() IS 'the stand-up of the rule judge''s session tables a write of WritebackStep needs';
+
 COMMENT ON FUNCTION "slice"."__immutable_assign_decide_read_nearest_row_lab3k5wovp"() IS 'immutability guard of AssignDecideReadNearestRow';
 
 COMMENT ON FUNCTION "slice"."__immutable_assign_decide_read_seen_row_fueqjd7hpy"() IS 'immutability guard of AssignDecideReadSeenRow';
@@ -6258,8 +6401,6 @@ COMMENT ON FUNCTION "slice"."__immutable_item_4ldnoxfrc7"() IS 'immutability gua
 
 COMMENT ON FUNCTION "slice"."__immutable_order_ben75ltrft"() IS 'immutability guard of Order';
 
-COMMENT ON FUNCTION "slice"."__immutable_passage_iyn37vjgw2"() IS 'immutability guard of Passage';
-
 COMMENT ON FUNCTION "slice"."__immutable_retry_paused_ss7djxjrej"() IS 'immutability guard of RetryPaused';
 
 COMMENT ON FUNCTION "slice"."__immutable_retry_resumed_dlzqou5yma"() IS 'immutability guard of RetryResumed';
@@ -6277,8 +6418,6 @@ COMMENT ON FUNCTION "slice"."__immutable_review_root_po3ofptpdd"() IS 'immutabil
 COMMENT ON FUNCTION "slice"."__immutable_review_served_klodk5ysgl"() IS 'immutability guard of ReviewServed';
 
 COMMENT ON FUNCTION "slice"."__immutable_reviewed_al7kpguevt"() IS 'immutability guard of Reviewed';
-
-COMMENT ON FUNCTION "slice"."__immutable_seen_2hqyun4r6w"() IS 'immutability guard of Seen';
 
 COMMENT ON FUNCTION "slice"."__immutable_settled_wamxlunuss"() IS 'immutability guard of Settled';
 
