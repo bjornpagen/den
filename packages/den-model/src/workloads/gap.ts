@@ -305,7 +305,8 @@ export const gapOf = (
 
 	const GapAnalysis: RootKind<Analysis, boolean, never> = {
 		name: "GapAnalysis",
-		trigger: { _tag: "App", heading: "GapAnalysisInput" },
+		trigger: { _tag: "App" },
+		from: { _tag: "Given", heading: "GapAnalysisInput" },
 		precondition: Option.none(),
 		window: Option.none(),
 		exclusive: Option.none(),

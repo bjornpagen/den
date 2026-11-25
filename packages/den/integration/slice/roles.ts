@@ -10,7 +10,6 @@ import { syncGraph, syncWriter } from "#integration/slice/generated/sync.fragmen
 import { writebackGraph, writebackWriter } from "#integration/slice/generated/writeback.fragment.ts"
 import {
 	Assigned,
-	Bell,
 	Built,
 	Chimed,
 	Concluded,
@@ -27,26 +26,29 @@ import {
 	Settled,
 	Summary,
 	Tally,
+	Want,
 	Weight
 } from "#integration/slice/relations.ts"
 
 /**
- * The app's writer role: it inserts the app's items, cursors, orders, tallies, settled batches, copies, builds,
- * passages, seen passages, assignments and their conclusions, reviews' saved groups and summaries, the attempts the gradebook delivered, what throttled calls heard, the clock's chimes, and reads the weights its pages read and the passages and seen passages its
- * decisions read. Every flow names it as the role its steps write under, so den adds its commits to
- * it: it holds each flow's graph whole, which serves den's commits, and inserts into what each flow's `Writer` lists.
+ * The app's writer role: it inserts the app's items, cursors, orders, tallies, the sizes it wants batches at, settled
+ * batches, copies, builds, passages, seen passages, assignments and their conclusions, reviews' saved groups and
+ * summaries, the attempts the gradebook delivered, what throttled calls heard, the clock's chimes, and reads the
+ * weights its pages read and the passages and seen passages its decisions read. Every flow names it as the role its
+ * steps write under, so den adds its commits to it: it holds each flow's graph whole, which serves den's commits, and
+ * inserts into what each flow's `Writer` lists.
  */
 export const Loader = role(
 	App,
 	"loader",
 	{
 		Feed,
-		Bell,
 		Item,
 		Weight,
 		Cursor,
 		Order,
 		Tally,
+		Want,
 		Settled,
 		Copied,
 		Built,
@@ -75,6 +77,7 @@ export const Loader = role(
 			"Cursor",
 			"Order",
 			"Tally",
+			"Want",
 			"Settled",
 			"Copied",
 			"Built",

@@ -12,17 +12,21 @@ import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/
  * A schedule's roots, one per member of its roster, retired and requested again, on PostgreSQL 19: the census ticks
  * the clock, whose tick requests a root per bell for the hour its cron's latest instant names, each keyed by the
  * instant and its bell, at the request's own instant, and rings each one's admission; the transport is drained, each
- * bell chimes the hour once and each root finishes; a retirement retires both, as any ended root, though the census
- * still requests their keys; and every tick after it within the hour requests those keys again, which answers that each
- * root was already requested, since its Root stands and a request adds nothing where one does, rings nothing for a
- * retired root, whose graph is gone, and brings no graph row back.
+ * bell chimes the hour once and each root finishes, and a tick then rings no admission of a root admitted already; a
+ * retirement retires both, as any ended root, though the census still requests their keys; and every tick after it
+ * within the hour requests those keys again, which answers that each root was already requested, since its Root stands
+ * and a request adds nothing where one does, rings nothing for a retired root, whose graph is gone, and brings no graph
+ * row back.
  *
- * Oracle (specification): one chime of the hour per bell; the first tick rings exactly one admission per bell; the
- * retirement retires each; each tick after it succeeds and rings nothing; and the flow's snapshot holds no scope and no
- * step.
+ * Oracle (specification): one chime of the hour per bell; the first tick rings exactly one admission per bell, and a
+ * tick once they have run rings none; the retirement retires each; each tick after it succeeds and rings nothing; and
+ * the flow's snapshot holds no scope and no step.
  */
 
 type Feature = "one tick after" | "several ticks after"
+
+/** An hour in milliseconds, the clock's cron's period ("0 * * * *"). */
+const hourMillis = 3_600_000
 
 /** The clock's bells, its schedule's roster, in order. */
 const bells = ["east", "west"] as const
@@ -63,7 +67,22 @@ export const aRetiredScheduledRootsKeyRequestedAgainStartsNothing = property.exp
 							),
 							[...bells]
 						)
-						assert.equal(Arr.dedupe(Arr.map(chimes, (chime) => chime.hour)).length, 1)
+						const at = Arr.map(first.rings, (ring) => ring.cause)
+						assert.deepEqual(
+							Arr.dedupe(Arr.map(chimes, (chime) => chime.hour)),
+							Arr.flatMap(Arr.take(at, 1), (cause) =>
+								cause._tag === "Census"
+									? [BigInt(Math.floor(cause.at / hourMillis) * hourMillis)]
+									: []
+							),
+							"each bell chimes the hour its schedule's latest instant names, derived from its key"
+						)
+						const between = yield* tick(clock.ledger)
+						assert.deepEqual(
+							Arr.filter(between.rings, (ring) => ring.wake._tag === "Admit"),
+							[],
+							"a tick after its roots were admitted rings no admission of them"
+						)
 						const retired = yield* retire(clock.ledger)
 						assert.deepEqual(
 							Arr.map(retired, (r) => r.kind),
@@ -102,13 +121,15 @@ export const aRetiredScheduledRootsKeyRequestedAgainStartsNothing = property.exp
 			file: "packages/den/integration/slice/generated/clock.binding.ts",
 			original: '...Arr.flatMap(read.requested, (s) => view(s.scope, "requested")),',
 			replacement: '...Arr.flatMap(read.roots, (s) => view(s.scope, "requested")),',
-			why: "A retired root reads as requested, its header standing with no admission: every tick rings its admission again, for ever."
+			why: "An admitted root reads as requested: every tick rings its admission again until its graph is cleared."
 		},
 		{
 			file: "packages/den/src/runtime/bind.ts",
-			original: '\tArr.join([String(at), member], ":")',
-			replacement: "\tString(at)",
-			why: "A schedule's roots are keyed by their instant alone: the second bell's root meets the first's key, answers it was already requested, and never chimes."
+			original:
+				"\t\tArr.flatMap(Arr.sort(fields, Order.String), (field: string) => [field, String(key[field])])\n",
+			replacement:
+				"\t\tArr.flatMap(Arr.take(Arr.sort(fields, Order.String), 1), (field: string) => [field, String(key[field])])\n",
+			why: "A derived root is keyed by its key's first field alone, a schedule's by its instant: the second bell's root meets the first's key, answers it was already requested, and never chimes."
 		}
 	]
 })

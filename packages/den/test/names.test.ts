@@ -20,6 +20,7 @@ import { flow } from "#algebra/flow.ts"
 import {
 	always,
 	atSpawn,
+	given,
 	none,
 	operator,
 	reads,
@@ -281,6 +282,7 @@ const grading = (stating: Stating) => {
 	)
 	const Sitting = root("Sitting", {
 		trigger: operator,
+		from: given,
 		input: Schema.Struct({}),
 		children: [Item],
 		start: () => [],

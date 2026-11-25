@@ -57,7 +57,8 @@ const oneSeat = (() => {
 const loweredSlice = sliceCopyNeed(
 	"den seat counts: the slice lowered to one Pool seat",
 	"fan",
-	oneSeat
+	oneSeat,
+	[]
 )
 
 /**

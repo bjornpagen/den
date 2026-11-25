@@ -1,5 +1,10 @@
 import type { Lowered } from "@bjornpagen/den/lower/fragment"
-import { printFragment } from "@bjornpagen/den/lower/print"
+import {
+	type Placement,
+	printBinding,
+	printFragment,
+	printPrograms
+} from "@bjornpagen/den/lower/print"
 import { authenticationTimeoutSeconds, type Ledgers, promote } from "@bjornpagen/den/runtime/turn"
 import { DeploymentId, EnvironmentName, Host, inProcess } from "@bjornpagen/den/transport"
 import { compileServedMoved } from "@bjornpagen/grizzle/compile"
@@ -42,7 +47,7 @@ import { reviewLedger } from "#integration/slice/generated/review.binding.ts"
 import { syncLedger } from "#integration/slice/generated/sync.binding.ts"
 import { writebackLedger } from "#integration/slice/generated/writeback.binding.ts"
 import { AppLogin, Worker } from "#integration/slice/logins.ts"
-import initMigration from "#integration/slice/migrations/slice/20261125200606_init/meta.json" with { type: "json" }
+import initMigration from "#integration/slice/migrations/slice/20261125230907_init/meta.json" with { type: "json" }
 import appFile from "#integration/slice/migrations/slice/served/app.json" with { type: "json" }
 import workerFile from "#integration/slice/migrations/slice/served/worker.json" with { type: "json" }
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -121,7 +126,7 @@ const grizzleBin = `${import.meta.dirname}/../../node_modules/.bin/grizzle`
  * record lacks, or lacks one it holds (committedFolders).
  */
 const committed = Object.freeze({
-	"20261125200606_init": initMigration
+	"20261125230907_init": initMigration
 })
 
 /** A migration folder's name, as `grizzle generate` drafts it: a UTC timestamp to the second, then its name. */
@@ -217,20 +222,30 @@ const asOwner = (member: TlsMember, database: string, statement: string) =>
 
 /**
  * Runs a grizzle command over the configuration in `directory` (the slice's own, or a copy of it), for the database and
- * role prefix `env` names. The command inherits the test process's environment, and with it the compile cache the
- * testing library's setup hands to every process a test starts, so it loads grizzle's modules from the V8 code the
- * run's processes already compiled. Its exit is awaited as a declared wait (waitingOn), named by the command: its
- * statements are PostgreSQL's work and its own a child's, which the case's guard does not read as the worker's.
+ * role prefix `env` names, with the arguments a caller `declared` beside it (a copy's `--drop`s). The command inherits
+ * the test process's environment, and with it the compile cache the testing library's setup hands to every process a
+ * test starts, so it loads grizzle's modules from the V8 code the run's processes already compiled. Its exit is awaited
+ * as a declared wait (waitingOn), named by the command: its statements are PostgreSQL's work and its own a child's,
+ * which the case's guard does not read as the worker's.
  */
-const grizzle = (command: string, env: Readonly<Record<string, string>>, directory: string) =>
+const grizzle = (
+	command: string,
+	env: Readonly<Record<string, string>>,
+	directory: string,
+	declared: ReadonlyArray<string>
+) =>
 	Effect.scoped(
 		Effect.gen(function* () {
-			const handle = yield* ChildProcess.make(grizzleBin, [command, "grizzle.config.ts"], {
-				cwd: directory,
-				env,
-				extendEnv: true,
-				stdin: "ignore"
-			})
+			const handle = yield* ChildProcess.make(
+				grizzleBin,
+				[command, "grizzle.config.ts", ...declared],
+				{
+					cwd: directory,
+					env,
+					extendEnv: true,
+					stdin: "ignore"
+				}
+			)
 			const [stdout, stderr, code] = yield* waitingOn(`grizzle ${command} in ${directory}`)(
 				Effect.all(
 					[
@@ -299,7 +314,7 @@ const install = (
 ) =>
 	Effect.gen(function* () {
 		const env = envOf(member, database, rolePrefix)
-		yield* grizzle("migrate", env, sliceDir)
+		yield* grizzle("migrate", env, sliceDir, [])
 		const roles = loginsOf(rolePrefix)
 		const set = (role: string, secret: Redacted.Redacted) =>
 			asOwner(member, member.owner, `ALTER ROLE "${role}" PASSWORD '${Redacted.value(secret)}'`)
@@ -646,7 +661,7 @@ const ownInstallation = (member: TlsMember, database: string) =>
 				decoder: yield* password
 			})
 		}),
-		(installed) => Effect.orDie(grizzle("uninstall", installed.env, sliceDir))
+		(installed) => Effect.orDie(grizzle("uninstall", installed.env, sliceDir, []))
 	)
 
 /**
@@ -678,12 +693,12 @@ export const installedSliceCase: DatabaseNeed<Context.Context<SliceCase>> = {
 }
 
 /**
- * A copy of the slice beside it in which den printed `flow`'s fragment again from `lowered`, as a deploy that changed
- * that flow would: every module of it read under the copy's own specifiers, and a migration from the slice's own to it
- * drafted by `grizzle generate`, which a case's `migrateIn` applies to its own database. It lives in its scope, which
- * removes it.
+ * A copy of the slice beside it in which den printed `flow`'s fragment, programs and binding again from `lowered`, as a
+ * deploy that changed that flow would: every module of it read under the copy's own specifiers, and a migration from
+ * the slice's own to it drafted by `grizzle generate`, `drops` declared dropped, which a case's `migrateIn` applies to
+ * its own database. It lives in its scope, which removes it.
  */
-const sliceCopyOf = (flow: string, lowered: Lowered) =>
+const sliceCopyOf = (flow: string, lowered: Lowered, drops: ReadonlyArray<string>) =>
 	Effect.gen(function* () {
 		const fs = yield* FileSystem.FileSystem
 		const path = yield* Path.Path
@@ -703,39 +718,53 @@ const sliceCopyOf = (flow: string, lowered: Lowered) =>
 				)
 			)
 		)
-		yield* fs.writeFileString(
-			path.join(copy, "generated", `${flow}.fragment.ts`),
-			printFragment(lowered, {
-				fragment: `${specifier}generated/${flow}.fragment.ts`,
-				programs: `${specifier}generated/${flow}.programs.ts`,
-				relations: `${specifier}relations.ts`,
-				schema: { from: `${specifier}app.ts`, name: "App" },
-				writer: { from: `${specifier}roles.ts`, name: "Loader" },
-				flow: { from: `${specifier}flows.ts`, name: flow },
-				reads: { from: `${specifier}reads.ts`, exports: {} }
-			})
+		const placement: Placement = {
+			fragment: `${specifier}generated/${flow}.fragment.ts`,
+			programs: `${specifier}generated/${flow}.programs.ts`,
+			relations: `${specifier}relations.ts`,
+			schema: { from: `${specifier}app.ts`, name: "App" },
+			writer: { from: `${specifier}roles.ts`, name: "Loader" },
+			flow: { from: `${specifier}flows.ts`, name: flow },
+			reads: { from: `${specifier}reads.ts`, exports: {} }
+		}
+		yield* Effect.forEach(
+			[
+				["fragment", printFragment],
+				["programs", printPrograms],
+				["binding", printBinding]
+			] as const,
+			([module, print]) =>
+				fs.writeFileString(
+					path.join(copy, "generated", `${flow}.${module}.ts`),
+					print(lowered, placement)
+				)
 		)
-		yield* grizzle("generate", {}, copy)
+		yield* grizzle(
+			"generate",
+			{},
+			copy,
+			Arr.flatMap(drops, (relation) => ["--drop", relation])
+		)
 		return copy
 	})
 
 /**
- * The CPU a slice copy's open may spend on a worker (`sliceCopyNeed`'s budget): the slice copied, one fragment printed
- * again, and `grizzle generate` over the copy, a child process whose CPU the open's bound counts with the worker's own
- * (its process tree).
+ * The CPU a slice copy's open may spend on a worker (`sliceCopyNeed`'s budget): the slice copied, one flow's modules
+ * printed again, and `grizzle generate` over the copy, a child process whose CPU the open's bound counts with the
+ * worker's own (its process tree).
  *
  * @limitKind measured
  * @owner den's integration suites (packages/den/integration)
  * @unit milliseconds of CPU
  * @scope one open of a slice copy on one worker, its process tree
  * @evidence `grizzle generate` of the whole slice from no snapshot (its init drafted from nothing, more than a copy's
- *   one-fragment delta), its user and system CPU by /usr/bin/time (~/.cache/den/METIS-PROCTOR-logs/
- *   slice-generate-time-1914.log)
- * @observed 2026-11-25 19:14 UTC
- * @environment cassowary, Ubuntu 26.04 on arm64 in AWS, 64 cores and 247 GiB, shared with other lanes' runs (load 150
- *   to 300); den on a75c1c57 with lane METIS-PROCTOR's RequestedWith
+ *   one-flow delta), its user and system CPU by /usr/bin/time
+ *   (~/.cache/den/METIS-PROCTOR-logs/slice-generate-time-2149.log)
+ * @observed 2026-11-25 21:49 UTC
+ * @environment cassowary, Ubuntu 26.04 on arm64 in AWS, 64 cores and 247 GiB, shared with other lanes' runs; den on
+ *   00f23edb with lane METIS-PROCTOR's derived root inputs
  * @workload one `grizzle generate integration/slice/grizzle.config.ts`
- * @result 31.73 s user and 1.20 s system: 32.9 s of CPU (29.1 s wall)
+ * @result 32.10 s user and 1.14 s system: 33.2 s of CPU (30.1 s wall)
  * @decision about twice the drafting, rounded up: a child's CPU moves with the load and with a cold compile cache
  * @revalidate a slice whose generate grows, a grizzle repin, another machine
  */
@@ -744,13 +773,19 @@ const sliceCopyBudgetMillis = 70_000
 /**
  * A copy of the slice in which `flow`'s fragment is `lowered` (`sliceCopyOf`), once per worker: a need opened in the
  * worker's scope, so the copy is removed when the worker ends, every case of the worker migrating its own database to
- * it and reading it only.
+ * it and reading it only. `drops` are the relations the deploy drops, which `grizzle generate` drafts only where its
+ * caller declares each (`--drop`): a root whose input derived from its key and is now given drops its key's relation.
  */
-export const sliceCopyNeed = (key: string, flow: string, lowered: Lowered): Need<string> => ({
+export const sliceCopyNeed = (
+	key: string,
+	flow: string,
+	lowered: Lowered,
+	drops: ReadonlyArray<string>
+): Need<string> => ({
 	key,
 	budget: sliceCopyBudgetMillis,
 	runNeeds: [],
-	open: Effect.mapBoth(sliceCopyOf(flow, lowered), {
+	open: Effect.mapBoth(sliceCopyOf(flow, lowered, drops), {
 		onSuccess: Effect.succeed,
 		onFailure: (cause) =>
 			NeedFailed.make({ need: key, message: `the slice's copy: ${cause.message}` })
@@ -762,7 +797,7 @@ export const sliceCopyNeed = (key: string, flow: string, lowered: Lowered): Need
  * slice's: grizzle migrate's output, or the SetupFailed its refusal ends with.
  */
 export const migrateIn = (directory: string) =>
-	Effect.flatMap(Installation, (installed) => grizzle("migrate", installed.env, directory))
+	Effect.flatMap(Installation, (installed) => grizzle("migrate", installed.env, directory, []))
 
 /** The case's member's wal_level, as the owner's session in the case's database reads it. */
 export const walLevel = Effect.flatMap(Installation, (installed) =>

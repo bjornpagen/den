@@ -204,6 +204,7 @@ export const timebackOf = (
 	const TimebackDaily: RootKind<Daily, boolean, never> = {
 		name: TIMEBACK_DAILY,
 		trigger: { _tag: "Schedule", every: 1 },
+		from: { _tag: "Derived" },
 		precondition: Option.none(),
 		window: limits.window,
 		exclusive: Option.some((daily) => daily.relation.name),

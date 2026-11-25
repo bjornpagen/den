@@ -15,6 +15,7 @@ import {
 	edge,
 	exclusiveBy,
 	type FieldSchema,
+	given,
 	none,
 	noReads,
 	operator,
@@ -260,6 +261,7 @@ const built = (sketch: Sketch): AnyFlow => {
 	})
 	const Run = root("Run", {
 		trigger: operator,
+		from: given,
 		input: Schema.Struct({}),
 		children: sketch.scoped ? [...steps, Inner] : steps,
 		start: () => [],

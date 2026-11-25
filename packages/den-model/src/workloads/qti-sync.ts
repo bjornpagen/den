@@ -117,6 +117,7 @@ export const qtiSyncOf = (
 	const Read: RootKind<Span, boolean, never> = {
 		name: QTI_SYNC,
 		trigger: { _tag: "Schedule", every: 1 },
+		from: { _tag: "Derived" },
 		precondition: Option.none(),
 		exclusive: Option.some((span) => span.collection.name),
 		window: limits.window,

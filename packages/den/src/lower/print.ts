@@ -7,6 +7,7 @@ import {
 	type EdgeIR,
 	type FieldType,
 	type JoinIR,
+	type KeyIR,
 	type LawIR,
 	type Lowered,
 	type ReadIR,
@@ -17,6 +18,7 @@ import {
 	type SpawnedStepIR,
 	type StepIR,
 	type ValueIR,
+	recordsRequestOf,
 	valueRelations
 } from "#lower/fragment.ts"
 import type { Base } from "#lower/schema.ts"
@@ -346,15 +348,66 @@ const fieldNamesOf = (l: Lowered, relation: string): ReadonlyArray<string> =>
 /**
  * The rows a root's request writes beside its Root, each relation beside its printed rows, the one list its printed
  * ChangeSet and its printed parameters follow, each guarded by the absence of its Root: its root scope's row, its
- * exclusivity keys where it holds a seat, and its input's rows.
+ * exclusivity keys where it holds a seat, and a given root's input rows (a derived root's are its read's,
+ * `requestOfRoot`'s derivedRows).
  */
 const requestedRowsOf = (P: string, j: JoinIR): ReadonlyArray<readonly [string, string]> => [
 	[`${P}Scope`, "[{ scope, root: scope }]"],
 	...(isExclusive(j)
 		? [[`${P}ExclusiveKey`, "Arr.map(keys, (k) => ({ ...k, root: scope }))"] as const]
 		: []),
-	...factRowsOf(j.input, "scope", "input", "scope")
+	...(isDerived(j) ? [] : factRowsOf(j.input, "scope", "input", "scope"))
 ]
+
+/**
+ * A derived root's key (lower/fragment.ts RootIR `from`), none for a root whose input its request gives, or a scope.
+ */
+const derivedKeyOf = (j: JoinIR): Option.Option<KeyIR> =>
+	Option.flatMap(j.root, (r) =>
+		r.from.kind === "derived" ? Option.some(r.from.key) : Option.none()
+	)
+
+/** Whether a root's input is derived from its key. */
+const isDerived = (j: JoinIR): boolean => Option.isSome(derivedKeyOf(j))
+
+/** A derived root's key fields, in its key struct's order, none for any other join. */
+const keyFieldsOf = (j: JoinIR): ReadonlyArray<string> =>
+	Option.match(derivedKeyOf(j), { onNone: () => [], onSome: (key) => key.fields })
+
+/** The parameter a derived root's request names its key's field `field` in. */
+const keyParamName = (P: string, j: JoinIR, field: string): string =>
+	`${lower1(P)}${j.name}Key${Str.capitalize(field)}`
+
+/** A derived root's key's field `field` as a rule's term: its request's parameter, of its key relation's type. */
+const keyParamOf = (P: string, j: JoinIR, key: KeyIR, field: string): string =>
+	`r.param(${q(keyParamName(P, j, field))}, ${key.relation}.fields.${field})`
+
+/** The variable a rule binds a derived root's read's column `field` to. */
+const derivedColumn = (field: string): string => `derived${Str.capitalize(field)}`
+
+/**
+ * A derived root's read, bound by its request's key, in a rule: the read the flow declares beside the kind
+ * (`declaredFlow`, its `from.read`), each key field its param, and each of its columns a variable `derived<Field>`,
+ * which the rule matches, each its own line before the rule's return; nothing for a root whose input its request gives.
+ */
+const derivedOf = (
+	l: Lowered,
+	j: JoinIR
+): Readonly<{ declare: string; match: string; columns: ReadonlyArray<string> }> =>
+	Option.match(derivedKeyOf(j), {
+		onNone: () => ({ declare: "", match: "", columns: [] }),
+		onSome: (key) => {
+			const columns = inputFieldsOf(l, j.input.relation)
+			const columnsBound = `{ ${commas(Arr.map(columns, (c) => `${c}: ${derivedColumn(c)}`))} }`
+			return {
+				declare: `
+	const derived = declaredFlow.kinds[${String(j.index)}].from.read.bind({ ${commas(Arr.map(key.fields, (f) => `${f}: ${keyParamOf(l.prefix, j, key, f)}`))} })
+	const ${columnsBound} = v(derived, "derived")`,
+				match: `.match(derived, ${columnsBound})`,
+				columns
+			}
+		}
+	})
 
 /** The relation parameter a root's request names its rows of `relation` in. */
 const requestedRowsParam = (P: string, j: JoinIR, relation: string): string =>
@@ -363,7 +416,8 @@ const requestedRowsParam = (P: string, j: JoinIR, relation: string): string =>
 /**
  * Whether a root's request records what it was requested with (lower/fragment.ts recordsRequestOf, read off its IR).
  */
-const recordsRequest = (j: JoinIR): boolean => Option.exists(j.root, (r) => r.records)
+const recordsRequest = (j: JoinIR): boolean =>
+	Option.exists(j.root, (r) => recordsRequestOf(r.from.kind))
 
 /**
  * The declared fields of an input relation, the ones its heading names and its digest reads: every field but the root
@@ -455,18 +509,23 @@ const inputTextsOf = (l: Lowered, j: JoinIR): string =>
  * each relation's rows a relation parameter, each inserted only where no Root holds the request's root, as the state
  * before the change reads it. The Root's own row is the request's root scope's, at its scope and key the request's
  * parameters, its kind the root kind's handle, and its instant the request's reading of the database's clock, `now`,
- * which the clocked request binds, so no host names the instant a root was requested. An app's or an operator's root
- * records beside it what it was requested with (`RequestedWith`: its kind's input fingerprint and its input's digest),
- * inserted where no Root holds the root, or again where the held record has the request's fingerprint: an equal input
- * meets it, another is refused on its key, naming the root, and a request under another fingerprint inserts nothing.
+ * which the clocked request binds, so no host names the instant a root was requested. A root whose input its request
+ * gives records beside it what it was requested with (`RequestedWith`: its kind's input fingerprint and its input's
+ * digest), inserted where no Root holds the root, or again where the held record has the request's fingerprint: an
+ * equal input meets it, another is refused on its key, naming the root, and a request under another fingerprint inserts
+ * nothing. A derived root's request names its key alone: its key is the request's parameters and its input its read's
+ * row at that key (`derivedOf`), every row of the request inserted only where the read finds one: a derived root stands
+ * only where its input derives, and records nothing. Its read is of the app's facts, which the graph does not hold, so
+ * its request is written `over` the role that serves it, which holds the read's level whole (the programs'
+ * `requestOver`): den's for a root den requests, the app's for a root its write requests; any other's over the graph.
  *
  * A request of a root already requested inserts nothing else, its graph standing or retired: retirement deletes a
- * graph's rows but never its Root nor its RequestedWith (the fragment's `cleared`), so a repeat of the same input adds
- * no fact and refuses nothing, and an app's write that unions the request with its own commits its own facts. Two first
- * requests of one root at once meet in the database's serializable read of the Root's absence: the second is refused
- * transient, and run again it inserts nothing, or, naming another input, is refused on its key.
+ * graph's rows but never its Root, its RequestedWith nor a derived root's key (the fragment's `cleared`), so a repeat
+ * of the same input adds no fact and refuses nothing, and an app's write that unions the request with its own commits
+ * its own facts. Two first requests of one root at once meet in the database's serializable read of the Root's absence:
+ * the second is refused transient, and run again it inserts nothing, or, naming another input, is refused on its key.
  */
-const requestOfRoot = (l: Lowered, j: JoinIR, graph: string): string => {
+const requestOfRoot = (l: Lowered, j: JoinIR, over: string): string => {
 	const P = l.prefix
 	const root = `${P}Root`
 	const scope = `${P}Scope`
@@ -475,15 +534,33 @@ const requestOfRoot = (l: Lowered, j: JoinIR, graph: string): string => {
 	const relationOf = (relation: string, fields: ReadonlyArray<string>): string =>
 		`const requested = r.relation(${q(requestedRowsParam(P, j, relation))}, { ${commas(Arr.map(fields, (f) => `${f}: ${relation}.fields.${f}`))} })
 	const { ${entries(fields)} } = v(requested, "requested")`
+	const derived = derivedOf(l, j)
 	const guarded = (relation: string): string => {
 		const fields = fieldNamesOf(l, relation)
-		return `.insert(${relation}, query(${graph}).rule((r) => {
-	${relationOf(relation, fields)}
-	return r.match(requested, { ${entries(fields)} }).where(r.not(${root}, { root })).find({ ${entries(fields)} })
+		return `.insert(${relation}, query(${over}).rule((r) => {
+	${relationOf(relation, fields)}${derived.declare}
+	return r.match(requested, { ${entries(fields)} })${derived.match}.where(r.not(${root}, { root })).find({ ${entries(fields)} })
 }))`
 	}
+	/**
+	 * A derived root's key, kept beside its Root, and its input, its read's row at the request's own root scope, each
+	 * inserted where the read finds the row.
+	 */
+	const derivedRows = Option.match(derivedKeyOf(j), {
+		onNone: () => "",
+		onSome: (key) => {
+			const atRoot = (
+				relation: string,
+				found: string
+			) => `.insert(${relation}, query(${over}).rule((r) => {
+	${relationOf(scope, ["root", "scope"])}${derived.declare}
+	return r.match(requested, { root, scope })${derived.match}.where(r.eq(scope, root), r.not(${root}, { root })).find(${found})
+}))`
+			return `${atRoot(key.relation, `{ root, ${commas(Arr.map(key.fields, (f) => `${f}: ${keyParamOf(P, j, key, f)}`))} }`)}${atRoot(j.input.relation, `{ scope, root, ${commas(Arr.map(derived.columns, (c) => `${c}: ${derivedColumn(c)}`))} }`)}`
+		}
+	})
 	const record = recordsRequest(j)
-		? `.insert(${requested}, query(${graph}).rule((r) => {
+		? `.insert(${requested}, query(${over}).rule((r) => {
 	${relationOf(requested, ["root", "fingerprint", "input"])}
 	return r.match(requested, { root, fingerprint, input }).where(r.not(${root}, { root })).find({ root, fingerprint, input })
 }).rule((r) => {
@@ -492,14 +569,14 @@ const requestOfRoot = (l: Lowered, j: JoinIR, graph: string): string => {
 	return r.match(requested, { root, fingerprint, input }).match(${requested}, { root, fingerprint, input: held }).find({ root, fingerprint, input })
 }))`
 		: ""
-	return `ChangeSet.empty(${graph})${Arr.join(
+	return `ChangeSet.empty(${over})${Arr.join(
 		Arr.map(requestedRowsOf(P, j), ([relation]) => guarded(relation)),
 		""
-	)}${record}.insert(${root}, query(${graph}).rule((r) => {
+	)}${derivedRows}${record}.insert(${root}, query(${over}).rule((r) => {
 	const requested = r.relation(${q(requestedRowsParam(P, j, scope))}, { root: ${scope}.fields.root, scope: ${scope}.fields.scope })
-	const { root, scope } = v(requested, "requested")
+	const { root, scope } = v(requested, "requested")${derived.declare}
 	return r
-		.match(requested, { root, scope })
+		.match(requested, { root, scope })${derived.match}
 		.where(r.eq(scope, root), r.eq(root, r.param(${q(params.scope)}, ${root}.fields.root)), r.not(${root}, { root }))
 		.find({ root, kind: ${P}RootKind.handle(${q(j.name)}), key: r.param(${q(params.key)}, ${root}.fields.key), at: r.param("now", ${root}.fields.at) })
 }))`
@@ -511,7 +588,10 @@ const timedKinds = (l: Lowered): boolean => Arr.some(l.steps, (s) => s.due.kind 
 /** Whether a join is a root that holds an exclusivity seat. */
 const isExclusive = (j: JoinIR): boolean => Option.exists(j.root, (r) => r.exclusive)
 
-/** The relations a flow's app role writes: each result, output, read and spawn a commit writes, and its roots' requests. */
+/**
+ * The relations a flow's app role writes: each result, output, read and spawn a commit writes, and its app's roots'
+ * requests.
+ */
 const writerRelationsOf = (l: Lowered): ReadonlyArray<string> => {
 	const P = l.prefix
 	const anySpawn = Arr.isReadonlyArrayNonEmpty(l.edges)
@@ -912,7 +992,8 @@ const spawnedStepsOf = (graph: string, step: string, timed: boolean): string => 
 /**
  * The programs module: den's programs over the flow's graph and coordination fragments, the roles over the app's
  * schema that hold them whole and serve them, each commit's union of den's facts with the app's writes, each app root's
- * request over the graph, which the app unions with its own write, and the declared reads over the flow's app role.
+ * request, which the app's write commits beside its own (over the graph, or over the app's role for a derived root),
+ * and the declared reads over the flow's app role.
  */
 export const printPrograms = (l: Lowered, place: Placement): string => {
 	const n = naming(l)
@@ -920,6 +1001,16 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const app = place.schema.name
 	const W = place.writer.name
 	const r = (s: string) => `${P}${s}`
+	/**
+	 * What a root's request is written over: the flow's graph for a given input; for a derived one the role that serves
+	 * it, which holds its read's level whole: den's for a root den requests, the app's for a root its write requests.
+	 */
+	const requestOver = (j: JoinIR): string => (isDerived(j) ? (isApp(j) ? W : n.den) : n.graph)
+	/** The levels the reads of the derived roots den requests are over, each of which den's role holds whole. */
+	const derivedLevels = Arr.map(
+		Arr.filter(l.joins, (j) => isDerived(j) && !isApp(j)),
+		(j) => `...declaredFlow.kinds[${String(j.index)}].from.over.relations`
+	)
 	const scopeParam = `r.param("scope", ${r("Scope")}.fields.scope)`
 	const stepParam = `r.param("step", ${r("Step")}.fields.step)`
 	const den = denRelationsOf(l)
@@ -1297,7 +1388,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			])
 		)
 		if (Option.isSome(j.root) && !isApp(j)) {
-			const request = requestOfRoot(l, j, n.graph)
+			const request = requestOfRoot(l, j, requestOver(j))
 			denPrograms.push([n.program(`Request${j.name}`), `clocked(${request}, { now: "millis" })`])
 		}
 		Arr.forEach(j.finish.reads, (read) => {
@@ -1506,7 +1597,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		)
 	)
 	const appRoots = Arr.filter(l.joins, isApp)
-	const requests = Arr.map(appRoots, (j) => `${j.name}: ${requestOfRoot(l, j, n.graph)}`)
+	const requests = Arr.map(appRoots, (j) => `${j.name}: ${requestOfRoot(l, j, requestOver(j))}`)
 
 	const block = (name: string, programs: ReadonlyArray<readonly [string, string]>) => [
 		`export const ${name} = Object.freeze({`,
@@ -1514,8 +1605,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		"})"
 	]
 	const body = lines([
-		`/** den's role for the flow ${P}: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains${Option.isSome(l.seats) ? " and live holds" : ""} and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */`,
-		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([`...${n.graph}.relations`, ...l.coordination, ...liveEntry, ...idleEntries, ...awaitedEntries])} }, { insert: [${commas([...Arr.map(den, q), ...recordNames(l)])}] })`,
+		`/** den's role for the flow ${P}: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains${Option.isSome(l.seats) ? ", live holds" : ""}${Arr.isReadonlyArrayNonEmpty(derivedLevels) ? ", the levels its derived roots' reads are over, whole," : ""} and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */`,
+		`export const ${n.den} = role(${app}, ${q(n.denName)}, { ${commas([`...${n.graph}.relations`, ...derivedLevels, ...l.coordination, ...liveEntry, ...idleEntries, ...awaitedEntries])} }, { insert: [${commas([...Arr.map(den, q), ...recordNames(l)])}] })`,
 		"",
 		`/** den's coordinator role for the flow ${P}: the turns of its seats, exclusivity seats and pauses, the seat module's. It holds the coordination group's rosters and relations whole, no role holding a closed relation${Option.isSome(l.seats) ? ", and reads its seats' live holds through the seat level the app's schema states, so a schema without it fails to typecheck" : ""}. */`,
 		`export const ${n.coordinator} = role(${app}, ${q(n.coordinatorName)}, { ${commas([...rosterNames, ...l.coordination, ...liveEntry])} }, { insert: [${commas(Arr.map(l.coordination, q))}] })`,
@@ -1543,7 +1634,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		"",
 		...(Arr.isReadonlyArrayNonEmpty(requests)
 			? [
-					`/** The requests of the flow's roots the app's own write starts, each a ChangeSet over the flow's graph the app unions with its own. */`,
+					`/** The requests of the flow's roots the app's own write starts, each a ChangeSet the app's write commits beside its own: over the flow's graph, unioned with it, or, for a root whose input derives from its key, over its app role, sequenced after the strata whose facts it derives from. */`,
 					`export const ${n.requests} = Object.freeze({ ${commas(requests)} })`
 				]
 			: [])
@@ -1564,7 +1655,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		...(Arr.some(
 			l.steps,
 			(st) => Arr.isReadonlyArrayNonEmpty(st.reads) || st.writes.kind === "through"
-		) || Arr.some(l.joins, (j) => j.finish.writes.kind === "through")
+		) || Arr.some(l.joins, (j) => j.finish.writes.kind === "through" || isDerived(j))
 			? [`import { ${place.flow.name} as declaredFlow } from ${q(place.flow.from)}`]
 			: []),
 		`import { ${commas(imported)} } from ${q(place.fragment)}`,
@@ -2093,15 +2184,16 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 
 	const roots = Arr.filter(l.joins, (j) => Option.isSome(j.root))
 	/**
-	 * The rows a root's request names (`requestedRowsOf`), each relation's under its relation parameter, and, for an
-	 * app's or an operator's root, what it is requested with (`RequestedWith`): its kind's input fingerprint and its
-	 * input's digest.
+	 * The rows a root's request names (`requestedRowsOf`), each relation's under its relation parameter, a derived
+	 * root's key's fields, each its own parameter, and, for a root whose input its request gives, what it is requested
+	 * with (`RequestedWith`): its kind's input fingerprint and its input's digest.
 	 */
 	const requestRows = (j: JoinIR): ReadonlyArray<string> => [
 		...Arr.map(
 			requestedRowsOf(P, j),
 			([relation, rows]) => `${requestedRowsParam(P, j, relation)}: ${rows}`
 		),
+		...Arr.map(keyFieldsOf(j), (f) => `${keyParamName(P, j, f)}: key.${f}`),
 		...(recordsRequest(j)
 			? [
 					`${requestedRowsParam(P, j, r("RequestedWith"))}: Option.toArray(Option.map(codecTextsOf(${inputTextsOf(l, j)}), (texts) => ({ root: scope, fingerprint: ${lower1(P)}${j.name}Heading, input: inputDigest(${q(P)}, ${q(j.name)}, texts) })))`
@@ -2109,18 +2201,30 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			: [])
 	]
 	const requestOf = (j: JoinIR): string => {
+		const derivedKind = isDerived(j)
+		/** What names the root's exclusivity seat: its given input, or a derived root's key. */
+		const seatOf = derivedKind ? "key" : "input"
 		const keys = (body: string) =>
 			isExclusive(j)
-				? `pipe(exclusiveRows(${q(P)}, ${q(j.name)}, ${kindAt(j.index)}.exclusive, input, scope), (keys) => ${body})`
+				? `pipe(exclusiveRows(${q(P)}, ${q(j.name)}, ${kindAt(j.index)}.exclusive, ${seatOf}, scope), (keys) => ${body})`
 				: body
-		const input = `input: Parameters<(typeof ${kindAt(j.index)})["start"]>[0]`
-		const signature = `(key: string, ${input})`
+		const signature = derivedKind
+			? `(key: Extract<(typeof ${kindAt(j.index)})["from"], { readonly kind: "derived" }>["key"]["Type"])`
+			: `(key: string, input: Parameters<(typeof ${kindAt(j.index)})["start"]>[0])`
 		const names = requestParams(P, j)
-		const params = `{ ${commas([`${names.scope}: scope`, `${names.key}: key`, ...requestRows(j)])} }`
+		/** The root's idempotency key: a given root's as its request names it, a derived root's its key's text. */
+		const keyText = derivedKind ? "keyText" : "key"
+		const params = `{ ${commas([`${names.scope}: scope`, `${names.key}: ${keyText}`, ...requestRows(j)])} }`
 		const requested = `({ flow: FlowName.make(${q(P)}), scope, params: ${params} })`
-		return isApp(j)
-			? `${j.name}: ${signature} => pipe(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${keys(requested)})`
-			: `${j.name}: ${signature} => pipe(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${keys(`pipe(h.den.${n.program(`Request${j.name}`)}.once({ params: ${params}, facts: {} }), settled, fresh, Effect.map((accepted) => ({ flow: FlowName.make(${q(P)}), scope, fresh: accepted })))`)})`
+		const body = isApp(j)
+			? keys(requested)
+			: keys(
+					`pipe(h.den.${n.program(`Request${j.name}`)}.once({ params: ${params}, facts: {} }), settled, fresh, Effect.map((accepted) => ({ flow: FlowName.make(${q(P)}), scope, fresh: accepted })))`
+				)
+		const scoped = `pipe(rootScope(${q(P)}, ${q(j.name)}, ${keyText}), (scope) => ${body})`
+		return derivedKind
+			? `${j.name}: ${signature} => pipe(derivedKey([${commas(Arr.map(keyFieldsOf(j), q))}], key), (keyText) => ${scoped})`
+			: `${j.name}: ${signature} => ${scoped}`
 	}
 	const denRoots = Arr.filter(roots, (j) => !isApp(j))
 	const appRoots = Arr.filter(roots, isApp)
@@ -2211,7 +2315,10 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		: "Effect.succeed([])"
 	const busyOf = `const busyOf = (read: { ${commas(Arr.map(l.idle, (f) => `readonly ${busyName(f)}: ReadonlyArray<unknown>`))} }): ReadonlyArray<string> => Arr.filter([${commas(Arr.map(l.idle, q))}] as const, (flow) => Arr.isReadonlyArrayNonEmpty(read[\`${BUSY}\${flow}\`]))`
 	const recordsValues = Arr.flatMap(l.steps, (st) => Arr.map(st.reads, (rd) => `${rd.stem}Records`))
-	/** The input relations whose fields a request's digest reads (`inputTextsOf`): an app's or an operator's root's. */
+	/**
+	 * The input relations whose fields a request's digest reads (`inputTextsOf`): a root's whose input its request
+	 * gives.
+	 */
 	const digestedRelations = Arr.dedupe(
 		Arr.flatMap(Arr.filter(roots, recordsRequest), (j: JoinIR) =>
 			Arr.filter(valueRelations(j.input), (relation) =>
@@ -2263,7 +2370,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			? [`import { codecText } from "@bjornpagen/grizzle/compile"`]
 			: []),
 		`import type { MemberHandle } from "@bjornpagen/grizzle/runtime"`,
-		`import { ${commas(["any", ...(throughs ? ["committedFacts"] : []), "dueOf", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishReads ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", ...(Arr.isReadonlyArrayNonEmpty(recordsValues) ? ["recordText"] : []), "rowsOf", ...(Arr.some(denRoots, isScheduled) ? ["scheduledKey", "scheduleOf"] : []), "signals", "spawnedOf", "type SpawnRows"])} } from "@bjornpagen/den/runtime/bind"`,
+		`import { ${commas(["any", ...(throughs ? ["committedFacts"] : []), ...(Arr.some(roots, isDerived) ? ["derivedKey"] : []), "dueOf", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishReads ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", ...(Arr.isReadonlyArrayNonEmpty(recordsValues) ? ["recordText"] : []), "rowsOf", "signals", "spawnedOf", "type SpawnRows"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
 		`import type { ${commas(["FlowNeeds", ...(exclusives ? ["ExclusiveTurn"] : []), "Admission", "Ledger", "RootRunner", "ScopeView", ...(resources ? ["SeatAt"] : []), "Snapshot", "Spawned"])} } from "@bjornpagen/den/runtime/ledger"`,
 		`import { UnknownPauseTarget } from "@bjornpagen/den/runtime/ledger"`,
@@ -2416,7 +2523,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			Arr.map(
 				Arr.filter(denRoots, isScheduled),
 				(j) =>
-					`...Option.toArray(Option.map(scheduleOf(${kindAt(j.index)}.trigger), (s) => ({ kind: ${q(j.name)}, cron: s.cron, request: (at: Instant) => Effect.forEach(s.roster(at), (root) => request.${j.name}(scheduledKey(at, root.member), root.input)) })))`
+					`{ kind: ${q(j.name)}, cron: ${kindAt(j.index)}.trigger.cron, request: (at: Instant) => Effect.forEach(${kindAt(j.index)}.trigger.members, (member) => request.${j.name}({ at, member })) }`
 			)
 		)}]`,
 		"\t}",

@@ -1,7 +1,6 @@
 import { mutable, schema } from "@bjornpagen/grizzle"
 import {
 	Assigned,
-	Bell,
 	Built,
 	Chimed,
 	Concluded,
@@ -20,26 +19,27 @@ import {
 	Settled,
 	Summary,
 	Tally,
+	Want,
 	Weight
 } from "#integration/slice/relations.ts"
 
 /**
- * The slice's app relations, the level below den's fragments: what each flow's steps read (`reads(SliceBase, ...)`), so
- * the records grizzle makes of a read's query stand on a level over the query's, as metis's essay grading reads its
- * delivery level. The app role `loader` holds every relation of it, so its workload serves the reads over it. Every
- * relation is closed but a passage and a seen passage, which the editor rewrites and takes back, each open inside its
- * unit.
+ * The slice's app relations, the level below den's fragments: what each flow's steps read (`reads(SliceBase, ...)`) and
+ * each derived root's input is read from (`derived(key, SliceBase, read)`), so the records grizzle makes of a read's
+ * query stand on a level over the query's, as metis's essay grading reads its delivery level. The app role `loader`
+ * holds every relation of it, so its workload serves the reads over it. Every relation is closed but a passage and a
+ * seen passage, which the editor rewrites and takes back, each open inside its unit.
  */
 export const SliceBase = schema(
 	"Slice",
 	[
 		Feed,
-		Bell,
 		Item,
 		Weight,
 		Cursor,
 		Order,
 		Tally,
+		Want,
 		Settled,
 		Copied,
 		Built,

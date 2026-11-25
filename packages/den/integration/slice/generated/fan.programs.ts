@@ -15,6 +15,7 @@ import {
 	FanRoot,
 	FanRequestedWith,
 	FanWithin,
+	FanExclusiveKey,
 	FanAdmitted,
 	FanSkipped,
 	FanStep,
@@ -37,12 +38,17 @@ import {
 	FanBatchInput,
 	FanFanRunInput,
 	FanSweepInput,
+	FanWantedInput,
+	FanWantedKey,
 	FanSquareOutput,
 	FanDustOutput,
 	FanMopOutput,
 	FanBatchFinishOutput,
 	FanFanRunFinishOutput,
 	FanSweepFinishOutput,
+	FanWantedFinishOutput,
+	FanExclusive,
+	FanReleased,
 	FanPaused,
 	FanResumed,
 	FanServed,
@@ -51,12 +57,14 @@ import {
 } from "#integration/slice/generated/fan.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's role for the flow Fan: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains and live holds and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */
+/** den's role for the flow Fan: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains, live holds and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */
 export const FanDen = role(
 	App,
 	"fan_den",
 	{
 		...fanGraph.relations,
+		FanExclusive,
+		FanReleased,
 		FanPaused,
 		FanResumed,
 		FanServed,
@@ -73,6 +81,7 @@ export const FanDen = role(
 			"FanRoot",
 			"FanRequestedWith",
 			"FanWithin",
+			"FanExclusiveKey",
 			"FanAdmitted",
 			"FanSkipped",
 			"FanStep",
@@ -95,9 +104,12 @@ export const FanDen = role(
 			"FanBatchInput",
 			"FanFanRunInput",
 			"FanSweepInput",
+			"FanWantedInput",
+			"FanWantedKey",
 			"FanBatchFinishOutput",
 			"FanFanRunFinishOutput",
 			"FanSweepFinishOutput",
+			"FanWantedFinishOutput",
 			"FanHold"
 		]
 	}
@@ -115,6 +127,8 @@ export const FanCoordinator = role(
 		FanRetryWhy,
 		FanPausable,
 		FanResource,
+		FanExclusive,
+		FanReleased,
 		FanPaused,
 		FanResumed,
 		FanServed,
@@ -125,7 +139,7 @@ export const FanCoordinator = role(
 				.find({ resource, seat, step, root, attempt, until })
 		})
 	},
-	{ insert: ["FanPaused", "FanResumed", "FanServed"] }
+	{ insert: ["FanExclusive", "FanReleased", "FanPaused", "FanResumed", "FanServed"] }
 )
 
 const fanPendingRead = query(FanDen).rule((r) => {
@@ -328,6 +342,13 @@ export const fanDenPrograms = Object.freeze({
 			.where(r.eq(scope, r.param("scope", FanRoot.fields.root)))
 			.find({ scope, kind, key, at })
 	}),
+	fanExclusiveKeyOf: query(fanGraph).rule((r) => {
+		const { root, scope, key, id } = v(FanExclusiveKey, "fanExclusiveKey")
+		return r
+			.match(FanExclusiveKey, { root, scope, key, id })
+			.where(r.eq(scope, r.param("scope", FanExclusiveKey.fields.scope)))
+			.find({ root, scope, key, id })
+	}),
 	fanFinishedRoots: query(fanGraph)
 		.rule((r) => {
 			const { scope, step } = v(FanFinish, "finish")
@@ -429,11 +450,22 @@ export const fanDenPrograms = Object.freeze({
 				.match(FanScope, { root: scope, scope })
 				.find({ scope, kind, key, at })
 		}),
+		keys: query(FanDen).rule((r) => {
+			const { scope, key, id } = v(FanExclusiveKey, "fanExclusiveKey")
+			return r.match(FanExclusiveKey, { scope, key, id }).find({ scope, key, id })
+		}),
 		holds: query(FanDen).rule((r) => {
 			const { resource, seat, step, root, attempt, until } = v(FanDen.relations.FanLive, "live")
 			return r
 				.match(FanDen.relations.FanLive, { resource, seat, step, root, attempt, until })
 				.find({ resource, seat, step, root, attempt, until })
+		}),
+		exclusives: query(FanDen).rule((r) => {
+			const { kind, key, turn, scope } = v(FanExclusive, "fanExclusive")
+			return r
+				.match(FanExclusive, { kind, key, turn, scope })
+				.where(r.not(FanReleased, { kind, key, turn }))
+				.find({ kind, key, turn, scope })
 		}),
 		paused: query(FanDen).rule((r) => {
 			const { target, turn } = v(FanPaused, "fanPaused")
@@ -712,12 +744,63 @@ export const fanDenPrograms = Object.freeze({
 				})
 			),
 		{ now: "millis" }
-	)
+	),
+	fanReadFanWantedInput: query(fanGraph).rule((r) => {
+		const { root, scope, batch, size } = v(FanWantedInput, "fanWantedInput")
+		return r
+			.match(FanWantedInput, { root, scope, batch, size })
+			.where(r.eq(scope, r.param("scope", FanWantedInput.fields.scope)))
+			.find({ root, scope, batch, size })
+	}),
+	fanOutputsWantedBatch: query(fanGraph).rule((r) => {
+		const { scope, parent } = v(FanWithin, "within")
+		const { step } = v(FanFinish, "finish")
+		return r
+			.match(FanWithin, { scope, parent, kind: "Batch" })
+			.match(FanFinish, { scope, step })
+			.match(FanBatchFinishOutput, { step })
+			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))
+			.find({ step })
+	}),
+	fanInputsWantedBatch: query(fanGraph).rule((r) => {
+		const { scope, parent } = v(FanWithin, "within")
+		const { step } = v(FanFinish, "finish")
+		const { batch, size } = v(FanBatchInput, "input")
+		return r
+			.match(FanWithin, { scope, parent, kind: "Batch" })
+			.match(FanFinish, { scope, step })
+			.match(FanBatchInput, { scope, batch, size })
+			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))
+			.find({ step, batch, size })
+	}),
+	fanFailuresWantedBatch: query(fanGraph).rule((r) => {
+		const { scope, parent } = v(FanWithin, "within")
+		const { step } = v(FanFinish, "finish")
+		return r
+			.match(FanWithin, { scope, parent, kind: "Batch" })
+			.match(FanFinish, { scope, step })
+			.match(FanResult, { step, outcome: "failed" })
+			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))
+			.find({ step })
+	})
 })
 
 export const fanDenWorkload = workload(FanDen, fanDenPrograms)
 
 export const fanCoordinatorPrograms = Object.freeze({
+	fanHoldExclusive: ChangeSet.empty(fanCoordination).insert(FanExclusive, []),
+	fanReleaseExclusive: ChangeSet.empty(fanCoordination).insert(FanReleased, []),
+	fanExclusiveTurns: query(fanCoordination).rule((r) => {
+		const { kind, key, turn } = v(FanExclusive, "fanExclusive")
+		return r.match(FanExclusive, { kind, key, turn }).find({ kind, key, turn: r.max(turn) })
+	}),
+	fanExclusives: query(fanCoordination).rule((r) => {
+		const { kind, key, turn, scope } = v(FanExclusive, "fanExclusive")
+		return r
+			.match(FanExclusive, { kind, key, turn, scope })
+			.where(r.not(FanReleased, { kind, key, turn }))
+			.find({ kind, key, turn, scope })
+	}),
 	fanPromote: clocked(
 		ChangeSet.empty(fanCoordination).insert(
 			FanServed,
@@ -757,6 +840,7 @@ export const FanRetirer = role(
 		write: [
 			"FanScope",
 			"FanWithin",
+			"FanExclusiveKey",
 			"FanAdmitted",
 			"FanSkipped",
 			"FanStep",
@@ -779,12 +863,14 @@ export const FanRetirer = role(
 			"FanBatchInput",
 			"FanFanRunInput",
 			"FanSweepInput",
+			"FanWantedInput",
 			"FanSquareOutput",
 			"FanDustOutput",
 			"FanMopOutput",
 			"FanBatchFinishOutput",
 			"FanFanRunFinishOutput",
 			"FanSweepFinishOutput",
+			"FanWantedFinishOutput",
 			"FanHold"
 		]
 	}
@@ -794,6 +880,7 @@ export const fanRetirerPrograms = Object.freeze({
 	fanRetire: ChangeSet.empty(fanGraph).deleteWhere({
 		FanScope: { root: param("root", FanRoot.fields.root) },
 		FanWithin: { root: param("root", FanRoot.fields.root) },
+		FanExclusiveKey: { root: param("root", FanRoot.fields.root) },
 		FanAdmitted: { root: param("root", FanRoot.fields.root) },
 		FanSkipped: { root: param("root", FanRoot.fields.root) },
 		FanStep: { root: param("root", FanRoot.fields.root) },
@@ -816,12 +903,14 @@ export const fanRetirerPrograms = Object.freeze({
 		FanBatchInput: { root: param("root", FanRoot.fields.root) },
 		FanFanRunInput: { root: param("root", FanRoot.fields.root) },
 		FanSweepInput: { root: param("root", FanRoot.fields.root) },
+		FanWantedInput: { root: param("root", FanRoot.fields.root) },
 		FanSquareOutput: { root: param("root", FanRoot.fields.root) },
 		FanDustOutput: { root: param("root", FanRoot.fields.root) },
 		FanMopOutput: { root: param("root", FanRoot.fields.root) },
 		FanBatchFinishOutput: { root: param("root", FanRoot.fields.root) },
 		FanFanRunFinishOutput: { root: param("root", FanRoot.fields.root) },
-		FanSweepFinishOutput: { root: param("root", FanRoot.fields.root) }
+		FanSweepFinishOutput: { root: param("root", FanRoot.fields.root) },
+		FanWantedFinishOutput: { root: param("root", FanRoot.fields.root) }
 	})
 })
 
@@ -868,7 +957,126 @@ export const fanCommitPrograms = Object.freeze({
 		.insert(FanResult, [])
 		.insert(FanDone, [])
 		.insert(FanHeld, [])
-		.insert(FanSweepFinishOutput, [])
+		.insert(FanSweepFinishOutput, []),
+	fanCommitWantedFinish: ChangeSet.union(
+		ChangeSet.empty(fanGraph)
+			.insert(FanResult, [])
+			.insert(FanDone, [])
+			.insert(FanHeld, [])
+			.insert(FanWantedFinishOutput, []),
+		declaredFlow.kinds[6].finish.writes.changes(Loader)
+	)
 })
 
 export const fanCommits = workload(Loader, fanCommitPrograms)
+
+/** The requests of the flow's roots the app's own write starts, each a ChangeSet the app's write commits beside its own: over the flow's graph, unioned with it, or, for a root whose input derives from its key, over its app role, sequenced after the strata whose facts it derives from. */
+export const fanRequests = Object.freeze({
+	Wanted: ChangeSet.empty(Loader)
+		.insert(
+			FanScope,
+			query(Loader).rule((r) => {
+				const requested = r.relation("fanWantedFanScope", {
+					root: FanScope.fields.root,
+					scope: FanScope.fields.scope
+				})
+				const { root, scope } = v(requested, "requested")
+				const derived = declaredFlow.kinds[6].from.read.bind({
+					batch: r.param("fanWantedKeyBatch", FanWantedKey.fields.batch)
+				})
+				const { batch: derivedBatch, size: derivedSize } = v(derived, "derived")
+				return r
+					.match(requested, { root, scope })
+					.match(derived, { batch: derivedBatch, size: derivedSize })
+					.where(r.not(FanRoot, { root }))
+					.find({ root, scope })
+			})
+		)
+		.insert(
+			FanExclusiveKey,
+			query(Loader).rule((r) => {
+				const requested = r.relation("fanWantedFanExclusiveKey", {
+					root: FanExclusiveKey.fields.root,
+					scope: FanExclusiveKey.fields.scope,
+					key: FanExclusiveKey.fields.key,
+					id: FanExclusiveKey.fields.id
+				})
+				const { root, scope, key, id } = v(requested, "requested")
+				const derived = declaredFlow.kinds[6].from.read.bind({
+					batch: r.param("fanWantedKeyBatch", FanWantedKey.fields.batch)
+				})
+				const { batch: derivedBatch, size: derivedSize } = v(derived, "derived")
+				return r
+					.match(requested, { root, scope, key, id })
+					.match(derived, { batch: derivedBatch, size: derivedSize })
+					.where(r.not(FanRoot, { root }))
+					.find({ root, scope, key, id })
+			})
+		)
+		.insert(
+			FanWantedKey,
+			query(Loader).rule((r) => {
+				const requested = r.relation("fanWantedFanScope", {
+					root: FanScope.fields.root,
+					scope: FanScope.fields.scope
+				})
+				const { root, scope } = v(requested, "requested")
+				const derived = declaredFlow.kinds[6].from.read.bind({
+					batch: r.param("fanWantedKeyBatch", FanWantedKey.fields.batch)
+				})
+				const { batch: derivedBatch, size: derivedSize } = v(derived, "derived")
+				return r
+					.match(requested, { root, scope })
+					.match(derived, { batch: derivedBatch, size: derivedSize })
+					.where(r.eq(scope, root), r.not(FanRoot, { root }))
+					.find({ root, batch: r.param("fanWantedKeyBatch", FanWantedKey.fields.batch) })
+			})
+		)
+		.insert(
+			FanWantedInput,
+			query(Loader).rule((r) => {
+				const requested = r.relation("fanWantedFanScope", {
+					root: FanScope.fields.root,
+					scope: FanScope.fields.scope
+				})
+				const { root, scope } = v(requested, "requested")
+				const derived = declaredFlow.kinds[6].from.read.bind({
+					batch: r.param("fanWantedKeyBatch", FanWantedKey.fields.batch)
+				})
+				const { batch: derivedBatch, size: derivedSize } = v(derived, "derived")
+				return r
+					.match(requested, { root, scope })
+					.match(derived, { batch: derivedBatch, size: derivedSize })
+					.where(r.eq(scope, root), r.not(FanRoot, { root }))
+					.find({ scope, root, batch: derivedBatch, size: derivedSize })
+			})
+		)
+		.insert(
+			FanRoot,
+			query(Loader).rule((r) => {
+				const requested = r.relation("fanWantedFanScope", {
+					root: FanScope.fields.root,
+					scope: FanScope.fields.scope
+				})
+				const { root, scope } = v(requested, "requested")
+				const derived = declaredFlow.kinds[6].from.read.bind({
+					batch: r.param("fanWantedKeyBatch", FanWantedKey.fields.batch)
+				})
+				const { batch: derivedBatch, size: derivedSize } = v(derived, "derived")
+				return r
+					.match(requested, { root, scope })
+					.match(derived, { batch: derivedBatch, size: derivedSize })
+					.where(
+						r.eq(scope, root),
+						r.eq(root, r.param("fanWantedScope", FanRoot.fields.root)),
+						r.not(FanRoot, { root })
+					)
+					.find({
+						root,
+						kind: FanRootKind.handle("Wanted"),
+						key: r.param("fanWantedKey", FanRoot.fields.key),
+						at: r.param("now", FanRoot.fields.at)
+					})
+			})
+		)
+})

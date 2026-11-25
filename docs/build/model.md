@@ -36,9 +36,10 @@ evidence (`decisions.md`, "Settled by the evidence"), and the model follows thos
 - **Scope kind**: the children its start opens, and a finish, a step over the scope's input and its children's
   endings (done or failed). A child scope's `then` edges start steps in the scope that opened it once its finish is
   done ("Pages' finish starts Prune").
-- **Root kind**: a trigger (`Schedule`, `Operator`, `App`), a precondition (a `Query` that must read empty) or none,
-  an exclusivity key of its input or none, a window or none, and a scope. Exclusivity and windows belong to root kinds
-  only: every one of edullm's is per run.
+- **Root kind**: a trigger (`Schedule`, `Operator`, `App`) and where its input comes from (`Given`, with its kind's
+  input heading, or `Derived` from its key, a scheduled kind's always: `Started`), a precondition (a `Query` that must
+  read empty) or none, an exclusivity key of what its request names (its input, or a derived root's key) or none, a
+  window or none, and a scope. Exclusivity and windows belong to root kinds only: every one of edullm's is per run.
 - **Edges**: spawn edges only, to steps or child scopes of one declared kind, ordinal by position. An edge runs only on
   an output: a step that fails spawns nothing.
 - **Resource**: a name and its seats, keyed `"0" … "<seats − 1>"`; a root's exclusivity is a seat keyed by its kind and
@@ -53,14 +54,16 @@ The state is a projection of the facts, keyed by canonical text; `apply` is the 
 A transition emits its facts one by one on an evolving state, so later decisions in one call see earlier facts, as one
 grizzle transaction would. A fact whose key is already held is no change, so a call made twice adds nothing.
 
-- **admit**: `differs` if an app's or an operator's root of the key was requested with another input under its kind's
-  same input heading (the trigger's `heading`, what den's `<P>RequestedWith` records beside the input's digest), which
-  commits nothing; a request again under another heading, after a deploy that changed the kind's input, is the same
-  keyed act, and a scheduled root records none and is never compared. Then `unchanged` if a root of the key is live;
-  `retired` if the key was retired (it never recurs); `blocked` if the precondition reads rows. Otherwise `Admitted` and
-  the precondition's `Read` (empty); then, if another live run holds the exclusivity seat, `Finished{Held}` at once
-  (`held`: the run is recorded and skipped, edullm's "that relation skips the night"), else the scope's `Seated` and the
-  start's children, recursively.
+- **admit**: `differs` if a root of the key whose input its request gives was requested with another input under its
+  kind's same input heading (its `from`'s `heading`, what den's `<P>RequestedWith` records beside the input's digest),
+  which commits nothing; a request again under another heading, after a deploy that changed the kind's input, is the
+  same keyed act, and a root whose input derives from its key (a scheduled root's among them) records none and is never
+  compared. Then `unchanged` if a root of the key is live; `retired` if the key was retired (it never recurs);
+  `underived` if its input derives from its key and its read (`derivedAdmissionOf`) derives none from the app's rows as
+  the transaction holds them, the app's writes before it among them; `blocked` if the precondition reads rows. Otherwise
+  `Admitted` and the precondition's `Read` (empty); then, if another live run holds the exclusivity seat,
+  `Finished{Held}` at once (`held`: the run is recorded and skipped, edullm's "that relation skips the night"), else the
+  scope's `Seated` and the start's children, recursively.
 - **write**: the app's own transaction: its rows as `Wrote{App}`, and the roots it admits, each behind its own race;
   an admission that `differs` refuses the whole transaction, its rows among it, as den's key of `<P>RequestedWith`
   refuses the app's commit.

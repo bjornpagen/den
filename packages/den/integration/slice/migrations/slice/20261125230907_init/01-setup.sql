@@ -72,12 +72,6 @@ RETURN '{"Assignment"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__assign_root_kind_names_opbaefdfbo"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__bell_names_aiqi4uostx"() RETURNS "pg_catalog"."name"[]
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"east","west"}'::"pg_catalog"."name"[];
-
-REVOKE ALL ON FUNCTION "slice"."__bell_names_aiqi4uostx"() FROM PUBLIC;
-
 CREATE FUNCTION "slice"."__chain_chain_run_input_feed_names_byxgsvzik7"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN '{"news","sport"}'::"pg_catalog"."name"[];
@@ -126,24 +120,6 @@ RETURN '{"ChainRun","Ordered"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__chain_root_kind_names_ndmuh43zki"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__clock_chime_input_bell_names_nkzi4dgaig"() RETURNS "pg_catalog"."name"[]
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"east","west"}'::"pg_catalog"."name"[];
-
-REVOKE ALL ON FUNCTION "slice"."__clock_chime_input_bell_names_nkzi4dgaig"() FROM PUBLIC;
-
-CREATE FUNCTION "slice"."__clock_chime_output_bell_names_tzmx63kpb4"() RETURNS "pg_catalog"."name"[]
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"east","west"}'::"pg_catalog"."name"[];
-
-REVOKE ALL ON FUNCTION "slice"."__clock_chime_output_bell_names_tzmx63kpb4"() FROM PUBLIC;
-
-CREATE FUNCTION "slice"."__clock_hourly_input_bell_names_vugtqsvsug"() RETURNS "pg_catalog"."name"[]
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"east","west"}'::"pg_catalog"."name"[];
-
-REVOKE ALL ON FUNCTION "slice"."__clock_hourly_input_bell_names_vugtqsvsug"() FROM PUBLIC;
-
 CREATE FUNCTION "slice"."__clock_kind_names_7yqk67pwg5"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN '{"Chime","Close","HourlyFinish","SittingFinish"}'::"pg_catalog"."name"[];
@@ -180,11 +156,11 @@ RETURN '{"Batch"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__fan_child_kind_names_i6k53d3e2e"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__fan_kind_names_rrax7ylsix"() RETURNS "pg_catalog"."name"[]
+CREATE FUNCTION "slice"."__fan_kind_names_6jgkvuzg33"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"BatchFinish","Dust","FanRunFinish","Mop","Square","SweepFinish"}'::"pg_catalog"."name"[];
+RETURN '{"BatchFinish","Dust","FanRunFinish","Mop","Square","SweepFinish","WantedFinish"}'::"pg_catalog"."name"[];
 
-REVOKE ALL ON FUNCTION "slice"."__fan_kind_names_rrax7ylsix"() FROM PUBLIC;
+REVOKE ALL ON FUNCTION "slice"."__fan_kind_names_6jgkvuzg33"() FROM PUBLIC;
 
 CREATE FUNCTION "slice"."__fan_outcome_names_7pbhseigfj"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -192,11 +168,11 @@ RETURN '{"done","failed"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__fan_outcome_names_7pbhseigfj"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__fan_pausable_names_7t2samsp7b"() RETURNS "pg_catalog"."name"[]
+CREATE FUNCTION "slice"."__fan_pausable_names_fpk6cvxfiv"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"FanRun","Pool","Sweep","Vendor"}'::"pg_catalog"."name"[];
+RETURN '{"FanRun","Pool","Sweep","Vendor","Wanted"}'::"pg_catalog"."name"[];
 
-REVOKE ALL ON FUNCTION "slice"."__fan_pausable_names_7t2samsp7b"() FROM PUBLIC;
+REVOKE ALL ON FUNCTION "slice"."__fan_pausable_names_fpk6cvxfiv"() FROM PUBLIC;
 
 CREATE FUNCTION "slice"."__fan_resource_names_tugc7yp6xo"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -210,11 +186,11 @@ RETURN '{"later","spent","transient"}'::"pg_catalog"."name"[];
 
 REVOKE ALL ON FUNCTION "slice"."__fan_retry_why_names_shpypqrqhk"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__fan_root_kind_names_nagupzc3sq"() RETURNS "pg_catalog"."name"[]
+CREATE FUNCTION "slice"."__fan_root_kind_names_jqlbcidhe6"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN '{"FanRun","Sweep"}'::"pg_catalog"."name"[];
+RETURN '{"FanRun","Sweep","Wanted"}'::"pg_catalog"."name"[];
 
-REVOKE ALL ON FUNCTION "slice"."__fan_root_kind_names_nagupzc3sq"() FROM PUBLIC;
+REVOKE ALL ON FUNCTION "slice"."__fan_root_kind_names_jqlbcidhe6"() FROM PUBLIC;
 
 CREATE FUNCTION "slice"."__feed_names_azjbqebc6i"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -408,12 +384,6 @@ RETURN X'80'::bit varying;
 
 REVOKE ALL ON FUNCTION "slice"."__assign_root_kind_live_nccqmed4lq"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__bell_live_bk7zau3khi"() RETURNS bit varying
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN X'C0'::bit varying;
-
-REVOKE ALL ON FUNCTION "slice"."__bell_live_bk7zau3khi"() FROM PUBLIC;
-
 CREATE FUNCTION "slice"."__chain_chain_run_input_feed_live_iopwed3csj"() RETURNS bit varying
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN X'C0'::bit varying;
@@ -462,24 +432,6 @@ RETURN X'C0'::bit varying;
 
 REVOKE ALL ON FUNCTION "slice"."__chain_root_kind_live_mnlnztwbz2"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__clock_chime_input_bell_live_vs2eypgl4v"() RETURNS bit varying
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN X'C0'::bit varying;
-
-REVOKE ALL ON FUNCTION "slice"."__clock_chime_input_bell_live_vs2eypgl4v"() FROM PUBLIC;
-
-CREATE FUNCTION "slice"."__clock_chime_output_bell_live_ikpwkv25mh"() RETURNS bit varying
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN X'C0'::bit varying;
-
-REVOKE ALL ON FUNCTION "slice"."__clock_chime_output_bell_live_ikpwkv25mh"() FROM PUBLIC;
-
-CREATE FUNCTION "slice"."__clock_hourly_input_bell_live_yfdtebn7na"() RETURNS bit varying
-LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN X'C0'::bit varying;
-
-REVOKE ALL ON FUNCTION "slice"."__clock_hourly_input_bell_live_yfdtebn7na"() FROM PUBLIC;
-
 CREATE FUNCTION "slice"."__clock_kind_live_kem5uxahz7"() RETURNS bit varying
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN X'F0'::bit varying;
@@ -516,11 +468,11 @@ RETURN X'80'::bit varying;
 
 REVOKE ALL ON FUNCTION "slice"."__fan_child_kind_live_lzght2aqpn"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__fan_kind_live_mosnikz3yn"() RETURNS bit varying
+CREATE FUNCTION "slice"."__fan_kind_live_wcuqzqhqwl"() RETURNS bit varying
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN X'FC'::bit varying;
+RETURN X'FE'::bit varying;
 
-REVOKE ALL ON FUNCTION "slice"."__fan_kind_live_mosnikz3yn"() FROM PUBLIC;
+REVOKE ALL ON FUNCTION "slice"."__fan_kind_live_wcuqzqhqwl"() FROM PUBLIC;
 
 CREATE FUNCTION "slice"."__fan_outcome_live_nos3iqln54"() RETURNS bit varying
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -528,11 +480,11 @@ RETURN X'C0'::bit varying;
 
 REVOKE ALL ON FUNCTION "slice"."__fan_outcome_live_nos3iqln54"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__fan_pausable_live_uymd2oabeh"() RETURNS bit varying
+CREATE FUNCTION "slice"."__fan_pausable_live_m2rf37xwjt"() RETURNS bit varying
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN X'F0'::bit varying;
+RETURN X'F8'::bit varying;
 
-REVOKE ALL ON FUNCTION "slice"."__fan_pausable_live_uymd2oabeh"() FROM PUBLIC;
+REVOKE ALL ON FUNCTION "slice"."__fan_pausable_live_m2rf37xwjt"() FROM PUBLIC;
 
 CREATE FUNCTION "slice"."__fan_resource_live_yqyw4ee5fp"() RETURNS bit varying
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -546,11 +498,11 @@ RETURN X'E0'::bit varying;
 
 REVOKE ALL ON FUNCTION "slice"."__fan_retry_why_live_yom5egfb4x"() FROM PUBLIC;
 
-CREATE FUNCTION "slice"."__fan_root_kind_live_sx7vmfeklj"() RETURNS bit varying
+CREATE FUNCTION "slice"."__fan_root_kind_live_zwogjm2ro3"() RETURNS bit varying
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
-RETURN X'C0'::bit varying;
+RETURN X'E0'::bit varying;
 
-REVOKE ALL ON FUNCTION "slice"."__fan_root_kind_live_sx7vmfeklj"() FROM PUBLIC;
+REVOKE ALL ON FUNCTION "slice"."__fan_root_kind_live_zwogjm2ro3"() FROM PUBLIC;
 
 CREATE FUNCTION "slice"."__feed_live_pfwkvulieq"() RETURNS bit varying
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
@@ -692,8 +644,6 @@ REVOKE ALL ON FUNCTION "slice"."__writeback_root_kind_live_ifibfl2f7i"() FROM PU
 
 CREATE DOMAIN "slice"."__sha256" AS "pg_catalog"."bytea" CONSTRAINT "check" CHECK (VALUE IS NULL OR ("pg_catalog"."octet_length"(VALUE) = 32) IS TRUE);
 
-CREATE DOMAIN "slice"."bell" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__bell_live_bk7zau3khi"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
 CREATE DOMAIN "slice"."feed" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__feed_live_pfwkvulieq"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
 CREATE DOMAIN "slice"."__domain_gfw43vigph" AS bigint CONSTRAINT "check" CHECK (VALUE IS NULL OR (VALUE >= 0::bigint) IS TRUE);
@@ -744,12 +694,6 @@ CREATE DOMAIN "slice_den"."chain_retry_why" AS smallint CONSTRAINT "check" CHECK
 
 CREATE DOMAIN "slice_den"."chain_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__chain_root_kind_live_mnlnztwbz2"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
-CREATE DOMAIN "slice_den"."clock_chime_input_bell" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_chime_input_bell_live_vs2eypgl4v"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice_den"."clock_chime_output_bell" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_chime_output_bell_live_ikpwkv25mh"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
-CREATE DOMAIN "slice_den"."clock_hourly_input_bell" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_hourly_input_bell_live_yfdtebn7na"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
-
 CREATE DOMAIN "slice_den"."clock_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_kind_live_kem5uxahz7"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
 CREATE DOMAIN "slice_den"."clock_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__clock_outcome_live_q7vjmi72sr"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
@@ -762,17 +706,17 @@ CREATE DOMAIN "slice_den"."clock_root_kind" AS smallint CONSTRAINT "check" CHECK
 
 CREATE DOMAIN "slice_den"."fan_child_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_child_kind_live_lzght2aqpn"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
-CREATE DOMAIN "slice_den"."fan_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_kind_live_mosnikz3yn"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+CREATE DOMAIN "slice_den"."fan_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_kind_live_wcuqzqhqwl"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
 CREATE DOMAIN "slice_den"."fan_outcome" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_outcome_live_nos3iqln54"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
-CREATE DOMAIN "slice_den"."fan_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_pausable_live_uymd2oabeh"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+CREATE DOMAIN "slice_den"."fan_pausable" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_pausable_live_m2rf37xwjt"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
 CREATE DOMAIN "slice_den"."fan_resource" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_resource_live_yqyw4ee5fp"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
 CREATE DOMAIN "slice_den"."fan_retry_why" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_retry_why_live_yom5egfb4x"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
-CREATE DOMAIN "slice_den"."fan_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_root_kind_live_sx7vmfeklj"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
+CREATE DOMAIN "slice_den"."fan_root_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__fan_root_kind_live_zwogjm2ro3"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
 CREATE DOMAIN "slice_den"."retry_kind" AS smallint CONSTRAINT "check" CHECK (VALUE IS NULL OR (CASE WHEN VALUE >= 0 AND VALUE < 8 THEN "pg_catalog"."get_bit"("slice"."__retry_kind_live_lujs5xc25d"(), VALUE::integer) = 1 ELSE false END) IS TRUE);
 
@@ -966,9 +910,9 @@ CREATE TYPE "slice"."__row_olds_chain_step_a4auuc4j32" AS ("due" bigint, "kind" 
 
 REVOKE ALL ON TYPE "slice"."__row_olds_chain_step_a4auuc4j32" FROM PUBLIC;
 
-CREATE TYPE "slice"."__row_news_clock_chime_input_rfzc5ysow2" AS ("bell" smallint, "hour" bigint, "root" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
+CREATE TYPE "slice"."__row_news_clock_chime_input_67ym67psij" AS ("bell" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "hour" bigint, "root" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
-REVOKE ALL ON TYPE "slice"."__row_news_clock_chime_input_rfzc5ysow2" FROM PUBLIC;
+REVOKE ALL ON TYPE "slice"."__row_news_clock_chime_input_67ym67psij" FROM PUBLIC;
 
 CREATE TYPE "slice"."__row_news_clock_close_input_f7grz5pq5d" AS ("deadline" bigint, "root" "pg_catalog"."bytea", "sitting" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "step" "pg_catalog"."bytea");
 
@@ -982,6 +926,14 @@ CREATE TYPE "slice"."__row_news_clock_failed_banad75ik7" AS ("root" "pg_catalog"
 
 REVOKE ALL ON TYPE "slice"."__row_news_clock_failed_banad75ik7" FROM PUBLIC;
 
+CREATE TYPE "slice"."__row_news_clock_hourly_key_i76xjn5tfb" AS ("at" bigint, "member" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_news_clock_hourly_key_i76xjn5tfb" FROM PUBLIC;
+
+CREATE TYPE "slice"."__row_olds_clock_hourly_key_oaljgydoez" AS ("at" bigint, "member" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_olds_clock_hourly_key_oaljgydoez" FROM PUBLIC;
+
 CREATE TYPE "slice"."__row_olds_clock_requested_with_3fdps2cdvj" AS ("fingerprint" "pg_catalog"."bytea", "input" "pg_catalog"."bytea", "root" "pg_catalog"."bytea");
 
 REVOKE ALL ON TYPE "slice"."__row_olds_clock_requested_with_3fdps2cdvj" FROM PUBLIC;
@@ -993,6 +945,10 @@ REVOKE ALL ON TYPE "slice"."__row_olds_clock_result_xmvy6bruki" FROM PUBLIC;
 CREATE TYPE "slice"."__row_news_clock_root_77gtrqv5vx" AS ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea");
 
 REVOKE ALL ON TYPE "slice"."__row_news_clock_root_77gtrqv5vx" FROM PUBLIC;
+
+CREATE TYPE "slice"."__row_olds_clock_root_ady73n5pk3" AS ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_olds_clock_root_ady73n5pk3" FROM PUBLIC;
 
 CREATE TYPE "slice"."__row_olds_clock_step_ro3hcnnd7q" AS ("due" bigint, "kind" smallint, "root" "pg_catalog"."bytea", "scope" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
@@ -1046,6 +1002,10 @@ CREATE TYPE "slice"."__row_news_fan_root_pek322ray3" AS ("at" bigint, "key" "pg_
 
 REVOKE ALL ON TYPE "slice"."__row_news_fan_root_pek322ray3" FROM PUBLIC;
 
+CREATE TYPE "slice"."__row_olds_fan_root_tqdoaxqfia" AS ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_olds_fan_root_tqdoaxqfia" FROM PUBLIC;
+
 CREATE TYPE "slice"."__row_news_fan_square_input_oooc5jrvqp" AS ("batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "n" bigint, "root" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
 REVOKE ALL ON TYPE "slice"."__row_news_fan_square_input_oooc5jrvqp" FROM PUBLIC;
@@ -1053,6 +1013,14 @@ REVOKE ALL ON TYPE "slice"."__row_news_fan_square_input_oooc5jrvqp" FROM PUBLIC;
 CREATE TYPE "slice"."__row_olds_fan_step_e5cdd74oi6" AS ("due" bigint, "kind" smallint, "root" "pg_catalog"."bytea", "scope" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
 REVOKE ALL ON TYPE "slice"."__row_olds_fan_step_e5cdd74oi6" FROM PUBLIC;
+
+CREATE TYPE "slice"."__row_news_fan_wanted_key_msnlbwd4zc" AS ("batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_news_fan_wanted_key_msnlbwd4zc" FROM PUBLIC;
+
+CREATE TYPE "slice"."__row_olds_fan_wanted_key_flihgepgsp" AS ("batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_olds_fan_wanted_key_flihgepgsp" FROM PUBLIC;
 
 CREATE TYPE "slice"."__row_olds_fan_within_igrko3tlla" AS ("kind" smallint, "parent" "pg_catalog"."bytea", "root" "pg_catalog"."bytea", "scope" "pg_catalog"."bytea");
 

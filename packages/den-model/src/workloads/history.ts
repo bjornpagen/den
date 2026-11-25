@@ -82,7 +82,8 @@ export const historyOf = (
 
 	const HistoryLoad: RootKind<Load, number, never> = {
 		name: "HistoryLoad",
-		trigger: { _tag: "Operator", heading: "HistoryLoadInput" },
+		trigger: { _tag: "Operator" },
+		from: { _tag: "Given", heading: "HistoryLoadInput" },
 		precondition: Option.none(),
 		window: Option.none(),
 		exclusive: Option.none(),

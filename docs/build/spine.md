@@ -192,12 +192,13 @@ output into `select(PResult, outcome = done)`) certifies.
     graph once its exclusivity seat is given back, every row of it deleted at its root but its record; an app row that
     references it keeps it. The app's census runs it beside its tick. A root's request is one fact identified by its
     root, a schedule's too (one root per member of its roster at each instant its cron names, keyed by the instant and
-    the member, which its input reads too; a schedule of one root is a roster of one): it inserts its Root and its
+    the member, from which its input derives; a schedule of one root is a roster of one): it inserts its Root and its
     graph's rows only where no Root holds its root (`lower/print.ts` requestOfRoot), so a request of any key again,
-    retired or not, of the same input adds nothing and answers that it was already requested, and an app's or an
-    operator's of another input under the same input fingerprint is refused on its `<P>RequestedWith`, which no
-    retirement clears (a scheduled root records none); and a schedule's key the census still requests retires
-    like any other (`schedule.test.ts`); a root is requested while its graph is open, its Scope standing, so a retired
+    retired or not, of the same input adds nothing and answers that it was already requested, and one whose input it
+    gives of another input under the same input fingerprint is refused on its `<P>RequestedWith`, which no retirement
+    clears; a root whose input derives from its key (`derived`) records none, its input its read's row at its
+    request's commit (`derived.test.ts`); and a schedule's key the census still requests retires like any other
+    (`schedule.test.ts`); a root is requested while its graph is open, its Scope standing, so a retired
     one is never rung again.
 11. **Stopping.** Not built.
 12. **Ringing.** A turn rings what its end made eligible: what its commit spawned, its scope's finish once its last

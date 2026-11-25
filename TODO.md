@@ -16,13 +16,19 @@
 - **AlphaTest (owner, 2026-11-20):** ring after request, the seat handoff, finish spawns with child-scope edges and the
   source's named delay are built, and AlphaTest's background work is modelled in den-model; running on Vercel and a
   census for staging (Vercel Cron calls production only) are next.
-- **A key names one input, what is left (grizzle main's ruling, 2026-11-25; lane METIS-PROCTOR):** a root kind whose
-  input is a derivation of its key declares it so and records nothing, scheduled roots its special case, so a scheduled
-  kind's request port takes no input from its caller (v3, next); a step input refined by a check lowers to its contract
-  and law (after v3, with DENSCOPE on lower/schema.ts); the fingerprint out of its caller's hands, named by the served
-  request program itself under the running den's scheme, so no caller can name another; grizzle's codec text is part of
-  its format (engine core/format.ts artifactFormat), which grizzle does not export yet: once it does, each kind's
-  fingerprint folds it in at run time, so a repin that changes a value's text changes every fingerprint and a key
-  requested before it is the same keyed act; and the model judges a precondition before it records a root, den after it
-  records the request, so a key requested again after a blocked admission is answered apart by them, a divergence the
-  differential's programs, which hold no precondition, do not reach.
+- **Derived root inputs, what is left (den v3; lane METIS-PROCTOR; grizzle main's ruling, 2026-11-25):** no two derived
+  roots of one key, whatever text names them, as a law: `<P><Root>Key` keyed by its fields too, which den can state once
+  each key text field has a byte bound at its natural limit, from data, or the key is keyed by an explicit SHA-256
+  digest column of its fields that den declares (Bjorn's rule: no automatic key hashing); until then a field's rename
+  re-keys. A read of no relation reads no level of the app's: den's role holds a derived read's declared level whole,
+  read-only, broader than the read needs, until grizzle's empty level (`schema.empty`, the bottom of every schema chain,
+  DENSCOPE's) lands and a schedule's read is `query(schema.empty)`. A request again told apart from one whose read
+  derived nothing, which `fresh` answers alike.
+- **A key names one input, what is left (grizzle main's ruling, 2026-11-25; lane METIS-PROCTOR):** a step input refined
+  by a check lowers to its contract and law (with DENSCOPE on lower/schema.ts); the fingerprint out of its caller's
+  hands, named by the served request program itself under the running den's scheme, so no caller can name another;
+  grizzle's codec text is part of its format (engine core/format.ts artifactFormat), which grizzle does not export yet:
+  once it does, each kind's fingerprint folds it in at run time, so a repin that changes a value's text changes every
+  fingerprint and a key requested before it is the same keyed act; and the model judges a precondition before it records
+  a root, den after it records the request, so a key requested again after a blocked admission is answered apart by
+  them, a divergence the differential's programs, which hold no precondition, do not reach.

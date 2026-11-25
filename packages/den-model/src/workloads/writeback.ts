@@ -132,7 +132,8 @@ export const writebackOf = (
 
 	const Writeback: RootKind<Graded, boolean, never> = {
 		name: "Writeback",
-		trigger: { _tag: "App", heading: "WritebackInput" },
+		trigger: { _tag: "App" },
+		from: { _tag: "Given", heading: "WritebackInput" },
 		precondition: Option.none(),
 		window: Option.none(),
 		exclusive: Option.none(),

@@ -28,9 +28,6 @@ export const ClockRootKind = closed.unordered("ClockRootKind", ["Hourly", "Sitti
 export const ClockOutcome = closed.unordered("ClockOutcome", ["done", "failed"])
 export const ClockRetryWhy = closed.unordered("ClockRetryWhy", ["spent", "transient", "later"])
 export const ClockPausable = closed.unordered("ClockPausable", ["Hourly", "Sitting"])
-export const ClockChimeInputBell = closed.unordered("ClockChimeInputBell", ["east", "west"])
-export const ClockHourlyInputBell = closed.unordered("ClockHourlyInputBell", ["east", "west"])
-export const ClockChimeOutputBell = closed.unordered("ClockChimeOutputBell", ["east", "west"])
 
 export const ClockScope = relation("ClockScope", { root: sha256, scope: sha256 }, ["root", "scope"])
 export const ClockRoot = relation(
@@ -106,7 +103,7 @@ export const ClockExhausted = relation("ClockExhausted", { root: sha256, step: s
 ])
 export const ClockChimeInput = relation(
 	"ClockChimeInput",
-	{ root: sha256, step: sha256, hour: pg.bigint, bell: closedId(ClockChimeInputBell) },
+	{ root: sha256, step: sha256, hour: pg.bigint, bell: Text },
 	["root", "step"]
 )
 export const ClockCloseInput = relation(
@@ -116,7 +113,7 @@ export const ClockCloseInput = relation(
 )
 export const ClockHourlyInput = relation(
 	"ClockHourlyInput",
-	{ root: sha256, scope: sha256, hour: pg.bigint, bell: closedId(ClockHourlyInputBell) },
+	{ root: sha256, scope: sha256, hour: pg.bigint, bell: Text },
 	["root", "scope"]
 )
 export const ClockSittingInput = relation(
@@ -124,9 +121,14 @@ export const ClockSittingInput = relation(
 	{ root: sha256, scope: sha256, sitting: Text, deadline: DenInstant },
 	["root", "scope"]
 )
+export const ClockHourlyKey = relation(
+	"ClockHourlyKey",
+	{ root: sha256, at: pg.bigint, member: Text },
+	["root"]
+)
 export const ClockChimeOutput = relation(
 	"ClockChimeOutput",
-	{ root: sha256, step: sha256, hour: pg.bigint, bell: closedId(ClockChimeOutputBell) },
+	{ root: sha256, step: sha256, hour: pg.bigint, bell: Text },
 	["root", "step"]
 )
 export const ClockCloseOutput = relation(
@@ -168,9 +170,6 @@ export const clockGraph = fragment(
 		ClockOutcome,
 		ClockRetryWhy,
 		ClockPausable,
-		ClockChimeInputBell,
-		ClockHourlyInputBell,
-		ClockChimeOutputBell,
 		ClockScope,
 		ClockRoot,
 		ClockRequestedWith,
@@ -193,6 +192,7 @@ export const clockGraph = fragment(
 		ClockCloseInput,
 		ClockHourlyInput,
 		ClockSittingInput,
+		ClockHourlyKey,
 		ClockChimeOutput,
 		ClockCloseOutput,
 		ClockHourlyFinishOutput,
@@ -287,6 +287,20 @@ export const clockGraph = fragment(
 				"root"
 			)
 		),
+		contained(
+			on(ClockHourlyKey, "root"),
+			on(
+				select(ClockRoot, (row) => row.eq(row.kind, "Hourly")),
+				"root"
+			)
+		),
+		contained(
+			on(
+				select(ClockRoot, (row) => row.eq(row.kind, "Hourly")),
+				"root"
+			),
+			on(ClockHourlyKey, "root")
+		),
 		contained(on(ClockChimeOutput, "root", "step"), on(ClockChimeInput, "root", "step")),
 		contained(on(ClockChimeOutput, "root", "step"), on(ClockDone, "root", "step")),
 		contained(on(ClockCloseOutput, "root", "step"), on(ClockCloseInput, "root", "step")),
@@ -349,9 +363,6 @@ export const clockCoordination = fragment(
 		ClockOutcome,
 		ClockRetryWhy,
 		ClockPausable,
-		ClockChimeInputBell,
-		ClockHourlyInputBell,
-		ClockChimeOutputBell,
 		ClockPaused,
 		ClockResumed,
 		ClockServed

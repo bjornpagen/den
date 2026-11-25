@@ -11,6 +11,7 @@ import {
 	always,
 	atSpawn,
 	edge,
+	given,
 	none,
 	noReads,
 	operator,
@@ -152,11 +153,12 @@ const declare = (fault: Fault) => {
 		start: () => [B.of({})],
 		finish: finish(fault === "foreign read" ? [A] : [B])
 	})
+	if (fault === "a schedule's member twice") {
+		schedule(Cron.parseUnsafe("0 * * * *"), ["east", "east"])
+	}
 	const Run = root(fault === "bad name" ? "run_lower" : "Run", {
-		trigger:
-			fault === "a schedule's member twice"
-				? schedule(Cron.parseUnsafe("0 * * * *"), ["east", "east"], () => ({}))
-				: operator,
+		trigger: operator,
+		from: given,
 		input: Empty,
 		children: fault === "unowned kind" ? [Inner] : [A, Inner],
 		start: () => [Inner.of({})],

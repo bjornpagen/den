@@ -56,8 +56,8 @@ export const rootScope = (flow: string, kind: string, key: string): Sha256 =>
  * The texts of a request's input, each a relation's name or a field's grizzle codec text (codecText), where every value
  * is one its field's type admits; none where any is not, a value its kind's schema admits and its type does not (a text
  * holding NUL, a bigint past int8). The request's own input rows carry that value, which grizzle's parameter encoder
- * refuses, typed, before any statement runs, and a Root of an app's or an operator's kind cannot stand without its
- * record, so such a request is refused whatever its record: none is printed for it.
+ * refuses, typed, before any statement runs, and a Root of a kind whose input its request gives cannot stand without
+ * its record, so such a request is refused whatever its record: none is printed for it.
  */
 export const codecTextsOf = (
 	texts: ReadonlyArray<Result.Result<string, unknown>>

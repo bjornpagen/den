@@ -3,6 +3,7 @@ import type {
 	AnyRelation,
 	ClockUnit,
 	Clocked,
+	EvidenceOfQuery,
 	Fact,
 	HeadOf,
 	ParamArg,
@@ -10,6 +11,7 @@ import type {
 	ReadsChildren,
 	ReadsQuery,
 	RecordNames,
+	SchemaSource,
 	Vector
 } from "@bjornpagen/grizzle"
 import type { InputOf } from "@bjornpagen/grizzle/runtime"
@@ -683,8 +685,9 @@ export interface AnyFinish {
 }
 
 /**
- * Whether a root holds a seat for its whole life: no, or one per key its input names (one live run per relation, W1;
- * per collection, W3; per request kind, W2; one Gold build, W4). A root whose seat another live root of its kind holds
+ * Whether a root holds a seat for its whole life: no, or one per key taken from what its request names (one live run
+ * per relation, W1; per collection, W3; per request kind, W2; one Gold build, W4): its input, or a derived root's key,
+ * the one value its request holds before its read (`SeatOf`). A root whose seat another live root of its kind holds
  * is not admitted and is recorded skipped, as edullm's relation skips the night; no child scope holds a seat, so none
  * waits on one and none deadlocks.
  */
@@ -695,7 +698,7 @@ export type Exclusive<I> =
 /** No exclusivity seat. */
 export const shared: { readonly kind: "shared" } = { kind: "shared" }
 
-/** One live scope of the kind per key `key` takes from its input. */
+/** One live scope of the kind per key `key` takes from what its request names: its input, or a derived root's key. */
 export const exclusiveBy = <I>(key: (input: I) => string): Exclusive<I> => ({
 	kind: "exclusive",
 	key
@@ -731,10 +734,8 @@ export interface ScopeShape<
 	readonly finish: F
 }
 
-/** What only a root declares beside its scope's shape: its trigger and its gates, an exclusivity seat, a window and a precondition. */
-export interface RootGates<I> {
-	readonly trigger: Trigger<I>
-	readonly exclusive: Exclusive<I>
+/** What only a root declares beside its trigger, its source and its seat: a window and a precondition. */
+export interface RootGates {
 	readonly window: Window
 	readonly precondition: Precondition
 }
@@ -781,37 +782,24 @@ export const scope = <
 	return { _tag: "Scope", name, ...shape, of: spawnOf(name) }
 }
 
+/** What starts a root: a schedule, an operator's command, or the app's own write. */
+export type Trigger = ScheduleTrigger | Commanded
+
 /**
- * What starts a root: a schedule, whose every instant starts one root per member of its roster, keyed by the instant
- * and the member; an operator's command; or the app's own write, which requests the root inside the app's own
+ * A root an operator's command starts, or the app's own write, which requests the root inside the app's own
  * transaction.
  */
-export type Trigger<I> =
-	| {
-			readonly kind: "schedule"
-			readonly cron: Cron.Cron
-			/** The roots an instant starts: each member of the roster, and its root's input at that instant. */
-			readonly roster: (at: bigint) => Arr.NonEmptyReadonlyArray<Scheduled<I>>
-	  }
-	| { readonly kind: "operator" }
-	| { readonly kind: "app" }
-
-/** One member's root at a scheduled instant: the member, and its root's input. */
-export interface Scheduled<I> {
-	readonly member: string
-	readonly input: I
-}
+export type Commanded = { readonly kind: "operator" } | { readonly kind: "app" }
 
 /**
- * A root per member of `members` at each instant `cron` matches, keyed by the instant and the member, its input what
- * `input` makes of both (W1's relations, each a night's copy; W3's collections; a schedule of one root is a roster of
- * one member). Members are named as PascalCase or camelCase texts, each once.
+ * A root per member of `members` at each instant `cron` matches, keyed by the instant and the member (W1's relations,
+ * each a night's copy; W3's collections; a schedule of one root is a roster of one member), its input derived from
+ * that key (`derived` over `scheduleKey`). Members are named as PascalCase or camelCase texts, each once.
  */
-export const schedule = <const M extends Arr.NonEmptyReadonlyArray<string>, I>(
+export const schedule = (
 	cron: Cron.Cron,
-	members: M,
-	input: (at: bigint, member: M[number]) => I
-): Trigger<I> => {
+	members: Arr.NonEmptyReadonlyArray<string>
+): ScheduleTrigger => {
 	Arr.forEach(members, (member: string, index) => {
 		const why = `its member ${member} is no name of letters and digits`
 		if (!MEMBER.test(member)) {
@@ -821,12 +809,139 @@ export const schedule = <const M extends Arr.NonEmptyReadonlyArray<string>, I>(
 			throw new Refused({ declaration: "schedule", why: `its member ${member} is listed twice` })
 		}
 	})
-	return {
-		kind: "schedule",
-		cron,
-		roster: (at) => Arr.map(members, (member) => ({ member, input: input(at, member) }))
-	}
+	return { kind: "schedule", cron, members }
 }
+
+/** A schedule's trigger: its cron, and the roster's members, each a root at every instant the cron matches. */
+export interface ScheduleTrigger {
+	readonly kind: "schedule"
+	readonly cron: Cron.Cron
+	readonly members: Arr.NonEmptyReadonlyArray<string>
+}
+
+/**
+ * The key of a scheduled root: the instant its schedule matched, in den's milliseconds, and the member of its roster,
+ * a text, from which its input is derived (`derived`), a read binding both as its params.
+ */
+export const scheduleKey = Schema.Struct({ at: Schema.BigInt, member: Schema.String })
+
+/**
+ * Where a root's input comes from (grizzle main's ruling, 2026-11-25). Given: the request that names the root gives
+ * it, and the root records what it was requested with (the fragment's RequestedWith), so a key requested again of
+ * another input is refused. Derived: a read of the app's facts, bound by the root's key, gives it in the request's own
+ * statement, the request naming the key alone, so the root records nothing, its input a derived fact; a scheduled
+ * root's input is derived, from the instant and the member its key names.
+ */
+export type InputFrom = Given | Derived<Stored, unknown, unknown>
+
+/** A root's input given by its request. */
+export interface Given {
+	readonly kind: "given"
+}
+
+/**
+ * A root's input derived from its key: `key`, a struct of the fields a request names, and `read`, a query over `over`,
+ * a level of the app's below den's fragment, whose params are those fields and whose one row is the root's input, its
+ * columns the input's fields. A request finds the row in its own statement and inserts it as the root's input, and
+ * inserts the root only where it finds one, so a derived root stands only where its input derives. A read of no
+ * relation (its rule a `find` of its params alone) derives its input from the key's values alone. The role that serves
+ * the request holds `over` whole: the app's role for a root its write requests, den's for any other.
+ */
+export interface Derived<KS extends Stored, O, Q> {
+	readonly kind: "derived"
+	readonly key: KS
+	readonly over: O
+	readonly read: Q
+}
+
+/** The given source (`Given`). */
+export const given: Given = { kind: "given" }
+
+/** A root's input derived from its key `key` by the read `read` over the level `over` (`Derived`). */
+export const derived = <KS extends Stored, O, Q>(key: KS, over: O, read: Q): Derived<KS, O, Q> => ({
+	kind: "derived",
+	key,
+	over,
+	read
+})
+
+/**
+ * What a root's exclusivity seat is named by: its given input, or a derived root's key; and `unknown` while `root`'s
+ * input type is still only `Stored`'s, before TypeScript has inferred it, so a seat function states the type it reads
+ * and is held to it.
+ */
+export type SeatOf<I, F> = Uninferred<
+	[F] extends [Derived<infer KS extends Stored, unknown, unknown>] ? KS["Type"] : I
+>
+
+/**
+ * `unknown` for the type a root's input has before it is inferred, `Stored`'s (a field of any name); any other as it
+ * is.
+ */
+export type Uninferred<X> = string extends keyof X ? unknown : X
+
+/** The level a grizzle query is written over (grizzle's `SchemaSource`). */
+type LevelOf<Q> = Q extends SchemaSource<infer S, unknown> ? S : never
+
+/** Whether `T` is a union of more than one type. */
+type IsUnion<T, U = T> = T extends unknown ? ([U] extends [T] ? false : true) : never
+
+/**
+ * A root's trigger and source held together, by the member this type adds where they do not hold, which no root holds:
+ * one trigger, a schedule or a command, and one source, given or derived, never a union of either; a schedule's
+ * derived from `scheduleKey`; and a derived read held to its level, its key and its input (`DerivesInput`).
+ */
+export type Sourced<Tr, F, I> =
+	true extends IsUnion<F>
+		? { readonly "a root's input comes from one source": never }
+		: true extends IsUnion<Tr>
+			? { readonly "a root is started by a schedule or by a command, never by either": never }
+			: [Tr] extends [ScheduleTrigger]
+				? [F] extends [Derived<infer KS extends Stored, infer O, infer Q>]
+					? [KS] extends [typeof scheduleKey]
+						? DerivesInput<KS, O, Q, I>
+						: {
+								readonly "a scheduled root's key is scheduleKey, its instant and its member": never
+							}
+					: { readonly "a scheduled root's input derives from its key": never }
+				: [Tr] extends [Commanded]
+					? [F] extends [Given]
+						? unknown
+						: [F] extends [Derived<infer KS extends Stored, infer O, infer Q>]
+							? DerivesInput<KS, O, Q, I>
+							: { readonly "a root's input comes from one source": never }
+					: { readonly "a root is started by a schedule or by a command, never by either": never }
+
+/**
+ * A derived root's read held to its key, its level and its input: written over the level its source names, which the
+ * role that serves it holds whole; its parameters exactly its key's fields, each bound by the key's value; its row
+ * exactly the root's input; and at most one row for a key, as grizzle's evidence proves of the read (its card: a key of
+ * the read fixed by its parameters, or an aggregate grouped by them). So no read is declared that a request of the key
+ * cannot bind, that reads past the level its server holds, that delivers anything but the input, or that could deliver
+ * two inputs for one key.
+ */
+type DerivesInput<KS extends Stored, O, Q, I> = [LevelOf<Q>] extends [O]
+	? [O] extends [LevelOf<Q>]
+		? ReadsInput<KS, Q, I>
+		: { readonly "a derived root's read is over the level its source names": never }
+	: { readonly "a derived root's read is over the level its source names": never }
+
+/** A derived read's parameters, row and card held to its key and its input (`DerivesInput`). */
+type ReadsInput<KS extends Stored, Q, I> = [
+	Exclude<keyof ParamsOf<Q>, keyof KS["Type"]> | Exclude<keyof KS["Type"], keyof ParamsOf<Q>>
+] extends [never]
+	? [KS["Type"]] extends [ParamArg<ParamsOf<Q>>]
+		? [HeadOf<Q>] extends [I]
+			? [I] extends [HeadOf<Q>]
+				? [EvidenceOfQuery<Q>["card"]] extends ["atMostOne" | "one"]
+					? unknown
+					: { readonly "a derived root's read finds at most one row for its key": never }
+				: { readonly "a derived root's read delivers its input and nothing else": never }
+			: { readonly "a derived root's read delivers its whole input": never }
+		: { readonly "a derived root's key binds its read's parameters": never }
+	: {
+			readonly "a derived root's read takes its key's fields as its parameters, and no other": never
+		}
 
 /** A root an operator starts. */
 export const operator: { readonly kind: "operator" } = { kind: "operator" }
@@ -834,21 +949,37 @@ export const operator: { readonly kind: "operator" } = { kind: "operator" }
 /** A root the app's own write requests, in its own transaction. */
 export const app: { readonly kind: "app" } = { kind: "app" }
 
+/** What a root declares beside its scope's shape: its trigger, its input's source, its seat and its gates. */
+export type RootShape<I, Tr extends Trigger, F extends InputFrom> = RootGates & {
+	readonly trigger: Tr
+	readonly from: F
+	readonly exclusive: Exclusive<SeatOf<I, F>>
+}
+
+/**
+ * What `root` takes beside a scope's shape: its trigger, its source, its seat and its gates, held together (`Sourced`).
+ */
+export type RootDeclared<I, Tr extends Trigger, F extends InputFrom> = RootShape<I, Tr, F> &
+	Sourced<Tr, F, I>
+
 /**
  * A root kind: a scope a trigger starts, the only way a graph begins. Its identity is its kind and the idempotency key
- * its trigger gives, so starting it twice with one key starts one graph. It is admitted once its precondition holds,
- * inside its window, unless its exclusivity seat is held; its work runs only inside its window.
+ * its request names (a given root's as its caller names it, a derived root's its key's text), so starting it twice with
+ * one key starts one graph. It is admitted once its precondition holds, inside its window, unless its exclusivity seat
+ * is held; its work runs only inside its window.
  */
-export interface RootKind<
+export type RootKind<
 	Name extends string,
 	IS extends Stored,
 	Children extends ReadonlyArray<ChildKind>,
-	F extends AnyFinish
->
-	extends ScopeShape<IS, Children, F>, RootGates<IS["Type"]> {
-	readonly _tag: "Root"
-	readonly name: Name
-}
+	F extends AnyFinish,
+	Tr extends Trigger,
+	From extends InputFrom
+> = ScopeShape<IS, Children, F> &
+	RootShape<IS["Type"], Tr, From> & {
+		readonly _tag: "Root"
+		readonly name: Name
+	}
 
 export const root = <
 	const Name extends string,
@@ -858,13 +989,18 @@ export const root = <
 	OS extends Stored,
 	ES extends ErrorSchema,
 	T extends AnyCommit,
-	R
+	R,
+	const Tr extends Trigger,
+	const From extends InputFrom
 >(
 	name: Name,
-	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>> & RootGates<IS["Type"]>
-): RootKind<Name, IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>> => {
+	shape: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>> &
+		RootDeclared<IS["Type"], Tr, From>
+): RootKind<Name, IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>, Tr, From> => {
 	named("root", name)
-	return { _tag: "Root", name, ...shape }
+	const declared: ScopeShape<IS, Children, Finish<IS["Type"], Ended, OS, ES, T, R>> &
+		RootShape<IS["Type"], Tr, From> = shape
+	return { ...declared, _tag: "Root" as const, name }
 }
 
 /** A scope kind an edge spawns: never a root, which only a trigger starts. */

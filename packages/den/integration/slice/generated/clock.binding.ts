@@ -1,14 +1,13 @@
 import {
 	any,
 	committedFacts,
+	derivedKey,
 	dueOf,
 	fresh,
 	one,
 	only,
 	readingOf,
 	rowsOf,
-	scheduledKey,
-	scheduleOf,
 	signals,
 	spawnedOf,
 	type SpawnRows
@@ -266,23 +265,26 @@ export const clockLedger = (h: ClockHandles) => {
 		resume: (target) => Effect.flatMap(pausableOf(target), resumeIn(pauseChains))
 	}
 	const request = {
-		Hourly: (key: string, input: Parameters<(typeof clock.kinds)[1]["start"]>[0]) =>
-			pipe(rootScope("Clock", "Hourly", key), (scope) =>
-				pipe(
-					h.den.clockRequestHourly.once({
-						params: {
-							clockHourlyScope: scope,
-							clockHourlyKey: key,
-							clockHourlyClockScope: [{ scope, root: scope }],
-							clockHourlyClockHourlyInput: [
-								{ scope: scope, root: scope, hour: input.hour, bell: input.bell }
-							]
-						},
-						facts: {}
-					}),
-					settled,
-					fresh,
-					Effect.map((accepted) => ({ flow: FlowName.make("Clock"), scope, fresh: accepted }))
+		Hourly: (
+			key: Extract<(typeof clock.kinds)[1]["from"], { readonly kind: "derived" }>["key"]["Type"]
+		) =>
+			pipe(derivedKey(["at", "member"], key), (keyText) =>
+				pipe(rootScope("Clock", "Hourly", keyText), (scope) =>
+					pipe(
+						h.den.clockRequestHourly.once({
+							params: {
+								clockHourlyScope: scope,
+								clockHourlyKey: keyText,
+								clockHourlyClockScope: [{ scope, root: scope }],
+								clockHourlyKeyAt: key.at,
+								clockHourlyKeyMember: key.member
+							},
+							facts: {}
+						}),
+						settled,
+						fresh,
+						Effect.map((accepted) => ({ flow: FlowName.make("Clock"), scope, fresh: accepted }))
+					)
 				)
 			),
 		Sitting: (key: string, input: Parameters<(typeof clock.kinds)[3]["start"]>[0]) =>
@@ -840,16 +842,12 @@ export const clockLedger = (h: ClockHandles) => {
 		),
 		coordination,
 		scheduled: [
-			...Option.toArray(
-				Option.map(scheduleOf(clock.kinds[1].trigger), (s) => ({
-					kind: "Hourly",
-					cron: s.cron,
-					request: (at: Instant) =>
-						Effect.forEach(s.roster(at), (root) =>
-							request.Hourly(scheduledKey(at, root.member), root.input)
-						)
-				}))
-			)
+			{
+				kind: "Hourly",
+				cron: clock.kinds[1].trigger.cron,
+				request: (at: Instant) =>
+					Effect.forEach(clock.kinds[1].trigger.members, (member) => request.Hourly({ at, member }))
+			}
 		]
 	}
 	return {

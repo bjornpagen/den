@@ -185,31 +185,46 @@ export type ScopeKind<I, O, E> = Readonly<{
 	finish: FinishKind<I, O, E>
 }>
 
-/**
- * What starts a root: a schedule every `every` ticks, an operator, or the app's own write inside its transaction. An
- * operator's and an app's trigger names its kind's input heading as its deployment declares it, the fingerprint its
- * requests record beside the input they were requested with, so a deploy that changes the heading changes it; a
- * schedule's input is a function of its key and records none.
- */
+/** What starts a root: a schedule every `every` ticks, an operator, or the app's own write inside its transaction. */
 export type Trigger =
 	| Readonly<{ _tag: "Schedule"; every: number }>
-	| Readonly<{ _tag: "Operator"; heading: string }>
-	| Readonly<{ _tag: "App"; heading: string }>
+	| Readonly<{ _tag: "Operator" }>
+	| Readonly<{ _tag: "App" }>
+
+/**
+ * Where a root's input comes from (den's `from`): given by its request, which names its kind's input heading as its
+ * deployment declares it, the fingerprint its root records beside the input it was requested with, so a deploy that
+ * changes the heading changes it; or derived from its key, a read of the app's facts at the request's commit (a
+ * schedule's from its key alone), so its root records nothing.
+ */
+export type From = Readonly<{ _tag: "Given"; heading: string }> | Readonly<{ _tag: "Derived" }>
+
+/**
+ * A root's trigger and its input's source together, as den holds them: a schedule's input derives from its key; an
+ * operator's or the app's is given or derived.
+ */
+export type Started =
+	| Readonly<{
+			trigger: Extract<Trigger, Readonly<{ _tag: "Schedule" }>>
+			from: Extract<From, Readonly<{ _tag: "Derived" }>>
+	  }>
+	| Readonly<{ trigger: Exclude<Trigger, Readonly<{ _tag: "Schedule" }>>; from: From }>
 
 /**
  * A root kind: a scope a trigger starts, the only way a graph begins, behind its precondition (a read that must be
  * empty for it to be admitted, W4's quiescence) and its exclusivity (the key of the seat its run holds for its life,
- * one live run per key: per relation, per collection, one Gold build); its window bounds when its steps may run.
- * Nothing follows a root's finish.
+ * one live run per key: per relation, per collection, one Gold build), named by what its request names, `S`: its
+ * input, or a derived root's key, as den names it before any read; its window bounds when its steps may run. Nothing
+ * follows a root's finish.
  */
-export type RootKind<I, O, E> = Readonly<{
-	name: string
-	trigger: Trigger
-	precondition: Option.Option<Query>
-	exclusive: Option.Option<(input: I) => string>
-	window: Option.Option<Window>
-	scope: ScopeKind<I, O, E>
-}>
+export type RootKind<I, O, E, S = I> = Started &
+	Readonly<{
+		name: string
+		precondition: Option.Option<Query>
+		exclusive: Option.Option<(named: S) => string>
+		window: Option.Option<Window>
+		scope: ScopeKind<I, O, E>
+	}>
 
 /**
  * A declared spawn edge from a step of input `I` and output `O`: a pure function to the children it starts, steps or
@@ -337,36 +352,104 @@ export const open = <I, O, J, P, Q>(
 		Arr.map(inputs(input, output), (child) => scopeOf(target, child, then))
 })
 
+/** What a root admits, its types erased: its input as data, its exclusivity seat's key, and its scope's work. */
+export type Admits = Readonly<{
+	input: Datum
+	exclusive: Option.Option<string>
+	scope: ScopeWork
+}>
+
 /**
- * A root's admission, its types erased: the root's key (its kind and idempotency key), its input as data, the
- * fingerprint it records beside its input (its kind's input heading; none for a scheduled kind's), its precondition,
- * its exclusivity seat's key, its window, and its scope's work.
+ * Where an admission's root's input comes from: given by its request, beside the fingerprint it records with it (its
+ * kind's input heading); or derived, at the request's commit, from the rows `read` finds of the app's facts (none, for
+ * an input derived from its key's values alone), none where it derives nothing, and recorded nowhere.
+ */
+export type Source =
+	| Readonly<{ _tag: "Given"; heading: string; admits: Admits }>
+	| Readonly<{
+			_tag: "Derived"
+			read: Option.Option<Query>
+			derive: (rows: ReadonlyArray<Row>) => Option.Option<Admits>
+	  }>
+
+/**
+ * A root's admission, its types erased: the root's key (its kind and idempotency key), what its request names as data
+ * (its input, or a derived root's key; a scheduled root's admitted by `admissionOf` names the input its key derives),
+ * where its input comes from, its precondition and its window.
  */
 export type Admission = Readonly<{
 	kind: string
 	key: string
-	input: Datum
-	heading: Option.Option<string>
+	named: Datum
+	source: Source
 	precondition: Option.Option<Query>
-	exclusive: Option.Option<string>
 	window: Option.Option<Window>
-	scope: ScopeWork
 }>
 
-/** The admission of a root kind under an idempotency key, with its input. Nothing follows a root's finish. */
-export const admissionOf = <I, O, E>(
-	kind: RootKind<I, O, E>,
+/** What a root of `kind` admits with `input`, at the seat `exclusive` its request named. */
+const admitsOf = <I, O, E, S>(
+	kind: RootKind<I, O, E, S>,
+	input: I,
+	exclusive: Option.Option<string>
+): Admits => ({
+	input: kind.scope.input(input),
+	exclusive,
+	scope: scopeWorkOf(kind.scope, input, () => [])
+})
+
+/**
+ * The admission of a root kind under an idempotency key, with its input: given by its request, or, for a kind whose
+ * input derives from its key alone (a schedule's), the input its key derives, which also names its seat; a kind whose
+ * input a read derives is admitted by `derivedAdmissionOf`. Nothing follows a root's finish.
+ */
+export const admissionOf = <I, O, E>(kind: RootKind<I, O, E>, key: string, input: I): Admission => {
+	const admits = admitsOf(
+		kind,
+		input,
+		Option.map(kind.exclusive, (exclusive) => exclusive(input))
+	)
+	return {
+		kind: kind.name,
+		key,
+		named: kind.scope.input(input),
+		source:
+			kind.from._tag === "Given"
+				? { _tag: "Given", heading: kind.from.heading, admits }
+				: { _tag: "Derived", read: Option.none(), derive: () => Option.some(admits) },
+		precondition: kind.precondition,
+		window: kind.window
+	}
+}
+
+/**
+ * The admission of a root kind whose input derives from its key `named` by a read of the app's facts: the rows `read`
+ * finds at the request's commit, which `derive` makes its input of, or none, where the root is not admitted; its seat
+ * is named by the key, before any read, as den's binding names it.
+ */
+export const derivedAdmissionOf = <I, O, E, S extends Datum>(
+	kind: RootKind<I, O, E, S>,
 	key: string,
-	input: I
+	named: S,
+	read: Query,
+	derive: (rows: ReadonlyArray<Row>) => Option.Option<I>
 ): Admission => ({
 	kind: kind.name,
 	key,
-	input: kind.scope.input(input),
-	heading: kind.trigger._tag === "Schedule" ? Option.none() : Option.some(kind.trigger.heading),
+	named,
+	source: {
+		_tag: "Derived",
+		read: Option.some(read),
+		derive: (rows) =>
+			Option.map(derive(rows), (input) =>
+				admitsOf(
+					kind,
+					input,
+					Option.map(kind.exclusive, (exclusive) => exclusive(named))
+				)
+			)
+	},
 	precondition: kind.precondition,
-	exclusive: Option.map(kind.exclusive, (exclusive) => exclusive(input)),
-	window: kind.window,
-	scope: scopeWorkOf(kind.scope, input, () => [])
+	window: kind.window
 })
 
 /**

@@ -1,5 +1,5 @@
 import { stripTypeScriptTypes } from "node:module"
-import { relation } from "@bjornpagen/grizzle"
+import { pg, query, relation, schema } from "@bjornpagen/grizzle"
 import { aimed, exhaust, explore } from "@bjornpagen/testing/explore"
 import { required, requiredInSpace } from "@bjornpagen/testing/features"
 import { array, boolean, element, type Gen } from "@bjornpagen/testing/gen"
@@ -27,11 +27,14 @@ import {
 	always,
 	atSpawn,
 	awaitFact,
+	derived,
+	given,
 	none,
 	noReads,
 	operator,
 	root,
 	schedule,
+	scheduleKey,
 	shared,
 	step,
 	unconditional,
@@ -154,6 +157,7 @@ const named = (word: Word) => {
 	)
 	const Run = root("Run", {
 		trigger: operator,
+		from: given,
 		input: Schema.Struct({ [word]: Schema.String }),
 		children: [Named],
 		start: () => [],
@@ -250,53 +254,84 @@ layer(NodeServices.layer)((it) =>
 const Started = Schema.Literals(["schedule", "operator"])
 type Started = typeof Started.Type
 
-/**
- * A flow of one root started as `started`, its one step echoing its input: a schedule's root keyed by its cron's
- * instant and its one member, or an operator's. Over both, a scheduled root's request records nothing beside its Root,
- * and an operator's records what it was requested with (the fragment's RequestedWith, lower/print.ts recordsRequest): a
- * schedule's input is a function of its key, which the census requests every tick, so a deploy that changes that input
- * must never meet a recorded one and stop the census.
- *
- * Oracle (specification): docs/decisions.md, a root's request is one fact: scheduled roots record no input. Mutant it
- * kills: `recordsRequest = (j) => Option.isSome(j.root)`, which prints a schedule's request recording its input.
- */
-const startedBy = (started: Started) => {
-	const Hour = Schema.Struct({ hour: Schema.BigInt, bell: Schema.String })
-	const Chime = step(
-		"Chime",
-		{
-			input: Hour,
-			output: Hour,
-			error: Schema.Never,
-			reads: noReads,
-			awaits: [],
-			uses: [],
-			retry: none,
-			waits: none,
-			due: atSpawn,
-			writes: writesNothing
-		},
-		(hour: typeof Hour.Type) => Effect.succeed({ output: hour })
-	)
-	const Hourly = root("Hourly", {
-		trigger:
-			started === "schedule"
-				? schedule(Cron.parseUnsafe("0 * * * *"), ["east"], (at, bell) => ({ hour: at, bell }))
-				: operator,
+/** The level a schedule's hour is read over: one of no relation, which den's role holds whole. */
+const Bells = schema("Bells", [], [])
+
+/** The hour a schedule's key derives: the instant and the member it names, a read of no relation. */
+const hourOf = query(Bells).rule((r) =>
+	r.find({ hour: r.param("at", pg.bigint), bell: r.param("member", Text) })
+)
+
+/** An hour of the clock, and the bell that chimes it. */
+const Hour = Schema.Struct({ hour: Schema.BigInt, bell: Schema.String })
+
+/** Echoes its hour. */
+const Chiming = step(
+	"Chime",
+	{
 		input: Hour,
-		children: [Chime],
-		start: (hour) => [Chime.of(hour)],
+		output: Hour,
+		error: Schema.Never,
+		reads: noReads,
+		awaits: [],
+		uses: [],
+		retry: none,
+		waits: none,
+		due: atSpawn,
+		writes: writesNothing
+	},
+	(hour: typeof Hour.Type) => Effect.succeed({ output: hour })
+)
+
+/** The hourly root, each source's: a schedule's, its hour derived from its key, or an operator's, given. */
+const hourly = Object.freeze({
+	schedule: root("Hourly", {
+		trigger: schedule(Cron.parseUnsafe("0 * * * *"), ["east"]),
+		from: derived(scheduleKey, Bells, hourOf),
+		input: Hour,
+		children: [Chiming],
+		start: (hour) => [Chiming.of(hour)],
+		exclusive: shared,
+		window: always,
+		precondition: unconditional,
+		finish: finishing
+	}),
+	operator: root("Hourly", {
+		trigger: operator,
+		from: given,
+		input: Hour,
+		children: [Chiming],
+		start: (hour) => [Chiming.of(hour)],
 		exclusive: shared,
 		window: always,
 		precondition: unconditional,
 		finish: finishing
 	})
-	return flow("Bells", {
-		writes: writer<{ readonly name: "loader" }>("loader"),
-		kinds: [Chime, Hourly],
-		edges: []
-	})
-}
+})
+
+/**
+ * A flow of one root started as `started`, its one step echoing its input: a schedule's root keyed by its cron's
+ * instant and its one member, or an operator's. Over both, a scheduled root's request records nothing beside its Root,
+ * and an operator's records what it was requested with (the fragment's RequestedWith, lower/print.ts recordsRequest): a
+ * schedule's input derives from its key, which the census requests every tick, so a deploy that changes that input
+ * must never meet a recorded one and stop the census.
+ *
+ * Oracle (specification): docs/decisions.md, a root's request is one fact: scheduled roots record no input. Mutants it
+ * kills: `recordsRequest = (j) => Option.isSome(j.root)`, which prints a schedule's request recording its input, and
+ * `recordsRequestOf = () => true`, which makes a derived input record.
+ */
+const startedBy = (started: Started) =>
+	started === "schedule"
+		? flow("Bells", {
+				writes: writer<{ readonly name: "loader" }>("loader"),
+				kinds: [Chiming, hourly.schedule],
+				edges: []
+			})
+		: flow("Bells", {
+				writes: writer<{ readonly name: "loader" }>("loader"),
+				kinds: [Chiming, hourly.operator],
+				edges: []
+			})
 
 layer(NodeServices.layer)((it) =>
 	it.effect(
@@ -422,6 +457,7 @@ const shapedBy = (shape: Shape) => {
 	)
 	const Hourly = root("Hourly", {
 		trigger: operator,
+		from: given,
 		input: Input,
 		children: [Chime],
 		start: (input) => [Chime.of(input)],

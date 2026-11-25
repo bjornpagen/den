@@ -790,7 +790,7 @@ export const chainCommitPrograms = Object.freeze({
 
 export const chainCommits = workload(Loader, chainCommitPrograms)
 
-/** The requests of the flow's roots the app's own write starts, each a ChangeSet over the flow's graph the app unions with its own. */
+/** The requests of the flow's roots the app's own write starts, each a ChangeSet the app's write commits beside its own: over the flow's graph, unioned with it, or, for a root whose input derives from its key, over its app role, sequenced after the strata whose facts it derives from. */
 export const chainRequests = Object.freeze({
 	Ordered: ChangeSet.empty(chainGraph)
 		.insert(

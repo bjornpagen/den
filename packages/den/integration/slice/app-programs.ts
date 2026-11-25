@@ -50,9 +50,12 @@ import {
 	FanStartScope,
 	FanStartStep,
 	FanStep,
+	FanWantedInput,
+	FanWantedKey,
 	FanWithin,
 	fanGraph
 } from "#integration/slice/generated/fan.fragment.ts"
+import { fanRequests } from "#integration/slice/generated/fan.programs.ts"
 import {
 	RetryClaim,
 	RetryExhausted,
@@ -90,14 +93,16 @@ import {
 	Settled,
 	Summary,
 	Tally,
+	Want,
 	Weight
 } from "#integration/slice/relations.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
 /**
  * The app's own programs, apart from den's: its auditor role and its reads, and its writer role's own writes (an order
- * requesting a chain in its own transaction, a feed's weight, a passage and its embedding, a passage a learner saw). The certification suite certifies them alone, as an
- * installation with no den program would.
+ * requesting a chain in its own transaction, a feed's weight, a batch's wanted sizes and the run they derive, a passage
+ * and its embedding, a passage a learner saw). The certification suite certifies them alone, as an installation with no
+ * den program would.
  */
 
 /** A review claim's seats, the graph's own relation, which the fragment lists and does not name apart. */
@@ -146,6 +151,8 @@ export const Auditor = role(
 		FanStartScope,
 		FanStartStep,
 		FanStep,
+		FanWantedInput,
+		FanWantedKey,
 		FanWithin,
 		Heard,
 		Item,
@@ -168,6 +175,7 @@ export const Auditor = role(
 		SyncSkipped,
 		Summary,
 		Tally,
+		Want,
 		Weight
 	},
 	{ insert: ["Audit"] }
@@ -612,6 +620,14 @@ const every = Object.freeze({
 	fanRunInputs: query(Auditor).rule((r) => {
 		const { scope, batch, size } = v(FanFanRunInput, "s")
 		return r.match(FanFanRunInput, { scope, batch, size }).find({ scope, batch, size })
+	}),
+	fanWantedInputs: query(Auditor).rule((r) => {
+		const { scope, batch, size } = v(FanWantedInput, "s")
+		return r.match(FanWantedInput, { scope, batch, size }).find({ scope, batch, size })
+	}),
+	fanWantedKeys: query(Auditor).rule((r) => {
+		const { root, batch } = v(FanWantedKey, "s")
+		return r.match(FanWantedKey, { root, batch }).find({ root, batch })
 	})
 })
 
@@ -668,9 +684,11 @@ export const auditWorkload = workload(Auditor, {
 })
 
 /**
- * The app's own write: an order and the chain it requests, in one transaction, so the root exists exactly when the
+ * The app's own writes: an order and the chain it requests, in one transaction, so the root exists exactly when the
  * order does and the relay rings what the commit made eligible; clocked, since the root's instant is the write's own
- * reading of the database's clock.
+ * reading of the database's clock. And the sizes it wants a batch at, alone or beside its request of the batch's run,
+ * sequenced after them, so the run's size derives from what the write wants too, as metis's ending of a sitting
+ * sequences its essay's request after its grading.
  */
 export const appWorkload = workload(Loader, {
 	order: clocked(
@@ -680,6 +698,13 @@ export const appWorkload = workload(Loader, {
 		}
 	),
 	weigh: ChangeSet.empty(Loader).insert(App.relations.Weight, []),
+	want: ChangeSet.empty(Loader).insert(Want, []),
+	wantRun: clocked(
+		ChangeSet.sequence(ChangeSet.empty(Loader).insert(Want, []), fanRequests.Wanted),
+		{
+			now: "millis"
+		}
+	),
 	hear: ChangeSet.empty(Loader).insert(Heard, []),
 	place: ChangeSet.empty(Loader).insert(Passage, []),
 	see: ChangeSet.empty(Loader).insert(Seen, [])

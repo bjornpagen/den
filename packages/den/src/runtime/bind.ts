@@ -1,17 +1,24 @@
 import type { HeadOf, RecordedQuery, Sha256 } from "@bjornpagen/grizzle"
 import { rowText } from "@bjornpagen/grizzle/compile"
 import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, type Cron, Effect, Option, Order, Predicate, Result, Stream } from "effect"
-import type { Due, Exclusive, Scheduled, Trigger } from "#algebra/kinds.ts"
-import { atOnce, type Delay, delayOf, exclusiveId, type Instant } from "#runtime/identity.ts"
+import { Array as Arr, Effect, Option, Order, Predicate, Result, Stream } from "effect"
+import type { Due, Exclusive } from "#algebra/kinds.ts"
+import {
+	atOnce,
+	type Delay,
+	delayOf,
+	exclusiveId,
+	framedText,
+	type Instant
+} from "#runtime/identity.ts"
 import type { SpawnDue, Spawned } from "#runtime/ledger.ts"
 import type { Settled } from "#runtime/settled.ts"
 
 /**
  * What every printed binding shares (lower/print.ts) beside running each call settled (runtime/settled.ts): reading a
  * key member's one row, the database's instant and a read's rows, an array's elements in order and a value's tagged
- * unions, a spawn's due instant, a scope's exclusivity key and a root's schedule, and a watch's events as the relay's
- * signals.
+ * unions, a spawn's due instant, a scope's exclusivity key and a derived root's key, and a watch's events as the
+ * relay's signals.
  */
 
 /** The one row a key member found, if it found one. */
@@ -157,27 +164,19 @@ export const exclusiveRows = <I>(
 	}))
 
 /**
- * The idempotency key of a schedule's root for `member` at the instant `at`: the instant and the member, which holds no
- * colon, so two of a schedule's roots never share a key.
+ * The idempotency key of a derived root, its key's fields `fields` named by a request (`key`): each field's name and
+ * its value's text, framed (runtime/identity.ts framedText), the fields in the order of their names, so a deploy that
+ * only reorders the key's struct keeps every root's key. A key field holds a text, a bigint or a boolean
+ * (lower/fragment.ts derivable), each of which `String` writes one way, so two keys share a text exactly where they are
+ * equal; a schedule's root's key is its instant and its member.
  */
-export const scheduledKey = (at: bigint, member: string): string =>
-	Arr.join([String(at), member], ":")
-
-/** A root kind's schedule, none for a root an operator or the app starts. */
-export const scheduleOf = <I>(
-	trigger: Trigger<I>
-): Option.Option<{
-	readonly cron: Cron.Cron
-	readonly roster: (at: bigint) => Arr.NonEmptyReadonlyArray<Scheduled<I>>
-}> => {
-	switch (trigger.kind) {
-		case "schedule":
-			return Option.some({ cron: trigger.cron, roster: trigger.roster })
-		case "operator":
-		case "app":
-			return Option.none()
-	}
-}
+export const derivedKey = (
+	fields: ReadonlyArray<string>,
+	key: Readonly<Record<string, string | bigint | boolean>>
+): string =>
+	framedText(
+		Arr.flatMap(Arr.sort(fields, Order.String), (field: string) => [field, String(key[field])])
+	)
 
 /**
  * A watch's events as the relay's signals: a change for every row event and `ready`, the CallError for `error`, and
@@ -193,10 +192,11 @@ export const signals = <E extends { readonly kind: string; readonly error?: Call
 
 /**
  * Whether a root's request started it: accepted, where no change means the root was already requested, whatever became
- * of its graph since. A request inserts its Root and its graph's rows only where no Root holds its root, and its record
- * keeps the key once its graph is cleared (lower/print.ts requestOfRoot), so a request of a key already requested, a
- * retired root's included, adds nothing, and an app's or an operator's of another input under its kind's same input
- * heading is refused on its record's key (RequestedWith).
+ * of its graph since, or, for a root whose input derives from its key, that its read derived none, so it stands
+ * nowhere. A request inserts its Root and its graph's rows only where no Root holds its root (and, derived, where its
+ * read finds its row), and its record keeps the key once its graph is cleared (lower/print.ts requestOfRoot), so a
+ * request of a key already requested, a retired root's included, adds nothing, and one whose input it gives of another
+ * input under its kind's same input heading is refused on its record's key (RequestedWith).
  */
 export const fresh = (
 	write: Effect.Effect<WriteOutcome<unknown>, Settled>

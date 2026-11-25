@@ -29,6 +29,7 @@ import {
 } from "#identity.ts"
 import {
 	type Admission,
+	type Admits,
 	type ChildEnding,
 	type Claimed,
 	type Counts,
@@ -129,8 +130,8 @@ export type RootRow = Readonly<{
 export type SeatRow = Readonly<{ seat: SeatKey; holder: Holder }>
 
 /**
- * What an app's or an operator's root was requested with: its kind's input heading at its first request, and its
- * input's canonical text. A key names one input under one heading.
+ * What a root whose input its request gives was requested with: its kind's input heading at its first request, and
+ * its input's canonical text. A key names one input under one heading.
  */
 export type Requested = Readonly<{ heading: string; input: string }>
 
@@ -1146,20 +1147,23 @@ const land = (
 
 /**
  * Admits a root into a transaction under its key, behind what its key was requested with, its key race, its retired
- * key and its precondition's read; a root whose exclusivity seat another live run holds is recorded and ends `Held` at
- * once, so its night is skipped under its key, and answers how it went. A key requested with another input under the
- * same heading `differs`; under another heading, after a deploy that changed the kind's input, it is the same keyed
- * act, answered as its root stands.
+ * key, its input's derivation and its precondition's read; a root whose exclusivity seat another live run holds is
+ * recorded and ends `Held` at once, so its night is skipped under its key, and answers how it went. A key requested
+ * with another input under the same heading `differs`; under another heading, after a deploy that changed the kind's
+ * input, it is the same keyed act, answered as its root stands. A root whose input derives from its key records
+ * nothing: a key requested again is the same act whatever its read finds now, and a first request whose read derives
+ * nothing at its commit, the app's writes before it in the transaction among what it reads, is `underived`.
  */
 const admitInto = (tx: Tx, admission: Admission, by: By, at: number): Answer => {
 	const root: RootKey = { kind: admission.kind, key: admission.key }
 	const text = rootText(root)
 	const state = tx.state()
-	const input = textOf(admission.input)
+	const source = admission.source
 	if (
+		source._tag === "Given" &&
 		Option.exists(
 			HashMap.get(state.requested, text),
-			(held) => Option.contains(admission.heading, held.heading) && held.input !== input
+			(held) => held.heading === source.heading && held.input !== textOf(source.admits.input)
 		)
 	) {
 		return "differs"
@@ -1170,6 +1174,16 @@ const admitInto = (tx: Tx, admission: Admission, by: By, at: number): Answer => 
 	if (HashSet.has(state.retired, text)) {
 		return "retired"
 	}
+	const derived: Option.Option<Admits> =
+		source._tag === "Given"
+			? Option.some(source.admits)
+			: source.derive(
+					Option.match(source.read, { onNone: () => [], onSome: (query) => rowsOf(state, query) })
+				)
+	if (Option.isNone(derived)) {
+		return "underived"
+	}
+	const admitted = derived.value
 	const precondition = Option.map(admission.precondition, (query) => ({
 		query,
 		rows: rowsOf(state, query)
@@ -1177,7 +1191,7 @@ const admitInto = (tx: Tx, admission: Admission, by: By, at: number): Answer => 
 	if (Option.exists(precondition, (read) => Arr.isReadonlyArrayNonEmpty(read.rows))) {
 		return "blocked"
 	}
-	const seat = exclusiveSeat(admission.kind, admission.exclusive)
+	const seat = exclusiveSeat(admission.kind, admitted.exclusive)
 	const held = Option.exists(seat, (key) => standings.busy(state, key, at))
 	const scope: ScopeId = { _tag: "RootScope", root }
 	const rooted: RootRow = {
@@ -1186,23 +1200,26 @@ const admitInto = (tx: Tx, admission: Admission, by: By, at: number): Answer => 
 		kind: root.kind,
 		scope: scopeText(scope),
 		age: state.admitted,
-		exclusive: admission.exclusive,
+		exclusive: admitted.exclusive,
 		window: admission.window
 	}
-	const scoped = scopeRowOf(scope, root.kind, rooted, Option.none(), admission.scope)
+	const scoped = scopeRowOf(scope, root.kind, rooted, Option.none(), admitted.scope)
 	tx.emit({
 		_tag: "Admit",
 		fact: {
 			_tag: "Admitted",
 			root,
-			input: admission.input,
-			exclusive: admission.exclusive,
+			input: admitted.input,
+			exclusive: admitted.exclusive,
 			by,
 			at
 		},
 		root: rooted,
 		scope: scoped,
-		requested: Option.map(admission.heading, (heading) => ({ heading, input }))
+		requested:
+			source._tag === "Given"
+				? Option.some({ heading: source.heading, input: textOf(source.admits.input) })
+				: Option.none()
 	})
 	Option.match(precondition, {
 		onNone: () => undefined,
@@ -1326,7 +1343,7 @@ export const ledger = {
 		const command: Command = {
 			_tag: "Admit",
 			root: { kind: admission.kind, key: admission.key },
-			input: admission.input,
+			named: admission.named,
 			by
 		}
 		const tx = begin(state)
@@ -1349,7 +1366,7 @@ export const ledger = {
 			writes,
 			admits: Arr.map(admits, (admission) => ({
 				root: { kind: admission.kind, key: admission.key },
-				input: admission.input
+				named: admission.named
 			}))
 		}
 		const tx = begin(state)

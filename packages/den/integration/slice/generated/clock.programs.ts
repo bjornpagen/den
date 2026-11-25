@@ -9,9 +9,6 @@ import {
 	ClockOutcome,
 	ClockRetryWhy,
 	ClockPausable,
-	ClockChimeInputBell,
-	ClockHourlyInputBell,
-	ClockChimeOutputBell,
 	ClockScope,
 	ClockRoot,
 	ClockRequestedWith,
@@ -34,6 +31,7 @@ import {
 	ClockCloseInput,
 	ClockHourlyInput,
 	ClockSittingInput,
+	ClockHourlyKey,
 	ClockChimeOutput,
 	ClockCloseOutput,
 	ClockHourlyFinishOutput,
@@ -46,11 +44,17 @@ import {
 } from "#integration/slice/generated/clock.fragment.ts"
 import { Loader } from "#integration/slice/roles.ts"
 
-/** den's role for the flow Clock: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */
+/** den's role for the flow Clock: the database's instant, claims, retries, fenced attempts, failures, admissions, requests, and every read the scheduler makes. It holds the graph, the coordination group's chains, the levels its derived roots' reads are over, whole, and the steps and results of the flows its preconditions name, writing only the graph, so the scheduler's snapshot reads all of them in one statement. */
 export const ClockDen = role(
 	App,
 	"clock_den",
-	{ ...clockGraph.relations, ClockPaused, ClockResumed, ClockServed },
+	{
+		...clockGraph.relations,
+		...declaredFlow.kinds[1].from.over.relations,
+		ClockPaused,
+		ClockResumed,
+		ClockServed
+	},
 	{
 		insert: [
 			"ClockScope",
@@ -75,6 +79,7 @@ export const ClockDen = role(
 			"ClockCloseInput",
 			"ClockHourlyInput",
 			"ClockSittingInput",
+			"ClockHourlyKey",
 			"ClockHourlyFinishOutput",
 			"ClockSittingFinishOutput"
 		]
@@ -91,9 +96,6 @@ export const ClockCoordinator = role(
 		ClockOutcome,
 		ClockRetryWhy,
 		ClockPausable,
-		ClockChimeInputBell,
-		ClockHourlyInputBell,
-		ClockChimeOutputBell,
 		ClockPaused,
 		ClockResumed,
 		ClockServed
@@ -415,47 +417,87 @@ export const clockDenPrograms = Object.freeze({
 			.find({ root, scope, hour, bell })
 	}),
 	clockRequestHourly: clocked(
-		ChangeSet.empty(clockGraph)
+		ChangeSet.empty(ClockDen)
 			.insert(
 				ClockScope,
-				query(clockGraph).rule((r) => {
+				query(ClockDen).rule((r) => {
 					const requested = r.relation("clockHourlyClockScope", {
 						root: ClockScope.fields.root,
 						scope: ClockScope.fields.scope
 					})
 					const { root, scope } = v(requested, "requested")
+					const derived = declaredFlow.kinds[1].from.read.bind({
+						at: r.param("clockHourlyKeyAt", ClockHourlyKey.fields.at),
+						member: r.param("clockHourlyKeyMember", ClockHourlyKey.fields.member)
+					})
+					const { hour: derivedHour, bell: derivedBell } = v(derived, "derived")
 					return r
 						.match(requested, { root, scope })
+						.match(derived, { hour: derivedHour, bell: derivedBell })
 						.where(r.not(ClockRoot, { root }))
 						.find({ root, scope })
 				})
 			)
 			.insert(
-				ClockHourlyInput,
-				query(clockGraph).rule((r) => {
-					const requested = r.relation("clockHourlyClockHourlyInput", {
-						root: ClockHourlyInput.fields.root,
-						scope: ClockHourlyInput.fields.scope,
-						hour: ClockHourlyInput.fields.hour,
-						bell: ClockHourlyInput.fields.bell
-					})
-					const { root, scope, hour, bell } = v(requested, "requested")
-					return r
-						.match(requested, { root, scope, hour, bell })
-						.where(r.not(ClockRoot, { root }))
-						.find({ root, scope, hour, bell })
-				})
-			)
-			.insert(
-				ClockRoot,
-				query(clockGraph).rule((r) => {
+				ClockHourlyKey,
+				query(ClockDen).rule((r) => {
 					const requested = r.relation("clockHourlyClockScope", {
 						root: ClockScope.fields.root,
 						scope: ClockScope.fields.scope
 					})
 					const { root, scope } = v(requested, "requested")
+					const derived = declaredFlow.kinds[1].from.read.bind({
+						at: r.param("clockHourlyKeyAt", ClockHourlyKey.fields.at),
+						member: r.param("clockHourlyKeyMember", ClockHourlyKey.fields.member)
+					})
+					const { hour: derivedHour, bell: derivedBell } = v(derived, "derived")
 					return r
 						.match(requested, { root, scope })
+						.match(derived, { hour: derivedHour, bell: derivedBell })
+						.where(r.eq(scope, root), r.not(ClockRoot, { root }))
+						.find({
+							root,
+							at: r.param("clockHourlyKeyAt", ClockHourlyKey.fields.at),
+							member: r.param("clockHourlyKeyMember", ClockHourlyKey.fields.member)
+						})
+				})
+			)
+			.insert(
+				ClockHourlyInput,
+				query(ClockDen).rule((r) => {
+					const requested = r.relation("clockHourlyClockScope", {
+						root: ClockScope.fields.root,
+						scope: ClockScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					const derived = declaredFlow.kinds[1].from.read.bind({
+						at: r.param("clockHourlyKeyAt", ClockHourlyKey.fields.at),
+						member: r.param("clockHourlyKeyMember", ClockHourlyKey.fields.member)
+					})
+					const { hour: derivedHour, bell: derivedBell } = v(derived, "derived")
+					return r
+						.match(requested, { root, scope })
+						.match(derived, { hour: derivedHour, bell: derivedBell })
+						.where(r.eq(scope, root), r.not(ClockRoot, { root }))
+						.find({ scope, root, hour: derivedHour, bell: derivedBell })
+				})
+			)
+			.insert(
+				ClockRoot,
+				query(ClockDen).rule((r) => {
+					const requested = r.relation("clockHourlyClockScope", {
+						root: ClockScope.fields.root,
+						scope: ClockScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					const derived = declaredFlow.kinds[1].from.read.bind({
+						at: r.param("clockHourlyKeyAt", ClockHourlyKey.fields.at),
+						member: r.param("clockHourlyKeyMember", ClockHourlyKey.fields.member)
+					})
+					const { hour: derivedHour, bell: derivedBell } = v(derived, "derived")
+					return r
+						.match(requested, { root, scope })
+						.match(derived, { hour: derivedHour, bell: derivedBell })
 						.where(
 							r.eq(scope, root),
 							r.eq(root, r.param("clockHourlyScope", ClockRoot.fields.root)),

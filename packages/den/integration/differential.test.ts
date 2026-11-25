@@ -5,7 +5,7 @@ import { type Settled, settled } from "@bjornpagen/den/runtime/settled"
 import { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
-import { aimed, element, type Gen, int, oneOf } from "@bjornpagen/testing/gen"
+import { aimed, array, element, type Gen, int, oneOf } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import type { Datum } from "@den/model/datum"
 import type { Fact } from "@den/model/facts"
@@ -14,6 +14,7 @@ import { type Answered, emptyState, endingOf, ledger, type State } from "@den/mo
 import {
 	type Admission,
 	admissionOf,
+	derivedAdmissionOf,
 	type Ladder,
 	ordinals,
 	type Resource,
@@ -23,9 +24,19 @@ import {
 	scopeOf,
 	spawn,
 	type StepKind,
-	stepOf
+	stepOf,
+	type Write
 } from "@den/model/program"
-import { Array as Arr, Effect, HashMap, Option, Order, String as Str } from "effect"
+import {
+	Array as Arr,
+	Effect,
+	HashMap,
+	Number as Num,
+	Option,
+	Order,
+	Result,
+	String as Str
+} from "effect"
 import { chain, poolSeats } from "#integration/slice/flows.ts"
 import { ringAndDrain } from "#integration/support/run.ts"
 import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
@@ -37,9 +48,11 @@ import { backoffFirstMillis, backoffLastMillis, longestLeaseMillis } from "#runt
  * programs. A program is a root of the slice's chain flow (a feed of n pages, each reading the feed's stored weight),
  * requested by the operator or by the app's write of an order beside it, or of its fan-out flow (a batch of n squares
  * on the two-seat Pool), with its input drawn, and then perhaps requested again: of the same input, of another under
- * its kind's input heading, or, for the app's, of another after a deploy that changed the heading. The engine runs it
- * end to end on PostgreSQL 19; the model, given the same program as data (its kinds, edges, starts and bodies written
- * apart from the engine's, the same pure functions of their inputs), runs it in memory, every step claimed and
+ * its kind's input heading, or, for the app's, of another after a deploy that changed the heading. Or it is the fan's
+ * run whose input derives from its key (Wanted), the app's write requesting it by its batch alone, its size the largest
+ * the app wanted before the request and beside it, and perhaps requested again beside more it wants then. The engine
+ * runs it end to end on PostgreSQL 19; the model, given the same program as data (its kinds, edges, starts and bodies
+ * written apart from the engine's, the same pure functions of their inputs), runs it in memory, every step claimed and
  * committed until none is pending. Each side's trace is reduced to the facts both agree on (`support/trace.ts`), and
  * each side's request again to whether it was refused and the orders the app committed. The harness rings each root's
  * admission itself, the app's as the operator's, and not the census an app's write rings beside it (`afterCommit`,
@@ -60,6 +73,9 @@ type Feature =
 	| "a request again of another input"
 	| "a request again across a deploy"
 	| "the app's write of another input"
+	| "a run its key derives"
+	| "a key that derives no run"
+	| "a key requested again after the app wanted more"
 
 /**
  * What follows a program's run: nothing, or its request again of the same input, or of another under its kind's input
@@ -91,6 +107,12 @@ type Program =
 			readonly repeat: Repeat
 	  }
 	| { readonly kind: "fan"; readonly size: number; readonly repeat: Asked }
+	| {
+			readonly kind: "wanted"
+			readonly before: ReadonlyArray<number>
+			readonly beside: ReadonlyArray<number>
+			readonly again: Option.Option<ReadonlyArray<number>>
+	  }
 
 const askedAgain: Gen<Asked> = element(["none", "same", "other"] as const)
 
@@ -136,16 +158,45 @@ const fanOf =
 	(batch: Gen<number>): Gen<Program> =>
 	(source) => ({ kind: "fan", size: source.draw(batch), repeat: source.draw(askedAgain) })
 
+/** Up to `most` sizes the app wants a batch at, each empty to past the Pool's seats. */
+const wantedSizes = (most: number): Gen<ReadonlyArray<number>> =>
+	array(int(0, poolSeats + 1), { min: 0, max: most })
+
 /**
- * A program: a chain, or a fan-out, each as often as the other; while a situation only one arm reaches is pending, that
- * arm.
+ * A run of a batch the app's write requests by the batch alone, its size derived from the sizes the app wanted before
+ * it and beside it, then perhaps requested again, beside sizes it wants then.
  */
-const programs = aimed(oneOf<Program>([(source) => source.draw(chains), fanOf(sizes)]), [
-	["the app's write of another input", appChain("other")],
-	["a request again across a deploy", appChain("redeployed")],
-	["an empty batch", fanOf(() => 0)],
-	["a contended pool", fanOf(int(poolSeats + 1, poolSeats + 2))]
-])
+const wantedRuns: Gen<Program> = (source) => ({
+	kind: "wanted",
+	before: source.draw(wantedSizes(2)),
+	beside: source.draw(wantedSizes(1)),
+	again: source.draw(
+		oneOf([() => Option.none(), (again) => Option.some(again.draw(wantedSizes(1)))])
+	)
+})
+
+/**
+ * A program: a chain, a fan-out or a derived run, each as often as the others; while a situation only one arm reaches
+ * is pending, that arm.
+ */
+const programs = aimed(
+	oneOf<Program>([(source) => source.draw(chains), fanOf(sizes), wantedRuns]),
+	[
+		["the app's write of another input", appChain("other")],
+		["a request again across a deploy", appChain("redeployed")],
+		["an empty batch", fanOf(() => 0)],
+		["a contended pool", fanOf(int(poolSeats + 1, poolSeats + 2))],
+		[
+			"a key requested again after the app wanted more",
+			(): Program => ({
+				kind: "wanted",
+				before: [1],
+				beside: [],
+				again: Option.some([poolSeats + 1])
+			})
+		]
+	]
+)
 
 /** The model's ladder of a den step's retry: no end until it settles, or its first attempt alone; den's rungs. */
 const ladderOf = (retry: Again): Ladder => {
@@ -238,7 +289,8 @@ const finishing = (ladder: Ladder) => ({
 
 const ChainRun: RootKind<ChainIn, Datum, never> = {
 	name: "ChainRun",
-	trigger: { _tag: "Operator", heading: "ChainRunInput" },
+	trigger: { _tag: "Operator" },
+	from: { _tag: "Given", heading: "ChainRunInput" },
 	precondition: Option.none(),
 	exclusive: Option.none(),
 	window: Option.none(),
@@ -282,7 +334,8 @@ const Batch: ScopeKind<BatchIn, Datum, never> = {
 
 const FanRun: RootKind<BatchIn, Datum, never> = {
 	name: "FanRun",
-	trigger: { _tag: "Operator", heading: "FanRunInput" },
+	trigger: { _tag: "Operator" },
+	from: { _tag: "Given", heading: "FanRunInput" },
 	precondition: Option.none(),
 	exclusive: Option.none(),
 	window: Option.none(),
@@ -298,33 +351,78 @@ const FanRun: RootKind<BatchIn, Datum, never> = {
 const Ordered: RootKind<ChainIn, Datum, never> = {
 	...ChainRun,
 	name: "Ordered",
-	trigger: { _tag: "App", heading: "OrderedInput" },
+	trigger: { _tag: "App" },
+	from: { _tag: "Given", heading: "OrderedInput" },
 	scope: { ...ChainRun.scope, name: "Ordered" }
 }
 
 /** Ordered as a deploy that changed its input's heading declares it. */
 const OrderedRedeployed: RootKind<ChainIn, Datum, never> = {
 	...Ordered,
-	trigger: { _tag: "App", heading: "OrderedInput, deployed again" }
+	from: { _tag: "Given", heading: "OrderedInput, deployed again" }
 }
 
-/** A request as the model makes it: the operator's admission, or the app's write of an order that admits it. */
+/**
+ * The same run, requested by the app's write by its batch alone, its size derived from what the app wants: the largest
+ * size it wants the batch at, read when the request commits, kept since; one live run per batch, seated by its key.
+ */
+const Wanted: RootKind<BatchIn, Datum, never, { readonly batch: string }> = {
+	...FanRun,
+	name: "Wanted",
+	trigger: { _tag: "App" },
+	from: { _tag: "Derived" },
+	exclusive: Option.some((key) => key.batch),
+	scope: { ...FanRun.scope, name: "Wanted" }
+}
+
+/** The app's want of `batch` at `size`, as the model's app relation holds it, one row per size. */
+const wantOf = (batch: string, size: number): Write => ({
+	relation: "Want",
+	key: `${batch}/${String(size)}`,
+	value: size
+})
+
+/**
+ * Wanted's admission under `key`: its batch's run, at the largest size the app wants it at, none where it wants none.
+ */
+const wantedAdmissionOf = (key: string, batch: string): Admission =>
+	derivedAdmissionOf(
+		Wanted,
+		key,
+		{ batch },
+		{ _tag: "Rows", relation: "Want", key: Option.none() },
+		(found) => {
+			const wanted = Arr.filterMap(found, (row) =>
+				Str.startsWith(`${batch}/`)(row.key) && typeof row.value === "number"
+					? Result.succeed(row.value)
+					: Result.failVoid
+			)
+			return Arr.isReadonlyArrayNonEmpty(wanted)
+				? Option.some({ batch, size: Arr.max(wanted, Num.Order) })
+				: Option.none()
+		}
+	)
+
+/** A request as the model makes it: the operator's admission, or the app's write of its own facts that admits it. */
 type Asking = Readonly<{
 	admission: Admission
-	order: Option.Option<Readonly<{ order: string; feed: string }>>
+	by: Readonly<{ _tag: "Operator" }> | Readonly<{ _tag: "App"; writes: ReadonlyArray<Write> }>
 }>
 
 const askedOf = (state: State, asking: Asking): Answered =>
-	Option.match(asking.order, {
-		onNone: () => ledger.admit(state, asking.admission, "operator", 0),
-		onSome: (order) =>
-			ledger.write(
-				state,
-				[{ relation: "Order", key: order.order, value: order.feed }],
-				[asking.admission],
-				0
-			)
-	})
+	asking.by._tag === "Operator"
+		? ledger.admit(state, asking.admission, "operator", 0)
+		: ledger.write(state, asking.by.writes, [asking.admission], 0)
+
+/** An operator's request. */
+const byOperator: Asking["by"] = { _tag: "Operator" }
+
+/** The app's write of `writes` beside its request. */
+const byApp = (writes: ReadonlyArray<Write>): Asking["by"] => ({ _tag: "App", writes })
+
+/** The app's write of an order beside its request. */
+const ordering = (order: string, feed: string): Asking["by"] =>
+	byApp([{ relation: "Order", key: order, value: feed }])
 
 /** What the model's run committed: its facts, whether its request again was refused, and the app's orders. */
 type ModelRun = Readonly<{
@@ -334,30 +432,22 @@ type ModelRun = Readonly<{
 }>
 
 /**
- * The model's run of a request: the app's weight written first, then the root requested, then, pass after pass,
- * every pending step claimed and its report committed, until a pass changes nothing; then its request again, if any,
- * and its passes. Every instant is zero: the programs wait on nothing but their parents and the Pool's seats.
+ * The model's run of a request: the app's facts before it written first (a feed's weight, a batch's wants), then the
+ * root requested, then, pass after pass, every pending step claimed and its report committed, until a pass changes
+ * nothing; then its request again, if any, and its passes. Every instant is zero: the programs wait on nothing but
+ * their parents and the Pool's seats.
  */
 const modelRun = (
 	first: Asking,
 	again: Option.Option<Asking>,
-	weight: Option.Option<{ readonly feed: string; readonly factor: number }>
+	before: ReadonlyArray<Write>
 ): ModelRun => {
 	const log: Array<ReadonlyArray<Fact>> = []
 	const record = (entered: Answered): State => {
 		log.push(entered.entry.facts)
 		return entered.state
 	}
-	const written = record(
-		ledger.write(
-			emptyState,
-			Option.toArray(
-				Option.map(weight, (w) => ({ relation: "Weight", key: w.feed, value: w.factor }))
-			),
-			[],
-			0
-		)
-	)
+	const written = record(ledger.write(emptyState, before, [], 0))
 	const pass = (state: State, phase: string, turn: number): State => {
 		const pending = Arr.filter(HashMap.toValues(state.steps), (row) => Option.isNone(endingOf(row)))
 		const after = Arr.reduce(pending, state, (current, row) => {
@@ -444,7 +534,9 @@ const refusedOf = <A, E extends Settled, R>(request: Effect.Effect<A, E, R>, rec
  * Commits the facts the reference model commits, on generated programs, and refuses a request again exactly where the
  * model does: a key names one input under its kind's input heading, so a request again of another input is refused,
  * the app's write beside it committing nothing, while one of the same input, or of another after a deploy that changed
- * the heading, is the same keyed act, the app's write committing its own order and the root starting nothing.
+ * the heading, is the same keyed act, the app's write committing its own order and the root starting nothing. A
+ * derived run starts where both sides' reads derive its size at its request's commit, at the size they derive, and a
+ * request again of its key starts nothing, whatever the app wanted since.
  *
  * Budget: its suite's count before the conversion (differential: 12 independent cases and 12 steered, Vitest at den
  * dc5bd11), and 12 steered more for its requests again, each by the operator's, the app's and a fan-out's arm.
@@ -464,7 +556,10 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 			"a request again of its input",
 			"a request again of another input",
 			"a request again across a deploy",
-			"the app's write of another input"
+			"the app's write of another input",
+			"a run its key derives",
+			"a key that derives no run",
+			"a key requested again after the app wanted more"
 		] satisfies ReadonlyArray<Reached<Feature>>,
 		check:
 			({ slice }, c: Case<Feature>) =>
@@ -477,7 +572,7 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 							const key = "diff"
 							const begin = (chosen: Program) =>
 								Effect.gen(function* () {
-									if (chosen.repeat !== "none") {
+									if (chosen.kind !== "wanted" && chosen.repeat !== "none") {
 										c.note(repeatFeatures[chosen.repeat])
 									}
 									switch (chosen.kind) {
@@ -502,8 +597,8 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 												0,
 												(sum, w) => sum + Number(w.factor)
 											)
-											const weight =
-												factor > 0 ? Option.some({ feed: chosen.feed, factor }) : Option.none()
+											const weight: ReadonlyArray<Write> =
+												factor > 0 ? [{ relation: "Weight", key: chosen.feed, value: factor }] : []
 											const input: ChainIn = { feed: chosen.feed, pages: chosen.pages }
 											const other: ChainIn = { feed: chosen.feed, pages: chosen.pages + 1 }
 											/** A chain's input as the engine's request takes it: the drawn feed, which another input keeps. */
@@ -517,11 +612,13 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 												return {
 													scope: requested.scope,
 													flow: requested.flow,
+													key,
+													admits: true,
 													model: modelRun(
-														{ admission: admissionOf(ChainRun, key, input), order: Option.none() },
+														{ admission: admissionOf(ChainRun, key, input), by: byOperator },
 														Option.map(again, (run) => ({
 															admission: admissionOf(ChainRun, key, run.input),
-															order: Option.none()
+															by: byOperator
 														})),
 														weight
 													),
@@ -568,10 +665,12 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 											return {
 												scope: first.asked.scope,
 												flow: first.asked.flow,
+												key,
+												admits: true,
 												model: modelRun(
 													{
 														admission: admissionOf(Ordered, key, input),
-														order: Option.some({ order: "first", feed: chosen.feed })
+														by: ordering("first", chosen.feed)
 													},
 													Option.map(again, (run) => ({
 														admission: admissionOf(
@@ -579,7 +678,7 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 															key,
 															run.input
 														),
-														order: Option.some({ order: "again", feed: chosen.feed })
+														by: ordering("again", chosen.feed)
 													})),
 													weight
 												),
@@ -602,13 +701,15 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 											return {
 												scope: requested.scope,
 												flow: requested.flow,
+												key,
+												admits: true,
 												model: modelRun(
-													{ admission: admissionOf(FanRun, key, input), order: Option.none() },
+													{ admission: admissionOf(FanRun, key, input), by: byOperator },
 													Option.map(again, (run) => ({
 														admission: admissionOf(FanRun, key, run.input),
-														order: Option.none()
+														by: byOperator
 													})),
-													Option.none()
+													[]
 												),
 												root: "FanRun",
 												again: Option.map(again, (run) =>
@@ -617,6 +718,73 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 														"FanRequestedWith"
 													)
 												)
+											}
+										}
+										case "wanted": {
+											const asked = fanLedger.appRequests.Wanted({ batch: key })
+											const derived = asked.params.fanWantedKey
+											const wants = (wanted: ReadonlyArray<number>) =>
+												Arr.map(wanted, (size) => ({ batch: key, size: BigInt(size) }))
+											const writes = (wanted: ReadonlyArray<number>) =>
+												Arr.map(wanted, (size) => wantOf(key, size))
+											/** The app's write of the sizes `wanted` beside its request of the run. */
+											const wantedBeside = (wanted: ReadonlyArray<number>) =>
+												settled(
+													loader.workload.wantRun.once({
+														params: asked.params,
+														facts: { insert: { Want: wants(wanted) } }
+													})
+												)
+											const first = [...chosen.before, ...chosen.beside]
+											const largestOf = (wanted: ReadonlyArray<number>) =>
+												Arr.isReadonlyArrayNonEmpty(wanted)
+													? Option.some(Arr.max(wanted, Num.Order))
+													: Option.none()
+											const derivedFirst = largestOf(first)
+											const derivedAgain = largestOf([
+												...first,
+												...Option.getOrElse(chosen.again, () => [])
+											])
+											c.note(
+												Option.isSome(derivedFirst)
+													? "a run its key derives"
+													: "a key that derives no run"
+											)
+											if (
+												Option.isSome(chosen.again) &&
+												Option.isSome(derivedFirst) &&
+												Option.exists(derivedAgain, (size) => size > derivedFirst.value)
+											) {
+												c.note("a key requested again after the app wanted more")
+											}
+											yield* settled(
+												loader.workload.want.once({
+													params: {},
+													facts: { insert: { Want: wants(chosen.before) } }
+												})
+											)
+											yield* wantedBeside(chosen.beside)
+											const again = chosen.again
+											return {
+												scope: asked.scope,
+												flow: asked.flow,
+												key: derived,
+												admits:
+													Option.isSome(derivedFirst) ||
+													(Option.isSome(again) && Option.isSome(derivedAgain)),
+												model: modelRun(
+													{
+														admission: wantedAdmissionOf(derived, key),
+														by: byApp(writes(chosen.beside))
+													},
+													Option.map(again, (wanted) => ({
+														admission: wantedAdmissionOf(derived, key),
+														by: byApp(writes(wanted))
+													})),
+													writes(chosen.before)
+												),
+												root: "Wanted",
+												again: Option.map(again, (wanted) => Effect.as(wantedBeside(wanted), false))
 											}
 										}
 									}
@@ -757,12 +925,16 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 									)
 								])
 							}
-							const mine = (texts: ReadonlyArray<string>) =>
-								Arr.filter(texts, Str.includes(rootText({ kind: started.root, key })))
+							const rooted = rootText({ kind: started.root, key: started.key })
+							const mine = (texts: ReadonlyArray<string>) => Arr.filter(texts, Str.includes(rooted))
 							const engine = mine(agreed(factsOf(graph)))
 							assert.deepEqual(engine, mine(agreed(started.model.facts)))
-							assert.ok(Arr.contains(engine, `admitted ${rootText({ kind: started.root, key })}`))
-							assert.ok(Arr.some(engine, Str.startsWith("finished ")))
+							if (started.admits) {
+								assert.ok(Arr.contains(engine, `admitted ${rooted}`))
+								assert.ok(Arr.some(engine, Str.startsWith("finished ")))
+							} else {
+								assert.deepEqual(engine, [], "a key whose read derives nothing starts no root")
+							}
 						}),
 						services
 					)
@@ -792,8 +964,8 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 			{
 				file: "packages/den-model/src/ledger.ts",
 				original:
-					"\t\t\t(held) => Option.contains(admission.heading, held.heading) && held.input !== input\n",
-				replacement: "\t\t\t(held) => held.input !== input\n",
+					"\t\t\t(held) => held.heading === source.heading && held.input !== textOf(source.admits.input)\n",
+				replacement: "\t\t\t(held) => held.input !== textOf(source.admits.input)\n",
 				why: "The model compares a request again across a deploy that changed its kind's heading with the first's input, and refuses the app's redelivery the engine commits."
 			},
 			{

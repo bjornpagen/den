@@ -5,9 +5,11 @@ import {
 	type Ending,
 	atSpawn,
 	awaitFact,
+	derived,
 	dueAt,
 	edge,
 	exclusiveBy,
+	given,
 	idle,
 	instant,
 	none,
@@ -18,6 +20,7 @@ import {
 	vectorOf,
 	root,
 	schedule,
+	scheduleKey,
 	scope,
 	shared,
 	step,
@@ -30,7 +33,8 @@ import {
 import { laterOf } from "@bjornpagen/den/algebra/later"
 import { ChangeSet, Vector } from "@bjornpagen/grizzle"
 import { Array as Arr, Context, Cron, Effect, Option, Order, Schema } from "effect"
-import { DecideReads, PageReads } from "#integration/slice/reads.ts"
+import { SliceBase } from "#integration/slice/base.ts"
+import { DecideReads, HourlyOf, PageReads, WantedOf } from "#integration/slice/reads.ts"
 import {
 	Assigned,
 	Built,
@@ -201,6 +205,7 @@ const firstPage = (run: typeof ChainInput.Type) => [
 /** A feed's chain an operator starts: its first page, the chain its edges grow, and a finish moving its cursor. */
 const ChainRun = root("ChainRun", {
 	trigger: operator,
+	from: given,
 	input: ChainInput,
 	children: [Page],
 	start: firstPage,
@@ -213,6 +218,7 @@ const ChainRun = root("ChainRun", {
 /** The same chain, requested by the app's own write inside its own transaction, beside the order it records. */
 const Ordered = root("Ordered", {
 	trigger: app,
+	from: given,
 	input: ChainInput,
 	children: [Page],
 	start: firstPage,
@@ -304,29 +310,53 @@ const Batch = scope("Batch", {
 	}
 })
 
+/** A fan-out run's batch and its size. */
+const FanInput = Schema.Struct({ batch: Schema.String, size: Schema.BigInt })
+
+/** A fan-out run's finish, once its batch's has run: the batch settled. */
+const settle = Object.freeze({
+	reads: [Batch],
+	output: Finished,
+	error: Schema.Never,
+	uses: [],
+	retry: untilSettled,
+	waits: none,
+	writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Settled, []), {}),
+	body: (run: typeof FanInput.Type) =>
+		Effect.succeed({
+			output: {},
+			writes: { params: {}, facts: { insert: { Settled: [{ batch: run.batch }] } } }
+		})
+})
+
 /** A fan-out run: one batch, whose finish runs once after all its squares, and a root finish after the batch's. */
 const FanRun = root("FanRun", {
 	trigger: operator,
-	input: Schema.Struct({ batch: Schema.String, size: Schema.BigInt }),
+	from: given,
+	input: FanInput,
 	children: [Batch],
 	start: (run) => [Batch.of({ batch: run.batch, size: run.size })],
 	exclusive: shared,
 	window: always,
 	precondition: unconditional,
-	finish: {
-		reads: [Batch],
-		output: Finished,
-		error: Schema.Never,
-		uses: [],
-		retry: untilSettled,
-		waits: none,
-		writes: through((role: typeof Loader) => ChangeSet.empty(role).insert(Settled, []), {}),
-		body: (run) =>
-			Effect.succeed({
-				output: {},
-				writes: { params: {}, facts: { insert: { Settled: [{ batch: run.batch }] } } }
-			})
-	}
+	finish: settle
+})
+
+/**
+ * The same run of a batch the app's write requests by the batch alone, its size derived from what the app wants
+ * (reads.ts WantedOf) when the request commits: the largest size wanted, kept whatever is wanted after; and no run
+ * where none is wanted.
+ */
+const Wanted = root("Wanted", {
+	trigger: app,
+	from: derived(Schema.Struct({ batch: Schema.String }), SliceBase, WantedOf),
+	input: FanInput,
+	children: [Batch],
+	start: (run) => [Batch.of({ batch: run.batch, size: run.size })],
+	exclusive: exclusiveBy((key: { readonly batch: string }) => key.batch),
+	window: always,
+	precondition: unconditional,
+	finish: settle
 })
 
 /**
@@ -381,6 +411,7 @@ const Mop = step(
 /** A sweep: one Dust and one Mop, and a finish that reads neither. */
 const Sweep = root("Sweep", {
 	trigger: operator,
+	from: given,
 	input: SweepInput,
 	children: [Dust, Mop],
 	start: (sweep) => [Dust.of(sweep), Mop.of(sweep)],
@@ -401,7 +432,7 @@ const Sweep = root("Sweep", {
 
 export const fan = flow("Fan", {
 	writes: loader,
-	kinds: [Square, Batch, FanRun, Dust, Mop, Sweep],
+	kinds: [Square, Batch, FanRun, Dust, Mop, Sweep, Wanted],
 	edges: []
 })
 
@@ -436,6 +467,7 @@ const Copy = step(
 /** One live sync per relation: a second root for a relation whose sync is live is skipped, never admitted. */
 const SyncRun = root("SyncRun", {
 	trigger: operator,
+	from: given,
 	input: SyncInput,
 	children: [Copy],
 	start: (input) => [Copy.of(input)],
@@ -479,6 +511,7 @@ const Build = step(
 /** The Gold build, admitted only while the chain has no step pending (W4: no Timeback or QTI step pending). */
 const Gold = root("Gold", {
 	trigger: operator,
+	from: given,
 	input: Schema.Struct({ build: Schema.BigInt }),
 	children: [Build],
 	start: (input) => [Build.of(input)],
@@ -568,6 +601,7 @@ const Brittle = step(
  */
 const Ladders = root("Ladders", {
 	trigger: operator,
+	from: given,
 	input: Schema.Struct({ steadfast: Schema.String, brittle: Schema.String }),
 	children: [Steadfast, Brittle],
 	start: (input) => [Steadfast.of({ key: input.steadfast }), Brittle.of({ key: input.brittle })],
@@ -647,6 +681,7 @@ const Polite = step(
 /** A run of the polite step, whose finish records what it heard: its source's answer, or a refusal. */
 const Throttled = root("Throttled", {
 	trigger: operator,
+	from: given,
 	input: Attempted,
 	children: [Polite],
 	start: (input) => [Polite.of(input)],
@@ -705,6 +740,7 @@ const Patient = step(
 /** A run of the patient step, whose finish records what it heard: its source's answer, however late. */
 const Unhurried = root("Unhurried", {
 	trigger: operator,
+	from: given,
 	input: Attempted,
 	children: [Patient],
 	start: (input) => [Patient.of(input)],
@@ -896,6 +932,7 @@ const Asked = edge("Asked", Embed, Decide, (probe, embedded) => [
  */
 const Assignment = root("Assignment", {
 	trigger: operator,
+	from: given,
 	input: Probe,
 	children: [Embed],
 	start: (probe) => [Embed.of(probe)],
@@ -1117,6 +1154,7 @@ const Saved = edge("Saved", Questions, Save, (group, cluster) => [
  */
 const ReviewRun = root("ReviewRun", {
 	trigger: operator,
+	from: given,
 	input: ReviewInput,
 	children: [Gather],
 	start: (review) => [Gather.of(review)],
@@ -1188,6 +1226,7 @@ const Deliver = step(
 /** An attempt's writeback, AlphaTest's at grading: its one step delivers the result to the gradebook. */
 const Writeback = root("Writeback", {
 	trigger: operator,
+	from: given,
 	input: Graded,
 	children: [Deliver],
 	start: (graded) => [Deliver.of(graded)],
@@ -1213,7 +1252,7 @@ export const writeback = flow("Writeback", {
 })
 
 /** An hour of the clock, the instant its schedule named, and the bell that chimes it, a member of its roster. */
-const Hour = Schema.Struct({ hour: Schema.BigInt, bell: Schema.Literals(["east", "west"]) })
+const Hour = Schema.Struct({ hour: Schema.BigInt, bell: Schema.String })
 
 /** Chimes one hour on one bell: the app's row of it. */
 const Chime = step(
@@ -1239,13 +1278,12 @@ const Chime = step(
 
 /**
  * A root per bell its schedule starts at the top of every hour, each keyed by the instant its cron named and its bell,
- * which every census tick requests until the next hour's: its one step chimes that bell.
+ * which every census tick requests until the next hour's, its hour derived from that key (reads.ts HourlyOf): its one
+ * step chimes that bell.
  */
 const Hourly = root("Hourly", {
-	trigger: schedule(Cron.parseUnsafe("0 * * * *"), ["east", "west"], (at, bell) => ({
-		hour: at,
-		bell
-	})),
+	trigger: schedule(Cron.parseUnsafe("0 * * * *"), ["east", "west"]),
+	from: derived(scheduleKey, SliceBase, HourlyOf),
 	input: Hour,
 	children: [Chime],
 	start: (hour) => [Chime.of(hour)],
@@ -1288,6 +1326,7 @@ const Close = step(
 /** A timed sitting, its one step its close at its deadline. */
 const Sitting = root("Sitting", {
 	trigger: operator,
+	from: given,
 	input: Timed,
 	children: [Close],
 	start: (timed) => [Close.of(timed)],

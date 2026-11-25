@@ -31,13 +31,20 @@ export const FanKind = closed.unordered("FanKind", [
 	"Mop",
 	"BatchFinish",
 	"FanRunFinish",
-	"SweepFinish"
+	"SweepFinish",
+	"WantedFinish"
 ])
-export const FanRootKind = closed.unordered("FanRootKind", ["FanRun", "Sweep"])
+export const FanRootKind = closed.unordered("FanRootKind", ["FanRun", "Sweep", "Wanted"])
 export const FanChildKind = closed.unordered("FanChildKind", ["Batch"])
 export const FanOutcome = closed.unordered("FanOutcome", ["done", "failed"])
 export const FanRetryWhy = closed.unordered("FanRetryWhy", ["spent", "transient", "later"])
-export const FanPausable = closed.unordered("FanPausable", ["Pool", "Vendor", "FanRun", "Sweep"])
+export const FanPausable = closed.unordered("FanPausable", [
+	"Pool",
+	"Vendor",
+	"FanRun",
+	"Sweep",
+	"Wanted"
+])
 export const FanResource = closed.unordered("FanResource", ["Pool"])
 const FanSeats = closed.relation(
 	"FanSeats",
@@ -60,6 +67,11 @@ export const FanRequestedWith = relation(
 export const FanWithin = relation(
 	"FanWithin",
 	{ root: sha256, scope: sha256, parent: sha256, kind: closedId(FanChildKind) },
+	["root", "scope"]
+)
+export const FanExclusiveKey = relation(
+	"FanExclusiveKey",
+	{ root: sha256, scope: sha256, key: Text, id: sha256 },
 	["root", "scope"]
 )
 export const FanAdmitted = relation("FanAdmitted", { root: sha256, scope: sha256 }, [
@@ -156,6 +168,12 @@ export const FanSweepInput = relation(
 	{ root: sha256, scope: sha256, sweep: Text },
 	["root", "scope"]
 )
+export const FanWantedInput = relation(
+	"FanWantedInput",
+	{ root: sha256, scope: sha256, batch: Text, size: pg.bigint },
+	["root", "scope"]
+)
+export const FanWantedKey = relation("FanWantedKey", { root: sha256, batch: Text }, ["root"])
 export const FanSquareOutput = relation(
 	"FanSquareOutput",
 	{ root: sha256, step: sha256, square: pg.bigint },
@@ -185,6 +203,11 @@ export const FanSweepFinishOutput = relation(
 	{ root: sha256, step: sha256 },
 	["root", "step"]
 )
+export const FanWantedFinishOutput = relation(
+	"FanWantedFinishOutput",
+	{ root: sha256, step: sha256 },
+	["root", "step"]
+)
 const FanHold = relation(
 	"FanHold",
 	{
@@ -196,6 +219,16 @@ const FanHold = relation(
 		seat: natural
 	},
 	["resource", "root", "step", "attempt"]
+)
+export const FanExclusive = relation(
+	"FanExclusive",
+	{ kind: closedId(FanRootKind), key: sha256, turn: natural, scope: sha256 },
+	["kind", "key", "turn"]
+)
+export const FanReleased = relation(
+	"FanReleased",
+	{ kind: closedId(FanRootKind), key: sha256, turn: natural },
+	["kind", "key", "turn"]
 )
 export const FanPaused = relation("FanPaused", { target: closedId(FanPausable), turn: natural }, [
 	"target",
@@ -225,6 +258,7 @@ export const fanGraph = fragment(
 		FanRoot,
 		FanRequestedWith,
 		FanWithin,
+		FanExclusiveKey,
 		FanAdmitted,
 		FanSkipped,
 		FanStep,
@@ -247,18 +281,22 @@ export const fanGraph = fragment(
 		FanBatchInput,
 		FanFanRunInput,
 		FanSweepInput,
+		FanWantedInput,
+		FanWantedKey,
 		FanSquareOutput,
 		FanDustOutput,
 		FanMopOutput,
 		FanBatchFinishOutput,
 		FanFanRunFinishOutput,
 		FanSweepFinishOutput,
+		FanWantedFinishOutput,
 		FanHold
 	],
 	[
 		unit("DenRoot", { root: sha256 }),
 		key(on(FanScope, "scope")),
 		key(on(FanStep, "step")),
+		contained(on(FanExclusiveKey, "root", "scope"), on(FanScope, "root", "scope")),
 		contained(on(FanWithin, "root", "scope"), on(FanScope, "root", "scope")),
 		contained(on(FanWithin, "root", "parent"), on(FanScope, "root", "scope")),
 		contained(on(FanStartScope, "root", "scope"), on(FanAdmitted, "root", "scope")),
@@ -369,6 +407,27 @@ export const fanGraph = fragment(
 				"root"
 			)
 		),
+		contained(
+			on(FanWantedInput, "scope"),
+			on(
+				select(FanRoot, (row) => row.eq(row.kind, "Wanted")),
+				"root"
+			)
+		),
+		contained(
+			on(FanWantedKey, "root"),
+			on(
+				select(FanRoot, (row) => row.eq(row.kind, "Wanted")),
+				"root"
+			)
+		),
+		contained(
+			on(
+				select(FanRoot, (row) => row.eq(row.kind, "Wanted")),
+				"root"
+			),
+			on(FanWantedKey, "root")
+		),
 		contained(on(FanSquareOutput, "root", "step"), on(FanSquareInput, "root", "step")),
 		contained(on(FanSquareOutput, "root", "step"), on(FanDone, "root", "step")),
 		contained(on(FanDustOutput, "root", "step"), on(FanDustInput, "root", "step")),
@@ -378,12 +437,14 @@ export const fanGraph = fragment(
 		contained(on(FanBatchFinishOutput, "root", "step"), on(FanDone, "root", "step")),
 		contained(on(FanFanRunFinishOutput, "root", "step"), on(FanDone, "root", "step")),
 		contained(on(FanSweepFinishOutput, "root", "step"), on(FanDone, "root", "step")),
+		contained(on(FanWantedFinishOutput, "root", "step"), on(FanDone, "root", "step")),
 		unit("FanSeat", { resource: closedId(FanResource) }),
 		ordered(on(FanHold, "root", "step", "attempt", "at"), fin(FanClaim, "holds")),
 		mutable(FanHold),
 		contained(on(FanScope, "root"), on(FanRoot, "root")),
 		mutable(FanScope),
 		mutable(FanWithin),
+		mutable(FanExclusiveKey),
 		mutable(FanAdmitted),
 		contained(on(FanSkipped, "root", "scope"), on(FanScope, "root", "scope")),
 		mutable(FanSkipped),
@@ -425,6 +486,8 @@ export const fanGraph = fragment(
 		mutable(FanFanRunInput),
 		contained(on(FanSweepInput, "root", "scope"), on(FanScope, "root", "scope")),
 		mutable(FanSweepInput),
+		contained(on(FanWantedInput, "root", "scope"), on(FanScope, "root", "scope")),
+		mutable(FanWantedInput),
 		contained(on(FanSquareOutput, "root", "step"), on(FanStep, "root", "step")),
 		mutable(FanSquareOutput),
 		contained(on(FanDustOutput, "root", "step"), on(FanStep, "root", "step")),
@@ -436,7 +499,9 @@ export const fanGraph = fragment(
 		contained(on(FanFanRunFinishOutput, "root", "step"), on(FanStep, "root", "step")),
 		mutable(FanFanRunFinishOutput),
 		contained(on(FanSweepFinishOutput, "root", "step"), on(FanStep, "root", "step")),
-		mutable(FanSweepFinishOutput)
+		mutable(FanSweepFinishOutput),
+		contained(on(FanWantedFinishOutput, "root", "step"), on(FanStep, "root", "step")),
+		mutable(FanWantedFinishOutput)
 	]
 )
 
@@ -451,11 +516,18 @@ export const fanCoordination = fragment(
 		FanPausable,
 		FanResource,
 		FanSeats,
+		FanExclusive,
+		FanReleased,
 		FanPaused,
 		FanResumed,
 		FanServed
 	],
 	[
+		contained(on(FanReleased, "kind", "key", "turn"), on(FanExclusive, "kind", "key", "turn")),
+		contained(
+			on(FanExclusive, "kind", "key", pred("turn")),
+			on(FanReleased, "kind", "key", "turn")
+		),
 		contained(on(FanResumed, "target", "turn"), on(FanPaused, "target", "turn")),
 		contained(on(FanPaused, "target", pred("turn")), on(FanResumed, "target", "turn"))
 	]
@@ -496,5 +568,11 @@ export const fanWriter = [
 	"FanMopOutput",
 	"FanBatchFinishOutput",
 	"FanFanRunFinishOutput",
-	"FanSweepFinishOutput"
+	"FanSweepFinishOutput",
+	"FanWantedFinishOutput",
+	"FanScope",
+	"FanRoot",
+	"FanExclusiveKey",
+	"FanWantedInput",
+	"FanWantedKey"
 ] as const

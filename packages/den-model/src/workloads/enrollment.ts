@@ -57,6 +57,7 @@ export const enrollmentOf = (
 	const Hourly: RootKind<number, number, never> = {
 		name: "EnrollmentSweep",
 		trigger: { _tag: "Schedule", every: 1 },
+		from: { _tag: "Derived" },
 		precondition: Option.none(),
 		window: Option.none(),
 		exclusive: Option.some(() => "enrollment"),

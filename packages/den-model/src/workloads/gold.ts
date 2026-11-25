@@ -60,7 +60,8 @@ export const goldOf = (
 
 	const GoldRefresh: RootKind<Refresh, boolean, never> = {
 		name: "GoldRefresh",
-		trigger: { _tag: "Operator", heading: "GoldRefreshInput" },
+		trigger: { _tag: "Operator" },
+		from: { _tag: "Given", heading: "GoldRefreshInput" },
 		precondition: Option.some({ _tag: "Pending", roots: [TIMEBACK_DAILY, QTI_SYNC] }),
 		window: Option.none(),
 		exclusive: Option.some(() => "gold"),

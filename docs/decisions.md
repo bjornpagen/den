@@ -73,9 +73,9 @@
   - A step's declared reads are recorded with its result, in the commit; a step that dies after reading reads again.
   - A reclaim (a holder that died) counts as an attempt on the step's ladder; a wait (a transient refusal) does not.
   - Retired keys are remembered by each root's record, the closed fact that it was requested, which a retirement's
-    clearing of its graph keeps, and, for an app's or an operator's root, by what it was requested with (its kind's
-    input fingerprint and its input's digest, `<P>RequestedWith`), which the clearing keeps too; den keeps no other
-    record of them.
+    clearing of its graph keeps, and, for a root whose input its request gives, by what it was requested with (its
+    kind's input fingerprint and its input's digest, `<P>RequestedWith`), which the clearing keeps too; den keeps no
+    other record of them.
   - The Gold refresh (W4) has no window: its trigger is 13:18Z or an operator's press.
 - **The API is decided on technical merit.** Whether den keeps Effect's `Workflow`/`Activity` API as it is or offers
   a graph of steps with no workflow above them is decided by what is great about Effect's API and whether den can
@@ -200,11 +200,10 @@
   - Rejected: grizzle's `settled`, a retry inside the library under den; a copy in each app, a second spelling of one
     concept.
 - **A schedule starts a root per member of its roster (settled by the plan's need, 2026-11-20).** `schedule(cron,
-  members, (at, member) => input)` starts one root per member at each instant its cron names, keyed by the instant
-  and the member, so a nightly copy of each of W1's relations or each of W3's collections is one schedule, not a root
-  kind per member; a schedule of one root is a roster of one, the one form. Its trigger holds the roots an instant
-  starts, `roster(at)`, each member with its root's input, so the census requests each by its key and nothing reads a
-  member back.
+  members)` starts one root per member at each instant its cron names, keyed by the instant and the member
+  (`scheduleKey`), so a nightly copy of each of W1's relations or each of W3's collections is one schedule, not a root
+  kind per member; a schedule of one root is a roster of one, the one form. Its root's input derives from that key (the
+  derived ruling below), so the census requests each by its key alone and nothing reads a member back.
   - Rejected: a single-root schedule beside a roster form, two forms for one thing; a key of the instant alone with
     the member in the input, which would collapse every member's root of an instant into one.
 - **A step is joined on its input and the facts it awaits (settled by AlphaTest's need, 2026-11-20).** AlphaTest's gap
@@ -323,27 +322,68 @@
   on metis's webhook redeliveries).** A request of a key already requested with the same input, its graph standing or
   retired, adds nothing and refuses nothing, so an app's write that unions it with its own commits its own facts: every
   row of its graph a request writes is inserted only where no Root holds its root, and its record (below) again only
-  under the same fingerprint. An app's or an operator's root records beside its Root what it was requested with,
+  under the same fingerprint. A root whose input its request gives records beside its Root what it was requested with,
   `<P>RequestedWith(root, fingerprint, input)`: the fingerprint of its kind's input heading and the digest of its input
   rows, grizzle's codec text of each declared field, each framed by its length (runtime/identity.ts); a request whose
   input holds a value its field's type does not admit has no digest and no record, and grizzle refuses it, typed. A
   request again under the same fingerprint inserts it again, so an equal input meets it and another is refused on its
   key, naming the root; one under another fingerprint, after a deploy that changed the kind's input heading, inserts
   nothing and is answered as already requested, so a redelivery across a shape change is idempotent: a reused key with
-  other content goes undetected only across that boundary, where the two inputs have no one text to compare. A scheduled
-  root records none: its input is a function of its key, which the census requests every tick, so no deploy can stop it.
-  The heading frames each input relation with each declared field's name and type as den prints it, a brand with its
-  base and a roster with its handles, and the digest's printed construction, and each fingerprint is taken under the
-  running den's input digest scheme, a known answer of its digest over a fixed probe, so a deploy that changes the
-  input, or a den whose digest answers otherwise, generated again or not, changes it.
+  other content goes undetected only across that boundary, where the two inputs have no one text to compare. A root
+  whose input derives from its key records none (below), a scheduled root's among them. The heading frames each input
+  relation with each declared field's name and type as den prints it, a brand with its base and a roster with its
+  handles, and the digest's printed construction, and each fingerprint is taken under the running den's input digest
+  scheme, a known answer of its digest over a fixed probe, so a deploy that changes the input, or a den whose digest
+  answers otherwise, generated again or not, changes it.
   - Rejected: `race(Root)` or a second header; a digest of the raw input value, a second canonical text beside
-    grizzle's; clearing `<P>RequestedWith` when a kind's input changes, since it is closed and every app's and
-    operator's Root is contained in it.
+    grizzle's; clearing `<P>RequestedWith` when a kind's input changes, since it is closed and every Root whose input
+    was given is contained in it.
   - The record has no backfill: it lands as a one-init cutover, every installation installed fresh from an init drafted
     from nothing (metis's own; edullm and grizzle hold no persistent den installation, each suite's installed fresh). An
-    installation of a den from before it holds its app's and operator's roots without a record, and any migration that
-    states the law containing them in `<P>RequestedWith` is refused while such a root stands, naming the law
-    (`requested.test.ts`); an init drafted again replaces the folder its ledger applied, which grizzle's migrate refuses
-    before any statement (`AppliedEdited`). A kind moved from a schedule to an app's or an operator's trigger is such a
-    migration too: its scheduled roots hold no record and roots are never deleted, so it is refused for good once one
-    was requested, and such a move takes a kind of a new name.
+    installation of a den from before it holds its given roots without a record, and any migration that states the law
+    containing them in `<P>RequestedWith` is refused while such a root stands, naming the law (`requested.test.ts`); an
+    init drafted again replaces the folder its ledger applied, which grizzle's migrate refuses before any statement
+    (`AppliedEdited`). A kind moved from a derived input to a given one is such a migration too: its roots hold no
+    record and roots are never deleted, so it is refused for good once one was requested, and such a move takes a kind
+    of a new name.
+- **A root's input is given by its request or derived from its key, and only a given one is recorded (grizzle main's
+  ruling, 2026-11-25, den v3; lane METIS-PROCTOR).** Every root declares where its input comes from (`from`), one
+  source, never a union: `given`, its request naming its input, which its root records (above); or `derived(key, over,
+  read)`, its request naming its key alone, a struct of text, bigint and boolean fields, and its input the one row
+  `read` finds, an ordinary grizzle query over `over`, a level of the app's below den's fragment, whose parameters are
+  exactly the key's fields, whose row is exactly the input, and of which grizzle's evidence proves at most one row
+  (algebra/kinds.ts `Sourced` holds these by type, the read written over the level its source names among them, and a
+  schedule's source to `scheduleKey`). The request's own statement binds the read by the key's parameters and inserts
+  its row as the root's input, every row of the request inserted only where the read finds one and no Root holds the
+  root, so a derived root stands exactly where its input derives, at its request's commit, and records nothing: its
+  input is a derived fact. A request again of the key, its graph standing or retired, starts nothing and leaves the
+  input as it was, whatever the read finds now; a request whose read finds nothing inserts nothing and is answered as no
+  fresh root. Its key is kept as `<P><Root>Key`, keyed by the root, closed and kept through retirement, containing the
+  kind's Root and contained in it, so no derived root stands without its key, and a kind moved from a given input to a
+  derived one is refused while any of its roots stands, as the record's move is (above). Its idempotency key is its
+  key's fields' names and texts, framed, by the fields' names (runtime/bind.ts derivedKey), so a struct that only
+  reorders its fields keeps every key, and one that renames a field changes every key, which the key's own law is to
+  refuse once its fields can key it (each key text bounded at its natural limit, or an explicit SHA-256 digest of them
+  declared to key it, Bjorn's rule: no automatic key hashing; TODO.md); its exclusivity seat is named by its key, the
+  one value its request holds before its read (`SeatOf`). A scheduled root's input is derived, the one way: the
+  schedule's key is its instant and its roster's member (`scheduleKey`), each tick requesting a root per member by that
+  key alone, so no deploy that changes the input can stop the census. The request is served by the role that holds the
+  read's level whole. A root den requests (an operator's, a schedule's) is served by den's role, which holds that level
+  for reading and writes only the graph, so the census still requests while the app's commits login is refused, and
+  den's runtime login reads that level: a read is written over the narrowest level that holds what it reads, and for an
+  app whose lowest level holds every relation, as metis's does, every scheduled flow's den role reads every app table
+  until a read of no relation can be written over grizzle's empty level (`schema.empty`, DENSCOPE's; TODO.md). A root
+  the app's own write requests is served by the app's role, and the write sequences it after the strata whose facts it
+  derives from, as metis's ending of a sitting sequences its essay's request after its grading; that role holds the
+  inserts of its rows, a derived root's key and input among them, as it holds a given app root's, the app trusted with
+  its own write and the generated request the one way it writes them. An ordinary served read, under grizzle's read laws
+  and its missed-index refusal.
+  - Rejected: a schedule's own input function beside the read (two ways to derive an input); a derived request that
+    names any field beside its key; recording a derived input, which no deploy that changes the read could compare;
+    rosters, brands and doubles in a derived key or input: den lowers a roster or a brand to its own fragment's type,
+    which a read of the app's level neither binds nor delivers, and a double writes -0 and 0 alike; serving den's
+    derived requests over the app's role, which would grant the app role inserts into every scheduled flow's roots and
+    fail the census with the app's login.
+  - The key's text is a one-init cutover too: a scheduled root's key was its instant and its member joined by a colon,
+    and is now `derivedKey`'s, so an installation from before it would request the current instant again under another
+    root; every installation installs fresh from its one init (above).

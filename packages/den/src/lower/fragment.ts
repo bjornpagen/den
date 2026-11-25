@@ -14,6 +14,7 @@ import {
 	type Due,
 	type Again,
 	Refused,
+	type InputFrom,
 	type Stored,
 	type Trigger
 } from "#algebra/kinds.ts"
@@ -21,6 +22,7 @@ import {
 	type ArrayField,
 	type Base,
 	type Column,
+	type ColumnType,
 	type DenKey,
 	errorShapeOf,
 	type Shape,
@@ -294,19 +296,38 @@ export interface FinishReadIR {
 }
 
 /**
- * Whether a root started by `trigger` records what it was requested with (its kind's RequestedWith): an app's or an
- * operator's, never a schedule's, whose input is a function of its key, so no change of it can stop the census that
- * requests the key every tick. The one place the rule is stated: the fragment's law and the printed requests read it.
+ * Whether a derived root's key's or input's column of type `type` is one its read can bind or deliver, and its key's
+ * text names one way: a text, a bigint or a boolean. A read is declared over a level of the app's below den's
+ * fragment, beside the flow, before den lowers the flow's rosters and contracts, so it delivers and binds base columns
+ * alone; no double, whose -0 and 0 write alike.
  */
-const recordsRequestOf = (trigger: Trigger<never>["kind"]): boolean => trigger !== "schedule"
+const derivable = (type: ColumnType): boolean => type.kind === "base" && type.base !== "double"
 
 /**
- * What only a root has: its trigger, whether its request records what it was requested with (`recordsRequestOf`),
- * whether it holds an exclusivity seat, and the flows its precondition names.
+ * Whether a root whose input comes `from` its request or its key records what it was requested with (its kind's
+ * RequestedWith): exactly where its request gives its input; a derived input is a derived fact, nothing to compare, a
+ * scheduled root's among them (grizzle main's ruling, 2026-11-25). The one place the rule is stated: the fragment's law
+ * and the printed requests read it.
+ */
+export const recordsRequestOf = (from: InputFrom["kind"]): boolean => from === "given"
+
+/**
+ * A derived root's key, its kind's `<P><Root>Key`: the relation that keeps the key's fields beside its Root, and the
+ * fields, in its key struct's order.
+ */
+export interface KeyIR {
+	readonly relation: string
+	readonly fields: ReadonlyArray<string>
+}
+
+/**
+ * What only a root has: its trigger, where its input comes from (given, or derived from its key), which decides whether
+ * its request records what it was requested with (`recordsRequestOf`), whether it holds an exclusivity seat, and the
+ * flows its precondition names.
  */
 export interface RootIR {
-	readonly trigger: Trigger<never>["kind"]
-	readonly records: boolean
+	readonly trigger: Trigger["kind"]
+	readonly from: Readonly<{ kind: "given" }> | Readonly<{ kind: "derived"; key: KeyIR }>
 	readonly exclusive: boolean
 	readonly idle: ReadonlyArray<string>
 }
@@ -358,13 +379,14 @@ export interface Lowered {
 	 * in the call that opens it, so its admission, its finish and its own start's children are among them.
 	 */
 	readonly spawning: ReadonlyArray<string>
-	/** The relations the request of a root the app's own write starts writes. */
+	/** The relations the flow's app role writes the request of a root the app's own write starts into. */
 	readonly requesting: ReadonlyArray<string>
 	/** The relations den's coordinator role inserts into: each chain's turns and their ends. */
 	readonly coordination: ReadonlyArray<string>
 	/**
-	 * The relations a finished root's clearing deletes the rows of, at its root: every graph relation but the root's own
-	 * record, what it was requested with (RequestedWith), and its claims' holds, which go with their claims.
+	 * The relations a finished root's clearing deletes the rows of, at its root: every graph relation but the root's
+	 * own record, what it was requested with (RequestedWith) or a derived root's key, and its claims' holds, which go
+	 * with their claims.
 	 */
 	readonly cleared: ReadonlyArray<string>
 	/** The claims' holds, each a member of its claim's ordered family under the flow's seat unit. */
@@ -538,15 +560,16 @@ export const lower = (flow: AnyFlow): Lowered => {
 		key: ["root"]
 	})
 	/**
-	 * What an app's or an operator's root was requested with: the fingerprint of its kind's input heading when its first
-	 * request was made (lower/print.ts inputHeadingOf) and the digest of that request's input rows, grizzle's codec
-	 * text of each (runtime/identity.ts inputDigest). A closed fact beside its Root, never updated or deleted, nor deleted
-	 * by retirement. A request again under the same fingerprint inserts it again, so an equal input meets it and changes
-	 * nothing and another input is refused on its key, naming the root: a key names one input. A request under another
-	 * fingerprint, after a deploy that changed the kind's input heading, inserts nothing and is answered as already
-	 * requested, the same keyed act, so a redelivery across a shape change is idempotent: a reused key with other content
-	 * goes undetected only across that boundary, where the two inputs have no one text to compare. A scheduled root has
-	 * none, its input a function of its key, so no input change can stop the census that requests it every tick.
+	 * What a root whose input its request gives was requested with: the fingerprint of its kind's input heading when
+	 * its first request was made (lower/print.ts inputHeadingOf) and the digest of that request's input rows, grizzle's
+	 * codec text of each (runtime/identity.ts inputDigest). A closed fact beside its Root, never updated or deleted,
+	 * nor deleted by retirement. A request again under the same fingerprint inserts it again, so an equal input meets
+	 * it and changes nothing and another input is refused on its key, naming the root: a key names one input. A request
+	 * under another fingerprint, after a deploy that changed the kind's input heading, inserts nothing and is answered
+	 * as already requested, the same keyed act, so a redelivery across a shape change is idempotent: a reused key with
+	 * other content goes undetected only across that boundary, where the two inputs have no one text to compare. A root
+	 * whose input derives from its key has none (its key instead), a scheduled root's among them, so no input change
+	 * can stop the census that requests it every tick.
 	 */
 	const RequestedWith = relation({
 		name: name("RequestedWith"),
@@ -781,7 +804,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		into(side(Exhausted, ["step"]), failedSide)
 	)
 	Arr.forEach(roots, (j) => {
-		if (recordsRequestOf(j.trigger.kind)) {
+		if (recordsRequestOf(j.from.kind)) {
 			laws.push(into(sideOf(Root, ["root"], ofKind(j.name)), side(RequestedWith, ["root"])))
 		}
 	})
@@ -978,6 +1001,67 @@ export const lower = (flow: AnyFlow): Lowered => {
 		})
 
 	/**
+	 * Each derived root's key, by its kind's name: the fields its request names, kept beside its Root in
+	 * `<P><Root>Key`, keyed by the root, closed and outside the cleared unit like the Root itself, contained in the
+	 * kind's Root and containing it, so no derived root stands without its key, nor a key without its root, a retired
+	 * root's among them. Its fields and its input's are columns of a text, a bigint or a boolean (`derivable`), so its
+	 * text is one way (runtime/bind.ts derivedKey) and its read is bound by them as its params and delivers its input
+	 * as one row of such columns.
+	 */
+	const keys = new Map<string, KeyIR>()
+	Arr.forEach(roots, (j) => {
+		if (j.from.kind !== "derived") {
+			return
+		}
+		const declaration = `root ${j.name}'s key`
+		const relationName = name(`${j.name}Key`)
+		const shape = shapeOf(declaration, j.from.key)
+		Arr.forEach(
+			[
+				[declaration, shape],
+				[`root ${j.name}'s derived input`, inputOf(j.name).shape]
+			] as const,
+			([refused, held]) => {
+				if (
+					Arr.isReadonlyArrayNonEmpty(held.options) ||
+					Arr.isReadonlyArrayNonEmpty(held.arrays) ||
+					Arr.isReadonlyArrayNonEmpty(held.unions)
+				) {
+					throw new Refused({
+						declaration: refused,
+						why: "it holds columns alone, no Option, array or tagged union, the one row a read binds or delivers"
+					})
+				}
+				Arr.forEach(held.columns, (c) => {
+					if (c.name === "root") {
+						throw new Refused({
+							declaration: refused,
+							why: "its field root is one its relation keeps for itself"
+						})
+					}
+					if (!derivable(c.type)) {
+						throw new Refused({
+							declaration: refused,
+							why: `its field ${c.name} is no text, bigint or boolean, the columns a read of a level of the app's binds or delivers`
+						})
+					}
+				})
+			}
+		)
+		relation({
+			name: relationName,
+			fields: [
+				{ name: "root", type: scopeKey },
+				...Arr.map(shape.columns, (c) => ({ name: c.name, type: fieldOf(relationName, c) }))
+			],
+			key: ["root"]
+		})
+		laws.push(into(side(relationName, ["root"]), sideOf(Root, ["root"], ofKind(j.name))))
+		laws.push(into(sideOf(Root, ["root"], ofKind(j.name)), side(relationName, ["root"])))
+		keys.set(j.name, { relation: relationName, fields: Arr.map(shape.columns, (c) => c.name) })
+	})
+
+	/**
 	 * Each node's output, by its kind's name: a step kind's, held only where its step is done and its input holds it, and
 	 * a scope kind's, its finish's, held only where its finish is done; an edge leaves a node only from its output, so a
 	 * node that failed spawns nothing.
@@ -1152,7 +1236,10 @@ export const lower = (flow: AnyFlow): Lowered => {
 				j._tag === "Root"
 					? Option.some({
 							trigger: j.trigger.kind,
-							records: recordsRequestOf(j.trigger.kind),
+							from: Option.match(Option.fromNullishOr(keys.get(j.name)), {
+								onNone: () => ({ kind: "given" as const }),
+								onSome: (key) => ({ kind: "derived" as const, key })
+							}),
 							exclusive: j.exclusive.kind === "exclusive",
 							idle: j.precondition.kind === "idle" ? j.precondition.flows : []
 						})
@@ -1316,34 +1403,45 @@ export const lower = (flow: AnyFlow): Lowered => {
 		),
 		...Arr.map(edgesIR, (e) => e.relation)
 	]
+	const appRequested = Arr.filter(joinsIR, (j: JoinIR) =>
+		Option.exists(j.root, (r) => r.trigger === "app")
+	)
 	const requesting = [
 		Scope,
 		Root,
-		RequestedWith,
+		...(Arr.some(appRequested, (j) => Option.exists(j.root, (r) => recordsRequestOf(r.from.kind)))
+			? [RequestedWith]
+			: []),
 		...exclusiveKeys,
-		...Arr.flatMap(
-			Arr.filter(joinsIR, (j: JoinIR) => Option.exists(j.root, (r) => r.trigger === "app")),
-			(j: JoinIR) => valueRelations(j.input)
-		)
+		...Arr.flatMap(appRequested, (j: JoinIR) => [
+			...valueRelations(j.input),
+			...Option.toArray(
+				Option.flatMap(j.root, (r) =>
+					r.from.kind === "derived" ? Option.some(r.from.key.relation) : Option.none()
+				)
+			)
+		])
 	]
 
 	/**
-	 * Every root's graph sits under one unit of grizzle's, `DenRoot`, keyed by the root's scope, `root`, which every flow's
-	 * fragment states alike and so one unit, the roots being digests that no two flows share: every graph relation but the
-	 * root's own record carries its root as `root`, first in its key and on both sides of every containment and key
-	 * between them, so every write of a graph's rows holds its root. A root's record is closed, the fact that it was
-	 * requested, and so is what it was requested with (RequestedWith); every other graph relation is mutable inside the
-	 * unit, since a finished root's graph is cleared under its root, every row of it deleted but those two. A claim's
-	 * holds sit under the flow's seat unit and are cleared with their claims. The coordination group is no part of any
-	 * unit: its chains of turns outlive the graphs whose steps took them.
+	 * Every root's graph sits under one unit of grizzle's, `DenRoot`, keyed by the root's scope, `root`, which every
+	 * flow's fragment states alike and so one unit, the roots being digests that no two flows share: every graph
+	 * relation but the root's own record carries its root as `root`, first in its key and on both sides of every
+	 * containment and key between them, so every write of a graph's rows holds its root. A root's record is closed, the
+	 * fact that it was requested, and so is what it was requested with (RequestedWith) and a derived root's key
+	 * (`<P><Root>Key`); every other graph relation is mutable inside the unit, since a finished root's graph is cleared
+	 * under its root, every row of it deleted but those. A claim's holds sit under the flow's seat unit and are cleared
+	 * with their claims. The coordination group is no part of any unit: its chains of turns outlive the graphs whose
+	 * steps took them.
 	 *
 	 * A row's root is its owner's. Each identity is held by one relation keyed by it alone beside its root, a step by
 	 * Step and a scope by Scope, since den derives it from its parent's (runtime/identity.ts): it names one row, of one
-	 * root. Every other graph relation leads its fields with its owner, the identity its row lives under, and is contained
-	 * by its root and its owner in its owner's holder; Step's owner is its scope, and Scope's is its root, its record. So
-	 * a read that fixes a step or a scope fixes its root, the unit every row of it sits in: a containment onto a key of
-	 * one field gives the field it pairs with the key every other field it pairs (grizzle's declared statistics, its
-	 * dependencies), and each row's own containment in its root's record follows, through its holder's.
+	 * root. Every other graph relation leads its fields with its owner, the identity its row lives under, and is
+	 * contained by its root and its owner in its owner's holder; Step's owner is its scope, and Scope's is its root,
+	 * its record. So a read that fixes a step or a scope fixes its root, the unit every row of it sits in: a
+	 * containment onto a key of one field gives the field it pairs with the key every other field it pairs (grizzle's
+	 * declared statistics, its dependencies), and each row's own containment in its root's record follows, through its
+	 * holder's.
 	 */
 	const held = Arr.map(Option.toArray(seats), (st) => st.hold)
 	const bodies = new Set(
@@ -1352,6 +1450,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 			(r) =>
 				r !== Root &&
 				r !== RequestedWith &&
+				!Arr.some(Array.from(keys.values()), (key) => key.relation === r) &&
 				!Arr.contains(coordination, r) &&
 				!Arr.contains(held, r)
 		)

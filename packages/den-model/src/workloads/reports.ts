@@ -85,7 +85,8 @@ export const reportsOf = (
 
 	const ReportRoot: RootKind<Report, number, never> = {
 		name: names.root,
-		trigger: { _tag: "App", heading: `${names.root}Input` },
+		trigger: { _tag: "App" },
+		from: { _tag: "Given", heading: `${names.root}Input` },
 		precondition: Option.none(),
 		window: Option.none(),
 		exclusive: Option.none(),

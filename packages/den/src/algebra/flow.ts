@@ -4,6 +4,7 @@ import {
 	type AnyFinish,
 	type AnyStepKind,
 	type Exclusive,
+	type InputFrom,
 	named,
 	type PauseHandle,
 	type Precondition,
@@ -20,7 +21,8 @@ import {
 export interface AnyRootKind {
 	readonly _tag: "Root"
 	readonly name: string
-	readonly trigger: { readonly kind: Trigger<never>["kind"] }
+	readonly trigger: { readonly kind: Trigger["kind"] }
+	readonly from: InputFrom
 	readonly input: Stored
 	readonly children: ReadonlyArray<{ readonly _tag: string; readonly name: string }>
 	readonly exclusive: Exclusive<never>

@@ -55,7 +55,8 @@ export const seedOf = (
 
 	const SeedRoot: RootKind<Seeding, number, never> = {
 		name: "SilverSeedRun",
-		trigger: { _tag: "Operator", heading: "SilverSeedRunInput" },
+		trigger: { _tag: "Operator" },
+		from: { _tag: "Given", heading: "SilverSeedRunInput" },
 		precondition: Option.none(),
 		window: Option.none(),
 		exclusive: Option.none(),

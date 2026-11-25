@@ -24,6 +24,7 @@
 					"__assign_decide_read_seen_row_pattern_passage_4zwznhaacf",
 					"__assigned_pattern_learner_w5zkki4w7t",
 					"__assigned_pattern_passage_ljzhrsqlme",
+					"__chimed_pattern_bell_a65w27lsyh",
 					"__concluded_pattern_learner_awya7ix2jm",
 					"__concluded_pattern_served_abzd77g66z",
 					"__copied_pattern_relation_43bo7updbu",
@@ -38,7 +39,8 @@
 					"__seen_pattern_passage_r5wqomaqes",
 					"__settled_pattern_batch_fbl3au7jk6",
 					"__summary_pattern_review_nzjhowrn3c",
-					"__tally_pattern_batch_tfec76yjc3"
+					"__tally_pattern_batch_tfec76yjc3",
+					"__want_pattern_batch_o5ooyzbfz4"
 				]
 			}
 		},
@@ -1332,6 +1334,17 @@
 					"__clock_hourly_input_pk_root_scope_46f6q3on6o"
 				]
 			},
+			"clock_hourly_key": {
+				"__clock_hourly_key_pk_iqlcy244pv": [
+					"__clock_hourly_key_pk_root_vlktqxdsn4"
+				],
+				"__rule_clock_hourly_key_in_clock_root_37zki4obpg": [
+					"__clock_hourly_key_in_clock_root_fzwnoyqvjx"
+				],
+				"__rule_clock_root_kind_in_clock_hourly_key_5fbasagjwk": [
+					"__clock_root_kind_in_clock_hourly_key_sx3qadfb55"
+				]
+			},
 			"clock_paused": {
 				"__clock_paused_fk_target_pred_turn_7tgjovpr6x": [
 					"__clock_paused_in_clock_resumed_2p7f3spwzi"
@@ -1401,6 +1414,12 @@
 				],
 				"__clock_root_pk_rnmiw3efr2": [
 					"__clock_root_pk_root_4ff33vzn7k"
+				],
+				"__rule_clock_hourly_key_in_clock_root_37zki4obpg": [
+					"__clock_hourly_key_in_clock_root_fzwnoyqvjx"
+				],
+				"__rule_clock_root_kind_in_clock_hourly_key_5fbasagjwk": [
+					"__clock_root_kind_in_clock_hourly_key_sx3qadfb55"
 				],
 				"__rule_clock_root_kind_in_clock_requested_with_vdixallsrx": [
 					"__clock_root_kind_in_clock_requested_with_tic43y5sht"
@@ -1622,6 +1641,22 @@
 					"__fan_live_key_resource_seat_wqkc2jfkpw"
 				]
 			},
+			"fan_exclusive": {
+				"__fan_exclusive_fk_kind_key_pred_turn_dyvewabv75": [
+					"__fan_exclusive_in_fan_released_4ivzz6vkeg"
+				],
+				"__fan_exclusive_pk_m6sgdzlvmh": [
+					"__fan_exclusive_pk_kind_key_turn_w765qxvwtd"
+				]
+			},
+			"fan_exclusive_key": {
+				"__fan_exclusive_key_fk_root_scope_w4wlpmkbb6": [
+					"__fan_exclusive_key_in_fan_scope_oymgyc352c"
+				],
+				"__fan_exclusive_key_pk_dqq46aar7y": [
+					"__fan_exclusive_key_pk_root_scope_74wl3jpibr"
+				]
+			},
 			"fan_exhausted": {
 				"__fan_exhausted_fk_root_step_lfol3zhscm": [
 					"__fan_exhausted_in_fan_failed_e6lgt3s6k2"
@@ -1784,6 +1819,14 @@
 					"__fan_refusal_pk_root_step_jmqcnmrcco"
 				]
 			},
+			"fan_released": {
+				"__fan_released_fk_kind_key_turn_3w24p2wqa2": [
+					"__fan_released_in_fan_exclusive_frzk2g6xjh"
+				],
+				"__fan_released_pk_kzdup6rx4m": [
+					"__fan_released_pk_kind_key_turn_xbnkqssyds"
+				]
+			},
 			"fan_requested_with": {
 				"__fan_requested_with_fk_root_4p6mpdfivp": [
 					"__fan_requested_with_in_fan_root_4kqlshiuud"
@@ -1843,6 +1886,12 @@
 				],
 				"__rule_fan_root_kind_in_fan_requested_with_y2eoonmjh6": [
 					"__fan_root_kind_in_fan_requested_with_5pofsnch6r"
+				],
+				"__rule_fan_root_kind_in_fan_wanted_key_mzt6xbg4yb": [
+					"__fan_root_kind_in_fan_wanted_key_n6zp2yj56f"
+				],
+				"__rule_fan_wanted_key_in_fan_root_sqvhpj3vqk": [
+					"__fan_wanted_key_in_fan_root_72brvlkzc2"
 				]
 			},
 			"fan_scope": {
@@ -1977,6 +2026,39 @@
 				],
 				"__fan_sweep_input_pk_zzlgjjqr6f": [
 					"__fan_sweep_input_pk_root_scope_xpt23c3av6"
+				]
+			},
+			"fan_wanted_finish_output": {
+				"__fan_wanted_finish_output_fk_root_step_5gnvgmuqtc": [
+					"__fan_wanted_finish_output_in_fan_step_elsvta4mb2"
+				],
+				"__fan_wanted_finish_output_fk_root_step_nowqxllejz": [
+					"__fan_wanted_finish_output_in_fan_done_hrqr6pkund"
+				],
+				"__fan_wanted_finish_output_pk_yzfwxx7lln": [
+					"__fan_wanted_finish_output_pk_root_step_op4pt6cjme"
+				]
+			},
+			"fan_wanted_input": {
+				"__fan_wanted_input_fk_root_scope_bplbmnj6uf": [
+					"__fan_wanted_input_in_fan_scope_odse2qoioo"
+				],
+				"__fan_wanted_input_fk_scope_tag_kind_wanted_3573mr5njd": [
+					"__fan_wanted_input_in_fan_root_k7e3rbvk2r"
+				],
+				"__fan_wanted_input_pk_dnq2nzzzkx": [
+					"__fan_wanted_input_pk_root_scope_yc6nbmzsv5"
+				]
+			},
+			"fan_wanted_key": {
+				"__fan_wanted_key_pk_uqg7pqcckj": [
+					"__fan_wanted_key_pk_root_pam7qaxsnc"
+				],
+				"__rule_fan_root_kind_in_fan_wanted_key_mzt6xbg4yb": [
+					"__fan_root_kind_in_fan_wanted_key_n6zp2yj56f"
+				],
+				"__rule_fan_wanted_key_in_fan_root_sqvhpj3vqk": [
+					"__fan_wanted_key_in_fan_root_72brvlkzc2"
 				]
 			},
 			"fan_within": {
@@ -3350,6 +3432,11 @@
 					"__tally_pk_batch_ae65tx2wol"
 				]
 			},
+			"want": {
+				"__want_pk_exjpgudfoz": [
+					"__want_pk_batch_size_epog3lvm4d"
+				]
+			},
 			"weight": {
 				"__weight_pk_p77rl634io": [
 					"__weight_pk_feed_factor_ecfc3qemnh"
@@ -3730,6 +3817,10 @@
 				"FanEnded"
 			],
 			[
+				"FanExclusive",
+				"FanReleased"
+			],
+			[
 				"FanPaused",
 				"FanResumed"
 			],
@@ -3869,6 +3960,8 @@
 				"fan_claim": [],
 				"fan_dust_input": [],
 				"fan_ended": [],
+				"fan_exclusive": [],
+				"fan_exclusive_key": [],
 				"fan_fan_run_input": [],
 				"fan_fenced": [],
 				"fan_finish": [],
@@ -3876,6 +3969,7 @@
 				"fan_hold": [],
 				"fan_mop_input": [],
 				"fan_paused": [],
+				"fan_released": [],
 				"fan_result": [],
 				"fan_resumed": [],
 				"fan_retry": [],
@@ -3888,6 +3982,8 @@
 				"fan_start_step": [],
 				"fan_step": [],
 				"fan_sweep_input": [],
+				"fan_wanted_input": [],
+				"fan_wanted_key": [],
 				"fan_within": [],
 				"heard": [],
 				"item": [],
@@ -4024,6 +4120,10 @@
 			},
 			{
 				"law": "__fan_sweep_input_in_fan_root_5twfrs7hqj",
+				"part": 0
+			},
+			{
+				"law": "__fan_wanted_input_in_fan_root_k7e3rbvk2r",
 				"part": 0
 			},
 			{
@@ -4495,6 +4595,34 @@
 						}
 					},
 					"relation": "Tally"
+				},
+				"want": {
+					"indexes": {
+						"__want_pk_exjpgudfoz": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "batch",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "size",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__want_pk_batch_size_epog3lvm4d"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "Want"
 				},
 				"weight": {
 					"indexes": {
@@ -9843,6 +9971,37 @@
 					},
 					"relation": "ClockHourlyInput"
 				},
+				"clock_hourly_key": {
+					"indexes": {
+						"__clock_hourly_key_pk_iqlcy244pv": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_hourly_key_pk_root_vlktqxdsn4"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_hourly_key_in_clock_root_fzwnoyqvjx"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_root_kind_in_clock_hourly_key_sx3qadfb55"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "ClockHourlyKey"
+				},
 				"clock_paused": {
 					"indexes": {
 						"__clock_paused_ix_target_pred_turn_qryngij_6_c_4_la4ocjtto2": {
@@ -10152,6 +10311,14 @@
 								{
 									"kind": "law",
 									"law": "__clock_root_pk_root_4ff33vzn7k"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_hourly_key_in_clock_root_fzwnoyqvjx"
+								},
+								{
+									"kind": "law",
+									"law": "__clock_root_kind_in_clock_hourly_key_sx3qadfb55"
 								},
 								{
 									"kind": "law",
@@ -10991,6 +11158,116 @@
 					},
 					"relation": "FanEnded"
 				},
+				"fan_exclusive": {
+					"indexes": {
+						"__fan_exclusive_ix_kind_key_pred_turn_qryngij_6_c_4_vboqjsyskn": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "kind",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "key",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"holds": {
+										"field": "turn",
+										"kind": "term"
+									},
+									"kind": "law",
+									"laws": [
+										"__fan_exclusive_in_fan_released_4ivzz6vkeg"
+									]
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_exclusive_in_fan_released_4ivzz6vkeg"
+								}
+							]
+						},
+						"__fan_exclusive_pk_m6sgdzlvmh": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "kind",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "key",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "turn",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_exclusive_pk_kind_key_turn_w765qxvwtd"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanExclusive"
+				},
+				"fan_exclusive_key": {
+					"indexes": {
+						"__fan_exclusive_key_ix_scope_7s5kcsf2wj": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__fan_exclusive_key_pk_dqq46aar7y": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_exclusive_key_pk_root_scope_74wl3jpibr"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_exclusive_key_in_fan_scope_oymgyc352c"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanExclusiveKey"
+				},
 				"fan_exhausted": {
 					"indexes": {
 						"__fan_exhausted_pk_4t3sxjskvd": {
@@ -11676,6 +11953,43 @@
 					},
 					"relation": "FanRefusal"
 				},
+				"fan_released": {
+					"indexes": {
+						"__fan_released_pk_kzdup6rx4m": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "kind",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "key",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "turn",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_released_pk_kind_key_turn_xbnkqssyds"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_released_in_fan_exclusive_frzk2g6xjh"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanReleased"
+				},
 				"fan_requested_with": {
 					"indexes": {
 						"__fan_requested_with_pk_vaj2obx6si": {
@@ -11888,6 +12202,10 @@
 								},
 								{
 									"kind": "law",
+									"law": "__fan_wanted_input_in_fan_root_k7e3rbvk2r"
+								},
+								{
+									"kind": "law",
 									"law": "__fan_fan_run_input_in_fan_root_xx6j5eu5n5"
 								}
 							]
@@ -11912,6 +12230,14 @@
 								{
 									"kind": "law",
 									"law": "__fan_root_kind_in_fan_requested_with_bwfggm3qrn"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_root_kind_in_fan_wanted_key_n6zp2yj56f"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_wanted_key_in_fan_root_72brvlkzc2"
 								},
 								{
 									"kind": "access"
@@ -12486,6 +12812,123 @@
 						}
 					},
 					"relation": "FanSweepInput"
+				},
+				"fan_wanted_finish_output": {
+					"indexes": {
+						"__fan_wanted_finish_output_pk_yzfwxx7lln": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_wanted_finish_output_pk_root_step_op4pt6cjme"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_wanted_finish_output_in_fan_done_hrqr6pkund"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_wanted_finish_output_in_fan_step_elsvta4mb2"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanWantedFinishOutput"
+				},
+				"fan_wanted_input": {
+					"indexes": {
+						"__fan_wanted_input_ix_scope_57fqk3rwec": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_wanted_input_in_fan_root_k7e3rbvk2r"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__fan_wanted_input_pk_dnq2nzzzkx": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_wanted_input_pk_root_scope_yc6nbmzsv5"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_wanted_input_in_fan_scope_odse2qoioo"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanWantedInput"
+				},
+				"fan_wanted_key": {
+					"indexes": {
+						"__fan_wanted_key_pk_uqg7pqcckj": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_wanted_key_pk_root_pam7qaxsnc"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_root_kind_in_fan_wanted_key_n6zp2yj56f"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_wanted_key_in_fan_root_72brvlkzc2"
+								},
+								{
+									"kind": "access"
+								}
+							]
+						}
+					},
+					"relation": "FanWantedKey"
 				},
 				"fan_within": {
 					"indexes": {
@@ -19528,11 +19971,11 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "47731ab40179aa760094f7f66a0e4e43b4bc722efeea58310e437690f458a57a",
+	"fingerprint": "8811b9da547cf97fe342f8e8f46b78b95c053ef0e56e4f19936cc5906793067e",
 	"format": 8,
 	"levels": [
 		{
-			"fingerprint": "9a0e28864de1001de07449250f627ab92de1e719ee6d6bd7c205ba4082565255",
+			"fingerprint": "0cd4af1fea215e6a02a44476e1280794a3407330b9a72ec0fe6b2de7c149bc59",
 			"laws": [
 				{"described":{"fields":["learner"],"kind":"primaryKey","relation":"Assigned"},"law":"__assigned_pk_learner_ogs732lrn5"},
 				{"described":{"fields":["build"],"kind":"primaryKey","relation":"Built"},"law":"__built_pk_build_iy4nih3fhq"},
@@ -19551,13 +19994,14 @@
 				{"described":{"fields":["batch"],"kind":"primaryKey","relation":"Settled"},"law":"__settled_pk_batch_qfhu63z7q7"},
 				{"described":{"fields":["review"],"kind":"primaryKey","relation":"Summary"},"law":"__summary_pk_review_ugsih7yu3h"},
 				{"described":{"fields":["batch"],"kind":"primaryKey","relation":"Tally"},"law":"__tally_pk_batch_ae65tx2wol"},
+				{"described":{"fields":["batch","size"],"kind":"primaryKey","relation":"Want"},"law":"__want_pk_batch_size_epog3lvm4d"},
 				{"described":{"fields":["feed","factor"],"kind":"primaryKey","relation":"Weight"},"law":"__weight_pk_feed_factor_ecfc3qemnh"}
 			],
 			"name": "Slice",
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "0acc714d2b5460ac4e6e94bf8d6a29c7c99209af74819f5a46f2a128bae4ecd6",
+			"fingerprint": "fcc329ca80a36dfdc1ebc353add2846c67028e2bbc9dfaa62cbdbbb215f88b4c",
 			"laws": [
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_k674zmpvkp"},
 				{"described":{"fields":["root","scope"],"kind":"primaryKey","relation":"AssignAdmitted"},"law":"__assign_admitted_pk_root_scope_gdkqjkbw6t"},
@@ -19883,6 +20327,8 @@
 				{"described":{"from":{"relation":"ClockHourlyInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Hourly"}}]},"terms":[{"field":"root","kind":"field"}]}},"law":"__clock_hourly_input_in_clock_root_7hs4dixu6l"},
 				{"described":{"from":{"relation":"ClockHourlyInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ClockScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]}},"law":"__clock_hourly_input_in_clock_scope_wt5pr366gq"},
 				{"described":{"fields":["root","scope"],"kind":"primaryKey","relation":"ClockHourlyInput"},"law":"__clock_hourly_input_pk_root_scope_46f6q3on6o"},
+				{"described":{"from":{"relation":"ClockHourlyKey","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Hourly"}}]},"terms":[{"field":"root","kind":"field"}]}},"law":"__clock_hourly_key_in_clock_root_fzwnoyqvjx"},
+				{"described":{"fields":["root"],"kind":"primaryKey","relation":"ClockHourlyKey"},"law":"__clock_hourly_key_pk_root_vlktqxdsn4"},
 				{"described":{"from":{"relation":"ClockPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"ClockResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__clock_paused_in_clock_resumed_2p7f3spwzi"},
 				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"ClockPaused"},"law":"__clock_paused_pk_target_turn_hghrkxmwlv"},
 				{"described":{"from":{"relation":"ClockRefusal","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ClockFailed","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]}},"law":"__clock_refusal_in_clock_failed_xuxtfutsnf"},
@@ -19897,6 +20343,7 @@
 				{"described":{"from":{"relation":"ClockRetry","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]},"kind":"contained","to":{"relation":"ClockEnded","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]}},"law":"__clock_retry_in_clock_ended_qi4l4tuosw"},
 				{"described":{"from":{"relation":"ClockRetry","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"ClockStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]}},"law":"__clock_retry_in_clock_step_edvvq5imfv"},
 				{"described":{"fields":["root","step","attempt"],"kind":"primaryKey","relation":"ClockRetry"},"law":"__clock_retry_pk_root_step_attempt_xdskxe5g7y"},
+				{"described":{"from":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Hourly"}}]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockHourlyKey","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]}},"law":"__clock_root_kind_in_clock_hourly_key_sx3qadfb55"},
 				{"described":{"from":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Sitting"}}]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRequestedWith","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]}},"law":"__clock_root_kind_in_clock_requested_with_tic43y5sht"},
 				{"described":{"fields":["root"],"kind":"primaryKey","relation":"ClockRoot"},"law":"__clock_root_pk_root_4ff33vzn7k"},
 				{"described":{"from":{"relation":"ClockScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]}},"law":"__clock_scope_in_clock_root_jxroiiu6m4"},
@@ -19948,6 +20395,10 @@
 				{"described":{"from":{"relation":"FanEnded","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]},"kind":"contained","to":{"relation":"FanClaim","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"},{"field":"attempt","kind":"field"}]}},"law":"__fan_ended_in_fan_claim_hf7rqygjyx"},
 				{"described":{"from":{"relation":"FanEnded","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]}},"law":"__fan_ended_in_fan_step_6daevp636i"},
 				{"described":{"fields":["root","step","attempt"],"kind":"primaryKey","relation":"FanEnded"},"law":"__fan_ended_pk_root_step_attempt_4unexgvcsk"},
+				{"described":{"from":{"relation":"FanExclusive","selection":{"conjuncts":[]},"terms":[{"field":"kind","kind":"field"},{"field":"key","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"FanReleased","selection":{"conjuncts":[]},"terms":[{"field":"kind","kind":"field"},{"field":"key","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__fan_exclusive_in_fan_released_4ivzz6vkeg"},
+				{"described":{"from":{"relation":"FanExclusiveKey","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]}},"law":"__fan_exclusive_key_in_fan_scope_oymgyc352c"},
+				{"described":{"fields":["root","scope"],"kind":"primaryKey","relation":"FanExclusiveKey"},"law":"__fan_exclusive_key_pk_root_scope_74wl3jpibr"},
+				{"described":{"fields":["kind","key","turn"],"kind":"primaryKey","relation":"FanExclusive"},"law":"__fan_exclusive_pk_kind_key_turn_w765qxvwtd"},
 				{"described":{"from":{"relation":"FanExhausted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanFailed","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]}},"law":"__fan_exhausted_in_fan_failed_e6lgt3s6k2"},
 				{"described":{"from":{"relation":"FanExhausted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]}},"law":"__fan_exhausted_in_fan_step_3u464357l5"},
 				{"described":{"fields":["root","step"],"kind":"primaryKey","relation":"FanExhausted"},"law":"__fan_exhausted_pk_root_step_e3zhwpooc2"},
@@ -19986,6 +20437,8 @@
 				{"described":{"from":{"relation":"FanRefusal","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanFailed","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]}},"law":"__fan_refusal_in_fan_failed_dwdrefhnfp"},
 				{"described":{"from":{"relation":"FanRefusal","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]}},"law":"__fan_refusal_in_fan_step_cuxfqa2q2u"},
 				{"described":{"fields":["root","step"],"kind":"primaryKey","relation":"FanRefusal"},"law":"__fan_refusal_pk_root_step_jmqcnmrcco"},
+				{"described":{"from":{"relation":"FanReleased","selection":{"conjuncts":[]},"terms":[{"field":"kind","kind":"field"},{"field":"key","kind":"field"},{"field":"turn","kind":"field"}]},"kind":"contained","to":{"relation":"FanExclusive","selection":{"conjuncts":[]},"terms":[{"field":"kind","kind":"field"},{"field":"key","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__fan_released_in_fan_exclusive_frzk2g6xjh"},
+				{"described":{"fields":["kind","key","turn"],"kind":"primaryKey","relation":"FanReleased"},"law":"__fan_released_pk_kind_key_turn_xbnkqssyds"},
 				{"described":{"from":{"relation":"FanRequestedWith","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]}},"law":"__fan_requested_with_in_fan_root_4kqlshiuud"},
 				{"described":{"fields":["root"],"kind":"primaryKey","relation":"FanRequestedWith"},"law":"__fan_requested_with_pk_root_7bdtejr5cr"},
 				{"described":{"from":{"relation":"FanResult","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]}},"law":"__fan_result_in_fan_step_ilrg2edroz"},
@@ -19997,6 +20450,7 @@
 				{"described":{"fields":["root","step","attempt"],"kind":"primaryKey","relation":"FanRetry"},"law":"__fan_retry_pk_root_step_attempt_k5pwvo7uf6"},
 				{"described":{"from":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"FanRun"}}]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRequestedWith","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]}},"law":"__fan_root_kind_in_fan_requested_with_5pofsnch6r"},
 				{"described":{"from":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Sweep"}}]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRequestedWith","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]}},"law":"__fan_root_kind_in_fan_requested_with_bwfggm3qrn"},
+				{"described":{"from":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Wanted"}}]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanWantedKey","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]}},"law":"__fan_root_kind_in_fan_wanted_key_n6zp2yj56f"},
 				{"described":{"fields":["root"],"kind":"primaryKey","relation":"FanRoot"},"law":"__fan_root_pk_root_k25hzzmj4e"},
 				{"described":{"from":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]}},"law":"__fan_scope_in_fan_root_n4nkb6kg2d"},
 				{"described":{"kind":"key","side":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]}},"law":"__fan_scope_key_scope_sejztzt55v"},
@@ -20033,6 +20487,14 @@
 				{"described":{"from":{"relation":"FanSweepInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Sweep"}}]},"terms":[{"field":"root","kind":"field"}]}},"law":"__fan_sweep_input_in_fan_root_5twfrs7hqj"},
 				{"described":{"from":{"relation":"FanSweepInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]}},"law":"__fan_sweep_input_in_fan_scope_ijo54diiqi"},
 				{"described":{"fields":["root","scope"],"kind":"primaryKey","relation":"FanSweepInput"},"law":"__fan_sweep_input_pk_root_scope_xpt23c3av6"},
+				{"described":{"from":{"relation":"FanWantedFinishOutput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanDone","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]}},"law":"__fan_wanted_finish_output_in_fan_done_hrqr6pkund"},
+				{"described":{"from":{"relation":"FanWantedFinishOutput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]},"kind":"contained","to":{"relation":"FanStep","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"step","kind":"field"}]}},"law":"__fan_wanted_finish_output_in_fan_step_elsvta4mb2"},
+				{"described":{"fields":["root","step"],"kind":"primaryKey","relation":"FanWantedFinishOutput"},"law":"__fan_wanted_finish_output_pk_root_step_op4pt6cjme"},
+				{"described":{"from":{"relation":"FanWantedInput","selection":{"conjuncts":[]},"terms":[{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Wanted"}}]},"terms":[{"field":"root","kind":"field"}]}},"law":"__fan_wanted_input_in_fan_root_k7e3rbvk2r"},
+				{"described":{"from":{"relation":"FanWantedInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]}},"law":"__fan_wanted_input_in_fan_scope_odse2qoioo"},
+				{"described":{"fields":["root","scope"],"kind":"primaryKey","relation":"FanWantedInput"},"law":"__fan_wanted_input_pk_root_scope_yc6nbmzsv5"},
+				{"described":{"from":{"relation":"FanWantedKey","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Wanted"}}]},"terms":[{"field":"root","kind":"field"}]}},"law":"__fan_wanted_key_in_fan_root_72brvlkzc2"},
+				{"described":{"fields":["root"],"kind":"primaryKey","relation":"FanWantedKey"},"law":"__fan_wanted_key_pk_root_pam7qaxsnc"},
 				{"described":{"from":{"relation":"FanWithin","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]}},"law":"__fan_within_in_fan_scope_bz6hsvih2k"},
 				{"described":{"from":{"relation":"FanWithin","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"parent","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]}},"law":"__fan_within_in_fan_scope_gneohkjy7x"},
 				{"described":{"fields":["root","scope"],"kind":"primaryKey","relation":"FanWithin"},"law":"__fan_within_pk_root_scope_t5mczvx25o"},
@@ -20445,7 +20907,7 @@
 			"schema": "slice_den"
 		},
 		{
-			"fingerprint": "1b16ea860133ede6d22447ca6f623841a4b09ab89aec8c6f999b999e14b1dbc2",
+			"fingerprint": "de313b82c36f9a7d490e60175c886bcc296083d06a533edf206de45cf2d90567",
 			"laws": [
 				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"},
 				{"described":{"kind":"key","side":{"relation":"FanLive","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"}]}},"law":"__fan_live_key_resource_seat_wqkc2jfkpw"},
@@ -20840,6 +21302,14 @@
 				"routes": []
 			},
 			{
+				"relation": "FanExclusive",
+				"routes": []
+			},
+			{
+				"relation": "FanExclusiveKey",
+				"routes": []
+			},
+			{
 				"relation": "FanFanRunInput",
 				"routes": []
 			},
@@ -20865,6 +21335,10 @@
 			},
 			{
 				"relation": "FanPaused",
+				"routes": []
+			},
+			{
+				"relation": "FanReleased",
 				"routes": []
 			},
 			{
@@ -20913,6 +21387,14 @@
 			},
 			{
 				"relation": "FanSweepInput",
+				"routes": []
+			},
+			{
+				"relation": "FanWantedInput",
+				"routes": []
+			},
+			{
+				"relation": "FanWantedKey",
 				"routes": []
 			},
 			{
@@ -21401,16 +21883,6 @@
 				"kind": "live"
 			}
 		],
-		"Bell": [
-			{
-				"handle": "east",
-				"kind": "live"
-			},
-			{
-				"handle": "west",
-				"kind": "live"
-			}
-		],
 		"ChainChainRunInputFeed": [
 			{
 				"handle": "news",
@@ -21496,36 +21968,6 @@
 			},
 			{
 				"handle": "Ordered",
-				"kind": "live"
-			}
-		],
-		"ClockChimeInputBell": [
-			{
-				"handle": "east",
-				"kind": "live"
-			},
-			{
-				"handle": "west",
-				"kind": "live"
-			}
-		],
-		"ClockChimeOutputBell": [
-			{
-				"handle": "east",
-				"kind": "live"
-			},
-			{
-				"handle": "west",
-				"kind": "live"
-			}
-		],
-		"ClockHourlyInputBell": [
-			{
-				"handle": "east",
-				"kind": "live"
-			},
-			{
-				"handle": "west",
 				"kind": "live"
 			}
 		],
@@ -21621,6 +22063,10 @@
 			{
 				"handle": "SweepFinish",
 				"kind": "live"
+			},
+			{
+				"handle": "WantedFinish",
+				"kind": "live"
 			}
 		],
 		"FanOutcome": [
@@ -21648,6 +22094,10 @@
 			},
 			{
 				"handle": "Vendor",
+				"kind": "live"
+			},
+			{
+				"handle": "Wanted",
 				"kind": "live"
 			}
 		],
@@ -21678,6 +22128,10 @@
 			},
 			{
 				"handle": "Sweep",
+				"kind": "live"
+			},
+			{
+				"handle": "Wanted",
 				"kind": "live"
 			}
 		],

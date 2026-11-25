@@ -191,6 +191,7 @@ export const alphatestOf = (
 	const AlphaTestNightly: RootKind<Night, boolean, never> = {
 		name: "AlphaTestNightly",
 		trigger: { _tag: "Schedule", every: 1 },
+		from: { _tag: "Derived" },
 		precondition: Option.none(),
 		window: limits.window,
 		exclusive: Option.some(() => "alphatest"),

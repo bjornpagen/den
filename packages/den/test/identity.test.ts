@@ -7,6 +7,7 @@ import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
 import { assert, describe, it } from "@effect/vitest"
 import { Array as Arr, Effect, Formatter, String as Str } from "effect"
+import { derivedKey } from "#runtime/bind.ts"
 import {
 	edgeScope,
 	edgeStep,
@@ -27,13 +28,18 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * Derived identity: a root's scope is a function of its flow, kind and idempotency key, a spawned step or scope of its
  * parent, edge and ordinal, and an exclusivity seat of its flow, kind and key text, each the SHA-256 of its parts,
  * grizzle's `sha256`, its 32 bytes, so a step run twice spawns onto the same keys and two scopes of one key meet at one
- * seat; and distinct parts derive distinct keys, so no two children of a graph share one. A start's ordinal and an edge's
- * ordinal name one child each, a step or a scope, so a step and a scope derived from the same parts never both exist.
- * A kind's input fingerprint is a function of its heading's text under the running den's input digest scheme, and a
- * request's input digest of its flow, kind and input texts, each text framed by its length; a digest's scheme is what
- * it answers over a fixed probe, so a digest that answers otherwise has another scheme, and every fingerprint with it.
+ * seat; and distinct parts derive distinct keys, so no two children of a graph share one. A start's ordinal and an
+ * edge's ordinal name one child each, a step or a scope, so a step and a scope derived from the same parts never both
+ * exist. A kind's input fingerprint is a function of its heading's text under the running den's input digest scheme,
+ * and a request's input digest of its flow, kind and input texts, each text framed by its length; a digest's scheme is
+ * what it answers over a fixed probe, so a digest that answers otherwise has another scheme, and every fingerprint with
+ * it. A derived root's key text is its key's fields' names and texts, each framed, by the fields' names
+ * (runtime/bind.ts derivedKey), so two keys share a text exactly where they are equal, a key's parts moved between its
+ * fields among them, and a struct that only reorders its fields keeps its text.
  *
- * Oracle (universal): f(x) = f(x), x ≠ y ⇒ f(x) ≠ f(y), and 32 bytes.
+ * Oracle (universal): f(x) = f(x), x ≠ y ⇒ f(x) ≠ f(y), and 32 bytes. Mutant it kills: a derived key's texts joined
+ * unframed, `derivedKey = (fields, key) => Arr.join(Arr.map(fields, (f) => String(key[f])), "")`; the fields taken in
+ * their struct's order.
  */
 
 type Feature = "same key" | "different keys"
@@ -89,6 +95,23 @@ describe("derived identity", () => {
 						const finish = finishStep(first)
 						const child = startedScope(first, 0)
 						const opened = edgeScope(started, "Next", 0)
+						const keyed = derivedKey(["at", "member"], { at: a, member: b })
+						assert.strictEqual(keyed, derivedKey(["at", "member"], { at: a, member: b }))
+						assert.strictEqual(
+							keyed,
+							derivedKey(["member", "at"], { at: a, member: b }),
+							"a derived key's text is its fields' by their names, whatever order its struct declares them in"
+						)
+						assert.strictEqual(
+							keyed === derivedKey(["at", "member"], { at: b, member: a }),
+							a === b,
+							"a derived key's text names its fields' values in its fields' order"
+						)
+						assert.strictEqual(
+							keyed === derivedKey(["at", "member"], { at: `${a}${b}`, member: "" }),
+							b === "",
+							"a derived key's text keeps its fields apart"
+						)
 						const seat = exclusiveId("Flow", "Run", a)
 						const sameSeat = exclusiveId("Flow", "Run", a)
 						const otherSeat = exclusiveId("Flow", "Run", b)
@@ -187,10 +210,7 @@ describe("derived identity", () => {
 						)
 						const derived = [first, started, next, finish, seat, heading, digest]
 						assert.isTrue(
-							Arr.every(
-								[...derived, child, opened],
-								(derivedKey) => derivedKey.length === DIGEST_BYTES
-							)
+							Arr.every([...derived, child, opened], (id) => id.length === DIGEST_BYTES)
 						)
 						assert.strictEqual(Arr.dedupeWith(derived, Sha256.equals).length, derived.length)
 						const sibling = startedScope(first, 1)

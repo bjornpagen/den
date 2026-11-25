@@ -178,11 +178,11 @@ export type Reported =
  * - `Retire`, `Pause`, `Resume`, `Deploy`: the census's retirement of a finished root, and the operator's verbs.
  */
 export type Command =
-	| Readonly<{ _tag: "Admit"; root: RootKey; input: Datum; by: By }>
+	| Readonly<{ _tag: "Admit"; root: RootKey; named: Datum; by: By }>
 	| Readonly<{
 			_tag: "Write"
 			writes: ReadonlyArray<Write>
-			admits: ReadonlyArray<Readonly<{ root: RootKey; input: Datum }>>
+			admits: ReadonlyArray<Readonly<{ root: RootKey; named: Datum }>>
 	  }>
 	| Readonly<{ _tag: "Claim"; step: StepId; turn: string; deployment: number }>
 	| Readonly<{
@@ -213,8 +213,10 @@ export type Command =
  * - `live`: a retirement found its root not yet finished;
  * - `held`, `retired`, `blocked`: an admission found its exclusivity seat held by a live run, its key retired (it never
  *   recurs), or its precondition's read not empty;
- * - `differs`: an app's or an operator's admission found its key requested with another input under its kind's same
- *   input heading, and the call commits nothing, the app's own writes beside it among it.
+ * - `differs`: an admission whose input its request gives found its key requested with another input under its kind's
+ *   same input heading, and the call commits nothing, the app's own writes beside it among it;
+ * - `underived`: an admission whose input derives from its key found that its read derives none at the request's
+ *   commit, so no root stands, and the app's own writes beside it land.
  */
 export type Answer =
 	| "accepted"
@@ -233,6 +235,7 @@ export type Answer =
 	| "retired"
 	| "blocked"
 	| "differs"
+	| "underived"
 
 /**
  * One entry of a trace: the ledger's clock when a call ran, the call, the answer, and the facts it committed, in the

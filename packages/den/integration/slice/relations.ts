@@ -2,20 +2,20 @@ import { Text } from "@bjornpagen/den/lower/keys"
 import { closed, closedId, natural, pg, relation, sha256, str, unit } from "@bjornpagen/grizzle"
 
 /**
- * The toy app's own relations, which den's steps write and read and its finishes move forward: the items a feed's
- * pages hold, each feed's weight (which a page reads before its body runs), each feed's cursor as insert-only
- * position facts (the latest is the cursor), the orders the app writes beside a root it requests in its own
- * transaction, each batch's tally, the batches whose whole run finished, the relations a sync copied, the builds the
- * Gold step made, the attempts the gradebook delivered, each review's saved groups and its summary, what each throttled call heard, the hours the clock chimed, an auditor's notes on den's results, and the assignment
- * engine's shape in miniature: passages and their
- * embeddings, the passages a learner has seen, the passage each assignment gave a learner, and each assignment's
- * conclusion. Every relation is closed, its facts inserted and never changed, but a passage and a seen passage, which
- * the app's editor rewrites and takes back (app-programs.ts Editor), each open inside its unit (PassageUnit,
- * LearnerUnit; base.ts).
+ * The toy app's own relations, which den's steps write and read and its finishes move forward: the items a feed's pages
+ * hold, each feed's weight (which a page reads before its body runs), each feed's cursor as insert-only position facts
+ * (the latest is the cursor), the orders the app writes beside a root it requests in its own transaction, each batch's
+ * tally, the sizes the app wants a batch at, the batches whose whole run finished, the relations a sync copied, the
+ * builds the Gold step made, the attempts the gradebook delivered, each review's saved groups and its summary, what
+ * each throttled call heard, the hours the clock chimed, an auditor's notes on den's results, and the assignment
+ * engine's shape in miniature: passages and their embeddings, the passages a learner has seen, the passage each
+ * assignment gave a learner, and each assignment's conclusion. Every relation is closed, its facts inserted and never
+ * changed, but a passage and a seen passage, which the app's editor rewrites and takes back (app-programs.ts Editor),
+ * each open inside its unit (PassageUnit, LearnerUnit; base.ts).
  */
 export const Feed = closed.unordered("Feed", ["news", "sport"])
 
-/** A batch's or a relation's name, bounded so it can key a row. */
+/** A batch's, a relation's or a bell's name, bounded so it can key a row. */
 const Name = str.regex("^[a-z0-9-]{1,64}$")
 
 /** One item of a feed's page. */
@@ -43,6 +43,12 @@ export const Order = relation("Order", { order: Name, feed: closedId(Feed) }, ["
 /** A batch's tally: how many squares it summed, and their total. */
 export const Tally = relation("Tally", { batch: Name, count: natural, total: pg.bigint }, ["batch"])
 
+/**
+ * A size the app wants a batch run at: the run the app's write requests of the batch (flows.ts Wanted) squares the
+ * largest it wants when the request commits, and keeps it, whatever is wanted after.
+ */
+export const Want = relation("Want", { batch: Name, size: pg.bigint }, ["batch", "size"])
+
 /** A batch whose whole run, its tally included, finished. */
 export const Settled = relation("Settled", { batch: Name }, ["batch"])
 
@@ -67,14 +73,8 @@ export const Summary = relation("Summary", { review: Name, groups: natural, tota
 /** What a throttled call's run heard from its source, by its key: an answer, or a refusal past its step's waits. */
 export const Heard = relation("Heard", { key: Name, answered: pg.boolean }, ["key"])
 
-/** A clock's bells, the roster its schedule starts a root of each hour per member. */
-export const Bell = closed.unordered("Bell", ["east", "west"])
-
-/** An hour a bell of the clock chimed, by the instant its schedule named. */
-export const Chimed = relation("Chimed", { hour: pg.bigint, bell: closedId(Bell) }, [
-	"hour",
-	"bell"
-])
+/** An hour a bell of the clock chimed, by the instant its schedule named and the bell, a member of its roster. */
+export const Chimed = relation("Chimed", { hour: pg.bigint, bell: Name }, ["hour", "bell"])
 
 /** A build the Gold step made, by its number. */
 export const Built = relation("Built", { build: natural }, ["build"])

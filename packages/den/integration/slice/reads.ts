@@ -1,14 +1,43 @@
 import { reads } from "@bjornpagen/den/algebra/kinds"
-import { Distance, query, v, type Vector } from "@bjornpagen/grizzle"
+import { Text } from "@bjornpagen/den/lower/keys"
+import { Distance, pg, query, v, type Vector } from "@bjornpagen/grizzle"
 import { SliceBase } from "#integration/slice/base.ts"
-import { embeddingDimensions, Item, Passage, Seen, Weight } from "#integration/slice/relations.ts"
+import {
+	embeddingDimensions,
+	Item,
+	Passage,
+	Seen,
+	Want,
+	Weight
+} from "#integration/slice/relations.ts"
 
 /**
- * The slice's declared reads, each a step's by the name `<Step>Reads`: named queries over the slice's base level alone,
- * never over a flow or its app role, so den's fragment builds each read's records from them when it loads while the flow
- * that names them is typed over the schema the fragment is spread into (den generate holds each step's reads to this
- * module's export of its name).
+ * The slice's declared reads, each a step's by the name `<Step>Reads`, and each a derived root's input (`<Root>Of`, its
+ * kind's `derived`): queries over the slice's base level alone, never over a flow or its app role, so den's fragment
+ * builds each read's records from them when it loads while the flow that names them is typed over the schema the
+ * fragment is spread into (den generate holds each step's reads to this module's export of its name).
  */
+
+/**
+ * The clock's hour, derived from its schedule's key: the instant its cron matched, and the member of its roster, the
+ * bell that chimes it. A read of no relation, its input derived from the key's values alone; written over the slice's
+ * base, the narrowest level grizzle states, which den's clock role so holds whole, read-only (TODO.md).
+ */
+export const HourlyOf = query(SliceBase).rule((r) =>
+	r.find({ hour: r.param("at", pg.bigint), bell: r.param("member", Text) })
+)
+
+/**
+ * A batch's run the app wants, derived from its key, the batch: the largest size it wants the batch at, and none where
+ * it wants the batch at no size.
+ */
+export const WantedOf = query(SliceBase).rule((r) => {
+	const { batch, size } = v(Want, "want")
+	return r
+		.match(Want, { batch, size })
+		.where(r.eq(batch, r.param("batch", Text)))
+		.find({ batch, size: r.max(size) })
+})
 
 /**
  * How many passages an assignment's nearest read finds at most, the suite's own size: within the topics' sizes the

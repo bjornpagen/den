@@ -391,6 +391,11 @@ export const aRepeatedRequestIsTheSameFact = property.explore(repeats, {
  */
 type Deployed = "deploy" | "redeliver" | "tick"
 
+/**
+ * What a sequence of deploys reached: a redelivery under its first deployment or another, and a census's tick of a
+ * schedule's key under another deployment, which names its key alone whatever the deployment (its input derived from
+ * it), so a deploy that changes the kinds' input headings leaves it already requested.
+ */
 type DeployedFeature =
 	| "a redelivery under the first deployment"
 	| "a redelivery under another deployment"
@@ -414,9 +419,9 @@ const deployments: Gen<ReadonlyArray<Deployed>> = array(
  * A key requested again across deploys of its kind's input heading is the same keyed act: over drawn sequences of
  * deploys, redeliveries of an app's request and ticks of a schedule's, each app write commits its own order, the
  * root's record keeps the fingerprint of its first request, and each scheduled request again answers that its root was
- * already requested, whatever input the deployment gives it. A later deployment's request names another fingerprint
- * and another input's digest, as a deploy that changed the kind's input would print them, and is never compared with
- * the first's; a scheduled root records no input, so no deploy can stop its census.
+ * already requested. A later deployment's request names another fingerprint and another input's digest, as a deploy
+ * that changed the kind's input would print them, and is never compared with the first's; a scheduled root's request
+ * names its key alone, its input derived from it, and records nothing, so no deploy can stop its census.
  *
  * Oracle (specification): docs/decisions.md, a root's request is one fact identified by its root, and its key names one
  * input (grizzle main's ruling, 2026-11-25).
@@ -466,14 +471,14 @@ export const aKeyRequestedAgainAcrossDeploysIsTheSameAct = property.explore(depl
 								() => [asked]
 							)
 						}
-						const hourUnder = (deployment: number) =>
-							clock.request.Hourly("deployed", {
-								hour: BigInt(deployment),
-								bell: deployment % 2 === 0 ? "east" : "west"
-							})
+						/**
+						 * The census's request of the schedule's key, which names the key alone, its input derived from
+						 * it.
+						 */
+						const tick = clock.request.Hourly({ at: 0n, member: "east" })
 						const first = chain.appRequests.Ordered("deployed", { feed: "news", pages: 1n })
 						yield* orderedUnder(0, "order-0")
-						const ticked = yield* hourUnder(0)
+						const ticked = yield* tick
 						assert.equal(ticked.fresh, true, "the schedule's first request starts its root")
 						const outcome = yield* Effect.reduce(
 							drawn,
@@ -497,7 +502,7 @@ export const aKeyRequestedAgainAcrossDeploysIsTheSameAct = property.explore(depl
 								if (state.deployment > 0) {
 									c.note("a tick under another deployment")
 								}
-								return Effect.map(hourUnder(state.deployment), (again) => {
+								return Effect.map(tick, (again) => {
 									assert.equal(
 										again.fresh,
 										false,

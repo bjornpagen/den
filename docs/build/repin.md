@@ -82,24 +82,25 @@ for the coordination group, and DBCLOCK:
   key of one field that grizzle's dependencies read (its declared statistics, its unit-bound reads), and each row's
   containment in its root's record follows through its holder's. `<P>Root` is keyed by `root`, closed: the fact that the
   root was requested, never updated or deleted, and so is `<P>RequestedWith`, keyed by `root` and contained in `<P>Root`
-  (and, for an app's or an operator's kind, containing it): what the root was requested with, its kind's input
-  fingerprint and its input's digest. A claim's seats sit under the flow's seat unit, `unit("<P>Seat", { resource:
+  (and, for a kind whose input its request gives, containing it): what the root was requested with, its kind's input
+  fingerprint and its input's digest; and so is a derived root's key, `<P><Root>Key`, keyed by `root`, contained in its
+  kind's `<P>Root` and containing it. A claim's seats sit under the flow's seat unit, `unit("<P>Seat", { resource:
   closedId(<P>Resource) })`: `<P>Hold` is keyed `(resource, root, step, attempt)`, the claim's ordered family written
   nested in the claim's one write, which supplies the attempt the database stamps, so every write of a resource's holds
   holds the resource, and the live holds' laws, at most one a seat and each below its resource's count, are judged
   inside it (never a lock derived from a law). Every graph relation and the holds are `mutable`, inside their units: a
   finished root's graph is cleared by `<p>_retirer`, a role of its own writing them, which serves
   `ChangeSet.empty(<p>Graph).deleteWhere({ <Rel>: { root: param("root", <P>Root.fields.root) }, … })` over every graph
-  relation but `<P>Root` and `<P>RequestedWith`; a claim's holds go with their claim, and the claims' place stamps'
-  heads with them (a delete of a place's whole groups, grizzle f07b59f14); `runtime/retire.ts` clears every ended root
-  nothing still needs, a call each. A stale holder's insert after its root is cleared is refused by the foreign keys
-  into the rows the clearing deleted, and a root requested again inserts nothing, its request guarded by the absence of
-  `<P>Root` at its root, which the request answers as already requested: it starts nothing, and the retired key never
-  starts a graph again; of another input under the same fingerprint, its `<P>RequestedWith` refuses it on its key. An
-  app row that references a graph row refuses the clearing (NO ACTION). A read's records rows are closed, outside every
-  unit, never removed (grizzle main's ruling on metis's MR-CATALOG). The census's reads of roots read only roots whose
-  graph stands, a root's record matched with its own Scope row, which the clearing deletes. The coordination group's
-  chains of turns sit under no unit and stay.
+  relation but `<P>Root`, `<P>RequestedWith` and each derived root's key; a claim's holds go with their claim, and the
+  claims' place stamps' heads with them (a delete of a place's whole groups, grizzle f07b59f14); `runtime/retire.ts`
+  clears every ended root nothing still needs, a call each. A stale holder's insert after its root is cleared is refused
+  by the foreign keys into the rows the clearing deleted, and a root requested again inserts nothing, its request
+  guarded by the absence of `<P>Root` at its root, which the request answers as already requested: it starts nothing,
+  and the retired key never starts a graph again; of another input under the same fingerprint, its `<P>RequestedWith`
+  refuses it on its key. An app row that references a graph row refuses the clearing (NO ACTION). A read's records rows
+  are closed, outside every unit, never removed (grizzle main's ruling on metis's MR-CATALOG). The census's reads of
+  roots read only roots whose graph stands, a root's record matched with its own Scope row, which the clearing deletes.
+  The coordination group's chains of turns sit under no unit and stay.
 
 - **Certificates, and every call settled (grizzle's SELECTWHOLE, bb62f0fa1; Bjorn's ruling of 2026-11-19).** A
   containment with a selected side is judged whole, as a rule over a query, where the relations it reads are immutable
