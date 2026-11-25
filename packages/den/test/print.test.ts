@@ -1,13 +1,26 @@
 import { stripTypeScriptTypes } from "node:module"
 import { relation } from "@bjornpagen/grizzle"
-import { exhaust } from "@bjornpagen/testing/explore"
-import { requiredInSpace } from "@bjornpagen/testing/features"
-import { element } from "@bjornpagen/testing/gen"
+import { aimed, exhaust, explore } from "@bjornpagen/testing/explore"
+import { required, requiredInSpace } from "@bjornpagen/testing/features"
+import { array, boolean, element, type Gen } from "@bjornpagen/testing/gen"
+import { notesOnly } from "@bjornpagen/testing/sense"
+import { boundedShrink } from "@bjornpagen/testing/shrink"
 import { searched } from "@bjornpagen/testing/vitest"
 import { testWorkers } from "@bjornpagen/testing/workers"
 import * as NodeServices from "@effect/platform-node/NodeServices"
 import { assert, layer } from "@effect/vitest"
-import { Array as Arr, Effect, Formatter, Option, Schema, Stream } from "effect"
+import {
+	Array as Arr,
+	Cron,
+	Effect,
+	Equal,
+	Formatter,
+	Option,
+	Record,
+	Schema,
+	Stream,
+	String as Str
+} from "effect"
 import { ChildProcess } from "effect/process"
 import { flow } from "#algebra/flow.ts"
 import {
@@ -18,6 +31,7 @@ import {
 	noReads,
 	operator,
 	root,
+	schedule,
 	shared,
 	step,
 	unconditional,
@@ -225,6 +239,305 @@ layer(NodeServices.layer)((it) =>
 							refusals,
 							Arr.map(modules, ([module]) => [module, Option.none()] as const),
 							`each module den prints for a field named ${word} parses`
+						)
+					})
+			)
+		)
+	)
+)
+
+/** How a root is started: by its schedule, by an operator. */
+const Started = Schema.Literals(["schedule", "operator"])
+type Started = typeof Started.Type
+
+/**
+ * A flow of one root started as `started`, its one step echoing its input: a schedule's root keyed by its cron's
+ * instant and its one member, or an operator's. Over both, a scheduled root's request records nothing beside its Root,
+ * and an operator's records what it was requested with (the fragment's RequestedWith, lower/print.ts recordsRequest): a
+ * schedule's input is a function of its key, which the census requests every tick, so a deploy that changes that input
+ * must never meet a recorded one and stop the census.
+ *
+ * Oracle (specification): docs/decisions.md, a root's request is one fact: scheduled roots record no input. Mutant it
+ * kills: `recordsRequest = (j) => Option.isSome(j.root)`, which prints a schedule's request recording its input.
+ */
+const startedBy = (started: Started) => {
+	const Hour = Schema.Struct({ hour: Schema.BigInt, bell: Schema.String })
+	const Chime = step(
+		"Chime",
+		{
+			input: Hour,
+			output: Hour,
+			error: Schema.Never,
+			reads: noReads,
+			awaits: [],
+			uses: [],
+			retry: none,
+			waits: none,
+			due: atSpawn,
+			writes: writesNothing
+		},
+		(hour: typeof Hour.Type) => Effect.succeed({ output: hour })
+	)
+	const Hourly = root("Hourly", {
+		trigger:
+			started === "schedule"
+				? schedule(Cron.parseUnsafe("0 * * * *"), ["east"], (at, bell) => ({ hour: at, bell }))
+				: operator,
+		input: Hour,
+		children: [Chime],
+		start: (hour) => [Chime.of(hour)],
+		exclusive: shared,
+		window: always,
+		precondition: unconditional,
+		finish: finishing
+	})
+	return flow("Bells", {
+		writes: writer<{ readonly name: "loader" }>("loader"),
+		kinds: [Chime, Hourly],
+		edges: []
+	})
+}
+
+layer(NodeServices.layer)((it) =>
+	it.effect(
+		"prints a record of the request beside an operator's root and none beside a schedule's",
+		(ctx) =>
+			searched(
+				ctx,
+				exhaust(
+					{
+						suite: "printed requests",
+						generator: element(Started.literals),
+						literal: Formatter.format,
+						coverage: requiredInSpace<Started>(Started.literals),
+						caseHang: caseHangMillis,
+						box: "a flow of one root, started by its schedule or by an operator",
+						oracle: {
+							kind: "specification",
+							name: "scheduled roots record no input; an operator's records its kind's input fingerprint and its input's digest"
+						},
+						concurrency: testWorkers
+					},
+					(started, c) =>
+						Effect.sync(() => {
+							c.note(started)
+							const programs = printPrograms(lower(startedBy(started)), placement)
+							assert.strictEqual(
+								Str.includes("bellsHourlyBellsRequestedWith")(programs),
+								started === "operator",
+								`a root started by ${started} records what it was requested with exactly where an operator starts it`
+							)
+						})
+				)
+			)
+	)
+)
+
+/** A field's type, as a deploy may declare it: a base, a roster of two handles, or a brand of a base. */
+const FIELD_TYPES = [
+	"bigint",
+	"text",
+	"east or west",
+	"east or north",
+	"a brand of text",
+	"a brand of bigint"
+] as const
+
+/** A field's name and type in a root kind's input, as a deploy may declare it. */
+type Field = readonly [name: "hour" | "bell" | "note", type: (typeof FIELD_TYPES)[number]]
+
+/** A root kind's input: its fields in order, each name once, none to three of them. */
+type Shape = ReadonlyArray<Field>
+
+const field: Gen<Field> = (source) => [
+	source.draw(element(["hour", "bell", "note"] as const)),
+	source.draw(element(FIELD_TYPES))
+]
+
+/** A field's schema: its type's, a brand named after the field, so no two fields of a shape share one. */
+const schemaOf = ([name, type]: Field) => {
+	switch (type) {
+		case "bigint":
+			return Schema.BigInt
+		case "text":
+			return Schema.String
+		case "east or west":
+			return Schema.Literals(["east", "west"])
+		case "east or north":
+			return Schema.Literals(["east", "north"])
+		case "a brand of text":
+			return name === "hour"
+				? Schema.String.pipe(Schema.brand("HourMark"))
+				: name === "bell"
+					? Schema.String.pipe(Schema.brand("BellMark"))
+					: Schema.String.pipe(Schema.brand("NoteMark"))
+		case "a brand of bigint":
+			return name === "hour"
+				? Schema.BigInt.pipe(Schema.brand("HourMark"))
+				: name === "bell"
+					? Schema.BigInt.pipe(Schema.brand("BellMark"))
+					: Schema.BigInt.pipe(Schema.brand("NoteMark"))
+	}
+}
+
+const shapeGen: Gen<Shape> = (source) =>
+	Arr.dedupeWith(source.draw(array(field, { min: 0, max: 3 })), ([a], [b]) => a === b)
+
+/**
+ * Two deployments' shapes of one operator's root kind's input, none to three fields: the later the earlier again, or
+ * one drawn afresh. Over them, the heading a binding fingerprints the kind's input by is one exactly where the shapes
+ * are (the same fields, in order, of the same types), so a request again across a deploy that changed the input is
+ * never compared with the first's digest, and one within a deployment always is. It imports codecText exactly where it
+ * binds a relation's codec texts, so an input of no field imports none. Mutants it kills: inputHeadingOf printing
+ * `${f.name}` for each field, without its type, which gives an hour as text an hour's heading; and headingTypeOf
+ * printing a roster or a brand by its name alone, which gives east or north east or west's heading, and a brand of
+ * bigint a brand of text's; and the codecText import printed for every recording root, which an input of no field
+ * leaves unused.
+ */
+const deployed: Gen<readonly [Shape, Shape]> = (source) => {
+	const earlier = source.draw(shapeGen)
+	return [earlier, source.draw(boolean) ? earlier : source.draw(shapeGen)]
+}
+
+/** A flow of one operator's root over an input of `shape`, its one step echoing it. */
+const shapedBy = (shape: Shape) => {
+	const Input = Schema.Struct(
+		Record.fromEntries(Arr.map(shape, (f) => [f[0], schemaOf(f)] as const))
+	)
+	const Chime = step(
+		"Chime",
+		{
+			input: Input,
+			output: Input,
+			error: Schema.Never,
+			reads: noReads,
+			awaits: [],
+			uses: [],
+			retry: none,
+			waits: none,
+			due: atSpawn,
+			writes: writesNothing
+		},
+		(input: typeof Input.Type) => Effect.succeed({ output: input })
+	)
+	const Hourly = root("Hourly", {
+		trigger: operator,
+		input: Input,
+		children: [Chime],
+		start: (input) => [Chime.of(input)],
+		exclusive: shared,
+		window: always,
+		precondition: unconditional,
+		finish: finishing
+	})
+	return flow("Bells", {
+		writes: writer<{ readonly name: "loader" }>("loader"),
+		kinds: [Chime, Hourly],
+		edges: []
+	})
+}
+
+/** The binding den prints for a flow of one operator's root over an input of `shape`. */
+const bindingOf = (shape: Shape): string => printBinding(lower(shapedBy(shape)), placement)
+
+/** The heading the binding fingerprints the hourly kind's input by: the line that takes it, as printed. */
+const headingOf = (shape: Shape): Option.Option<string> =>
+	Arr.findFirst(
+		Str.split("\n")(bindingOf(shape)),
+		Str.includes("bellsHourlyHeading = inputFingerprint(")
+	)
+
+type Deployed =
+	| "the same shape"
+	| "another shape"
+	| "an input of no field"
+	| "a roster's handles changed"
+	| "a brand's base changed"
+
+/**
+ * Two deployments of a one-field input whose field's type moves from `earlier` to `later` and nothing else: what a
+ * heading that names a roster or a brand by its name alone gives one heading.
+ */
+const swapped =
+	(earlier: Field[1], later: Field[1]): Gen<readonly [Shape, Shape]> =>
+	(source) => {
+		const name = source.draw(element(["hour", "bell", "note"] as const))
+		return [[[name, earlier]], [[name, later]]]
+	}
+
+/** Whether two shapes differ in one field's type alone, from `from` to `to`. */
+const swappedIn = (earlier: Shape, later: Shape, from: Field[1], to: Field[1]): boolean =>
+	earlier.length === later.length &&
+	Arr.filter(Arr.zip(earlier, later), ([[a, t], [b, u]]) => a !== b || t !== u).length === 1 &&
+	Arr.some(Arr.zip(earlier, later), ([[a, t], [b, u]]) => a === b && t === from && u === to)
+
+/** Whether two shapes are one: the same fields, in the same order, of the same types. */
+const sameShape = (earlier: Shape, later: Shape): boolean =>
+	earlier.length === later.length &&
+	Arr.every(Arr.zip(earlier, later), ([[a, t], [b, u]]) => a === b && t === u)
+
+layer(NodeServices.layer)((it) =>
+	it.effect("prints a kind's input heading that changes exactly with its input's shape", (ctx) =>
+		searched(
+			ctx,
+			explore(
+				{
+					suite: "printed headings",
+					oracle: {
+						kind: "specification",
+						name: "docs/decisions.md: a request again under another fingerprint, after a deploy that changed the kind's input heading, is the same keyed act"
+					},
+					draw: aimed(deployed, [
+						["a roster's handles changed", swapped("east or west", "east or north")],
+						["a brand's base changed", swapped("a brand of text", "a brand of bigint")]
+					]),
+					literal: Formatter.format,
+					coverage: required<Deployed>(
+						[
+							"the same shape",
+							"another shape",
+							"an input of no field",
+							"a roster's handles changed",
+							"a brand's base changed"
+						],
+						{
+							cases: 40,
+							sense: notesOnly
+						}
+					),
+					kept: [],
+					runs: 100,
+					shrink: boundedShrink(40),
+					steerEvery: 16,
+					caseHang: caseHangMillis
+				},
+				([earlier, later], c) =>
+					Effect.sync(() => {
+						c.note(sameShape(earlier, later) ? "the same shape" : "another shape")
+						if (Arr.isReadonlyArrayEmpty(earlier)) {
+							c.note("an input of no field")
+						}
+						if (swappedIn(earlier, later, "east or west", "east or north")) {
+							c.note("a roster's handles changed")
+						}
+						if (swappedIn(earlier, later, "a brand of text", "a brand of bigint")) {
+							c.note("a brand's base changed")
+						}
+						const first = headingOf(earlier)
+						assert.isTrue(
+							Option.isSome(first),
+							"an operator's root kind's binding takes its heading"
+						)
+						assert.strictEqual(
+							Equal.equals(first, headingOf(later)),
+							sameShape(earlier, later),
+							"two headings are one exactly where their shapes are"
+						)
+						const binding = bindingOf(earlier)
+						assert.strictEqual(
+							Str.includes("import { codecText }")(binding),
+							Str.includes("Texts = Object.freeze(")(binding),
+							"a binding imports codecText exactly where it binds a relation's codec texts, an input of no field binding none"
 						)
 					})
 			)

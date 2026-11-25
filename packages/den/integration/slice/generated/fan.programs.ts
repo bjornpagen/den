@@ -13,6 +13,7 @@ import {
 	FanResource,
 	FanScope,
 	FanRoot,
+	FanRequestedWith,
 	FanWithin,
 	FanAdmitted,
 	FanSkipped,
@@ -70,6 +71,7 @@ export const FanDen = role(
 		insert: [
 			"FanScope",
 			"FanRoot",
+			"FanRequestedWith",
 			"FanWithin",
 			"FanAdmitted",
 			"FanSkipped",
@@ -535,6 +537,35 @@ export const fanDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
+				FanRequestedWith,
+				query(fanGraph)
+					.rule((r) => {
+						const requested = r.relation("fanFanRunFanRequestedWith", {
+							root: FanRequestedWith.fields.root,
+							fingerprint: FanRequestedWith.fields.fingerprint,
+							input: FanRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.where(r.not(FanRoot, { root }))
+							.find({ root, fingerprint, input })
+					})
+					.rule((r) => {
+						const requested = r.relation("fanFanRunFanRequestedWith", {
+							root: FanRequestedWith.fields.root,
+							fingerprint: FanRequestedWith.fields.fingerprint,
+							input: FanRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						const { input: held } = v(FanRequestedWith, "held")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.match(FanRequestedWith, { root, fingerprint, input: held })
+							.find({ root, fingerprint, input })
+					})
+			)
+			.insert(
 				FanRoot,
 				query(fanGraph).rule((r) => {
 					const requested = r.relation("fanFanRunFanScope", {
@@ -627,6 +658,35 @@ export const fanDenPrograms = Object.freeze({
 						.where(r.not(FanRoot, { root }))
 						.find({ root, scope, sweep })
 				})
+			)
+			.insert(
+				FanRequestedWith,
+				query(fanGraph)
+					.rule((r) => {
+						const requested = r.relation("fanSweepFanRequestedWith", {
+							root: FanRequestedWith.fields.root,
+							fingerprint: FanRequestedWith.fields.fingerprint,
+							input: FanRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.where(r.not(FanRoot, { root }))
+							.find({ root, fingerprint, input })
+					})
+					.rule((r) => {
+						const requested = r.relation("fanSweepFanRequestedWith", {
+							root: FanRequestedWith.fields.root,
+							fingerprint: FanRequestedWith.fields.fingerprint,
+							input: FanRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						const { input: held } = v(FanRequestedWith, "held")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.match(FanRequestedWith, { root, fingerprint, input: held })
+							.find({ root, fingerprint, input })
+					})
 			)
 			.insert(
 				FanRoot,

@@ -12,7 +12,15 @@ import {
 	spawnedOf,
 	type SpawnRows
 } from "@bjornpagen/den/runtime/bind"
-import { atOnce, finishStep, rootScope, startedStep } from "@bjornpagen/den/runtime/identity"
+import {
+	atOnce,
+	finishStep,
+	rootScope,
+	codecTextsOf,
+	inputDigest,
+	inputFingerprint,
+	startedStep
+} from "@bjornpagen/den/runtime/identity"
 import type {
 	FlowNeeds,
 	Admission,
@@ -29,10 +37,16 @@ import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Retry over its served programs; `den generate` writes it, and nothing edits it. */
 import { type Addition, Sha256 } from "@bjornpagen/grizzle"
+import { codecText } from "@bjornpagen/grizzle/compile"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
+import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { retry } from "#integration/slice/flows.ts"
-import { RetryPausable } from "#integration/slice/generated/retry.fragment.ts"
+import {
+	RetryPausable,
+	RetryLaddersInput,
+	RetryThrottledInput,
+	RetryUnhurriedInput
+} from "#integration/slice/generated/retry.fragment.ts"
 import type {
 	RetryScope,
 	RetryAdmitted,
@@ -51,6 +65,28 @@ import type {
 	retryRetirerPrograms,
 	retryCommitPrograms
 } from "#integration/slice/generated/retry.programs.ts"
+
+/** The codec text of each declared field of RetryLaddersInput, a request's input row, bound once (grizzle's codecText). */
+const retryLaddersInputTexts = Object.freeze({
+	steadfast: codecText(RetryLaddersInput.fields.steadfast),
+	brittle: codecText(RetryLaddersInput.fields.brittle)
+})
+/** The codec text of each declared field of RetryThrottledInput, a request's input row, bound once (grizzle's codecText). */
+const retryThrottledInputTexts = Object.freeze({ key: codecText(RetryThrottledInput.fields.key) })
+/** The codec text of each declared field of RetryUnhurriedInput, a request's input row, bound once (grizzle's codecText). */
+const retryUnhurriedInputTexts = Object.freeze({ key: codecText(RetryUnhurriedInput.fields.key) })
+/** The fingerprint of root kind Ladders's input heading, taken once. */
+const retryLaddersHeading = inputFingerprint(
+	'58:17:RetryLaddersInput17:9:steadfast4:Text15:7:brittle4:Text261:6:digest249:[...pipe([{ scope: scope, root: scope, steadfast: input.steadfast, brittle: input.brittle }], Arr.flatMap((row) => [Result.succeed("RetryLaddersInput"), retryLaddersInputTexts.steadfast(row.steadfast), retryLaddersInputTexts.brittle(row.brittle)]))]'
+)
+/** The fingerprint of root kind Throttled's input heading, taken once. */
+const retryThrottledHeading = inputFingerprint(
+	'36:19:RetryThrottledInput11:3:key4:Text172:6:digest160:[...pipe([{ scope: scope, root: scope, key: input.key }], Arr.flatMap((row) => [Result.succeed("RetryThrottledInput"), retryThrottledInputTexts.key(row.key)]))]'
+)
+/** The fingerprint of root kind Unhurried's input heading, taken once. */
+const retryUnhurriedHeading = inputFingerprint(
+	'36:19:RetryUnhurriedInput11:3:key4:Text172:6:digest160:[...pipe([{ scope: scope, root: scope, key: input.key }], Arr.flatMap((row) => [Result.succeed("RetryUnhurriedInput"), retryUnhurriedInputTexts.key(row.key)]))]'
+)
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface RetryHandles {
@@ -315,7 +351,33 @@ export const retryLedger = (h: RetryHandles) => {
 							retryLaddersRetryScope: [{ scope, root: scope }],
 							retryLaddersRetryLaddersInput: [
 								{ scope: scope, root: scope, steadfast: input.steadfast, brittle: input.brittle }
-							]
+							],
+							retryLaddersRetryRequestedWith: Option.toArray(
+								Option.map(
+									codecTextsOf([
+										...pipe(
+											[
+												{
+													scope: scope,
+													root: scope,
+													steadfast: input.steadfast,
+													brittle: input.brittle
+												}
+											],
+											Arr.flatMap((row) => [
+												Result.succeed("RetryLaddersInput"),
+												retryLaddersInputTexts.steadfast(row.steadfast),
+												retryLaddersInputTexts.brittle(row.brittle)
+											])
+										)
+									]),
+									(texts) => ({
+										root: scope,
+										fingerprint: retryLaddersHeading,
+										input: inputDigest("Retry", "Ladders", texts)
+									})
+								)
+							)
 						},
 						facts: {}
 					}),
@@ -332,7 +394,25 @@ export const retryLedger = (h: RetryHandles) => {
 							retryThrottledScope: scope,
 							retryThrottledKey: key,
 							retryThrottledRetryScope: [{ scope, root: scope }],
-							retryThrottledRetryThrottledInput: [{ scope: scope, root: scope, key: input.key }]
+							retryThrottledRetryThrottledInput: [{ scope: scope, root: scope, key: input.key }],
+							retryThrottledRetryRequestedWith: Option.toArray(
+								Option.map(
+									codecTextsOf([
+										...pipe(
+											[{ scope: scope, root: scope, key: input.key }],
+											Arr.flatMap((row) => [
+												Result.succeed("RetryThrottledInput"),
+												retryThrottledInputTexts.key(row.key)
+											])
+										)
+									]),
+									(texts) => ({
+										root: scope,
+										fingerprint: retryThrottledHeading,
+										input: inputDigest("Retry", "Throttled", texts)
+									})
+								)
+							)
 						},
 						facts: {}
 					}),
@@ -349,7 +429,25 @@ export const retryLedger = (h: RetryHandles) => {
 							retryUnhurriedScope: scope,
 							retryUnhurriedKey: key,
 							retryUnhurriedRetryScope: [{ scope, root: scope }],
-							retryUnhurriedRetryUnhurriedInput: [{ scope: scope, root: scope, key: input.key }]
+							retryUnhurriedRetryUnhurriedInput: [{ scope: scope, root: scope, key: input.key }],
+							retryUnhurriedRetryRequestedWith: Option.toArray(
+								Option.map(
+									codecTextsOf([
+										...pipe(
+											[{ scope: scope, root: scope, key: input.key }],
+											Arr.flatMap((row) => [
+												Result.succeed("RetryUnhurriedInput"),
+												retryUnhurriedInputTexts.key(row.key)
+											])
+										)
+									]),
+									(texts) => ({
+										root: scope,
+										fingerprint: retryUnhurriedHeading,
+										input: inputDigest("Retry", "Unhurried", texts)
+									})
+								)
+							)
 						},
 						facts: {}
 					}),

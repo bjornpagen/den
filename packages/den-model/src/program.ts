@@ -185,11 +185,16 @@ export type ScopeKind<I, O, E> = Readonly<{
 	finish: FinishKind<I, O, E>
 }>
 
-/** What starts a root: a schedule every `every` ticks, an operator, or the app's own write inside its transaction. */
+/**
+ * What starts a root: a schedule every `every` ticks, an operator, or the app's own write inside its transaction. An
+ * operator's and an app's trigger names its kind's input heading as its deployment declares it, the fingerprint its
+ * requests record beside the input they were requested with, so a deploy that changes the heading changes it; a
+ * schedule's input is a function of its key and records none.
+ */
 export type Trigger =
 	| Readonly<{ _tag: "Schedule"; every: number }>
-	| Readonly<{ _tag: "Operator" }>
-	| Readonly<{ _tag: "App" }>
+	| Readonly<{ _tag: "Operator"; heading: string }>
+	| Readonly<{ _tag: "App"; heading: string }>
 
 /**
  * A root kind: a scope a trigger starts, the only way a graph begins, behind its precondition (a read that must be
@@ -333,13 +338,15 @@ export const open = <I, O, J, P, Q>(
 })
 
 /**
- * A root's admission, its types erased: the root's key (its kind and idempotency key), its input as data, its
- * precondition, its exclusivity seat's key, its window, and its scope's work.
+ * A root's admission, its types erased: the root's key (its kind and idempotency key), its input as data, the
+ * fingerprint it records beside its input (its kind's input heading; none for a scheduled kind's), its precondition,
+ * its exclusivity seat's key, its window, and its scope's work.
  */
 export type Admission = Readonly<{
 	kind: string
 	key: string
 	input: Datum
+	heading: Option.Option<string>
 	precondition: Option.Option<Query>
 	exclusive: Option.Option<string>
 	window: Option.Option<Window>
@@ -355,6 +362,7 @@ export const admissionOf = <I, O, E>(
 	kind: kind.name,
 	key,
 	input: kind.scope.input(input),
+	heading: kind.trigger._tag === "Schedule" ? Option.none() : Option.some(kind.trigger.heading),
 	precondition: kind.precondition,
 	exclusive: Option.map(kind.exclusive, (exclusive) => exclusive(input)),
 	window: kind.window,

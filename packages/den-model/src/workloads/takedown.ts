@@ -76,7 +76,7 @@ export const takedownOf = (
 
 	const AttemptRoot: RootKind<Attempt, number, never> = {
 		name: "TutorAttempt",
-		trigger: { _tag: "App" },
+		trigger: { _tag: "App", heading: "TutorAttemptInput" },
 		precondition: Option.none(),
 		window: Option.none(),
 		exclusive: Option.none(),

@@ -26,6 +26,7 @@ import {
 	ChainOrderedInputFeed,
 	ChainScope,
 	ChainRoot,
+	ChainRequestedWith,
 	ChainAdmitted,
 	ChainSkipped,
 	ChainStep,
@@ -73,6 +74,7 @@ export const ChainDen = role(
 		insert: [
 			"ChainScope",
 			"ChainRoot",
+			"ChainRequestedWith",
 			"ChainAdmitted",
 			"ChainSkipped",
 			"ChainStep",
@@ -457,6 +459,35 @@ export const chainDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
+				ChainRequestedWith,
+				query(chainGraph)
+					.rule((r) => {
+						const requested = r.relation("chainChainRunChainRequestedWith", {
+							root: ChainRequestedWith.fields.root,
+							fingerprint: ChainRequestedWith.fields.fingerprint,
+							input: ChainRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.where(r.not(ChainRoot, { root }))
+							.find({ root, fingerprint, input })
+					})
+					.rule((r) => {
+						const requested = r.relation("chainChainRunChainRequestedWith", {
+							root: ChainRequestedWith.fields.root,
+							fingerprint: ChainRequestedWith.fields.fingerprint,
+							input: ChainRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						const { input: held } = v(ChainRequestedWith, "held")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.match(ChainRequestedWith, { root, fingerprint, input: held })
+							.find({ root, fingerprint, input })
+					})
+			)
+			.insert(
 				ChainRoot,
 				query(chainGraph).rule((r) => {
 					const requested = r.relation("chainChainRunChainScope", {
@@ -791,6 +822,35 @@ export const chainRequests = Object.freeze({
 					.where(r.not(ChainRoot, { root }))
 					.find({ root, scope, feed, pages })
 			})
+		)
+		.insert(
+			ChainRequestedWith,
+			query(chainGraph)
+				.rule((r) => {
+					const requested = r.relation("chainOrderedChainRequestedWith", {
+						root: ChainRequestedWith.fields.root,
+						fingerprint: ChainRequestedWith.fields.fingerprint,
+						input: ChainRequestedWith.fields.input
+					})
+					const { root, fingerprint, input } = v(requested, "requested")
+					return r
+						.match(requested, { root, fingerprint, input })
+						.where(r.not(ChainRoot, { root }))
+						.find({ root, fingerprint, input })
+				})
+				.rule((r) => {
+					const requested = r.relation("chainOrderedChainRequestedWith", {
+						root: ChainRequestedWith.fields.root,
+						fingerprint: ChainRequestedWith.fields.fingerprint,
+						input: ChainRequestedWith.fields.input
+					})
+					const { root, fingerprint, input } = v(requested, "requested")
+					const { input: held } = v(ChainRequestedWith, "held")
+					return r
+						.match(requested, { root, fingerprint, input })
+						.match(ChainRequestedWith, { root, fingerprint, input: held })
+						.find({ root, fingerprint, input })
+				})
 		)
 		.insert(
 			ChainRoot,

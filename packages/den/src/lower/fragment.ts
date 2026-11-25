@@ -31,20 +31,21 @@ import {
 
 /**
  * A flow lowered to a fragment, as data: the rosters, contracts, relations and laws the app lists in its own
- * `schema(...)` as the flow's graph and coordination fragments, every name under the flow's prefix, and the kinds, joins
- * and edges the programs and the binding are printed from. The fragment's relations are an ordered list, the form grizzle's `schema()` takes, which refuses two
- * declarations of one name that differ as `DuplicateIdentity`.
+ * `schema(...)` as the flow's graph and coordination fragments, every name under the flow's prefix, and the kinds,
+ * joins and edges the programs and the binding are printed from. The fragment's relations are an ordered list, the form
+ * grizzle's `schema()` takes, which refuses two declarations of one name that differ as `DuplicateIdentity`.
  *
  * Two groups of relations, by who writes them, their every law a key, a containment or a row check; each role certifies
  * at the level grizzle's generate gives its writes (docs/build/repin.md), and every call of each runs again on a
- * transient refusal (runtime/ledger.ts Settled). The graph (scopes, steps, claims, results, values, edges) is written by
- * den's role and the app's writer role, inserted and never updated, and sits under grizzle's units: every relation of a
- * root's graph under DenRoot, at the root, which a finished root's clearing deletes the rows of under its den retiring
- * role, its root's record kept; a claim's seats under the flow's seat unit, at their resource. The coordination group is
- * written by den's coordinator role alone, insert-only: each exclusivity seat and pause is a chain of turns, a turn held
- * and then ended (`Exclusive`/`Released`, `Paused`/`Resumed`), each turn after the first contained in its predecessor's
- * end, so a chain holds at most one live turn, its latest, and nothing is ever deleted. A resource's seat count is a
- * closed relation, which every live hold's seat is checked below on the seat level (SeatsIR).
+ * transient refusal (runtime/ledger.ts Settled). The graph (scopes, steps, claims, results, values, edges) is written
+ * by den's role and the app's writer role, inserted and never updated, and sits under grizzle's units: every relation
+ * of a root's graph under DenRoot, at the root, which a finished root's clearing deletes the rows of under its den
+ * retiring role, its root's record and what it was requested with kept; a claim's seats under the flow's seat unit, at
+ * their resource. The coordination group is written by den's coordinator role alone, insert-only: each exclusivity seat
+ * and pause is a chain of turns, a turn held and then ended (`Exclusive`/`Released`, `Paused`/`Resumed`), each turn
+ * after the first contained in its predecessor's end, so a chain holds at most one live turn, its latest, and nothing
+ * is ever deleted. A resource's seat count is a closed relation, which every live hold's seat is checked below on the
+ * seat level (SeatsIR).
  */
 
 /**
@@ -53,8 +54,12 @@ import {
  */
 export type Identity = "step" | "scope"
 
-/** What a digest names: an identity, a row a step's read found (its text's digest), or an exclusivity seat. */
-export type Digested = Identity | "row" | "seat"
+/**
+ * What a digest names: an identity, a row a step's read found (its text's digest), an exclusivity seat, or what a root
+ * was requested with (a kind's input heading, or its input's codec text: runtime/identity.ts inputFingerprint,
+ * inputDigest).
+ */
+export type Digested = Identity | "row" | "seat" | "request"
 
 /** What a lowered field holds. */
 export type FieldType =
@@ -288,9 +293,20 @@ export interface FinishReadIR {
 	readonly output: ValueIR
 }
 
-/** What only a root has: its trigger, whether it holds an exclusivity seat, and the flows its precondition names. */
+/**
+ * Whether a root started by `trigger` records what it was requested with (its kind's RequestedWith): an app's or an
+ * operator's, never a schedule's, whose input is a function of its key, so no change of it can stop the census that
+ * requests the key every tick. The one place the rule is stated: the fragment's law and the printed requests read it.
+ */
+const recordsRequestOf = (trigger: Trigger<never>["kind"]): boolean => trigger !== "schedule"
+
+/**
+ * What only a root has: its trigger, whether its request records what it was requested with (`recordsRequestOf`),
+ * whether it holds an exclusivity seat, and the flows its precondition names.
+ */
 export interface RootIR {
 	readonly trigger: Trigger<never>["kind"]
+	readonly records: boolean
 	readonly exclusive: boolean
 	readonly idle: ReadonlyArray<string>
 }
@@ -348,7 +364,7 @@ export interface Lowered {
 	readonly coordination: ReadonlyArray<string>
 	/**
 	 * The relations a finished root's clearing deletes the rows of, at its root: every graph relation but the root's own
-	 * record and its claims' holds, which go with their claims.
+	 * record, what it was requested with (RequestedWith), and its claims' holds, which go with their claims.
 	 */
 	readonly cleared: ReadonlyArray<string>
 	/** The claims' holds, each a member of its claim's ordered family under the flow's seat unit. */
@@ -459,6 +475,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const seatKey: FieldType = { kind: "digest", names: "seat" }
 	const instant: FieldType = { kind: "key", contract: "DenInstant" }
 	const rowKey: FieldType = { kind: "digest", names: "row" }
+	const requestDigest: FieldType = { kind: "digest", names: "request" }
 	const text: FieldType = { kind: "base", base: "text" }
 	const natural: FieldType = { kind: "natural" }
 	const place: FieldType = { kind: "place" }
@@ -517,6 +534,26 @@ export const lower = (flow: AnyFlow): Lowered => {
 			{ name: "kind", type: { kind: "closed", roster: name("RootKind") } },
 			{ name: "key", type: text },
 			{ name: "at", type: instant }
+		],
+		key: ["root"]
+	})
+	/**
+	 * What an app's or an operator's root was requested with: the fingerprint of its kind's input heading when its first
+	 * request was made (lower/print.ts inputHeadingOf) and the digest of that request's input rows, grizzle's codec
+	 * text of each (runtime/identity.ts inputDigest). A closed fact beside its Root, never updated or deleted, nor deleted
+	 * by retirement. A request again under the same fingerprint inserts it again, so an equal input meets it and changes
+	 * nothing and another input is refused on its key, naming the root: a key names one input. A request under another
+	 * fingerprint, after a deploy that changed the kind's input heading, inserts nothing and is answered as already
+	 * requested, the same keyed act, so a redelivery across a shape change is idempotent: a reused key with other content
+	 * goes undetected only across that boundary, where the two inputs have no one text to compare. A scheduled root has
+	 * none, its input a function of its key, so no input change can stop the census that requests it every tick.
+	 */
+	const RequestedWith = relation({
+		name: name("RequestedWith"),
+		fields: [
+			{ name: "root", type: scopeKey },
+			{ name: "fingerprint", type: requestDigest },
+			{ name: "input", type: requestDigest }
 		],
 		key: ["root"]
 	})
@@ -712,6 +749,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 		into(side(Admitted, ["scope"]), side(Scope, ["scope"])),
 		into(side(Skipped, ["scope"]), side(Root, ["root"])),
 		into(side(Skipped, ["by"]), side(Root, ["root"])),
+		into(side(RequestedWith, ["root"]), side(Root, ["root"])),
 		into(side(Step, ["scope"]), side(Admitted, ["scope"])),
 		into(side(StartStep, ["scope"]), side(Admitted, ["scope"])),
 		into(side(StartStep, ["step"]), side(Step, ["step"])),
@@ -742,6 +780,11 @@ export const lower = (flow: AnyFlow): Lowered => {
 		into(side(Refusal, ["step"]), failedSide),
 		into(side(Exhausted, ["step"]), failedSide)
 	)
+	Arr.forEach(roots, (j) => {
+		if (recordsRequestOf(j.trigger.kind)) {
+			laws.push(into(sideOf(Root, ["root"], ofKind(j.name)), side(RequestedWith, ["root"])))
+		}
+	})
 
 	/**
 	 * A value's relations: its owner's row and a relation per optional field, each held to `owned`; a column `keyed`
@@ -1109,6 +1152,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 				j._tag === "Root"
 					? Option.some({
 							trigger: j.trigger.kind,
+							records: recordsRequestOf(j.trigger.kind),
 							exclusive: j.exclusive.kind === "exclusive",
 							idle: j.precondition.kind === "idle" ? j.precondition.flows : []
 						})
@@ -1275,6 +1319,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const requesting = [
 		Scope,
 		Root,
+		RequestedWith,
 		...exclusiveKeys,
 		...Arr.flatMap(
 			Arr.filter(joinsIR, (j: JoinIR) => Option.exists(j.root, (r) => r.trigger === "app")),
@@ -1287,10 +1332,10 @@ export const lower = (flow: AnyFlow): Lowered => {
 	 * fragment states alike and so one unit, the roots being digests that no two flows share: every graph relation but the
 	 * root's own record carries its root as `root`, first in its key and on both sides of every containment and key
 	 * between them, so every write of a graph's rows holds its root. A root's record is closed, the fact that it was
-	 * requested; every other graph relation is mutable inside the unit, since a finished root's graph is cleared under its
-	 * root, every row of it deleted but its record. A claim's holds sit under the flow's seat unit and are cleared with
-	 * their claims. The coordination group is no part of any unit: its chains of turns outlive the graphs whose steps took
-	 * them.
+	 * requested, and so is what it was requested with (RequestedWith); every other graph relation is mutable inside the
+	 * unit, since a finished root's graph is cleared under its root, every row of it deleted but those two. A claim's
+	 * holds sit under the flow's seat unit and are cleared with their claims. The coordination group is no part of any
+	 * unit: its chains of turns outlive the graphs whose steps took them.
 	 *
 	 * A row's root is its owner's. Each identity is held by one relation keyed by it alone beside its root, a step by
 	 * Step and a scope by Scope, since den derives it from its parent's (runtime/identity.ts): it names one row, of one
@@ -1304,7 +1349,11 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const bodies = new Set(
 		Arr.filter(
 			Arr.map(relations, (r) => r.name),
-			(r) => r !== Root && !Arr.contains(coordination, r) && !Arr.contains(held, r)
+			(r) =>
+				r !== Root &&
+				r !== RequestedWith &&
+				!Arr.contains(coordination, r) &&
+				!Arr.contains(held, r)
 		)
 	)
 	const rootField = { name: "root", type: scopeKey }

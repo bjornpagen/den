@@ -1293,6 +1293,22 @@ BEGIN
 END
 $$;
 
+ALTER TABLE "slice_den"."assign_requested_with"
+  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
+  ALTER COLUMN "root" SET STATISTICS 0,
+  ALTER COLUMN "fingerprint" SET STATISTICS 0,
+  ALTER COLUMN "input" SET STATISTICS 0;
+DO $$
+BEGIN
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'assign_requested_with'::"pg_catalog"."text", 'root'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'assign_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'root'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_requested_with'::"pg_catalog"."text", COLUMN = 'root'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'assign_requested_with'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'assign_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_requested_with'::"pg_catalog"."text", COLUMN = 'fingerprint'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'assign_requested_with'::"pg_catalog"."text", 'input'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'assign_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'input'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_requested_with'::"pg_catalog"."text", COLUMN = 'input'::"pg_catalog"."text"; END IF;
+END
+$$;
+
 ALTER TABLE "slice_den"."assign_result"
   SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
   ALTER COLUMN "root" SET STATISTICS 0,
@@ -1958,6 +1974,22 @@ BEGIN
 END
 $$;
 
+ALTER TABLE "slice_den"."chain_requested_with"
+  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
+  ALTER COLUMN "root" SET STATISTICS 0,
+  ALTER COLUMN "fingerprint" SET STATISTICS 0,
+  ALTER COLUMN "input" SET STATISTICS 0;
+DO $$
+BEGIN
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_requested_with'::"pg_catalog"."text", 'root'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'root'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_requested_with'::"pg_catalog"."text", COLUMN = 'root'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_requested_with'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_requested_with'::"pg_catalog"."text", COLUMN = 'fingerprint'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'chain_requested_with'::"pg_catalog"."text", 'input'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'chain_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'input'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_requested_with'::"pg_catalog"."text", COLUMN = 'input'::"pg_catalog"."text"; END IF;
+END
+$$;
+
 ALTER TABLE "slice_den"."chain_result"
   SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
   ALTER COLUMN "root" SET STATISTICS 0,
@@ -2395,6 +2427,22 @@ BEGIN
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'clock_refusal'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'step'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'clock_refusal'::"pg_catalog"."text", COLUMN = 'step'::"pg_catalog"."text"; END IF;
   PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'clock_refusal'::"pg_catalog"."text", 'law'::"pg_catalog"."text", false);
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'clock_refusal'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'law'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'clock_refusal'::"pg_catalog"."text", COLUMN = 'law'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+ALTER TABLE "slice_den"."clock_requested_with"
+  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
+  ALTER COLUMN "root" SET STATISTICS 0,
+  ALTER COLUMN "fingerprint" SET STATISTICS 0,
+  ALTER COLUMN "input" SET STATISTICS 0;
+DO $$
+BEGIN
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'clock_requested_with'::"pg_catalog"."text", 'root'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'clock_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'root'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'clock_requested_with'::"pg_catalog"."text", COLUMN = 'root'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'clock_requested_with'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'clock_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'clock_requested_with'::"pg_catalog"."text", COLUMN = 'fingerprint'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'clock_requested_with'::"pg_catalog"."text", 'input'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'clock_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'input'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'clock_requested_with'::"pg_catalog"."text", COLUMN = 'input'::"pg_catalog"."text"; END IF;
 END
 $$;
 
@@ -2927,6 +2975,22 @@ BEGIN
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'fan_refusal'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'step'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'fan_refusal'::"pg_catalog"."text", COLUMN = 'step'::"pg_catalog"."text"; END IF;
   PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'fan_refusal'::"pg_catalog"."text", 'law'::"pg_catalog"."text", false);
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'fan_refusal'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'law'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'fan_refusal'::"pg_catalog"."text", COLUMN = 'law'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+ALTER TABLE "slice_den"."fan_requested_with"
+  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
+  ALTER COLUMN "root" SET STATISTICS 0,
+  ALTER COLUMN "fingerprint" SET STATISTICS 0,
+  ALTER COLUMN "input" SET STATISTICS 0;
+DO $$
+BEGIN
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'fan_requested_with'::"pg_catalog"."text", 'root'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'fan_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'root'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'fan_requested_with'::"pg_catalog"."text", COLUMN = 'root'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'fan_requested_with'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'fan_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'fan_requested_with'::"pg_catalog"."text", COLUMN = 'fingerprint'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'fan_requested_with'::"pg_catalog"."text", 'input'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'fan_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'input'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'fan_requested_with'::"pg_catalog"."text", COLUMN = 'input'::"pg_catalog"."text"; END IF;
 END
 $$;
 
@@ -3492,6 +3556,22 @@ BEGIN
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'retry_refusal'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'step'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'retry_refusal'::"pg_catalog"."text", COLUMN = 'step'::"pg_catalog"."text"; END IF;
   PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'retry_refusal'::"pg_catalog"."text", 'law'::"pg_catalog"."text", false);
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'retry_refusal'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'law'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'retry_refusal'::"pg_catalog"."text", COLUMN = 'law'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+ALTER TABLE "slice_den"."retry_requested_with"
+  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
+  ALTER COLUMN "root" SET STATISTICS 0,
+  ALTER COLUMN "fingerprint" SET STATISTICS 0,
+  ALTER COLUMN "input" SET STATISTICS 0;
+DO $$
+BEGIN
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'retry_requested_with'::"pg_catalog"."text", 'root'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'retry_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'root'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'retry_requested_with'::"pg_catalog"."text", COLUMN = 'root'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'retry_requested_with'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'retry_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'retry_requested_with'::"pg_catalog"."text", COLUMN = 'fingerprint'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'retry_requested_with'::"pg_catalog"."text", 'input'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'retry_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'input'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'retry_requested_with'::"pg_catalog"."text", COLUMN = 'input'::"pg_catalog"."text"; END IF;
 END
 $$;
 
@@ -4090,6 +4170,22 @@ BEGIN
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'review_refusal'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'step'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'review_refusal'::"pg_catalog"."text", COLUMN = 'step'::"pg_catalog"."text"; END IF;
   PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'review_refusal'::"pg_catalog"."text", 'law'::"pg_catalog"."text", false);
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'review_refusal'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'law'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'review_refusal'::"pg_catalog"."text", COLUMN = 'law'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+ALTER TABLE "slice_den"."review_requested_with"
+  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
+  ALTER COLUMN "root" SET STATISTICS 0,
+  ALTER COLUMN "fingerprint" SET STATISTICS 0,
+  ALTER COLUMN "input" SET STATISTICS 0;
+DO $$
+BEGIN
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'review_requested_with'::"pg_catalog"."text", 'root'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'review_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'root'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'review_requested_with'::"pg_catalog"."text", COLUMN = 'root'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'review_requested_with'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'review_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'review_requested_with'::"pg_catalog"."text", COLUMN = 'fingerprint'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'review_requested_with'::"pg_catalog"."text", 'input'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'review_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'input'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'review_requested_with'::"pg_catalog"."text", COLUMN = 'input'::"pg_catalog"."text"; END IF;
 END
 $$;
 
@@ -4752,6 +4848,22 @@ BEGIN
 END
 $$;
 
+ALTER TABLE "slice_den"."sync_requested_with"
+  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
+  ALTER COLUMN "root" SET STATISTICS 0,
+  ALTER COLUMN "fingerprint" SET STATISTICS 0,
+  ALTER COLUMN "input" SET STATISTICS 0;
+DO $$
+BEGIN
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'sync_requested_with'::"pg_catalog"."text", 'root'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'sync_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'root'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'sync_requested_with'::"pg_catalog"."text", COLUMN = 'root'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'sync_requested_with'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'sync_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'sync_requested_with'::"pg_catalog"."text", COLUMN = 'fingerprint'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'sync_requested_with'::"pg_catalog"."text", 'input'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'sync_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'input'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'sync_requested_with'::"pg_catalog"."text", COLUMN = 'input'::"pg_catalog"."text"; END IF;
+END
+$$;
+
 ALTER TABLE "slice_den"."sync_result"
   SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
   ALTER COLUMN "root" SET STATISTICS 0,
@@ -5145,6 +5257,22 @@ BEGIN
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'writeback_refusal'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'step'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'writeback_refusal'::"pg_catalog"."text", COLUMN = 'step'::"pg_catalog"."text"; END IF;
   PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'writeback_refusal'::"pg_catalog"."text", 'law'::"pg_catalog"."text", false);
   IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'writeback_refusal'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'law'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'writeback_refusal'::"pg_catalog"."text", COLUMN = 'law'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+ALTER TABLE "slice_den"."writeback_requested_with"
+  SET (autovacuum_analyze_threshold = 2147483647, autovacuum_analyze_scale_factor = 100),
+  ALTER COLUMN "root" SET STATISTICS 0,
+  ALTER COLUMN "fingerprint" SET STATISTICS 0,
+  ALTER COLUMN "input" SET STATISTICS 0;
+DO $$
+BEGIN
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'writeback_requested_with'::"pg_catalog"."text", 'root'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'writeback_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'root'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('-1'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'writeback_requested_with'::"pg_catalog"."text", COLUMN = 'root'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'writeback_requested_with'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'writeback_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'fingerprint'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'writeback_requested_with'::"pg_catalog"."text", COLUMN = 'fingerprint'::"pg_catalog"."text"; END IF;
+  PERFORM "pg_catalog"."pg_clear_attribute_stats"('slice_den'::"pg_catalog"."text", 'writeback_requested_with'::"pg_catalog"."text", 'input'::"pg_catalog"."text", false);
+  IF NOT "pg_catalog"."pg_restore_attribute_stats"('schemaname'::"pg_catalog"."text", 'slice_den'::"pg_catalog"."text", 'relname'::"pg_catalog"."text", 'writeback_requested_with'::"pg_catalog"."text", 'attname'::"pg_catalog"."text", 'input'::"pg_catalog"."text", 'inherited'::"pg_catalog"."text", false, 'n_distinct'::"pg_catalog"."text", ('2'::"pg_catalog"."text")::real) THEN RAISE EXCEPTION 'a declared statistic was not restored' USING ERRCODE = 'internal_error'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'writeback_requested_with'::"pg_catalog"."text", COLUMN = 'input'::"pg_catalog"."text"; END IF;
 END
 $$;
 

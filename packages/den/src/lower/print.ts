@@ -10,6 +10,7 @@ import {
 	type LawIR,
 	type Lowered,
 	type ReadIR,
+	type RelationIR,
 	type SeatsIR,
 	type SideIR,
 	type SpawnedScopeIR,
@@ -19,6 +20,7 @@ import {
 	valueRelations
 } from "#lower/fragment.ts"
 import type { Base } from "#lower/schema.ts"
+import { framedText } from "#runtime/identity.ts"
 
 /**
  * The printer: a lowered flow as three TypeScript modules the app commits beside its schema, which `den generate`
@@ -327,25 +329,24 @@ const requestParams = (P: string, j: JoinIR) => ({
 })
 
 /**
- * The fields of `relation`, one of the flow's fragments' relations, by name: the printer names only relations the
- * lowering made, so one it cannot find is its own defect, which throws rather than print a rule of no fields.
+ * The fields of `relation`, one of the flow's fragments' relations: the printer names only relations the lowering made,
+ * so one it cannot find is its own defect, which throws rather than print a rule of no fields.
  */
+const relationFieldsOf = (l: Lowered, relation: string): RelationIR["fields"] =>
+	Option.getOrThrowWith(
+		Arr.findFirst(l.relations, (rel) => rel.name === relation),
+		() =>
+			new Error(`den's printer named ${relation}, which no fragment of the flow ${l.prefix} holds`)
+	).fields
+
+/** The names of `relation`'s fields (`relationFieldsOf`). */
 const fieldNamesOf = (l: Lowered, relation: string): ReadonlyArray<string> =>
-	Arr.map(
-		Option.getOrThrowWith(
-			Arr.findFirst(l.relations, (rel) => rel.name === relation),
-			() =>
-				new Error(
-					`den's printer named ${relation}, which no fragment of the flow ${l.prefix} holds`
-				)
-		).fields,
-		(f) => f.name
-	)
+	Arr.map(relationFieldsOf(l, relation), (f) => f.name)
 
 /**
  * The rows a root's request writes beside its Root, each relation beside its printed rows, the one list its printed
- * ChangeSet and its printed parameters follow: its root scope's row, its exclusivity keys where it holds a seat, and
- * its input's.
+ * ChangeSet and its printed parameters follow, each guarded by the absence of its Root: its root scope's row, its
+ * exclusivity keys where it holds a seat, and its input's rows.
  */
 const requestedRowsOf = (P: string, j: JoinIR): ReadonlyArray<readonly [string, string]> => [
 	[`${P}Scope`, "[{ scope, root: scope }]"],
@@ -360,35 +361,141 @@ const requestedRowsParam = (P: string, j: JoinIR, relation: string): string =>
 	`${lower1(P)}${j.name}${relation}`
 
 /**
- * A root's request, one fact identified by its root: its Root and every row of its graph it names
- * (`requestedRowsOf`), each relation's rows a relation parameter, each inserted only where no Root holds the
- * request's root, as the state before the change reads it. The Root's own row is the request's root scope's, at its
- * scope and key the request's parameters, its kind the root kind's handle, and its instant the request's reading of the
- * database's clock, `now`, which the clocked request binds, so no host names the instant a root was requested.
+ * Whether a root's request records what it was requested with (lower/fragment.ts recordsRequestOf, read off its IR).
+ */
+const recordsRequest = (j: JoinIR): boolean => Option.exists(j.root, (r) => r.records)
+
+/**
+ * The declared fields of an input relation, the ones its heading names and its digest reads: every field but the root
+ * and the owning scope, which its key names.
+ */
+const declaredFieldsOf = (l: Lowered, relation: string): RelationIR["fields"] =>
+	Arr.filter(relationFieldsOf(l, relation), (f) => f.name !== "root" && f.name !== "scope")
+
+/** The names of an input relation's declared fields (`declaredFieldsOf`), each of which its digest reads. */
+const inputFieldsOf = (l: Lowered, relation: string): ReadonlyArray<string> =>
+	Arr.map(declaredFieldsOf(l, relation), (f) => f.name)
+
+/**
+ * A root kind's input heading, the text its fingerprint is taken of under the running den's input digest scheme
+ * (runtime/identity.ts inputFingerprint): each relation its input lowers to with each declared field's name and type
+ * (`headingTypeOf`), and the printed construction of its digest (`inputTextsOf`), every part framed (`framedText`), so
+ * a deploy that changes the input's shape changes the fingerprint, and a request again across it is the same keyed act,
+ * never compared with a digest of another shape.
+ */
+const inputHeadingOf = (l: Lowered, j: JoinIR): string =>
+	framedText([
+		...Arr.map(valueRelations(j.input), (relation) =>
+			framedText([
+				relation,
+				...Arr.map(declaredFieldsOf(l, relation), (f) =>
+					framedText([f.name, headingTypeOf(l, f.type)])
+				)
+			])
+		),
+		framedText(["digest", inputTextsOf(l, j)])
+	])
+
+/**
+ * A declared field's type as a kind's input heading names it: as the printer writes it, a brand with the base it
+ * brands, and a roster with its handles, each framed (`framedText`), so a deploy that changes what a field holds
+ * changes the heading: a brand's base, or a roster's handles, a value's codec text being its handle, so a handle
+ * renamed would give the same event another text under the same heading.
+ */
+const headingTypeOf = (l: Lowered, type: FieldType): string =>
+	type.kind === "brand"
+		? framedText([
+				"brand",
+				type.brand,
+				fieldExpr({
+					kind: "base",
+					base: Option.getOrThrowWith(
+						Arr.findFirst(l.brands, (b) => b.name === type.brand),
+						() =>
+							new Error(
+								`den's printer named the brand ${type.brand}, which the flow ${l.prefix} declares none of`
+							)
+					).base
+				})
+			])
+		: type.kind === "closed"
+			? framedText([
+					"closedId",
+					type.roster,
+					...Option.getOrThrowWith(
+						Arr.findFirst(l.rosters, (r) => r.name === type.roster),
+						() =>
+							new Error(
+								`den's printer named the roster ${type.roster}, which the flow ${l.prefix} declares none of`
+							)
+					).handles
+				])
+			: fieldExpr(type)
+
+/**
+ * The texts a request's input digest is taken of, each a Result of its codec: each input relation's rows, the
+ * relation's name before each row and each declared field's grizzle codec text (runtime/identity.ts codecTextsOf,
+ * inputDigest).
+ */
+const inputTextsOf = (l: Lowered, j: JoinIR): string =>
+	`[${commas(
+		Arr.map(factRowsOf(j.input, "scope", "input", "scope"), ([relation, rows]) => {
+			const fields = inputFieldsOf(l, relation)
+			return Arr.isReadonlyArrayNonEmpty(fields)
+				? `...pipe(${rows}, Arr.flatMap((row) => [${commas([
+						`Result.succeed(${q(relation)})`,
+						...Arr.map(fields, (f) => `${lower1(relation)}Texts.${f}(row.${f})`)
+					])}]))`
+				: `...Arr.map(${rows}, () => Result.succeed(${q(relation)}))`
+		})
+	)}]`
+
+/**
+ * A root's request, one fact identified by its root: its Root and every row of its graph it names (`requestedRowsOf`),
+ * each relation's rows a relation parameter, each inserted only where no Root holds the request's root, as the state
+ * before the change reads it. The Root's own row is the request's root scope's, at its scope and key the request's
+ * parameters, its kind the root kind's handle, and its instant the request's reading of the database's clock, `now`,
+ * which the clocked request binds, so no host names the instant a root was requested. An app's or an operator's root
+ * records beside it what it was requested with (`RequestedWith`: its kind's input fingerprint and its input's digest),
+ * inserted where no Root holds the root, or again where the held record has the request's fingerprint: an equal input
+ * meets it, another is refused on its key, naming the root, and a request under another fingerprint inserts nothing.
  *
- * A request of a root already requested inserts nothing, its graph standing or retired: retirement deletes a graph's
- * rows but never its Root (the fragment's `cleared`), so a repeat adds no fact and refuses nothing, and an app's write
- * that unions the request with its own commits its own facts. Two first requests of one root at once meet in the
- * database's serializable read of the Root's absence: the second is refused transient, and run again it inserts
- * nothing, so one root is requested, once.
+ * A request of a root already requested inserts nothing else, its graph standing or retired: retirement deletes a
+ * graph's rows but never its Root nor its RequestedWith (the fragment's `cleared`), so a repeat of the same input adds
+ * no fact and refuses nothing, and an app's write that unions the request with its own commits its own facts. Two first
+ * requests of one root at once meet in the database's serializable read of the Root's absence: the second is refused
+ * transient, and run again it inserts nothing, or, naming another input, is refused on its key.
  */
 const requestOfRoot = (l: Lowered, j: JoinIR, graph: string): string => {
 	const P = l.prefix
 	const root = `${P}Root`
 	const scope = `${P}Scope`
+	const requested = `${P}RequestedWith`
 	const params = requestParams(P, j)
+	const relationOf = (relation: string, fields: ReadonlyArray<string>): string =>
+		`const requested = r.relation(${q(requestedRowsParam(P, j, relation))}, { ${commas(Arr.map(fields, (f) => `${f}: ${relation}.fields.${f}`))} })
+	const { ${entries(fields)} } = v(requested, "requested")`
 	const guarded = (relation: string): string => {
 		const fields = fieldNamesOf(l, relation)
 		return `.insert(${relation}, query(${graph}).rule((r) => {
-	const requested = r.relation(${q(requestedRowsParam(P, j, relation))}, { ${commas(Arr.map(fields, (f) => `${f}: ${relation}.fields.${f}`))} })
-	const { ${entries(fields)} } = v(requested, "requested")
+	${relationOf(relation, fields)}
 	return r.match(requested, { ${entries(fields)} }).where(r.not(${root}, { root })).find({ ${entries(fields)} })
 }))`
 	}
+	const record = recordsRequest(j)
+		? `.insert(${requested}, query(${graph}).rule((r) => {
+	${relationOf(requested, ["root", "fingerprint", "input"])}
+	return r.match(requested, { root, fingerprint, input }).where(r.not(${root}, { root })).find({ root, fingerprint, input })
+}).rule((r) => {
+	${relationOf(requested, ["root", "fingerprint", "input"])}
+	const { input: held } = v(${requested}, "held")
+	return r.match(requested, { root, fingerprint, input }).match(${requested}, { root, fingerprint, input: held }).find({ root, fingerprint, input })
+}))`
+		: ""
 	return `ChangeSet.empty(${graph})${Arr.join(
 		Arr.map(requestedRowsOf(P, j), ([relation]) => guarded(relation)),
 		""
-	)}.insert(${root}, query(${graph}).rule((r) => {
+	)}${record}.insert(${root}, query(${graph}).rule((r) => {
 	const requested = r.relation(${q(requestedRowsParam(P, j, scope))}, { root: ${scope}.fields.root, scope: ${scope}.fields.scope })
 	const { root, scope } = v(requested, "requested")
 	return r
@@ -1985,12 +2092,22 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		])
 
 	const roots = Arr.filter(l.joins, (j) => Option.isSome(j.root))
-	/** The rows a root's request names (`requestedRowsOf`), each relation's under its relation parameter. */
-	const requestRows = (j: JoinIR): ReadonlyArray<string> =>
-		Arr.map(
+	/**
+	 * The rows a root's request names (`requestedRowsOf`), each relation's under its relation parameter, and, for an
+	 * app's or an operator's root, what it is requested with (`RequestedWith`): its kind's input fingerprint and its
+	 * input's digest.
+	 */
+	const requestRows = (j: JoinIR): ReadonlyArray<string> => [
+		...Arr.map(
 			requestedRowsOf(P, j),
 			([relation, rows]) => `${requestedRowsParam(P, j, relation)}: ${rows}`
-		)
+		),
+		...(recordsRequest(j)
+			? [
+					`${requestedRowsParam(P, j, r("RequestedWith"))}: Option.toArray(Option.map(codecTextsOf(${inputTextsOf(l, j)}), (texts) => ({ root: scope, fingerprint: ${lower1(P)}${j.name}Heading, input: inputDigest(${q(P)}, ${q(j.name)}, texts) })))`
+				]
+			: [])
+	]
 	const requestOf = (j: JoinIR): string => {
 		const keys = (body: string) =>
 			isExclusive(j)
@@ -2094,11 +2211,20 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		: "Effect.succeed([])"
 	const busyOf = `const busyOf = (read: { ${commas(Arr.map(l.idle, (f) => `readonly ${busyName(f)}: ReadonlyArray<unknown>`))} }): ReadonlyArray<string> => Arr.filter([${commas(Arr.map(l.idle, q))}] as const, (flow) => Arr.isReadonlyArrayNonEmpty(read[\`${BUSY}\${flow}\`]))`
 	const recordsValues = Arr.flatMap(l.steps, (st) => Arr.map(st.reads, (rd) => `${rd.stem}Records`))
-	const fragmentValues = [
+	/** The input relations whose fields a request's digest reads (`inputTextsOf`): an app's or an operator's root's. */
+	const digestedRelations = Arr.dedupe(
+		Arr.flatMap(Arr.filter(roots, recordsRequest), (j: JoinIR) =>
+			Arr.filter(valueRelations(j.input), (relation) =>
+				Arr.isReadonlyArrayNonEmpty(inputFieldsOf(l, relation))
+			)
+		)
+	)
+	const fragmentValues = Arr.dedupe([
 		...boundRostersOf(l),
 		...recordsValues,
-		...(Arr.isReadonlyArrayNonEmpty(recordsValues) ? [n.graph] : [])
-	]
+		...(Arr.isReadonlyArrayNonEmpty(recordsValues) ? [n.graph] : []),
+		...digestedRelations
+	])
 	const fragmentImports = Arr.dedupe([...spawning, r("Kind"), r("RootKind"), ...fragmentValues])
 	const fragmentTypes = Arr.filter(fragmentImports, (name) => !Arr.contains(fragmentValues, name))
 	const valueReaders = [...Arr.map(l.steps, (s) => s.input), ...Arr.map(l.joins, (j) => j.input)]
@@ -2121,6 +2247,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"finishStep",
 		...(Arr.some(roots, isScheduled) ? ["type Instant"] : []),
 		"rootScope",
+		...(Arr.some(roots, recordsRequest) ? ["codecTextsOf", "inputDigest", "inputFingerprint"] : []),
 		...(Arr.some(l.steps, (st) => Arr.isReadonlyArrayNonEmpty(st.reads)) ? ["rowDigest"] : []),
 		...(Arr.some(l.joins, (j) => Arr.some(j.children, (c) => c.kind === "scope"))
 			? ["startedScope"]
@@ -2132,6 +2259,9 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	return `${lines([
 		`/** The ledger port of the flow ${P} over its served programs; \`den generate\` writes it, and nothing edits it. */`,
 		`import { ${commas(["type Addition", ...(Arr.isReadonlyArrayNonEmpty(recordsValues) ? ["recordsFacts"] : []), "Sha256"])} } from "@bjornpagen/grizzle"`,
+		...(Arr.isReadonlyArrayNonEmpty(digestedRelations)
+			? [`import { codecText } from "@bjornpagen/grizzle/compile"`]
+			: []),
 		`import type { MemberHandle } from "@bjornpagen/grizzle/runtime"`,
 		`import { ${commas(["any", ...(throughs ? ["committedFacts"] : []), "dueOf", ...(exclusiveKeys ? ["exclusiveRows"] : []), ...(Arr.isReadonlyArrayNonEmpty(denRoots) ? ["fresh"] : []), ...(finishReads ? ["held"] : []), "one", "only", ...(families ? ["ordered"] : []), "readingOf", ...(Arr.isReadonlyArrayNonEmpty(recordsValues) ? ["recordText"] : []), "rowsOf", ...(Arr.some(denRoots, isScheduled) ? ["scheduledKey", "scheduleOf"] : []), "signals", "spawnedOf", "type SpawnRows"])} } from "@bjornpagen/den/runtime/bind"`,
 		`import { ${commas(identity)} } from "@bjornpagen/den/runtime/identity"`,
@@ -2141,7 +2271,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		`import { settled } from "@bjornpagen/den/runtime/settled"`,
 		`import { runnerOf } from "@bjornpagen/den/runtime/turn"`,
 		`import { FlowName } from "@bjornpagen/den/transport"`,
-		`import { Array as Arr, Effect, Option, pipe, Stream } from "effect"`,
+		`import { ${commas(["Array as Arr", "Effect", "Option", "pipe", ...(Arr.some(roots, recordsRequest) ? ["Result"] : []), "Stream"])} } from "effect"`,
 		`import { ${F} } from ${q(place.flow.from)}`,
 		`import { ${commas(fragmentValues)} } from ${q(place.fragment)}`,
 		`import type { ${commas(fragmentTypes)} } from ${q(place.fragment)}`,
@@ -2153,6 +2283,16 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				(rd) =>
 					`/** The text of a row step ${st.name}'s read \`${rd.name}\` found, its digest's input. */\nconst ${rd.stem}Text = recordText(${kindAt(st.index)}.reads.named.${rd.name})`
 			)
+		),
+		...Arr.map(
+			digestedRelations,
+			(relation) =>
+				`/** The codec text of each declared field of ${relation}, a request's input row, bound once (grizzle's codecText). */\nconst ${lower1(relation)}Texts = Object.freeze({ ${commas(Arr.map(inputFieldsOf(l, relation), (f) => `${f}: codecText(${relation}.fields.${f})`))} })`
+		),
+		...Arr.map(
+			Arr.filter(roots, recordsRequest),
+			(j) =>
+				`/** The fingerprint of root kind ${j.name}'s input heading, taken once. */\nconst ${lower1(P)}${j.name}Heading = inputFingerprint(${q(inputHeadingOf(l, j))})`
 		),
 		"",
 		`/** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */`,

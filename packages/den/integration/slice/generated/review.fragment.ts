@@ -55,6 +55,11 @@ export const ReviewRoot = relation(
 	{ root: sha256, kind: closedId(ReviewRootKind), key: Text, at: DenInstant },
 	["root"]
 )
+export const ReviewRequestedWith = relation(
+	"ReviewRequestedWith",
+	{ root: sha256, fingerprint: sha256, input: sha256 },
+	["root"]
+)
 export const ReviewWithin = relation(
 	"ReviewWithin",
 	{ root: sha256, scope: sha256, parent: sha256, kind: closedId(ReviewChildKind) },
@@ -248,6 +253,7 @@ export const reviewGraph = fragment(
 		ReviewResource,
 		ReviewScope,
 		ReviewRoot,
+		ReviewRequestedWith,
 		ReviewWithin,
 		ReviewAdmitted,
 		ReviewSkipped,
@@ -293,6 +299,7 @@ export const reviewGraph = fragment(
 		contained(on(ReviewAdmitted, "root", "scope"), on(ReviewScope, "root", "scope")),
 		contained(on(ReviewSkipped, "scope"), on(ReviewRoot, "root")),
 		contained(on(ReviewSkipped, "by"), on(ReviewRoot, "root")),
+		contained(on(ReviewRequestedWith, "root"), on(ReviewRoot, "root")),
 		contained(on(ReviewStep, "root", "scope"), on(ReviewAdmitted, "root", "scope")),
 		contained(on(ReviewStartStep, "root", "scope"), on(ReviewAdmitted, "root", "scope")),
 		contained(on(ReviewStartStep, "root", "step"), on(ReviewStep, "root", "step")),
@@ -346,6 +353,13 @@ export const reviewGraph = fragment(
 		),
 		contained(on(ReviewRefusal, "root", "step"), on(ReviewFailed, "root", "step")),
 		contained(on(ReviewExhausted, "root", "step"), on(ReviewFailed, "root", "step")),
+		contained(
+			on(
+				select(ReviewRoot, (row) => row.eq(row.kind, "ReviewRun")),
+				"root"
+			),
+			on(ReviewRequestedWith, "root")
+		),
 		contained(
 			on(ReviewAnalyzeInput, "root", "step"),
 			on(

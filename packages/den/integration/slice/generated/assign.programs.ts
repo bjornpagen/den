@@ -27,6 +27,7 @@ import {
 	AssignDecideOutputStage,
 	AssignScope,
 	AssignRoot,
+	AssignRequestedWith,
 	AssignAdmitted,
 	AssignSkipped,
 	AssignStep,
@@ -84,6 +85,7 @@ export const AssignDen = role(
 		insert: [
 			"AssignScope",
 			"AssignRoot",
+			"AssignRequestedWith",
 			"AssignAdmitted",
 			"AssignSkipped",
 			"AssignStep",
@@ -623,6 +625,35 @@ export const assignDenPrograms = Object.freeze({
 						.where(r.not(AssignRoot, { root }))
 						.find({ root, scope, radius })
 				})
+			)
+			.insert(
+				AssignRequestedWith,
+				query(assignGraph)
+					.rule((r) => {
+						const requested = r.relation("assignAssignmentAssignRequestedWith", {
+							root: AssignRequestedWith.fields.root,
+							fingerprint: AssignRequestedWith.fields.fingerprint,
+							input: AssignRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.where(r.not(AssignRoot, { root }))
+							.find({ root, fingerprint, input })
+					})
+					.rule((r) => {
+						const requested = r.relation("assignAssignmentAssignRequestedWith", {
+							root: AssignRequestedWith.fields.root,
+							fingerprint: AssignRequestedWith.fields.fingerprint,
+							input: AssignRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						const { input: held } = v(AssignRequestedWith, "held")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.match(AssignRequestedWith, { root, fingerprint, input: held })
+							.find({ root, fingerprint, input })
+					})
 			)
 			.insert(
 				AssignRoot,

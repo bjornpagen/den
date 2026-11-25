@@ -39,6 +39,11 @@ export const ChainRoot = relation(
 	{ root: sha256, kind: closedId(ChainRootKind), key: Text, at: DenInstant },
 	["root"]
 )
+export const ChainRequestedWith = relation(
+	"ChainRequestedWith",
+	{ root: sha256, fingerprint: sha256, input: sha256 },
+	["root"]
+)
 export const ChainAdmitted = relation("ChainAdmitted", { root: sha256, scope: sha256 }, [
 	"root",
 	"scope"
@@ -217,6 +222,7 @@ export const chainGraph = fragment(
 		ChainOrderedInputFeed,
 		ChainScope,
 		ChainRoot,
+		ChainRequestedWith,
 		ChainAdmitted,
 		ChainSkipped,
 		ChainStep,
@@ -255,6 +261,7 @@ export const chainGraph = fragment(
 		contained(on(ChainAdmitted, "root", "scope"), on(ChainScope, "root", "scope")),
 		contained(on(ChainSkipped, "scope"), on(ChainRoot, "root")),
 		contained(on(ChainSkipped, "by"), on(ChainRoot, "root")),
+		contained(on(ChainRequestedWith, "root"), on(ChainRoot, "root")),
 		contained(on(ChainStep, "root", "scope"), on(ChainAdmitted, "root", "scope")),
 		contained(on(ChainStartStep, "root", "scope"), on(ChainAdmitted, "root", "scope")),
 		contained(on(ChainStartStep, "root", "step"), on(ChainStep, "root", "step")),
@@ -299,6 +306,20 @@ export const chainGraph = fragment(
 		),
 		contained(on(ChainRefusal, "root", "step"), on(ChainFailed, "root", "step")),
 		contained(on(ChainExhausted, "root", "step"), on(ChainFailed, "root", "step")),
+		contained(
+			on(
+				select(ChainRoot, (row) => row.eq(row.kind, "ChainRun")),
+				"root"
+			),
+			on(ChainRequestedWith, "root")
+		),
+		contained(
+			on(
+				select(ChainRoot, (row) => row.eq(row.kind, "Ordered")),
+				"root"
+			),
+			on(ChainRequestedWith, "root")
+		),
 		contained(
 			on(ChainPageInput, "root", "step"),
 			on(
@@ -437,6 +458,7 @@ export const chainWriter = [
 	"ChainPageInputAfter",
 	"ChainNext",
 	"ChainRoot",
+	"ChainRequestedWith",
 	"ChainOrderedInput",
 	...Arr.map(ChainPageReadWeightsRecords.relations, (rel) => rel.name),
 	...Arr.map(ChainPageReadEarlierRecords.relations, (rel) => rel.name),

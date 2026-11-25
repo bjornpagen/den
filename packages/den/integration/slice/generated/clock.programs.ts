@@ -14,6 +14,7 @@ import {
 	ClockChimeOutputBell,
 	ClockScope,
 	ClockRoot,
+	ClockRequestedWith,
 	ClockAdmitted,
 	ClockSkipped,
 	ClockStep,
@@ -54,6 +55,7 @@ export const ClockDen = role(
 		insert: [
 			"ClockScope",
 			"ClockRoot",
+			"ClockRequestedWith",
 			"ClockAdmitted",
 			"ClockSkipped",
 			"ClockStep",
@@ -507,6 +509,35 @@ export const clockDenPrograms = Object.freeze({
 						.where(r.not(ClockRoot, { root }))
 						.find({ root, scope, sitting, deadline })
 				})
+			)
+			.insert(
+				ClockRequestedWith,
+				query(clockGraph)
+					.rule((r) => {
+						const requested = r.relation("clockSittingClockRequestedWith", {
+							root: ClockRequestedWith.fields.root,
+							fingerprint: ClockRequestedWith.fields.fingerprint,
+							input: ClockRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.where(r.not(ClockRoot, { root }))
+							.find({ root, fingerprint, input })
+					})
+					.rule((r) => {
+						const requested = r.relation("clockSittingClockRequestedWith", {
+							root: ClockRequestedWith.fields.root,
+							fingerprint: ClockRequestedWith.fields.fingerprint,
+							input: ClockRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						const { input: held } = v(ClockRequestedWith, "held")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.match(ClockRequestedWith, { root, fingerprint, input: held })
+							.find({ root, fingerprint, input })
+					})
 			)
 			.insert(
 				ClockRoot,

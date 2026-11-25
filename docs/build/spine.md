@@ -194,10 +194,11 @@ output into `select(PResult, outcome = done)`) certifies.
     root, a schedule's too (one root per member of its roster at each instant its cron names, keyed by the instant and
     the member, which its input reads too; a schedule of one root is a roster of one): it inserts its Root and its
     graph's rows only where no Root holds its root (`lower/print.ts` requestOfRoot), so a request of any key again,
-    retired or not, adds nothing and answers that it was already requested, and a schedule's key the census still
-    requests retires like any other
-    (`schedule.test.ts`); a root is requested while its graph is open, its Scope standing, so a retired one is never
-    rung again.
+    retired or not, of the same input adds nothing and answers that it was already requested, and an app's or an
+    operator's of another input under the same input fingerprint is refused on its `<P>RequestedWith`, which no
+    retirement clears (a scheduled root records none); and a schedule's key the census still requests retires
+    like any other (`schedule.test.ts`); a root is requested while its graph is open, its Scope standing, so a retired
+    one is never rung again.
 11. **Stopping.** Not built.
 12. **Ringing.** A turn rings what its end made eligible: what its commit spawned, its scope's finish once its last
     child ended, and, for an attempt that held seats, the steps eligibility finds waiting on a resource it held, at a

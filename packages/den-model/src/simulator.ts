@@ -586,6 +586,7 @@ export const simulate = (setup: Setup, nature: Nature): Run => {
 			case "held":
 			case "retired":
 			case "blocked":
+			case "differs":
 				exit(worker)
 		}
 	}
@@ -1098,6 +1099,7 @@ const seenOfAdmission = (answer: Answer): Option.Option<Seen> => {
 		case "behind":
 		case "exhausted":
 		case "live":
+		case "differs":
 			return Option.none()
 	}
 }

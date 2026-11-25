@@ -18,6 +18,9 @@ import {
 	atOnce,
 	finishStep,
 	rootScope,
+	codecTextsOf,
+	inputDigest,
+	inputFingerprint,
 	rowDigest,
 	startedStep
 } from "@bjornpagen/den/runtime/identity"
@@ -37,15 +40,18 @@ import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Chain over its served programs; `den generate` writes it, and nothing edits it. */
 import { type Addition, recordsFacts, Sha256 } from "@bjornpagen/grizzle"
+import { codecText } from "@bjornpagen/grizzle/compile"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
+import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { chain } from "#integration/slice/flows.ts"
 import {
 	ChainPausable,
 	ChainPageReadWeightsRecords,
 	ChainPageReadEarlierRecords,
 	ChainPageReadTreeRecords,
-	chainGraph
+	chainGraph,
+	ChainChainRunInput,
+	ChainOrderedInput
 } from "#integration/slice/generated/chain.fragment.ts"
 import type {
 	ChainScope,
@@ -71,6 +77,24 @@ const ChainPageReadWeightsText = recordText(chain.kinds[0].reads.named.weights)
 const ChainPageReadEarlierText = recordText(chain.kinds[0].reads.named.earlier)
 /** The text of a row step Page's read `tree` found, its digest's input. */
 const ChainPageReadTreeText = recordText(chain.kinds[0].reads.named.tree)
+/** The codec text of each declared field of ChainChainRunInput, a request's input row, bound once (grizzle's codecText). */
+const chainChainRunInputTexts = Object.freeze({
+	feed: codecText(ChainChainRunInput.fields.feed),
+	pages: codecText(ChainChainRunInput.fields.pages)
+})
+/** The codec text of each declared field of ChainOrderedInput, a request's input row, bound once (grizzle's codecText). */
+const chainOrderedInputTexts = Object.freeze({
+	feed: codecText(ChainOrderedInput.fields.feed),
+	pages: codecText(ChainOrderedInput.fields.pages)
+})
+/** The fingerprint of root kind ChainRun's input heading, taken once. */
+const chainChainRunHeading = inputFingerprint(
+	'102:18:ChainChainRunInput57:4:feed48:8:closedId22:ChainChainRunInputFeed4:news5:sport18:5:pages9:pg.bigint236:6:digest224:[...pipe([{ scope: scope, root: scope, feed: input.feed, pages: input.pages }], Arr.flatMap((row) => [Result.succeed("ChainChainRunInput"), chainChainRunInputTexts.feed(row.feed), chainChainRunInputTexts.pages(row.pages)]))]'
+)
+/** The fingerprint of root kind Ordered's input heading, taken once. */
+const chainOrderedHeading = inputFingerprint(
+	'100:17:ChainOrderedInput56:4:feed47:8:closedId21:ChainOrderedInputFeed4:news5:sport18:5:pages9:pg.bigint233:6:digest221:[...pipe([{ scope: scope, root: scope, feed: input.feed, pages: input.pages }], Arr.flatMap((row) => [Result.succeed("ChainOrderedInput"), chainOrderedInputTexts.feed(row.feed), chainOrderedInputTexts.pages(row.pages)]))]'
+)
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface ChainHandles {
@@ -294,7 +318,26 @@ export const chainLedger = (h: ChainHandles) => {
 							chainChainRunChainScope: [{ scope, root: scope }],
 							chainChainRunChainChainRunInput: [
 								{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
-							]
+							],
+							chainChainRunChainRequestedWith: Option.toArray(
+								Option.map(
+									codecTextsOf([
+										...pipe(
+											[{ scope: scope, root: scope, feed: input.feed, pages: input.pages }],
+											Arr.flatMap((row) => [
+												Result.succeed("ChainChainRunInput"),
+												chainChainRunInputTexts.feed(row.feed),
+												chainChainRunInputTexts.pages(row.pages)
+											])
+										)
+									]),
+									(texts) => ({
+										root: scope,
+										fingerprint: chainChainRunHeading,
+										input: inputDigest("Chain", "ChainRun", texts)
+									})
+								)
+							)
 						},
 						facts: {}
 					}),
@@ -1056,7 +1099,26 @@ export const chainLedger = (h: ChainHandles) => {
 						chainOrderedChainScope: [{ scope, root: scope }],
 						chainOrderedChainOrderedInput: [
 							{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
-						]
+						],
+						chainOrderedChainRequestedWith: Option.toArray(
+							Option.map(
+								codecTextsOf([
+									...pipe(
+										[{ scope: scope, root: scope, feed: input.feed, pages: input.pages }],
+										Arr.flatMap((row) => [
+											Result.succeed("ChainOrderedInput"),
+											chainOrderedInputTexts.feed(row.feed),
+											chainOrderedInputTexts.pages(row.pages)
+										])
+									)
+								]),
+								(texts) => ({
+									root: scope,
+									fingerprint: chainOrderedHeading,
+									input: inputDigest("Chain", "Ordered", texts)
+								})
+							)
+						)
 					}
 				}))
 		}

@@ -212,7 +212,9 @@ export type Command =
  * - `exhausted`: a claim found the lease of its step's last attempt run out, and ended it failed instead;
  * - `live`: a retirement found its root not yet finished;
  * - `held`, `retired`, `blocked`: an admission found its exclusivity seat held by a live run, its key retired (it never
- *   recurs), or its precondition's read not empty.
+ *   recurs), or its precondition's read not empty;
+ * - `differs`: an app's or an operator's admission found its key requested with another input under its kind's same
+ *   input heading, and the call commits nothing, the app's own writes beside it among it.
  */
 export type Answer =
 	| "accepted"
@@ -230,6 +232,7 @@ export type Answer =
 	| "held"
 	| "retired"
 	| "blocked"
+	| "differs"
 
 /**
  * One entry of a trace: the ledger's clock when a call ran, the call, the answer, and the facts it committed, in the

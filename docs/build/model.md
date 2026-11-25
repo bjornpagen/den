@@ -53,11 +53,17 @@ The state is a projection of the facts, keyed by canonical text; `apply` is the 
 A transition emits its facts one by one on an evolving state, so later decisions in one call see earlier facts, as one
 grizzle transaction would. A fact whose key is already held is no change, so a call made twice adds nothing.
 
-- **admit**: `unchanged` if a root of the key is live; `retired` if the key was retired (it never recurs); `blocked` if
-  the precondition reads rows. Otherwise `Admitted` and the precondition's `Read` (empty); then, if another live run
-  holds the exclusivity seat, `Finished{Held}` at once (`held`: the run is recorded and skipped, edullm's "that
-  relation skips the night"), else the scope's `Seated` and the start's children, recursively.
-- **write**: the app's own transaction: its rows as `Wrote{App}`, and the roots it admits, each behind its own race.
+- **admit**: `differs` if an app's or an operator's root of the key was requested with another input under its kind's
+  same input heading (the trigger's `heading`, what den's `<P>RequestedWith` records beside the input's digest), which
+  commits nothing; a request again under another heading, after a deploy that changed the kind's input, is the same
+  keyed act, and a scheduled root records none and is never compared. Then `unchanged` if a root of the key is live;
+  `retired` if the key was retired (it never recurs); `blocked` if the precondition reads rows. Otherwise `Admitted` and
+  the precondition's `Read` (empty); then, if another live run holds the exclusivity seat, `Finished{Held}` at once
+  (`held`: the run is recorded and skipped, edullm's "that relation skips the night"), else the scope's `Seated` and the
+  start's children, recursively.
+- **write**: the app's own transaction: its rows as `Wrote{App}`, and the roots it admits, each behind its own race;
+  an admission that `differs` refuses the whole transaction, its rows among it, as den's key of `<P>RequestedWith`
+  refuses the app's commit.
 - **claim(step, turn)**: `stale`, `gone`, `lost` (ended, or a live claim holds it), `early`, `closed`, `paused`, `full`,
   `behind`; else a reclaim of a lapsed lease at the end of its ladder fails the step `LadderEnded{lapsed}` (`exhausted`),
   and any other claim is `Claimed{attempt, turn, until}`, the lapsed claim's seats given back, and the lowest free seat

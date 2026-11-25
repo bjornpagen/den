@@ -922,9 +922,17 @@ CREATE TYPE "slice"."__row_news_assign_failed_lpxnyexx73" AS ("root" "pg_catalog
 
 REVOKE ALL ON TYPE "slice"."__row_news_assign_failed_lpxnyexx73" FROM PUBLIC;
 
+CREATE TYPE "slice"."__row_olds_assign_requested_with_du6qh7hi2e" AS ("fingerprint" "pg_catalog"."bytea", "input" "pg_catalog"."bytea", "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_olds_assign_requested_with_du6qh7hi2e" FROM PUBLIC;
+
 CREATE TYPE "slice"."__row_olds_assign_result_y6xdg27a27" AS ("outcome" smallint, "root" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
 REVOKE ALL ON TYPE "slice"."__row_olds_assign_result_y6xdg27a27" FROM PUBLIC;
+
+CREATE TYPE "slice"."__row_news_assign_root_mlgojh5hbk" AS ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_news_assign_root_mlgojh5hbk" FROM PUBLIC;
 
 CREATE TYPE "slice"."__row_olds_assign_step_zrm5kjcsbb" AS ("due" bigint, "kind" smallint, "root" "pg_catalog"."bytea", "scope" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
@@ -942,9 +950,17 @@ CREATE TYPE "slice"."__row_news_chain_page_input_5vfsi4iuxb" AS ("feed" smallint
 
 REVOKE ALL ON TYPE "slice"."__row_news_chain_page_input_5vfsi4iuxb" FROM PUBLIC;
 
+CREATE TYPE "slice"."__row_olds_chain_requested_with_chzxikdtnl" AS ("fingerprint" "pg_catalog"."bytea", "input" "pg_catalog"."bytea", "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_olds_chain_requested_with_chzxikdtnl" FROM PUBLIC;
+
 CREATE TYPE "slice"."__row_olds_chain_result_zhxr3n3y5v" AS ("outcome" smallint, "root" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
 REVOKE ALL ON TYPE "slice"."__row_olds_chain_result_zhxr3n3y5v" FROM PUBLIC;
+
+CREATE TYPE "slice"."__row_news_chain_root_3rdxqpnika" AS ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_news_chain_root_3rdxqpnika" FROM PUBLIC;
 
 CREATE TYPE "slice"."__row_olds_chain_step_a4auuc4j32" AS ("due" bigint, "kind" smallint, "root" "pg_catalog"."bytea", "scope" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
@@ -966,9 +982,17 @@ CREATE TYPE "slice"."__row_news_clock_failed_banad75ik7" AS ("root" "pg_catalog"
 
 REVOKE ALL ON TYPE "slice"."__row_news_clock_failed_banad75ik7" FROM PUBLIC;
 
+CREATE TYPE "slice"."__row_olds_clock_requested_with_3fdps2cdvj" AS ("fingerprint" "pg_catalog"."bytea", "input" "pg_catalog"."bytea", "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_olds_clock_requested_with_3fdps2cdvj" FROM PUBLIC;
+
 CREATE TYPE "slice"."__row_olds_clock_result_xmvy6bruki" AS ("outcome" smallint, "root" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
 REVOKE ALL ON TYPE "slice"."__row_olds_clock_result_xmvy6bruki" FROM PUBLIC;
+
+CREATE TYPE "slice"."__row_news_clock_root_77gtrqv5vx" AS ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_news_clock_root_77gtrqv5vx" FROM PUBLIC;
 
 CREATE TYPE "slice"."__row_olds_clock_step_ro3hcnnd7q" AS ("due" bigint, "kind" smallint, "root" "pg_catalog"."bytea", "scope" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
@@ -1010,9 +1034,17 @@ CREATE TYPE "slice"."__row_news_fan_mop_input_vkauufcv3s" AS ("root" "pg_catalog
 
 REVOKE ALL ON TYPE "slice"."__row_news_fan_mop_input_vkauufcv3s" FROM PUBLIC;
 
+CREATE TYPE "slice"."__row_olds_fan_requested_with_vvlswsw6at" AS ("fingerprint" "pg_catalog"."bytea", "input" "pg_catalog"."bytea", "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_olds_fan_requested_with_vvlswsw6at" FROM PUBLIC;
+
 CREATE TYPE "slice"."__row_olds_fan_result_cfwjurochh" AS ("outcome" smallint, "root" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
 REVOKE ALL ON TYPE "slice"."__row_olds_fan_result_cfwjurochh" FROM PUBLIC;
+
+CREATE TYPE "slice"."__row_news_fan_root_pek322ray3" AS ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_news_fan_root_pek322ray3" FROM PUBLIC;
 
 CREATE TYPE "slice"."__row_news_fan_square_input_oooc5jrvqp" AS ("batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "n" bigint, "root" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
@@ -1046,9 +1078,17 @@ CREATE TYPE "slice"."__row_news_retry_polite_input_6z54vs4crc" AS ("key" "pg_cat
 
 REVOKE ALL ON TYPE "slice"."__row_news_retry_polite_input_6z54vs4crc" FROM PUBLIC;
 
+CREATE TYPE "slice"."__row_olds_retry_requested_with_pwesmz6aqt" AS ("fingerprint" "pg_catalog"."bytea", "input" "pg_catalog"."bytea", "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_olds_retry_requested_with_pwesmz6aqt" FROM PUBLIC;
+
 CREATE TYPE "slice"."__row_olds_retry_result_sawexe6rws" AS ("outcome" smallint, "root" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
 REVOKE ALL ON TYPE "slice"."__row_olds_retry_result_sawexe6rws" FROM PUBLIC;
+
+CREATE TYPE "slice"."__row_news_retry_root_bpmsp2lmj3" AS ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_news_retry_root_bpmsp2lmj3" FROM PUBLIC;
 
 CREATE TYPE "slice"."__row_news_retry_steadfast_input_6gk4r2it4l" AS ("key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
@@ -1094,9 +1134,17 @@ CREATE TYPE "slice"."__row_news_review_questions_input_xqapos33bv" AS ("group" b
 
 REVOKE ALL ON TYPE "slice"."__row_news_review_questions_input_xqapos33bv" FROM PUBLIC;
 
+CREATE TYPE "slice"."__row_olds_review_requested_with_d4ep53ociv" AS ("fingerprint" "pg_catalog"."bytea", "input" "pg_catalog"."bytea", "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_olds_review_requested_with_d4ep53ociv" FROM PUBLIC;
+
 CREATE TYPE "slice"."__row_olds_review_result_4edqg37cfx" AS ("outcome" smallint, "root" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
 REVOKE ALL ON TYPE "slice"."__row_olds_review_result_4edqg37cfx" FROM PUBLIC;
+
+CREATE TYPE "slice"."__row_news_review_root_eshmunzwn4" AS ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_news_review_root_eshmunzwn4" FROM PUBLIC;
 
 CREATE TYPE "slice"."__row_news_review_save_input_g4felfy764" AS ("count" bigint, "group" bigint, "review" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."bytea", "step" "pg_catalog"."bytea", "total" bigint);
 
@@ -1126,9 +1174,17 @@ CREATE TYPE "slice"."__row_news_sync_failed_uo7agxnsp7" AS ("root" "pg_catalog".
 
 REVOKE ALL ON TYPE "slice"."__row_news_sync_failed_uo7agxnsp7" FROM PUBLIC;
 
+CREATE TYPE "slice"."__row_olds_sync_requested_with_7xi5vgtjja" AS ("fingerprint" "pg_catalog"."bytea", "input" "pg_catalog"."bytea", "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_olds_sync_requested_with_7xi5vgtjja" FROM PUBLIC;
+
 CREATE TYPE "slice"."__row_olds_sync_result_5yd36qoig4" AS ("outcome" smallint, "root" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
 REVOKE ALL ON TYPE "slice"."__row_olds_sync_result_5yd36qoig4" FROM PUBLIC;
+
+CREATE TYPE "slice"."__row_news_sync_root_zdr2x363tg" AS ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_news_sync_root_zdr2x363tg" FROM PUBLIC;
 
 CREATE TYPE "slice"."__row_olds_sync_step_24id3jri34" AS ("due" bigint, "kind" smallint, "root" "pg_catalog"."bytea", "scope" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
@@ -1146,9 +1202,17 @@ CREATE TYPE "slice"."__row_news_writeback_failed_o2vuzrgz2y" AS ("root" "pg_cata
 
 REVOKE ALL ON TYPE "slice"."__row_news_writeback_failed_o2vuzrgz2y" FROM PUBLIC;
 
+CREATE TYPE "slice"."__row_olds_writeback_requested_with_bmpjgxjpa7" AS ("fingerprint" "pg_catalog"."bytea", "input" "pg_catalog"."bytea", "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_olds_writeback_requested_with_bmpjgxjpa7" FROM PUBLIC;
+
 CREATE TYPE "slice"."__row_olds_writeback_result_ctqblben4u" AS ("outcome" smallint, "root" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 
 REVOKE ALL ON TYPE "slice"."__row_olds_writeback_result_ctqblben4u" FROM PUBLIC;
+
+CREATE TYPE "slice"."__row_news_writeback_root_gtduy6k6pr" AS ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea");
+
+REVOKE ALL ON TYPE "slice"."__row_news_writeback_root_gtduy6k6pr" FROM PUBLIC;
 
 CREATE TYPE "slice"."__row_olds_writeback_step_rvrwqy67gp" AS ("due" bigint, "kind" smallint, "root" "pg_catalog"."bytea", "scope" "pg_catalog"."bytea", "step" "pg_catalog"."bytea");
 

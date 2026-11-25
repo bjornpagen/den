@@ -36,6 +36,11 @@ export const WritebackRoot = relation(
 	{ root: sha256, kind: closedId(WritebackRootKind), key: Text, at: DenInstant },
 	["root"]
 )
+export const WritebackRequestedWith = relation(
+	"WritebackRequestedWith",
+	{ root: sha256, fingerprint: sha256, input: sha256 },
+	["root"]
+)
 export const WritebackAdmitted = relation("WritebackAdmitted", { root: sha256, scope: sha256 }, [
 	"root",
 	"scope"
@@ -159,6 +164,7 @@ export const writebackGraph = fragment(
 		WritebackPausable,
 		WritebackScope,
 		WritebackRoot,
+		WritebackRequestedWith,
 		WritebackAdmitted,
 		WritebackSkipped,
 		WritebackStep,
@@ -186,6 +192,7 @@ export const writebackGraph = fragment(
 		contained(on(WritebackAdmitted, "root", "scope"), on(WritebackScope, "root", "scope")),
 		contained(on(WritebackSkipped, "scope"), on(WritebackRoot, "root")),
 		contained(on(WritebackSkipped, "by"), on(WritebackRoot, "root")),
+		contained(on(WritebackRequestedWith, "root"), on(WritebackRoot, "root")),
 		contained(on(WritebackStep, "root", "scope"), on(WritebackAdmitted, "root", "scope")),
 		contained(on(WritebackStartStep, "root", "scope"), on(WritebackAdmitted, "root", "scope")),
 		contained(on(WritebackStartStep, "root", "step"), on(WritebackStep, "root", "step")),
@@ -239,6 +246,13 @@ export const writebackGraph = fragment(
 		),
 		contained(on(WritebackRefusal, "root", "step"), on(WritebackFailed, "root", "step")),
 		contained(on(WritebackExhausted, "root", "step"), on(WritebackFailed, "root", "step")),
+		contained(
+			on(
+				select(WritebackRoot, (row) => row.eq(row.kind, "Writeback")),
+				"root"
+			),
+			on(WritebackRequestedWith, "root")
+		),
 		contained(
 			on(WritebackDeliverInput, "root", "step"),
 			on(

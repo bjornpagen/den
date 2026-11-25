@@ -19,6 +19,9 @@ import {
 	atOnce,
 	finishStep,
 	rootScope,
+	codecTextsOf,
+	inputDigest,
+	inputFingerprint,
 	startedStep
 } from "@bjornpagen/den/runtime/identity"
 import type {
@@ -38,10 +41,16 @@ import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Review over its served programs; `den generate` writes it, and nothing edits it. */
 import { type Addition, Sha256 } from "@bjornpagen/grizzle"
+import { codecText } from "@bjornpagen/grizzle/compile"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
+import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { review } from "#integration/slice/flows.ts"
-import { ReviewPausable, ReviewResource } from "#integration/slice/generated/review.fragment.ts"
+import {
+	ReviewPausable,
+	ReviewResource,
+	ReviewReviewRunInput,
+	ReviewReviewRunInputSizes
+} from "#integration/slice/generated/review.fragment.ts"
 import type {
 	ReviewScope,
 	ReviewWithin,
@@ -65,6 +74,20 @@ import type {
 	reviewRetirerPrograms,
 	reviewCommitPrograms
 } from "#integration/slice/generated/review.programs.ts"
+
+/** The codec text of each declared field of ReviewReviewRunInput, a request's input row, bound once (grizzle's codecText). */
+const reviewReviewRunInputTexts = Object.freeze({
+	review: codecText(ReviewReviewRunInput.fields.review)
+})
+/** The codec text of each declared field of ReviewReviewRunInputSizes, a request's input row, bound once (grizzle's codecText). */
+const reviewReviewRunInputSizesTexts = Object.freeze({
+	ordinal: codecText(ReviewReviewRunInputSizes.fields.ordinal),
+	value: codecText(ReviewReviewRunInputSizes.fields.value)
+})
+/** The fingerprint of root kind ReviewRun's input heading, taken once. */
+const reviewReviewRunHeading = inputFingerprint(
+	'40:20:ReviewReviewRunInput14:6:review4:Text70:25:ReviewReviewRunInputSizes18:7:ordinal7:natural18:5:value9:pg.bigint481:6:digest469:[...pipe([{ scope: scope, root: scope, review: input.review }], Arr.flatMap((row) => [Result.succeed("ReviewReviewRunInput"), reviewReviewRunInputTexts.review(row.review)])), ...pipe(Arr.map(input.sizes, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("ReviewReviewRunInputSizes"), reviewReviewRunInputSizesTexts.ordinal(row.ordinal), reviewReviewRunInputSizesTexts.value(row.value)]))]'
+)
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface ReviewHandles {
@@ -352,7 +375,38 @@ export const reviewLedger = (h: ReviewHandles) => {
 								root: scope,
 								ordinal: BigInt(index),
 								value: element
-							}))
+							})),
+							reviewReviewRunReviewRequestedWith: Option.toArray(
+								Option.map(
+									codecTextsOf([
+										...pipe(
+											[{ scope: scope, root: scope, review: input.review }],
+											Arr.flatMap((row) => [
+												Result.succeed("ReviewReviewRunInput"),
+												reviewReviewRunInputTexts.review(row.review)
+											])
+										),
+										...pipe(
+											Arr.map(input.sizes, (element, index) => ({
+												scope: scope,
+												root: scope,
+												ordinal: BigInt(index),
+												value: element
+											})),
+											Arr.flatMap((row) => [
+												Result.succeed("ReviewReviewRunInputSizes"),
+												reviewReviewRunInputSizesTexts.ordinal(row.ordinal),
+												reviewReviewRunInputSizesTexts.value(row.value)
+											])
+										)
+									]),
+									(texts) => ({
+										root: scope,
+										fingerprint: reviewReviewRunHeading,
+										input: inputDigest("Review", "ReviewRun", texts)
+									})
+								)
+							)
 						},
 						facts: {}
 					}),

@@ -29,6 +29,7 @@ import {
 	ChainPageReadTreeRow,
 	chainGraph,
 	ChainPageReadWeightsRow,
+	ChainRequestedWith,
 	ChainResult,
 	ChainRoot,
 	ChainStartStep,
@@ -474,16 +475,25 @@ const chainGraphRows = query(Auditor)
 		return r.match(ChainPageInput, { step, root }).find({ step, root })
 	})
 
+/** What every chain root was requested with, by its root: its kind's input fingerprint, which a retirement keeps. */
+const chainRequestedWith = query(Auditor).rule((r) => {
+	const { root, fingerprint } = v(ChainRequestedWith, "requested")
+	return r.match(ChainRequestedWith, { root, fingerprint }).find({ root, fingerprint })
+})
+
 /** Every order the app recorded, by its key: the app's own facts, which a write beside a root's request commits. */
 const orders = query(Auditor).rule((r) => {
 	const { order } = v(Order, "order")
 	return r.match(Order, { order }).find({ order })
 })
 
-/** Every Ordered root's input row, by its root: a request's input, which a clearing of its graph deletes. */
+/**
+ * Every Ordered root's input row, by its root, with its count of pages: a request's input, which a clearing of its
+ * graph deletes.
+ */
 const chainOrderedInputs = query(Auditor).rule((r) => {
-	const { root } = v(ChainOrderedInput, "input")
-	return r.match(ChainOrderedInput, { root }).find({ root })
+	const { root, pages: count } = v(ChainOrderedInput, "input")
+	return r.match(ChainOrderedInput, { root, pages: count }).find({ root, pages: count })
 })
 
 /** Every chain root's scope, its record, which a clearing of its graph keeps. */
@@ -641,6 +651,7 @@ export const auditWorkload = workload(Auditor, {
 	heard,
 	chainGraphRows,
 	chainOrderedInputs,
+	chainRequestedWith,
 	orders,
 	chainHeaders,
 	assignResults,

@@ -51,7 +51,7 @@ export const flatOf = (
 	}
 	const Root: RootKind<number, number, never> = {
 		name: "Flat",
-		trigger: { _tag: "Operator" },
+		trigger: { _tag: "Operator", heading: "FlatInput" },
 		precondition: Option.none(),
 		window: Option.none(),
 		exclusive: Option.none(),
@@ -123,6 +123,7 @@ const verdictOf = (
 		case "held":
 		case "retired":
 		case "blocked":
+		case "differs":
 			return refused(answered.answer)
 	}
 }

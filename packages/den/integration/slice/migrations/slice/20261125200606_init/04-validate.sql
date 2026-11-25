@@ -258,6 +258,16 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_assign_failed_3fwuzoo5wq"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__reader_olds_assign_requested_with_443b3z4c4i"() RETURNS SETOF "slice"."__row_olds_assign_requested_with_du6qh7hi2e"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_assign_requested_with_443b3z4c4i"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__reader_olds_assign_result_jkusfe56os"() RETURNS SETOF "slice"."__row_olds_assign_result_y6xdg27a27"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -267,6 +277,16 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_assign_result_jkusfe56os"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__reader_news_assign_root_3xyzyb53nr"() RETURNS SETOF "slice"."__row_news_assign_root_mlgojh5hbk"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root" FROM "pg_temp"."__delta_news_assign_root_pdqr6p4xia" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_assign_root_3xyzyb53nr"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__reader_olds_assign_step_zgkm42uz2f"() RETURNS SETOF "slice"."__row_olds_assign_step_zrm5kjcsbb"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -308,6 +328,16 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_chain_page_input_obmb52egoq"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__reader_olds_chain_requested_with_4x7wyiwiez"() RETURNS SETOF "slice"."__row_olds_chain_requested_with_chzxikdtnl"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_chain_requested_with_4x7wyiwiez"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__reader_olds_chain_result_nva6clqovh"() RETURNS SETOF "slice"."__row_olds_chain_result_zhxr3n3y5v"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -317,6 +347,16 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_chain_result_nva6clqovh"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__reader_news_chain_root_mcybluxt5e"() RETURNS SETOF "slice"."__row_news_chain_root_3rdxqpnika"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root" FROM "pg_temp"."__delta_news_chain_root_ijyckclhe7" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_chain_root_mcybluxt5e"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__reader_olds_chain_step_yztqk3nrsj"() RETURNS SETOF "slice"."__row_olds_chain_step_a4auuc4j32"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -368,6 +408,16 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_clock_failed_valmjzds6g"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__reader_olds_clock_requested_with_arihfprtk2"() RETURNS SETOF "slice"."__row_olds_clock_requested_with_3fdps2cdvj"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_clock_requested_with_arihfprtk2"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__reader_olds_clock_result_j3aouqlor5"() RETURNS SETOF "slice"."__row_olds_clock_result_xmvy6bruki"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -377,6 +427,16 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_clock_result_j3aouqlor5"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__reader_news_clock_root_mr43vya4t5"() RETURNS SETOF "slice"."__row_news_clock_root_77gtrqv5vx"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root" FROM "pg_temp"."__delta_news_clock_root_zka62mczpm" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_clock_root_mr43vya4t5"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__reader_olds_clock_step_pgxck5ertr"() RETURNS SETOF "slice"."__row_olds_clock_step_ro3hcnnd7q"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -478,6 +538,16 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_fan_mop_input_y2wt46ygp5"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__reader_olds_fan_requested_with_ojtaefe2lg"() RETURNS SETOF "slice"."__row_olds_fan_requested_with_vvlswsw6at"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_fan_requested_with_ojtaefe2lg"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__reader_olds_fan_result_5zw7ij7lso"() RETURNS SETOF "slice"."__row_olds_fan_result_cfwjurochh"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -487,6 +557,16 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_fan_result_5zw7ij7lso"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__reader_news_fan_root_6b32bydtyr"() RETURNS SETOF "slice"."__row_news_fan_root_pek322ray3"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root" FROM "pg_temp"."__delta_news_fan_root_jja5rh7vpv" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_fan_root_6b32bydtyr"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__reader_news_fan_square_input_p7ron44s5l"() RETURNS SETOF "slice"."__row_news_fan_square_input_oooc5jrvqp"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -568,6 +648,16 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_retry_polite_input_ldefi4pvmz"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__reader_olds_retry_requested_with_am6b6xgnmd"() RETURNS SETOF "slice"."__row_olds_retry_requested_with_pwesmz6aqt"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "pg_temp"."__delta_olds_retry_requested_with_dmldy4l647" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_retry_requested_with_am6b6xgnmd"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__reader_olds_retry_result_uld336hsbx"() RETURNS SETOF "slice"."__row_olds_retry_result_sawexe6rws"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -577,6 +667,16 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_retry_result_uld336hsbx"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__reader_news_retry_root_otdnullrvt"() RETURNS SETOF "slice"."__row_news_retry_root_bpmsp2lmj3"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root" FROM "pg_temp"."__delta_news_retry_root_neq4p2a4rt" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_retry_root_otdnullrvt"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__reader_news_retry_steadfast_input_vfnxzktspv"() RETURNS SETOF "slice"."__row_news_retry_steadfast_input_6gk4r2it4l"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -688,6 +788,16 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_review_questions_input_ds6zex53wd"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__reader_olds_review_requested_with_nykgw6gh5l"() RETURNS SETOF "slice"."__row_olds_review_requested_with_d4ep53ociv"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "pg_temp"."__delta_olds_review_requested_with_spmimogfiz" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_review_requested_with_nykgw6gh5l"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__reader_olds_review_result_kqmhnbcsva"() RETURNS SETOF "slice"."__row_olds_review_result_4edqg37cfx"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -697,6 +807,16 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_review_result_kqmhnbcsva"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__reader_news_review_root_naq7lhzan7"() RETURNS SETOF "slice"."__row_news_review_root_eshmunzwn4"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root" FROM "pg_temp"."__delta_news_review_root_3i2klgpxij" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_review_root_naq7lhzan7"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__reader_news_review_save_input_wwipjutxrs"() RETURNS SETOF "slice"."__row_news_review_save_input_g4felfy764"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -768,6 +888,16 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_sync_failed_2ecpcuza2e"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__reader_olds_sync_requested_with_nxo6lpi6h7"() RETURNS SETOF "slice"."__row_olds_sync_requested_with_7xi5vgtjja"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_sync_requested_with_nxo6lpi6h7"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__reader_olds_sync_result_zh6zs3n256"() RETURNS SETOF "slice"."__row_olds_sync_result_5yd36qoig4"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -777,6 +907,16 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_sync_result_zh6zs3n256"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__reader_news_sync_root_5bdr4w2js5"() RETURNS SETOF "slice"."__row_news_sync_root_zdr2x363tg"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root" FROM "pg_temp"."__delta_news_sync_root_jqzatbcigx" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_sync_root_5bdr4w2js5"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__reader_olds_sync_step_tfxcx6pquc"() RETURNS SETOF "slice"."__row_olds_sync_step_24id3jri34"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -818,6 +958,16 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_writeback_failed_66tuuxudwu"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__reader_olds_writeback_requested_with_orryfb25pj"() RETURNS SETOF "slice"."__row_olds_writeback_requested_with_bmpjgxjpa7"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "pg_temp"."__delta_olds_writeback_requested_with_7assjghdal" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_writeback_requested_with_orryfb25pj"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__reader_olds_writeback_result_pcbgqjqnz3"() RETURNS SETOF "slice"."__row_olds_writeback_result_ctqblben4u"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -827,6 +977,16 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__reader_olds_writeback_result_pcbgqjqnz3"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__reader_news_writeback_root_ey46dixxka"() RETURNS SETOF "slice"."__row_news_writeback_root_gtduy6k6pr"
+LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  RETURN QUERY SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root" FROM "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" AS "r1" ;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__reader_news_writeback_root_ey46dixxka"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__reader_olds_writeback_step_5z6akmweto"() RETURNS SETOF "slice"."__row_olds_writeback_step_rvrwqy67gp"
 LANGUAGE plpgsql VOLATILE ROWS 1 SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -1118,6 +1278,16 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_assign_failed_in_assign_result_rrfurnngc2"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__judge_assign_root_kind_in_assign_requested_with_vraaribrmt"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM (WITH "r24"("c1", "c2", "c3", "c4") AS MATERIALIZED (SELECT "r25"."c1", "r25"."c2", "r25"."c3", "r25"."c4" FROM "slice"."__reader_news_assign_root_3xyzyb53nr"() AS "r25"("c1", "c2", "c3", "c4")), "r26"("c1", "c2", "c3") AS MATERIALIZED (SELECT "r27"."c1", "r27"."c2", "r27"."c3" FROM "slice"."__reader_olds_assign_requested_with_443b3z4c4i"() AS "r27"("c1", "c2", "c3")) SELECT "r21"."c23" FROM (SELECT "r10"."c11" FROM ((SELECT "r3"."c3" AS "c7" FROM (SELECT "r1"."c4", "r1"."c3" FROM "r24" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c4" = 0::smallint UNION SELECT "r6"."c3" AS "c10" FROM "r26" AS "r6")) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r16"."c19" FROM (SELECT "r14"."c16" FROM (SELECT "r13"."c13", "r11"."c12" FROM (SELECT "r12"."kind", "r12"."root" FROM "slice_den"."assign_root" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15", "c16") WHERE "r14"."c15" = 0::smallint) AS "r16"("c19") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r17"."root" FROM "slice_den"."assign_requested_with" AS "r17") AS "r19"("c21") WHERE "r19"."c21" = "r16"."c19") OFFSET 0) AS "r21"("c23")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'a write breaks a rule over a query' USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text", CONSTRAINT = '__rule_assign_root_kind_in_assign_requested_with_4xmlqzryt7'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_requested_with'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_assign_root_kind_in_assign_requested_with_vraaribrmt"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__judge_chain_done_in_chain_result_675t5ij4i2"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -1147,6 +1317,26 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_chain_page_input_in_chain_step_oothsyr55y"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__judge_chain_root_kind_in_chain_requested_with_wxwr2l5iz6"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM (WITH "r24"("c1", "c2", "c3", "c4") AS MATERIALIZED (SELECT "r25"."c1", "r25"."c2", "r25"."c3", "r25"."c4" FROM "slice"."__reader_news_chain_root_mcybluxt5e"() AS "r25"("c1", "c2", "c3", "c4")), "r26"("c1", "c2", "c3") AS MATERIALIZED (SELECT "r27"."c1", "r27"."c2", "r27"."c3" FROM "slice"."__reader_olds_chain_requested_with_4x7wyiwiez"() AS "r27"("c1", "c2", "c3")) SELECT "r21"."c23" FROM (SELECT "r10"."c11" FROM ((SELECT "r3"."c3" AS "c7" FROM (SELECT "r1"."c4", "r1"."c3" FROM "r24" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c4" = 0::smallint UNION SELECT "r6"."c3" AS "c10" FROM "r26" AS "r6")) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r16"."c19" FROM (SELECT "r14"."c16" FROM (SELECT "r13"."c13", "r11"."c12" FROM (SELECT "r12"."kind", "r12"."root" FROM "slice_den"."chain_root" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15", "c16") WHERE "r14"."c15" = 0::smallint) AS "r16"("c19") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r17"."root" FROM "slice_den"."chain_requested_with" AS "r17") AS "r19"("c21") WHERE "r19"."c21" = "r16"."c19") OFFSET 0) AS "r21"("c23")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'a write breaks a rule over a query' USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text", CONSTRAINT = '__rule_chain_root_kind_in_chain_requested_with_e2cinxmzix'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_requested_with'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_chain_root_kind_in_chain_requested_with_wxwr2l5iz6"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__judge_chain_root_kind_in_chain_requested_with_hct6qx7fd6"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM (WITH "r24"("c1", "c2", "c3", "c4") AS MATERIALIZED (SELECT "r25"."c1", "r25"."c2", "r25"."c3", "r25"."c4" FROM "slice"."__reader_news_chain_root_mcybluxt5e"() AS "r25"("c1", "c2", "c3", "c4")), "r26"("c1", "c2", "c3") AS MATERIALIZED (SELECT "r27"."c1", "r27"."c2", "r27"."c3" FROM "slice"."__reader_olds_chain_requested_with_4x7wyiwiez"() AS "r27"("c1", "c2", "c3")) SELECT "r21"."c23" FROM (SELECT "r10"."c11" FROM ((SELECT "r3"."c3" AS "c7" FROM (SELECT "r1"."c4", "r1"."c3" FROM "r24" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c4" = 1::smallint UNION SELECT "r6"."c3" AS "c10" FROM "r26" AS "r6")) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r16"."c19" FROM (SELECT "r14"."c16" FROM (SELECT "r13"."c13", "r11"."c12" FROM (SELECT "r12"."kind", "r12"."root" FROM "slice_den"."chain_root" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15", "c16") WHERE "r14"."c15" = 1::smallint) AS "r16"("c19") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r17"."root" FROM "slice_den"."chain_requested_with" AS "r17") AS "r19"("c21") WHERE "r19"."c21" = "r16"."c19") OFFSET 0) AS "r21"("c23")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'a write breaks a rule over a query' USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text", CONSTRAINT = '__rule_chain_root_kind_in_chain_requested_with_us4lcta7gn'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_requested_with'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_chain_root_kind_in_chain_requested_with_hct6qx7fd6"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge_clock_chime_input_in_clock_step_cfgh2w5ma3"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -1187,6 +1377,16 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_clock_failed_in_clock_result_rclmfokwzo"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__judge_clock_root_kind_in_clock_requested_with_6vjvudhhdz"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM (WITH "r24"("c1", "c2", "c3", "c4") AS MATERIALIZED (SELECT "r25"."c1", "r25"."c2", "r25"."c3", "r25"."c4" FROM "slice"."__reader_news_clock_root_mr43vya4t5"() AS "r25"("c1", "c2", "c3", "c4")), "r26"("c1", "c2", "c3") AS MATERIALIZED (SELECT "r27"."c1", "r27"."c2", "r27"."c3" FROM "slice"."__reader_olds_clock_requested_with_arihfprtk2"() AS "r27"("c1", "c2", "c3")) SELECT "r21"."c23" FROM (SELECT "r10"."c11" FROM ((SELECT "r3"."c3" AS "c7" FROM (SELECT "r1"."c4", "r1"."c3" FROM "r24" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c4" = 1::smallint UNION SELECT "r6"."c3" AS "c10" FROM "r26" AS "r6")) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r16"."c19" FROM (SELECT "r14"."c16" FROM (SELECT "r13"."c13", "r11"."c12" FROM (SELECT "r12"."kind", "r12"."root" FROM "slice_den"."clock_root" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15", "c16") WHERE "r14"."c15" = 1::smallint) AS "r16"("c19") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r17"."root" FROM "slice_den"."clock_requested_with" AS "r17") AS "r19"("c21") WHERE "r19"."c21" = "r16"."c19") OFFSET 0) AS "r21"("c23")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'a write breaks a rule over a query' USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text", CONSTRAINT = '__rule_clock_root_kind_in_clock_requested_with_vdixallsrx'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'clock_requested_with'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_clock_root_kind_in_clock_requested_with_6vjvudhhdz"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge_fan_batch_input_in_fan_within_4gfuvufclc"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -1237,6 +1437,26 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_fan_mop_input_in_fan_step_y343huwkfv"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__judge_fan_root_kind_in_fan_requested_with_ztdt4x45qy"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM (WITH "r24"("c1", "c2", "c3", "c4") AS MATERIALIZED (SELECT "r25"."c1", "r25"."c2", "r25"."c3", "r25"."c4" FROM "slice"."__reader_news_fan_root_6b32bydtyr"() AS "r25"("c1", "c2", "c3", "c4")), "r26"("c1", "c2", "c3") AS MATERIALIZED (SELECT "r27"."c1", "r27"."c2", "r27"."c3" FROM "slice"."__reader_olds_fan_requested_with_ojtaefe2lg"() AS "r27"("c1", "c2", "c3")) SELECT "r21"."c23" FROM (SELECT "r10"."c11" FROM ((SELECT "r3"."c3" AS "c7" FROM (SELECT "r1"."c4", "r1"."c3" FROM "r24" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c4" = 0::smallint UNION SELECT "r6"."c3" AS "c10" FROM "r26" AS "r6")) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r16"."c19" FROM (SELECT "r14"."c16" FROM (SELECT "r13"."c13", "r11"."c12" FROM (SELECT "r12"."kind", "r12"."root" FROM "slice_den"."fan_root" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15", "c16") WHERE "r14"."c15" = 0::smallint) AS "r16"("c19") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r17"."root" FROM "slice_den"."fan_requested_with" AS "r17") AS "r19"("c21") WHERE "r19"."c21" = "r16"."c19") OFFSET 0) AS "r21"("c23")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'a write breaks a rule over a query' USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text", CONSTRAINT = '__rule_fan_root_kind_in_fan_requested_with_y2eoonmjh6'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'fan_requested_with'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_fan_root_kind_in_fan_requested_with_ztdt4x45qy"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__judge_fan_root_kind_in_fan_requested_with_wqykzajga4"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM (WITH "r24"("c1", "c2", "c3", "c4") AS MATERIALIZED (SELECT "r25"."c1", "r25"."c2", "r25"."c3", "r25"."c4" FROM "slice"."__reader_news_fan_root_6b32bydtyr"() AS "r25"("c1", "c2", "c3", "c4")), "r26"("c1", "c2", "c3") AS MATERIALIZED (SELECT "r27"."c1", "r27"."c2", "r27"."c3" FROM "slice"."__reader_olds_fan_requested_with_ojtaefe2lg"() AS "r27"("c1", "c2", "c3")) SELECT "r21"."c23" FROM (SELECT "r10"."c11" FROM ((SELECT "r3"."c3" AS "c7" FROM (SELECT "r1"."c4", "r1"."c3" FROM "r24" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c4" = 1::smallint UNION SELECT "r6"."c3" AS "c10" FROM "r26" AS "r6")) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r16"."c19" FROM (SELECT "r14"."c16" FROM (SELECT "r13"."c13", "r11"."c12" FROM (SELECT "r12"."kind", "r12"."root" FROM "slice_den"."fan_root" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15", "c16") WHERE "r14"."c15" = 1::smallint) AS "r16"("c19") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r17"."root" FROM "slice_den"."fan_requested_with" AS "r17") AS "r19"("c21") WHERE "r19"."c21" = "r16"."c19") OFFSET 0) AS "r21"("c23")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'a write breaks a rule over a query' USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text", CONSTRAINT = '__rule_fan_root_kind_in_fan_requested_with_wf543rylab'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'fan_requested_with'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_fan_root_kind_in_fan_requested_with_wqykzajga4"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge_fan_square_input_in_fan_step_nxz74orxwd"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -1298,6 +1518,36 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_retry_polite_input_in_retry_step_4vl6qwfgzn"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__judge_retry_root_kind_in_retry_requested_with_uxbsfun37o"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM (WITH "r24"("c1", "c2", "c3", "c4") AS MATERIALIZED (SELECT "r25"."c1", "r25"."c2", "r25"."c3", "r25"."c4" FROM "slice"."__reader_news_retry_root_otdnullrvt"() AS "r25"("c1", "c2", "c3", "c4")), "r26"("c1", "c2", "c3") AS MATERIALIZED (SELECT "r27"."c1", "r27"."c2", "r27"."c3" FROM "slice"."__reader_olds_retry_requested_with_am6b6xgnmd"() AS "r27"("c1", "c2", "c3")) SELECT "r21"."c23" FROM (SELECT "r10"."c11" FROM ((SELECT "r3"."c3" AS "c7" FROM (SELECT "r1"."c4", "r1"."c3" FROM "r24" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c4" = 0::smallint UNION SELECT "r6"."c3" AS "c10" FROM "r26" AS "r6")) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r16"."c19" FROM (SELECT "r14"."c16" FROM (SELECT "r13"."c13", "r11"."c12" FROM (SELECT "r12"."kind", "r12"."root" FROM "slice_den"."retry_root" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15", "c16") WHERE "r14"."c15" = 0::smallint) AS "r16"("c19") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r17"."root" FROM "slice_den"."retry_requested_with" AS "r17") AS "r19"("c21") WHERE "r19"."c21" = "r16"."c19") OFFSET 0) AS "r21"("c23")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'a write breaks a rule over a query' USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text", CONSTRAINT = '__rule_retry_root_kind_in_retry_requested_with_eiw4t3f4zy'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'retry_requested_with'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_retry_root_kind_in_retry_requested_with_uxbsfun37o"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__judge_retry_root_kind_in_retry_requested_with_fdec6qmbfw"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM (WITH "r24"("c1", "c2", "c3", "c4") AS MATERIALIZED (SELECT "r25"."c1", "r25"."c2", "r25"."c3", "r25"."c4" FROM "slice"."__reader_news_retry_root_otdnullrvt"() AS "r25"("c1", "c2", "c3", "c4")), "r26"("c1", "c2", "c3") AS MATERIALIZED (SELECT "r27"."c1", "r27"."c2", "r27"."c3" FROM "slice"."__reader_olds_retry_requested_with_am6b6xgnmd"() AS "r27"("c1", "c2", "c3")) SELECT "r21"."c23" FROM (SELECT "r10"."c11" FROM ((SELECT "r3"."c3" AS "c7" FROM (SELECT "r1"."c4", "r1"."c3" FROM "r24" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c4" = 1::smallint UNION SELECT "r6"."c3" AS "c10" FROM "r26" AS "r6")) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r16"."c19" FROM (SELECT "r14"."c16" FROM (SELECT "r13"."c13", "r11"."c12" FROM (SELECT "r12"."kind", "r12"."root" FROM "slice_den"."retry_root" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15", "c16") WHERE "r14"."c15" = 1::smallint) AS "r16"("c19") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r17"."root" FROM "slice_den"."retry_requested_with" AS "r17") AS "r19"("c21") WHERE "r19"."c21" = "r16"."c19") OFFSET 0) AS "r21"("c23")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'a write breaks a rule over a query' USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text", CONSTRAINT = '__rule_retry_root_kind_in_retry_requested_with_3tytwnbqnb'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'retry_requested_with'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_retry_root_kind_in_retry_requested_with_fdec6qmbfw"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__judge_retry_root_kind_in_retry_requested_with_fmhoylviyc"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM (WITH "r24"("c1", "c2", "c3", "c4") AS MATERIALIZED (SELECT "r25"."c1", "r25"."c2", "r25"."c3", "r25"."c4" FROM "slice"."__reader_news_retry_root_otdnullrvt"() AS "r25"("c1", "c2", "c3", "c4")), "r26"("c1", "c2", "c3") AS MATERIALIZED (SELECT "r27"."c1", "r27"."c2", "r27"."c3" FROM "slice"."__reader_olds_retry_requested_with_am6b6xgnmd"() AS "r27"("c1", "c2", "c3")) SELECT "r21"."c23" FROM (SELECT "r10"."c11" FROM ((SELECT "r3"."c3" AS "c7" FROM (SELECT "r1"."c4", "r1"."c3" FROM "r24" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c4" = 2::smallint UNION SELECT "r6"."c3" AS "c10" FROM "r26" AS "r6")) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r16"."c19" FROM (SELECT "r14"."c16" FROM (SELECT "r13"."c13", "r11"."c12" FROM (SELECT "r12"."kind", "r12"."root" FROM "slice_den"."retry_root" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15", "c16") WHERE "r14"."c15" = 2::smallint) AS "r16"("c19") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r17"."root" FROM "slice_den"."retry_requested_with" AS "r17") AS "r19"("c21") WHERE "r19"."c21" = "r16"."c19") OFFSET 0) AS "r21"("c23")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'a write breaks a rule over a query' USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text", CONSTRAINT = '__rule_retry_root_kind_in_retry_requested_with_6bsjonnweg'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'retry_requested_with'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_retry_root_kind_in_retry_requested_with_fmhoylviyc"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__judge_retry_steadfast_input_in_retry_step_xkylzkj4zd"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -1358,6 +1608,16 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_review_questions_input_in_review_within_oq2i4d4qlh"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__judge_review_root_kind_in_review_requested_with_g2urmlweog"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM (WITH "r24"("c1", "c2", "c3", "c4") AS MATERIALIZED (SELECT "r25"."c1", "r25"."c2", "r25"."c3", "r25"."c4" FROM "slice"."__reader_news_review_root_naq7lhzan7"() AS "r25"("c1", "c2", "c3", "c4")), "r26"("c1", "c2", "c3") AS MATERIALIZED (SELECT "r27"."c1", "r27"."c2", "r27"."c3" FROM "slice"."__reader_olds_review_requested_with_nykgw6gh5l"() AS "r27"("c1", "c2", "c3")) SELECT "r21"."c23" FROM (SELECT "r10"."c11" FROM ((SELECT "r3"."c3" AS "c7" FROM (SELECT "r1"."c4", "r1"."c3" FROM "r24" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c4" = 0::smallint UNION SELECT "r6"."c3" AS "c10" FROM "r26" AS "r6")) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r16"."c19" FROM (SELECT "r14"."c16" FROM (SELECT "r13"."c13", "r11"."c12" FROM (SELECT "r12"."kind", "r12"."root" FROM "slice_den"."review_root" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15", "c16") WHERE "r14"."c15" = 0::smallint) AS "r16"("c19") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r17"."root" FROM "slice_den"."review_requested_with" AS "r17") AS "r19"("c21") WHERE "r19"."c21" = "r16"."c19") OFFSET 0) AS "r21"("c23")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'a write breaks a rule over a query' USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text", CONSTRAINT = '__rule_review_root_kind_in_review_requested_with_db7tkcbjbv'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'review_requested_with'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_review_root_kind_in_review_requested_with_g2urmlweog"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__judge_review_save_input_in_review_step_qbidwsfxvi"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -1408,6 +1668,26 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_sync_failed_in_sync_result_zp7mocg4uv"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__judge_sync_root_kind_in_sync_requested_with_r5trt2jyga"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM (WITH "r24"("c1", "c2", "c3", "c4") AS MATERIALIZED (SELECT "r25"."c1", "r25"."c2", "r25"."c3", "r25"."c4" FROM "slice"."__reader_news_sync_root_5bdr4w2js5"() AS "r25"("c1", "c2", "c3", "c4")), "r26"("c1", "c2", "c3") AS MATERIALIZED (SELECT "r27"."c1", "r27"."c2", "r27"."c3" FROM "slice"."__reader_olds_sync_requested_with_nxo6lpi6h7"() AS "r27"("c1", "c2", "c3")) SELECT "r21"."c23" FROM (SELECT "r10"."c11" FROM ((SELECT "r3"."c3" AS "c7" FROM (SELECT "r1"."c4", "r1"."c3" FROM "r24" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c4" = 0::smallint UNION SELECT "r6"."c3" AS "c10" FROM "r26" AS "r6")) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r16"."c19" FROM (SELECT "r14"."c16" FROM (SELECT "r13"."c13", "r11"."c12" FROM (SELECT "r12"."kind", "r12"."root" FROM "slice_den"."sync_root" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15", "c16") WHERE "r14"."c15" = 0::smallint) AS "r16"("c19") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r17"."root" FROM "slice_den"."sync_requested_with" AS "r17") AS "r19"("c21") WHERE "r19"."c21" = "r16"."c19") OFFSET 0) AS "r21"("c23")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'a write breaks a rule over a query' USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text", CONSTRAINT = '__rule_sync_root_kind_in_sync_requested_with_vtprvodrbc'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'sync_requested_with'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_sync_root_kind_in_sync_requested_with_r5trt2jyga"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__judge_sync_root_kind_in_sync_requested_with_gxdkhw7yb5"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM (WITH "r24"("c1", "c2", "c3", "c4") AS MATERIALIZED (SELECT "r25"."c1", "r25"."c2", "r25"."c3", "r25"."c4" FROM "slice"."__reader_news_sync_root_5bdr4w2js5"() AS "r25"("c1", "c2", "c3", "c4")), "r26"("c1", "c2", "c3") AS MATERIALIZED (SELECT "r27"."c1", "r27"."c2", "r27"."c3" FROM "slice"."__reader_olds_sync_requested_with_nxo6lpi6h7"() AS "r27"("c1", "c2", "c3")) SELECT "r21"."c23" FROM (SELECT "r10"."c11" FROM ((SELECT "r3"."c3" AS "c7" FROM (SELECT "r1"."c4", "r1"."c3" FROM "r24" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c4" = 1::smallint UNION SELECT "r6"."c3" AS "c10" FROM "r26" AS "r6")) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r16"."c19" FROM (SELECT "r14"."c16" FROM (SELECT "r13"."c13", "r11"."c12" FROM (SELECT "r12"."kind", "r12"."root" FROM "slice_den"."sync_root" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15", "c16") WHERE "r14"."c15" = 1::smallint) AS "r16"("c19") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r17"."root" FROM "slice_den"."sync_requested_with" AS "r17") AS "r19"("c21") WHERE "r19"."c21" = "r16"."c19") OFFSET 0) AS "r21"("c23")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'a write breaks a rule over a query' USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text", CONSTRAINT = '__rule_sync_root_kind_in_sync_requested_with_5irx26xkic'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'sync_requested_with'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_sync_root_kind_in_sync_requested_with_gxdkhw7yb5"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__judge_writeback_deliver_input_in_writeback_step_4x5vzcjzbi"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -1437,6 +1717,16 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_writeback_failed_in_writeback_result_ingi2erzkx"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__judge_writeback_root_kind_in_writeback_requested_5hsqrxrofp"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  PERFORM 1 FROM (WITH "r24"("c1", "c2", "c3", "c4") AS MATERIALIZED (SELECT "r25"."c1", "r25"."c2", "r25"."c3", "r25"."c4" FROM "slice"."__reader_news_writeback_root_ey46dixxka"() AS "r25"("c1", "c2", "c3", "c4")), "r26"("c1", "c2", "c3") AS MATERIALIZED (SELECT "r27"."c1", "r27"."c2", "r27"."c3" FROM "slice"."__reader_olds_writeback_requested_with_orryfb25pj"() AS "r27"("c1", "c2", "c3")) SELECT "r21"."c23" FROM (SELECT "r10"."c11" FROM ((SELECT "r3"."c3" AS "c7" FROM (SELECT "r1"."c4", "r1"."c3" FROM "r24" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c4" = 0::smallint UNION SELECT "r6"."c3" AS "c10" FROM "r26" AS "r6")) AS "r10"("c11") OFFSET 0) AS "r11"("c12"), LATERAL (SELECT "r16"."c19" FROM (SELECT "r14"."c16" FROM (SELECT "r13"."c13", "r11"."c12" FROM (SELECT "r12"."kind", "r12"."root" FROM "slice_den"."writeback_root" AS "r12") AS "r13"("c13", "c14") WHERE "r13"."c14" = "r11"."c12") AS "r14"("c15", "c16") WHERE "r14"."c15" = 0::smallint) AS "r16"("c19") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r17"."root" FROM "slice_den"."writeback_requested_with" AS "r17") AS "r19"("c21") WHERE "r19"."c21" = "r16"."c19") OFFSET 0) AS "r21"("c23")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'a write breaks a rule over a query' USING ERRCODE = 'foreign_key_violation'::"pg_catalog"."text", CONSTRAINT = '__rule_writeback_root_kind_in_writeback_requested_jbl3a44l57'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'writeback_requested_with'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_writeback_root_kind_in_writeback_requested_5hsqrxrofp"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge_fan_live_key_resource_seat_tml3jzipqt"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -1690,6 +1980,23 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_assign_embed_input_mode_nearest_3xhwbfkrlv"("pg_catalog"."text"[]) FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__judge_assign_root_bkwk5wvgwu"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__rowed" "pg_catalog"."text"[];
+BEGIN
+  "__rowed" := '{}'::"pg_catalog"."text"[];
+  IF "__written" @> '{"__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN DELETE FROM "pg_temp"."__delta_news_assign_root_pdqr6p4xia" AS "r1" WHERE "r1"."ctid" IN (SELECT "r3"."c1" FROM (SELECT "r2"."ctid" AS "c1", "pg_catalog"."sum"("r2"."__count") OVER (PARTITION BY "r2"."root", "r2"."kind") AS "c2", "pg_catalog"."row_number"() OVER (PARTITION BY "r2"."root", "r2"."kind" ORDER BY "r2"."__count" DESC) AS "c3" FROM "pg_temp"."__delta_news_assign_root_pdqr6p4xia" AS "r2") AS "r3"("c1", "c2", "c3") WHERE "r3"."c2" <= 0::bigint OR "r3"."c3" > 1::bigint) ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_assign_root_pdqr6p4xia" AS "r1") THEN "__rowed" := "__rowed" || '__delta_news_assign_root_pdqr6p4xia'::"pg_catalog"."text"; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN "__rowed" := "__rowed" || '__delta_olds_assign_requested_with_k5aeb5rq4q'::"pg_catalog"."text"; END IF;
+  IF "__rowed" && '{"__delta_news_assign_root_pdqr6p4xia","__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_assign_root_kind_in_assign_requested_with_vraaribrmt"(); END IF;
+  IF "__written" @> '{"__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_assign_root_pdqr6p4xia"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_news_assign_root_pdqr6p4xia"; ELSE DELETE FROM "pg_temp"."__delta_news_assign_root_pdqr6p4xia" AS "r1" ; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q"; ELSE DELETE FROM "pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q" AS "r1" ; END IF; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_assign_root_bkwk5wvgwu"("pg_catalog"."text"[]) FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__judge_chain_done_7blz2jjczl"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -1726,6 +2033,24 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_chain_page_input_22qgggq3id"("pg_catalog"."text"[]) FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__judge_chain_root_xtgbryzuoy"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__rowed" "pg_catalog"."text"[];
+BEGIN
+  "__rowed" := '{}'::"pg_catalog"."text"[];
+  IF "__written" @> '{"__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN DELETE FROM "pg_temp"."__delta_news_chain_root_ijyckclhe7" AS "r1" WHERE "r1"."ctid" IN (SELECT "r3"."c1" FROM (SELECT "r2"."ctid" AS "c1", "pg_catalog"."sum"("r2"."__count") OVER (PARTITION BY "r2"."root", "r2"."kind") AS "c2", "pg_catalog"."row_number"() OVER (PARTITION BY "r2"."root", "r2"."kind" ORDER BY "r2"."__count" DESC) AS "c3" FROM "pg_temp"."__delta_news_chain_root_ijyckclhe7" AS "r2") AS "r3"("c1", "c2", "c3") WHERE "r3"."c2" <= 0::bigint OR "r3"."c3" > 1::bigint) ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_chain_root_ijyckclhe7" AS "r1") THEN "__rowed" := "__rowed" || '__delta_news_chain_root_ijyckclhe7'::"pg_catalog"."text"; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN "__rowed" := "__rowed" || '__delta_olds_chain_requested_with_3djy4udl5k'::"pg_catalog"."text"; END IF;
+  IF "__rowed" && '{"__delta_news_chain_root_ijyckclhe7","__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_chain_root_kind_in_chain_requested_with_wxwr2l5iz6"(); END IF;
+  IF "__rowed" && '{"__delta_news_chain_root_ijyckclhe7","__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_chain_root_kind_in_chain_requested_with_hct6qx7fd6"(); END IF;
+  IF "__written" @> '{"__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_chain_root_ijyckclhe7"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_news_chain_root_ijyckclhe7"; ELSE DELETE FROM "pg_temp"."__delta_news_chain_root_ijyckclhe7" AS "r1" ; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k"; ELSE DELETE FROM "pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k" AS "r1" ; END IF; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_chain_root_xtgbryzuoy"("pg_catalog"."text"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge_clock_chime_input_qujlwtonhn"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -1766,6 +2091,23 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_clock_done_nw5m6y7otq"("pg_catalog"."text"[]) FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__judge_clock_root_v7shadfugs"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__rowed" "pg_catalog"."text"[];
+BEGIN
+  "__rowed" := '{}'::"pg_catalog"."text"[];
+  IF "__written" @> '{"__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN DELETE FROM "pg_temp"."__delta_news_clock_root_zka62mczpm" AS "r1" WHERE "r1"."ctid" IN (SELECT "r3"."c1" FROM (SELECT "r2"."ctid" AS "c1", "pg_catalog"."sum"("r2"."__count") OVER (PARTITION BY "r2"."root", "r2"."kind") AS "c2", "pg_catalog"."row_number"() OVER (PARTITION BY "r2"."root", "r2"."kind" ORDER BY "r2"."__count" DESC) AS "c3" FROM "pg_temp"."__delta_news_clock_root_zka62mczpm" AS "r2") AS "r3"("c1", "c2", "c3") WHERE "r3"."c2" <= 0::bigint OR "r3"."c3" > 1::bigint) ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_clock_root_zka62mczpm" AS "r1") THEN "__rowed" := "__rowed" || '__delta_news_clock_root_zka62mczpm'::"pg_catalog"."text"; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN "__rowed" := "__rowed" || '__delta_olds_clock_requested_with_cij4jtvh4k'::"pg_catalog"."text"; END IF;
+  IF "__rowed" && '{"__delta_news_clock_root_zka62mczpm","__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_clock_root_kind_in_clock_requested_with_6vjvudhhdz"(); END IF;
+  IF "__written" @> '{"__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_clock_root_zka62mczpm"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_news_clock_root_zka62mczpm"; ELSE DELETE FROM "pg_temp"."__delta_news_clock_root_zka62mczpm" AS "r1" ; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k"; ELSE DELETE FROM "pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k" AS "r1" ; END IF; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_clock_root_v7shadfugs"("pg_catalog"."text"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge_fan_batch_input_zonhzu34ui"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -1891,6 +2233,24 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_fan_hold_xpwnh3rc3e"("pg_catalog"."text"[]) FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__judge_fan_root_b45hk2y3y7"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__rowed" "pg_catalog"."text"[];
+BEGIN
+  "__rowed" := '{}'::"pg_catalog"."text"[];
+  IF "__written" @> '{"__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN DELETE FROM "pg_temp"."__delta_news_fan_root_jja5rh7vpv" AS "r1" WHERE "r1"."ctid" IN (SELECT "r3"."c1" FROM (SELECT "r2"."ctid" AS "c1", "pg_catalog"."sum"("r2"."__count") OVER (PARTITION BY "r2"."root", "r2"."kind") AS "c2", "pg_catalog"."row_number"() OVER (PARTITION BY "r2"."root", "r2"."kind" ORDER BY "r2"."__count" DESC) AS "c3" FROM "pg_temp"."__delta_news_fan_root_jja5rh7vpv" AS "r2") AS "r3"("c1", "c2", "c3") WHERE "r3"."c2" <= 0::bigint OR "r3"."c3" > 1::bigint) ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_fan_root_jja5rh7vpv" AS "r1") THEN "__rowed" := "__rowed" || '__delta_news_fan_root_jja5rh7vpv'::"pg_catalog"."text"; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN "__rowed" := "__rowed" || '__delta_olds_fan_requested_with_q6stszqeuf'::"pg_catalog"."text"; END IF;
+  IF "__rowed" && '{"__delta_news_fan_root_jja5rh7vpv","__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_fan_root_kind_in_fan_requested_with_wqykzajga4"(); END IF;
+  IF "__rowed" && '{"__delta_news_fan_root_jja5rh7vpv","__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_fan_root_kind_in_fan_requested_with_ztdt4x45qy"(); END IF;
+  IF "__written" @> '{"__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_fan_root_jja5rh7vpv"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_news_fan_root_jja5rh7vpv"; ELSE DELETE FROM "pg_temp"."__delta_news_fan_root_jja5rh7vpv" AS "r1" ; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf"; ELSE DELETE FROM "pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf" AS "r1" ; END IF; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_fan_root_b45hk2y3y7"("pg_catalog"."text"[]) FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__judge_retry_brittle_input_ltwi3gczlm"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -1936,6 +2296,25 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_retry_done_us2mduacrm"("pg_catalog"."text"[]) FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__judge_retry_root_s7dwjbl3cr"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__rowed" "pg_catalog"."text"[];
+BEGIN
+  "__rowed" := '{}'::"pg_catalog"."text"[];
+  IF "__written" @> '{"__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN DELETE FROM "pg_temp"."__delta_news_retry_root_neq4p2a4rt" AS "r1" WHERE "r1"."ctid" IN (SELECT "r3"."c1" FROM (SELECT "r2"."ctid" AS "c1", "pg_catalog"."sum"("r2"."__count") OVER (PARTITION BY "r2"."root", "r2"."kind") AS "c2", "pg_catalog"."row_number"() OVER (PARTITION BY "r2"."root", "r2"."kind" ORDER BY "r2"."__count" DESC) AS "c3" FROM "pg_temp"."__delta_news_retry_root_neq4p2a4rt" AS "r2") AS "r3"("c1", "c2", "c3") WHERE "r3"."c2" <= 0::bigint OR "r3"."c3" > 1::bigint) ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_root_neq4p2a4rt" AS "r1") THEN "__rowed" := "__rowed" || '__delta_news_retry_root_neq4p2a4rt'::"pg_catalog"."text"; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN "__rowed" := "__rowed" || '__delta_olds_retry_requested_with_dmldy4l647'::"pg_catalog"."text"; END IF;
+  IF "__rowed" && '{"__delta_news_retry_root_neq4p2a4rt","__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_retry_root_kind_in_retry_requested_with_fdec6qmbfw"(); END IF;
+  IF "__rowed" && '{"__delta_news_retry_root_neq4p2a4rt","__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_retry_root_kind_in_retry_requested_with_fmhoylviyc"(); END IF;
+  IF "__rowed" && '{"__delta_news_retry_root_neq4p2a4rt","__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_retry_root_kind_in_retry_requested_with_uxbsfun37o"(); END IF;
+  IF "__written" @> '{"__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_root_neq4p2a4rt"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_news_retry_root_neq4p2a4rt"; ELSE DELETE FROM "pg_temp"."__delta_news_retry_root_neq4p2a4rt" AS "r1" ; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_requested_with_dmldy4l647"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_olds_retry_requested_with_dmldy4l647"; ELSE DELETE FROM "pg_temp"."__delta_olds_retry_requested_with_dmldy4l647" AS "r1" ; END IF; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_retry_root_s7dwjbl3cr"("pg_catalog"."text"[]) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__judge_review_analyze_input_cfqtz7uc7g"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -2061,6 +2440,23 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_review_questions_input_bu3kdyq5g3"("pg_catalog"."text"[]) FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__judge_review_root_ooctkfl5qa"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__rowed" "pg_catalog"."text"[];
+BEGIN
+  "__rowed" := '{}'::"pg_catalog"."text"[];
+  IF "__written" @> '{"__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN DELETE FROM "pg_temp"."__delta_news_review_root_3i2klgpxij" AS "r1" WHERE "r1"."ctid" IN (SELECT "r3"."c1" FROM (SELECT "r2"."ctid" AS "c1", "pg_catalog"."sum"("r2"."__count") OVER (PARTITION BY "r2"."root", "r2"."kind") AS "c2", "pg_catalog"."row_number"() OVER (PARTITION BY "r2"."root", "r2"."kind" ORDER BY "r2"."__count" DESC) AS "c3" FROM "pg_temp"."__delta_news_review_root_3i2klgpxij" AS "r2") AS "r3"("c1", "c2", "c3") WHERE "r3"."c2" <= 0::bigint OR "r3"."c3" > 1::bigint) ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_review_root_3i2klgpxij" AS "r1") THEN "__rowed" := "__rowed" || '__delta_news_review_root_3i2klgpxij'::"pg_catalog"."text"; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN "__rowed" := "__rowed" || '__delta_olds_review_requested_with_spmimogfiz'::"pg_catalog"."text"; END IF;
+  IF "__rowed" && '{"__delta_news_review_root_3i2klgpxij","__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_review_root_kind_in_review_requested_with_g2urmlweog"(); END IF;
+  IF "__written" @> '{"__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_review_root_3i2klgpxij"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_news_review_root_3i2klgpxij"; ELSE DELETE FROM "pg_temp"."__delta_news_review_root_3i2klgpxij" AS "r1" ; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_review_requested_with_spmimogfiz"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_olds_review_requested_with_spmimogfiz"; ELSE DELETE FROM "pg_temp"."__delta_olds_review_requested_with_spmimogfiz" AS "r1" ; END IF; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_review_root_ooctkfl5qa"("pg_catalog"."text"[]) FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__judge_sync_build_input_eaxvc2njxf"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -2101,6 +2497,24 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_sync_done_psjgmjlxp6"("pg_catalog"."text"[]) FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__judge_sync_root_qtvcdrvdqh"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__rowed" "pg_catalog"."text"[];
+BEGIN
+  "__rowed" := '{}'::"pg_catalog"."text"[];
+  IF "__written" @> '{"__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN DELETE FROM "pg_temp"."__delta_news_sync_root_jqzatbcigx" AS "r1" WHERE "r1"."ctid" IN (SELECT "r3"."c1" FROM (SELECT "r2"."ctid" AS "c1", "pg_catalog"."sum"("r2"."__count") OVER (PARTITION BY "r2"."root", "r2"."kind") AS "c2", "pg_catalog"."row_number"() OVER (PARTITION BY "r2"."root", "r2"."kind" ORDER BY "r2"."__count" DESC) AS "c3" FROM "pg_temp"."__delta_news_sync_root_jqzatbcigx" AS "r2") AS "r3"("c1", "c2", "c3") WHERE "r3"."c2" <= 0::bigint OR "r3"."c3" > 1::bigint) ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_sync_root_jqzatbcigx" AS "r1") THEN "__rowed" := "__rowed" || '__delta_news_sync_root_jqzatbcigx'::"pg_catalog"."text"; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN "__rowed" := "__rowed" || '__delta_olds_sync_requested_with_imr3ul5g5h'::"pg_catalog"."text"; END IF;
+  IF "__rowed" && '{"__delta_news_sync_root_jqzatbcigx","__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_sync_root_kind_in_sync_requested_with_gxdkhw7yb5"(); END IF;
+  IF "__rowed" && '{"__delta_news_sync_root_jqzatbcigx","__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_sync_root_kind_in_sync_requested_with_r5trt2jyga"(); END IF;
+  IF "__written" @> '{"__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_sync_root_jqzatbcigx"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_news_sync_root_jqzatbcigx"; ELSE DELETE FROM "pg_temp"."__delta_news_sync_root_jqzatbcigx" AS "r1" ; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h"; ELSE DELETE FROM "pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h" AS "r1" ; END IF; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_sync_root_qtvcdrvdqh"("pg_catalog"."text"[]) FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__judge_writeback_deliver_input_fun3xqfq7u"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -2138,6 +2552,23 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__judge_writeback_done_c7valompmz"("pg_catalog"."text"[]) FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__judge_writeback_root_5xjtyn2i2j"("__written" "pg_catalog"."text"[]) RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__rowed" "pg_catalog"."text"[];
+BEGIN
+  "__rowed" := '{}'::"pg_catalog"."text"[];
+  IF "__written" @> '{"__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN DELETE FROM "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" AS "r1" WHERE "r1"."ctid" IN (SELECT "r3"."c1" FROM (SELECT "r2"."ctid" AS "c1", "pg_catalog"."sum"("r2"."__count") OVER (PARTITION BY "r2"."root", "r2"."kind") AS "c2", "pg_catalog"."row_number"() OVER (PARTITION BY "r2"."root", "r2"."kind" ORDER BY "r2"."__count" DESC) AS "c3" FROM "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" AS "r2") AS "r3"("c1", "c2", "c3") WHERE "r3"."c2" <= 0::bigint OR "r3"."c3" > 1::bigint) ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" AS "r1") THEN "__rowed" := "__rowed" || '__delta_news_writeback_root_ohnfbee6xg'::"pg_catalog"."text"; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN "__rowed" := "__rowed" || '__delta_olds_writeback_requested_with_7assjghdal'::"pg_catalog"."text"; END IF;
+  IF "__rowed" && '{"__delta_news_writeback_root_ohnfbee6xg","__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_writeback_root_kind_in_writeback_requested_5hsqrxrofp"(); END IF;
+  IF "__written" @> '{"__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_writeback_root_ohnfbee6xg"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_news_writeback_root_ohnfbee6xg"; ELSE DELETE FROM "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" AS "r1" ; END IF; END IF;
+  IF "__written" @> '{"__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN IF EXISTS (SELECT FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_writeback_requested_with_7assjghdal"'::"pg_catalog"."text") AND ("pg_catalog"."pg_relation_size"("r1"."oid") > 8192::bigint OR "pg_catalog"."pg_relation_size"("r1"."reltoastrelid") > 8192::bigint)) THEN TRUNCATE "pg_temp"."__delta_olds_writeback_requested_with_7assjghdal"; ELSE DELETE FROM "pg_temp"."__delta_olds_writeback_requested_with_7assjghdal" AS "r1" ; END IF; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__judge_writeback_root_5xjtyn2i2j"("pg_catalog"."text"[]) FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__judge"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -2154,10 +2585,13 @@ BEGIN
   IF "__written" && '{"__delta_news_assign_decide_output_stage_rest_6mbtdpgnzs","__delta_news_assign_decide_output_stage_serve_wtybqd4urn","__delta_olds_assign_decide_output_3jzxxqenub"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_assign_decide_output_stage_rest_irdavmdqjh"("__written"); END IF;
   IF "__written" && '{"__delta_news_assign_done_gkeahs6o6w","__delta_news_assign_failed_dwbhu7kja4","__delta_olds_assign_result_iqwu3uacwz"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_assign_done_hjsux6cb6r"("__written"); END IF;
   IF "__written" && '{"__delta_news_assign_embed_input_mode_nearest_isi2gtuixh","__delta_news_assign_embed_input_mode_within_cbohtiwnzc","__delta_olds_assign_embed_input_him44rawxg"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_assign_embed_input_mode_nearest_3xhwbfkrlv"("__written"); END IF;
+  IF "__written" && '{"__delta_news_assign_root_pdqr6p4xia","__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_assign_root_bkwk5wvgwu"("__written"); END IF;
   IF "__written" && '{"__delta_news_chain_done_7mxrjrr6d3","__delta_news_chain_failed_3cnddndadi","__delta_olds_chain_result_mcrhg5rpqs"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_chain_done_7blz2jjczl"("__written"); END IF;
   IF "__written" && '{"__delta_news_chain_page_input_ihrdbtmz2g","__delta_olds_chain_step_ydmnph2ay3"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_chain_page_input_22qgggq3id"("__written"); END IF;
+  IF "__written" && '{"__delta_news_chain_root_ijyckclhe7","__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_chain_root_xtgbryzuoy"("__written"); END IF;
   IF "__written" && '{"__delta_news_clock_chime_input_r6ze2v7bvf","__delta_news_clock_close_input_yp6k5mj55y","__delta_olds_clock_step_dbefiaawag"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_clock_chime_input_qujlwtonhn"("__written"); END IF;
   IF "__written" && '{"__delta_news_clock_done_asn3xw4kn4","__delta_news_clock_failed_nc5zet5rke","__delta_olds_clock_result_3bpq737pql"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_clock_done_nw5m6y7otq"("__written"); END IF;
+  IF "__written" && '{"__delta_news_clock_root_zka62mczpm","__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_clock_root_v7shadfugs"("__written"); END IF;
   IF "__written" && '{"__delta_news_fan_batch_input_nhwn27p3sp","__delta_olds_fan_within_l4kihfng2e"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_fan_batch_input_zonhzu34ui"("__written"); END IF;
   IF "__written" && '{"__delta_news_fan_done_l4635x4xm4","__delta_news_fan_failed_sjopflrmp2","__delta_olds_fan_result_xmvxkp2ewm"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_fan_done_2nmscmmvlu"("__written"); END IF;
   IF "__written" && '{"__delta_news_fan_dust_input_p6zhnbkdip","__delta_news_fan_mop_input_tpbiawxb6u","__delta_news_fan_square_input_3nosgvraec","__delta_olds_fan_step_nvhk3orr3b"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_fan_dust_input_6snexwuzoz"("__written"); END IF;
@@ -2165,8 +2599,10 @@ BEGIN
   IF "__written" && '{"__delta_olds_fan_ended_a52adgepad"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_fan_ended_6lkn5mmmar"("__written"); END IF;
   IF "__written" && '{"__delta_olds_fan_held_the2rscwp4"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_fan_held_dhl6funig6"("__written"); END IF;
   IF "__written" && '{"__delta_news_fan_hold_ahysnd4lqy"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_fan_hold_xpwnh3rc3e"("__written"); END IF;
+  IF "__written" && '{"__delta_news_fan_root_jja5rh7vpv","__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_fan_root_b45hk2y3y7"("__written"); END IF;
   IF "__written" && '{"__delta_news_retry_brittle_input_igfmpfvar7","__delta_news_retry_patient_input_ysvs3lnghk","__delta_news_retry_polite_input_5olnktyefb","__delta_news_retry_steadfast_input_obog2ca5jl","__delta_olds_retry_step_bwcgcrgoas"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_retry_brittle_input_ltwi3gczlm"("__written"); END IF;
   IF "__written" && '{"__delta_news_retry_done_he3nwopcjs","__delta_news_retry_failed_2odkfbznr3","__delta_olds_retry_result_5fhf6dh3d6"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_retry_done_us2mduacrm"("__written"); END IF;
+  IF "__written" && '{"__delta_news_retry_root_neq4p2a4rt","__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_retry_root_s7dwjbl3cr"("__written"); END IF;
   IF "__written" && '{"__delta_news_review_analyze_input_qaf6mth72j","__delta_news_review_gather_input_cs6fi6xkb5","__delta_news_review_save_input_5mlxkvqoko","__delta_olds_review_step_vprahaxyo3"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_review_analyze_input_cfqtz7uc7g"("__written"); END IF;
   IF "__written" && '{"__delta_news_review_done_53dva2wsk6","__delta_news_review_failed_o7xhoa7jvu","__delta_olds_review_result_zxudqwvl5c"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_review_done_xzuqwzrsjm"("__written"); END IF;
   IF "__written" && '{"__delta_news_review_claim_yqhefknxxx"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_review_claim_az6lkkq33b"("__written"); END IF;
@@ -2174,10 +2610,13 @@ BEGIN
   IF "__written" && '{"__delta_olds_review_held_63gxp7fnsb"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_review_held_wah4syhkpo"("__written"); END IF;
   IF "__written" && '{"__delta_news_review_hold_le5oubaoqu"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_review_hold_mggi2ob7td"("__written"); END IF;
   IF "__written" && '{"__delta_news_review_questions_input_74tgsyphvp","__delta_olds_review_within_lb7vyo643w"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_review_questions_input_bu3kdyq5g3"("__written"); END IF;
+  IF "__written" && '{"__delta_news_review_root_3i2klgpxij","__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_review_root_ooctkfl5qa"("__written"); END IF;
   IF "__written" && '{"__delta_news_sync_build_input_lr3zmnju24","__delta_news_sync_copy_input_ebqkx3hjzl","__delta_olds_sync_step_ssojir5323"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_sync_build_input_eaxvc2njxf"("__written"); END IF;
   IF "__written" && '{"__delta_news_sync_done_s5axodfjkn","__delta_news_sync_failed_3ges5xez5d","__delta_olds_sync_result_nguz5pld6a"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_sync_done_psjgmjlxp6"("__written"); END IF;
+  IF "__written" && '{"__delta_news_sync_root_jqzatbcigx","__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_sync_root_qtvcdrvdqh"("__written"); END IF;
   IF "__written" && '{"__delta_news_writeback_deliver_input_wkwchvj3ey","__delta_olds_writeback_step_wrfjyeqpi3"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_writeback_deliver_input_fun3xqfq7u"("__written"); END IF;
   IF "__written" && '{"__delta_news_writeback_done_bk7gh743kc","__delta_news_writeback_failed_obx26fcj3t","__delta_olds_writeback_result_pdyjf7qvef"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_writeback_done_c7valompmz"("__written"); END IF;
+  IF "__written" && '{"__delta_news_writeback_root_ohnfbee6xg","__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN PERFORM "slice"."__judge_writeback_root_5xjtyn2i2j"("__written"); END IF;
   RETURN NEW;
 END
 $$;
@@ -2380,6 +2819,20 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_assign_failed_cqtrnqesux"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__capture_assign_requested_with_h2atfyvv4s"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_assign_root_pdqr6p4xia"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_assign_requested_with_k5aeb5rq4q","!__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN '__delta_olds_assign_requested_with_k5aeb5rq4q'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN '__delta_news_assign_root_pdqr6p4xia'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_assign_requested_with_k5aeb5rq4q","__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_assign_requested_with_3xavh4tz7a"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_assign_requested_with_k5aeb5rq4q'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_assign_requested_with_k5aeb5rq4q'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_assign_root_pdqr6p4xia"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_assign_requested_with_k5aeb5rq4q","!__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN '__delta_olds_assign_requested_with_k5aeb5rq4q'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN '__delta_news_assign_root_pdqr6p4xia'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_assign_requested_with_k5aeb5rq4q","__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_assign_requested_with_3xavh4tz7a"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_assign_requested_with_k5aeb5rq4q'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_assign_requested_with_k5aeb5rq4q'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_assign_requested_with_h2atfyvv4s"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__capture_assign_result_3zix6jjqic"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -2393,6 +2846,20 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_assign_result_3zix6jjqic"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__capture_assign_root_lbkcscnsqf"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'INSERT'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_assign_root_pdqr6p4xia"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_assign_root_pdqr6p4xia","!__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN '__delta_news_assign_root_pdqr6p4xia'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN '__delta_olds_assign_requested_with_k5aeb5rq4q'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_assign_root_pdqr6p4xia","__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_assign_root_ecnnffi3e3"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_assign_root_pdqr6p4xia" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_assign_root_pdqr6p4xia" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_assign_root_pdqr6p4xia'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_assign_root_pdqr6p4xia'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_assign_root_pdqr6p4xia" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_assign_root_pdqr6p4xia"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_assign_root_pdqr6p4xia","!__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN '__delta_news_assign_root_pdqr6p4xia'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN '__delta_olds_assign_requested_with_k5aeb5rq4q'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_assign_root_pdqr6p4xia","__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_assign_root_ecnnffi3e3"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_assign_root_pdqr6p4xia" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" WHERE NOT EXISTS (SELECT FROM "olds" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") ; INSERT INTO "pg_temp"."__delta_news_assign_root_pdqr6p4xia" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") AND EXISTS (SELECT FROM "pg_temp"."__delta_news_assign_root_pdqr6p4xia" AS "r3") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_assign_root_pdqr6p4xia" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_assign_root_pdqr6p4xia'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_assign_root_pdqr6p4xia'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_assign_root_pdqr6p4xia" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_assign_root_pdqr6p4xia"'::"pg_catalog"."text")); IF "__stood" && '{"!__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN '__delta_news_assign_root_pdqr6p4xia'::"pg_catalog"."text" ELSE '__delta_news_assign_root_pdqr6p4xia'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'assign_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_assign_root_ecnnffi3e3"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_assign_root_pdqr6p4xia" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_assign_root_pdqr6p4xia" AS "r3") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_assign_root_lbkcscnsqf"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_assign_step_bxkkty5l67"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -2450,6 +2917,20 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_chain_page_input_ct4d2gjnsb"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__capture_chain_requested_with_haahw5wmk6"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_chain_root_ijyckclhe7"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_chain_requested_with_3djy4udl5k","!__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN '__delta_olds_chain_requested_with_3djy4udl5k'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN '__delta_news_chain_root_ijyckclhe7'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_chain_requested_with_3djy4udl5k","__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_chain_requested_with_fq22h3tdwv"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_chain_requested_with_3djy4udl5k'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_chain_requested_with_3djy4udl5k'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_chain_root_ijyckclhe7"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_chain_requested_with_3djy4udl5k","!__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN '__delta_olds_chain_requested_with_3djy4udl5k'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN '__delta_news_chain_root_ijyckclhe7'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_chain_requested_with_3djy4udl5k","__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_chain_requested_with_fq22h3tdwv"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_chain_requested_with_3djy4udl5k'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_chain_requested_with_3djy4udl5k'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_chain_requested_with_haahw5wmk6"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__capture_chain_result_y3xtf6otn5"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -2463,6 +2944,20 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_chain_result_y3xtf6otn5"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__capture_chain_root_3cootamwgf"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'INSERT'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_chain_root_ijyckclhe7"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_chain_root_ijyckclhe7","!__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN '__delta_news_chain_root_ijyckclhe7'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN '__delta_olds_chain_requested_with_3djy4udl5k'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_chain_root_ijyckclhe7","__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_chain_root_mmsdkigltc"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_chain_root_ijyckclhe7" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_chain_root_ijyckclhe7" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_chain_root_ijyckclhe7'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_chain_root_ijyckclhe7'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_chain_root_ijyckclhe7" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_chain_root_ijyckclhe7"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_chain_root_ijyckclhe7","!__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN '__delta_news_chain_root_ijyckclhe7'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN '__delta_olds_chain_requested_with_3djy4udl5k'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_chain_root_ijyckclhe7","__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_chain_root_mmsdkigltc"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_chain_root_ijyckclhe7" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" WHERE NOT EXISTS (SELECT FROM "olds" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") ; INSERT INTO "pg_temp"."__delta_news_chain_root_ijyckclhe7" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") AND EXISTS (SELECT FROM "pg_temp"."__delta_news_chain_root_ijyckclhe7" AS "r3") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_chain_root_ijyckclhe7" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_chain_root_ijyckclhe7'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_chain_root_ijyckclhe7'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_chain_root_ijyckclhe7" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_chain_root_ijyckclhe7"'::"pg_catalog"."text")); IF "__stood" && '{"!__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN '__delta_news_chain_root_ijyckclhe7'::"pg_catalog"."text" ELSE '__delta_news_chain_root_ijyckclhe7'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'chain_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_chain_root_mmsdkigltc"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_chain_root_ijyckclhe7" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_chain_root_ijyckclhe7" AS "r3") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_chain_root_3cootamwgf"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_chain_step_2uxbeo7tjg"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -2534,6 +3029,20 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_clock_failed_6qny3r6u6y"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__capture_clock_requested_with_wh65uqc7ii"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_clock_root_zka62mczpm"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_clock_requested_with_cij4jtvh4k","!__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN '__delta_olds_clock_requested_with_cij4jtvh4k'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN '__delta_news_clock_root_zka62mczpm'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_clock_requested_with_cij4jtvh4k","__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'clock_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_clock_requested_with_st4ea4apoz"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_clock_requested_with_cij4jtvh4k'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_clock_requested_with_cij4jtvh4k'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_clock_root_zka62mczpm"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_clock_requested_with_cij4jtvh4k","!__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN '__delta_olds_clock_requested_with_cij4jtvh4k'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN '__delta_news_clock_root_zka62mczpm'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_clock_requested_with_cij4jtvh4k","__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'clock_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_clock_requested_with_st4ea4apoz"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_clock_requested_with_cij4jtvh4k'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_clock_requested_with_cij4jtvh4k'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_clock_requested_with_wh65uqc7ii"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__capture_clock_result_jy4vcxcejz"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -2547,6 +3056,20 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_clock_result_jy4vcxcejz"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__capture_clock_root_tuedr7b4mb"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'INSERT'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_clock_root_zka62mczpm"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_clock_root_zka62mczpm","!__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN '__delta_news_clock_root_zka62mczpm'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN '__delta_olds_clock_requested_with_cij4jtvh4k'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_clock_root_zka62mczpm","__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'clock_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_clock_root_bfxjnnlbbr"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_clock_root_zka62mczpm" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_clock_root_zka62mczpm" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_clock_root_zka62mczpm'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_clock_root_zka62mczpm'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_clock_root_zka62mczpm" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_clock_root_zka62mczpm"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_clock_root_zka62mczpm","!__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN '__delta_news_clock_root_zka62mczpm'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN '__delta_olds_clock_requested_with_cij4jtvh4k'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_clock_root_zka62mczpm","__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'clock_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_clock_root_bfxjnnlbbr"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_clock_root_zka62mczpm" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" WHERE NOT EXISTS (SELECT FROM "olds" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") ; INSERT INTO "pg_temp"."__delta_news_clock_root_zka62mczpm" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") AND EXISTS (SELECT FROM "pg_temp"."__delta_news_clock_root_zka62mczpm" AS "r3") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_clock_root_zka62mczpm" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_clock_root_zka62mczpm'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_clock_root_zka62mczpm'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_clock_root_zka62mczpm" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_clock_root_zka62mczpm"'::"pg_catalog"."text")); IF "__stood" && '{"!__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN '__delta_news_clock_root_zka62mczpm'::"pg_catalog"."text" ELSE '__delta_news_clock_root_zka62mczpm'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'clock_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_clock_root_bfxjnnlbbr"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_clock_root_zka62mczpm" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_clock_root_zka62mczpm" AS "r3") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_clock_root_tuedr7b4mb"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_clock_step_u5p64rffid"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -2688,6 +3211,20 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_fan_mop_input_6phw2xwhnz"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__capture_fan_requested_with_owmaj7huz2"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_fan_root_jja5rh7vpv"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_fan_requested_with_q6stszqeuf","!__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN '__delta_olds_fan_requested_with_q6stszqeuf'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN '__delta_news_fan_root_jja5rh7vpv'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_fan_requested_with_q6stszqeuf","__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'fan_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_fan_requested_with_cfdhaf2vfh"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_fan_requested_with_q6stszqeuf'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_fan_requested_with_q6stszqeuf'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_fan_root_jja5rh7vpv"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_fan_requested_with_q6stszqeuf","!__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN '__delta_olds_fan_requested_with_q6stszqeuf'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN '__delta_news_fan_root_jja5rh7vpv'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_fan_requested_with_q6stszqeuf","__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'fan_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_fan_requested_with_cfdhaf2vfh"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_fan_requested_with_q6stszqeuf'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_fan_requested_with_q6stszqeuf'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_fan_requested_with_owmaj7huz2"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__capture_fan_result_tevufz2c53"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -2701,6 +3238,20 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_fan_result_tevufz2c53"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__capture_fan_root_cjk7n6ydwg"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'INSERT'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_fan_root_jja5rh7vpv"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_fan_root_jja5rh7vpv","!__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN '__delta_news_fan_root_jja5rh7vpv'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN '__delta_olds_fan_requested_with_q6stszqeuf'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_fan_root_jja5rh7vpv","__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'fan_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_fan_root_evnc53opne"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_fan_root_jja5rh7vpv" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_fan_root_jja5rh7vpv" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_fan_root_jja5rh7vpv'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_fan_root_jja5rh7vpv'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_fan_root_jja5rh7vpv" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_fan_root_jja5rh7vpv"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_fan_root_jja5rh7vpv","!__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN '__delta_news_fan_root_jja5rh7vpv'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN '__delta_olds_fan_requested_with_q6stszqeuf'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_fan_root_jja5rh7vpv","__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'fan_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_fan_root_evnc53opne"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_fan_root_jja5rh7vpv" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" WHERE NOT EXISTS (SELECT FROM "olds" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") ; INSERT INTO "pg_temp"."__delta_news_fan_root_jja5rh7vpv" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") AND EXISTS (SELECT FROM "pg_temp"."__delta_news_fan_root_jja5rh7vpv" AS "r3") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_fan_root_jja5rh7vpv" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_fan_root_jja5rh7vpv'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_fan_root_jja5rh7vpv'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_fan_root_jja5rh7vpv" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_fan_root_jja5rh7vpv"'::"pg_catalog"."text")); IF "__stood" && '{"!__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN '__delta_news_fan_root_jja5rh7vpv'::"pg_catalog"."text" ELSE '__delta_news_fan_root_jja5rh7vpv'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'fan_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_fan_root_evnc53opne"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_fan_root_jja5rh7vpv" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_fan_root_jja5rh7vpv" AS "r3") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_fan_root_cjk7n6ydwg"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_fan_square_input_x66yegc6bz"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -2814,6 +3365,20 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_retry_polite_input_4s6i2erlwp"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__capture_retry_requested_with_jgpz6kopmj"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_requested_with_dmldy4l647"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_root_neq4p2a4rt"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_retry_requested_with_dmldy4l647","!__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN '__delta_olds_retry_requested_with_dmldy4l647'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN '__delta_news_retry_root_neq4p2a4rt'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_retry_requested_with_dmldy4l647","__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'retry_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_retry_requested_with_ilqrjj3m5y"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_retry_requested_with_dmldy4l647" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_retry_requested_with_dmldy4l647" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_retry_requested_with_dmldy4l647'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_retry_requested_with_dmldy4l647'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_retry_requested_with_dmldy4l647" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_requested_with_dmldy4l647"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_root_neq4p2a4rt"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_retry_requested_with_dmldy4l647","!__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN '__delta_olds_retry_requested_with_dmldy4l647'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN '__delta_news_retry_root_neq4p2a4rt'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_retry_requested_with_dmldy4l647","__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'retry_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_retry_requested_with_ilqrjj3m5y"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_retry_requested_with_dmldy4l647" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_retry_requested_with_dmldy4l647" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_retry_requested_with_dmldy4l647'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_retry_requested_with_dmldy4l647'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_retry_requested_with_dmldy4l647" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_retry_requested_with_jgpz6kopmj"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__capture_retry_result_oof7kiqgid"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -2827,6 +3392,20 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_retry_result_oof7kiqgid"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__capture_retry_root_nujht4q2jp"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'INSERT'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_root_neq4p2a4rt"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_requested_with_dmldy4l647"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_retry_root_neq4p2a4rt","!__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN '__delta_news_retry_root_neq4p2a4rt'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN '__delta_olds_retry_requested_with_dmldy4l647'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_retry_root_neq4p2a4rt","__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'retry_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_retry_root_rvzhlkfxal"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_retry_root_neq4p2a4rt" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_root_neq4p2a4rt" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_retry_root_neq4p2a4rt'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_retry_root_neq4p2a4rt'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_root_neq4p2a4rt" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_root_neq4p2a4rt"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_requested_with_dmldy4l647"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_retry_root_neq4p2a4rt","!__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN '__delta_news_retry_root_neq4p2a4rt'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN '__delta_olds_retry_requested_with_dmldy4l647'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_retry_root_neq4p2a4rt","__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'retry_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_retry_root_rvzhlkfxal"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_retry_root_neq4p2a4rt" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" WHERE NOT EXISTS (SELECT FROM "olds" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") ; INSERT INTO "pg_temp"."__delta_news_retry_root_neq4p2a4rt" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") AND EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_root_neq4p2a4rt" AS "r3") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_root_neq4p2a4rt" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_retry_root_neq4p2a4rt'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_retry_root_neq4p2a4rt'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_root_neq4p2a4rt" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_root_neq4p2a4rt"'::"pg_catalog"."text")); IF "__stood" && '{"!__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN '__delta_news_retry_root_neq4p2a4rt'::"pg_catalog"."text" ELSE '__delta_news_retry_root_neq4p2a4rt'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'retry_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_retry_root_rvzhlkfxal"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_retry_root_neq4p2a4rt" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_retry_root_neq4p2a4rt" AS "r3") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_retry_root_nujht4q2jp"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_retry_steadfast_input_iqvn32jr3j"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -2982,6 +3561,20 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_review_questions_input_yqxbkx73iq"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__capture_review_requested_with_lzc5wr45yq"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_review_requested_with_spmimogfiz"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_review_root_3i2klgpxij"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_review_requested_with_spmimogfiz","!__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN '__delta_olds_review_requested_with_spmimogfiz'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN '__delta_news_review_root_3i2klgpxij'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_review_requested_with_spmimogfiz","__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'review_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_review_requested_with_o2plzxclt7"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_review_requested_with_spmimogfiz" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_review_requested_with_spmimogfiz" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_review_requested_with_spmimogfiz'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_review_requested_with_spmimogfiz'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_review_requested_with_spmimogfiz" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_review_requested_with_spmimogfiz"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_review_root_3i2klgpxij"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_review_requested_with_spmimogfiz","!__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN '__delta_olds_review_requested_with_spmimogfiz'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN '__delta_news_review_root_3i2klgpxij'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_review_requested_with_spmimogfiz","__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'review_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_review_requested_with_o2plzxclt7"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_review_requested_with_spmimogfiz" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_review_requested_with_spmimogfiz" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_review_requested_with_spmimogfiz'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_review_requested_with_spmimogfiz'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_review_requested_with_spmimogfiz" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_review_requested_with_lzc5wr45yq"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__capture_review_result_m25jokn327"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -2995,6 +3588,20 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_review_result_m25jokn327"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__capture_review_root_qgu5iwjyle"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'INSERT'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_review_root_3i2klgpxij"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_review_requested_with_spmimogfiz"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_review_root_3i2klgpxij","!__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN '__delta_news_review_root_3i2klgpxij'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN '__delta_olds_review_requested_with_spmimogfiz'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_review_root_3i2klgpxij","__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'review_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_review_root_ejfkrp7dtz"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_review_root_3i2klgpxij" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_review_root_3i2klgpxij" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_review_root_3i2klgpxij'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_review_root_3i2klgpxij'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_review_root_3i2klgpxij" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_review_root_3i2klgpxij"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_review_requested_with_spmimogfiz"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_review_root_3i2klgpxij","!__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN '__delta_news_review_root_3i2klgpxij'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN '__delta_olds_review_requested_with_spmimogfiz'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_review_root_3i2klgpxij","__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'review_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_review_root_ejfkrp7dtz"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_review_root_3i2klgpxij" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" WHERE NOT EXISTS (SELECT FROM "olds" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") ; INSERT INTO "pg_temp"."__delta_news_review_root_3i2klgpxij" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") AND EXISTS (SELECT FROM "pg_temp"."__delta_news_review_root_3i2klgpxij" AS "r3") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_review_root_3i2klgpxij" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_review_root_3i2klgpxij'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_review_root_3i2klgpxij'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_review_root_3i2klgpxij" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_review_root_3i2klgpxij"'::"pg_catalog"."text")); IF "__stood" && '{"!__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN '__delta_news_review_root_3i2klgpxij'::"pg_catalog"."text" ELSE '__delta_news_review_root_3i2klgpxij'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'review_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_review_root_ejfkrp7dtz"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_review_root_3i2klgpxij" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_review_root_3i2klgpxij" AS "r3") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_review_root_qgu5iwjyle"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_review_save_input_pdrqqmy66f"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -3094,6 +3701,20 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_sync_failed_xpbhxdlx72"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__capture_sync_requested_with_xfv4yl7s46"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_sync_root_jqzatbcigx"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_sync_requested_with_imr3ul5g5h","!__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN '__delta_olds_sync_requested_with_imr3ul5g5h'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN '__delta_news_sync_root_jqzatbcigx'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_sync_requested_with_imr3ul5g5h","__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'sync_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_sync_requested_with_4lul7oihcy"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_sync_requested_with_imr3ul5g5h'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_sync_requested_with_imr3ul5g5h'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_sync_root_jqzatbcigx"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_sync_requested_with_imr3ul5g5h","!__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN '__delta_olds_sync_requested_with_imr3ul5g5h'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN '__delta_news_sync_root_jqzatbcigx'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_sync_requested_with_imr3ul5g5h","__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'sync_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_sync_requested_with_4lul7oihcy"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_sync_requested_with_imr3ul5g5h'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_sync_requested_with_imr3ul5g5h'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_sync_requested_with_xfv4yl7s46"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__capture_sync_result_led6m2o22r"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -3107,6 +3728,20 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_sync_result_led6m2o22r"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__capture_sync_root_s5cwtqjc6s"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'INSERT'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_sync_root_jqzatbcigx"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_sync_root_jqzatbcigx","!__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN '__delta_news_sync_root_jqzatbcigx'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN '__delta_olds_sync_requested_with_imr3ul5g5h'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_sync_root_jqzatbcigx","__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'sync_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_sync_root_otymwhik42"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_sync_root_jqzatbcigx" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_sync_root_jqzatbcigx" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_sync_root_jqzatbcigx'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_sync_root_jqzatbcigx'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_sync_root_jqzatbcigx" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_sync_root_jqzatbcigx"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_sync_root_jqzatbcigx","!__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN '__delta_news_sync_root_jqzatbcigx'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN '__delta_olds_sync_requested_with_imr3ul5g5h'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_sync_root_jqzatbcigx","__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'sync_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_sync_root_otymwhik42"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_sync_root_jqzatbcigx" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" WHERE NOT EXISTS (SELECT FROM "olds" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") ; INSERT INTO "pg_temp"."__delta_news_sync_root_jqzatbcigx" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") AND EXISTS (SELECT FROM "pg_temp"."__delta_news_sync_root_jqzatbcigx" AS "r3") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_sync_root_jqzatbcigx" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_sync_root_jqzatbcigx'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_sync_root_jqzatbcigx'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_sync_root_jqzatbcigx" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_sync_root_jqzatbcigx"'::"pg_catalog"."text")); IF "__stood" && '{"!__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN '__delta_news_sync_root_jqzatbcigx'::"pg_catalog"."text" ELSE '__delta_news_sync_root_jqzatbcigx'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'sync_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_sync_root_otymwhik42"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_sync_root_jqzatbcigx" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_sync_root_jqzatbcigx" AS "r3") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_sync_root_s5cwtqjc6s"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_sync_step_35gtwztkwz"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -3164,6 +3799,20 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_writeback_failed_xewjzd2yye"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__capture_writeback_requested_with_2rygwrqbml"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_writeback_requested_with_7assjghdal"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_writeback_root_ohnfbee6xg"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_writeback_requested_with_7assjghdal","!__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN '__delta_olds_writeback_requested_with_7assjghdal'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN '__delta_news_writeback_root_ohnfbee6xg'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_writeback_requested_with_7assjghdal","__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'writeback_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_writeback_requested_with_xfqdgwx6jv"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_writeback_requested_with_7assjghdal" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_writeback_requested_with_7assjghdal" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_writeback_requested_with_7assjghdal'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_writeback_requested_with_7assjghdal'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_writeback_requested_with_7assjghdal" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_writeback_requested_with_7assjghdal"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_writeback_root_ohnfbee6xg"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_writeback_requested_with_7assjghdal","!__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN '__delta_olds_writeback_requested_with_7assjghdal'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN '__delta_news_writeback_root_ohnfbee6xg'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_olds_writeback_requested_with_7assjghdal","__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'writeback_requested_with'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_writeback_requested_with_xfqdgwx6jv"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_olds_writeback_requested_with_7assjghdal" ("fingerprint", "input", "root") SELECT "r1"."fingerprint", "r1"."input", "r1"."root" FROM "olds" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_olds_writeback_requested_with_7assjghdal" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_olds_writeback_requested_with_7assjghdal'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_olds_writeback_requested_with_7assjghdal'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_olds_writeback_requested_with_7assjghdal" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_writeback_requested_with_2rygwrqbml"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__capture_writeback_result_cd63iav5l7"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -3177,6 +3826,20 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__capture_writeback_result_cd63iav5l7"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__capture_writeback_root_4gkeh6e4ge"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__armed" "pg_catalog"."text"[];
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  IF TG_OP = 'INSERT'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_writeback_root_ohnfbee6xg"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_writeback_requested_with_7assjghdal"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_writeback_root_ohnfbee6xg","!__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN '__delta_news_writeback_root_ohnfbee6xg'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN '__delta_olds_writeback_requested_with_7assjghdal'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_writeback_root_ohnfbee6xg","__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'writeback_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_writeback_root_m53pgt6gxz"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_writeback_root_ohnfbee6xg'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_writeback_root_ohnfbee6xg'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'UPDATE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "news" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_writeback_root_ohnfbee6xg"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_writeback_requested_with_7assjghdal"'::"pg_catalog"."text"))); IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_writeback_root_ohnfbee6xg","!__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN '__delta_news_writeback_root_ohnfbee6xg'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN '__delta_olds_writeback_requested_with_7assjghdal'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__sentinel_53ts4wdrci","__delta_news_writeback_root_ohnfbee6xg","__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'writeback_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_writeback_root_m53pgt6gxz"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", 1::smallint FROM "news" AS "r1" WHERE NOT EXISTS (SELECT FROM "olds" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") ; INSERT INTO "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE NOT EXISTS (SELECT FROM "news" AS "r2" WHERE "r2"."root" = "r1"."root" AND "r2"."kind" = "r1"."kind") AND EXISTS (SELECT FROM "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" AS "r3") ; IF EXISTS (SELECT FROM "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" AS "r1") THEN UPDATE "pg_temp"."__sentinel_53ts4wdrci" AS "r2" SET "__written" = "r2"."__written" || '__delta_news_writeback_root_ohnfbee6xg'::"pg_catalog"."text" WHERE NOT "r2"."__written" @> '{"__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] ; END IF; "__armed" := ARRAY(SELECT '__delta_news_writeback_root_ohnfbee6xg'::"pg_catalog"."text" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" AS "r2")); INSERT INTO "pg_temp"."__sentinel_53ts4wdrci" ("__written") SELECT "__armed" WHERE NOT EXISTS (SELECT FROM "pg_temp"."__sentinel_53ts4wdrci" AS "r1") ; END IF; ELSIF TG_OP = 'DELETE'::"pg_catalog"."text" THEN IF EXISTS (SELECT FROM "olds" AS "r4") THEN "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" = "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_writeback_root_ohnfbee6xg"'::"pg_catalog"."text")); IF "__stood" && '{"!__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN '__delta_news_writeback_root_ohnfbee6xg'::"pg_catalog"."text" ELSE '__delta_news_writeback_root_ohnfbee6xg'::"pg_catalog"."text" END; END IF; IF NOT "__stood" @> '{"__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a write of a table the rule judge holds in a session that has not stood up its tables' USING ERRCODE = '55Z03'::"pg_catalog"."text", SCHEMA = 'slice_den'::"pg_catalog"."text", TABLE = 'writeback_root'::"pg_catalog"."text", HINT = 'write it through a served program of grizzle, whose session stands the tables up first, or call "slice"."__stand_writeback_root_m53pgt6gxz"() before the write'::"pg_catalog"."text"; END IF; INSERT INTO "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" ("at", "key", "kind", "root", "__count") SELECT "r1"."at", "r1"."key", "r1"."kind", "r1"."root", (-1)::smallint FROM "olds" AS "r1" WHERE EXISTS (SELECT FROM "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" AS "r3") ; END IF; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__capture_writeback_root_4gkeh6e4ge"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__capture_writeback_step_dklkh3hpav"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -3450,6 +4113,22 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_assign_failed_pmuglprcww"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__stand_assign_requested_with_3xavh4tz7a"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_assign_root_pdqr6p4xia"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_assign_requested_with_k5aeb5rq4q","!__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN '__delta_olds_assign_requested_with_k5aeb5rq4q'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN '__delta_news_assign_root_pdqr6p4xia'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_assign_root_pdqr6p4xia" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_assign_requested_with_3xavh4tz7a"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__stand_assign_result_3dwqbs6psk"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -3466,6 +4145,22 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_assign_result_3dwqbs6psk"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__stand_assign_root_ecnnffi3e3"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_assign_root_pdqr6p4xia"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_assign_root_pdqr6p4xia","!__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN '__delta_news_assign_root_pdqr6p4xia'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN '__delta_olds_assign_requested_with_k5aeb5rq4q'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_news_assign_root_pdqr6p4xia"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_assign_root_pdqr6p4xia" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_olds_assign_requested_with_k5aeb5rq4q"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_assign_requested_with_k5aeb5rq4q" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_assign_root_ecnnffi3e3"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__stand_assign_step_qwjijdgx6j"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -3532,6 +4227,22 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_chain_page_input_akkjfmkwih"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__stand_chain_requested_with_fq22h3tdwv"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_chain_root_ijyckclhe7"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_chain_requested_with_3djy4udl5k","!__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN '__delta_olds_chain_requested_with_3djy4udl5k'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN '__delta_news_chain_root_ijyckclhe7'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_chain_root_ijyckclhe7" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_chain_requested_with_fq22h3tdwv"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__stand_chain_result_2qc7m4brl3"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -3548,6 +4259,22 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_chain_result_2qc7m4brl3"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__stand_chain_root_mmsdkigltc"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_chain_root_ijyckclhe7"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_chain_root_ijyckclhe7","!__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN '__delta_news_chain_root_ijyckclhe7'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN '__delta_olds_chain_requested_with_3djy4udl5k'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_news_chain_root_ijyckclhe7"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_chain_root_ijyckclhe7" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_olds_chain_requested_with_3djy4udl5k"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_chain_requested_with_3djy4udl5k" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_chain_root_mmsdkigltc"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__stand_chain_step_3hsz3lyxy2"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -3629,6 +4356,22 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_clock_failed_zsyt2n5qx3"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__stand_clock_requested_with_st4ea4apoz"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_clock_root_zka62mczpm"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_clock_requested_with_cij4jtvh4k","!__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN '__delta_olds_clock_requested_with_cij4jtvh4k'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN '__delta_news_clock_root_zka62mczpm'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_clock_root_zka62mczpm" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_clock_requested_with_st4ea4apoz"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__stand_clock_result_dk5lfugcd5"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -3645,6 +4388,22 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_clock_result_dk5lfugcd5"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__stand_clock_root_bfxjnnlbbr"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_clock_root_zka62mczpm"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_clock_root_zka62mczpm","!__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN '__delta_news_clock_root_zka62mczpm'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN '__delta_olds_clock_requested_with_cij4jtvh4k'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_news_clock_root_zka62mczpm"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_clock_root_zka62mczpm" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_olds_clock_requested_with_cij4jtvh4k"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_clock_requested_with_cij4jtvh4k" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_clock_root_bfxjnnlbbr"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__stand_clock_step_cbbapr6dla"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -3803,6 +4562,22 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_fan_mop_input_i5g5pk2lsj"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__stand_fan_requested_with_cfdhaf2vfh"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_fan_root_jja5rh7vpv"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_fan_requested_with_q6stszqeuf","!__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN '__delta_olds_fan_requested_with_q6stszqeuf'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN '__delta_news_fan_root_jja5rh7vpv'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_fan_root_jja5rh7vpv" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_fan_requested_with_cfdhaf2vfh"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__stand_fan_result_4bsplumotk"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -3819,6 +4594,22 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_fan_result_4bsplumotk"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__stand_fan_root_evnc53opne"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_fan_root_jja5rh7vpv"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_fan_root_jja5rh7vpv","!__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN '__delta_news_fan_root_jja5rh7vpv'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN '__delta_olds_fan_requested_with_q6stszqeuf'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_news_fan_root_jja5rh7vpv"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_fan_root_jja5rh7vpv" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_olds_fan_requested_with_q6stszqeuf"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_fan_requested_with_q6stszqeuf" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_fan_root_evnc53opne"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__stand_fan_square_input_ag5nlkdpuv"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -3950,6 +4741,22 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_retry_polite_input_uiwzzm343r"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__stand_retry_requested_with_ilqrjj3m5y"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_requested_with_dmldy4l647"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_root_neq4p2a4rt"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_retry_requested_with_dmldy4l647","!__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN '__delta_olds_retry_requested_with_dmldy4l647'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN '__delta_news_retry_root_neq4p2a4rt'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_retry_requested_with_dmldy4l647" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_retry_root_neq4p2a4rt" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_retry_requested_with_ilqrjj3m5y"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__stand_retry_result_mpvrsnerne"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -3966,6 +4773,22 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_retry_result_mpvrsnerne"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__stand_retry_root_rvzhlkfxal"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_retry_root_neq4p2a4rt"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_retry_requested_with_dmldy4l647"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_retry_root_neq4p2a4rt","!__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN '__delta_news_retry_root_neq4p2a4rt'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN '__delta_olds_retry_requested_with_dmldy4l647'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_news_retry_root_neq4p2a4rt"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_retry_root_neq4p2a4rt" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_olds_retry_requested_with_dmldy4l647"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_retry_requested_with_dmldy4l647" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_retry_root_rvzhlkfxal"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__stand_retry_steadfast_input_chyldmp7fv"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -4142,6 +4965,22 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_review_questions_input_c55nnxszay"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__stand_review_requested_with_o2plzxclt7"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_review_requested_with_spmimogfiz"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_review_root_3i2klgpxij"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_review_requested_with_spmimogfiz","!__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN '__delta_olds_review_requested_with_spmimogfiz'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN '__delta_news_review_root_3i2klgpxij'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_review_requested_with_spmimogfiz" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_review_root_3i2klgpxij" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_review_requested_with_o2plzxclt7"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__stand_review_result_7berxkzbzb"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -4158,6 +4997,22 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_review_result_7berxkzbzb"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__stand_review_root_ejfkrp7dtz"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_review_root_3i2klgpxij"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_review_requested_with_spmimogfiz"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_review_root_3i2klgpxij","!__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN '__delta_news_review_root_3i2klgpxij'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN '__delta_olds_review_requested_with_spmimogfiz'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_news_review_root_3i2klgpxij"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_review_root_3i2klgpxij" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_olds_review_requested_with_spmimogfiz"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_review_requested_with_spmimogfiz" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_review_root_ejfkrp7dtz"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__stand_review_save_input_nwulronicu"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -4273,6 +5128,22 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_sync_failed_uzrsh7vxay"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__stand_sync_requested_with_4lul7oihcy"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_sync_root_jqzatbcigx"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_sync_requested_with_imr3ul5g5h","!__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN '__delta_olds_sync_requested_with_imr3ul5g5h'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN '__delta_news_sync_root_jqzatbcigx'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_sync_root_jqzatbcigx" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_sync_requested_with_4lul7oihcy"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__stand_sync_result_fkuahqxxbc"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -4289,6 +5160,22 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_sync_result_fkuahqxxbc"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__stand_sync_root_otymwhik42"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_sync_root_jqzatbcigx"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_sync_root_jqzatbcigx","!__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN '__delta_news_sync_root_jqzatbcigx'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN '__delta_olds_sync_requested_with_imr3ul5g5h'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_news_sync_root_jqzatbcigx"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_sync_root_jqzatbcigx" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_olds_sync_requested_with_imr3ul5g5h"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_sync_requested_with_imr3ul5g5h" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_sync_root_otymwhik42"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__stand_sync_step_mljbwcbsm5"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -4355,6 +5242,22 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_writeback_failed_tv4kbeol35"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__stand_writeback_requested_with_xfqdgwx6jv"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_writeback_requested_with_7assjghdal"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_writeback_root_ohnfbee6xg"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_olds_writeback_requested_with_7assjghdal","!__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN '__delta_olds_writeback_requested_with_7assjghdal'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN '__delta_news_writeback_root_ohnfbee6xg'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_writeback_requested_with_7assjghdal" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_writeback_requested_with_xfqdgwx6jv"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__stand_writeback_result_owlolckns5"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -4371,6 +5274,22 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__stand_writeback_result_owlolckns5"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__stand_writeback_root_m53pgt6gxz"() RETURNS "pg_catalog"."void"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+DECLARE
+  "__stood" "pg_catalog"."text"[];
+BEGIN
+  "__stood" := ARRAY(SELECT CASE WHEN "pg_catalog"."pg_get_userbyid"("r1"."relowner") = CURRENT_USER AND "r1"."relpersistence" = 't'::"pg_catalog"."text" AND ("r1"."relname"::"pg_catalog"."text" <> '__sentinel_53ts4wdrci'::"pg_catalog"."text" OR EXISTS (SELECT FROM "pg_catalog"."pg_trigger" AS "r3" WHERE "r3"."tgrelid" = "r1"."oid" AND "r3"."tgfoid" = "pg_catalog"."to_regprocedure"('"slice"."__judge"()'::"pg_catalog"."text"))) THEN "r1"."relname"::"pg_catalog"."text" ELSE '!'::"pg_catalog"."text" || "r1"."relname"::"pg_catalog"."text" END FROM "pg_catalog"."pg_class" AS "r1" WHERE "r1"."oid" IN ("pg_catalog"."to_regclass"('"pg_temp"."__sentinel_53ts4wdrci"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_news_writeback_root_ohnfbee6xg"'::"pg_catalog"."text"), "pg_catalog"."to_regclass"('"pg_temp"."__delta_olds_writeback_requested_with_7assjghdal"'::"pg_catalog"."text")));
+  IF "__stood" && '{"!__sentinel_53ts4wdrci","!__delta_news_writeback_root_ohnfbee6xg","!__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN RAISE EXCEPTION 'a session table of the rule judge that the judge''s definer does not own' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = 'pg_temp'::"pg_catalog"."text", TABLE = CASE WHEN "__stood" @> '{"!__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN '__sentinel_53ts4wdrci'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN '__delta_news_writeback_root_ohnfbee6xg'::"pg_catalog"."text" WHEN "__stood" @> '{"!__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN '__delta_olds_writeback_requested_with_7assjghdal'::"pg_catalog"."text" ELSE '__sentinel_53ts4wdrci'::"pg_catalog"."text" END; END IF;
+  IF NOT "__stood" @> '{"__sentinel_53ts4wdrci"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__sentinel_53ts4wdrci" ("__written" "pg_catalog"."text"[]) ON COMMIT PRESERVE ROWS; CREATE CONSTRAINT TRIGGER "__sentinel_53ts4wdrci" AFTER INSERT ON "pg_temp"."__sentinel_53ts4wdrci" DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION "slice"."__judge"(); END IF;
+  IF NOT "__stood" @> '{"__delta_news_writeback_root_ohnfbee6xg"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_news_writeback_root_ohnfbee6xg" ("at" bigint, "key" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "kind" smallint, "root" "pg_catalog"."bytea", "__count" smallint) ON COMMIT PRESERVE ROWS; END IF;
+  IF NOT "__stood" @> '{"__delta_olds_writeback_requested_with_7assjghdal"}'::"pg_catalog"."text"[] THEN CREATE TEMPORARY TABLE "pg_temp"."__delta_olds_writeback_requested_with_7assjghdal" ("fingerprint" "pg_catalog"."bytea" STORAGE PLAIN, "input" "pg_catalog"."bytea" STORAGE PLAIN, "root" "pg_catalog"."bytea" STORAGE PLAIN) ON COMMIT PRESERVE ROWS; END IF;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__stand_writeback_root_m53pgt6gxz"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__stand_writeback_step_dhhgvpedc7"() RETURNS "pg_catalog"."void"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -4599,6 +5518,16 @@ CREATE TRIGGER "__capture_update"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_assign_failed_cqtrnqesux"();
 
 CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."assign_requested_with"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_assign_requested_with_h2atfyvv4s"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."assign_requested_with"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_assign_requested_with_h2atfyvv4s"();
+
+CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."assign_result"
   REFERENCING OLD TABLE AS "olds"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_assign_result_3zix6jjqic"();
@@ -4607,6 +5536,21 @@ CREATE TRIGGER "__capture_update"
   AFTER UPDATE ON "slice_den"."assign_result"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_assign_result_3zix6jjqic"();
+
+CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."assign_root"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_assign_root_lbkcscnsqf"();
+
+CREATE TRIGGER "__capture_insert"
+  AFTER INSERT ON "slice_den"."assign_root"
+  REFERENCING NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_assign_root_lbkcscnsqf"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."assign_root"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_assign_root_lbkcscnsqf"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."assign_step"
@@ -4664,6 +5608,16 @@ CREATE TRIGGER "__capture_update"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_chain_page_input_ct4d2gjnsb"();
 
 CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."chain_requested_with"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_chain_requested_with_haahw5wmk6"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."chain_requested_with"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_chain_requested_with_haahw5wmk6"();
+
+CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."chain_result"
   REFERENCING OLD TABLE AS "olds"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_chain_result_y3xtf6otn5"();
@@ -4672,6 +5626,21 @@ CREATE TRIGGER "__capture_update"
   AFTER UPDATE ON "slice_den"."chain_result"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_chain_result_y3xtf6otn5"();
+
+CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."chain_root"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_chain_root_3cootamwgf"();
+
+CREATE TRIGGER "__capture_insert"
+  AFTER INSERT ON "slice_den"."chain_root"
+  REFERENCING NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_chain_root_3cootamwgf"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."chain_root"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_chain_root_3cootamwgf"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."chain_step"
@@ -4744,6 +5713,16 @@ CREATE TRIGGER "__capture_update"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_clock_failed_6qny3r6u6y"();
 
 CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."clock_requested_with"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_clock_requested_with_wh65uqc7ii"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."clock_requested_with"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_clock_requested_with_wh65uqc7ii"();
+
+CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."clock_result"
   REFERENCING OLD TABLE AS "olds"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_clock_result_jy4vcxcejz"();
@@ -4752,6 +5731,21 @@ CREATE TRIGGER "__capture_update"
   AFTER UPDATE ON "slice_den"."clock_result"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_clock_result_jy4vcxcejz"();
+
+CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."clock_root"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_clock_root_tuedr7b4mb"();
+
+CREATE TRIGGER "__capture_insert"
+  AFTER INSERT ON "slice_den"."clock_root"
+  REFERENCING NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_clock_root_tuedr7b4mb"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."clock_root"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_clock_root_tuedr7b4mb"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."clock_step"
@@ -4889,6 +5883,16 @@ CREATE TRIGGER "__capture_update"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_mop_input_6phw2xwhnz"();
 
 CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."fan_requested_with"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_requested_with_owmaj7huz2"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."fan_requested_with"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_requested_with_owmaj7huz2"();
+
+CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."fan_result"
   REFERENCING OLD TABLE AS "olds"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_result_tevufz2c53"();
@@ -4897,6 +5901,21 @@ CREATE TRIGGER "__capture_update"
   AFTER UPDATE ON "slice_den"."fan_result"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_result_tevufz2c53"();
+
+CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."fan_root"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_root_cjk7n6ydwg"();
+
+CREATE TRIGGER "__capture_insert"
+  AFTER INSERT ON "slice_den"."fan_root"
+  REFERENCING NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_root_cjk7n6ydwg"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."fan_root"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_fan_root_cjk7n6ydwg"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."fan_square_input"
@@ -5009,6 +6028,16 @@ CREATE TRIGGER "__capture_update"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_polite_input_4s6i2erlwp"();
 
 CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."retry_requested_with"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_requested_with_jgpz6kopmj"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."retry_requested_with"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_requested_with_jgpz6kopmj"();
+
+CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."retry_result"
   REFERENCING OLD TABLE AS "olds"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_result_oof7kiqgid"();
@@ -5017,6 +6046,21 @@ CREATE TRIGGER "__capture_update"
   AFTER UPDATE ON "slice_den"."retry_result"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_result_oof7kiqgid"();
+
+CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."retry_root"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_root_nujht4q2jp"();
+
+CREATE TRIGGER "__capture_insert"
+  AFTER INSERT ON "slice_den"."retry_root"
+  REFERENCING NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_root_nujht4q2jp"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."retry_root"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_retry_root_nujht4q2jp"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."retry_steadfast_input"
@@ -5169,6 +6213,16 @@ CREATE TRIGGER "__capture_update"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_review_questions_input_yqxbkx73iq"();
 
 CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."review_requested_with"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_review_requested_with_lzc5wr45yq"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."review_requested_with"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_review_requested_with_lzc5wr45yq"();
+
+CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."review_result"
   REFERENCING OLD TABLE AS "olds"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_review_result_m25jokn327"();
@@ -5177,6 +6231,21 @@ CREATE TRIGGER "__capture_update"
   AFTER UPDATE ON "slice_den"."review_result"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_review_result_m25jokn327"();
+
+CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."review_root"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_review_root_qgu5iwjyle"();
+
+CREATE TRIGGER "__capture_insert"
+  AFTER INSERT ON "slice_den"."review_root"
+  REFERENCING NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_review_root_qgu5iwjyle"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."review_root"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_review_root_qgu5iwjyle"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."review_save_input"
@@ -5274,6 +6343,16 @@ CREATE TRIGGER "__capture_update"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_sync_failed_xpbhxdlx72"();
 
 CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."sync_requested_with"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_sync_requested_with_xfv4yl7s46"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."sync_requested_with"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_sync_requested_with_xfv4yl7s46"();
+
+CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."sync_result"
   REFERENCING OLD TABLE AS "olds"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_sync_result_led6m2o22r"();
@@ -5282,6 +6361,21 @@ CREATE TRIGGER "__capture_update"
   AFTER UPDATE ON "slice_den"."sync_result"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_sync_result_led6m2o22r"();
+
+CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."sync_root"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_sync_root_s5cwtqjc6s"();
+
+CREATE TRIGGER "__capture_insert"
+  AFTER INSERT ON "slice_den"."sync_root"
+  REFERENCING NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_sync_root_s5cwtqjc6s"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."sync_root"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_sync_root_s5cwtqjc6s"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."sync_step"
@@ -5339,6 +6433,16 @@ CREATE TRIGGER "__capture_update"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_writeback_failed_xewjzd2yye"();
 
 CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."writeback_requested_with"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_writeback_requested_with_2rygwrqbml"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."writeback_requested_with"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_writeback_requested_with_2rygwrqbml"();
+
+CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."writeback_result"
   REFERENCING OLD TABLE AS "olds"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_writeback_result_cd63iav5l7"();
@@ -5347,6 +6451,21 @@ CREATE TRIGGER "__capture_update"
   AFTER UPDATE ON "slice_den"."writeback_result"
   REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_writeback_result_cd63iav5l7"();
+
+CREATE TRIGGER "__capture_delete"
+  AFTER DELETE ON "slice_den"."writeback_root"
+  REFERENCING OLD TABLE AS "olds"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_writeback_root_4gkeh6e4ge"();
+
+CREATE TRIGGER "__capture_insert"
+  AFTER INSERT ON "slice_den"."writeback_root"
+  REFERENCING NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_writeback_root_4gkeh6e4ge"();
+
+CREATE TRIGGER "__capture_update"
+  AFTER UPDATE ON "slice_den"."writeback_root"
+  REFERENCING OLD TABLE AS "olds" NEW TABLE AS "news"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__capture_writeback_root_4gkeh6e4ge"();
 
 CREATE TRIGGER "__capture_delete"
   AFTER DELETE ON "slice_den"."writeback_step"
@@ -5390,6 +6509,17 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_assign_paused_5n3oauuljz"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__immutable_assign_requested_with_jfazpuokod"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."root", OLD."fingerprint", OLD."input"), (NEW."root", NEW."fingerprint", NEW."input")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(AssignRequestedWith) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_assign_requested_with_jfazpuokod"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__immutable_assign_resumed_wcgii3wia6"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -5523,6 +6653,17 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_chain_paused_aoyhzggt5w"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__immutable_chain_requested_with_lphulmotb2"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."root", OLD."fingerprint", OLD."input"), (NEW."root", NEW."fingerprint", NEW."input")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ChainRequestedWith) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_chain_requested_with_lphulmotb2"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__immutable_chain_resumed_pyb74if2ds"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -5577,6 +6718,17 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_clock_paused_3ykaw355ga"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__immutable_clock_requested_with_qdxfqqbips"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."root", OLD."fingerprint", OLD."input"), (NEW."root", NEW."fingerprint", NEW."input")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ClockRequestedWith) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_clock_requested_with_qdxfqqbips"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__immutable_clock_resumed_yqfyfvv7pj"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -5666,6 +6818,17 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_fan_paused_ybdsv5d4um"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__immutable_fan_requested_with_jx75cuglpf"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."root", OLD."fingerprint", OLD."input"), (NEW."root", NEW."fingerprint", NEW."input")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(FanRequestedWith) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_fan_requested_with_jx75cuglpf"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__immutable_fan_resumed_euttpstg26"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -5743,6 +6906,17 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_retry_paused_ss7djxjrej"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__immutable_retry_requested_with_mw5llz3rby"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."root", OLD."fingerprint", OLD."input"), (NEW."root", NEW."fingerprint", NEW."input")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(RetryRequestedWith) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_retry_requested_with_mw5llz3rby"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__immutable_retry_resumed_dlzqou5yma"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -5786,6 +6960,17 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_review_paused_cmayqb3lyz"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__immutable_review_requested_with_3oturoaqs5"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."root", OLD."fingerprint", OLD."input"), (NEW."root", NEW."fingerprint", NEW."input")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(ReviewRequestedWith) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_review_requested_with_3oturoaqs5"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__immutable_review_resumed_yerv455d7e"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -5886,6 +7071,17 @@ $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_sync_released_vxed37ia4q"() FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION "slice"."__immutable_sync_requested_with_75aana3qd2"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."root", OLD."fingerprint", OLD."input"), (NEW."root", NEW."fingerprint", NEW."input")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(SyncRequestedWith) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_sync_requested_with_75aana3qd2"() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION "slice"."__immutable_sync_resumed_tbwsh2hgo7"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
 AS $$
@@ -5951,6 +7147,17 @@ END
 $$;
 
 REVOKE EXECUTE ON FUNCTION "slice"."__immutable_writeback_paused_wlprgt3byb"() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION "slice"."__immutable_writeback_requested_with_7ilwkltxjy"() RETURNS "pg_catalog"."trigger"
+LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
+AS $$
+BEGIN
+  IF "pg_catalog"."record_image_ne"((OLD."root", OLD."fingerprint", OLD."input"), (NEW."root", NEW."fingerprint", NEW."input")) THEN RAISE EXCEPTION 'an UPDATE of an immutable relation changes its row' USING ERRCODE = 'insufficient_privilege'::"pg_catalog"."text", SCHEMA = TG_TABLE_SCHEMA, TABLE = TG_TABLE_NAME, HINT = 'declare mutable(WritebackRequestedWith) among the schema''s rules, or delete the row and insert it again'::"pg_catalog"."text"; END IF;
+  RETURN NEW;
+END
+$$;
+
+REVOKE EXECUTE ON FUNCTION "slice"."__immutable_writeback_requested_with_7ilwkltxjy"() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION "slice"."__immutable_writeback_resumed_vv3hrewq67"() RETURNS "pg_catalog"."trigger"
 LANGUAGE plpgsql VOLATILE SECURITY DEFINER SET search_path = "pg_catalog", "pg_temp"
@@ -6058,6 +7265,10 @@ CREATE TRIGGER "__immutable"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_assign_paused_5n3oauuljz"();
 
 CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice_den"."assign_requested_with"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_assign_requested_with_jfazpuokod"();
+
+CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice_den"."assign_resumed"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_assign_resumed_wcgii3wia6"();
 
@@ -6098,6 +7309,10 @@ CREATE TRIGGER "__immutable"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_paused_aoyhzggt5w"();
 
 CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice_den"."chain_requested_with"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_requested_with_lphulmotb2"();
+
+CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice_den"."chain_resumed"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_chain_resumed_pyb74if2ds"();
 
@@ -6112,6 +7327,10 @@ CREATE TRIGGER "__immutable"
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice_den"."clock_paused"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_clock_paused_3ykaw355ga"();
+
+CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice_den"."clock_requested_with"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_clock_requested_with_qdxfqqbips"();
 
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice_den"."clock_resumed"
@@ -6130,6 +7349,10 @@ CREATE TRIGGER "__immutable"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_fan_paused_ybdsv5d4um"();
 
 CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice_den"."fan_requested_with"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_fan_requested_with_jx75cuglpf"();
+
+CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice_den"."fan_resumed"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_fan_resumed_euttpstg26"();
 
@@ -6146,6 +7369,10 @@ CREATE TRIGGER "__immutable"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_retry_paused_ss7djxjrej"();
 
 CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice_den"."retry_requested_with"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_retry_requested_with_mw5llz3rby"();
+
+CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice_den"."retry_resumed"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_retry_resumed_dlzqou5yma"();
 
@@ -6160,6 +7387,10 @@ CREATE TRIGGER "__immutable"
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice_den"."review_paused"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_review_paused_cmayqb3lyz"();
+
+CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice_den"."review_requested_with"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_review_requested_with_3oturoaqs5"();
 
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice_den"."review_resumed"
@@ -6186,6 +7417,10 @@ CREATE TRIGGER "__immutable"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_sync_released_vxed37ia4q"();
 
 CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice_den"."sync_requested_with"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_sync_requested_with_75aana3qd2"();
+
+CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice_den"."sync_resumed"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_sync_resumed_tbwsh2hgo7"();
 
@@ -6200,6 +7435,10 @@ CREATE TRIGGER "__immutable"
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice_den"."writeback_paused"
   FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_writeback_paused_wlprgt3byb"();
+
+CREATE TRIGGER "__immutable"
+  BEFORE UPDATE ON "slice_den"."writeback_requested_with"
+  FOR EACH ROW EXECUTE FUNCTION "slice"."__immutable_writeback_requested_with_7ilwkltxjy"();
 
 CREATE TRIGGER "__immutable"
   BEFORE UPDATE ON "slice_den"."writeback_resumed"
@@ -6224,6 +7463,27 @@ $$;
 DO $$
 BEGIN
   PERFORM 1 FROM (SELECT "r4"."c5", "r4"."c6" FROM (SELECT "r1"."root", "r1"."step" FROM "slice_den"."assign_decide_output_stage_rest" AS "r1") AS "r4"("c5", "c6") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r7"."c10", "r7"."c11" FROM (SELECT "r5"."root", "r5"."step", "r5"."stage" FROM "slice_den"."assign_decide_output" AS "r5") AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 0::smallint) AS "r9"("c16", "c17") WHERE "r9"."c16" = "r4"."c5" AND "r9"."c17" = "r4"."c6")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __assign_decide_output_stage_rest_in_assign_decide_5yvhflydkj is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__assign_decide_output_stage_rest_in_assign_decide_5yvhflydkj'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+-- The full violation query of law __review_root_kind_in_review_requested_with_e3mqi4j2et.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r5"."c7" FROM (SELECT "r3"."c4" FROM (SELECT "r1"."kind", "r1"."root" FROM "slice_den"."review_root" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c3" = 0::smallint) AS "r5"("c7") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r6"."root" FROM "slice_den"."review_requested_with" AS "r6") AS "r8"("c9") WHERE "r8"."c9" = "r5"."c7")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __review_root_kind_in_review_requested_with_e3mqi4j2et is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__review_root_kind_in_review_requested_with_e3mqi4j2et'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+-- The full violation query of law __chain_root_kind_in_chain_requested_with_saksfjpsqe.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r5"."c7" FROM (SELECT "r3"."c4" FROM (SELECT "r1"."kind", "r1"."root" FROM "slice_den"."chain_root" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c3" = 1::smallint) AS "r5"("c7") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r6"."root" FROM "slice_den"."chain_requested_with" AS "r6") AS "r8"("c9") WHERE "r8"."c9" = "r5"."c7")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __chain_root_kind_in_chain_requested_with_saksfjpsqe is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__chain_root_kind_in_chain_requested_with_saksfjpsqe'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+-- The full violation query of law __assign_root_kind_in_assign_requested_with_drpworwrqf.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r5"."c7" FROM (SELECT "r3"."c4" FROM (SELECT "r1"."kind", "r1"."root" FROM "slice_den"."assign_root" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c3" = 0::smallint) AS "r5"("c7") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r6"."root" FROM "slice_den"."assign_requested_with" AS "r6") AS "r8"("c9") WHERE "r8"."c9" = "r5"."c7")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __assign_root_kind_in_assign_requested_with_drpworwrqf is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__assign_root_kind_in_assign_requested_with_drpworwrqf'::"pg_catalog"."text"; END IF;
 END
 $$;
 
@@ -6252,6 +7512,20 @@ $$;
 DO $$
 BEGIN
   PERFORM 1 FROM (SELECT "r4"."c5", "r4"."c6" FROM (SELECT "r1"."root", "r1"."step" FROM "slice_den"."assign_failed" AS "r1") AS "r4"("c5", "c6") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r7"."c10", "r7"."c11" FROM (SELECT "r5"."root", "r5"."step", "r5"."outcome" FROM "slice_den"."assign_result" AS "r5") AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 1::smallint) AS "r9"("c16", "c17") WHERE "r9"."c16" = "r4"."c5" AND "r9"."c17" = "r4"."c6")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __assign_failed_in_assign_result_l3f3goky5i is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__assign_failed_in_assign_result_l3f3goky5i'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+-- The full violation query of law __retry_root_kind_in_retry_requested_with_emn7qeomci.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r5"."c7" FROM (SELECT "r3"."c4" FROM (SELECT "r1"."kind", "r1"."root" FROM "slice_den"."retry_root" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c3" = 1::smallint) AS "r5"("c7") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r6"."root" FROM "slice_den"."retry_requested_with" AS "r6") AS "r8"("c9") WHERE "r8"."c9" = "r5"."c7")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __retry_root_kind_in_retry_requested_with_emn7qeomci is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__retry_root_kind_in_retry_requested_with_emn7qeomci'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+-- The full violation query of law __retry_root_kind_in_retry_requested_with_w4r2kbabsp.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r5"."c7" FROM (SELECT "r3"."c4" FROM (SELECT "r1"."kind", "r1"."root" FROM "slice_den"."retry_root" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c3" = 2::smallint) AS "r5"("c7") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r6"."root" FROM "slice_den"."retry_requested_with" AS "r6") AS "r8"("c9") WHERE "r8"."c9" = "r5"."c7")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __retry_root_kind_in_retry_requested_with_w4r2kbabsp is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__retry_root_kind_in_retry_requested_with_w4r2kbabsp'::"pg_catalog"."text"; END IF;
 END
 $$;
 
@@ -6304,6 +7578,13 @@ BEGIN
 END
 $$;
 
+-- The full violation query of law __clock_root_kind_in_clock_requested_with_tic43y5sht.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r5"."c7" FROM (SELECT "r3"."c4" FROM (SELECT "r1"."kind", "r1"."root" FROM "slice_den"."clock_root" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c3" = 1::smallint) AS "r5"("c7") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r6"."root" FROM "slice_den"."clock_requested_with" AS "r6") AS "r8"("c9") WHERE "r8"."c9" = "r5"."c7")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __clock_root_kind_in_clock_requested_with_tic43y5sht is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__clock_root_kind_in_clock_requested_with_tic43y5sht'::"pg_catalog"."text"; END IF;
+END
+$$;
+
 -- The full violation query of law __retry_failed_in_retry_result_s325vm6ver.
 DO $$
 BEGIN
@@ -6336,6 +7617,13 @@ $$;
 DO $$
 BEGIN
   PERFORM 1 FROM (SELECT "r4"."c5", "r4"."c6" FROM (SELECT "r1"."root", "r1"."step" FROM "slice_den"."assign_decide_input" AS "r1") AS "r4"("c5", "c6") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r7"."c10", "r7"."c11" FROM (SELECT "r5"."root", "r5"."step", "r5"."kind" FROM "slice_den"."assign_step" AS "r5") AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 1::smallint) AS "r9"("c16", "c17") WHERE "r9"."c16" = "r4"."c5" AND "r9"."c17" = "r4"."c6")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __assign_decide_input_in_assign_step_ohidee7v22 is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__assign_decide_input_in_assign_step_ohidee7v22'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+-- The full violation query of law __sync_root_kind_in_sync_requested_with_3rlisnzl6z.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r5"."c7" FROM (SELECT "r3"."c4" FROM (SELECT "r1"."kind", "r1"."root" FROM "slice_den"."sync_root" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c3" = 0::smallint) AS "r5"("c7") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r6"."root" FROM "slice_den"."sync_requested_with" AS "r6") AS "r8"("c9") WHERE "r8"."c9" = "r5"."c7")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __sync_root_kind_in_sync_requested_with_3rlisnzl6z is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__sync_root_kind_in_sync_requested_with_3rlisnzl6z'::"pg_catalog"."text"; END IF;
 END
 $$;
 
@@ -6549,6 +7837,13 @@ BEGIN
 END
 $$;
 
+-- The full violation query of law __sync_root_kind_in_sync_requested_with_uodeaeuwif.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r5"."c7" FROM (SELECT "r3"."c4" FROM (SELECT "r1"."kind", "r1"."root" FROM "slice_den"."sync_root" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c3" = 1::smallint) AS "r5"("c7") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r6"."root" FROM "slice_den"."sync_requested_with" AS "r6") AS "r8"("c9") WHERE "r8"."c9" = "r5"."c7")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __sync_root_kind_in_sync_requested_with_uodeaeuwif is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__sync_root_kind_in_sync_requested_with_uodeaeuwif'::"pg_catalog"."text"; END IF;
+END
+$$;
+
 -- The full violation query of law __assign_decide_input_mode_within_in_assign_decide_xejdxxoild.
 DO $$
 BEGIN
@@ -6560,6 +7855,20 @@ $$;
 DO $$
 BEGIN
   PERFORM 1 FROM (SELECT "r4"."c5", "r4"."c6" FROM (SELECT "r1"."root", "r1"."step" FROM "slice_den"."chain_page_input" AS "r1") AS "r4"("c5", "c6") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r7"."c10", "r7"."c11" FROM (SELECT "r5"."root", "r5"."step", "r5"."kind" FROM "slice_den"."chain_step" AS "r5") AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 2::smallint) AS "r9"("c16", "c17") WHERE "r9"."c16" = "r4"."c5" AND "r9"."c17" = "r4"."c6")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __chain_page_input_in_chain_step_jcdsscxkrt is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__chain_page_input_in_chain_step_jcdsscxkrt'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+-- The full violation query of law __fan_root_kind_in_fan_requested_with_bwfggm3qrn.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r5"."c7" FROM (SELECT "r3"."c4" FROM (SELECT "r1"."kind", "r1"."root" FROM "slice_den"."fan_root" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c3" = 1::smallint) AS "r5"("c7") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r6"."root" FROM "slice_den"."fan_requested_with" AS "r6") AS "r8"("c9") WHERE "r8"."c9" = "r5"."c7")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __fan_root_kind_in_fan_requested_with_bwfggm3qrn is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__fan_root_kind_in_fan_requested_with_bwfggm3qrn'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+-- The full violation query of law __writeback_root_kind_in_writeback_requested_with_yv3kn44ed5.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r5"."c7" FROM (SELECT "r3"."c4" FROM (SELECT "r1"."kind", "r1"."root" FROM "slice_den"."writeback_root" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c3" = 0::smallint) AS "r5"("c7") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r6"."root" FROM "slice_den"."writeback_requested_with" AS "r6") AS "r8"("c9") WHERE "r8"."c9" = "r5"."c7")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __writeback_root_kind_in_writeback_requested_with_yv3kn44ed5 is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__writeback_root_kind_in_writeback_requested_with_yv3kn44ed5'::"pg_catalog"."text"; END IF;
 END
 $$;
 
@@ -6584,6 +7893,20 @@ BEGIN
 END
 $$;
 
+-- The full violation query of law __fan_root_kind_in_fan_requested_with_5pofsnch6r.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r5"."c7" FROM (SELECT "r3"."c4" FROM (SELECT "r1"."kind", "r1"."root" FROM "slice_den"."fan_root" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c3" = 0::smallint) AS "r5"("c7") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r6"."root" FROM "slice_den"."fan_requested_with" AS "r6") AS "r8"("c9") WHERE "r8"."c9" = "r5"."c7")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __fan_root_kind_in_fan_requested_with_5pofsnch6r is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__fan_root_kind_in_fan_requested_with_5pofsnch6r'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+-- The full violation query of law __retry_root_kind_in_retry_requested_with_rhvkeiab66.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r5"."c7" FROM (SELECT "r3"."c4" FROM (SELECT "r1"."kind", "r1"."root" FROM "slice_den"."retry_root" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c3" = 0::smallint) AS "r5"("c7") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r6"."root" FROM "slice_den"."retry_requested_with" AS "r6") AS "r8"("c9") WHERE "r8"."c9" = "r5"."c7")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __retry_root_kind_in_retry_requested_with_rhvkeiab66 is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__retry_root_kind_in_retry_requested_with_rhvkeiab66'::"pg_catalog"."text"; END IF;
+END
+$$;
+
 -- The full violation query of law __assign_decide_output_stage_in_assign_decide_output_sjskv7rqw2.
 DO $$
 BEGIN
@@ -6595,6 +7918,13 @@ $$;
 DO $$
 BEGIN
   PERFORM 1 FROM (SELECT "r4"."c5", "r4"."c6" FROM (SELECT "r1"."root", "r1"."step" FROM "slice_den"."assign_decide_input_mode_nearest" AS "r1") AS "r4"("c5", "c6") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r7"."c10", "r7"."c11" FROM (SELECT "r5"."root", "r5"."step", "r5"."mode" FROM "slice_den"."assign_decide_input" AS "r5") AS "r7"("c10", "c11", "c12") WHERE "r7"."c12" = 0::smallint) AS "r9"("c16", "c17") WHERE "r9"."c16" = "r4"."c5" AND "r9"."c17" = "r4"."c6")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __assign_decide_input_mode_nearest_in_assign_decide_argqmu2bpy is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__assign_decide_input_mode_nearest_in_assign_decide_argqmu2bpy'::"pg_catalog"."text"; END IF;
+END
+$$;
+
+-- The full violation query of law __chain_root_kind_in_chain_requested_with_yh5hdkmjhk.
+DO $$
+BEGIN
+  PERFORM 1 FROM (SELECT "r5"."c7" FROM (SELECT "r3"."c4" FROM (SELECT "r1"."kind", "r1"."root" FROM "slice_den"."chain_root" AS "r1") AS "r3"("c3", "c4") WHERE "r3"."c3" = 0::smallint) AS "r5"("c7") WHERE NOT EXISTS (SELECT 1 FROM (SELECT "r6"."root" FROM "slice_den"."chain_requested_with" AS "r6") AS "r8"("c9") WHERE "r8"."c9" = "r5"."c7")) AS "found"; IF FOUND THEN RAISE EXCEPTION 'law __chain_root_kind_in_chain_requested_with_yh5hdkmjhk is violated by existing rows' USING ERRCODE = 'integrity_constraint_violation'::"pg_catalog"."text", CONSTRAINT = '__chain_root_kind_in_chain_requested_with_yh5hdkmjhk'::"pg_catalog"."text"; END IF;
 END
 $$;
 

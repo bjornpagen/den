@@ -11,6 +11,7 @@ import {
 	SyncPausable,
 	SyncScope,
 	SyncRoot,
+	SyncRequestedWith,
 	SyncExclusiveKey,
 	SyncAdmitted,
 	SyncSkipped,
@@ -63,6 +64,7 @@ export const SyncDen = role(
 		insert: [
 			"SyncScope",
 			"SyncRoot",
+			"SyncRequestedWith",
 			"SyncExclusiveKey",
 			"SyncAdmitted",
 			"SyncSkipped",
@@ -486,6 +488,35 @@ export const syncDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
+				SyncRequestedWith,
+				query(syncGraph)
+					.rule((r) => {
+						const requested = r.relation("syncSyncRunSyncRequestedWith", {
+							root: SyncRequestedWith.fields.root,
+							fingerprint: SyncRequestedWith.fields.fingerprint,
+							input: SyncRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.where(r.not(SyncRoot, { root }))
+							.find({ root, fingerprint, input })
+					})
+					.rule((r) => {
+						const requested = r.relation("syncSyncRunSyncRequestedWith", {
+							root: SyncRequestedWith.fields.root,
+							fingerprint: SyncRequestedWith.fields.fingerprint,
+							input: SyncRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						const { input: held } = v(SyncRequestedWith, "held")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.match(SyncRequestedWith, { root, fingerprint, input: held })
+							.find({ root, fingerprint, input })
+					})
+			)
+			.insert(
 				SyncRoot,
 				query(syncGraph).rule((r) => {
 					const requested = r.relation("syncSyncRunSyncScope", {
@@ -547,6 +578,35 @@ export const syncDenPrograms = Object.freeze({
 						.where(r.not(SyncRoot, { root }))
 						.find({ root, scope, build })
 				})
+			)
+			.insert(
+				SyncRequestedWith,
+				query(syncGraph)
+					.rule((r) => {
+						const requested = r.relation("syncGoldSyncRequestedWith", {
+							root: SyncRequestedWith.fields.root,
+							fingerprint: SyncRequestedWith.fields.fingerprint,
+							input: SyncRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.where(r.not(SyncRoot, { root }))
+							.find({ root, fingerprint, input })
+					})
+					.rule((r) => {
+						const requested = r.relation("syncGoldSyncRequestedWith", {
+							root: SyncRequestedWith.fields.root,
+							fingerprint: SyncRequestedWith.fields.fingerprint,
+							input: SyncRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						const { input: held } = v(SyncRequestedWith, "held")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.match(SyncRequestedWith, { root, fingerprint, input: held })
+							.find({ root, fingerprint, input })
+					})
 			)
 			.insert(
 				SyncRoot,

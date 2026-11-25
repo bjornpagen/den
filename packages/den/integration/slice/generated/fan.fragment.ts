@@ -52,6 +52,11 @@ export const FanRoot = relation(
 	{ root: sha256, kind: closedId(FanRootKind), key: Text, at: DenInstant },
 	["root"]
 )
+export const FanRequestedWith = relation(
+	"FanRequestedWith",
+	{ root: sha256, fingerprint: sha256, input: sha256 },
+	["root"]
+)
 export const FanWithin = relation(
 	"FanWithin",
 	{ root: sha256, scope: sha256, parent: sha256, kind: closedId(FanChildKind) },
@@ -218,6 +223,7 @@ export const fanGraph = fragment(
 		FanResource,
 		FanScope,
 		FanRoot,
+		FanRequestedWith,
 		FanWithin,
 		FanAdmitted,
 		FanSkipped,
@@ -261,6 +267,7 @@ export const fanGraph = fragment(
 		contained(on(FanAdmitted, "root", "scope"), on(FanScope, "root", "scope")),
 		contained(on(FanSkipped, "scope"), on(FanRoot, "root")),
 		contained(on(FanSkipped, "by"), on(FanRoot, "root")),
+		contained(on(FanRequestedWith, "root"), on(FanRoot, "root")),
 		contained(on(FanStep, "root", "scope"), on(FanAdmitted, "root", "scope")),
 		contained(on(FanStartStep, "root", "scope"), on(FanAdmitted, "root", "scope")),
 		contained(on(FanStartStep, "root", "step"), on(FanStep, "root", "step")),
@@ -302,6 +309,20 @@ export const fanGraph = fragment(
 		),
 		contained(on(FanRefusal, "root", "step"), on(FanFailed, "root", "step")),
 		contained(on(FanExhausted, "root", "step"), on(FanFailed, "root", "step")),
+		contained(
+			on(
+				select(FanRoot, (row) => row.eq(row.kind, "FanRun")),
+				"root"
+			),
+			on(FanRequestedWith, "root")
+		),
+		contained(
+			on(
+				select(FanRoot, (row) => row.eq(row.kind, "Sweep")),
+				"root"
+			),
+			on(FanRequestedWith, "root")
+		),
 		contained(
 			on(FanSquareInput, "root", "step"),
 			on(

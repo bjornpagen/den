@@ -278,7 +278,7 @@ export const syntheticOf = (
 
 	const Synthetic: RootKind<Input, number, number> = {
 		name: "Synthetic",
-		trigger: { _tag: "Operator" },
+		trigger: { _tag: "Operator", heading: "SyntheticInput" },
 		precondition: Option.none(),
 		exclusive: shape.exclusive ? Option.some(() => "shared") : Option.none(),
 		window: shape.window,
@@ -299,7 +299,7 @@ export const syntheticOf = (
 	/** A gate: admitted only while no generated step is pending anywhere, W4's quiescence precondition. */
 	const Gate: RootKind<Input, number, number> = {
 		name: "Gate",
-		trigger: { _tag: "Operator" },
+		trigger: { _tag: "Operator", heading: "GateInput" },
 		precondition: Option.some({ _tag: "Pending", roots: ["Synthetic"] }),
 		window: Option.none(),
 		exclusive: Option.some(() => "gate"),

@@ -397,6 +397,13 @@ CREATE TABLE "slice_den"."assign_refusal" (
   CONSTRAINT "__assign_refusal_pk_xs5e4ryh4k" PRIMARY KEY ("root", "step")
 );
 
+CREATE TABLE "slice_den"."assign_requested_with" (
+  "root" "slice"."__sha256" NOT NULL,
+  "fingerprint" "slice"."__sha256" NOT NULL,
+  "input" "slice"."__sha256" NOT NULL,
+  CONSTRAINT "__assign_requested_with_pk_on2y3g7zqy" PRIMARY KEY ("root")
+);
+
 CREATE TABLE "slice_den"."assign_result" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
@@ -691,6 +698,13 @@ CREATE TABLE "slice_den"."chain_refusal" (
   CONSTRAINT "__chain_refusal_pk_4j4yw3qc6m" PRIMARY KEY ("root", "step")
 );
 
+CREATE TABLE "slice_den"."chain_requested_with" (
+  "root" "slice"."__sha256" NOT NULL,
+  "fingerprint" "slice"."__sha256" NOT NULL,
+  "input" "slice"."__sha256" NOT NULL,
+  CONSTRAINT "__chain_requested_with_pk_lkg4jmp76c" PRIMARY KEY ("root")
+);
+
 CREATE TABLE "slice_den"."chain_result" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
@@ -884,6 +898,13 @@ CREATE TABLE "slice_den"."clock_refusal" (
   "step" "slice"."__sha256" NOT NULL,
   "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   CONSTRAINT "__clock_refusal_pk_dslb6cgxa3" PRIMARY KEY ("root", "step")
+);
+
+CREATE TABLE "slice_den"."clock_requested_with" (
+  "root" "slice"."__sha256" NOT NULL,
+  "fingerprint" "slice"."__sha256" NOT NULL,
+  "input" "slice"."__sha256" NOT NULL,
+  CONSTRAINT "__clock_requested_with_pk_4p3mwvs5e3" PRIMARY KEY ("root")
 );
 
 CREATE TABLE "slice_den"."clock_result" (
@@ -1122,6 +1143,13 @@ CREATE TABLE "slice_den"."fan_refusal" (
   "step" "slice"."__sha256" NOT NULL,
   "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   CONSTRAINT "__fan_refusal_pk_7va55wo2wj" PRIMARY KEY ("root", "step")
+);
+
+CREATE TABLE "slice_den"."fan_requested_with" (
+  "root" "slice"."__sha256" NOT NULL,
+  "fingerprint" "slice"."__sha256" NOT NULL,
+  "input" "slice"."__sha256" NOT NULL,
+  CONSTRAINT "__fan_requested_with_pk_vaj2obx6si" PRIMARY KEY ("root")
 );
 
 CREATE TABLE "slice_den"."fan_result" (
@@ -1373,6 +1401,13 @@ CREATE TABLE "slice_den"."retry_refusal" (
   "step" "slice"."__sha256" NOT NULL,
   "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   CONSTRAINT "__retry_refusal_pk_nifndsd6pp" PRIMARY KEY ("root", "step")
+);
+
+CREATE TABLE "slice_den"."retry_requested_with" (
+  "root" "slice"."__sha256" NOT NULL,
+  "fingerprint" "slice"."__sha256" NOT NULL,
+  "input" "slice"."__sha256" NOT NULL,
+  CONSTRAINT "__retry_requested_with_pk_hud2g5nhzq" PRIMARY KEY ("root")
 );
 
 CREATE TABLE "slice_den"."retry_result" (
@@ -1638,6 +1673,13 @@ CREATE TABLE "slice_den"."review_refusal" (
   "step" "slice"."__sha256" NOT NULL,
   "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   CONSTRAINT "__review_refusal_pk_ajyglinn6r" PRIMARY KEY ("root", "step")
+);
+
+CREATE TABLE "slice_den"."review_requested_with" (
+  "root" "slice"."__sha256" NOT NULL,
+  "fingerprint" "slice"."__sha256" NOT NULL,
+  "input" "slice"."__sha256" NOT NULL,
+  CONSTRAINT "__review_requested_with_pk_eauvdhg7kh" PRIMARY KEY ("root")
 );
 
 CREATE TABLE "slice_den"."review_result" (
@@ -1931,6 +1973,13 @@ CREATE TABLE "slice_den"."sync_released" (
   CONSTRAINT "__sync_released_pk_k7qaw2iram" PRIMARY KEY ("kind", "key", "turn")
 );
 
+CREATE TABLE "slice_den"."sync_requested_with" (
+  "root" "slice"."__sha256" NOT NULL,
+  "fingerprint" "slice"."__sha256" NOT NULL,
+  "input" "slice"."__sha256" NOT NULL,
+  CONSTRAINT "__sync_requested_with_pk_dz754jk7j3" PRIMARY KEY ("root")
+);
+
 CREATE TABLE "slice_den"."sync_result" (
   "root" "slice"."__sha256" NOT NULL,
   "step" "slice"."__sha256" NOT NULL,
@@ -2106,6 +2155,13 @@ CREATE TABLE "slice_den"."writeback_refusal" (
   "step" "slice"."__sha256" NOT NULL,
   "law" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
   CONSTRAINT "__writeback_refusal_pk_lqictdn67w" PRIMARY KEY ("root", "step")
+);
+
+CREATE TABLE "slice_den"."writeback_requested_with" (
+  "root" "slice"."__sha256" NOT NULL,
+  "fingerprint" "slice"."__sha256" NOT NULL,
+  "input" "slice"."__sha256" NOT NULL,
+  CONSTRAINT "__writeback_requested_with_pk_yiae7pktd3" PRIMARY KEY ("root")
 );
 
 CREATE TABLE "slice_den"."writeback_result" (
@@ -2408,6 +2464,10 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."assign_requested_with"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."assign_result"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -2548,6 +2608,10 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."chain_requested_with"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."chain_result"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -2637,6 +2701,10 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."clock_refusal"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."clock_requested_with"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -2749,6 +2817,10 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."fan_refusal"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."fan_requested_with"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -2876,6 +2948,10 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."retry_requested_with"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."retry_result"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -2997,6 +3073,10 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."review_refusal"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."review_requested_with"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -3132,6 +3212,10 @@ CREATE TRIGGER "__isolation"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."sync_requested_with"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."sync_result"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
@@ -3213,6 +3297,10 @@ CREATE TRIGGER "__isolation"
 
 CREATE TRIGGER "__isolation"
   BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."writeback_refusal"
+  FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
+
+CREATE TRIGGER "__isolation"
+  BEFORE INSERT OR UPDATE OR DELETE OR TRUNCATE ON "slice_den"."writeback_requested_with"
   FOR EACH STATEMENT EXECUTE FUNCTION "slice"."__require_serializable"();
 
 CREATE TRIGGER "__isolation"
@@ -3524,6 +3612,8 @@ ALTER TABLE "slice_den"."assign_refusal"
   ADD CONSTRAINT "__assign_refusal_fk_root_step_hwduhrbvbd" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_failed" ("root", "step") MATCH SIMPLE,
   ADD CONSTRAINT "__assign_refusal_fk_root_step_af3aisimwq" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
+ALTER TABLE "slice_den"."assign_requested_with" ADD CONSTRAINT "__assign_requested_with_fk_root_zx4lvtx6x5" FOREIGN KEY ("root") REFERENCES "slice_den"."assign_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice_den"."assign_result" ADD CONSTRAINT "__assign_result_fk_root_step_k4wpox452s" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."assign_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."assign_resumed" ADD CONSTRAINT "__assign_resumed_fk_target_turn_3xan3ax2be" FOREIGN KEY ("target", "turn") REFERENCES "slice_den"."assign_paused" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
@@ -3647,6 +3737,8 @@ ALTER TABLE "slice_den"."chain_refusal"
   ADD CONSTRAINT "__chain_refusal_fk_root_step_ykkkqcajv4" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."chain_failed" ("root", "step") MATCH SIMPLE,
   ADD CONSTRAINT "__chain_refusal_fk_root_step_nfh5xnnucb" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."chain_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
+ALTER TABLE "slice_den"."chain_requested_with" ADD CONSTRAINT "__chain_requested_with_fk_root_kaou5g6ytt" FOREIGN KEY ("root") REFERENCES "slice_den"."chain_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice_den"."chain_result" ADD CONSTRAINT "__chain_result_fk_root_step_ocbnaznecu" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."chain_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."chain_resumed" ADD CONSTRAINT "__chain_resumed_fk_target_turn_qdtxs3euay" FOREIGN KEY ("target", "turn") REFERENCES "slice_den"."chain_paused" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
@@ -3730,6 +3822,8 @@ ALTER TABLE "slice_den"."clock_paused" ADD CONSTRAINT "__clock_paused_fk_target_
 ALTER TABLE "slice_den"."clock_refusal"
   ADD CONSTRAINT "__clock_refusal_fk_root_step_fgakzza4gr" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."clock_failed" ("root", "step") MATCH SIMPLE,
   ADD CONSTRAINT "__clock_refusal_fk_root_step_aurtl3zqby" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."clock_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice_den"."clock_requested_with" ADD CONSTRAINT "__clock_requested_with_fk_root_pyuj4tglmv" FOREIGN KEY ("root") REFERENCES "slice_den"."clock_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."clock_result" ADD CONSTRAINT "__clock_result_fk_root_step_uh7cpzsyxr" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."clock_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
@@ -3833,6 +3927,8 @@ ALTER TABLE "slice_den"."fan_paused" ADD CONSTRAINT "__fan_paused_fk_target_pred
 ALTER TABLE "slice_den"."fan_refusal"
   ADD CONSTRAINT "__fan_refusal_fk_root_step_qseur2r4dj" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."fan_failed" ("root", "step") MATCH SIMPLE,
   ADD CONSTRAINT "__fan_refusal_fk_root_step_4l2iz5yiww" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."fan_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice_den"."fan_requested_with" ADD CONSTRAINT "__fan_requested_with_fk_root_4p6mpdfivp" FOREIGN KEY ("root") REFERENCES "slice_den"."fan_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."fan_result" ADD CONSTRAINT "__fan_result_fk_root_step_mm2j7nmocm" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."fan_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
@@ -3949,6 +4045,8 @@ ALTER TABLE "slice_den"."retry_refusal"
   ADD CONSTRAINT "__retry_refusal_fk_root_step_vhxwkfyqu3" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."retry_failed" ("root", "step") MATCH SIMPLE,
   ADD CONSTRAINT "__retry_refusal_fk_root_step_cxbne35gly" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."retry_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
+ALTER TABLE "slice_den"."retry_requested_with" ADD CONSTRAINT "__retry_requested_with_fk_root_xpqnsapd2c" FOREIGN KEY ("root") REFERENCES "slice_den"."retry_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice_den"."retry_result" ADD CONSTRAINT "__retry_result_fk_root_step_i63yrf2jjz" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."retry_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."retry_resumed" ADD CONSTRAINT "__retry_resumed_fk_target_turn_x2e4jllxuy" FOREIGN KEY ("target", "turn") REFERENCES "slice_den"."retry_paused" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
@@ -4063,6 +4161,8 @@ ALTER TABLE "slice_den"."review_questions_input" ADD CONSTRAINT "__review_questi
 ALTER TABLE "slice_den"."review_refusal"
   ADD CONSTRAINT "__review_refusal_fk_root_step_i325iogm4w" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."review_failed" ("root", "step") MATCH SIMPLE,
   ADD CONSTRAINT "__review_refusal_fk_root_step_ksoewu53t4" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."review_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice_den"."review_requested_with" ADD CONSTRAINT "__review_requested_with_fk_root_qr6x7qjzy6" FOREIGN KEY ("root") REFERENCES "slice_den"."review_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."review_result" ADD CONSTRAINT "__review_result_fk_root_step_m7ddrhxqqw" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."review_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
@@ -4193,6 +4293,8 @@ ALTER TABLE "slice_den"."sync_refusal"
 
 ALTER TABLE "slice_den"."sync_released" ADD CONSTRAINT "__sync_released_fk_kind_key_turn_e54e5at4ya" FOREIGN KEY ("kind", "key", "turn") REFERENCES "slice_den"."sync_exclusive" ("kind", "key", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
+ALTER TABLE "slice_den"."sync_requested_with" ADD CONSTRAINT "__sync_requested_with_fk_root_bihshryreo" FOREIGN KEY ("root") REFERENCES "slice_den"."sync_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
 ALTER TABLE "slice_den"."sync_result" ADD CONSTRAINT "__sync_result_fk_root_step_dkzpapizq3" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."sync_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."sync_resumed" ADD CONSTRAINT "__sync_resumed_fk_target_turn_x3nw56h4tx" FOREIGN KEY ("target", "turn") REFERENCES "slice_den"."sync_paused" ("target", "turn") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
@@ -4269,6 +4371,8 @@ ALTER TABLE "slice_den"."writeback_paused" ADD CONSTRAINT "__writeback_paused_fk
 ALTER TABLE "slice_den"."writeback_refusal"
   ADD CONSTRAINT "__writeback_refusal_fk_root_step_xpfkdcxaxw" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."writeback_failed" ("root", "step") MATCH SIMPLE,
   ADD CONSTRAINT "__writeback_refusal_fk_root_step_sjojme5rf4" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."writeback_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE "slice_den"."writeback_requested_with" ADD CONSTRAINT "__writeback_requested_with_fk_root_72fgh2eqe3" FOREIGN KEY ("root") REFERENCES "slice_den"."writeback_root" ("root") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE "slice_den"."writeback_result" ADD CONSTRAINT "__writeback_result_fk_root_step_hpxhblq2jh" FOREIGN KEY ("root", "step") REFERENCES "slice_den"."writeback_step" ("root", "step") MATCH SIMPLE DEFERRABLE INITIALLY DEFERRED;
 

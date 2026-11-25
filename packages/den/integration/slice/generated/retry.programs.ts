@@ -11,6 +11,7 @@ import {
 	RetryPausable,
 	RetryScope,
 	RetryRoot,
+	RetryRequestedWith,
 	RetryAdmitted,
 	RetrySkipped,
 	RetryStep,
@@ -57,6 +58,7 @@ export const RetryDen = role(
 		insert: [
 			"RetryScope",
 			"RetryRoot",
+			"RetryRequestedWith",
 			"RetryAdmitted",
 			"RetrySkipped",
 			"RetryStep",
@@ -452,6 +454,35 @@ export const retryDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
+				RetryRequestedWith,
+				query(retryGraph)
+					.rule((r) => {
+						const requested = r.relation("retryLaddersRetryRequestedWith", {
+							root: RetryRequestedWith.fields.root,
+							fingerprint: RetryRequestedWith.fields.fingerprint,
+							input: RetryRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.where(r.not(RetryRoot, { root }))
+							.find({ root, fingerprint, input })
+					})
+					.rule((r) => {
+						const requested = r.relation("retryLaddersRetryRequestedWith", {
+							root: RetryRequestedWith.fields.root,
+							fingerprint: RetryRequestedWith.fields.fingerprint,
+							input: RetryRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						const { input: held } = v(RetryRequestedWith, "held")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.match(RetryRequestedWith, { root, fingerprint, input: held })
+							.find({ root, fingerprint, input })
+					})
+			)
+			.insert(
 				RetryRoot,
 				query(retryGraph).rule((r) => {
 					const requested = r.relation("retryLaddersRetryScope", {
@@ -567,6 +598,35 @@ export const retryDenPrograms = Object.freeze({
 				})
 			)
 			.insert(
+				RetryRequestedWith,
+				query(retryGraph)
+					.rule((r) => {
+						const requested = r.relation("retryThrottledRetryRequestedWith", {
+							root: RetryRequestedWith.fields.root,
+							fingerprint: RetryRequestedWith.fields.fingerprint,
+							input: RetryRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.where(r.not(RetryRoot, { root }))
+							.find({ root, fingerprint, input })
+					})
+					.rule((r) => {
+						const requested = r.relation("retryThrottledRetryRequestedWith", {
+							root: RetryRequestedWith.fields.root,
+							fingerprint: RetryRequestedWith.fields.fingerprint,
+							input: RetryRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						const { input: held } = v(RetryRequestedWith, "held")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.match(RetryRequestedWith, { root, fingerprint, input: held })
+							.find({ root, fingerprint, input })
+					})
+			)
+			.insert(
 				RetryRoot,
 				query(retryGraph).rule((r) => {
 					const requested = r.relation("retryThrottledRetryScope", {
@@ -654,6 +714,35 @@ export const retryDenPrograms = Object.freeze({
 						.where(r.not(RetryRoot, { root }))
 						.find({ root, scope, key })
 				})
+			)
+			.insert(
+				RetryRequestedWith,
+				query(retryGraph)
+					.rule((r) => {
+						const requested = r.relation("retryUnhurriedRetryRequestedWith", {
+							root: RetryRequestedWith.fields.root,
+							fingerprint: RetryRequestedWith.fields.fingerprint,
+							input: RetryRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.where(r.not(RetryRoot, { root }))
+							.find({ root, fingerprint, input })
+					})
+					.rule((r) => {
+						const requested = r.relation("retryUnhurriedRetryRequestedWith", {
+							root: RetryRequestedWith.fields.root,
+							fingerprint: RetryRequestedWith.fields.fingerprint,
+							input: RetryRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						const { input: held } = v(RetryRequestedWith, "held")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.match(RetryRequestedWith, { root, fingerprint, input: held })
+							.find({ root, fingerprint, input })
+					})
 			)
 			.insert(
 				RetryRoot,

@@ -45,6 +45,11 @@ export const RetryRoot = relation(
 	{ root: sha256, kind: closedId(RetryRootKind), key: Text, at: DenInstant },
 	["root"]
 )
+export const RetryRequestedWith = relation(
+	"RetryRequestedWith",
+	{ root: sha256, fingerprint: sha256, input: sha256 },
+	["root"]
+)
 export const RetryAdmitted = relation("RetryAdmitted", { root: sha256, scope: sha256 }, [
 	"root",
 	"scope"
@@ -202,6 +207,7 @@ export const retryGraph = fragment(
 		RetryPausable,
 		RetryScope,
 		RetryRoot,
+		RetryRequestedWith,
 		RetryAdmitted,
 		RetrySkipped,
 		RetryStep,
@@ -239,6 +245,7 @@ export const retryGraph = fragment(
 		contained(on(RetryAdmitted, "root", "scope"), on(RetryScope, "root", "scope")),
 		contained(on(RetrySkipped, "scope"), on(RetryRoot, "root")),
 		contained(on(RetrySkipped, "by"), on(RetryRoot, "root")),
+		contained(on(RetryRequestedWith, "root"), on(RetryRoot, "root")),
 		contained(on(RetryStep, "root", "scope"), on(RetryAdmitted, "root", "scope")),
 		contained(on(RetryStartStep, "root", "scope"), on(RetryAdmitted, "root", "scope")),
 		contained(on(RetryStartStep, "root", "step"), on(RetryStep, "root", "step")),
@@ -283,6 +290,27 @@ export const retryGraph = fragment(
 		),
 		contained(on(RetryRefusal, "root", "step"), on(RetryFailed, "root", "step")),
 		contained(on(RetryExhausted, "root", "step"), on(RetryFailed, "root", "step")),
+		contained(
+			on(
+				select(RetryRoot, (row) => row.eq(row.kind, "Ladders")),
+				"root"
+			),
+			on(RetryRequestedWith, "root")
+		),
+		contained(
+			on(
+				select(RetryRoot, (row) => row.eq(row.kind, "Throttled")),
+				"root"
+			),
+			on(RetryRequestedWith, "root")
+		),
+		contained(
+			on(
+				select(RetryRoot, (row) => row.eq(row.kind, "Unhurried")),
+				"root"
+			),
+			on(RetryRequestedWith, "root")
+		),
 		contained(
 			on(RetrySteadfastInput, "root", "step"),
 			on(

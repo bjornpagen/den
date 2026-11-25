@@ -13,6 +13,7 @@ import {
 	ReviewResource,
 	ReviewScope,
 	ReviewRoot,
+	ReviewRequestedWith,
 	ReviewWithin,
 	ReviewAdmitted,
 	ReviewSkipped,
@@ -73,6 +74,7 @@ export const ReviewDen = role(
 		insert: [
 			"ReviewScope",
 			"ReviewRoot",
+			"ReviewRequestedWith",
 			"ReviewWithin",
 			"ReviewAdmitted",
 			"ReviewSkipped",
@@ -598,6 +600,35 @@ export const reviewDenPrograms = Object.freeze({
 						.where(r.not(ReviewRoot, { root }))
 						.find({ root, scope, ordinal, value })
 				})
+			)
+			.insert(
+				ReviewRequestedWith,
+				query(reviewGraph)
+					.rule((r) => {
+						const requested = r.relation("reviewReviewRunReviewRequestedWith", {
+							root: ReviewRequestedWith.fields.root,
+							fingerprint: ReviewRequestedWith.fields.fingerprint,
+							input: ReviewRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.where(r.not(ReviewRoot, { root }))
+							.find({ root, fingerprint, input })
+					})
+					.rule((r) => {
+						const requested = r.relation("reviewReviewRunReviewRequestedWith", {
+							root: ReviewRequestedWith.fields.root,
+							fingerprint: ReviewRequestedWith.fields.fingerprint,
+							input: ReviewRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						const { input: held } = v(ReviewRequestedWith, "held")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.match(ReviewRequestedWith, { root, fingerprint, input: held })
+							.find({ root, fingerprint, input })
+					})
 			)
 			.insert(
 				ReviewRoot,

@@ -195,7 +195,8 @@ export const signals = <E extends { readonly kind: string; readonly error?: Call
  * Whether a root's request started it: accepted, where no change means the root was already requested, whatever became
  * of its graph since. A request inserts its Root and its graph's rows only where no Root holds its root, and its record
  * keeps the key once its graph is cleared (lower/print.ts requestOfRoot), so a request of a key already requested, a
- * retired root's included, adds nothing and refuses nothing.
+ * retired root's included, adds nothing, and an app's or an operator's of another input under its kind's same input
+ * heading is refused on its record's key (RequestedWith).
  */
 export const fresh = (
 	write: Effect.Effect<WriteOutcome<unknown>, Settled>

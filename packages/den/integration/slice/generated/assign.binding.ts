@@ -19,6 +19,9 @@ import {
 	atOnce,
 	finishStep,
 	rootScope,
+	codecTextsOf,
+	inputDigest,
+	inputFingerprint,
 	rowDigest,
 	startedStep
 } from "@bjornpagen/den/runtime/identity"
@@ -38,14 +41,19 @@ import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Assign over its served programs; `den generate` writes it, and nothing edits it. */
 import { type Addition, recordsFacts, Sha256 } from "@bjornpagen/grizzle"
+import { codecText } from "@bjornpagen/grizzle/compile"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
+import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { assign } from "#integration/slice/flows.ts"
 import {
 	AssignPausable,
 	AssignDecideReadNearestRecords,
 	AssignDecideReadSeenRecords,
-	assignGraph
+	assignGraph,
+	AssignAssignmentInput,
+	AssignAssignmentInputNear,
+	AssignAssignmentInputExclude,
+	AssignAssignmentInputModeWithin
 } from "#integration/slice/generated/assign.fragment.ts"
 import type {
 	AssignScope,
@@ -76,6 +84,30 @@ import type {
 const AssignDecideReadNearestText = recordText(assign.kinds[1].reads.named.nearest)
 /** The text of a row step Decide's read `seen` found, its digest's input. */
 const AssignDecideReadSeenText = recordText(assign.kinds[1].reads.named.seen)
+/** The codec text of each declared field of AssignAssignmentInput, a request's input row, bound once (grizzle's codecText). */
+const assignAssignmentInputTexts = Object.freeze({
+	learner: codecText(AssignAssignmentInput.fields.learner),
+	topic: codecText(AssignAssignmentInput.fields.topic),
+	mode: codecText(AssignAssignmentInput.fields.mode)
+})
+/** The codec text of each declared field of AssignAssignmentInputNear, a request's input row, bound once (grizzle's codecText). */
+const assignAssignmentInputNearTexts = Object.freeze({
+	ordinal: codecText(AssignAssignmentInputNear.fields.ordinal),
+	value: codecText(AssignAssignmentInputNear.fields.value)
+})
+/** The codec text of each declared field of AssignAssignmentInputExclude, a request's input row, bound once (grizzle's codecText). */
+const assignAssignmentInputExcludeTexts = Object.freeze({
+	ordinal: codecText(AssignAssignmentInputExclude.fields.ordinal),
+	value: codecText(AssignAssignmentInputExclude.fields.value)
+})
+/** The codec text of each declared field of AssignAssignmentInputModeWithin, a request's input row, bound once (grizzle's codecText). */
+const assignAssignmentInputModeWithinTexts = Object.freeze({
+	radius: codecText(AssignAssignmentInputModeWithin.fields.radius)
+})
+/** The fingerprint of root kind Assignment's input heading, taken once. */
+const assignAssignmentHeading = inputFingerprint(
+	'125:21:AssignAssignmentInput15:7:learner4:Text13:5:topic4:Text64:4:mode55:8:closedId25:AssignAssignmentInputMode7:Nearest6:Within84:25:AssignAssignmentInputNear18:7:ordinal7:natural32:5:value22:pg["double precision"]68:28:AssignAssignmentInputExclude18:7:ordinal7:natural13:5:value4:Text35:32:AssignAssignmentInputModeNearest70:31:AssignAssignmentInputModeWithin33:6:radius22:pg["double precision"]1376:6:digest1363:[...pipe([{ scope: scope, root: scope, learner: input.learner, topic: input.topic, mode: input.mode._tag }], Arr.flatMap((row) => [Result.succeed("AssignAssignmentInput"), assignAssignmentInputTexts.learner(row.learner), assignAssignmentInputTexts.topic(row.topic), assignAssignmentInputTexts.mode(row.mode)])), ...pipe(Arr.map(input.near, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("AssignAssignmentInputNear"), assignAssignmentInputNearTexts.ordinal(row.ordinal), assignAssignmentInputNearTexts.value(row.value)])), ...pipe(Arr.map(input.exclude, (element, index) => ({ scope: scope, root: scope, ordinal: BigInt(index), value: element })), Arr.flatMap((row) => [Result.succeed("AssignAssignmentInputExclude"), assignAssignmentInputExcludeTexts.ordinal(row.ordinal), assignAssignmentInputExcludeTexts.value(row.value)])), ...Arr.map(Arr.flatMap([input.mode], (variant) => (variant._tag === "Nearest" ? [{ scope: scope, root: scope }] : [])), () => Result.succeed("AssignAssignmentInputModeNearest")), ...pipe(Arr.flatMap([input.mode], (variant) => (variant._tag === "Within" ? [{ scope: scope, root: scope, radius: variant.radius }] : [])), Arr.flatMap((row) => [Result.succeed("AssignAssignmentInputModeWithin"), assignAssignmentInputModeWithinTexts.radius(row.radius)]))]'
+)
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface AssignHandles {
@@ -473,6 +505,77 @@ export const assignLedger = (h: AssignHandles) => {
 									variant._tag === "Within"
 										? [{ scope: scope, root: scope, radius: variant.radius }]
 										: []
+							),
+							assignAssignmentAssignRequestedWith: Option.toArray(
+								Option.map(
+									codecTextsOf([
+										...pipe(
+											[
+												{
+													scope: scope,
+													root: scope,
+													learner: input.learner,
+													topic: input.topic,
+													mode: input.mode._tag
+												}
+											],
+											Arr.flatMap((row) => [
+												Result.succeed("AssignAssignmentInput"),
+												assignAssignmentInputTexts.learner(row.learner),
+												assignAssignmentInputTexts.topic(row.topic),
+												assignAssignmentInputTexts.mode(row.mode)
+											])
+										),
+										...pipe(
+											Arr.map(input.near, (element, index) => ({
+												scope: scope,
+												root: scope,
+												ordinal: BigInt(index),
+												value: element
+											})),
+											Arr.flatMap((row) => [
+												Result.succeed("AssignAssignmentInputNear"),
+												assignAssignmentInputNearTexts.ordinal(row.ordinal),
+												assignAssignmentInputNearTexts.value(row.value)
+											])
+										),
+										...pipe(
+											Arr.map(input.exclude, (element, index) => ({
+												scope: scope,
+												root: scope,
+												ordinal: BigInt(index),
+												value: element
+											})),
+											Arr.flatMap((row) => [
+												Result.succeed("AssignAssignmentInputExclude"),
+												assignAssignmentInputExcludeTexts.ordinal(row.ordinal),
+												assignAssignmentInputExcludeTexts.value(row.value)
+											])
+										),
+										...Arr.map(
+											Arr.flatMap([input.mode], (variant) =>
+												variant._tag === "Nearest" ? [{ scope: scope, root: scope }] : []
+											),
+											() => Result.succeed("AssignAssignmentInputModeNearest")
+										),
+										...pipe(
+											Arr.flatMap([input.mode], (variant) =>
+												variant._tag === "Within"
+													? [{ scope: scope, root: scope, radius: variant.radius }]
+													: []
+											),
+											Arr.flatMap((row) => [
+												Result.succeed("AssignAssignmentInputModeWithin"),
+												assignAssignmentInputModeWithinTexts.radius(row.radius)
+											])
+										)
+									]),
+									(texts) => ({
+										root: scope,
+										fingerprint: assignAssignmentHeading,
+										input: inputDigest("Assign", "Assignment", texts)
+									})
+								)
 							)
 						},
 						facts: {}

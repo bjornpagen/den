@@ -10,4 +10,4 @@ packages/*/out/
 /sources/
 /docs/research/
 /scripts/sources.sh
-/packages/den/integration/.seats-*/
+/packages/den/integration/.copy-*/

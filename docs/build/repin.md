@@ -68,34 +68,38 @@ for the coordination group, and DBCLOCK:
   the relay's watch reads what commits made eligible, without time, and the census reads what time made eligible. The
   suites move the database's clock itself as they move their TestClock (**The moved clock** below).
 
-- **Units and clearing (grizzle 2be58c8a2's `unit`, f07b59f14's whole-group delete; the read-committed cutover).**
-  Every flow's graph sits under one unit of grizzle's, `unit("DenRoot", { root: sha256 })`, which each graph fragment
-  states alike and so one unit, the roots being digests no two flows share (grizzle forbids a contract over a digest, so
-  no flow names a domain of its own for its root): every graph relation but the root's record, `<P>Root`, carries its
-  root as `root`, first in its primary key and on both sides of every containment and key between them, so every write
-  of a graph's rows holds its root exclusively. A row's root is its owner's: `<P>Step` and `<P>Scope`, which hold den's
-  two identities, are each keyed by their identity alone too (`key(on(<P>Step, "step"))`, `key(on(<P>Scope,
-  "scope"))`), since den derives each from its parent's (`runtime/identity.ts`), and every other graph relation is
-  contained by its root and its owner, the field its key leads with after its root, in its owner's holder
-  (`contained(on(<P>Done, "root", "step"), on(<P>Step, "root", "step"))`); `<P>Step`'s owner is its scope, and
-  `<P>Scope` is contained in `<P>Root` by its root. So a read that fixes a step or a scope fixes its root, the unit its
-  rows sit in, by the containment onto a key of one field that grizzle's dependencies read (its declared statistics,
-  its unit-bound reads), and each row's containment in its root's record follows through its holder's. `<P>Root` is
-  keyed by `root`, closed: the fact that the root was requested, never updated or deleted. A claim's seats sit under the flow's
-  seat unit, `unit("<P>Seat", { resource: closedId(<P>Resource) })`: `<P>Hold` is keyed `(resource, root, step,
-  attempt)`, the claim's ordered family written nested in the claim's one write, which supplies the attempt the database
-  stamps, so every write of a resource's holds holds the resource, and the live holds' laws, at most one a seat and each
-  below its resource's count, are judged inside it (never a lock derived from a law). Every graph relation and the holds
-  are `mutable`, inside their units: a finished root's graph is cleared by `<p>_retirer`, a role of its own writing them,
-  which serves `ChangeSet.empty(<p>Graph).deleteWhere({ <Rel>: { root: param("root", <P>Root.fields.root) }, … })` over
-  every graph relation but `<P>Root`; a claim's holds go with their claim, and the claims' place stamps' heads with them
-  (a delete of a place's whole groups, grizzle f07b59f14); `runtime/retire.ts` clears every ended root nothing still
-  needs, a call each. A stale holder's insert after its root is cleared is refused by the foreign keys into the rows the
-  clearing deleted, and a root requested again inserts nothing, its request guarded by the absence of `<P>Root` at its
-  root, which the request answers as already requested: it starts nothing, and the retired key never starts a graph
-  again. An app row that references a graph row refuses the clearing (NO ACTION). A read's records rows are closed,
-  outside every unit, never removed (grizzle main's ruling on metis's MR-CATALOG). The census's reads of roots read only roots whose graph stands, a root's record matched with its
-  own Scope row, which the clearing deletes. The coordination group's chains of turns sit under no unit and stay.
+- **Units and clearing (grizzle 2be58c8a2's `unit`, f07b59f14's whole-group delete; the read-committed cutover).** Every
+  flow's graph sits under one unit of grizzle's, `unit("DenRoot", { root: sha256 })`, which each graph fragment states
+  alike and so one unit, the roots being digests no two flows share (grizzle forbids a contract over a digest, so no
+  flow names a domain of its own for its root): every graph relation but the root's record, `<P>Root`, carries its root
+  as `root`, first in its primary key and on both sides of every containment and key between them, so every write of a
+  graph's rows holds its root exclusively. A row's root is its owner's: `<P>Step` and `<P>Scope`, which hold den's two
+  identities, are each keyed by their identity alone too (`key(on(<P>Step, "step"))`, `key(on(<P>Scope, "scope"))`),
+  since den derives each from its parent's (`runtime/identity.ts`), and every other graph relation is contained by its
+  root and its owner, the field its key leads with after its root, in its owner's holder (`contained(on(<P>Done, "root",
+  "step"), on(<P>Step, "root", "step"))`); `<P>Step`'s owner is its scope, and `<P>Scope` is contained in `<P>Root` by
+  its root. So a read that fixes a step or a scope fixes its root, the unit its rows sit in, by the containment onto a
+  key of one field that grizzle's dependencies read (its declared statistics, its unit-bound reads), and each row's
+  containment in its root's record follows through its holder's. `<P>Root` is keyed by `root`, closed: the fact that the
+  root was requested, never updated or deleted, and so is `<P>RequestedWith`, keyed by `root` and contained in `<P>Root`
+  (and, for an app's or an operator's kind, containing it): what the root was requested with, its kind's input
+  fingerprint and its input's digest. A claim's seats sit under the flow's seat unit, `unit("<P>Seat", { resource:
+  closedId(<P>Resource) })`: `<P>Hold` is keyed `(resource, root, step, attempt)`, the claim's ordered family written
+  nested in the claim's one write, which supplies the attempt the database stamps, so every write of a resource's holds
+  holds the resource, and the live holds' laws, at most one a seat and each below its resource's count, are judged
+  inside it (never a lock derived from a law). Every graph relation and the holds are `mutable`, inside their units: a
+  finished root's graph is cleared by `<p>_retirer`, a role of its own writing them, which serves
+  `ChangeSet.empty(<p>Graph).deleteWhere({ <Rel>: { root: param("root", <P>Root.fields.root) }, … })` over every graph
+  relation but `<P>Root` and `<P>RequestedWith`; a claim's holds go with their claim, and the claims' place stamps'
+  heads with them (a delete of a place's whole groups, grizzle f07b59f14); `runtime/retire.ts` clears every ended root
+  nothing still needs, a call each. A stale holder's insert after its root is cleared is refused by the foreign keys
+  into the rows the clearing deleted, and a root requested again inserts nothing, its request guarded by the absence of
+  `<P>Root` at its root, which the request answers as already requested: it starts nothing, and the retired key never
+  starts a graph again; of another input under the same fingerprint, its `<P>RequestedWith` refuses it on its key. An
+  app row that references a graph row refuses the clearing (NO ACTION). A read's records rows are closed, outside every
+  unit, never removed (grizzle main's ruling on metis's MR-CATALOG). The census's reads of roots read only roots whose
+  graph stands, a root's record matched with its own Scope row, which the clearing deletes. The coordination group's
+  chains of turns sit under no unit and stay.
 
 - **Certificates, and every call settled (grizzle's SELECTWHOLE, bb62f0fa1; Bjorn's ruling of 2026-11-19).** A
   containment with a selected side is judged whole, as a rule over a query, where the relations it reads are immutable

@@ -1,5 +1,5 @@
 import { Array as Arr, Equal, HashMap, HashSet, Option, Order } from "effect"
-import type { Datum } from "#datum.ts"
+import { type Datum, textOf } from "#datum.ts"
 import {
 	type Answer,
 	type By,
@@ -129,13 +129,20 @@ export type RootRow = Readonly<{
 export type SeatRow = Readonly<{ seat: SeatKey; holder: Holder }>
 
 /**
+ * What an app's or an operator's root was requested with: its kind's input heading at its first request, and its
+ * input's canonical text. A key names one input under one heading.
+ */
+export type Requested = Readonly<{ heading: string; input: string }>
+
+/**
  * The ledger's state: a projection of the facts it holds, keyed by canonical text. The retired root keys, which never
- * recur, survive their graphs, and so do the app's own relations, which steps' writes and the app's transactions
- * land in.
+ * recur, survive their graphs, and so do what each root was requested with and the app's own relations, which steps'
+ * writes and the app's transactions land in.
  */
 export type State = Readonly<{
 	roots: HashMap.HashMap<string, RootRow>
 	retired: HashSet.HashSet<string>
+	requested: HashMap.HashMap<string, Requested>
 	scopes: HashMap.HashMap<string, ScopeRow>
 	steps: HashMap.HashMap<string, StepRow>
 	seats: HashMap.HashMap<string, SeatRow>
@@ -149,6 +156,7 @@ export type State = Readonly<{
 export const emptyState: State = {
 	roots: HashMap.empty(),
 	retired: HashSet.empty(),
+	requested: HashMap.empty(),
 	scopes: HashMap.empty(),
 	steps: HashMap.empty(),
 	seats: HashMap.empty(),
@@ -168,7 +176,13 @@ type PlainFact = Exclude<Fact, Readonly<{ _tag: "Admitted" | "Opened" | "Spawned
  * made with the work their typed code erased, which the trace leaves out.
  */
 type Event =
-	| Readonly<{ _tag: "Admit"; fact: FactOf<"Admitted">; root: RootRow; scope: ScopeRow }>
+	| Readonly<{
+			_tag: "Admit"
+			fact: FactOf<"Admitted">
+			root: RootRow
+			scope: ScopeRow
+			requested: Option.Option<Requested>
+	  }>
 	| Readonly<{ _tag: "Open"; fact: FactOf<"Opened">; scope: ScopeRow }>
 	| Readonly<{ _tag: "Spawn"; fact: FactOf<"Spawned">; row: StepRow }>
 	| Readonly<{ _tag: "Plain"; fact: PlainFact }>
@@ -252,6 +266,10 @@ const apply = (state: State, event: Event): State => {
 			return {
 				...state,
 				roots: HashMap.set(state.roots, event.root.text, event.root),
+				requested: Option.match(event.requested, {
+					onNone: () => state.requested,
+					onSome: (requested) => HashMap.set(state.requested, event.root.text, requested)
+				}),
 				admitted: state.admitted + 1,
 				scopes: HashMap.set(state.scopes, event.scope.text, event.scope)
 			}
@@ -1127,14 +1145,25 @@ const land = (
 }
 
 /**
- * Admits a root into a transaction under its key, behind its key race, its retired key and its precondition's read;
- * a root whose exclusivity seat another live run holds is recorded and ends `Held` at once, so its night is
- * skipped under its key, and answers how it went.
+ * Admits a root into a transaction under its key, behind what its key was requested with, its key race, its retired
+ * key and its precondition's read; a root whose exclusivity seat another live run holds is recorded and ends `Held` at
+ * once, so its night is skipped under its key, and answers how it went. A key requested with another input under the
+ * same heading `differs`; under another heading, after a deploy that changed the kind's input, it is the same keyed
+ * act, answered as its root stands.
  */
 const admitInto = (tx: Tx, admission: Admission, by: By, at: number): Answer => {
 	const root: RootKey = { kind: admission.kind, key: admission.key }
 	const text = rootText(root)
 	const state = tx.state()
+	const input = textOf(admission.input)
+	if (
+		Option.exists(
+			HashMap.get(state.requested, text),
+			(held) => Option.contains(admission.heading, held.heading) && held.input !== input
+		)
+	) {
+		return "differs"
+	}
 	if (HashMap.has(state.roots, text)) {
 		return "unchanged"
 	}
@@ -1172,7 +1201,8 @@ const admitInto = (tx: Tx, admission: Admission, by: By, at: number): Answer => 
 			at
 		},
 		root: rooted,
-		scope: scoped
+		scope: scoped,
+		requested: Option.map(admission.heading, (heading) => ({ heading, input }))
 	})
 	Option.match(precondition, {
 		onNone: () => undefined,
@@ -1305,7 +1335,8 @@ export const ledger = {
 
 	/**
 	 * Commits the app's own transaction: its writes, and the roots it admits in the same commit, each behind its own
-	 * key race. The writes land whatever the admissions answer.
+	 * key race. The writes land whatever the admissions answer, but for an admission whose key was requested with
+	 * another input (`differs`), which refuses the whole transaction, its writes among it.
 	 */
 	write: (
 		state: State,
@@ -1325,8 +1356,10 @@ export const ledger = {
 		Arr.forEach(writes, (write) =>
 			tx.emit(plain({ _tag: "Wrote", writer: { _tag: "App" }, write, at }))
 		)
-		Arr.forEach(admits, (admission) => admitInto(tx, admission, "app", at))
-		return committed(tx, at, command)
+		const answers = Arr.map(admits, (admission) => admitInto(tx, admission, "app", at))
+		return Arr.contains(answers, "differs")
+			? answered(state, at, command, "differs")
+			: committed(tx, at, command)
 	},
 
 	/**

@@ -16,6 +16,9 @@ import {
 	atOnce,
 	finishStep,
 	rootScope,
+	codecTextsOf,
+	inputDigest,
+	inputFingerprint,
 	startedScope,
 	startedStep
 } from "@bjornpagen/den/runtime/identity"
@@ -36,10 +39,16 @@ import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Fan over its served programs; `den generate` writes it, and nothing edits it. */
 import { type Addition, Sha256 } from "@bjornpagen/grizzle"
+import { codecText } from "@bjornpagen/grizzle/compile"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
+import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { fan } from "#integration/slice/flows.ts"
-import { FanPausable, FanResource } from "#integration/slice/generated/fan.fragment.ts"
+import {
+	FanPausable,
+	FanResource,
+	FanFanRunInput,
+	FanSweepInput
+} from "#integration/slice/generated/fan.fragment.ts"
 import type {
 	FanScope,
 	FanWithin,
@@ -60,6 +69,22 @@ import type {
 	fanRetirerPrograms,
 	fanCommitPrograms
 } from "#integration/slice/generated/fan.programs.ts"
+
+/** The codec text of each declared field of FanFanRunInput, a request's input row, bound once (grizzle's codecText). */
+const fanFanRunInputTexts = Object.freeze({
+	batch: codecText(FanFanRunInput.fields.batch),
+	size: codecText(FanFanRunInput.fields.size)
+})
+/** The codec text of each declared field of FanSweepInput, a request's input row, bound once (grizzle's codecText). */
+const fanSweepInputTexts = Object.freeze({ sweep: codecText(FanSweepInput.fields.sweep) })
+/** The fingerprint of root kind FanRun's input heading, taken once. */
+const fanFanRunHeading = inputFingerprint(
+	'53:14:FanFanRunInput13:5:batch4:Text17:4:size9:pg.bigint224:6:digest212:[...pipe([{ scope: scope, root: scope, batch: input.batch, size: input.size }], Arr.flatMap((row) => [Result.succeed("FanFanRunInput"), fanFanRunInputTexts.batch(row.batch), fanFanRunInputTexts.size(row.size)]))]'
+)
+/** The fingerprint of root kind Sweep's input heading, taken once. */
+const fanSweepHeading = inputFingerprint(
+	'32:13:FanSweepInput13:5:sweep4:Text168:6:digest156:[...pipe([{ scope: scope, root: scope, sweep: input.sweep }], Arr.flatMap((row) => [Result.succeed("FanSweepInput"), fanSweepInputTexts.sweep(row.sweep)]))]'
+)
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface FanHandles {
@@ -339,7 +364,26 @@ export const fanLedger = (h: FanHandles) => {
 							fanFanRunFanScope: [{ scope, root: scope }],
 							fanFanRunFanFanRunInput: [
 								{ scope: scope, root: scope, batch: input.batch, size: input.size }
-							]
+							],
+							fanFanRunFanRequestedWith: Option.toArray(
+								Option.map(
+									codecTextsOf([
+										...pipe(
+											[{ scope: scope, root: scope, batch: input.batch, size: input.size }],
+											Arr.flatMap((row) => [
+												Result.succeed("FanFanRunInput"),
+												fanFanRunInputTexts.batch(row.batch),
+												fanFanRunInputTexts.size(row.size)
+											])
+										)
+									]),
+									(texts) => ({
+										root: scope,
+										fingerprint: fanFanRunHeading,
+										input: inputDigest("Fan", "FanRun", texts)
+									})
+								)
+							)
 						},
 						facts: {}
 					}),
@@ -356,7 +400,25 @@ export const fanLedger = (h: FanHandles) => {
 							fanSweepScope: scope,
 							fanSweepKey: key,
 							fanSweepFanScope: [{ scope, root: scope }],
-							fanSweepFanSweepInput: [{ scope: scope, root: scope, sweep: input.sweep }]
+							fanSweepFanSweepInput: [{ scope: scope, root: scope, sweep: input.sweep }],
+							fanSweepFanRequestedWith: Option.toArray(
+								Option.map(
+									codecTextsOf([
+										...pipe(
+											[{ scope: scope, root: scope, sweep: input.sweep }],
+											Arr.flatMap((row) => [
+												Result.succeed("FanSweepInput"),
+												fanSweepInputTexts.sweep(row.sweep)
+											])
+										)
+									]),
+									(texts) => ({
+										root: scope,
+										fingerprint: fanSweepHeading,
+										input: inputDigest("Fan", "Sweep", texts)
+									})
+								)
+							)
 						},
 						facts: {}
 					}),

@@ -716,6 +716,7 @@ it.effect(
 							relations,
 							(name) =>
 								name !== `${P}Root` &&
+								name !== `${P}RequestedWith` &&
 								!Arr.contains(lowered.coordination, name) &&
 								!Arr.contains(held, name)
 						)
@@ -734,7 +735,7 @@ it.effect(
 								Order.String
 							),
 							Arr.sort([...bodies, ...held], Order.String),
-							"every graph relation but the root's record is mutable, cleared under its root"
+							"every graph relation but the root's record and what it was requested with is mutable, cleared under its root"
 						)
 						assert.deepStrictEqual(
 							Arr.sort(lowered.cleared, Order.String),
@@ -817,7 +818,7 @@ it.effect(
 									? rel.key[0] === "root" && Arr.some(rel.fields, (field) => field.name === "root")
 									: Arr.contains(held, rel.name)
 										? rel.key[0] === "resource"
-										: rel.name === `${P}Root`
+										: rel.name === `${P}Root` || rel.name === `${P}RequestedWith`
 											? rel.key[0] === "root"
 											: !Arr.some(rel.fields, (field) => field.name === "root")
 							)

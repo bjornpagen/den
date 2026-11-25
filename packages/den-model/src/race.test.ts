@@ -67,7 +67,7 @@ const raceOf = (race: Race) => {
 	}
 	const Root: RootKind<number, number, never> = {
 		name: "Race",
-		trigger: { _tag: "App" },
+		trigger: { _tag: "App", heading: "RaceInput" },
 		precondition: Option.none(),
 		window: Option.none(),
 		exclusive: Option.none(),

@@ -11,7 +11,15 @@ import {
 	spawnedOf,
 	type SpawnRows
 } from "@bjornpagen/den/runtime/bind"
-import { atOnce, finishStep, rootScope, startedStep } from "@bjornpagen/den/runtime/identity"
+import {
+	atOnce,
+	finishStep,
+	rootScope,
+	codecTextsOf,
+	inputDigest,
+	inputFingerprint,
+	startedStep
+} from "@bjornpagen/den/runtime/identity"
 import type {
 	FlowNeeds,
 	Admission,
@@ -28,10 +36,14 @@ import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Writeback over its served programs; `den generate` writes it, and nothing edits it. */
 import { type Addition, Sha256 } from "@bjornpagen/grizzle"
+import { codecText } from "@bjornpagen/grizzle/compile"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
+import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { writeback } from "#integration/slice/flows.ts"
-import { WritebackPausable } from "#integration/slice/generated/writeback.fragment.ts"
+import {
+	WritebackPausable,
+	WritebackWritebackInput
+} from "#integration/slice/generated/writeback.fragment.ts"
 import type {
 	WritebackScope,
 	WritebackAdmitted,
@@ -47,6 +59,15 @@ import type {
 	writebackRetirerPrograms,
 	writebackCommitPrograms
 } from "#integration/slice/generated/writeback.programs.ts"
+
+/** The codec text of each declared field of WritebackWritebackInput, a request's input row, bound once (grizzle's codecText). */
+const writebackWritebackInputTexts = Object.freeze({
+	attempt: codecText(WritebackWritebackInput.fields.attempt)
+})
+/** The fingerprint of root kind Writeback's input heading, taken once. */
+const writebackWritebackHeading = inputFingerprint(
+	'44:23:WritebackWritebackInput15:7:attempt4:Text196:6:digest184:[...pipe([{ scope: scope, root: scope, attempt: input.attempt }], Arr.flatMap((row) => [Result.succeed("WritebackWritebackInput"), writebackWritebackInputTexts.attempt(row.attempt)]))]'
+)
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface WritebackHandles {
@@ -217,7 +238,25 @@ export const writebackLedger = (h: WritebackHandles) => {
 							writebackWritebackWritebackScope: [{ scope, root: scope }],
 							writebackWritebackWritebackWritebackInput: [
 								{ scope: scope, root: scope, attempt: input.attempt }
-							]
+							],
+							writebackWritebackWritebackRequestedWith: Option.toArray(
+								Option.map(
+									codecTextsOf([
+										...pipe(
+											[{ scope: scope, root: scope, attempt: input.attempt }],
+											Arr.flatMap((row) => [
+												Result.succeed("WritebackWritebackInput"),
+												writebackWritebackInputTexts.attempt(row.attempt)
+											])
+										)
+									]),
+									(texts) => ({
+										root: scope,
+										fingerprint: writebackWritebackHeading,
+										input: inputDigest("Writeback", "Writeback", texts)
+									})
+								)
+							)
 						},
 						facts: {}
 					}),

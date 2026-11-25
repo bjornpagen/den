@@ -35,6 +35,11 @@ export const SyncRoot = relation(
 	{ root: sha256, kind: closedId(SyncRootKind), key: Text, at: DenInstant },
 	["root"]
 )
+export const SyncRequestedWith = relation(
+	"SyncRequestedWith",
+	{ root: sha256, fingerprint: sha256, input: sha256 },
+	["root"]
+)
 export const SyncExclusiveKey = relation(
 	"SyncExclusiveKey",
 	{ root: sha256, scope: sha256, key: Text, id: sha256 },
@@ -177,6 +182,7 @@ export const syncGraph = fragment(
 		SyncPausable,
 		SyncScope,
 		SyncRoot,
+		SyncRequestedWith,
 		SyncExclusiveKey,
 		SyncAdmitted,
 		SyncSkipped,
@@ -210,6 +216,7 @@ export const syncGraph = fragment(
 		contained(on(SyncAdmitted, "root", "scope"), on(SyncScope, "root", "scope")),
 		contained(on(SyncSkipped, "scope"), on(SyncRoot, "root")),
 		contained(on(SyncSkipped, "by"), on(SyncRoot, "root")),
+		contained(on(SyncRequestedWith, "root"), on(SyncRoot, "root")),
 		contained(on(SyncStep, "root", "scope"), on(SyncAdmitted, "root", "scope")),
 		contained(on(SyncStartStep, "root", "scope"), on(SyncAdmitted, "root", "scope")),
 		contained(on(SyncStartStep, "root", "step"), on(SyncStep, "root", "step")),
@@ -251,6 +258,20 @@ export const syncGraph = fragment(
 		),
 		contained(on(SyncRefusal, "root", "step"), on(SyncFailed, "root", "step")),
 		contained(on(SyncExhausted, "root", "step"), on(SyncFailed, "root", "step")),
+		contained(
+			on(
+				select(SyncRoot, (row) => row.eq(row.kind, "SyncRun")),
+				"root"
+			),
+			on(SyncRequestedWith, "root")
+		),
+		contained(
+			on(
+				select(SyncRoot, (row) => row.eq(row.kind, "Gold")),
+				"root"
+			),
+			on(SyncRequestedWith, "root")
+		),
 		contained(
 			on(SyncCopyInput, "root", "step"),
 			on(

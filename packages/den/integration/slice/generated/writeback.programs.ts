@@ -11,6 +11,7 @@ import {
 	WritebackPausable,
 	WritebackScope,
 	WritebackRoot,
+	WritebackRequestedWith,
 	WritebackAdmitted,
 	WritebackSkipped,
 	WritebackStep,
@@ -47,6 +48,7 @@ export const WritebackDen = role(
 		insert: [
 			"WritebackScope",
 			"WritebackRoot",
+			"WritebackRequestedWith",
 			"WritebackAdmitted",
 			"WritebackSkipped",
 			"WritebackStep",
@@ -413,6 +415,35 @@ export const writebackDenPrograms = Object.freeze({
 						.where(r.not(WritebackRoot, { root }))
 						.find({ root, scope, attempt })
 				})
+			)
+			.insert(
+				WritebackRequestedWith,
+				query(writebackGraph)
+					.rule((r) => {
+						const requested = r.relation("writebackWritebackWritebackRequestedWith", {
+							root: WritebackRequestedWith.fields.root,
+							fingerprint: WritebackRequestedWith.fields.fingerprint,
+							input: WritebackRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.where(r.not(WritebackRoot, { root }))
+							.find({ root, fingerprint, input })
+					})
+					.rule((r) => {
+						const requested = r.relation("writebackWritebackWritebackRequestedWith", {
+							root: WritebackRequestedWith.fields.root,
+							fingerprint: WritebackRequestedWith.fields.fingerprint,
+							input: WritebackRequestedWith.fields.input
+						})
+						const { root, fingerprint, input } = v(requested, "requested")
+						const { input: held } = v(WritebackRequestedWith, "held")
+						return r
+							.match(requested, { root, fingerprint, input })
+							.match(WritebackRequestedWith, { root, fingerprint, input: held })
+							.find({ root, fingerprint, input })
+					})
 			)
 			.insert(
 				WritebackRoot,

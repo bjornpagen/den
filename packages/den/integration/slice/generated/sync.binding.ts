@@ -12,7 +12,15 @@ import {
 	spawnedOf,
 	type SpawnRows
 } from "@bjornpagen/den/runtime/bind"
-import { atOnce, finishStep, rootScope, startedStep } from "@bjornpagen/den/runtime/identity"
+import {
+	atOnce,
+	finishStep,
+	rootScope,
+	codecTextsOf,
+	inputDigest,
+	inputFingerprint,
+	startedStep
+} from "@bjornpagen/den/runtime/identity"
 import type {
 	FlowNeeds,
 	ExclusiveTurn,
@@ -30,10 +38,16 @@ import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Sync over its served programs; `den generate` writes it, and nothing edits it. */
 import { type Addition, Sha256 } from "@bjornpagen/grizzle"
+import { codecText } from "@bjornpagen/grizzle/compile"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
+import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { sync } from "#integration/slice/flows.ts"
-import { SyncRootKind, SyncPausable } from "#integration/slice/generated/sync.fragment.ts"
+import {
+	SyncRootKind,
+	SyncPausable,
+	SyncSyncRunInput,
+	SyncGoldInput
+} from "#integration/slice/generated/sync.fragment.ts"
 import type {
 	SyncScope,
 	SyncAdmitted,
@@ -49,6 +63,22 @@ import type {
 	syncRetirerPrograms,
 	syncCommitPrograms
 } from "#integration/slice/generated/sync.programs.ts"
+
+/** The codec text of each declared field of SyncSyncRunInput, a request's input row, bound once (grizzle's codecText). */
+const syncSyncRunInputTexts = Object.freeze({
+	relation: codecText(SyncSyncRunInput.fields.relation),
+	run: codecText(SyncSyncRunInput.fields.run)
+})
+/** The codec text of each declared field of SyncGoldInput, a request's input row, bound once (grizzle's codecText). */
+const syncGoldInputTexts = Object.freeze({ build: codecText(SyncGoldInput.fields.build) })
+/** The fingerprint of root kind SyncRun's input heading, taken once. */
+const syncSyncRunHeading = inputFingerprint(
+	'57:16:SyncSyncRunInput16:8:relation4:Text16:3:run9:pg.bigint238:6:digest226:[...pipe([{ scope: scope, root: scope, relation: input.relation, run: input.run }], Arr.flatMap((row) => [Result.succeed("SyncSyncRunInput"), syncSyncRunInputTexts.relation(row.relation), syncSyncRunInputTexts.run(row.run)]))]'
+)
+/** The fingerprint of root kind Gold's input heading, taken once. */
+const syncGoldHeading = inputFingerprint(
+	'37:13:SyncGoldInput18:5:build9:pg.bigint168:6:digest156:[...pipe([{ scope: scope, root: scope, build: input.build }], Arr.flatMap((row) => [Result.succeed("SyncGoldInput"), syncGoldInputTexts.build(row.build)]))]'
+)
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface SyncHandles {
@@ -291,7 +321,26 @@ export const syncLedger = (h: SyncHandles) => {
 								syncSyncRunSyncExclusiveKey: Arr.map(keys, (k) => ({ ...k, root: scope })),
 								syncSyncRunSyncSyncRunInput: [
 									{ scope: scope, root: scope, relation: input.relation, run: input.run }
-								]
+								],
+								syncSyncRunSyncRequestedWith: Option.toArray(
+									Option.map(
+										codecTextsOf([
+											...pipe(
+												[{ scope: scope, root: scope, relation: input.relation, run: input.run }],
+												Arr.flatMap((row) => [
+													Result.succeed("SyncSyncRunInput"),
+													syncSyncRunInputTexts.relation(row.relation),
+													syncSyncRunInputTexts.run(row.run)
+												])
+											)
+										]),
+										(texts) => ({
+											root: scope,
+											fingerprint: syncSyncRunHeading,
+											input: inputDigest("Sync", "SyncRun", texts)
+										})
+									)
+								)
 							},
 							facts: {}
 						}),
@@ -309,7 +358,25 @@ export const syncLedger = (h: SyncHandles) => {
 							syncGoldScope: scope,
 							syncGoldKey: key,
 							syncGoldSyncScope: [{ scope, root: scope }],
-							syncGoldSyncGoldInput: [{ scope: scope, root: scope, build: input.build }]
+							syncGoldSyncGoldInput: [{ scope: scope, root: scope, build: input.build }],
+							syncGoldSyncRequestedWith: Option.toArray(
+								Option.map(
+									codecTextsOf([
+										...pipe(
+											[{ scope: scope, root: scope, build: input.build }],
+											Arr.flatMap((row) => [
+												Result.succeed("SyncGoldInput"),
+												syncGoldInputTexts.build(row.build)
+											])
+										)
+									]),
+									(texts) => ({
+										root: scope,
+										fingerprint: syncGoldHeading,
+										input: inputDigest("Sync", "Gold", texts)
+									})
+								)
+							)
 						},
 						facts: {}
 					}),

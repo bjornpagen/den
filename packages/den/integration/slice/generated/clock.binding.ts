@@ -18,6 +18,9 @@ import {
 	finishStep,
 	type Instant,
 	rootScope,
+	codecTextsOf,
+	inputDigest,
+	inputFingerprint,
 	startedStep
 } from "@bjornpagen/den/runtime/identity"
 import type {
@@ -36,10 +39,11 @@ import { runnerOf } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 /** The ledger port of the flow Clock over its served programs; `den generate` writes it, and nothing edits it. */
 import { type Addition, Sha256 } from "@bjornpagen/grizzle"
+import { codecText } from "@bjornpagen/grizzle/compile"
 import type { MemberHandle } from "@bjornpagen/grizzle/runtime"
-import { Array as Arr, Effect, Option, pipe, Stream } from "effect"
+import { Array as Arr, Effect, Option, pipe, Result, Stream } from "effect"
 import { clock } from "#integration/slice/flows.ts"
-import { ClockPausable } from "#integration/slice/generated/clock.fragment.ts"
+import { ClockPausable, ClockSittingInput } from "#integration/slice/generated/clock.fragment.ts"
 import type {
 	ClockScope,
 	ClockAdmitted,
@@ -56,6 +60,16 @@ import type {
 	clockRetirerPrograms,
 	clockCommitPrograms
 } from "#integration/slice/generated/clock.programs.ts"
+
+/** The codec text of each declared field of ClockSittingInput, a request's input row, bound once (grizzle's codecText). */
+const clockSittingInputTexts = Object.freeze({
+	sitting: codecText(ClockSittingInput.fields.sitting),
+	deadline: codecText(ClockSittingInput.fields.deadline)
+})
+/** The fingerprint of root kind Sitting's input heading, taken once. */
+const clockSittingHeading = inputFingerprint(
+	'64:17:ClockSittingInput15:7:sitting4:Text23:8:deadline10:DenInstant257:6:digest245:[...pipe([{ scope: scope, root: scope, sitting: input.sitting, deadline: input.deadline }], Arr.flatMap((row) => [Result.succeed("ClockSittingInput"), clockSittingInputTexts.sitting(row.sitting), clockSittingInputTexts.deadline(row.deadline)]))]'
+)
 
 /** The handles the ledger calls: den's role's, its coordinator role's, and the app role's commits, from whichever logins serve them. */
 export interface ClockHandles {
@@ -281,7 +295,33 @@ export const clockLedger = (h: ClockHandles) => {
 							clockSittingClockScope: [{ scope, root: scope }],
 							clockSittingClockSittingInput: [
 								{ scope: scope, root: scope, sitting: input.sitting, deadline: input.deadline }
-							]
+							],
+							clockSittingClockRequestedWith: Option.toArray(
+								Option.map(
+									codecTextsOf([
+										...pipe(
+											[
+												{
+													scope: scope,
+													root: scope,
+													sitting: input.sitting,
+													deadline: input.deadline
+												}
+											],
+											Arr.flatMap((row) => [
+												Result.succeed("ClockSittingInput"),
+												clockSittingInputTexts.sitting(row.sitting),
+												clockSittingInputTexts.deadline(row.deadline)
+											])
+										)
+									]),
+									(texts) => ({
+										root: scope,
+										fingerprint: clockSittingHeading,
+										input: inputDigest("Clock", "Sitting", texts)
+									})
+								)
+							)
 						},
 						facts: {}
 					}),

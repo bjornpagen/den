@@ -51,6 +51,11 @@ export const AssignRoot = relation(
 	{ root: sha256, kind: closedId(AssignRootKind), key: Text, at: DenInstant },
 	["root"]
 )
+export const AssignRequestedWith = relation(
+	"AssignRequestedWith",
+	{ root: sha256, fingerprint: sha256, input: sha256 },
+	["root"]
+)
 export const AssignAdmitted = relation("AssignAdmitted", { root: sha256, scope: sha256 }, [
 	"root",
 	"scope"
@@ -305,6 +310,7 @@ export const assignGraph = fragment(
 		AssignDecideOutputStage,
 		AssignScope,
 		AssignRoot,
+		AssignRequestedWith,
 		AssignAdmitted,
 		AssignSkipped,
 		AssignStep,
@@ -353,6 +359,7 @@ export const assignGraph = fragment(
 		contained(on(AssignAdmitted, "root", "scope"), on(AssignScope, "root", "scope")),
 		contained(on(AssignSkipped, "scope"), on(AssignRoot, "root")),
 		contained(on(AssignSkipped, "by"), on(AssignRoot, "root")),
+		contained(on(AssignRequestedWith, "root"), on(AssignRoot, "root")),
 		contained(on(AssignStep, "root", "scope"), on(AssignAdmitted, "root", "scope")),
 		contained(on(AssignStartStep, "root", "scope"), on(AssignAdmitted, "root", "scope")),
 		contained(on(AssignStartStep, "root", "step"), on(AssignStep, "root", "step")),
@@ -406,6 +413,13 @@ export const assignGraph = fragment(
 		),
 		contained(on(AssignRefusal, "root", "step"), on(AssignFailed, "root", "step")),
 		contained(on(AssignExhausted, "root", "step"), on(AssignFailed, "root", "step")),
+		contained(
+			on(
+				select(AssignRoot, (row) => row.eq(row.kind, "Assignment")),
+				"root"
+			),
+			on(AssignRequestedWith, "root")
+		),
 		contained(
 			on(AssignEmbedInput, "root", "step"),
 			on(

@@ -73,7 +73,9 @@
   - A step's declared reads are recorded with its result, in the commit; a step that dies after reading reads again.
   - A reclaim (a holder that died) counts as an attempt on the step's ladder; a wait (a transient refusal) does not.
   - Retired keys are remembered by each root's record, the closed fact that it was requested, which a retirement's
-    clearing of its graph keeps; den keeps no other record of them.
+    clearing of its graph keeps, and, for an app's or an operator's root, by what it was requested with (its kind's
+    input fingerprint and its input's digest, `<P>RequestedWith`), which the clearing keeps too; den keeps no other
+    record of them.
   - The Gold refresh (W4) has no window: its trigger is 13:18Z or an operator's press.
 - **The API is decided on technical merit.** Whether den keeps Effect's `Workflow`/`Activity` API as it is or offers
   a graph of steps with no workflow above them is decided by what is great about Effect's API and whether den can
@@ -317,3 +319,31 @@
   the replaced deployment's chains, its census's among them, end at their next ring, and the serving deployment's
   census heals what they left.
   - Rejected: a Vercel API call on a turn's path; the environment's variables alone, which name no replacement.
+- **A root's request is one fact identified by its root, and its key names one input (grizzle main's ruling, 2026-11-25,
+  on metis's webhook redeliveries).** A request of a key already requested with the same input, its graph standing or
+  retired, adds nothing and refuses nothing, so an app's write that unions it with its own commits its own facts: every
+  row of its graph a request writes is inserted only where no Root holds its root, and its record (below) again only
+  under the same fingerprint. An app's or an operator's root records beside its Root what it was requested with,
+  `<P>RequestedWith(root, fingerprint, input)`: the fingerprint of its kind's input heading and the digest of its input
+  rows, grizzle's codec text of each declared field, each framed by its length (runtime/identity.ts); a request whose
+  input holds a value its field's type does not admit has no digest and no record, and grizzle refuses it, typed. A
+  request again under the same fingerprint inserts it again, so an equal input meets it and another is refused on its
+  key, naming the root; one under another fingerprint, after a deploy that changed the kind's input heading, inserts
+  nothing and is answered as already requested, so a redelivery across a shape change is idempotent: a reused key with
+  other content goes undetected only across that boundary, where the two inputs have no one text to compare. A scheduled
+  root records none: its input is a function of its key, which the census requests every tick, so no deploy can stop it.
+  The heading frames each input relation with each declared field's name and type as den prints it, a brand with its
+  base and a roster with its handles, and the digest's printed construction, and each fingerprint is taken under the
+  running den's input digest scheme, a known answer of its digest over a fixed probe, so a deploy that changes the
+  input, or a den whose digest answers otherwise, generated again or not, changes it.
+  - Rejected: `race(Root)` or a second header; a digest of the raw input value, a second canonical text beside
+    grizzle's; clearing `<P>RequestedWith` when a kind's input changes, since it is closed and every app's and
+    operator's Root is contained in it.
+  - The record has no backfill: it lands as a one-init cutover, every installation installed fresh from an init drafted
+    from nothing (metis's own; edullm and grizzle hold no persistent den installation, each suite's installed fresh). An
+    installation of a den from before it holds its app's and operator's roots without a record, and any migration that
+    states the law containing them in `<P>RequestedWith` is refused while such a root stands, naming the law
+    (`requested.test.ts`); an init drafted again replaces the folder its ledger applied, which grizzle's migrate refuses
+    before any statement (`AppliedEdited`). A kind moved from a schedule to an app's or an operator's trigger is such a
+    migration too: its scheduled roots hold no record and roots are never deleted, so it is refused for good once one
+    was requested, and such a move takes a kind of a new name.

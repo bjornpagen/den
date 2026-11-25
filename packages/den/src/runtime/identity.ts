@@ -1,5 +1,5 @@
 import { Sha256 } from "@bjornpagen/grizzle"
-import { Array as Arr } from "effect"
+import { Array as Arr, Option, Result } from "effect"
 import type { Brand } from "effect"
 
 /**
@@ -51,6 +51,93 @@ const derive = (parts: ReadonlyArray<string>): Sha256 =>
 /** The scope of root kind `kind` of flow `flow`, started under the idempotency key `key`. */
 export const rootScope = (flow: string, kind: string, key: string): Sha256 =>
 	derive(["root", flow, kind, key])
+
+/**
+ * The texts of a request's input, each a relation's name or a field's grizzle codec text (codecText), where every value
+ * is one its field's type admits; none where any is not, a value its kind's schema admits and its type does not (a text
+ * holding NUL, a bigint past int8). The request's own input rows carry that value, which grizzle's parameter encoder
+ * refuses, typed, before any statement runs, and a Root of an app's or an operator's kind cannot stand without its
+ * record, so such a request is refused whatever its record: none is printed for it.
+ */
+export const codecTextsOf = (
+	texts: ReadonlyArray<Result.Result<string, unknown>>
+): Option.Option<ReadonlyArray<string>> => Result.getSuccess(Result.all(texts))
+
+/**
+ * Texts as one text that names them apart: each its length, a colon and itself, as grizzle's rowText frames a row's
+ * columns (a text may hold any character, a NUL among them, which `derive` keeps its parts apart by, a key's text
+ * holding none), so no two lists of texts, nested or not, make one text: den's one framing of texts a request names,
+ * of its input (`inputDigest`) and of a kind's input heading (lower/print.ts inputHeadingOf).
+ */
+export const framedText = (texts: ReadonlyArray<string>): string =>
+	Arr.join(
+		Arr.map(texts, (text) => `${String(text.length)}:${text}`),
+		""
+	)
+
+/**
+ * The digest of a request's input rows, each row's relation and each declared field's codec text, framed
+ * (`framedText`), so two requests of one kind under one fingerprint name one input exactly when their rows agree value
+ * for value: the content a key names, beside it (the fragment's RequestedWith). The text of each value is grizzle's;
+ * the framing of a request's rows is den's.
+ */
+export const inputDigest = (flow: string, kind: string, texts: ReadonlyArray<string>): Sha256 =>
+	derive(["input", flow, kind, framedText(texts)])
+
+/**
+ * Texts an input digest is probed over: none, empty ones, one, texts that join alike, the framing's own digits and
+ * colon, NUL, an uppercase letter and a decomposed character (a digest that folds case or normalizes answers apart),
+ * and texts outside ASCII and outside the BMP.
+ */
+const PROBES: ReadonlyArray<ReadonlyArray<string>> = [
+	[],
+	[""],
+	["a"],
+	["ab"],
+	["a", "b"],
+	["1:a"],
+	["", ""],
+	["a\u0000b"],
+	["A", "e\u0301"],
+	["é", "\u{1F600}"]
+]
+
+/** An input digest's scheme (`schemeOf`): a digest's hex, which holds no NUL, so a fingerprint under it names it apart. */
+export type InputScheme = string & Brand.Brand<"DenInputScheme">
+
+/** The claim behind the scheme's one mint (`schemeOf`), unchecked: a value read here is a digest's hex. */
+const readScheme: (value: string) => asserts value is InputScheme = () => undefined
+
+/**
+ * The scheme of an input digest `digest`: what it answers over a fixed probe (`PROBES`, under a flow and a kind of two
+ * names, so a digest that confuses them answers apart), digested, a known answer, so two digests that answer any probe
+ * apart have two schemes, whatever loader or bundler ran them.
+ */
+export const schemeOf = (digest: typeof inputDigest): InputScheme => {
+	const scheme = Sha256.toHex(
+		derive([
+			"scheme",
+			...Arr.map(PROBES, (texts) => Sha256.toHex(digest("ProbeFlow", "ProbeKind", texts)))
+		])
+	)
+	readScheme(scheme)
+	return scheme
+}
+
+/** The running den's input digest scheme (`schemeOf` its `inputDigest`), taken when den loads. */
+export const inputScheme = schemeOf(inputDigest)
+
+/** The fingerprint of a heading under the input digest scheme `scheme`: each of them apart. */
+export const fingerprintUnder = (scheme: InputScheme, heading: string): Sha256 =>
+	derive(["heading", scheme, heading])
+
+/**
+ * The fingerprint of a root kind's input heading, under the running den's input digest scheme: the heading's relations,
+ * fields and types and the printed construction of its digest, as den generate prints them (lower/print.ts
+ * inputHeadingOf), so a deploy that changes the shape of a kind's input changes its fingerprint, and so does a den
+ * whose digest answers otherwise, generated again or not.
+ */
+export const inputFingerprint = (heading: string): Sha256 => fingerprintUnder(inputScheme, heading)
 
 /** The step a scope's start spawns at `ordinal`. */
 export const startedStep = (scope: Sha256, ordinal: number): Sha256 =>

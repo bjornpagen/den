@@ -1,15 +1,14 @@
 import { lower } from "@bjornpagen/den/lower/fragment"
-import { printFragment } from "@bjornpagen/den/lower/print"
 import { atOnce, delayOf, instantOf } from "@bjornpagen/den/runtime/identity"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { boolean, finite, type Gen } from "@bjornpagen/testing/gen"
-import { type Case, type Need, NeedFailed, property } from "@bjornpagen/testing/property"
-import { Array as Arr, Effect, FileSystem, Option, Path, String as Str } from "effect"
+import { type Case, property } from "@bjornpagen/testing/property"
+import { Array as Arr, Effect, Option, String as Str } from "effect"
 import { fan } from "#integration/slice/flows.ts"
-import { grizzle, liveSliceCase, migrateIn, openLedgers } from "#integration/support/slice.ts"
+import { liveSliceCase, migrateIn, openLedgers, sliceCopyNeed } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
 
 /**
@@ -39,34 +38,10 @@ const seatOne: Gen<Seat> = (source) => {
 	return source.draw(boolean) ? "freed" : "held"
 }
 
-const sliceDir = `${import.meta.dirname}/slice`
-
-/**
- * A copy of the slice, beside it, whose Pool holds one seat: every module of it read under the copy's own specifiers,
- * the fan-out's fragment printed again with the lowered count, and a migration from the slice's own to it drafted by
- * `grizzle generate`.
- */
-const lowered = Effect.gen(function* () {
-	const fs = yield* FileSystem.FileSystem
-	const path = yield* Path.Path
-	const workspace = yield* fs.makeTempDirectoryScoped({
-		directory: import.meta.dirname,
-		prefix: ".seats-"
-	})
-	const copy = path.join(workspace, "slice")
-	const specifier = `#integration/${path.basename(workspace)}/slice/`
-	yield* fs.copy(sliceDir, copy)
-	const files = yield* fs.readDirectory(copy, { recursive: true })
-	yield* Effect.forEach(Arr.filter(files, Str.endsWith(".ts")), (file) =>
-		Effect.flatMap(fs.readFileString(path.join(copy, file)), (text) =>
-			fs.writeFileString(
-				path.join(copy, file),
-				Str.replaceAll("#integration/slice/", specifier)(text)
-			)
-		)
-	)
+/** The fan-out flow lowered as a deploy that gave its Pool one seat declares it: every other count as it is. */
+const oneSeat = (() => {
 	const flow = lower(fan)
-	const oneSeat = {
+	return {
 		...flow,
 		seats: Option.map(flow.seats, (seats) => ({
 			...seats,
@@ -76,60 +51,14 @@ const lowered = Effect.gen(function* () {
 			}
 		}))
 	}
-	yield* fs.writeFileString(
-		path.join(copy, "generated", "fan.fragment.ts"),
-		printFragment(oneSeat, {
-			fragment: `${specifier}generated/fan.fragment.ts`,
-			programs: `${specifier}generated/fan.programs.ts`,
-			relations: `${specifier}relations.ts`,
-			schema: { from: `${specifier}app.ts`, name: "App" },
-			writer: { from: `${specifier}roles.ts`, name: "Loader" },
-			flow: { from: `${specifier}flows.ts`, name: "fan" },
-			reads: { from: `${specifier}reads.ts`, exports: {} }
-		})
-	)
-	yield* grizzle("generate", {}, copy)
-	return copy
-})
+})()
 
-/**
- * The CPU the lowered copy's open may spend on a worker (loweredSlice's `budget`): the fragment printed again for one
- * Pool seat into a copy of the slice, and `grizzle generate` over it, a child process the worker awaits as a declared wait
- * (support/slice.ts `grizzle`).
- *
- * @limitKind measured
- * @owner den's integration suites (packages/den/integration)
- * @unit milliseconds of CPU
- * @scope one open of loweredSlice on one worker, the worker process's own CPU
- * @evidence seatcount.test's `readyingCpu` in ~/.cache/toolchain-test/runs/739101362-3164387.json (`toolchain-test run
- *   integration/claim.test.ts integration/relay.test.ts integration/seatcount.test.ts`, TEST_SEED=739101362), its two
- *   needs (liveSliceCase and loweredSlice) opened together, which bounds loweredSlice's open from above
- * @observed 2026-11-21 15:40 to 15:51 UTC
- * @environment cassowary, Ubuntu 26.04 on arm64 in AWS, 64 cores and 247 GiB, 1-minute load 410 to 430 from other
- *   lanes' runs; Node 26.13.1, toolchain 46e6e52e43dd, grizzle d81ee19dc (the pin), den-test-0 on the workbench's
- *   PostgreSQL 19.0
- * @workload one run of the property on one worker: its needs opened once, three cases
- * @result readyingCpu 3,021.6 ms for both needs; no open failed
- * @decision about ten times the readying that holds it, rounded up, as support/slice.ts's template budget: a worker's
- *   CPU for one open moves with the load and with a cold compile cache. Unmeasured: the open alone, on a quiet machine
- * @revalidate a lowering that prints more, a toolchain that counts a need's children in its budget, another machine
- */
-const loweredBudgetMillis = 30_000
-
-/**
- * The lowered copy of the slice, once per worker (a need opened in the worker's scope, so the copy is removed when the
- * worker ends): every case of a worker migrates its own database to it, and reads it only.
- */
-const loweredSlice: Need<string> = {
-	key: "den seat counts: the slice lowered to one Pool seat",
-	budget: loweredBudgetMillis,
-	runNeeds: [],
-	open: Effect.mapBoth(lowered, {
-		onSuccess: Effect.succeed,
-		onFailure: (cause) =>
-			NeedFailed.make({ need: "den seat counts", message: `the lowered copy: ${cause.message}` })
-	})
-}
+/** The slice with its Pool lowered to one seat, which its validation holds every live hold's seat below. */
+const loweredSlice = sliceCopyNeed(
+	"den seat counts: the slice lowered to one Pool seat",
+	"fan",
+	oneSeat
+)
 
 /**
  * Admits lowering a seat count exactly when no live hold sits at or above the new count.

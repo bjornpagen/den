@@ -38,6 +38,11 @@ export const ClockRoot = relation(
 	{ root: sha256, kind: closedId(ClockRootKind), key: Text, at: DenInstant },
 	["root"]
 )
+export const ClockRequestedWith = relation(
+	"ClockRequestedWith",
+	{ root: sha256, fingerprint: sha256, input: sha256 },
+	["root"]
+)
 export const ClockAdmitted = relation("ClockAdmitted", { root: sha256, scope: sha256 }, [
 	"root",
 	"scope"
@@ -168,6 +173,7 @@ export const clockGraph = fragment(
 		ClockChimeOutputBell,
 		ClockScope,
 		ClockRoot,
+		ClockRequestedWith,
 		ClockAdmitted,
 		ClockSkipped,
 		ClockStep,
@@ -199,6 +205,7 @@ export const clockGraph = fragment(
 		contained(on(ClockAdmitted, "root", "scope"), on(ClockScope, "root", "scope")),
 		contained(on(ClockSkipped, "scope"), on(ClockRoot, "root")),
 		contained(on(ClockSkipped, "by"), on(ClockRoot, "root")),
+		contained(on(ClockRequestedWith, "root"), on(ClockRoot, "root")),
 		contained(on(ClockStep, "root", "scope"), on(ClockAdmitted, "root", "scope")),
 		contained(on(ClockStartStep, "root", "scope"), on(ClockAdmitted, "root", "scope")),
 		contained(on(ClockStartStep, "root", "step"), on(ClockStep, "root", "step")),
@@ -243,6 +250,13 @@ export const clockGraph = fragment(
 		),
 		contained(on(ClockRefusal, "root", "step"), on(ClockFailed, "root", "step")),
 		contained(on(ClockExhausted, "root", "step"), on(ClockFailed, "root", "step")),
+		contained(
+			on(
+				select(ClockRoot, (row) => row.eq(row.kind, "Sitting")),
+				"root"
+			),
+			on(ClockRequestedWith, "root")
+		),
 		contained(
 			on(ClockChimeInput, "root", "step"),
 			on(
