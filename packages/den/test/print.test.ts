@@ -37,12 +37,13 @@ import { caseHangMillis } from "#test/support/suites.ts"
  *
  * Oracle (specification): ECMAScript's grammar of a module, whose code is strict, as Node's parser judges each printed
  * module once its types are stripped (`node --input-type=module --check`), over every word the grammar keeps from a
- * binding in a module (its reserved words, those strict code reserves, `await`, `eval` and `arguments`) and the two
- * names each printed rule binds itself, its builder `r` and the variables' maker `v`. Mutant it kills: printing a field
- * as its own name wherever a rule binds it, `bound = (field) => field`, which prints `const { package } = v(...)`.
+ * binding in a module (its reserved words, those strict code reserves, `await`, `eval` and `arguments`) and the names
+ * printed rules bind themselves, their builder `r`, the variables' maker `v` and a request's relation parameter
+ * `requested`. Mutant it kills: printing a field as its own name wherever a rule binds it, `bound = (field) => field`,
+ * which prints `const { package } = v(...)`, or `const { requested } = v(requested, ...)` in a root's request.
  */
 
-/** The words no module's code can bind, and the two names each printed rule binds itself. */
+/** The words no module's code can bind, and the names printed rules bind themselves. */
 const Word = Schema.Literals([
 	"await",
 	"break",
@@ -93,7 +94,8 @@ const Word = Schema.Literals([
 	"arguments",
 	"eval",
 	"r",
-	"v"
+	"v",
+	"requested"
 ])
 type Word = typeof Word.Type
 
@@ -111,7 +113,10 @@ const finishing = {
 	body: () => Effect.succeed({ output: {} })
 } as const
 
-/** A flow of one step whose input names `word` three ways: a column, a column of its structs, an awaited fact's key. */
+/**
+ * A flow of one step whose input names `word` three ways, a column, a column of its structs and an awaited fact's key,
+ * under a root whose input names it too, so its request's rule binds it.
+ */
 const named = (word: Word) => {
 	const value = Schema.Struct({
 		[word]: Schema.String,
@@ -135,7 +140,7 @@ const named = (word: Word) => {
 	)
 	const Run = root("Run", {
 		trigger: operator,
-		input: Schema.Struct({}),
+		input: Schema.Struct({ [word]: Schema.String }),
 		children: [Named],
 		start: () => [],
 		exclusive: shared,

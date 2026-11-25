@@ -338,28 +338,27 @@ export const reviewLedger = (h: ReviewHandles) => {
 	const request = {
 		ReviewRun: (key: string, input: Parameters<(typeof review.kinds)[4]["start"]>[0]) =>
 			pipe(rootScope("Review", "ReviewRun", key), (scope) =>
-				Effect.map(
-					fresh(
-						"Review",
-						settled(
-							h.den.reviewRequestReviewRun.once({
-								params: { reviewReviewRunScope: scope, reviewReviewRunKey: key },
-								facts: {
-									insert: {
-										ReviewScope: [{ scope, root: scope }],
-										ReviewReviewRunInput: [{ scope: scope, root: scope, review: input.review }],
-										ReviewReviewRunInputSizes: Arr.map(input.sizes, (element, index) => ({
-											scope: scope,
-											root: scope,
-											ordinal: BigInt(index),
-											value: element
-										}))
-									}
-								}
-							})
-						)
-					),
-					(accepted) => ({ flow: FlowName.make("Review"), scope, fresh: accepted })
+				pipe(
+					h.den.reviewRequestReviewRun.once({
+						params: {
+							reviewReviewRunScope: scope,
+							reviewReviewRunKey: key,
+							reviewReviewRunReviewScope: [{ scope, root: scope }],
+							reviewReviewRunReviewReviewRunInput: [
+								{ scope: scope, root: scope, review: input.review }
+							],
+							reviewReviewRunReviewReviewRunInputSizes: Arr.map(input.sizes, (element, index) => ({
+								scope: scope,
+								root: scope,
+								ordinal: BigInt(index),
+								value: element
+							}))
+						},
+						facts: {}
+					}),
+					settled,
+					fresh,
+					Effect.map((accepted) => ({ flow: FlowName.make("Review"), scope, fresh: accepted }))
 				)
 			)
 	}
@@ -1125,6 +1124,6 @@ export const reviewLedger = (h: ReviewHandles) => {
 	return {
 		ledger,
 		request,
-		requestFacts: {}
+		appRequests: {}
 	}
 }

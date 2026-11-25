@@ -504,18 +504,58 @@ export const fanDenPrograms = Object.freeze({
 	}),
 	fanRequestFanRun: clocked(
 		ChangeSet.empty(fanGraph)
-			.insert(FanScope, [])
-			.insert(FanFanRunInput, [])
+			.insert(
+				FanScope,
+				query(fanGraph).rule((r) => {
+					const requested = r.relation("fanFanRunFanScope", {
+						root: FanScope.fields.root,
+						scope: FanScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(r.not(FanRoot, { root }))
+						.find({ root, scope })
+				})
+			)
+			.insert(
+				FanFanRunInput,
+				query(fanGraph).rule((r) => {
+					const requested = r.relation("fanFanRunFanFanRunInput", {
+						root: FanFanRunInput.fields.root,
+						scope: FanFanRunInput.fields.scope,
+						batch: FanFanRunInput.fields.batch,
+						size: FanFanRunInput.fields.size
+					})
+					const { root, scope, batch, size } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, batch, size })
+						.where(r.not(FanRoot, { root }))
+						.find({ root, scope, batch, size })
+				})
+			)
 			.insert(
 				FanRoot,
-				query(fanGraph).rule((r) =>
-					r.find({
-						root: r.param("fanFanRunScope", FanRoot.fields.root),
-						kind: FanRootKind.handle("FanRun"),
-						key: r.param("fanFanRunKey", FanRoot.fields.key),
-						at: r.param("now", FanRoot.fields.at)
+				query(fanGraph).rule((r) => {
+					const requested = r.relation("fanFanRunFanScope", {
+						root: FanScope.fields.root,
+						scope: FanScope.fields.scope
 					})
-				)
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(
+							r.eq(scope, root),
+							r.eq(root, r.param("fanFanRunScope", FanRoot.fields.root)),
+							r.not(FanRoot, { root })
+						)
+						.find({
+							root,
+							kind: FanRootKind.handle("FanRun"),
+							key: r.param("fanFanRunKey", FanRoot.fields.key),
+							at: r.param("now", FanRoot.fields.at)
+						})
+				})
 			),
 		{ now: "millis" }
 	),
@@ -559,18 +599,57 @@ export const fanDenPrograms = Object.freeze({
 	}),
 	fanRequestSweep: clocked(
 		ChangeSet.empty(fanGraph)
-			.insert(FanScope, [])
-			.insert(FanSweepInput, [])
+			.insert(
+				FanScope,
+				query(fanGraph).rule((r) => {
+					const requested = r.relation("fanSweepFanScope", {
+						root: FanScope.fields.root,
+						scope: FanScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(r.not(FanRoot, { root }))
+						.find({ root, scope })
+				})
+			)
+			.insert(
+				FanSweepInput,
+				query(fanGraph).rule((r) => {
+					const requested = r.relation("fanSweepFanSweepInput", {
+						root: FanSweepInput.fields.root,
+						scope: FanSweepInput.fields.scope,
+						sweep: FanSweepInput.fields.sweep
+					})
+					const { root, scope, sweep } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, sweep })
+						.where(r.not(FanRoot, { root }))
+						.find({ root, scope, sweep })
+				})
+			)
 			.insert(
 				FanRoot,
-				query(fanGraph).rule((r) =>
-					r.find({
-						root: r.param("fanSweepScope", FanRoot.fields.root),
-						kind: FanRootKind.handle("Sweep"),
-						key: r.param("fanSweepKey", FanRoot.fields.key),
-						at: r.param("now", FanRoot.fields.at)
+				query(fanGraph).rule((r) => {
+					const requested = r.relation("fanSweepFanScope", {
+						root: FanScope.fields.root,
+						scope: FanScope.fields.scope
 					})
-				)
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(
+							r.eq(scope, root),
+							r.eq(root, r.param("fanSweepScope", FanRoot.fields.root)),
+							r.not(FanRoot, { root })
+						)
+						.find({
+							root,
+							kind: FanRootKind.handle("Sweep"),
+							key: r.param("fanSweepKey", FanRoot.fields.key),
+							at: r.param("now", FanRoot.fields.at)
+						})
+				})
 			),
 		{ now: "millis" }
 	)

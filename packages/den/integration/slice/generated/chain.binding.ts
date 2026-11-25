@@ -286,24 +286,21 @@ export const chainLedger = (h: ChainHandles) => {
 	const request = {
 		ChainRun: (key: string, input: Parameters<(typeof chain.kinds)[1]["start"]>[0]) =>
 			pipe(rootScope("Chain", "ChainRun", key), (scope) =>
-				Effect.map(
-					fresh(
-						"Chain",
-						settled(
-							h.den.chainRequestChainRun.once({
-								params: { chainChainRunScope: scope, chainChainRunKey: key },
-								facts: {
-									insert: {
-										ChainScope: [{ scope, root: scope }],
-										ChainChainRunInput: [
-											{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
-										]
-									}
-								}
-							})
-						)
-					),
-					(accepted) => ({ flow: FlowName.make("Chain"), scope, fresh: accepted })
+				pipe(
+					h.den.chainRequestChainRun.once({
+						params: {
+							chainChainRunScope: scope,
+							chainChainRunKey: key,
+							chainChainRunChainScope: [{ scope, root: scope }],
+							chainChainRunChainChainRunInput: [
+								{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
+							]
+						},
+						facts: {}
+					}),
+					settled,
+					fresh,
+					Effect.map((accepted) => ({ flow: FlowName.make("Chain"), scope, fresh: accepted }))
 				)
 			)
 	}
@@ -1048,15 +1045,18 @@ export const chainLedger = (h: ChainHandles) => {
 	return {
 		ledger,
 		request,
-		requestFacts: {
+		appRequests: {
 			Ordered: (key: string, input: Parameters<(typeof chain.kinds)[2]["start"]>[0]) =>
 				pipe(rootScope("Chain", "Ordered", key), (scope) => ({
 					flow: FlowName.make("Chain"),
 					scope,
-					params: { chainOrderedScope: scope, chainOrderedKey: key },
-					facts: {
-						ChainScope: [{ scope, root: scope }],
-						ChainOrderedInput: [{ scope: scope, root: scope, feed: input.feed, pages: input.pages }]
+					params: {
+						chainOrderedScope: scope,
+						chainOrderedKey: key,
+						chainOrderedChainScope: [{ scope, root: scope }],
+						chainOrderedChainOrderedInput: [
+							{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
+						]
 					}
 				}))
 		}

@@ -190,11 +190,12 @@ output into `select(PResult, outcome = done)`) certifies.
    sees the scope ended without its successors (`review.test.ts`).
 10. **Retirement.** Built on grizzle's units (`docs/build/repin.md`): `runtime/retire.ts` clears each ended root's
     graph once its exclusivity seat is given back, every row of it deleted at its root but its record; an app row that
-    references it keeps it. The app's census runs it beside its tick. Every root is requested at its request's own
-    instant, a schedule's too (one root per member of its roster at each instant its cron names, keyed by the instant
-    and the member, which its input reads too; a schedule of one root is a roster of one), so a request of any key
-    again, retired or not, meets its record's key and answers that it was already requested, and a schedule's key the
-    census still requests retires like any other
+    references it keeps it. The app's census runs it beside its tick. A root's request is one fact identified by its
+    root, a schedule's too (one root per member of its roster at each instant its cron names, keyed by the instant and
+    the member, which its input reads too; a schedule of one root is a roster of one): it inserts its Root and its
+    graph's rows only where no Root holds its root (`lower/print.ts` requestOfRoot), so a request of any key again,
+    retired or not, adds nothing and answers that it was already requested, and a schedule's key the census still
+    requests retires like any other
     (`schedule.test.ts`); a root is requested while its graph is open, its Scope standing, so a retired one is never
     rung again.
 11. **Stopping.** Not built.

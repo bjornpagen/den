@@ -222,9 +222,9 @@ export const aRetirementTakesEveryFinishedGraphNoAppRowPins = property.explore(r
 		},
 		{
 			file: "packages/den/src/runtime/bind.ts",
-			original: "\t\t\t() => Effect.succeed(false)",
-			replacement: "\t\t\t() => Effect.succeed(true)",
-			why: "A request of a key already requested, which its root's header refuses on its key, answers that it started the root, a retired one's included."
+			original: 'Effect.map(write, (outcome) => outcome.kind === "accepted")',
+			replacement: "Effect.map(write, () => true)",
+			why: "A request of a key already requested, which adds nothing, answers that it started the root, a retired one's included."
 		}
 	]
 })

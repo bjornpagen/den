@@ -7,7 +7,7 @@ import { type FlowName, type Ring, Transport } from "#transport.ts"
  * Ringing after a request: a root's graph starts at its admission, and nothing else rings an admission a write requested
  * but the census's next tick, up to a minute later, or a relay, which a serverless host has none of. So the write that
  * requests a root rings its admission itself, once it has committed, as a turn rings what its own commit spawned: the
- * app's own transaction that unions a root's request facts with its own, and an operator's request through den's role.
+ * app's own transaction that unions a root's request with its own write, and an operator's request through den's role.
  * The ledger stays the only authority: a ring a write sends for a root it did not commit finds no scope and is lost, and
  * a ring that is lost is healed by the census.
  */
@@ -44,7 +44,7 @@ export const ringRequested = (
 	})
 
 /**
- * Runs `write`, a write that requests roots (the app's own transaction that unions their request facts with its own, or
+ * Runs `write`, a write that requests roots (the app's own transaction that unions their requests with its own write, or
  * an operator's request through den's role), and once it has committed rings the admission of each root `requested`
  * names of what it answered, so its graph starts within one delivery. A write that fails committed nothing and rings
  * nothing; one whose commit's answer was lost rings nothing either, and the census starts what it committed.

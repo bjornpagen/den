@@ -254,51 +254,40 @@ export const clockLedger = (h: ClockHandles) => {
 	const request = {
 		Hourly: (key: string, input: Parameters<(typeof clock.kinds)[1]["start"]>[0]) =>
 			pipe(rootScope("Clock", "Hourly", key), (scope) =>
-				Effect.map(
-					fresh(
-						"Clock",
-						settled(
-							h.den.clockRequestHourly.once({
-								params: { clockHourlyScope: scope, clockHourlyKey: key },
-								facts: {
-									insert: {
-										ClockScope: [{ scope, root: scope }],
-										ClockHourlyInput: [
-											{ scope: scope, root: scope, hour: input.hour, bell: input.bell }
-										]
-									}
-								}
-							})
-						)
-					),
-					(accepted) => ({ flow: FlowName.make("Clock"), scope, fresh: accepted })
+				pipe(
+					h.den.clockRequestHourly.once({
+						params: {
+							clockHourlyScope: scope,
+							clockHourlyKey: key,
+							clockHourlyClockScope: [{ scope, root: scope }],
+							clockHourlyClockHourlyInput: [
+								{ scope: scope, root: scope, hour: input.hour, bell: input.bell }
+							]
+						},
+						facts: {}
+					}),
+					settled,
+					fresh,
+					Effect.map((accepted) => ({ flow: FlowName.make("Clock"), scope, fresh: accepted }))
 				)
 			),
 		Sitting: (key: string, input: Parameters<(typeof clock.kinds)[3]["start"]>[0]) =>
 			pipe(rootScope("Clock", "Sitting", key), (scope) =>
-				Effect.map(
-					fresh(
-						"Clock",
-						settled(
-							h.den.clockRequestSitting.once({
-								params: { clockSittingScope: scope, clockSittingKey: key },
-								facts: {
-									insert: {
-										ClockScope: [{ scope, root: scope }],
-										ClockSittingInput: [
-											{
-												scope: scope,
-												root: scope,
-												sitting: input.sitting,
-												deadline: input.deadline
-											}
-										]
-									}
-								}
-							})
-						)
-					),
-					(accepted) => ({ flow: FlowName.make("Clock"), scope, fresh: accepted })
+				pipe(
+					h.den.clockRequestSitting.once({
+						params: {
+							clockSittingScope: scope,
+							clockSittingKey: key,
+							clockSittingClockScope: [{ scope, root: scope }],
+							clockSittingClockSittingInput: [
+								{ scope: scope, root: scope, sitting: input.sitting, deadline: input.deadline }
+							]
+						},
+						facts: {}
+					}),
+					settled,
+					fresh,
+					Effect.map((accepted) => ({ flow: FlowName.make("Clock"), scope, fresh: accepted }))
 				)
 			)
 	}
@@ -826,6 +815,6 @@ export const clockLedger = (h: ClockHandles) => {
 	return {
 		ledger,
 		request,
-		requestFacts: {}
+		appRequests: {}
 	}
 }

@@ -554,19 +554,73 @@ export const reviewDenPrograms = Object.freeze({
 	}),
 	reviewRequestReviewRun: clocked(
 		ChangeSet.empty(reviewGraph)
-			.insert(ReviewScope, [])
-			.insert(ReviewReviewRunInput, [])
-			.insert(ReviewReviewRunInputSizes, [])
+			.insert(
+				ReviewScope,
+				query(reviewGraph).rule((r) => {
+					const requested = r.relation("reviewReviewRunReviewScope", {
+						root: ReviewScope.fields.root,
+						scope: ReviewScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(r.not(ReviewRoot, { root }))
+						.find({ root, scope })
+				})
+			)
+			.insert(
+				ReviewReviewRunInput,
+				query(reviewGraph).rule((r) => {
+					const requested = r.relation("reviewReviewRunReviewReviewRunInput", {
+						root: ReviewReviewRunInput.fields.root,
+						scope: ReviewReviewRunInput.fields.scope,
+						review: ReviewReviewRunInput.fields.review
+					})
+					const { root, scope, review } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, review })
+						.where(r.not(ReviewRoot, { root }))
+						.find({ root, scope, review })
+				})
+			)
+			.insert(
+				ReviewReviewRunInputSizes,
+				query(reviewGraph).rule((r) => {
+					const requested = r.relation("reviewReviewRunReviewReviewRunInputSizes", {
+						root: ReviewReviewRunInputSizes.fields.root,
+						scope: ReviewReviewRunInputSizes.fields.scope,
+						ordinal: ReviewReviewRunInputSizes.fields.ordinal,
+						value: ReviewReviewRunInputSizes.fields.value
+					})
+					const { root, scope, ordinal, value } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, ordinal, value })
+						.where(r.not(ReviewRoot, { root }))
+						.find({ root, scope, ordinal, value })
+				})
+			)
 			.insert(
 				ReviewRoot,
-				query(reviewGraph).rule((r) =>
-					r.find({
-						root: r.param("reviewReviewRunScope", ReviewRoot.fields.root),
-						kind: ReviewRootKind.handle("ReviewRun"),
-						key: r.param("reviewReviewRunKey", ReviewRoot.fields.key),
-						at: r.param("now", ReviewRoot.fields.at)
+				query(reviewGraph).rule((r) => {
+					const requested = r.relation("reviewReviewRunReviewScope", {
+						root: ReviewScope.fields.root,
+						scope: ReviewScope.fields.scope
 					})
-				)
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(
+							r.eq(scope, root),
+							r.eq(root, r.param("reviewReviewRunScope", ReviewRoot.fields.root)),
+							r.not(ReviewRoot, { root })
+						)
+						.find({
+							root,
+							kind: ReviewRootKind.handle("ReviewRun"),
+							key: r.param("reviewReviewRunKey", ReviewRoot.fields.key),
+							at: r.param("now", ReviewRoot.fields.at)
+						})
+				})
 			),
 		{ now: "millis" }
 	),

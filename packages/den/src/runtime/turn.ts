@@ -310,8 +310,7 @@ export const lostRace = (flow: string, error: Settled): boolean =>
 		`${flow}Retry`,
 		`${flow}Fenced`,
 		`${flow}Admitted`,
-		`${flow}Step`,
-		`${flow}Root`
+		`${flow}Step`
 	]) ||
 	(error.kind === "refused" &&
 		Arr.some(

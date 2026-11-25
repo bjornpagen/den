@@ -331,44 +331,38 @@ export const fanLedger = (h: FanHandles) => {
 	const request = {
 		FanRun: (key: string, input: Parameters<(typeof fan.kinds)[2]["start"]>[0]) =>
 			pipe(rootScope("Fan", "FanRun", key), (scope) =>
-				Effect.map(
-					fresh(
-						"Fan",
-						settled(
-							h.den.fanRequestFanRun.once({
-								params: { fanFanRunScope: scope, fanFanRunKey: key },
-								facts: {
-									insert: {
-										FanScope: [{ scope, root: scope }],
-										FanFanRunInput: [
-											{ scope: scope, root: scope, batch: input.batch, size: input.size }
-										]
-									}
-								}
-							})
-						)
-					),
-					(accepted) => ({ flow: FlowName.make("Fan"), scope, fresh: accepted })
+				pipe(
+					h.den.fanRequestFanRun.once({
+						params: {
+							fanFanRunScope: scope,
+							fanFanRunKey: key,
+							fanFanRunFanScope: [{ scope, root: scope }],
+							fanFanRunFanFanRunInput: [
+								{ scope: scope, root: scope, batch: input.batch, size: input.size }
+							]
+						},
+						facts: {}
+					}),
+					settled,
+					fresh,
+					Effect.map((accepted) => ({ flow: FlowName.make("Fan"), scope, fresh: accepted }))
 				)
 			),
 		Sweep: (key: string, input: Parameters<(typeof fan.kinds)[5]["start"]>[0]) =>
 			pipe(rootScope("Fan", "Sweep", key), (scope) =>
-				Effect.map(
-					fresh(
-						"Fan",
-						settled(
-							h.den.fanRequestSweep.once({
-								params: { fanSweepScope: scope, fanSweepKey: key },
-								facts: {
-									insert: {
-										FanScope: [{ scope, root: scope }],
-										FanSweepInput: [{ scope: scope, root: scope, sweep: input.sweep }]
-									}
-								}
-							})
-						)
-					),
-					(accepted) => ({ flow: FlowName.make("Fan"), scope, fresh: accepted })
+				pipe(
+					h.den.fanRequestSweep.once({
+						params: {
+							fanSweepScope: scope,
+							fanSweepKey: key,
+							fanSweepFanScope: [{ scope, root: scope }],
+							fanSweepFanSweepInput: [{ scope: scope, root: scope, sweep: input.sweep }]
+						},
+						facts: {}
+					}),
+					settled,
+					fresh,
+					Effect.map((accepted) => ({ flow: FlowName.make("Fan"), scope, fresh: accepted }))
 				)
 			)
 	}
@@ -1061,6 +1055,6 @@ export const fanLedger = (h: FanHandles) => {
 	return {
 		ledger,
 		request,
-		requestFacts: {}
+		appRequests: {}
 	}
 }

@@ -209,22 +209,21 @@ export const writebackLedger = (h: WritebackHandles) => {
 	const request = {
 		Writeback: (key: string, input: Parameters<(typeof writeback.kinds)[1]["start"]>[0]) =>
 			pipe(rootScope("Writeback", "Writeback", key), (scope) =>
-				Effect.map(
-					fresh(
-						"Writeback",
-						settled(
-							h.den.writebackRequestWriteback.once({
-								params: { writebackWritebackScope: scope, writebackWritebackKey: key },
-								facts: {
-									insert: {
-										WritebackScope: [{ scope, root: scope }],
-										WritebackWritebackInput: [{ scope: scope, root: scope, attempt: input.attempt }]
-									}
-								}
-							})
-						)
-					),
-					(accepted) => ({ flow: FlowName.make("Writeback"), scope, fresh: accepted })
+				pipe(
+					h.den.writebackRequestWriteback.once({
+						params: {
+							writebackWritebackScope: scope,
+							writebackWritebackKey: key,
+							writebackWritebackWritebackScope: [{ scope, root: scope }],
+							writebackWritebackWritebackWritebackInput: [
+								{ scope: scope, root: scope, attempt: input.attempt }
+							]
+						},
+						facts: {}
+					}),
+					settled,
+					fresh,
+					Effect.map((accepted) => ({ flow: FlowName.make("Writeback"), scope, fresh: accepted }))
 				)
 			)
 	}
@@ -605,6 +604,6 @@ export const writebackLedger = (h: WritebackHandles) => {
 	return {
 		ledger,
 		request,
-		requestFacts: {}
+		appRequests: {}
 	}
 }

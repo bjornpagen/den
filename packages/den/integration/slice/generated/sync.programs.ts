@@ -439,19 +439,74 @@ export const syncDenPrograms = Object.freeze({
 	}),
 	syncRequestSyncRun: clocked(
 		ChangeSet.empty(syncGraph)
-			.insert(SyncScope, [])
-			.insert(SyncExclusiveKey, [])
-			.insert(SyncSyncRunInput, [])
+			.insert(
+				SyncScope,
+				query(syncGraph).rule((r) => {
+					const requested = r.relation("syncSyncRunSyncScope", {
+						root: SyncScope.fields.root,
+						scope: SyncScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(r.not(SyncRoot, { root }))
+						.find({ root, scope })
+				})
+			)
+			.insert(
+				SyncExclusiveKey,
+				query(syncGraph).rule((r) => {
+					const requested = r.relation("syncSyncRunSyncExclusiveKey", {
+						root: SyncExclusiveKey.fields.root,
+						scope: SyncExclusiveKey.fields.scope,
+						key: SyncExclusiveKey.fields.key,
+						id: SyncExclusiveKey.fields.id
+					})
+					const { root, scope, key, id } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, key, id })
+						.where(r.not(SyncRoot, { root }))
+						.find({ root, scope, key, id })
+				})
+			)
+			.insert(
+				SyncSyncRunInput,
+				query(syncGraph).rule((r) => {
+					const requested = r.relation("syncSyncRunSyncSyncRunInput", {
+						root: SyncSyncRunInput.fields.root,
+						scope: SyncSyncRunInput.fields.scope,
+						relation: SyncSyncRunInput.fields.relation,
+						run: SyncSyncRunInput.fields.run
+					})
+					const { root, scope, relation, run } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, relation, run })
+						.where(r.not(SyncRoot, { root }))
+						.find({ root, scope, relation, run })
+				})
+			)
 			.insert(
 				SyncRoot,
-				query(syncGraph).rule((r) =>
-					r.find({
-						root: r.param("syncSyncRunScope", SyncRoot.fields.root),
-						kind: SyncRootKind.handle("SyncRun"),
-						key: r.param("syncSyncRunKey", SyncRoot.fields.key),
-						at: r.param("now", SyncRoot.fields.at)
+				query(syncGraph).rule((r) => {
+					const requested = r.relation("syncSyncRunSyncScope", {
+						root: SyncScope.fields.root,
+						scope: SyncScope.fields.scope
 					})
-				)
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(
+							r.eq(scope, root),
+							r.eq(root, r.param("syncSyncRunScope", SyncRoot.fields.root)),
+							r.not(SyncRoot, { root })
+						)
+						.find({
+							root,
+							kind: SyncRootKind.handle("SyncRun"),
+							key: r.param("syncSyncRunKey", SyncRoot.fields.key),
+							at: r.param("now", SyncRoot.fields.at)
+						})
+				})
 			),
 		{ now: "millis" }
 	),
@@ -464,18 +519,57 @@ export const syncDenPrograms = Object.freeze({
 	}),
 	syncRequestGold: clocked(
 		ChangeSet.empty(syncGraph)
-			.insert(SyncScope, [])
-			.insert(SyncGoldInput, [])
+			.insert(
+				SyncScope,
+				query(syncGraph).rule((r) => {
+					const requested = r.relation("syncGoldSyncScope", {
+						root: SyncScope.fields.root,
+						scope: SyncScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(r.not(SyncRoot, { root }))
+						.find({ root, scope })
+				})
+			)
+			.insert(
+				SyncGoldInput,
+				query(syncGraph).rule((r) => {
+					const requested = r.relation("syncGoldSyncGoldInput", {
+						root: SyncGoldInput.fields.root,
+						scope: SyncGoldInput.fields.scope,
+						build: SyncGoldInput.fields.build
+					})
+					const { root, scope, build } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, build })
+						.where(r.not(SyncRoot, { root }))
+						.find({ root, scope, build })
+				})
+			)
 			.insert(
 				SyncRoot,
-				query(syncGraph).rule((r) =>
-					r.find({
-						root: r.param("syncGoldScope", SyncRoot.fields.root),
-						kind: SyncRootKind.handle("Gold"),
-						key: r.param("syncGoldKey", SyncRoot.fields.key),
-						at: r.param("now", SyncRoot.fields.at)
+				query(syncGraph).rule((r) => {
+					const requested = r.relation("syncGoldSyncScope", {
+						root: SyncScope.fields.root,
+						scope: SyncScope.fields.scope
 					})
-				)
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(
+							r.eq(scope, root),
+							r.eq(root, r.param("syncGoldScope", SyncRoot.fields.root)),
+							r.not(SyncRoot, { root })
+						)
+						.find({
+							root,
+							kind: SyncRootKind.handle("Gold"),
+							key: r.param("syncGoldKey", SyncRoot.fields.key),
+							at: r.param("now", SyncRoot.fields.at)
+						})
+				})
 			),
 		{ now: "millis" }
 	)

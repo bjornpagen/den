@@ -426,18 +426,58 @@ export const chainDenPrograms = Object.freeze({
 	}),
 	chainRequestChainRun: clocked(
 		ChangeSet.empty(chainGraph)
-			.insert(ChainScope, [])
-			.insert(ChainChainRunInput, [])
+			.insert(
+				ChainScope,
+				query(chainGraph).rule((r) => {
+					const requested = r.relation("chainChainRunChainScope", {
+						root: ChainScope.fields.root,
+						scope: ChainScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(r.not(ChainRoot, { root }))
+						.find({ root, scope })
+				})
+			)
+			.insert(
+				ChainChainRunInput,
+				query(chainGraph).rule((r) => {
+					const requested = r.relation("chainChainRunChainChainRunInput", {
+						root: ChainChainRunInput.fields.root,
+						scope: ChainChainRunInput.fields.scope,
+						feed: ChainChainRunInput.fields.feed,
+						pages: ChainChainRunInput.fields.pages
+					})
+					const { root, scope, feed, pages } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, feed, pages })
+						.where(r.not(ChainRoot, { root }))
+						.find({ root, scope, feed, pages })
+				})
+			)
 			.insert(
 				ChainRoot,
-				query(chainGraph).rule((r) =>
-					r.find({
-						root: r.param("chainChainRunScope", ChainRoot.fields.root),
-						kind: ChainRootKind.handle("ChainRun"),
-						key: r.param("chainChainRunKey", ChainRoot.fields.key),
-						at: r.param("now", ChainRoot.fields.at)
+				query(chainGraph).rule((r) => {
+					const requested = r.relation("chainChainRunChainScope", {
+						root: ChainScope.fields.root,
+						scope: ChainScope.fields.scope
 					})
-				)
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(
+							r.eq(scope, root),
+							r.eq(root, r.param("chainChainRunScope", ChainRoot.fields.root)),
+							r.not(ChainRoot, { root })
+						)
+						.find({
+							root,
+							kind: ChainRootKind.handle("ChainRun"),
+							key: r.param("chainChainRunKey", ChainRoot.fields.key),
+							at: r.param("now", ChainRoot.fields.at)
+						})
+				})
 			),
 		{ now: "millis" }
 	),
@@ -722,17 +762,57 @@ export const chainCommits = workload(Loader, chainCommitPrograms)
 /** The requests of the flow's roots the app's own write starts, each a ChangeSet over the flow's graph the app unions with its own. */
 export const chainRequests = Object.freeze({
 	Ordered: ChangeSet.empty(chainGraph)
-		.insert(ChainScope, [])
-		.insert(ChainOrderedInput, [])
+		.insert(
+			ChainScope,
+			query(chainGraph).rule((r) => {
+				const requested = r.relation("chainOrderedChainScope", {
+					root: ChainScope.fields.root,
+					scope: ChainScope.fields.scope
+				})
+				const { root, scope } = v(requested, "requested")
+				return r
+					.match(requested, { root, scope })
+					.where(r.not(ChainRoot, { root }))
+					.find({ root, scope })
+			})
+		)
+		.insert(
+			ChainOrderedInput,
+			query(chainGraph).rule((r) => {
+				const requested = r.relation("chainOrderedChainOrderedInput", {
+					root: ChainOrderedInput.fields.root,
+					scope: ChainOrderedInput.fields.scope,
+					feed: ChainOrderedInput.fields.feed,
+					pages: ChainOrderedInput.fields.pages
+				})
+				const { root, scope, feed, pages } = v(requested, "requested")
+				return r
+					.match(requested, { root, scope, feed, pages })
+					.where(r.not(ChainRoot, { root }))
+					.find({ root, scope, feed, pages })
+			})
+		)
 		.insert(
 			ChainRoot,
-			query(chainGraph).rule((r) =>
-				r.find({
-					root: r.param("chainOrderedScope", ChainRoot.fields.root),
-					kind: ChainRootKind.handle("Ordered"),
-					key: r.param("chainOrderedKey", ChainRoot.fields.key),
-					at: r.param("now", ChainRoot.fields.at)
+			query(chainGraph).rule((r) => {
+				const requested = r.relation("chainOrderedChainScope", {
+					root: ChainScope.fields.root,
+					scope: ChainScope.fields.scope
 				})
-			)
+				const { root, scope } = v(requested, "requested")
+				return r
+					.match(requested, { root, scope })
+					.where(
+						r.eq(scope, root),
+						r.eq(root, r.param("chainOrderedScope", ChainRoot.fields.root)),
+						r.not(ChainRoot, { root })
+					)
+					.find({
+						root,
+						kind: ChainRootKind.handle("Ordered"),
+						key: r.param("chainOrderedKey", ChainRoot.fields.key),
+						at: r.param("now", ChainRoot.fields.at)
+					})
+			})
 		)
 })

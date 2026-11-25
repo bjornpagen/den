@@ -69,8 +69,9 @@ const lower1 = (text: string): string => Str.uncapitalize(text)
 /**
  * The names a printed rule cannot bind a variable to: the words ECMAScript reserves in a module, whose code is strict
  * (its keywords, `enum`, the words strict code reserves, `await`, and the literals `null`, `true` and `false`), `eval`
- * and `arguments`, which strict code may not bind, and the two names every printed rule binds itself, its builder `r`
- * and the variables' maker `v`: a field so named would redeclare the one, or reach the other before its declaration.
+ * and `arguments`, which strict code may not bind, and the names printed rules bind themselves, their builder `r`, the
+ * variables' maker `v` and `requested`, the relation parameter a request's rule binds beside its relation's fields
+ * (`requestOfRoot`): a field so named would redeclare one of them, or reach it before its declaration.
  */
 const unbindable: ReadonlyArray<string> = [
 	"await",
@@ -122,7 +123,8 @@ const unbindable: ReadonlyArray<string> = [
 	"arguments",
 	"eval",
 	"r",
-	"v"
+	"v",
+	"requested"
 ]
 
 /**
@@ -325,19 +327,75 @@ const requestParams = (P: string, j: JoinIR) => ({
 })
 
 /**
- * A root's Root row as a request at its own instant inserts it: its scope and key the request's parameters, its kind
- * the root kind's handle, and its instant the request's reading of the database's clock, `now`, which the clocked
- * request binds, so no host names the instant a root was requested.
+ * The fields of `relation`, one of the flow's fragments' relations, by name: the printer names only relations the
+ * lowering made, so one it cannot find is its own defect, which throws rather than print a rule of no fields.
  */
-const requestedRootOf = (
-	P: string,
-	j: JoinIR,
-	graph: string,
-	root: string,
-	kinds: string
-): string => {
+const fieldNamesOf = (l: Lowered, relation: string): ReadonlyArray<string> =>
+	Arr.map(
+		Option.getOrThrowWith(
+			Arr.findFirst(l.relations, (rel) => rel.name === relation),
+			() =>
+				new Error(
+					`den's printer named ${relation}, which no fragment of the flow ${l.prefix} holds`
+				)
+		).fields,
+		(f) => f.name
+	)
+
+/**
+ * The rows a root's request writes beside its Root, each relation beside its printed rows, the one list its printed
+ * ChangeSet and its printed parameters follow: its root scope's row, its exclusivity keys where it holds a seat, and
+ * its input's.
+ */
+const requestedRowsOf = (P: string, j: JoinIR): ReadonlyArray<readonly [string, string]> => [
+	[`${P}Scope`, "[{ scope, root: scope }]"],
+	...(isExclusive(j)
+		? [[`${P}ExclusiveKey`, "Arr.map(keys, (k) => ({ ...k, root: scope }))"] as const]
+		: []),
+	...factRowsOf(j.input, "scope", "input", "scope")
+]
+
+/** The relation parameter a root's request names its rows of `relation` in. */
+const requestedRowsParam = (P: string, j: JoinIR, relation: string): string =>
+	`${lower1(P)}${j.name}${relation}`
+
+/**
+ * A root's request, one fact identified by its root: its Root and every row of its graph it names
+ * (`requestedRowsOf`), each relation's rows a relation parameter, each inserted only where no Root holds the
+ * request's root, as the state before the change reads it. The Root's own row is the request's root scope's, at its
+ * scope and key the request's parameters, its kind the root kind's handle, and its instant the request's reading of the
+ * database's clock, `now`, which the clocked request binds, so no host names the instant a root was requested.
+ *
+ * A request of a root already requested inserts nothing, its graph standing or retired: retirement deletes a graph's
+ * rows but never its Root (the fragment's `cleared`), so a repeat adds no fact and refuses nothing, and an app's write
+ * that unions the request with its own commits its own facts. Two first requests of one root at once meet in the
+ * database's serializable read of the Root's absence: the second is refused transient, and run again it inserts
+ * nothing, so one root is requested, once.
+ */
+const requestOfRoot = (l: Lowered, j: JoinIR, graph: string): string => {
+	const P = l.prefix
+	const root = `${P}Root`
+	const scope = `${P}Scope`
 	const params = requestParams(P, j)
-	return `.insert(${root}, query(${graph}).rule((r) => r.find({ root: r.param(${q(params.scope)}, ${root}.fields.root), kind: ${kinds}.handle(${q(j.name)}), key: r.param(${q(params.key)}, ${root}.fields.key), at: r.param("now", ${root}.fields.at) })))`
+	const guarded = (relation: string): string => {
+		const fields = fieldNamesOf(l, relation)
+		return `.insert(${relation}, query(${graph}).rule((r) => {
+	const requested = r.relation(${q(requestedRowsParam(P, j, relation))}, { ${commas(Arr.map(fields, (f) => `${f}: ${relation}.fields.${f}`))} })
+	const { ${entries(fields)} } = v(requested, "requested")
+	return r.match(requested, { ${entries(fields)} }).where(r.not(${root}, { root })).find({ ${entries(fields)} })
+}))`
+	}
+	return `ChangeSet.empty(${graph})${Arr.join(
+		Arr.map(requestedRowsOf(P, j), ([relation]) => guarded(relation)),
+		""
+	)}.insert(${root}, query(${graph}).rule((r) => {
+	const requested = r.relation(${q(requestedRowsParam(P, j, scope))}, { root: ${scope}.fields.root, scope: ${scope}.fields.scope })
+	const { root, scope } = v(requested, "requested")
+	return r
+		.match(requested, { root, scope })
+		.where(r.eq(scope, root), r.eq(root, r.param(${q(params.scope)}, ${root}.fields.root)), r.not(${root}, { root }))
+		.find({ root, kind: ${P}RootKind.handle(${q(j.name)}), key: r.param(${q(params.key)}, ${root}.fields.key), at: r.param("now", ${root}.fields.at) })
+}))`
 }
 
 /** Whether a flow has a step kind due at its input's instant, whose spawns name their due instants (`timed`). */
@@ -578,13 +636,7 @@ const allOf = (role: string, relation: string, fields: ReadonlyArray<string>): s
  * for it.
  */
 const ownedBy = (l: Lowered, role: string, relation: string, owner: string): string => {
-	const fields = Option.match(
-		Arr.findFirst(l.relations, (rel) => rel.name === relation),
-		{
-			onNone: (): ReadonlyArray<string> => [],
-			onSome: (rel) => Arr.map(rel.fields, (f) => f.name)
-		}
-	)
+	const fields = fieldNamesOf(l, relation)
 	return `query(${role}).rule((r) => {
 	const { ${entries(fields)} } = v(${relation}, ${q(lower1(relation))})
 	return r.match(${relation}, { ${entries(fields)} }).where(r.eq(${bound(owner)}, r.param(${q(owner)}, ${relation}.fields.${owner}))).find({ ${entries(fields)} })
@@ -1138,12 +1190,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			])
 		)
 		if (Option.isSome(j.root) && !isApp(j)) {
-			const request = `ChangeSet.empty(${n.graph})${members([
-				r("Scope"),
-
-				...(isExclusive(j) ? [r("ExclusiveKey")] : []),
-				...valueRelations(j.input)
-			])}${requestedRootOf(P, j, n.graph, r("Root"), r("RootKind"))}`
+			const request = requestOfRoot(l, j, n.graph)
 			denPrograms.push([n.program(`Request${j.name}`), `clocked(${request}, { now: "millis" })`])
 		}
 		Arr.forEach(j.finish.reads, (read) => {
@@ -1352,15 +1399,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		)
 	)
 	const appRoots = Arr.filter(l.joins, isApp)
-	const requests = Arr.map(
-		appRoots,
-		(j) =>
-			`${j.name}: ChangeSet.empty(${n.graph})${members([
-				r("Scope"),
-				...(isExclusive(j) ? [r("ExclusiveKey")] : []),
-				...valueRelations(j.input)
-			])}${requestedRootOf(P, j, n.graph, r("Root"), r("RootKind"))}`
-	)
+	const requests = Arr.map(appRoots, (j) => `${j.name}: ${requestOfRoot(l, j, n.graph)}`)
 
 	const block = (name: string, programs: ReadonlyArray<readonly [string, string]>) => [
 		`export const ${name} = Object.freeze({`,
@@ -1427,45 +1466,57 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	])}\n`
 }
 
-/** A value's facts for one owner `key` of the root `root` and value `x`: its row, and a row of each part it holds. */
-const factsOf = (v: ValueIR, key: string, x: string, root: string): ReadonlyArray<string> => [
-	`${v.relation}: [{ ${commas([
-		`${v.owner}: ${key}`,
-		`root: ${root}`,
-		...Arr.map(v.shape.columns, (c) => `${c.name}: ${x}.${c.name}`),
-		...Arr.map(v.unions, (u) => `${u.field.name}: ${x}.${u.field.name}._tag`)
-	])} }]`,
-	...Arr.map(
-		v.sidecars,
-		(s) =>
-			`${s.relation}: Option.toArray(Option.map(${x}.${s.column.name}, (value) => ({ ${v.owner}: ${key}, root: ${root}, value })))`
-	),
-	...Arr.map(
-		v.families,
-		(f) =>
-			`${f.relation}: Arr.map(${x}.${f.field.name}, (element, index) => ({ ${commas([
-				`${v.owner}: ${key}`,
-				`root: ${root}`,
-				"ordinal: BigInt(index)",
-				...(f.field.element.kind === "value"
-					? ["value: element"]
-					: Arr.map(f.field.element.columns, (c) => `${c.name}: element.${c.name}`))
-			])} }))`
-	),
+/**
+ * A value's facts for one owner `key` of the root `root` and value `x`, each relation beside its rows: its row, and a
+ * row of each part it holds.
+ */
+const factRowsOf = (
+	v: ValueIR,
+	key: string,
+	x: string,
+	root: string
+): ReadonlyArray<readonly [string, string]> => [
+	[
+		v.relation,
+		`[{ ${commas([
+			`${v.owner}: ${key}`,
+			`root: ${root}`,
+			...Arr.map(v.shape.columns, (c) => `${c.name}: ${x}.${c.name}`),
+			...Arr.map(v.unions, (u) => `${u.field.name}: ${x}.${u.field.name}._tag`)
+		])} }]`
+	],
+	...Arr.map(v.sidecars, (s): readonly [string, string] => [
+		s.relation,
+		`Option.toArray(Option.map(${x}.${s.column.name}, (value) => ({ ${v.owner}: ${key}, root: ${root}, value })))`
+	]),
+	...Arr.map(v.families, (f): readonly [string, string] => [
+		f.relation,
+		`Arr.map(${x}.${f.field.name}, (element, index) => ({ ${commas([
+			`${v.owner}: ${key}`,
+			`root: ${root}`,
+			"ordinal: BigInt(index)",
+			...(f.field.element.kind === "value"
+				? ["value: element"]
+				: Arr.map(f.field.element.columns, (c) => `${c.name}: element.${c.name}`))
+		])} }))`
+	]),
 	...Arr.flatMap(v.unions, (u) =>
-		Arr.map(
-			u.variants,
-			(vr) =>
-				`${vr.relation}: Arr.flatMap([${x}.${u.field.name}], (variant) => (variant._tag === ${q(vr.variant.tag)} ? [{ ${commas(
-					[
-						`${v.owner}: ${key}`,
-						`root: ${root}`,
-						...Arr.map(vr.variant.columns, (c) => `${c.name}: variant.${c.name}`)
-					]
-				)} }] : []))`
-		)
+		Arr.map(u.variants, (vr): readonly [string, string] => [
+			vr.relation,
+			`Arr.flatMap([${x}.${u.field.name}], (variant) => (variant._tag === ${q(vr.variant.tag)} ? [{ ${commas(
+				[
+					`${v.owner}: ${key}`,
+					`root: ${root}`,
+					...Arr.map(vr.variant.columns, (c) => `${c.name}: variant.${c.name}`)
+				]
+			)} }] : []))`
+		])
 	)
 ]
+
+/** A value's facts for one owner `key` of the root `root` and value `x`, as a facts record's entries (`factRowsOf`). */
+const factsOf = (v: ValueIR, key: string, x: string, root: string): ReadonlyArray<string> =>
+	Arr.map(factRowsOf(v, key, x, root), ([relation, rows]) => `${relation}: ${rows}`)
 
 /** Where a value's parts are found as it is read: each option's row, each array's rows and each variant's row. */
 interface Parts {
@@ -1934,13 +1985,12 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		])
 
 	const roots = Arr.filter(l.joins, (j) => Option.isSome(j.root))
-	const requestFacts = (j: JoinIR): ReadonlyArray<string> => [
-		`${r("Scope")}: [{ scope, root: scope }]`,
-		...(isExclusive(j)
-			? [`${r("ExclusiveKey")}: Arr.map(keys, (k) => ({ ...k, root: scope }))`]
-			: []),
-		...factsOf(j.input, "scope", "input", "scope")
-	]
+	/** The rows a root's request names (`requestedRowsOf`), each relation's under its relation parameter. */
+	const requestRows = (j: JoinIR): ReadonlyArray<string> =>
+		Arr.map(
+			requestedRowsOf(P, j),
+			([relation, rows]) => `${requestedRowsParam(P, j, relation)}: ${rows}`
+		)
 	const requestOf = (j: JoinIR): string => {
 		const keys = (body: string) =>
 			isExclusive(j)
@@ -1949,13 +1999,11 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		const input = `input: Parameters<(typeof ${kindAt(j.index)})["start"]>[0]`
 		const signature = `(key: string, ${input})`
 		const names = requestParams(P, j)
-		const params = `{ ${names.scope}: scope, ${names.key}: key }`
-		const facts = `({ flow: FlowName.make(${q(P)}), scope, params: ${params}, facts: { ${commas(requestFacts(j))} } })`
+		const params = `{ ${commas([`${names.scope}: scope`, `${names.key}: key`, ...requestRows(j)])} }`
+		const requested = `({ flow: FlowName.make(${q(P)}), scope, params: ${params} })`
 		return isApp(j)
-			? isExclusive(j)
-				? `${j.name}: ${signature} => pipe(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => pipe(exclusiveRows(${q(P)}, ${q(j.name)}, ${kindAt(j.index)}.exclusive, input, scope), (keys) => ${facts}))`
-				: `${j.name}: ${signature} => pipe(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${facts})`
-			: `${j.name}: ${signature} => pipe(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${keys(`Effect.map(fresh(${q(P)}, settled(h.den.${n.program(`Request${j.name}`)}.once({ params: ${params}, facts: { insert: { ${commas(requestFacts(j))} } } }))), (accepted) => ({ flow: FlowName.make(${q(P)}), scope, fresh: accepted }))`)})`
+			? `${j.name}: ${signature} => pipe(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${keys(requested)})`
+			: `${j.name}: ${signature} => pipe(rootScope(${q(P)}, ${q(j.name)}, key), (scope) => ${keys(`pipe(h.den.${n.program(`Request${j.name}`)}.once({ params: ${params}, facts: {} }), settled, fresh, Effect.map((accepted) => ({ flow: FlowName.make(${q(P)}), scope, fresh: accepted })))`)})`
 	}
 	const denRoots = Arr.filter(roots, (j) => !isApp(j))
 	const appRoots = Arr.filter(roots, isApp)
@@ -2235,7 +2283,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"\treturn {",
 		"\t\tledger,",
 		"\t\trequest,",
-		`\t\trequestFacts: { ${commas(Arr.map(appRoots, requestOf))} }`,
+		`\t\tappRequests: { ${commas(Arr.map(appRoots, requestOf))} }`,
 		"\t}",
 		"}"
 	])}\n`

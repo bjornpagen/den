@@ -532,22 +532,120 @@ export const assignDenPrograms = Object.freeze({
 	}),
 	assignRequestAssignment: clocked(
 		ChangeSet.empty(assignGraph)
-			.insert(AssignScope, [])
-			.insert(AssignAssignmentInput, [])
-			.insert(AssignAssignmentInputNear, [])
-			.insert(AssignAssignmentInputExclude, [])
-			.insert(AssignAssignmentInputModeNearest, [])
-			.insert(AssignAssignmentInputModeWithin, [])
+			.insert(
+				AssignScope,
+				query(assignGraph).rule((r) => {
+					const requested = r.relation("assignAssignmentAssignScope", {
+						root: AssignScope.fields.root,
+						scope: AssignScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(r.not(AssignRoot, { root }))
+						.find({ root, scope })
+				})
+			)
+			.insert(
+				AssignAssignmentInput,
+				query(assignGraph).rule((r) => {
+					const requested = r.relation("assignAssignmentAssignAssignmentInput", {
+						root: AssignAssignmentInput.fields.root,
+						scope: AssignAssignmentInput.fields.scope,
+						learner: AssignAssignmentInput.fields.learner,
+						topic: AssignAssignmentInput.fields.topic,
+						mode: AssignAssignmentInput.fields.mode
+					})
+					const { root, scope, learner, topic, mode } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, learner, topic, mode })
+						.where(r.not(AssignRoot, { root }))
+						.find({ root, scope, learner, topic, mode })
+				})
+			)
+			.insert(
+				AssignAssignmentInputNear,
+				query(assignGraph).rule((r) => {
+					const requested = r.relation("assignAssignmentAssignAssignmentInputNear", {
+						root: AssignAssignmentInputNear.fields.root,
+						scope: AssignAssignmentInputNear.fields.scope,
+						ordinal: AssignAssignmentInputNear.fields.ordinal,
+						value: AssignAssignmentInputNear.fields.value
+					})
+					const { root, scope, ordinal, value } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, ordinal, value })
+						.where(r.not(AssignRoot, { root }))
+						.find({ root, scope, ordinal, value })
+				})
+			)
+			.insert(
+				AssignAssignmentInputExclude,
+				query(assignGraph).rule((r) => {
+					const requested = r.relation("assignAssignmentAssignAssignmentInputExclude", {
+						root: AssignAssignmentInputExclude.fields.root,
+						scope: AssignAssignmentInputExclude.fields.scope,
+						ordinal: AssignAssignmentInputExclude.fields.ordinal,
+						value: AssignAssignmentInputExclude.fields.value
+					})
+					const { root, scope, ordinal, value } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, ordinal, value })
+						.where(r.not(AssignRoot, { root }))
+						.find({ root, scope, ordinal, value })
+				})
+			)
+			.insert(
+				AssignAssignmentInputModeNearest,
+				query(assignGraph).rule((r) => {
+					const requested = r.relation("assignAssignmentAssignAssignmentInputModeNearest", {
+						root: AssignAssignmentInputModeNearest.fields.root,
+						scope: AssignAssignmentInputModeNearest.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(r.not(AssignRoot, { root }))
+						.find({ root, scope })
+				})
+			)
+			.insert(
+				AssignAssignmentInputModeWithin,
+				query(assignGraph).rule((r) => {
+					const requested = r.relation("assignAssignmentAssignAssignmentInputModeWithin", {
+						root: AssignAssignmentInputModeWithin.fields.root,
+						scope: AssignAssignmentInputModeWithin.fields.scope,
+						radius: AssignAssignmentInputModeWithin.fields.radius
+					})
+					const { root, scope, radius } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, radius })
+						.where(r.not(AssignRoot, { root }))
+						.find({ root, scope, radius })
+				})
+			)
 			.insert(
 				AssignRoot,
-				query(assignGraph).rule((r) =>
-					r.find({
-						root: r.param("assignAssignmentScope", AssignRoot.fields.root),
-						kind: AssignRootKind.handle("Assignment"),
-						key: r.param("assignAssignmentKey", AssignRoot.fields.key),
-						at: r.param("now", AssignRoot.fields.at)
+				query(assignGraph).rule((r) => {
+					const requested = r.relation("assignAssignmentAssignScope", {
+						root: AssignScope.fields.root,
+						scope: AssignScope.fields.scope
 					})
-				)
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(
+							r.eq(scope, root),
+							r.eq(root, r.param("assignAssignmentScope", AssignRoot.fields.root)),
+							r.not(AssignRoot, { root })
+						)
+						.find({
+							root,
+							kind: AssignRootKind.handle("Assignment"),
+							key: r.param("assignAssignmentKey", AssignRoot.fields.key),
+							at: r.param("now", AssignRoot.fields.at)
+						})
+				})
 			),
 		{ now: "millis" }
 	),

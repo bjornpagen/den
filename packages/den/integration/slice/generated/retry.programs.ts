@@ -421,18 +421,58 @@ export const retryDenPrograms = Object.freeze({
 	}),
 	retryRequestLadders: clocked(
 		ChangeSet.empty(retryGraph)
-			.insert(RetryScope, [])
-			.insert(RetryLaddersInput, [])
+			.insert(
+				RetryScope,
+				query(retryGraph).rule((r) => {
+					const requested = r.relation("retryLaddersRetryScope", {
+						root: RetryScope.fields.root,
+						scope: RetryScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(r.not(RetryRoot, { root }))
+						.find({ root, scope })
+				})
+			)
+			.insert(
+				RetryLaddersInput,
+				query(retryGraph).rule((r) => {
+					const requested = r.relation("retryLaddersRetryLaddersInput", {
+						root: RetryLaddersInput.fields.root,
+						scope: RetryLaddersInput.fields.scope,
+						steadfast: RetryLaddersInput.fields.steadfast,
+						brittle: RetryLaddersInput.fields.brittle
+					})
+					const { root, scope, steadfast, brittle } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, steadfast, brittle })
+						.where(r.not(RetryRoot, { root }))
+						.find({ root, scope, steadfast, brittle })
+				})
+			)
 			.insert(
 				RetryRoot,
-				query(retryGraph).rule((r) =>
-					r.find({
-						root: r.param("retryLaddersScope", RetryRoot.fields.root),
-						kind: RetryRootKind.handle("Ladders"),
-						key: r.param("retryLaddersKey", RetryRoot.fields.key),
-						at: r.param("now", RetryRoot.fields.at)
+				query(retryGraph).rule((r) => {
+					const requested = r.relation("retryLaddersRetryScope", {
+						root: RetryScope.fields.root,
+						scope: RetryScope.fields.scope
 					})
-				)
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(
+							r.eq(scope, root),
+							r.eq(root, r.param("retryLaddersScope", RetryRoot.fields.root)),
+							r.not(RetryRoot, { root })
+						)
+						.find({
+							root,
+							kind: RetryRootKind.handle("Ladders"),
+							key: r.param("retryLaddersKey", RetryRoot.fields.key),
+							at: r.param("now", RetryRoot.fields.at)
+						})
+				})
 			),
 		{ now: "millis" }
 	),
@@ -497,18 +537,57 @@ export const retryDenPrograms = Object.freeze({
 	}),
 	retryRequestThrottled: clocked(
 		ChangeSet.empty(retryGraph)
-			.insert(RetryScope, [])
-			.insert(RetryThrottledInput, [])
+			.insert(
+				RetryScope,
+				query(retryGraph).rule((r) => {
+					const requested = r.relation("retryThrottledRetryScope", {
+						root: RetryScope.fields.root,
+						scope: RetryScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(r.not(RetryRoot, { root }))
+						.find({ root, scope })
+				})
+			)
+			.insert(
+				RetryThrottledInput,
+				query(retryGraph).rule((r) => {
+					const requested = r.relation("retryThrottledRetryThrottledInput", {
+						root: RetryThrottledInput.fields.root,
+						scope: RetryThrottledInput.fields.scope,
+						key: RetryThrottledInput.fields.key
+					})
+					const { root, scope, key } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, key })
+						.where(r.not(RetryRoot, { root }))
+						.find({ root, scope, key })
+				})
+			)
 			.insert(
 				RetryRoot,
-				query(retryGraph).rule((r) =>
-					r.find({
-						root: r.param("retryThrottledScope", RetryRoot.fields.root),
-						kind: RetryRootKind.handle("Throttled"),
-						key: r.param("retryThrottledKey", RetryRoot.fields.key),
-						at: r.param("now", RetryRoot.fields.at)
+				query(retryGraph).rule((r) => {
+					const requested = r.relation("retryThrottledRetryScope", {
+						root: RetryScope.fields.root,
+						scope: RetryScope.fields.scope
 					})
-				)
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(
+							r.eq(scope, root),
+							r.eq(root, r.param("retryThrottledScope", RetryRoot.fields.root)),
+							r.not(RetryRoot, { root })
+						)
+						.find({
+							root,
+							kind: RetryRootKind.handle("Throttled"),
+							key: r.param("retryThrottledKey", RetryRoot.fields.key),
+							at: r.param("now", RetryRoot.fields.at)
+						})
+				})
 			),
 		{ now: "millis" }
 	),
@@ -547,18 +626,57 @@ export const retryDenPrograms = Object.freeze({
 	}),
 	retryRequestUnhurried: clocked(
 		ChangeSet.empty(retryGraph)
-			.insert(RetryScope, [])
-			.insert(RetryUnhurriedInput, [])
+			.insert(
+				RetryScope,
+				query(retryGraph).rule((r) => {
+					const requested = r.relation("retryUnhurriedRetryScope", {
+						root: RetryScope.fields.root,
+						scope: RetryScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(r.not(RetryRoot, { root }))
+						.find({ root, scope })
+				})
+			)
+			.insert(
+				RetryUnhurriedInput,
+				query(retryGraph).rule((r) => {
+					const requested = r.relation("retryUnhurriedRetryUnhurriedInput", {
+						root: RetryUnhurriedInput.fields.root,
+						scope: RetryUnhurriedInput.fields.scope,
+						key: RetryUnhurriedInput.fields.key
+					})
+					const { root, scope, key } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, key })
+						.where(r.not(RetryRoot, { root }))
+						.find({ root, scope, key })
+				})
+			)
 			.insert(
 				RetryRoot,
-				query(retryGraph).rule((r) =>
-					r.find({
-						root: r.param("retryUnhurriedScope", RetryRoot.fields.root),
-						kind: RetryRootKind.handle("Unhurried"),
-						key: r.param("retryUnhurriedKey", RetryRoot.fields.key),
-						at: r.param("now", RetryRoot.fields.at)
+				query(retryGraph).rule((r) => {
+					const requested = r.relation("retryUnhurriedRetryScope", {
+						root: RetryScope.fields.root,
+						scope: RetryScope.fields.scope
 					})
-				)
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(
+							r.eq(scope, root),
+							r.eq(root, r.param("retryUnhurriedScope", RetryRoot.fields.root)),
+							r.not(RetryRoot, { root })
+						)
+						.find({
+							root,
+							kind: RetryRootKind.handle("Unhurried"),
+							key: r.param("retryUnhurriedKey", RetryRoot.fields.key),
+							at: r.param("now", RetryRoot.fields.at)
+						})
+				})
 			),
 		{ now: "millis" }
 	),

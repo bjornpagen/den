@@ -66,13 +66,13 @@ export const theRelayRingsARootTheAppRequestedInItsOwnTransaction = property.exp
 							)
 						)
 						const order = "order"
-						const request = chain.requestFacts.Ordered(order, {
+						const request = chain.appRequests.Ordered(order, {
 							feed: run.feed,
 							pages: BigInt(run.pages)
 						})
 						yield* loader.workload.order.once({
 							params: request.params,
-							facts: { insert: { Order: [{ order, feed: run.feed }], ...request.facts } }
+							facts: { insert: { Order: [{ order, feed: run.feed }] } }
 						})
 						const admission = yield* Effect.raceFirst(
 							Stream.fromQueue(rung).pipe(

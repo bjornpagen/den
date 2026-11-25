@@ -414,18 +414,58 @@ export const clockDenPrograms = Object.freeze({
 	}),
 	clockRequestHourly: clocked(
 		ChangeSet.empty(clockGraph)
-			.insert(ClockScope, [])
-			.insert(ClockHourlyInput, [])
+			.insert(
+				ClockScope,
+				query(clockGraph).rule((r) => {
+					const requested = r.relation("clockHourlyClockScope", {
+						root: ClockScope.fields.root,
+						scope: ClockScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(r.not(ClockRoot, { root }))
+						.find({ root, scope })
+				})
+			)
+			.insert(
+				ClockHourlyInput,
+				query(clockGraph).rule((r) => {
+					const requested = r.relation("clockHourlyClockHourlyInput", {
+						root: ClockHourlyInput.fields.root,
+						scope: ClockHourlyInput.fields.scope,
+						hour: ClockHourlyInput.fields.hour,
+						bell: ClockHourlyInput.fields.bell
+					})
+					const { root, scope, hour, bell } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, hour, bell })
+						.where(r.not(ClockRoot, { root }))
+						.find({ root, scope, hour, bell })
+				})
+			)
 			.insert(
 				ClockRoot,
-				query(clockGraph).rule((r) =>
-					r.find({
-						root: r.param("clockHourlyScope", ClockRoot.fields.root),
-						kind: ClockRootKind.handle("Hourly"),
-						key: r.param("clockHourlyKey", ClockRoot.fields.key),
-						at: r.param("now", ClockRoot.fields.at)
+				query(clockGraph).rule((r) => {
+					const requested = r.relation("clockHourlyClockScope", {
+						root: ClockScope.fields.root,
+						scope: ClockScope.fields.scope
 					})
-				)
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(
+							r.eq(scope, root),
+							r.eq(root, r.param("clockHourlyScope", ClockRoot.fields.root)),
+							r.not(ClockRoot, { root })
+						)
+						.find({
+							root,
+							kind: ClockRootKind.handle("Hourly"),
+							key: r.param("clockHourlyKey", ClockRoot.fields.key),
+							at: r.param("now", ClockRoot.fields.at)
+						})
+				})
 			),
 		{ now: "millis" }
 	),
@@ -438,18 +478,58 @@ export const clockDenPrograms = Object.freeze({
 	}),
 	clockRequestSitting: clocked(
 		ChangeSet.empty(clockGraph)
-			.insert(ClockScope, [])
-			.insert(ClockSittingInput, [])
+			.insert(
+				ClockScope,
+				query(clockGraph).rule((r) => {
+					const requested = r.relation("clockSittingClockScope", {
+						root: ClockScope.fields.root,
+						scope: ClockScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(r.not(ClockRoot, { root }))
+						.find({ root, scope })
+				})
+			)
+			.insert(
+				ClockSittingInput,
+				query(clockGraph).rule((r) => {
+					const requested = r.relation("clockSittingClockSittingInput", {
+						root: ClockSittingInput.fields.root,
+						scope: ClockSittingInput.fields.scope,
+						sitting: ClockSittingInput.fields.sitting,
+						deadline: ClockSittingInput.fields.deadline
+					})
+					const { root, scope, sitting, deadline } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, sitting, deadline })
+						.where(r.not(ClockRoot, { root }))
+						.find({ root, scope, sitting, deadline })
+				})
+			)
 			.insert(
 				ClockRoot,
-				query(clockGraph).rule((r) =>
-					r.find({
-						root: r.param("clockSittingScope", ClockRoot.fields.root),
-						kind: ClockRootKind.handle("Sitting"),
-						key: r.param("clockSittingKey", ClockRoot.fields.key),
-						at: r.param("now", ClockRoot.fields.at)
+				query(clockGraph).rule((r) => {
+					const requested = r.relation("clockSittingClockScope", {
+						root: ClockScope.fields.root,
+						scope: ClockScope.fields.scope
 					})
-				)
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(
+							r.eq(scope, root),
+							r.eq(root, r.param("clockSittingScope", ClockRoot.fields.root)),
+							r.not(ClockRoot, { root })
+						)
+						.find({
+							root,
+							kind: ClockRootKind.handle("Sitting"),
+							key: r.param("clockSittingKey", ClockRoot.fields.key),
+							at: r.param("now", ClockRoot.fields.at)
+						})
+				})
 			),
 		{ now: "millis" }
 	)

@@ -282,46 +282,40 @@ export const syncLedger = (h: SyncHandles) => {
 		SyncRun: (key: string, input: Parameters<(typeof sync.kinds)[1]["start"]>[0]) =>
 			pipe(rootScope("Sync", "SyncRun", key), (scope) =>
 				pipe(exclusiveRows("Sync", "SyncRun", sync.kinds[1].exclusive, input, scope), (keys) =>
-					Effect.map(
-						fresh(
-							"Sync",
-							settled(
-								h.den.syncRequestSyncRun.once({
-									params: { syncSyncRunScope: scope, syncSyncRunKey: key },
-									facts: {
-										insert: {
-											SyncScope: [{ scope, root: scope }],
-											SyncExclusiveKey: Arr.map(keys, (k) => ({ ...k, root: scope })),
-											SyncSyncRunInput: [
-												{ scope: scope, root: scope, relation: input.relation, run: input.run }
-											]
-										}
-									}
-								})
-							)
-						),
-						(accepted) => ({ flow: FlowName.make("Sync"), scope, fresh: accepted })
+					pipe(
+						h.den.syncRequestSyncRun.once({
+							params: {
+								syncSyncRunScope: scope,
+								syncSyncRunKey: key,
+								syncSyncRunSyncScope: [{ scope, root: scope }],
+								syncSyncRunSyncExclusiveKey: Arr.map(keys, (k) => ({ ...k, root: scope })),
+								syncSyncRunSyncSyncRunInput: [
+									{ scope: scope, root: scope, relation: input.relation, run: input.run }
+								]
+							},
+							facts: {}
+						}),
+						settled,
+						fresh,
+						Effect.map((accepted) => ({ flow: FlowName.make("Sync"), scope, fresh: accepted }))
 					)
 				)
 			),
 		Gold: (key: string, input: Parameters<(typeof sync.kinds)[3]["start"]>[0]) =>
 			pipe(rootScope("Sync", "Gold", key), (scope) =>
-				Effect.map(
-					fresh(
-						"Sync",
-						settled(
-							h.den.syncRequestGold.once({
-								params: { syncGoldScope: scope, syncGoldKey: key },
-								facts: {
-									insert: {
-										SyncScope: [{ scope, root: scope }],
-										SyncGoldInput: [{ scope: scope, root: scope, build: input.build }]
-									}
-								}
-							})
-						)
-					),
-					(accepted) => ({ flow: FlowName.make("Sync"), scope, fresh: accepted })
+				pipe(
+					h.den.syncRequestGold.once({
+						params: {
+							syncGoldScope: scope,
+							syncGoldKey: key,
+							syncGoldSyncScope: [{ scope, root: scope }],
+							syncGoldSyncGoldInput: [{ scope: scope, root: scope, build: input.build }]
+						},
+						facts: {}
+					}),
+					settled,
+					fresh,
+					Effect.map((accepted) => ({ flow: FlowName.make("Sync"), scope, fresh: accepted }))
 				)
 			)
 	}
@@ -840,6 +834,6 @@ export const syncLedger = (h: SyncHandles) => {
 	return {
 		ledger,
 		request,
-		requestFacts: {}
+		appRequests: {}
 	}
 }

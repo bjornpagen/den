@@ -4,7 +4,7 @@ import type { CallError, WriteOutcome } from "@bjornpagen/grizzle/runtime"
 import { Array as Arr, type Cron, Effect, Option, Order, Predicate, Result, Stream } from "effect"
 import type { Due, Exclusive, Scheduled, Trigger } from "#algebra/kinds.ts"
 import { atOnce, type Delay, delayOf, exclusiveId, type Instant } from "#runtime/identity.ts"
-import { refusedOnKey, type SpawnDue, type Spawned } from "#runtime/ledger.ts"
+import type { SpawnDue, Spawned } from "#runtime/ledger.ts"
 import type { Settled } from "#runtime/settled.ts"
 
 /**
@@ -192,21 +192,14 @@ export const signals = <E extends { readonly kind: string; readonly error?: Call
 	)
 
 /**
- * Whether a root's request started it: accepted, or no change or a refusal on the root's key, another request's under
- * the same key with its own instant, either of which means the root was already requested, whatever became of its graph
- * since: its record keeps the key once its graph is cleared, so a retired root's request again is answered so too.
+ * Whether a root's request started it: accepted, where no change means the root was already requested, whatever became
+ * of its graph since. A request inserts its Root and its graph's rows only where no Root holds its root, and its record
+ * keeps the key once its graph is cleared (lower/print.ts requestOfRoot), so a request of a key already requested, a
+ * retired root's included, adds nothing and refuses nothing.
  */
 export const fresh = (
-	flow: string,
 	write: Effect.Effect<WriteOutcome<unknown>, Settled>
-): Effect.Effect<boolean, Settled> =>
-	write.pipe(
-		Effect.map((outcome) => outcome.kind === "accepted"),
-		Effect.catchIf(
-			(error: Settled) => refusedOnKey(error, [`${flow}Root`]),
-			() => Effect.succeed(false)
-		)
-	)
+): Effect.Effect<boolean, Settled> => Effect.map(write, (outcome) => outcome.kind === "accepted")
 
 /** Whether a read found any row. */
 export const any = <A>(

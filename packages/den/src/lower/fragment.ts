@@ -490,8 +490,9 @@ export const lower = (flow: AnyFlow): Lowered => {
 	})
 	/**
 	 * A root as its request recorded it: its scope, the root of every row of its graph, its kind, its trigger's key and the
-	 * instant it was requested. A closed fact, never updated or deleted: its key refuses the root requested again, and
-	 * once its graph is cleared it holds what was requested and nothing more.
+	 * instant it was requested. A closed fact, never updated or deleted, nor deleted by retirement: a request of its root
+	 * again inserts nothing (print.ts requestOfRoot), and once its graph is cleared it holds what was requested and
+	 * nothing more.
 	 */
 	const Root = relation({
 		name: name("Root"),

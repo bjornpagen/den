@@ -17,6 +17,7 @@ import {
 	ChainClaim,
 	ChainFinish,
 	ChainNext,
+	ChainOrderedInput,
 	ChainPageInput,
 	ChainPageInputAfter,
 	ChainPageOutput,
@@ -473,6 +474,18 @@ const chainGraphRows = query(Auditor)
 		return r.match(ChainPageInput, { step, root }).find({ step, root })
 	})
 
+/** Every order the app recorded, by its key: the app's own facts, which a write beside a root's request commits. */
+const orders = query(Auditor).rule((r) => {
+	const { order } = v(Order, "order")
+	return r.match(Order, { order }).find({ order })
+})
+
+/** Every Ordered root's input row, by its root: a request's input, which a clearing of its graph deletes. */
+const chainOrderedInputs = query(Auditor).rule((r) => {
+	const { root } = v(ChainOrderedInput, "input")
+	return r.match(ChainOrderedInput, { root }).find({ root })
+})
+
 /** Every chain root's scope, its record, which a clearing of its graph keeps. */
 const chainHeaders = query(Auditor).rule((r) => {
 	const { root: scope, key } = v(ChainRoot, "root")
@@ -627,6 +640,8 @@ export const auditWorkload = workload(Auditor, {
 	retryExhausted,
 	heard,
 	chainGraphRows,
+	chainOrderedInputs,
+	orders,
 	chainHeaders,
 	assignResults,
 	nearestReads,

@@ -12698,7 +12698,7 @@
 				"name": "05-publish.sql",
 				"steps": [
 					{
-						"digest": "2a285cf40b2880d01dce5aac9483c307c462fef4aaa26fed741861138710131f",
+						"digest": "a9fdd57041d7cf4fb5b71ec871c1b4a53dbe15d7e27d189ca70495eda99f6c69",
 						"kind": "digest"
 					},
 					{
@@ -28066,7 +28066,7 @@
 		"schema": "slice",
 		"schemaName": "Slice",
 		"source": "c05d81c6e77da49c56afb338cd23714f4001a82047304cab6c20b4bd05ef5165",
-		"target": "52302cda3fe25dc66bf7a774e185006483a950c63069a465081486cb0373e71d"
+		"target": "46eea9014aca1448e443c0e627ab98511f6fc810f7054a3a50ab9b4fca0195a8"
 	},
-	"seal": "294b15dedc86c63b5229e0e5bcaa6a7b620e5bac3d53e57b7da9d33c77ae6f29"
+	"seal": "0d9b52d84d98a685413b5167a01727b7590e9a56d0aba8068f74bf1abcaaff6c"
 }

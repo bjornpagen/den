@@ -14,8 +14,8 @@ import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/
  * instant and its bell, at the request's own instant, and rings each one's admission; the transport is drained, each
  * bell chimes the hour once and each root finishes; a retirement retires both, as any ended root, though the census
  * still requests their keys; and every tick after it within the hour requests those keys again, which answers that each
- * root was already requested, since its header's key refuses another instant, rings nothing for a retired root, whose
- * graph is gone, and brings no graph row back.
+ * root was already requested, since its Root stands and a request adds nothing where one does, rings nothing for a
+ * retired root, whose graph is gone, and brings no graph row back.
  *
  * Oracle (specification): one chime of the hour per bell; the first tick rings exactly one admission per bell; the
  * retirement retires each; each tick after it succeeds and rings nothing; and the flow's snapshot holds no scope and no
@@ -92,10 +92,11 @@ export const aRetiredScheduledRootsKeyRequestedAgainStartsNothing = property.exp
 	kept: [],
 	kills: [
 		{
-			file: "packages/den/src/runtime/bind.ts",
-			original: "(error: Settled) => refusedOnKey(error, [`",
-			replacement: "(error: Settled) => false && refusedOnKey(error, [`",
-			why: "A request of a key already requested, which its header's key refuses, fails where it answers that the root was already requested: the census's tick of a retired schedule's key fails."
+			file: "packages/den/integration/slice/generated/clock.programs.ts",
+			original:
+				'\t\t\t\t\t\t\tr.eq(root, r.param("clockHourlyScope", ClockRoot.fields.root)),\n\t\t\t\t\t\t\tr.not(ClockRoot, { root })\n',
+			replacement: '\t\t\t\t\t\t\tr.eq(root, r.param("clockHourlyScope", ClockRoot.fields.root))\n',
+			why: "A request of a key already requested writes its Root again at its own instant, which the held Root's key refuses: the census's tick of a retired schedule's key fails."
 		},
 		{
 			file: "packages/den/integration/slice/generated/clock.binding.ts",

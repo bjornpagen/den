@@ -84,10 +84,10 @@ for the coordination group, and DBCLOCK:
   every graph relation but `<P>Root`; a claim's holds go with their claim, and the claims' place stamps' heads with them
   (a delete of a place's whole groups, grizzle f07b59f14); `runtime/retire.ts` clears every ended root nothing still
   needs, a call each. A stale holder's insert after its root is cleared is refused by the foreign keys into the rows the
-  clearing deleted, and a root requested again meets `<P>Root`'s key, which the request answers as already requested:
-  it starts nothing, and the retired key never starts a graph again. An app row that references a graph row refuses the
-  clearing (NO ACTION). A read's records rows are closed, outside every unit, never removed (grizzle main's ruling on
-  metis's MR-CATALOG). The census's reads of roots read only roots whose graph stands, a root's record matched with its
+  clearing deleted, and a root requested again inserts nothing, its request guarded by the absence of `<P>Root` at its
+  root, which the request answers as already requested: it starts nothing, and the retired key never starts a graph
+  again. An app row that references a graph row refuses the clearing (NO ACTION). A read's records rows are closed,
+  outside every unit, never removed (grizzle main's ruling on metis's MR-CATALOG). The census's reads of roots read only roots whose graph stands, a root's record matched with its
   own Scope row, which the clearing deletes. The coordination group's chains of turns sit under no unit and stay.
 
 - **Certificates, and every call settled (grizzle's SELECTWHOLE, bb62f0fa1; Bjorn's ruling of 2026-11-19).** A
@@ -147,7 +147,8 @@ for the coordination group, and DBCLOCK:
   `Sha256.toHex`. A wake crosses the wire as `WireWakeSchema`, each key its hex, which `wireOf` writes and `wakeOf`
   parses once at the consumer's boundary (`Sha256.fromHex`, a `NotAKey` where the text is no digest's hex), so the
   runtime's `Wake` carries `Sha256` and den-vercel's consumer acknowledges a delivery whose key it cannot parse. An app
-  root's `requestFacts.<Root>(key, input)` is the facts themselves, no Effect.
+  root's `appRequests.<Root>(key, input)` is its request's parameters (its rows among them, each relation's a
+  relation parameter), no Effect.
 
 - **A refusal names its laws above apart (grizzle REDFIX2 453e6e0c6).** An `above` refusal's laws of the levels above
   are `refused.above`, and its own `refused.laws` only where `own` is `every`: `runtime/ledger.ts` `refusedLaws` reads

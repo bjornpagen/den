@@ -433,50 +433,53 @@ export const assignLedger = (h: AssignHandles) => {
 	const request = {
 		Assignment: (key: string, input: Parameters<(typeof assign.kinds)[2]["start"]>[0]) =>
 			pipe(rootScope("Assign", "Assignment", key), (scope) =>
-				Effect.map(
-					fresh(
-						"Assign",
-						settled(
-							h.den.assignRequestAssignment.once({
-								params: { assignAssignmentScope: scope, assignAssignmentKey: key },
-								facts: {
-									insert: {
-										AssignScope: [{ scope, root: scope }],
-										AssignAssignmentInput: [
-											{
-												scope: scope,
-												root: scope,
-												learner: input.learner,
-												topic: input.topic,
-												mode: input.mode._tag
-											}
-										],
-										AssignAssignmentInputNear: Arr.map(input.near, (element, index) => ({
-											scope: scope,
-											root: scope,
-											ordinal: BigInt(index),
-											value: element
-										})),
-										AssignAssignmentInputExclude: Arr.map(input.exclude, (element, index) => ({
-											scope: scope,
-											root: scope,
-											ordinal: BigInt(index),
-											value: element
-										})),
-										AssignAssignmentInputModeNearest: Arr.flatMap([input.mode], (variant) =>
-											variant._tag === "Nearest" ? [{ scope: scope, root: scope }] : []
-										),
-										AssignAssignmentInputModeWithin: Arr.flatMap([input.mode], (variant) =>
-											variant._tag === "Within"
-												? [{ scope: scope, root: scope, radius: variant.radius }]
-												: []
-										)
-									}
+				pipe(
+					h.den.assignRequestAssignment.once({
+						params: {
+							assignAssignmentScope: scope,
+							assignAssignmentKey: key,
+							assignAssignmentAssignScope: [{ scope, root: scope }],
+							assignAssignmentAssignAssignmentInput: [
+								{
+									scope: scope,
+									root: scope,
+									learner: input.learner,
+									topic: input.topic,
+									mode: input.mode._tag
 								}
-							})
-						)
-					),
-					(accepted) => ({ flow: FlowName.make("Assign"), scope, fresh: accepted })
+							],
+							assignAssignmentAssignAssignmentInputNear: Arr.map(input.near, (element, index) => ({
+								scope: scope,
+								root: scope,
+								ordinal: BigInt(index),
+								value: element
+							})),
+							assignAssignmentAssignAssignmentInputExclude: Arr.map(
+								input.exclude,
+								(element, index) => ({
+									scope: scope,
+									root: scope,
+									ordinal: BigInt(index),
+									value: element
+								})
+							),
+							assignAssignmentAssignAssignmentInputModeNearest: Arr.flatMap(
+								[input.mode],
+								(variant) => (variant._tag === "Nearest" ? [{ scope: scope, root: scope }] : [])
+							),
+							assignAssignmentAssignAssignmentInputModeWithin: Arr.flatMap(
+								[input.mode],
+								(variant) =>
+									variant._tag === "Within"
+										? [{ scope: scope, root: scope, radius: variant.radius }]
+										: []
+							)
+						},
+						facts: {}
+					}),
+					settled,
+					fresh,
+					Effect.map((accepted) => ({ flow: FlowName.make("Assign"), scope, fresh: accepted }))
 				)
 			)
 	}
@@ -1173,6 +1176,6 @@ export const assignLedger = (h: AssignHandles) => {
 	return {
 		ledger,
 		request,
-		requestFacts: {}
+		appRequests: {}
 	}
 }

@@ -307,69 +307,55 @@ export const retryLedger = (h: RetryHandles) => {
 	const request = {
 		Ladders: (key: string, input: Parameters<(typeof retry.kinds)[2]["start"]>[0]) =>
 			pipe(rootScope("Retry", "Ladders", key), (scope) =>
-				Effect.map(
-					fresh(
-						"Retry",
-						settled(
-							h.den.retryRequestLadders.once({
-								params: { retryLaddersScope: scope, retryLaddersKey: key },
-								facts: {
-									insert: {
-										RetryScope: [{ scope, root: scope }],
-										RetryLaddersInput: [
-											{
-												scope: scope,
-												root: scope,
-												steadfast: input.steadfast,
-												brittle: input.brittle
-											}
-										]
-									}
-								}
-							})
-						)
-					),
-					(accepted) => ({ flow: FlowName.make("Retry"), scope, fresh: accepted })
+				pipe(
+					h.den.retryRequestLadders.once({
+						params: {
+							retryLaddersScope: scope,
+							retryLaddersKey: key,
+							retryLaddersRetryScope: [{ scope, root: scope }],
+							retryLaddersRetryLaddersInput: [
+								{ scope: scope, root: scope, steadfast: input.steadfast, brittle: input.brittle }
+							]
+						},
+						facts: {}
+					}),
+					settled,
+					fresh,
+					Effect.map((accepted) => ({ flow: FlowName.make("Retry"), scope, fresh: accepted }))
 				)
 			),
 		Throttled: (key: string, input: Parameters<(typeof retry.kinds)[4]["start"]>[0]) =>
 			pipe(rootScope("Retry", "Throttled", key), (scope) =>
-				Effect.map(
-					fresh(
-						"Retry",
-						settled(
-							h.den.retryRequestThrottled.once({
-								params: { retryThrottledScope: scope, retryThrottledKey: key },
-								facts: {
-									insert: {
-										RetryScope: [{ scope, root: scope }],
-										RetryThrottledInput: [{ scope: scope, root: scope, key: input.key }]
-									}
-								}
-							})
-						)
-					),
-					(accepted) => ({ flow: FlowName.make("Retry"), scope, fresh: accepted })
+				pipe(
+					h.den.retryRequestThrottled.once({
+						params: {
+							retryThrottledScope: scope,
+							retryThrottledKey: key,
+							retryThrottledRetryScope: [{ scope, root: scope }],
+							retryThrottledRetryThrottledInput: [{ scope: scope, root: scope, key: input.key }]
+						},
+						facts: {}
+					}),
+					settled,
+					fresh,
+					Effect.map((accepted) => ({ flow: FlowName.make("Retry"), scope, fresh: accepted }))
 				)
 			),
 		Unhurried: (key: string, input: Parameters<(typeof retry.kinds)[6]["start"]>[0]) =>
 			pipe(rootScope("Retry", "Unhurried", key), (scope) =>
-				Effect.map(
-					fresh(
-						"Retry",
-						settled(
-							h.den.retryRequestUnhurried.once({
-								params: { retryUnhurriedScope: scope, retryUnhurriedKey: key },
-								facts: {
-									insert: {
-										RetryScope: [{ scope, root: scope }],
-										RetryUnhurriedInput: [{ scope: scope, root: scope, key: input.key }]
-									}
-								}
-							})
-						)
-					),
-					(accepted) => ({ flow: FlowName.make("Retry"), scope, fresh: accepted })
+				pipe(
+					h.den.retryRequestUnhurried.once({
+						params: {
+							retryUnhurriedScope: scope,
+							retryUnhurriedKey: key,
+							retryUnhurriedRetryScope: [{ scope, root: scope }],
+							retryUnhurriedRetryUnhurriedInput: [{ scope: scope, root: scope, key: input.key }]
+						},
+						facts: {}
+					}),
+					settled,
+					fresh,
+					Effect.map((accepted) => ({ flow: FlowName.make("Retry"), scope, fresh: accepted }))
 				)
 			)
 	}
@@ -1199,6 +1185,6 @@ export const retryLedger = (h: RetryHandles) => {
 	return {
 		ledger,
 		request,
-		requestFacts: {}
+		appRequests: {}
 	}
 }

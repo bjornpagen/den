@@ -385,18 +385,57 @@ export const writebackDenPrograms = Object.freeze({
 	}),
 	writebackRequestWriteback: clocked(
 		ChangeSet.empty(writebackGraph)
-			.insert(WritebackScope, [])
-			.insert(WritebackWritebackInput, [])
+			.insert(
+				WritebackScope,
+				query(writebackGraph).rule((r) => {
+					const requested = r.relation("writebackWritebackWritebackScope", {
+						root: WritebackScope.fields.root,
+						scope: WritebackScope.fields.scope
+					})
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(r.not(WritebackRoot, { root }))
+						.find({ root, scope })
+				})
+			)
+			.insert(
+				WritebackWritebackInput,
+				query(writebackGraph).rule((r) => {
+					const requested = r.relation("writebackWritebackWritebackWritebackInput", {
+						root: WritebackWritebackInput.fields.root,
+						scope: WritebackWritebackInput.fields.scope,
+						attempt: WritebackWritebackInput.fields.attempt
+					})
+					const { root, scope, attempt } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope, attempt })
+						.where(r.not(WritebackRoot, { root }))
+						.find({ root, scope, attempt })
+				})
+			)
 			.insert(
 				WritebackRoot,
-				query(writebackGraph).rule((r) =>
-					r.find({
-						root: r.param("writebackWritebackScope", WritebackRoot.fields.root),
-						kind: WritebackRootKind.handle("Writeback"),
-						key: r.param("writebackWritebackKey", WritebackRoot.fields.key),
-						at: r.param("now", WritebackRoot.fields.at)
+				query(writebackGraph).rule((r) => {
+					const requested = r.relation("writebackWritebackWritebackScope", {
+						root: WritebackScope.fields.root,
+						scope: WritebackScope.fields.scope
 					})
-				)
+					const { root, scope } = v(requested, "requested")
+					return r
+						.match(requested, { root, scope })
+						.where(
+							r.eq(scope, root),
+							r.eq(root, r.param("writebackWritebackScope", WritebackRoot.fields.root)),
+							r.not(WritebackRoot, { root })
+						)
+						.find({
+							root,
+							kind: WritebackRootKind.handle("Writeback"),
+							key: r.param("writebackWritebackKey", WritebackRoot.fields.key),
+							at: r.param("now", WritebackRoot.fields.at)
+						})
+				})
 			),
 		{ now: "millis" }
 	)
