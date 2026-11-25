@@ -73,8 +73,15 @@ for the coordination group, and DBCLOCK:
   states alike and so one unit, the roots being digests no two flows share (grizzle forbids a contract over a digest, so
   no flow names a domain of its own for its root): every graph relation but the root's record, `<P>Root`, carries its
   root as `root`, first in its primary key and on both sides of every containment and key between them, so every write
-  of a graph's rows holds its root exclusively, and each is contained in `<P>Root` by its root. `<P>Root` is keyed by
-  `root`, closed: the fact that the root was requested, never updated or deleted. A claim's seats sit under the flow's
+  of a graph's rows holds its root exclusively. A row's root is its owner's: `<P>Step` and `<P>Scope`, which hold den's
+  two identities, are each keyed by their identity alone too (`key(on(<P>Step, "step"))`, `key(on(<P>Scope,
+  "scope"))`), since den derives each from its parent's (`runtime/identity.ts`), and every other graph relation is
+  contained by its root and its owner, the field its key leads with after its root, in its owner's holder
+  (`contained(on(<P>Done, "root", "step"), on(<P>Step, "root", "step"))`); `<P>Step`'s owner is its scope, and
+  `<P>Scope` is contained in `<P>Root` by its root. So a read that fixes a step or a scope fixes its root, the unit its
+  rows sit in, by the containment onto a key of one field that grizzle's dependencies read (its declared statistics,
+  its unit-bound reads), and each row's containment in its root's record follows through its holder's. `<P>Root` is
+  keyed by `root`, closed: the fact that the root was requested, never updated or deleted. A claim's seats sit under the flow's
   seat unit, `unit("<P>Seat", { resource: closedId(<P>Resource) })`: `<P>Hold` is keyed `(resource, root, step,
   attempt)`, the claim's ordered family written nested in the claim's one write, which supplies the attempt the database
   stamps, so every write of a resource's holds holds the resource, and the live holds' laws, at most one a seat and each
@@ -95,7 +102,7 @@ for the coordination group, and DBCLOCK:
   and its two sides join within one unit: each step's and scope's input in its Step or Scope of its kind
   (`select(<P>Step, kind = …)`), each Done and Failed in its Result of its outcome, and the Assign flow's tagged
   unions' variant pairs, both ways. A plain containment into a declared key stays a foreign key, and so does each
-  graph relation's containment in its root's record. A write can break such a rule through a row another role writes, so every role that writes one
+  graph relation's containment in its owner's holder. A write can break such a rule through a row another role writes, so every role that writes one
   certifies SERIALIZABLE (`laws`): each flow's `<p>_den` and `<p>_retirer`, and the app's `loader`, which commits the
   steps. Each flow's `<p>_coordinator` and the app's `auditor` certify READ COMMITTED; the app's and the worker's
   logins fence ChainResult, each of their writes of it locking it in exclusive mode before its snapshot, for the

@@ -3565,6 +3565,8 @@ COMMENT ON CONSTRAINT "__assign_root_key_root_kind_albudrr2vv" ON "slice_den"."a
 
 COMMENT ON CONSTRAINT "__assign_scope_pk_xytntbncid" ON "slice_den"."assign_scope" IS 'primary key of AssignScope';
 
+COMMENT ON CONSTRAINT "__assign_scope_key_scope_6ayivwnr6w" ON "slice_den"."assign_scope" IS 'key AssignScope(scope)';
+
 COMMENT ON CONSTRAINT "__assign_served_pk_gahaxyiegw" ON "slice_den"."assign_served" IS 'primary key of AssignServed';
 
 COMMENT ON CONSTRAINT "__assign_skipped_pk_5qhgbueof7" ON "slice_den"."assign_skipped" IS 'primary key of AssignSkipped';
@@ -3574,6 +3576,8 @@ COMMENT ON CONSTRAINT "__assign_start_step_pk_jjcfkvptmp" ON "slice_den"."assign
 COMMENT ON CONSTRAINT "__assign_start_step_key_root_step_n7nc3rlewh" ON "slice_den"."assign_start_step" IS 'key AssignStartStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_step_pk_2oc4ehvfzd" ON "slice_den"."assign_step" IS 'primary key of AssignStep';
+
+COMMENT ON CONSTRAINT "__assign_step_key_step_onrbsu6v67" ON "slice_den"."assign_step" IS 'key AssignStep(step)';
 
 COMMENT ON CONSTRAINT "__audit_pk_dcvpvv5cjz" ON "slice_den"."audit" IS 'primary key of Audit';
 
@@ -3651,6 +3655,8 @@ COMMENT ON CONSTRAINT "__chain_root_key_root_kind_nrgbg46psl" ON "slice_den"."ch
 
 COMMENT ON CONSTRAINT "__chain_scope_pk_fxzt444lf6" ON "slice_den"."chain_scope" IS 'primary key of ChainScope';
 
+COMMENT ON CONSTRAINT "__chain_scope_key_scope_w373uqpwyq" ON "slice_den"."chain_scope" IS 'key ChainScope(scope)';
+
 COMMENT ON CONSTRAINT "__chain_served_pk_wzbdafznld" ON "slice_den"."chain_served" IS 'primary key of ChainServed';
 
 COMMENT ON CONSTRAINT "__chain_skipped_pk_cjdtdttlyx" ON "slice_den"."chain_skipped" IS 'primary key of ChainSkipped';
@@ -3660,6 +3666,8 @@ COMMENT ON CONSTRAINT "__chain_start_step_pk_dgda7shxb4" ON "slice_den"."chain_s
 COMMENT ON CONSTRAINT "__chain_start_step_key_root_step_ncsd5g5nar" ON "slice_den"."chain_start_step" IS 'key ChainStartStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_step_pk_u6x5wnvfbv" ON "slice_den"."chain_step" IS 'primary key of ChainStep';
+
+COMMENT ON CONSTRAINT "__chain_step_key_step_32tfhd2p5e" ON "slice_den"."chain_step" IS 'key ChainStep(step)';
 
 COMMENT ON CONSTRAINT "__clock_admitted_pk_a7wwsyakra" ON "slice_den"."clock_admitted" IS 'primary key of ClockAdmitted';
 
@@ -3709,6 +3717,8 @@ COMMENT ON CONSTRAINT "__clock_root_key_root_kind_e4vt5g6ggk" ON "slice_den"."cl
 
 COMMENT ON CONSTRAINT "__clock_scope_pk_dux445xz6c" ON "slice_den"."clock_scope" IS 'primary key of ClockScope';
 
+COMMENT ON CONSTRAINT "__clock_scope_key_scope_ikor7cy7lf" ON "slice_den"."clock_scope" IS 'key ClockScope(scope)';
+
 COMMENT ON CONSTRAINT "__clock_served_pk_t5lm3cvd5b" ON "slice_den"."clock_served" IS 'primary key of ClockServed';
 
 COMMENT ON CONSTRAINT "__clock_sitting_finish_output_pk_pejmuwtji5" ON "slice_den"."clock_sitting_finish_output" IS 'primary key of ClockSittingFinishOutput';
@@ -3722,6 +3732,8 @@ COMMENT ON CONSTRAINT "__clock_start_step_pk_qgw6bnuo54" ON "slice_den"."clock_s
 COMMENT ON CONSTRAINT "__clock_start_step_key_root_step_pknqcsg3yv" ON "slice_den"."clock_start_step" IS 'key ClockStartStep(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_step_pk_jjmk3diqpl" ON "slice_den"."clock_step" IS 'primary key of ClockStep';
+
+COMMENT ON CONSTRAINT "__clock_step_key_step_hgcnovy6vv" ON "slice_den"."clock_step" IS 'key ClockStep(step)';
 
 COMMENT ON CONSTRAINT "__fan_admitted_pk_jzt7rtrzny" ON "slice_den"."fan_admitted" IS 'primary key of FanAdmitted';
 
@@ -3781,6 +3793,8 @@ COMMENT ON CONSTRAINT "__fan_root_key_root_kind_fhgsejgmzx" ON "slice_den"."fan_
 
 COMMENT ON CONSTRAINT "__fan_scope_pk_7bvjfihnef" ON "slice_den"."fan_scope" IS 'primary key of FanScope';
 
+COMMENT ON CONSTRAINT "__fan_scope_key_scope_ehh72plhww" ON "slice_den"."fan_scope" IS 'key FanScope(scope)';
+
 COMMENT ON CONSTRAINT "__fan_served_pk_hcfoxxhdsr" ON "slice_den"."fan_served" IS 'primary key of FanServed';
 
 COMMENT ON CONSTRAINT "__fan_skipped_pk_22erbmfzer" ON "slice_den"."fan_skipped" IS 'primary key of FanSkipped';
@@ -3798,6 +3812,8 @@ COMMENT ON CONSTRAINT "__fan_start_step_pk_7e247xk4mz" ON "slice_den"."fan_start
 COMMENT ON CONSTRAINT "__fan_start_step_key_root_step_edhkhzfqxw" ON "slice_den"."fan_start_step" IS 'key FanStartStep(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_step_pk_2f4tcxnofk" ON "slice_den"."fan_step" IS 'primary key of FanStep';
+
+COMMENT ON CONSTRAINT "__fan_step_key_step_zhkwete5vm" ON "slice_den"."fan_step" IS 'key FanStep(step)';
 
 COMMENT ON CONSTRAINT "__fan_sweep_finish_output_pk_7dvx2ngckn" ON "slice_den"."fan_sweep_finish_output" IS 'primary key of FanSweepFinishOutput';
 
@@ -3857,6 +3873,8 @@ COMMENT ON CONSTRAINT "__retry_root_key_root_kind_fljwbhyeaq" ON "slice_den"."re
 
 COMMENT ON CONSTRAINT "__retry_scope_pk_fgji2phvxy" ON "slice_den"."retry_scope" IS 'primary key of RetryScope';
 
+COMMENT ON CONSTRAINT "__retry_scope_key_scope_cxzylhyf64" ON "slice_den"."retry_scope" IS 'key RetryScope(scope)';
+
 COMMENT ON CONSTRAINT "__retry_served_pk_wgxtug7z34" ON "slice_den"."retry_served" IS 'primary key of RetryServed';
 
 COMMENT ON CONSTRAINT "__retry_skipped_pk_au5z33ql7a" ON "slice_den"."retry_skipped" IS 'primary key of RetrySkipped';
@@ -3870,6 +3888,8 @@ COMMENT ON CONSTRAINT "__retry_steadfast_input_pk_omubooh2k3" ON "slice_den"."re
 COMMENT ON CONSTRAINT "__retry_steadfast_output_pk_xyvfgnpd5w" ON "slice_den"."retry_steadfast_output" IS 'primary key of RetrySteadfastOutput';
 
 COMMENT ON CONSTRAINT "__retry_step_pk_opjqidwhzg" ON "slice_den"."retry_step" IS 'primary key of RetryStep';
+
+COMMENT ON CONSTRAINT "__retry_step_key_step_nrthvwlxer" ON "slice_den"."retry_step" IS 'key RetryStep(step)';
 
 COMMENT ON CONSTRAINT "__retry_throttled_finish_output_pk_o6epepnuox" ON "slice_den"."retry_throttled_finish_output" IS 'primary key of RetryThrottledFinishOutput';
 
@@ -3949,6 +3969,8 @@ COMMENT ON CONSTRAINT "__review_saved_key_root_to_hfwtbsvtvv" ON "slice_den"."re
 
 COMMENT ON CONSTRAINT "__review_scope_pk_grsivyyp7b" ON "slice_den"."review_scope" IS 'primary key of ReviewScope';
 
+COMMENT ON CONSTRAINT "__review_scope_key_scope_zikoayu732" ON "slice_den"."review_scope" IS 'key ReviewScope(scope)';
+
 COMMENT ON CONSTRAINT "__review_served_pk_bkbrtbk3k7" ON "slice_den"."review_served" IS 'primary key of ReviewServed';
 
 COMMENT ON CONSTRAINT "__review_skipped_pk_ymsn25w74u" ON "slice_den"."review_skipped" IS 'primary key of ReviewSkipped';
@@ -3966,6 +3988,8 @@ COMMENT ON CONSTRAINT "__review_start_step_pk_w5suwqqg4p" ON "slice_den"."review
 COMMENT ON CONSTRAINT "__review_start_step_key_root_step_sgv2fu4bpg" ON "slice_den"."review_start_step" IS 'key ReviewStartStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_step_pk_gfbmnzqbc3" ON "slice_den"."review_step" IS 'primary key of ReviewStep';
+
+COMMENT ON CONSTRAINT "__review_step_key_step_6zswnepqkd" ON "slice_den"."review_step" IS 'key ReviewStep(step)';
 
 COMMENT ON CONSTRAINT "__review_within_pk_ohgogpkz4s" ON "slice_den"."review_within" IS 'primary key of ReviewWithin';
 
@@ -4023,6 +4047,8 @@ COMMENT ON CONSTRAINT "__sync_root_key_root_kind_eiyeq632ma" ON "slice_den"."syn
 
 COMMENT ON CONSTRAINT "__sync_scope_pk_bg72sm6p4z" ON "slice_den"."sync_scope" IS 'primary key of SyncScope';
 
+COMMENT ON CONSTRAINT "__sync_scope_key_scope_wd7ijpypy3" ON "slice_den"."sync_scope" IS 'key SyncScope(scope)';
+
 COMMENT ON CONSTRAINT "__sync_served_pk_ed5gkrpyzv" ON "slice_den"."sync_served" IS 'primary key of SyncServed';
 
 COMMENT ON CONSTRAINT "__sync_skipped_pk_yutjqacvws" ON "slice_den"."sync_skipped" IS 'primary key of SyncSkipped';
@@ -4032,6 +4058,8 @@ COMMENT ON CONSTRAINT "__sync_start_step_pk_4dv7h6kuu3" ON "slice_den"."sync_sta
 COMMENT ON CONSTRAINT "__sync_start_step_key_root_step_otrdmdbrol" ON "slice_den"."sync_start_step" IS 'key SyncStartStep(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_step_pk_wfgcxdvbwo" ON "slice_den"."sync_step" IS 'primary key of SyncStep';
+
+COMMENT ON CONSTRAINT "__sync_step_key_step_d7ugjkasz4" ON "slice_den"."sync_step" IS 'key SyncStep(step)';
 
 COMMENT ON CONSTRAINT "__sync_sync_run_finish_output_pk_n74f63qvg6" ON "slice_den"."sync_sync_run_finish_output" IS 'primary key of SyncSyncRunFinishOutput';
 
@@ -4077,6 +4105,8 @@ COMMENT ON CONSTRAINT "__writeback_root_key_root_kind_xcyyolrc7c" ON "slice_den"
 
 COMMENT ON CONSTRAINT "__writeback_scope_pk_aywjorzcsy" ON "slice_den"."writeback_scope" IS 'primary key of WritebackScope';
 
+COMMENT ON CONSTRAINT "__writeback_scope_key_scope_lessf5blgh" ON "slice_den"."writeback_scope" IS 'key WritebackScope(scope)';
+
 COMMENT ON CONSTRAINT "__writeback_served_pk_pw2fwekjjm" ON "slice_den"."writeback_served" IS 'primary key of WritebackServed';
 
 COMMENT ON CONSTRAINT "__writeback_skipped_pk_3pijvusl26" ON "slice_den"."writeback_skipped" IS 'primary key of WritebackSkipped';
@@ -4086,6 +4116,8 @@ COMMENT ON CONSTRAINT "__writeback_start_step_pk_sp7hkcjz7m" ON "slice_den"."wri
 COMMENT ON CONSTRAINT "__writeback_start_step_key_root_step_td6hftw5pk" ON "slice_den"."writeback_start_step" IS 'key WritebackStartStep(root, step)';
 
 COMMENT ON CONSTRAINT "__writeback_step_pk_xsrl5j4mlf" ON "slice_den"."writeback_step" IS 'primary key of WritebackStep';
+
+COMMENT ON CONSTRAINT "__writeback_step_key_step_js3rfiokua" ON "slice_den"."writeback_step" IS 'key WritebackStep(step)';
 
 COMMENT ON CONSTRAINT "__writeback_writeback_finish_output_pk_payvcqalt7" ON "slice_den"."writeback_writeback_finish_output" IS 'primary key of WritebackWritebackFinishOutput';
 
@@ -4231,151 +4263,145 @@ COMMENT ON CONSTRAINT "__fan_hold_check_fan_hold_ordered_fan_claim_holds_zint2b2
 
 COMMENT ON CONSTRAINT "__review_hold_check_review_hold_ordered_review_claim_icnqunpnlb" ON "slice_den"."review_hold" IS 'check of ReviewHold for law ordered ReviewHold(root, step, attempt, at) in fin(ReviewClaim, holds)';
 
-COMMENT ON CONSTRAINT "__assign_admitted_fk_root_hk5ersf5hl" ON "slice_den"."assign_admitted" IS 'foreign key AssignAdmitted(root) to AssignRoot(root)';
-
 COMMENT ON CONSTRAINT "__assign_admitted_fk_root_scope_unmbbqjvuz" ON "slice_den"."assign_admitted" IS 'foreign key AssignAdmitted(root, scope) to AssignScope(root, scope)';
-
-COMMENT ON CONSTRAINT "__assign_asked_fk_root_mie3eprgke" ON "slice_den"."assign_asked" IS 'foreign key AssignAsked(root) to AssignRoot(root)';
 
 COMMENT ON CONSTRAINT "__assign_asked_fk_root_from_egcl4ohqo5" ON "slice_den"."assign_asked" IS 'foreign key AssignAsked(root, from) to AssignEmbedOutput(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_asked_fk_root_to_nau6tqpt7j" ON "slice_den"."assign_asked" IS 'foreign key AssignAsked(root, to) to AssignDecideInput(root, step)';
+COMMENT ON CONSTRAINT "__assign_asked_fk_root_from_6wrf2w24uc" ON "slice_den"."assign_asked" IS 'foreign key AssignAsked(root, from) to AssignStep(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_finish_output_fk_root_7t547ru2wk" ON "slice_den"."assign_assignment_finish_output" IS 'foreign key AssignAssignmentFinishOutput(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_asked_fk_root_to_nau6tqpt7j" ON "slice_den"."assign_asked" IS 'foreign key AssignAsked(root, to) to AssignDecideInput(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_assignment_finish_output_fk_root_step_xd4lcqxnwu" ON "slice_den"."assign_assignment_finish_output" IS 'foreign key AssignAssignmentFinishOutput(root, step) to AssignDone(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_fk_root_kvtoeqjbqa" ON "slice_den"."assign_assignment_input" IS 'foreign key AssignAssignmentInput(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_assignment_finish_output_fk_root_step_gzyabr2afl" ON "slice_den"."assign_assignment_finish_output" IS 'foreign key AssignAssignmentFinishOutput(root, step) to AssignStep(root, step)';
+
+COMMENT ON CONSTRAINT "__assign_assignment_input_fk_root_scope_lcgcyjnkog" ON "slice_den"."assign_assignment_input" IS 'foreign key AssignAssignmentInput(root, scope) to AssignScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_fk_scope_tag_kind_646lzaw56q" ON "slice_den"."assign_assignment_input" IS 'foreign key AssignAssignmentInput(scope, tag AssignRoot.kind = Assignment) to AssignRoot(root, kind)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_root_iovtlis5om" ON "slice_den"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(root) to AssignRoot(root)';
-
 COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_root_scope_qsm54cc645" ON "slice_den"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(root, scope) to AssignAssignmentInput(root, scope)';
+
+COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_root_scope_irhbpzgmtx" ON "slice_den"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(root, scope) to AssignScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_exclude_fk_root_scope_pred_xyfmadmy2x" ON "slice_den"."assign_assignment_input_exclude" IS 'foreign key AssignAssignmentInputExclude(root where Logic.ge(ordinal, 1n), scope, pred(ordinal)) to AssignAssignmentInputExclude(root, scope, ordinal)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_mode_nearest_fk_root_6yvi7prxiu" ON "slice_den"."assign_assignment_input_mode_nearest" IS 'foreign key AssignAssignmentInputModeNearest(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_assignment_input_mode_nearest_fk_root_scope_6i4bqzwxmy" ON "slice_den"."assign_assignment_input_mode_nearest" IS 'foreign key AssignAssignmentInputModeNearest(root, scope) to AssignScope(root, scope)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_mode_within_fk_root_g45wawxglu" ON "slice_den"."assign_assignment_input_mode_within" IS 'foreign key AssignAssignmentInputModeWithin(root) to AssignRoot(root)';
-
-COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_root_2cmn5si5rq" ON "slice_den"."assign_assignment_input_near" IS 'foreign key AssignAssignmentInputNear(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_assignment_input_mode_within_fk_root_scope_ubokbtb6tu" ON "slice_den"."assign_assignment_input_mode_within" IS 'foreign key AssignAssignmentInputModeWithin(root, scope) to AssignScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_root_scope_zlksrjaoob" ON "slice_den"."assign_assignment_input_near" IS 'foreign key AssignAssignmentInputNear(root, scope) to AssignAssignmentInput(root, scope)';
 
-COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_root_scope_pred_irjyvyphrh" ON "slice_den"."assign_assignment_input_near" IS 'foreign key AssignAssignmentInputNear(root where Logic.ge(ordinal, 1n), scope, pred(ordinal)) to AssignAssignmentInputNear(root, scope, ordinal)';
+COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_root_scope_gyktnyg3n7" ON "slice_den"."assign_assignment_input_near" IS 'foreign key AssignAssignmentInputNear(root, scope) to AssignScope(root, scope)';
 
-COMMENT ON CONSTRAINT "__assign_claim_fk_root_hhp6cgsct2" ON "slice_den"."assign_claim" IS 'foreign key AssignClaim(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_assignment_input_near_fk_root_scope_pred_irjyvyphrh" ON "slice_den"."assign_assignment_input_near" IS 'foreign key AssignAssignmentInputNear(root where Logic.ge(ordinal, 1n), scope, pred(ordinal)) to AssignAssignmentInputNear(root, scope, ordinal)';
 
 COMMENT ON CONSTRAINT "__assign_claim_fk_root_step_z35ulxscvt" ON "slice_den"."assign_claim" IS 'foreign key AssignClaim(root, step) to AssignStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_claim_fk_root_step_pred_attempt_bt5m6xhi43" ON "slice_den"."assign_claim" IS 'foreign key AssignClaim(root where Logic.ge(attempt, 1n), step, pred(attempt)) to AssignEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__assign_decide_input_fk_root_57yk3w5qjz" ON "slice_den"."assign_decide_input" IS 'foreign key AssignDecideInput(root) to AssignRoot(root)';
-
-COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_root_yz5voylpmu" ON "slice_den"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_decide_input_fk_root_step_igdcrjssd3" ON "slice_den"."assign_decide_input" IS 'foreign key AssignDecideInput(root, step) to AssignStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_root_step_62s7y3zxzv" ON "slice_den"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(root, step) to AssignDecideInput(root, step)';
 
+COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_root_step_iddq5dh4ap" ON "slice_den"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(root, step) to AssignStep(root, step)';
+
 COMMENT ON CONSTRAINT "__assign_decide_input_exclude_fk_root_step_pred_vc4il3cgp6" ON "slice_den"."assign_decide_input_exclude" IS 'foreign key AssignDecideInputExclude(root where Logic.ge(ordinal, 1n), step, pred(ordinal)) to AssignDecideInputExclude(root, step, ordinal)';
 
-COMMENT ON CONSTRAINT "__assign_decide_input_mode_nearest_fk_root_vrbpbkw55f" ON "slice_den"."assign_decide_input_mode_nearest" IS 'foreign key AssignDecideInputModeNearest(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_decide_input_mode_nearest_fk_root_step_5peaxfkhff" ON "slice_den"."assign_decide_input_mode_nearest" IS 'foreign key AssignDecideInputModeNearest(root, step) to AssignStep(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_decide_input_mode_within_fk_root_pn7qnxf5da" ON "slice_den"."assign_decide_input_mode_within" IS 'foreign key AssignDecideInputModeWithin(root) to AssignRoot(root)';
-
-COMMENT ON CONSTRAINT "__assign_decide_output_fk_root_cdp7lsnba5" ON "slice_den"."assign_decide_output" IS 'foreign key AssignDecideOutput(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_decide_input_mode_within_fk_root_step_2rdpk7bkmk" ON "slice_den"."assign_decide_input_mode_within" IS 'foreign key AssignDecideInputModeWithin(root, step) to AssignStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_decide_output_fk_root_step_pwsuruf3ul" ON "slice_den"."assign_decide_output" IS 'foreign key AssignDecideOutput(root, step) to AssignDecideInput(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_decide_output_fk_root_step_reczzzxtv7" ON "slice_den"."assign_decide_output" IS 'foreign key AssignDecideOutput(root, step) to AssignDone(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_decide_output_stage_rest_fk_root_v7p5cdtxtz" ON "slice_den"."assign_decide_output_stage_rest" IS 'foreign key AssignDecideOutputStageRest(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_decide_output_fk_root_step_jjxfv3qn3e" ON "slice_den"."assign_decide_output" IS 'foreign key AssignDecideOutput(root, step) to AssignStep(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_decide_output_stage_serve_fk_root_dnolem6ncd" ON "slice_den"."assign_decide_output_stage_serve" IS 'foreign key AssignDecideOutputStageServe(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_decide_output_stage_rest_fk_root_step_n5oh4qicf6" ON "slice_den"."assign_decide_output_stage_rest" IS 'foreign key AssignDecideOutputStageRest(root, step) to AssignStep(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_root_tfufuj3nqk" ON "slice_den"."assign_decide_output_weighed" IS 'foreign key AssignDecideOutputWeighed(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_decide_output_stage_serve_fk_root_step_oonulae66c" ON "slice_den"."assign_decide_output_stage_serve" IS 'foreign key AssignDecideOutputStageServe(root, step) to AssignStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_root_step_vvsbzwtvof" ON "slice_den"."assign_decide_output_weighed" IS 'foreign key AssignDecideOutputWeighed(root, step) to AssignDecideOutput(root, step)';
+
+COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_root_step_p7abhgwln3" ON "slice_den"."assign_decide_output_weighed" IS 'foreign key AssignDecideOutputWeighed(root, step) to AssignStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_decide_output_weighed_fk_root_step_pred_ii5u7bfryh" ON "slice_den"."assign_decide_output_weighed" IS 'foreign key AssignDecideOutputWeighed(root where Logic.ge(ordinal, 1n), step, pred(ordinal)) to AssignDecideOutputWeighed(root, step, ordinal)';
 
 COMMENT ON CONSTRAINT "__assign_decide_read_nearest_fk_digest_bpdnxpzp5m" ON "slice_den"."assign_decide_read_nearest" IS 'foreign key AssignDecideReadNearest(digest) to AssignDecideReadNearestRow(digest)';
 
-COMMENT ON CONSTRAINT "__assign_decide_read_nearest_fk_root_2zdhq3p3xg" ON "slice_den"."assign_decide_read_nearest" IS 'foreign key AssignDecideReadNearest(root) to AssignRoot(root)';
-
 COMMENT ON CONSTRAINT "__assign_decide_read_nearest_fk_root_step_anuw7c2rf4" ON "slice_den"."assign_decide_read_nearest" IS 'foreign key AssignDecideReadNearest(root, step) to AssignResult(root, step)';
+
+COMMENT ON CONSTRAINT "__assign_decide_read_nearest_fk_root_step_o6ms3vld7t" ON "slice_den"."assign_decide_read_nearest" IS 'foreign key AssignDecideReadNearest(root, step) to AssignStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_decide_read_seen_fk_digest_zjwk3f7pfz" ON "slice_den"."assign_decide_read_seen" IS 'foreign key AssignDecideReadSeen(digest) to AssignDecideReadSeenRow(digest)';
 
-COMMENT ON CONSTRAINT "__assign_decide_read_seen_fk_root_qryoazvyva" ON "slice_den"."assign_decide_read_seen" IS 'foreign key AssignDecideReadSeen(root) to AssignRoot(root)';
-
 COMMENT ON CONSTRAINT "__assign_decide_read_seen_fk_root_step_agvsf5drbl" ON "slice_den"."assign_decide_read_seen" IS 'foreign key AssignDecideReadSeen(root, step) to AssignResult(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_done_fk_root_klcl2ojfbu" ON "slice_den"."assign_done" IS 'foreign key AssignDone(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_decide_read_seen_fk_root_step_mv4uqnfszq" ON "slice_den"."assign_decide_read_seen" IS 'foreign key AssignDecideReadSeen(root, step) to AssignStep(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_fk_root_d5blm5pm2a" ON "slice_den"."assign_embed_input" IS 'foreign key AssignEmbedInput(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_done_fk_root_step_jnpyqphpod" ON "slice_den"."assign_done" IS 'foreign key AssignDone(root, step) to AssignStep(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_root_yxhvh4acej" ON "slice_den"."assign_embed_input_exclude" IS 'foreign key AssignEmbedInputExclude(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_embed_input_fk_root_step_rnzanixu6r" ON "slice_den"."assign_embed_input" IS 'foreign key AssignEmbedInput(root, step) to AssignStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_root_step_5kxjdsp4if" ON "slice_den"."assign_embed_input_exclude" IS 'foreign key AssignEmbedInputExclude(root, step) to AssignEmbedInput(root, step)';
 
+COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_root_step_ky3b4wudl7" ON "slice_den"."assign_embed_input_exclude" IS 'foreign key AssignEmbedInputExclude(root, step) to AssignStep(root, step)';
+
 COMMENT ON CONSTRAINT "__assign_embed_input_exclude_fk_root_step_pred_pcwizkmay4" ON "slice_den"."assign_embed_input_exclude" IS 'foreign key AssignEmbedInputExclude(root where Logic.ge(ordinal, 1n), step, pred(ordinal)) to AssignEmbedInputExclude(root, step, ordinal)';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_mode_nearest_fk_root_jnyguegnta" ON "slice_den"."assign_embed_input_mode_nearest" IS 'foreign key AssignEmbedInputModeNearest(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_embed_input_mode_nearest_fk_root_step_r4t3h6xgge" ON "slice_den"."assign_embed_input_mode_nearest" IS 'foreign key AssignEmbedInputModeNearest(root, step) to AssignStep(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_mode_within_fk_root_fn43ckwpfx" ON "slice_den"."assign_embed_input_mode_within" IS 'foreign key AssignEmbedInputModeWithin(root) to AssignRoot(root)';
-
-COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_root_ez7btmcfis" ON "slice_den"."assign_embed_input_near" IS 'foreign key AssignEmbedInputNear(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_embed_input_mode_within_fk_root_step_br4jvr5oin" ON "slice_den"."assign_embed_input_mode_within" IS 'foreign key AssignEmbedInputModeWithin(root, step) to AssignStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_root_step_ejkwdhq7b6" ON "slice_den"."assign_embed_input_near" IS 'foreign key AssignEmbedInputNear(root, step) to AssignEmbedInput(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_root_step_pred_ordinal_tmq3bjkufn" ON "slice_den"."assign_embed_input_near" IS 'foreign key AssignEmbedInputNear(root where Logic.ge(ordinal, 1n), step, pred(ordinal)) to AssignEmbedInputNear(root, step, ordinal)';
+COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_root_step_zqfv3upodb" ON "slice_den"."assign_embed_input_near" IS 'foreign key AssignEmbedInputNear(root, step) to AssignStep(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_embed_output_fk_root_6bau3nsfor" ON "slice_den"."assign_embed_output" IS 'foreign key AssignEmbedOutput(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_embed_input_near_fk_root_step_pred_ordinal_tmq3bjkufn" ON "slice_den"."assign_embed_input_near" IS 'foreign key AssignEmbedInputNear(root where Logic.ge(ordinal, 1n), step, pred(ordinal)) to AssignEmbedInputNear(root, step, ordinal)';
 
 COMMENT ON CONSTRAINT "__assign_embed_output_fk_root_step_t2s5kgspwa" ON "slice_den"."assign_embed_output" IS 'foreign key AssignEmbedOutput(root, step) to AssignDone(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_embed_output_fk_root_step_me4olxkaae" ON "slice_den"."assign_embed_output" IS 'foreign key AssignEmbedOutput(root, step) to AssignEmbedInput(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_ended_fk_root_qlpcxv7bzf" ON "slice_den"."assign_ended" IS 'foreign key AssignEnded(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_embed_output_fk_root_step_l7rws2phs3" ON "slice_den"."assign_embed_output" IS 'foreign key AssignEmbedOutput(root, step) to AssignStep(root, step)';
+
+COMMENT ON CONSTRAINT "__assign_ended_fk_root_step_fwsr5rmq4p" ON "slice_den"."assign_ended" IS 'foreign key AssignEnded(root, step) to AssignStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_ended_fk_root_step_attempt_he35lvdstl" ON "slice_den"."assign_ended" IS 'foreign key AssignEnded(root, step, attempt) to AssignClaim(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__assign_exhausted_fk_root_s3mbwj4i66" ON "slice_den"."assign_exhausted" IS 'foreign key AssignExhausted(root) to AssignRoot(root)';
-
 COMMENT ON CONSTRAINT "__assign_exhausted_fk_root_step_cspvc4i2pv" ON "slice_den"."assign_exhausted" IS 'foreign key AssignExhausted(root, step) to AssignFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_failed_fk_root_ug7m4hfg26" ON "slice_den"."assign_failed" IS 'foreign key AssignFailed(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_exhausted_fk_root_step_6alordqsb5" ON "slice_den"."assign_exhausted" IS 'foreign key AssignExhausted(root, step) to AssignStep(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_fenced_fk_root_pzert3n2ix" ON "slice_den"."assign_fenced" IS 'foreign key AssignFenced(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_failed_fk_root_step_ipzrsjzgti" ON "slice_den"."assign_failed" IS 'foreign key AssignFailed(root, step) to AssignStep(root, step)';
+
+COMMENT ON CONSTRAINT "__assign_fenced_fk_root_step_dnqe55jtoa" ON "slice_den"."assign_fenced" IS 'foreign key AssignFenced(root, step) to AssignStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_fenced_fk_root_step_attempt_rjjyfxo25t" ON "slice_den"."assign_fenced" IS 'foreign key AssignFenced(root, step, attempt) to AssignEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__assign_finish_fk_root_ittp5n4r7x" ON "slice_den"."assign_finish" IS 'foreign key AssignFinish(root) to AssignRoot(root)';
-
 COMMENT ON CONSTRAINT "__assign_finish_fk_root_scope_az2daj5mvb" ON "slice_den"."assign_finish" IS 'foreign key AssignFinish(root, scope) to AssignAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__assign_finish_fk_root_scope_f7uiptxzin" ON "slice_den"."assign_finish" IS 'foreign key AssignFinish(root, scope) to AssignScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__assign_finish_fk_root_step_mkv6pbd4xq" ON "slice_den"."assign_finish" IS 'foreign key AssignFinish(root, step) to AssignStep(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_held_fk_root_rjgsqthsgz" ON "slice_den"."assign_held" IS 'foreign key AssignHeld(root) to AssignRoot(root)';
-
 COMMENT ON CONSTRAINT "__assign_held_fk_root_step_6ut2ho42il" ON "slice_den"."assign_held" IS 'foreign key AssignHeld(root, step) to AssignResult(root, step)';
+
+COMMENT ON CONSTRAINT "__assign_held_fk_root_step_4jy2ibkhlr" ON "slice_den"."assign_held" IS 'foreign key AssignHeld(root, step) to AssignStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_held_fk_root_step_attempt_agnrzcmkqy" ON "slice_den"."assign_held" IS 'foreign key AssignHeld(root, step, attempt) to AssignClaim(root, step, attempt)';
 
 COMMENT ON CONSTRAINT "__assign_paused_fk_target_pred_turn_xgirbknudp" ON "slice_den"."assign_paused" IS 'foreign key AssignPaused(target, pred(turn)) to AssignResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__assign_refusal_fk_root_jsjocrkd2e" ON "slice_den"."assign_refusal" IS 'foreign key AssignRefusal(root) to AssignRoot(root)';
-
 COMMENT ON CONSTRAINT "__assign_refusal_fk_root_step_hwduhrbvbd" ON "slice_den"."assign_refusal" IS 'foreign key AssignRefusal(root, step) to AssignFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_result_fk_root_3kdri7su7d" ON "slice_den"."assign_result" IS 'foreign key AssignResult(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_refusal_fk_root_step_af3aisimwq" ON "slice_den"."assign_refusal" IS 'foreign key AssignRefusal(root, step) to AssignStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_result_fk_root_step_k4wpox452s" ON "slice_den"."assign_result" IS 'foreign key AssignResult(root, step) to AssignStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_resumed_fk_target_turn_3xan3ax2be" ON "slice_den"."assign_resumed" IS 'foreign key AssignResumed(target, turn) to AssignPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__assign_retry_fk_root_rwe4ld6pba" ON "slice_den"."assign_retry" IS 'foreign key AssignRetry(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_retry_fk_root_step_e2etghhjnd" ON "slice_den"."assign_retry" IS 'foreign key AssignRetry(root, step) to AssignStep(root, step)';
 
 COMMENT ON CONSTRAINT "__assign_retry_fk_root_step_attempt_374j3xrgm3" ON "slice_den"."assign_retry" IS 'foreign key AssignRetry(root, step, attempt) to AssignEnded(root, step, attempt)';
 
@@ -4383,109 +4409,105 @@ COMMENT ON CONSTRAINT "__assign_scope_fk_root_j4jocebgtw" ON "slice_den"."assign
 
 COMMENT ON CONSTRAINT "__assign_skipped_fk_by_2bt5slbwgj" ON "slice_den"."assign_skipped" IS 'foreign key AssignSkipped(by) to AssignRoot(root)';
 
-COMMENT ON CONSTRAINT "__assign_skipped_fk_root_atj5irqxdw" ON "slice_den"."assign_skipped" IS 'foreign key AssignSkipped(root) to AssignRoot(root)';
+COMMENT ON CONSTRAINT "__assign_skipped_fk_root_scope_jidurgue3e" ON "slice_den"."assign_skipped" IS 'foreign key AssignSkipped(root, scope) to AssignScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__assign_skipped_fk_scope_x4sryze463" ON "slice_den"."assign_skipped" IS 'foreign key AssignSkipped(scope) to AssignRoot(root)';
 
-COMMENT ON CONSTRAINT "__assign_start_step_fk_root_5zgngqedtk" ON "slice_den"."assign_start_step" IS 'foreign key AssignStartStep(root) to AssignRoot(root)';
-
 COMMENT ON CONSTRAINT "__assign_start_step_fk_root_scope_ixmywec4qv" ON "slice_den"."assign_start_step" IS 'foreign key AssignStartStep(root, scope) to AssignAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__assign_start_step_fk_root_scope_t7vctbm6kw" ON "slice_den"."assign_start_step" IS 'foreign key AssignStartStep(root, scope) to AssignScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__assign_start_step_fk_root_step_q57whinuhh" ON "slice_den"."assign_start_step" IS 'foreign key AssignStartStep(root, step) to AssignStep(root, step)';
 
-COMMENT ON CONSTRAINT "__assign_step_fk_root_ctwrjygrhh" ON "slice_den"."assign_step" IS 'foreign key AssignStep(root) to AssignRoot(root)';
-
 COMMENT ON CONSTRAINT "__assign_step_fk_root_scope_tiqkvqahkt" ON "slice_den"."assign_step" IS 'foreign key AssignStep(root, scope) to AssignAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__assign_step_fk_root_scope_4j4ldav7gl" ON "slice_den"."assign_step" IS 'foreign key AssignStep(root, scope) to AssignScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__audit_fk_step_root_eb7inhsrbm" ON "slice_den"."audit" IS 'foreign key Audit(step, root) to ChainResult(step, root)';
 
-COMMENT ON CONSTRAINT "__chain_admitted_fk_root_2a2fujtxet" ON "slice_den"."chain_admitted" IS 'foreign key ChainAdmitted(root) to ChainRoot(root)';
-
 COMMENT ON CONSTRAINT "__chain_admitted_fk_root_scope_pyx6o74r6r" ON "slice_den"."chain_admitted" IS 'foreign key ChainAdmitted(root, scope) to ChainScope(root, scope)';
-
-COMMENT ON CONSTRAINT "__chain_chain_run_finish_output_fk_root_3xtvfg5kmu" ON "slice_den"."chain_chain_run_finish_output" IS 'foreign key ChainChainRunFinishOutput(root) to ChainRoot(root)';
 
 COMMENT ON CONSTRAINT "__chain_chain_run_finish_output_fk_root_step_wxcmcz2uwn" ON "slice_den"."chain_chain_run_finish_output" IS 'foreign key ChainChainRunFinishOutput(root, step) to ChainDone(root, step)';
 
-COMMENT ON CONSTRAINT "__chain_chain_run_input_fk_root_6zfot7qlmq" ON "slice_den"."chain_chain_run_input" IS 'foreign key ChainChainRunInput(root) to ChainRoot(root)';
+COMMENT ON CONSTRAINT "__chain_chain_run_finish_output_fk_root_step_dqanxvykwn" ON "slice_den"."chain_chain_run_finish_output" IS 'foreign key ChainChainRunFinishOutput(root, step) to ChainStep(root, step)';
+
+COMMENT ON CONSTRAINT "__chain_chain_run_input_fk_root_scope_azcdpxczrt" ON "slice_den"."chain_chain_run_input" IS 'foreign key ChainChainRunInput(root, scope) to ChainScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__chain_chain_run_input_fk_scope_tag_kind_chain_run_5wb4haod5z" ON "slice_den"."chain_chain_run_input" IS 'foreign key ChainChainRunInput(scope, tag ChainRoot.kind = ChainRun) to ChainRoot(root, kind)';
-
-COMMENT ON CONSTRAINT "__chain_claim_fk_root_imegl2mvim" ON "slice_den"."chain_claim" IS 'foreign key ChainClaim(root) to ChainRoot(root)';
 
 COMMENT ON CONSTRAINT "__chain_claim_fk_root_step_7edppg4aqs" ON "slice_den"."chain_claim" IS 'foreign key ChainClaim(root, step) to ChainStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_claim_fk_root_step_pred_attempt_fmwmco64ak" ON "slice_den"."chain_claim" IS 'foreign key ChainClaim(root where Logic.ge(attempt, 1n), step, pred(attempt)) to ChainEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__chain_done_fk_root_h5y3lmghf3" ON "slice_den"."chain_done" IS 'foreign key ChainDone(root) to ChainRoot(root)';
+COMMENT ON CONSTRAINT "__chain_done_fk_root_step_7d3jwphqat" ON "slice_den"."chain_done" IS 'foreign key ChainDone(root, step) to ChainStep(root, step)';
 
-COMMENT ON CONSTRAINT "__chain_ended_fk_root_yonuzkytaq" ON "slice_den"."chain_ended" IS 'foreign key ChainEnded(root) to ChainRoot(root)';
+COMMENT ON CONSTRAINT "__chain_ended_fk_root_step_f53nmrcf4o" ON "slice_den"."chain_ended" IS 'foreign key ChainEnded(root, step) to ChainStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_ended_fk_root_step_attempt_daxikklndi" ON "slice_den"."chain_ended" IS 'foreign key ChainEnded(root, step, attempt) to ChainClaim(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__chain_exhausted_fk_root_5235djdbik" ON "slice_den"."chain_exhausted" IS 'foreign key ChainExhausted(root) to ChainRoot(root)';
-
 COMMENT ON CONSTRAINT "__chain_exhausted_fk_root_step_4l7lqt7ji4" ON "slice_den"."chain_exhausted" IS 'foreign key ChainExhausted(root, step) to ChainFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__chain_failed_fk_root_zdy2bxxwqo" ON "slice_den"."chain_failed" IS 'foreign key ChainFailed(root) to ChainRoot(root)';
+COMMENT ON CONSTRAINT "__chain_exhausted_fk_root_step_qen7piy3si" ON "slice_den"."chain_exhausted" IS 'foreign key ChainExhausted(root, step) to ChainStep(root, step)';
 
-COMMENT ON CONSTRAINT "__chain_fenced_fk_root_oq37i4ofgu" ON "slice_den"."chain_fenced" IS 'foreign key ChainFenced(root) to ChainRoot(root)';
+COMMENT ON CONSTRAINT "__chain_failed_fk_root_step_wgrsezdykc" ON "slice_den"."chain_failed" IS 'foreign key ChainFailed(root, step) to ChainStep(root, step)';
+
+COMMENT ON CONSTRAINT "__chain_fenced_fk_root_step_zoq4smze5v" ON "slice_den"."chain_fenced" IS 'foreign key ChainFenced(root, step) to ChainStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_fenced_fk_root_step_attempt_rjs5xdup6v" ON "slice_den"."chain_fenced" IS 'foreign key ChainFenced(root, step, attempt) to ChainEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__chain_finish_fk_root_5qnmmmfgar" ON "slice_den"."chain_finish" IS 'foreign key ChainFinish(root) to ChainRoot(root)';
-
 COMMENT ON CONSTRAINT "__chain_finish_fk_root_scope_id3fnylkst" ON "slice_den"."chain_finish" IS 'foreign key ChainFinish(root, scope) to ChainAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__chain_finish_fk_root_scope_cun3ubklxj" ON "slice_den"."chain_finish" IS 'foreign key ChainFinish(root, scope) to ChainScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__chain_finish_fk_root_step_6graxxwr3k" ON "slice_den"."chain_finish" IS 'foreign key ChainFinish(root, step) to ChainStep(root, step)';
 
-COMMENT ON CONSTRAINT "__chain_held_fk_root_zaxrm5fd3q" ON "slice_den"."chain_held" IS 'foreign key ChainHeld(root) to ChainRoot(root)';
-
 COMMENT ON CONSTRAINT "__chain_held_fk_root_step_qp5rohxglc" ON "slice_den"."chain_held" IS 'foreign key ChainHeld(root, step) to ChainResult(root, step)';
+
+COMMENT ON CONSTRAINT "__chain_held_fk_root_step_pzstggr5uz" ON "slice_den"."chain_held" IS 'foreign key ChainHeld(root, step) to ChainStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_held_fk_root_step_attempt_itfckrv27c" ON "slice_den"."chain_held" IS 'foreign key ChainHeld(root, step, attempt) to ChainClaim(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__chain_next_fk_root_2bkywg6ole" ON "slice_den"."chain_next" IS 'foreign key ChainNext(root) to ChainRoot(root)';
-
 COMMENT ON CONSTRAINT "__chain_next_fk_root_from_kgirayj3r7" ON "slice_den"."chain_next" IS 'foreign key ChainNext(root, from) to ChainPageOutput(root, step)';
+
+COMMENT ON CONSTRAINT "__chain_next_fk_root_from_cbyt22x2kb" ON "slice_den"."chain_next" IS 'foreign key ChainNext(root, from) to ChainStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_next_fk_root_to_sgtpaqtkk5" ON "slice_den"."chain_next" IS 'foreign key ChainNext(root, to) to ChainPageInput(root, step)';
 
-COMMENT ON CONSTRAINT "__chain_ordered_finish_output_fk_root_bvw2jtfnml" ON "slice_den"."chain_ordered_finish_output" IS 'foreign key ChainOrderedFinishOutput(root) to ChainRoot(root)';
-
 COMMENT ON CONSTRAINT "__chain_ordered_finish_output_fk_root_step_o7qzrnwjhn" ON "slice_den"."chain_ordered_finish_output" IS 'foreign key ChainOrderedFinishOutput(root, step) to ChainDone(root, step)';
 
-COMMENT ON CONSTRAINT "__chain_ordered_input_fk_root_fzez5zrqop" ON "slice_den"."chain_ordered_input" IS 'foreign key ChainOrderedInput(root) to ChainRoot(root)';
+COMMENT ON CONSTRAINT "__chain_ordered_finish_output_fk_root_step_bgpcuvizzv" ON "slice_den"."chain_ordered_finish_output" IS 'foreign key ChainOrderedFinishOutput(root, step) to ChainStep(root, step)';
+
+COMMENT ON CONSTRAINT "__chain_ordered_input_fk_root_scope_cvyakq2mmm" ON "slice_den"."chain_ordered_input" IS 'foreign key ChainOrderedInput(root, scope) to ChainScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__chain_ordered_input_fk_scope_tag_kind_ordered_3oj5bnc73t" ON "slice_den"."chain_ordered_input" IS 'foreign key ChainOrderedInput(scope, tag ChainRoot.kind = Ordered) to ChainRoot(root, kind)';
 
-COMMENT ON CONSTRAINT "__chain_page_input_fk_root_o44giizz5e" ON "slice_den"."chain_page_input" IS 'foreign key ChainPageInput(root) to ChainRoot(root)';
-
-COMMENT ON CONSTRAINT "__chain_page_input_after_fk_root_akclgel5y2" ON "slice_den"."chain_page_input_after" IS 'foreign key ChainPageInputAfter(root) to ChainRoot(root)';
+COMMENT ON CONSTRAINT "__chain_page_input_fk_root_step_4ppejtqytz" ON "slice_den"."chain_page_input" IS 'foreign key ChainPageInput(root, step) to ChainStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_page_input_after_fk_root_step_j23hgcqubg" ON "slice_den"."chain_page_input_after" IS 'foreign key ChainPageInputAfter(root, step) to ChainPageInput(root, step)';
 
-COMMENT ON CONSTRAINT "__chain_page_output_fk_root_atfwmhe3y5" ON "slice_den"."chain_page_output" IS 'foreign key ChainPageOutput(root) to ChainRoot(root)';
+COMMENT ON CONSTRAINT "__chain_page_input_after_fk_root_step_argee2kcrw" ON "slice_den"."chain_page_input_after" IS 'foreign key ChainPageInputAfter(root, step) to ChainStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_page_output_fk_root_step_vpxoed5wiw" ON "slice_den"."chain_page_output" IS 'foreign key ChainPageOutput(root, step) to ChainDone(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_page_output_fk_root_step_crz5lf7jcp" ON "slice_den"."chain_page_output" IS 'foreign key ChainPageOutput(root, step) to ChainPageInput(root, step)';
 
-COMMENT ON CONSTRAINT "__chain_page_output_next_fk_root_6u73o7xn26" ON "slice_den"."chain_page_output_next" IS 'foreign key ChainPageOutputNext(root) to ChainRoot(root)';
+COMMENT ON CONSTRAINT "__chain_page_output_fk_root_step_x4sxvbjuqf" ON "slice_den"."chain_page_output" IS 'foreign key ChainPageOutput(root, step) to ChainStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_page_output_next_fk_root_step_zoq5plixab" ON "slice_den"."chain_page_output_next" IS 'foreign key ChainPageOutputNext(root, step) to ChainPageOutput(root, step)';
 
-COMMENT ON CONSTRAINT "__chain_page_read_earlier_fk_digest_draxd5jrld" ON "slice_den"."chain_page_read_earlier" IS 'foreign key ChainPageReadEarlier(digest) to ChainPageReadEarlierRow(digest)';
+COMMENT ON CONSTRAINT "__chain_page_output_next_fk_root_step_yitewnz5it" ON "slice_den"."chain_page_output_next" IS 'foreign key ChainPageOutputNext(root, step) to ChainStep(root, step)';
 
-COMMENT ON CONSTRAINT "__chain_page_read_earlier_fk_root_cfmzzfm46c" ON "slice_den"."chain_page_read_earlier" IS 'foreign key ChainPageReadEarlier(root) to ChainRoot(root)';
+COMMENT ON CONSTRAINT "__chain_page_read_earlier_fk_digest_draxd5jrld" ON "slice_den"."chain_page_read_earlier" IS 'foreign key ChainPageReadEarlier(digest) to ChainPageReadEarlierRow(digest)';
 
 COMMENT ON CONSTRAINT "__chain_page_read_earlier_fk_root_step_wuy63lvcqg" ON "slice_den"."chain_page_read_earlier" IS 'foreign key ChainPageReadEarlier(root, step) to ChainResult(root, step)';
 
+COMMENT ON CONSTRAINT "__chain_page_read_earlier_fk_root_step_7lgmmjpzgv" ON "slice_den"."chain_page_read_earlier" IS 'foreign key ChainPageReadEarlier(root, step) to ChainStep(root, step)';
+
 COMMENT ON CONSTRAINT "__chain_page_read_tree_fk_digest_cz6fzlmtk4" ON "slice_den"."chain_page_read_tree" IS 'foreign key ChainPageReadTree(digest) to ChainPageReadTreeRow(digest)';
 
-COMMENT ON CONSTRAINT "__chain_page_read_tree_fk_root_njf4s7r3cs" ON "slice_den"."chain_page_read_tree" IS 'foreign key ChainPageReadTree(root) to ChainRoot(root)';
-
 COMMENT ON CONSTRAINT "__chain_page_read_tree_fk_root_step_gu4nmv4usa" ON "slice_den"."chain_page_read_tree" IS 'foreign key ChainPageReadTree(root, step) to ChainResult(root, step)';
+
+COMMENT ON CONSTRAINT "__chain_page_read_tree_fk_root_step_5jdwehtqbt" ON "slice_den"."chain_page_read_tree" IS 'foreign key ChainPageReadTree(root, step) to ChainStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_page_read_tree_items_fk_digest_copy_items_sicbcwc4zb" ON "slice_den"."chain_page_read_tree_items" IS 'foreign key ChainPageReadTreeItems(digest, the owner''s count of the family ChainPageReadTreeRow.items) to ChainPageReadTreeRow(digest, items)';
 
@@ -4495,25 +4517,23 @@ COMMENT ON CONSTRAINT "__chain_page_read_tree_row_fk_digest_pred_items_7rh66dc67
 
 COMMENT ON CONSTRAINT "__chain_page_read_weights_fk_digest_73zfvhpwus" ON "slice_den"."chain_page_read_weights" IS 'foreign key ChainPageReadWeights(digest) to ChainPageReadWeightsRow(digest)';
 
-COMMENT ON CONSTRAINT "__chain_page_read_weights_fk_root_rgl5ceyh5t" ON "slice_den"."chain_page_read_weights" IS 'foreign key ChainPageReadWeights(root) to ChainRoot(root)';
-
 COMMENT ON CONSTRAINT "__chain_page_read_weights_fk_root_step_3bx3bwh3v6" ON "slice_den"."chain_page_read_weights" IS 'foreign key ChainPageReadWeights(root, step) to ChainResult(root, step)';
+
+COMMENT ON CONSTRAINT "__chain_page_read_weights_fk_root_step_qxk4wctybp" ON "slice_den"."chain_page_read_weights" IS 'foreign key ChainPageReadWeights(root, step) to ChainStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_page_tree_first_fk_digest_at_thwgbmxhwl" ON "slice_den"."chain_page_tree_first" IS 'foreign key ChainPageTreeFirst(digest, at) to ChainPageReadTreeItems(digest, at)';
 
 COMMENT ON CONSTRAINT "__chain_paused_fk_target_pred_turn_mokmv27wuy" ON "slice_den"."chain_paused" IS 'foreign key ChainPaused(target, pred(turn)) to ChainResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__chain_refusal_fk_root_igybfgrnab" ON "slice_den"."chain_refusal" IS 'foreign key ChainRefusal(root) to ChainRoot(root)';
-
 COMMENT ON CONSTRAINT "__chain_refusal_fk_root_step_ykkkqcajv4" ON "slice_den"."chain_refusal" IS 'foreign key ChainRefusal(root, step) to ChainFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__chain_result_fk_root_qfzpxjk4du" ON "slice_den"."chain_result" IS 'foreign key ChainResult(root) to ChainRoot(root)';
+COMMENT ON CONSTRAINT "__chain_refusal_fk_root_step_nfh5xnnucb" ON "slice_den"."chain_refusal" IS 'foreign key ChainRefusal(root, step) to ChainStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_result_fk_root_step_ocbnaznecu" ON "slice_den"."chain_result" IS 'foreign key ChainResult(root, step) to ChainStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_resumed_fk_target_turn_qdtxs3euay" ON "slice_den"."chain_resumed" IS 'foreign key ChainResumed(target, turn) to ChainPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__chain_retry_fk_root_jq5wrwifd5" ON "slice_den"."chain_retry" IS 'foreign key ChainRetry(root) to ChainRoot(root)';
+COMMENT ON CONSTRAINT "__chain_retry_fk_root_step_ovrtf36jcq" ON "slice_den"."chain_retry" IS 'foreign key ChainRetry(root, step) to ChainStep(root, step)';
 
 COMMENT ON CONSTRAINT "__chain_retry_fk_root_step_attempt_t2kbhcxstx" ON "slice_den"."chain_retry" IS 'foreign key ChainRetry(root, step, attempt) to ChainEnded(root, step, attempt)';
 
@@ -4521,135 +4541,125 @@ COMMENT ON CONSTRAINT "__chain_scope_fk_root_3oxsnvnyqm" ON "slice_den"."chain_s
 
 COMMENT ON CONSTRAINT "__chain_skipped_fk_by_s5hrvg2lf3" ON "slice_den"."chain_skipped" IS 'foreign key ChainSkipped(by) to ChainRoot(root)';
 
-COMMENT ON CONSTRAINT "__chain_skipped_fk_root_yxr3tmmie3" ON "slice_den"."chain_skipped" IS 'foreign key ChainSkipped(root) to ChainRoot(root)';
+COMMENT ON CONSTRAINT "__chain_skipped_fk_root_scope_ghpfmtf7sw" ON "slice_den"."chain_skipped" IS 'foreign key ChainSkipped(root, scope) to ChainScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__chain_skipped_fk_scope_2p7bml3674" ON "slice_den"."chain_skipped" IS 'foreign key ChainSkipped(scope) to ChainRoot(root)';
 
-COMMENT ON CONSTRAINT "__chain_start_step_fk_root_vtey5or3yt" ON "slice_den"."chain_start_step" IS 'foreign key ChainStartStep(root) to ChainRoot(root)';
-
 COMMENT ON CONSTRAINT "__chain_start_step_fk_root_scope_lvxzyapkkz" ON "slice_den"."chain_start_step" IS 'foreign key ChainStartStep(root, scope) to ChainAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__chain_start_step_fk_root_scope_csyj2bv7zv" ON "slice_den"."chain_start_step" IS 'foreign key ChainStartStep(root, scope) to ChainScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__chain_start_step_fk_root_step_3v26ol7z45" ON "slice_den"."chain_start_step" IS 'foreign key ChainStartStep(root, step) to ChainStep(root, step)';
 
-COMMENT ON CONSTRAINT "__chain_step_fk_root_dlv5rmxivo" ON "slice_den"."chain_step" IS 'foreign key ChainStep(root) to ChainRoot(root)';
-
 COMMENT ON CONSTRAINT "__chain_step_fk_root_scope_yfe4j5xzze" ON "slice_den"."chain_step" IS 'foreign key ChainStep(root, scope) to ChainAdmitted(root, scope)';
 
-COMMENT ON CONSTRAINT "__clock_admitted_fk_root_k24hh76oel" ON "slice_den"."clock_admitted" IS 'foreign key ClockAdmitted(root) to ClockRoot(root)';
+COMMENT ON CONSTRAINT "__chain_step_fk_root_scope_2dsmwvsjfx" ON "slice_den"."chain_step" IS 'foreign key ChainStep(root, scope) to ChainScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__clock_admitted_fk_root_scope_qiiqqqcffn" ON "slice_den"."clock_admitted" IS 'foreign key ClockAdmitted(root, scope) to ClockScope(root, scope)';
 
-COMMENT ON CONSTRAINT "__clock_chime_input_fk_root_c375laujun" ON "slice_den"."clock_chime_input" IS 'foreign key ClockChimeInput(root) to ClockRoot(root)';
-
-COMMENT ON CONSTRAINT "__clock_chime_output_fk_root_tcbxpayvzg" ON "slice_den"."clock_chime_output" IS 'foreign key ClockChimeOutput(root) to ClockRoot(root)';
+COMMENT ON CONSTRAINT "__clock_chime_input_fk_root_step_b2ryltpz5c" ON "slice_den"."clock_chime_input" IS 'foreign key ClockChimeInput(root, step) to ClockStep(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_chime_output_fk_root_step_qixdzekdul" ON "slice_den"."clock_chime_output" IS 'foreign key ClockChimeOutput(root, step) to ClockChimeInput(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_chime_output_fk_root_step_hz7ggh3lus" ON "slice_den"."clock_chime_output" IS 'foreign key ClockChimeOutput(root, step) to ClockDone(root, step)';
 
-COMMENT ON CONSTRAINT "__clock_claim_fk_root_vfdaqngoqt" ON "slice_den"."clock_claim" IS 'foreign key ClockClaim(root) to ClockRoot(root)';
+COMMENT ON CONSTRAINT "__clock_chime_output_fk_root_step_flgj3oymiz" ON "slice_den"."clock_chime_output" IS 'foreign key ClockChimeOutput(root, step) to ClockStep(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_claim_fk_root_step_hnkgjikniq" ON "slice_den"."clock_claim" IS 'foreign key ClockClaim(root, step) to ClockStep(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_claim_fk_root_step_pred_attempt_s6bkkwaqnz" ON "slice_den"."clock_claim" IS 'foreign key ClockClaim(root where Logic.ge(attempt, 1n), step, pred(attempt)) to ClockEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__clock_close_input_fk_root_6fzi6ks77d" ON "slice_den"."clock_close_input" IS 'foreign key ClockCloseInput(root) to ClockRoot(root)';
-
-COMMENT ON CONSTRAINT "__clock_close_output_fk_root_6liop2t5nl" ON "slice_den"."clock_close_output" IS 'foreign key ClockCloseOutput(root) to ClockRoot(root)';
+COMMENT ON CONSTRAINT "__clock_close_input_fk_root_step_sqnp6phfzc" ON "slice_den"."clock_close_input" IS 'foreign key ClockCloseInput(root, step) to ClockStep(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_close_output_fk_root_step_f7egr5rego" ON "slice_den"."clock_close_output" IS 'foreign key ClockCloseOutput(root, step) to ClockCloseInput(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_close_output_fk_root_step_waaqexpeeq" ON "slice_den"."clock_close_output" IS 'foreign key ClockCloseOutput(root, step) to ClockDone(root, step)';
 
-COMMENT ON CONSTRAINT "__clock_done_fk_root_4y5qrlc3tq" ON "slice_den"."clock_done" IS 'foreign key ClockDone(root) to ClockRoot(root)';
+COMMENT ON CONSTRAINT "__clock_close_output_fk_root_step_aeii5cry7w" ON "slice_den"."clock_close_output" IS 'foreign key ClockCloseOutput(root, step) to ClockStep(root, step)';
 
-COMMENT ON CONSTRAINT "__clock_ended_fk_root_5tof7ozuaz" ON "slice_den"."clock_ended" IS 'foreign key ClockEnded(root) to ClockRoot(root)';
+COMMENT ON CONSTRAINT "__clock_done_fk_root_step_yq4qhavboe" ON "slice_den"."clock_done" IS 'foreign key ClockDone(root, step) to ClockStep(root, step)';
+
+COMMENT ON CONSTRAINT "__clock_ended_fk_root_step_gx5kdzotda" ON "slice_den"."clock_ended" IS 'foreign key ClockEnded(root, step) to ClockStep(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_ended_fk_root_step_attempt_drvkyvybmh" ON "slice_den"."clock_ended" IS 'foreign key ClockEnded(root, step, attempt) to ClockClaim(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__clock_exhausted_fk_root_d7efrcc2fe" ON "slice_den"."clock_exhausted" IS 'foreign key ClockExhausted(root) to ClockRoot(root)';
-
 COMMENT ON CONSTRAINT "__clock_exhausted_fk_root_step_ifbdfsiptr" ON "slice_den"."clock_exhausted" IS 'foreign key ClockExhausted(root, step) to ClockFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__clock_failed_fk_root_qg2llqnev7" ON "slice_den"."clock_failed" IS 'foreign key ClockFailed(root) to ClockRoot(root)';
+COMMENT ON CONSTRAINT "__clock_exhausted_fk_root_step_gaqpfdbyl3" ON "slice_den"."clock_exhausted" IS 'foreign key ClockExhausted(root, step) to ClockStep(root, step)';
 
-COMMENT ON CONSTRAINT "__clock_fenced_fk_root_ly2rcwmtiz" ON "slice_den"."clock_fenced" IS 'foreign key ClockFenced(root) to ClockRoot(root)';
+COMMENT ON CONSTRAINT "__clock_failed_fk_root_step_g4aoka6lo5" ON "slice_den"."clock_failed" IS 'foreign key ClockFailed(root, step) to ClockStep(root, step)';
+
+COMMENT ON CONSTRAINT "__clock_fenced_fk_root_step_cr4zsb2h6l" ON "slice_den"."clock_fenced" IS 'foreign key ClockFenced(root, step) to ClockStep(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_fenced_fk_root_step_attempt_kyyyl7ahsl" ON "slice_den"."clock_fenced" IS 'foreign key ClockFenced(root, step, attempt) to ClockEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__clock_finish_fk_root_jccfay2gg5" ON "slice_den"."clock_finish" IS 'foreign key ClockFinish(root) to ClockRoot(root)';
-
 COMMENT ON CONSTRAINT "__clock_finish_fk_root_scope_tzo2gy4k4n" ON "slice_den"."clock_finish" IS 'foreign key ClockFinish(root, scope) to ClockAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__clock_finish_fk_root_scope_6z7ojozft7" ON "slice_den"."clock_finish" IS 'foreign key ClockFinish(root, scope) to ClockScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__clock_finish_fk_root_step_3vz6t66zne" ON "slice_den"."clock_finish" IS 'foreign key ClockFinish(root, step) to ClockStep(root, step)';
 
-COMMENT ON CONSTRAINT "__clock_held_fk_root_mlldt53ejt" ON "slice_den"."clock_held" IS 'foreign key ClockHeld(root) to ClockRoot(root)';
-
 COMMENT ON CONSTRAINT "__clock_held_fk_root_step_cumpf2bq5c" ON "slice_den"."clock_held" IS 'foreign key ClockHeld(root, step) to ClockResult(root, step)';
+
+COMMENT ON CONSTRAINT "__clock_held_fk_root_step_4lmqwyfsx6" ON "slice_den"."clock_held" IS 'foreign key ClockHeld(root, step) to ClockStep(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_held_fk_root_step_attempt_ob3nh2i5w6" ON "slice_den"."clock_held" IS 'foreign key ClockHeld(root, step, attempt) to ClockClaim(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__clock_hourly_finish_output_fk_root_ifkidt4wov" ON "slice_den"."clock_hourly_finish_output" IS 'foreign key ClockHourlyFinishOutput(root) to ClockRoot(root)';
-
 COMMENT ON CONSTRAINT "__clock_hourly_finish_output_fk_root_step_bouynloxnt" ON "slice_den"."clock_hourly_finish_output" IS 'foreign key ClockHourlyFinishOutput(root, step) to ClockDone(root, step)';
 
-COMMENT ON CONSTRAINT "__clock_hourly_input_fk_root_lv2i3nz3bd" ON "slice_den"."clock_hourly_input" IS 'foreign key ClockHourlyInput(root) to ClockRoot(root)';
+COMMENT ON CONSTRAINT "__clock_hourly_finish_output_fk_root_step_jspbxqs2og" ON "slice_den"."clock_hourly_finish_output" IS 'foreign key ClockHourlyFinishOutput(root, step) to ClockStep(root, step)';
+
+COMMENT ON CONSTRAINT "__clock_hourly_input_fk_root_scope_edbqaxjsld" ON "slice_den"."clock_hourly_input" IS 'foreign key ClockHourlyInput(root, scope) to ClockScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__clock_hourly_input_fk_scope_tag_kind_hourly_yqnjwt5yzr" ON "slice_den"."clock_hourly_input" IS 'foreign key ClockHourlyInput(scope, tag ClockRoot.kind = Hourly) to ClockRoot(root, kind)';
 
 COMMENT ON CONSTRAINT "__clock_paused_fk_target_pred_turn_7tgjovpr6x" ON "slice_den"."clock_paused" IS 'foreign key ClockPaused(target, pred(turn)) to ClockResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__clock_refusal_fk_root_4s4zld4qii" ON "slice_den"."clock_refusal" IS 'foreign key ClockRefusal(root) to ClockRoot(root)';
-
 COMMENT ON CONSTRAINT "__clock_refusal_fk_root_step_fgakzza4gr" ON "slice_den"."clock_refusal" IS 'foreign key ClockRefusal(root, step) to ClockFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__clock_result_fk_root_suxsu57hav" ON "slice_den"."clock_result" IS 'foreign key ClockResult(root) to ClockRoot(root)';
+COMMENT ON CONSTRAINT "__clock_refusal_fk_root_step_aurtl3zqby" ON "slice_den"."clock_refusal" IS 'foreign key ClockRefusal(root, step) to ClockStep(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_result_fk_root_step_uh7cpzsyxr" ON "slice_den"."clock_result" IS 'foreign key ClockResult(root, step) to ClockStep(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_resumed_fk_target_turn_45dwn4cwo5" ON "slice_den"."clock_resumed" IS 'foreign key ClockResumed(target, turn) to ClockPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__clock_retry_fk_root_qebeas6p7m" ON "slice_den"."clock_retry" IS 'foreign key ClockRetry(root) to ClockRoot(root)';
+COMMENT ON CONSTRAINT "__clock_retry_fk_root_step_l5mlehgaai" ON "slice_den"."clock_retry" IS 'foreign key ClockRetry(root, step) to ClockStep(root, step)';
 
 COMMENT ON CONSTRAINT "__clock_retry_fk_root_step_attempt_vut5icvrra" ON "slice_den"."clock_retry" IS 'foreign key ClockRetry(root, step, attempt) to ClockEnded(root, step, attempt)';
 
 COMMENT ON CONSTRAINT "__clock_scope_fk_root_xasutriv42" ON "slice_den"."clock_scope" IS 'foreign key ClockScope(root) to ClockRoot(root)';
 
-COMMENT ON CONSTRAINT "__clock_sitting_finish_output_fk_root_k75b2xtrce" ON "slice_den"."clock_sitting_finish_output" IS 'foreign key ClockSittingFinishOutput(root) to ClockRoot(root)';
-
 COMMENT ON CONSTRAINT "__clock_sitting_finish_output_fk_root_step_3nv65ayicb" ON "slice_den"."clock_sitting_finish_output" IS 'foreign key ClockSittingFinishOutput(root, step) to ClockDone(root, step)';
 
-COMMENT ON CONSTRAINT "__clock_sitting_input_fk_root_l7evxvvjly" ON "slice_den"."clock_sitting_input" IS 'foreign key ClockSittingInput(root) to ClockRoot(root)';
+COMMENT ON CONSTRAINT "__clock_sitting_finish_output_fk_root_step_zqtvbg4t5v" ON "slice_den"."clock_sitting_finish_output" IS 'foreign key ClockSittingFinishOutput(root, step) to ClockStep(root, step)';
+
+COMMENT ON CONSTRAINT "__clock_sitting_input_fk_root_scope_5hr6svgtkx" ON "slice_den"."clock_sitting_input" IS 'foreign key ClockSittingInput(root, scope) to ClockScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__clock_sitting_input_fk_scope_tag_kind_sitting_v4ep6mjxje" ON "slice_den"."clock_sitting_input" IS 'foreign key ClockSittingInput(scope, tag ClockRoot.kind = Sitting) to ClockRoot(root, kind)';
 
 COMMENT ON CONSTRAINT "__clock_skipped_fk_by_nuxpfr6rlt" ON "slice_den"."clock_skipped" IS 'foreign key ClockSkipped(by) to ClockRoot(root)';
 
-COMMENT ON CONSTRAINT "__clock_skipped_fk_root_zq2i2mqaav" ON "slice_den"."clock_skipped" IS 'foreign key ClockSkipped(root) to ClockRoot(root)';
+COMMENT ON CONSTRAINT "__clock_skipped_fk_root_scope_umaapw5huy" ON "slice_den"."clock_skipped" IS 'foreign key ClockSkipped(root, scope) to ClockScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__clock_skipped_fk_scope_oi3a3bn4yj" ON "slice_den"."clock_skipped" IS 'foreign key ClockSkipped(scope) to ClockRoot(root)';
 
-COMMENT ON CONSTRAINT "__clock_start_step_fk_root_eav7pywfga" ON "slice_den"."clock_start_step" IS 'foreign key ClockStartStep(root) to ClockRoot(root)';
-
 COMMENT ON CONSTRAINT "__clock_start_step_fk_root_scope_m4fy3w5rcl" ON "slice_den"."clock_start_step" IS 'foreign key ClockStartStep(root, scope) to ClockAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__clock_start_step_fk_root_scope_nbmml3ni7y" ON "slice_den"."clock_start_step" IS 'foreign key ClockStartStep(root, scope) to ClockScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__clock_start_step_fk_root_step_ysvl2b4s4g" ON "slice_den"."clock_start_step" IS 'foreign key ClockStartStep(root, step) to ClockStep(root, step)';
 
-COMMENT ON CONSTRAINT "__clock_step_fk_root_44druyyrpy" ON "slice_den"."clock_step" IS 'foreign key ClockStep(root) to ClockRoot(root)';
-
 COMMENT ON CONSTRAINT "__clock_step_fk_root_scope_77guzwc2dq" ON "slice_den"."clock_step" IS 'foreign key ClockStep(root, scope) to ClockAdmitted(root, scope)';
 
-COMMENT ON CONSTRAINT "__fan_admitted_fk_root_pqn32kek6h" ON "slice_den"."fan_admitted" IS 'foreign key FanAdmitted(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__clock_step_fk_root_scope_k3rk7n4jq2" ON "slice_den"."clock_step" IS 'foreign key ClockStep(root, scope) to ClockScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__fan_admitted_fk_root_scope_paiega74y2" ON "slice_den"."fan_admitted" IS 'foreign key FanAdmitted(root, scope) to FanScope(root, scope)';
 
-COMMENT ON CONSTRAINT "__fan_batch_finish_output_fk_root_4gjmd7n23q" ON "slice_den"."fan_batch_finish_output" IS 'foreign key FanBatchFinishOutput(root) to FanRoot(root)';
-
 COMMENT ON CONSTRAINT "__fan_batch_finish_output_fk_root_step_lvbwqkrzya" ON "slice_den"."fan_batch_finish_output" IS 'foreign key FanBatchFinishOutput(root, step) to FanDone(root, step)';
 
-COMMENT ON CONSTRAINT "__fan_batch_input_fk_root_6mrrtm2cth" ON "slice_den"."fan_batch_input" IS 'foreign key FanBatchInput(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_batch_finish_output_fk_root_step_uvhwobeihn" ON "slice_den"."fan_batch_finish_output" IS 'foreign key FanBatchFinishOutput(root, step) to FanStep(root, step)';
 
-COMMENT ON CONSTRAINT "__fan_claim_fk_root_vemdcaxtlr" ON "slice_den"."fan_claim" IS 'foreign key FanClaim(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_batch_input_fk_root_scope_sqnk42kypy" ON "slice_den"."fan_batch_input" IS 'foreign key FanBatchInput(root, scope) to FanScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__fan_claim_fk_root_step_2xkxna4wne" ON "slice_den"."fan_claim" IS 'foreign key FanClaim(root, step) to FanStep(root, step)';
 
@@ -4657,47 +4667,47 @@ COMMENT ON CONSTRAINT "__fan_claim_fk_root_step_attempt_pred_holds_6ej2el2klx" O
 
 COMMENT ON CONSTRAINT "__fan_claim_fk_root_step_pred_attempt_thlj3gkwmg" ON "slice_den"."fan_claim" IS 'foreign key FanClaim(root where Logic.ge(attempt, 1n), step, pred(attempt)) to FanEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__fan_done_fk_root_ojbxyih4lw" ON "slice_den"."fan_done" IS 'foreign key FanDone(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_done_fk_root_step_snckhrcktc" ON "slice_den"."fan_done" IS 'foreign key FanDone(root, step) to FanStep(root, step)';
 
-COMMENT ON CONSTRAINT "__fan_dust_input_fk_root_illh2kcoec" ON "slice_den"."fan_dust_input" IS 'foreign key FanDustInput(root) to FanRoot(root)';
-
-COMMENT ON CONSTRAINT "__fan_dust_output_fk_root_7u44muld7v" ON "slice_den"."fan_dust_output" IS 'foreign key FanDustOutput(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_dust_input_fk_root_step_zkgggm2l56" ON "slice_den"."fan_dust_input" IS 'foreign key FanDustInput(root, step) to FanStep(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_dust_output_fk_root_step_22ctuvlqsa" ON "slice_den"."fan_dust_output" IS 'foreign key FanDustOutput(root, step) to FanDone(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_dust_output_fk_root_step_q6syhjm3id" ON "slice_den"."fan_dust_output" IS 'foreign key FanDustOutput(root, step) to FanDustInput(root, step)';
 
-COMMENT ON CONSTRAINT "__fan_ended_fk_root_wmg4cc42fg" ON "slice_den"."fan_ended" IS 'foreign key FanEnded(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_dust_output_fk_root_step_3tchtvpkq4" ON "slice_den"."fan_dust_output" IS 'foreign key FanDustOutput(root, step) to FanStep(root, step)';
+
+COMMENT ON CONSTRAINT "__fan_ended_fk_root_step_g7lfuycwwy" ON "slice_den"."fan_ended" IS 'foreign key FanEnded(root, step) to FanStep(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_ended_fk_root_step_attempt_sludbzdnea" ON "slice_den"."fan_ended" IS 'foreign key FanEnded(root, step, attempt) to FanClaim(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__fan_exhausted_fk_root_xx6capfmv3" ON "slice_den"."fan_exhausted" IS 'foreign key FanExhausted(root) to FanRoot(root)';
-
 COMMENT ON CONSTRAINT "__fan_exhausted_fk_root_step_lfol3zhscm" ON "slice_den"."fan_exhausted" IS 'foreign key FanExhausted(root, step) to FanFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__fan_failed_fk_root_4ocrijtubm" ON "slice_den"."fan_failed" IS 'foreign key FanFailed(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_exhausted_fk_root_step_txucm4khfj" ON "slice_den"."fan_exhausted" IS 'foreign key FanExhausted(root, step) to FanStep(root, step)';
 
-COMMENT ON CONSTRAINT "__fan_fan_run_finish_output_fk_root_qol7iw4yrz" ON "slice_den"."fan_fan_run_finish_output" IS 'foreign key FanFanRunFinishOutput(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_failed_fk_root_step_e3uoiynnze" ON "slice_den"."fan_failed" IS 'foreign key FanFailed(root, step) to FanStep(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_fan_run_finish_output_fk_root_step_eikvoft6l2" ON "slice_den"."fan_fan_run_finish_output" IS 'foreign key FanFanRunFinishOutput(root, step) to FanDone(root, step)';
 
-COMMENT ON CONSTRAINT "__fan_fan_run_input_fk_root_wnkqnndo6m" ON "slice_den"."fan_fan_run_input" IS 'foreign key FanFanRunInput(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_fan_run_finish_output_fk_root_step_sxqsosyjco" ON "slice_den"."fan_fan_run_finish_output" IS 'foreign key FanFanRunFinishOutput(root, step) to FanStep(root, step)';
+
+COMMENT ON CONSTRAINT "__fan_fan_run_input_fk_root_scope_zfasx36h3d" ON "slice_den"."fan_fan_run_input" IS 'foreign key FanFanRunInput(root, scope) to FanScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__fan_fan_run_input_fk_scope_tag_kind_fan_run_nkgxbb32ui" ON "slice_den"."fan_fan_run_input" IS 'foreign key FanFanRunInput(scope, tag FanRoot.kind = FanRun) to FanRoot(root, kind)';
 
-COMMENT ON CONSTRAINT "__fan_fenced_fk_root_tbde7uemtt" ON "slice_den"."fan_fenced" IS 'foreign key FanFenced(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_fenced_fk_root_step_xby6ndghkk" ON "slice_den"."fan_fenced" IS 'foreign key FanFenced(root, step) to FanStep(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_fenced_fk_root_step_attempt_kxzdzh7oiz" ON "slice_den"."fan_fenced" IS 'foreign key FanFenced(root, step, attempt) to FanEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__fan_finish_fk_root_4j7jrcab7r" ON "slice_den"."fan_finish" IS 'foreign key FanFinish(root) to FanRoot(root)';
-
 COMMENT ON CONSTRAINT "__fan_finish_fk_root_scope_3z53mfbjar" ON "slice_den"."fan_finish" IS 'foreign key FanFinish(root, scope) to FanAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__fan_finish_fk_root_scope_4wzngp66gg" ON "slice_den"."fan_finish" IS 'foreign key FanFinish(root, scope) to FanScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__fan_finish_fk_root_step_hd27i2yklh" ON "slice_den"."fan_finish" IS 'foreign key FanFinish(root, step) to FanStep(root, step)';
 
-COMMENT ON CONSTRAINT "__fan_held_fk_root_6uafmy2fja" ON "slice_den"."fan_held" IS 'foreign key FanHeld(root) to FanRoot(root)';
-
 COMMENT ON CONSTRAINT "__fan_held_fk_root_step_4pr6zebh4l" ON "slice_den"."fan_held" IS 'foreign key FanHeld(root, step) to FanResult(root, step)';
+
+COMMENT ON CONSTRAINT "__fan_held_fk_root_step_673ozjicob" ON "slice_den"."fan_held" IS 'foreign key FanHeld(root, step) to FanStep(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_held_fk_root_step_attempt_bflumufwqp" ON "slice_den"."fan_held" IS 'foreign key FanHeld(root, step, attempt) to FanClaim(root, step, attempt)';
 
@@ -4705,27 +4715,25 @@ COMMENT ON CONSTRAINT "__fan_hold_fk_root_step_attempt_copy_holds_hnnbabpski" ON
 
 COMMENT ON CONSTRAINT "__fan_hold_fk_root_step_attempt_pred_at_lene3l2wo7" ON "slice_den"."fan_hold" IS 'foreign key FanHold(root, step, attempt, pred(at)) to FanHold(root, step, attempt, at)';
 
-COMMENT ON CONSTRAINT "__fan_mop_input_fk_root_ns3xpijkql" ON "slice_den"."fan_mop_input" IS 'foreign key FanMopInput(root) to FanRoot(root)';
-
-COMMENT ON CONSTRAINT "__fan_mop_output_fk_root_npn3ws5u4k" ON "slice_den"."fan_mop_output" IS 'foreign key FanMopOutput(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_mop_input_fk_root_step_7coslxahxn" ON "slice_den"."fan_mop_input" IS 'foreign key FanMopInput(root, step) to FanStep(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_mop_output_fk_root_step_5d3cdcf24y" ON "slice_den"."fan_mop_output" IS 'foreign key FanMopOutput(root, step) to FanDone(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_mop_output_fk_root_step_gbh3w7dstn" ON "slice_den"."fan_mop_output" IS 'foreign key FanMopOutput(root, step) to FanMopInput(root, step)';
 
-COMMENT ON CONSTRAINT "__fan_paused_fk_target_pred_turn_flvtnhgqoq" ON "slice_den"."fan_paused" IS 'foreign key FanPaused(target, pred(turn)) to FanResumed(target, turn)';
+COMMENT ON CONSTRAINT "__fan_mop_output_fk_root_step_djslkqxv6t" ON "slice_den"."fan_mop_output" IS 'foreign key FanMopOutput(root, step) to FanStep(root, step)';
 
-COMMENT ON CONSTRAINT "__fan_refusal_fk_root_75724lmcsj" ON "slice_den"."fan_refusal" IS 'foreign key FanRefusal(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_paused_fk_target_pred_turn_flvtnhgqoq" ON "slice_den"."fan_paused" IS 'foreign key FanPaused(target, pred(turn)) to FanResumed(target, turn)';
 
 COMMENT ON CONSTRAINT "__fan_refusal_fk_root_step_qseur2r4dj" ON "slice_den"."fan_refusal" IS 'foreign key FanRefusal(root, step) to FanFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__fan_result_fk_root_e3jgq5zb5g" ON "slice_den"."fan_result" IS 'foreign key FanResult(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_refusal_fk_root_step_4l2iz5yiww" ON "slice_den"."fan_refusal" IS 'foreign key FanRefusal(root, step) to FanStep(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_result_fk_root_step_mm2j7nmocm" ON "slice_den"."fan_result" IS 'foreign key FanResult(root, step) to FanStep(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_resumed_fk_target_turn_c5d76zka2w" ON "slice_den"."fan_resumed" IS 'foreign key FanResumed(target, turn) to FanPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__fan_retry_fk_root_rvvtyx37lp" ON "slice_den"."fan_retry" IS 'foreign key FanRetry(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_retry_fk_root_step_dji2iap5lk" ON "slice_den"."fan_retry" IS 'foreign key FanRetry(root, step) to FanStep(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_retry_fk_root_step_attempt_qtwk5f4wb3" ON "slice_den"."fan_retry" IS 'foreign key FanRetry(root, step, attempt) to FanEnded(root, step, attempt)';
 
@@ -4733,131 +4741,123 @@ COMMENT ON CONSTRAINT "__fan_scope_fk_root_peo7vjux2b" ON "slice_den"."fan_scope
 
 COMMENT ON CONSTRAINT "__fan_skipped_fk_by_ptbn5ftpw3" ON "slice_den"."fan_skipped" IS 'foreign key FanSkipped(by) to FanRoot(root)';
 
-COMMENT ON CONSTRAINT "__fan_skipped_fk_root_b5irmgajk5" ON "slice_den"."fan_skipped" IS 'foreign key FanSkipped(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_skipped_fk_root_scope_zoezs3f2j3" ON "slice_den"."fan_skipped" IS 'foreign key FanSkipped(root, scope) to FanScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__fan_skipped_fk_scope_5rsfnka2al" ON "slice_den"."fan_skipped" IS 'foreign key FanSkipped(scope) to FanRoot(root)';
 
-COMMENT ON CONSTRAINT "__fan_square_input_fk_root_2nvvofo7fx" ON "slice_den"."fan_square_input" IS 'foreign key FanSquareInput(root) to FanRoot(root)';
-
-COMMENT ON CONSTRAINT "__fan_square_output_fk_root_raxsz2wnfz" ON "slice_den"."fan_square_output" IS 'foreign key FanSquareOutput(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_square_input_fk_root_step_czm3ctmjss" ON "slice_den"."fan_square_input" IS 'foreign key FanSquareInput(root, step) to FanStep(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_square_output_fk_root_step_yvg2qx27p2" ON "slice_den"."fan_square_output" IS 'foreign key FanSquareOutput(root, step) to FanDone(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_square_output_fk_root_step_7xh6wnyepk" ON "slice_den"."fan_square_output" IS 'foreign key FanSquareOutput(root, step) to FanSquareInput(root, step)';
 
-COMMENT ON CONSTRAINT "__fan_start_scope_fk_root_i4x7yine4h" ON "slice_den"."fan_start_scope" IS 'foreign key FanStartScope(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_square_output_fk_root_step_yfsaf7ue33" ON "slice_den"."fan_square_output" IS 'foreign key FanSquareOutput(root, step) to FanStep(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_start_scope_fk_root_child_p2ruy7qsg2" ON "slice_den"."fan_start_scope" IS 'foreign key FanStartScope(root, child) to FanScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__fan_start_scope_fk_root_scope_q3eun6lixq" ON "slice_den"."fan_start_scope" IS 'foreign key FanStartScope(root, scope) to FanAdmitted(root, scope)';
 
-COMMENT ON CONSTRAINT "__fan_start_step_fk_root_bqcxetkvh4" ON "slice_den"."fan_start_step" IS 'foreign key FanStartStep(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_start_scope_fk_root_scope_ayer7ncuhn" ON "slice_den"."fan_start_scope" IS 'foreign key FanStartScope(root, scope) to FanScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__fan_start_step_fk_root_scope_ocnak7go4o" ON "slice_den"."fan_start_step" IS 'foreign key FanStartStep(root, scope) to FanAdmitted(root, scope)';
 
-COMMENT ON CONSTRAINT "__fan_start_step_fk_root_step_ml4otyqd5u" ON "slice_den"."fan_start_step" IS 'foreign key FanStartStep(root, step) to FanStep(root, step)';
+COMMENT ON CONSTRAINT "__fan_start_step_fk_root_scope_yfg5db7u23" ON "slice_den"."fan_start_step" IS 'foreign key FanStartStep(root, scope) to FanScope(root, scope)';
 
-COMMENT ON CONSTRAINT "__fan_step_fk_root_3gf6ghqhcf" ON "slice_den"."fan_step" IS 'foreign key FanStep(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_start_step_fk_root_step_ml4otyqd5u" ON "slice_den"."fan_start_step" IS 'foreign key FanStartStep(root, step) to FanStep(root, step)';
 
 COMMENT ON CONSTRAINT "__fan_step_fk_root_scope_mnnzqu5muv" ON "slice_den"."fan_step" IS 'foreign key FanStep(root, scope) to FanAdmitted(root, scope)';
 
-COMMENT ON CONSTRAINT "__fan_sweep_finish_output_fk_root_qug2mo6fuy" ON "slice_den"."fan_sweep_finish_output" IS 'foreign key FanSweepFinishOutput(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_step_fk_root_scope_7hmxdgnve3" ON "slice_den"."fan_step" IS 'foreign key FanStep(root, scope) to FanScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__fan_sweep_finish_output_fk_root_step_fywimi72uj" ON "slice_den"."fan_sweep_finish_output" IS 'foreign key FanSweepFinishOutput(root, step) to FanDone(root, step)';
 
-COMMENT ON CONSTRAINT "__fan_sweep_input_fk_root_f2achnhw3v" ON "slice_den"."fan_sweep_input" IS 'foreign key FanSweepInput(root) to FanRoot(root)';
+COMMENT ON CONSTRAINT "__fan_sweep_finish_output_fk_root_step_ryftvowe6x" ON "slice_den"."fan_sweep_finish_output" IS 'foreign key FanSweepFinishOutput(root, step) to FanStep(root, step)';
+
+COMMENT ON CONSTRAINT "__fan_sweep_input_fk_root_scope_qjyveymntd" ON "slice_den"."fan_sweep_input" IS 'foreign key FanSweepInput(root, scope) to FanScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__fan_sweep_input_fk_scope_tag_kind_sweep_m67ubjgrsc" ON "slice_den"."fan_sweep_input" IS 'foreign key FanSweepInput(scope, tag FanRoot.kind = Sweep) to FanRoot(root, kind)';
-
-COMMENT ON CONSTRAINT "__fan_within_fk_root_tmpiwtg7ll" ON "slice_den"."fan_within" IS 'foreign key FanWithin(root) to FanRoot(root)';
 
 COMMENT ON CONSTRAINT "__fan_within_fk_root_parent_7jmxi4kbha" ON "slice_den"."fan_within" IS 'foreign key FanWithin(root, parent) to FanScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__fan_within_fk_root_scope_s4ljjlq6zp" ON "slice_den"."fan_within" IS 'foreign key FanWithin(root, scope) to FanScope(root, scope)';
 
-COMMENT ON CONSTRAINT "__retry_admitted_fk_root_5xhbiwikln" ON "slice_den"."retry_admitted" IS 'foreign key RetryAdmitted(root) to RetryRoot(root)';
-
 COMMENT ON CONSTRAINT "__retry_admitted_fk_root_scope_4whpx2yoko" ON "slice_den"."retry_admitted" IS 'foreign key RetryAdmitted(root, scope) to RetryScope(root, scope)';
 
-COMMENT ON CONSTRAINT "__retry_brittle_input_fk_root_ovfrkuyu2s" ON "slice_den"."retry_brittle_input" IS 'foreign key RetryBrittleInput(root) to RetryRoot(root)';
-
-COMMENT ON CONSTRAINT "__retry_brittle_output_fk_root_tdraxk2ss2" ON "slice_den"."retry_brittle_output" IS 'foreign key RetryBrittleOutput(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_brittle_input_fk_root_step_hlztk5pli7" ON "slice_den"."retry_brittle_input" IS 'foreign key RetryBrittleInput(root, step) to RetryStep(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_brittle_output_fk_root_step_jb4luuaii6" ON "slice_den"."retry_brittle_output" IS 'foreign key RetryBrittleOutput(root, step) to RetryBrittleInput(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_brittle_output_fk_root_step_u5tr5mvcej" ON "slice_den"."retry_brittle_output" IS 'foreign key RetryBrittleOutput(root, step) to RetryDone(root, step)';
 
-COMMENT ON CONSTRAINT "__retry_claim_fk_root_uzkuwxou5w" ON "slice_den"."retry_claim" IS 'foreign key RetryClaim(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_brittle_output_fk_root_step_4iw5oycmsm" ON "slice_den"."retry_brittle_output" IS 'foreign key RetryBrittleOutput(root, step) to RetryStep(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_claim_fk_root_step_y3nttmzxe7" ON "slice_den"."retry_claim" IS 'foreign key RetryClaim(root, step) to RetryStep(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_claim_fk_root_step_pred_attempt_ygcziesx4q" ON "slice_den"."retry_claim" IS 'foreign key RetryClaim(root where Logic.ge(attempt, 1n), step, pred(attempt)) to RetryEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__retry_done_fk_root_wer2aem4qv" ON "slice_den"."retry_done" IS 'foreign key RetryDone(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_done_fk_root_step_d6c7pi2dpp" ON "slice_den"."retry_done" IS 'foreign key RetryDone(root, step) to RetryStep(root, step)';
 
-COMMENT ON CONSTRAINT "__retry_ended_fk_root_5fnejqpzud" ON "slice_den"."retry_ended" IS 'foreign key RetryEnded(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_ended_fk_root_step_tet57bx36t" ON "slice_den"."retry_ended" IS 'foreign key RetryEnded(root, step) to RetryStep(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_ended_fk_root_step_attempt_zmythu6lea" ON "slice_den"."retry_ended" IS 'foreign key RetryEnded(root, step, attempt) to RetryClaim(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__retry_exhausted_fk_root_jbthfuhrlh" ON "slice_den"."retry_exhausted" IS 'foreign key RetryExhausted(root) to RetryRoot(root)';
-
 COMMENT ON CONSTRAINT "__retry_exhausted_fk_root_step_ysmlpu2xyq" ON "slice_den"."retry_exhausted" IS 'foreign key RetryExhausted(root, step) to RetryFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__retry_failed_fk_root_z6iudxitdd" ON "slice_den"."retry_failed" IS 'foreign key RetryFailed(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_exhausted_fk_root_step_37kf6fgbfy" ON "slice_den"."retry_exhausted" IS 'foreign key RetryExhausted(root, step) to RetryStep(root, step)';
 
-COMMENT ON CONSTRAINT "__retry_fenced_fk_root_iv3bmsuh2g" ON "slice_den"."retry_fenced" IS 'foreign key RetryFenced(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_failed_fk_root_step_uguij74dd4" ON "slice_den"."retry_failed" IS 'foreign key RetryFailed(root, step) to RetryStep(root, step)';
+
+COMMENT ON CONSTRAINT "__retry_fenced_fk_root_step_ippcs3eeog" ON "slice_den"."retry_fenced" IS 'foreign key RetryFenced(root, step) to RetryStep(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_fenced_fk_root_step_attempt_yjqggn34wn" ON "slice_den"."retry_fenced" IS 'foreign key RetryFenced(root, step, attempt) to RetryEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__retry_finish_fk_root_b3kxmpk2yi" ON "slice_den"."retry_finish" IS 'foreign key RetryFinish(root) to RetryRoot(root)';
-
 COMMENT ON CONSTRAINT "__retry_finish_fk_root_scope_zjjmku4ngd" ON "slice_den"."retry_finish" IS 'foreign key RetryFinish(root, scope) to RetryAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__retry_finish_fk_root_scope_ybtoj7rtci" ON "slice_den"."retry_finish" IS 'foreign key RetryFinish(root, scope) to RetryScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__retry_finish_fk_root_step_uxc6mv3jae" ON "slice_den"."retry_finish" IS 'foreign key RetryFinish(root, step) to RetryStep(root, step)';
 
-COMMENT ON CONSTRAINT "__retry_held_fk_root_rsjdg3wo7q" ON "slice_den"."retry_held" IS 'foreign key RetryHeld(root) to RetryRoot(root)';
-
 COMMENT ON CONSTRAINT "__retry_held_fk_root_step_n2vjs67jaj" ON "slice_den"."retry_held" IS 'foreign key RetryHeld(root, step) to RetryResult(root, step)';
+
+COMMENT ON CONSTRAINT "__retry_held_fk_root_step_etlrrjjeex" ON "slice_den"."retry_held" IS 'foreign key RetryHeld(root, step) to RetryStep(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_held_fk_root_step_attempt_hfwaf4utod" ON "slice_den"."retry_held" IS 'foreign key RetryHeld(root, step, attempt) to RetryClaim(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__retry_ladders_finish_output_fk_root_7rb3icsdb6" ON "slice_den"."retry_ladders_finish_output" IS 'foreign key RetryLaddersFinishOutput(root) to RetryRoot(root)';
-
 COMMENT ON CONSTRAINT "__retry_ladders_finish_output_fk_root_step_i7hxe26f2a" ON "slice_den"."retry_ladders_finish_output" IS 'foreign key RetryLaddersFinishOutput(root, step) to RetryDone(root, step)';
 
-COMMENT ON CONSTRAINT "__retry_ladders_input_fk_root_onjlohn2jr" ON "slice_den"."retry_ladders_input" IS 'foreign key RetryLaddersInput(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_ladders_finish_output_fk_root_step_ra5qmanxwx" ON "slice_den"."retry_ladders_finish_output" IS 'foreign key RetryLaddersFinishOutput(root, step) to RetryStep(root, step)';
+
+COMMENT ON CONSTRAINT "__retry_ladders_input_fk_root_scope_d2fufzxzci" ON "slice_den"."retry_ladders_input" IS 'foreign key RetryLaddersInput(root, scope) to RetryScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__retry_ladders_input_fk_scope_tag_kind_ladders_erl4knm7ui" ON "slice_den"."retry_ladders_input" IS 'foreign key RetryLaddersInput(scope, tag RetryRoot.kind = Ladders) to RetryRoot(root, kind)';
 
-COMMENT ON CONSTRAINT "__retry_patient_input_fk_root_ye6tucziiu" ON "slice_den"."retry_patient_input" IS 'foreign key RetryPatientInput(root) to RetryRoot(root)';
-
-COMMENT ON CONSTRAINT "__retry_patient_output_fk_root_zicrxry2hs" ON "slice_den"."retry_patient_output" IS 'foreign key RetryPatientOutput(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_patient_input_fk_root_step_f4hmhtbk3n" ON "slice_den"."retry_patient_input" IS 'foreign key RetryPatientInput(root, step) to RetryStep(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_patient_output_fk_root_step_fpgjlxisro" ON "slice_den"."retry_patient_output" IS 'foreign key RetryPatientOutput(root, step) to RetryDone(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_patient_output_fk_root_step_cpuczlpiep" ON "slice_den"."retry_patient_output" IS 'foreign key RetryPatientOutput(root, step) to RetryPatientInput(root, step)';
 
+COMMENT ON CONSTRAINT "__retry_patient_output_fk_root_step_pohr6muvkc" ON "slice_den"."retry_patient_output" IS 'foreign key RetryPatientOutput(root, step) to RetryStep(root, step)';
+
 COMMENT ON CONSTRAINT "__retry_paused_fk_target_pred_turn_i33p2skdd4" ON "slice_den"."retry_paused" IS 'foreign key RetryPaused(target, pred(turn)) to RetryResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__retry_polite_input_fk_root_utaxoyy6ep" ON "slice_den"."retry_polite_input" IS 'foreign key RetryPoliteInput(root) to RetryRoot(root)';
-
-COMMENT ON CONSTRAINT "__retry_polite_output_fk_root_4uohlhyopl" ON "slice_den"."retry_polite_output" IS 'foreign key RetryPoliteOutput(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_polite_input_fk_root_step_3jp5lj6xax" ON "slice_den"."retry_polite_input" IS 'foreign key RetryPoliteInput(root, step) to RetryStep(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_polite_output_fk_root_step_gafbdn5c5n" ON "slice_den"."retry_polite_output" IS 'foreign key RetryPoliteOutput(root, step) to RetryDone(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_polite_output_fk_root_step_nu63thii5h" ON "slice_den"."retry_polite_output" IS 'foreign key RetryPoliteOutput(root, step) to RetryPoliteInput(root, step)';
 
-COMMENT ON CONSTRAINT "__retry_refusal_fk_root_gqjb5ppq4z" ON "slice_den"."retry_refusal" IS 'foreign key RetryRefusal(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_polite_output_fk_root_step_nxdrkj3kkv" ON "slice_den"."retry_polite_output" IS 'foreign key RetryPoliteOutput(root, step) to RetryStep(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_refusal_fk_root_step_vhxwkfyqu3" ON "slice_den"."retry_refusal" IS 'foreign key RetryRefusal(root, step) to RetryFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__retry_result_fk_root_ttl23wfhtd" ON "slice_den"."retry_result" IS 'foreign key RetryResult(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_refusal_fk_root_step_cxbne35gly" ON "slice_den"."retry_refusal" IS 'foreign key RetryRefusal(root, step) to RetryStep(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_result_fk_root_step_i63yrf2jjz" ON "slice_den"."retry_result" IS 'foreign key RetryResult(root, step) to RetryStep(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_resumed_fk_target_turn_x2e4jllxuy" ON "slice_den"."retry_resumed" IS 'foreign key RetryResumed(target, turn) to RetryPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__retry_retry_fk_root_oxwbladqw2" ON "slice_den"."retry_retry" IS 'foreign key RetryRetry(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_retry_fk_root_step_f6jn5krklx" ON "slice_den"."retry_retry" IS 'foreign key RetryRetry(root, step) to RetryStep(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_retry_fk_root_step_attempt_khdzeotgev" ON "slice_den"."retry_retry" IS 'foreign key RetryRetry(root, step, attempt) to RetryEnded(root, step, attempt)';
 
@@ -4865,57 +4865,53 @@ COMMENT ON CONSTRAINT "__retry_scope_fk_root_p6ulzqc36r" ON "slice_den"."retry_s
 
 COMMENT ON CONSTRAINT "__retry_skipped_fk_by_jf24rn5sep" ON "slice_den"."retry_skipped" IS 'foreign key RetrySkipped(by) to RetryRoot(root)';
 
-COMMENT ON CONSTRAINT "__retry_skipped_fk_root_3prxyrcgox" ON "slice_den"."retry_skipped" IS 'foreign key RetrySkipped(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_skipped_fk_root_scope_as5s7uohkr" ON "slice_den"."retry_skipped" IS 'foreign key RetrySkipped(root, scope) to RetryScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__retry_skipped_fk_scope_my57tu4oty" ON "slice_den"."retry_skipped" IS 'foreign key RetrySkipped(scope) to RetryRoot(root)';
 
-COMMENT ON CONSTRAINT "__retry_start_step_fk_root_w636ow2klm" ON "slice_den"."retry_start_step" IS 'foreign key RetryStartStep(root) to RetryRoot(root)';
-
 COMMENT ON CONSTRAINT "__retry_start_step_fk_root_scope_phyy3twhmr" ON "slice_den"."retry_start_step" IS 'foreign key RetryStartStep(root, scope) to RetryAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__retry_start_step_fk_root_scope_e3jd5sddhk" ON "slice_den"."retry_start_step" IS 'foreign key RetryStartStep(root, scope) to RetryScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__retry_start_step_fk_root_step_tjvsrtkfqg" ON "slice_den"."retry_start_step" IS 'foreign key RetryStartStep(root, step) to RetryStep(root, step)';
 
-COMMENT ON CONSTRAINT "__retry_steadfast_input_fk_root_23b7aa6ndw" ON "slice_den"."retry_steadfast_input" IS 'foreign key RetrySteadfastInput(root) to RetryRoot(root)';
-
-COMMENT ON CONSTRAINT "__retry_steadfast_output_fk_root_w6kqatfjqs" ON "slice_den"."retry_steadfast_output" IS 'foreign key RetrySteadfastOutput(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_steadfast_input_fk_root_step_3q67hyqyq6" ON "slice_den"."retry_steadfast_input" IS 'foreign key RetrySteadfastInput(root, step) to RetryStep(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_steadfast_output_fk_root_step_4f5g2y22yg" ON "slice_den"."retry_steadfast_output" IS 'foreign key RetrySteadfastOutput(root, step) to RetryDone(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_steadfast_output_fk_root_step_tr34nnpddn" ON "slice_den"."retry_steadfast_output" IS 'foreign key RetrySteadfastOutput(root, step) to RetrySteadfastInput(root, step)';
 
-COMMENT ON CONSTRAINT "__retry_step_fk_root_irk53krlyb" ON "slice_den"."retry_step" IS 'foreign key RetryStep(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_steadfast_output_fk_root_step_v5mp7yeltb" ON "slice_den"."retry_steadfast_output" IS 'foreign key RetrySteadfastOutput(root, step) to RetryStep(root, step)';
 
 COMMENT ON CONSTRAINT "__retry_step_fk_root_scope_xe4735gsrg" ON "slice_den"."retry_step" IS 'foreign key RetryStep(root, scope) to RetryAdmitted(root, scope)';
 
-COMMENT ON CONSTRAINT "__retry_throttled_finish_output_fk_root_mv74q2xwkd" ON "slice_den"."retry_throttled_finish_output" IS 'foreign key RetryThrottledFinishOutput(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_step_fk_root_scope_ubjxxgucjq" ON "slice_den"."retry_step" IS 'foreign key RetryStep(root, scope) to RetryScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__retry_throttled_finish_output_fk_root_step_aygvmljkir" ON "slice_den"."retry_throttled_finish_output" IS 'foreign key RetryThrottledFinishOutput(root, step) to RetryDone(root, step)';
 
-COMMENT ON CONSTRAINT "__retry_throttled_input_fk_root_ujimben3vx" ON "slice_den"."retry_throttled_input" IS 'foreign key RetryThrottledInput(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_throttled_finish_output_fk_root_step_ozfnseaqrp" ON "slice_den"."retry_throttled_finish_output" IS 'foreign key RetryThrottledFinishOutput(root, step) to RetryStep(root, step)';
+
+COMMENT ON CONSTRAINT "__retry_throttled_input_fk_root_scope_yejc25rnmm" ON "slice_den"."retry_throttled_input" IS 'foreign key RetryThrottledInput(root, scope) to RetryScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__retry_throttled_input_fk_scope_tag_kind_throttled_trbhgfiswb" ON "slice_den"."retry_throttled_input" IS 'foreign key RetryThrottledInput(scope, tag RetryRoot.kind = Throttled) to RetryRoot(root, kind)';
 
-COMMENT ON CONSTRAINT "__retry_unhurried_finish_output_fk_root_62xnu7b6zc" ON "slice_den"."retry_unhurried_finish_output" IS 'foreign key RetryUnhurriedFinishOutput(root) to RetryRoot(root)';
-
 COMMENT ON CONSTRAINT "__retry_unhurried_finish_output_fk_root_step_fzjhrc7zku" ON "slice_den"."retry_unhurried_finish_output" IS 'foreign key RetryUnhurriedFinishOutput(root, step) to RetryDone(root, step)';
 
-COMMENT ON CONSTRAINT "__retry_unhurried_input_fk_root_c6duisqpyu" ON "slice_den"."retry_unhurried_input" IS 'foreign key RetryUnhurriedInput(root) to RetryRoot(root)';
+COMMENT ON CONSTRAINT "__retry_unhurried_finish_output_fk_root_step_7jes3ip3gy" ON "slice_den"."retry_unhurried_finish_output" IS 'foreign key RetryUnhurriedFinishOutput(root, step) to RetryStep(root, step)';
+
+COMMENT ON CONSTRAINT "__retry_unhurried_input_fk_root_scope_5vujadmlj4" ON "slice_den"."retry_unhurried_input" IS 'foreign key RetryUnhurriedInput(root, scope) to RetryScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__retry_unhurried_input_fk_scope_tag_kind_unhurried_4hx7yzieur" ON "slice_den"."retry_unhurried_input" IS 'foreign key RetryUnhurriedInput(scope, tag RetryRoot.kind = Unhurried) to RetryRoot(root, kind)';
 
-COMMENT ON CONSTRAINT "__review_admitted_fk_root_au5nhgo5mx" ON "slice_den"."review_admitted" IS 'foreign key ReviewAdmitted(root) to ReviewRoot(root)';
-
 COMMENT ON CONSTRAINT "__review_admitted_fk_root_scope_wpazxz5qvc" ON "slice_den"."review_admitted" IS 'foreign key ReviewAdmitted(root, scope) to ReviewScope(root, scope)';
 
-COMMENT ON CONSTRAINT "__review_analyze_input_fk_root_gqgyyeei6s" ON "slice_den"."review_analyze_input" IS 'foreign key ReviewAnalyzeInput(root) to ReviewRoot(root)';
-
-COMMENT ON CONSTRAINT "__review_analyze_output_fk_root_hf5o3phpsb" ON "slice_den"."review_analyze_output" IS 'foreign key ReviewAnalyzeOutput(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_analyze_input_fk_root_step_yub2qzymcs" ON "slice_den"."review_analyze_input" IS 'foreign key ReviewAnalyzeInput(root, step) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_analyze_output_fk_root_step_h2ee2dnes4" ON "slice_den"."review_analyze_output" IS 'foreign key ReviewAnalyzeOutput(root, step) to ReviewAnalyzeInput(root, step)';
 
 COMMENT ON CONSTRAINT "__review_analyze_output_fk_root_step_4na2usm64g" ON "slice_den"."review_analyze_output" IS 'foreign key ReviewAnalyzeOutput(root, step) to ReviewDone(root, step)';
 
-COMMENT ON CONSTRAINT "__review_claim_fk_root_fsjmudg375" ON "slice_den"."review_claim" IS 'foreign key ReviewClaim(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_analyze_output_fk_root_step_mcuzplqybm" ON "slice_den"."review_analyze_output" IS 'foreign key ReviewAnalyzeOutput(root, step) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_claim_fk_root_step_7f6aefekwa" ON "slice_den"."review_claim" IS 'foreign key ReviewClaim(root, step) to ReviewStep(root, step)';
 
@@ -4923,45 +4919,45 @@ COMMENT ON CONSTRAINT "__review_claim_fk_root_step_attempt_pred_holds_4fz52sncza
 
 COMMENT ON CONSTRAINT "__review_claim_fk_root_step_pred_attempt_77xjl3onsd" ON "slice_den"."review_claim" IS 'foreign key ReviewClaim(root where Logic.ge(attempt, 1n), step, pred(attempt)) to ReviewEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__review_done_fk_root_soej6st3lg" ON "slice_den"."review_done" IS 'foreign key ReviewDone(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_done_fk_root_step_glhq6szbww" ON "slice_den"."review_done" IS 'foreign key ReviewDone(root, step) to ReviewStep(root, step)';
 
-COMMENT ON CONSTRAINT "__review_ended_fk_root_3czmjgel6e" ON "slice_den"."review_ended" IS 'foreign key ReviewEnded(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_ended_fk_root_step_7wr4emeec6" ON "slice_den"."review_ended" IS 'foreign key ReviewEnded(root, step) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_ended_fk_root_step_attempt_5k7tdgg5nm" ON "slice_den"."review_ended" IS 'foreign key ReviewEnded(root, step, attempt) to ReviewClaim(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__review_exhausted_fk_root_x6nlpney3u" ON "slice_den"."review_exhausted" IS 'foreign key ReviewExhausted(root) to ReviewRoot(root)';
-
 COMMENT ON CONSTRAINT "__review_exhausted_fk_root_step_7u7yvsyo3u" ON "slice_den"."review_exhausted" IS 'foreign key ReviewExhausted(root, step) to ReviewFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__review_failed_fk_root_kwv2eowiqu" ON "slice_den"."review_failed" IS 'foreign key ReviewFailed(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_exhausted_fk_root_step_uadodb5yiw" ON "slice_den"."review_exhausted" IS 'foreign key ReviewExhausted(root, step) to ReviewStep(root, step)';
 
-COMMENT ON CONSTRAINT "__review_fenced_fk_root_zo2nzc2gen" ON "slice_den"."review_fenced" IS 'foreign key ReviewFenced(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_failed_fk_root_step_fmegqiyhwt" ON "slice_den"."review_failed" IS 'foreign key ReviewFailed(root, step) to ReviewStep(root, step)';
+
+COMMENT ON CONSTRAINT "__review_fenced_fk_root_step_kdzvzqe26m" ON "slice_den"."review_fenced" IS 'foreign key ReviewFenced(root, step) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_fenced_fk_root_step_attempt_kxthyqyqwb" ON "slice_den"."review_fenced" IS 'foreign key ReviewFenced(root, step, attempt) to ReviewEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__review_finish_fk_root_7higpsa7lc" ON "slice_den"."review_finish" IS 'foreign key ReviewFinish(root) to ReviewRoot(root)';
-
 COMMENT ON CONSTRAINT "__review_finish_fk_root_scope_gmmfvaopci" ON "slice_den"."review_finish" IS 'foreign key ReviewFinish(root, scope) to ReviewAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__review_finish_fk_root_scope_av5o3ybt2d" ON "slice_den"."review_finish" IS 'foreign key ReviewFinish(root, scope) to ReviewScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__review_finish_fk_root_step_ev6ctqell2" ON "slice_den"."review_finish" IS 'foreign key ReviewFinish(root, step) to ReviewStep(root, step)';
 
-COMMENT ON CONSTRAINT "__review_gather_input_fk_root_aatej4c4qe" ON "slice_den"."review_gather_input" IS 'foreign key ReviewGatherInput(root) to ReviewRoot(root)';
-
-COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_root_gtzy54rpjy" ON "slice_den"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_gather_input_fk_root_step_db5vv26eez" ON "slice_den"."review_gather_input" IS 'foreign key ReviewGatherInput(root, step) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_root_step_zge42z5dw4" ON "slice_den"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(root, step) to ReviewGatherInput(root, step)';
 
-COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_root_step_pred_oebvwidbtm" ON "slice_den"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(root where Logic.ge(ordinal, 1n), step, pred(ordinal)) to ReviewGatherInputSizes(root, step, ordinal)';
+COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_root_step_27idztmubk" ON "slice_den"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(root, step) to ReviewStep(root, step)';
 
-COMMENT ON CONSTRAINT "__review_gather_output_fk_root_t2ns3ngaas" ON "slice_den"."review_gather_output" IS 'foreign key ReviewGatherOutput(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_gather_input_sizes_fk_root_step_pred_oebvwidbtm" ON "slice_den"."review_gather_input_sizes" IS 'foreign key ReviewGatherInputSizes(root where Logic.ge(ordinal, 1n), step, pred(ordinal)) to ReviewGatherInputSizes(root, step, ordinal)';
 
 COMMENT ON CONSTRAINT "__review_gather_output_fk_root_step_bt3tpfiw36" ON "slice_den"."review_gather_output" IS 'foreign key ReviewGatherOutput(root, step) to ReviewDone(root, step)';
 
 COMMENT ON CONSTRAINT "__review_gather_output_fk_root_step_ypsfoe6pny" ON "slice_den"."review_gather_output" IS 'foreign key ReviewGatherOutput(root, step) to ReviewGatherInput(root, step)';
 
-COMMENT ON CONSTRAINT "__review_held_fk_root_tg7gkvz6zi" ON "slice_den"."review_held" IS 'foreign key ReviewHeld(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_gather_output_fk_root_step_ni7dbzmuww" ON "slice_den"."review_gather_output" IS 'foreign key ReviewGatherOutput(root, step) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_held_fk_root_step_377oxpprpb" ON "slice_den"."review_held" IS 'foreign key ReviewHeld(root, step) to ReviewResult(root, step)';
+
+COMMENT ON CONSTRAINT "__review_held_fk_root_step_6ucwevd65f" ON "slice_den"."review_held" IS 'foreign key ReviewHeld(root, step) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_held_fk_root_step_attempt_43pd26ucr5" ON "slice_den"."review_held" IS 'foreign key ReviewHeld(root, step, attempt) to ReviewClaim(root, step, attempt)';
 
@@ -4971,51 +4967,49 @@ COMMENT ON CONSTRAINT "__review_hold_fk_root_step_attempt_pred_at_sqpugy4xri" ON
 
 COMMENT ON CONSTRAINT "__review_paused_fk_target_pred_turn_rig5fmgcvc" ON "slice_den"."review_paused" IS 'foreign key ReviewPaused(target, pred(turn)) to ReviewResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__review_questions_finish_output_fk_root_2jrpl46746" ON "slice_den"."review_questions_finish_output" IS 'foreign key ReviewQuestionsFinishOutput(root) to ReviewRoot(root)';
-
 COMMENT ON CONSTRAINT "__review_questions_finish_output_fk_root_step_flxzyo2ooj" ON "slice_den"."review_questions_finish_output" IS 'foreign key ReviewQuestionsFinishOutput(root, step) to ReviewDone(root, step)';
 
-COMMENT ON CONSTRAINT "__review_questions_input_fk_root_ysfek2wixo" ON "slice_den"."review_questions_input" IS 'foreign key ReviewQuestionsInput(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_questions_finish_output_fk_root_step_miwyapestz" ON "slice_den"."review_questions_finish_output" IS 'foreign key ReviewQuestionsFinishOutput(root, step) to ReviewStep(root, step)';
 
-COMMENT ON CONSTRAINT "__review_refusal_fk_root_gp4d5lwiig" ON "slice_den"."review_refusal" IS 'foreign key ReviewRefusal(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_questions_input_fk_root_scope_6uvp2sj3t7" ON "slice_den"."review_questions_input" IS 'foreign key ReviewQuestionsInput(root, scope) to ReviewScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__review_refusal_fk_root_step_i325iogm4w" ON "slice_den"."review_refusal" IS 'foreign key ReviewRefusal(root, step) to ReviewFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__review_result_fk_root_2wvmi67j4z" ON "slice_den"."review_result" IS 'foreign key ReviewResult(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_refusal_fk_root_step_ksoewu53t4" ON "slice_den"."review_refusal" IS 'foreign key ReviewRefusal(root, step) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_result_fk_root_step_m7ddrhxqqw" ON "slice_den"."review_result" IS 'foreign key ReviewResult(root, step) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_resumed_fk_target_turn_nvm252hscc" ON "slice_den"."review_resumed" IS 'foreign key ReviewResumed(target, turn) to ReviewPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__review_retry_fk_root_wtys3jovwi" ON "slice_den"."review_retry" IS 'foreign key ReviewRetry(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_retry_fk_root_step_ifbhbgbjic" ON "slice_den"."review_retry" IS 'foreign key ReviewRetry(root, step) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_retry_fk_root_step_attempt_iuo24rnbik" ON "slice_den"."review_retry" IS 'foreign key ReviewRetry(root, step, attempt) to ReviewEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__review_review_run_finish_output_fk_root_7v3t4ipzaa" ON "slice_den"."review_review_run_finish_output" IS 'foreign key ReviewReviewRunFinishOutput(root) to ReviewRoot(root)';
-
 COMMENT ON CONSTRAINT "__review_review_run_finish_output_fk_root_step_65iqvssdi2" ON "slice_den"."review_review_run_finish_output" IS 'foreign key ReviewReviewRunFinishOutput(root, step) to ReviewDone(root, step)';
 
-COMMENT ON CONSTRAINT "__review_review_run_input_fk_root_osb52qu33y" ON "slice_den"."review_review_run_input" IS 'foreign key ReviewReviewRunInput(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_review_run_finish_output_fk_root_step_fl4bfx2c4c" ON "slice_den"."review_review_run_finish_output" IS 'foreign key ReviewReviewRunFinishOutput(root, step) to ReviewStep(root, step)';
+
+COMMENT ON CONSTRAINT "__review_review_run_input_fk_root_scope_jojwgvs76k" ON "slice_den"."review_review_run_input" IS 'foreign key ReviewReviewRunInput(root, scope) to ReviewScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__review_review_run_input_fk_scope_tag_kind_review_mewu5adpnd" ON "slice_den"."review_review_run_input" IS 'foreign key ReviewReviewRunInput(scope, tag ReviewRoot.kind = ReviewRun) to ReviewRoot(root, kind)';
 
-COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_root_hyokohgtna" ON "slice_den"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(root) to ReviewRoot(root)';
-
 COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_root_scope_qoiz22wckm" ON "slice_den"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(root, scope) to ReviewReviewRunInput(root, scope)';
+
+COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_root_scope_6pgof5phxe" ON "slice_den"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(root, scope) to ReviewScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__review_review_run_input_sizes_fk_root_scope_pred_72aqqzv6rv" ON "slice_den"."review_review_run_input_sizes" IS 'foreign key ReviewReviewRunInputSizes(root where Logic.ge(ordinal, 1n), scope, pred(ordinal)) to ReviewReviewRunInputSizes(root, scope, ordinal)';
 
-COMMENT ON CONSTRAINT "__review_save_input_fk_root_sjf3h5qc3a" ON "slice_den"."review_save_input" IS 'foreign key ReviewSaveInput(root) to ReviewRoot(root)';
-
-COMMENT ON CONSTRAINT "__review_save_output_fk_root_oirx3ekjvp" ON "slice_den"."review_save_output" IS 'foreign key ReviewSaveOutput(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_save_input_fk_root_step_jwraq2sbzp" ON "slice_den"."review_save_input" IS 'foreign key ReviewSaveInput(root, step) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_save_output_fk_root_step_datnfhi7up" ON "slice_den"."review_save_output" IS 'foreign key ReviewSaveOutput(root, step) to ReviewDone(root, step)';
 
 COMMENT ON CONSTRAINT "__review_save_output_fk_root_step_vv5non4wsq" ON "slice_den"."review_save_output" IS 'foreign key ReviewSaveOutput(root, step) to ReviewSaveInput(root, step)';
 
-COMMENT ON CONSTRAINT "__review_saved_fk_root_x52ljhcnct" ON "slice_den"."review_saved" IS 'foreign key ReviewSaved(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_save_output_fk_root_step_drcr33c5uz" ON "slice_den"."review_save_output" IS 'foreign key ReviewSaveOutput(root, step) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_saved_fk_root_from_htuh7p3c55" ON "slice_den"."review_saved" IS 'foreign key ReviewSaved(root, from) to ReviewQuestionsFinishOutput(root, step)';
+
+COMMENT ON CONSTRAINT "__review_saved_fk_root_from_ku2omex6f7" ON "slice_den"."review_saved" IS 'foreign key ReviewSaved(root, from) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_saved_fk_root_to_o5cxc3jt3f" ON "slice_den"."review_saved" IS 'foreign key ReviewSaved(root, to) to ReviewSaveInput(root, step)';
 
@@ -5023,121 +5017,111 @@ COMMENT ON CONSTRAINT "__review_scope_fk_root_rc4vyqpoku" ON "slice_den"."review
 
 COMMENT ON CONSTRAINT "__review_skipped_fk_by_mzoxrlpp7w" ON "slice_den"."review_skipped" IS 'foreign key ReviewSkipped(by) to ReviewRoot(root)';
 
-COMMENT ON CONSTRAINT "__review_skipped_fk_root_wudw7u3tmk" ON "slice_den"."review_skipped" IS 'foreign key ReviewSkipped(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_skipped_fk_root_scope_o5jk25ddgb" ON "slice_den"."review_skipped" IS 'foreign key ReviewSkipped(root, scope) to ReviewScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__review_skipped_fk_scope_zgzwa7kzos" ON "slice_den"."review_skipped" IS 'foreign key ReviewSkipped(scope) to ReviewRoot(root)';
 
-COMMENT ON CONSTRAINT "__review_split_fk_root_jlqcbkgtug" ON "slice_den"."review_split" IS 'foreign key ReviewSplit(root) to ReviewRoot(root)';
-
 COMMENT ON CONSTRAINT "__review_split_fk_root_from_i46qo7w3dg" ON "slice_den"."review_split" IS 'foreign key ReviewSplit(root, from) to ReviewGatherOutput(root, step)';
 
-COMMENT ON CONSTRAINT "__review_split_fk_root_to_wrpn5vlkn4" ON "slice_den"."review_split" IS 'foreign key ReviewSplit(root, to) to ReviewQuestionsInput(root, scope)';
+COMMENT ON CONSTRAINT "__review_split_fk_root_from_ubl2q2g6ns" ON "slice_den"."review_split" IS 'foreign key ReviewSplit(root, from) to ReviewStep(root, step)';
 
-COMMENT ON CONSTRAINT "__review_start_scope_fk_root_veunsb37ej" ON "slice_den"."review_start_scope" IS 'foreign key ReviewStartScope(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_split_fk_root_to_wrpn5vlkn4" ON "slice_den"."review_split" IS 'foreign key ReviewSplit(root, to) to ReviewQuestionsInput(root, scope)';
 
 COMMENT ON CONSTRAINT "__review_start_scope_fk_root_child_u342utzlud" ON "slice_den"."review_start_scope" IS 'foreign key ReviewStartScope(root, child) to ReviewScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__review_start_scope_fk_root_scope_ax6i5m4tah" ON "slice_den"."review_start_scope" IS 'foreign key ReviewStartScope(root, scope) to ReviewAdmitted(root, scope)';
 
-COMMENT ON CONSTRAINT "__review_start_step_fk_root_kc2xmrejre" ON "slice_den"."review_start_step" IS 'foreign key ReviewStartStep(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_start_scope_fk_root_scope_ewcgg4gkqi" ON "slice_den"."review_start_scope" IS 'foreign key ReviewStartScope(root, scope) to ReviewScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__review_start_step_fk_root_scope_elajx6ojmn" ON "slice_den"."review_start_step" IS 'foreign key ReviewStartStep(root, scope) to ReviewAdmitted(root, scope)';
 
-COMMENT ON CONSTRAINT "__review_start_step_fk_root_step_hydxoqk6ko" ON "slice_den"."review_start_step" IS 'foreign key ReviewStartStep(root, step) to ReviewStep(root, step)';
+COMMENT ON CONSTRAINT "__review_start_step_fk_root_scope_hm4o5wnnq3" ON "slice_den"."review_start_step" IS 'foreign key ReviewStartStep(root, scope) to ReviewScope(root, scope)';
 
-COMMENT ON CONSTRAINT "__review_step_fk_root_gk2twzc54d" ON "slice_den"."review_step" IS 'foreign key ReviewStep(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_start_step_fk_root_step_hydxoqk6ko" ON "slice_den"."review_start_step" IS 'foreign key ReviewStartStep(root, step) to ReviewStep(root, step)';
 
 COMMENT ON CONSTRAINT "__review_step_fk_root_scope_a6ifj3up6d" ON "slice_den"."review_step" IS 'foreign key ReviewStep(root, scope) to ReviewAdmitted(root, scope)';
 
-COMMENT ON CONSTRAINT "__review_within_fk_root_kbpltgshop" ON "slice_den"."review_within" IS 'foreign key ReviewWithin(root) to ReviewRoot(root)';
+COMMENT ON CONSTRAINT "__review_step_fk_root_scope_4m7aoxywg2" ON "slice_den"."review_step" IS 'foreign key ReviewStep(root, scope) to ReviewScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__review_within_fk_root_parent_xrlmd76tph" ON "slice_den"."review_within" IS 'foreign key ReviewWithin(root, parent) to ReviewScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__review_within_fk_root_scope_2kmwa6l6ye" ON "slice_den"."review_within" IS 'foreign key ReviewWithin(root, scope) to ReviewScope(root, scope)';
 
-COMMENT ON CONSTRAINT "__sync_admitted_fk_root_vjue6n3y7o" ON "slice_den"."sync_admitted" IS 'foreign key SyncAdmitted(root) to SyncRoot(root)';
-
 COMMENT ON CONSTRAINT "__sync_admitted_fk_root_scope_qm32lzefa4" ON "slice_den"."sync_admitted" IS 'foreign key SyncAdmitted(root, scope) to SyncScope(root, scope)';
 
-COMMENT ON CONSTRAINT "__sync_build_input_fk_root_gipbudtoeu" ON "slice_den"."sync_build_input" IS 'foreign key SyncBuildInput(root) to SyncRoot(root)';
-
-COMMENT ON CONSTRAINT "__sync_build_output_fk_root_23goyrum2n" ON "slice_den"."sync_build_output" IS 'foreign key SyncBuildOutput(root) to SyncRoot(root)';
+COMMENT ON CONSTRAINT "__sync_build_input_fk_root_step_y7yc5ng7jk" ON "slice_den"."sync_build_input" IS 'foreign key SyncBuildInput(root, step) to SyncStep(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_build_output_fk_root_step_bks325utix" ON "slice_den"."sync_build_output" IS 'foreign key SyncBuildOutput(root, step) to SyncBuildInput(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_build_output_fk_root_step_rgsowc3ndi" ON "slice_den"."sync_build_output" IS 'foreign key SyncBuildOutput(root, step) to SyncDone(root, step)';
 
-COMMENT ON CONSTRAINT "__sync_claim_fk_root_j45k52a2va" ON "slice_den"."sync_claim" IS 'foreign key SyncClaim(root) to SyncRoot(root)';
+COMMENT ON CONSTRAINT "__sync_build_output_fk_root_step_guomzcrnnh" ON "slice_den"."sync_build_output" IS 'foreign key SyncBuildOutput(root, step) to SyncStep(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_claim_fk_root_step_quvtx5ttao" ON "slice_den"."sync_claim" IS 'foreign key SyncClaim(root, step) to SyncStep(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_claim_fk_root_step_pred_attempt_bol6pjm3eo" ON "slice_den"."sync_claim" IS 'foreign key SyncClaim(root where Logic.ge(attempt, 1n), step, pred(attempt)) to SyncEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__sync_copy_input_fk_root_5b344cu54y" ON "slice_den"."sync_copy_input" IS 'foreign key SyncCopyInput(root) to SyncRoot(root)';
-
-COMMENT ON CONSTRAINT "__sync_copy_output_fk_root_ux2mtgkj5a" ON "slice_den"."sync_copy_output" IS 'foreign key SyncCopyOutput(root) to SyncRoot(root)';
+COMMENT ON CONSTRAINT "__sync_copy_input_fk_root_step_5wme7kprty" ON "slice_den"."sync_copy_input" IS 'foreign key SyncCopyInput(root, step) to SyncStep(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_copy_output_fk_root_step_si7qys3qgo" ON "slice_den"."sync_copy_output" IS 'foreign key SyncCopyOutput(root, step) to SyncCopyInput(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_copy_output_fk_root_step_szcmye7j7w" ON "slice_den"."sync_copy_output" IS 'foreign key SyncCopyOutput(root, step) to SyncDone(root, step)';
 
-COMMENT ON CONSTRAINT "__sync_done_fk_root_uyb2bhzaad" ON "slice_den"."sync_done" IS 'foreign key SyncDone(root) to SyncRoot(root)';
+COMMENT ON CONSTRAINT "__sync_copy_output_fk_root_step_xm2lbcdbsr" ON "slice_den"."sync_copy_output" IS 'foreign key SyncCopyOutput(root, step) to SyncStep(root, step)';
 
-COMMENT ON CONSTRAINT "__sync_ended_fk_root_7rgqazkh4x" ON "slice_den"."sync_ended" IS 'foreign key SyncEnded(root) to SyncRoot(root)';
+COMMENT ON CONSTRAINT "__sync_done_fk_root_step_ftvlmvrpba" ON "slice_den"."sync_done" IS 'foreign key SyncDone(root, step) to SyncStep(root, step)';
+
+COMMENT ON CONSTRAINT "__sync_ended_fk_root_step_i2lhyuwibk" ON "slice_den"."sync_ended" IS 'foreign key SyncEnded(root, step) to SyncStep(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_ended_fk_root_step_attempt_n3qg5glb33" ON "slice_den"."sync_ended" IS 'foreign key SyncEnded(root, step, attempt) to SyncClaim(root, step, attempt)';
 
 COMMENT ON CONSTRAINT "__sync_exclusive_fk_kind_key_pred_turn_opo5gkimc4" ON "slice_den"."sync_exclusive" IS 'foreign key SyncExclusive(kind, key, pred(turn)) to SyncReleased(kind, key, turn)';
 
-COMMENT ON CONSTRAINT "__sync_exclusive_key_fk_root_urgmjhp5hz" ON "slice_den"."sync_exclusive_key" IS 'foreign key SyncExclusiveKey(root) to SyncRoot(root)';
-
 COMMENT ON CONSTRAINT "__sync_exclusive_key_fk_root_scope_ru5tdbmjnc" ON "slice_den"."sync_exclusive_key" IS 'foreign key SyncExclusiveKey(root, scope) to SyncScope(root, scope)';
-
-COMMENT ON CONSTRAINT "__sync_exhausted_fk_root_wzt4yzl5i3" ON "slice_den"."sync_exhausted" IS 'foreign key SyncExhausted(root) to SyncRoot(root)';
 
 COMMENT ON CONSTRAINT "__sync_exhausted_fk_root_step_22ldo45blt" ON "slice_den"."sync_exhausted" IS 'foreign key SyncExhausted(root, step) to SyncFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__sync_failed_fk_root_gzx4vab76y" ON "slice_den"."sync_failed" IS 'foreign key SyncFailed(root) to SyncRoot(root)';
+COMMENT ON CONSTRAINT "__sync_exhausted_fk_root_step_kmkjf7jent" ON "slice_den"."sync_exhausted" IS 'foreign key SyncExhausted(root, step) to SyncStep(root, step)';
 
-COMMENT ON CONSTRAINT "__sync_fenced_fk_root_yvz4qwnipt" ON "slice_den"."sync_fenced" IS 'foreign key SyncFenced(root) to SyncRoot(root)';
+COMMENT ON CONSTRAINT "__sync_failed_fk_root_step_myvzlf5ffc" ON "slice_den"."sync_failed" IS 'foreign key SyncFailed(root, step) to SyncStep(root, step)';
+
+COMMENT ON CONSTRAINT "__sync_fenced_fk_root_step_rx2gydw664" ON "slice_den"."sync_fenced" IS 'foreign key SyncFenced(root, step) to SyncStep(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_fenced_fk_root_step_attempt_hkkt227xm7" ON "slice_den"."sync_fenced" IS 'foreign key SyncFenced(root, step, attempt) to SyncEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__sync_finish_fk_root_xla366yua7" ON "slice_den"."sync_finish" IS 'foreign key SyncFinish(root) to SyncRoot(root)';
-
 COMMENT ON CONSTRAINT "__sync_finish_fk_root_scope_n57v7sorjw" ON "slice_den"."sync_finish" IS 'foreign key SyncFinish(root, scope) to SyncAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__sync_finish_fk_root_scope_nkwaqqjkro" ON "slice_den"."sync_finish" IS 'foreign key SyncFinish(root, scope) to SyncScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__sync_finish_fk_root_step_gtaz64zwer" ON "slice_den"."sync_finish" IS 'foreign key SyncFinish(root, step) to SyncStep(root, step)';
 
-COMMENT ON CONSTRAINT "__sync_gold_finish_output_fk_root_brcapjkr3d" ON "slice_den"."sync_gold_finish_output" IS 'foreign key SyncGoldFinishOutput(root) to SyncRoot(root)';
-
 COMMENT ON CONSTRAINT "__sync_gold_finish_output_fk_root_step_mamfz2phff" ON "slice_den"."sync_gold_finish_output" IS 'foreign key SyncGoldFinishOutput(root, step) to SyncDone(root, step)';
 
-COMMENT ON CONSTRAINT "__sync_gold_input_fk_root_k3spkcvsef" ON "slice_den"."sync_gold_input" IS 'foreign key SyncGoldInput(root) to SyncRoot(root)';
+COMMENT ON CONSTRAINT "__sync_gold_finish_output_fk_root_step_4oqis6llqp" ON "slice_den"."sync_gold_finish_output" IS 'foreign key SyncGoldFinishOutput(root, step) to SyncStep(root, step)';
+
+COMMENT ON CONSTRAINT "__sync_gold_input_fk_root_scope_mxp3g3bgni" ON "slice_den"."sync_gold_input" IS 'foreign key SyncGoldInput(root, scope) to SyncScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__sync_gold_input_fk_scope_tag_kind_gold_jrvjw7qlef" ON "slice_den"."sync_gold_input" IS 'foreign key SyncGoldInput(scope, tag SyncRoot.kind = Gold) to SyncRoot(root, kind)';
 
-COMMENT ON CONSTRAINT "__sync_held_fk_root_rzde73ueha" ON "slice_den"."sync_held" IS 'foreign key SyncHeld(root) to SyncRoot(root)';
-
 COMMENT ON CONSTRAINT "__sync_held_fk_root_step_ehzwf7un2t" ON "slice_den"."sync_held" IS 'foreign key SyncHeld(root, step) to SyncResult(root, step)';
+
+COMMENT ON CONSTRAINT "__sync_held_fk_root_step_vuwropgke7" ON "slice_den"."sync_held" IS 'foreign key SyncHeld(root, step) to SyncStep(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_held_fk_root_step_attempt_mcpqusift2" ON "slice_den"."sync_held" IS 'foreign key SyncHeld(root, step, attempt) to SyncClaim(root, step, attempt)';
 
 COMMENT ON CONSTRAINT "__sync_paused_fk_target_pred_turn_ovy6ezc3ey" ON "slice_den"."sync_paused" IS 'foreign key SyncPaused(target, pred(turn)) to SyncResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__sync_refusal_fk_root_2vdwma7htq" ON "slice_den"."sync_refusal" IS 'foreign key SyncRefusal(root) to SyncRoot(root)';
-
 COMMENT ON CONSTRAINT "__sync_refusal_fk_root_step_yvga4jg2h6" ON "slice_den"."sync_refusal" IS 'foreign key SyncRefusal(root, step) to SyncFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__sync_released_fk_kind_key_turn_e54e5at4ya" ON "slice_den"."sync_released" IS 'foreign key SyncReleased(kind, key, turn) to SyncExclusive(kind, key, turn)';
+COMMENT ON CONSTRAINT "__sync_refusal_fk_root_step_65sxus7ykl" ON "slice_den"."sync_refusal" IS 'foreign key SyncRefusal(root, step) to SyncStep(root, step)';
 
-COMMENT ON CONSTRAINT "__sync_result_fk_root_lt2lf7ofou" ON "slice_den"."sync_result" IS 'foreign key SyncResult(root) to SyncRoot(root)';
+COMMENT ON CONSTRAINT "__sync_released_fk_kind_key_turn_e54e5at4ya" ON "slice_den"."sync_released" IS 'foreign key SyncReleased(kind, key, turn) to SyncExclusive(kind, key, turn)';
 
 COMMENT ON CONSTRAINT "__sync_result_fk_root_step_dkzpapizq3" ON "slice_den"."sync_result" IS 'foreign key SyncResult(root, step) to SyncStep(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_resumed_fk_target_turn_x3nw56h4tx" ON "slice_den"."sync_resumed" IS 'foreign key SyncResumed(target, turn) to SyncPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__sync_retry_fk_root_27tnti7cc2" ON "slice_den"."sync_retry" IS 'foreign key SyncRetry(root) to SyncRoot(root)';
+COMMENT ON CONSTRAINT "__sync_retry_fk_root_step_mugwrgmigc" ON "slice_den"."sync_retry" IS 'foreign key SyncRetry(root, step) to SyncStep(root, step)';
 
 COMMENT ON CONSTRAINT "__sync_retry_fk_root_step_attempt_cg4q7avist" ON "slice_den"."sync_retry" IS 'foreign key SyncRetry(root, step, attempt) to SyncEnded(root, step, attempt)';
 
@@ -5145,87 +5129,81 @@ COMMENT ON CONSTRAINT "__sync_scope_fk_root_wx7v6qyztc" ON "slice_den"."sync_sco
 
 COMMENT ON CONSTRAINT "__sync_skipped_fk_by_wk5g3hkdey" ON "slice_den"."sync_skipped" IS 'foreign key SyncSkipped(by) to SyncRoot(root)';
 
-COMMENT ON CONSTRAINT "__sync_skipped_fk_root_jx4njrriz7" ON "slice_den"."sync_skipped" IS 'foreign key SyncSkipped(root) to SyncRoot(root)';
+COMMENT ON CONSTRAINT "__sync_skipped_fk_root_scope_dct5o42l56" ON "slice_den"."sync_skipped" IS 'foreign key SyncSkipped(root, scope) to SyncScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__sync_skipped_fk_scope_hufe6pzhes" ON "slice_den"."sync_skipped" IS 'foreign key SyncSkipped(scope) to SyncRoot(root)';
 
-COMMENT ON CONSTRAINT "__sync_start_step_fk_root_zbxbx6nakh" ON "slice_den"."sync_start_step" IS 'foreign key SyncStartStep(root) to SyncRoot(root)';
-
 COMMENT ON CONSTRAINT "__sync_start_step_fk_root_scope_e4yzl2gkau" ON "slice_den"."sync_start_step" IS 'foreign key SyncStartStep(root, scope) to SyncAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__sync_start_step_fk_root_scope_nacgozh2kl" ON "slice_den"."sync_start_step" IS 'foreign key SyncStartStep(root, scope) to SyncScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__sync_start_step_fk_root_step_btl5tfw67n" ON "slice_den"."sync_start_step" IS 'foreign key SyncStartStep(root, step) to SyncStep(root, step)';
 
-COMMENT ON CONSTRAINT "__sync_step_fk_root_7koklte7xf" ON "slice_den"."sync_step" IS 'foreign key SyncStep(root) to SyncRoot(root)';
-
 COMMENT ON CONSTRAINT "__sync_step_fk_root_scope_uniymuuxtn" ON "slice_den"."sync_step" IS 'foreign key SyncStep(root, scope) to SyncAdmitted(root, scope)';
 
-COMMENT ON CONSTRAINT "__sync_sync_run_finish_output_fk_root_cgctmcnojv" ON "slice_den"."sync_sync_run_finish_output" IS 'foreign key SyncSyncRunFinishOutput(root) to SyncRoot(root)';
+COMMENT ON CONSTRAINT "__sync_step_fk_root_scope_enzxhjw2gj" ON "slice_den"."sync_step" IS 'foreign key SyncStep(root, scope) to SyncScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__sync_sync_run_finish_output_fk_root_step_c7wzop2yks" ON "slice_den"."sync_sync_run_finish_output" IS 'foreign key SyncSyncRunFinishOutput(root, step) to SyncDone(root, step)';
 
-COMMENT ON CONSTRAINT "__sync_sync_run_input_fk_root_e3ein75db7" ON "slice_den"."sync_sync_run_input" IS 'foreign key SyncSyncRunInput(root) to SyncRoot(root)';
+COMMENT ON CONSTRAINT "__sync_sync_run_finish_output_fk_root_step_wsebsn5uc2" ON "slice_den"."sync_sync_run_finish_output" IS 'foreign key SyncSyncRunFinishOutput(root, step) to SyncStep(root, step)';
+
+COMMENT ON CONSTRAINT "__sync_sync_run_input_fk_root_scope_ju7hx4q2mn" ON "slice_den"."sync_sync_run_input" IS 'foreign key SyncSyncRunInput(root, scope) to SyncScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__sync_sync_run_input_fk_scope_tag_kind_sync_run_5ldve3xhyp" ON "slice_den"."sync_sync_run_input" IS 'foreign key SyncSyncRunInput(scope, tag SyncRoot.kind = SyncRun) to SyncRoot(root, kind)';
 
-COMMENT ON CONSTRAINT "__writeback_admitted_fk_root_3pmou3v4ov" ON "slice_den"."writeback_admitted" IS 'foreign key WritebackAdmitted(root) to WritebackRoot(root)';
-
 COMMENT ON CONSTRAINT "__writeback_admitted_fk_root_scope_qqqzahnyf2" ON "slice_den"."writeback_admitted" IS 'foreign key WritebackAdmitted(root, scope) to WritebackScope(root, scope)';
-
-COMMENT ON CONSTRAINT "__writeback_claim_fk_root_t5utqjo4kb" ON "slice_den"."writeback_claim" IS 'foreign key WritebackClaim(root) to WritebackRoot(root)';
 
 COMMENT ON CONSTRAINT "__writeback_claim_fk_root_step_zg75zksbji" ON "slice_den"."writeback_claim" IS 'foreign key WritebackClaim(root, step) to WritebackStep(root, step)';
 
 COMMENT ON CONSTRAINT "__writeback_claim_fk_root_step_pred_attempt_4zvl2uw25a" ON "slice_den"."writeback_claim" IS 'foreign key WritebackClaim(root where Logic.ge(attempt, 1n), step, pred(attempt)) to WritebackEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__writeback_deliver_input_fk_root_fzl4wgyinc" ON "slice_den"."writeback_deliver_input" IS 'foreign key WritebackDeliverInput(root) to WritebackRoot(root)';
-
-COMMENT ON CONSTRAINT "__writeback_deliver_output_fk_root_tju66l373v" ON "slice_den"."writeback_deliver_output" IS 'foreign key WritebackDeliverOutput(root) to WritebackRoot(root)';
+COMMENT ON CONSTRAINT "__writeback_deliver_input_fk_root_step_kv5flpjg57" ON "slice_den"."writeback_deliver_input" IS 'foreign key WritebackDeliverInput(root, step) to WritebackStep(root, step)';
 
 COMMENT ON CONSTRAINT "__writeback_deliver_output_fk_root_step_oqndhmdkte" ON "slice_den"."writeback_deliver_output" IS 'foreign key WritebackDeliverOutput(root, step) to WritebackDeliverInput(root, step)';
 
 COMMENT ON CONSTRAINT "__writeback_deliver_output_fk_root_step_fcccly2svu" ON "slice_den"."writeback_deliver_output" IS 'foreign key WritebackDeliverOutput(root, step) to WritebackDone(root, step)';
 
-COMMENT ON CONSTRAINT "__writeback_done_fk_root_qxxfxxjt2a" ON "slice_den"."writeback_done" IS 'foreign key WritebackDone(root) to WritebackRoot(root)';
+COMMENT ON CONSTRAINT "__writeback_deliver_output_fk_root_step_uwlwbh6tz7" ON "slice_den"."writeback_deliver_output" IS 'foreign key WritebackDeliverOutput(root, step) to WritebackStep(root, step)';
 
-COMMENT ON CONSTRAINT "__writeback_ended_fk_root_5w55u5dwo4" ON "slice_den"."writeback_ended" IS 'foreign key WritebackEnded(root) to WritebackRoot(root)';
+COMMENT ON CONSTRAINT "__writeback_done_fk_root_step_bzwxzhndka" ON "slice_den"."writeback_done" IS 'foreign key WritebackDone(root, step) to WritebackStep(root, step)';
+
+COMMENT ON CONSTRAINT "__writeback_ended_fk_root_step_am67uqomrg" ON "slice_den"."writeback_ended" IS 'foreign key WritebackEnded(root, step) to WritebackStep(root, step)';
 
 COMMENT ON CONSTRAINT "__writeback_ended_fk_root_step_attempt_qh4jnsspop" ON "slice_den"."writeback_ended" IS 'foreign key WritebackEnded(root, step, attempt) to WritebackClaim(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__writeback_exhausted_fk_root_42qcqjcao3" ON "slice_den"."writeback_exhausted" IS 'foreign key WritebackExhausted(root) to WritebackRoot(root)';
-
 COMMENT ON CONSTRAINT "__writeback_exhausted_fk_root_step_gfmcwvfpwb" ON "slice_den"."writeback_exhausted" IS 'foreign key WritebackExhausted(root, step) to WritebackFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__writeback_failed_fk_root_bs7oqx2awz" ON "slice_den"."writeback_failed" IS 'foreign key WritebackFailed(root) to WritebackRoot(root)';
+COMMENT ON CONSTRAINT "__writeback_exhausted_fk_root_step_xwgnlixkqu" ON "slice_den"."writeback_exhausted" IS 'foreign key WritebackExhausted(root, step) to WritebackStep(root, step)';
 
-COMMENT ON CONSTRAINT "__writeback_fenced_fk_root_34etxfxqnc" ON "slice_den"."writeback_fenced" IS 'foreign key WritebackFenced(root) to WritebackRoot(root)';
+COMMENT ON CONSTRAINT "__writeback_failed_fk_root_step_ep5ube2q2t" ON "slice_den"."writeback_failed" IS 'foreign key WritebackFailed(root, step) to WritebackStep(root, step)';
+
+COMMENT ON CONSTRAINT "__writeback_fenced_fk_root_step_jryffdx4b3" ON "slice_den"."writeback_fenced" IS 'foreign key WritebackFenced(root, step) to WritebackStep(root, step)';
 
 COMMENT ON CONSTRAINT "__writeback_fenced_fk_root_step_attempt_scgwb3deqz" ON "slice_den"."writeback_fenced" IS 'foreign key WritebackFenced(root, step, attempt) to WritebackEnded(root, step, attempt)';
 
-COMMENT ON CONSTRAINT "__writeback_finish_fk_root_wihwtidkg2" ON "slice_den"."writeback_finish" IS 'foreign key WritebackFinish(root) to WritebackRoot(root)';
-
 COMMENT ON CONSTRAINT "__writeback_finish_fk_root_scope_wktu6oamh6" ON "slice_den"."writeback_finish" IS 'foreign key WritebackFinish(root, scope) to WritebackAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__writeback_finish_fk_root_scope_2ufa2arlo5" ON "slice_den"."writeback_finish" IS 'foreign key WritebackFinish(root, scope) to WritebackScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__writeback_finish_fk_root_step_x7bocjavzm" ON "slice_den"."writeback_finish" IS 'foreign key WritebackFinish(root, step) to WritebackStep(root, step)';
 
-COMMENT ON CONSTRAINT "__writeback_held_fk_root_mothonlblc" ON "slice_den"."writeback_held" IS 'foreign key WritebackHeld(root) to WritebackRoot(root)';
-
 COMMENT ON CONSTRAINT "__writeback_held_fk_root_step_5jfudzwxhs" ON "slice_den"."writeback_held" IS 'foreign key WritebackHeld(root, step) to WritebackResult(root, step)';
+
+COMMENT ON CONSTRAINT "__writeback_held_fk_root_step_ujyn46mfgy" ON "slice_den"."writeback_held" IS 'foreign key WritebackHeld(root, step) to WritebackStep(root, step)';
 
 COMMENT ON CONSTRAINT "__writeback_held_fk_root_step_attempt_7rv7r23ugx" ON "slice_den"."writeback_held" IS 'foreign key WritebackHeld(root, step, attempt) to WritebackClaim(root, step, attempt)';
 
 COMMENT ON CONSTRAINT "__writeback_paused_fk_target_pred_turn_rvsgo6wgpe" ON "slice_den"."writeback_paused" IS 'foreign key WritebackPaused(target, pred(turn)) to WritebackResumed(target, turn)';
 
-COMMENT ON CONSTRAINT "__writeback_refusal_fk_root_xssissz2nt" ON "slice_den"."writeback_refusal" IS 'foreign key WritebackRefusal(root) to WritebackRoot(root)';
-
 COMMENT ON CONSTRAINT "__writeback_refusal_fk_root_step_xpfkdcxaxw" ON "slice_den"."writeback_refusal" IS 'foreign key WritebackRefusal(root, step) to WritebackFailed(root, step)';
 
-COMMENT ON CONSTRAINT "__writeback_result_fk_root_bkmxvortse" ON "slice_den"."writeback_result" IS 'foreign key WritebackResult(root) to WritebackRoot(root)';
+COMMENT ON CONSTRAINT "__writeback_refusal_fk_root_step_sjojme5rf4" ON "slice_den"."writeback_refusal" IS 'foreign key WritebackRefusal(root, step) to WritebackStep(root, step)';
 
 COMMENT ON CONSTRAINT "__writeback_result_fk_root_step_hpxhblq2jh" ON "slice_den"."writeback_result" IS 'foreign key WritebackResult(root, step) to WritebackStep(root, step)';
 
 COMMENT ON CONSTRAINT "__writeback_resumed_fk_target_turn_vfx6l6vk75" ON "slice_den"."writeback_resumed" IS 'foreign key WritebackResumed(target, turn) to WritebackPaused(target, turn)';
 
-COMMENT ON CONSTRAINT "__writeback_retry_fk_root_mzphhcytkj" ON "slice_den"."writeback_retry" IS 'foreign key WritebackRetry(root) to WritebackRoot(root)';
+COMMENT ON CONSTRAINT "__writeback_retry_fk_root_step_mqrj7w6oik" ON "slice_den"."writeback_retry" IS 'foreign key WritebackRetry(root, step) to WritebackStep(root, step)';
 
 COMMENT ON CONSTRAINT "__writeback_retry_fk_root_step_attempt_w6r4myovu5" ON "slice_den"."writeback_retry" IS 'foreign key WritebackRetry(root, step, attempt) to WritebackEnded(root, step, attempt)';
 
@@ -5233,25 +5211,25 @@ COMMENT ON CONSTRAINT "__writeback_scope_fk_root_ewz6khigbz" ON "slice_den"."wri
 
 COMMENT ON CONSTRAINT "__writeback_skipped_fk_by_3dxz35zl4d" ON "slice_den"."writeback_skipped" IS 'foreign key WritebackSkipped(by) to WritebackRoot(root)';
 
-COMMENT ON CONSTRAINT "__writeback_skipped_fk_root_xonhvqo66s" ON "slice_den"."writeback_skipped" IS 'foreign key WritebackSkipped(root) to WritebackRoot(root)';
+COMMENT ON CONSTRAINT "__writeback_skipped_fk_root_scope_oiafhni4pk" ON "slice_den"."writeback_skipped" IS 'foreign key WritebackSkipped(root, scope) to WritebackScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__writeback_skipped_fk_scope_4nuhyyemgw" ON "slice_den"."writeback_skipped" IS 'foreign key WritebackSkipped(scope) to WritebackRoot(root)';
 
-COMMENT ON CONSTRAINT "__writeback_start_step_fk_root_2qouhvvgko" ON "slice_den"."writeback_start_step" IS 'foreign key WritebackStartStep(root) to WritebackRoot(root)';
-
 COMMENT ON CONSTRAINT "__writeback_start_step_fk_root_scope_rlujmxpldi" ON "slice_den"."writeback_start_step" IS 'foreign key WritebackStartStep(root, scope) to WritebackAdmitted(root, scope)';
+
+COMMENT ON CONSTRAINT "__writeback_start_step_fk_root_scope_hro4duvhvg" ON "slice_den"."writeback_start_step" IS 'foreign key WritebackStartStep(root, scope) to WritebackScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__writeback_start_step_fk_root_step_6rk46kjksz" ON "slice_den"."writeback_start_step" IS 'foreign key WritebackStartStep(root, step) to WritebackStep(root, step)';
 
-COMMENT ON CONSTRAINT "__writeback_step_fk_root_cjzy2tu26p" ON "slice_den"."writeback_step" IS 'foreign key WritebackStep(root) to WritebackRoot(root)';
-
 COMMENT ON CONSTRAINT "__writeback_step_fk_root_scope_4chp4gjey5" ON "slice_den"."writeback_step" IS 'foreign key WritebackStep(root, scope) to WritebackAdmitted(root, scope)';
 
-COMMENT ON CONSTRAINT "__writeback_writeback_finish_output_fk_root_fpv5ktmqpd" ON "slice_den"."writeback_writeback_finish_output" IS 'foreign key WritebackWritebackFinishOutput(root) to WritebackRoot(root)';
+COMMENT ON CONSTRAINT "__writeback_step_fk_root_scope_2ldlcdao3z" ON "slice_den"."writeback_step" IS 'foreign key WritebackStep(root, scope) to WritebackScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__writeback_writeback_finish_output_fk_root_step_mv27ofwfme" ON "slice_den"."writeback_writeback_finish_output" IS 'foreign key WritebackWritebackFinishOutput(root, step) to WritebackDone(root, step)';
 
-COMMENT ON CONSTRAINT "__writeback_writeback_input_fk_root_dnhnpqnqud" ON "slice_den"."writeback_writeback_input" IS 'foreign key WritebackWritebackInput(root) to WritebackRoot(root)';
+COMMENT ON CONSTRAINT "__writeback_writeback_finish_output_fk_root_step_holznxpvrn" ON "slice_den"."writeback_writeback_finish_output" IS 'foreign key WritebackWritebackFinishOutput(root, step) to WritebackStep(root, step)';
+
+COMMENT ON CONSTRAINT "__writeback_writeback_input_fk_root_scope_kx6ojnouad" ON "slice_den"."writeback_writeback_input" IS 'foreign key WritebackWritebackInput(root, scope) to WritebackScope(root, scope)';
 
 COMMENT ON CONSTRAINT "__writeback_writeback_input_fk_scope_tag_kind_wy35jinrsh" ON "slice_den"."writeback_writeback_input" IS 'foreign key WritebackWritebackInput(scope, tag WritebackRoot.kind = Writeback) to WritebackRoot(root, kind)';
 
@@ -5369,9 +5347,7 @@ COMMENT ON INDEX "slice_den"."__assign_skipped_ix_scope_ftup4gbap6" IS 'btree in
 
 COMMENT ON INDEX "slice_den"."__assign_step_ix_root_scope_64vujnvoiu" IS 'btree index AssignStep(root, scope)';
 
-COMMENT ON INDEX "slice_den"."__assign_step_ix_scope_kind_step_xn2zxx73po" IS 'btree index AssignStep(scope, kind, step)';
-
-COMMENT ON INDEX "slice_den"."__assign_step_ix_step_root_cy4ylv4gbw" IS 'btree index AssignStep(step, root)';
+COMMENT ON INDEX "slice_den"."__assign_step_ix_scope_kind_4jyx7qz4gq" IS 'btree index AssignStep(scope, kind)';
 
 COMMENT ON INDEX "slice_den"."__chain_admitted_ix_scope_v57a4nivm3" IS 'btree index ChainAdmitted(scope)';
 
@@ -5415,9 +5391,7 @@ COMMENT ON INDEX "slice_den"."__chain_skipped_ix_scope_jvrcbbmf2m" IS 'btree ind
 
 COMMENT ON INDEX "slice_den"."__chain_step_ix_root_scope_srrhrbyetn" IS 'btree index ChainStep(root, scope)';
 
-COMMENT ON INDEX "slice_den"."__chain_step_ix_scope_kind_step_tsdjtgaey5" IS 'btree index ChainStep(scope, kind, step)';
-
-COMMENT ON INDEX "slice_den"."__chain_step_ix_step_kind_root_2pdoze4bhr" IS 'btree index ChainStep(step, kind, root)';
+COMMENT ON INDEX "slice_den"."__chain_step_ix_scope_kind_spn3gys2vi" IS 'btree index ChainStep(scope, kind)';
 
 COMMENT ON INDEX "slice_den"."__clock_admitted_ix_scope_kljsbnk7gu" IS 'btree index ClockAdmitted(scope)';
 
@@ -5448,8 +5422,6 @@ COMMENT ON INDEX "slice_den"."__clock_skipped_ix_by_252vuphujb" IS 'btree index 
 COMMENT ON INDEX "slice_den"."__clock_skipped_ix_scope_vlmkgoc4qh" IS 'btree index ClockSkipped(scope)';
 
 COMMENT ON INDEX "slice_den"."__clock_step_ix_scope_root_dr2wopxg6r" IS 'btree index ClockStep(scope, root)';
-
-COMMENT ON INDEX "slice_den"."__clock_step_ix_step_root_snqq7fyo4q" IS 'btree index ClockStep(step, root)';
 
 COMMENT ON INDEX "slice_den"."__fan_admitted_ix_scope_6tfnemhvcg" IS 'btree index FanAdmitted(scope)';
 
@@ -5491,9 +5463,7 @@ COMMENT ON INDEX "slice_den"."__fan_square_output_ix_step_teolwx3lfw" IS 'btree 
 
 COMMENT ON INDEX "slice_den"."__fan_step_ix_root_scope_aw525h7gua" IS 'btree index FanStep(root, scope)';
 
-COMMENT ON INDEX "slice_den"."__fan_step_ix_scope_kind_step_5arz2gb4sb" IS 'btree index FanStep(scope, kind, step)';
-
-COMMENT ON INDEX "slice_den"."__fan_step_ix_step_root_nf2nqwhde2" IS 'btree index FanStep(step, root)';
+COMMENT ON INDEX "slice_den"."__fan_step_ix_scope_kind_h2wuapaqs3" IS 'btree index FanStep(scope, kind)';
 
 COMMENT ON INDEX "slice_den"."__fan_sweep_input_ix_scope_zvab3un5km" IS 'btree index FanSweepInput(scope)';
 
@@ -5543,9 +5513,7 @@ COMMENT ON INDEX "slice_den"."__retry_steadfast_output_ix_step_xu5p4zs52x" IS 'b
 
 COMMENT ON INDEX "slice_den"."__retry_step_ix_root_scope_ogbhay3han" IS 'btree index RetryStep(root, scope)';
 
-COMMENT ON INDEX "slice_den"."__retry_step_ix_scope_kind_step_m6ufaqcqmk" IS 'btree index RetryStep(scope, kind, step)';
-
-COMMENT ON INDEX "slice_den"."__retry_step_ix_step_root_v4tguvl2xo" IS 'btree index RetryStep(step, root)';
+COMMENT ON INDEX "slice_den"."__retry_step_ix_scope_kind_gvjz7p6rcr" IS 'btree index RetryStep(scope, kind)';
 
 COMMENT ON INDEX "slice_den"."__retry_throttled_input_ix_scope_srrsrnmwfp" IS 'btree index RetryThrottledInput(scope)';
 
@@ -5601,9 +5569,7 @@ COMMENT ON INDEX "slice_den"."__review_skipped_ix_scope_ypzvqrmdce" IS 'btree in
 
 COMMENT ON INDEX "slice_den"."__review_step_ix_root_scope_jvmzqg2kjy" IS 'btree index ReviewStep(root, scope)';
 
-COMMENT ON INDEX "slice_den"."__review_step_ix_scope_kind_step_udhxex4i5c" IS 'btree index ReviewStep(scope, kind, step)';
-
-COMMENT ON INDEX "slice_den"."__review_step_ix_step_root_eyzhr3fgx6" IS 'btree index ReviewStep(step, root)';
+COMMENT ON INDEX "slice_den"."__review_step_ix_scope_kind_fjqrbmtqpf" IS 'btree index ReviewStep(scope, kind)';
 
 COMMENT ON INDEX "slice_den"."__review_within_ix_parent_kind_scope_dtilr5xomp" IS 'btree index ReviewWithin(parent, kind, scope)';
 
@@ -5645,8 +5611,6 @@ COMMENT ON INDEX "slice_den"."__sync_skipped_ix_scope_d5pw2mcp56" IS 'btree inde
 
 COMMENT ON INDEX "slice_den"."__sync_step_ix_scope_root_hppxk5gi6a" IS 'btree index SyncStep(scope, root)';
 
-COMMENT ON INDEX "slice_den"."__sync_step_ix_step_root_q3nsi64opx" IS 'btree index SyncStep(step, root)';
-
 COMMENT ON INDEX "slice_den"."__sync_sync_run_input_ix_scope_xmn3bafu67" IS 'btree index SyncSyncRunInput(scope)';
 
 COMMENT ON INDEX "slice_den"."__writeback_admitted_ix_scope_54lp3ihfk7" IS 'btree index WritebackAdmitted(scope)';
@@ -5672,8 +5636,6 @@ COMMENT ON INDEX "slice_den"."__writeback_skipped_ix_by_3ei4k4fj53" IS 'btree in
 COMMENT ON INDEX "slice_den"."__writeback_skipped_ix_scope_dwesxm2rrj" IS 'btree index WritebackSkipped(scope)';
 
 COMMENT ON INDEX "slice_den"."__writeback_step_ix_scope_root_ft5ap6qmlh" IS 'btree index WritebackStep(scope, root)';
-
-COMMENT ON INDEX "slice_den"."__writeback_step_ix_step_root_q3li3ogpqx" IS 'btree index WritebackStep(step, root)';
 
 COMMENT ON INDEX "slice_den"."__writeback_writeback_input_ix_scope_72jqfcjowv" IS 'btree index WritebackWritebackInput(scope)';
 

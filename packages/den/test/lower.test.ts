@@ -29,7 +29,7 @@ import {
 	writer,
 	writesNothing
 } from "#algebra/kinds.ts"
-import { type LawIR, lower } from "#lower/fragment.ts"
+import { type LawIR, type Lowered, lower, type SideIR } from "#lower/fragment.ts"
 import { type Placement, printFragment } from "#lower/print.ts"
 import { caseHangMillis } from "#test/support/suites.ts"
 
@@ -47,9 +47,15 @@ import { caseHangMillis } from "#test/support/suites.ts"
  * A scope's kind is its place's: a root's on its Root row, among the flow's roots, and a child scope's on its Within
  * row, among its child scope kinds, whose relations (Within, StartScope) exist exactly when the flow declares one.
  * Every graph relation but the root's record sits under one unit, DenRoot, keyed by the root: its root first in every
- * key and on both sides of every containment between them, each contained in the root's record and mutable, cleared under
- * its root; a claim's holds lead with their resource, under the flow's seat unit; and no coordination relation carries a
- * root.
+ * key and on both sides of every containment between them, mutable, cleared under its root; a claim's holds lead with
+ * their resource, under the flow's seat unit; and no coordination relation carries a root. A row's root is its owner's:
+ * Step and Scope are each keyed by their identity alone too, every other graph relation is contained by its root and its
+ * owner, the field its key leads with after its root, in its owner's holder, and Scope in the root's record, so a read
+ * that fixes a row's owner (and Step's scope, and Within's parent) fixes its root, its unit, by the fragment's keys and
+ * containments alone, read as grizzle reads a dependency: a containment over every row of a relation onto a key of one
+ * field of its target gives the field it pairs with that key every other field it pairs. Mutants it kills: the holders
+ * keyed by their root and identity alone (no `key(on(<P>Scope, "scope"))`, no `key(on(<P>Step, "step"))`), and every
+ * graph relation contained in its root's record by its root alone, as it was, which fixes no root from a step or a scope.
  *
  * Oracle (specification): the proposal's sections 5 and 6, over flows of up to three steps, chained or not, of each
  * field form, with or without a resource, a pause handle, an exclusive root, a child scope, one or two named reads and a typed
@@ -273,6 +279,73 @@ const built = (sketch: Sketch): AnyFlow => {
 const containmentsOf = (laws: ReadonlyArray<LawIR>) =>
 	Arr.flatMap(laws, (law) => (law.kind === "contained" ? [law] : []))
 
+/** The plain fields of a side, none where it reads a field's predecessor or selects some of its rows. */
+const plainFields = (side: SideIR): Option.Option<ReadonlyArray<string>> =>
+	side.selection.kind === "all" && Arr.every(side.terms, (t) => !t.pred)
+		? Option.some(Arr.map(side.terms, (t) => t.field))
+		: Option.none()
+
+/** A relation's keys: its primary key and each key law over every row of it, by their fields. */
+const keysOf = (lowered: Lowered, relation: string): ReadonlyArray<ReadonlyArray<string>> => [
+	...Arr.flatMap(lowered.relations, (r) => (r.name === relation ? [r.key] : [])),
+	...Arr.flatMap(lowered.laws, (law) =>
+		law.kind === "key" && law.side.relation === relation
+			? Option.toArray(plainFields(law.side))
+			: []
+	)
+]
+
+/** A key's one field, none for a key of several. */
+const soleField = (key: ReadonlyArray<string>): Option.Option<string> =>
+	key.length === 1 ? Arr.head(key) : Option.none()
+
+/**
+ * The fields of `relation` a read fixing `fixed` fixes, by the fragment's keys and containments alone, read as grizzle
+ * reads a dependency (its declared statistics and its unit-bound reads): a containment over every row of the relation,
+ * onto a key of one field of its target, gives the field it pairs with that key every other field it pairs; and a key
+ * fixed whole fixes every field.
+ */
+const fixedBy = (
+	lowered: Lowered,
+	relation: string,
+	fixed: ReadonlyArray<string>
+): ReadonlyArray<string> => {
+	const dependencies = Arr.flatMap(containmentsOf(lowered.laws), (law) =>
+		law.from.relation === relation
+			? Option.match(Option.all([plainFields(law.from), plainFields(law.to)]), {
+					onNone: () => [],
+					onSome: ([from, to]) =>
+						Arr.flatMap(keysOf(lowered, law.to.relation), (key) =>
+							Option.toArray(
+								Option.flatMap(soleField(key), (field) =>
+									Option.flatMap(
+										Arr.findFirstIndex(to, (paired) => paired === field),
+										(at) => Option.map(Arr.get(from, at), (by) => ({ by, fields: from }))
+									)
+								)
+							)
+						)
+				})
+			: []
+	)
+	const fields = Arr.flatMap(lowered.relations, (r) =>
+		r.name === relation ? Arr.map(r.fields, (field) => field.name) : []
+	)
+	const grow = (held: ReadonlyArray<string>): ReadonlyArray<string> => {
+		const next = Arr.dedupe([
+			...held,
+			...Arr.flatMap(dependencies, (d) => (Arr.contains(held, d.by) ? d.fields : [])),
+			...(Arr.some(keysOf(lowered, relation), (key) =>
+				Arr.every(key, (field) => Arr.contains(held, field))
+			)
+				? fields
+				: [])
+		])
+		return next.length === held.length ? held : grow(next)
+	}
+	return grow(Arr.dedupe(fixed))
+}
+
 it.effect(
 	"lowers each flow under its prefix, its Result's arms and its coordination group apart",
 	(ctx) =>
@@ -397,7 +470,7 @@ it.effect(
 								[
 									[`${P}S0Input`, ["root", "step"]],
 									[`${P}S0InputValue`, ["root", "step", "pred:ordinal"]],
-									[`${P}Root`, ["root"]]
+									[`${P}Step`, ["root", "step"]]
 								]
 							)
 						}
@@ -667,20 +740,76 @@ it.effect(
 							Arr.sort(lowered.cleared, Order.String),
 							Arr.sort(bodies, Order.String)
 						)
+						assert.deepStrictEqual(
+							Arr.flatMap(lowered.laws, (law) =>
+								law.kind === "key" &&
+								(law.side.relation === `${P}Scope` || law.side.relation === `${P}Step`)
+									? [[law.side.relation, ...Arr.map(law.side.terms, (t) => t.field)]]
+									: []
+							),
+							[
+								[`${P}Scope`, "scope"],
+								[`${P}Step`, "step"]
+							],
+							"each identity's holder is keyed by it alone"
+						)
+						/** A body's owner: the field its key leads with after its root. */
+						const ownerOf = (body: string) =>
+							Option.flatMap(
+								Arr.findFirst(lowered.relations, (r) => r.name === body),
+								(r) => Arr.get(r.key, 1)
+							)
+						const holderOf = (body: string, owner: string) =>
+							body === `${P}Scope`
+								? { relation: `${P}Root`, terms: ["root"], at: ["root"] }
+								: Option.exists(
+											Arr.findFirst(lowered.relations, (r) => r.name === body),
+											(r) =>
+												Arr.some(
+													r.fields,
+													(field) =>
+														field.name === owner &&
+														field.type.kind === "digest" &&
+														field.type.names === "step"
+												)
+									  )
+									? { relation: `${P}Step`, terms: ["root", owner], at: ["root", "step"] }
+									: { relation: `${P}Scope`, terms: ["root", owner], at: ["root", "scope"] }
 						assert.isTrue(
 							Arr.every(bodies, (body) =>
-								Arr.some(
-									containmentsOf(lowered.laws),
-									(law) =>
-										law.from.relation === body &&
-										law.to.relation === `${P}Root` &&
-										Arr.join(
-											Arr.map(law.from.terms, (t) => t.field),
-											","
-										) === "root"
-								)
+								Option.exists(ownerOf(body), (owner) => {
+									const holder = holderOf(body, body === `${P}Step` ? "scope" : owner)
+									return Arr.some(
+										containmentsOf(lowered.laws),
+										(law) =>
+											law.from.relation === body &&
+											law.to.relation === holder.relation &&
+											Option.exists(
+												plainFields(law.from),
+												(from) => Arr.join(from, ",") === Arr.join(holder.terms, ",")
+											) &&
+											Option.exists(
+												plainFields(law.to),
+												(to) => Arr.join(to, ",") === Arr.join(holder.at, ",")
+											)
+									)
+								})
 							),
-							"every body is contained in its root's record"
+							"every body is contained by its root and its owner in its owner's holder, Scope in its root's record"
+						)
+						Arr.forEach(bodies, (body) =>
+							Arr.forEach(
+								[
+									...Option.toArray(ownerOf(body)),
+									...(body === `${P}Step` ? ["scope"] : []),
+									...(body === `${P}Within` ? ["parent"] : [])
+								],
+								(owner) =>
+									assert.isTrue(
+										Arr.contains(fixedBy(lowered, body, [owner]), "root"),
+										`a read of ${body} that fixes its ${owner} fixes its root`
+									)
+							)
 						)
 						assert.isTrue(
 							Arr.every(lowered.relations, (rel) =>

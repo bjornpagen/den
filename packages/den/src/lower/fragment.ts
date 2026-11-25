@@ -47,10 +47,19 @@ import {
  * closed relation, which every live hold's seat is checked below on the seat level (SeatsIR).
  */
 
+/**
+ * An identity den derives (runtime/identity.ts): a scope's from its parent's, a root's from its flow, kind and key, and a
+ * step's from its parent's, each the SHA-256 of its parts, so each names one row of its holder, of one root.
+ */
+export type Identity = "step" | "scope"
+
+/** What a digest names: an identity, a row a step's read found (its text's digest), or an exclusivity seat. */
+export type Digested = Identity | "row" | "seat"
+
 /** What a lowered field holds. */
 export type FieldType =
 	| { readonly kind: "key"; readonly contract: DenKey }
-	| { readonly kind: "digest" }
+	| { readonly kind: "digest"; readonly names: Digested }
 	| { readonly kind: "natural" }
 	| { readonly kind: "place" }
 	| { readonly kind: "drawn" }
@@ -359,6 +368,13 @@ const sideOf = (relation: string, terms: ReadonlyArray<string>, selection: Selec
 const side = (relation: string, terms: ReadonlyArray<string>): SideIR =>
 	sideOf(relation, terms, all)
 const into = (from: SideIR, to: SideIR): LawIR => ({ kind: "contained", from, to })
+/** Whether two sides read alike: one relation, every row of it, at the same terms. */
+const sameSide = (a: SideIR, b: SideIR): boolean =>
+	a.relation === b.relation &&
+	a.selection.kind === "all" &&
+	b.selection.kind === "all" &&
+	a.terms.length === b.terms.length &&
+	Arr.every(Arr.zip(a.terms, b.terms), ([x, y]) => x.field === y.field && x.pred === y.pred)
 const keyOf = (relation: string, terms: ReadonlyArray<string>): LawIR => ({
 	kind: "key",
 	side: side(relation, terms)
@@ -438,11 +454,11 @@ export const lower = (flow: AnyFlow): Lowered => {
 	const steps = stepsOf(kinds)
 	const joins = joinsOf(kinds)
 	const roots = Arr.filter(joins, (j): j is AnyRootKind => j._tag === "Root")
-	const digest: FieldType = { kind: "digest" }
-	const stepKey = digest
-	const scopeKey = digest
+	const stepKey: FieldType = { kind: "digest", names: "step" }
+	const scopeKey: FieldType = { kind: "digest", names: "scope" }
+	const seatKey: FieldType = { kind: "digest", names: "seat" }
 	const instant: FieldType = { kind: "key", contract: "DenInstant" }
-	const rowKey = digest
+	const rowKey: FieldType = { kind: "digest", names: "row" }
 	const text: FieldType = { kind: "base", base: "text" }
 	const natural: FieldType = { kind: "natural" }
 	const place: FieldType = { kind: "place" }
@@ -527,7 +543,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 					fields: [
 						{ name: "scope", type: scopeKey },
 						{ name: "key", type: text },
-						{ name: "id", type: digest }
+						{ name: "id", type: seatKey }
 					],
 					key: ["scope"]
 				})
@@ -1211,7 +1227,7 @@ export const lower = (flow: AnyFlow): Lowered => {
 				name("Released"),
 				[
 					{ name: "kind", type: { kind: "closed", roster: name("RootKind") } },
-					{ name: "key", type: digest }
+					{ name: "key", type: seatKey }
 				],
 				[{ name: "scope", type: scopeKey }]
 			)
@@ -1270,11 +1286,19 @@ export const lower = (flow: AnyFlow): Lowered => {
 	 * Every root's graph sits under one unit of grizzle's, `DenRoot`, keyed by the root's scope, `root`, which every flow's
 	 * fragment states alike and so one unit, the roots being digests that no two flows share: every graph relation but the
 	 * root's own record carries its root as `root`, first in its key and on both sides of every containment and key
-	 * between them, so every write of a graph's rows holds its root, and each is contained in its root's record. A root's
-	 * record is closed, the fact that it was requested; every other graph relation is mutable inside the unit, since a
-	 * finished root's graph is cleared under its root, every row of it deleted but its record. A claim's holds sit under
-	 * the flow's seat unit and are cleared with their claims. The coordination group is no part of any unit: its chains of
-	 * turns outlive the graphs whose steps took them.
+	 * between them, so every write of a graph's rows holds its root. A root's record is closed, the fact that it was
+	 * requested; every other graph relation is mutable inside the unit, since a finished root's graph is cleared under its
+	 * root, every row of it deleted but its record. A claim's holds sit under the flow's seat unit and are cleared with
+	 * their claims. The coordination group is no part of any unit: its chains of turns outlive the graphs whose steps took
+	 * them.
+	 *
+	 * A row's root is its owner's. Each identity is held by one relation keyed by it alone beside its root, a step by
+	 * Step and a scope by Scope, since den derives it from its parent's (runtime/identity.ts): it names one row, of one
+	 * root. Every other graph relation leads its fields with its owner, the identity its row lives under, and is contained
+	 * by its root and its owner in its owner's holder; Step's owner is its scope, and Scope's is its root, its record. So
+	 * a read that fixes a step or a scope fixes its root, the unit every row of it sits in: a containment onto a key of
+	 * one field gives the field it pairs with the key every other field it pairs (grizzle's declared statistics, its
+	 * dependencies), and each row's own containment in its root's record follows, through its holder's.
 	 */
 	const held = Arr.map(Option.toArray(seats), (st) => st.hold)
 	const bodies = new Set(
@@ -1295,28 +1319,69 @@ export const lower = (flow: AnyFlow): Lowered => {
 	)
 	const rootTerm = { field: "root", pred: false }
 	const onRoot = (on: SideIR): SideIR => ({ ...on, terms: [rootTerm, ...on.terms] })
+	const flowLaws = Arr.map(laws, (law): LawIR => {
+		switch (law.kind) {
+			case "contained":
+				return bodies.has(law.from.relation) && bodies.has(law.to.relation)
+					? { ...law, from: onRoot(law.from), to: onRoot(law.to) }
+					: law
+			case "key":
+				return bodies.has(law.side.relation) ? { ...law, side: onRoot(law.side) } : law
+			case "race":
+			case "check":
+			case "unit":
+			case "mutable":
+			case "ordered":
+				return law
+		}
+	})
+	const holders: Readonly<Record<Identity, string>> = { step: Step, scope: Scope }
+	/** The identity a field names, where it names one. */
+	const identityOf = (type: FieldType): Option.Option<Identity> =>
+		type.kind === "digest" && (type.names === "step" || type.names === "scope")
+			? Option.some(type.names)
+			: Option.none()
+	/** A body's owner: its first field naming an identity it does not hold, none for Scope, which names no other. */
+	const ownerOf = (
+		body: RelationIR
+	): Option.Option<{ readonly field: string; readonly identity: Identity }> =>
+		Arr.findFirst(body.fields, (f) =>
+			Option.filter(
+				Option.map(identityOf(f.type), (identity) => ({ field: f.name, identity })),
+				(owner) => holders[owner.identity] !== body.name
+			)
+		)
+	/** A body's containment in its owner's holder by its root and its owner, or Scope's in its root's record by its root. */
+	const ownerLaw = (body: RelationIR): LawIR =>
+		Option.match(ownerOf(body), {
+			onNone: () => into(side(body.name, ["root"]), side(Root, ["root"])),
+			onSome: (owner) =>
+				into(
+					side(body.name, ["root", owner.field]),
+					side(holders[owner.identity], ["root", owner.identity])
+				)
+		})
+	const statesAlready = (law: LawIR): boolean =>
+		law.kind === "contained" &&
+		Arr.some(
+			flowLaws,
+			(stated) =>
+				stated.kind === "contained" &&
+				sameSide(stated.from, law.from) &&
+				sameSide(stated.to, law.to)
+		)
 	const rootedLaws: ReadonlyArray<LawIR> = [
 		{ kind: "unit", name: "DenRoot", heading: [rootField] },
-		...Arr.map(laws, (law): LawIR => {
-			switch (law.kind) {
-				case "contained":
-					return bodies.has(law.from.relation) && bodies.has(law.to.relation)
-						? { ...law, from: onRoot(law.from), to: onRoot(law.to) }
-						: law
-				case "key":
-					return bodies.has(law.side.relation) ? { ...law, side: onRoot(law.side) } : law
-				case "race":
-				case "check":
-				case "unit":
-				case "mutable":
-				case "ordered":
-					return law
+		keyOf(Scope, ["scope"]),
+		keyOf(Step, ["step"]),
+		...flowLaws,
+		...Arr.flatMap(
+			Arr.filter(relations, (r: RelationIR) => bodies.has(r.name)),
+			(body: RelationIR): ReadonlyArray<LawIR> => {
+				const owned = ownerLaw(body)
+				return [...(statesAlready(owned) ? [] : [owned]), { kind: "mutable", relation: body.name }]
 			}
-		}),
-		...Arr.flatMap(Array.from(bodies), (body): ReadonlyArray<LawIR> => [
-			into(side(body, ["root"]), side(Root, ["root"])),
-			{ kind: "mutable", relation: body }
-		])
+		)
 	]
 
 	const names = [
