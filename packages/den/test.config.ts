@@ -21,6 +21,7 @@ export default defineRunner({
 	include: ["integration/**/*.test.ts"],
 	smallStack: [],
 	conditions: [],
+	environment: [],
 	layer: PgCluster.layer({
 		prefix: DatabasePrefix("den_t_"),
 		cluster: denCluster,

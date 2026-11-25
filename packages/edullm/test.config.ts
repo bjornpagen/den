@@ -9,6 +9,7 @@ export default defineRunner({
 	include: ["test/**/*.test.ts"],
 	smallStack: [],
 	conditions: [],
+	environment: [],
 	layer: Layer.empty,
 	mutation: noMutation
 })
