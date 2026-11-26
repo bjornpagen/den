@@ -1,5 +1,6 @@
 import { regex } from "arkregex"
-import { Array as Arr, Option, Order, String as Str } from "effect"
+import { Array as Arr, Option, Order, Record as Rec, String as Str } from "effect"
+import { denClock } from "#algebra/kinds.ts"
 import {
 	type AwaitIR,
 	type CommitIR,
@@ -32,7 +33,8 @@ import { framedText } from "#runtime/identity.ts"
  *   flow's graph and its coordination group, each with its laws, beside the den relations the flow's app role inserts
  *   into to commit its steps;
  * - the programs: den's role's and its coordinator role's programs over those fragments, the roles over the app's
- *   schema that hold them whole and serve them, and the commits, requests and declared reads over the flow's app role;
+ *   schema that hold them whole and serve them, the commits and declared reads over the flow's app role, and the
+ *   requests the app's writes compose, over the graph or the app's schema;
  * - the binding: the ledger port over the programs' served handles, converting den's values to facts and rows back.
  */
 
@@ -303,6 +305,7 @@ const naming = (l: Lowered) => {
 		commitPrograms: n("CommitPrograms"),
 		commitWorkload: n("Commits"),
 		requests: n("Requests"),
+		requestWrites: n("RequestWrites"),
 		handles: `${l.prefix}Handles`,
 		ledger: n("Ledger"),
 		program: n
@@ -508,7 +511,7 @@ const inputTextsOf = (l: Lowered, j: JoinIR): string =>
  * A root's request, one fact identified by its root: its Root and every row of its graph it names (`requestedRowsOf`),
  * each relation's rows a relation parameter, each inserted only where no Root holds the request's root, as the state
  * before the change reads it. The Root's own row is the request's root scope's, at its scope and key the request's
- * parameters, its kind the root kind's handle, and its instant the request's reading of the database's clock, `now`,
+ * parameters, its kind the root kind's handle, and its instant the request's reading of the database's clock, `denNow`,
  * which the clocked request binds, so no host names the instant a root was requested. A root whose input its request
  * gives records beside it what it was requested with (`RequestedWith`: its kind's input fingerprint and its input's
  * digest), inserted where no Root holds the root, or again where the held record has the request's fingerprint: an
@@ -516,8 +519,10 @@ const inputTextsOf = (l: Lowered, j: JoinIR): string =>
  * nothing. A derived root's request names its key alone: its key is the request's parameters and its input its read's
  * row at that key (`derivedOf`), every row of the request inserted only where the read finds one: a derived root stands
  * only where its input derives, and records nothing. Its read is of the app's facts, which the graph does not hold, so
- * its request is written `over` the role that serves it, which holds the read's level whole (the programs'
- * `requestOver`): den's for a root den requests, the app's for a root its write requests; any other's over the graph.
+ * its request is written `over` a level that holds the read's level and the graph (the programs' `requestOver`): den's
+ * role, which serves a root den requests; the app's schema for a root the app's write requests, so the request
+ * composes into any of the app's writes over the schema or a level above it, run by a role that holds the schema whole;
+ * any other's over the graph.
  *
  * A request of a root already requested inserts nothing else, its graph standing or retired: retirement deletes a
  * graph's rows but never its Root, its RequestedWith nor a derived root's key (the fragment's `cleared`), so a repeat
@@ -578,9 +583,24 @@ const requestOfRoot = (l: Lowered, j: JoinIR, over: string): string => {
 	return r
 		.match(requested, { root, scope })${derived.match}
 		.where(r.eq(scope, root), r.eq(root, r.param(${q(params.scope)}, ${root}.fields.root)), r.not(${root}, { root }))
-		.find({ root, kind: ${P}RootKind.handle(${q(j.name)}), key: r.param(${q(params.key)}, ${root}.fields.key), at: r.param("now", ${root}.fields.at) })
+		.find({ root, kind: ${P}RootKind.handle(${q(j.name)}), key: r.param(${q(params.key)}, ${root}.fields.key), at: r.param("${denClock}", ${root}.fields.at) })
 }))`
 }
+
+/**
+ * The relations a root's request inserts, from the pieces its printed ChangeSet is (requestOfRoot): its scope's row,
+ * its exclusivity keys and a given root's input rows (`requestedRowsOf`), a derived root's key and input, what a given
+ * root was requested with, and its Root.
+ */
+const requestWritesOf = (P: string, j: JoinIR): ReadonlyArray<string> => [
+	...Arr.map(requestedRowsOf(P, j), ([relation]) => relation),
+	...Option.match(derivedKeyOf(j), {
+		onNone: () => [],
+		onSome: (key) => [key.relation, j.input.relation]
+	}),
+	...(recordsRequest(j) ? [`${P}RequestedWith`] : []),
+	`${P}Root`
+]
 
 /** Whether a flow has a step kind due at its input's instant, whose spawns name their due instants (`timed`). */
 const timedKinds = (l: Lowered): boolean => Arr.some(l.steps, (s) => s.due.kind === "at")
@@ -595,7 +615,6 @@ const isExclusive = (j: JoinIR): boolean => Option.exists(j.root, (r) => r.exclu
 const writerRelationsOf = (l: Lowered): ReadonlyArray<string> => {
 	const P = l.prefix
 	const anySpawn = Arr.isReadonlyArrayNonEmpty(l.edges)
-	const appRoots = Arr.some(l.joins, (j) => isApp(j))
 	return Arr.dedupe([
 		`${P}Result`,
 		`${P}Done`,
@@ -604,7 +623,10 @@ const writerRelationsOf = (l: Lowered): ReadonlyArray<string> => {
 		...Arr.flatMap(l.joins, (j) => valueRelations(j.finish.output)),
 		...Arr.flatMap(l.steps, (s) => Arr.map(s.reads, (r) => r.record)),
 		...(anySpawn ? l.spawning : []),
-		...(appRoots ? l.requesting : [])
+		...Arr.flatMap(
+			Arr.filter(l.joins, (j) => isApp(j)),
+			(j: JoinIR) => requestWritesOf(l.prefix, j)
+		)
 	])
 }
 
@@ -878,7 +900,7 @@ const liveHoldsOf = (role: string, st: SeatsIR): string => {
 const claimOf = (graph: string, r: (s: string) => string): string => `clocked(
 	ChangeSet.empty(${graph})
 		.insertAllComputed({ ${r("Claim")}: [] }, {
-			until: Type.cast(Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))), DenInstant)
+			until: Type.cast(Num.add(Type.base(param("${denClock}", DenInstant)), Type.base(param("budget", DenDelay))), DenInstant)
 		})
 		.insert(${r("Ended")}, [])
 		.read("held", (delta) =>
@@ -887,7 +909,7 @@ const claimOf = (graph: string, r: (s: string) => string): string => `clocked(
 				return r.match(delta.added(${r("Claim")}), { step, root, attempt }).find({ step, root, attempt })
 			})
 		),
-	{ now: "millis" }
+	{ ${denClock}: "millis" }
 )`
 
 /** A query over `role` of each chain's live turn: every turn of `held` that no row of `ended` ends. */
@@ -932,7 +954,7 @@ const admittingOf = (l: Lowered): ReadonlyArray<string> => {
 /**
  * A step's or a finish's commit: den's facts, a ChangeSet over the flow's graph, and, for a kind that commits through
  * the app's ChangeSet, that ChangeSet, which `kind`'s `writes` makes of the flow's app role `writer`, unioned so both
- * commit in one call: a refusal of either refuses both. The call's reading of the database's clock binds `now`, the
+ * commit in one call: a refusal of either refuses both. The call's reading of the database's clock binds `denNow`, the
  * instant its spawned steps are due from, and each instant of the app's ChangeSet its clock names.
  */
 const commitOf = (
@@ -946,7 +968,7 @@ const commitOf = (
 ): string => {
 	const den = `ChangeSet.empty(${graph})${members(inserts)}${recorded}${Option.getOrElse(spawns, () => "")}`
 	const clock = [
-		...(Option.isSome(spawns) ? [["now", "millis"] as const] : []),
+		...(Option.isSome(spawns) ? [[denClock, "millis"] as const] : []),
 		...(commit.kind === "through" ? commit.clock : [])
 	]
 	const united =
@@ -974,7 +996,7 @@ const spawnedStepsOf = (graph: string, step: string, timed: boolean): string => 
 				step,
 				kind,
 				scope,
-				due: Type.cast(Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)), DenInstant),
+				due: Type.cast(Num.add(Type.base(r.param("${denClock}", DenInstant)), Type.base(delay)), DenInstant),
 				root: r.param("root", ${step}.fields.root)
 			})
 	})${
@@ -992,7 +1014,7 @@ const spawnedStepsOf = (graph: string, step: string, timed: boolean): string => 
 /**
  * The programs module: den's programs over the flow's graph and coordination fragments, the roles over the app's
  * schema that hold them whole and serve them, each commit's union of den's facts with the app's writes, each app root's
- * request, which the app's write commits beside its own (over the graph, or over the app's role for a derived root),
+ * request, which the app's write commits beside its own (over the graph, or over the app's schema for a derived root),
  * and the declared reads over the flow's app role.
  */
 export const printPrograms = (l: Lowered, place: Placement): string => {
@@ -1002,10 +1024,11 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const W = place.writer.name
 	const r = (s: string) => `${P}${s}`
 	/**
-	 * What a root's request is written over: the flow's graph for a given input; for a derived one the role that serves
-	 * it, which holds its read's level whole: den's for a root den requests, the app's for a root its write requests.
+	 * What a root's request is written over. A derived root's read is of the app's facts, which the graph does not hold:
+	 * den's role, which serves it, holds them for a root den requests, and the app's schema for a root the app's write
+	 * requests, so the request composes into any of the app's writes over the schema or a level above it.
 	 */
-	const requestOver = (j: JoinIR): string => (isDerived(j) ? (isApp(j) ? W : n.den) : n.graph)
+	const requestOver = (j: JoinIR): string => (isDerived(j) ? (isApp(j) ? app : n.den) : n.graph)
 	/** The levels the reads of the derived roots den requests are over, each of which den's role holds whole. */
 	const derivedLevels = Arr.map(
 		Arr.filter(l.joins, (j) => isDerived(j) && !isApp(j)),
@@ -1182,13 +1205,13 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const denPrograms: Array<readonly [string, string]> = [
 		[
 			n.program("Now"),
-			`clocked(query(${n.graph}).rule((r) => r.find({ now: r.param("now", DenInstant) })), { now: "millis" })`
+			`clocked(query(${n.graph}).rule((r) => r.find({ now: r.param("${denClock}", DenInstant) })), { ${denClock}: "millis" })`
 		],
 		[
 			n.program("Reading"),
 			`clocked(
 	query(${n.den}).reads({
-		now: query(${n.graph}).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+		now: query(${n.graph}).rule((r) => r.find({ now: r.param("${denClock}", DenInstant) })),
 		serving: query(${n.den}).rule((r) => {
 			const { environment, at, deployment } = v(${r("Served")}, "served")
 			return r
@@ -1197,7 +1220,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 				.find({ deployment })
 		})
 	}),
-	{ "now.now": "millis" }
+	{ "now.${denClock}": "millis" }
 )`
 		],
 		[n.program("Claim"), claimOf(n.graph, r)],
@@ -1212,13 +1235,13 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 				r.find({
 					step: r.param("step", ${r("Retry")}.fields.step),
 					attempt: r.param("attempt", ${r("Retry")}.fields.attempt),
-					at: Type.cast(Num.add(Type.base(r.param("now", DenInstant)), Type.base(r.param("delay", DenDelay))), DenInstant),
+					at: Type.cast(Num.add(Type.base(r.param("${denClock}", DenInstant)), Type.base(r.param("delay", DenDelay))), DenInstant),
 					why: r.param("why", ${r("Retry")}.fields.why),
 					root: r.param("root", ${r("Retry")}.fields.root)
 				})
 			)
 		),
-	{ now: "millis" }
+	{ ${denClock}: "millis" }
 )`
 		],
 		[
@@ -1241,7 +1264,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			n.program("Admit"),
 			`clocked(ChangeSet.empty(${n.graph})${members(
 				Arr.filter(admittingOf(l), (rel) => rel !== r("Step"))
-			)}${spawnedStepsOf(n.graph, r("Step"), timedKinds(l))}, { now: "millis" })`
+			)}${spawnedStepsOf(n.graph, r("Step"), timedKinds(l))}, { ${denClock}: "millis" })`
 		],
 		[n.program("Skip"), `ChangeSet.empty(${n.graph}).insert(${r("Skipped")}, [])`],
 		[n.program("SkippedOf"), ownedBy(l, n.graph, r("Skipped"), "scope")],
@@ -1389,7 +1412,10 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		)
 		if (Option.isSome(j.root) && !isApp(j)) {
 			const request = requestOfRoot(l, j, requestOver(j))
-			denPrograms.push([n.program(`Request${j.name}`), `clocked(${request}, { now: "millis" })`])
+			denPrograms.push([
+				n.program(`Request${j.name}`),
+				`clocked(${request}, { ${denClock}: "millis" })`
+			])
 		}
 		Arr.forEach(j.finish.reads, (read) => {
 			/**
@@ -1518,7 +1544,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	coordinatorPrograms.push(
 		[
 			n.program("Promote"),
-			`clocked(ChangeSet.empty(${n.coordination}).insert(${r("Served")}, query(${n.coordination}).rule((r) => r.find({ environment: r.param("environment", ${r("Served")}.fields.environment), at: r.param("now", ${r("Served")}.fields.at), deployment: r.param("deployment", ${r("Served")}.fields.deployment) }))), { now: "millis" })`
+			`clocked(ChangeSet.empty(${n.coordination}).insert(${r("Served")}, query(${n.coordination}).rule((r) => r.find({ environment: r.param("environment", ${r("Served")}.fields.environment), at: r.param("${denClock}", ${r("Served")}.fields.at), deployment: r.param("deployment", ${r("Served")}.fields.deployment) }))), { ${denClock}: "millis" })`
 		],
 		[n.program("Pause"), insertInto(r("Paused"))],
 		[n.program("Resume"), insertInto(r("Resumed"))],
@@ -1529,7 +1555,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const commitPrograms: Array<readonly [string, string]> = [
 		[
 			n.program("Authenticated"),
-			`clocked(query(${n.graph}).rule((r) => r.find({ now: r.param("now", DenInstant) })), { now: "millis" })`
+			`clocked(query(${n.graph}).rule((r) => r.find({ now: r.param("${denClock}", DenInstant) })), { ${denClock}: "millis" })`
 		]
 	]
 	/**
@@ -1598,6 +1624,10 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	)
 	const appRoots = Arr.filter(l.joins, isApp)
 	const requests = Arr.map(appRoots, (j) => `${j.name}: ${requestOfRoot(l, j, requestOver(j))}`)
+	const requestWrites = Arr.map(
+		appRoots,
+		(j) => `${j.name}: [${commas(Arr.map(requestWritesOf(P, j), q))}] as const`
+	)
 
 	const block = (name: string, programs: ReadonlyArray<readonly [string, string]>) => [
 		`export const ${name} = Object.freeze({`,
@@ -1634,8 +1664,11 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		"",
 		...(Arr.isReadonlyArrayNonEmpty(requests)
 			? [
-					`/** The requests of the flow's roots the app's own write starts, each a ChangeSet the app's write commits beside its own: over the flow's graph, unioned with it, or, for a root whose input derives from its key, over its app role, sequenced after the strata whose facts it derives from. */`,
-					`export const ${n.requests} = Object.freeze({ ${commas(requests)} })`
+					`/** The requests of the flow's roots the app's own write starts, each a ChangeSet the app's write commits beside its own: over the flow's graph, unioned with it, or, for a root whose input derives from its key, over the app's schema, sequenced after the strata whose facts it derives from. */`,
+					`export const ${n.requests} = Object.freeze({ ${commas(requests)} })`,
+					"",
+					`/** What each of the flow's requests inserts, by its root: a role whose write composes a request inserts these beside its write's own, and none of den's step commits; a role composing several of the flow's requests names each relation in its insert list once. */`,
+					`export const ${n.requestWrites} = Object.freeze({ ${commas(requestWrites)} })`
 				]
 			: [])
 	])
@@ -1650,8 +1683,16 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		`import { ${commas(Arr.filter(["ChangeSet", "Num", "Type", "clocked", "param", "query", "recordsFacts", "role", "v", "workload"], (name) => tokens.has(name)))} } from "@bjornpagen/grizzle"`,
 		`import { ${commas(Arr.filter(["DenDelay", "DenInstant"], (name) => tokens.has(name)))} } from "@bjornpagen/den/lower/keys"`,
 		...(tokens.has("Arr") ? [`import { Array as Arr } from "effect"`] : []),
-		`import { ${app} } from ${q(place.schema.from)}`,
-		`import { ${W} } from ${q(place.writer.from)}`,
+		...Arr.map(
+			Rec.toEntries(Arr.groupBy([place.schema, place.writer], (exported) => exported.from)),
+			([from, names]) =>
+				`import { ${commas(
+					Arr.sort(
+						Arr.map(names, (exported) => exported.name),
+						Order.String
+					)
+				)} } from ${q(from)}`
+		),
 		...(Arr.some(
 			l.steps,
 			(st) => Arr.isReadonlyArrayNonEmpty(st.reads) || st.writes.kind === "through"

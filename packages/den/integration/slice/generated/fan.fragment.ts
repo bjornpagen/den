@@ -571,8 +571,8 @@ export const fanWriter = [
 	"FanSweepFinishOutput",
 	"FanWantedFinishOutput",
 	"FanScope",
-	"FanRoot",
 	"FanExclusiveKey",
+	"FanWantedKey",
 	"FanWantedInput",
-	"FanWantedKey"
+	"FanRoot"
 ] as const

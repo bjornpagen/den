@@ -163,12 +163,12 @@ const reviewLatestServed = query(ReviewDen).rule((r) => {
 
 export const reviewDenPrograms = Object.freeze({
 	reviewNow: clocked(
-		query(reviewGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(reviewGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	reviewReading: clocked(
 		query(ReviewDen).reads({
-			now: query(reviewGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			now: query(reviewGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
 			serving: query(ReviewDen).rule((r) => {
 				const { environment, at, deployment } = v(ReviewServed, "served")
 				return r
@@ -182,7 +182,7 @@ export const reviewDenPrograms = Object.freeze({
 					.find({ deployment })
 			})
 		}),
-		{ "now.now": "millis" }
+		{ "now.denNow": "millis" }
 	),
 	reviewClaim: clocked(
 		ChangeSet.empty(reviewGraph)
@@ -190,7 +190,7 @@ export const reviewDenPrograms = Object.freeze({
 				{ ReviewClaim: [] },
 				{
 					until: Type.cast(
-						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						Num.add(Type.base(param("denNow", DenInstant)), Type.base(param("budget", DenDelay))),
 						DenInstant
 					)
 				}
@@ -204,7 +204,7 @@ export const reviewDenPrograms = Object.freeze({
 						.find({ step, root, attempt })
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	reviewRetry: clocked(
 		ChangeSet.empty(reviewGraph)
@@ -216,7 +216,10 @@ export const reviewDenPrograms = Object.freeze({
 						step: r.param("step", ReviewRetry.fields.step),
 						attempt: r.param("attempt", ReviewRetry.fields.attempt),
 						at: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(r.param("delay", DenDelay))),
+							Num.add(
+								Type.base(r.param("denNow", DenInstant)),
+								Type.base(r.param("delay", DenDelay))
+							),
 							DenInstant
 						),
 						why: r.param("why", ReviewRetry.fields.why),
@@ -224,7 +227,7 @@ export const reviewDenPrograms = Object.freeze({
 					})
 				)
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	reviewFence: ChangeSet.empty(reviewGraph).insert(ReviewEnded, []).insert(ReviewFenced, []),
 	reviewHolds: query(ReviewDen).rule((r) => {
@@ -271,14 +274,14 @@ export const reviewDenPrograms = Object.freeze({
 						kind,
 						scope,
 						due: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
+							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
 							DenInstant
 						),
 						root: r.param("root", ReviewStep.fields.root)
 					})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	reviewSkip: ChangeSet.empty(reviewGraph).insert(ReviewSkipped, []),
 	reviewSkippedOf: query(reviewGraph).rule((r) => {
@@ -649,11 +652,11 @@ export const reviewDenPrograms = Object.freeze({
 							root,
 							kind: ReviewRootKind.handle("ReviewRun"),
 							key: r.param("reviewReviewRunKey", ReviewRoot.fields.key),
-							at: r.param("now", ReviewRoot.fields.at)
+							at: r.param("denNow", ReviewRoot.fields.at)
 						})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	reviewOutputsReviewRunQuestions: query(reviewGraph).rule((r) => {
 		const { scope, parent } = v(ReviewWithin, "within")
@@ -724,12 +727,12 @@ export const reviewCoordinatorPrograms = Object.freeze({
 			query(reviewCoordination).rule((r) =>
 				r.find({
 					environment: r.param("environment", ReviewServed.fields.environment),
-					at: r.param("now", ReviewServed.fields.at),
+					at: r.param("denNow", ReviewServed.fields.at),
 					deployment: r.param("deployment", ReviewServed.fields.deployment)
 				})
 			)
 		),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	reviewPause: ChangeSet.empty(reviewCoordination).insert(ReviewPaused, []),
 	reviewResume: ChangeSet.empty(reviewCoordination).insert(ReviewResumed, []),
@@ -834,8 +837,8 @@ export const reviewRetirerWorkload = workload(ReviewRetirer, reviewRetirerProgra
 /** The commits and declared reads of the flow Review, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const reviewCommitPrograms = Object.freeze({
 	reviewAuthenticated: clocked(
-		query(reviewGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(reviewGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	reviewCommitAnalyze: ChangeSet.empty(reviewGraph)
 		.insert(ReviewResult, [])
@@ -876,14 +879,14 @@ export const reviewCommitPrograms = Object.freeze({
 						kind,
 						scope,
 						due: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
+							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
 							DenInstant
 						),
 						root: r.param("root", ReviewStep.fields.root)
 					})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	reviewCommitSave: ChangeSet.union(
 		ChangeSet.empty(reviewGraph)
@@ -927,14 +930,14 @@ export const reviewCommitPrograms = Object.freeze({
 						kind,
 						scope,
 						due: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
+							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
 							DenInstant
 						),
 						root: r.param("root", ReviewStep.fields.root)
 					})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	reviewCommitReviewRunFinish: ChangeSet.union(
 		ChangeSet.empty(reviewGraph)

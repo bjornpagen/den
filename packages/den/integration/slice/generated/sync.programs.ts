@@ -150,12 +150,12 @@ const syncLatestServed = query(SyncDen).rule((r) => {
 
 export const syncDenPrograms = Object.freeze({
 	syncNow: clocked(
-		query(syncGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(syncGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	syncReading: clocked(
 		query(SyncDen).reads({
-			now: query(syncGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			now: query(syncGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
 			serving: query(SyncDen).rule((r) => {
 				const { environment, at, deployment } = v(SyncServed, "served")
 				return r
@@ -169,7 +169,7 @@ export const syncDenPrograms = Object.freeze({
 					.find({ deployment })
 			})
 		}),
-		{ "now.now": "millis" }
+		{ "now.denNow": "millis" }
 	),
 	syncClaim: clocked(
 		ChangeSet.empty(syncGraph)
@@ -177,7 +177,7 @@ export const syncDenPrograms = Object.freeze({
 				{ SyncClaim: [] },
 				{
 					until: Type.cast(
-						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						Num.add(Type.base(param("denNow", DenInstant)), Type.base(param("budget", DenDelay))),
 						DenInstant
 					)
 				}
@@ -191,7 +191,7 @@ export const syncDenPrograms = Object.freeze({
 						.find({ step, root, attempt })
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	syncRetry: clocked(
 		ChangeSet.empty(syncGraph)
@@ -203,7 +203,10 @@ export const syncDenPrograms = Object.freeze({
 						step: r.param("step", SyncRetry.fields.step),
 						attempt: r.param("attempt", SyncRetry.fields.attempt),
 						at: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(r.param("delay", DenDelay))),
+							Num.add(
+								Type.base(r.param("denNow", DenInstant)),
+								Type.base(r.param("delay", DenDelay))
+							),
 							DenInstant
 						),
 						why: r.param("why", SyncRetry.fields.why),
@@ -211,7 +214,7 @@ export const syncDenPrograms = Object.freeze({
 					})
 				)
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	syncFence: ChangeSet.empty(syncGraph).insert(SyncEnded, []).insert(SyncFenced, []),
 	syncRefuse: ChangeSet.empty(syncGraph)
@@ -247,14 +250,14 @@ export const syncDenPrograms = Object.freeze({
 						kind,
 						scope,
 						due: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
+							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
 							DenInstant
 						),
 						root: r.param("root", SyncStep.fields.root)
 					})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	syncSkip: ChangeSet.empty(syncGraph).insert(SyncSkipped, []),
 	syncSkippedOf: query(syncGraph).rule((r) => {
@@ -535,11 +538,11 @@ export const syncDenPrograms = Object.freeze({
 							root,
 							kind: SyncRootKind.handle("SyncRun"),
 							key: r.param("syncSyncRunKey", SyncRoot.fields.key),
-							at: r.param("now", SyncRoot.fields.at)
+							at: r.param("denNow", SyncRoot.fields.at)
 						})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	syncReadSyncGoldInput: query(syncGraph).rule((r) => {
 		const { root, scope, build } = v(SyncGoldInput, "syncGoldInput")
@@ -627,11 +630,11 @@ export const syncDenPrograms = Object.freeze({
 							root,
 							kind: SyncRootKind.handle("Gold"),
 							key: r.param("syncGoldKey", SyncRoot.fields.key),
-							at: r.param("now", SyncRoot.fields.at)
+							at: r.param("denNow", SyncRoot.fields.at)
 						})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	)
 })
 
@@ -657,12 +660,12 @@ export const syncCoordinatorPrograms = Object.freeze({
 			query(syncCoordination).rule((r) =>
 				r.find({
 					environment: r.param("environment", SyncServed.fields.environment),
-					at: r.param("now", SyncServed.fields.at),
+					at: r.param("denNow", SyncServed.fields.at),
 					deployment: r.param("deployment", SyncServed.fields.deployment)
 				})
 			)
 		),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	syncPause: ChangeSet.empty(syncCoordination).insert(SyncPaused, []),
 	syncResume: ChangeSet.empty(syncCoordination).insert(SyncResumed, []),
@@ -752,8 +755,8 @@ export const syncRetirerWorkload = workload(SyncRetirer, syncRetirerPrograms)
 /** The commits and declared reads of the flow Sync, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const syncCommitPrograms = Object.freeze({
 	syncAuthenticated: clocked(
-		query(syncGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(syncGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	syncCommitCopy: ChangeSet.union(
 		ChangeSet.empty(syncGraph)

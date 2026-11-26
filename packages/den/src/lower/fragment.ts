@@ -379,8 +379,6 @@ export interface Lowered {
 	 * in the call that opens it, so its admission, its finish and its own start's children are among them.
 	 */
 	readonly spawning: ReadonlyArray<string>
-	/** The relations the flow's app role writes the request of a root the app's own write starts into. */
-	readonly requesting: ReadonlyArray<string>
 	/** The relations den's coordinator role inserts into: each chain's turns and their ends. */
 	readonly coordination: ReadonlyArray<string>
 	/**
@@ -1403,25 +1401,6 @@ export const lower = (flow: AnyFlow): Lowered => {
 		),
 		...Arr.map(edgesIR, (e) => e.relation)
 	]
-	const appRequested = Arr.filter(joinsIR, (j: JoinIR) =>
-		Option.exists(j.root, (r) => r.trigger === "app")
-	)
-	const requesting = [
-		Scope,
-		Root,
-		...(Arr.some(appRequested, (j) => Option.exists(j.root, (r) => recordsRequestOf(r.from.kind)))
-			? [RequestedWith]
-			: []),
-		...exclusiveKeys,
-		...Arr.flatMap(appRequested, (j: JoinIR) => [
-			...valueRelations(j.input),
-			...Option.toArray(
-				Option.flatMap(j.root, (r) =>
-					r.from.kind === "derived" ? Option.some(r.from.key.relation) : Option.none()
-				)
-			)
-		])
-	]
 
 	/**
 	 * Every root's graph sits under one unit of grizzle's, `DenRoot`, keyed by the root's scope, `root`, which every
@@ -1563,7 +1542,6 @@ export const lower = (flow: AnyFlow): Lowered => {
 		resources: Arr.map(flow.resources, (r) => ({ name: r.name, seats: r.seats })),
 		pausable,
 		spawning,
-		requesting,
 		coordination,
 		idle: Arr.dedupe(
 			Arr.flatMap(joinsIR, (j) => Option.match(j.root, { onNone: () => [], onSome: (r) => r.idle }))

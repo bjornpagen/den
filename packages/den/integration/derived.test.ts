@@ -1,14 +1,43 @@
+import { denClock } from "@bjornpagen/den/algebra/kinds"
 import { instantOf } from "@bjornpagen/den/runtime/identity"
 import { settled } from "@bjornpagen/den/runtime/settled"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
-import { Sha256 } from "@bjornpagen/grizzle"
+import {
+	ChangeSet,
+	clocked,
+	login,
+	pg,
+	relation,
+	role,
+	Sha256,
+	schema,
+	wholeEntriesOf,
+	workload
+} from "@bjornpagen/grizzle"
+import { compileServed } from "@bjornpagen/grizzle/compile"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
-import { aimed, array, element, type Gen, int, oneOf } from "@bjornpagen/testing/gen"
+import {
+	aimed,
+	array,
+	boolean,
+	element,
+	finite,
+	type Gen,
+	int,
+	oneOf
+} from "@bjornpagen/testing/gen"
 import { type Case, property, ReplayToken } from "@bjornpagen/testing/property"
-import { Array as Arr, Effect, HashMap, Number as Num, Option, Order } from "effect"
+import { Array as Arr, Effect, Exit, HashMap, Number as Num, Option, Order } from "effect"
+import { App } from "#integration/slice/app.ts"
 import { poolSeats } from "#integration/slice/flows.ts"
+import { chainRequests, chainRequestWrites } from "#integration/slice/generated/chain.programs.ts"
+import { fanRequests, fanRequestWrites } from "#integration/slice/generated/fan.programs.ts"
+import { AppLogin } from "#integration/slice/logins.ts"
+import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
+import { Want } from "#integration/slice/relations.ts"
+import { Loader } from "#integration/slice/roles.ts"
 import { ringOnAndDrain } from "#integration/support/run.ts"
 import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 import { longestLeaseMillis } from "#runtime/turn.ts"
@@ -322,3 +351,187 @@ export const aDerivedRootsInputIsItsReadAtItsRequest = property.explore(events, 
 		}
 	]
 })
+
+/**
+ * Where a derived root's request is composed: a write over the app's schema served by the flow's writer, or by another
+ * role of the app's that holds the schema whole, or a write over a level above the schema.
+ */
+type Composer =
+	| "the flow's writer"
+	| "another role of the app's"
+	| "a write over a level above the schema"
+
+const composers: Gen<Composer> = (source) => {
+	if (!source.draw(boolean)) {
+		return "the flow's writer"
+	}
+	return source.draw(boolean)
+		? "a write over a level above the schema"
+		: "another role of the app's"
+}
+
+/** The relations the fan's Wanted request inserts, as its flow's programs print them. */
+type WantedWrite = (typeof fanRequestWrites.Wanted)[number]
+
+/** The relations the chain's Ordered request inserts, a given root's, as its flow's programs print them. */
+type OrderedWrite = (typeof chainRequestWrites.Ordered)[number]
+
+/**
+ * The compile, as `grizzle generate` commits it, of the app's want of a batch with its run requested after it, by a
+ * role of the app's other than the one the fan names as its writer, holding the app's schema whole and inserting the
+ * sizes it wants and `writes` alone, as metis's student role inserts what its proctored submit requests: a login of
+ * that role alone, which no installation holds, so its workload is compiled, never served.
+ */
+const wantRunBy = (writes: ReadonlyArray<WantedWrite>) => {
+	const another = role(App, "another", wholeEntriesOf(App), { insert: ["Want", ...writes] })
+	return compileServed(login(App, "composing", [another]), snapshotFile, [
+		workload(another, {
+			wantRun: clocked(
+				ChangeSet.sequence(ChangeSet.empty(another).insert(Want, []), fanRequests.Wanted),
+				{
+					[denClock]: "millis"
+				}
+			)
+		})
+	])
+}
+
+/** The compile, as `wantRunBy`'s, of the app's order with the chain's Ordered root requested beside it. */
+const orderBy = (writes: ReadonlyArray<OrderedWrite>) => {
+	const another = role(App, "another", wholeEntriesOf(App), { insert: ["Order", ...writes] })
+	return compileServed(login(App, "composing", [another]), snapshotFile, [
+		workload(another, {
+			order: clocked(
+				ChangeSet.union(
+					ChangeSet.empty(another).insert(App.relations.Order, []),
+					chainRequests.Ordered
+				),
+				{
+					[denClock]: "millis"
+				}
+			)
+		})
+	])
+}
+
+/**
+ * That a role writes `request` inserting exactly `writes`: its compile (`compiled`) takes them all, and is refused
+ * without any one of them.
+ */
+const exactly = <W extends string, E>(
+	request: string,
+	writes: ReadonlyArray<W>,
+	compiled: (writes: ReadonlyArray<W>) => Effect.Effect<unknown, E>
+) =>
+	Effect.gen(function* () {
+		yield* compiled(writes)
+		yield* Effect.forEach(writes, (write) =>
+			Effect.map(Effect.exit(compiled(Arr.filter(writes, (other) => other !== write))), (exit) =>
+				assert.ok(
+					Exit.isFailure(exit),
+					`a role that does not insert ${write} cannot write ${request}`
+				)
+			)
+		)
+	})
+
+/** What a write over a level above the app's schema writes beside the request, as metis's proctored submit does. */
+const Noted = relation("Noted", { size: pg.bigint }, ["size"])
+
+/** A level above the app's schema, as metis's proctoring levels stand above essay grading's. */
+const Above = schema.extend([App], "SliceAbove", [Noted], [])
+
+/**
+ * Composes a derived app root's request into every write of the app's over its schema or a level above it: the fan's
+ * Wanted, sequenced after the sizes the write wants, compiled as a workload of the fan's writer and of another role
+ * inserting what the request inserts (`fanRequestWrites`), whose compile is refused without any one of them, as is the
+ * chain's Ordered, a given root's, beside the app's order, and built into a write over a level above the schema (its
+ * levels alone: no installation holds that level).
+ *
+ * Oracle (specification): docs/decisions.md, a root the app's own write requests is written over the app's schema, so
+ * it composes into any of the app's writes over the schema or a level above it, run by a role that holds it whole and
+ * inserts what the request inserts.
+ *
+ * Box: its suite's, every case of it (the three places a write composes the fan's Wanted request, the chain's Ordered
+ * beside it in the other role's).
+ */
+export const aDerivedAppRequestComposesIntoEveryWriteOverItsSchema = property.exhaust(
+	finite(composers),
+	{
+		box: "the fan's Wanted request compiled for the fan's writer and for another role of the app's, the chain's Ordered for that role, and in a write over a level above the app's schema",
+		needs: {},
+		situations: [
+			"the flow's writer",
+			"another role of the app's",
+			"a write over a level above the schema"
+		] satisfies ReadonlyArray<Reached<Composer>>,
+		check: (_, c: Case<Composer>) => (composer) =>
+			Effect.suspend(() => {
+				c.note(composer)
+				switch (composer) {
+					case "the flow's writer":
+						return Effect.asVoid(
+							compileServed(AppLogin, snapshotFile, [
+								workload(Loader, {
+									wantRun: clocked(
+										ChangeSet.sequence(
+											ChangeSet.empty(Loader).insert(Want, []),
+											fanRequests.Wanted
+										),
+										{ [denClock]: "millis" }
+									)
+								})
+							])
+						)
+					case "another role of the app's":
+						return Effect.andThen(
+							exactly("the fan's Wanted request", fanRequestWrites.Wanted, wantRunBy),
+							exactly("the chain's Ordered request", chainRequestWrites.Ordered, orderBy)
+						)
+					case "a write over a level above the schema":
+						return Effect.asVoid(
+							Effect.sync(() =>
+								ChangeSet.sequence(ChangeSet.empty(Above).insert(Noted, []), fanRequests.Wanted)
+							)
+						)
+				}
+			}),
+		oracle: {
+			kind: "specification",
+			name: "a derived app root's request composes into any of the app's writes over its schema or a level above it"
+		},
+		kept: [],
+		kills: [
+			{
+				file: "packages/den/integration/slice/generated/fan.programs.ts",
+				original: "\tWanted: ChangeSet.empty(App)\n",
+				replacement: "\tWanted: ChangeSet.empty(Loader)\n",
+				why: "The request is written over the fan's writer role: neither another role holding the same schema nor a write over a level above it can compose it, and each is refused."
+			},
+			{
+				file: "packages/den/integration/slice/generated/fan.programs.ts",
+				original:
+					'\tWanted: ["FanScope", "FanExclusiveKey", "FanWantedKey", "FanWantedInput", "FanRoot"] as const\n',
+				replacement:
+					'\tWanted: ["FanScope", "FanExclusiveKey", "FanWantedKey", "FanWantedInput"] as const\n',
+				why: "The request's insert list omits its Root: a role that inserts what the list names cannot write the request, and its workload's compile is refused."
+			},
+			{
+				file: "packages/den/integration/slice/generated/fan.programs.ts",
+				original:
+					'\tWanted: ["FanScope", "FanExclusiveKey", "FanWantedKey", "FanWantedInput", "FanRoot"] as const\n',
+				replacement:
+					'\tWanted: ["FanScope", "FanExclusiveKey", "FanWantedKey", "FanWantedInput", "FanRoot", "FanResult"] as const\n',
+				why: "The request's insert list names a relation the request never inserts, a step commit's: a role without it still writes the request, so the list grants more than the request needs."
+			},
+			{
+				file: "packages/den/integration/slice/generated/chain.programs.ts",
+				original:
+					'\tOrdered: ["ChainScope", "ChainOrderedInput", "ChainRequestedWith", "ChainRoot"] as const\n',
+				replacement:
+					'\tOrdered: ["ChainScope", "ChainOrderedInput", "ChainRequestedWith", "ChainRoot", "ChainResult"] as const\n',
+				why: "A given root's request's insert list names a step commit's relation too: a role without it still writes the request, so the list grants more than the request needs."
+			}
+		]
+	}
+)

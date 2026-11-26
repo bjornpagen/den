@@ -1,3 +1,4 @@
+import { denClock } from "@bjornpagen/den/algebra/kinds"
 import { ChangeSet, clocked, query, recordsQuery, role, v, workload } from "@bjornpagen/grizzle"
 import { App } from "#integration/slice/app.ts"
 import {
@@ -694,7 +695,7 @@ export const appWorkload = workload(Loader, {
 	order: clocked(
 		ChangeSet.union(ChangeSet.empty(Loader).insert(Order, []), chainRequests.Ordered),
 		{
-			now: "millis"
+			[denClock]: "millis"
 		}
 	),
 	weigh: ChangeSet.empty(Loader).insert(App.relations.Weight, []),
@@ -702,7 +703,7 @@ export const appWorkload = workload(Loader, {
 	wantRun: clocked(
 		ChangeSet.sequence(ChangeSet.empty(Loader).insert(Want, []), fanRequests.Wanted),
 		{
-			now: "millis"
+			[denClock]: "millis"
 		}
 	),
 	hear: ChangeSet.empty(Loader).insert(Heard, []),

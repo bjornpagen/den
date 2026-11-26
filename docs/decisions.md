@@ -283,13 +283,13 @@
 - **A step commits through the app's own ChangeSet, in its commit's call (settled by metis's need, 2026-11-21).** The
   essay grader records its evaluation through the app's ChangeSet, which inserts what an insert of facts cannot state
   (its rows from parameters, its instants the database's), so a step's `writes` is `through(changes, clock)`, a
-  ChangeSet `changes` makes of the flow's app role, or `writesNothing`; den's commit is
-  `ChangeSet.union(<den's facts>, changes(W))`, clocked for den's spawns' `now` and each instant `clock` names, and the
-  body returns its output and that ChangeSet's served input, its parameters and its array members' facts (an insert's
-  rows `AdditionIn`, nested members under their owners). A refusal of either refuses both: the step ends failed by the
-  law, with nothing of its own or of the app's committed. A commit rings the steps its rows made ready by what its
-  outcome counts, whatever its ChangeSet holds.
-  - den's commit names `steps`, `root` and `now` itself, and a ChangeSet's free parameters are one namespace, so
+  ChangeSet `changes` makes of the flow's app role, or `writesNothing`; den's commit is `ChangeSet.union(<den's facts>,
+  changes(W))`, clocked for den's spawns' `denNow` and each instant `clock` names, and the body returns its output and
+  that ChangeSet's served input, its parameters and its array members' facts (an insert's rows `AdditionIn`, nested
+  members under their owners). A refusal of either refuses both: the step ends failed by the law, with nothing of its
+  own or of the app's committed. A commit rings the steps its rows made ready by what its outcome counts, whatever its
+  ChangeSet holds.
+  - den's commit names `steps`, `root` and `denNow` itself, and a ChangeSet's free parameters are one namespace, so
     `through` refuses at the type level a ChangeSet that names any of them: a served commit binds no value when it is
     built, so den cannot close its own parameters with `bind`. A scope of parameters a call still supplies is grizzle's
     to add.
@@ -367,23 +367,28 @@
   declared to key it, Bjorn's rule: no automatic key hashing; TODO.md); its exclusivity seat is named by its key, the
   one value its request holds before its read (`SeatOf`). A scheduled root's input is derived, the one way: the
   schedule's key is its instant and its roster's member (`scheduleKey`), each tick requesting a root per member by that
-  key alone, so no deploy that changes the input can stop the census. The request is served by the role that holds the
-  read's level whole. A root den requests (an operator's, a schedule's) is served by den's role, which holds that level
-  for reading and writes only the graph, so the census still requests while the app's commits login is refused, and
-  den's runtime login reads that level: a read is written over the narrowest level that holds what it reads, and for an
-  app whose lowest level holds every relation, as metis's does, every scheduled flow's den role reads every app table
-  until a read of no relation can be written over grizzle's empty level (`schema.empty`, DENSCOPE's; TODO.md). A root
-  the app's own write requests is served by the app's role, and the write sequences it after the strata whose facts it
-  derives from, as metis's ending of a sitting sequences its essay's request after its grading; that role holds the
-  inserts of its rows, a derived root's key and input among them, as it holds a given app root's, the app trusted with
-  its own write and the generated request the one way it writes them. An ordinary served read, under grizzle's read laws
-  and its missed-index refusal.
+  key alone, so no deploy that changes the input can stop the census. A root den requests (an operator's, a schedule's)
+  is written over den's role and served by it, which holds the read's level for reading and writes only the graph, so
+  the census still requests while the app's commits login is refused, and den's runtime login reads that level: a read
+  is written over the narrowest level that holds what it reads, and for an app whose lowest level holds every relation,
+  as metis's does, every scheduled flow's den role reads every app table until a read of no relation can be written over
+  grizzle's empty level (`schema.empty`, DENSCOPE's; TODO.md). A root the app's own write requests is written over the
+  app's schema, which holds the flow's graph and the read's level, so it composes into any of the app's writes over the
+  schema or a level above it, run by a role that holds the schema whole, sequenced after the strata whose facts it
+  derives from, as metis's proctored submit sequences essay grading's request after its grading; that role inserts the
+  rows the request inserts (the printed `RequestWrites`), a derived root's key and input among them, as it inserts a
+  given app root's, the app trusted with its own write and the generated request the one way it writes them. An ordinary
+  served read, under grizzle's read laws and its missed-index refusal. Every printed program binds den's own clock
+  parameter, `denNow`, so a request or a commit composed with the app's ChangeSets never meets a parameter of the app's
+  own of another type.
   - Rejected: a schedule's own input function beside the read (two ways to derive an input); a derived request that
     names any field beside its key; recording a derived input, which no deploy that changes the read could compare;
     rosters, brands and doubles in a derived key or input: den lowers a roster or a brand to its own fragment's type,
     which a read of the app's level neither binds nor delivers, and a double writes -0 and 0 alike; serving den's
     derived requests over the app's role, which would grant the app role inserts into every scheduled flow's roots and
-    fail the census with the app's login.
+    fail the census with the app's login; an app root's derived request written over the flow's app role, which no other
+    role of the app's composes into its write; a placement level of its own for it, which every app would name as its
+    schema: a role holding that level whole holds the schema whole.
   - The key's text is a one-init cutover too: a scheduled root's key was its instant and its member joined by a colon,
     and is now `derivedKey`'s, so an installation from before it would request the current instant again under another
     root; every installation installs fresh from its one init (above).

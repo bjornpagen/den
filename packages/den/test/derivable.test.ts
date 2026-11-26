@@ -1,4 +1,4 @@
-import { pg, query, relation, schema, v } from "@bjornpagen/grizzle"
+import { type AnyChangeSet, ChangeSet, pg, query, relation, schema, v } from "@bjornpagen/grizzle"
 import { exhaust } from "@bjornpagen/testing/explore"
 import { requiredInSpace } from "@bjornpagen/testing/features"
 import { element } from "@bjornpagen/testing/gen"
@@ -10,6 +10,7 @@ import { flow } from "#algebra/flow.ts"
 import {
 	always,
 	app,
+	type ClockBinding,
 	derived,
 	given,
 	none,
@@ -20,6 +21,7 @@ import {
 	scheduleKey,
 	shared,
 	type Derived,
+	denClock,
 	type Exclusive,
 	exclusiveBy,
 	type InputFrom,
@@ -27,6 +29,7 @@ import {
 	type SeatOf,
 	type Stored,
 	type Trigger,
+	through,
 	unconditional,
 	writer,
 	writesNothing
@@ -239,13 +242,30 @@ const OnlyBatch = Schema.Struct({ batch: Schema.String })
 const WithLate = Schema.Struct({ batch: Schema.String, size: Schema.BigInt, late: Schema.Boolean })
 
 /** The members of `T` named by a sentence: the refusals `root`'s declared type adds. */
-type RefusalsOf<T> = { [K in keyof T]: K extends `${string} ${string}` ? K : never }[keyof T]
+type RefusalsOf<T> = { [K in keyof T]-?: K extends `${string} ${string}` ? K : never }[keyof T]
 
 /**
  * The refusal `root` names for a trigger and a source, the member its parameter's type adds where they do not hold, or
  * "accepted".
  */
 type VerdictOf<T> = [RefusalsOf<T>] extends [never] ? "accepted" : RefusalsOf<T>
+
+/**
+ * A step's ChangeSet inserting the sizes a parameter named `param` gives: den's clock (`denNow`), which den's commit
+ * names and `through` refuses, or `now`, an app's own.
+ */
+const sizedBy = <const N extends string>(param: N) =>
+	ChangeSet.empty(Wants).insert(
+		Want,
+		query(Wants).rule((r) =>
+			r.find({ batch: r.param("batch", Text), size: r.param(param, pg.bigint) })
+		)
+	)
+
+/** What `through`'s parameter makes of a step's ChangeSet `C`: `C`, beside the refusal where it names den's. */
+type ThroughTakes<C> = C extends AnyChangeSet
+	? ReturnType<Parameters<typeof through<unknown, C, ClockBinding>>[0]>
+	: never
 
 /** Whether a seat function `S` names the seat `root`'s parameter `D` takes. */
 type SeatVerdict<S, D> = D extends { readonly exclusive: infer E }
@@ -368,6 +388,8 @@ const verdicts: Readonly<{
 		RootTakes<typeof Wanted.input, typeof app, typeof Wanted.from>
 	>
 	seatUninferred: [unknown] extends [SeatOf<Stored["Type"], InputFrom>] ? "unknown" : "a type"
+	stepNamesDenClock: VerdictOf<ThroughTakes<ReturnType<typeof sizedBy<typeof denClock>>>>
+	stepNamesAppClock: VerdictOf<ThroughTakes<ReturnType<typeof sizedBy<"now">>>>
 }> = {
 	derived: "accepted",
 	scheduled: "accepted",
@@ -386,7 +408,10 @@ const verdicts: Readonly<{
 	keyOtherType: "a derived root's key binds its read's parameters",
 	seatByKey: "accepted",
 	seatByInput: "refused",
-	seatUninferred: "unknown"
+	seatUninferred: "unknown",
+	stepNamesDenClock:
+		"a step's ChangeSet names no parameter den's commit names: steps, root or denNow",
+	stepNamesAppClock: "accepted"
 }
 
 /** A run of a batch derived from its key, one live run per batch, its seat named by its key. */

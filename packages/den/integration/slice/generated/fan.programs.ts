@@ -174,12 +174,12 @@ const fanLatestServed = query(FanDen).rule((r) => {
 
 export const fanDenPrograms = Object.freeze({
 	fanNow: clocked(
-		query(fanGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(fanGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	fanReading: clocked(
 		query(FanDen).reads({
-			now: query(fanGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			now: query(fanGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
 			serving: query(FanDen).rule((r) => {
 				const { environment, at, deployment } = v(FanServed, "served")
 				return r
@@ -193,7 +193,7 @@ export const fanDenPrograms = Object.freeze({
 					.find({ deployment })
 			})
 		}),
-		{ "now.now": "millis" }
+		{ "now.denNow": "millis" }
 	),
 	fanClaim: clocked(
 		ChangeSet.empty(fanGraph)
@@ -201,7 +201,7 @@ export const fanDenPrograms = Object.freeze({
 				{ FanClaim: [] },
 				{
 					until: Type.cast(
-						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						Num.add(Type.base(param("denNow", DenInstant)), Type.base(param("budget", DenDelay))),
 						DenInstant
 					)
 				}
@@ -215,7 +215,7 @@ export const fanDenPrograms = Object.freeze({
 						.find({ step, root, attempt })
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	fanRetry: clocked(
 		ChangeSet.empty(fanGraph)
@@ -227,7 +227,10 @@ export const fanDenPrograms = Object.freeze({
 						step: r.param("step", FanRetry.fields.step),
 						attempt: r.param("attempt", FanRetry.fields.attempt),
 						at: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(r.param("delay", DenDelay))),
+							Num.add(
+								Type.base(r.param("denNow", DenInstant)),
+								Type.base(r.param("delay", DenDelay))
+							),
 							DenInstant
 						),
 						why: r.param("why", FanRetry.fields.why),
@@ -235,7 +238,7 @@ export const fanDenPrograms = Object.freeze({
 					})
 				)
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	fanFence: ChangeSet.empty(fanGraph).insert(FanEnded, []).insert(FanFenced, []),
 	fanHolds: query(FanDen).rule((r) => {
@@ -281,14 +284,14 @@ export const fanDenPrograms = Object.freeze({
 						kind,
 						scope,
 						due: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
+							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
 							DenInstant
 						),
 						root: r.param("root", FanStep.fields.root)
 					})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	fanSkip: ChangeSet.empty(fanGraph).insert(FanSkipped, []),
 	fanSkippedOf: query(fanGraph).rule((r) => {
@@ -616,11 +619,11 @@ export const fanDenPrograms = Object.freeze({
 							root,
 							kind: FanRootKind.handle("FanRun"),
 							key: r.param("fanFanRunKey", FanRoot.fields.key),
-							at: r.param("now", FanRoot.fields.at)
+							at: r.param("denNow", FanRoot.fields.at)
 						})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	fanOutputsFanRunBatch: query(fanGraph).rule((r) => {
 		const { scope, parent } = v(FanWithin, "within")
@@ -739,11 +742,11 @@ export const fanDenPrograms = Object.freeze({
 							root,
 							kind: FanRootKind.handle("Sweep"),
 							key: r.param("fanSweepKey", FanRoot.fields.key),
-							at: r.param("now", FanRoot.fields.at)
+							at: r.param("denNow", FanRoot.fields.at)
 						})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	fanReadFanWantedInput: query(fanGraph).rule((r) => {
 		const { root, scope, batch, size } = v(FanWantedInput, "fanWantedInput")
@@ -807,12 +810,12 @@ export const fanCoordinatorPrograms = Object.freeze({
 			query(fanCoordination).rule((r) =>
 				r.find({
 					environment: r.param("environment", FanServed.fields.environment),
-					at: r.param("now", FanServed.fields.at),
+					at: r.param("denNow", FanServed.fields.at),
 					deployment: r.param("deployment", FanServed.fields.deployment)
 				})
 			)
 		),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	fanPause: ChangeSet.empty(fanCoordination).insert(FanPaused, []),
 	fanResume: ChangeSet.empty(fanCoordination).insert(FanResumed, []),
@@ -919,8 +922,8 @@ export const fanRetirerWorkload = workload(FanRetirer, fanRetirerPrograms)
 /** The commits and declared reads of the flow Fan, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const fanCommitPrograms = Object.freeze({
 	fanAuthenticated: clocked(
-		query(fanGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(fanGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	fanCommitSquare: ChangeSet.empty(fanGraph)
 		.insert(FanResult, [])
@@ -970,12 +973,12 @@ export const fanCommitPrograms = Object.freeze({
 
 export const fanCommits = workload(Loader, fanCommitPrograms)
 
-/** The requests of the flow's roots the app's own write starts, each a ChangeSet the app's write commits beside its own: over the flow's graph, unioned with it, or, for a root whose input derives from its key, over its app role, sequenced after the strata whose facts it derives from. */
+/** The requests of the flow's roots the app's own write starts, each a ChangeSet the app's write commits beside its own: over the flow's graph, unioned with it, or, for a root whose input derives from its key, over the app's schema, sequenced after the strata whose facts it derives from. */
 export const fanRequests = Object.freeze({
-	Wanted: ChangeSet.empty(Loader)
+	Wanted: ChangeSet.empty(App)
 		.insert(
 			FanScope,
-			query(Loader).rule((r) => {
+			query(App).rule((r) => {
 				const requested = r.relation("fanWantedFanScope", {
 					root: FanScope.fields.root,
 					scope: FanScope.fields.scope
@@ -994,7 +997,7 @@ export const fanRequests = Object.freeze({
 		)
 		.insert(
 			FanExclusiveKey,
-			query(Loader).rule((r) => {
+			query(App).rule((r) => {
 				const requested = r.relation("fanWantedFanExclusiveKey", {
 					root: FanExclusiveKey.fields.root,
 					scope: FanExclusiveKey.fields.scope,
@@ -1015,7 +1018,7 @@ export const fanRequests = Object.freeze({
 		)
 		.insert(
 			FanWantedKey,
-			query(Loader).rule((r) => {
+			query(App).rule((r) => {
 				const requested = r.relation("fanWantedFanScope", {
 					root: FanScope.fields.root,
 					scope: FanScope.fields.scope
@@ -1034,7 +1037,7 @@ export const fanRequests = Object.freeze({
 		)
 		.insert(
 			FanWantedInput,
-			query(Loader).rule((r) => {
+			query(App).rule((r) => {
 				const requested = r.relation("fanWantedFanScope", {
 					root: FanScope.fields.root,
 					scope: FanScope.fields.scope
@@ -1053,7 +1056,7 @@ export const fanRequests = Object.freeze({
 		)
 		.insert(
 			FanRoot,
-			query(Loader).rule((r) => {
+			query(App).rule((r) => {
 				const requested = r.relation("fanWantedFanScope", {
 					root: FanScope.fields.root,
 					scope: FanScope.fields.scope
@@ -1075,8 +1078,13 @@ export const fanRequests = Object.freeze({
 						root,
 						kind: FanRootKind.handle("Wanted"),
 						key: r.param("fanWantedKey", FanRoot.fields.key),
-						at: r.param("now", FanRoot.fields.at)
+						at: r.param("denNow", FanRoot.fields.at)
 					})
 			})
 		)
+})
+
+/** What each of the flow's requests inserts, by its root: a role whose write composes a request inserts these beside its write's own, and none of den's step commits; a role composing several of the flow's requests names each relation in its insert list once. */
+export const fanRequestWrites = Object.freeze({
+	Wanted: ["FanScope", "FanExclusiveKey", "FanWantedKey", "FanWantedInput", "FanRoot"] as const
 })

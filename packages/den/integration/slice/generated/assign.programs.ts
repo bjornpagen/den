@@ -177,12 +177,12 @@ const assignLatestServed = query(AssignDen).rule((r) => {
 
 export const assignDenPrograms = Object.freeze({
 	assignNow: clocked(
-		query(assignGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(assignGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	assignReading: clocked(
 		query(AssignDen).reads({
-			now: query(assignGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			now: query(assignGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
 			serving: query(AssignDen).rule((r) => {
 				const { environment, at, deployment } = v(AssignServed, "served")
 				return r
@@ -196,7 +196,7 @@ export const assignDenPrograms = Object.freeze({
 					.find({ deployment })
 			})
 		}),
-		{ "now.now": "millis" }
+		{ "now.denNow": "millis" }
 	),
 	assignClaim: clocked(
 		ChangeSet.empty(assignGraph)
@@ -204,7 +204,7 @@ export const assignDenPrograms = Object.freeze({
 				{ AssignClaim: [] },
 				{
 					until: Type.cast(
-						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						Num.add(Type.base(param("denNow", DenInstant)), Type.base(param("budget", DenDelay))),
 						DenInstant
 					)
 				}
@@ -218,7 +218,7 @@ export const assignDenPrograms = Object.freeze({
 						.find({ step, root, attempt })
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	assignRetry: clocked(
 		ChangeSet.empty(assignGraph)
@@ -230,7 +230,10 @@ export const assignDenPrograms = Object.freeze({
 						step: r.param("step", AssignRetry.fields.step),
 						attempt: r.param("attempt", AssignRetry.fields.attempt),
 						at: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(r.param("delay", DenDelay))),
+							Num.add(
+								Type.base(r.param("denNow", DenInstant)),
+								Type.base(r.param("delay", DenDelay))
+							),
 							DenInstant
 						),
 						why: r.param("why", AssignRetry.fields.why),
@@ -238,7 +241,7 @@ export const assignDenPrograms = Object.freeze({
 					})
 				)
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	assignFence: ChangeSet.empty(assignGraph).insert(AssignEnded, []).insert(AssignFenced, []),
 	assignRefuse: ChangeSet.empty(assignGraph)
@@ -281,14 +284,14 @@ export const assignDenPrograms = Object.freeze({
 						kind,
 						scope,
 						due: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
+							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
 							DenInstant
 						),
 						root: r.param("root", AssignStep.fields.root)
 					})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	assignSkip: ChangeSet.empty(assignGraph).insert(AssignSkipped, []),
 	assignSkippedOf: query(assignGraph).rule((r) => {
@@ -674,11 +677,11 @@ export const assignDenPrograms = Object.freeze({
 							root,
 							kind: AssignRootKind.handle("Assignment"),
 							key: r.param("assignAssignmentKey", AssignRoot.fields.key),
-							at: r.param("now", AssignRoot.fields.at)
+							at: r.param("denNow", AssignRoot.fields.at)
 						})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	assignOutputsAssignmentDecide: query(assignGraph).rule((r) => {
 		const { step, scope } = v(AssignStep, "step")
@@ -769,12 +772,12 @@ export const assignCoordinatorPrograms = Object.freeze({
 			query(assignCoordination).rule((r) =>
 				r.find({
 					environment: r.param("environment", AssignServed.fields.environment),
-					at: r.param("now", AssignServed.fields.at),
+					at: r.param("denNow", AssignServed.fields.at),
 					deployment: r.param("deployment", AssignServed.fields.deployment)
 				})
 			)
 		),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	assignPause: ChangeSet.empty(assignCoordination).insert(AssignPaused, []),
 	assignResume: ChangeSet.empty(assignCoordination).insert(AssignResumed, []),
@@ -892,8 +895,8 @@ export const assignRetirerWorkload = workload(AssignRetirer, assignRetirerProgra
 /** The commits and declared reads of the flow Assign, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const assignCommitPrograms = Object.freeze({
 	assignAuthenticated: clocked(
-		query(assignGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(assignGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	assignCommitEmbed: clocked(
 		ChangeSet.empty(assignGraph)
@@ -930,14 +933,14 @@ export const assignCommitPrograms = Object.freeze({
 						kind,
 						scope,
 						due: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
+							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
 							DenInstant
 						),
 						root: r.param("root", AssignStep.fields.root)
 					})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	assignCommitDecide: ChangeSet.union(
 		ChangeSet.empty(assignGraph)

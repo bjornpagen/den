@@ -158,12 +158,12 @@ const chainLatestServed = query(ChainDen).rule((r) => {
 
 export const chainDenPrograms = Object.freeze({
 	chainNow: clocked(
-		query(chainGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(chainGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	chainReading: clocked(
 		query(ChainDen).reads({
-			now: query(chainGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			now: query(chainGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
 			serving: query(ChainDen).rule((r) => {
 				const { environment, at, deployment } = v(ChainServed, "served")
 				return r
@@ -177,7 +177,7 @@ export const chainDenPrograms = Object.freeze({
 					.find({ deployment })
 			})
 		}),
-		{ "now.now": "millis" }
+		{ "now.denNow": "millis" }
 	),
 	chainClaim: clocked(
 		ChangeSet.empty(chainGraph)
@@ -185,7 +185,7 @@ export const chainDenPrograms = Object.freeze({
 				{ ChainClaim: [] },
 				{
 					until: Type.cast(
-						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						Num.add(Type.base(param("denNow", DenInstant)), Type.base(param("budget", DenDelay))),
 						DenInstant
 					)
 				}
@@ -199,7 +199,7 @@ export const chainDenPrograms = Object.freeze({
 						.find({ step, root, attempt })
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	chainRetry: clocked(
 		ChangeSet.empty(chainGraph)
@@ -211,7 +211,10 @@ export const chainDenPrograms = Object.freeze({
 						step: r.param("step", ChainRetry.fields.step),
 						attempt: r.param("attempt", ChainRetry.fields.attempt),
 						at: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(r.param("delay", DenDelay))),
+							Num.add(
+								Type.base(r.param("denNow", DenInstant)),
+								Type.base(r.param("delay", DenDelay))
+							),
 							DenInstant
 						),
 						why: r.param("why", ChainRetry.fields.why),
@@ -219,7 +222,7 @@ export const chainDenPrograms = Object.freeze({
 					})
 				)
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	chainFence: ChangeSet.empty(chainGraph).insert(ChainEnded, []).insert(ChainFenced, []),
 	chainRefuse: ChangeSet.empty(chainGraph)
@@ -255,14 +258,14 @@ export const chainDenPrograms = Object.freeze({
 						kind,
 						scope,
 						due: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
+							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
 							DenInstant
 						),
 						root: r.param("root", ChainStep.fields.root)
 					})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	chainSkip: ChangeSet.empty(chainGraph).insert(ChainSkipped, []),
 	chainSkippedOf: query(chainGraph).rule((r) => {
@@ -506,11 +509,11 @@ export const chainDenPrograms = Object.freeze({
 							root,
 							kind: ChainRootKind.handle("ChainRun"),
 							key: r.param("chainChainRunKey", ChainRoot.fields.key),
-							at: r.param("now", ChainRoot.fields.at)
+							at: r.param("denNow", ChainRoot.fields.at)
 						})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	chainOutputsChainRunPage: query(chainGraph).rule((r) => {
 		const { step, scope } = v(ChainStep, "step")
@@ -618,12 +621,12 @@ export const chainCoordinatorPrograms = Object.freeze({
 			query(chainCoordination).rule((r) =>
 				r.find({
 					environment: r.param("environment", ChainServed.fields.environment),
-					at: r.param("now", ChainServed.fields.at),
+					at: r.param("denNow", ChainServed.fields.at),
 					deployment: r.param("deployment", ChainServed.fields.deployment)
 				})
 			)
 		),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	chainPause: ChangeSet.empty(chainCoordination).insert(ChainPaused, []),
 	chainResume: ChangeSet.empty(chainCoordination).insert(ChainResumed, []),
@@ -719,8 +722,8 @@ export const chainRetirerWorkload = workload(ChainRetirer, chainRetirerPrograms)
 /** The commits and declared reads of the flow Chain, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const chainCommitPrograms = Object.freeze({
 	chainAuthenticated: clocked(
-		query(chainGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(chainGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	chainCommitPage: clocked(
 		ChangeSet.union(
@@ -758,7 +761,7 @@ export const chainCommitPrograms = Object.freeze({
 							kind,
 							scope,
 							due: Type.cast(
-								Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
+								Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
 								DenInstant
 							),
 							root: r.param("root", ChainStep.fields.root)
@@ -767,7 +770,7 @@ export const chainCommitPrograms = Object.freeze({
 				),
 			declaredFlow.kinds[0].writes.changes(Loader)
 		),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	chainReadPage: query(Loader).reads(declaredFlow.kinds[0].reads.named),
 	chainCommitChainRunFinish: ChangeSet.union(
@@ -790,7 +793,7 @@ export const chainCommitPrograms = Object.freeze({
 
 export const chainCommits = workload(Loader, chainCommitPrograms)
 
-/** The requests of the flow's roots the app's own write starts, each a ChangeSet the app's write commits beside its own: over the flow's graph, unioned with it, or, for a root whose input derives from its key, over its app role, sequenced after the strata whose facts it derives from. */
+/** The requests of the flow's roots the app's own write starts, each a ChangeSet the app's write commits beside its own: over the flow's graph, unioned with it, or, for a root whose input derives from its key, over the app's schema, sequenced after the strata whose facts it derives from. */
 export const chainRequests = Object.freeze({
 	Ordered: ChangeSet.empty(chainGraph)
 		.insert(
@@ -871,8 +874,13 @@ export const chainRequests = Object.freeze({
 						root,
 						kind: ChainRootKind.handle("Ordered"),
 						key: r.param("chainOrderedKey", ChainRoot.fields.key),
-						at: r.param("now", ChainRoot.fields.at)
+						at: r.param("denNow", ChainRoot.fields.at)
 					})
 			})
 		)
+})
+
+/** What each of the flow's requests inserts, by its root: a role whose write composes a request inserts these beside its write's own, and none of den's step commits; a role composing several of the flow's requests names each relation in its insert list once. */
+export const chainRequestWrites = Object.freeze({
+	Ordered: ["ChainScope", "ChainOrderedInput", "ChainRequestedWith", "ChainRoot"] as const
 })

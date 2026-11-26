@@ -135,12 +135,12 @@ const clockLatestServed = query(ClockDen).rule((r) => {
 
 export const clockDenPrograms = Object.freeze({
 	clockNow: clocked(
-		query(clockGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(clockGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	clockReading: clocked(
 		query(ClockDen).reads({
-			now: query(clockGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			now: query(clockGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
 			serving: query(ClockDen).rule((r) => {
 				const { environment, at, deployment } = v(ClockServed, "served")
 				return r
@@ -154,7 +154,7 @@ export const clockDenPrograms = Object.freeze({
 					.find({ deployment })
 			})
 		}),
-		{ "now.now": "millis" }
+		{ "now.denNow": "millis" }
 	),
 	clockClaim: clocked(
 		ChangeSet.empty(clockGraph)
@@ -162,7 +162,7 @@ export const clockDenPrograms = Object.freeze({
 				{ ClockClaim: [] },
 				{
 					until: Type.cast(
-						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						Num.add(Type.base(param("denNow", DenInstant)), Type.base(param("budget", DenDelay))),
 						DenInstant
 					)
 				}
@@ -176,7 +176,7 @@ export const clockDenPrograms = Object.freeze({
 						.find({ step, root, attempt })
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	clockRetry: clocked(
 		ChangeSet.empty(clockGraph)
@@ -188,7 +188,10 @@ export const clockDenPrograms = Object.freeze({
 						step: r.param("step", ClockRetry.fields.step),
 						attempt: r.param("attempt", ClockRetry.fields.attempt),
 						at: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(r.param("delay", DenDelay))),
+							Num.add(
+								Type.base(r.param("denNow", DenInstant)),
+								Type.base(r.param("delay", DenDelay))
+							),
 							DenInstant
 						),
 						why: r.param("why", ClockRetry.fields.why),
@@ -196,7 +199,7 @@ export const clockDenPrograms = Object.freeze({
 					})
 				)
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	clockFence: ChangeSet.empty(clockGraph).insert(ClockEnded, []).insert(ClockFenced, []),
 	clockRefuse: ChangeSet.empty(clockGraph)
@@ -233,7 +236,7 @@ export const clockDenPrograms = Object.freeze({
 							kind,
 							scope,
 							due: Type.cast(
-								Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
+								Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
 								DenInstant
 							),
 							root: r.param("root", ClockStep.fields.root)
@@ -252,7 +255,7 @@ export const clockDenPrograms = Object.freeze({
 							.find({ step, kind, scope, due, root: r.param("root", ClockStep.fields.root) })
 					})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	clockSkip: ChangeSet.empty(clockGraph).insert(ClockSkipped, []),
 	clockSkippedOf: query(clockGraph).rule((r) => {
@@ -507,11 +510,11 @@ export const clockDenPrograms = Object.freeze({
 							root,
 							kind: ClockRootKind.handle("Hourly"),
 							key: r.param("clockHourlyKey", ClockRoot.fields.key),
-							at: r.param("now", ClockRoot.fields.at)
+							at: r.param("denNow", ClockRoot.fields.at)
 						})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	clockReadClockSittingInput: query(clockGraph).rule((r) => {
 		const { root, scope, sitting, deadline } = v(ClockSittingInput, "clockSittingInput")
@@ -600,11 +603,11 @@ export const clockDenPrograms = Object.freeze({
 							root,
 							kind: ClockRootKind.handle("Sitting"),
 							key: r.param("clockSittingKey", ClockRoot.fields.key),
-							at: r.param("now", ClockRoot.fields.at)
+							at: r.param("denNow", ClockRoot.fields.at)
 						})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	)
 })
 
@@ -617,12 +620,12 @@ export const clockCoordinatorPrograms = Object.freeze({
 			query(clockCoordination).rule((r) =>
 				r.find({
 					environment: r.param("environment", ClockServed.fields.environment),
-					at: r.param("now", ClockServed.fields.at),
+					at: r.param("denNow", ClockServed.fields.at),
 					deployment: r.param("deployment", ClockServed.fields.deployment)
 				})
 			)
 		),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	clockPause: ChangeSet.empty(clockCoordination).insert(ClockPaused, []),
 	clockResume: ChangeSet.empty(clockCoordination).insert(ClockResumed, []),
@@ -710,8 +713,8 @@ export const clockRetirerWorkload = workload(ClockRetirer, clockRetirerPrograms)
 /** The commits and declared reads of the flow Clock, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const clockCommitPrograms = Object.freeze({
 	clockAuthenticated: clocked(
-		query(clockGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(clockGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	clockCommitChime: ChangeSet.union(
 		ChangeSet.empty(clockGraph)

@@ -123,12 +123,12 @@ const writebackLatestServed = query(WritebackDen).rule((r) => {
 
 export const writebackDenPrograms = Object.freeze({
 	writebackNow: clocked(
-		query(writebackGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(writebackGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	writebackReading: clocked(
 		query(WritebackDen).reads({
-			now: query(writebackGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			now: query(writebackGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
 			serving: query(WritebackDen).rule((r) => {
 				const { environment, at, deployment } = v(WritebackServed, "served")
 				return r
@@ -142,7 +142,7 @@ export const writebackDenPrograms = Object.freeze({
 					.find({ deployment })
 			})
 		}),
-		{ "now.now": "millis" }
+		{ "now.denNow": "millis" }
 	),
 	writebackClaim: clocked(
 		ChangeSet.empty(writebackGraph)
@@ -150,7 +150,7 @@ export const writebackDenPrograms = Object.freeze({
 				{ WritebackClaim: [] },
 				{
 					until: Type.cast(
-						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						Num.add(Type.base(param("denNow", DenInstant)), Type.base(param("budget", DenDelay))),
 						DenInstant
 					)
 				}
@@ -164,7 +164,7 @@ export const writebackDenPrograms = Object.freeze({
 						.find({ step, root, attempt })
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	writebackRetry: clocked(
 		ChangeSet.empty(writebackGraph)
@@ -176,7 +176,10 @@ export const writebackDenPrograms = Object.freeze({
 						step: r.param("step", WritebackRetry.fields.step),
 						attempt: r.param("attempt", WritebackRetry.fields.attempt),
 						at: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(r.param("delay", DenDelay))),
+							Num.add(
+								Type.base(r.param("denNow", DenInstant)),
+								Type.base(r.param("delay", DenDelay))
+							),
 							DenInstant
 						),
 						why: r.param("why", WritebackRetry.fields.why),
@@ -184,7 +187,7 @@ export const writebackDenPrograms = Object.freeze({
 					})
 				)
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	writebackFence: ChangeSet.empty(writebackGraph)
 		.insert(WritebackEnded, [])
@@ -221,14 +224,14 @@ export const writebackDenPrograms = Object.freeze({
 						kind,
 						scope,
 						due: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
+							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
 							DenInstant
 						),
 						root: r.param("root", WritebackStep.fields.root)
 					})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	writebackSkip: ChangeSet.empty(writebackGraph).insert(WritebackSkipped, []),
 	writebackSkippedOf: query(writebackGraph).rule((r) => {
@@ -464,11 +467,11 @@ export const writebackDenPrograms = Object.freeze({
 							root,
 							kind: WritebackRootKind.handle("Writeback"),
 							key: r.param("writebackWritebackKey", WritebackRoot.fields.key),
-							at: r.param("now", WritebackRoot.fields.at)
+							at: r.param("denNow", WritebackRoot.fields.at)
 						})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	)
 })
 
@@ -481,12 +484,12 @@ export const writebackCoordinatorPrograms = Object.freeze({
 			query(writebackCoordination).rule((r) =>
 				r.find({
 					environment: r.param("environment", WritebackServed.fields.environment),
-					at: r.param("now", WritebackServed.fields.at),
+					at: r.param("denNow", WritebackServed.fields.at),
 					deployment: r.param("deployment", WritebackServed.fields.deployment)
 				})
 			)
 		),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	writebackPause: ChangeSet.empty(writebackCoordination).insert(WritebackPaused, []),
 	writebackResume: ChangeSet.empty(writebackCoordination).insert(WritebackResumed, []),
@@ -569,8 +572,8 @@ export const writebackRetirerWorkload = workload(WritebackRetirer, writebackReti
 /** The commits and declared reads of the flow Writeback, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const writebackCommitPrograms = Object.freeze({
 	writebackAuthenticated: clocked(
-		query(writebackGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(writebackGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	writebackCommitDeliver: ChangeSet.union(
 		ChangeSet.empty(writebackGraph)

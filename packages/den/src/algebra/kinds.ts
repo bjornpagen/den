@@ -254,11 +254,18 @@ export type Stored = Schema.Struct<{ readonly [field: string]: FieldSchema }>
 export type ErrorSchema = Stored | Schema.Never
 
 /**
+ * The parameter every program den prints binds to the database's clock (`clocked`), a name of den's own: a request or a
+ * commit is composed with the app's ChangeSets, whose parameters are the app's, and grizzle refuses one name of two
+ * types across a write's members, so den takes no name an app's write may use for its own clock, as `now`.
+ */
+export const denClock = "denNow"
+
+/**
  * The parameters den's own commit names: the steps a commit spawns, the root they spawn in, and the call's reading of
  * the database's clock. A step's ChangeSet names none of them, since a ChangeSet's free parameters are one namespace,
  * its union's and its members', and a served commit binds no value when it is built.
  */
-export type DenCommitParam = "steps" | "root" | "now"
+export type DenCommitParam = "steps" | "root" | typeof denClock
 
 /** A ChangeSet's parameters bound to the database's clock, each by the unit of its reading. */
 export interface ClockBinding {
@@ -300,7 +307,9 @@ export type AnyCommit =
 type FreeOfDen<C> = [Extract<keyof ParamsOf<C>, DenCommitParam>] extends [never]
 	? unknown
 	: {
-			readonly "a step's ChangeSet names no parameter den's commit names: steps, root or now": never
+			readonly [
+				Refusal in `a step's ChangeSet names no parameter den's commit names: steps, root or ${typeof denClock}`
+			]: never
 		}
 
 /** A step's commit through `changes`, a ChangeSet over the flow's app role, its instants bound by `clock`. */
@@ -844,8 +853,9 @@ export interface Given {
  * a level of the app's below den's fragment, whose params are those fields and whose one row is the root's input, its
  * columns the input's fields. A request finds the row in its own statement and inserts it as the root's input, and
  * inserts the root only where it finds one, so a derived root stands only where its input derives. A read of no
- * relation (its rule a `find` of its params alone) derives its input from the key's values alone. The role that serves
- * the request holds `over` whole: the app's role for a root its write requests, den's for any other.
+ * relation (its rule a `find` of its params alone) derives its input from the key's values alone. The request is
+ * written over what holds `over` and the flow's graph: the app's schema for a root the app's write requests, den's role
+ * for any other.
  */
 export interface Derived<KS extends Stored, O, Q> {
 	readonly kind: "derived"

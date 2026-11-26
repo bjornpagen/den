@@ -457,9 +457,9 @@ export const chainWriter = [
 	"ChainPageInput",
 	"ChainPageInputAfter",
 	"ChainNext",
-	"ChainRoot",
-	"ChainRequestedWith",
 	"ChainOrderedInput",
+	"ChainRequestedWith",
+	"ChainRoot",
 	...Arr.map(ChainPageReadWeightsRecords.relations, (rel) => rel.name),
 	...Arr.map(ChainPageReadEarlierRecords.relations, (rel) => rel.name),
 	...Arr.map(ChainPageReadTreeRecords.relations, (rel) => rel.name)

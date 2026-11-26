@@ -137,12 +137,12 @@ const retryLatestServed = query(RetryDen).rule((r) => {
 
 export const retryDenPrograms = Object.freeze({
 	retryNow: clocked(
-		query(retryGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(retryGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	retryReading: clocked(
 		query(RetryDen).reads({
-			now: query(retryGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
+			now: query(retryGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
 			serving: query(RetryDen).rule((r) => {
 				const { environment, at, deployment } = v(RetryServed, "served")
 				return r
@@ -156,7 +156,7 @@ export const retryDenPrograms = Object.freeze({
 					.find({ deployment })
 			})
 		}),
-		{ "now.now": "millis" }
+		{ "now.denNow": "millis" }
 	),
 	retryClaim: clocked(
 		ChangeSet.empty(retryGraph)
@@ -164,7 +164,7 @@ export const retryDenPrograms = Object.freeze({
 				{ RetryClaim: [] },
 				{
 					until: Type.cast(
-						Num.add(Type.base(param("now", DenInstant)), Type.base(param("budget", DenDelay))),
+						Num.add(Type.base(param("denNow", DenInstant)), Type.base(param("budget", DenDelay))),
 						DenInstant
 					)
 				}
@@ -178,7 +178,7 @@ export const retryDenPrograms = Object.freeze({
 						.find({ step, root, attempt })
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	retryRetry: clocked(
 		ChangeSet.empty(retryGraph)
@@ -190,7 +190,10 @@ export const retryDenPrograms = Object.freeze({
 						step: r.param("step", RetryRetry.fields.step),
 						attempt: r.param("attempt", RetryRetry.fields.attempt),
 						at: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(r.param("delay", DenDelay))),
+							Num.add(
+								Type.base(r.param("denNow", DenInstant)),
+								Type.base(r.param("delay", DenDelay))
+							),
 							DenInstant
 						),
 						why: r.param("why", RetryRetry.fields.why),
@@ -198,7 +201,7 @@ export const retryDenPrograms = Object.freeze({
 					})
 				)
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	retryFence: ChangeSet.empty(retryGraph).insert(RetryEnded, []).insert(RetryFenced, []),
 	retryRefuse: ChangeSet.empty(retryGraph)
@@ -236,14 +239,14 @@ export const retryDenPrograms = Object.freeze({
 						kind,
 						scope,
 						due: Type.cast(
-							Num.add(Type.base(r.param("now", DenInstant)), Type.base(delay)),
+							Num.add(Type.base(r.param("denNow", DenInstant)), Type.base(delay)),
 							DenInstant
 						),
 						root: r.param("root", RetryStep.fields.root)
 					})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	retrySkip: ChangeSet.empty(retryGraph).insert(RetrySkipped, []),
 	retrySkippedOf: query(retryGraph).rule((r) => {
@@ -501,11 +504,11 @@ export const retryDenPrograms = Object.freeze({
 							root,
 							kind: RetryRootKind.handle("Ladders"),
 							key: r.param("retryLaddersKey", RetryRoot.fields.key),
-							at: r.param("now", RetryRoot.fields.at)
+							at: r.param("denNow", RetryRoot.fields.at)
 						})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	retryOutputsLaddersSteadfast: query(retryGraph).rule((r) => {
 		const { step, scope } = v(RetryStep, "step")
@@ -645,11 +648,11 @@ export const retryDenPrograms = Object.freeze({
 							root,
 							kind: RetryRootKind.handle("Throttled"),
 							key: r.param("retryThrottledKey", RetryRoot.fields.key),
-							at: r.param("now", RetryRoot.fields.at)
+							at: r.param("denNow", RetryRoot.fields.at)
 						})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	retryOutputsThrottledPolite: query(retryGraph).rule((r) => {
 		const { step, scope } = v(RetryStep, "step")
@@ -763,11 +766,11 @@ export const retryDenPrograms = Object.freeze({
 							root,
 							kind: RetryRootKind.handle("Unhurried"),
 							key: r.param("retryUnhurriedKey", RetryRoot.fields.key),
-							at: r.param("now", RetryRoot.fields.at)
+							at: r.param("denNow", RetryRoot.fields.at)
 						})
 				})
 			),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	retryOutputsUnhurriedPatient: query(retryGraph).rule((r) => {
 		const { step, scope } = v(RetryStep, "step")
@@ -806,12 +809,12 @@ export const retryCoordinatorPrograms = Object.freeze({
 			query(retryCoordination).rule((r) =>
 				r.find({
 					environment: r.param("environment", RetryServed.fields.environment),
-					at: r.param("now", RetryServed.fields.at),
+					at: r.param("denNow", RetryServed.fields.at),
 					deployment: r.param("deployment", RetryServed.fields.deployment)
 				})
 			)
 		),
-		{ now: "millis" }
+		{ denNow: "millis" }
 	),
 	retryPause: ChangeSet.empty(retryCoordination).insert(RetryPaused, []),
 	retryResume: ChangeSet.empty(retryCoordination).insert(RetryResumed, []),
@@ -911,8 +914,8 @@ export const retryRetirerWorkload = workload(RetryRetirer, retryRetirerPrograms)
 /** The commits and declared reads of the flow Retry, over its app role Loader, and a read of the database's instant that says the role's login is let in. */
 export const retryCommitPrograms = Object.freeze({
 	retryAuthenticated: clocked(
-		query(retryGraph).rule((r) => r.find({ now: r.param("now", DenInstant) })),
-		{ now: "millis" }
+		query(retryGraph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })),
+		{ denNow: "millis" }
 	),
 	retryCommitSteadfast: ChangeSet.empty(retryGraph)
 		.insert(RetryResult, [])

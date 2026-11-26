@@ -51,22 +51,24 @@ for the coordination group, and DBCLOCK:
   holds are their claims' and are cleared with them (a finished graph's attempts have all ended, so its holds are never
   live), and a seat holds at most one live hold by the live holds' key.
 
-- **DBCLOCK (44cade74, 6172e92c, 8081e6ce).** `clocked(program, { now: unit })` binds `now` to
-  `transaction_timestamp()`, one reading per call. Each flow's den role serves a clocked read of the database's instant
-  alone, `<p>Now: clocked(query(<p>Graph).rule((r) => r.find({ now: r.param("now", DenInstant) })), { now: "millis" })`,
+- **DBCLOCK (44cade74, 6172e92c, 8081e6ce).** `clocked(program, { <param>: unit })` binds each parameter
+  it names to `transaction_timestamp()`, one reading per call. Each flow's den role serves a clocked read
+  of the database's instant alone,
+  `<p>Now: clocked(query(<p>Graph).rule((r) => r.find({ now: r.param("denNow", DenInstant) })), { denNow: "millis" })`,
   and the ledger port answers it as `now`. The census's tick and the relay's pass read it once each and judge leases,
   due instants and windows at that reading; a turn judges its claim and its gates at a reading, and the timers it rings
   are its delays and the durations between two readings. A retry's due instant and every spawned step's are computed in
   the statement that writes them, the call's own reading plus a `DenDelay` (a step's delay after its spawn, a retry's
-  rung), `Type.cast(Num.add(Type.base(now), Type.base(delay)), DenInstant)` in a clocked ChangeSet, which
-  grizzle types with no guard since a reading lies in the clock's range and a delay in its contract's (79874ab5f), so no
-  host names an instant a write stores (DECISIONS 43(a)). An invocation's end is its first reading plus its budget, and
-  a claim's lease is computed in the claim's own statement, its reading plus the time the invocation has left at the
-  turn's reading, `insertAllComputed({ <P>Claim: [] }, { until })` with its holds nested as before, so no host names when a
-  lease ends and no host's clock judges anything. `runtime/clock.ts` keeps only the in-process transport's clock, at which the in-process driver
-  delivers a held wake once its delay has passed. Clocked reads serve `once` and no `watch`, which matches den's split:
-  the relay's watch reads what commits made eligible, without time, and the census reads what time made eligible. The
-  suites move the database's clock itself as they move their TestClock (**The moved clock** below).
+  rung), `Type.cast(Num.add(Type.base(denNow), Type.base(delay)), DenInstant)` in a clocked ChangeSet, which grizzle
+  types with no guard since a reading lies in the clock's range and a delay in its contract's (79874ab5f), so no host
+  names an instant a write stores (DECISIONS 43(a)). An invocation's end is its first reading plus its budget, and a
+  claim's lease is computed in the claim's own statement, its reading plus the time the invocation has left at the
+  turn's reading, `insertAllComputed({ <P>Claim: [] }, { until })` with its holds nested as before, so no host names
+  when a lease ends and no host's clock judges anything. `runtime/clock.ts` keeps only the in-process transport's clock,
+  at which the in-process driver delivers a held wake once its delay has passed. Clocked reads serve `once` and no
+  `watch`, which matches den's split: the relay's watch reads what commits made eligible, without time, and the census
+  reads what time made eligible. The suites move the database's clock itself as they move their TestClock (**The moved
+  clock** below).
 
 - **Units and clearing (grizzle 2be58c8a2's `unit`, f07b59f14's whole-group delete; the read-committed cutover).** Every
   flow's graph sits under one unit of grizzle's, `unit("DenRoot", { root: sha256 })`, which each graph fragment states
@@ -128,20 +130,20 @@ for the coordination group, and DBCLOCK:
   2026-11-21), so grizzle keeps none, and an app runs its own calls to its served programs through den's too.
 
 - **The moved clock (grizzle d37c40141, 8831b13b7).** A suite reads the database's clock at the instant its TestClock
-  stands at, through the statements the served files run: `integration/support/slice.ts` serves each login from its
-  file compiled for a moved clock (`compileServedMoved(login, snapshot, login.workload)`, from the committed snapshot,
-  once a process), and every Db of a case is opened by `Db.openMoved(role, {}, instant)`, the case's `Instant`, read
-  at each call (**A moved clock is stated as an instant** below). So a clocked read's reading, a ChangeSet's `now` and every instant an insert stamps are all
-  the one moved instant of their call, a lease lapses and a retry comes due when the TestClock travels past it, and no
-  suite reads two clocks. The ledgers' `travelling`, which shifted den's `now` reads alone by the TestClock's travel while
-  clocked writes stamped the database's own instant, is deleted, and with it its double count under the machine's
-  clock, where it added real time the database had already read. The committed served files stay the roles'
-  addresses (`WorkerServed`, `AppServed`): a role opens on the layer of its login's name. The tests open the app's
-  auditor through `openAuditor`, a moved Db like the ledgers', since a moved file refuses a ChangeSet call that states
-  no instant.
+  stands at, through the statements the served files run: `integration/support/slice.ts` serves each login from its file
+  compiled for a moved clock (`compileServedMoved(login, snapshot, login.workload)`, from the committed snapshot, once a
+  process), and every Db of a case is opened by `Db.openMoved(role, {}, instant)`, the case's `Instant`, read at each
+  call (**A moved clock is stated as an instant** below). So a clocked read's reading, a ChangeSet's clocked parameters
+  and every instant an insert stamps are all the one moved instant of their call, a lease lapses and a retry comes due
+  when the TestClock travels past it, and no suite reads two clocks. The ledgers' `travelling`, which shifted den's
+  `now` reads alone by the TestClock's travel while clocked writes stamped the database's own instant, is deleted, and
+  with it its double count under the machine's clock, where it added real time the database had already read. The
+  committed served files stay the roles' addresses (`WorkerServed`, `AppServed`): a role opens on the layer of its
+  login's name. The tests open the app's auditor through `openAuditor`, a moved Db like the ledgers', since a moved file
+  refuses a ChangeSet call that states no instant.
 
 - **The scalar namespaces (grizzle 51dff4bc0)** and **a level's bases as a list (ca3c91ee3).** `Compute` is gone: den's
-  printed programs compute a due instant or a lease's end as `Type.cast(Num.add(Type.base(now), Type.base(delay)),
+  printed programs compute a due instant or a lease's end as `Type.cast(Num.add(Type.base(denNow), Type.base(delay)),
   DenInstant)`, a finite double's law is `Num.isFinite`, `DenDelay`'s contract is `Logic.and(Logic.ge(d, 0n),
   Logic.le(d, longestDelayMillis))`, and the slice's nearest-row distance is `Distance.cosine`. The slice's `App` is
   `schema.extend([Listed], "SliceSeats", …)`. grizzle's packages include `packages/openapi`, which
