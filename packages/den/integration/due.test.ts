@@ -104,14 +104,16 @@ export const aStepDueAtItsInputsInstantRunsAtItAndNotBefore = property.explore(s
 								return { offset, deadline, step, scope: requested.scope }
 							})
 						)
-						const wakeOf = (step: Sha256): Wake => ({
+						/** A planned sitting's close step, by its key: its root, the sitting's own scope, then the step. */
+						const keyOf = (p: (typeof planned)[number]) => ({ root: p.scope, step: p.step })
+						const wakeOf = (p: (typeof planned)[number]): Wake => ({
 							_tag: "Step",
 							flow,
-							step,
+							...keyOf(p),
 							attempt: AttemptNumber.make(0)
 						})
-						const ranOf = (step: Sha256) =>
-							Effect.map(ledger.resultOf(step), (outcome) => Option.contains(outcome, "done"))
+						const ranOf = (p: (typeof planned)[number]) =>
+							Effect.map(ledger.resultOf(keyOf(p)), (outcome) => Option.contains(outcome, "done"))
 						yield* tick(ledger)
 						yield* drain(ledgers)
 						const past = Arr.filter(planned, (p) => p.offset < 0)
@@ -128,12 +130,12 @@ export const aStepDueAtItsInputsInstantRunsAtItAndNotBefore = property.explore(s
 						if (ahead.length > 1) {
 							c.note("several instants ahead")
 						}
-						const pastRan = yield* Effect.forEach(past, (p) => ranOf(p.step))
+						const pastRan = yield* Effect.forEach(past, ranOf)
 						assert.ok(
 							Arr.every(pastRan, (ran) => ran),
 							"every sitting already past its instant closes at the first census tick"
 						)
-						const aheadRan = yield* Effect.forEach(ahead, (p) => ranOf(p.step))
+						const aheadRan = yield* Effect.forEach(ahead, ranOf)
 						assert.ok(
 							!Arr.some(aheadRan, (ran) => ran),
 							"no sitting ahead of its instant closes at the first tick"
@@ -144,7 +146,7 @@ export const aStepDueAtItsInputsInstantRunsAtItAndNotBefore = property.explore(s
 								const short = Number(p.deadline) - shortSeconds * 1000 - Number(reading)
 								yield* TestClock.adjust(Duration.millis(Math.max(0, short)))
 								const early = yield* endsFrom
-								const served = yield* serve(ledgers, wakeOf(p.step), early)
+								const served = yield* serve(ledgers, wakeOf(p), early)
 								assert.deepEqual(
 									served.ending.kind === "waiting"
 										? { why: served.ending.why, until: served.ending.until }
@@ -152,16 +154,18 @@ export const aStepDueAtItsInputsInstantRunsAtItAndNotBefore = property.explore(s
 									{ why: "due", until: Option.some(p.deadline) },
 									"short of its instant, its wake finds it not yet due"
 								)
-								const claims = yield* ledger.claimsOf(p.step)
+								const claims = yield* ledger.claimsOf(keyOf(p))
 								assert.deepEqual(claims, [], "nothing claimed it before its instant")
 								yield* TestClock.adjust(Duration.seconds(shortSeconds))
 								yield* tick(ledger)
 								yield* drain(ledgers)
-								const ran = yield* ranOf(p.step)
+								const ran = yield* ranOf(p)
 								assert.ok(ran, "the tick at its instant closes it")
 							})
 						)
-						const finished = yield* Effect.forEach(planned, (p) => ledger.finished(p.scope))
+						const finished = yield* Effect.forEach(planned, (p) =>
+							ledger.finished({ root: p.scope, scope: p.scope })
+						)
 						assert.ok(Arr.every(finished, (f) => f))
 					}),
 					services

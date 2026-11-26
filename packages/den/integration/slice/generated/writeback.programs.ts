@@ -89,11 +89,11 @@ export const WritebackCoordinator = role(
 )
 
 const writebackPendingRead = query(WritebackDen).rule((r) => {
-	const { step, kind, scope, due } = v(WritebackStep, "step")
+	const { root, step, kind, scope, due } = v(WritebackStep, "step")
 	return r
-		.match(WritebackStep, { step, kind, scope, due })
-		.where(r.not(WritebackResult, { step }))
-		.find({ step, kind, scope, due })
+		.match(WritebackStep, { root, step, kind, scope, due })
+		.where(r.not(WritebackResult, { root, step }))
+		.find({ root, step, kind, scope, due })
 })
 
 const writebackRequestedRead = query(WritebackDen).rule((r) => {
@@ -101,15 +101,18 @@ const writebackRequestedRead = query(WritebackDen).rule((r) => {
 	return r
 		.match(WritebackRoot, { root: scope })
 		.match(WritebackScope, { root: scope, scope })
-		.where(r.not(WritebackAdmitted, { scope }), r.not(WritebackSkipped, { scope }))
+		.where(
+			r.not(WritebackAdmitted, { root: scope, scope }),
+			r.not(WritebackSkipped, { root: scope, scope })
+		)
 		.find({ scope })
 })
 
 const writebackRunningRead = query(WritebackDen).rule((r) => {
-	const { scope, step } = v(WritebackFinish, "finish")
+	const { root, scope, step } = v(WritebackFinish, "finish")
 	return r
-		.match(WritebackFinish, { scope, step })
-		.where(r.not(WritebackResult, { step }))
+		.match(WritebackFinish, { root, scope, step })
+		.where(r.not(WritebackResult, { root, step }))
 		.find({ scope })
 })
 
@@ -238,35 +241,50 @@ export const writebackDenPrograms = Object.freeze({
 		const { root, scope, by } = v(WritebackSkipped, "writebackSkipped")
 		return r
 			.match(WritebackSkipped, { root, scope, by })
-			.where(r.eq(scope, r.param("scope", WritebackSkipped.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", WritebackSkipped.fields.root)),
+				r.eq(scope, r.param("scope", WritebackSkipped.fields.scope))
+			)
 			.find({ root, scope, by })
 	}),
 	writebackStepOf: query(writebackGraph).rule((r) => {
 		const { root, step, kind, scope, due } = v(WritebackStep, "writebackStep")
 		return r
 			.match(WritebackStep, { root, step, kind, scope, due })
-			.where(r.eq(step, r.param("step", WritebackStep.fields.step)))
+			.where(
+				r.eq(root, r.param("root", WritebackStep.fields.root)),
+				r.eq(step, r.param("step", WritebackStep.fields.step))
+			)
 			.find({ root, step, kind, scope, due })
 	}),
 	writebackResultOf: query(writebackGraph).rule((r) => {
 		const { root, step, outcome } = v(WritebackResult, "writebackResult")
 		return r
 			.match(WritebackResult, { root, step, outcome })
-			.where(r.eq(step, r.param("step", WritebackResult.fields.step)))
+			.where(
+				r.eq(root, r.param("root", WritebackResult.fields.root)),
+				r.eq(step, r.param("step", WritebackResult.fields.step))
+			)
 			.find({ root, step, outcome })
 	}),
 	writebackHeldOf: query(writebackGraph).rule((r) => {
 		const { root, step, attempt } = v(WritebackHeld, "writebackHeld")
 		return r
 			.match(WritebackHeld, { root, step, attempt })
-			.where(r.eq(step, r.param("step", WritebackHeld.fields.step)))
+			.where(
+				r.eq(root, r.param("root", WritebackHeld.fields.root)),
+				r.eq(step, r.param("step", WritebackHeld.fields.step))
+			)
 			.find({ root, step, attempt })
 	}),
 	writebackAdmittedOf: query(writebackGraph).rule((r) => {
 		const { root, scope } = v(WritebackAdmitted, "writebackAdmitted")
 		return r
 			.match(WritebackAdmitted, { root, scope })
-			.where(r.eq(scope, r.param("scope", WritebackAdmitted.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", WritebackAdmitted.fields.root)),
+				r.eq(scope, r.param("scope", WritebackAdmitted.fields.scope))
+			)
 			.find({ root, scope })
 	}),
 	writebackRootOf: query(writebackGraph).rule((r) => {
@@ -275,7 +293,7 @@ export const writebackDenPrograms = Object.freeze({
 		return r
 			.match(WritebackRoot, { root: scope, kind, key, at })
 			.match(WritebackScope, { root: scope, scope })
-			.where(r.eq(scope, r.param("scope", WritebackRoot.fields.root)))
+			.where(r.eq(scope, r.param("root", WritebackRoot.fields.root)))
 			.find({ scope, kind, key, at })
 	}),
 	writebackFinishedRoots: query(writebackGraph)
@@ -291,43 +309,56 @@ export const writebackDenPrograms = Object.freeze({
 			return r.match(WritebackSkipped, { root: scope, scope }).find({ scope })
 		}),
 	writebackClaimsOf: query(writebackGraph).rule((r) => {
-		const { step, attempt, until } = v(WritebackClaim, "claim")
+		const { root, step, attempt, until } = v(WritebackClaim, "claim")
 		return r
-			.match(WritebackClaim, { step, attempt, until })
-			.where(r.eq(step, r.param("step", WritebackStep.fields.step)))
+			.match(WritebackClaim, { root, step, attempt, until })
+			.where(
+				r.eq(root, r.param("root", WritebackScope.fields.root)),
+				r.eq(step, r.param("step", WritebackStep.fields.step))
+			)
 			.find({ step, attempt, until })
 	}),
 	writebackRetriesOf: query(writebackGraph).rule((r) => {
-		const { step, attempt, at, why } = v(WritebackRetry, "retry")
+		const { root, step, attempt, at, why } = v(WritebackRetry, "retry")
 		return r
-			.match(WritebackRetry, { step, attempt, at, why })
-			.where(r.eq(step, r.param("step", WritebackStep.fields.step)))
+			.match(WritebackRetry, { root, step, attempt, at, why })
+			.where(
+				r.eq(root, r.param("root", WritebackScope.fields.root)),
+				r.eq(step, r.param("step", WritebackStep.fields.step))
+			)
 			.find({ step, attempt, at, why })
 	}),
 	writebackFencedOf: query(writebackGraph).rule((r) => {
-		const { step, attempt } = v(WritebackFenced, "fenced")
+		const { root, step, attempt } = v(WritebackFenced, "fenced")
 		return r
-			.match(WritebackFenced, { step, attempt })
-			.where(r.eq(step, r.param("step", WritebackStep.fields.step)))
+			.match(WritebackFenced, { root, step, attempt })
+			.where(
+				r.eq(root, r.param("root", WritebackScope.fields.root)),
+				r.eq(step, r.param("step", WritebackStep.fields.step))
+			)
 			.find({ step, attempt })
 	}),
 	writebackUnendedSteps: query(writebackGraph).rule((r) => {
-		const { step, scope } = v(WritebackStep, "step")
+		const { root, step, scope } = v(WritebackStep, "step")
 		return r
-			.match(WritebackStep, { step, scope })
+			.match(WritebackStep, { root, step, scope })
 			.where(
+				r.eq(root, r.param("root", WritebackScope.fields.root)),
 				r.eq(scope, r.param("scope", WritebackScope.fields.scope)),
-				r.not(WritebackResult, { step }),
-				r.not(WritebackFinish, { scope, step })
+				r.not(WritebackResult, { root, step }),
+				r.not(WritebackFinish, { root, scope, step })
 			)
 			.find({ step })
 	}),
 	writebackFinished: query(writebackGraph).rule((r) => {
-		const { scope, step } = v(WritebackFinish, "finish")
+		const { root, scope, step } = v(WritebackFinish, "finish")
 		return r
-			.match(WritebackFinish, { scope, step })
-			.match(WritebackResult, { step })
-			.where(r.eq(scope, r.param("scope", WritebackScope.fields.scope)))
+			.match(WritebackFinish, { root, scope, step })
+			.match(WritebackResult, { root, step })
+			.where(
+				r.eq(root, r.param("root", WritebackScope.fields.root)),
+				r.eq(scope, r.param("scope", WritebackScope.fields.scope))
+			)
 			.find({ step })
 	}),
 	writebackPending: writebackPendingRead,
@@ -336,24 +367,24 @@ export const writebackDenPrograms = Object.freeze({
 	writebackSnapshot: query(WritebackDen).reads({
 		steps: writebackPendingRead,
 		claims: query(WritebackDen).rule((r) => {
-			const { step, attempt, until } = v(WritebackClaim, "claim")
+			const { root, step, attempt, until } = v(WritebackClaim, "claim")
 			return r
-				.match(WritebackClaim, { step, attempt, until })
-				.where(r.not(WritebackResult, { step }))
+				.match(WritebackClaim, { root, step, attempt, until })
+				.where(r.not(WritebackResult, { root, step }))
 				.find({ step, attempt, until })
 		}),
 		retries: query(WritebackDen).rule((r) => {
-			const { step, attempt, at, why } = v(WritebackRetry, "retry")
+			const { root, step, attempt, at, why } = v(WritebackRetry, "retry")
 			return r
-				.match(WritebackRetry, { step, attempt, at, why })
-				.where(r.not(WritebackResult, { step }))
+				.match(WritebackRetry, { root, step, attempt, at, why })
+				.where(r.not(WritebackResult, { root, step }))
 				.find({ step, attempt, at, why })
 		}),
 		fenced: query(WritebackDen).rule((r) => {
-			const { step, attempt } = v(WritebackFenced, "fenced")
+			const { root, step, attempt } = v(WritebackFenced, "fenced")
 			return r
-				.match(WritebackFenced, { step, attempt })
-				.where(r.not(WritebackResult, { step }))
+				.match(WritebackFenced, { root, step, attempt })
+				.where(r.not(WritebackResult, { root, step }))
 				.find({ step, attempt })
 		}),
 		requested: writebackRequestedRead,
@@ -378,14 +409,20 @@ export const writebackDenPrograms = Object.freeze({
 		const { root, step, attempt } = v(WritebackDeliverInput, "writebackDeliverInput")
 		return r
 			.match(WritebackDeliverInput, { root, step, attempt })
-			.where(r.eq(step, r.param("step", WritebackDeliverInput.fields.step)))
+			.where(
+				r.eq(root, r.param("root", WritebackDeliverInput.fields.root)),
+				r.eq(step, r.param("step", WritebackDeliverInput.fields.step))
+			)
 			.find({ root, step, attempt })
 	}),
 	writebackReadWritebackWritebackInput: query(writebackGraph).rule((r) => {
 		const { root, scope, attempt } = v(WritebackWritebackInput, "writebackWritebackInput")
 		return r
 			.match(WritebackWritebackInput, { root, scope, attempt })
-			.where(r.eq(scope, r.param("scope", WritebackWritebackInput.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", WritebackWritebackInput.fields.root)),
+				r.eq(scope, r.param("scope", WritebackWritebackInput.fields.scope))
+			)
 			.find({ root, scope, attempt })
 	}),
 	writebackRequestWriteback: clocked(

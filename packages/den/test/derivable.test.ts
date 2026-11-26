@@ -40,15 +40,16 @@ import { caseHangMillis } from "#test/support/suites.ts"
 
 /**
  * A derived root's key and input as lowering holds them: each a struct of text, bigint and boolean columns alone, the
- * columns a read of a level of the app's binds and delivers, its key's field never `root`, which its record keeps for
- * itself; any other is refused with Refused when the flow is lowered, naming the root's key or its derived input. Each
- * fault is a kind built past `root`'s types (a spread, as a deploy's copy of a flow is), so lowering is the check that
- * meets it.
+ * columns a read of a level of the app's binds and delivers; its key of one field at least, never `root`, which its
+ * record keeps for itself, nor the name of the digest it keys a text field by. Any other is refused with Refused when
+ * the flow is lowered, naming the root's key or its derived input. Each fault is a kind built past `root`'s types (a
+ * spread, as a deploy's copy of a flow is), so lowering is the check that meets it.
  *
  * Oracle (specification): docs/decisions.md, a derived root's key and input hold text, bigint and boolean columns
- * alone (lower/fragment.ts derivable), and its key is a closed record held to its root both ways and kept through
- * retirement. Mutants it kills: `derivable = () => true`; the "columns alone" refusal deleted; either of the key's laws
- * dropped; the key cleared with the graph.
+ * alone (lower/fragment.ts derivable), and its key is a closed record held to its root both ways, kept through
+ * retirement and keyed by its fields, each text by its digest. Mutants it kills: `derivable = () => true`; the
+ * "columns alone" refusal deleted; any of the key's laws dropped; the key cleared with the graph; the digest refusal
+ * deleted; the empty key's refusal deleted.
  */
 
 const Fault = Schema.Literals([
@@ -58,6 +59,8 @@ const Fault = Schema.Literals([
 	"a key's double",
 	"a key's brand",
 	"a key's field named root",
+	"a key's field named as its text's digest",
+	"a key of no field",
 	"an input's array",
 	"an input's tagged union",
 	"an input's double"
@@ -120,6 +123,10 @@ const keyOf = (fault: Fault) => {
 			return Schema.Struct({ batch: Schema.String.pipe(Schema.brand("Batch")) })
 		case "a key's field named root":
 			return Schema.Struct({ root: Schema.String })
+		case "a key's field named as its text's digest":
+			return Schema.Struct({ batch: Schema.String, batchDigest: Schema.String })
+		case "a key of no field":
+			return Schema.Struct({})
 		case "none":
 		case "an input's array":
 		case "an input's tagged union":
@@ -146,6 +153,8 @@ const inputOf = (fault: Fault) => {
 		case "a key's double":
 		case "a key's brand":
 		case "a key's field named root":
+		case "a key's field named as its text's digest":
+		case "a key of no field":
 			return Wanted.input
 	}
 }
@@ -543,6 +552,31 @@ it.effect(
 							recorded === "a derived root's key",
 							"only a derived root keeps a key"
 						)
+						if (recorded === "a derived root's key") {
+							assert.deepStrictEqual(
+								Arr.flatMap(lowered.joins, (j) =>
+									Option.match(j.root, {
+										onNone: () => [],
+										onSome: (r) => (r.from.kind === "derived" ? r.from.key.digests : [])
+									})
+								),
+								[{ name: "batchDigest", of: "batch" }],
+								"the key keeps its text's digest beside it"
+							)
+							assert.isTrue(
+								Arr.some(
+									lowered.laws,
+									(law) =>
+										law.kind === "key" &&
+										law.side.relation === record &&
+										Arr.join(
+											Arr.map(law.side.terms, (t) => t.field),
+											","
+										) === "batchDigest"
+								),
+								"the key's fields key it, its text by its digest: one key's fields name one root"
+							)
+						}
 					})
 			)
 		)

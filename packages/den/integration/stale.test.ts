@@ -83,7 +83,7 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 							return yield* Effect.die("a chain admits its first page")
 						}
 						const step = page.value.step
-						const located = yield* chain.ledger.stepOf(step)
+						const located = yield* chain.ledger.stepOf({ root: requested.scope, step })
 						if (Option.isNone(located)) {
 							return yield* Effect.die("an admitted page is located")
 						}
@@ -121,7 +121,7 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 						const lateRan = yield* finish(late)
 						assert.equal(earlyRan.kind, "committed")
 						assert.ok(lateRan.kind === "error" && lostRace("Chain", lateRan.error))
-						const held = yield* chain.ledger.heldOf(step)
+						const held = yield* chain.ledger.heldOf({ root: requested.scope, step })
 						assert.deepEqual(held, Option.some(early.attempt))
 						const pages = yield* rows(app.workload.pages.once({ params: {}, facts: {} }))
 						assert.equal(Arr.filter(pages, (p) => Sha256.equals(p.step, step)).length, 1)
@@ -145,11 +145,20 @@ export const aStaleHolderLosesWhenAnotherAttemptsCommitHoldsItsStep = property.e
 						c.note("a forged attempt")
 						const forged = yield* serve(
 							ledgers,
-							{ _tag: "Step", flow, step: otherPage.value.step, attempt: AttemptNumber.make(1) },
+							{
+								_tag: "Step",
+								flow,
+								root: other.scope,
+								step: otherPage.value.step,
+								attempt: AttemptNumber.make(1)
+							},
 							ends(forgedAt)
 						)
 						assert.equal(forged.ending.kind, "lost")
-						const claims = yield* chain.ledger.claimsOf(otherPage.value.step)
+						const claims = yield* chain.ledger.claimsOf({
+							root: other.scope,
+							step: otherPage.value.step
+						})
 						assert.deepEqual(claims, [])
 					}),
 					services

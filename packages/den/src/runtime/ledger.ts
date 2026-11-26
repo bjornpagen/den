@@ -44,14 +44,10 @@ export const refusedOnKey = (error: Settled, relations: ReadonlyArray<string>): 
 /** A step's outcome, its Result: done with its output, or failed. */
 export type Outcome = "done" | "failed"
 
-/**
- * Where a step is: its kind's runner, its owning scope, its root, the key of the unit its graph sits under, and the
- * instant its first attempt is due.
- */
+/** Where a step is: its kind's runner, its owning scope, and the instant its first attempt is due. */
 export interface Located<R> {
 	readonly runner: StepRunner<R>
 	readonly scope: Sha256
-	readonly root: Sha256
 	readonly due: Instant
 }
 
@@ -61,12 +57,14 @@ export interface Located<R> {
  */
 export type Rooted<A> = A & { readonly root: Sha256 }
 
+/** A step by its key in its root's graph: its root, the unit's key, then the step, so its rows are one probe away. */
+export type StepKey = Rooted<{ readonly step: Sha256 }>
+
+/** A scope by its key in its root's graph: its root, then the scope; a root's own scope is its root. */
+export type ScopeKey = Rooted<{ readonly scope: Sha256 }>
+
 /** A step's attempt, in its root's graph: what a refusal or an exhaustion records its ending against. */
-export interface StepAt {
-	readonly step: Sha256
-	readonly root: Sha256
-	readonly attempt: bigint
-}
+export type StepAt = StepKey & { readonly attempt: bigint }
 
 /**
  * When a spawned step is first due: a delay after the spawning call's own reading of the database's clock, which the
@@ -304,6 +302,7 @@ export class UnknownPauseTarget extends Data.TaggedError("UnknownPauseTarget")<{
 export interface Snapshot<R> {
 	readonly steps: ReadonlyArray<{
 		readonly step: Sha256
+		readonly root: Sha256
 		readonly runner: StepRunner<R>
 		readonly scope: Sha256
 		readonly due: Instant
@@ -384,28 +383,28 @@ export interface Ledger<R> {
 		readonly environment: EnvironmentName
 		readonly deployment: DeploymentId
 	}) => Effect.Effect<void, Settled>
-	readonly stepOf: (step: Sha256) => Effect.Effect<Option.Option<Located<R>>, Settled>
-	readonly resultOf: (step: Sha256) => Effect.Effect<Option.Option<Outcome>, Settled>
-	readonly heldOf: (step: Sha256) => Effect.Effect<Option.Option<bigint>, Settled>
-	readonly claimsOf: (step: Sha256) => Effect.Effect<ReadonlyArray<ClaimRow>, Settled>
-	readonly retriesOf: (step: Sha256) => Effect.Effect<ReadonlyArray<RetryRow>, Settled>
-	readonly fencedOf: (step: Sha256) => Effect.Effect<ReadonlyArray<FencedRow>, Settled>
-	readonly scopeOf: (scope: Sha256) => Effect.Effect<Option.Option<ScopeView>, Settled>
+	readonly stepOf: (at: StepKey) => Effect.Effect<Option.Option<Located<R>>, Settled>
+	readonly resultOf: (at: StepKey) => Effect.Effect<Option.Option<Outcome>, Settled>
+	readonly heldOf: (at: StepKey) => Effect.Effect<Option.Option<bigint>, Settled>
+	readonly claimsOf: (at: StepKey) => Effect.Effect<ReadonlyArray<ClaimRow>, Settled>
+	readonly retriesOf: (at: StepKey) => Effect.Effect<ReadonlyArray<RetryRow>, Settled>
+	readonly fencedOf: (at: StepKey) => Effect.Effect<ReadonlyArray<FencedRow>, Settled>
+	readonly scopeOf: (at: ScopeKey) => Effect.Effect<Option.Option<ScopeView>, Settled>
 	/** Whether some child of a scope, a step but its finish or a child scope, has not ended. */
-	readonly unended: (scope: Sha256) => Effect.Effect<boolean, Settled>
+	readonly unended: (at: ScopeKey) => Effect.Effect<boolean, Settled>
 	/** Whether a scope's finish has its result. */
-	readonly finished: (scope: Sha256) => Effect.Effect<boolean, Settled>
+	readonly finished: (at: ScopeKey) => Effect.Effect<boolean, Settled>
 	/** The flows this flow's preconditions name that hold a pending step, in one statement. */
 	readonly busy: Effect.Effect<ReadonlyArray<string>, Settled>
 	/** The app's relations the flow's step kinds await a fact of: a commit that writes one asks `ready`. */
 	readonly awaits: ReadonlyArray<string>
 	/** Whether a step waits on a fact it awaits: some awaited row does not exist. */
-	readonly awaiting: (step: Sha256) => Effect.Effect<boolean, Settled>
+	readonly awaiting: (at: StepKey) => Effect.Effect<boolean, Settled>
 	/**
 	 * The steps a fact's arrival made ready, in one statement: the steps of kinds that await, with no result and no claim,
 	 * whose every awaited row exists.
 	 */
-	readonly ready: Effect.Effect<ReadonlyArray<Sha256>, Settled>
+	readonly ready: Effect.Effect<ReadonlyArray<StepKey>, Settled>
 	/**
 	 * Claims a step's next attempt with the seats it takes, one write: the attempt the database stamped, read back from
 	 * the write. The ends of the lapsed attempts of its step and of its seats' holders are recorded in it, so a seat a

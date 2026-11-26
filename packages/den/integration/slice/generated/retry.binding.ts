@@ -133,7 +133,7 @@ const pausableOf = (
 		() => new UnknownPauseTarget({ flow: FlowName.make("Retry"), target })
 	)
 
-/** The ledger of the flow Retry over its handles, with the requests of its roots. */
+/** The ledger of the flow Retry over its handles, with the requests of the roots den requests. */
 export const retryLedger = (h: RetryHandles) => {
 	const noRows: Rows = {
 		RetryScope: [],
@@ -252,58 +252,58 @@ export const retryLedger = (h: RetryHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readRetrySteadfastInput = (step: Sha256) =>
+	const readRetrySteadfastInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.retryReadRetrySteadfastInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.retryReadRetrySteadfastInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readRetryBrittleInput = (step: Sha256) =>
+	const readRetryBrittleInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.retryReadRetryBrittleInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.retryReadRetryBrittleInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readRetryPoliteInput = (step: Sha256) =>
+	const readRetryPoliteInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.retryReadRetryPoliteInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.retryReadRetryPoliteInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readRetryPatientInput = (step: Sha256) =>
+	const readRetryPatientInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.retryReadRetryPatientInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.retryReadRetryPatientInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readRetryLaddersInput = (scope: Sha256) =>
+	const readRetryLaddersInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.retryReadRetryLaddersInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.retryReadRetryLaddersInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ steadfast: found.steadfast, brittle: found.brittle }))
 		})
-	const readRetryThrottledInput = (scope: Sha256) =>
+	const readRetryThrottledInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.retryReadRetryThrottledInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.retryReadRetryThrottledInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
 		})
-	const readRetryUnhurriedInput = (scope: Sha256) =>
+	const readRetryUnhurriedInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.retryReadRetryUnhurriedInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.retryReadRetryUnhurriedInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ key: found.key }))
@@ -461,7 +461,7 @@ export const retryLedger = (h: RetryHandles) => {
 		Steadfast: runnerOf(
 			retry.kinds[0],
 			{
-				input: (step) => readRetrySteadfastInput(step),
+				input: ({ root, step }) => readRetrySteadfastInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -492,7 +492,7 @@ export const retryLedger = (h: RetryHandles) => {
 		Brittle: runnerOf(
 			retry.kinds[1],
 			{
-				input: (step) => readRetryBrittleInput(step),
+				input: ({ root, step }) => readRetryBrittleInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -523,7 +523,7 @@ export const retryLedger = (h: RetryHandles) => {
 		Polite: runnerOf(
 			retry.kinds[3],
 			{
-				input: (step) => readRetryPoliteInput(step),
+				input: ({ root, step }) => readRetryPoliteInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -554,7 +554,7 @@ export const retryLedger = (h: RetryHandles) => {
 		Patient: runnerOf(
 			retry.kinds[5],
 			{
-				input: (step) => readRetryPatientInput(step),
+				input: ({ root, step }) => readRetryPatientInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -595,30 +595,36 @@ export const retryLedger = (h: RetryHandles) => {
 				}) => retry.kinds[2].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.retryStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.retryStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readRetryLaddersInput(scope)
+						const input = yield* readRetryLaddersInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
 						const outputSteadfastRows = yield* Effect.map(
-							settled(h.den.retryOutputsLaddersSteadfast.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.retryOutputsLaddersSteadfast.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputSteadfastRows = yield* Effect.map(
-							settled(h.den.retryInputsLaddersSteadfast.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.retryInputsLaddersSteadfast.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const failuresSteadfast = yield* Effect.map(
-							settled(h.den.retryFailuresLaddersSteadfast.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.retryFailuresLaddersSteadfast.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputSteadfast = (child: (typeof inputSteadfastRows)[number]["step"]) =>
@@ -646,15 +652,19 @@ export const retryLedger = (h: RetryHandles) => {
 							))
 						]
 						const outputBrittleRows = yield* Effect.map(
-							settled(h.den.retryOutputsLaddersBrittle.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.retryOutputsLaddersBrittle.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputBrittleRows = yield* Effect.map(
-							settled(h.den.retryInputsLaddersBrittle.once({ params: { scope }, facts: {} })),
+							settled(h.den.retryInputsLaddersBrittle.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const failuresBrittle = yield* Effect.map(
-							settled(h.den.retryFailuresLaddersBrittle.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.retryFailuresLaddersBrittle.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputBrittle = (child: (typeof inputBrittleRows)[number]["step"]) =>
@@ -726,30 +736,36 @@ export const retryLedger = (h: RetryHandles) => {
 				}) => retry.kinds[4].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.retryStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.retryStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readRetryThrottledInput(scope)
+						const input = yield* readRetryThrottledInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
 						const outputPoliteRows = yield* Effect.map(
-							settled(h.den.retryOutputsThrottledPolite.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.retryOutputsThrottledPolite.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputPoliteRows = yield* Effect.map(
-							settled(h.den.retryInputsThrottledPolite.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.retryInputsThrottledPolite.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const failuresPolite = yield* Effect.map(
-							settled(h.den.retryFailuresThrottledPolite.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.retryFailuresThrottledPolite.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputPolite = (child: (typeof inputPoliteRows)[number]["step"]) =>
@@ -821,30 +837,36 @@ export const retryLedger = (h: RetryHandles) => {
 				}) => retry.kinds[6].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.retryStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.retryStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readRetryUnhurriedInput(scope)
+						const input = yield* readRetryUnhurriedInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
 						const outputPatientRows = yield* Effect.map(
-							settled(h.den.retryOutputsUnhurriedPatient.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.retryOutputsUnhurriedPatient.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputPatientRows = yield* Effect.map(
-							settled(h.den.retryInputsUnhurriedPatient.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.retryInputsUnhurriedPatient.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const failuresPatient = yield* Effect.map(
-							settled(h.den.retryFailuresUnhurriedPatient.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.retryFailuresUnhurriedPatient.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputPatient = (child: (typeof inputPatientRows)[number]["step"]) =>
@@ -910,7 +932,7 @@ export const retryLedger = (h: RetryHandles) => {
 			precondition: retry.kinds[2].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readRetryLaddersInput(scope)
+					const input = yield* readRetryLaddersInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -959,7 +981,7 @@ export const retryLedger = (h: RetryHandles) => {
 			precondition: retry.kinds[4].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readRetryThrottledInput(scope)
+					const input = yield* readRetryThrottledInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -1008,7 +1030,7 @@ export const retryLedger = (h: RetryHandles) => {
 			precondition: retry.kinds[6].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readRetryUnhurriedInput(scope)
+					const input = yield* readRetryUnhurriedInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -1082,44 +1104,59 @@ export const retryLedger = (h: RetryHandles) => {
 			settled(h.commits.retryAuthenticated.once({ params: {}, facts: {} }))
 		),
 		holds: Effect.succeed([]),
-		stepOf: (step) =>
-			Effect.map(settled(h.den.retryStepOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => ({
-					runner: runners[row.kind],
-					scope: row.scope,
-					root: row.root,
-					due: row.due
-				}))
+		stepOf: (at) =>
+			Effect.map(
+				settled(h.den.retryStepOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) =>
+					Option.map(one(rows), (row) => ({
+						runner: runners[row.kind],
+						scope: row.scope,
+						due: row.due
+					}))
 			),
-		resultOf: (step) =>
-			Effect.map(settled(h.den.retryResultOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.outcome)
+		resultOf: (at) =>
+			Effect.map(
+				settled(h.den.retryResultOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) => Option.map(one(rows), (row) => row.outcome)
 			),
-		heldOf: (step) =>
-			Effect.map(settled(h.den.retryHeldOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.attempt)
+		heldOf: (at) =>
+			Effect.map(
+				settled(h.den.retryHeldOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) => Option.map(one(rows), (row) => row.attempt)
 			),
-		claimsOf: (step) =>
-			Effect.map(settled(h.den.retryClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
-		retriesOf: (step) =>
-			Effect.map(settled(h.den.retryRetriesOf.once({ params: { step }, facts: {} })), rowsOf),
-		fencedOf: (step) =>
-			Effect.map(settled(h.den.retryFencedOf.once({ params: { step }, facts: {} })), rowsOf),
-		scopeOf: (scope) =>
+		claimsOf: (at) =>
+			Effect.map(
+				settled(h.den.retryClaimsOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		retriesOf: (at) =>
+			Effect.map(
+				settled(h.den.retryRetriesOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		fencedOf: (at) =>
+			Effect.map(
+				settled(h.den.retryFencedOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				const root = yield* Effect.map(
-					settled(h.den.retryRootOf.once({ params: { scope: scope }, facts: {} })),
+				if (!Sha256.equals(root, scope)) {
+					return Option.none()
+				}
+				const standing = yield* Effect.map(
+					settled(h.den.retryRootOf.once({ params: { root }, facts: {} })),
 					one
 				)
-				if (Option.isNone(root)) {
+				if (Option.isNone(standing)) {
 					return Option.none()
 				}
 				const admitted = yield* Effect.map(
-					settled(h.den.retryAdmittedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.retryAdmittedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const skipped = yield* Effect.map(
-					settled(h.den.retrySkippedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.retrySkippedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const admission: Admission = Option.isSome(admitted)
@@ -1130,18 +1167,18 @@ export const retryLedger = (h: RetryHandles) => {
 				return Option.some<ScopeView>({
 					place: "root",
 					scope,
-					kind: root.value.kind,
-					key: root.value.key,
-					at: root.value.at,
+					kind: standing.value.kind,
+					key: standing.value.key,
+					at: standing.value.at,
 					admission,
 					exclusive: Option.none(),
-					runner: roots[root.value.kind]
+					runner: roots[standing.value.kind]
 				})
 			}),
-		unended: (scope) =>
-			h.den.retryUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
-		finished: (scope) =>
-			h.den.retryFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
+		unended: ({ root, scope }) =>
+			h.den.retryUnendedSteps.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
+		finished: ({ root, scope }) =>
+			h.den.retryFinished.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
 		awaits: [],
 		awaiting: () => Effect.succeed(false),
@@ -1249,6 +1286,7 @@ export const retryLedger = (h: RetryHandles) => {
 				return {
 					steps: Arr.map(read.steps, (s) => ({
 						step: s.step,
+						root: s.root,
 						runner: runners[s.kind],
 						scope: s.scope,
 						due: s.due
@@ -1282,7 +1320,6 @@ export const retryLedger = (h: RetryHandles) => {
 	}
 	return {
 		ledger,
-		request,
-		appRequests: {}
+		request
 	}
 }

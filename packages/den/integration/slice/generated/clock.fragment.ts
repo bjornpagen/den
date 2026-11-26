@@ -4,7 +4,9 @@ import {
 	closed,
 	closedId,
 	contained,
+	Crypto,
 	fragment,
+	generated,
 	key,
 	mutable,
 	natural,
@@ -121,10 +123,11 @@ export const ClockSittingInput = relation(
 	{ root: sha256, scope: sha256, sitting: Text, deadline: DenInstant },
 	["root", "scope"]
 )
-export const ClockHourlyKey = relation(
+export const ClockHourlyKey = relation.generated(
 	"ClockHourlyKey",
 	{ root: sha256, at: pg.bigint, member: Text },
-	["root"]
+	["root"],
+	(row) => ({ memberDigest: generated(sha256, Crypto.sha256(row.member)) })
 )
 export const ClockChimeOutput = relation(
 	"ClockChimeOutput",
@@ -287,6 +290,7 @@ export const clockGraph = fragment(
 				"root"
 			)
 		),
+		key(on(ClockHourlyKey, "at", "memberDigest")),
 		contained(
 			on(ClockHourlyKey, "root"),
 			on(

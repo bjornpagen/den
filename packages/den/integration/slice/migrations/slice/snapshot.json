@@ -1335,6 +1335,9 @@
 				]
 			},
 			"clock_hourly_key": {
+				"__clock_hourly_key_key_at_member_digest_kkthzqojax": [
+					"__clock_hourly_key_key_at_member_digest_couacjnxo5"
+				],
 				"__clock_hourly_key_pk_iqlcy244pv": [
 					"__clock_hourly_key_pk_root_vlktqxdsn4"
 				],
@@ -2051,6 +2054,9 @@
 				]
 			},
 			"fan_wanted_key": {
+				"__fan_wanted_key_key_batch_digest_otdiqnej2r": [
+					"__fan_wanted_key_key_batch_digest_vsolby2gdg"
+				],
 				"__fan_wanted_key_pk_uqg7pqcckj": [
 					"__fan_wanted_key_pk_root_pam7qaxsnc"
 				],
@@ -3861,7 +3867,9 @@
 				"WritebackResumed"
 			]
 		],
-		"library": [],
+		"library": [
+			"textDigest"
+		],
 		"live": {
 			"kind": "source",
 			"tables": {
@@ -4656,20 +4664,6 @@
 			"slice_den": {
 				"assign_admitted": {
 					"indexes": {
-						"__assign_admitted_ix_scope_sav4gw3eqi": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_admitted_pk_gj2obtfaxk": {
 							"columns": [
 								{
@@ -4820,9 +4814,6 @@
 								{
 									"kind": "law",
 									"law": "__assign_assignment_input_in_assign_root_rkzdmd7vxs"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -4874,13 +4865,8 @@
 				},
 				"assign_assignment_input_exclude": {
 					"indexes": {
-						"__assign_assignment_input_exclude_ix_scope_root_zqfaf4s3ix": {
+						"__assign_assignment_input_exclude_ix_root_yjobx_7_fg4zumwcss": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -4891,6 +4877,11 @@
 									"laws": [
 										"__assign_assignment_input_exclude_ordinal_in_assign_5kvv6nmeey"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -4908,9 +4899,6 @@
 								{
 									"kind": "law",
 									"law": "__assign_assignment_input_exclude_ordinal_in_assign_5kvv6nmeey"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -4955,25 +4943,6 @@
 				},
 				"assign_assignment_input_mode_nearest": {
 					"indexes": {
-						"__assign_assignment_input_mode_nearest_ix_scope_root_p7dpsia4cd": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_assignment_input_mode_nearest_pk_fztb2eqo2a": {
 							"columns": [
 								{
@@ -5014,25 +4983,6 @@
 				},
 				"assign_assignment_input_mode_within": {
 					"indexes": {
-						"__assign_assignment_input_mode_within_ix_scope_root_bqasesgaf7": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_assignment_input_mode_within_pk_udozvnjxuq": {
 							"columns": [
 								{
@@ -5073,13 +5023,8 @@
 				},
 				"assign_assignment_input_near": {
 					"indexes": {
-						"__assign_assignment_input_near_ix_scope_root_yjobx_7_e5r373gcrk": {
+						"__assign_assignment_input_near_ix_root_yjobx_7_uyrd_eslvtfubhv": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -5090,6 +5035,11 @@
 									"laws": [
 										"__assign_assignment_input_near_ordinal_in_assign_u6ozpups66"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -5107,9 +5057,6 @@
 								{
 									"kind": "law",
 									"law": "__assign_assignment_input_near_ordinal_in_assign_u6ozpups66"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -5154,13 +5101,8 @@
 				},
 				"assign_claim": {
 					"indexes": {
-						"__assign_claim_ix_step_root_yewsvvtcyz_pred_attempt_wh3x4tgtcq": {
+						"__assign_claim_ix_root_yewsvvtcyz_step_pred_attempt_s4mrwy4x35": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -5171,6 +5113,11 @@
 									"laws": [
 										"__assign_claim_attempt_in_assign_ended_ctab666hdx"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -5188,9 +5135,6 @@
 								{
 									"kind": "law",
 									"law": "__assign_claim_attempt_in_assign_ended_ctab666hdx"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -5231,25 +5175,6 @@
 				},
 				"assign_decide_input": {
 					"indexes": {
-						"__assign_decide_input_ix_step_root_b573uqwoo7": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_decide_input_pk_phi7dovwvq": {
 							"columns": [
 								{
@@ -5302,13 +5227,8 @@
 				},
 				"assign_decide_input_exclude": {
 					"indexes": {
-						"__assign_decide_input_exclude_ix_step_root_yjobx_7_gsddib7qpt": {
+						"__assign_decide_input_exclude_ix_root_yjobx_7_uyrd_tvp5fze2p2": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -5319,6 +5239,11 @@
 									"laws": [
 										"__assign_decide_input_exclude_ordinal_in_assign_r43sy3pz4x"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -5336,9 +5261,6 @@
 								{
 									"kind": "law",
 									"law": "__assign_decide_input_exclude_ordinal_in_assign_r43sy3pz4x"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -5383,25 +5305,6 @@
 				},
 				"assign_decide_input_mode_nearest": {
 					"indexes": {
-						"__assign_decide_input_mode_nearest_ix_step_root_3kk3dg4j53": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_decide_input_mode_nearest_pk_ajsecg3xwl": {
 							"columns": [
 								{
@@ -5442,25 +5345,6 @@
 				},
 				"assign_decide_input_mode_within": {
 					"indexes": {
-						"__assign_decide_input_mode_within_ix_step_root_txf3tbu422": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_decide_input_mode_within_pk_5ir7rapaar": {
 							"columns": [
 								{
@@ -5501,25 +5385,6 @@
 				},
 				"assign_decide_output": {
 					"indexes": {
-						"__assign_decide_output_ix_step_root_xj4kp626lu": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_decide_output_pk_tf6r7wtfse": {
 							"columns": [
 								{
@@ -5576,25 +5441,6 @@
 				},
 				"assign_decide_output_stage_rest": {
 					"indexes": {
-						"__assign_decide_output_stage_rest_ix_step_root_qqyxhk427n": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_decide_output_stage_rest_pk_6ufjdcdzhx": {
 							"columns": [
 								{
@@ -5635,25 +5481,6 @@
 				},
 				"assign_decide_output_stage_serve": {
 					"indexes": {
-						"__assign_decide_output_stage_serve_ix_step_root_qyudonuazu": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_decide_output_stage_serve_pk_g54atpshow": {
 							"columns": [
 								{
@@ -5694,13 +5521,8 @@
 				},
 				"assign_decide_output_weighed": {
 					"indexes": {
-						"__assign_decide_output_weighed_ix_step_root_yjobx_7_cs5ragvjo3": {
+						"__assign_decide_output_weighed_ix_root_yjobx_7_uyrd_4rmuwbmf6w": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -5711,6 +5533,11 @@
 									"laws": [
 										"__assign_decide_output_weighed_ordinal_in_assign_vsag5dukb2"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -5728,9 +5555,6 @@
 								{
 									"kind": "law",
 									"law": "__assign_decide_output_weighed_ordinal_in_assign_vsag5dukb2"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -5975,25 +5799,6 @@
 				},
 				"assign_embed_input": {
 					"indexes": {
-						"__assign_embed_input_ix_step_root_bmzodxatow": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_embed_input_pk_q4ezcfvwia": {
 							"columns": [
 								{
@@ -6046,13 +5851,8 @@
 				},
 				"assign_embed_input_exclude": {
 					"indexes": {
-						"__assign_embed_input_exclude_ix_step_root_yjobx_7_xcibpzqvn6": {
+						"__assign_embed_input_exclude_ix_root_yjobx_7_uyrd_slid2hlxa6": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -6063,6 +5863,11 @@
 									"laws": [
 										"__assign_embed_input_exclude_ordinal_in_assign_embed_3mm7sjv43o"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -6080,9 +5885,6 @@
 								{
 									"kind": "law",
 									"law": "__assign_embed_input_exclude_ordinal_in_assign_embed_3mm7sjv43o"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -6127,25 +5929,6 @@
 				},
 				"assign_embed_input_mode_nearest": {
 					"indexes": {
-						"__assign_embed_input_mode_nearest_ix_step_root_ramcyjzsmj": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_embed_input_mode_nearest_pk_wiskd5j54m": {
 							"columns": [
 								{
@@ -6186,25 +5969,6 @@
 				},
 				"assign_embed_input_mode_within": {
 					"indexes": {
-						"__assign_embed_input_mode_within_ix_step_root_7b4wxziea2": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_embed_input_mode_within_pk_zldmxccjlo": {
 							"columns": [
 								{
@@ -6245,13 +6009,8 @@
 				},
 				"assign_embed_input_near": {
 					"indexes": {
-						"__assign_embed_input_near_ix_step_root_yjobx_7_uyrd_eh47bqlhw3": {
+						"__assign_embed_input_near_ix_root_yjobx_7_uyrd_step_p4zzb4knwa": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -6262,6 +6021,11 @@
 									"laws": [
 										"__assign_embed_input_near_ordinal_in_assign_embed_yakmnvu2ta"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -6279,9 +6043,6 @@
 								{
 									"kind": "law",
 									"law": "__assign_embed_input_near_ordinal_in_assign_embed_yakmnvu2ta"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -6479,20 +6240,6 @@
 				},
 				"assign_fenced": {
 					"indexes": {
-						"__assign_fenced_ix_step_eztmdy3mzv": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_fenced_pk_y6jyfviepa": {
 							"columns": [
 								{
@@ -6534,25 +6281,6 @@
 				},
 				"assign_finish": {
 					"indexes": {
-						"__assign_finish_ix_scope_step_53o4eorqpr": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_finish_key_root_step_eqtmpheihj": {
 							"columns": [
 								{
@@ -6613,20 +6341,6 @@
 				},
 				"assign_held": {
 					"indexes": {
-						"__assign_held_ix_step_irvbrtgz2r": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_held_pk_by245z7t45": {
 							"columns": [
 								{
@@ -6788,16 +6502,35 @@
 				},
 				"assign_result": {
 					"indexes": {
-						"__assign_result_ix_step_outcome_root_35vmqe5lxj": {
+						"__assign_result_ix_root_outcome_step_ddttgrf23v": {
 							"columns": [
 								{
 									"direction": "asc",
-									"field": "step",
+									"field": "root",
 									"kind": "field"
 								},
 								{
 									"direction": "asc",
 									"field": "outcome",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__assign_result_ix_step_root_jqeougquil": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
 									"kind": "field"
 								},
 								{
@@ -6884,20 +6617,6 @@
 				},
 				"assign_retry": {
 					"indexes": {
-						"__assign_retry_ix_step_efjk6uhsq4": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__assign_retry_pk_4dcm5yzzhe": {
 							"columns": [
 								{
@@ -7092,9 +6811,6 @@
 								{
 									"kind": "law",
 									"law": "__assign_skipped_in_assign_root_sp6duj6plv"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -7195,32 +6911,13 @@
 				},
 				"assign_step": {
 					"indexes": {
-						"__assign_step_ix_root_scope_64vujnvoiu": {
+						"__assign_step_ix_root_scope_kind_drsz5mwtr4": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
 									"kind": "field"
 								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__assign_step_in_assign_admitted_hc3wn2662o"
-								},
-								{
-									"kind": "law",
-									"law": "__assign_step_in_assign_scope_xfsff7c34l"
-								}
-							]
-						},
-						"__assign_step_ix_scope_kind_4jyx7qz4gq": {
-							"columns": [
 								{
 									"direction": "asc",
 									"field": "scope",
@@ -7235,6 +6932,14 @@
 							"reasons": [
 								{
 									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_step_in_assign_admitted_hc3wn2662o"
+								},
+								{
+									"kind": "law",
+									"law": "__assign_step_in_assign_scope_xfsff7c34l"
 								}
 							]
 						},
@@ -7319,20 +7024,6 @@
 				},
 				"chain_admitted": {
 					"indexes": {
-						"__chain_admitted_ix_scope_v57a4nivm3": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__chain_admitted_pk_iexc6ruxuv": {
 							"columns": [
 								{
@@ -7413,9 +7104,6 @@
 								{
 									"kind": "law",
 									"law": "__chain_chain_run_input_in_chain_root_wjfvdqchhp"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -7451,13 +7139,8 @@
 				},
 				"chain_claim": {
 					"indexes": {
-						"__chain_claim_ix_step_root_yewsvvtcyz_pred_attempt_z55hhc5lhz": {
+						"__chain_claim_ix_root_yewsvvtcyz_step_pred_attempt_u3vr77sgyb": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -7468,6 +7151,11 @@
 									"laws": [
 										"__chain_claim_attempt_in_chain_ended_m6ossvykfm"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -7485,9 +7173,6 @@
 								{
 									"kind": "law",
 									"law": "__chain_claim_attempt_in_chain_ended_m6ossvykfm"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -7677,20 +7362,6 @@
 				},
 				"chain_fenced": {
 					"indexes": {
-						"__chain_fenced_ix_step_h437d2nbx3": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__chain_fenced_pk_wwbie4qq5k": {
 							"columns": [
 								{
@@ -7732,25 +7403,6 @@
 				},
 				"chain_finish": {
 					"indexes": {
-						"__chain_finish_ix_scope_step_om6bljb56e": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__chain_finish_ix_step_gfuhyfoe3p": {
 							"columns": [
 								{
@@ -7825,20 +7477,6 @@
 				},
 				"chain_held": {
 					"indexes": {
-						"__chain_held_ix_step_4lrvrd3gs5": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__chain_held_pk_73idl7oo5c": {
 							"columns": [
 								{
@@ -7992,9 +7630,6 @@
 								{
 									"kind": "law",
 									"law": "__chain_ordered_input_in_chain_root_2b7oq5kfdr"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -8030,25 +7665,6 @@
 				},
 				"chain_page_input": {
 					"indexes": {
-						"__chain_page_input_ix_step_root_wr66hlqeaw": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__chain_page_input_pk_xuafsbu5vz": {
 							"columns": [
 								{
@@ -8085,20 +7701,6 @@
 				},
 				"chain_page_input_after": {
 					"indexes": {
-						"__chain_page_input_after_ix_step_qdsmrr4vxs": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__chain_page_input_after_pk_zsdylv6pam": {
 							"columns": [
 								{
@@ -8189,20 +7791,6 @@
 				},
 				"chain_page_output_next": {
 					"indexes": {
-						"__chain_page_output_next_ix_step_r3v3ug5ybb": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__chain_page_output_next_pk_h55uzx4bbq": {
 							"columns": [
 								{
@@ -8729,6 +8317,30 @@
 				},
 				"chain_result": {
 					"indexes": {
+						"__chain_result_ix_root_outcome_step_3fchhz2atb": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "outcome",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								}
+							]
+						},
 						"__chain_result_ix_step_outcome_root_ipaxj3wl7z": {
 							"columns": [
 								{
@@ -8825,20 +8437,6 @@
 				},
 				"chain_retry": {
 					"indexes": {
-						"__chain_retry_ix_step_jpeyuc4c4h": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__chain_retry_pk_522nodru3s": {
 							"columns": [
 								{
@@ -9041,9 +8639,6 @@
 								{
 									"kind": "law",
 									"law": "__chain_skipped_in_chain_root_twur4xahmu"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -9144,32 +8739,13 @@
 				},
 				"chain_step": {
 					"indexes": {
-						"__chain_step_ix_root_scope_srrhrbyetn": {
+						"__chain_step_ix_root_scope_kind_7y3wfct5o4": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
 									"kind": "field"
 								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__chain_step_in_chain_admitted_l33hd3isp2"
-								},
-								{
-									"kind": "law",
-									"law": "__chain_step_in_chain_scope_baldaa2ubu"
-								}
-							]
-						},
-						"__chain_step_ix_scope_kind_spn3gys2vi": {
-							"columns": [
 								{
 									"direction": "asc",
 									"field": "scope",
@@ -9184,6 +8760,14 @@
 							"reasons": [
 								{
 									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_step_in_chain_admitted_l33hd3isp2"
+								},
+								{
+									"kind": "law",
+									"law": "__chain_step_in_chain_scope_baldaa2ubu"
 								}
 							]
 						},
@@ -9237,20 +8821,6 @@
 				},
 				"clock_admitted": {
 					"indexes": {
-						"__clock_admitted_ix_scope_kljsbnk7gu": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__clock_admitted_pk_a7wwsyakra": {
 							"columns": [
 								{
@@ -9283,25 +8853,6 @@
 				},
 				"clock_chime_input": {
 					"indexes": {
-						"__clock_chime_input_ix_step_root_vzyzntggzq": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__clock_chime_input_pk_rx6722hrpy": {
 							"columns": [
 								{
@@ -9378,13 +8929,8 @@
 				},
 				"clock_claim": {
 					"indexes": {
-						"__clock_claim_ix_step_root_yewsvvtcyz_pred_attempt_xukg6gzvx7": {
+						"__clock_claim_ix_root_yewsvvtcyz_step_pred_attempt_kxaavegaxo": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -9395,6 +8941,11 @@
 									"laws": [
 										"__clock_claim_attempt_in_clock_ended_f6dwofz2cx"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -9412,9 +8963,6 @@
 								{
 									"kind": "law",
 									"law": "__clock_claim_attempt_in_clock_ended_f6dwofz2cx"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -9455,25 +9003,6 @@
 				},
 				"clock_close_input": {
 					"indexes": {
-						"__clock_close_input_ix_step_root_iuvhjb65sf": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__clock_close_input_pk_kzcush3qdx": {
 							"columns": [
 								{
@@ -9699,20 +9228,6 @@
 				},
 				"clock_fenced": {
 					"indexes": {
-						"__clock_fenced_ix_step_6fkdtadk6s": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__clock_fenced_pk_mzppv2rrab": {
 							"columns": [
 								{
@@ -9754,25 +9269,6 @@
 				},
 				"clock_finish": {
 					"indexes": {
-						"__clock_finish_ix_scope_step_q2cyoxfrgy": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__clock_finish_key_root_step_gg4t25lynz": {
 							"columns": [
 								{
@@ -9833,20 +9329,6 @@
 				},
 				"clock_held": {
 					"indexes": {
-						"__clock_held_ix_step_254uki72j6": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__clock_held_pk_qqxrvee2gy": {
 							"columns": [
 								{
@@ -9935,9 +9417,6 @@
 								{
 									"kind": "law",
 									"law": "__clock_hourly_input_in_clock_root_7hs4dixu6l"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -9973,6 +9452,26 @@
 				},
 				"clock_hourly_key": {
 					"indexes": {
+						"__clock_hourly_key_key_at_member_digest_kkthzqojax": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "at",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "memberDigest",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__clock_hourly_key_key_at_member_digest_couacjnxo5"
+								}
+							]
+						},
 						"__clock_hourly_key_pk_iqlcy244pv": {
 							"columns": [
 								{
@@ -10125,25 +9624,6 @@
 				},
 				"clock_result": {
 					"indexes": {
-						"__clock_result_ix_step_root_v3qa4me2e6": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__clock_result_pk_yptcdjm6pu": {
 							"columns": [
 								{
@@ -10216,20 +9696,6 @@
 				},
 				"clock_retry": {
 					"indexes": {
-						"__clock_retry_ix_step_evme3lajlk": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__clock_retry_pk_4kyiqeoeqd": {
 							"columns": [
 								{
@@ -10457,9 +9923,6 @@
 								{
 									"kind": "law",
 									"law": "__clock_sitting_input_in_clock_root_2gyn6uyrg4"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -10522,9 +9985,6 @@
 								{
 									"kind": "law",
 									"law": "__clock_skipped_in_clock_root_cibq5wdri2"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -10625,16 +10085,16 @@
 				},
 				"clock_step": {
 					"indexes": {
-						"__clock_step_ix_scope_root_dr2wopxg6r": {
+						"__clock_step_ix_root_scope_xautpoatwk": {
 							"columns": [
 								{
 									"direction": "asc",
-									"field": "scope",
+									"field": "root",
 									"kind": "field"
 								},
 								{
 									"direction": "asc",
-									"field": "root",
+									"field": "scope",
 									"kind": "field"
 								}
 							],
@@ -10664,9 +10124,6 @@
 								{
 									"kind": "law",
 									"law": "__clock_step_key_step_aownxne5nm"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -10706,20 +10163,6 @@
 				},
 				"fan_admitted": {
 					"indexes": {
-						"__fan_admitted_ix_scope_6tfnemhvcg": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__fan_admitted_pk_jzt7rtrzny": {
 							"columns": [
 								{
@@ -10752,20 +10195,6 @@
 				},
 				"fan_batch_finish_output": {
 					"indexes": {
-						"__fan_batch_finish_output_ix_step_ocxqquufa6": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__fan_batch_finish_output_pk_mq5omzswqd": {
 							"columns": [
 								{
@@ -10802,25 +10231,6 @@
 				},
 				"fan_batch_input": {
 					"indexes": {
-						"__fan_batch_input_ix_scope_root_v4z44ipfis": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__fan_batch_input_pk_bmhyfuy2bw": {
 							"columns": [
 								{
@@ -10857,13 +10267,8 @@
 				},
 				"fan_claim": {
 					"indexes": {
-						"__fan_claim_ix_step_root_yewsvvtcyz_pred_attempt_oey_nttbgx6ow2": {
+						"__fan_claim_ix_root_yewsvvtcyz_step_pred_attempt_oey_aqngtlwjsx": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -10874,6 +10279,11 @@
 									"laws": [
 										"__fan_claim_attempt_in_fan_ended_w5zcrn5p7x"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -10891,9 +10301,6 @@
 								{
 									"kind": "law",
 									"law": "__fan_claim_attempt_in_fan_ended_w5zcrn5p7x"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -11016,25 +10423,6 @@
 				},
 				"fan_dust_input": {
 					"indexes": {
-						"__fan_dust_input_ix_step_root_w75lqylbvv": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__fan_dust_input_pk_xyleoykgmc": {
 							"columns": [
 								{
@@ -11224,20 +10612,6 @@
 				},
 				"fan_exclusive_key": {
 					"indexes": {
-						"__fan_exclusive_key_ix_scope_7s5kcsf2wj": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__fan_exclusive_key_pk_dqq46aar7y": {
 							"columns": [
 								{
@@ -11390,9 +10764,6 @@
 								{
 									"kind": "law",
 									"law": "__fan_fan_run_input_in_fan_root_xx6j5eu5n5"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -11428,20 +10799,6 @@
 				},
 				"fan_fenced": {
 					"indexes": {
-						"__fan_fenced_ix_step_xiphniebnv": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__fan_fenced_pk_6tkvirerez": {
 							"columns": [
 								{
@@ -11483,25 +10840,6 @@
 				},
 				"fan_finish": {
 					"indexes": {
-						"__fan_finish_ix_scope_step_gv7mbzp7pp": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__fan_finish_ix_step_jjs336jpbb": {
 							"columns": [
 								{
@@ -11537,6 +10875,9 @@
 								{
 									"kind": "law",
 									"law": "__fan_finish_in_fan_step_hyde4rmwuy"
+								},
+								{
+									"kind": "access"
 								}
 							]
 						},
@@ -11576,20 +10917,6 @@
 				},
 				"fan_held": {
 					"indexes": {
-						"__fan_held_ix_step_rtiyqqxotz": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__fan_held_pk_4ic6tjvac4": {
 							"columns": [
 								{
@@ -11770,25 +11097,6 @@
 				},
 				"fan_mop_input": {
 					"indexes": {
-						"__fan_mop_input_ix_step_root_m3lg7oxuam": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__fan_mop_input_pk_jwnqekad76": {
 							"columns": [
 								{
@@ -12027,16 +11335,35 @@
 				},
 				"fan_result": {
 					"indexes": {
-						"__fan_result_ix_step_outcome_root_udaij7stvj": {
+						"__fan_result_ix_root_outcome_step_srquy2zczs": {
 							"columns": [
 								{
 									"direction": "asc",
-									"field": "step",
+									"field": "root",
 									"kind": "field"
 								},
 								{
 									"direction": "asc",
 									"field": "outcome",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__fan_result_ix_step_root_gzzhwer4f4": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
 									"kind": "field"
 								},
 								{
@@ -12123,20 +11450,6 @@
 				},
 				"fan_retry": {
 					"indexes": {
-						"__fan_retry_ix_step_4v6a7logoe": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__fan_retry_pk_7xubce4v66": {
 							"columns": [
 								{
@@ -12351,9 +11664,6 @@
 								{
 									"kind": "law",
 									"law": "__fan_skipped_in_fan_root_r5qos4qqwi"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -12389,25 +11699,6 @@
 				},
 				"fan_square_input": {
 					"indexes": {
-						"__fan_square_input_ix_step_root_jod5ra6yqo": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__fan_square_input_pk_uzumoizv53": {
 							"columns": [
 								{
@@ -12444,20 +11735,6 @@
 				},
 				"fan_square_output": {
 					"indexes": {
-						"__fan_square_output_ix_step_teolwx3lfw": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__fan_square_output_pk_wcgarjqvhr": {
 							"columns": [
 								{
@@ -12628,32 +11905,13 @@
 				},
 				"fan_step": {
 					"indexes": {
-						"__fan_step_ix_root_scope_aw525h7gua": {
+						"__fan_step_ix_root_scope_kind_u5r7xvxvzl": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
 									"kind": "field"
 								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__fan_step_in_fan_admitted_v3f3l7gm2a"
-								},
-								{
-									"kind": "law",
-									"law": "__fan_step_in_fan_scope_75sll64wed"
-								}
-							]
-						},
-						"__fan_step_ix_scope_kind_h2wuapaqs3": {
-							"columns": [
 								{
 									"direction": "asc",
 									"field": "scope",
@@ -12668,6 +11926,14 @@
 							"reasons": [
 								{
 									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_step_in_fan_admitted_v3f3l7gm2a"
+								},
+								{
+									"kind": "law",
+									"law": "__fan_step_in_fan_scope_75sll64wed"
 								}
 							]
 						},
@@ -12683,9 +11949,6 @@
 								{
 									"kind": "law",
 									"law": "__fan_step_key_step_vgoukxy7tk"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -12777,9 +12040,6 @@
 								{
 									"kind": "law",
 									"law": "__fan_sweep_input_in_fan_root_5twfrs7hqj"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -12863,9 +12123,6 @@
 								{
 									"kind": "law",
 									"law": "__fan_wanted_input_in_fan_root_k7e3rbvk2r"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -12901,6 +12158,21 @@
 				},
 				"fan_wanted_key": {
 					"indexes": {
+						"__fan_wanted_key_key_batch_digest_otdiqnej2r": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "batchDigest",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "law",
+									"law": "__fan_wanted_key_key_batch_digest_vsolby2gdg"
+								}
+							]
+						},
 						"__fan_wanted_key_pk_uqg7pqcckj": {
 							"columns": [
 								{
@@ -12932,8 +12204,13 @@
 				},
 				"fan_within": {
 					"indexes": {
-						"__fan_within_ix_parent_kind_scope_5ywepfmzj2": {
+						"__fan_within_ix_root_parent_kind_3fui4hg5uo": {
 							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
 								{
 									"direction": "asc",
 									"field": "parent",
@@ -12943,55 +12220,15 @@
 									"direction": "asc",
 									"field": "kind",
 									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
 								}
 							],
 							"reasons": [
 								{
 									"kind": "access"
-								}
-							]
-						},
-						"__fan_within_ix_parent_root_eiovyuswcz": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "parent",
-									"kind": "field"
 								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
 								{
 									"kind": "law",
 									"law": "__fan_within_in_fan_scope_gneohkjy7x"
-								}
-							]
-						},
-						"__fan_within_ix_scope_root_vht7afdsvu": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -13031,20 +12268,6 @@
 				},
 				"retry_admitted": {
 					"indexes": {
-						"__retry_admitted_ix_scope_yqb7r5kcts": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__retry_admitted_pk_qyp7cminjx": {
 							"columns": [
 								{
@@ -13077,25 +12300,6 @@
 				},
 				"retry_brittle_input": {
 					"indexes": {
-						"__retry_brittle_input_ix_step_root_6ur6u2dkec": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__retry_brittle_input_pk_tlqssexohy": {
 							"columns": [
 								{
@@ -13132,20 +12336,6 @@
 				},
 				"retry_brittle_output": {
 					"indexes": {
-						"__retry_brittle_output_ix_step_ddjioko4ap": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__retry_brittle_output_pk_oecjcng2s4": {
 							"columns": [
 								{
@@ -13186,13 +12376,8 @@
 				},
 				"retry_claim": {
 					"indexes": {
-						"__retry_claim_ix_step_root_yewsvvtcyz_pred_attempt_acklz4su4p": {
+						"__retry_claim_ix_root_yewsvvtcyz_step_pred_attempt_wdrdjobqln": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -13203,6 +12388,11 @@
 									"laws": [
 										"__retry_claim_attempt_in_retry_ended_wclfhgou6k"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -13220,9 +12410,6 @@
 								{
 									"kind": "law",
 									"law": "__retry_claim_attempt_in_retry_ended_wclfhgou6k"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -13412,20 +12599,6 @@
 				},
 				"retry_fenced": {
 					"indexes": {
-						"__retry_fenced_ix_step_taohzqvdeo": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__retry_fenced_pk_umzicmiruo": {
 							"columns": [
 								{
@@ -13467,25 +12640,6 @@
 				},
 				"retry_finish": {
 					"indexes": {
-						"__retry_finish_ix_scope_step_6tswescc6v": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__retry_finish_key_root_step_lrmuwwupuk": {
 							"columns": [
 								{
@@ -13546,20 +12700,6 @@
 				},
 				"retry_held": {
 					"indexes": {
-						"__retry_held_ix_step_l7f7ax5pel": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__retry_held_pk_nvgeylmjp2": {
 							"columns": [
 								{
@@ -13648,9 +12788,6 @@
 								{
 									"kind": "law",
 									"law": "__retry_ladders_input_in_retry_root_3xr7rtvhpt"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -13686,25 +12823,6 @@
 				},
 				"retry_patient_input": {
 					"indexes": {
-						"__retry_patient_input_ix_step_root_2ufb6ex62j": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__retry_patient_input_pk_74247zb7wo": {
 							"columns": [
 								{
@@ -13741,20 +12859,6 @@
 				},
 				"retry_patient_output": {
 					"indexes": {
-						"__retry_patient_output_ix_step_4nlbxubrgc": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__retry_patient_output_pk_whtgus732k": {
 							"columns": [
 								{
@@ -13849,25 +12953,6 @@
 				},
 				"retry_polite_input": {
 					"indexes": {
-						"__retry_polite_input_ix_step_root_yequmlbu4w": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__retry_polite_input_pk_ptzd72dxff": {
 							"columns": [
 								{
@@ -13904,20 +12989,6 @@
 				},
 				"retry_polite_output": {
 					"indexes": {
-						"__retry_polite_output_ix_step_cagfkplnyp": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__retry_polite_output_pk_2kuwfluplv": {
 							"columns": [
 								{
@@ -14033,16 +13104,35 @@
 				},
 				"retry_result": {
 					"indexes": {
-						"__retry_result_ix_step_outcome_root_5x6caywnin": {
+						"__retry_result_ix_root_outcome_step_o6dp2ckkon": {
 							"columns": [
 								{
 									"direction": "asc",
-									"field": "step",
+									"field": "root",
 									"kind": "field"
 								},
 								{
 									"direction": "asc",
 									"field": "outcome",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__retry_result_ix_step_root_ceayjuggx6": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
 									"kind": "field"
 								},
 								{
@@ -14129,20 +13219,6 @@
 				},
 				"retry_retry": {
 					"indexes": {
-						"__retry_retry_ix_step_4y7ukujr4x": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__retry_retry_pk_slrwn4rt5d": {
 							"columns": [
 								{
@@ -14353,9 +13429,6 @@
 								{
 									"kind": "law",
 									"law": "__retry_skipped_in_retry_root_6defhwtyn2"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -14456,25 +13529,6 @@
 				},
 				"retry_steadfast_input": {
 					"indexes": {
-						"__retry_steadfast_input_ix_step_root_kko5yn5mfi": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__retry_steadfast_input_pk_omubooh2k3": {
 							"columns": [
 								{
@@ -14511,20 +13565,6 @@
 				},
 				"retry_steadfast_output": {
 					"indexes": {
-						"__retry_steadfast_output_ix_step_xu5p4zs52x": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__retry_steadfast_output_pk_xyvfgnpd5w": {
 							"columns": [
 								{
@@ -14565,32 +13605,13 @@
 				},
 				"retry_step": {
 					"indexes": {
-						"__retry_step_ix_root_scope_ogbhay3han": {
+						"__retry_step_ix_root_scope_kind_2fjaoxcf4e": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
 									"kind": "field"
 								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__retry_step_in_retry_admitted_77esm2lucc"
-								},
-								{
-									"kind": "law",
-									"law": "__retry_step_in_retry_scope_2c6jkruibj"
-								}
-							]
-						},
-						"__retry_step_ix_scope_kind_gvjz7p6rcr": {
-							"columns": [
 								{
 									"direction": "asc",
 									"field": "scope",
@@ -14605,6 +13626,14 @@
 							"reasons": [
 								{
 									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__retry_step_in_retry_admitted_77esm2lucc"
+								},
+								{
+									"kind": "law",
+									"law": "__retry_step_in_retry_scope_2c6jkruibj"
 								}
 							]
 						},
@@ -14718,9 +13747,6 @@
 								{
 									"kind": "law",
 									"law": "__retry_throttled_input_in_retry_root_mgoreq5wx2"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -14804,9 +13830,6 @@
 								{
 									"kind": "law",
 									"law": "__retry_unhurried_input_in_retry_root_n7cjwvbqiy"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -14842,20 +13865,6 @@
 				},
 				"review_admitted": {
 					"indexes": {
-						"__review_admitted_ix_scope_uaz2e2unre": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__review_admitted_pk_woy7ee4y4p": {
 							"columns": [
 								{
@@ -14888,25 +13897,6 @@
 				},
 				"review_analyze_input": {
 					"indexes": {
-						"__review_analyze_input_ix_step_root_s5vaywecrt": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__review_analyze_input_pk_jr7qmhqwgi": {
 							"columns": [
 								{
@@ -14943,20 +13933,6 @@
 				},
 				"review_analyze_output": {
 					"indexes": {
-						"__review_analyze_output_ix_step_t5p7no2i5e": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__review_analyze_output_pk_35aclxnkmb": {
 							"columns": [
 								{
@@ -14997,13 +13973,8 @@
 				},
 				"review_claim": {
 					"indexes": {
-						"__review_claim_ix_step_root_yewsvvtcyz_pred_attempt_53g43drm5l": {
+						"__review_claim_ix_root_yewsvvtcyz_step_pred_attempt_mkdccfyo25": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -15014,6 +13985,11 @@
 									"laws": [
 										"__review_claim_attempt_in_review_ended_a7am3yveih"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -15031,9 +14007,6 @@
 								{
 									"kind": "law",
 									"law": "__review_claim_attempt_in_review_ended_a7am3yveih"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -15277,20 +14250,6 @@
 				},
 				"review_fenced": {
 					"indexes": {
-						"__review_fenced_ix_step_k2afeb3irz": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__review_fenced_pk_chaexdbnzu": {
 							"columns": [
 								{
@@ -15332,25 +14291,6 @@
 				},
 				"review_finish": {
 					"indexes": {
-						"__review_finish_ix_scope_step_4k6s2nqgyy": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__review_finish_ix_step_luhj6362cj": {
 							"columns": [
 								{
@@ -15386,6 +14326,9 @@
 								{
 									"kind": "law",
 									"law": "__review_finish_in_review_step_gsy3dzetvl"
+								},
+								{
+									"kind": "access"
 								}
 							]
 						},
@@ -15439,25 +14382,6 @@
 								}
 							]
 						},
-						"__review_gather_input_ix_step_root_sq3sceot7a": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__review_gather_input_pk_rllaxtocmq": {
 							"columns": [
 								{
@@ -15494,13 +14418,8 @@
 				},
 				"review_gather_input_sizes": {
 					"indexes": {
-						"__review_gather_input_sizes_ix_step_root_yjobx_7_7uihmnh7ih": {
+						"__review_gather_input_sizes_ix_root_yjobx_7_uyrd_f6hynmtooj": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -15511,6 +14430,11 @@
 									"laws": [
 										"__review_gather_input_sizes_ordinal_in_review_gather_56awwjkvnx"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -15528,9 +14452,6 @@
 								{
 									"kind": "law",
 									"law": "__review_gather_input_sizes_ordinal_in_review_gather_56awwjkvnx"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -15615,20 +14536,6 @@
 				},
 				"review_held": {
 					"indexes": {
-						"__review_held_ix_step_xvtsgiwapv": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__review_held_pk_cwyo7jovuu": {
 							"columns": [
 								{
@@ -15877,20 +14784,6 @@
 				},
 				"review_questions_finish_output": {
 					"indexes": {
-						"__review_questions_finish_output_ix_step_snk4x6oh75": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__review_questions_finish_output_pk_36plo53gmb": {
 							"columns": [
 								{
@@ -15927,25 +14820,6 @@
 				},
 				"review_questions_input": {
 					"indexes": {
-						"__review_questions_input_ix_scope_root_4mssyhumwi": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__review_questions_input_pk_4d27veaz4g": {
 							"columns": [
 								{
@@ -16049,16 +14923,35 @@
 				},
 				"review_result": {
 					"indexes": {
-						"__review_result_ix_step_outcome_root_lbrp6nyb6i": {
+						"__review_result_ix_root_outcome_step_7fbtzenqei": {
 							"columns": [
 								{
 									"direction": "asc",
-									"field": "step",
+									"field": "root",
 									"kind": "field"
 								},
 								{
 									"direction": "asc",
 									"field": "outcome",
+									"kind": "field"
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
+								}
+							],
+							"reasons": [
+								{
+									"kind": "access"
+								}
+							]
+						},
+						"__review_result_ix_step_root_vz6d5jl67t": {
+							"columns": [
+								{
+									"direction": "asc",
+									"field": "step",
 									"kind": "field"
 								},
 								{
@@ -16145,20 +15038,6 @@
 				},
 				"review_retry": {
 					"indexes": {
-						"__review_retry_ix_step_c7roln6cyz": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__review_retry_pk_is3m5sa5tx": {
 							"columns": [
 								{
@@ -16248,9 +15127,6 @@
 								{
 									"kind": "law",
 									"law": "__review_review_run_input_in_review_root_3hvkhbjzsq"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -16286,13 +15162,8 @@
 				},
 				"review_review_run_input_sizes": {
 					"indexes": {
-						"__review_review_run_input_sizes_ix_scope_root_yjobx_q27b4rjhuv": {
+						"__review_review_run_input_sizes_ix_root_yjobx_7_uyrd_bdoeysdecv": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -16303,6 +15174,11 @@
 									"laws": [
 										"__review_review_run_input_sizes_ordinal_in_review_wqfzj2uv5w"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "scope",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -16320,9 +15196,6 @@
 								{
 									"kind": "law",
 									"law": "__review_review_run_input_sizes_ordinal_in_review_wqfzj2uv5w"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -16418,25 +15291,6 @@
 				},
 				"review_save_input": {
 					"indexes": {
-						"__review_save_input_ix_step_root_vn5k5ydivm": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__review_save_input_pk_iaqr5cg2c2": {
 							"columns": [
 								{
@@ -16473,20 +15327,6 @@
 				},
 				"review_save_output": {
 					"indexes": {
-						"__review_save_output_ix_step_uj4wo4gdyl": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__review_save_output_pk_usbddkytv7": {
 							"columns": [
 								{
@@ -16694,9 +15534,6 @@
 								{
 									"kind": "law",
 									"law": "__review_skipped_in_review_root_vhm56s54zf"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -16927,32 +15764,13 @@
 				},
 				"review_step": {
 					"indexes": {
-						"__review_step_ix_root_scope_jvmzqg2kjy": {
+						"__review_step_ix_root_scope_kind_y6rly7sw5c": {
 							"columns": [
 								{
 									"direction": "asc",
 									"field": "root",
 									"kind": "field"
 								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "law",
-									"law": "__review_step_in_review_admitted_yaqxrykpx7"
-								},
-								{
-									"kind": "law",
-									"law": "__review_step_in_review_scope_sfoo3dlrbb"
-								}
-							]
-						},
-						"__review_step_ix_scope_kind_fjqrbmtqpf": {
-							"columns": [
 								{
 									"direction": "asc",
 									"field": "scope",
@@ -16967,6 +15785,14 @@
 							"reasons": [
 								{
 									"kind": "access"
+								},
+								{
+									"kind": "law",
+									"law": "__review_step_in_review_admitted_yaqxrykpx7"
+								},
+								{
+									"kind": "law",
+									"law": "__review_step_in_review_scope_sfoo3dlrbb"
 								}
 							]
 						},
@@ -17028,8 +15854,13 @@
 				},
 				"review_within": {
 					"indexes": {
-						"__review_within_ix_parent_kind_scope_dtilr5xomp": {
+						"__review_within_ix_root_parent_kind_olszbr3xpq": {
 							"columns": [
+								{
+									"direction": "asc",
+									"field": "root",
+									"kind": "field"
+								},
 								{
 									"direction": "asc",
 									"field": "parent",
@@ -17039,55 +15870,15 @@
 									"direction": "asc",
 									"field": "kind",
 									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
 								}
 							],
 							"reasons": [
 								{
 									"kind": "access"
-								}
-							]
-						},
-						"__review_within_ix_parent_root_ajpsgwldly": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "parent",
-									"kind": "field"
 								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
 								{
 									"kind": "law",
 									"law": "__review_within_in_review_scope_23aw2jlu5x"
-								}
-							]
-						},
-						"__review_within_ix_scope_root_de6bpnvbbw": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -17127,20 +15918,6 @@
 				},
 				"sync_admitted": {
 					"indexes": {
-						"__sync_admitted_ix_scope_iqmg6cfxd7": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__sync_admitted_pk_ral53o3fpi": {
 							"columns": [
 								{
@@ -17173,25 +15950,6 @@
 				},
 				"sync_build_input": {
 					"indexes": {
-						"__sync_build_input_ix_step_root_n7cbt5ywes": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__sync_build_input_pk_wtjr2xzecg": {
 							"columns": [
 								{
@@ -17268,13 +16026,8 @@
 				},
 				"sync_claim": {
 					"indexes": {
-						"__sync_claim_ix_step_root_yewsvvtcyz_pred_attempt_fiq4h65yco": {
+						"__sync_claim_ix_root_yewsvvtcyz_step_pred_attempt_7ep2znumjc": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -17285,6 +16038,11 @@
 									"laws": [
 										"__sync_claim_attempt_in_sync_ended_godmse3iec"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -17302,9 +16060,6 @@
 								{
 									"kind": "law",
 									"law": "__sync_claim_attempt_in_sync_ended_godmse3iec"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -17345,25 +16100,6 @@
 				},
 				"sync_copy_input": {
 					"indexes": {
-						"__sync_copy_input_ix_step_root_pzhfu7yan4": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__sync_copy_input_pk_nzsbbbp6o5": {
 							"columns": [
 								{
@@ -17581,20 +16317,6 @@
 				},
 				"sync_exclusive_key": {
 					"indexes": {
-						"__sync_exclusive_key_ix_scope_odlg62uodv": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__sync_exclusive_key_pk_dba4nxbky5": {
 							"columns": [
 								{
@@ -17699,20 +16421,6 @@
 				},
 				"sync_fenced": {
 					"indexes": {
-						"__sync_fenced_ix_step_z7k6qcdgfq": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__sync_fenced_pk_tszx4qm2gz": {
 							"columns": [
 								{
@@ -17754,25 +16462,6 @@
 				},
 				"sync_finish": {
 					"indexes": {
-						"__sync_finish_ix_scope_step_owsw7m5w74": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__sync_finish_ix_step_uwcksqapnl": {
 							"columns": [
 								{
@@ -17895,9 +16584,6 @@
 								{
 									"kind": "law",
 									"law": "__sync_gold_input_in_sync_root_xsbwhosvlr"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -17933,20 +16619,6 @@
 				},
 				"sync_held": {
 					"indexes": {
-						"__sync_held_ix_step_hqbgboxgaj": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__sync_held_pk_wsme4moka4": {
 							"columns": [
 								{
@@ -18240,20 +16912,6 @@
 				},
 				"sync_retry": {
 					"indexes": {
-						"__sync_retry_ix_step_nqiv6tlf2k": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__sync_retry_pk_6q52red7iw": {
 							"columns": [
 								{
@@ -18456,9 +17114,6 @@
 								{
 									"kind": "law",
 									"law": "__sync_skipped_in_sync_root_llmsb5fm3t"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -18559,16 +17214,16 @@
 				},
 				"sync_step": {
 					"indexes": {
-						"__sync_step_ix_scope_root_hppxk5gi6a": {
+						"__sync_step_ix_root_scope_l4sfn7gzd3": {
 							"columns": [
 								{
 									"direction": "asc",
-									"field": "scope",
+									"field": "root",
 									"kind": "field"
 								},
 								{
 									"direction": "asc",
-									"field": "root",
+									"field": "scope",
 									"kind": "field"
 								}
 							],
@@ -18598,9 +17253,6 @@
 								{
 									"kind": "law",
 									"law": "__sync_step_key_step_vpejg6uhxv"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -18688,9 +17340,6 @@
 								{
 									"kind": "law",
 									"law": "__sync_sync_run_input_in_sync_root_v2n233xxv5"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -18726,20 +17375,6 @@
 				},
 				"writeback_admitted": {
 					"indexes": {
-						"__writeback_admitted_ix_scope_54lp3ihfk7": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__writeback_admitted_pk_eplj3gsbzy": {
 							"columns": [
 								{
@@ -18772,13 +17407,8 @@
 				},
 				"writeback_claim": {
 					"indexes": {
-						"__writeback_claim_ix_step_root_yewsvvtcyz_pred_tplitkeoq2": {
+						"__writeback_claim_ix_root_yewsvvtcyz_step_pred_n2g6vx5xg3": {
 							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
 								{
 									"direction": "asc",
 									"holds": {
@@ -18789,6 +17419,11 @@
 									"laws": [
 										"__writeback_claim_attempt_in_writeback_ended_o7ygscuqgf"
 									]
+								},
+								{
+									"direction": "asc",
+									"field": "step",
+									"kind": "field"
 								},
 								{
 									"direction": "asc",
@@ -18806,9 +17441,6 @@
 								{
 									"kind": "law",
 									"law": "__writeback_claim_attempt_in_writeback_ended_o7ygscuqgf"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -18849,25 +17481,6 @@
 				},
 				"writeback_deliver_input": {
 					"indexes": {
-						"__writeback_deliver_input_ix_step_root_vaxq6pgpkm": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__writeback_deliver_input_pk_i7vk7dq3eb": {
 							"columns": [
 								{
@@ -19093,20 +17706,6 @@
 				},
 				"writeback_fenced": {
 					"indexes": {
-						"__writeback_fenced_ix_step_iwrqegcnk6": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__writeback_fenced_pk_exblcoemag": {
 							"columns": [
 								{
@@ -19148,25 +17747,6 @@
 				},
 				"writeback_finish": {
 					"indexes": {
-						"__writeback_finish_ix_scope_step_6ooh2ahmws": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "scope",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__writeback_finish_key_root_step_mwy36ww7ko": {
 							"columns": [
 								{
@@ -19227,20 +17807,6 @@
 				},
 				"writeback_held": {
 					"indexes": {
-						"__writeback_held_ix_step_itsn6ncq5e": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__writeback_held_pk_5tktjcet5w": {
 							"columns": [
 								{
@@ -19402,25 +17968,6 @@
 				},
 				"writeback_result": {
 					"indexes": {
-						"__writeback_result_ix_step_root_u43itfyxzx": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								},
-								{
-									"direction": "asc",
-									"field": "root",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__writeback_result_pk_lygppaax77": {
 							"columns": [
 								{
@@ -19493,20 +18040,6 @@
 				},
 				"writeback_retry": {
 					"indexes": {
-						"__writeback_retry_ix_step_xokcsjqehk": {
-							"columns": [
-								{
-									"direction": "asc",
-									"field": "step",
-									"kind": "field"
-								}
-							],
-							"reasons": [
-								{
-									"kind": "access"
-								}
-							]
-						},
 						"__writeback_retry_pk_j2ien3obty": {
 							"columns": [
 								{
@@ -19701,9 +18234,6 @@
 								{
 									"kind": "law",
 									"law": "__writeback_skipped_in_writeback_root_t3hg6l43uf"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -19804,16 +18334,16 @@
 				},
 				"writeback_step": {
 					"indexes": {
-						"__writeback_step_ix_scope_root_ft5ap6qmlh": {
+						"__writeback_step_ix_root_scope_oebhktgfcr": {
 							"columns": [
 								{
 									"direction": "asc",
-									"field": "scope",
+									"field": "root",
 									"kind": "field"
 								},
 								{
 									"direction": "asc",
-									"field": "root",
+									"field": "scope",
 									"kind": "field"
 								}
 							],
@@ -19843,9 +18373,6 @@
 								{
 									"kind": "law",
 									"law": "__writeback_step_key_step_sk2g35ftzj"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -19929,9 +18456,6 @@
 								{
 									"kind": "law",
 									"law": "__writeback_writeback_input_in_writeback_root_3leqd2ed5y"
-								},
-								{
-									"kind": "access"
 								}
 							]
 						},
@@ -19971,7 +18495,7 @@
 			"8ea3b3b3430988be5b15247b0255025a6d4f598f8485e1f1284e8d6a9bf1e15f": "6f5ba169462bdb47db4c56bb5fe21d5091867333e4952f2c20b18e8fa085befc"
 		}
 	},
-	"fingerprint": "042c756882b85218fd565b88e5469b066c637f89bcc927b3b36d6946af277b93",
+	"fingerprint": "1fb787e21e2af9d3a1f91fa8af04588790f289d6504aea4add6afc68cef45a41",
 	"format": 8,
 	"levels": [
 		{
@@ -20001,7 +18525,7 @@
 			"schema": "slice"
 		},
 		{
-			"fingerprint": "fcc329ca80a36dfdc1ebc353add2846c67028e2bbc9dfaa62cbdbbb215f88b4c",
+			"fingerprint": "0c8f5560aab2d9bc42b97b8dcd7ce54a65c638f53b9825ef5869f6d4ce03d7df",
 			"laws": [
 				{"described":{"from":{"relation":"AssignAdmitted","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"AssignScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]}},"law":"__assign_admitted_in_assign_scope_k674zmpvkp"},
 				{"described":{"fields":["root","scope"],"kind":"primaryKey","relation":"AssignAdmitted"},"law":"__assign_admitted_pk_root_scope_gdkqjkbw6t"},
@@ -20328,6 +18852,7 @@
 				{"described":{"from":{"relation":"ClockHourlyInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"ClockScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]}},"law":"__clock_hourly_input_in_clock_scope_wt5pr366gq"},
 				{"described":{"fields":["root","scope"],"kind":"primaryKey","relation":"ClockHourlyInput"},"law":"__clock_hourly_input_pk_root_scope_46f6q3on6o"},
 				{"described":{"from":{"relation":"ClockHourlyKey","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"ClockRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Hourly"}}]},"terms":[{"field":"root","kind":"field"}]}},"law":"__clock_hourly_key_in_clock_root_fzwnoyqvjx"},
+				{"described":{"kind":"key","side":{"relation":"ClockHourlyKey","selection":{"conjuncts":[]},"terms":[{"field":"at","kind":"field"},{"field":"memberDigest","kind":"field"}]}},"law":"__clock_hourly_key_key_at_member_digest_couacjnxo5"},
 				{"described":{"fields":["root"],"kind":"primaryKey","relation":"ClockHourlyKey"},"law":"__clock_hourly_key_pk_root_vlktqxdsn4"},
 				{"described":{"from":{"relation":"ClockPaused","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"pred"}]},"kind":"contained","to":{"relation":"ClockResumed","selection":{"conjuncts":[]},"terms":[{"field":"target","kind":"field"},{"field":"turn","kind":"field"}]}},"law":"__clock_paused_in_clock_resumed_2p7f3spwzi"},
 				{"described":{"fields":["target","turn"],"kind":"primaryKey","relation":"ClockPaused"},"law":"__clock_paused_pk_target_turn_hghrkxmwlv"},
@@ -20494,6 +19019,7 @@
 				{"described":{"from":{"relation":"FanWantedInput","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]}},"law":"__fan_wanted_input_in_fan_scope_odse2qoioo"},
 				{"described":{"fields":["root","scope"],"kind":"primaryKey","relation":"FanWantedInput"},"law":"__fan_wanted_input_pk_root_scope_yc6nbmzsv5"},
 				{"described":{"from":{"relation":"FanWantedKey","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"}]},"kind":"contained","to":{"relation":"FanRoot","selection":{"conjuncts":[{"kind":"compare","left":{"field":"kind","kind":"field"},"op":"eq","right":{"kind":"literal","value":"Wanted"}}]},"terms":[{"field":"root","kind":"field"}]}},"law":"__fan_wanted_key_in_fan_root_72brvlkzc2"},
+				{"described":{"kind":"key","side":{"relation":"FanWantedKey","selection":{"conjuncts":[]},"terms":[{"field":"batchDigest","kind":"field"}]}},"law":"__fan_wanted_key_key_batch_digest_vsolby2gdg"},
 				{"described":{"fields":["root"],"kind":"primaryKey","relation":"FanWantedKey"},"law":"__fan_wanted_key_pk_root_pam7qaxsnc"},
 				{"described":{"from":{"relation":"FanWithin","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]}},"law":"__fan_within_in_fan_scope_bz6hsvih2k"},
 				{"described":{"from":{"relation":"FanWithin","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"parent","kind":"field"}]},"kind":"contained","to":{"relation":"FanScope","selection":{"conjuncts":[]},"terms":[{"field":"root","kind":"field"},{"field":"scope","kind":"field"}]}},"law":"__fan_within_in_fan_scope_gneohkjy7x"},
@@ -20907,7 +19433,7 @@
 			"schema": "slice_den"
 		},
 		{
-			"fingerprint": "de313b82c36f9a7d490e60175c886bcc296083d06a533edf206de45cf2d90567",
+			"fingerprint": "21c428077695d13156aaeaac7741e6ff262bd5e199566e8b888356ef7b4848b4",
 			"laws": [
 				{"described":{"kind":"check","name":"FanSeatBelowCount","relation":"FanLive"},"law":"__fan_live_check_fan_seat_below_count_jcuojp5fnq"},
 				{"described":{"kind":"key","side":{"relation":"FanLive","selection":{"conjuncts":[]},"terms":[{"field":"resource","kind":"field"},{"field":"seat","kind":"field"}]}},"law":"__fan_live_key_resource_seat_wqkc2jfkpw"},

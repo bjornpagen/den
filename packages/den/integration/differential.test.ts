@@ -38,6 +38,8 @@ import {
 	String as Str
 } from "effect"
 import { chain, poolSeats } from "#integration/slice/flows.ts"
+import { chainAppRequests } from "#integration/slice/generated/chain.binding.ts"
+import { fanAppRequests } from "#integration/slice/generated/fan.binding.ts"
 import { ringAndDrain } from "#integration/support/run.ts"
 import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 import { agreed, factsOf, type Graph } from "#integration/support/trace.ts"
@@ -636,7 +638,7 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 												c.note("the app's write of another input")
 											}
 											const orderedOf = (order: string, run: AskedAgain<ChainIn>) => {
-												const asked = chainLedger.appRequests.Ordered(key, named(run.input))
+												const asked = chainAppRequests.Ordered(key, named(run.input))
 												const params = run.deployed
 													? {
 															...asked.params,
@@ -721,7 +723,7 @@ export const theDifferentialHarnessCommitsTheFactsTheReferenceModelCommits = pro
 											}
 										}
 										case "wanted": {
-											const asked = fanLedger.appRequests.Wanted({ batch: key })
+											const asked = fanAppRequests.Wanted({ batch: key })
 											const derived = asked.params.fanWantedKey
 											const wants = (wanted: ReadonlyArray<number>) =>
 												Arr.map(wanted, (size) => ({ batch: key, size: BigInt(size) }))

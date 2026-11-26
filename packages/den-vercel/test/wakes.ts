@@ -9,7 +9,7 @@ import { Array as Arr } from "effect"
 
 /** A wake as its JSON holds it. */
 export type Encoded =
-	| Readonly<{ _tag: "Step"; flow: string; step: string; attempt: number }>
+	| Readonly<{ _tag: "Step"; flow: string; root: string; step: string; attempt: number }>
 	| Readonly<{ _tag: "Admit"; flow: string; scope: string }>
 	| Readonly<{ _tag: "Census"; at: number }>
 
@@ -27,10 +27,11 @@ const flow: Gen<string> = string(characterOf(["Q", ":", "s", "t", "e", "p", "a"]
 /** A step's attempt. */
 const attempt: Gen<number> = int(0, 11)
 
-/** A wake for a step's attempt. */
+/** A wake for a step's attempt, beside its root. */
 const step: Gen<Encoded> = (source) => ({
 	_tag: "Step",
 	flow: source.draw(flow),
+	root: source.draw(digest),
 	step: source.draw(digest),
 	attempt: source.draw(attempt)
 })

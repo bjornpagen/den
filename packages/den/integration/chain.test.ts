@@ -205,6 +205,7 @@ export const theChainFlowRunsAFeedsPagesToItsCursor = property.explore(runs, {
 									{
 										_tag: "Step",
 										flow: FlowName.make("Chain"),
+										root: scope,
 										step: page.step,
 										attempt: AttemptNumber.make(0)
 									},

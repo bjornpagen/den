@@ -150,9 +150,10 @@ export const aRefusedCredentialFencesSpendsNothingAndRunsNoBodyWhileItStands = p
 										["done"]
 									)
 									const step = (yield* Effect.fromOption(Arr.head(done))).step
-									const claimed = yield* retry.ledger.claimsOf(step)
-									const retried = yield* retry.ledger.retriesOf(step)
-									const fenced = yield* retry.ledger.fencedOf(step)
+									const at = { root: requested.scope, step }
+									const claimed = yield* retry.ledger.claimsOf(at)
+									const retried = yield* retry.ledger.retriesOf(at)
+									const fenced = yield* retry.ledger.fencedOf(at)
 									const fence = BigInt(planned.deaths)
 									assert.deepEqual(
 										Arr.map(Arr.sort(claimed, byAttempt), (cl) => cl.attempt),

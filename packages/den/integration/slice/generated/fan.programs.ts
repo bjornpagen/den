@@ -143,11 +143,11 @@ export const FanCoordinator = role(
 )
 
 const fanPendingRead = query(FanDen).rule((r) => {
-	const { step, kind, scope, due } = v(FanStep, "step")
+	const { root, step, kind, scope, due } = v(FanStep, "step")
 	return r
-		.match(FanStep, { step, kind, scope, due })
-		.where(r.not(FanResult, { step }))
-		.find({ step, kind, scope, due })
+		.match(FanStep, { root, step, kind, scope, due })
+		.where(r.not(FanResult, { root, step }))
+		.find({ root, step, kind, scope, due })
 })
 
 const fanRequestedRead = query(FanDen).rule((r) => {
@@ -155,13 +155,16 @@ const fanRequestedRead = query(FanDen).rule((r) => {
 	return r
 		.match(FanRoot, { root: scope })
 		.match(FanScope, { root: scope, scope })
-		.where(r.not(FanAdmitted, { scope }), r.not(FanSkipped, { scope }))
+		.where(r.not(FanAdmitted, { root: scope, scope }), r.not(FanSkipped, { root: scope, scope }))
 		.find({ scope })
 })
 
 const fanRunningRead = query(FanDen).rule((r) => {
-	const { scope, step } = v(FanFinish, "finish")
-	return r.match(FanFinish, { scope, step }).where(r.not(FanResult, { step })).find({ scope })
+	const { root, scope, step } = v(FanFinish, "finish")
+	return r
+		.match(FanFinish, { root, scope, step })
+		.where(r.not(FanResult, { root, step }))
+		.find({ scope })
 })
 
 const fanLatestServed = query(FanDen).rule((r) => {
@@ -298,42 +301,60 @@ export const fanDenPrograms = Object.freeze({
 		const { root, scope, by } = v(FanSkipped, "fanSkipped")
 		return r
 			.match(FanSkipped, { root, scope, by })
-			.where(r.eq(scope, r.param("scope", FanSkipped.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", FanSkipped.fields.root)),
+				r.eq(scope, r.param("scope", FanSkipped.fields.scope))
+			)
 			.find({ root, scope, by })
 	}),
 	fanStepOf: query(fanGraph).rule((r) => {
 		const { root, step, kind, scope, due } = v(FanStep, "fanStep")
 		return r
 			.match(FanStep, { root, step, kind, scope, due })
-			.where(r.eq(step, r.param("step", FanStep.fields.step)))
+			.where(
+				r.eq(root, r.param("root", FanStep.fields.root)),
+				r.eq(step, r.param("step", FanStep.fields.step))
+			)
 			.find({ root, step, kind, scope, due })
 	}),
 	fanResultOf: query(fanGraph).rule((r) => {
 		const { root, step, outcome } = v(FanResult, "fanResult")
 		return r
 			.match(FanResult, { root, step, outcome })
-			.where(r.eq(step, r.param("step", FanResult.fields.step)))
+			.where(
+				r.eq(root, r.param("root", FanResult.fields.root)),
+				r.eq(step, r.param("step", FanResult.fields.step))
+			)
 			.find({ root, step, outcome })
 	}),
 	fanHeldOf: query(fanGraph).rule((r) => {
 		const { root, step, attempt } = v(FanHeld, "fanHeld")
 		return r
 			.match(FanHeld, { root, step, attempt })
-			.where(r.eq(step, r.param("step", FanHeld.fields.step)))
+			.where(
+				r.eq(root, r.param("root", FanHeld.fields.root)),
+				r.eq(step, r.param("step", FanHeld.fields.step))
+			)
 			.find({ root, step, attempt })
 	}),
 	fanWithinOf: query(fanGraph).rule((r) => {
 		const { root, scope, parent, kind } = v(FanWithin, "fanWithin")
 		return r
 			.match(FanWithin, { root, scope, parent, kind })
-			.where(r.eq(scope, r.param("scope", FanWithin.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", FanWithin.fields.root)),
+				r.eq(scope, r.param("scope", FanWithin.fields.scope))
+			)
 			.find({ root, scope, parent, kind })
 	}),
 	fanAdmittedOf: query(fanGraph).rule((r) => {
 		const { root, scope } = v(FanAdmitted, "fanAdmitted")
 		return r
 			.match(FanAdmitted, { root, scope })
-			.where(r.eq(scope, r.param("scope", FanAdmitted.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", FanAdmitted.fields.root)),
+				r.eq(scope, r.param("scope", FanAdmitted.fields.scope))
+			)
 			.find({ root, scope })
 	}),
 	fanRootOf: query(fanGraph).rule((r) => {
@@ -342,14 +363,17 @@ export const fanDenPrograms = Object.freeze({
 		return r
 			.match(FanRoot, { root: scope, kind, key, at })
 			.match(FanScope, { root: scope, scope })
-			.where(r.eq(scope, r.param("scope", FanRoot.fields.root)))
+			.where(r.eq(scope, r.param("root", FanRoot.fields.root)))
 			.find({ scope, kind, key, at })
 	}),
 	fanExclusiveKeyOf: query(fanGraph).rule((r) => {
 		const { root, scope, key, id } = v(FanExclusiveKey, "fanExclusiveKey")
 		return r
 			.match(FanExclusiveKey, { root, scope, key, id })
-			.where(r.eq(scope, r.param("scope", FanExclusiveKey.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", FanExclusiveKey.fields.root)),
+				r.eq(scope, r.param("scope", FanExclusiveKey.fields.scope))
+			)
 			.find({ root, scope, key, id })
 	}),
 	fanFinishedRoots: query(fanGraph)
@@ -365,52 +389,69 @@ export const fanDenPrograms = Object.freeze({
 			return r.match(FanSkipped, { root: scope, scope }).find({ scope })
 		}),
 	fanClaimsOf: query(fanGraph).rule((r) => {
-		const { step, attempt, until } = v(FanClaim, "claim")
+		const { root, step, attempt, until } = v(FanClaim, "claim")
 		return r
-			.match(FanClaim, { step, attempt, until })
-			.where(r.eq(step, r.param("step", FanStep.fields.step)))
+			.match(FanClaim, { root, step, attempt, until })
+			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
+				r.eq(step, r.param("step", FanStep.fields.step))
+			)
 			.find({ step, attempt, until })
 	}),
 	fanRetriesOf: query(fanGraph).rule((r) => {
-		const { step, attempt, at, why } = v(FanRetry, "retry")
+		const { root, step, attempt, at, why } = v(FanRetry, "retry")
 		return r
-			.match(FanRetry, { step, attempt, at, why })
-			.where(r.eq(step, r.param("step", FanStep.fields.step)))
+			.match(FanRetry, { root, step, attempt, at, why })
+			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
+				r.eq(step, r.param("step", FanStep.fields.step))
+			)
 			.find({ step, attempt, at, why })
 	}),
 	fanFencedOf: query(fanGraph).rule((r) => {
-		const { step, attempt } = v(FanFenced, "fenced")
+		const { root, step, attempt } = v(FanFenced, "fenced")
 		return r
-			.match(FanFenced, { step, attempt })
-			.where(r.eq(step, r.param("step", FanStep.fields.step)))
+			.match(FanFenced, { root, step, attempt })
+			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
+				r.eq(step, r.param("step", FanStep.fields.step))
+			)
 			.find({ step, attempt })
 	}),
 	fanUnendedSteps: query(fanGraph).rule((r) => {
-		const { step, scope } = v(FanStep, "step")
+		const { root, step, scope } = v(FanStep, "step")
 		return r
-			.match(FanStep, { step, scope })
+			.match(FanStep, { root, step, scope })
 			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
 				r.eq(scope, r.param("scope", FanScope.fields.scope)),
-				r.not(FanResult, { step }),
-				r.not(FanFinish, { scope, step })
+				r.not(FanResult, { root, step }),
+				r.not(FanFinish, { root, scope, step })
 			)
 			.find({ step })
 	}),
 	fanOpenChildren: query(fanGraph).rule((r) => {
-		const { scope, parent } = v(FanWithin, "within")
+		const { root, scope, parent } = v(FanWithin, "within")
 		const { step } = v(FanFinish, "finish")
 		return r
-			.match(FanWithin, { scope, parent })
-			.match(FanFinish, { scope, step })
-			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)), r.not(FanResult, { step }))
+			.match(FanWithin, { root, scope, parent })
+			.match(FanFinish, { root, scope, step })
+			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
+				r.eq(parent, r.param("scope", FanScope.fields.scope)),
+				r.not(FanResult, { root, step })
+			)
 			.find({ child: scope })
 	}),
 	fanFinished: query(fanGraph).rule((r) => {
-		const { scope, step } = v(FanFinish, "finish")
+		const { root, scope, step } = v(FanFinish, "finish")
 		return r
-			.match(FanFinish, { scope, step })
-			.match(FanResult, { step })
-			.where(r.eq(scope, r.param("scope", FanScope.fields.scope)))
+			.match(FanFinish, { root, scope, step })
+			.match(FanResult, { root, step })
+			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
+				r.eq(scope, r.param("scope", FanScope.fields.scope))
+			)
 			.find({ step })
 	}),
 	fanPending: fanPendingRead,
@@ -419,24 +460,24 @@ export const fanDenPrograms = Object.freeze({
 	fanSnapshot: query(FanDen).reads({
 		steps: fanPendingRead,
 		claims: query(FanDen).rule((r) => {
-			const { step, attempt, until } = v(FanClaim, "claim")
+			const { root, step, attempt, until } = v(FanClaim, "claim")
 			return r
-				.match(FanClaim, { step, attempt, until })
-				.where(r.not(FanResult, { step }))
+				.match(FanClaim, { root, step, attempt, until })
+				.where(r.not(FanResult, { root, step }))
 				.find({ step, attempt, until })
 		}),
 		retries: query(FanDen).rule((r) => {
-			const { step, attempt, at, why } = v(FanRetry, "retry")
+			const { root, step, attempt, at, why } = v(FanRetry, "retry")
 			return r
-				.match(FanRetry, { step, attempt, at, why })
-				.where(r.not(FanResult, { step }))
+				.match(FanRetry, { root, step, attempt, at, why })
+				.where(r.not(FanResult, { root, step }))
 				.find({ step, attempt, at, why })
 		}),
 		fenced: query(FanDen).rule((r) => {
-			const { step, attempt } = v(FanFenced, "fenced")
+			const { root, step, attempt } = v(FanFenced, "fenced")
 			return r
-				.match(FanFenced, { step, attempt })
-				.where(r.not(FanResult, { step }))
+				.match(FanFenced, { root, step, attempt })
+				.where(r.not(FanResult, { root, step }))
 				.find({ step, attempt })
 		}),
 		requested: fanRequestedRead,
@@ -482,61 +523,85 @@ export const fanDenPrograms = Object.freeze({
 		const { root, step, batch, n } = v(FanSquareInput, "fanSquareInput")
 		return r
 			.match(FanSquareInput, { root, step, batch, n })
-			.where(r.eq(step, r.param("step", FanSquareInput.fields.step)))
+			.where(
+				r.eq(root, r.param("root", FanSquareInput.fields.root)),
+				r.eq(step, r.param("step", FanSquareInput.fields.step))
+			)
 			.find({ root, step, batch, n })
 	}),
 	fanReadFanDustInput: query(fanGraph).rule((r) => {
 		const { root, step, sweep } = v(FanDustInput, "fanDustInput")
 		return r
 			.match(FanDustInput, { root, step, sweep })
-			.where(r.eq(step, r.param("step", FanDustInput.fields.step)))
+			.where(
+				r.eq(root, r.param("root", FanDustInput.fields.root)),
+				r.eq(step, r.param("step", FanDustInput.fields.step))
+			)
 			.find({ root, step, sweep })
 	}),
 	fanReadFanMopInput: query(fanGraph).rule((r) => {
 		const { root, step, sweep } = v(FanMopInput, "fanMopInput")
 		return r
 			.match(FanMopInput, { root, step, sweep })
-			.where(r.eq(step, r.param("step", FanMopInput.fields.step)))
+			.where(
+				r.eq(root, r.param("root", FanMopInput.fields.root)),
+				r.eq(step, r.param("step", FanMopInput.fields.step))
+			)
 			.find({ root, step, sweep })
 	}),
 	fanReadFanBatchInput: query(fanGraph).rule((r) => {
 		const { root, scope, batch, size } = v(FanBatchInput, "fanBatchInput")
 		return r
 			.match(FanBatchInput, { root, scope, batch, size })
-			.where(r.eq(scope, r.param("scope", FanBatchInput.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", FanBatchInput.fields.root)),
+				r.eq(scope, r.param("scope", FanBatchInput.fields.scope))
+			)
 			.find({ root, scope, batch, size })
 	}),
 	fanOutputsBatchSquare: query(fanGraph).rule((r) => {
-		const { step, scope } = v(FanStep, "step")
+		const { root, step, scope } = v(FanStep, "step")
 		const { square } = v(FanSquareOutput, "output")
 		return r
-			.match(FanStep, { step, kind: "Square", scope })
-			.match(FanSquareOutput, { step, square })
-			.where(r.eq(scope, r.param("scope", FanScope.fields.scope)))
+			.match(FanStep, { root, step, kind: "Square", scope })
+			.match(FanSquareOutput, { root, step, square })
+			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
+				r.eq(scope, r.param("scope", FanScope.fields.scope))
+			)
 			.find({ step, square })
 	}),
 	fanInputsBatchSquare: query(fanGraph).rule((r) => {
-		const { step, scope } = v(FanStep, "step")
+		const { root, step, scope } = v(FanStep, "step")
 		const { batch, n } = v(FanSquareInput, "input")
 		return r
-			.match(FanStep, { step, kind: "Square", scope })
-			.match(FanSquareInput, { step, batch, n })
-			.where(r.eq(scope, r.param("scope", FanScope.fields.scope)))
+			.match(FanStep, { root, step, kind: "Square", scope })
+			.match(FanSquareInput, { root, step, batch, n })
+			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
+				r.eq(scope, r.param("scope", FanScope.fields.scope))
+			)
 			.find({ step, batch, n })
 	}),
 	fanFailuresBatchSquare: query(fanGraph).rule((r) => {
-		const { step, scope } = v(FanStep, "step")
+		const { root, step, scope } = v(FanStep, "step")
 		return r
-			.match(FanStep, { step, kind: "Square", scope })
-			.match(FanResult, { step, outcome: "failed" })
-			.where(r.eq(scope, r.param("scope", FanScope.fields.scope)))
+			.match(FanStep, { root, step, kind: "Square", scope })
+			.match(FanResult, { root, step, outcome: "failed" })
+			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
+				r.eq(scope, r.param("scope", FanScope.fields.scope))
+			)
 			.find({ step })
 	}),
 	fanReadFanFanRunInput: query(fanGraph).rule((r) => {
 		const { root, scope, batch, size } = v(FanFanRunInput, "fanFanRunInput")
 		return r
 			.match(FanFanRunInput, { root, scope, batch, size })
-			.where(r.eq(scope, r.param("scope", FanFanRunInput.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", FanFanRunInput.fields.root)),
+				r.eq(scope, r.param("scope", FanFanRunInput.fields.scope))
+			)
 			.find({ root, scope, batch, size })
 	}),
 	fanRequestFanRun: clocked(
@@ -626,41 +691,53 @@ export const fanDenPrograms = Object.freeze({
 		{ denNow: "millis" }
 	),
 	fanOutputsFanRunBatch: query(fanGraph).rule((r) => {
-		const { scope, parent } = v(FanWithin, "within")
+		const { root, scope, parent } = v(FanWithin, "within")
 		const { step } = v(FanFinish, "finish")
 		return r
-			.match(FanWithin, { scope, parent, kind: "Batch" })
-			.match(FanFinish, { scope, step })
-			.match(FanBatchFinishOutput, { step })
-			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))
+			.match(FanWithin, { root, scope, parent, kind: "Batch" })
+			.match(FanFinish, { root, scope, step })
+			.match(FanBatchFinishOutput, { root, step })
+			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
+				r.eq(parent, r.param("scope", FanScope.fields.scope))
+			)
 			.find({ step })
 	}),
 	fanInputsFanRunBatch: query(fanGraph).rule((r) => {
-		const { scope, parent } = v(FanWithin, "within")
+		const { root, scope, parent } = v(FanWithin, "within")
 		const { step } = v(FanFinish, "finish")
 		const { batch, size } = v(FanBatchInput, "input")
 		return r
-			.match(FanWithin, { scope, parent, kind: "Batch" })
-			.match(FanFinish, { scope, step })
-			.match(FanBatchInput, { scope, batch, size })
-			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))
+			.match(FanWithin, { root, scope, parent, kind: "Batch" })
+			.match(FanFinish, { root, scope, step })
+			.match(FanBatchInput, { root, scope, batch, size })
+			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
+				r.eq(parent, r.param("scope", FanScope.fields.scope))
+			)
 			.find({ step, batch, size })
 	}),
 	fanFailuresFanRunBatch: query(fanGraph).rule((r) => {
-		const { scope, parent } = v(FanWithin, "within")
+		const { root, scope, parent } = v(FanWithin, "within")
 		const { step } = v(FanFinish, "finish")
 		return r
-			.match(FanWithin, { scope, parent, kind: "Batch" })
-			.match(FanFinish, { scope, step })
-			.match(FanResult, { step, outcome: "failed" })
-			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))
+			.match(FanWithin, { root, scope, parent, kind: "Batch" })
+			.match(FanFinish, { root, scope, step })
+			.match(FanResult, { root, step, outcome: "failed" })
+			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
+				r.eq(parent, r.param("scope", FanScope.fields.scope))
+			)
 			.find({ step })
 	}),
 	fanReadFanSweepInput: query(fanGraph).rule((r) => {
 		const { root, scope, sweep } = v(FanSweepInput, "fanSweepInput")
 		return r
 			.match(FanSweepInput, { root, scope, sweep })
-			.where(r.eq(scope, r.param("scope", FanSweepInput.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", FanSweepInput.fields.root)),
+				r.eq(scope, r.param("scope", FanSweepInput.fields.scope))
+			)
 			.find({ root, scope, sweep })
 	}),
 	fanRequestSweep: clocked(
@@ -752,38 +829,50 @@ export const fanDenPrograms = Object.freeze({
 		const { root, scope, batch, size } = v(FanWantedInput, "fanWantedInput")
 		return r
 			.match(FanWantedInput, { root, scope, batch, size })
-			.where(r.eq(scope, r.param("scope", FanWantedInput.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", FanWantedInput.fields.root)),
+				r.eq(scope, r.param("scope", FanWantedInput.fields.scope))
+			)
 			.find({ root, scope, batch, size })
 	}),
 	fanOutputsWantedBatch: query(fanGraph).rule((r) => {
-		const { scope, parent } = v(FanWithin, "within")
+		const { root, scope, parent } = v(FanWithin, "within")
 		const { step } = v(FanFinish, "finish")
 		return r
-			.match(FanWithin, { scope, parent, kind: "Batch" })
-			.match(FanFinish, { scope, step })
-			.match(FanBatchFinishOutput, { step })
-			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))
+			.match(FanWithin, { root, scope, parent, kind: "Batch" })
+			.match(FanFinish, { root, scope, step })
+			.match(FanBatchFinishOutput, { root, step })
+			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
+				r.eq(parent, r.param("scope", FanScope.fields.scope))
+			)
 			.find({ step })
 	}),
 	fanInputsWantedBatch: query(fanGraph).rule((r) => {
-		const { scope, parent } = v(FanWithin, "within")
+		const { root, scope, parent } = v(FanWithin, "within")
 		const { step } = v(FanFinish, "finish")
 		const { batch, size } = v(FanBatchInput, "input")
 		return r
-			.match(FanWithin, { scope, parent, kind: "Batch" })
-			.match(FanFinish, { scope, step })
-			.match(FanBatchInput, { scope, batch, size })
-			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))
+			.match(FanWithin, { root, scope, parent, kind: "Batch" })
+			.match(FanFinish, { root, scope, step })
+			.match(FanBatchInput, { root, scope, batch, size })
+			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
+				r.eq(parent, r.param("scope", FanScope.fields.scope))
+			)
 			.find({ step, batch, size })
 	}),
 	fanFailuresWantedBatch: query(fanGraph).rule((r) => {
-		const { scope, parent } = v(FanWithin, "within")
+		const { root, scope, parent } = v(FanWithin, "within")
 		const { step } = v(FanFinish, "finish")
 		return r
-			.match(FanWithin, { scope, parent, kind: "Batch" })
-			.match(FanFinish, { scope, step })
-			.match(FanResult, { step, outcome: "failed" })
-			.where(r.eq(parent, r.param("scope", FanScope.fields.scope)))
+			.match(FanWithin, { root, scope, parent, kind: "Batch" })
+			.match(FanFinish, { root, scope, step })
+			.match(FanResult, { root, step, outcome: "failed" })
+			.where(
+				r.eq(root, r.param("root", FanScope.fields.root)),
+				r.eq(parent, r.param("scope", FanScope.fields.scope))
+			)
 			.find({ step })
 	})
 })

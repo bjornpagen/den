@@ -111,11 +111,11 @@ export const SyncCoordinator = role(
 )
 
 const syncPendingRead = query(SyncDen).rule((r) => {
-	const { step, kind, scope, due } = v(SyncStep, "step")
+	const { root, step, kind, scope, due } = v(SyncStep, "step")
 	return r
-		.match(SyncStep, { step, kind, scope, due })
-		.where(r.not(SyncResult, { step }))
-		.find({ step, kind, scope, due })
+		.match(SyncStep, { root, step, kind, scope, due })
+		.where(r.not(SyncResult, { root, step }))
+		.find({ root, step, kind, scope, due })
 })
 
 const syncRequestedRead = query(SyncDen).rule((r) => {
@@ -123,20 +123,23 @@ const syncRequestedRead = query(SyncDen).rule((r) => {
 	return r
 		.match(SyncRoot, { root: scope })
 		.match(SyncScope, { root: scope, scope })
-		.where(r.not(SyncAdmitted, { scope }), r.not(SyncSkipped, { scope }))
+		.where(r.not(SyncAdmitted, { root: scope, scope }), r.not(SyncSkipped, { root: scope, scope }))
 		.find({ scope })
 })
 
 const syncRunningRead = query(SyncDen).rule((r) => {
-	const { scope, step } = v(SyncFinish, "finish")
-	return r.match(SyncFinish, { scope, step }).where(r.not(SyncResult, { step })).find({ scope })
+	const { root, scope, step } = v(SyncFinish, "finish")
+	return r
+		.match(SyncFinish, { root, scope, step })
+		.where(r.not(SyncResult, { root, step }))
+		.find({ scope })
 })
 
 const syncBusyChainRead = query(SyncDen).rule((r) => {
-	const { step } = v(App.relations.ChainStep, "step")
+	const { root, step } = v(App.relations.ChainStep, "step")
 	return r
-		.match(App.relations.ChainStep, { step })
-		.where(r.not(App.relations.ChainResult, { step }))
+		.match(App.relations.ChainStep, { root, step })
+		.where(r.not(App.relations.ChainResult, { root, step }))
 		.find({ step })
 })
 
@@ -264,35 +267,50 @@ export const syncDenPrograms = Object.freeze({
 		const { root, scope, by } = v(SyncSkipped, "syncSkipped")
 		return r
 			.match(SyncSkipped, { root, scope, by })
-			.where(r.eq(scope, r.param("scope", SyncSkipped.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", SyncSkipped.fields.root)),
+				r.eq(scope, r.param("scope", SyncSkipped.fields.scope))
+			)
 			.find({ root, scope, by })
 	}),
 	syncStepOf: query(syncGraph).rule((r) => {
 		const { root, step, kind, scope, due } = v(SyncStep, "syncStep")
 		return r
 			.match(SyncStep, { root, step, kind, scope, due })
-			.where(r.eq(step, r.param("step", SyncStep.fields.step)))
+			.where(
+				r.eq(root, r.param("root", SyncStep.fields.root)),
+				r.eq(step, r.param("step", SyncStep.fields.step))
+			)
 			.find({ root, step, kind, scope, due })
 	}),
 	syncResultOf: query(syncGraph).rule((r) => {
 		const { root, step, outcome } = v(SyncResult, "syncResult")
 		return r
 			.match(SyncResult, { root, step, outcome })
-			.where(r.eq(step, r.param("step", SyncResult.fields.step)))
+			.where(
+				r.eq(root, r.param("root", SyncResult.fields.root)),
+				r.eq(step, r.param("step", SyncResult.fields.step))
+			)
 			.find({ root, step, outcome })
 	}),
 	syncHeldOf: query(syncGraph).rule((r) => {
 		const { root, step, attempt } = v(SyncHeld, "syncHeld")
 		return r
 			.match(SyncHeld, { root, step, attempt })
-			.where(r.eq(step, r.param("step", SyncHeld.fields.step)))
+			.where(
+				r.eq(root, r.param("root", SyncHeld.fields.root)),
+				r.eq(step, r.param("step", SyncHeld.fields.step))
+			)
 			.find({ root, step, attempt })
 	}),
 	syncAdmittedOf: query(syncGraph).rule((r) => {
 		const { root, scope } = v(SyncAdmitted, "syncAdmitted")
 		return r
 			.match(SyncAdmitted, { root, scope })
-			.where(r.eq(scope, r.param("scope", SyncAdmitted.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", SyncAdmitted.fields.root)),
+				r.eq(scope, r.param("scope", SyncAdmitted.fields.scope))
+			)
 			.find({ root, scope })
 	}),
 	syncRootOf: query(syncGraph).rule((r) => {
@@ -301,14 +319,17 @@ export const syncDenPrograms = Object.freeze({
 		return r
 			.match(SyncRoot, { root: scope, kind, key, at })
 			.match(SyncScope, { root: scope, scope })
-			.where(r.eq(scope, r.param("scope", SyncRoot.fields.root)))
+			.where(r.eq(scope, r.param("root", SyncRoot.fields.root)))
 			.find({ scope, kind, key, at })
 	}),
 	syncExclusiveKeyOf: query(syncGraph).rule((r) => {
 		const { root, scope, key, id } = v(SyncExclusiveKey, "syncExclusiveKey")
 		return r
 			.match(SyncExclusiveKey, { root, scope, key, id })
-			.where(r.eq(scope, r.param("scope", SyncExclusiveKey.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", SyncExclusiveKey.fields.root)),
+				r.eq(scope, r.param("scope", SyncExclusiveKey.fields.scope))
+			)
 			.find({ root, scope, key, id })
 	}),
 	syncFinishedRoots: query(syncGraph)
@@ -324,43 +345,56 @@ export const syncDenPrograms = Object.freeze({
 			return r.match(SyncSkipped, { root: scope, scope }).find({ scope })
 		}),
 	syncClaimsOf: query(syncGraph).rule((r) => {
-		const { step, attempt, until } = v(SyncClaim, "claim")
+		const { root, step, attempt, until } = v(SyncClaim, "claim")
 		return r
-			.match(SyncClaim, { step, attempt, until })
-			.where(r.eq(step, r.param("step", SyncStep.fields.step)))
+			.match(SyncClaim, { root, step, attempt, until })
+			.where(
+				r.eq(root, r.param("root", SyncScope.fields.root)),
+				r.eq(step, r.param("step", SyncStep.fields.step))
+			)
 			.find({ step, attempt, until })
 	}),
 	syncRetriesOf: query(syncGraph).rule((r) => {
-		const { step, attempt, at, why } = v(SyncRetry, "retry")
+		const { root, step, attempt, at, why } = v(SyncRetry, "retry")
 		return r
-			.match(SyncRetry, { step, attempt, at, why })
-			.where(r.eq(step, r.param("step", SyncStep.fields.step)))
+			.match(SyncRetry, { root, step, attempt, at, why })
+			.where(
+				r.eq(root, r.param("root", SyncScope.fields.root)),
+				r.eq(step, r.param("step", SyncStep.fields.step))
+			)
 			.find({ step, attempt, at, why })
 	}),
 	syncFencedOf: query(syncGraph).rule((r) => {
-		const { step, attempt } = v(SyncFenced, "fenced")
+		const { root, step, attempt } = v(SyncFenced, "fenced")
 		return r
-			.match(SyncFenced, { step, attempt })
-			.where(r.eq(step, r.param("step", SyncStep.fields.step)))
+			.match(SyncFenced, { root, step, attempt })
+			.where(
+				r.eq(root, r.param("root", SyncScope.fields.root)),
+				r.eq(step, r.param("step", SyncStep.fields.step))
+			)
 			.find({ step, attempt })
 	}),
 	syncUnendedSteps: query(syncGraph).rule((r) => {
-		const { step, scope } = v(SyncStep, "step")
+		const { root, step, scope } = v(SyncStep, "step")
 		return r
-			.match(SyncStep, { step, scope })
+			.match(SyncStep, { root, step, scope })
 			.where(
+				r.eq(root, r.param("root", SyncScope.fields.root)),
 				r.eq(scope, r.param("scope", SyncScope.fields.scope)),
-				r.not(SyncResult, { step }),
-				r.not(SyncFinish, { scope, step })
+				r.not(SyncResult, { root, step }),
+				r.not(SyncFinish, { root, scope, step })
 			)
 			.find({ step })
 	}),
 	syncFinished: query(syncGraph).rule((r) => {
-		const { scope, step } = v(SyncFinish, "finish")
+		const { root, scope, step } = v(SyncFinish, "finish")
 		return r
-			.match(SyncFinish, { scope, step })
-			.match(SyncResult, { step })
-			.where(r.eq(scope, r.param("scope", SyncScope.fields.scope)))
+			.match(SyncFinish, { root, scope, step })
+			.match(SyncResult, { root, step })
+			.where(
+				r.eq(root, r.param("root", SyncScope.fields.root)),
+				r.eq(scope, r.param("scope", SyncScope.fields.scope))
+			)
 			.find({ step })
 	}),
 	syncPending: syncPendingRead,
@@ -371,24 +405,24 @@ export const syncDenPrograms = Object.freeze({
 	syncSnapshot: query(SyncDen).reads({
 		steps: syncPendingRead,
 		claims: query(SyncDen).rule((r) => {
-			const { step, attempt, until } = v(SyncClaim, "claim")
+			const { root, step, attempt, until } = v(SyncClaim, "claim")
 			return r
-				.match(SyncClaim, { step, attempt, until })
-				.where(r.not(SyncResult, { step }))
+				.match(SyncClaim, { root, step, attempt, until })
+				.where(r.not(SyncResult, { root, step }))
 				.find({ step, attempt, until })
 		}),
 		retries: query(SyncDen).rule((r) => {
-			const { step, attempt, at, why } = v(SyncRetry, "retry")
+			const { root, step, attempt, at, why } = v(SyncRetry, "retry")
 			return r
-				.match(SyncRetry, { step, attempt, at, why })
-				.where(r.not(SyncResult, { step }))
+				.match(SyncRetry, { root, step, attempt, at, why })
+				.where(r.not(SyncResult, { root, step }))
 				.find({ step, attempt, at, why })
 		}),
 		fenced: query(SyncDen).rule((r) => {
-			const { step, attempt } = v(SyncFenced, "fenced")
+			const { root, step, attempt } = v(SyncFenced, "fenced")
 			return r
-				.match(SyncFenced, { step, attempt })
-				.where(r.not(SyncResult, { step }))
+				.match(SyncFenced, { root, step, attempt })
+				.where(r.not(SyncResult, { root, step }))
 				.find({ step, attempt })
 		}),
 		requested: syncRequestedRead,
@@ -425,21 +459,30 @@ export const syncDenPrograms = Object.freeze({
 		const { root, step, relation, run } = v(SyncCopyInput, "syncCopyInput")
 		return r
 			.match(SyncCopyInput, { root, step, relation, run })
-			.where(r.eq(step, r.param("step", SyncCopyInput.fields.step)))
+			.where(
+				r.eq(root, r.param("root", SyncCopyInput.fields.root)),
+				r.eq(step, r.param("step", SyncCopyInput.fields.step))
+			)
 			.find({ root, step, relation, run })
 	}),
 	syncReadSyncBuildInput: query(syncGraph).rule((r) => {
 		const { root, step, build } = v(SyncBuildInput, "syncBuildInput")
 		return r
 			.match(SyncBuildInput, { root, step, build })
-			.where(r.eq(step, r.param("step", SyncBuildInput.fields.step)))
+			.where(
+				r.eq(root, r.param("root", SyncBuildInput.fields.root)),
+				r.eq(step, r.param("step", SyncBuildInput.fields.step))
+			)
 			.find({ root, step, build })
 	}),
 	syncReadSyncSyncRunInput: query(syncGraph).rule((r) => {
 		const { root, scope, relation, run } = v(SyncSyncRunInput, "syncSyncRunInput")
 		return r
 			.match(SyncSyncRunInput, { root, scope, relation, run })
-			.where(r.eq(scope, r.param("scope", SyncSyncRunInput.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", SyncSyncRunInput.fields.root)),
+				r.eq(scope, r.param("scope", SyncSyncRunInput.fields.scope))
+			)
 			.find({ root, scope, relation, run })
 	}),
 	syncRequestSyncRun: clocked(
@@ -548,7 +591,10 @@ export const syncDenPrograms = Object.freeze({
 		const { root, scope, build } = v(SyncGoldInput, "syncGoldInput")
 		return r
 			.match(SyncGoldInput, { root, scope, build })
-			.where(r.eq(scope, r.param("scope", SyncGoldInput.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", SyncGoldInput.fields.root)),
+				r.eq(scope, r.param("scope", SyncGoldInput.fields.scope))
+			)
 			.find({ root, scope, build })
 	}),
 	syncRequestGold: clocked(

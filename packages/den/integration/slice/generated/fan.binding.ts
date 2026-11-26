@@ -150,7 +150,29 @@ const exclusiveTurnsOf = (turns: ReadonlyArray<ExclusiveTurn>) =>
 		)
 	)
 
-/** The ledger of the flow Fan over its handles, with the requests of its roots. */
+/** Each app root's request as a host names it, by the root: the flow, the root's scope, and the parameters of its printed request (`fanRequests`), which the app's write commits beside its own and rings once committed, with no ledger opened. */
+export const fanAppRequests = Object.freeze({
+	Wanted: (
+		key: Extract<(typeof fan.kinds)[6]["from"], { readonly kind: "derived" }>["key"]["Type"]
+	) =>
+		pipe(derivedKey(["batch"], key), (keyText) =>
+			pipe(rootScope("Fan", "Wanted", keyText), (scope) =>
+				pipe(exclusiveRows("Fan", "Wanted", fan.kinds[6].exclusive, key, scope), (keys) => ({
+					flow: FlowName.make("Fan"),
+					scope,
+					params: {
+						fanWantedScope: scope,
+						fanWantedKey: keyText,
+						fanWantedFanScope: [{ scope, root: scope }],
+						fanWantedFanExclusiveKey: Arr.map(keys, (k) => ({ ...k, root: scope })),
+						fanWantedKeyBatch: key.batch
+					}
+				}))
+			)
+		)
+})
+
+/** The ledger of the flow Fan over its handles, with the requests of the roots den requests. */
 export const fanLedger = (h: FanHandles) => {
 	const noRows: Rows = {
 		FanScope: [],
@@ -318,58 +340,58 @@ export const fanLedger = (h: FanHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readFanSquareInput = (step: Sha256) =>
+	const readFanSquareInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.fanReadFanSquareInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.fanReadFanSquareInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, n: found.n }))
 		})
-	const readFanDustInput = (step: Sha256) =>
+	const readFanDustInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.fanReadFanDustInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.fanReadFanDustInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ sweep: found.sweep }))
 		})
-	const readFanMopInput = (step: Sha256) =>
+	const readFanMopInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.fanReadFanMopInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.fanReadFanMopInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ sweep: found.sweep }))
 		})
-	const readFanBatchInput = (scope: Sha256) =>
+	const readFanBatchInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.fanReadFanBatchInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.fanReadFanBatchInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, size: found.size }))
 		})
-	const readFanFanRunInput = (scope: Sha256) =>
+	const readFanFanRunInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.fanReadFanFanRunInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.fanReadFanFanRunInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, size: found.size }))
 		})
-	const readFanSweepInput = (scope: Sha256) =>
+	const readFanSweepInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.fanReadFanSweepInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.fanReadFanSweepInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ sweep: found.sweep }))
 		})
-	const readFanWantedInput = (scope: Sha256) =>
+	const readFanWantedInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.fanReadFanWantedInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.fanReadFanWantedInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ batch: found.batch, size: found.size }))
@@ -518,7 +540,7 @@ export const fanLedger = (h: FanHandles) => {
 		Square: runnerOf(
 			fan.kinds[0],
 			{
-				input: (step) => readFanSquareInput(step),
+				input: ({ root, step }) => readFanSquareInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -549,7 +571,7 @@ export const fanLedger = (h: FanHandles) => {
 		Dust: runnerOf(
 			fan.kinds[3],
 			{
-				input: (step) => readFanDustInput(step),
+				input: ({ root, step }) => readFanDustInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -580,7 +602,7 @@ export const fanLedger = (h: FanHandles) => {
 		Mop: runnerOf(
 			fan.kinds[4],
 			{
-				input: (step) => readFanMopInput(step),
+				input: ({ root, step }) => readFanMopInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -621,30 +643,30 @@ export const fanLedger = (h: FanHandles) => {
 				}) => fan.kinds[1].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.fanStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.fanStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readFanBatchInput(scope)
+						const input = yield* readFanBatchInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
 						const outputSquareRows = yield* Effect.map(
-							settled(h.den.fanOutputsBatchSquare.once({ params: { scope }, facts: {} })),
+							settled(h.den.fanOutputsBatchSquare.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const inputSquareRows = yield* Effect.map(
-							settled(h.den.fanInputsBatchSquare.once({ params: { scope }, facts: {} })),
+							settled(h.den.fanInputsBatchSquare.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const failuresSquare = yield* Effect.map(
-							settled(h.den.fanFailuresBatchSquare.once({ params: { scope }, facts: {} })),
+							settled(h.den.fanFailuresBatchSquare.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const inputSquare = (child: (typeof inputSquareRows)[number]["step"]) =>
@@ -714,30 +736,30 @@ export const fanLedger = (h: FanHandles) => {
 				}) => fan.kinds[2].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.fanStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.fanStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readFanFanRunInput(scope)
+						const input = yield* readFanFanRunInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
 						const outputBatchRows = yield* Effect.map(
-							settled(h.den.fanOutputsFanRunBatch.once({ params: { scope }, facts: {} })),
+							settled(h.den.fanOutputsFanRunBatch.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const inputBatchRows = yield* Effect.map(
-							settled(h.den.fanInputsFanRunBatch.once({ params: { scope }, facts: {} })),
+							settled(h.den.fanInputsFanRunBatch.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const failuresBatch = yield* Effect.map(
-							settled(h.den.fanFailuresFanRunBatch.once({ params: { scope }, facts: {} })),
+							settled(h.den.fanFailuresFanRunBatch.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const inputBatch = (child: (typeof inputBatchRows)[number]["step"]) =>
@@ -804,17 +826,17 @@ export const fanLedger = (h: FanHandles) => {
 				}) => fan.kinds[5].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.fanStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.fanStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readFanSweepInput(scope)
+						const input = yield* readFanSweepInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -858,30 +880,30 @@ export const fanLedger = (h: FanHandles) => {
 				}) => fan.kinds[6].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.fanStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.fanStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readFanWantedInput(scope)
+						const input = yield* readFanWantedInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
 						const outputBatchRows = yield* Effect.map(
-							settled(h.den.fanOutputsWantedBatch.once({ params: { scope }, facts: {} })),
+							settled(h.den.fanOutputsWantedBatch.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const inputBatchRows = yield* Effect.map(
-							settled(h.den.fanInputsWantedBatch.once({ params: { scope }, facts: {} })),
+							settled(h.den.fanInputsWantedBatch.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const failuresBatch = yield* Effect.map(
-							settled(h.den.fanFailuresWantedBatch.once({ params: { scope }, facts: {} })),
+							settled(h.den.fanFailuresWantedBatch.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const inputBatch = (child: (typeof inputBatchRows)[number]["step"]) =>
@@ -942,7 +964,7 @@ export const fanLedger = (h: FanHandles) => {
 			precondition: fan.kinds[2].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readFanFanRunInput(scope)
+					const input = yield* readFanFanRunInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -993,7 +1015,7 @@ export const fanLedger = (h: FanHandles) => {
 			precondition: fan.kinds[5].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readFanSweepInput(scope)
+					const input = yield* readFanSweepInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -1044,7 +1066,7 @@ export const fanLedger = (h: FanHandles) => {
 			precondition: fan.kinds[6].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readFanWantedInput(scope)
+					const input = yield* readFanWantedInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -1120,38 +1142,46 @@ export const fanLedger = (h: FanHandles) => {
 			settled(h.commits.fanAuthenticated.once({ params: {}, facts: {} }))
 		),
 		holds: Effect.map(settled(h.den.fanHolds.once({ params: {}, facts: {} })), rowsOf),
-		stepOf: (step) =>
-			Effect.map(settled(h.den.fanStepOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => ({
-					runner: runners[row.kind],
-					scope: row.scope,
-					root: row.root,
-					due: row.due
-				}))
+		stepOf: (at) =>
+			Effect.map(
+				settled(h.den.fanStepOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) =>
+					Option.map(one(rows), (row) => ({
+						runner: runners[row.kind],
+						scope: row.scope,
+						due: row.due
+					}))
 			),
-		resultOf: (step) =>
-			Effect.map(settled(h.den.fanResultOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.outcome)
+		resultOf: (at) =>
+			Effect.map(
+				settled(h.den.fanResultOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) => Option.map(one(rows), (row) => row.outcome)
 			),
-		heldOf: (step) =>
-			Effect.map(settled(h.den.fanHeldOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.attempt)
+		heldOf: (at) =>
+			Effect.map(
+				settled(h.den.fanHeldOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) => Option.map(one(rows), (row) => row.attempt)
 			),
-		claimsOf: (step) =>
-			Effect.map(settled(h.den.fanClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
-		retriesOf: (step) =>
-			Effect.map(settled(h.den.fanRetriesOf.once({ params: { step }, facts: {} })), rowsOf),
-		fencedOf: (step) =>
-			Effect.map(settled(h.den.fanFencedOf.once({ params: { step }, facts: {} })), rowsOf),
-		scopeOf: (scope) =>
+		claimsOf: (at) =>
+			Effect.map(
+				settled(h.den.fanClaimsOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		retriesOf: (at) =>
+			Effect.map(
+				settled(h.den.fanRetriesOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		fencedOf: (at) =>
+			Effect.map(
+				settled(h.den.fanFencedOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				const root = yield* Effect.map(
-					settled(h.den.fanRootOf.once({ params: { scope: scope }, facts: {} })),
-					one
-				)
-				if (Option.isNone(root)) {
+				if (!Sha256.equals(root, scope)) {
 					const within = yield* Effect.map(
-						settled(h.den.fanWithinOf.once({ params: { scope: scope }, facts: {} })),
+						settled(h.den.fanWithinOf.once({ params: { root, scope }, facts: {} })),
 						one
 					)
 					return Option.map(within, (w): ScopeView => ({
@@ -1161,16 +1191,23 @@ export const fanLedger = (h: FanHandles) => {
 						parent: w.parent
 					}))
 				}
+				const standing = yield* Effect.map(
+					settled(h.den.fanRootOf.once({ params: { root }, facts: {} })),
+					one
+				)
+				if (Option.isNone(standing)) {
+					return Option.none()
+				}
 				const admitted = yield* Effect.map(
-					settled(h.den.fanAdmittedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.fanAdmittedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const skipped = yield* Effect.map(
-					settled(h.den.fanSkippedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.fanSkippedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const key = yield* Effect.map(
-					settled(h.den.fanExclusiveKeyOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.fanExclusiveKeyOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const admission: Admission = Option.isSome(admitted)
@@ -1181,24 +1218,24 @@ export const fanLedger = (h: FanHandles) => {
 				return Option.some<ScopeView>({
 					place: "root",
 					scope,
-					kind: root.value.kind,
-					key: root.value.key,
-					at: root.value.at,
+					kind: standing.value.kind,
+					key: standing.value.key,
+					at: standing.value.at,
 					admission,
 					exclusive: Option.map(key, (k) => k.id),
-					runner: roots[root.value.kind]
+					runner: roots[standing.value.kind]
 				})
 			}),
-		unended: (scope) =>
+		unended: ({ root, scope }) =>
 			Effect.flatMap(
-				h.den.fanUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
+				h.den.fanUnendedSteps.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
 				(steps) =>
 					steps
 						? Effect.succeed(true)
-						: h.den.fanOpenChildren.once({ params: { scope }, facts: {} }).pipe(settled, any)
+						: h.den.fanOpenChildren.once({ params: { root, scope }, facts: {} }).pipe(settled, any)
 			),
-		finished: (scope) =>
-			h.den.fanFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
+		finished: ({ root, scope }) =>
+			h.den.fanFinished.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
 		awaits: [],
 		awaiting: () => Effect.succeed(false),
@@ -1316,6 +1353,7 @@ export const fanLedger = (h: FanHandles) => {
 				return {
 					steps: Arr.map(read.steps, (s) => ({
 						step: s.step,
+						root: s.root,
 						runner: runners[s.kind],
 						scope: s.scope,
 						due: s.due
@@ -1351,26 +1389,6 @@ export const fanLedger = (h: FanHandles) => {
 	}
 	return {
 		ledger,
-		request,
-		appRequests: {
-			Wanted: (
-				key: Extract<(typeof fan.kinds)[6]["from"], { readonly kind: "derived" }>["key"]["Type"]
-			) =>
-				pipe(derivedKey(["batch"], key), (keyText) =>
-					pipe(rootScope("Fan", "Wanted", keyText), (scope) =>
-						pipe(exclusiveRows("Fan", "Wanted", fan.kinds[6].exclusive, key, scope), (keys) => ({
-							flow: FlowName.make("Fan"),
-							scope,
-							params: {
-								fanWantedScope: scope,
-								fanWantedKey: keyText,
-								fanWantedFanScope: [{ scope, root: scope }],
-								fanWantedFanExclusiveKey: Arr.map(keys, (k) => ({ ...k, root: scope })),
-								fanWantedKeyBatch: key.batch
-							}
-						}))
-					)
-				)
-		}
+		request
 	}
 }

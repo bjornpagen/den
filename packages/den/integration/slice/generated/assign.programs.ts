@@ -146,11 +146,11 @@ export const AssignCoordinator = role(
 )
 
 const assignPendingRead = query(AssignDen).rule((r) => {
-	const { step, kind, scope, due } = v(AssignStep, "step")
+	const { root, step, kind, scope, due } = v(AssignStep, "step")
 	return r
-		.match(AssignStep, { step, kind, scope, due })
-		.where(r.not(AssignResult, { step }))
-		.find({ step, kind, scope, due })
+		.match(AssignStep, { root, step, kind, scope, due })
+		.where(r.not(AssignResult, { root, step }))
+		.find({ root, step, kind, scope, due })
 })
 
 const assignRequestedRead = query(AssignDen).rule((r) => {
@@ -158,13 +158,19 @@ const assignRequestedRead = query(AssignDen).rule((r) => {
 	return r
 		.match(AssignRoot, { root: scope })
 		.match(AssignScope, { root: scope, scope })
-		.where(r.not(AssignAdmitted, { scope }), r.not(AssignSkipped, { scope }))
+		.where(
+			r.not(AssignAdmitted, { root: scope, scope }),
+			r.not(AssignSkipped, { root: scope, scope })
+		)
 		.find({ scope })
 })
 
 const assignRunningRead = query(AssignDen).rule((r) => {
-	const { scope, step } = v(AssignFinish, "finish")
-	return r.match(AssignFinish, { scope, step }).where(r.not(AssignResult, { step })).find({ scope })
+	const { root, scope, step } = v(AssignFinish, "finish")
+	return r
+		.match(AssignFinish, { root, scope, step })
+		.where(r.not(AssignResult, { root, step }))
+		.find({ scope })
 })
 
 const assignLatestServed = query(AssignDen).rule((r) => {
@@ -298,35 +304,50 @@ export const assignDenPrograms = Object.freeze({
 		const { root, scope, by } = v(AssignSkipped, "assignSkipped")
 		return r
 			.match(AssignSkipped, { root, scope, by })
-			.where(r.eq(scope, r.param("scope", AssignSkipped.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", AssignSkipped.fields.root)),
+				r.eq(scope, r.param("scope", AssignSkipped.fields.scope))
+			)
 			.find({ root, scope, by })
 	}),
 	assignStepOf: query(assignGraph).rule((r) => {
 		const { root, step, kind, scope, due } = v(AssignStep, "assignStep")
 		return r
 			.match(AssignStep, { root, step, kind, scope, due })
-			.where(r.eq(step, r.param("step", AssignStep.fields.step)))
+			.where(
+				r.eq(root, r.param("root", AssignStep.fields.root)),
+				r.eq(step, r.param("step", AssignStep.fields.step))
+			)
 			.find({ root, step, kind, scope, due })
 	}),
 	assignResultOf: query(assignGraph).rule((r) => {
 		const { root, step, outcome } = v(AssignResult, "assignResult")
 		return r
 			.match(AssignResult, { root, step, outcome })
-			.where(r.eq(step, r.param("step", AssignResult.fields.step)))
+			.where(
+				r.eq(root, r.param("root", AssignResult.fields.root)),
+				r.eq(step, r.param("step", AssignResult.fields.step))
+			)
 			.find({ root, step, outcome })
 	}),
 	assignHeldOf: query(assignGraph).rule((r) => {
 		const { root, step, attempt } = v(AssignHeld, "assignHeld")
 		return r
 			.match(AssignHeld, { root, step, attempt })
-			.where(r.eq(step, r.param("step", AssignHeld.fields.step)))
+			.where(
+				r.eq(root, r.param("root", AssignHeld.fields.root)),
+				r.eq(step, r.param("step", AssignHeld.fields.step))
+			)
 			.find({ root, step, attempt })
 	}),
 	assignAdmittedOf: query(assignGraph).rule((r) => {
 		const { root, scope } = v(AssignAdmitted, "assignAdmitted")
 		return r
 			.match(AssignAdmitted, { root, scope })
-			.where(r.eq(scope, r.param("scope", AssignAdmitted.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", AssignAdmitted.fields.root)),
+				r.eq(scope, r.param("scope", AssignAdmitted.fields.scope))
+			)
 			.find({ root, scope })
 	}),
 	assignRootOf: query(assignGraph).rule((r) => {
@@ -335,7 +356,7 @@ export const assignDenPrograms = Object.freeze({
 		return r
 			.match(AssignRoot, { root: scope, kind, key, at })
 			.match(AssignScope, { root: scope, scope })
-			.where(r.eq(scope, r.param("scope", AssignRoot.fields.root)))
+			.where(r.eq(scope, r.param("root", AssignRoot.fields.root)))
 			.find({ scope, kind, key, at })
 	}),
 	assignFinishedRoots: query(assignGraph)
@@ -351,43 +372,56 @@ export const assignDenPrograms = Object.freeze({
 			return r.match(AssignSkipped, { root: scope, scope }).find({ scope })
 		}),
 	assignClaimsOf: query(assignGraph).rule((r) => {
-		const { step, attempt, until } = v(AssignClaim, "claim")
+		const { root, step, attempt, until } = v(AssignClaim, "claim")
 		return r
-			.match(AssignClaim, { step, attempt, until })
-			.where(r.eq(step, r.param("step", AssignStep.fields.step)))
+			.match(AssignClaim, { root, step, attempt, until })
+			.where(
+				r.eq(root, r.param("root", AssignScope.fields.root)),
+				r.eq(step, r.param("step", AssignStep.fields.step))
+			)
 			.find({ step, attempt, until })
 	}),
 	assignRetriesOf: query(assignGraph).rule((r) => {
-		const { step, attempt, at, why } = v(AssignRetry, "retry")
+		const { root, step, attempt, at, why } = v(AssignRetry, "retry")
 		return r
-			.match(AssignRetry, { step, attempt, at, why })
-			.where(r.eq(step, r.param("step", AssignStep.fields.step)))
+			.match(AssignRetry, { root, step, attempt, at, why })
+			.where(
+				r.eq(root, r.param("root", AssignScope.fields.root)),
+				r.eq(step, r.param("step", AssignStep.fields.step))
+			)
 			.find({ step, attempt, at, why })
 	}),
 	assignFencedOf: query(assignGraph).rule((r) => {
-		const { step, attempt } = v(AssignFenced, "fenced")
+		const { root, step, attempt } = v(AssignFenced, "fenced")
 		return r
-			.match(AssignFenced, { step, attempt })
-			.where(r.eq(step, r.param("step", AssignStep.fields.step)))
+			.match(AssignFenced, { root, step, attempt })
+			.where(
+				r.eq(root, r.param("root", AssignScope.fields.root)),
+				r.eq(step, r.param("step", AssignStep.fields.step))
+			)
 			.find({ step, attempt })
 	}),
 	assignUnendedSteps: query(assignGraph).rule((r) => {
-		const { step, scope } = v(AssignStep, "step")
+		const { root, step, scope } = v(AssignStep, "step")
 		return r
-			.match(AssignStep, { step, scope })
+			.match(AssignStep, { root, step, scope })
 			.where(
+				r.eq(root, r.param("root", AssignScope.fields.root)),
 				r.eq(scope, r.param("scope", AssignScope.fields.scope)),
-				r.not(AssignResult, { step }),
-				r.not(AssignFinish, { scope, step })
+				r.not(AssignResult, { root, step }),
+				r.not(AssignFinish, { root, scope, step })
 			)
 			.find({ step })
 	}),
 	assignFinished: query(assignGraph).rule((r) => {
-		const { scope, step } = v(AssignFinish, "finish")
+		const { root, scope, step } = v(AssignFinish, "finish")
 		return r
-			.match(AssignFinish, { scope, step })
-			.match(AssignResult, { step })
-			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.match(AssignFinish, { root, scope, step })
+			.match(AssignResult, { root, step })
+			.where(
+				r.eq(root, r.param("root", AssignScope.fields.root)),
+				r.eq(scope, r.param("scope", AssignScope.fields.scope))
+			)
 			.find({ step })
 	}),
 	assignPending: assignPendingRead,
@@ -396,24 +430,24 @@ export const assignDenPrograms = Object.freeze({
 	assignSnapshot: query(AssignDen).reads({
 		steps: assignPendingRead,
 		claims: query(AssignDen).rule((r) => {
-			const { step, attempt, until } = v(AssignClaim, "claim")
+			const { root, step, attempt, until } = v(AssignClaim, "claim")
 			return r
-				.match(AssignClaim, { step, attempt, until })
-				.where(r.not(AssignResult, { step }))
+				.match(AssignClaim, { root, step, attempt, until })
+				.where(r.not(AssignResult, { root, step }))
 				.find({ step, attempt, until })
 		}),
 		retries: query(AssignDen).rule((r) => {
-			const { step, attempt, at, why } = v(AssignRetry, "retry")
+			const { root, step, attempt, at, why } = v(AssignRetry, "retry")
 			return r
-				.match(AssignRetry, { step, attempt, at, why })
-				.where(r.not(AssignResult, { step }))
+				.match(AssignRetry, { root, step, attempt, at, why })
+				.where(r.not(AssignResult, { root, step }))
 				.find({ step, attempt, at, why })
 		}),
 		fenced: query(AssignDen).rule((r) => {
-			const { step, attempt } = v(AssignFenced, "fenced")
+			const { root, step, attempt } = v(AssignFenced, "fenced")
 			return r
-				.match(AssignFenced, { step, attempt })
-				.where(r.not(AssignResult, { step }))
+				.match(AssignFenced, { root, step, attempt })
+				.where(r.not(AssignResult, { root, step }))
 				.find({ step, attempt })
 		}),
 		requested: assignRequestedRead,
@@ -438,77 +472,110 @@ export const assignDenPrograms = Object.freeze({
 		const { root, step, learner, topic, mode } = v(AssignEmbedInput, "assignEmbedInput")
 		return r
 			.match(AssignEmbedInput, { root, step, learner, topic, mode })
-			.where(r.eq(step, r.param("step", AssignEmbedInput.fields.step)))
+			.where(
+				r.eq(root, r.param("root", AssignEmbedInput.fields.root)),
+				r.eq(step, r.param("step", AssignEmbedInput.fields.step))
+			)
 			.find({ root, step, learner, topic, mode })
 	}),
 	assignReadAssignEmbedInputModeNearest: query(assignGraph).rule((r) => {
 		const { root, step } = v(AssignEmbedInputModeNearest, "assignEmbedInputModeNearest")
 		return r
 			.match(AssignEmbedInputModeNearest, { root, step })
-			.where(r.eq(step, r.param("step", AssignEmbedInputModeNearest.fields.step)))
+			.where(
+				r.eq(root, r.param("root", AssignEmbedInputModeNearest.fields.root)),
+				r.eq(step, r.param("step", AssignEmbedInputModeNearest.fields.step))
+			)
 			.find({ root, step })
 	}),
 	assignReadAssignEmbedInputModeWithin: query(assignGraph).rule((r) => {
 		const { root, step, radius } = v(AssignEmbedInputModeWithin, "assignEmbedInputModeWithin")
 		return r
 			.match(AssignEmbedInputModeWithin, { root, step, radius })
-			.where(r.eq(step, r.param("step", AssignEmbedInputModeWithin.fields.step)))
+			.where(
+				r.eq(root, r.param("root", AssignEmbedInputModeWithin.fields.root)),
+				r.eq(step, r.param("step", AssignEmbedInputModeWithin.fields.step))
+			)
 			.find({ root, step, radius })
 	}),
 	assignReadAssignEmbedInputNear: query(assignGraph).rule((r) => {
-		const { step, ordinal, value } = v(AssignEmbedInputNear, "part")
+		const { root, step, ordinal, value } = v(AssignEmbedInputNear, "part")
 		return r
-			.match(AssignEmbedInputNear, { step, ordinal, value })
-			.where(r.eq(step, r.param("step", AssignEmbedInputNear.fields.step)))
-			.find({ step, ordinal, value })
+			.match(AssignEmbedInputNear, { root, step, ordinal, value })
+			.where(
+				r.eq(root, r.param("root", AssignEmbedInputNear.fields.root)),
+				r.eq(step, r.param("step", AssignEmbedInputNear.fields.step))
+			)
+			.find({ root, step, ordinal, value })
 	}),
 	assignReadAssignEmbedInputExclude: query(assignGraph).rule((r) => {
-		const { step, ordinal, value } = v(AssignEmbedInputExclude, "part")
+		const { root, step, ordinal, value } = v(AssignEmbedInputExclude, "part")
 		return r
-			.match(AssignEmbedInputExclude, { step, ordinal, value })
-			.where(r.eq(step, r.param("step", AssignEmbedInputExclude.fields.step)))
-			.find({ step, ordinal, value })
+			.match(AssignEmbedInputExclude, { root, step, ordinal, value })
+			.where(
+				r.eq(root, r.param("root", AssignEmbedInputExclude.fields.root)),
+				r.eq(step, r.param("step", AssignEmbedInputExclude.fields.step))
+			)
+			.find({ root, step, ordinal, value })
 	}),
 	assignReadAssignDecideInput: query(assignGraph).rule((r) => {
 		const { root, step, learner, topic, vector, mode } = v(AssignDecideInput, "assignDecideInput")
 		return r
 			.match(AssignDecideInput, { root, step, learner, topic, vector, mode })
-			.where(r.eq(step, r.param("step", AssignDecideInput.fields.step)))
+			.where(
+				r.eq(root, r.param("root", AssignDecideInput.fields.root)),
+				r.eq(step, r.param("step", AssignDecideInput.fields.step))
+			)
 			.find({ root, step, learner, topic, vector, mode })
 	}),
 	assignReadAssignDecideInputModeNearest: query(assignGraph).rule((r) => {
 		const { root, step } = v(AssignDecideInputModeNearest, "assignDecideInputModeNearest")
 		return r
 			.match(AssignDecideInputModeNearest, { root, step })
-			.where(r.eq(step, r.param("step", AssignDecideInputModeNearest.fields.step)))
+			.where(
+				r.eq(root, r.param("root", AssignDecideInputModeNearest.fields.root)),
+				r.eq(step, r.param("step", AssignDecideInputModeNearest.fields.step))
+			)
 			.find({ root, step })
 	}),
 	assignReadAssignDecideInputModeWithin: query(assignGraph).rule((r) => {
 		const { root, step, radius } = v(AssignDecideInputModeWithin, "assignDecideInputModeWithin")
 		return r
 			.match(AssignDecideInputModeWithin, { root, step, radius })
-			.where(r.eq(step, r.param("step", AssignDecideInputModeWithin.fields.step)))
+			.where(
+				r.eq(root, r.param("root", AssignDecideInputModeWithin.fields.root)),
+				r.eq(step, r.param("step", AssignDecideInputModeWithin.fields.step))
+			)
 			.find({ root, step, radius })
 	}),
 	assignReadAssignDecideInputExclude: query(assignGraph).rule((r) => {
-		const { step, ordinal, value } = v(AssignDecideInputExclude, "part")
+		const { root, step, ordinal, value } = v(AssignDecideInputExclude, "part")
 		return r
-			.match(AssignDecideInputExclude, { step, ordinal, value })
-			.where(r.eq(step, r.param("step", AssignDecideInputExclude.fields.step)))
-			.find({ step, ordinal, value })
+			.match(AssignDecideInputExclude, { root, step, ordinal, value })
+			.where(
+				r.eq(root, r.param("root", AssignDecideInputExclude.fields.root)),
+				r.eq(step, r.param("step", AssignDecideInputExclude.fields.step))
+			)
+			.find({ root, step, ordinal, value })
 	}),
 	assignReadAssignAssignmentInput: query(assignGraph).rule((r) => {
 		const { root, scope, learner, topic, mode } = v(AssignAssignmentInput, "assignAssignmentInput")
 		return r
 			.match(AssignAssignmentInput, { root, scope, learner, topic, mode })
-			.where(r.eq(scope, r.param("scope", AssignAssignmentInput.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", AssignAssignmentInput.fields.root)),
+				r.eq(scope, r.param("scope", AssignAssignmentInput.fields.scope))
+			)
 			.find({ root, scope, learner, topic, mode })
 	}),
 	assignReadAssignAssignmentInputModeNearest: query(assignGraph).rule((r) => {
 		const { root, scope } = v(AssignAssignmentInputModeNearest, "assignAssignmentInputModeNearest")
 		return r
 			.match(AssignAssignmentInputModeNearest, { root, scope })
-			.where(r.eq(scope, r.param("scope", AssignAssignmentInputModeNearest.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", AssignAssignmentInputModeNearest.fields.root)),
+				r.eq(scope, r.param("scope", AssignAssignmentInputModeNearest.fields.scope))
+			)
 			.find({ root, scope })
 	}),
 	assignReadAssignAssignmentInputModeWithin: query(assignGraph).rule((r) => {
@@ -518,22 +585,31 @@ export const assignDenPrograms = Object.freeze({
 		)
 		return r
 			.match(AssignAssignmentInputModeWithin, { root, scope, radius })
-			.where(r.eq(scope, r.param("scope", AssignAssignmentInputModeWithin.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", AssignAssignmentInputModeWithin.fields.root)),
+				r.eq(scope, r.param("scope", AssignAssignmentInputModeWithin.fields.scope))
+			)
 			.find({ root, scope, radius })
 	}),
 	assignReadAssignAssignmentInputNear: query(assignGraph).rule((r) => {
-		const { scope, ordinal, value } = v(AssignAssignmentInputNear, "part")
+		const { root, scope, ordinal, value } = v(AssignAssignmentInputNear, "part")
 		return r
-			.match(AssignAssignmentInputNear, { scope, ordinal, value })
-			.where(r.eq(scope, r.param("scope", AssignAssignmentInputNear.fields.scope)))
-			.find({ scope, ordinal, value })
+			.match(AssignAssignmentInputNear, { root, scope, ordinal, value })
+			.where(
+				r.eq(root, r.param("root", AssignAssignmentInputNear.fields.root)),
+				r.eq(scope, r.param("scope", AssignAssignmentInputNear.fields.scope))
+			)
+			.find({ root, scope, ordinal, value })
 	}),
 	assignReadAssignAssignmentInputExclude: query(assignGraph).rule((r) => {
-		const { scope, ordinal, value } = v(AssignAssignmentInputExclude, "part")
+		const { root, scope, ordinal, value } = v(AssignAssignmentInputExclude, "part")
 		return r
-			.match(AssignAssignmentInputExclude, { scope, ordinal, value })
-			.where(r.eq(scope, r.param("scope", AssignAssignmentInputExclude.fields.scope)))
-			.find({ scope, ordinal, value })
+			.match(AssignAssignmentInputExclude, { root, scope, ordinal, value })
+			.where(
+				r.eq(root, r.param("root", AssignAssignmentInputExclude.fields.root)),
+				r.eq(scope, r.param("scope", AssignAssignmentInputExclude.fields.scope))
+			)
+			.find({ root, scope, ordinal, value })
 	}),
 	assignRequestAssignment: clocked(
 		ChangeSet.empty(assignGraph)
@@ -684,81 +760,108 @@ export const assignDenPrograms = Object.freeze({
 		{ denNow: "millis" }
 	),
 	assignOutputsAssignmentDecide: query(assignGraph).rule((r) => {
-		const { step, scope } = v(AssignStep, "step")
+		const { root, step, scope } = v(AssignStep, "step")
 		const { confidence, stage } = v(AssignDecideOutput, "output")
 		return r
-			.match(AssignStep, { step, kind: "Decide", scope })
-			.match(AssignDecideOutput, { step, confidence, stage })
-			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.match(AssignStep, { root, step, kind: "Decide", scope })
+			.match(AssignDecideOutput, { root, step, confidence, stage })
+			.where(
+				r.eq(root, r.param("root", AssignScope.fields.root)),
+				r.eq(scope, r.param("scope", AssignScope.fields.scope))
+			)
 			.find({ step, confidence, stage })
 	}),
 	assignOutputsAssignmentDecideWeighed: query(assignGraph).rule((r) => {
-		const { step, scope } = v(AssignStep, "step")
+		const { root, step, scope } = v(AssignStep, "step")
 		const { ordinal, passage, distance, passed } = v(AssignDecideOutputWeighed, "part")
 		return r
-			.match(AssignStep, { step, kind: "Decide", scope })
-			.match(AssignDecideOutputWeighed, { step, ordinal, passage, distance, passed })
-			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.match(AssignStep, { root, step, kind: "Decide", scope })
+			.match(AssignDecideOutputWeighed, { root, step, ordinal, passage, distance, passed })
+			.where(
+				r.eq(root, r.param("root", AssignScope.fields.root)),
+				r.eq(scope, r.param("scope", AssignScope.fields.scope))
+			)
 			.find({ step, ordinal, passage, distance, passed })
 	}),
 	assignOutputsAssignmentDecideStageServe: query(assignGraph).rule((r) => {
-		const { step, scope } = v(AssignStep, "step")
+		const { root, step, scope } = v(AssignStep, "step")
 		const { passage, distance } = v(AssignDecideOutputStageServe, "part")
 		return r
-			.match(AssignStep, { step, kind: "Decide", scope })
-			.match(AssignDecideOutputStageServe, { step, passage, distance })
-			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.match(AssignStep, { root, step, kind: "Decide", scope })
+			.match(AssignDecideOutputStageServe, { root, step, passage, distance })
+			.where(
+				r.eq(root, r.param("root", AssignScope.fields.root)),
+				r.eq(scope, r.param("scope", AssignScope.fields.scope))
+			)
 			.find({ step, passage, distance })
 	}),
 	assignOutputsAssignmentDecideStageRest: query(assignGraph).rule((r) => {
-		const { step, scope } = v(AssignStep, "step")
+		const { root, step, scope } = v(AssignStep, "step")
 		return r
-			.match(AssignStep, { step, kind: "Decide", scope })
-			.match(AssignDecideOutputStageRest, { step })
-			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.match(AssignStep, { root, step, kind: "Decide", scope })
+			.match(AssignDecideOutputStageRest, { root, step })
+			.where(
+				r.eq(root, r.param("root", AssignScope.fields.root)),
+				r.eq(scope, r.param("scope", AssignScope.fields.scope))
+			)
 			.find({ step })
 	}),
 	assignInputsAssignmentDecide: query(assignGraph).rule((r) => {
-		const { step, scope } = v(AssignStep, "step")
+		const { root, step, scope } = v(AssignStep, "step")
 		const { learner, topic, vector, mode } = v(AssignDecideInput, "input")
 		return r
-			.match(AssignStep, { step, kind: "Decide", scope })
-			.match(AssignDecideInput, { step, learner, topic, vector, mode })
-			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.match(AssignStep, { root, step, kind: "Decide", scope })
+			.match(AssignDecideInput, { root, step, learner, topic, vector, mode })
+			.where(
+				r.eq(root, r.param("root", AssignScope.fields.root)),
+				r.eq(scope, r.param("scope", AssignScope.fields.scope))
+			)
 			.find({ step, learner, topic, vector, mode })
 	}),
 	assignInputsAssignmentDecideExclude: query(assignGraph).rule((r) => {
-		const { step, scope } = v(AssignStep, "step")
+		const { root, step, scope } = v(AssignStep, "step")
 		const { ordinal, value } = v(AssignDecideInputExclude, "part")
 		return r
-			.match(AssignStep, { step, kind: "Decide", scope })
-			.match(AssignDecideInputExclude, { step, ordinal, value })
-			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.match(AssignStep, { root, step, kind: "Decide", scope })
+			.match(AssignDecideInputExclude, { root, step, ordinal, value })
+			.where(
+				r.eq(root, r.param("root", AssignScope.fields.root)),
+				r.eq(scope, r.param("scope", AssignScope.fields.scope))
+			)
 			.find({ step, ordinal, value })
 	}),
 	assignInputsAssignmentDecideModeNearest: query(assignGraph).rule((r) => {
-		const { step, scope } = v(AssignStep, "step")
+		const { root, step, scope } = v(AssignStep, "step")
 		return r
-			.match(AssignStep, { step, kind: "Decide", scope })
-			.match(AssignDecideInputModeNearest, { step })
-			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.match(AssignStep, { root, step, kind: "Decide", scope })
+			.match(AssignDecideInputModeNearest, { root, step })
+			.where(
+				r.eq(root, r.param("root", AssignScope.fields.root)),
+				r.eq(scope, r.param("scope", AssignScope.fields.scope))
+			)
 			.find({ step })
 	}),
 	assignInputsAssignmentDecideModeWithin: query(assignGraph).rule((r) => {
-		const { step, scope } = v(AssignStep, "step")
+		const { root, step, scope } = v(AssignStep, "step")
 		const { radius } = v(AssignDecideInputModeWithin, "part")
 		return r
-			.match(AssignStep, { step, kind: "Decide", scope })
-			.match(AssignDecideInputModeWithin, { step, radius })
-			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.match(AssignStep, { root, step, kind: "Decide", scope })
+			.match(AssignDecideInputModeWithin, { root, step, radius })
+			.where(
+				r.eq(root, r.param("root", AssignScope.fields.root)),
+				r.eq(scope, r.param("scope", AssignScope.fields.scope))
+			)
 			.find({ step, radius })
 	}),
 	assignFailuresAssignmentDecide: query(assignGraph).rule((r) => {
-		const { step, scope } = v(AssignStep, "step")
+		const { root, step, scope } = v(AssignStep, "step")
 		return r
-			.match(AssignStep, { step, kind: "Decide", scope })
-			.match(AssignResult, { step, outcome: "failed" })
-			.where(r.eq(scope, r.param("scope", AssignScope.fields.scope)))
+			.match(AssignStep, { root, step, kind: "Decide", scope })
+			.match(AssignResult, { root, step, outcome: "failed" })
+			.where(
+				r.eq(root, r.param("root", AssignScope.fields.root)),
+				r.eq(scope, r.param("scope", AssignScope.fields.scope))
+			)
 			.find({ step })
 	})
 })

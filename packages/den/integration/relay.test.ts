@@ -7,6 +7,7 @@ import type { Reached } from "@bjornpagen/testing/features"
 import { element, type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Fiber, Formatter, Option, Queue, Stream } from "effect"
+import { chainAppRequests } from "#integration/slice/generated/chain.binding.ts"
 import {
 	installedSliceCase,
 	openAuditor,
@@ -66,7 +67,7 @@ export const theRelayRingsARootTheAppRequestedInItsOwnTransaction = property.exp
 							)
 						)
 						const order = "order"
-						const request = chain.appRequests.Ordered(order, {
+						const request = chainAppRequests.Ordered(order, {
 							feed: run.feed,
 							pages: BigInt(run.pages)
 						})

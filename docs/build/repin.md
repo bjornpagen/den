@@ -161,8 +161,8 @@ for the coordination group, and DBCLOCK:
   `Sha256.toHex`. A wake crosses the wire as `WireWakeSchema`, each key its hex, which `wireOf` writes and `wakeOf`
   parses once at the consumer's boundary (`Sha256.fromHex`, a `NotAKey` where the text is no digest's hex), so the
   runtime's `Wake` carries `Sha256` and den-vercel's consumer acknowledges a delivery whose key it cannot parse. An app
-  root's `appRequests.<Root>(key, input)` is its request's parameters (its rows among them, each relation's a
-  relation parameter), no Effect.
+  root's `<p>AppRequests.<Root>(key, input)`, a module export of its binding, is its request's parameters (its rows
+  among them, each relation's a relation parameter), no Effect.
 
 - **A refusal names its laws above apart (grizzle REDFIX2 453e6e0c6).** An `above` refusal's laws of the levels above
   are `refused.above`, and its own `refused.laws` only where `own` is `every`: `runtime/ledger.ts` `refusedLaws` reads

@@ -312,12 +312,15 @@ const derivable = (type: ColumnType): boolean => type.kind === "base" && type.ba
 export const recordsRequestOf = (from: InputFrom["kind"]): boolean => from === "given"
 
 /**
- * A derived root's key, its kind's `<P><Root>Key`: the relation that keeps the key's fields beside its Root, and the
- * fields, in its key struct's order.
+ * A derived root's key, its kind's `<P><Root>Key`: the relation that keeps the key's fields beside its Root, the
+ * fields, in its key struct's order, and the fields PostgreSQL stores beside them as the SHA-256 digest of each text
+ * field (`<field>Digest`, `of` the field it digests): a B-tree keys no text of no byte bound, so the key's law keys
+ * each text by its digest.
  */
 export interface KeyIR {
 	readonly relation: string
 	readonly fields: ReadonlyArray<string>
+	readonly digests: ReadonlyArray<{ readonly name: string; readonly of: string }>
 }
 
 /**
@@ -1004,7 +1007,10 @@ export const lower = (flow: AnyFlow): Lowered => {
 	 * kind's Root and containing it, so no derived root stands without its key, nor a key without its root, a retired
 	 * root's among them. Its fields and its input's are columns of a text, a bigint or a boolean (`derivable`), so its
 	 * text is one way (runtime/bind.ts derivedKey) and its read is bound by them as its params and delivers its input
-	 * as one row of such columns.
+	 * as one row of such columns. Its fields key it too, each text by its digest (`<field>Digest`, a field den declares
+	 * beside it, since a key text holds no byte bound), so one key's fields name one root: a request of them under
+	 * another key text (a field renamed) is refused where a root of them stands, never a second root drawn. A key names
+	 * one field at least, which its law keys.
 	 */
 	const keys = new Map<string, KeyIR>()
 	Arr.forEach(roots, (j) => {
@@ -1046,6 +1052,25 @@ export const lower = (flow: AnyFlow): Lowered => {
 				})
 			}
 		)
+		const digests = Arr.flatMap(shape.columns, (c) =>
+			c.type.kind === "base" && c.type.base === "text"
+				? [{ name: `${c.name}Digest`, of: c.name }]
+				: []
+		)
+		Arr.forEach(digests, (d) => {
+			if (Arr.some(shape.columns, (c) => c.name === d.name)) {
+				throw new Refused({
+					declaration,
+					why: `its field ${d.name} names the digest den keys its text field ${d.of} by`
+				})
+			}
+		})
+		if (!Arr.isReadonlyArrayNonEmpty(shape.columns)) {
+			throw new Refused({
+				declaration,
+				why: "it names no field, and a key names what its root is requested by"
+			})
+		}
 		relation({
 			name: relationName,
 			fields: [
@@ -1054,9 +1079,24 @@ export const lower = (flow: AnyFlow): Lowered => {
 			],
 			key: ["root"]
 		})
+		laws.push(
+			keyOf(
+				relationName,
+				Arr.map(shape.columns, (c) =>
+					Option.match(
+						Arr.findFirst(digests, (d) => d.of === c.name),
+						{ onNone: () => c.name, onSome: (d) => d.name }
+					)
+				)
+			)
+		)
 		laws.push(into(side(relationName, ["root"]), sideOf(Root, ["root"], ofKind(j.name))))
 		laws.push(into(sideOf(Root, ["root"], ofKind(j.name)), side(relationName, ["root"])))
-		keys.set(j.name, { relation: relationName, fields: Arr.map(shape.columns, (c) => c.name) })
+		keys.set(j.name, {
+			relation: relationName,
+			fields: Arr.map(shape.columns, (c) => c.name),
+			digests
+		})
 	})
 
 	/**

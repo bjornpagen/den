@@ -896,7 +896,9 @@ CREATE TABLE "slice_den"."clock_hourly_key" (
   "root" "slice"."__sha256" NOT NULL,
   "at" bigint NOT NULL,
   "member" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  CONSTRAINT "__clock_hourly_key_pk_iqlcy244pv" PRIMARY KEY ("root")
+  "member_digest" "slice"."__sha256" GENERATED ALWAYS AS ("slice"."__text_digest_2x5x4iwe4m"("member")) STORED NOT NULL,
+  CONSTRAINT "__clock_hourly_key_pk_iqlcy244pv" PRIMARY KEY ("root"),
+  CONSTRAINT "__clock_hourly_key_key_at_member_digest_kkthzqojax" UNIQUE NULLS DISTINCT ("at", "member_digest")
 );
 
 CREATE TABLE "slice_den"."clock_paused" (
@@ -1316,7 +1318,9 @@ CREATE TABLE "slice_den"."fan_wanted_input" (
 CREATE TABLE "slice_den"."fan_wanted_key" (
   "root" "slice"."__sha256" NOT NULL,
   "batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8" NOT NULL,
-  CONSTRAINT "__fan_wanted_key_pk_uqg7pqcckj" PRIMARY KEY ("root")
+  "batch_digest" "slice"."__sha256" GENERATED ALWAYS AS ("slice"."__text_digest_2x5x4iwe4m"("batch")) STORED NOT NULL,
+  CONSTRAINT "__fan_wanted_key_pk_uqg7pqcckj" PRIMARY KEY ("root"),
+  CONSTRAINT "__fan_wanted_key_key_batch_digest_otdiqnej2r" UNIQUE NULLS DISTINCT ("batch_digest")
 );
 
 CREATE TABLE "slice_den"."fan_within" (

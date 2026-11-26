@@ -24,9 +24,11 @@ import type {
 	RetryRow,
 	Rooted,
 	RootView,
+	ScopeKey,
 	SeatAt,
 	SpawnDue,
 	Spawned,
+	StepKey,
 	StepRunner,
 	Turn
 } from "#runtime/ledger.ts"
@@ -258,11 +260,12 @@ const served = (ending: Ending): Served => ({ ending, onward: [] })
 const delayTo = (at: Instant, until: Instant): Duration.Duration =>
 	Duration.millis(Math.max(0, Number(until) - Number(at)))
 
-/** A step's wake at an attempt. */
-const stepWake = (flow: FlowName, step: Sha256, attempt: bigint): Wake => ({
+/** A step's wake at an attempt, beside its root. */
+const stepWake = (flow: FlowName, at: StepKey, attempt: bigint): Wake => ({
 	_tag: "Step",
 	flow,
-	step,
+	root: at.root,
+	step: at.step,
 	attempt: AttemptNumber.make(Number(attempt))
 })
 
@@ -338,7 +341,7 @@ export const written = <A, R>(
  * for a step that commits through a ChangeSet, that ChangeSet's input, and its typed failure.
  */
 export interface StepPort<I, Rows, D, E> {
-	readonly input: (step: Sha256) => Effect.Effect<Option.Option<I>, Settled>
+	readonly input: (at: StepKey) => Effect.Effect<Option.Option<I>, Settled>
 	readonly read: (input: I) => Effect.Effect<Rows, Settled>
 	readonly commit: (
 		done: { readonly turn: Turn; readonly input: I; readonly rows: Rows } & D
@@ -389,7 +392,7 @@ export const runnerOf = <I, Rows, D, E, R>(
 		at: Instant,
 		clock: Effect.Effect<Instant, Settled>
 	) {
-		const input = yield* Effect.result(port.input(turn.step))
+		const input = yield* Effect.result(port.input(turn))
 		if (input._tag === "Failure") {
 			return { kind: "error", error: input.failure } satisfies Ran
 		}
@@ -455,16 +458,14 @@ const unwritten = (flow: string, error: Settled, wake: Wake): Ending =>
 			: { kind: "waiting", wake, why: "unread", until: Option.none() }
 	)
 
-/** The root of `scope`'s graph, read upward through its parents: none once a scope on the way is gone. */
+/** The root `root` of a graph, by its own scope: none once it is gone. */
 const rootOf = <R>(
 	ledger: Ledger<R>,
-	scope: Sha256
+	root: Sha256
 ): Effect.Effect<Option.Option<RootView>, Settled> =>
-	Effect.flatMap(ledger.scopeOf(scope), (found) =>
-		Option.match(found, {
-			onNone: () => Effect.succeedNone,
-			onSome: (s) => (s.place === "root" ? Effect.succeedSome(s) : rootOf(ledger, s.parent))
-		})
+	Effect.map(
+		ledger.scopeOf({ root, scope: root }),
+		Option.filter((s): s is RootView => s.place === "root")
 	)
 
 /**
@@ -507,7 +508,7 @@ const gate = <R>(
 /** The wake for a step's next attempt, as its claims, retries and fences stand (Standing): none while a claim holds it. */
 const nextWake = <R>(
 	ledger: Ledger<R>,
-	step: Sha256
+	step: StepKey
 ): Effect.Effect<Option.Option<Onward>, Settled> =>
 	Effect.gen(function* () {
 		const at = yield* ledger.now
@@ -553,6 +554,7 @@ const spawnDelay = (due: SpawnDue, now: Option.Option<Instant>): Duration.Durati
  */
 const spawnedRings = <R>(
 	ledger: Ledger<R>,
+	root: Sha256,
 	spawned: Spawned
 ): Effect.Effect<ReadonlyArray<Onward>> =>
 	Effect.map(
@@ -561,11 +563,11 @@ const spawnedRings = <R>(
 			: Effect.succeedNone,
 		(now): ReadonlyArray<Onward> => [
 			...Arr.map(spawned.steps, (s) => ({
-				wake: stepWake(ledger.flow, s.step, 0n),
+				wake: stepWake(ledger.flow, { root, step: s.step }, 0n),
 				delay: spawnDelay(s.due, now)
 			})),
 			...Arr.map(spawned.finishes, (finish) => ({
-				wake: stepWake(ledger.flow, finish, 0n),
+				wake: stepWake(ledger.flow, { root, step: finish }, 0n),
 				delay: Duration.zero
 			}))
 		]
@@ -578,14 +580,14 @@ const spawnedRings = <R>(
 const settled = <R>(
 	ledger: Ledger<R>,
 	runner: StepRunner<R>,
-	scope: Sha256,
+	{ root, scope }: ScopeKey,
 	spawned: Spawned
 ): Effect.Effect<ReadonlyArray<Onward>> =>
 	Effect.gen(function* () {
-		const children = yield* spawnedRings(ledger, spawned)
+		const children = yield* spawnedRings(ledger, root, spawned)
 		const ready = (s: Sha256) =>
-			Effect.flatMap(ledger.unended(s), (busy) =>
-				busy ? Effect.succeedNone : nextWake(ledger, finishStep(s))
+			Effect.flatMap(ledger.unended({ root, scope: s }), (busy) =>
+				busy ? Effect.succeedNone : nextWake(ledger, { root, step: finishStep(s) })
 			)
 		if (Option.isNone(runner.finishes)) {
 			const finish =
@@ -595,7 +597,7 @@ const settled = <R>(
 			return [...children, ...Option.toArray(finish)]
 		}
 		yield* Effect.flatMap(exclusiveOf(ledger, scope), (rows) => releaseExclusive(ledger, rows))
-		const parent = yield* Effect.map(ledger.scopeOf(scope), Option.flatMap(parentOf))
+		const parent = yield* Effect.map(ledger.scopeOf({ root, scope }), Option.flatMap(parentOf))
 		const upward = Option.isSome(parent) ? yield* ready(parent.value) : Option.none()
 		return [...children, ...Option.toArray(upward)]
 	}).pipe(Effect.orElseSucceed((): ReadonlyArray<Onward> => []))
@@ -630,7 +632,7 @@ const ended = <R>(
 ): Effect.Effect<Ending> =>
 	Effect.gen(function* () {
 		const at = yield* readOr(ledger.now, wake)
-		const next = stepWake(ledger.flow, turn.step, turn.attempt + 1n)
+		const next = stepWake(ledger.flow, turn, turn.attempt + 1n)
 		switch (how.kind) {
 			case "spent": {
 				const total = used.attempts + 1
@@ -738,7 +740,7 @@ const endingOf = <R>(
 								why: "law"
 							})
 				case "commitUnknown":
-					return Effect.flatMap(Effect.option(ledger.heldOf(turn.step)), (held) =>
+					return Effect.flatMap(Effect.option(ledger.heldOf(turn)), (held) =>
 						Option.contains(Option.flatten(held), turn.attempt)
 							? Effect.succeed<Ending>({ kind: "done", wake, spawned: { steps: [], finishes: [] } })
 							: ended(ledger, runner, turn, used, { kind: "spent" }, wake)
@@ -830,20 +832,20 @@ const serveStep = <R>(
 	ends: Instant
 ): Effect.Effect<Served, Ending, R> =>
 	Effect.gen(function* () {
-		const step = wake.step
+		const { step, root } = wake
 		const at = yield* readOr(ledger.now, wake)
-		const located = yield* readOr(ledger.stepOf(step), wake)
+		const located = yield* readOr(ledger.stepOf(wake), wake)
 		if (Option.isNone(located)) {
 			return served({ kind: "lost", wake })
 		}
-		const { runner, scope, root, due: first } = located.value
-		const result = yield* readOr(ledger.resultOf(step), wake)
+		const { runner, scope, due: first } = located.value
+		const result = yield* readOr(ledger.resultOf(wake), wake)
 		if (Option.isSome(result)) {
 			return served({ kind: "lost", wake })
 		}
-		const claims = yield* readOr(ledger.claimsOf(step), wake)
-		const retries = yield* readOr(ledger.retriesOf(step), wake)
-		const fenced = yield* readOr(ledger.fencedOf(step), wake)
+		const claims = yield* readOr(ledger.claimsOf(wake), wake)
+		const retries = yield* readOr(ledger.retriesOf(wake), wake)
+		const fenced = yield* readOr(ledger.fencedOf(wake), wake)
 		const stands = standing(claims, retries, fenced, at)
 		if (stands.kind === "held") {
 			return served({ kind: "lost", wake })
@@ -859,7 +861,7 @@ const serveStep = <R>(
 				onward: [{ wake, delay: delayTo(at, due) }]
 			} satisfies Served
 		}
-		const graph = yield* readOr(rootOf(ledger, scope), wake)
+		const graph = yield* readOr(rootOf(ledger, root), wake)
 		const shut = yield* readOr(gate(ledger, graph, runner.uses, at), wake)
 		if (Option.isSome(shut)) {
 			return {
@@ -871,13 +873,13 @@ const serveStep = <R>(
 			} satisfies Served
 		}
 		if (Option.isSome(runner.finishes)) {
-			const busy = yield* readOr(ledger.unended(scope), wake)
+			const busy = yield* readOr(ledger.unended({ root, scope }), wake)
 			if (busy) {
 				return served({ kind: "waiting", wake, why: "unready", until: Option.none() })
 			}
 		}
 		if (Arr.isReadonlyArrayNonEmpty(runner.awaits)) {
-			const unmet = yield* readOr(ledger.awaiting(step), wake)
+			const unmet = yield* readOr(ledger.awaiting(wake), wake)
 			if (unmet) {
 				return served({ kind: "waiting", wake, why: "awaiting", until: Option.none() })
 			}
@@ -913,12 +915,12 @@ const serveStep = <R>(
 			})
 			return {
 				ending: failed,
-				onward: yield* settledOn(ledger, runner, scope, failed, claimed.seats)
+				onward: yield* settledOn(ledger, runner, { root, scope }, failed, claimed.seats)
 			}
 		}
 		const ran = yield* runner.run(turn, at, ledger.now)
 		const ending = yield* endingOf(ledger, runner, turn, ran, used, wake)
-		const onward = yield* settledOn(ledger, runner, scope, ending, claimed.seats)
+		const onward = yield* settledOn(ledger, runner, { root, scope }, ending, claimed.seats)
 		const readied =
 			ran.kind === "committed" ? yield* readiedBy(ledgers, writtenBy(ran.committed.outcome)) : []
 		return { ending, onward: [...onward, ...readied] }
@@ -997,7 +999,7 @@ const waitersOf = <R>(
 const settledOn = <R>(
 	ledger: Ledger<R>,
 	runner: StepRunner<R>,
-	scope: Sha256,
+	scope: ScopeKey,
 	ending: Ending,
 	freed: ReadonlyArray<SeatAt>
 ): Effect.Effect<ReadonlyArray<Onward>> => {
@@ -1045,7 +1047,7 @@ const serveAdmit = <R>(
 	Effect.gen(function* () {
 		const scope = wake.scope
 		const at = yield* readOr(ledger.now, wake)
-		const viewed = yield* readOr(ledger.scopeOf(scope), wake)
+		const viewed = yield* readOr(ledger.scopeOf({ root: scope, scope }), wake)
 		if (
 			Option.isNone(viewed) ||
 			viewed.value.place === "child" ||
@@ -1099,7 +1101,7 @@ const serveAdmit = <R>(
 		const spawned = admitted.success.value.spawned
 		return {
 			ending: { kind: "admitted", wake, spawned },
-			onward: yield* spawnedRings(ledger, spawned)
+			onward: yield* spawnedRings(ledger, scope, spawned)
 		}
 	})
 

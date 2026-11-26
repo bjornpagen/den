@@ -115,7 +115,7 @@ const pausableOf = (
 		() => new UnknownPauseTarget({ flow: FlowName.make("Writeback"), target })
 	)
 
-/** The ledger of the flow Writeback over its handles, with the requests of its roots. */
+/** The ledger of the flow Writeback over its handles, with the requests of the roots den requests. */
 export const writebackLedger = (h: WritebackHandles) => {
 	const noRows: Rows = {
 		WritebackScope: [],
@@ -169,21 +169,21 @@ export const writebackLedger = (h: WritebackHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readWritebackDeliverInput = (step: Sha256) =>
+	const readWritebackDeliverInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(
-					h.den.writebackReadWritebackDeliverInput.once({ params: { step: step }, facts: {} })
+					h.den.writebackReadWritebackDeliverInput.once({ params: { root, step }, facts: {} })
 				),
 				one
 			)
 			return Option.map(row, (found) => ({ attempt: found.attempt }))
 		})
-	const readWritebackWritebackInput = (scope: Sha256) =>
+	const readWritebackWritebackInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
 				settled(
-					h.den.writebackReadWritebackWritebackInput.once({ params: { scope: scope }, facts: {} })
+					h.den.writebackReadWritebackWritebackInput.once({ params: { root, scope }, facts: {} })
 				),
 				one
 			)
@@ -270,7 +270,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 		Deliver: runnerOf(
 			writeback.kinds[0],
 			{
-				input: (step) => readWritebackDeliverInput(step),
+				input: ({ root, step }) => readWritebackDeliverInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -316,17 +316,17 @@ export const writebackLedger = (h: WritebackHandles) => {
 				}) => writeback.kinds[1].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.writebackStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.writebackStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readWritebackWritebackInput(scope)
+						const input = yield* readWritebackWritebackInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -366,7 +366,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 			precondition: writeback.kinds[1].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readWritebackWritebackInput(scope)
+					const input = yield* readWritebackWritebackInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -437,44 +437,71 @@ export const writebackLedger = (h: WritebackHandles) => {
 			settled(h.commits.writebackAuthenticated.once({ params: {}, facts: {} }))
 		),
 		holds: Effect.succeed([]),
-		stepOf: (step) =>
-			Effect.map(settled(h.den.writebackStepOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => ({
-					runner: runners[row.kind],
-					scope: row.scope,
-					root: row.root,
-					due: row.due
-				}))
+		stepOf: (at) =>
+			Effect.map(
+				settled(
+					h.den.writebackStepOf.once({ params: { root: at.root, step: at.step }, facts: {} })
+				),
+				(rows) =>
+					Option.map(one(rows), (row) => ({
+						runner: runners[row.kind],
+						scope: row.scope,
+						due: row.due
+					}))
 			),
-		resultOf: (step) =>
-			Effect.map(settled(h.den.writebackResultOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.outcome)
+		resultOf: (at) =>
+			Effect.map(
+				settled(
+					h.den.writebackResultOf.once({ params: { root: at.root, step: at.step }, facts: {} })
+				),
+				(rows) => Option.map(one(rows), (row) => row.outcome)
 			),
-		heldOf: (step) =>
-			Effect.map(settled(h.den.writebackHeldOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.attempt)
+		heldOf: (at) =>
+			Effect.map(
+				settled(
+					h.den.writebackHeldOf.once({ params: { root: at.root, step: at.step }, facts: {} })
+				),
+				(rows) => Option.map(one(rows), (row) => row.attempt)
 			),
-		claimsOf: (step) =>
-			Effect.map(settled(h.den.writebackClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
-		retriesOf: (step) =>
-			Effect.map(settled(h.den.writebackRetriesOf.once({ params: { step }, facts: {} })), rowsOf),
-		fencedOf: (step) =>
-			Effect.map(settled(h.den.writebackFencedOf.once({ params: { step }, facts: {} })), rowsOf),
-		scopeOf: (scope) =>
+		claimsOf: (at) =>
+			Effect.map(
+				settled(
+					h.den.writebackClaimsOf.once({ params: { root: at.root, step: at.step }, facts: {} })
+				),
+				rowsOf
+			),
+		retriesOf: (at) =>
+			Effect.map(
+				settled(
+					h.den.writebackRetriesOf.once({ params: { root: at.root, step: at.step }, facts: {} })
+				),
+				rowsOf
+			),
+		fencedOf: (at) =>
+			Effect.map(
+				settled(
+					h.den.writebackFencedOf.once({ params: { root: at.root, step: at.step }, facts: {} })
+				),
+				rowsOf
+			),
+		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				const root = yield* Effect.map(
-					settled(h.den.writebackRootOf.once({ params: { scope: scope }, facts: {} })),
+				if (!Sha256.equals(root, scope)) {
+					return Option.none()
+				}
+				const standing = yield* Effect.map(
+					settled(h.den.writebackRootOf.once({ params: { root }, facts: {} })),
 					one
 				)
-				if (Option.isNone(root)) {
+				if (Option.isNone(standing)) {
 					return Option.none()
 				}
 				const admitted = yield* Effect.map(
-					settled(h.den.writebackAdmittedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.writebackAdmittedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const skipped = yield* Effect.map(
-					settled(h.den.writebackSkippedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.writebackSkippedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const admission: Admission = Option.isSome(admitted)
@@ -485,18 +512,18 @@ export const writebackLedger = (h: WritebackHandles) => {
 				return Option.some<ScopeView>({
 					place: "root",
 					scope,
-					kind: root.value.kind,
-					key: root.value.key,
-					at: root.value.at,
+					kind: standing.value.kind,
+					key: standing.value.key,
+					at: standing.value.at,
 					admission,
 					exclusive: Option.none(),
-					runner: roots[root.value.kind]
+					runner: roots[standing.value.kind]
 				})
 			}),
-		unended: (scope) =>
-			h.den.writebackUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
-		finished: (scope) =>
-			h.den.writebackFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
+		unended: ({ root, scope }) =>
+			h.den.writebackUnendedSteps.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
+		finished: ({ root, scope }) =>
+			h.den.writebackFinished.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
 		awaits: [],
 		awaiting: () => Effect.succeed(false),
@@ -609,6 +636,7 @@ export const writebackLedger = (h: WritebackHandles) => {
 					return {
 						steps: Arr.map(read.steps, (s) => ({
 							step: s.step,
+							root: s.root,
 							runner: runners[s.kind],
 							scope: s.scope,
 							due: s.due
@@ -642,7 +670,6 @@ export const writebackLedger = (h: WritebackHandles) => {
 	}
 	return {
 		ledger,
-		request,
-		appRequests: {}
+		request
 	}
 }

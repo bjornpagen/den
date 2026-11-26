@@ -69,23 +69,32 @@ export class Host extends Context.Service<
 >()("@bjornpagen/den/transport/Host") {}
 
 /**
- * A wake as the wire carries it: a step's attempt, a scope's admission, or a period's census, each key its digest's hex
- * (Sha256.toHex).
+ * A wake as the wire carries it: a step's attempt beside its root, a root's admission, or a period's census, each key
+ * its digest's hex (Sha256.toHex). Every read of a step's rows binds its root, the unit's key; a root's scope is its
+ * own root.
  * A transport that sends wakes over a wire encodes this schema (wireOf) and decodes it once at its consumer's boundary,
  * then parses its keys (wakeOf).
  */
 export const WireWakeSchema = Schema.Union([
-	Schema.TaggedStruct("Step", { flow: FlowName, step: Schema.String, attempt: AttemptNumber }),
+	Schema.TaggedStruct("Step", {
+		flow: FlowName,
+		root: Schema.String,
+		step: Schema.String,
+		attempt: AttemptNumber
+	}),
 	Schema.TaggedStruct("Admit", { flow: FlowName, scope: Schema.String }),
 	CensusWake
 ])
 export type WireWake = typeof WireWakeSchema.Type
 
-/** A wake: a step's attempt, a scope's admission, or a period's census, each key the digest den derived. */
+/**
+ * A wake: a step's attempt beside its root, a root's admission, or a period's census, each key the digest den derived.
+ */
 export type Wake =
 	| {
 			readonly _tag: "Step"
 			readonly flow: FlowName
+			readonly root: Sha256
 			readonly step: Sha256
 			readonly attempt: AttemptNumber
 	  }
@@ -99,7 +108,7 @@ export type FlowWake = Extract<Wake, { readonly flow: FlowName }>
 export const wireOf = (wake: Wake): WireWake => {
 	switch (wake._tag) {
 		case "Step":
-			return { ...wake, step: Sha256.toHex(wake.step) }
+			return { ...wake, root: Sha256.toHex(wake.root), step: Sha256.toHex(wake.step) }
 		case "Admit":
 			return { ...wake, scope: Sha256.toHex(wake.scope) }
 		case "Census":
@@ -124,7 +133,9 @@ const keyOf = (text: string): Result.Result<Sha256, NotAKey> => {
 export const wakeOf = (wire: WireWake): Result.Result<Wake, NotAKey> => {
 	switch (wire._tag) {
 		case "Step":
-			return Result.map(keyOf(wire.step), (step) => ({ ...wire, step }))
+			return Result.flatMap(keyOf(wire.root), (root) =>
+				Result.map(keyOf(wire.step), (step) => ({ ...wire, root, step }))
+			)
 		case "Admit":
 			return Result.map(keyOf(wire.scope), (scope) => ({ ...wire, scope }))
 		case "Census":

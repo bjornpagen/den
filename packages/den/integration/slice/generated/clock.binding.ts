@@ -113,7 +113,7 @@ const pausableOf = (
 		() => new UnknownPauseTarget({ flow: FlowName.make("Clock"), target })
 	)
 
-/** The ledger of the flow Clock over its handles, with the requests of its roots. */
+/** The ledger of the flow Clock over its handles, with the requests of the roots den requests. */
 export const clockLedger = (h: ClockHandles) => {
 	const noRows: Rows = {
 		ClockScope: [],
@@ -200,34 +200,34 @@ export const clockLedger = (h: ClockHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readClockChimeInput = (step: Sha256) =>
+	const readClockChimeInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.clockReadClockChimeInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.clockReadClockChimeInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ hour: found.hour, bell: found.bell }))
 		})
-	const readClockCloseInput = (step: Sha256) =>
+	const readClockCloseInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.clockReadClockCloseInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.clockReadClockCloseInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ sitting: found.sitting, deadline: found.deadline }))
 		})
-	const readClockHourlyInput = (scope: Sha256) =>
+	const readClockHourlyInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.clockReadClockHourlyInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.clockReadClockHourlyInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ hour: found.hour, bell: found.bell }))
 		})
-	const readClockSittingInput = (scope: Sha256) =>
+	const readClockSittingInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.clockReadClockSittingInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.clockReadClockSittingInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ sitting: found.sitting, deadline: found.deadline }))
@@ -337,7 +337,7 @@ export const clockLedger = (h: ClockHandles) => {
 		Chime: runnerOf(
 			clock.kinds[0],
 			{
-				input: (step) => readClockChimeInput(step),
+				input: ({ root, step }) => readClockChimeInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -378,7 +378,7 @@ export const clockLedger = (h: ClockHandles) => {
 		Close: runnerOf(
 			clock.kinds[2],
 			{
-				input: (step) => readClockCloseInput(step),
+				input: ({ root, step }) => readClockCloseInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -424,17 +424,17 @@ export const clockLedger = (h: ClockHandles) => {
 				}) => clock.kinds[1].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.clockStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.clockStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readClockHourlyInput(scope)
+						const input = yield* readClockHourlyInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -478,17 +478,17 @@ export const clockLedger = (h: ClockHandles) => {
 				}) => clock.kinds[3].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.clockStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.clockStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readClockSittingInput(scope)
+						const input = yield* readClockSittingInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -526,7 +526,7 @@ export const clockLedger = (h: ClockHandles) => {
 			precondition: clock.kinds[1].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readClockHourlyInput(scope)
+					const input = yield* readClockHourlyInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -573,7 +573,7 @@ export const clockLedger = (h: ClockHandles) => {
 			precondition: clock.kinds[3].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readClockSittingInput(scope)
+					const input = yield* readClockSittingInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -645,44 +645,59 @@ export const clockLedger = (h: ClockHandles) => {
 			settled(h.commits.clockAuthenticated.once({ params: {}, facts: {} }))
 		),
 		holds: Effect.succeed([]),
-		stepOf: (step) =>
-			Effect.map(settled(h.den.clockStepOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => ({
-					runner: runners[row.kind],
-					scope: row.scope,
-					root: row.root,
-					due: row.due
-				}))
+		stepOf: (at) =>
+			Effect.map(
+				settled(h.den.clockStepOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) =>
+					Option.map(one(rows), (row) => ({
+						runner: runners[row.kind],
+						scope: row.scope,
+						due: row.due
+					}))
 			),
-		resultOf: (step) =>
-			Effect.map(settled(h.den.clockResultOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.outcome)
+		resultOf: (at) =>
+			Effect.map(
+				settled(h.den.clockResultOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) => Option.map(one(rows), (row) => row.outcome)
 			),
-		heldOf: (step) =>
-			Effect.map(settled(h.den.clockHeldOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.attempt)
+		heldOf: (at) =>
+			Effect.map(
+				settled(h.den.clockHeldOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) => Option.map(one(rows), (row) => row.attempt)
 			),
-		claimsOf: (step) =>
-			Effect.map(settled(h.den.clockClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
-		retriesOf: (step) =>
-			Effect.map(settled(h.den.clockRetriesOf.once({ params: { step }, facts: {} })), rowsOf),
-		fencedOf: (step) =>
-			Effect.map(settled(h.den.clockFencedOf.once({ params: { step }, facts: {} })), rowsOf),
-		scopeOf: (scope) =>
+		claimsOf: (at) =>
+			Effect.map(
+				settled(h.den.clockClaimsOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		retriesOf: (at) =>
+			Effect.map(
+				settled(h.den.clockRetriesOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		fencedOf: (at) =>
+			Effect.map(
+				settled(h.den.clockFencedOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				const root = yield* Effect.map(
-					settled(h.den.clockRootOf.once({ params: { scope: scope }, facts: {} })),
+				if (!Sha256.equals(root, scope)) {
+					return Option.none()
+				}
+				const standing = yield* Effect.map(
+					settled(h.den.clockRootOf.once({ params: { root }, facts: {} })),
 					one
 				)
-				if (Option.isNone(root)) {
+				if (Option.isNone(standing)) {
 					return Option.none()
 				}
 				const admitted = yield* Effect.map(
-					settled(h.den.clockAdmittedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.clockAdmittedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const skipped = yield* Effect.map(
-					settled(h.den.clockSkippedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.clockSkippedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const admission: Admission = Option.isSome(admitted)
@@ -693,18 +708,18 @@ export const clockLedger = (h: ClockHandles) => {
 				return Option.some<ScopeView>({
 					place: "root",
 					scope,
-					kind: root.value.kind,
-					key: root.value.key,
-					at: root.value.at,
+					kind: standing.value.kind,
+					key: standing.value.key,
+					at: standing.value.at,
 					admission,
 					exclusive: Option.none(),
-					runner: roots[root.value.kind]
+					runner: roots[standing.value.kind]
 				})
 			}),
-		unended: (scope) =>
-			h.den.clockUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
-		finished: (scope) =>
-			h.den.clockFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
+		unended: ({ root, scope }) =>
+			h.den.clockUnendedSteps.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
+		finished: ({ root, scope }) =>
+			h.den.clockFinished.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
 		awaits: [],
 		awaiting: () => Effect.succeed(false),
@@ -812,6 +827,7 @@ export const clockLedger = (h: ClockHandles) => {
 				return {
 					steps: Arr.map(read.steps, (s) => ({
 						step: s.step,
+						root: s.root,
 						runner: runners[s.kind],
 						scope: s.scope,
 						due: s.due
@@ -852,7 +868,6 @@ export const clockLedger = (h: ClockHandles) => {
 	}
 	return {
 		ledger,
-		request,
-		appRequests: {}
+		request
 	}
 }

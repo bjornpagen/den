@@ -127,11 +127,11 @@ export const ChainCoordinator = role(
 )
 
 const chainPendingRead = query(ChainDen).rule((r) => {
-	const { step, kind, scope, due } = v(ChainStep, "step")
+	const { root, step, kind, scope, due } = v(ChainStep, "step")
 	return r
-		.match(ChainStep, { step, kind, scope, due })
-		.where(r.not(ChainResult, { step }))
-		.find({ step, kind, scope, due })
+		.match(ChainStep, { root, step, kind, scope, due })
+		.where(r.not(ChainResult, { root, step }))
+		.find({ root, step, kind, scope, due })
 })
 
 const chainRequestedRead = query(ChainDen).rule((r) => {
@@ -139,13 +139,19 @@ const chainRequestedRead = query(ChainDen).rule((r) => {
 	return r
 		.match(ChainRoot, { root: scope })
 		.match(ChainScope, { root: scope, scope })
-		.where(r.not(ChainAdmitted, { scope }), r.not(ChainSkipped, { scope }))
+		.where(
+			r.not(ChainAdmitted, { root: scope, scope }),
+			r.not(ChainSkipped, { root: scope, scope })
+		)
 		.find({ scope })
 })
 
 const chainRunningRead = query(ChainDen).rule((r) => {
-	const { scope, step } = v(ChainFinish, "finish")
-	return r.match(ChainFinish, { scope, step }).where(r.not(ChainResult, { step })).find({ scope })
+	const { root, scope, step } = v(ChainFinish, "finish")
+	return r
+		.match(ChainFinish, { root, scope, step })
+		.where(r.not(ChainResult, { root, step }))
+		.find({ scope })
 })
 
 const chainLatestServed = query(ChainDen).rule((r) => {
@@ -272,35 +278,50 @@ export const chainDenPrograms = Object.freeze({
 		const { root, scope, by } = v(ChainSkipped, "chainSkipped")
 		return r
 			.match(ChainSkipped, { root, scope, by })
-			.where(r.eq(scope, r.param("scope", ChainSkipped.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", ChainSkipped.fields.root)),
+				r.eq(scope, r.param("scope", ChainSkipped.fields.scope))
+			)
 			.find({ root, scope, by })
 	}),
 	chainStepOf: query(chainGraph).rule((r) => {
 		const { root, step, kind, scope, due } = v(ChainStep, "chainStep")
 		return r
 			.match(ChainStep, { root, step, kind, scope, due })
-			.where(r.eq(step, r.param("step", ChainStep.fields.step)))
+			.where(
+				r.eq(root, r.param("root", ChainStep.fields.root)),
+				r.eq(step, r.param("step", ChainStep.fields.step))
+			)
 			.find({ root, step, kind, scope, due })
 	}),
 	chainResultOf: query(chainGraph).rule((r) => {
 		const { root, step, outcome } = v(ChainResult, "chainResult")
 		return r
 			.match(ChainResult, { root, step, outcome })
-			.where(r.eq(step, r.param("step", ChainResult.fields.step)))
+			.where(
+				r.eq(root, r.param("root", ChainResult.fields.root)),
+				r.eq(step, r.param("step", ChainResult.fields.step))
+			)
 			.find({ root, step, outcome })
 	}),
 	chainHeldOf: query(chainGraph).rule((r) => {
 		const { root, step, attempt } = v(ChainHeld, "chainHeld")
 		return r
 			.match(ChainHeld, { root, step, attempt })
-			.where(r.eq(step, r.param("step", ChainHeld.fields.step)))
+			.where(
+				r.eq(root, r.param("root", ChainHeld.fields.root)),
+				r.eq(step, r.param("step", ChainHeld.fields.step))
+			)
 			.find({ root, step, attempt })
 	}),
 	chainAdmittedOf: query(chainGraph).rule((r) => {
 		const { root, scope } = v(ChainAdmitted, "chainAdmitted")
 		return r
 			.match(ChainAdmitted, { root, scope })
-			.where(r.eq(scope, r.param("scope", ChainAdmitted.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", ChainAdmitted.fields.root)),
+				r.eq(scope, r.param("scope", ChainAdmitted.fields.scope))
+			)
 			.find({ root, scope })
 	}),
 	chainRootOf: query(chainGraph).rule((r) => {
@@ -309,7 +330,7 @@ export const chainDenPrograms = Object.freeze({
 		return r
 			.match(ChainRoot, { root: scope, kind, key, at })
 			.match(ChainScope, { root: scope, scope })
-			.where(r.eq(scope, r.param("scope", ChainRoot.fields.root)))
+			.where(r.eq(scope, r.param("root", ChainRoot.fields.root)))
 			.find({ scope, kind, key, at })
 	}),
 	chainFinishedRoots: query(chainGraph)
@@ -325,43 +346,56 @@ export const chainDenPrograms = Object.freeze({
 			return r.match(ChainSkipped, { root: scope, scope }).find({ scope })
 		}),
 	chainClaimsOf: query(chainGraph).rule((r) => {
-		const { step, attempt, until } = v(ChainClaim, "claim")
+		const { root, step, attempt, until } = v(ChainClaim, "claim")
 		return r
-			.match(ChainClaim, { step, attempt, until })
-			.where(r.eq(step, r.param("step", ChainStep.fields.step)))
+			.match(ChainClaim, { root, step, attempt, until })
+			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
+				r.eq(step, r.param("step", ChainStep.fields.step))
+			)
 			.find({ step, attempt, until })
 	}),
 	chainRetriesOf: query(chainGraph).rule((r) => {
-		const { step, attempt, at, why } = v(ChainRetry, "retry")
+		const { root, step, attempt, at, why } = v(ChainRetry, "retry")
 		return r
-			.match(ChainRetry, { step, attempt, at, why })
-			.where(r.eq(step, r.param("step", ChainStep.fields.step)))
+			.match(ChainRetry, { root, step, attempt, at, why })
+			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
+				r.eq(step, r.param("step", ChainStep.fields.step))
+			)
 			.find({ step, attempt, at, why })
 	}),
 	chainFencedOf: query(chainGraph).rule((r) => {
-		const { step, attempt } = v(ChainFenced, "fenced")
+		const { root, step, attempt } = v(ChainFenced, "fenced")
 		return r
-			.match(ChainFenced, { step, attempt })
-			.where(r.eq(step, r.param("step", ChainStep.fields.step)))
+			.match(ChainFenced, { root, step, attempt })
+			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
+				r.eq(step, r.param("step", ChainStep.fields.step))
+			)
 			.find({ step, attempt })
 	}),
 	chainUnendedSteps: query(chainGraph).rule((r) => {
-		const { step, scope } = v(ChainStep, "step")
+		const { root, step, scope } = v(ChainStep, "step")
 		return r
-			.match(ChainStep, { step, scope })
+			.match(ChainStep, { root, step, scope })
 			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
 				r.eq(scope, r.param("scope", ChainScope.fields.scope)),
-				r.not(ChainResult, { step }),
-				r.not(ChainFinish, { scope, step })
+				r.not(ChainResult, { root, step }),
+				r.not(ChainFinish, { root, scope, step })
 			)
 			.find({ step })
 	}),
 	chainFinished: query(chainGraph).rule((r) => {
-		const { scope, step } = v(ChainFinish, "finish")
+		const { root, scope, step } = v(ChainFinish, "finish")
 		return r
-			.match(ChainFinish, { scope, step })
-			.match(ChainResult, { step })
-			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.match(ChainFinish, { root, scope, step })
+			.match(ChainResult, { root, step })
+			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
+				r.eq(scope, r.param("scope", ChainScope.fields.scope))
+			)
 			.find({ step })
 	}),
 	chainPending: chainPendingRead,
@@ -370,24 +404,24 @@ export const chainDenPrograms = Object.freeze({
 	chainSnapshot: query(ChainDen).reads({
 		steps: chainPendingRead,
 		claims: query(ChainDen).rule((r) => {
-			const { step, attempt, until } = v(ChainClaim, "claim")
+			const { root, step, attempt, until } = v(ChainClaim, "claim")
 			return r
-				.match(ChainClaim, { step, attempt, until })
-				.where(r.not(ChainResult, { step }))
+				.match(ChainClaim, { root, step, attempt, until })
+				.where(r.not(ChainResult, { root, step }))
 				.find({ step, attempt, until })
 		}),
 		retries: query(ChainDen).rule((r) => {
-			const { step, attempt, at, why } = v(ChainRetry, "retry")
+			const { root, step, attempt, at, why } = v(ChainRetry, "retry")
 			return r
-				.match(ChainRetry, { step, attempt, at, why })
-				.where(r.not(ChainResult, { step }))
+				.match(ChainRetry, { root, step, attempt, at, why })
+				.where(r.not(ChainResult, { root, step }))
 				.find({ step, attempt, at, why })
 		}),
 		fenced: query(ChainDen).rule((r) => {
-			const { step, attempt } = v(ChainFenced, "fenced")
+			const { root, step, attempt } = v(ChainFenced, "fenced")
 			return r
-				.match(ChainFenced, { step, attempt })
-				.where(r.not(ChainResult, { step }))
+				.match(ChainFenced, { root, step, attempt })
+				.where(r.not(ChainResult, { root, step }))
 				.find({ step, attempt })
 		}),
 		requested: chainRequestedRead,
@@ -412,21 +446,30 @@ export const chainDenPrograms = Object.freeze({
 		const { root, step, feed, seq, pages } = v(ChainPageInput, "chainPageInput")
 		return r
 			.match(ChainPageInput, { root, step, feed, seq, pages })
-			.where(r.eq(step, r.param("step", ChainPageInput.fields.step)))
+			.where(
+				r.eq(root, r.param("root", ChainPageInput.fields.root)),
+				r.eq(step, r.param("step", ChainPageInput.fields.step))
+			)
 			.find({ root, step, feed, seq, pages })
 	}),
 	chainReadChainPageInputAfter: query(chainGraph).rule((r) => {
 		const { root, step, value } = v(ChainPageInputAfter, "chainPageInputAfter")
 		return r
 			.match(ChainPageInputAfter, { root, step, value })
-			.where(r.eq(step, r.param("step", ChainPageInputAfter.fields.step)))
+			.where(
+				r.eq(root, r.param("root", ChainPageInputAfter.fields.root)),
+				r.eq(step, r.param("step", ChainPageInputAfter.fields.step))
+			)
 			.find({ root, step, value })
 	}),
 	chainReadChainChainRunInput: query(chainGraph).rule((r) => {
 		const { root, scope, feed, pages } = v(ChainChainRunInput, "chainChainRunInput")
 		return r
 			.match(ChainChainRunInput, { root, scope, feed, pages })
-			.where(r.eq(scope, r.param("scope", ChainChainRunInput.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", ChainChainRunInput.fields.root)),
+				r.eq(scope, r.param("scope", ChainChainRunInput.fields.scope))
+			)
 			.find({ root, scope, feed, pages })
 	}),
 	chainRequestChainRun: clocked(
@@ -516,98 +559,131 @@ export const chainDenPrograms = Object.freeze({
 		{ denNow: "millis" }
 	),
 	chainOutputsChainRunPage: query(chainGraph).rule((r) => {
-		const { step, scope } = v(ChainStep, "step")
+		const { root, step, scope } = v(ChainStep, "step")
 		const { seq, items, earlier } = v(ChainPageOutput, "output")
 		return r
-			.match(ChainStep, { step, kind: "Page", scope })
-			.match(ChainPageOutput, { step, seq, items, earlier })
-			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.match(ChainStep, { root, step, kind: "Page", scope })
+			.match(ChainPageOutput, { root, step, seq, items, earlier })
+			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
+				r.eq(scope, r.param("scope", ChainScope.fields.scope))
+			)
 			.find({ step, seq, items, earlier })
 	}),
 	chainOutputsChainRunPageNext: query(chainGraph).rule((r) => {
-		const { step, scope } = v(ChainStep, "step")
+		const { root, step, scope } = v(ChainStep, "step")
 		const { value } = v(ChainPageOutputNext, "part")
 		return r
-			.match(ChainStep, { step, kind: "Page", scope })
-			.match(ChainPageOutputNext, { step, value })
-			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.match(ChainStep, { root, step, kind: "Page", scope })
+			.match(ChainPageOutputNext, { root, step, value })
+			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
+				r.eq(scope, r.param("scope", ChainScope.fields.scope))
+			)
 			.find({ step, value })
 	}),
 	chainInputsChainRunPage: query(chainGraph).rule((r) => {
-		const { step, scope } = v(ChainStep, "step")
+		const { root, step, scope } = v(ChainStep, "step")
 		const { feed, seq, pages } = v(ChainPageInput, "input")
 		return r
-			.match(ChainStep, { step, kind: "Page", scope })
-			.match(ChainPageInput, { step, feed, seq, pages })
-			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.match(ChainStep, { root, step, kind: "Page", scope })
+			.match(ChainPageInput, { root, step, feed, seq, pages })
+			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
+				r.eq(scope, r.param("scope", ChainScope.fields.scope))
+			)
 			.find({ step, feed, seq, pages })
 	}),
 	chainInputsChainRunPageAfter: query(chainGraph).rule((r) => {
-		const { step, scope } = v(ChainStep, "step")
+		const { root, step, scope } = v(ChainStep, "step")
 		const { value } = v(ChainPageInputAfter, "part")
 		return r
-			.match(ChainStep, { step, kind: "Page", scope })
-			.match(ChainPageInputAfter, { step, value })
-			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.match(ChainStep, { root, step, kind: "Page", scope })
+			.match(ChainPageInputAfter, { root, step, value })
+			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
+				r.eq(scope, r.param("scope", ChainScope.fields.scope))
+			)
 			.find({ step, value })
 	}),
 	chainFailuresChainRunPage: query(chainGraph).rule((r) => {
-		const { step, scope } = v(ChainStep, "step")
+		const { root, step, scope } = v(ChainStep, "step")
 		return r
-			.match(ChainStep, { step, kind: "Page", scope })
-			.match(ChainResult, { step, outcome: "failed" })
-			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.match(ChainStep, { root, step, kind: "Page", scope })
+			.match(ChainResult, { root, step, outcome: "failed" })
+			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
+				r.eq(scope, r.param("scope", ChainScope.fields.scope))
+			)
 			.find({ step })
 	}),
 	chainReadChainOrderedInput: query(chainGraph).rule((r) => {
 		const { root, scope, feed, pages } = v(ChainOrderedInput, "chainOrderedInput")
 		return r
 			.match(ChainOrderedInput, { root, scope, feed, pages })
-			.where(r.eq(scope, r.param("scope", ChainOrderedInput.fields.scope)))
+			.where(
+				r.eq(root, r.param("root", ChainOrderedInput.fields.root)),
+				r.eq(scope, r.param("scope", ChainOrderedInput.fields.scope))
+			)
 			.find({ root, scope, feed, pages })
 	}),
 	chainOutputsOrderedPage: query(chainGraph).rule((r) => {
-		const { step, scope } = v(ChainStep, "step")
+		const { root, step, scope } = v(ChainStep, "step")
 		const { seq, items, earlier } = v(ChainPageOutput, "output")
 		return r
-			.match(ChainStep, { step, kind: "Page", scope })
-			.match(ChainPageOutput, { step, seq, items, earlier })
-			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.match(ChainStep, { root, step, kind: "Page", scope })
+			.match(ChainPageOutput, { root, step, seq, items, earlier })
+			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
+				r.eq(scope, r.param("scope", ChainScope.fields.scope))
+			)
 			.find({ step, seq, items, earlier })
 	}),
 	chainOutputsOrderedPageNext: query(chainGraph).rule((r) => {
-		const { step, scope } = v(ChainStep, "step")
+		const { root, step, scope } = v(ChainStep, "step")
 		const { value } = v(ChainPageOutputNext, "part")
 		return r
-			.match(ChainStep, { step, kind: "Page", scope })
-			.match(ChainPageOutputNext, { step, value })
-			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.match(ChainStep, { root, step, kind: "Page", scope })
+			.match(ChainPageOutputNext, { root, step, value })
+			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
+				r.eq(scope, r.param("scope", ChainScope.fields.scope))
+			)
 			.find({ step, value })
 	}),
 	chainInputsOrderedPage: query(chainGraph).rule((r) => {
-		const { step, scope } = v(ChainStep, "step")
+		const { root, step, scope } = v(ChainStep, "step")
 		const { feed, seq, pages } = v(ChainPageInput, "input")
 		return r
-			.match(ChainStep, { step, kind: "Page", scope })
-			.match(ChainPageInput, { step, feed, seq, pages })
-			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.match(ChainStep, { root, step, kind: "Page", scope })
+			.match(ChainPageInput, { root, step, feed, seq, pages })
+			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
+				r.eq(scope, r.param("scope", ChainScope.fields.scope))
+			)
 			.find({ step, feed, seq, pages })
 	}),
 	chainInputsOrderedPageAfter: query(chainGraph).rule((r) => {
-		const { step, scope } = v(ChainStep, "step")
+		const { root, step, scope } = v(ChainStep, "step")
 		const { value } = v(ChainPageInputAfter, "part")
 		return r
-			.match(ChainStep, { step, kind: "Page", scope })
-			.match(ChainPageInputAfter, { step, value })
-			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.match(ChainStep, { root, step, kind: "Page", scope })
+			.match(ChainPageInputAfter, { root, step, value })
+			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
+				r.eq(scope, r.param("scope", ChainScope.fields.scope))
+			)
 			.find({ step, value })
 	}),
 	chainFailuresOrderedPage: query(chainGraph).rule((r) => {
-		const { step, scope } = v(ChainStep, "step")
+		const { root, step, scope } = v(ChainStep, "step")
 		return r
-			.match(ChainStep, { step, kind: "Page", scope })
-			.match(ChainResult, { step, outcome: "failed" })
-			.where(r.eq(scope, r.param("scope", ChainScope.fields.scope)))
+			.match(ChainStep, { root, step, kind: "Page", scope })
+			.match(ChainResult, { root, step, outcome: "failed" })
+			.where(
+				r.eq(root, r.param("root", ChainScope.fields.root)),
+				r.eq(scope, r.param("scope", ChainScope.fields.scope))
+			)
 			.find({ step })
 	})
 })

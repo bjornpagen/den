@@ -140,7 +140,43 @@ const pausableOf = (
 		() => new UnknownPauseTarget({ flow: FlowName.make("Chain"), target })
 	)
 
-/** The ledger of the flow Chain over its handles, with the requests of its roots. */
+/** Each app root's request as a host names it, by the root: the flow, the root's scope, and the parameters of its printed request (`chainRequests`), which the app's write commits beside its own and rings once committed, with no ledger opened. */
+export const chainAppRequests = Object.freeze({
+	Ordered: (key: string, input: Parameters<(typeof chain.kinds)[2]["start"]>[0]) =>
+		pipe(rootScope("Chain", "Ordered", key), (scope) => ({
+			flow: FlowName.make("Chain"),
+			scope,
+			params: {
+				chainOrderedScope: scope,
+				chainOrderedKey: key,
+				chainOrderedChainScope: [{ scope, root: scope }],
+				chainOrderedChainOrderedInput: [
+					{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
+				],
+				chainOrderedChainRequestedWith: Option.toArray(
+					Option.map(
+						codecTextsOf([
+							...pipe(
+								[{ scope: scope, root: scope, feed: input.feed, pages: input.pages }],
+								Arr.flatMap((row) => [
+									Result.succeed("ChainOrderedInput"),
+									chainOrderedInputTexts.feed(row.feed),
+									chainOrderedInputTexts.pages(row.pages)
+								])
+							)
+						]),
+						(texts) => ({
+							root: scope,
+							fingerprint: chainOrderedHeading,
+							input: inputDigest("Chain", "Ordered", texts)
+						})
+					)
+				)
+			}
+		}))
+})
+
+/** The ledger of the flow Chain over its handles, with the requests of the roots den requests. */
 export const chainLedger = (h: ChainHandles) => {
 	const noRows: Rows = {
 		ChainScope: [],
@@ -242,14 +278,14 @@ export const chainLedger = (h: ChainHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readChainPageInput = (step: Sha256) =>
+	const readChainPageInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.chainReadChainPageInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.chainReadChainPageInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			const side0 = yield* Effect.map(
-				settled(h.den.chainReadChainPageInputAfter.once({ params: { step: step }, facts: {} })),
+				settled(h.den.chainReadChainPageInputAfter.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({
@@ -259,18 +295,18 @@ export const chainLedger = (h: ChainHandles) => {
 				after: Option.map(side0, (o) => o.value)
 			}))
 		})
-	const readChainChainRunInput = (scope: Sha256) =>
+	const readChainChainRunInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.chainReadChainChainRunInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.chainReadChainChainRunInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ feed: found.feed, pages: found.pages }))
 		})
-	const readChainOrderedInput = (scope: Sha256) =>
+	const readChainOrderedInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.chainReadChainOrderedInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.chainReadChainOrderedInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ feed: found.feed, pages: found.pages }))
@@ -351,7 +387,7 @@ export const chainLedger = (h: ChainHandles) => {
 		Page: runnerOf(
 			chain.kinds[0],
 			{
-				input: (step) => readChainPageInput(step),
+				input: ({ root, step }) => readChainPageInput(root, step),
 				read: (input) =>
 					Effect.flatMap(
 						settled(
@@ -536,38 +572,42 @@ export const chainLedger = (h: ChainHandles) => {
 				}) => chain.kinds[1].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.chainStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.chainStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readChainChainRunInput(scope)
+						const input = yield* readChainChainRunInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
 						const outputPageRows = yield* Effect.map(
-							settled(h.den.chainOutputsChainRunPage.once({ params: { scope }, facts: {} })),
+							settled(h.den.chainOutputsChainRunPage.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const outputPageSide0 = yield* Effect.map(
-							settled(h.den.chainOutputsChainRunPageNext.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.chainOutputsChainRunPageNext.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputPageRows = yield* Effect.map(
-							settled(h.den.chainInputsChainRunPage.once({ params: { scope }, facts: {} })),
+							settled(h.den.chainInputsChainRunPage.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const inputPageSide0 = yield* Effect.map(
-							settled(h.den.chainInputsChainRunPageAfter.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.chainInputsChainRunPageAfter.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const failuresPage = yield* Effect.map(
-							settled(h.den.chainFailuresChainRunPage.once({ params: { scope }, facts: {} })),
+							settled(h.den.chainFailuresChainRunPage.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const inputPage = (child: (typeof inputPageRows)[number]["step"]) =>
@@ -655,38 +695,42 @@ export const chainLedger = (h: ChainHandles) => {
 				}) => chain.kinds[2].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.chainStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.chainStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readChainOrderedInput(scope)
+						const input = yield* readChainOrderedInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
 						const outputPageRows = yield* Effect.map(
-							settled(h.den.chainOutputsOrderedPage.once({ params: { scope }, facts: {} })),
+							settled(h.den.chainOutputsOrderedPage.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const outputPageSide0 = yield* Effect.map(
-							settled(h.den.chainOutputsOrderedPageNext.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.chainOutputsOrderedPageNext.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputPageRows = yield* Effect.map(
-							settled(h.den.chainInputsOrderedPage.once({ params: { scope }, facts: {} })),
+							settled(h.den.chainInputsOrderedPage.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const inputPageSide0 = yield* Effect.map(
-							settled(h.den.chainInputsOrderedPageAfter.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.chainInputsOrderedPageAfter.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const failuresPage = yield* Effect.map(
-							settled(h.den.chainFailuresOrderedPage.once({ params: { scope }, facts: {} })),
+							settled(h.den.chainFailuresOrderedPage.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const inputPage = (child: (typeof inputPageRows)[number]["step"]) =>
@@ -768,7 +812,7 @@ export const chainLedger = (h: ChainHandles) => {
 			precondition: chain.kinds[1].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readChainChainRunInput(scope)
+					const input = yield* readChainChainRunInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -815,7 +859,7 @@ export const chainLedger = (h: ChainHandles) => {
 			precondition: chain.kinds[2].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readChainOrderedInput(scope)
+					const input = yield* readChainOrderedInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -887,44 +931,59 @@ export const chainLedger = (h: ChainHandles) => {
 			settled(h.commits.chainAuthenticated.once({ params: {}, facts: {} }))
 		),
 		holds: Effect.succeed([]),
-		stepOf: (step) =>
-			Effect.map(settled(h.den.chainStepOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => ({
-					runner: runners[row.kind],
-					scope: row.scope,
-					root: row.root,
-					due: row.due
-				}))
+		stepOf: (at) =>
+			Effect.map(
+				settled(h.den.chainStepOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) =>
+					Option.map(one(rows), (row) => ({
+						runner: runners[row.kind],
+						scope: row.scope,
+						due: row.due
+					}))
 			),
-		resultOf: (step) =>
-			Effect.map(settled(h.den.chainResultOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.outcome)
+		resultOf: (at) =>
+			Effect.map(
+				settled(h.den.chainResultOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) => Option.map(one(rows), (row) => row.outcome)
 			),
-		heldOf: (step) =>
-			Effect.map(settled(h.den.chainHeldOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.attempt)
+		heldOf: (at) =>
+			Effect.map(
+				settled(h.den.chainHeldOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) => Option.map(one(rows), (row) => row.attempt)
 			),
-		claimsOf: (step) =>
-			Effect.map(settled(h.den.chainClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
-		retriesOf: (step) =>
-			Effect.map(settled(h.den.chainRetriesOf.once({ params: { step }, facts: {} })), rowsOf),
-		fencedOf: (step) =>
-			Effect.map(settled(h.den.chainFencedOf.once({ params: { step }, facts: {} })), rowsOf),
-		scopeOf: (scope) =>
+		claimsOf: (at) =>
+			Effect.map(
+				settled(h.den.chainClaimsOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		retriesOf: (at) =>
+			Effect.map(
+				settled(h.den.chainRetriesOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		fencedOf: (at) =>
+			Effect.map(
+				settled(h.den.chainFencedOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				const root = yield* Effect.map(
-					settled(h.den.chainRootOf.once({ params: { scope: scope }, facts: {} })),
+				if (!Sha256.equals(root, scope)) {
+					return Option.none()
+				}
+				const standing = yield* Effect.map(
+					settled(h.den.chainRootOf.once({ params: { root }, facts: {} })),
 					one
 				)
-				if (Option.isNone(root)) {
+				if (Option.isNone(standing)) {
 					return Option.none()
 				}
 				const admitted = yield* Effect.map(
-					settled(h.den.chainAdmittedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.chainAdmittedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const skipped = yield* Effect.map(
-					settled(h.den.chainSkippedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.chainSkippedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const admission: Admission = Option.isSome(admitted)
@@ -935,18 +994,18 @@ export const chainLedger = (h: ChainHandles) => {
 				return Option.some<ScopeView>({
 					place: "root",
 					scope,
-					kind: root.value.kind,
-					key: root.value.key,
-					at: root.value.at,
+					kind: standing.value.kind,
+					key: standing.value.key,
+					at: standing.value.at,
 					admission,
 					exclusive: Option.none(),
-					runner: roots[root.value.kind]
+					runner: roots[standing.value.kind]
 				})
 			}),
-		unended: (scope) =>
-			h.den.chainUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
-		finished: (scope) =>
-			h.den.chainFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
+		unended: ({ root, scope }) =>
+			h.den.chainUnendedSteps.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
+		finished: ({ root, scope }) =>
+			h.den.chainFinished.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
 		awaits: [],
 		awaiting: () => Effect.succeed(false),
@@ -1054,6 +1113,7 @@ export const chainLedger = (h: ChainHandles) => {
 				return {
 					steps: Arr.map(read.steps, (s) => ({
 						step: s.step,
+						root: s.root,
 						runner: runners[s.kind],
 						scope: s.scope,
 						due: s.due
@@ -1087,40 +1147,6 @@ export const chainLedger = (h: ChainHandles) => {
 	}
 	return {
 		ledger,
-		request,
-		appRequests: {
-			Ordered: (key: string, input: Parameters<(typeof chain.kinds)[2]["start"]>[0]) =>
-				pipe(rootScope("Chain", "Ordered", key), (scope) => ({
-					flow: FlowName.make("Chain"),
-					scope,
-					params: {
-						chainOrderedScope: scope,
-						chainOrderedKey: key,
-						chainOrderedChainScope: [{ scope, root: scope }],
-						chainOrderedChainOrderedInput: [
-							{ scope: scope, root: scope, feed: input.feed, pages: input.pages }
-						],
-						chainOrderedChainRequestedWith: Option.toArray(
-							Option.map(
-								codecTextsOf([
-									...pipe(
-										[{ scope: scope, root: scope, feed: input.feed, pages: input.pages }],
-										Arr.flatMap((row) => [
-											Result.succeed("ChainOrderedInput"),
-											chainOrderedInputTexts.feed(row.feed),
-											chainOrderedInputTexts.pages(row.pages)
-										])
-									)
-								]),
-								(texts) => ({
-									root: scope,
-									fingerprint: chainOrderedHeading,
-									input: inputDigest("Chain", "Ordered", texts)
-								})
-							)
-						)
-					}
-				}))
-		}
+		request
 	}
 }

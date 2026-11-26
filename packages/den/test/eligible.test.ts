@@ -320,7 +320,7 @@ const built = (w: World): Built => {
 		for (const { value: s, index: j } of indexed(r.steps)) {
 			const step = startedStep(root, j)
 			kinds.set(Sha256.toHex(step), s.kind)
-			steps.push({ step, runner: runners[s.kind], scope: root, due: at(s.due) })
+			steps.push({ step, root, runner: runners[s.kind], scope: root, due: at(s.due) })
 			if (s.awaiting) {
 				awaiting.push(step)
 			}
@@ -340,7 +340,7 @@ const built = (w: World): Built => {
 		}
 		const finish = finishStep(root)
 		kinds.set(Sha256.toHex(finish), "RunFinish")
-		steps.push({ step: finish, runner: runners.RunFinish, scope: root, due: at(r.age - 10) })
+		steps.push({ step: finish, root, runner: runners.RunFinish, scope: root, due: at(r.age - 10) })
 		for (const j of ordinals(r.batches)) {
 			const batch = startedScope(root, 100 + j)
 			scopes.push({ place: "child", scope: batch, kind: "Batch", parent: root })
@@ -348,6 +348,7 @@ const built = (w: World): Built => {
 			kinds.set(Sha256.toHex(batchFinish), "BatchFinish")
 			steps.push({
 				step: batchFinish,
+				root,
 				runner: runners.BatchFinish,
 				scope: batch,
 				due: at(r.age - 10)

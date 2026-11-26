@@ -9,6 +9,7 @@ import { searched } from "@bjornpagen/testing/vitest"
 import { testWorkers } from "@bjornpagen/testing/workers"
 import * as NodeServices from "@effect/platform-node/NodeServices"
 import { assert, layer } from "@effect/vitest"
+import { regex } from "arkregex"
 import {
 	Array as Arr,
 	Cron,
@@ -41,6 +42,16 @@ import {
 	writer,
 	writesNothing
 } from "#algebra/kinds.ts"
+import {
+	assign,
+	chain,
+	clock,
+	fan,
+	retry,
+	review,
+	sync,
+	writeback
+} from "#integration/slice/flows.ts"
 import { lower } from "#lower/fragment.ts"
 import { Text } from "#lower/keys.ts"
 import { type Placement, printBinding, printFragment, printPrograms } from "#lower/print.ts"
@@ -365,6 +376,108 @@ layer(NodeServices.layer)((it) =>
 						})
 				)
 			)
+	)
+)
+
+/** The slice's flows by name, every feature den lowers among them: child scopes, finish reads, awaited facts, seats. */
+const sliceFlows = Object.freeze({ chain, fan, sync, retry, assign, review, writeback, clock })
+
+/**
+ * A slice flow's name: every read of a step's or a scope's rows states its root, so each printed rule that binds a step
+ * or a scope by parameter binds the root too, a probe of the key of grizzle's unit DenRoot, which every graph relation
+ * leads with, never a read with its unit unbound.
+ *
+ * Every anti-join probe names its row's root too, a scan's among them, and so does every join of a rule that reads by
+ * step or scope.
+ *
+ * Oracle (specification): docs/decisions.md, rooted reads (grizzle main's ruling, 2026-11-26). Mutants it kills: the
+ * root binding dropped from `ownedBy` (a body read by its owner), from a claim's, a retry's or a fence's read, or from
+ * a scope's unended steps; the root dropped from a pending step's probe of its Result, or from a finish's join of it.
+ */
+const SliceFlow = Schema.Literals([
+	"chain",
+	"fan",
+	"sync",
+	"retry",
+	"assign",
+	"review",
+	"writeback",
+	"clock"
+])
+type SliceFlow = typeof SliceFlow.Type
+
+/** Whether a printed rule binds a step or a scope by a parameter of that name, and so reads a graph's rows by it. */
+const STEP_OR_SCOPE = regex('r\\.param\\("(?:step|scope)"')
+
+/** The slice's relations that carry a root field, every flow's graph's: a probe of one, any flow's, names it. */
+const rooted = Arr.flatMap(Record.values(sliceFlows), (sliceFlow) =>
+	Arr.flatMap(lower(sliceFlow).relations, (lowered) =>
+		Arr.some(lowered.fields, (field) => field.name === "root") ? [lowered.name] : []
+	)
+)
+
+/** Whether a printed rule binds the root it reads under. */
+const ROOTED = regex('r\\.param\\("root"')
+
+/**
+ * Each join or anti-join a printed rule writes over a relation, by name or through the app's schema (`App.relations.X`,
+ * another flow's relations a busy read probes): how, the relation, and its entries' text.
+ */
+const PROBE = regex("(\\.match|r\\.not)\\((?:\\w+\\.relations\\.)?(\\w+), \\{([^}]*)\\}", "g")
+
+/** Whether a join's or an anti-join's entries name the root as an entry of its own: `root` or `root: …`. */
+const NAMES_ROOT = regex("(?:^|,)\\s*root\\s*(?::|,|$)")
+
+layer(NodeServices.layer)((it) =>
+	it.effect("binds every read of a step's or a scope's rows by its root", (ctx) =>
+		searched(
+			ctx,
+			exhaust(
+				{
+					suite: "rooted reads",
+					generator: element(SliceFlow.literals),
+					literal: Formatter.format,
+					coverage: requiredInSpace<SliceFlow>(SliceFlow.literals),
+					caseHang: caseHangMillis,
+					box: "each of the slice's flows, printed",
+					oracle: {
+						kind: "specification",
+						name: "docs/decisions.md: every read of a graph's rows by step or scope states its root"
+					},
+					concurrency: testWorkers
+				},
+				(name, c) =>
+					Effect.sync(() => {
+						c.note(name)
+						const rules = Arr.drop(
+							Str.split(".rule((r) =>")(printPrograms(lower(sliceFlows[name]), placement)),
+							1
+						)
+						assert.deepStrictEqual(
+							Arr.filter(rules, (rule) => STEP_OR_SCOPE.test(rule) && !ROOTED.test(rule)),
+							[],
+							`every rule of the flow ${name} that reads by step or scope binds its root`
+						)
+						assert.deepStrictEqual(
+							Arr.flatMap(rules, (rule) =>
+								Arr.flatMap(Arr.fromIterable(Str.matchAll(PROBE)(rule)), (found) => {
+									const [probe, how, probed, entries] = found
+									if (probed === undefined || entries === undefined) {
+										return [probe]
+									}
+									return Arr.contains(rooted, probed) &&
+										(how === "r.not" || STEP_OR_SCOPE.test(rule)) &&
+										!NAMES_ROOT.test(entries)
+										? [probe]
+										: []
+								})
+							),
+							[],
+							`every anti-join of the flow ${name}, and every join of a rule it reads by step or scope, names its row's root`
+						)
+					})
+			)
+		)
 	)
 )
 

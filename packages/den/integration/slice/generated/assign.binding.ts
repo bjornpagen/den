@@ -164,7 +164,7 @@ const pausableOf = (
 		() => new UnknownPauseTarget({ flow: FlowName.make("Assign"), target })
 	)
 
-/** The ledger of the flow Assign over its handles, with the requests of its roots. */
+/** The ledger of the flow Assign over its handles, with the requests of the roots den requests. */
 export const assignLedger = (h: AssignHandles) => {
 	const noRows: Rows = {
 		AssignScope: [],
@@ -280,29 +280,31 @@ export const assignLedger = (h: AssignHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readAssignEmbedInput = (step: Sha256) =>
+	const readAssignEmbedInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.assignReadAssignEmbedInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.assignReadAssignEmbedInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			const family0 = yield* Effect.map(
-				settled(h.den.assignReadAssignEmbedInputNear.once({ params: { step }, facts: {} })),
+				settled(h.den.assignReadAssignEmbedInputNear.once({ params: { root, step }, facts: {} })),
 				rowsOf
 			)
 			const family1 = yield* Effect.map(
-				settled(h.den.assignReadAssignEmbedInputExclude.once({ params: { step }, facts: {} })),
+				settled(
+					h.den.assignReadAssignEmbedInputExclude.once({ params: { root, step }, facts: {} })
+				),
 				rowsOf
 			)
 			const variant0_0 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignEmbedInputModeNearest.once({ params: { step: step }, facts: {} })
+					h.den.assignReadAssignEmbedInputModeNearest.once({ params: { root, step }, facts: {} })
 				),
 				one
 			)
 			const variant0_1 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignEmbedInputModeWithin.once({ params: { step: step }, facts: {} })
+					h.den.assignReadAssignEmbedInputModeWithin.once({ params: { root, step }, facts: {} })
 				),
 				one
 			)
@@ -327,25 +329,27 @@ export const assignLedger = (h: AssignHandles) => {
 				)
 			)
 		})
-	const readAssignDecideInput = (step: Sha256) =>
+	const readAssignDecideInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.assignReadAssignDecideInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.assignReadAssignDecideInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			const family0 = yield* Effect.map(
-				settled(h.den.assignReadAssignDecideInputExclude.once({ params: { step }, facts: {} })),
+				settled(
+					h.den.assignReadAssignDecideInputExclude.once({ params: { root, step }, facts: {} })
+				),
 				rowsOf
 			)
 			const variant0_0 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignDecideInputModeNearest.once({ params: { step: step }, facts: {} })
+					h.den.assignReadAssignDecideInputModeNearest.once({ params: { root, step }, facts: {} })
 				),
 				one
 			)
 			const variant0_1 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignDecideInputModeWithin.once({ params: { step: step }, facts: {} })
+					h.den.assignReadAssignDecideInputModeWithin.once({ params: { root, step }, facts: {} })
 				),
 				one
 			)
@@ -370,28 +374,28 @@ export const assignLedger = (h: AssignHandles) => {
 				)
 			)
 		})
-	const readAssignAssignmentInput = (scope: Sha256) =>
+	const readAssignAssignmentInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(
-					h.den.assignReadAssignAssignmentInput.once({ params: { scope: scope }, facts: {} })
-				),
+				settled(h.den.assignReadAssignAssignmentInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			const family0 = yield* Effect.map(
-				settled(h.den.assignReadAssignAssignmentInputNear.once({ params: { scope }, facts: {} })),
+				settled(
+					h.den.assignReadAssignAssignmentInputNear.once({ params: { root, scope }, facts: {} })
+				),
 				rowsOf
 			)
 			const family1 = yield* Effect.map(
 				settled(
-					h.den.assignReadAssignAssignmentInputExclude.once({ params: { scope }, facts: {} })
+					h.den.assignReadAssignAssignmentInputExclude.once({ params: { root, scope }, facts: {} })
 				),
 				rowsOf
 			)
 			const variant0_0 = yield* Effect.map(
 				settled(
 					h.den.assignReadAssignAssignmentInputModeNearest.once({
-						params: { scope: scope },
+						params: { root, scope },
 						facts: {}
 					})
 				),
@@ -400,7 +404,7 @@ export const assignLedger = (h: AssignHandles) => {
 			const variant0_1 = yield* Effect.map(
 				settled(
 					h.den.assignReadAssignAssignmentInputModeWithin.once({
-						params: { scope: scope },
+						params: { root, scope },
 						facts: {}
 					})
 				),
@@ -590,7 +594,7 @@ export const assignLedger = (h: AssignHandles) => {
 		Embed: runnerOf(
 			assign.kinds[0],
 			{
-				input: (step) => readAssignEmbedInput(step),
+				input: ({ root, step }) => readAssignEmbedInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -674,7 +678,7 @@ export const assignLedger = (h: AssignHandles) => {
 		Decide: runnerOf(
 			assign.kinds[1],
 			{
-				input: (step) => readAssignDecideInput(step),
+				input: ({ root, step }) => readAssignDecideInput(root, step),
 				read: (input) =>
 					Effect.flatMap(
 						settled(
@@ -807,66 +811,90 @@ export const assignLedger = (h: AssignHandles) => {
 				}) => assign.kinds[2].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.assignStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.assignStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readAssignAssignmentInput(scope)
+						const input = yield* readAssignAssignmentInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
 						const outputDecideRows = yield* Effect.map(
-							settled(h.den.assignOutputsAssignmentDecide.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.assignOutputsAssignmentDecide.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const outputDecideFamily0 = yield* Effect.map(
 							settled(
-								h.den.assignOutputsAssignmentDecideWeighed.once({ params: { scope }, facts: {} })
+								h.den.assignOutputsAssignmentDecideWeighed.once({
+									params: { root, scope },
+									facts: {}
+								})
 							),
 							rowsOf
 						)
 						const outputDecideVariant0_0 = yield* Effect.map(
 							settled(
-								h.den.assignOutputsAssignmentDecideStageServe.once({ params: { scope }, facts: {} })
+								h.den.assignOutputsAssignmentDecideStageServe.once({
+									params: { root, scope },
+									facts: {}
+								})
 							),
 							rowsOf
 						)
 						const outputDecideVariant0_1 = yield* Effect.map(
 							settled(
-								h.den.assignOutputsAssignmentDecideStageRest.once({ params: { scope }, facts: {} })
+								h.den.assignOutputsAssignmentDecideStageRest.once({
+									params: { root, scope },
+									facts: {}
+								})
 							),
 							rowsOf
 						)
 						const inputDecideRows = yield* Effect.map(
-							settled(h.den.assignInputsAssignmentDecide.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.assignInputsAssignmentDecide.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputDecideFamily0 = yield* Effect.map(
 							settled(
-								h.den.assignInputsAssignmentDecideExclude.once({ params: { scope }, facts: {} })
+								h.den.assignInputsAssignmentDecideExclude.once({
+									params: { root, scope },
+									facts: {}
+								})
 							),
 							rowsOf
 						)
 						const inputDecideVariant0_0 = yield* Effect.map(
 							settled(
-								h.den.assignInputsAssignmentDecideModeNearest.once({ params: { scope }, facts: {} })
+								h.den.assignInputsAssignmentDecideModeNearest.once({
+									params: { root, scope },
+									facts: {}
+								})
 							),
 							rowsOf
 						)
 						const inputDecideVariant0_1 = yield* Effect.map(
 							settled(
-								h.den.assignInputsAssignmentDecideModeWithin.once({ params: { scope }, facts: {} })
+								h.den.assignInputsAssignmentDecideModeWithin.once({
+									params: { root, scope },
+									facts: {}
+								})
 							),
 							rowsOf
 						)
 						const failuresDecide = yield* Effect.map(
-							settled(h.den.assignFailuresAssignmentDecide.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.assignFailuresAssignmentDecide.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputDecide = (child: (typeof inputDecideRows)[number]["step"]) =>
@@ -997,7 +1025,7 @@ export const assignLedger = (h: AssignHandles) => {
 			precondition: assign.kinds[2].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readAssignAssignmentInput(scope)
+					const input = yield* readAssignAssignmentInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -1076,44 +1104,61 @@ export const assignLedger = (h: AssignHandles) => {
 			settled(h.commits.assignAuthenticated.once({ params: {}, facts: {} }))
 		),
 		holds: Effect.succeed([]),
-		stepOf: (step) =>
-			Effect.map(settled(h.den.assignStepOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => ({
-					runner: runners[row.kind],
-					scope: row.scope,
-					root: row.root,
-					due: row.due
-				}))
+		stepOf: (at) =>
+			Effect.map(
+				settled(h.den.assignStepOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) =>
+					Option.map(one(rows), (row) => ({
+						runner: runners[row.kind],
+						scope: row.scope,
+						due: row.due
+					}))
 			),
-		resultOf: (step) =>
-			Effect.map(settled(h.den.assignResultOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.outcome)
+		resultOf: (at) =>
+			Effect.map(
+				settled(h.den.assignResultOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) => Option.map(one(rows), (row) => row.outcome)
 			),
-		heldOf: (step) =>
-			Effect.map(settled(h.den.assignHeldOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.attempt)
+		heldOf: (at) =>
+			Effect.map(
+				settled(h.den.assignHeldOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) => Option.map(one(rows), (row) => row.attempt)
 			),
-		claimsOf: (step) =>
-			Effect.map(settled(h.den.assignClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
-		retriesOf: (step) =>
-			Effect.map(settled(h.den.assignRetriesOf.once({ params: { step }, facts: {} })), rowsOf),
-		fencedOf: (step) =>
-			Effect.map(settled(h.den.assignFencedOf.once({ params: { step }, facts: {} })), rowsOf),
-		scopeOf: (scope) =>
+		claimsOf: (at) =>
+			Effect.map(
+				settled(h.den.assignClaimsOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		retriesOf: (at) =>
+			Effect.map(
+				settled(
+					h.den.assignRetriesOf.once({ params: { root: at.root, step: at.step }, facts: {} })
+				),
+				rowsOf
+			),
+		fencedOf: (at) =>
+			Effect.map(
+				settled(h.den.assignFencedOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				const root = yield* Effect.map(
-					settled(h.den.assignRootOf.once({ params: { scope: scope }, facts: {} })),
+				if (!Sha256.equals(root, scope)) {
+					return Option.none()
+				}
+				const standing = yield* Effect.map(
+					settled(h.den.assignRootOf.once({ params: { root }, facts: {} })),
 					one
 				)
-				if (Option.isNone(root)) {
+				if (Option.isNone(standing)) {
 					return Option.none()
 				}
 				const admitted = yield* Effect.map(
-					settled(h.den.assignAdmittedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.assignAdmittedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const skipped = yield* Effect.map(
-					settled(h.den.assignSkippedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.assignSkippedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const admission: Admission = Option.isSome(admitted)
@@ -1124,18 +1169,18 @@ export const assignLedger = (h: AssignHandles) => {
 				return Option.some<ScopeView>({
 					place: "root",
 					scope,
-					kind: root.value.kind,
-					key: root.value.key,
-					at: root.value.at,
+					kind: standing.value.kind,
+					key: standing.value.key,
+					at: standing.value.at,
 					admission,
 					exclusive: Option.none(),
-					runner: roots[root.value.kind]
+					runner: roots[standing.value.kind]
 				})
 			}),
-		unended: (scope) =>
-			h.den.assignUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
-		finished: (scope) =>
-			h.den.assignFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
+		unended: ({ root, scope }) =>
+			h.den.assignUnendedSteps.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
+		finished: ({ root, scope }) =>
+			h.den.assignFinished.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
 		awaits: [],
 		awaiting: () => Effect.succeed(false),
@@ -1245,6 +1290,7 @@ export const assignLedger = (h: AssignHandles) => {
 					return {
 						steps: Arr.map(read.steps, (s) => ({
 							step: s.step,
+							root: s.root,
 							runner: runners[s.kind],
 							scope: s.scope,
 							due: s.due
@@ -1278,7 +1324,6 @@ export const assignLedger = (h: AssignHandles) => {
 	}
 	return {
 		ledger,
-		request,
-		appRequests: {}
+		request
 	}
 }

@@ -1,5 +1,7 @@
 import { denClock } from "@bjornpagen/den/algebra/kinds"
-import { instantOf } from "@bjornpagen/den/runtime/identity"
+import { derivedKey, exclusiveRows } from "@bjornpagen/den/runtime/bind"
+import { instantOf, rootScope } from "@bjornpagen/den/runtime/identity"
+import { refusedLaws } from "@bjornpagen/den/runtime/ledger"
 import { settled } from "@bjornpagen/den/runtime/settled"
 import { serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
@@ -31,8 +33,9 @@ import {
 import { type Case, property, ReplayToken } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Exit, HashMap, Number as Num, Option, Order } from "effect"
 import { App } from "#integration/slice/app.ts"
-import { poolSeats } from "#integration/slice/flows.ts"
+import { fan as fanFlow, poolSeats } from "#integration/slice/flows.ts"
 import { chainRequests, chainRequestWrites } from "#integration/slice/generated/chain.programs.ts"
+import { fanAppRequests } from "#integration/slice/generated/fan.binding.ts"
 import { fanRequests, fanRequestWrites } from "#integration/slice/generated/fan.programs.ts"
 import { AppLogin } from "#integration/slice/logins.ts"
 import snapshotFile from "#integration/slice/migrations/slice/snapshot.json" with { type: "json" }
@@ -219,7 +222,7 @@ export const aDerivedRootsInputIsItsReadAtItsRequest = property.explore(events, 
 										c.note("a size wanted beside its run's request")
 									}
 								}
-								const asked = fan.appRequests.Wanted({ batch: event.batch })
+								const asked = fanAppRequests.Wanted({ batch: event.batch })
 								return Effect.gen(function* () {
 									yield* settled(
 										loader.workload.wantRun.once({
@@ -253,7 +256,7 @@ export const aDerivedRootsInputIsItsReadAtItsRequest = property.explore(events, 
 									Option.map(standing.input, (size) => ({
 										batch,
 										size,
-										asked: fan.appRequests.Wanted({ batch })
+										asked: fanAppRequests.Wanted({ batch })
 									}))
 								)
 							)
@@ -535,3 +538,109 @@ export const aDerivedAppRequestComposesIntoEveryWriteOverItsSchema = property.ex
 		]
 	}
 )
+
+/** Whether a batch's root stands under its own key's text before a request of it under a renamed field's text. */
+type Renamed = "a renamed field's key after its fields' root" | "a renamed field's key alone"
+
+const renamings: Gen<Renamed> = (source) =>
+	source.draw(boolean)
+		? "a renamed field's key after its fields' root"
+		: "a renamed field's key alone"
+
+/**
+ * Keys a derived root by its fields, whatever text names them: the fan's Wanted requested under the key text a deploy
+ * that renamed its key's field `batch` to `group` computes for the same batch (runtime/bind.ts derivedKey), so its root
+ * scope is another. Where the batch's root stands under its own text, the request is refused, the key's fields naming
+ * that root already; where none stands, its root stands alone.
+ *
+ * Oracle (specification): docs/decisions.md, a derived root's key is keyed by its fields, each text by its digest, so
+ * one key's fields name one root and a request of them under another key text is refused by that law where a root of
+ * them stands, and fails for nothing else.
+ *
+ * Box: its suite's, every case of it (the renamed key's request after its batch's root, and alone).
+ */
+export const aKeysFieldsNameOneRoot = property.exhaust(finite(renamings), {
+	box: "the fan's Wanted requested under a renamed field's key text, after its batch's root and alone",
+	needs: { slice: sliceCase },
+	situations: [
+		"a renamed field's key after its fields' root",
+		"a renamed field's key alone"
+	] satisfies ReadonlyArray<Reached<Renamed>>,
+	check:
+		({ slice }, c: Case<Renamed>) =>
+		(renamed) =>
+			Effect.flatMap(slice, (services) =>
+				Effect.provideContext(
+					Effect.gen(function* () {
+						c.note(renamed)
+						const { loader } = yield* openLedgers
+						const batch = "renamed"
+						const want = { insert: { Want: [{ batch, size: 2n }] } }
+						if (renamed === "a renamed field's key after its fields' root") {
+							yield* settled(
+								loader.workload.wantRun.once({
+									params: fanAppRequests.Wanted({ batch }).params,
+									facts: want
+								})
+							)
+						}
+						const keyText = derivedKey(["group"], { group: batch })
+						const scope = rootScope("Fan", "Wanted", keyText)
+						const keys = exclusiveRows(
+							"Fan",
+							"Wanted",
+							fanFlow.kinds[6].exclusive,
+							{ batch },
+							scope
+						)
+						const requested = yield* Effect.exit(
+							settled(
+								loader.workload.wantRun.once({
+									params: {
+										fanWantedScope: scope,
+										fanWantedKey: keyText,
+										fanWantedFanScope: [{ scope, root: scope }],
+										fanWantedFanExclusiveKey: Arr.map(keys, (k) => ({ ...k, root: scope })),
+										fanWantedKeyBatch: batch
+									},
+									facts: want
+								})
+							)
+						)
+						const refusedOnItsFields = Option.exists(
+							Exit.findErrorOption(requested),
+							(error) =>
+								error.kind === "refused" &&
+								Arr.some(
+									refusedLaws(error.refused),
+									({ law }) => law.kind === "key" && law.side.relation === "FanWantedKey"
+								)
+						)
+						assert.equal(
+							refusedOnItsFields,
+							renamed === "a renamed field's key after its fields' root",
+							"a request under another text of a key's fields is refused by the key's law exactly where a root of those fields stands"
+						)
+						assert.equal(
+							Exit.isFailure(requested),
+							refusedOnItsFields,
+							"the request fails for nothing else"
+						)
+					}),
+					services
+				)
+			),
+	oracle: {
+		kind: "specification",
+		name: "a derived root's key is keyed by its fields, so one key's fields name one root"
+	},
+	kept: [],
+	kills: [
+		{
+			file: "packages/den/integration/slice/generated/fan.fragment.ts",
+			original: '\t\tkey(on(FanWantedKey, "batchDigest")),\n',
+			replacement: "",
+			why: "No law keys the key's fields: the installed index still refuses the renamed text's root, but as no law of the code's, so the refusal names no key law and the request fails for something else."
+		}
+	]
+})

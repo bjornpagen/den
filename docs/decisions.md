@@ -362,25 +362,26 @@
   kind's Root and contained in it, so no derived root stands without its key, and a kind moved from a given input to a
   derived one is refused while any of its roots stands, as the record's move is (above). Its idempotency key is its
   key's fields' names and texts, framed, by the fields' names (runtime/bind.ts derivedKey), so a struct that only
-  reorders its fields keeps every key, and one that renames a field changes every key, which the key's own law is to
-  refuse once its fields can key it (each key text bounded at its natural limit, or an explicit SHA-256 digest of them
-  declared to key it, Bjorn's rule: no automatic key hashing; TODO.md); its exclusivity seat is named by its key, the
-  one value its request holds before its read (`SeatOf`). A scheduled root's input is derived, the one way: the
-  schedule's key is its instant and its roster's member (`scheduleKey`), each tick requesting a root per member by that
-  key alone, so no deploy that changes the input can stop the census. A root den requests (an operator's, a schedule's)
-  is written over den's role and served by it, which holds the read's level for reading and writes only the graph, so
-  the census still requests while the app's commits login is refused, and den's runtime login reads that level: a read
-  is written over the narrowest level that holds what it reads, and for an app whose lowest level holds every relation,
-  as metis's does, every scheduled flow's den role reads every app table until a read of no relation can be written over
-  grizzle's empty level (`schema.empty`, DENSCOPE's; TODO.md). A root the app's own write requests is written over the
-  app's schema, which holds the flow's graph and the read's level, so it composes into any of the app's writes over the
-  schema or a level above it, run by a role that holds the schema whole, sequenced after the strata whose facts it
-  derives from, as metis's proctored submit sequences essay grading's request after its grading; that role inserts the
-  rows the request inserts (the printed `RequestWrites`), a derived root's key and input among them, as it inserts a
-  given app root's, the app trusted with its own write and the generated request the one way it writes them. An ordinary
-  served read, under grizzle's read laws and its missed-index refusal. Every printed program binds den's own clock
-  parameter, `denNow`, so a request or a commit composed with the app's ChangeSets never meets a parameter of the app's
-  own of another type.
+  reorders its fields keeps every key, and one that renames a field changes every key, which the key's own law refuses
+  where a root of those fields stands: `<P><Root>Key` is keyed by its fields too, each text by an explicit SHA-256
+  digest den declares beside it (`<field>Digest`), since a key text holds no byte bound (Bjorn's rule: no automatic key
+  hashing), a key of no field refused, since its law keys what its root is requested by; its exclusivity seat is named
+  by its key, the one value its request holds before its read (`SeatOf`). A scheduled root's input is derived, the one
+  way: the schedule's key is its instant and its roster's member (`scheduleKey`), each tick requesting a root per member
+  by that key alone, so no deploy that changes the input can stop the census. A root den requests (an operator's, a
+  schedule's) is written over den's role and served by it, which holds the read's level for reading and writes only the
+  graph, so the census still requests while the app's commits login is refused, and den's runtime login reads that
+  level: a read is written over the narrowest level that holds what it reads, and for an app whose lowest level holds
+  every relation, as metis's does, every scheduled flow's den role reads every app table until a read of no relation can
+  be written over grizzle's empty level (`schema.empty`, DENSCOPE's; TODO.md). A root the app's own write requests is
+  written over the app's schema, which holds the flow's graph and the read's level, so it composes into any of the app's
+  writes over the schema or a level above it, run by a role that holds the schema whole, sequenced after the strata
+  whose facts it derives from, as metis's proctored submit sequences essay grading's request after its grading; that
+  role inserts the rows the request inserts (the printed `RequestWrites`), a derived root's key and input among them, as
+  it inserts a given app root's, the app trusted with its own write and the generated request the one way it writes
+  them. An ordinary served read, under grizzle's read laws and its missed-index refusal. Every printed program binds
+  den's own clock parameter, `denNow`, so a request or a commit composed with the app's ChangeSets never meets a
+  parameter of the app's own of another type.
   - Rejected: a schedule's own input function beside the read (two ways to derive an input); a derived request that
     names any field beside its key; recording a derived input, which no deploy that changes the read could compare;
     rosters, brands and doubles in a derived key or input: den lowers a roster or a brand to its own fragment's type,
@@ -388,7 +389,22 @@
     derived requests over the app's role, which would grant the app role inserts into every scheduled flow's roots and
     fail the census with the app's login; an app root's derived request written over the flow's app role, which no other
     role of the app's composes into its write; a placement level of its own for it, which every app would name as its
-    schema: a role holding that level whole holds the schema whole.
+    schema: a role holding that level whole holds the schema whole; a byte bound on each key text, which no app's key
+    declares and den cannot read off an Effect Schema string.
   - The key's text is a one-init cutover too: a scheduled root's key was its instant and its member joined by a colon,
     and is now `derivedKey`'s, so an installation from before it would request the current instant again under another
     root; every installation installs fresh from its one init (above).
+
+## Owner order, 2026-11-26: rooted reads
+
+- **Every read of a graph's rows states its root (grizzle main's ruling, 2026-11-26).** Every graph relation leads with
+  its root, the key of grizzle's unit `DenRoot` (DENSCOPE's (root, step) redraft), and a read by step or by scope alone
+  left the unit unbound: grizzle's unit census (UNITKEY) counted 492 of metis's statements whose den step reads never
+  stated their root, 69% of the statements PostgreSQL read with their unit unbound. Every printed read of a step's or a
+  scope's rows binds `root` beside it, and every anti-join probe inside a scan (a step with no Result, a root not
+  Admitted) matches on its row's root, so each is a probe of the unit's key; the ledger port takes a step or a scope by
+  its key (`StepKey`, `ScopeKey`), the root its caller holds: a step's wake carries its root beside the step, each wake
+  a spawn or an admission rings the root of the call that rang it, the scheduler's snapshot each pending step's root,
+  and a root's admission its own scope, which is its root.
+  - Rejected: reading a step's root first by the step alone, a probe with its unit unbound; a wake of a root's admission
+    naming its root apart, which is its scope.

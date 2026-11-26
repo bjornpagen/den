@@ -5,10 +5,12 @@ import {
 	closed,
 	closedId,
 	contained,
+	Crypto,
 	derived,
 	drawn,
 	fin,
 	fragment,
+	generated,
 	key,
 	mutable,
 	natural,
@@ -173,7 +175,12 @@ export const FanWantedInput = relation(
 	{ root: sha256, scope: sha256, batch: Text, size: pg.bigint },
 	["root", "scope"]
 )
-export const FanWantedKey = relation("FanWantedKey", { root: sha256, batch: Text }, ["root"])
+export const FanWantedKey = relation.generated(
+	"FanWantedKey",
+	{ root: sha256, batch: Text },
+	["root"],
+	(row) => ({ batchDigest: generated(sha256, Crypto.sha256(row.batch)) })
+)
 export const FanSquareOutput = relation(
 	"FanSquareOutput",
 	{ root: sha256, step: sha256, square: pg.bigint },
@@ -414,6 +421,7 @@ export const fanGraph = fragment(
 				"root"
 			)
 		),
+		key(on(FanWantedKey, "batchDigest")),
 		contained(
 			on(FanWantedKey, "root"),
 			on(

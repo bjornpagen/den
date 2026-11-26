@@ -73,7 +73,13 @@ export const aSeatGivenBackRingsTheStepsWaitingOnIt = property.explore(runs, {
 						assert.equal(squares.length, run.size)
 						const root = requested.scope
 						const wakeOf = (step: Sha256, attempt: bigint) =>
-							({ _tag: "Step", flow, step, attempt: AttemptNumber.make(Number(attempt)) }) as const
+							({
+								_tag: "Step",
+								flow,
+								root,
+								step,
+								attempt: AttemptNumber.make(Number(attempt))
+							}) as const
 						const holders = Arr.take(squares, poolSeats)
 						const held = yield* Effect.forEach(holders, (square) =>
 							Effect.gen(function* () {

@@ -158,9 +158,11 @@ export const aSourcesNamedDelayIsAWaitThatSpendsNothingUntilItSettles = property
 						const spawned = admitted.ending.kind === "admitted" ? admitted.ending.spawned.steps : []
 						assert.equal(spawned.length, 1)
 						const step: Sha256 = Option.getOrThrow(Arr.head(spawned)).step
+						const stepAt = { root: requested.scope, step }
 						const wakeOf = (attempt: number): Wake => ({
 							_tag: "Step",
 							flow,
+							root: requested.scope,
 							step,
 							attempt: AttemptNumber.make(attempt)
 						})
@@ -190,7 +192,7 @@ export const aSourcesNamedDelayIsAWaitThatSpendsNothingUntilItSettles = property
 									Arr.every(turn.onward, (o) => Duration.toMillis(o.delay) <= millis),
 									"the next attempt is rung no later than the source's delay"
 								)
-								const retries = yield* ledger.retriesOf(step)
+								const retries = yield* ledger.retriesOf(stepAt)
 								const mine = Arr.filter(retries, (r) => r.attempt === BigInt(attempt))
 								assert.deepEqual(
 									Arr.map(mine, (r) => r.why),
@@ -217,15 +219,15 @@ export const aSourcesNamedDelayIsAWaitThatSpendsNothingUntilItSettles = property
 							past ? "failed by its waits" : "done"
 						)
 						yield* ringOnAndDrain(ledgers, last)
-						const claims = yield* ledger.claimsOf(step)
+						const claims = yield* ledger.claimsOf(stepAt)
 						assert.equal(claims.length, waited.length + 1)
-						const waits = yield* ledger.retriesOf(step)
+						const waits = yield* ledger.retriesOf(stepAt)
 						assert.equal(
 							Arr.filter(waits, (r) => r.why === "later").length,
 							waited.length,
 							"each refusal it waited on is one wait on its source, and nothing else is"
 						)
-						const outcome = yield* ledger.resultOf(step)
+						const outcome = yield* ledger.resultOf(stepAt)
 						assert.deepEqual(outcome, Option.some(past ? ("failed" as const) : ("done" as const)))
 						const app = yield* openAuditor
 						const exhausted = yield* rows(
@@ -235,7 +237,10 @@ export const aSourcesNamedDelayIsAWaitThatSpendsNothingUntilItSettles = property
 							Arr.some(exhausted, (row) => Sha256.equals(row.step, step)),
 							past
 						)
-						const finished = yield* ledger.finished(requested.scope)
+						const finished = yield* ledger.finished({
+							root: requested.scope,
+							scope: requested.scope
+						})
 						assert.equal(finished, true)
 						const heard = yield* rows(app.workload.heard.once({ params: {}, facts: {} }))
 						assert.deepEqual(

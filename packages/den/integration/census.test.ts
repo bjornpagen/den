@@ -97,8 +97,7 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 							if (loss.deadHolder && Option.isSome(first)) {
 								c.note("a dead holder")
 								const step = first.value.step
-								const located = yield* chain.ledger.stepOf(step)
-								const root = Option.getOrThrow(located).root
+								const root = requested.scope
 								yield* chain.ledger.claim({
 									step,
 									root,
@@ -140,7 +139,10 @@ export const theCensusRingsEveryLostWakeAndReclaimsADeadHoldersStep = property.e
 								loss.pages
 							)
 							if (loss.deadHolder && Option.isSome(first)) {
-								const attempt = yield* chain.ledger.heldOf(first.value.step)
+								const attempt = yield* chain.ledger.heldOf({
+									root: requested.scope,
+									step: first.value.step
+								})
 								assert.deepEqual(attempt, Option.some(1n))
 							}
 						}),

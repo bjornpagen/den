@@ -149,7 +149,7 @@ const holdsOf = (seats: ReadonlyArray<SeatAt>) =>
 		)
 	)
 
-/** The ledger of the flow Review over its handles, with the requests of its roots. */
+/** The ledger of the flow Review over its handles, with the requests of the roots den requests. */
 export const reviewLedger = (h: ReviewHandles) => {
 	const noRows: Rows = {
 		ReviewScope: [],
@@ -256,10 +256,10 @@ export const reviewLedger = (h: ReviewHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readReviewAnalyzeInput = (step: Sha256) =>
+	const readReviewAnalyzeInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.reviewReadReviewAnalyzeInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.reviewReadReviewAnalyzeInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({
@@ -268,14 +268,14 @@ export const reviewLedger = (h: ReviewHandles) => {
 				question: found.question
 			}))
 		})
-	const readReviewGatherInput = (step: Sha256) =>
+	const readReviewGatherInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.reviewReadReviewGatherInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.reviewReadReviewGatherInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			const family0 = yield* Effect.map(
-				settled(h.den.reviewReadReviewGatherInputSizes.once({ params: { step }, facts: {} })),
+				settled(h.den.reviewReadReviewGatherInputSizes.once({ params: { root, step }, facts: {} })),
 				rowsOf
 			)
 			return Option.map(row, (found) => ({
@@ -283,10 +283,10 @@ export const reviewLedger = (h: ReviewHandles) => {
 				sizes: Arr.map(ordered(family0), (e) => e.value)
 			}))
 		})
-	const readReviewSaveInput = (step: Sha256) =>
+	const readReviewSaveInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.reviewReadReviewSaveInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.reviewReadReviewSaveInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({
@@ -296,10 +296,10 @@ export const reviewLedger = (h: ReviewHandles) => {
 				total: found.total
 			}))
 		})
-	const readReviewQuestionsInput = (scope: Sha256) =>
+	const readReviewQuestionsInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.reviewReadReviewQuestionsInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.reviewReadReviewQuestionsInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({
@@ -308,14 +308,16 @@ export const reviewLedger = (h: ReviewHandles) => {
 				size: found.size
 			}))
 		})
-	const readReviewReviewRunInput = (scope: Sha256) =>
+	const readReviewReviewRunInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.reviewReadReviewReviewRunInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.reviewReadReviewReviewRunInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			const family0 = yield* Effect.map(
-				settled(h.den.reviewReadReviewReviewRunInputSizes.once({ params: { scope }, facts: {} })),
+				settled(
+					h.den.reviewReadReviewReviewRunInputSizes.once({ params: { root, scope }, facts: {} })
+				),
 				rowsOf
 			)
 			return Option.map(row, (found) => ({
@@ -420,7 +422,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 		Analyze: runnerOf(
 			review.kinds[0],
 			{
-				input: (step) => readReviewAnalyzeInput(step),
+				input: ({ root, step }) => readReviewAnalyzeInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -451,7 +453,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 		Gather: runnerOf(
 			review.kinds[2],
 			{
-				input: (step) => readReviewGatherInput(step),
+				input: ({ root, step }) => readReviewGatherInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -541,7 +543,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 		Save: runnerOf(
 			review.kinds[3],
 			{
-				input: (step) => readReviewSaveInput(step),
+				input: ({ root, step }) => readReviewSaveInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -588,37 +590,43 @@ export const reviewLedger = (h: ReviewHandles) => {
 				}) => review.kinds[1].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.reviewStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.reviewStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readReviewQuestionsInput(scope)
+						const input = yield* readReviewQuestionsInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
 						const within = yield* Effect.map(
-							settled(h.den.reviewWithinOf.once({ params: { scope: scope }, facts: {} })),
+							settled(h.den.reviewWithinOf.once({ params: { root, scope }, facts: {} })),
 							one
 						)
 						if (Option.isNone(within)) {
 							return Option.none()
 						}
 						const outputAnalyzeRows = yield* Effect.map(
-							settled(h.den.reviewOutputsQuestionsAnalyze.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.reviewOutputsQuestionsAnalyze.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputAnalyzeRows = yield* Effect.map(
-							settled(h.den.reviewInputsQuestionsAnalyze.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.reviewInputsQuestionsAnalyze.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const failuresAnalyze = yield* Effect.map(
-							settled(h.den.reviewFailuresQuestionsAnalyze.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.reviewFailuresQuestionsAnalyze.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputAnalyze = (child: (typeof inputAnalyzeRows)[number]["step"]) =>
@@ -737,31 +745,35 @@ export const reviewLedger = (h: ReviewHandles) => {
 				}) => review.kinds[4].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.reviewStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.reviewStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readReviewReviewRunInput(scope)
+						const input = yield* readReviewReviewRunInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
 						const outputQuestionsRows = yield* Effect.map(
-							settled(h.den.reviewOutputsReviewRunQuestions.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.reviewOutputsReviewRunQuestions.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputQuestionsRows = yield* Effect.map(
-							settled(h.den.reviewInputsReviewRunQuestions.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.reviewInputsReviewRunQuestions.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const failuresQuestions = yield* Effect.map(
 							settled(
-								h.den.reviewFailuresReviewRunQuestions.once({ params: { scope }, facts: {} })
+								h.den.reviewFailuresReviewRunQuestions.once({ params: { root, scope }, facts: {} })
 							),
 							rowsOf
 						)
@@ -790,15 +802,19 @@ export const reviewLedger = (h: ReviewHandles) => {
 							))
 						]
 						const outputSaveRows = yield* Effect.map(
-							settled(h.den.reviewOutputsReviewRunSave.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.reviewOutputsReviewRunSave.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputSaveRows = yield* Effect.map(
-							settled(h.den.reviewInputsReviewRunSave.once({ params: { scope }, facts: {} })),
+							settled(h.den.reviewInputsReviewRunSave.once({ params: { root, scope }, facts: {} })),
 							rowsOf
 						)
 						const failuresSave = yield* Effect.map(
-							settled(h.den.reviewFailuresReviewRunSave.once({ params: { scope }, facts: {} })),
+							settled(
+								h.den.reviewFailuresReviewRunSave.once({ params: { root, scope }, facts: {} })
+							),
 							rowsOf
 						)
 						const inputSave = (child: (typeof inputSaveRows)[number]["step"]) =>
@@ -869,7 +885,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 			precondition: review.kinds[4].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readReviewReviewRunInput(scope)
+					const input = yield* readReviewReviewRunInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -946,38 +962,48 @@ export const reviewLedger = (h: ReviewHandles) => {
 			settled(h.commits.reviewAuthenticated.once({ params: {}, facts: {} }))
 		),
 		holds: Effect.map(settled(h.den.reviewHolds.once({ params: {}, facts: {} })), rowsOf),
-		stepOf: (step) =>
-			Effect.map(settled(h.den.reviewStepOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => ({
-					runner: runners[row.kind],
-					scope: row.scope,
-					root: row.root,
-					due: row.due
-				}))
+		stepOf: (at) =>
+			Effect.map(
+				settled(h.den.reviewStepOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) =>
+					Option.map(one(rows), (row) => ({
+						runner: runners[row.kind],
+						scope: row.scope,
+						due: row.due
+					}))
 			),
-		resultOf: (step) =>
-			Effect.map(settled(h.den.reviewResultOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.outcome)
+		resultOf: (at) =>
+			Effect.map(
+				settled(h.den.reviewResultOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) => Option.map(one(rows), (row) => row.outcome)
 			),
-		heldOf: (step) =>
-			Effect.map(settled(h.den.reviewHeldOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.attempt)
+		heldOf: (at) =>
+			Effect.map(
+				settled(h.den.reviewHeldOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) => Option.map(one(rows), (row) => row.attempt)
 			),
-		claimsOf: (step) =>
-			Effect.map(settled(h.den.reviewClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
-		retriesOf: (step) =>
-			Effect.map(settled(h.den.reviewRetriesOf.once({ params: { step }, facts: {} })), rowsOf),
-		fencedOf: (step) =>
-			Effect.map(settled(h.den.reviewFencedOf.once({ params: { step }, facts: {} })), rowsOf),
-		scopeOf: (scope) =>
+		claimsOf: (at) =>
+			Effect.map(
+				settled(h.den.reviewClaimsOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		retriesOf: (at) =>
+			Effect.map(
+				settled(
+					h.den.reviewRetriesOf.once({ params: { root: at.root, step: at.step }, facts: {} })
+				),
+				rowsOf
+			),
+		fencedOf: (at) =>
+			Effect.map(
+				settled(h.den.reviewFencedOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				const root = yield* Effect.map(
-					settled(h.den.reviewRootOf.once({ params: { scope: scope }, facts: {} })),
-					one
-				)
-				if (Option.isNone(root)) {
+				if (!Sha256.equals(root, scope)) {
 					const within = yield* Effect.map(
-						settled(h.den.reviewWithinOf.once({ params: { scope: scope }, facts: {} })),
+						settled(h.den.reviewWithinOf.once({ params: { root, scope }, facts: {} })),
 						one
 					)
 					return Option.map(within, (w): ScopeView => ({
@@ -987,12 +1013,19 @@ export const reviewLedger = (h: ReviewHandles) => {
 						parent: w.parent
 					}))
 				}
+				const standing = yield* Effect.map(
+					settled(h.den.reviewRootOf.once({ params: { root }, facts: {} })),
+					one
+				)
+				if (Option.isNone(standing)) {
+					return Option.none()
+				}
 				const admitted = yield* Effect.map(
-					settled(h.den.reviewAdmittedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.reviewAdmittedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const skipped = yield* Effect.map(
-					settled(h.den.reviewSkippedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.reviewSkippedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const admission: Admission = Option.isSome(admitted)
@@ -1003,30 +1036,32 @@ export const reviewLedger = (h: ReviewHandles) => {
 				return Option.some<ScopeView>({
 					place: "root",
 					scope,
-					kind: root.value.kind,
-					key: root.value.key,
-					at: root.value.at,
+					kind: standing.value.kind,
+					key: standing.value.key,
+					at: standing.value.at,
 					admission,
 					exclusive: Option.none(),
-					runner: roots[root.value.kind]
+					runner: roots[standing.value.kind]
 				})
 			}),
-		unended: (scope) =>
+		unended: ({ root, scope }) =>
 			Effect.flatMap(
-				h.den.reviewUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
+				h.den.reviewUnendedSteps.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
 				(steps) =>
 					steps
 						? Effect.succeed(true)
-						: h.den.reviewOpenChildren.once({ params: { scope }, facts: {} }).pipe(settled, any)
+						: h.den.reviewOpenChildren
+								.once({ params: { root, scope }, facts: {} })
+								.pipe(settled, any)
 			),
-		finished: (scope) =>
-			h.den.reviewFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
+		finished: ({ root, scope }) =>
+			h.den.reviewFinished.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.succeed([]),
 		awaits: ["Delivered"],
-		awaiting: (step) =>
-			h.den.reviewAwaitingOf.once({ params: { step }, facts: {} }).pipe(settled, any),
+		awaiting: ({ root, step }) =>
+			h.den.reviewAwaitingOf.once({ params: { root, step }, facts: {} }).pipe(settled, any),
 		ready: Effect.map(settled(h.den.reviewReady.once({ params: {}, facts: {} })), (rows) =>
-			Arr.map(rowsOf(rows), (row) => row.step)
+			Arr.map(rowsOf(rows), (row) => ({ root: row.root, step: row.step }))
 		),
 		claim: (row) =>
 			Effect.flatMap(
@@ -1142,6 +1177,7 @@ export const reviewLedger = (h: ReviewHandles) => {
 					return {
 						steps: Arr.map(read.steps, (s) => ({
 							step: s.step,
+							root: s.root,
 							runner: runners[s.kind],
 							scope: s.scope,
 							due: s.due
@@ -1177,7 +1213,6 @@ export const reviewLedger = (h: ReviewHandles) => {
 	}
 	return {
 		ledger,
-		request,
-		appRequests: {}
+		request
 	}
 }

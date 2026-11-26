@@ -18,6 +18,12 @@ CREATE FUNCTION "slice"."__constant_ib5zplua3f"() RETURNS bit varying LANGUAGE s
 
 REVOKE ALL ON FUNCTION "slice"."__constant_ib5zplua3f"() FROM PUBLIC;
 
+CREATE FUNCTION "slice"."__text_digest_2x5x4iwe4m"("text" "pg_catalog"."text") RETURNS "pg_catalog"."bytea"
+LANGUAGE sql IMMUTABLE STRICT PARALLEL SAFE
+RETURN "pg_catalog"."sha256"("pg_catalog"."convert_to"($1::"pg_catalog"."text", 'UTF8'::"pg_catalog"."text"));
+
+REVOKE ALL ON FUNCTION "slice"."__text_digest_2x5x4iwe4m"("pg_catalog"."text") FROM PUBLIC;
+
 CREATE FUNCTION "slice"."__assign_assignment_input_mode_names_w3ldolcqbb"() RETURNS "pg_catalog"."name"[]
 LANGUAGE sql IMMUTABLE PARALLEL SAFE
 RETURN '{"Nearest","Within"}'::"pg_catalog"."name"[];
@@ -926,13 +932,13 @@ CREATE TYPE "slice"."__row_news_clock_failed_banad75ik7" AS ("root" "pg_catalog"
 
 REVOKE ALL ON TYPE "slice"."__row_news_clock_failed_banad75ik7" FROM PUBLIC;
 
-CREATE TYPE "slice"."__row_news_clock_hourly_key_i76xjn5tfb" AS ("at" bigint, "member" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."bytea");
+CREATE TYPE "slice"."__row_news_clock_hourly_key_bvqnh3puop" AS ("at" bigint, "member" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "member_digest" "pg_catalog"."bytea", "root" "pg_catalog"."bytea");
 
-REVOKE ALL ON TYPE "slice"."__row_news_clock_hourly_key_i76xjn5tfb" FROM PUBLIC;
+REVOKE ALL ON TYPE "slice"."__row_news_clock_hourly_key_bvqnh3puop" FROM PUBLIC;
 
-CREATE TYPE "slice"."__row_olds_clock_hourly_key_oaljgydoez" AS ("at" bigint, "member" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."bytea");
+CREATE TYPE "slice"."__row_olds_clock_hourly_key_bjxhqpm6xx" AS ("at" bigint, "member" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "member_digest" "pg_catalog"."bytea", "root" "pg_catalog"."bytea");
 
-REVOKE ALL ON TYPE "slice"."__row_olds_clock_hourly_key_oaljgydoez" FROM PUBLIC;
+REVOKE ALL ON TYPE "slice"."__row_olds_clock_hourly_key_bjxhqpm6xx" FROM PUBLIC;
 
 CREATE TYPE "slice"."__row_olds_clock_requested_with_3fdps2cdvj" AS ("fingerprint" "pg_catalog"."bytea", "input" "pg_catalog"."bytea", "root" "pg_catalog"."bytea");
 
@@ -1014,13 +1020,13 @@ CREATE TYPE "slice"."__row_olds_fan_step_e5cdd74oi6" AS ("due" bigint, "kind" sm
 
 REVOKE ALL ON TYPE "slice"."__row_olds_fan_step_e5cdd74oi6" FROM PUBLIC;
 
-CREATE TYPE "slice"."__row_news_fan_wanted_key_msnlbwd4zc" AS ("batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."bytea");
+CREATE TYPE "slice"."__row_news_fan_wanted_key_knwnlixix2" AS ("batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "batch_digest" "pg_catalog"."bytea", "root" "pg_catalog"."bytea");
 
-REVOKE ALL ON TYPE "slice"."__row_news_fan_wanted_key_msnlbwd4zc" FROM PUBLIC;
+REVOKE ALL ON TYPE "slice"."__row_news_fan_wanted_key_knwnlixix2" FROM PUBLIC;
 
-CREATE TYPE "slice"."__row_olds_fan_wanted_key_flihgepgsp" AS ("batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "root" "pg_catalog"."bytea");
+CREATE TYPE "slice"."__row_olds_fan_wanted_key_mqsjn4ztac" AS ("batch" "pg_catalog"."text" COLLATE "pg_catalog"."pg_c_utf8", "batch_digest" "pg_catalog"."bytea", "root" "pg_catalog"."bytea");
 
-REVOKE ALL ON TYPE "slice"."__row_olds_fan_wanted_key_flihgepgsp" FROM PUBLIC;
+REVOKE ALL ON TYPE "slice"."__row_olds_fan_wanted_key_mqsjn4ztac" FROM PUBLIC;
 
 CREATE TYPE "slice"."__row_olds_fan_within_igrko3tlla" AS ("kind" smallint, "parent" "pg_catalog"."bytea", "root" "pg_catalog"."bytea", "scope" "pg_catalog"."bytea");
 

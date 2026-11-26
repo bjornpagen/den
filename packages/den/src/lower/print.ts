@@ -248,16 +248,19 @@ const fragmentImportsOf = (l: Lowered): ReadonlyArray<string> => {
 		law.kind === "contained" ? [law.from, law.to] : law.kind === "key" ? [law.side] : []
 	)
 	const seated = Option.isSome(l.seats)
+	const digested = Arr.some(l.relations, (r) => Arr.isReadonlyArrayNonEmpty(digestsOf(l, r.name)))
 	return [
 		...(seated || Arr.some(l.laws, (law) => law.kind === "check") ? ["check"] : []),
 		"closed",
 		...(used("closed") ? ["closedId"] : []),
 		"contained",
 		...(Arr.isReadonlyArrayNonEmpty(l.brands) ? ["contract"] : []),
+		...(digested ? ["Crypto"] : []),
 		...(seated ? ["derived"] : []),
 		...(used("drawn") ? ["drawn"] : []),
 		...(Arr.some(l.laws, (law) => law.kind === "ordered") ? ["fin"] : []),
 		"fragment",
+		...(digested ? ["generated"] : []),
 		"key",
 		"mutable",
 		...(used("natural") || used("drawn") ? ["natural"] : []),
@@ -306,6 +309,7 @@ const naming = (l: Lowered) => {
 		commitWorkload: n("Commits"),
 		requests: n("Requests"),
 		requestWrites: n("RequestWrites"),
+		appRequests: n("AppRequests"),
 		handles: `${l.prefix}Handles`,
 		ledger: n("Ledger"),
 		program: n
@@ -368,6 +372,18 @@ const requestedRowsOf = (P: string, j: JoinIR): ReadonlyArray<readonly [string, 
 const derivedKeyOf = (j: JoinIR): Option.Option<KeyIR> =>
 	Option.flatMap(j.root, (r) =>
 		r.from.kind === "derived" ? Option.some(r.from.key) : Option.none()
+	)
+
+/**
+ * The fields a derived root's key keeps beside its text fields as their digests (lower/fragment.ts KeyIR `digests`),
+ * none for any other relation.
+ */
+const digestsOf = (l: Lowered, relation: string): KeyIR["digests"] =>
+	Arr.flatMap(l.joins, (j) =>
+		Option.match(derivedKeyOf(j), {
+			onNone: () => [],
+			onSome: (key) => (key.relation === relation ? key.digests : [])
+		})
 	)
 
 /** Whether a root's input is derived from its key. */
@@ -765,9 +781,9 @@ export const printFragment = (l: Lowered, place: Placement): string => {
 		...Arr.map(
 			l.relations,
 			(r) =>
-				`${Arr.contains(nested, r.name) ? "const" : "export const"} ${r.name} = relation(${q(r.name)}, { ${commas(
+				`${Arr.contains(nested, r.name) ? "const" : "export const"} ${r.name} = ${Arr.isReadonlyArrayNonEmpty(digestsOf(l, r.name)) ? "relation.generated" : "relation"}(${q(r.name)}, { ${commas(
 					Arr.map(r.fields, (f) => `${f.name}: ${fieldExpr(f.type)}`)
-				)} }, [${commas(Arr.map(r.key, q))}])`
+				)} }, [${commas(Arr.map(r.key, q))}]${Arr.match(digestsOf(l, r.name), { onEmpty: () => "", onNonEmpty: (digests) => `, (row) => ({ ${commas(Arr.map(digests, (d) => `${d.name}: generated(sha256, Crypto.sha256(row.${d.of}))`))} })` })})`
 		),
 		"",
 		...Arr.flatMap(readsOfFlow(l), ({ step, read }) => [
@@ -840,15 +856,14 @@ const allOf = (role: string, relation: string, fields: ReadonlyArray<string>): s
 })`
 
 /**
- * A query over `role` of the rows of `relation` whose field `owner` the parameter of its name holds, every field: a
- * body's key holds its root before its owner, so a read by its owner alone is a query served by an index generate derives
- * for it.
+ * A query over `role` of the rows of `relation` under the root and the owner (`owner`) its parameters of their names
+ * hold, every field: a body's key holds its root before its owner, so the read is one probe of that key.
  */
 const ownedBy = (l: Lowered, role: string, relation: string, owner: string): string => {
 	const fields = fieldNamesOf(l, relation)
 	return `query(${role}).rule((r) => {
 	const { ${entries(fields)} } = v(${relation}, ${q(lower1(relation))})
-	return r.match(${relation}, { ${entries(fields)} }).where(r.eq(${bound(owner)}, r.param(${q(owner)}, ${relation}.fields.${owner}))).find({ ${entries(fields)} })
+	return r.match(${relation}, { ${entries(fields)} }).where(r.eq(${bound("root")}, r.param("root", ${relation}.fields.root)), r.eq(${bound(owner)}, r.param(${q(owner)}, ${relation}.fields.${owner}))).find({ ${entries(fields)} })
 })`
 }
 
@@ -1036,6 +1051,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	)
 	const scopeParam = `r.param("scope", ${r("Scope")}.fields.scope)`
 	const stepParam = `r.param("step", ${r("Step")}.fields.step)`
+	/** The root of the graph a read by step or by scope reads: the unit's key, which every graph relation leads with. */
+	const rootParam = `r.param("root", ${r("Scope")}.fields.root)`
 	const den = denRelationsOf(l)
 	const idleEntries = Arr.flatMap(l.idle, (f) => [
 		`${f}Step: ${app}.relations.${f}Step`,
@@ -1060,11 +1077,11 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 					s.awaits,
 					(a) => `
 	.rule((r) => {
-		const { ${entries(["step", ...keyColumns([a])])} } = v(${s.input.relation}, "input")
+		const { ${entries(["root", "step", ...keyColumns([a])])} } = v(${s.input.relation}, "input")
 		return r
-			.match(${s.input.relation}, { ${entries(["step", ...keyColumns([a])])} })
-			.where(${commas([`r.not(${r("Result")}, { step })`, `r.not(${app}.relations.${a.relation}, ${keyOf(a)})`, ...also])})
-			.find({ step })
+			.match(${s.input.relation}, { ${entries(["root", "step", ...keyColumns([a])])} })
+			.where(${commas([...also, `r.not(${r("Result")}, { root, step })`, `r.not(${app}.relations.${a.relation}, ${keyOf(a)})`])})
+			.find({ root, step })
 	})`
 				)
 			),
@@ -1079,9 +1096,9 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			awaiting,
 			(s) => `
 	.rule((r) => {
-		const { ${entries(["step", ...keyColumns(s.awaits)])} } = v(${s.input.relation}, "input")
+		const { ${entries(["root", "step", ...keyColumns(s.awaits)])} } = v(${s.input.relation}, "input")
 		return r
-			.match(${s.input.relation}, { ${entries(["step", ...keyColumns(s.awaits)])} })${Arr.join(
+			.match(${s.input.relation}, { ${entries(["root", "step", ...keyColumns(s.awaits)])} })${Arr.join(
 				Arr.map(
 					s.awaits,
 					(a) => `
@@ -1089,8 +1106,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 				),
 				""
 			)}
-			.where(r.not(${r("Result")}, { step }), r.not(${r("Claim")}, { step }))
-			.find({ step })
+			.where(r.not(${r("Result")}, { root, step }), r.not(${r("Claim")}, { root, step }))
+			.find({ root, step })
 	})`
 		),
 		""
@@ -1119,30 +1136,30 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		pending: [
 			n.program("PendingRead"),
 			`query(${n.den}).rule((r) => {
-	const { step, kind, scope, due } = v(${r("Step")}, "step")
-	return r.match(${r("Step")}, { step, kind, scope, due }).where(r.not(${r("Result")}, { step })).find({ step, kind, scope, due })
+	const { root, step, kind, scope, due } = v(${r("Step")}, "step")
+	return r.match(${r("Step")}, { root, step, kind, scope, due }).where(r.not(${r("Result")}, { root, step })).find({ root, step, kind, scope, due })
 })`
 		],
 		requested: [
 			n.program("RequestedRead"),
 			`query(${n.den}).rule((r) => {
 	const { scope } = v(${r("Scope")}, "scope")
-	return r.match(${r("Root")}, { root: scope }).match(${r("Scope")}, { root: scope, scope }).where(r.not(${r("Admitted")}, { scope }), r.not(${r("Skipped")}, { scope })).find({ scope })
+	return r.match(${r("Root")}, { root: scope }).match(${r("Scope")}, { root: scope, scope }).where(r.not(${r("Admitted")}, { root: scope, scope }), r.not(${r("Skipped")}, { root: scope, scope })).find({ scope })
 })`
 		],
 		running: [
 			n.program("RunningRead"),
 			`query(${n.den}).rule((r) => {
-	const { scope, step } = v(${r("Finish")}, "finish")
-	return r.match(${r("Finish")}, { scope, step }).where(r.not(${r("Result")}, { step })).find({ scope })
+	const { root, scope, step } = v(${r("Finish")}, "finish")
+	return r.match(${r("Finish")}, { root, scope, step }).where(r.not(${r("Result")}, { root, step })).find({ scope })
 })`
 		]
 	} as const
 	const busyRead = (f: string): readonly [string, string] => [
 		n.program(`Busy${f}Read`),
 		`query(${n.den}).rule((r) => {
-	const { step } = v(${app}.relations.${f}Step, "step")
-	return r.match(${app}.relations.${f}Step, { step }).where(r.not(${app}.relations.${f}Result, { step })).find({ step })
+	const { root, step } = v(${app}.relations.${f}Step, "step")
+	return r.match(${app}.relations.${f}Step, { root, step }).where(r.not(${app}.relations.${f}Result, { root, step })).find({ step })
 })`
 	]
 	/** The instant each environment's latest promotion was served from: the one its deployment serves. */
@@ -1178,16 +1195,16 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	const snapshotOf = `query(${n.den}).reads({ ${commas([
 		`steps: ${shared.pending}`,
 		`claims: query(${n.den}).rule((r) => {
-	const { step, attempt, until } = v(${r("Claim")}, "claim")
-	return r.match(${r("Claim")}, { step, attempt, until }).where(r.not(${r("Result")}, { step })).find({ step, attempt, until })
+	const { root, step, attempt, until } = v(${r("Claim")}, "claim")
+	return r.match(${r("Claim")}, { root, step, attempt, until }).where(r.not(${r("Result")}, { root, step })).find({ step, attempt, until })
 })`,
 		`retries: query(${n.den}).rule((r) => {
-	const { step, attempt, at, why } = v(${r("Retry")}, "retry")
-	return r.match(${r("Retry")}, { step, attempt, at, why }).where(r.not(${r("Result")}, { step })).find({ step, attempt, at, why })
+	const { root, step, attempt, at, why } = v(${r("Retry")}, "retry")
+	return r.match(${r("Retry")}, { root, step, attempt, at, why }).where(r.not(${r("Result")}, { root, step })).find({ step, attempt, at, why })
 })`,
 		`fenced: query(${n.den}).rule((r) => {
-	const { step, attempt } = v(${r("Fenced")}, "fenced")
-	return r.match(${r("Fenced")}, { step, attempt }).where(r.not(${r("Result")}, { step })).find({ step, attempt })
+	const { root, step, attempt } = v(${r("Fenced")}, "fenced")
+	return r.match(${r("Fenced")}, { root, step, attempt }).where(r.not(${r("Result")}, { root, step })).find({ step, attempt })
 })`,
 		`requested: ${shared.requested}`,
 		`running: ${shared.running}`,
@@ -1277,7 +1294,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		[n.program("AdmittedOf"), ownedBy(l, n.graph, r("Admitted"), "scope")],
 		[
 			n.program("RootOf"),
-			standingRootsOf(n.graph, r, [`r.eq(scope, r.param("scope", ${r("Root")}.fields.root))`])
+			standingRootsOf(n.graph, r, [`r.eq(scope, r.param("root", ${r("Root")}.fields.root))`])
 		],
 		...(exclusiveKeys
 			? [[n.program("ExclusiveKeyOf"), ownedBy(l, n.graph, r("ExclusiveKey"), "scope")] as const]
@@ -1297,31 +1314,31 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		[
 			n.program("ClaimsOf"),
 			`query(${n.graph}).rule((r) => {
-	const { step, attempt, until } = v(${r("Claim")}, "claim")
-	return r.match(${r("Claim")}, { step, attempt, until }).where(r.eq(step, ${stepParam})).find({ step, attempt, until })
+	const { root, step, attempt, until } = v(${r("Claim")}, "claim")
+	return r.match(${r("Claim")}, { root, step, attempt, until }).where(r.eq(root, ${rootParam}), r.eq(step, ${stepParam})).find({ step, attempt, until })
 })`
 		],
 		[
 			n.program("RetriesOf"),
 			`query(${n.graph}).rule((r) => {
-	const { step, attempt, at, why } = v(${r("Retry")}, "retry")
-	return r.match(${r("Retry")}, { step, attempt, at, why }).where(r.eq(step, ${stepParam})).find({ step, attempt, at, why })
+	const { root, step, attempt, at, why } = v(${r("Retry")}, "retry")
+	return r.match(${r("Retry")}, { root, step, attempt, at, why }).where(r.eq(root, ${rootParam}), r.eq(step, ${stepParam})).find({ step, attempt, at, why })
 })`
 		],
 		[
 			n.program("FencedOf"),
 			`query(${n.graph}).rule((r) => {
-	const { step, attempt } = v(${r("Fenced")}, "fenced")
-	return r.match(${r("Fenced")}, { step, attempt }).where(r.eq(step, ${stepParam})).find({ step, attempt })
+	const { root, step, attempt } = v(${r("Fenced")}, "fenced")
+	return r.match(${r("Fenced")}, { root, step, attempt }).where(r.eq(root, ${rootParam}), r.eq(step, ${stepParam})).find({ step, attempt })
 })`
 		],
 		[
 			n.program("UnendedSteps"),
 			`query(${n.graph}).rule((r) => {
-	const { step, scope } = v(${r("Step")}, "step")
+	const { root, step, scope } = v(${r("Step")}, "step")
 	return r
-		.match(${r("Step")}, { step, scope })
-		.where(r.eq(scope, ${scopeParam}), r.not(${r("Result")}, { step }), r.not(${r("Finish")}, { scope, step }))
+		.match(${r("Step")}, { root, step, scope })
+		.where(r.eq(root, ${rootParam}), r.eq(scope, ${scopeParam}), r.not(${r("Result")}, { root, step }), r.not(${r("Finish")}, { root, scope, step }))
 		.find({ step })
 })`
 		],
@@ -1330,12 +1347,12 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 					[
 						n.program("OpenChildren"),
 						`query(${n.graph}).rule((r) => {
-	const { scope, parent } = v(${r("Within")}, "within")
+	const { root, scope, parent } = v(${r("Within")}, "within")
 	const { step } = v(${r("Finish")}, "finish")
 	return r
-		.match(${r("Within")}, { scope, parent })
-		.match(${r("Finish")}, { scope, step })
-		.where(r.eq(parent, ${scopeParam}), r.not(${r("Result")}, { step }))
+		.match(${r("Within")}, { root, scope, parent })
+		.match(${r("Finish")}, { root, scope, step })
+		.where(r.eq(root, ${rootParam}), r.eq(parent, ${scopeParam}), r.not(${r("Result")}, { root, step }))
 		.find({ child: scope })
 })`
 					] as const
@@ -1344,8 +1361,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 		[
 			n.program("Finished"),
 			`query(${n.graph}).rule((r) => {
-	const { scope, step } = v(${r("Finish")}, "finish")
-	return r.match(${r("Finish")}, { scope, step }).match(${r("Result")}, { step }).where(r.eq(scope, ${scopeParam})).find({ step })
+	const { root, scope, step } = v(${r("Finish")}, "finish")
+	return r.match(${r("Finish")}, { root, scope, step }).match(${r("Result")}, { root, step }).where(r.eq(root, ${rootParam}), r.eq(scope, ${scopeParam})).find({ step })
 })`
 		],
 		[n.program("Pending"), shared.pending],
@@ -1365,7 +1382,7 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			? [
 					[
 						n.program("AwaitingOf"),
-						awaitingOf([`r.eq(step, r.param("step", ${r("Step")}.fields.step))`])
+						awaitingOf([`r.eq(root, ${rootParam})`, `r.eq(step, ${stepParam})`])
 					] as const,
 					[n.program("Ready"), readyOf] as const
 				]
@@ -1425,15 +1442,15 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 			const ofKind =
 				read.kind === "step"
 					? {
-							bind: `const { step, scope } = v(${r("Step")}, "step")`,
-							match: `.match(${r("Step")}, { step, kind: ${q(read.name)}, scope })`,
+							bind: `const { root, step, scope } = v(${r("Step")}, "step")`,
+							match: `.match(${r("Step")}, { root, step, kind: ${q(read.name)}, scope })`,
 							owner: "scope"
 						}
 					: {
-							bind: `const { scope, parent } = v(${r("Within")}, "within")
+							bind: `const { root, scope, parent } = v(${r("Within")}, "within")
 	const { step } = v(${r("Finish")}, "finish")`,
-							match: `.match(${r("Within")}, { scope, parent, kind: ${q(read.name)} })
-		.match(${r("Finish")}, { scope, step })`,
+							match: `.match(${r("Within")}, { root, scope, parent, kind: ${q(read.name)} })
+		.match(${r("Finish")}, { root, scope, step })`,
 							owner: "parent"
 						}
 			/** A set read of the relation `relation` owned by `by`, the step or the scope it is keyed by, of `fields`, by step. */
@@ -1451,8 +1468,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	}
 	return r
 		${ofKind.match}
-		.match(${relation}, { ${entries([by, ...fields])} })
-		.where(r.eq(${ofKind.owner}, ${scopeParam}))
+		.match(${relation}, { ${entries(["root", by, ...fields])} })
+		.where(r.eq(root, ${rootParam}), r.eq(${ofKind.owner}, ${scopeParam}))
 		.find({ ${entries(["step", ...fields])} })
 })`
 			/**
@@ -1519,8 +1536,8 @@ export const printPrograms = (l: Lowered, place: Placement): string => {
 	${ofKind.bind}
 	return r
 		${ofKind.match}
-		.match(${r("Result")}, { step, outcome: "failed" })
-		.where(r.eq(${ofKind.owner}, ${scopeParam}))
+		.match(${r("Result")}, { root, step, outcome: "failed" })
+		.where(r.eq(root, ${rootParam}), r.eq(${ofKind.owner}, ${scopeParam}))
 		.find({ step })
 })`
 			])
@@ -1821,10 +1838,10 @@ const ownedOf = (
 	relation: string,
 	fields: ReadonlyArray<string>
 ): string => {
-	const all = [v.owner, ...fields]
+	const all = ["root", v.owner, ...fields]
 	return `query(${graph}).rule((r) => {
 	const { ${entries(all)} } = v(${relation}, "part")
-	return r.match(${relation}, { ${entries(all)} }).where(r.eq(${bound(v.owner)}, r.param(${q(v.owner)}, ${relation}.fields.${v.owner}))).find({ ${entries(all)} })
+	return r.match(${relation}, { ${entries(all)} }).where(r.eq(${bound("root")}, r.param("root", ${relation}.fields.root)), r.eq(${bound(v.owner)}, r.param(${q(v.owner)}, ${relation}.fields.${v.owner}))).find({ ${entries(all)} })
 })`
 }
 
@@ -1863,28 +1880,29 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"\tspawned: { steps: [...a.spawned.steps, ...b.spawned.steps], finishes: [...a.spawned.finishes, ...b.spawned.finishes] }",
 		"})"
 	])
-	const keyRead = (handle: string, key: string, owner: "step" | "scope") =>
-		`Effect.map(settled(h.den.${handle}.once({ params: { ${owner}: ${key} }, facts: {} })), one)`
+	/** A read of one row by its printed parameters, `params`, its root among them where the row is a graph body's. */
+	const keyRead = (handle: string, params: string) =>
+		`Effect.map(settled(h.den.${handle}.once({ params: ${params}, facts: {} })), one)`
 	const readerOf = (v: ValueIR): string => `read${v.relation}`
 	const readerDef = (v: ValueIR): string => {
 		const body = lines([
 			"Effect.gen(function* () {",
-			`\tconst row = yield* ${keyRead(n.program(`Read${v.relation}`), v.owner, v.owner)}`,
+			`\tconst row = yield* ${keyRead(n.program(`Read${v.relation}`), `{ root, ${v.owner} }`)}`,
 			...Arr.map(
 				v.sidecars,
 				(s, i) =>
-					`\tconst side${i} = yield* ${keyRead(n.program(`Read${s.relation}`), v.owner, v.owner)}`
+					`\tconst side${i} = yield* ${keyRead(n.program(`Read${s.relation}`), `{ root, ${v.owner} }`)}`
 			),
 			...Arr.map(
 				v.families,
 				(f, i) =>
-					`\tconst family${i} = yield* Effect.map(settled(h.den.${n.program(`Read${f.relation}`)}.once({ params: { ${v.owner} }, facts: {} })), rowsOf)`
+					`\tconst family${i} = yield* Effect.map(settled(h.den.${n.program(`Read${f.relation}`)}.once({ params: { root, ${v.owner} }, facts: {} })), rowsOf)`
 			),
 			...Arr.flatMap(v.unions, (u, i) =>
 				Arr.map(
 					u.variants,
 					(vr, j) =>
-						`\tconst variant${i}_${j} = yield* ${keyRead(n.program(`Read${vr.relation}`), v.owner, v.owner)}`
+						`\tconst variant${i}_${j} = yield* ${keyRead(n.program(`Read${vr.relation}`), `{ root, ${v.owner} }`)}`
 				)
 			),
 			`\treturn Option.${unioned(v) ? "flatMap" : "map"}(row, (found) => ${valueOf(v, "found", {
@@ -1894,7 +1912,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			})})`,
 			"})"
 		])
-		return `const ${readerOf(v)} = (${v.owner}: Sha256) => ${indented("\t")(body)}`
+		return `const ${readerOf(v)} = (root: Sha256, ${v.owner}: Sha256) => ${indented("\t")(body)}`
 	}
 	/**
 	 * A child scope opened under `owner` with key `key` and input `input`, admitted in the same call: its Scope, Within,
@@ -2071,7 +2089,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			: "read: () => Effect.succeed({})"
 		return lines([
 			`runnerOf(${kindAt(s.index)}, {`,
-			`\tinput: (step) => ${readerOf(s.input)}(step),`,
+			`\tinput: ({ root, step }) => ${readerOf(s.input)}(root, step),`,
 			`\t${read},`,
 			`\t${indented("\t")(
 				commitPort(s.name, s.output, s.edges, s.writes, recordingOf(s, "done.rows", "done.turn"), {
@@ -2090,7 +2108,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const finishRunner = (j: JoinIR): string => {
 		const reads = Arr.map(j.finish.reads, (read) => {
 			const all = (name: string, program: string) =>
-				`\t\tconst ${name} = yield* Effect.map(settled(h.den.${n.program(program)}.once({ params: { scope }, facts: {} })), rowsOf)`
+				`\t\tconst ${name} = yield* Effect.map(settled(h.den.${n.program(program)}.once({ params: { root, scope }, facts: {} })), rowsOf)`
 			/** The set reads of every relation of `value`, under `stem`, each into a constant named from `at`. */
 			const loaded = (value: ValueIR, stem: string, at: string): ReadonlyArray<string> => [
 				all(`${at}Rows`, stem),
@@ -2154,19 +2172,19 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			`\t\tbody: (read: { readonly input: Parameters<(typeof ${kind})["start"]>[0]; readonly endings: Parameters<(typeof ${kind})["finish"]["body"]>[1]${spawns ? "; readonly parent: Sha256" : ""} }) => ${kind}.finish.body(read.input, read.endings)`,
 			"\t},",
 			"\t{",
-			"\t\tinput: (step) => Effect.gen(function* () {",
-			`\t\tconst located = yield* Effect.map(settled(h.den.${n.program("StepOf")}.once({ params: { step }, facts: {} })), one)`,
+			"\t\tinput: ({ root, step }) => Effect.gen(function* () {",
+			`\t\tconst located = yield* Effect.map(settled(h.den.${n.program("StepOf")}.once({ params: { root, step }, facts: {} })), one)`,
 			"\t\tif (Option.isNone(located)) {",
 			"\t\t\treturn Option.none()",
 			"\t\t}",
 			"\t\tconst scope = located.value.scope",
-			`\t\tconst input = yield* ${readerOf(j.input)}(scope)`,
+			`\t\tconst input = yield* ${readerOf(j.input)}(root, scope)`,
 			"\t\tif (Option.isNone(input)) {",
 			"\t\t\treturn Option.none()",
 			"\t\t}",
 			...(spawns
 				? [
-						`\t\tconst within = yield* ${keyRead(n.program("WithinOf"), "scope", "scope")}`,
+						`\t\tconst within = yield* ${keyRead(n.program("WithinOf"), "{ root, scope }")}`,
 						"\t\tif (Option.isNone(within)) {",
 						"\t\t\treturn Option.none()",
 						"\t\t}"
@@ -2195,7 +2213,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 	const admitOf = (j: JoinIR): string =>
 		lines([
 			"(scope: Sha256) => Effect.gen(function* () {",
-			`\tconst input = yield* ${readerOf(j.input)}(scope)`,
+			`\tconst input = yield* ${readerOf(j.input)}(scope, scope)`,
 			"\tif (Option.isNone(input)) {",
 			"\t\treturn Option.none()",
 			"\t}",
@@ -2321,7 +2339,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 			: "\t\t\tonNone: (): ReadonlyArray<ScopeView> => []",
 		"\t\t})",
 		"\treturn {",
-		"\t\tsteps: Arr.map(read.steps, (s) => ({ step: s.step, runner: runners[s.kind], scope: s.scope, due: s.due })),",
+		"\t\tsteps: Arr.map(read.steps, (s) => ({ step: s.step, root: s.root, runner: runners[s.kind], scope: s.scope, due: s.due })),",
 		"\t\tclaims: read.claims,",
 		"\t\tretries: read.retries,",
 		"\t\tfenced: read.fenced,",
@@ -2473,7 +2491,14 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 				]
 			: []),
 		"",
-		`/** The ledger of the flow ${P} over its handles, with the requests of its roots. */`,
+		...(Arr.isReadonlyArrayNonEmpty(appRoots)
+			? [
+					`/** Each app root's request as a host names it, by the root: the flow, the root's scope, and the parameters of its printed request (\`${n.requests}\`), which the app's write commits beside its own and rings once committed, with no ledger opened. */`,
+					`export const ${n.appRequests} = Object.freeze({ ${commas(Arr.map(appRoots, requestOf))} })`,
+					""
+				]
+			: []),
+		`/** The ledger of the flow ${P} over its handles, with the requests of the roots den requests. */`,
 		`export const ${n.ledger} = (h: ${n.handles}) => {`,
 		`\t${noRows}`,
 		"\tconst nothingGrown: Grown = { rows: noRows, steps: [], timed: [], spawned: { steps: [], finishes: [] } }",
@@ -2511,41 +2536,44 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		resources
 			? `\t\tholds: Effect.map(settled(h.den.${n.program("Holds")}.once({ params: {}, facts: {} })), rowsOf),`
 			: "\t\tholds: Effect.succeed([]),",
-		`\t\tstepOf: (step) => Effect.map(settled(h.den.${n.program("StepOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => ({ runner: runners[row.kind], scope: row.scope, root: row.root, due: row.due }))),`,
-		`\t\tresultOf: (step) => Effect.map(settled(h.den.${n.program("ResultOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.outcome)),`,
-		`\t\theldOf: (step) => Effect.map(settled(h.den.${n.program("HeldOf")}.once({ params: { step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.attempt)),`,
-		`\t\tclaimsOf: (step) => Effect.map(settled(h.den.${n.program("ClaimsOf")}.once({ params: { step }, facts: {} })), rowsOf),`,
-		`\t\tretriesOf: (step) => Effect.map(settled(h.den.${n.program("RetriesOf")}.once({ params: { step }, facts: {} })), rowsOf),`,
-		`\t\tfencedOf: (step) => Effect.map(settled(h.den.${n.program("FencedOf")}.once({ params: { step }, facts: {} })), rowsOf),`,
-		"\t\tscopeOf: (scope) => Effect.gen(function* () {",
-		`\t\t\tconst root = yield* ${keyRead(n.program("RootOf"), "scope", "scope")}`,
-		"\t\t\tif (Option.isNone(root)) {",
+		`\t\tstepOf: (at) => Effect.map(settled(h.den.${n.program("StepOf")}.once({ params: { root: at.root, step: at.step }, facts: {} })), (rows) => Option.map(one(rows), (row) => ({ runner: runners[row.kind], scope: row.scope, due: row.due }))),`,
+		`\t\tresultOf: (at) => Effect.map(settled(h.den.${n.program("ResultOf")}.once({ params: { root: at.root, step: at.step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.outcome)),`,
+		`\t\theldOf: (at) => Effect.map(settled(h.den.${n.program("HeldOf")}.once({ params: { root: at.root, step: at.step }, facts: {} })), (rows) => Option.map(one(rows), (row) => row.attempt)),`,
+		`\t\tclaimsOf: (at) => Effect.map(settled(h.den.${n.program("ClaimsOf")}.once({ params: { root: at.root, step: at.step }, facts: {} })), rowsOf),`,
+		`\t\tretriesOf: (at) => Effect.map(settled(h.den.${n.program("RetriesOf")}.once({ params: { root: at.root, step: at.step }, facts: {} })), rowsOf),`,
+		`\t\tfencedOf: (at) => Effect.map(settled(h.den.${n.program("FencedOf")}.once({ params: { root: at.root, step: at.step }, facts: {} })), rowsOf),`,
+		"\t\tscopeOf: ({ root, scope }) => Effect.gen(function* () {",
+		"\t\t\tif (!Sha256.equals(root, scope)) {",
 		...(children
 			? [
-					`\t\t\t\tconst within = yield* ${keyRead(n.program("WithinOf"), "scope", "scope")}`,
+					`\t\t\t\tconst within = yield* ${keyRead(n.program("WithinOf"), "{ root, scope }")}`,
 					'\t\t\t\treturn Option.map(within, (w): ScopeView => ({ place: "child", scope, kind: w.kind, parent: w.parent }))'
 				]
 			: ["\t\t\t\treturn Option.none()"]),
 		"\t\t\t}",
-		`\t\t\tconst admitted = yield* ${keyRead(n.program("AdmittedOf"), "scope", "scope")}`,
-		`\t\t\tconst skipped = yield* ${keyRead(n.program("SkippedOf"), "scope", "scope")}`,
+		`\t\t\tconst standing = yield* ${keyRead(n.program("RootOf"), "{ root }")}`,
+		"\t\t\tif (Option.isNone(standing)) {",
+		"\t\t\t\treturn Option.none()",
+		"\t\t\t}",
+		`\t\t\tconst admitted = yield* ${keyRead(n.program("AdmittedOf"), "{ root, scope }")}`,
+		`\t\t\tconst skipped = yield* ${keyRead(n.program("SkippedOf"), "{ root, scope }")}`,
 		...(exclusiveKeys
-			? [`\t\t\tconst key = yield* ${keyRead(n.program("ExclusiveKeyOf"), "scope", "scope")}`]
+			? [`\t\t\tconst key = yield* ${keyRead(n.program("ExclusiveKeyOf"), "{ root, scope }")}`]
 			: []),
 		'\t\t\tconst admission: Admission = Option.isSome(admitted) ? "admitted" : Option.isSome(skipped) ? "skipped" : "requested"',
-		`\t\t\treturn Option.some<ScopeView>({ place: "root", scope, kind: root.value.kind, key: root.value.key, at: root.value.at, admission, exclusive: ${exclusiveKeys ? "Option.map(key, (k) => k.id)" : "Option.none()"}, runner: roots[root.value.kind] })`,
+		`\t\t\treturn Option.some<ScopeView>({ place: "root", scope, kind: standing.value.kind, key: standing.value.key, at: standing.value.at, admission, exclusive: ${exclusiveKeys ? "Option.map(key, (k) => k.id)" : "Option.none()"}, runner: roots[standing.value.kind] })`,
 		"\t\t}),",
 		children
-			? `\t\tunended: (scope) => Effect.flatMap(h.den.${n.program("UnendedSteps")}.once({ params: { scope }, facts: {} }).pipe(settled, any), (steps) => steps ? Effect.succeed(true) : h.den.${n.program("OpenChildren")}.once({ params: { scope }, facts: {} }).pipe(settled, any)),`
-			: `\t\tunended: (scope) => h.den.${n.program("UnendedSteps")}.once({ params: { scope }, facts: {} }).pipe(settled, any),`,
-		`\t\tfinished: (scope) => h.den.${n.program("Finished")}.once({ params: { scope }, facts: {} }).pipe(settled, any),`,
+			? `\t\tunended: ({ root, scope }) => Effect.flatMap(h.den.${n.program("UnendedSteps")}.once({ params: { root, scope }, facts: {} }).pipe(settled, any), (steps) => steps ? Effect.succeed(true) : h.den.${n.program("OpenChildren")}.once({ params: { root, scope }, facts: {} }).pipe(settled, any)),`
+			: `\t\tunended: ({ root, scope }) => h.den.${n.program("UnendedSteps")}.once({ params: { root, scope }, facts: {} }).pipe(settled, any),`,
+		`\t\tfinished: ({ root, scope }) => h.den.${n.program("Finished")}.once({ params: { root, scope }, facts: {} }).pipe(settled, any),`,
 		`\t\tbusy: ${indented("\t\t")(busyFlows)},`,
 		`\t\tawaits: [${commas(Arr.map(l.awaited, q))}],`,
 		Arr.isReadonlyArrayNonEmpty(awaitingKinds)
-			? `\t\tawaiting: (step) => h.den.${n.program("AwaitingOf")}.once({ params: { step }, facts: {} }).pipe(settled, any),`
+			? `\t\tawaiting: ({ root, step }) => h.den.${n.program("AwaitingOf")}.once({ params: { root, step }, facts: {} }).pipe(settled, any),`
 			: "\t\tawaiting: () => Effect.succeed(false),",
 		Arr.isReadonlyArrayNonEmpty(awaitingKinds)
-			? `\t\tready: Effect.map(settled(h.den.${n.program("Ready")}.once({ params: {}, facts: {} })), (rows) => Arr.map(rowsOf(rows), (row) => row.step)),`
+			? `\t\tready: Effect.map(settled(h.den.${n.program("Ready")}.once({ params: {}, facts: {} })), (rows) => Arr.map(rowsOf(rows), (row) => ({ root: row.root, step: row.step }))),`
 			: "\t\tready: Effect.succeed([]),",
 		resources
 			? `\t\tclaim: (row) => Effect.flatMap(settled(h.den.${n.program("Claim")}.once({ params: { budget: row.budget }, facts: { insert: { ${r("Claim")}: [{ step: row.step, root: row.root, holds: holdsOf(row.seats) }], ${r("Ended")}: row.lapsed } } })), (outcome) => Effect.map(only(rowsOf(outcome.reads.held)), (c) => c.attempt)),`
@@ -2570,8 +2598,7 @@ export const printBinding = (l: Lowered, place: Placement): string => {
 		"\t}",
 		"\treturn {",
 		"\t\tledger,",
-		"\t\trequest,",
-		`\t\tappRequests: { ${commas(Arr.map(appRoots, requestOf))} }`,
+		"\t\trequest",
 		"\t}",
 		"}"
 	])}\n`

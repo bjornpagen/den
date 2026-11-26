@@ -1,7 +1,7 @@
 import { delayOf, instantOf } from "@bjornpagen/den/runtime/identity"
+import type { StepKey } from "@bjornpagen/den/runtime/ledger"
 import { lostRace, serve } from "@bjornpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagen/den/transport"
-import type { Sha256 } from "@bjornpagen/grizzle"
 import { assert } from "@bjornpagen/testing/assert"
 import type { Reached } from "@bjornpagen/testing/features"
 import { finite, int } from "@bjornpagen/testing/gen"
@@ -45,7 +45,7 @@ export const admitsOneClaimerOfAnAttemptInEveryInterleaving = property.exhaust(f
 						c.note(pages === 1 ? "one page" : "two pages")
 						const { chain, ledgers } = yield* openLedgers
 						const runs = yield* Ref.make(0)
-						const current = yield* Ref.make(Option.none<Sha256>())
+						const current = yield* Ref.make(Option.none<StepKey>())
 						const reset = Effect.gen(function* () {
 							const n = yield* Ref.getAndUpdate(runs, (k) => k + 1)
 							const at = yield* chain.ledger.now
@@ -64,15 +64,13 @@ export const admitsOneClaimerOfAnAttemptInEveryInterleaving = property.exhaust(f
 									: Option.none()
 							yield* Ref.set(
 								current,
-								Option.map(first, (s) => s.step)
+								Option.map(first, (s) => ({ root: requested.scope, step: s.step }))
 							)
 						}).pipe(Effect.orDie)
 						const claim = (_session: Session): Effect.Effect<Outcome> =>
 							Effect.gen(function* () {
 								const held = yield* Ref.get(current)
-								const step = Option.getOrThrow(held)
-								const located = yield* Effect.orDie(chain.ledger.stepOf(step))
-								const root = Option.getOrThrow(located).root
+								const { root, step } = Option.getOrThrow(held)
 								const outcome = yield* Effect.result(
 									chain.ledger.claim({
 										step,

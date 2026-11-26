@@ -16,14 +16,15 @@
 - **AlphaTest (owner, 2026-11-20):** ring after request, the seat handoff, finish spawns with child-scope edges and the
   source's named delay are built, and AlphaTest's background work is modelled in den-model; running on Vercel and a
   census for staging (Vercel Cron calls production only) are next.
-- **Derived root inputs, what is left (den v3; lane METIS-PROCTOR; grizzle main's ruling, 2026-11-25):** no two derived
-  roots of one key, whatever text names them, as a law: `<P><Root>Key` keyed by its fields too, which den can state once
-  each key text field has a byte bound at its natural limit, from data, or the key is keyed by an explicit SHA-256
-  digest column of its fields that den declares (Bjorn's rule: no automatic key hashing); until then a field's rename
-  re-keys. A read of no relation reads no level of the app's: den's role holds a derived read's declared level whole,
-  read-only, broader than the read needs, until grizzle's empty level (`schema.empty`, the bottom of every schema chain,
-  DENSCOPE's) lands and a schedule's read is `query(schema.empty)`. A request again told apart from one whose read
-  derived nothing, which `fresh` answers alike.
+- **A turn's root gate in one probe (lane METIS-PROCTOR, den v3.2's review):** a step's turn reads its root's gate (its
+  kind's window and pause) through `scopeOf`, four probes (the Root, its admission, its skip, its exclusivity key) where
+  its root alone, one probe, answers it, and a root's own finish reads the same four to learn it has no parent; the
+  port's read of a root's gate is the one probe.
+- **Derived root inputs, what is left (den v3; lane METIS-PROCTOR; grizzle main's ruling, 2026-11-25):** a read of no
+  relation reads no level of the app's: den's role holds a derived read's declared level whole, read-only, broader than
+  the read needs, until grizzle's empty level (`schema.empty`, the bottom of every schema chain, DENSCOPE's) lands and a
+  schedule's read is `query(schema.empty)`. A request again told apart from one whose read derived nothing, which
+  `fresh` answers alike.
 - **A key names one input, what is left (grizzle main's ruling, 2026-11-25; lane METIS-PROCTOR):** a step input refined
   by a check lowers to its contract and law (with DENSCOPE on lower/schema.ts); the fingerprint out of its caller's
   hands, named by the served request program itself under the running den's scheme, so no caller can name another;

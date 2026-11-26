@@ -10,6 +10,7 @@ import type { Reached } from "@bjornpagen/testing/features"
 import { aimed, array, boolean, element, type Gen, int } from "@bjornpagen/testing/gen"
 import { type Case, property } from "@bjornpagen/testing/property"
 import { Array as Arr, Effect, Order, Ref } from "effect"
+import { chainAppRequests } from "#integration/slice/generated/chain.binding.ts"
 import { openAuditor, openLedgers, rows, sliceCase } from "#integration/support/slice.ts"
 
 /**
@@ -64,13 +65,13 @@ export const aCommittedRequestRingsItsRootsAdmission = property.explore(runs, {
 						const order = "order"
 						const input = { feed: run.feed, pages: BigInt(run.pages) }
 						if (run.refused) {
-							const earlier = chain.appRequests.Ordered("earlier", input)
+							const earlier = chainAppRequests.Ordered("earlier", input)
 							yield* loader.workload.order.once({
 								params: earlier.params,
 								facts: { insert: { Order: [{ order, feed: run.feed }] } }
 							})
 						}
-						const request = chain.appRequests.Ordered("later", input)
+						const request = chainAppRequests.Ordered("later", input)
 						const written = yield* Effect.result(
 							afterCommit(
 								loader.workload.order.once({
@@ -89,7 +90,10 @@ export const aCommittedRequestRingsItsRootsAdmission = property.explore(runs, {
 							c.note("a refused request")
 							assert.equal(written._tag, "Failure")
 							assert.deepEqual(rung, [])
-							const scope = yield* chain.ledger.scopeOf(request.scope)
+							const scope = yield* chain.ledger.scopeOf({
+								root: request.scope,
+								scope: request.scope
+							})
 							assert.equal(scope._tag, "None")
 							return
 						}
@@ -220,9 +224,9 @@ export const aRepeatedRequestIsTheSameFact = property.explore(repeats, {
 						const { chain, ledgers, loader } = yield* openLedgers
 						const app = yield* openAuditor
 						const input = { feed: run.feed, pages: BigInt(run.pages) }
-						const request = chain.appRequests.Ordered("repeated", input)
+						const request = chainAppRequests.Ordered("repeated", input)
 						const orderedOf = (order: string, named: typeof input) => {
-							const asked = chain.appRequests.Ordered("repeated", named)
+							const asked = chainAppRequests.Ordered("repeated", named)
 							return afterCommit(
 								settled(
 									loader.workload.order.once({
@@ -283,7 +287,10 @@ export const aRepeatedRequestIsTheSameFact = property.explore(repeats, {
 								? Effect.andThen(
 										Effect.andThen(drain(ledgers), retire(chain.ledger)),
 										Effect.map(
-											Effect.all([chain.ledger.finishedRoots, chain.ledger.scopeOf(request.scope)]),
+											Effect.all([
+												chain.ledger.finishedRoots,
+												chain.ledger.scopeOf({ root: request.scope, scope: request.scope })
+											]),
 											([left, cleared]) => {
 												assert.deepEqual(
 													left,
@@ -328,7 +335,10 @@ export const aRepeatedRequestIsTheSameFact = property.explore(repeats, {
 								app.workload.chainOrderedInputs.once({ params: {}, facts: {} })
 							)
 							assert.deepEqual(inputs, [], "nor its input")
-							const cleared = yield* chain.ledger.scopeOf(request.scope)
+							const cleared = yield* chain.ledger.scopeOf({
+								root: request.scope,
+								scope: request.scope
+							})
 							assert.equal(cleared._tag, "None", "the retired root's scope stays cleared")
 							return
 						}
@@ -441,10 +451,10 @@ export const aKeyRequestedAgainAcrossDeploysIsTheSameAct = property.explore(depl
 			Effect.flatMap(slice, (services) =>
 				Effect.provideContext(
 					Effect.gen(function* () {
-						const { chain, clock, loader } = yield* openLedgers
+						const { clock, loader } = yield* openLedgers
 						const app = yield* openAuditor
 						const orderedUnder = (deployment: number, order: string) => {
-							const asked = chain.appRequests.Ordered("deployed", {
+							const asked = chainAppRequests.Ordered("deployed", {
 								feed: "news",
 								pages: BigInt(1 + deployment)
 							})
@@ -476,7 +486,7 @@ export const aKeyRequestedAgainAcrossDeploysIsTheSameAct = property.explore(depl
 						 * it.
 						 */
 						const tick = clock.request.Hourly({ at: 0n, member: "east" })
-						const first = chain.appRequests.Ordered("deployed", { feed: "news", pages: 1n })
+						const first = chainAppRequests.Ordered("deployed", { feed: "news", pages: 1n })
 						yield* orderedUnder(0, "order-0")
 						const ticked = yield* tick
 						assert.equal(ticked.fresh, true, "the schedule's first request starts its root")

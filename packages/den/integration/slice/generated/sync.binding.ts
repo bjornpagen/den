@@ -129,7 +129,7 @@ const exclusiveTurnsOf = (turns: ReadonlyArray<ExclusiveTurn>) =>
 		)
 	)
 
-/** The ledger of the flow Sync over its handles, with the requests of its roots. */
+/** The ledger of the flow Sync over its handles, with the requests of the roots den requests. */
 export const syncLedger = (h: SyncHandles) => {
 	const noRows: Rows = {
 		SyncScope: [],
@@ -209,34 +209,34 @@ export const syncLedger = (h: SyncHandles) => {
 			nothingGrown,
 			joined
 		)
-	const readSyncCopyInput = (step: Sha256) =>
+	const readSyncCopyInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.syncReadSyncCopyInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.syncReadSyncCopyInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ relation: found.relation, run: found.run }))
 		})
-	const readSyncBuildInput = (step: Sha256) =>
+	const readSyncBuildInput = (root: Sha256, step: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.syncReadSyncBuildInput.once({ params: { step: step }, facts: {} })),
+				settled(h.den.syncReadSyncBuildInput.once({ params: { root, step }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ build: found.build }))
 		})
-	const readSyncSyncRunInput = (scope: Sha256) =>
+	const readSyncSyncRunInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.syncReadSyncSyncRunInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.syncReadSyncSyncRunInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ relation: found.relation, run: found.run }))
 		})
-	const readSyncGoldInput = (scope: Sha256) =>
+	const readSyncGoldInput = (root: Sha256, scope: Sha256) =>
 		Effect.gen(function* () {
 			const row = yield* Effect.map(
-				settled(h.den.syncReadSyncGoldInput.once({ params: { scope: scope }, facts: {} })),
+				settled(h.den.syncReadSyncGoldInput.once({ params: { root, scope }, facts: {} })),
 				one
 			)
 			return Option.map(row, (found) => ({ build: found.build }))
@@ -390,7 +390,7 @@ export const syncLedger = (h: SyncHandles) => {
 		Copy: runnerOf(
 			sync.kinds[0],
 			{
-				input: (step) => readSyncCopyInput(step),
+				input: ({ root, step }) => readSyncCopyInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -424,7 +424,7 @@ export const syncLedger = (h: SyncHandles) => {
 		Build: runnerOf(
 			sync.kinds[2],
 			{
-				input: (step) => readSyncBuildInput(step),
+				input: ({ root, step }) => readSyncBuildInput(root, step),
 				read: () => Effect.succeed({}),
 				commit: (done) =>
 					Effect.gen(function* () {
@@ -468,17 +468,17 @@ export const syncLedger = (h: SyncHandles) => {
 				}) => sync.kinds[1].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.syncStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.syncStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readSyncSyncRunInput(scope)
+						const input = yield* readSyncSyncRunInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -522,17 +522,17 @@ export const syncLedger = (h: SyncHandles) => {
 				}) => sync.kinds[3].finish.body(read.input, read.endings)
 			},
 			{
-				input: (step) =>
+				input: ({ root, step }) =>
 					Effect.gen(function* () {
 						const located = yield* Effect.map(
-							settled(h.den.syncStepOf.once({ params: { step }, facts: {} })),
+							settled(h.den.syncStepOf.once({ params: { root, step }, facts: {} })),
 							one
 						)
 						if (Option.isNone(located)) {
 							return Option.none()
 						}
 						const scope = located.value.scope
-						const input = yield* readSyncGoldInput(scope)
+						const input = yield* readSyncGoldInput(root, scope)
 						if (Option.isNone(input)) {
 							return Option.none()
 						}
@@ -570,7 +570,7 @@ export const syncLedger = (h: SyncHandles) => {
 			precondition: sync.kinds[1].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readSyncSyncRunInput(scope)
+					const input = yield* readSyncSyncRunInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -617,7 +617,7 @@ export const syncLedger = (h: SyncHandles) => {
 			precondition: sync.kinds[3].precondition,
 			admit: (scope: Sha256) =>
 				Effect.gen(function* () {
-					const input = yield* readSyncGoldInput(scope)
+					const input = yield* readSyncGoldInput(scope, scope)
 					if (Option.isNone(input)) {
 						return Option.none()
 					}
@@ -689,48 +689,63 @@ export const syncLedger = (h: SyncHandles) => {
 			settled(h.commits.syncAuthenticated.once({ params: {}, facts: {} }))
 		),
 		holds: Effect.succeed([]),
-		stepOf: (step) =>
-			Effect.map(settled(h.den.syncStepOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => ({
-					runner: runners[row.kind],
-					scope: row.scope,
-					root: row.root,
-					due: row.due
-				}))
+		stepOf: (at) =>
+			Effect.map(
+				settled(h.den.syncStepOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) =>
+					Option.map(one(rows), (row) => ({
+						runner: runners[row.kind],
+						scope: row.scope,
+						due: row.due
+					}))
 			),
-		resultOf: (step) =>
-			Effect.map(settled(h.den.syncResultOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.outcome)
+		resultOf: (at) =>
+			Effect.map(
+				settled(h.den.syncResultOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) => Option.map(one(rows), (row) => row.outcome)
 			),
-		heldOf: (step) =>
-			Effect.map(settled(h.den.syncHeldOf.once({ params: { step }, facts: {} })), (rows) =>
-				Option.map(one(rows), (row) => row.attempt)
+		heldOf: (at) =>
+			Effect.map(
+				settled(h.den.syncHeldOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				(rows) => Option.map(one(rows), (row) => row.attempt)
 			),
-		claimsOf: (step) =>
-			Effect.map(settled(h.den.syncClaimsOf.once({ params: { step }, facts: {} })), rowsOf),
-		retriesOf: (step) =>
-			Effect.map(settled(h.den.syncRetriesOf.once({ params: { step }, facts: {} })), rowsOf),
-		fencedOf: (step) =>
-			Effect.map(settled(h.den.syncFencedOf.once({ params: { step }, facts: {} })), rowsOf),
-		scopeOf: (scope) =>
+		claimsOf: (at) =>
+			Effect.map(
+				settled(h.den.syncClaimsOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		retriesOf: (at) =>
+			Effect.map(
+				settled(h.den.syncRetriesOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		fencedOf: (at) =>
+			Effect.map(
+				settled(h.den.syncFencedOf.once({ params: { root: at.root, step: at.step }, facts: {} })),
+				rowsOf
+			),
+		scopeOf: ({ root, scope }) =>
 			Effect.gen(function* () {
-				const root = yield* Effect.map(
-					settled(h.den.syncRootOf.once({ params: { scope: scope }, facts: {} })),
+				if (!Sha256.equals(root, scope)) {
+					return Option.none()
+				}
+				const standing = yield* Effect.map(
+					settled(h.den.syncRootOf.once({ params: { root }, facts: {} })),
 					one
 				)
-				if (Option.isNone(root)) {
+				if (Option.isNone(standing)) {
 					return Option.none()
 				}
 				const admitted = yield* Effect.map(
-					settled(h.den.syncAdmittedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.syncAdmittedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const skipped = yield* Effect.map(
-					settled(h.den.syncSkippedOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.syncSkippedOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const key = yield* Effect.map(
-					settled(h.den.syncExclusiveKeyOf.once({ params: { scope: scope }, facts: {} })),
+					settled(h.den.syncExclusiveKeyOf.once({ params: { root, scope }, facts: {} })),
 					one
 				)
 				const admission: Admission = Option.isSome(admitted)
@@ -741,18 +756,18 @@ export const syncLedger = (h: SyncHandles) => {
 				return Option.some<ScopeView>({
 					place: "root",
 					scope,
-					kind: root.value.kind,
-					key: root.value.key,
-					at: root.value.at,
+					kind: standing.value.kind,
+					key: standing.value.key,
+					at: standing.value.at,
 					admission,
 					exclusive: Option.map(key, (k) => k.id),
-					runner: roots[root.value.kind]
+					runner: roots[standing.value.kind]
 				})
 			}),
-		unended: (scope) =>
-			h.den.syncUnendedSteps.once({ params: { scope }, facts: {} }).pipe(settled, any),
-		finished: (scope) =>
-			h.den.syncFinished.once({ params: { scope }, facts: {} }).pipe(settled, any),
+		unended: ({ root, scope }) =>
+			h.den.syncUnendedSteps.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
+		finished: ({ root, scope }) =>
+			h.den.syncFinished.once({ params: { root, scope }, facts: {} }).pipe(settled, any),
 		busy: Effect.flatMap(settled(h.den.syncBusy.once({ params: {}, facts: {} })), (rows) =>
 			Effect.map(only(rows), busyOf)
 		),
@@ -865,6 +880,7 @@ export const syncLedger = (h: SyncHandles) => {
 				return {
 					steps: Arr.map(read.steps, (s) => ({
 						step: s.step,
+						root: s.root,
 						runner: runners[s.kind],
 						scope: s.scope,
 						due: s.due
@@ -900,7 +916,6 @@ export const syncLedger = (h: SyncHandles) => {
 	}
 	return {
 		ledger,
-		request,
-		appRequests: {}
+		request
 	}
 }

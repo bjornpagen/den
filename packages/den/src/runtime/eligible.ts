@@ -81,6 +81,7 @@ export interface Eligible {
  */
 interface Candidate {
 	readonly step: Sha256
+	readonly root: Sha256
 	readonly attempt: bigint
 	readonly seated: ReadonlyArray<Resource>
 	readonly age: Instant
@@ -176,8 +177,8 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 		Arr.map(snapshot.scopes, (s) => [Sha256.toHex(s.scope), s] as const)
 	)
 	const view = (scope: Sha256): Option.Option<ScopeView> => HashMap.get(scopes, Sha256.toHex(scope))
-	const rootOf = (scope: Sha256): Option.Option<RootView> =>
-		Option.flatMap(view(scope), (s) => (s.place === "root" ? Option.some(s) : rootOf(s.parent)))
+	const rootOf = (root: Sha256): Option.Option<RootView> =>
+		Option.filter(view(root), (s): s is RootView => s.place === "root")
 	const open = (root: RootView): boolean => isOpen(root.runner.window, now)
 	const paused = (target: string): boolean => Arr.contains(snapshot.paused, target)
 	const admissions = Arr.filter(snapshot.scopes, (s) => {
@@ -202,7 +203,7 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 
 	const candidates = Arr.flatMap(snapshot.steps, (p): ReadonlyArray<Candidate> => {
 		const runner = p.runner
-		const root = rootOf(p.scope)
+		const root = rootOf(p.root)
 		if (Option.isNone(view(p.scope)) || Option.isNone(root)) {
 			return []
 		}
@@ -239,7 +240,15 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 			return []
 		}
 		return [
-			{ step: p.step, attempt, seated: seatedOf(runner.uses), age: root.value.at, due, waited }
+			{
+				step: p.step,
+				root: p.root,
+				attempt,
+				seated: seatedOf(runner.uses),
+				age: root.value.at,
+				due,
+				waited
+			}
 		]
 	})
 
@@ -266,6 +275,7 @@ export const eligible = <R>(ledger: Ledger<R>, snapshot: Snapshot<R>, now: Insta
 	const wakeOf = (c: Candidate): Wake => ({
 		_tag: "Step",
 		flow: ledger.flow,
+		root: c.root,
 		step: c.step,
 		attempt: AttemptNumber.make(Number(c.attempt))
 	})
